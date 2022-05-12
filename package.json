@@ -31,6 +31,15 @@
     ]
   },
   "build": {
+    "extraResources": [
+      {
+        "from": "./src/extraResources/",
+        "to": "extraResources",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
     "productName": "ElectronReact",
     "appId": "org.erb.ElectronReact",
     "asar": true,

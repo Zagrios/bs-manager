@@ -1,6 +1,8 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
-export type Channels = 'ipc-example';
+export type Channels = 'bs-download.start'|'bs-download.send-input';
+
+export type ReplyChannels = 'bs-download.ask-password';
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {

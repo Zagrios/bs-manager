@@ -135,3 +135,5 @@ app
     });
   })
   .catch(console.log);
+
+  import './ipcs/custom-ipcs';
