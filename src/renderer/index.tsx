@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client';
 import { InitDownloadInfoInterface } from 'main/ipcs/bs-download-ipcs';
 import App from './App';
 import 'tailwindcss/tailwind.css';
+import './index.css'
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);

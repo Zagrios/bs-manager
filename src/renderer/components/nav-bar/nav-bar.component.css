@@ -21,3 +21,9 @@
   background-blend-mode: luminosity;
   background-size: 100%;
 }
+
+#versions{
+  scrollbar-gutter: stable;
+}
+
+
