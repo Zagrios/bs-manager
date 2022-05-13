@@ -14,6 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import './ipcs/custom-ipcs';
 
 export default class AppUpdater {
   constructor() {
@@ -101,6 +102,9 @@ const createWindow = async () => {
   const menuBuilder = new MenuBuilder(mainWindow);
   menuBuilder.buildMenu();
 
+  mainWindow.removeMenu();
+  mainWindow.setMenu(null);
+
   // Open urls in the user's browser
   mainWindow.webContents.setWindowOpenHandler((edata) => {
     shell.openExternal(edata.url);
@@ -135,5 +139,3 @@ app
     });
   })
   .catch(console.log);
-
-  import './ipcs/custom-ipcs';
