@@ -4,5 +4,6 @@
     "global-require": "off",
     "import/no-dynamic-require": "off",
     "prettier/prettier": 0,
+    "import/prefer-default-export": "off"
   }
 }

@@ -1,0 +1,23 @@
+#logo-bottom{
+  position: absolute;
+  /* width: 200px; height: 200px; */
+  display: block;
+  background-image: url('../../../../assets/logo1.png');
+  -webkit-mask-image: url('../../../../assets/logo1.png');
+  -webkit-mask-size: cover;
+  -webkit-mask-mode: alpha;
+  background-blend-mode: luminosity;
+  background-size: 100%;
+}
+
+#logo-top{
+  position: absolute;
+  /* width: 200px; height: 200px; */
+  display: block;
+  background-image: url('../../../../assets/logo2.png');
+  -webkit-mask-image: url('../../../../assets/logo2.png');
+  -webkit-mask-size: cover;
+  -webkit-mask-mode: alpha;
+  background-blend-mode: luminosity;
+  background-size: 100%;
+}

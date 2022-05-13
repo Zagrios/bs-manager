@@ -42,8 +42,10 @@ ipcMain.on('bs-download.start', async (event, args: InitDownloadInfoInterface) =
     console.log(out);
 
     if(out[0] === "[Progress]"){ event.reply('bs-download.progress', out[1]); }
-    else if(out[0] === "[Password]" || out[0].includes('[Password]')){ event.reply('bs-download.ask-password'); }
-    else if(out[0] === "[any]"){ event.reply('bs-download.progress', out); }
+    else if(out[0] === "[Password]"){ event.reply('bs-download.ask-password'); }
+    else if(out[0] === "[2FA]"){ event.reply('bs-download.ask-2fa'); }
+    else if(out[0] === "[Guard]"){ event.reply('bs-download.ask-guard'); }
+    else if(out[0] === "[Error]"){ event.reply('bs-download.error', out); }
 
   });
 

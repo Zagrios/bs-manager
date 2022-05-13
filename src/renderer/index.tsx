@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client';
-import App from './App';
 import { InitDownloadInfoInterface } from 'main/ipcs/bs-download-ipcs';
+import App from './App';
+import 'tailwindcss/tailwind.css';
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);

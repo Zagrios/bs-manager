@@ -26,6 +26,10 @@ export default class AppUpdater {
 
 let mainWindow: BrowserWindow | null = null;
 
+export function getMainWindow(): BrowserWindow | null{
+  return mainWindow;
+}
+
 ipcMain.on('ipc-example', async (event, arg) => {
   const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
   console.log(msgTemplate(arg));
@@ -74,6 +78,10 @@ const createWindow = async () => {
     show: false,
     width: 1024,
     height: 728,
+    minWidth: 800,
+    minHeight: 500,
+    frame: false,
+    titleBarOverlay: false,
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: app.isPackaged
@@ -81,6 +89,8 @@ const createWindow = async () => {
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
   });
+
+
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
