@@ -233,6 +233,7 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
+    "@node-steam/vdf": "^2.2.0",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.6",
     "electron-updater": "^4.6.5",
@@ -241,6 +242,7 @@
     "react-dom": "^18.0.0",
     "react-icons": "^4.3.1",
     "react-router-dom": "^6.3.0",
+    "regedit": "^5.1.1",
     "tailwind-scrollbar-hide": "^1.1.7"
   },
   "devEngines": {

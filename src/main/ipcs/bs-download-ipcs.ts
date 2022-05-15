@@ -12,7 +12,7 @@
 import { ipcMain } from 'electron';
 import path from 'path';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
-import { createFolderIfNotExist } from '../utils';
+import { UtilsService } from '../services/utils.service';
 
 
 export interface InitDownloadInfoInterface {
@@ -26,14 +26,15 @@ export interface InitDownloadInfoInterface {
 }
 
 const DEPOT_DOWNLOADER_EXE = 'DepotDownloader.exe';
-const DEPOT_DOWNLOADER_PATH = path.join(path.dirname(__dirname), '..', 'extraResources', 'depot-downloader', DEPOT_DOWNLOADER_EXE);
 
 let PROCESS: ChildProcessWithoutNullStreams;
 
 ipcMain.on('bs-download.start', async (event, args: InitDownloadInfoInterface) => {
+  const DEPOT_DOWNLOADER_PATH = path.join(UtilsService.getInstance().getAssetsPath(), 'depot-downloader', DEPOT_DOWNLOADER_EXE);
+  console.log(UtilsService.getInstance().getAssetsPath());
   console.log(DEPOT_DOWNLOADER_PATH);
   console.log(args.cwd);
-  createFolderIfNotExist(args.cwd);
+  UtilsService.getInstance().createFolderIfNotExist(args.cwd);
   PROCESS = spawn(DEPOT_DOWNLOADER_PATH, [`-app ${args.app}`, `-depot ${args.depot}`, `-manifest ${args.manifest}`, `-username ${args.username}`, `-dir ${args.folder}`, args.stay ? `-remember-password` : ''], {shell: true, cwd: args.cwd});
 
   PROCESS.stdout.on('data', data => {
