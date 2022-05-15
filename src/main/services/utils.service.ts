@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync } from "fs";
+import { existsSync, mkdirSync, readdirSync, readFile } from "fs";
 import { spawnSync } from "child_process";
 import { homedir } from "os";
 import path from "path";
@@ -39,8 +39,19 @@ export class UtilsService{
     return path.join(this.getUserFolder(), 'Documents');
   }
 
+  public readFileAsync(path: string){
+    return new Promise<Buffer>((resolve, reject) => {
+      readFile(path, (err, data) => {
+          if(err){ reject(err); }
+          else{ resolve(data); }
+      });
+    });
+  }
 
-
-
+  public listDirsInDir(dirPath: string): string[]{
+    let files = readdirSync(dirPath, { withFileTypes:true});
+    files = files.filter(f => f.isDirectory())
+    return files.map(f => f.name);
+  }
 
 }

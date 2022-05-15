@@ -9,9 +9,11 @@ import { BS_EXECUTABLE, BS_APP_ID } from '../constants';
 
 ipcMain.on('test-launch', async () => {
   console.log("steam "+ UtilsService.getInstance().taskRunning('steam.exe'));
-  console.log(await SteamService.getInstance().getSteamGameFolder());
+  console.log(await SteamService.getInstance().getSteamGamesFolder());
   console.log(BSInstallerService.getInstance().getBSInstallationFolder());
-  console.log((await BSVersionManagerService.getInstance().loadBsVersions()));
+  console.log((await BSVersionManagerService.getInstance().getAvailableVersions()));
+  console.log(await BSVersionManagerService.getInstance().getVersionOfBSFolder(path.join(await SteamService.getInstance().getSteamGamesFolder(), "Beat Saber")));
+  console.log(await BSInstallerService.getInstance().getInstalledBsVersion());
   return;
 
   const BS_EXE = "Beat Saber.exe"
@@ -28,9 +30,9 @@ ipcMain.on('test-launch', async () => {
 
 ipcMain.on('bs-launch.steam', async (event, args) => {
   const steamService = SteamService.getInstance();
-  if(!steamService.isGameInstalled(BS_APP_ID)){ event.reply('bs-launch.not-installed'); }
-  const beatSaberSteamFolder = path.join(await steamService.getSteamPath(), "Beat Saber");
+  const beatSaberSteamFolder = path.join(await steamService.getSteamGamesFolder(), "Beat Saber");
   const beatSaberSteamExe = path.join(beatSaberSteamFolder, BS_EXECUTABLE);
-  const spawnProcess = spawn(`\"${beatSaberSteamExe}\"`, [], {shell: true, cwd: beatSaberSteamFolder, env: {...process.env, "SteamAppId": "620980"}});
+  const spawnProcess = spawn(`\"${beatSaberSteamExe}\"`, [], {shell: true, cwd: beatSaberSteamFolder, env: {...process.env, "SteamAppId": BS_APP_ID}});
+
 
 })

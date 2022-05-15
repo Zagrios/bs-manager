@@ -37,9 +37,10 @@ export class SteamService{
     return this.steamPath;
   }
 
-  public async getSteamGameFolder(): Promise<string>{
+  public async getSteamGamesFolder(): Promise<string>{
+    this.isGameInstalled("");
     const steamFolder = await this.getSteamPath();
-    return path.join(steamFolder, 'common');
+    return path.join(steamFolder, 'steamapps', 'common');
   }
 
   public async isGameInstalled(gameId: string): Promise<boolean>{
@@ -49,11 +50,12 @@ export class SteamService{
     if(!this.utils.pathExist(libraryFolders)){ return false; }
     libraryFolders =  parse(await readFile(libraryFolders, {encoding: 'utf-8'}));
 
+
     if(!libraryFolders.libraryfolders){ return false; }
     libraryFolders = libraryFolders.libraryfolders
 
     for(const libKey in Object.keys(libraryFolders)){
-      if(!libraryFolders[libKey]["apps"]){ continue; }
+      if(!libraryFolders[libKey] || !libraryFolders[libKey]["apps"]){ continue; }
       if(libraryFolders[libKey]["apps"][gameId]){ return true };
     }
     return false;
