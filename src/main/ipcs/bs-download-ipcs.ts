@@ -1,14 +1,3 @@
-// const script = path.join(path.dirname(__dirname), 'extraRessources', 'DepotDownloader', 'DepotDownloader.exe');;
-//   const intance = spawn(script, ['-username lekilleur618', '-manifest 4038188869828689801', '-depot 620981', '-app 620980', '-remember-password'], {cwd: "C:\\test", shell: true});
-//   intance.stdout.on('data', (data) =>{
-//     console.log(data.toString());
-//     if(data.toString().includes('Enter account password for')){
-//       intance.stdin.write('MmBopN8qez5gKFZX\n');
-//     }
-//   });
-//   intance.stderr.on('data', (data) => console.log(data.toString()));
-//   intance.on('message', (message) => {console.log(message.toString())});
-
 import { ipcMain } from 'electron';
 import path from 'path';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
