@@ -1,9 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import installedBSReducer from './reducers/bs-versions-installed.reducer'
+import availableBsReducer from './reducers/bs-versions-available.reducer'
 
 const store = configureStore({
     reducer:{
-        installedBSReducer,
+        installedBSReducer, availableBsReducer
     }
 });
 

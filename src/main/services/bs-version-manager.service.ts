@@ -70,6 +70,7 @@ export class BSVersionManagerService{
 
   public async getVersionOfBSFolder(bsPath: string): Promise<string>{
     const versionFilePath = path.join(bsPath, 'Beat Saber_Data', 'globalgamemanagers');
+    console.log(versionFilePath);
     if(!this.utilsService.pathExist(versionFilePath)){ return null; }
 
     const versionsAvailable = await this.getAvailableVersions();

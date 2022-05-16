@@ -7,12 +7,10 @@ import { BSVersion } from 'main/services/bs-version-manager.service';
 
 export function NavBar() {
 
-  const { installedVersions }: {installedVersions: BSVersion[]} = useSelector((state: any) => ({...state.installedBSReducer}));
-
-  console.log(installedVersions);
+  const { installedVersions }: {installedVersions: BSVersion[]} = useSelector((state: any) => state.installedBSReducer);
 
   return (
-    <div id='nav-bar' className='flex flex-col items-center w-fit h-full max-h-full p-2 bg-gray-200 dark:bg-[#202225]'>
+    <div id='nav-bar' className='z-10 flex flex-col items-center w-fit h-full max-h-full p-2 bg-gray-200 dark:bg-[#202225]'>
       <div className='w-full flex items-start content-start justify-center relative mb-3'>
         <div className='relative aspect-square w-16'>
           <span id='logo-bottom' className='bg-blue-500 aspect-square w-16'> </span>

@@ -30,9 +30,7 @@ ipcMain.on('test-launch', async () => {
 
 ipcMain.on('bs-launch.steam', async (event, args) => {
   const steamService = SteamService.getInstance();
-  const beatSaberSteamFolder = path.join(await steamService.getSteamGamesFolder(), "Beat Saber");
+  const beatSaberSteamFolder = await steamService.getGameFolder(BS_APP_ID, "Beat Saber");
   const beatSaberSteamExe = path.join(beatSaberSteamFolder, BS_EXECUTABLE);
   const spawnProcess = spawn(`\"${beatSaberSteamExe}\"`, [], {shell: true, cwd: beatSaberSteamFolder, env: {...process.env, "SteamAppId": BS_APP_ID}});
-
-
 })

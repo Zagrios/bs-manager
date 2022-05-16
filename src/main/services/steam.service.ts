@@ -37,28 +37,24 @@ export class SteamService{
     return this.steamPath;
   }
 
-  public async getSteamGamesFolder(): Promise<string>{
-    this.isGameInstalled("");
-    const steamFolder = await this.getSteamPath();
-    return path.join(steamFolder, 'steamapps', 'common');
-  }
-
-  public async isGameInstalled(gameId: string): Promise<boolean>{
+  public async getGameFolder(gameId: string, gameFolder?: string): Promise<string>{
     const steamPath = await this.getSteamPath();
     let libraryFolders: any = path.join(steamPath, 'steamapps', 'libraryfolders.vdf');
 
-    if(!this.utils.pathExist(libraryFolders)){ return false; }
+    if(!this.utils.pathExist(libraryFolders)){ console.log("null 1"); return null; }
     libraryFolders =  parse(await readFile(libraryFolders, {encoding: 'utf-8'}));
 
 
-    if(!libraryFolders.libraryfolders){ return false; }
+    if(!libraryFolders.libraryfolders){ return null; }
     libraryFolders = libraryFolders.libraryfolders
 
     for(const libKey in Object.keys(libraryFolders)){
+      console.log(libraryFolders[libKey]);
       if(!libraryFolders[libKey] || !libraryFolders[libKey]["apps"]){ continue; }
-      if(libraryFolders[libKey]["apps"][gameId]){ return true };
+      if(libraryFolders[libKey]["apps"][gameId]){ return path.join(libraryFolders[libKey]["path"], "steamapps", "common", gameFolder); };
     }
-    return false;
+    console.log("null 3")
+    return null;
   }
 
 }

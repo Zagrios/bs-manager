@@ -30,11 +30,15 @@ export class BSInstallerService{
 
   public async getInstalledBsVersion(): Promise<BSVersion[]>{
     const versions: BSVersion[] = [];
-    if(this.steamService.isGameInstalled(BS_APP_ID)){
-      const steamBsFolder = path.join(await this.steamService.getSteamGamesFolder(), "Beat Saber");
+    console.log("aaa");
+    const steamBsFolder = await this.steamService.getGameFolder(BS_APP_ID, "Beat Saber")
+    console.log(steamBsFolder);
+    if(steamBsFolder && this.utils.pathExist(steamBsFolder)){
       const steamBsVersion = await this.bsVersionService.getVersionOfBSFolder(steamBsFolder);
-      const steamVersionDetails = this.bsVersionService.getVersionDetailFromVersionNumber(steamBsVersion);
-      versions.push(steamVersionDetails ? {...steamVersionDetails, steam: true} : {BSVersion: steamBsVersion, steam: true});
+      if(steamBsVersion){
+        const steamVersionDetails = this.bsVersionService.getVersionDetailFromVersionNumber(steamBsVersion);
+        versions.push(steamVersionDetails ? {...steamVersionDetails, steam: true} : {BSVersion: steamBsVersion, steam: true});
+      }
     }
 
     if(!this.utils.folderExist(this.getBSInstallationFolder())){ return versions }
