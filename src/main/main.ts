@@ -79,7 +79,7 @@ const createWindow = async () => {
     show: false,
     width: 1024,
     height: 728,
-    minWidth: 800,
+    minWidth: 900,
     minHeight: 500,
     frame: false,
     titleBarOverlay: false,
