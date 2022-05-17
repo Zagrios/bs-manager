@@ -245,6 +245,7 @@
     "react-router-dom": "^6.3.0",
     "redux": "^4.2.0",
     "regedit": "^5.1.1",
+    "rxjs": "^7.5.5",
     "tailwind-scrollbar-hide": "^1.1.7"
   },
   "devEngines": {
