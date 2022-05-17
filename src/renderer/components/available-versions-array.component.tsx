@@ -1,11 +1,11 @@
 import { BSVersion } from "../../main/services/bs-version-manager.service"
 import { useEffect, useState } from "react"
 
-export function AvailableVersionsArray({versions}: {versions: BSVersion[]}) {
+export function AvailableVersionsArray({versions, setSelectedVersion}: {versions: BSVersion[], setSelectedVersion: Function}) {
 
   const [versionsMap, setVersionsMap] = useState(new Map<string, BSVersion[]>())
 
-  console.log(versions);
+  console.log(setSelectedVersion);
 
   useEffect(() => {
     organiseVersions()
@@ -25,7 +25,7 @@ export function AvailableVersionsArray({versions}: {versions: BSVersion[]}) {
 
   return (
     <div>
-      { versions.map(v => <button className="bg-gray-200 m-2">{v.BSVersion}</button>) }
+      { versions.map((v, index) => <button onClick={() => setSelectedVersion(v)} key={index} className="bg-gray-200 m-2">{v.BSVersion}</button>) }
     </div>
   )
 }
