@@ -1,3 +1,5 @@
+const colors = require('tailwindcss/colors')
+
 module.exports = {
   content: ['./src/renderer/**/*.tsx'],
   mode: 'jit',
@@ -6,6 +8,14 @@ module.exports = {
     scrollbar: ['rounded']
   },
   theme:{
+    colors:{
+      ...colors,
+      'main-color': {
+        1: '#202225',
+        2: '#2C2F33',
+        3: '#40444b',
+      },
+    },
     extend:{
       keyframes:{
         zoominimg: {
