@@ -28,7 +28,7 @@ export default function TitleBar() {
   }
 
   return (
-    <header id="titlebar" className="dark:bg-[#202225] w-screen flex content-center items-center justify-start z-10">
+    <header id="titlebar" className="dark:bg-main-color-1 w-screen flex content-center items-center justify-start z-10">
       <div id="drag-region" className='grow basis-0'>
         <div id="window-title" className='pl-1'>
           <span className='text-gray-100 font-bold text-sm'>BSManager</span>
