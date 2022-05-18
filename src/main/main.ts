@@ -25,9 +25,9 @@ export default class AppUpdater {
   }
 }
 
-let mainWindow: BrowserWindow | null = null;
+let mainWindow: BrowserWindow = null;
 
-export function getMainWindow(): BrowserWindow | null{
+export function getMainWindow(): BrowserWindow{
   return mainWindow;
 }
 
@@ -90,6 +90,8 @@ const createWindow = async () => {
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
   });
+
+  UtilsService.getInstance().setMainWindow(mainWindow);
 
 
 

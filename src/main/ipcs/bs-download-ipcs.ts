@@ -2,7 +2,8 @@ import { ipcMain } from 'electron';
 import path from 'path';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import { UtilsService } from '../services/utils.service';
-import { BSVersion } from 'main/services/bs-version-manager.service';
+import { BSVersion } from '../services/bs-version-manager.service';
+import { BSInstallerService } from '../services/bs-installer.service';
 
 
 export interface InitDownloadInfoInterface {
@@ -27,7 +28,8 @@ const DEPOT_DOWNLOADER_EXE = 'DepotDownloader.exe';
 let PROCESS: ChildProcessWithoutNullStreams;
 
 ipcMain.on('bs-download.start', async (event, args: DownloadInfo) => {
-  console.log(args); return;
+  BSInstallerService.getInstance().downloadBsVersion(args);
+   return;
   const DEPOT_DOWNLOADER_PATH = path.join(UtilsService.getInstance().getAssetsPath(), 'depot-downloader', DEPOT_DOWNLOADER_EXE);
   console.log(UtilsService.getInstance().getAssetsPath());
   console.log(DEPOT_DOWNLOADER_PATH);

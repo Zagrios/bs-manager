@@ -2,12 +2,15 @@ import { existsSync, mkdirSync, readdirSync, readFile } from "fs";
 import { spawnSync } from "child_process";
 import { homedir } from "os";
 import path from "path";
+import { BrowserWindow } from "electron";
 
 export class UtilsService{
 
   private static instance: UtilsService;
 
   private assetsPath: string = '';
+
+  private mainWindow: BrowserWindow;
 
   private constructor(){}
 
@@ -19,13 +22,15 @@ export class UtilsService{
   public setAssetsPath(path: string): void{ this.assetsPath = path; }
   public getAssetsPath(): string{ return this.assetsPath; }
 
+  public setMainWindow(win: BrowserWindow){ this.mainWindow = win; }
+
   //à supprimer
   public folderExist(path: string): boolean{ return existsSync(path); }
 
   public pathExist(path: string): boolean{ return existsSync(path); }
 
   public createFolderIfNotExist(path: string): void{
-    if(!this.folderExist(path)){ mkdirSync(path); }
+    if(!this.folderExist(path)){ mkdirSync(path, {recursive: true}); }
   }
 
   public taskRunning(task: string): boolean{
@@ -52,6 +57,10 @@ export class UtilsService{
     let files = readdirSync(dirPath, { withFileTypes:true});
     files = files.filter(f => f.isDirectory())
     return files.map(f => f.name);
+  }
+
+  public ipcSend(channel: string, args?: any){
+    this.mainWindow.webContents.send(channel, args);
   }
 
 }
