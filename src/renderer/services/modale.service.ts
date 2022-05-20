@@ -42,6 +42,7 @@ export class ModalService{
 
 export enum ModalType {
     STEAM_LOGIN = "STEAM_LOGIN",
+    GUARD_CODE = "GUARD_CODE",
 }
 
 export enum ModalExitCode {

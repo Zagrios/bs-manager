@@ -9,10 +9,17 @@ export class BsDownloaderService{
     private readonly modalService: ModalService = ModalService.getInsance();
 
     private constructor(){
-        window.electron.ipcRenderer.on('bs-download.not-connected', async (bsVersion: BSVersion) => {
+        window.electron.ipcRenderer.on(`bs-download.[Password]`, async (bsVersion: BSVersion) => {
             const res = await this.modalService.openModal(ModalType.STEAM_LOGIN);
             if(res.exitCode !== ModalExitCode.COMPLETED){ return; }
             window.electron.ipcRenderer.sendMessage('bs-download.start', {bsVersion: bsVersion, username: res.data.username, password: res.data.password, stay: res.data.stay} as DownloadInfo)
+        });
+
+        window.electron.ipcRenderer.on(`bs-download.[Guard]`, async () => {
+            console.log("GUARD");
+            const res = await this.modalService.openModal(ModalType.GUARD_CODE);
+            if(res.exitCode != ModalExitCode.COMPLETED){ return; }
+            window.electron.ipcRenderer.sendMessage(`bs-download.[Guard]`, res.data);
         });
     }
 

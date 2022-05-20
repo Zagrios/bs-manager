@@ -91,13 +91,17 @@ export class BSInstallerService{
     this.downloadProcess.stdout.on('data', (data) => {
       console.log(data.toString());
       const out =  (data.toString() as string).split("|");
-      if(out[0] === DownloadEventType.NOT_LOGGED_IN && downloadInfos.password){ this.sendInputProcess(downloadInfos.password); }
+      if(out[0] === DownloadEventType.NOT_LOGGED_IN && downloadInfos.password){ setTimeout(() => {this.sendInputProcess(downloadInfos.password);}, 2000) }
       else if(out[0] === DownloadEventType.NOT_LOGGED_IN){ this.downloadProcess.kill(); this.utils.ipcSend(`bs-download.${DownloadEventType.NOT_LOGGED_IN}`); }
       else if(out[0] === DownloadEventType.GUARD_CODE){ this.utils.ipcSend(`bs-download.${DownloadEventType.GUARD_CODE}`); }
       else if(out[0] === DownloadEventType.TWO_FA_CODE){ this.utils.ipcSend(`bs-download.${DownloadEventType.TWO_FA_CODE}`); }
       else if(out[0] === DownloadEventType.PROGESS){ this.utils.ipcSend(`bs-download.${DownloadEventType.PROGESS}`, parseFloat(out[1])); }
       else if(out[0] === DownloadEventType.FINISH){ this.utils.ipcSend(`bs-download.${DownloadEventType.FINISH}`); this.downloadProcess.kill(); }
-      else if(out[0] === DownloadEventType.ERROR){ this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`); this.downloadProcess.kill(); }
+      else if(out[0] === DownloadEventType.ERROR){
+        console.log("ERROR");
+        this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`); 
+        this.downloadProcess.kill('SIGINT'); 
+      }
     })
 
     this.downloadProcess.stdout.on('error', err => {
