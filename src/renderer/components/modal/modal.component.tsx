@@ -12,12 +12,16 @@ export function Modal() {
 
   const modalSevice = ModalService.getInsance();
 
+  console.log(`modal type: ${modalType}`);
+
   useEffect(() => {
-    modalSevice.modalType$.pipe(distinctUntilChanged()).subscribe(type => {
-      setModalType(type)
+    modalSevice.modalType$.subscribe(type => {
+      setModalType(type);
+      console.log("*** open modal ***");
+      console.log("*** open type: "+type+" ***")
     })
   }, [])
-  
+
 
   return (
     <div className={`absolute w-screen h-screen flex content-center items-center justify-center z-50 ${modalType ? "top-0" : "top-[calc(100%+50px)]"}`}>

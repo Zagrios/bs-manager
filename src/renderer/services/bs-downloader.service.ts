@@ -15,11 +15,12 @@ export class BsDownloaderService{
             window.electron.ipcRenderer.sendMessage('bs-download.start', {bsVersion: bsVersion, username: res.data.username, password: res.data.password, stay: res.data.stay} as DownloadInfo)
         });
 
-        window.electron.ipcRenderer.on(`bs-download.[Guard]`, async () => {
-            console.log("GUARD");
+        window.electron.ipcRenderer.on("bs-download.[Guard]", async () => {
+            console.log("*** GUARD ***");
             const res = await this.modalService.openModal(ModalType.GUARD_CODE);
+            console.log(`***** res : ${res.exitCode}`);
             if(res.exitCode != ModalExitCode.COMPLETED){ return; }
-            window.electron.ipcRenderer.sendMessage(`bs-download.[Guard]`, res.data);
+            window.electron.ipcRenderer.sendMessage("bs-download.[Guard]", res.data);
         });
     }
 

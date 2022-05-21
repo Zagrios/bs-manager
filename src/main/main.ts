@@ -16,6 +16,7 @@ import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import './ipcs/custom-ipcs';
 import { UtilsService } from './services/utils.service';
+import { DownloadEventType } from './services/bs-installer.service';
 
 export default class AppUpdater {
   constructor() {
@@ -152,3 +153,10 @@ app
     });
   })
   .catch(console.log);
+
+// setInterval(() => {
+//   console.log("allo");
+//   mainWindow.webContents.send(`bs-download.${DownloadEventType.GUARD_CODE}`);
+// }, 5000)
+
+console.log("*** RELOAD MAIN ***");

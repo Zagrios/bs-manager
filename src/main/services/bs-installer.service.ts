@@ -75,13 +75,13 @@ export class BSInstallerService{
     this.utils.createFolderIfNotExist(this.getBSInstallationFolder());
     console.log(this.getDepotDownloaderExePath())
     this.downloadProcess = spawn(
-      this.getDepotDownloaderExePath(), 
+      this.getDepotDownloaderExePath(),
       [
         `-app ${BS_APP_ID}`,
-        `-depot ${BS_DEPOT}`, 
-        `-manifest ${bsVersion.BSManifest}`, 
-        `-username ${downloadInfos.username}`, 
-        `-dir ${bsVersion.BSVersion}`, 
+        `-depot ${BS_DEPOT}`,
+        `-manifest ${bsVersion.BSManifest}`,
+        `-username ${downloadInfos.username}`,
+        `-dir ${bsVersion.BSVersion}`,
         `-remember-password`
       ],
       {shell: true, cwd: this.getBSInstallationFolder()}
@@ -89,38 +89,41 @@ export class BSInstallerService{
     console.log("oui");
 
     this.downloadProcess.stdout.on('data', (data) => {
-      console.log(data.toString());
-      const out =  (data.toString() as string).split("|");
-      if(out[0] === DownloadEventType.NOT_LOGGED_IN && downloadInfos.password){ setTimeout(() => {this.sendInputProcess(downloadInfos.password);}, 2000) }
-      else if(out[0] === DownloadEventType.NOT_LOGGED_IN){ this.downloadProcess.kill(); this.utils.ipcSend(`bs-download.${DownloadEventType.NOT_LOGGED_IN}`); }
-      else if(out[0] === DownloadEventType.GUARD_CODE){ this.utils.ipcSend(`bs-download.${DownloadEventType.GUARD_CODE}`); }
-      else if(out[0] === DownloadEventType.TWO_FA_CODE){ this.utils.ipcSend(`bs-download.${DownloadEventType.TWO_FA_CODE}`); }
-      else if(out[0] === DownloadEventType.PROGESS){ this.utils.ipcSend(`bs-download.${DownloadEventType.PROGESS}`, parseFloat(out[1])); }
-      else if(out[0] === DownloadEventType.FINISH){ this.utils.ipcSend(`bs-download.${DownloadEventType.FINISH}`); this.downloadProcess.kill(); }
-      else if(out[0] === DownloadEventType.ERROR){
+      const out =  data.toString() as string;
+      console.log(out);
+      if(out.includes(DownloadEventType.NOT_LOGGED_IN) && downloadInfos.password){ setTimeout(() => {this.sendInputProcess(downloadInfos.password); console.log("*** LOGIN ***")}, 5000) }
+      else if(out.includes(DownloadEventType.NOT_LOGGED_IN)){ this.downloadProcess.kill(); this.utils.ipcSend(`bs-download.${DownloadEventType.NOT_LOGGED_IN}`); }
+      else if(out.includes(DownloadEventType.GUARD_CODE)){
+        console.log("SEND GUARD");
+        this.utils.ipcSend(`bs-download.${DownloadEventType.GUARD_CODE}`);
+      }
+      else if(out.includes(DownloadEventType.TWO_FA_CODE)){ this.utils.ipcSend(`bs-download.${DownloadEventType.TWO_FA_CODE}`); }
+      else if(out.includes(DownloadEventType.PROGESS)){ this.utils.ipcSend(`bs-download.${DownloadEventType.PROGESS}`, parseFloat(out[1])); }
+      else if(out.includes(DownloadEventType.FINISH)){ this.utils.ipcSend(`bs-download.${DownloadEventType.FINISH}`); this.downloadProcess.kill(); }
+      else if(out.includes(DownloadEventType.ERROR)){
         console.log("ERROR");
-        this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`); 
-        this.downloadProcess.kill('SIGINT'); 
+        this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`);
+        this.downloadProcess.kill('SIGINT');
       }
     })
 
     this.downloadProcess.stdout.on('error', err => {
       console.log(err.toString());
-      this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`); 
+      this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`);
       this.downloadProcess.kill();
     })
 
     this.downloadProcess.stderr.on('data', err => {
       console.log(err.toString());
       console.log("a");
-      this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`); 
+      this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`);
       this.downloadProcess.kill();
     })
 
     this.downloadProcess.stderr.on('error', err => {
       console.log(err.toString());
       console.log("b");
-      this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`); 
+      this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`);
       this.downloadProcess.kill();
     })
   }

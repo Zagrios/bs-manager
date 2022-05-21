@@ -1,4 +1,4 @@
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, timeout } from "rxjs";
 
 export class ModalService{
 
@@ -14,6 +14,8 @@ export class ModalService{
     }
 
     private close(){
+        console.log("*** CLOSE ***")
+        if(this.resolver){ this.resolve({exitCode: ModalExitCode.NO_CHOICE}); }
         this.modalType$.next(null);
     }
 
@@ -29,15 +31,15 @@ export class ModalService{
         this.resolver(data);
     }
 
-    public openModal(modalType: ModalType): Promise<ModalResponse>{
-        if(this.resolver){ this.resolver(ModalExitCode.NO_CHOICE); }
-        let resolver, rejecter;
-        const promise = new Promise<ModalResponse>((resolve, reject) => { resolver = resolve; rejecter = reject; });
-        this.modalType$.next(modalType);
+    public async openModal(modalType: ModalType): Promise<ModalResponse>{
+        this.close();
+        await timeout(100); //Must wait resolve
+        const promise = new Promise<ModalResponse>((resolve) => { this.resolver = resolve; });
         promise.then(() => this.close());
-        this.resolver = resolver;
-        return promise;
+        this.modalType$.next(modalType);
+        return await promise;
     }
+
 }
 
 export enum ModalType {

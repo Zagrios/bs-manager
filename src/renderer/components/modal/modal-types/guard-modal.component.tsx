@@ -6,8 +6,14 @@ export function GuardModal({resolver}: {resolver: (x: ModalResponse) => void}) {
 
     const [guardCode, setGuardCode] = useState('');
 
-    const loggin = () => resolver({exitCode: ModalExitCode.COMPLETED, data: guardCode});
-    const cancel = () => resolver({exitCode: ModalExitCode.CANCELED});
+    const loggin = (e: React.MouseEvent) => {
+      e.preventDefault();
+      resolver({exitCode: ModalExitCode.COMPLETED, data: guardCode});
+    }
+    const cancel = (e: React.MouseEvent) => {
+      e.preventDefault();
+      resolver({exitCode: ModalExitCode.CANCELED});
+    }
 
   return (
     <form className="p-4 bg-main-color-2 text-gray-200 overflow-hidden rounded-md shadow-lg shadow-black">
@@ -20,8 +26,8 @@ export function GuardModal({resolver}: {resolver: (x: ModalResponse) => void}) {
             <input className="bg-main-color-3 p-1 pr-2 pl-2 rounded-md" onChange={e => setGuardCode(e.target.value)} value={guardCode} type="guard" name="guard" id="guard" placeholder="Enter your Guard code"/>
         </div>
         <div className="w-full flex justify-center items-center content-center">
-            <button onClick={cancel} className="mr-4">Cancel</button>
-            <button onClick={loggin}>LogIn</button>
+            <button onClick={e => cancel(e)} className="mr-4">Cancel</button>
+            <button onClick={e =>loggin(e)}>LogIn</button>
         </div>
     </form>
   )
