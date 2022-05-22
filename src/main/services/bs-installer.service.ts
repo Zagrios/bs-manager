@@ -4,6 +4,7 @@ import { BSVersion, BSVersionManagerService } from "./bs-version-manager.service
 import { SteamService } from "./steam.service";
 import { UtilsService } from "./utils.service";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
+import treeKill from "tree-kill";
 
 export class BSInstallerService{
 
@@ -37,9 +38,7 @@ export class BSInstallerService{
 
   public async getInstalledBsVersion(): Promise<BSVersion[]>{
     const versions: BSVersion[] = [];
-    console.log("aaa");
     const steamBsFolder = await this.steamService.getGameFolder(BS_APP_ID, "Beat Saber")
-    console.log(steamBsFolder);
     if(steamBsFolder && this.utils.pathExist(steamBsFolder)){
       const steamBsVersion = await this.bsVersionService.getVersionOfBSFolder(steamBsFolder);
       if(steamBsVersion){
@@ -82,49 +81,48 @@ export class BSInstallerService{
         `-manifest ${bsVersion.BSManifest}`,
         `-username ${downloadInfos.username}`,
         `-dir ${bsVersion.BSVersion}`,
-        `-remember-password`
+        (downloadInfos.stay || !downloadInfos.password) && "-remember-password"
       ],
       {shell: true, cwd: this.getBSInstallationFolder()}
     )
-    console.log("oui");
 
-    this.downloadProcess.stdout.on('data', (data) => {
-      const out =  data.toString() as string;
-      console.log(out);
-      if(out.includes(DownloadEventType.NOT_LOGGED_IN) && downloadInfos.password){ setTimeout(() => {this.sendInputProcess(downloadInfos.password); console.log("*** LOGIN ***")}, 5000) }
-      else if(out.includes(DownloadEventType.NOT_LOGGED_IN)){ this.downloadProcess.kill(); this.utils.ipcSend(`bs-download.${DownloadEventType.NOT_LOGGED_IN}`); }
-      else if(out.includes(DownloadEventType.GUARD_CODE)){
-        console.log("SEND GUARD");
-        this.utils.ipcSend(`bs-download.${DownloadEventType.GUARD_CODE}`);
-      }
-      else if(out.includes(DownloadEventType.TWO_FA_CODE)){ this.utils.ipcSend(`bs-download.${DownloadEventType.TWO_FA_CODE}`); }
-      else if(out.includes(DownloadEventType.PROGESS)){ this.utils.ipcSend(`bs-download.${DownloadEventType.PROGESS}`, parseFloat(out[1])); }
-      else if(out.includes(DownloadEventType.FINISH)){ this.utils.ipcSend(`bs-download.${DownloadEventType.FINISH}`); this.downloadProcess.kill(); }
-      else if(out.includes(DownloadEventType.ERROR)){
-        console.log("ERROR");
-        this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`);
-        this.downloadProcess.kill('SIGINT');
-      }
+    this.downloadProcess.stdout.on('data', async (data) => {
+      const matched = (data.toString() as string).match(/(?:\[(.*?)\])\|(?:\[(.*?)\]\|)?(.*?)(?=$|\[)/gm);
+      if(!matched || !matched.length){ return; }
+
+      matched.forEach(match => {
+        console.log(match);
+        const out = match.split("|");
+
+        if(out[0] === DownloadEventType.NOT_LOGGED_IN && downloadInfos.password){ setTimeout(() => {this.sendInputProcess(downloadInfos.password); console.log("*** LOGIN ***")}, 5000) }
+        else if(out[0] === DownloadEventType.NOT_LOGGED_IN){ this.downloadProcess.kill(); this.utils.ipcSend(`bs-download.${DownloadEventType.NOT_LOGGED_IN}`); }
+        else if(out[0] === DownloadEventType.GUARD_CODE){ this.utils.ipcSend(`bs-download.${DownloadEventType.GUARD_CODE}`); }
+        else if(out[0] === DownloadEventType.TWO_FA_CODE){ this.utils.ipcSend(`bs-download.${DownloadEventType.TWO_FA_CODE}`); }
+        else if(out[0] === DownloadEventType.PROGESS){ this.utils.ipcSend(`bs-download.${DownloadEventType.PROGESS}`, parseFloat(out[1])); }
+        else if(out[0] === DownloadEventType.FINISH){ this.utils.ipcSend(`bs-download.${DownloadEventType.FINISH}`); this.downloadProcess.kill(); }
+        else if(out[0] === DownloadEventType.ERROR){
+          console.log("ERROR");
+          this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`);
+        }
+      });
+      
     })
 
     this.downloadProcess.stdout.on('error', err => {
       console.log(err.toString());
       this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`);
-      this.downloadProcess.kill();
     })
 
     this.downloadProcess.stderr.on('data', err => {
       console.log(err.toString());
       console.log("a");
       this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`);
-      this.downloadProcess.kill();
     })
 
     this.downloadProcess.stderr.on('error', err => {
       console.log(err.toString());
       console.log("b");
       this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`);
-      this.downloadProcess.kill();
     })
   }
 
