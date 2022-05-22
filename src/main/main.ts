@@ -154,9 +154,13 @@ app
   })
   .catch(console.log);
 
-// setInterval(() => {
+// setTimeout(() => {
 //   console.log("allo");
 //   mainWindow.webContents.send(`bs-download.${DownloadEventType.GUARD_CODE}`);
-// }, 5000)
+// }, 2000)
 
-console.log("*** RELOAD MAIN ***");
+// console.log("*** RELOAD MAIN ***");
+
+// const p = "aaa[Guard]|DFSDIOdfpsijd|[ERROR]|zefrjpezjf[432]zeijofgiz";
+// console.log(p.match(/(?:\[(.*?)\])\|(?:\[(.*?)\]\|)?(.*?)(?=$|\[)/gm));
+// console.log("c'est : "+(p.match(/(?:\[(.*?)\])\|(?:\[(.*?)\]\|)?(.*?)(?=$|\[)/gm)[0].split("|")[0] === "[Guard]"))
