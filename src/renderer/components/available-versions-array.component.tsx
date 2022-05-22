@@ -1,18 +1,23 @@
 import { BSVersion } from "../../main/services/bs-version-manager.service"
 import { useEffect, useState } from "react"
+import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
 
-export function AvailableVersionsArray({versions, setSelectedVersion}: {versions: BSVersion[], setSelectedVersion: Function}) {
+export function AvailableVersionsArray({setSelectedVersion}: {setSelectedVersion: Function}) {
 
-  const [versionsMap, setVersionsMap] = useState(new Map<string, BSVersion[]>())
+  const [versionsMap, setVersionsMap] = useState(new Map<string, BSVersion[]>());
+  const [versions, setVersions] = useState([] as BSVersion[]);
 
   console.log(setSelectedVersion);
 
   useEffect(() => {
-    organiseVersions()
+    BSVersionManagerService.getInstance().availableVersions$.subscribe(versions => {
+      organiseVersions(versions);
+      setVersions(versions);
+    });
   }, [])
   
 
-  const organiseVersions = () => {
+  const organiseVersions = (versions: BSVersion[]) => {
     const newMap = new Map<string, BSVersion[]>();
     versions.forEach(v => {
       newMap.set(v.year, [...(newMap.has(v.year) ? newMap.get(v.year)  : []), v]);

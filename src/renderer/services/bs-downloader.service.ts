@@ -1,5 +1,7 @@
+import { BehaviorSubject } from 'rxjs';
 import { DownloadInfo } from '../../main/ipcs/bs-download-ipcs';
 import { BSVersion } from '../../main/services/bs-version-manager.service'
+import { BSVersionManagerService } from './bs-version-manager.service';
 import { ModalExitCode, ModalService, ModalType } from './modale.service';
 
 export class BsDownloaderService{
@@ -7,6 +9,9 @@ export class BsDownloaderService{
     private static instance: BsDownloaderService;
 
     private readonly modalService: ModalService = ModalService.getInsance();
+    private readonly bsVersionManager: BSVersionManagerService = BSVersionManagerService.getInstance();
+
+    private readonly downloadedVersions$: BehaviorSubject<BSVersion[]> = new BehaviorSubject([]);
 
     private constructor(){
         window.electron.ipcRenderer.on(`bs-download.[Password]`, async (bsVersion: BSVersion) => {
@@ -16,11 +21,13 @@ export class BsDownloaderService{
         });
 
         window.electron.ipcRenderer.on("bs-download.[Guard]", async () => {
-            console.log("*** GUARD ***");
             const res = await this.modalService.openModal(ModalType.GUARD_CODE);
-            console.log(`***** res : ${res.exitCode}`);
             if(res.exitCode != ModalExitCode.COMPLETED){ return; }
             window.electron.ipcRenderer.sendMessage("bs-download.[Guard]", res.data);
+        });
+
+        window.electron.ipcRenderer.on("bs-download.[Finished]", async () => {
+            this.bsVersionManager.askInstalledVersions();
         });
     }
 

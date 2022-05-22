@@ -1,13 +1,21 @@
 import { FaPlus, } from 'react-icons/fa';
 import { AiFillSetting } from 'react-icons/ai'
 import './nav-bar.component.css'
-import { useSelector } from 'react-redux';
 import BsVersionItem from './bs-version-item.component';
 import { BSVersion } from 'main/services/bs-version-manager.service';
+import { useEffect, useState } from 'react';
+import { BSVersionManagerService } from 'renderer/services/bs-version-manager.service';
 
 export function NavBar() {
 
-  const { installedVersions }: {installedVersions: BSVersion[]} = useSelector((state: any) => state.installedBSReducer);
+  const [installedVersions, setInstalledVersions] = useState([] as BSVersion[]);
+
+  useEffect(() => {
+    BSVersionManagerService.getInstance().installedVersions$.subscribe(versions => {
+      setInstalledVersions(versions);
+    })
+  }, [])
+  
 
   return (
     <div id='nav-bar' className='z-10 flex flex-col h-full max-h-full items-center p-2 bg-gray-200 dark:bg-main-color-1'>
