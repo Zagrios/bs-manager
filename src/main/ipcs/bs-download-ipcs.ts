@@ -27,8 +27,9 @@ ipcMain.on('bs-download.start', async (event, args: DownloadInfo) => {
   BSInstallerService.getInstance().downloadBsVersion(args);
 });
 
-ipcMain.on(`bs-download${DownloadEventType.GUARD_CODE}`, async (event, args) => {
+ipcMain.on(`bs-download.${DownloadEventType.GUARD_CODE}`, async (event, args) => {
   BSInstallerService.getInstance().sendInputProcess(args);
+  console.log("**** "+args);
 })
 
 
