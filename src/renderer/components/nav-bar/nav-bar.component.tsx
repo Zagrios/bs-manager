@@ -18,7 +18,7 @@ export function NavBar() {
   
 
   return (
-    <div id='nav-bar' className='z-10 flex flex-col h-full max-h-full items-center p-2 bg-gray-200 dark:bg-main-color-1'>
+    <div id='nav-bar' className='z-10 flex flex-col h-full max-h-full items-center p-1 bg-gray-200 dark:bg-main-color-1'>
       <div className='w-full flex items-start content-start justify-center relative mb-3'>
         <div className='relative aspect-square w-16'>
           <span id='logo-bottom' className='bg-blue-500 aspect-square w-16'> </span>
