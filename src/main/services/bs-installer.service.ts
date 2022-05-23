@@ -94,11 +94,13 @@ export class BSInstallerService{
         console.log(match);
         const out = match.split("|");
 
-        if(out[0] === DownloadEventType.NOT_LOGGED_IN && downloadInfos.password){ setTimeout(() => {this.sendInputProcess(downloadInfos.password); console.log("*** LOGIN ***")}, 5000) }
+        if(out[0] === DownloadEventType.NOT_LOGGED_IN && downloadInfos.password){ this.sendInputProcess(downloadInfos.password); console.log("*** LOGIN ***"); }
         else if(out[0] === DownloadEventType.NOT_LOGGED_IN){ this.downloadProcess.kill(); this.utils.ipcSend(`bs-download.${DownloadEventType.NOT_LOGGED_IN}`); }
         else if(out[0] === DownloadEventType.GUARD_CODE){ this.utils.ipcSend(`bs-download.${DownloadEventType.GUARD_CODE}`); }
         else if(out[0] === DownloadEventType.TWO_FA_CODE){ this.utils.ipcSend(`bs-download.${DownloadEventType.TWO_FA_CODE}`); }
-        else if(out[0] === DownloadEventType.PROGESS){ this.utils.ipcSend(`bs-download.${DownloadEventType.PROGESS}`, parseFloat(out[1])); }
+        else if(out[0] === DownloadEventType.PROGESS){ 
+          this.utils.ipcSend(`bs-download.${DownloadEventType.PROGESS}`, parseFloat(out[1])); 
+        }
         else if(out[0] === DownloadEventType.FINISH){ this.utils.ipcSend(`bs-download.${DownloadEventType.FINISH}`); this.downloadProcess.kill(); }
         else if(out[0] === DownloadEventType.ERROR){
           console.log("ERROR");
