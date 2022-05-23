@@ -15,7 +15,7 @@ export class BSVersionManagerService {
             console.log(this.availableVersions$.value);
         });
         window.electron.ipcRenderer.on('bs-version.installed-versions', (versions: BSVersion[]) => {
-            this.installedVersions$.next(versions);
+            this.setInstalledVersions(versions);
         });
 
         this.askAvailableVersions();
@@ -25,6 +25,15 @@ export class BSVersionManagerService {
     public static getInstance(){
         if(!BSVersionManagerService.instance){ BSVersionManagerService.instance = new BSVersionManagerService(); }
         return BSVersionManagerService.instance;
+    }
+
+    public setInstalledVersions(versions: BSVersion[]){
+        const sorted: BSVersion[] = versions.sort((a, b) => b.BSVersion.localeCompare(a.BSVersion))
+        const steamIndex = sorted.findIndex(v => v.steam);
+        if(steamIndex){
+            [sorted[0], sorted[steamIndex]] = [sorted[steamIndex], sorted[0]];
+        }
+        this.installedVersions$.next(sorted);
     }
 
     public askAvailableVersions(): void{
