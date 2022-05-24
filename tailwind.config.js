@@ -18,10 +18,6 @@ module.exports = {
     },
     extend:{
       keyframes:{
-        zoominimg: {
-          '0%, 100%': { scale: '100%' },
-          '100%': { scale: '200%' }
-        }
       },
     }
   }
