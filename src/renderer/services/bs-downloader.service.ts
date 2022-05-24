@@ -11,9 +11,8 @@ export class BsDownloaderService{
     private readonly modalService: ModalService = ModalService.getInsance();
     private readonly bsVersionManager: BSVersionManagerService = BSVersionManagerService.getInstance();
 
-    private readonly downloadedVersions$: BehaviorSubject<BSVersion[]> = new BehaviorSubject([]);
-    private readonly currentBsVersionDownload$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
-    private readonly downloadProgress$: BehaviorSubject<number> = new BehaviorSubject(0);
+    public readonly currentBsVersionDownload$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
+    public readonly downloadProgress$: BehaviorSubject<number> = new BehaviorSubject(0);
 
     private constructor(){
         window.electron.ipcRenderer.on(`bs-download.[Password]`, async (bsVersion: BSVersion) => {
@@ -30,11 +29,22 @@ export class BsDownloaderService{
         });
 
         window.electron.ipcRenderer.on("bs-download.[Finished]", async () => {
+            this.downloadProgress$.next(0);
+            this.currentBsVersionDownload$.next(null);
             this.bsVersionManager.askInstalledVersions();
         });
 
         window.electron.ipcRenderer.on("bs-download.[Progress]", async (progress: number) => {
             this.downloadProgress$.next(progress);
+        });
+
+        this.currentBsVersionDownload$.subscribe(version => {
+            if(version){
+                this.bsVersionManager.setInstalledVersions([...this.bsVersionManager.installedVersions$.value, version]);
+            }
+            else{
+                this.bsVersionManager.askInstalledVersions();
+            }
         })
     }
 
