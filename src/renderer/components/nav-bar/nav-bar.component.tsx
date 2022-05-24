@@ -12,6 +12,7 @@ export function NavBar() {
 
   useEffect(() => {
     BSVersionManagerService.getInstance().installedVersions$.subscribe(versions => {
+      setInstalledVersions([]);
       setInstalledVersions(versions);
     })
   }, [])
@@ -26,7 +27,7 @@ export function NavBar() {
         </div>
       </div>
       <div id='versions' className='w-fit relative left-[2px] grow overflow-y-hidden scrollbar-track-transparent scrollbar-thin scrollbar-thumb-neutral-900 hover:overflow-y-scroll'>
-        {installedVersions.map((version, index) => <BsVersionItem key={index} version={version}/>)}
+      {installedVersions.map((version) => <BsVersionItem key={JSON.stringify(version)} version={version}/>)}
       </div>
       <div className='w-full p-2 flex flex-col items-center content-center justify-start'>
         <span className='cursor-pointer mb-3'>
