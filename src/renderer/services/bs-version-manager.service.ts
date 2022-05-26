@@ -11,8 +11,6 @@ export class BSVersionManagerService {
     private constructor(){
         window.electron.ipcRenderer.on('bs-version.request-versions', (versions: BSVersion[]) => {
             this.availableVersions$.next(versions);
-            console.log("ouiiii");
-            console.log(this.availableVersions$.value);
         });
         window.electron.ipcRenderer.on('bs-version.installed-versions', (versions: BSVersion[]) => {
             this.setInstalledVersions(versions);
@@ -30,7 +28,7 @@ export class BSVersionManagerService {
     public setInstalledVersions(versions: BSVersion[]){
         const sorted: BSVersion[] = versions.sort((a, b) => b.BSVersion.localeCompare(a.BSVersion))
         const steamIndex = sorted.findIndex(v => v.steam);
-        if(steamIndex){
+        if(steamIndex > 0){
             [sorted[0], sorted[steamIndex]] = [sorted[steamIndex], sorted[0]];
         }
         this.installedVersions$.next(sorted);
