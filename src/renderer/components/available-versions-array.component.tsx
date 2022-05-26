@@ -1,18 +1,28 @@
 import { BSVersion } from "../../main/services/bs-version-manager.service"
 import { useEffect, useState } from "react"
 import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
+import { BsDownloaderService } from "renderer/services/bs-downloader.service";
+import { filter, take } from "rxjs";
+import { useNavigate } from 'react-router-dom'
 
 export function AvailableVersionsArray({setSelectedVersion}: {setSelectedVersion: Function}) {
 
   const [versionsMap, setVersionsMap] = useState(new Map<string, BSVersion[]>());
   const [versions, setVersions] = useState([] as BSVersion[]);
 
-  console.log(setSelectedVersion);
+  const navigate = useNavigate();
+
+  const versionManagerService = BSVersionManagerService.getInstance();
+  const downloaderService = BsDownloaderService.getInstance();
 
   useEffect(() => {
-    BSVersionManagerService.getInstance().availableVersions$.subscribe(versions => {
+    versionManagerService.availableVersions$.subscribe(versions => {
       organiseVersions(versions);
       setVersions(versions);
+    });
+
+    downloaderService.currentBsVersionDownload$.pipe(filter(v => !!v), take(1)).subscribe(version => {
+      navigate(`/bs-version/${version.BSVersion}`, {state: version});
     });
   }, [])
   
@@ -25,8 +35,6 @@ export function AvailableVersionsArray({setSelectedVersion}: {setSelectedVersion
 
     setVersionsMap(newMap);
   }
-
-  console.log(versionsMap);
 
   return (
     <div>
