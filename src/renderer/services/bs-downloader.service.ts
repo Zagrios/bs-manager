@@ -14,10 +14,20 @@ export class BsDownloaderService{
     public readonly currentBsVersionDownload$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
     public readonly downloadProgress$: BehaviorSubject<number> = new BehaviorSubject(0);
 
+    public static getInstance(): BsDownloaderService{
+        if(!BsDownloaderService.instance){ BsDownloaderService.instance = new BsDownloaderService(); }
+        return BsDownloaderService.instance;
+    }
+
     private constructor(){
+        this.asignListerners();
+    }
+
+    private asignListerners(): void{
         window.electron.ipcRenderer.on(`bs-download.[Password]`, async (bsVersion: BSVersion) => {
             const res = await this.modalService.openModal(ModalType.STEAM_LOGIN);
             if(res.exitCode !== ModalExitCode.COMPLETED){ return; }
+            if(res.data.stay){ localStorage.setItem("username", res.data.username); }
             window.electron.ipcRenderer.sendMessage('bs-download.start', {bsVersion: bsVersion, username: res.data.username, password: res.data.password, stay: res.data.stay} as DownloadInfo)
             this.currentBsVersionDownload$.next(bsVersion);
         });
@@ -38,6 +48,11 @@ export class BsDownloaderService{
             this.downloadProgress$.next(progress);
         });
 
+        window.electron.ipcRenderer.on("bs-download.[Error]", async () => {
+            this.currentBsVersionDownload$.next(null);
+            this.downloadProgress$.next(0);
+        });
+
         this.currentBsVersionDownload$.subscribe(version => {
             if(version){
                 this.bsVersionManager.setInstalledVersions([...this.bsVersionManager.installedVersions$.value, version]);
@@ -45,15 +60,10 @@ export class BsDownloaderService{
             else{
                 this.bsVersionManager.askInstalledVersions();
             }
-        })
+        });
     }
 
-    public static getInstance(){
-        if(!BsDownloaderService.instance){ BsDownloaderService.instance = new BsDownloaderService(); }
-        return BsDownloaderService.instance;
-    }
-
-    public async download(bsVersion: BSVersion){
+    public async download(bsVersion: BSVersion): Promise<void>{
         let username = localStorage.getItem("username");
         if(!username){
             const res = await this.modalService.openModal(ModalType.STEAM_LOGIN);
