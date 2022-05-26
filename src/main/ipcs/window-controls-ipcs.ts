@@ -14,6 +14,5 @@ ipcMain.on('window.minimize', async () => {
 });
 
 ipcMain.on('window.reset', async () => {
-  console.log('aaaaaa');
   getMainWindow()?.restore();
 });

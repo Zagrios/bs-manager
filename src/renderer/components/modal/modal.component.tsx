@@ -12,13 +12,9 @@ export function Modal() {
 
   const modalSevice = ModalService.getInsance();
 
-  console.log(`modal type: ${modalType}`);
-
   useEffect(() => {
     modalSevice.modalType$.subscribe(type => {
       setModalType(type);
-      console.log("*** open modal ***");
-      console.log("*** open type: "+type+" ***")
     })
   }, [])
 
