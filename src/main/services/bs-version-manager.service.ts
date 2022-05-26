@@ -21,7 +21,7 @@ export class BSVersionManagerService{
 
 
   public static getInstance(): BSVersionManagerService{
-    if(!BSVersionManagerService.instance){ BSVersionManagerService.instance = new BSVersionManagerService() }
+    if(!BSVersionManagerService.instance){ BSVersionManagerService.instance = new BSVersionManagerService(); }
     return BSVersionManagerService.instance;
   }
 
@@ -70,9 +70,7 @@ export class BSVersionManagerService{
 
   public async getVersionOfBSFolder(bsPath: string): Promise<string>{
     const versionFilePath = path.join(bsPath, 'Beat Saber_Data', 'globalgamemanagers');
-    console.log(versionFilePath);
     if(!this.utilsService.pathExist(versionFilePath)){ return null; }
-
     const versionsAvailable = await this.getAvailableVersions();
     return new Promise<string>(async (resolve, reject) => {
      
@@ -85,7 +83,7 @@ export class BSVersionManagerService{
       });
       readLine.on('close', () => {
         if(findVersion){ resolve(findVersion) }
-        reject(findVersion);
+        resolve(findVersion);
       });
     })
   }
