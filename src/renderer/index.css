@@ -8,3 +8,14 @@
 ::-webkit-scrollbar-thumb {
   border-radius: 20px;
 }
+
+.download-progress{
+  background-size: 500% !important;
+  background: linear-gradient(90deg, rgb(62, 51, 255), rgb(255, 0, 0), rgb(62, 51, 255), rgb(255, 0, 0));
+  animation: rainbow 2s linear 0s infinite;
+}
+
+@keyframes rainbow {
+  0% { background-position: 84% 0 }
+  100% { background-position: 0 0% }
+}
