@@ -9,22 +9,22 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import './ipcs/custom-ipcs';
 import { UtilsService } from './services/utils.service';
-import { DownloadEventType } from './services/bs-installer.service';
 
 export default class AppUpdater {
   constructor() {
     log.transports.file.level = 'info';
     autoUpdater.logger = log;
-    autoUpdater.checkForUpdatesAndNotify();
+    //autoUpdater.checkForUpdatesAndNotify();
   }
 }
+
+log.catchErrors();
 
 let mainWindow: BrowserWindow = null;
 
@@ -32,19 +32,13 @@ export function getMainWindow(): BrowserWindow{
   return mainWindow;
 }
 
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
-});
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
 }
 
-const isDebug =
-  process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
+const isDebug = process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
 if (isDebug) {
   require('electron-debug')();
@@ -113,9 +107,6 @@ const createWindow = async () => {
     mainWindow = null;
   });
 
-  const menuBuilder = new MenuBuilder(mainWindow);
-  menuBuilder.buildMenu();
-
   mainWindow.removeMenu();
   mainWindow.setMenu(null);
 
@@ -153,14 +144,3 @@ app
     });
   })
   .catch(console.log);
-
-// setTimeout(() => {
-//   console.log("allo");
-//   mainWindow.webContents.send(`bs-download.${DownloadEventType.GUARD_CODE}`);
-// }, 2000)
-
-// console.log("*** RELOAD MAIN ***");
-
-// const p = "aaa[Guard]|DFSDIOdfpsijd|[ERROR]|zefrjpezjf[432]zeijofgiz";
-// console.log(p.match(/(?:\[(.*?)\])\|(?:\[(.*?)\]\|)?(.*?)(?=$|\[)/gm));
-// console.log("c'est : "+(p.match(/(?:\[(.*?)\])\|(?:\[(.*?)\]\|)?(.*?)(?=$|\[)/gm)[0].split("|")[0] === "[Guard]"))
