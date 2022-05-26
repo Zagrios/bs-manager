@@ -33,8 +33,8 @@
     "extraResources": [
       "./assets/**"
     ],
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "BSManager",
+    "appId": "org.erb.BSManager",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -244,7 +244,8 @@
     "react-router-dom": "^6.3.0",
     "regedit": "^5.1.1",
     "rxjs": "^7.5.5",
-    "tailwind-scrollbar-hide": "^1.1.7"
+    "tailwind-scrollbar-hide": "^1.1.7",
+    "uuid": "^8.3.2"
   },
   "devEngines": {
     "node": ">=14.x",
