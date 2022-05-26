@@ -12,7 +12,10 @@ export class SteamService{
 
   private steamPath: string = '';
 
-  private constructor(){}
+  private constructor(){
+    const vbsDirectory = path.join(this.utils.getAssetsPath(), "node-regedit", "vbs");
+    regedit.setExternalVBSLocation(vbsDirectory);
+  }
 
   public static getInstance(){
     if(!SteamService.instance){ SteamService.instance = new SteamService(); }
@@ -41,7 +44,7 @@ export class SteamService{
     const steamPath = await this.getSteamPath();
     let libraryFolders: any = path.join(steamPath, 'steamapps', 'libraryfolders.vdf');
 
-    if(!this.utils.pathExist(libraryFolders)){ console.log("null 1"); return null; }
+    if(!this.utils.pathExist(libraryFolders)){ return null; }
     libraryFolders =  parse(await readFile(libraryFolders, {encoding: 'utf-8'}));
 
 
@@ -49,11 +52,9 @@ export class SteamService{
     libraryFolders = libraryFolders.libraryfolders
 
     for(const libKey in Object.keys(libraryFolders)){
-      console.log(libraryFolders[libKey]);
       if(!libraryFolders[libKey] || !libraryFolders[libKey]["apps"]){ continue; }
       if(libraryFolders[libKey]["apps"][gameId]){ return path.join(libraryFolders[libKey]["path"], "steamapps", "common", gameFolder); };
     }
-    console.log("null 3")
     return null;
   }
 
