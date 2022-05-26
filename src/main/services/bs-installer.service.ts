@@ -4,7 +4,7 @@ import { BSVersion, BSVersionManagerService } from "./bs-version-manager.service
 import { SteamService } from "./steam.service";
 import { UtilsService } from "./utils.service";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
-import treeKill from "tree-kill";
+import log from "electron-log";
 
 export class BSInstallerService{
 
@@ -12,16 +12,19 @@ export class BSInstallerService{
 
   private static instance: BSInstallerService;
 
-  private readonly utils: UtilsService = UtilsService.getInstance();
-  private readonly steamService: SteamService = SteamService.getInstance();
-  private readonly bsVersionService: BSVersionManagerService = BSVersionManagerService.getInstance();
+  private readonly utils: UtilsService;
+  private readonly steamService: SteamService;
+  private readonly bsVersionService: BSVersionManagerService;
 
   private downloadProcess: ChildProcessWithoutNullStreams;
 
   private installationFolder: string;
 
   private constructor(){
-    this.installationFolder = path.join(this.utils.getUserDocumentsFolder(), BSInstallerService.INSTALLATION_FOLDER)
+    this.bsVersionService = BSVersionManagerService.getInstance();
+    this.utils =  UtilsService.getInstance();
+    this.steamService = SteamService.getInstance();
+    this.installationFolder = path.join(this.utils.getUserDocumentsFolder(), BSInstallerService.INSTALLATION_FOLDER);
   }
 
   public static getInstance(){
@@ -55,7 +58,6 @@ export class BSInstallerService{
       const version = this.bsVersionService.getVersionDetailFromVersionNumber(f);
       versions.push(version);
     })
-
     return versions;
   }
 
@@ -67,12 +69,10 @@ export class BSInstallerService{
 
   public downloadBsVersion(downloadInfos: DownloadInfo){
     if(this.downloadProcess?.connected){ this.utils.ipcSend(`bs-download.${DownloadEventType.ALREADY_DOAWNLOADING}`); return; }
-
     const bsVersion = this.bsVersionService.getVersionDetailFromVersionNumber(downloadInfos.bsVersion.BSVersion);
     if(!bsVersion){ this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`); return; }
 
     this.utils.createFolderIfNotExist(this.getBSInstallationFolder());
-    console.log(this.getDepotDownloaderExePath())
     this.downloadProcess = spawn(
       this.getDepotDownloaderExePath(),
       [
@@ -87,45 +87,52 @@ export class BSInstallerService{
     )
 
     this.downloadProcess.stdout.on('data', async (data) => {
+      log.info("DL PROCESS OUT " ,data.toString());
       const matched = (data.toString() as string).match(/(?:\[(.*?)\])\|(?:\[(.*?)\]\|)?(.*?)(?=$|\[)/gm);
       if(!matched || !matched.length){ return; }
 
       matched.forEach(match => {
-        console.log(match);
         const out = match.split("|");
 
-        if(out[0] === DownloadEventType.NOT_LOGGED_IN && downloadInfos.password){ this.sendInputProcess(downloadInfos.password); console.log("*** LOGIN ***"); }
-        else if(out[0] === DownloadEventType.NOT_LOGGED_IN){ this.downloadProcess.kill(); this.utils.ipcSend(`bs-download.${DownloadEventType.NOT_LOGGED_IN}`); }
-        else if(out[0] === DownloadEventType.GUARD_CODE){ this.utils.ipcSend(`bs-download.${DownloadEventType.GUARD_CODE}`); }
-        else if(out[0] === DownloadEventType.TWO_FA_CODE){ this.utils.ipcSend(`bs-download.${DownloadEventType.TWO_FA_CODE}`); }
+        if(out[0] === DownloadEventType.NOT_LOGGED_IN && downloadInfos.password){
+          this.sendInputProcess(downloadInfos.password);
+        }
+        else if(out[0] === DownloadEventType.NOT_LOGGED_IN){
+          this.downloadProcess.kill();
+          this.utils.ipcSend(`bs-download.${DownloadEventType.NOT_LOGGED_IN}`, bsVersion);
+        }
+        else if(out[0] === DownloadEventType.GUARD_CODE){
+          this.utils.ipcSend(`bs-download.${DownloadEventType.GUARD_CODE}`);
+        }
+        else if(out[0] === DownloadEventType.TWO_FA_CODE){
+          this.utils.ipcSend(`bs-download.${DownloadEventType.GUARD_CODE}`);
+        }
         else if(out[0] === DownloadEventType.PROGESS){ 
           this.utils.ipcSend(`bs-download.${DownloadEventType.PROGESS}`, parseFloat(out[1])); 
         }
-        else if(out[0] === DownloadEventType.FINISH){ this.utils.ipcSend(`bs-download.${DownloadEventType.FINISH}`); this.downloadProcess.kill(); }
+        else if(out[0] === DownloadEventType.FINISH){ 
+          this.utils.ipcSend(`bs-download.${DownloadEventType.FINISH}`); this.downloadProcess.kill(); 
+        }
         else if(out[0] === DownloadEventType.ERROR){
-          console.log("ERROR");
           this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`);
+          log.error("Download Event, Error", data.toString())
         }
       });
       
     })
 
-    this.downloadProcess.stdout.on('error', err => {
-      console.log(err.toString());
-      this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`);
-    })
-
-    this.downloadProcess.stderr.on('data', err => {
-      console.log(err.toString());
-      console.log("a");
-      this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`);
-    })
-
-    this.downloadProcess.stderr.on('error', err => {
-      console.log(err.toString());
-      console.log("b");
-      this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`);
-    })
+    this.downloadProcess.stdout.on('error', (err) => {
+      log.error("BS-DOWNLOAD ERROR", err.toString());
+      this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`); 
+    });
+    this.downloadProcess.stderr.on('data', (err) => { 
+      log.error("BS-DOWNLOAD ERROR", err.toString());
+      this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`); 
+    });
+    this.downloadProcess.stderr.on('error', (err) => { 
+      log.error("BS-DOWNLOAD ERROR", err.toString());
+      this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`); 
+    });
   }
 
 }
