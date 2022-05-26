@@ -30,8 +30,8 @@ export function LoginModal({resolver}: {resolver: (x: ModalResponse) => void}) {
             <label htmlFor="stay">Stay connected</label>
         </div>
         <div className="w-full flex justify-center items-center content-center">
-            <button onClick={cancel} className="mr-4">Cancel</button>
-            <button onClick={loggin}>LogIn</button>
+            <button onClick={(e) => {e.preventDefault(); cancel()}} className="mr-4">Cancel</button>
+            <button onClick={(e) => {e.preventDefault(); loggin()}}>LogIn</button>
         </div>
     </form>
   )
