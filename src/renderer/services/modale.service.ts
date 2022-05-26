@@ -14,7 +14,6 @@ export class ModalService{
     }
 
     private close(){
-        console.log("*** CLOSE ***")
         if(this.resolver){ this.resolve({exitCode: ModalExitCode.NO_CHOICE}); }
         this.modalType$.next(null);
     }
@@ -37,7 +36,7 @@ export class ModalService{
         const promise = new Promise<ModalResponse>((resolve) => { this.resolver = resolve; });
         promise.then(() => this.close());
         this.modalType$.next(modalType);
-        return await promise;
+        return promise;
     }
 
 }
