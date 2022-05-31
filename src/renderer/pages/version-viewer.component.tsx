@@ -1,11 +1,11 @@
-import { BSVersion } from 'main/services/bs-version-manager.service';
+import { BSVersion } from '../../main/services/bs-version-manager.service';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { BsDownloaderService } from 'renderer/services/bs-downloader.service';
-import { map, Subscription } from 'rxjs';
+import { BsDownloaderService } from '../services/bs-downloader.service';
+import { Subscription } from 'rxjs';
 import BSLogo from '../../../assets/bs-logo.png';
 import BeatRunning from '../../../assets/beat-running.png';
-import { BSLauncherService, LaunchResult } from 'renderer/services/bs-launcher.service';
+import { BSLauncherService, LaunchResult } from '../services/bs-launcher.service';
 
 export function VersionViewer() {
 
@@ -47,9 +47,9 @@ export function VersionViewer() {
     });
     setSubs([...subs, progressSub]);
   }, [downloading])
-  
-  
-  
+
+
+
 
   const setMode = (mode: string, value: boolean) => {
     if(mode === "debug"){ setDebugMode(value); }
@@ -82,14 +82,14 @@ export function VersionViewer() {
             <label htmlFor="decktop-mode">DESKTOP MODE</label>
           </div>
         </div>
-        {downloading && 
+        {downloading &&
           <div className='relative flex flex-col items-center justify-center content-center w-full mt-7 mb-7'>
             <img className='absolute z-[1] h-16 top-[-34px] transition-all' style={{left: `calc(${downloadProgress}% - 34px)`}} src={BeatRunning} alt="" />
             <div className='w-full h-2 relative overflow-hidden bg-main-color-1 rounded-full'>
               <div className='download-progress w-full h-full overflow-hidden transition-transform' style={{transform: `translate(${downloadProgress - 100}%, 0)`}}></div>
             </div>
             <span>{`${downloadProgress}%`}</span>
-          </div> 
+          </div>
         }
         { !downloading && <button className='mt-5 text-2xl font-bold bg-gray-200 text-gray-900' onClick={launchBs}>Launch</button> }
       </div>

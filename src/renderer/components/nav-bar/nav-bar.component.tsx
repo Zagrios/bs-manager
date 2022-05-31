@@ -2,9 +2,9 @@ import { FaPlus, } from 'react-icons/fa';
 import { AiFillSetting } from 'react-icons/ai'
 import './nav-bar.component.css'
 import BsVersionItem from './bs-version-item.component';
-import { BSVersion } from 'main/services/bs-version-manager.service';
+import { BSVersion } from '../../../main/services/bs-version-manager.service';
 import { useEffect, useState } from 'react';
-import { BSVersionManagerService } from 'renderer/services/bs-version-manager.service';
+import { BSVersionManagerService } from '../../services/bs-version-manager.service';
 import { Link } from 'react-router-dom';
 
 export function NavBar() {
@@ -34,7 +34,7 @@ export function NavBar() {
           <Link to={"blah"}>
             <FaPlus className='text-2xl text-blue-500 drop-shadow-lg'/>
           </Link>
-          
+
         </span>
         <span className='cursor-pointer'>
           <AiFillSetting className='text-2xl text-blue-500 drop-shadow-lg'/>

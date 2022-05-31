@@ -1,7 +1,7 @@
 import { BSVersion } from "../../main/services/bs-version-manager.service";
-import { AvailableVersionsArray } from "renderer/components/available-versions-array.component";
+import { AvailableVersionsArray } from "../components/available-versions-array.component";
 import { useState } from "react";
-import { BsDownloaderService } from "renderer/services/bs-downloader.service";
+import { BsDownloaderService } from "../services/bs-downloader.service";
 
 export function AvailableVersionsList() {
 

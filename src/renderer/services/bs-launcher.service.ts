@@ -1,4 +1,4 @@
-import { LauchOption } from "main/ipcs/bs-launcher-ipcs";
+import { LauchOption } from "../../main/ipcs/bs-launcher-ipcs";
 import { BSVersion } from "../../main/services/bs-version-manager.service";
 
 export class BSLauncherService{
