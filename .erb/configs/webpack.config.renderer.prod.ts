@@ -72,8 +72,8 @@ const configuration: webpack.Configuration = {
       {
         test: /\.s?(a|c)ss$/,
         use: [
-          MiniCssExtractPlugin.loader, 
-          'css-loader', 
+          MiniCssExtractPlugin.loader,
+          'css-loader',
           'sass-loader',
           {
             loader: 'postcss-loader',
@@ -93,7 +93,7 @@ const configuration: webpack.Configuration = {
       },
       // Images
       {
-        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        test: /\.(png|svg|jpg|jpeg|gif|mp4)$/i,
         type: 'asset/resource',
       },
     ],
