@@ -39,7 +39,7 @@ export default function BsVersionItem(props: {version: BSVersion}) {
       <Link to={`/bs-version/${props.version.BSVersion}`} state={props.version} className={`z-[1] flex cursor-pointer w-full justify-center content-center rounded-full items-center p-[3px] pl-2 pr-2 ${downloading && 'bg-black'} ${(isActive() && !downloading) && "bg-main-color-3"}`}>
         {props.version.steam && <SteamIcon className="w-[19px] h-[19px] mr-1"/>}
         {!props.version.steam && <BsNoteFill className="w-[19px] h-[19px] mr-1 text-red-600"/>}
-        <span className="flex items-center justify-center content-center shrink-0 grow text-lg text-gray-200 font-bold min-w-0">{props.version.BSVersion}</span>
+        <span className="flex items-center justify-center content-center shrink-0 grow text-lg text-gray-200 font-bold min-w-0 tracking-wide">{props.version.BSVersion}</span>
       </Link>
     </div>
 
