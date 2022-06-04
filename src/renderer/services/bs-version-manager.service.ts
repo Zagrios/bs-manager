@@ -42,4 +42,12 @@ export class BSVersionManagerService {
         window.electron.ipcRenderer.sendMessage("bs-version.installed-versions", null);
     }
 
+    public getAvailableYears(): string[]{
+      return [ ...new Set(this.availableVersions$.value.map(v => v.year))].sort((a, b) => b.localeCompare(a));
+    }
+
+    public getAvaibleVersionsOfYear(year: string): BSVersion[]{
+      return this.availableVersions$.value.filter(v => v.year === year);
+    }
+
 }
