@@ -6,14 +6,14 @@ import { VersionViewer } from "./pages/version-viewer.component";
 import { Modal } from "./components/modal/modal.component";
 
 export default function App() {
-  
+
   return (
-    <div className="relative w-screen h-screen overflow-hidden flex dark:bg-main-color-1 z-0">
+    <div className="relative w-screen h-screen overflow-hidden flex dark:bg-main-color-1 z-0 max-w-full">
       <Modal/>
       <NavBar/>
-      <div className="flex flex-col grow">
+      <div className="relative flex flex-col grow max-w-full min-w-0">
         <TitleBar/>
-        <div className="bg-main-color-2 relative rounded-tl-lg grow overflow-hidden">
+        <div className="bg-main-color-2 relative rounded-tl-lg grow overflow-hidden max-w-full">
           <Routes>
             <Route path={"/bs-version/:versionNumber"} element={<VersionViewer/>}/>
             <Route path="*" element={<AvailableVersionsList/>}/>
