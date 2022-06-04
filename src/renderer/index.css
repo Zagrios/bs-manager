@@ -1,10 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: acumin-pro, sans-serif;
+  }
+}
+
 ::-webkit-scrollbar {
     width: 4px !important;
     padding: 0;
     margin: 0;
     display: inline;
   }
-  
+
 ::-webkit-scrollbar-thumb {
   border-radius: 20px;
 }
