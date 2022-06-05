@@ -25,9 +25,9 @@ export function AvailableVersionsSlider({setSelectedVersion}: {setSelectedVersio
   }, [])
 
   return (
-    <div className="w-full h-fit relative flex flex-col">
+    <div className="w-full h-fit max-h-full relative flex flex-col items-center grow min-h-0">
       <AvailableVersionsNavBar years={availableYears} setSelectedYear={setSelectedYear}></AvailableVersionsNavBar>
-      <div className="w-full h-fit flex transition-transform duration-700" style={{transform: `translate(${-(yearIndex * 100)}%, 0)`}}>
+      <div className="w-full min-h-0 flex transition-transform duration-700" style={{transform: `translate(${-(yearIndex * 100)}%, 0)`}}>
         { availableYears.map((year, index) =>
           <AvailableVersionsSlide key={index} year={year}></AvailableVersionsSlide>
         )}

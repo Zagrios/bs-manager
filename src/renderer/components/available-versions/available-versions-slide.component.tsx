@@ -21,8 +21,8 @@ export function AvailableVersionsSlide(props: {year: string}) {
 
 
   return (
-    <div className="w-full max-w-full h-fit shrink-0 flex items-center justify-center content-center">
-      <div className="flex justify-center items-center content-center flex-wrap max-w-6xl">
+    <div className="w-full max-w-full max-h-full shrink-0 flex items-start justify-center overflow-x-hidden overflow-y-scroll content-start scrollbar-thin hover:scrollbar-thumb-neutral-900">
+      <div className="relative left-[2px] flex justify-center items-start content-start flex-wrap max-w-6xl">
         {availableVersions.map((version, index) =>
           <AvailableVersionItem key={index} version={version}></AvailableVersionItem>
         )}
