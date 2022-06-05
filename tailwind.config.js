@@ -19,6 +19,9 @@ module.exports = {
     extend:{
       keyframes:{
       },
+      boxShadow: {
+        'center': '0px 0px 8px 0px',
+      }
     }
   }
 };
