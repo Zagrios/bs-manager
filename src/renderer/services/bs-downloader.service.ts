@@ -14,6 +14,8 @@ export class BsDownloaderService{
     public readonly currentBsVersionDownload$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
     public readonly downloadProgress$: BehaviorSubject<number> = new BehaviorSubject(0);
 
+    public readonly selectedBsVersion$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
+
     public static getInstance(): BsDownloaderService{
         if(!BsDownloaderService.instance){ BsDownloaderService.instance = new BsDownloaderService(); }
         return BsDownloaderService.instance;
