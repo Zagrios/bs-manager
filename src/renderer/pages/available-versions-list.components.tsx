@@ -30,7 +30,8 @@ export function AvailableVersionsList() {
   return (
     <div className="h-full">
       <Slideshow className="absolute w-full h-full top-0" images={slideshowImages}></Slideshow>
-      <div className="relative z-[1] max-h-full flex flex-col pt-7">
+      <div className="relative z-[1] max-h-full flex items-center flex-col pt-3">
+        <h1 className="text-gray-100 text-2xl mb-4">Select a Version</h1>
         <AvailableVersionsSlider setSelectedVersion={selectedVersionCallback}/>
       </div>
     </div>
