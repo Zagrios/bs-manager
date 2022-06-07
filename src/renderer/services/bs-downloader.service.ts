@@ -65,7 +65,8 @@ export class BsDownloaderService{
         });
     }
 
-    public async download(bsVersion: BSVersion): Promise<void>{
+    public async download(bsVersion?: BSVersion): Promise<void>{
+        if(!bsVersion){ bsVersion = this.selectedBsVersion$.value; }
         let username = localStorage.getItem("username");
         if(!username){
             const res = await this.modalService.openModal(ModalType.STEAM_LOGIN);
