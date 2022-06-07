@@ -5,7 +5,7 @@ import { AvailableVersionsSlide } from "./available-versions-slide.component";
 import { AvailableVersionsNavBar } from "./available-versions-nav-bar.component";
 import { filter, take } from "rxjs";
 
-export function AvailableVersionsSlider({setSelectedVersion}: {setSelectedVersion: Function}) {
+export function AvailableVersionsSlider() {
 
   const navigate = useNavigate();
   const [availableYears, setAvailableYears] = useState([]);
