@@ -25,6 +25,15 @@
   animation: rainbow 2s linear 0s infinite;
 }
 
+.spin-loading{
+  animation: spin-loading 2s cubic-bezier(.46,-0.55,.49,1.52) 0s forwards infinite;
+}
+
+@keyframes spin-loading{
+  0%{ transform: rotate(-360deg); }
+  50%{ transform: rotate(-360deg); }
+}
+
 @keyframes rainbow {
   0% { background-position: 84% 0 }
   100% { background-position: 0 0% }
