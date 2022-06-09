@@ -43,6 +43,7 @@ export class BsDownloaderService{
         window.electron.ipcRenderer.on("bs-download.[Finished]", async () => {
             this.downloadProgress$.next(0);
             this.currentBsVersionDownload$.next(null);
+            this.selectedBsVersion$.next(null);
             this.bsVersionManager.askInstalledVersions();
         });
 
