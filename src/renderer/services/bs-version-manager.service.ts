@@ -26,7 +26,7 @@ export class BSVersionManagerService {
     }
 
     public setInstalledVersions(versions: BSVersion[]){
-        const sorted: BSVersion[] = versions.sort((a, b) => b.BSVersion.localeCompare(a.BSVersion))
+        const sorted: BSVersion[] = versions.sort((a, b) => +b.ReleaseDate - +a.ReleaseDate)
         const steamIndex = sorted.findIndex(v => v.steam);
         if(steamIndex > 0){
             [sorted[0], sorted[steamIndex]] = [sorted[steamIndex], sorted[0]];
@@ -47,7 +47,7 @@ export class BSVersionManagerService {
     }
 
     public getAvaibleVersionsOfYear(year: string): BSVersion[]{
-      return this.availableVersions$.value.filter(v => v.year === year);
+      return this.availableVersions$.value.filter(v => v.year === year).sort((a, b) => +b.ReleaseDate - +a.ReleaseDate);
     }
 
 }
