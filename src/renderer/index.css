@@ -8,6 +8,10 @@
   }
 }
 
+*{
+  user-select: none;
+}
+
 ::-webkit-scrollbar {
     width: 4px !important;
     padding: 0;
