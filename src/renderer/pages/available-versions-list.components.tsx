@@ -46,7 +46,7 @@ export function AvailableVersionsList() {
       downloadProgressSub.unsubscribe();
     }
   }, [])
-  
+
 
   return (
     <div className="relative h-full w-full flex items-center flex-col pt-2">
@@ -56,8 +56,8 @@ export function AvailableVersionsList() {
       <div onClick={startInstall} className={
         `
           flex items-center content-center justify-center absolute bottom-9 z-10 rounded-lg bg-main-color-3 shadow-center shadow-black cursor-pointer transition-all duration-300
-          ${versionSelected && !currentDownload && "h-16 w-36"} 
-          ${!versionSelected && !currentDownload && "translate-y-[100px]"}
+          ${versionSelected && !currentDownload && "h-16 w-36"}
+          ${!versionSelected && !currentDownload && "translate-y-[120px]"}
           ${currentDownload && !downloadProgress && "h-16 w-16 rounded-full"}
           ${currentDownload && !!downloadProgress && "h-5 w-3/4 rounded-full p-[6px]"}
         `
@@ -70,7 +70,7 @@ export function AvailableVersionsList() {
             <img className="h-[70px] absolute -translate-x-8 -translate-y-1 transition-all" style={{left: `${downloadProgress}%`}} src={beatRunningImg} />
           </>
         )}
-        {!currentDownload && <span className="flex justify-center items-center w-full h-full text-white font-bold tracking-wide text-xl text-center leading-6">DOWNLOAD {versionSelected?.BSVersion}</span>}
+        {!currentDownload && <span className="flex justify-center items-center w-36 h-16 text-white font-bold tracking-wide text-xl text-center leading-6">DOWNLOAD {versionSelected?.BSVersion}</span>}
         {currentDownload && !downloadProgress && <img className="w-14 h-14 spin-loading" src={beatWaitingImg}></img>}
       </div>
     </div>
