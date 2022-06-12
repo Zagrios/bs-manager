@@ -57,12 +57,8 @@ export class BsDownloaderService{
         });
 
         this.currentBsVersionDownload$.subscribe(version => {
-            if(version){
-                this.bsVersionManager.setInstalledVersions([...this.bsVersionManager.installedVersions$.value, version]);
-            }
-            else{
-                this.bsVersionManager.askInstalledVersions();
-            }
+            if(version){ this.bsVersionManager.setInstalledVersions([...this.bsVersionManager.installedVersions$.value, version]); }
+            else{ this.bsVersionManager.askInstalledVersions(); }
         });
     }
 
