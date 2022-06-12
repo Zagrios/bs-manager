@@ -11,7 +11,6 @@
 		"BSVersion": "0.10.2",
 		"BSManifest": "2542095265882143144",
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/3199123443061240805",
-		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steam/apps/620980/capsule_616x353.jpg",
 		"ReleaseDate": "1526065860",
 		"year": "2018"
 	},
@@ -19,7 +18,6 @@
 		"BSVersion": "0.10.2p1",
 		"BSManifest": "5611588554149133260",
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/1660018815112331498",
-		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steam/apps/620980/capsule_616x353.jpg",
 		"ReleaseDate": "1526843460",
 		"year": "2018"
 	},
@@ -33,7 +31,6 @@
 		"BSVersion": "0.11.0",
 		"BSManifest": "8700049030626148111",
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/1675787121569907303",
-		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steam/apps/620980/capsule_616x353.jpg",
 		"ReleaseDate": "1532027460",
 		"year": "2018"
 	},
@@ -41,7 +38,6 @@
 		"BSVersion": "0.11.1",
 		"BSManifest": "6574193224879562324",
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/1675787121577641471",
-		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steam/apps/620980/capsule_616x353.jpg",
 		"ReleaseDate": "1532113860",
 		"year": "2018"
 	},
@@ -49,7 +45,6 @@
 		"BSVersion": "0.11.2",
 		"BSManifest": "2707973953401625222",
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/1700559455389069835",
-		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steam/apps/620980/capsule_616x353.jpg",
 		"ReleaseDate": "1534792260",
 		"year": "2018"
 	},
@@ -57,7 +52,6 @@
 		"BSVersion": "0.12.0",
 		"BSManifest": "6094599000655593822",
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/1708449632708343984",
-		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steam/apps/620980/capsule_616x353.jpg?t=1622461922",
 		"ReleaseDate": "1543349460",
 		"year": "2018"
 	},
@@ -65,7 +59,6 @@
 		"BSVersion": "0.12.0p1",
 		"BSManifest": "2068421223689664394",
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/1708450266986928520",
-		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steam/apps/620980/capsule_616x353.jpg",
 		"ReleaseDate": "1543435860",
 		"year": "2018"
 	},
@@ -97,7 +90,6 @@
 		"BSVersion": "0.13.0p1",
 		"BSManifest": "6827433614670733798",
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/1809790964563689188",
-		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steam/apps/620980/capsule_616x353.jpg",
 		"ReleaseDate": "1553026260",
 		"year": "2019"
 	},
@@ -105,7 +97,6 @@
 		"BSVersion": "0.13.1",
 		"BSManifest": "6033025349617217666",
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/1735482645687974657",
-		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steam/apps/620980/capsule_616x353.jpg",
 		"ReleaseDate": "1554145860",
 		"year": "2019"
 	},
@@ -113,7 +104,6 @@
 		"BSVersion": "0.13.2",
 		"BSManifest": "6839388023573913446",
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/1779393376014546213",
-		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steam/apps/620980/capsule_616x353.jpg",
 		"ReleaseDate": "1554405060",
 		"year": "2019"
 	},
@@ -129,7 +119,6 @@
 		"BSVersion": "1.0.1",
 		"BSManifest": "7950322551526208347",
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/1617268229025488499",
-		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steam/apps/620980/capsule_616x353.jpg",
 		"ReleaseDate": "1558984260",
 		"year": "2019"
 	},
@@ -137,7 +126,6 @@
 		"BSVersion": "1.1.0",
 		"BSManifest": "1400454104881094752",
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/1606010497768610092",
-		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steam/apps/620980/capsule_616x353.jpg",
 		"ReleaseDate": "1560193860",
 		"year": "2019"
 	},
@@ -145,7 +133,6 @@
 		"BSVersion": "1.1.0p1",
 		"BSManifest": "1041583928494277430",
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/1607139567641962696",
-		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steam/apps/620980/capsule_616x353.jpg",
 		"ReleaseDate": "1563217860",
 		"year": "2019"
 	},
