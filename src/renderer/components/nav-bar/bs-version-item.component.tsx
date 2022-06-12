@@ -34,7 +34,7 @@ export default function BsVersionItem(props: {version: BSVersion}) {
 
 
   return (
-    <div className={`relative p-[1px] overflow-hidden rounded-full flex justify-center content-center items-center mb-1 ${downloading && "nav-item-download"}`}>
+    <div className={`outline-none relative p-[1px] overflow-hidden rounded-full flex justify-center content-center items-center mb-1 ${downloading && "nav-item-download"}`}>
       <div className="absolute top-0 w-full h-full" style={{transform: `translate(${-(100 - downloadPercent)}%, 0)`}}></div>
       <Link to={`/bs-version/${props.version.BSVersion}`} state={props.version} className={`z-[1] flex cursor-pointer w-full justify-center content-center rounded-full items-center p-[3px] pl-2 pr-2 ${downloading && 'bg-black'} ${(isActive() && !downloading) && "bg-main-color-3"}`}>
         {props.version.steam && <SteamIcon className="w-[19px] h-[19px] mr-1"/>}
