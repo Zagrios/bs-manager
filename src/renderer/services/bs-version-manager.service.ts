@@ -31,7 +31,8 @@ export class BSVersionManagerService {
         if(steamIndex > 0){
             [sorted[0], sorted[steamIndex]] = [sorted[steamIndex], sorted[0]];
         }
-        this.installedVersions$.next(sorted);
+        const cleanedSort = [...new Map(sorted.map(version => [`${version.BSVersion}-${version.steam}`, version])).values()]
+        this.installedVersions$.next(cleanedSort);
     }
 
     public askAvailableVersions(): void{
@@ -43,7 +44,7 @@ export class BSVersionManagerService {
     }
 
     public getAvailableYears(): string[]{
-      return [ ...new Set(this.availableVersions$.value.map(v => v.year))].sort((a, b) => b.localeCompare(a));
+      return [...new Set(this.availableVersions$.value.map(v => v.year))].sort((a, b) => b.localeCompare(a));
     }
 
     public getAvaibleVersionsOfYear(year: string): BSVersion[]{
