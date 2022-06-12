@@ -107,10 +107,10 @@ export class BSInstallerService{
         else if(out[0] === DownloadEventType.TWO_FA_CODE){
           this.utils.ipcSend(`bs-download.${DownloadEventType.GUARD_CODE}`);
         }
-        else if(out[0] === DownloadEventType.PROGESS){ 
+        else if(out[0] === DownloadEventType.PROGESS || (out[0] === DownloadEventType.VALIDATION && parseFloat(out[1]) < 100)){ 
           this.utils.ipcSend(`bs-download.${DownloadEventType.PROGESS}`, parseFloat(out[1])); 
         }
-        else if(out[0] === DownloadEventType.FINISH){ 
+        else if(out[0] === DownloadEventType.FINISH || (out[0] === DownloadEventType.VALIDATION && parseFloat(out[1]) == 100)){ 
           this.utils.ipcSend(`bs-download.${DownloadEventType.FINISH}`); this.downloadProcess.kill(); 
         }
         else if(out[0] === DownloadEventType.ERROR){
@@ -157,6 +157,7 @@ export enum DownloadEventType{
   GUARD_CODE = "[Guard]",
   TWO_FA_CODE = "[2FA]",
   PROGESS = "[Progress]",
+  VALIDATION = "[Validated]",
   FINISH = "[Finished]",
   ALREADY_DOAWNLOADING = "[AlreadyDownloading]",
   ERROR = "[Error]",
