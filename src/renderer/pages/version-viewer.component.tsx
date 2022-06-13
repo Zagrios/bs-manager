@@ -62,37 +62,23 @@ export function VersionViewer() {
   }
 
   return (
-    <div className="flex items-center flex-col w-full text-gray-200">
-      <div className='w-fit flex flex-col items-center'>
-        <img className='max-w-xl' src={BSLogo} alt="" />
-        <h1 className='text-4xl font-bold'>{state.BSVersion}</h1>
-        { launchRes === LaunchResult.STEAM_NOT_RUNNING && <h2 className='text-3xl font-bold text-red-600'>STEAM NOT RUNNING</h2>}
-        { launchRes === LaunchResult.EXE_NOT_FIND && <h2 className='text-3xl font-bold text-red-600'>EXECUTABLE NOT EXIST</h2>}
-        <div className='flex justify-around w-3/4 mt-5'>
-          <div>
-            <input onChange={e => setMode("debug", e.target.checked)} checked={debugMode} type="checkbox" name="debug-mode" id="debug-mode" />
-            <label htmlFor="debug-mode">DEBUG MODE</label>
-          </div>
-          <div>
-            <input onChange={e => setMode("oculus", e.target.checked)} checked={oculusMode} type="checkbox" name="oculus-mode" id="oculus-mode" />
-            <label htmlFor="oculus-mode">OCULUS MODE</label>
-          </div>
-          <div>
-            <input onChange={e => setMode("desktop", e.target.checked)} checked={desktopMode} type="checkbox" name="decktop-mode" id="decktop-mode" />
-            <label htmlFor="decktop-mode">DESKTOP MODE</label>
-          </div>
+    <>
+      <img className="absolute w-full h-full top-0 left-0 blur-lg brightness-75 object-cover" src={state.ReleaseImg} alt="" />
+      <div className="relative flex items-center flex-col w-full h-full text-gray-200">
+        <img className='relative -left-4 object-cover h-28 -top-3' src={BSLogo} alt="" />
+        <h1 className='relative text-4xl font-bold italic -top-7'>{state.BSVersion}</h1>
+        <div className='relative flex flex-row justify-center items-center content-center -top-2'>
+          <VersionLunchModButton onClick={() => setMode("oculus", !oculusMode)} active={oculusMode} text="OCULUS MOD"/>
+          <VersionLunchModButton onClick={() => setMode("desktop", !desktopMode)} active={desktopMode} text="DESKTOP MOD"/>
+          <VersionLunchModButton onClick={() => setMode("debug", !debugMode)} active={debugMode} text="DEBUG MOD"/>
         </div>
-        {downloading &&
-          <div className='relative flex flex-col items-center justify-center content-center w-full mt-7 mb-7'>
-            <img className='absolute z-[1] h-16 top-[-34px] transition-all' style={{left: `calc(${downloadProgress}% - 34px)`}} src={BeatRunning} alt="" />
-            <div className='w-full h-2 relative overflow-hidden bg-main-color-1 rounded-full'>
-              <div className='download-progress w-full h-full overflow-hidden transition-transform' style={{transform: `translate(${downloadProgress - 100}%, 0)`}}></div>
-            </div>
-            <span>{`${downloadProgress}%`}</span>
-          </div>
-        }
-        { !downloading && <button className='mt-5 text-2xl font-bold bg-gray-200 text-gray-900' onClick={launchBs}>Launch</button> }
       </div>
-    </div>
+    </>
   )
+}
+
+export function VersionLunchModButton(props: {onClick: Function, active: boolean, text: string}) {
+  return (
+    <span onClick={() => props.onClick()} className={`w-56 text-center cursor-pointer p-3 border-4 border-white rounded-full font-bold italic text-lg tracking-wide ml-3 mr-3 transition-all ${props.active && "bg-white text-black bg-opacity-70"} hover:bg-white hover:bg-opacity-70 hover:text-black`}>{props.text}</span>
+  );
 }
