@@ -4,8 +4,8 @@ import { useLocation } from 'react-router-dom';
 import { BsDownloaderService } from '../services/bs-downloader.service';
 import { Subscription } from 'rxjs';
 import BSLogo from '../../../assets/bs-logo.png';
-import BeatRunning from '../../../assets/beat-running.png';
 import { BSLauncherService, LaunchResult } from '../services/bs-launcher.service';
+import { TabNavBar } from 'renderer/components/shared/tab-nav-bar.component';
 
 export function VersionViewer() {
 
@@ -63,21 +63,22 @@ export function VersionViewer() {
 
   return (
     <>
-      <img className="absolute w-full h-full top-0 left-0 blur-lg brightness-75 object-cover" src={state.ReleaseImg} alt="" />
+      <img className="absolute w-full h-full top-0 left-0 blur-lg object-cover brightness-90" src={state.ReleaseImg} alt="" />
       <div className="relative flex items-center flex-col w-full h-full text-gray-200">
-        <img className='relative -left-4 object-cover h-28 -top-3' src={BSLogo} alt="" />
-        <h1 className='relative text-4xl font-bold italic -top-7'>{state.BSVersion}</h1>
+        <img className='relative -left-4 object-cover h-28' src={BSLogo} alt="" />
+        <h1 className='relative text-4xl font-bold italic -top-4'>{state.BSVersion}</h1>
+        <TabNavBar tabsText={["Launch", "Maps", "Mods"]} onTabChange={() => console.log()}/>
         <div className='relative flex flex-row justify-center items-center content-center -top-2'>
-          <VersionLunchModButton onClick={() => setMode("oculus", !oculusMode)} active={oculusMode} text="OCULUS MOD"/>
-          <VersionLunchModButton onClick={() => setMode("desktop", !desktopMode)} active={desktopMode} text="DESKTOP MOD"/>
-          <VersionLunchModButton onClick={() => setMode("debug", !debugMode)} active={debugMode} text="DEBUG MOD"/>
+          <ToogleLunchMod onClick={() => setMode("oculus", !oculusMode)} active={oculusMode} text="OCULUS MOD"/>
+          <ToogleLunchMod onClick={() => setMode("desktop", !desktopMode)} active={desktopMode} text="DESKTOP MOD"/>
+          <ToogleLunchMod onClick={() => setMode("debug", !debugMode)} active={debugMode} text="DEBUG MOD"/>
         </div>
       </div>
     </>
   )
 }
 
-export function VersionLunchModButton(props: {onClick: Function, active: boolean, text: string}) {
+export function ToogleLunchMod(props: {onClick: Function, active: boolean, text: string}) {
   return (
     <span onClick={() => props.onClick()} className={`w-56 text-center cursor-pointer p-3 border-4 border-white rounded-full font-bold italic text-lg tracking-wide ml-3 mr-3 transition-all ${props.active && "bg-white text-black bg-opacity-70"} hover:bg-white hover:bg-opacity-70 hover:text-black`}>{props.text}</span>
   );
