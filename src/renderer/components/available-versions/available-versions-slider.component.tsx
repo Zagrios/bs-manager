@@ -25,7 +25,7 @@ export function AvailableVersionsSlider() {
   return (
     <div className="w-full h-fit max-h-full relative flex flex-col items-center grow min-h-0">
       <TabNavBar tabsText={availableYears} onTabChange={setSelectedYear}/>
-      <div className="w-full min-h-0 flex transition-transform duration-500" style={{transform: `translate(${-(yearIndex * 100)}%, 0)`}}>
+      <div className="w-full min-h-0 flex transition-transform duration-300" style={{transform: `translate(${-(yearIndex * 100)}%, 0)`}}>
         { availableYears.map((year, index) =>
           <AvailableVersionsSlide key={index} year={year}></AvailableVersionsSlide>
         )}
