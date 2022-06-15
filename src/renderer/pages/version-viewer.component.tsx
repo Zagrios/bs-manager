@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import BSLogo from '../../../assets/bs-logo.png';
 import { BSLauncherService, LaunchResult } from '../services/bs-launcher.service';
 import { TabNavBar } from 'renderer/components/shared/tab-nav-bar.component';
+import wipGif from "../../../assets/wip.gif"
 
 export function VersionViewer() {
 
@@ -19,6 +20,7 @@ export function VersionViewer() {
   const [debugMode, setDebugMode] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState(0);
+  const [currentTabIndex, setCurrentTabIndex] = useState(0);
 
   const [subs, setSubs] = useState([] as Subscription[]);
 
@@ -65,14 +67,29 @@ export function VersionViewer() {
     <>
       <img className="absolute w-full h-full top-0 left-0 blur-lg object-cover brightness-90" src={state.ReleaseImg} alt="" />
       <div className="relative flex items-center flex-col w-full h-full text-gray-200">
-        <img className='relative -left-4 object-cover h-28' src={BSLogo} alt="" />
-        <h1 className='relative text-4xl font-bold italic -top-4'>{state.BSVersion}</h1>
-        <TabNavBar tabsText={["Launch", "Maps", "Mods"]} onTabChange={() => console.log()}/>
-        <div className='relative flex flex-row justify-center items-center content-center -top-2'>
-          <ToogleLunchMod onClick={() => setMode("oculus", !oculusMode)} active={oculusMode} text="OCULUS MOD"/>
-          <ToogleLunchMod onClick={() => setMode("desktop", !desktopMode)} active={desktopMode} text="DESKTOP MOD"/>
-          <ToogleLunchMod onClick={() => setMode("debug", !debugMode)} active={debugMode} text="DEBUG MOD"/>
+        <img className='relative object-cover h-28' src={BSLogo} alt="" />
+        <h1 className='relative text-4xl font-bold italic -top-3'>{state.BSVersion}</h1>
+        <TabNavBar className='mt-3' tabsText={["Launch", "Maps", "Mods"]} onTabChange={(i : number) => setCurrentTabIndex(i)}/>
+        <div className='mt-2 w-full grow flex transition-transform duration-300 pt-5' style={{transform: `translate(${-(currentTabIndex * 100)}%, 0)`}}>
+          <div className='w-full shrink-0 items-start relative flex flex-row justify-center -top-2'>
+            <ToogleLunchMod onClick={() => setMode("oculus", !oculusMode)} active={oculusMode} text="OCULUS MOD"/>
+            <ToogleLunchMod onClick={() => setMode("desktop", !desktopMode)} active={desktopMode} text="DESKTOP MOD"/>
+            <ToogleLunchMod onClick={() => setMode("debug", !debugMode)} active={debugMode} text="DEBUG MOD"/>
+          </div>
+          <div className='shrink-0 w-full h-full flex justify-center'>
+            <div className='p-4 bg-main-color-2 h-fit rounded-md'>
+              <img src={wipGif} alt="" />
+              <span className='block w-full text-center font-bold mt-2'>Work In Progress</span>
+            </div>
+          </div>
+          <div className='shrink-0 w-full h-full flex justify-center'>
+            <div className='p-4 bg-main-color-2 h-fit rounded-md'>
+              <img src={wipGif} alt="" />
+              <span className='block w-full text-center font-bold mt-2'>Work In Progress</span>
+            </div>
+          </div>
         </div>
+        
       </div>
     </>
   )
