@@ -1,67 +1,51 @@
 import { BSVersion } from '../../main/services/bs-version-manager.service';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { BsDownloaderService } from '../services/bs-downloader.service';
-import { Subscription } from 'rxjs';
 import BSLogo from '../../../assets/bs-logo.png';
-import { BSLauncherService, LaunchResult } from '../services/bs-launcher.service';
+import { BSLauncherService, LaunchMods, LaunchResult } from '../services/bs-launcher.service';
 import { TabNavBar } from 'renderer/components/shared/tab-nav-bar.component';
 import wipGif from "../../../assets/wip.gif"
+import { ConfigurationService } from 'renderer/services/configuration.service';
 
 export function VersionViewer() {
 
   const {state} = useLocation() as {state: BSVersion};
-
-  const bsDownloaderService = BsDownloaderService.getInstance();
-  const bsLauncherService = BSLauncherService.getInstance();
+  //const bsLauncherService = BSLauncherService.getInstance();
 
   const [oculusMode, setOculusMode] = useState(false);
   const [desktopMode, setDesktopMode] = useState(false);
   const [debugMode, setDebugMode] = useState(false);
-  const [downloading, setDownloading] = useState(false);
-  const [downloadProgress, setDownloadProgress] = useState(0);
   const [currentTabIndex, setCurrentTabIndex] = useState(0);
 
-  const [subs, setSubs] = useState([] as Subscription[]);
+  const configService = ConfigurationService.getInstance();
 
-  const [launchRes, setLaunchRes] = useState(null);
+  // const [launchRes, setLaunchRes] = useState(null);
 
   useEffect(() => {
-    const downloadingSub = bsDownloaderService.currentBsVersionDownload$.subscribe(version => {
-      if(!version){ setDownloading(false); return }
-      if(state.BSVersion === version.BSVersion){ setDownloading(true); return }
-      setDownloading(false);
-    });
-    setSubs([...subs, downloadingSub]);
+    setOculusMode(!!configService.get<boolean>(LaunchMods.OCULUS_MOD));
+    setDesktopMode(!!configService.get<boolean>(LaunchMods.DESKTOP_MOD));
+    setDebugMode(!!configService.get<boolean>(LaunchMods.DEBUG_MOD));
+  }, [])
+  
 
-    return () => {
-      subs.forEach(s => s.unsubscribe());
-      setOculusMode(false); setDebugMode(false); setDesktopMode(false);
-      setDownloading(false);
-      setLaunchRes(null);
+  const setMode = (mode: LaunchMods, value: boolean) => {
+    if(mode === LaunchMods.DEBUG_MOD){ setDebugMode(value); }
+    else if(mode === LaunchMods.OCULUS_MOD){ 
+      setOculusMode(value); 
+      setDesktopMode(false);
+      configService.set(LaunchMods.DESKTOP_MOD, false);
     }
-  }, [state]);
-
-  useEffect(() => {
-    if(!downloading){ return; }
-    const progressSub = bsDownloaderService.downloadProgress$.subscribe(progress => {
-      if(downloading){ setDownloadProgress(progress); }
-    });
-    setSubs([...subs, progressSub]);
-  }, [downloading])
-
-
-
-
-  const setMode = (mode: string, value: boolean) => {
-    if(mode === "debug"){ setDebugMode(value); }
-    if(mode === "oculus"){ setOculusMode(value); setDesktopMode(false); }
-    if(mode === "desktop"){ setDesktopMode(value); setOculusMode(false); }
+    else if(mode === LaunchMods.DESKTOP_MOD){ 
+      setDesktopMode(value); 
+      setOculusMode(false);
+      configService.set(LaunchMods.OCULUS_MOD, false);
+    }
+    configService.set(mode, value);
   }
 
-  const launchBs = () => {
-    bsLauncherService.launch(state, oculusMode, desktopMode, debugMode).then(res => setLaunchRes(res));
-  }
+  // const launchBs = () => {
+  //   bsLauncherService.launch(state, oculusMode, desktopMode, debugMode).then(res => setLaunchRes(res));
+  // }
 
   return (
     <>
@@ -72,9 +56,9 @@ export function VersionViewer() {
         <TabNavBar className='mt-3' tabsText={["Launch", "Maps", "Mods"]} onTabChange={(i : number) => setCurrentTabIndex(i)}/>
         <div className='mt-2 w-full grow flex transition-transform duration-300 pt-5' style={{transform: `translate(${-(currentTabIndex * 100)}%, 0)`}}>
           <div className='w-full shrink-0 items-start relative flex flex-row justify-center -top-2'>
-            <ToogleLunchMod onClick={() => setMode("oculus", !oculusMode)} active={oculusMode} text="OCULUS MOD"/>
-            <ToogleLunchMod onClick={() => setMode("desktop", !desktopMode)} active={desktopMode} text="DESKTOP MOD"/>
-            <ToogleLunchMod onClick={() => setMode("debug", !debugMode)} active={debugMode} text="DEBUG MOD"/>
+            <ToogleLunchMod onClick={() => setMode(LaunchMods.OCULUS_MOD, !oculusMode)} active={oculusMode} text="OCULUS MOD"/>
+            <ToogleLunchMod onClick={() => setMode(LaunchMods.DESKTOP_MOD, !desktopMode)} active={desktopMode} text="DESKTOP MOD"/>
+            <ToogleLunchMod onClick={() => setMode(LaunchMods.DEBUG_MOD, !debugMode)} active={debugMode} text="DEBUG MOD"/>
           </div>
           <div className='shrink-0 w-full h-full flex justify-center'>
             <div className='p-4 bg-main-color-2 h-fit rounded-md'>
@@ -89,7 +73,6 @@ export function VersionViewer() {
             </div>
           </div>
         </div>
-        
       </div>
     </>
   )
