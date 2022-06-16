@@ -64,8 +64,9 @@ export function AvailableVersionsList() {
         }>
         {currentDownload && !!downloadProgress && (
           <>
-            <div className="h-full w-full rounded-full overflow-hidden bg-main-color-1">
+            <div className="relative h-full w-full rounded-full overflow-hidden bg-main-color-1">
               <div className="w-full h-full rounded-full download-progress -translate-x-full transition-transform" style={{transform: `translate(-${100 - downloadProgress}%, 0)`}}></div>
+              <span className="absolute w-full text-center text-white -top-[3px] left-0 text-[10px]">{`${downloadProgress}%`}</span>
             </div>
             <img className="h-[70px] absolute -translate-x-8 -translate-y-1 transition-all" style={{left: `${downloadProgress}%`}} src={beatRunningImg} />
           </>
