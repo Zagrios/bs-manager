@@ -30,3 +30,9 @@ export enum LaunchResult {
     STEAM_NOT_RUNNING = 1,
     EXE_NOT_FIND = 2,
 }
+
+export enum LaunchMods{
+    OCULUS_MOD = "LAUNCH_OCULUS_MOD",
+    DESKTOP_MOD = "LAUNCH_DESKTOP_MOD",
+    DEBUG_MOD ="LAUNCH_DEBUG_MOD"
+}
