@@ -1,6 +1,8 @@
 import { ModalExitCode, ModalResponse } from "../../../services/modale.service";
 import { useState } from "react";
 import BeatConflict from "../../../../../assets/beat-conflict.png"
+import { BsmImage } from "renderer/components/shared/bsm-image.component";
+import { BsmButton } from "renderer/components/shared/bsm-button.component";
 
 export function GuardModal({resolver}: {resolver: (x: ModalResponse) => void}) {
 
@@ -10,25 +12,19 @@ export function GuardModal({resolver}: {resolver: (x: ModalResponse) => void}) {
       if(!guardCode){ return; }
       resolver({exitCode: ModalExitCode.COMPLETED, data: guardCode});
     }
-    const cancel = () => resolver({exitCode: ModalExitCode.CANCELED});
-    
 
   return (
-    <form className="p-4 bg-main-color-2 text-gray-200 overflow-hidden rounded-md shadow-lg shadow-black" onSubmit={(e) => {e.preventDefault(); login();}}>
-        <h1 className="w-full text-center font-bold text-2xl">Steam Guard</h1>
-        <div className="w-full flex justify-center content-center items-center">
-            <img className="aspect-square object-cover w-28" src={BeatConflict} />
+    <form className="relative p-4  text-gray-200 overflow-hidden rounded-md shadow-lg shadow-black bg-gradient-to-br from-main-color-3 to-main-color-2" onSubmit={(e) => {e.preventDefault(); login();}}>
+        <span className="absolute bg-gradient-to-r from-blue-500 to-red-500 top-0 w-full left-0 h-1"></span>
+        <h1 className="text-3xl uppercase tracking-wide w-full text-center">Steam Guard</h1>
+        <BsmImage className="mx-auto h-24" image={BeatConflict}/>
+        <div className="mb-4">
+            <label className="block font-bold tracking-wide" htmlFor="guard">Guard Code</label>
+            <input className="w-full bg-main-color-1 px-2 rounded-md py-[2px]" onChange={e => setGuardCode(e.target.value.toUpperCase())} value={guardCode} type="guard" name="guard" id="guard" placeholder="Enter your Guard code"/>
         </div>
-        <div className="flex flex-col">
-            <label className="font-bold" htmlFor="guard">Guard Code</label>
-            <input className="bg-main-color-3 p-1 pr-2 pl-2 rounded-md" onChange={e => setGuardCode(e.target.value)} value={guardCode} type="guard" name="guard" id="guard" placeholder="Enter your Guard code"/>
-        </div>
-        <div className="mt-3 w-full flex justify-center items-center content-center">
-            <span onClick={cancel} className="font-bold uppercase grow mr-4 border-2 pr-3 pl-3 pt-[2px] pb-[2px] cursor-pointer rounded-md border-gray-300 hover:bg-gray-300 hover:text-black transition-colors">Cancel</span>
-            <button type="submit" className="relative font-bold uppercase grow">
-              <div className="absolute glow-on-hover opacity-100 z-[1] w-[calc(100%+4px)] h-[calc(100%+4px)] top-[-2px] left-[-2px] blur-none rounded-md"></div>
-              <div className="relative tracking-wide rounded-md h-full w-full z-[1] pr-3 pl-3 pt-[2px] pb-[2px] bg-main-color-2 hover:text-black hover:bg-transparent transition-colors">login</div>
-            </button>
+        <div className="grid grid-flow-col grid-cols-2 gap-4">
+            <BsmButton className="rounded-md text-center bg-gray-500 hover:brightness-110 transition-all" onClick={() => {resolver({exitCode: ModalExitCode.CANCELED})}} withBar={false} text="Cancel"/>
+            <BsmButton className="rounded-md text-center bg-blue-500 hover:brightness-110 transition-all" type="submit" withBar={false} text="Login"/>
         </div>
     </form>
   )
