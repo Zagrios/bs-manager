@@ -5,6 +5,7 @@ export class ModalService{
     private static instance: ModalService;
 
     private _modalType$: BehaviorSubject<ModalType> = new BehaviorSubject<ModalType>(null);
+    private modalData: any = null;
     private resolver: any;
     private constructor(){}
 
@@ -22,6 +23,10 @@ export class ModalService{
         return this._modalType$;
     }
 
+    public getModalData<Type>(): Type{
+        return this.modalData;
+    } 
+
     public getResolver(): any{
         return this.resolver;
     }
@@ -30,12 +35,14 @@ export class ModalService{
         this.resolver(data);
     }
 
-    public async openModal(modalType: ModalType): Promise<ModalResponse>{
+    public async openModal(modalType: ModalType, data?: any): Promise<ModalResponse>{
         this.close();
         await timeout(100); //Must wait resolve
         const promise = new Promise<ModalResponse>((resolve) => { this.resolver = resolve; });
         promise.then(() => this.close());
         this.modalType$.next(modalType);
+        if(data){ this.modalData = data; }
+        else{ this.modalData = null; }
         return promise;
     }
 
@@ -44,6 +51,7 @@ export class ModalService{
 export enum ModalType {
     STEAM_LOGIN = "STEAM_LOGIN",
     GUARD_CODE = "GUARD_CODE",
+    UNINSTALL = "UNINSTALL",
 }
 
 export enum ModalExitCode {
