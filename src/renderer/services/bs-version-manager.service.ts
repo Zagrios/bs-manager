@@ -35,6 +35,10 @@ export class BSVersionManagerService {
         this.installedVersions$.next(cleanedSort);
     }
 
+    public getInstalledVersions(): BSVersion[]{
+        return this.installedVersions$.value;
+    }
+
     public askAvailableVersions(): void{
         window.electron.ipcRenderer.sendMessage("bs-version.request-versions", null);
     }
