@@ -77,4 +77,8 @@ export class BsDownloaderService{
         this.currentBsVersionDownload$.next(bsVersion);
     }
 
+    public get isDownloading(): boolean{
+        return !!this.currentBsVersionDownload$.value || !!this.downloadProgress$.value;
+    }
+
 }
