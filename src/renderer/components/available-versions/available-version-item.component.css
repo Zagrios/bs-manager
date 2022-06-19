@@ -6,12 +6,12 @@
     left:-4px;
     background-size: 400%;
     z-index: -1;
-    filter: blur(5px);
+    filter: blur(3px);
     width: calc(100% + 8px);
     height: calc(100% + 8px);
     animation: glowing 20s linear infinite;
     opacity: 0;
-    transition: opacity .3s ease-in-out;
+    transition: opacity .2s ease-in-out;
     border-radius: 10px;
 }
 
