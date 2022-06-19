@@ -18,7 +18,7 @@ export function TabNavBar(props: {tabsText: string[], onTabChange: Function, cla
     
 
   return (
-    <div className={`relative h-8 shrink-0 cursor-pointer rounded-md overflow-hidden mb-3 shadow-md shadow-gray-800 ${props.className}`}>
+    <div className={`relative h-8 shrink-0 cursor-pointer rounded-md overflow-hidden mb-3 shadow-md shadow-black ${props.className}`}>
         <div className="absolute w-full h-1 bottom-0">  
           <span className="absolute h-full w-full bg-red-500 brightness-50"></span>
           <span className="absolute h-full block bg-red-500 transition-transform duration-300 shadow-lg shadow-red-500" style={{transform: `translate(${currentTabIndex * 100}%, 0)`, width: `${tabsWidth}px`}}></span>
