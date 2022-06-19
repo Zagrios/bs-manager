@@ -3,6 +3,7 @@ import { spawnSync } from "child_process";
 import { homedir } from "os";
 import path from "path";
 import { BrowserWindow } from "electron";
+import { rm } from "fs/promises";
 
 export class UtilsService{
 
@@ -57,6 +58,10 @@ export class UtilsService{
     let files = readdirSync(dirPath, { withFileTypes:true});
     files = files.filter(f => f.isDirectory())
     return files.map(f => f.name);
+  }
+
+  public deleteFolder(folderPath: string): Promise<void>{
+    return rm(folderPath, {recursive: true});
   }
 
   public ipcSend(channel: string, args?: any){
