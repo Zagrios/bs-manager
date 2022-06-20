@@ -4,6 +4,7 @@ import { Routes, Route } from "react-router-dom";
 import { AvailableVersionsList } from "./pages/available-versions-list.components";
 import { VersionViewer } from "./pages/version-viewer.component";
 import { Modal } from "./components/modal/modal.component";
+import { SettingsPage } from "./pages/settings-page.component";
 
 export default function App() {
 
@@ -16,6 +17,7 @@ export default function App() {
         <div className="bg-main-color-2 relative rounded-tl-lg grow overflow-hidden max-w-full">
           <Routes>
             <Route path={"/bs-version/:versionNumber"} element={<VersionViewer/>}/>
+            <Route path={"/settings"} element={<SettingsPage/>}/>
             <Route path="*" element={<AvailableVersionsList/>}/>
           </Routes>
         </div>
