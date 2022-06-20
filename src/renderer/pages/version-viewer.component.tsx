@@ -20,7 +20,7 @@ export function VersionViewer() {
 
   const {state} = useLocation() as {state: BSVersion};
   const navigate = useNavigate();
-  //const bsLauncherService = BSLauncherService.getInstance();
+  const bsLauncherService = BSLauncherService.getInstance();
 
   const [oculusMode, setOculusMode] = useState(false);
   const [desktopMode, setDesktopMode] = useState(false);
@@ -32,7 +32,7 @@ export function VersionViewer() {
   const bsVersionManagerService = BSVersionManagerService.getInstance();
   const modalService = ModalService.getInsance();
 
-  // const [launchRes, setLaunchRes] = useState(null);
+  const [launchRes, setLaunchRes] = useState(null);
 
   useEffect(() => {
     setOculusMode(!!configService.get<boolean>(LaunchMods.OCULUS_MOD));
@@ -74,9 +74,11 @@ export function VersionViewer() {
     }
   }
 
-  // const launchBs = () => {
-  //   bsLauncherService.launch(state, oculusMode, desktopMode, debugMode).then(res => setLaunchRes(res));
-  // }
+  const launchBs = () => {
+    bsLauncherService.launch(state, oculusMode, desktopMode, debugMode).then(res => {
+      setLaunchRes(res);
+    });
+  }
 
   return (
     <>
@@ -93,7 +95,7 @@ export function VersionViewer() {
               <ToogleLunchMod icon='terminal' onClick={() => setMode(LaunchMods.DEBUG_MOD, !debugMode)} active={debugMode} text="DEBUG MOD"/>
             </div>
             <div className='grow flex justify-center items-center'>
-              <BsmButton className='relative flex items-center text-5xl font-bold tracking-wide pt-1 pb-3 pl-7 pr-7 rounded-lg shadow-md italic shadow-black active:scale-90 transition-transform' text='Launch'/>
+              <BsmButton onClick={launchBs} className='relative flex items-center text-5xl font-bold tracking-wide pt-1 pb-3 pl-7 pr-7 rounded-lg shadow-md italic shadow-black active:scale-90 transition-transform' text='Launch'/>
             </div>
           </div>
           <div className='shrink-0 w-full h-full flex justify-center'>
