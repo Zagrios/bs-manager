@@ -6,7 +6,7 @@ export function SettingRadioArray({items, selectedItem = items[0].id, onItemSele
   return (
     <div className="w-full">
         { items.map(i => (
-            <div onClick={() => onItemSelected(i.id)} key={i.id} className={`py-3 my-[6px] w-full flex justify-between items-center rounded-md px-2 transition-colors duration-200 ${i.id === selectedItem ? "bg-main-color-3" : "bg-main-color-1"}`}>
+            <div onClick={() => onItemSelected(i.id)} key={i.id} className={`py-3 my-[6px] w-full flex cursor-pointer justify-between items-center rounded-md px-2 transition-colors duration-200 ${i.id === selectedItem ? "bg-main-color-3" : "bg-main-color-1"}`}>
                 <div className="flex items-center">
                     <div className="h-5 rounded-full aspect-square border-2 border-white p-[3px] mr-2">
                         <motion.span initial={{scale: 0}} animate={{scale: i.id === selectedItem ? 1 : 0}} className="h-full w-full block bg-white rounded-full"/>
