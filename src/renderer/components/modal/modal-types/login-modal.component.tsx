@@ -16,8 +16,7 @@ export function LoginModal({resolver}: {resolver: (x: ModalResponse) => void}) {
     }
 
   return (
-    <form className="relative p-4  text-gray-200 overflow-hidden rounded-md shadow-lg shadow-black bg-gradient-to-br from-main-color-3 to-main-color-2" onSubmit={(e) => {e.preventDefault(); loggin();}}>
-        <span className="absolute bg-gradient-to-r from-blue-500 to-red-500 top-0 w-full left-0 h-1"></span>
+    <form onSubmit={(e) => {e.preventDefault(); loggin();}}>
         <h1 className="text-3xl uppercase tracking-wide w-full text-center">Steam Login</h1>
         <BsmImage className="mx-auto h-20" image={BeatImpatient} />
         <div className="mb-2">
