@@ -22,7 +22,7 @@ export class BSUninstallerService {
 
     public async uninstall(version :BSVersion){
         if(version.steam){ throw "Cannot uninstall steam version"; }
-        const versionFolder = path.join(this.bsInstallerService.getBSInstallationFolder(), version.BSVersion);
+        const versionFolder = path.join(this.bsInstallerService.installationFolder, version.BSVersion);
         if(!this.utilsService.folderExist(versionFolder)){ throw "Version folder not exist"; }
 
         return await this.utilsService.deleteFolder(versionFolder);

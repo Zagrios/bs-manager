@@ -52,6 +52,7 @@ export enum ModalType {
     STEAM_LOGIN = "STEAM_LOGIN",
     GUARD_CODE = "GUARD_CODE",
     UNINSTALL = "UNINSTALL",
+    INSTALLATION_FOLDER = "INSTALLATION_FOLDER",
 }
 
 export enum ModalExitCode {

@@ -5,26 +5,30 @@ import { SteamService } from "./steam.service";
 import { UtilsService } from "./utils.service";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import log from "electron-log";
+import { InstallationLocationService } from "./installation-location.service";
 
 export class BSInstallerService{
 
-  private static readonly INSTALLATION_FOLDER = path.join("BSManager", "BSInstances");
+  private static readonly INSTALLATION_FOLDER = "BSInstances";
 
   private static instance: BSInstallerService;
 
   private readonly utils: UtilsService;
   private readonly steamService: SteamService;
   private readonly bsVersionService: BSVersionManagerService;
+  private readonly installLocationService: InstallationLocationService;
 
   private downloadProcess: ChildProcessWithoutNullStreams;
-
-  private installationFolder: string;
 
   private constructor(){
     this.bsVersionService = BSVersionManagerService.getInstance();
     this.utils =  UtilsService.getInstance();
     this.steamService = SteamService.getInstance();
-    this.installationFolder = path.join(this.utils.getUserDocumentsFolder(), BSInstallerService.INSTALLATION_FOLDER);
+    this.installLocationService = InstallationLocationService.getInstance();
+  }
+
+  public get installationFolder(): string{
+    return path.join(this.installLocationService.installationDirectory, BSInstallerService.INSTALLATION_FOLDER);
   }
 
   public static getInstance(){
@@ -35,9 +39,6 @@ export class BSInstallerService{
   private getDepotDownloaderExePath(): string{
     return path.join(this.utils.getAssetsPath(), 'depot-downloader', 'DepotDownloader.exe');
   }
-
-  public getBSInstallationFolder(): string{ return this.installationFolder; }
-  public setBSInstallationFolder(path: string){ this.installationFolder = path; }
 
   public async getInstalledBsVersion(): Promise<BSVersion[]>{
     const versions: BSVersion[] = [];
@@ -50,9 +51,9 @@ export class BSInstallerService{
       }
     }
 
-    if(!this.utils.folderExist(this.getBSInstallationFolder())){ return versions }
+    if(!this.utils.folderExist(this.installationFolder)){ return versions }
 
-    const folderInInstallation = this.utils.listDirsInDir(this.getBSInstallationFolder());
+    const folderInInstallation = this.utils.listDirsInDir(this.installationFolder);
 
     folderInInstallation.forEach(f => {
       const version = this.bsVersionService.getVersionDetailFromVersionNumber(f);
@@ -72,7 +73,7 @@ export class BSInstallerService{
     const bsVersion = this.bsVersionService.getVersionDetailFromVersionNumber(downloadInfos.bsVersion.BSVersion);
     if(!bsVersion){ this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`); return; }
 
-    this.utils.createFolderIfNotExist(this.getBSInstallationFolder());
+    this.utils.createFolderIfNotExist(this.installationFolder);
     this.downloadProcess = spawn(
       this.getDepotDownloaderExePath(),
       [
@@ -83,7 +84,7 @@ export class BSInstallerService{
         `-dir ${bsVersion.BSVersion}`,
         (downloadInfos.stay || !downloadInfos.password) && "-remember-password"
       ],
-      {shell: true, cwd: this.getBSInstallationFolder()}
+      {shell: true, cwd: this.installationFolder}
     )
 
     this.downloadProcess.stdout.on('data', async (data) => {

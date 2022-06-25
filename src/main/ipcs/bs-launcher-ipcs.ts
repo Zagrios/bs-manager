@@ -23,7 +23,7 @@ ipcMain.on('bs-launch.launch', async (event, args: LauchOption) => { //Create a 
     cwd = await steamService.getGameFolder(BS_APP_ID, "Beat Saber");
   }
   else{
-    cwd = path.join(installerService.getBSInstallationFolder(), args.version.BSVersion);
+    cwd = path.join(installerService.installationFolder, args.version.BSVersion);
   }
   const exePath = path.join(cwd, BS_EXECUTABLE);
   if(!UtilsService.getInstance().pathExist(exePath)){ UtilsService.getInstance().ipcSend("bs-launch.launch", 2); return; }

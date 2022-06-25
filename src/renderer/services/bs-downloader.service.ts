@@ -1,7 +1,9 @@
 import { BehaviorSubject } from 'rxjs';
+import { IpcResponse } from 'shared/models/ipc-models.model';
 import { DownloadInfo } from '../../main/ipcs/bs-download-ipcs';
 import { BSVersion } from '../../main/services/bs-version-manager.service'
 import { BSVersionManagerService } from './bs-version-manager.service';
+import { IpcService } from './ipc.service';
 import { ModalExitCode, ModalService, ModalType } from './modale.service';
 
 export class BsDownloaderService{
@@ -9,12 +11,14 @@ export class BsDownloaderService{
     private static instance: BsDownloaderService;
 
     private readonly modalService: ModalService = ModalService.getInsance();
+    private readonly ipcService: IpcService;
     private readonly bsVersionManager: BSVersionManagerService = BSVersionManagerService.getInstance();
 
     public readonly currentBsVersionDownload$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
     public readonly downloadProgress$: BehaviorSubject<number> = new BehaviorSubject(0);
 
     public readonly selectedBsVersion$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
+
 
     public static getInstance(): BsDownloaderService{
         if(!BsDownloaderService.instance){ BsDownloaderService.instance = new BsDownloaderService(); }
@@ -23,6 +27,7 @@ export class BsDownloaderService{
 
     private constructor(){
         this.asignListerners();
+        this.ipcService = IpcService.getInstance();
     }
 
     private asignListerners(): void{
@@ -79,6 +84,15 @@ export class BsDownloaderService{
 
     public get isDownloading(): boolean{
         return !!this.currentBsVersionDownload$.value || !!this.downloadProgress$.value;
+    }
+
+    public async getInstallationFolder(): Promise<string>{
+        const res = await this.ipcService.send<string>("bs-download.installation-folder");
+        return res.success ? res.data : "";
+    }
+
+    public setInstallationFolder(path: string): Promise<IpcResponse<string>>{
+        return this.ipcService.send<string>("bs-download.set-installation-folder", {args: path});
     }
 
 }

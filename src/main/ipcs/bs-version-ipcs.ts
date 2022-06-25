@@ -25,7 +25,7 @@ ipcMain.on("bs-version.open-folder", async (event, args: BSVersion) => {
         console.log(versionFolder)
     }
     else{
-        versionFolder = path.join(bsInstallerService.getBSInstallationFolder(), args.BSVersion);
+        versionFolder = path.join(bsInstallerService.installationFolder, args.BSVersion);
     }
     if(UtilsService.getInstance().folderExist(versionFolder)){
         exec(`start "" "${versionFolder}"`);
