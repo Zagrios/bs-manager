@@ -57,7 +57,7 @@ export function VersionViewer() {
   }
 
   const dropDownActions = async (id: number) => {
-    if(id === 3){
+    if(id === 4){
       const modalCompleted = await modalService.openModal(ModalType.UNINSTALL, state)
       if(modalCompleted.exitCode === ModalExitCode.COMPLETED){
         bsUninstallerService.uninstall(state)
@@ -115,7 +115,8 @@ export function VersionViewer() {
       <BsmDropdownButton className='absolute top-5 right-5 h-9 w-9' onItemClick={dropDownActions} items={[
           {id: 1, text: "Add to favorites (wip)", icon:"favorite"},
           {id: 2, text: "Open folder", icon: "folder"},
-          {id: 3, text: "Uninstall", icon:"trash"}
+          {id: 3, text: "Verify files (WIP)", icon: "folder"},
+          {id: 4, text: "Uninstall", icon:"trash"}
         ]}/>
     </>
   )
