@@ -5,6 +5,7 @@ import { AvailableVersionsList } from "./pages/available-versions-list.component
 import { VersionViewer } from "./pages/version-viewer.component";
 import { Modal } from "./components/modal/modal.component";
 import { SettingsPage } from "./pages/settings-page.component";
+import { BsmProgressBar } from "./components/progress-bar/bsm-progress-bar.component";
 
 export default function App() {
 
@@ -20,6 +21,7 @@ export default function App() {
             <Route path={"/settings"} element={<SettingsPage/>}/>
             <Route path="*" element={<AvailableVersionsList/>}/>
           </Routes>
+          <BsmProgressBar/>
         </div>
       </div>
     </div>
