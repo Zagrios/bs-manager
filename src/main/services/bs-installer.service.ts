@@ -68,10 +68,10 @@ export class BSInstallerService{
     }
   }
 
-  public downloadBsVersion(downloadInfos: DownloadInfo){
-    if(this.downloadProcess?.connected){ this.utils.ipcSend(`bs-download.${DownloadEventType.ALREADY_DOAWNLOADING}`); return; }
+  public async downloadBsVersion(downloadInfos: DownloadInfo): Promise<DownloadEvent>{
+    if(this.downloadProcess?.connected){ return {type: "[AlreadyDownloading]"}; }
     const bsVersion = this.bsVersionService.getVersionDetailFromVersionNumber(downloadInfos.bsVersion.BSVersion);
-    if(!bsVersion){ this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`); return; }
+    if(!bsVersion){ return {type: "[Error]"}; }
 
     this.utils.createFolderIfNotExist(this.installationFolder);
     this.downloadProcess = spawn(
@@ -87,53 +87,56 @@ export class BSInstallerService{
       {shell: true, cwd: this.installationFolder}
     )
 
-    this.downloadProcess.stdout.on('data', async (data) => {
-      log.info("DL PROCESS OUT " ,data.toString());
-      const matched = (data.toString() as string).match(/(?:\[(.*?)\])\|(?:\[(.*?)\]\|)?(.*?)(?=$|\[)/gm);
-      if(!matched || !matched.length){ return; }
+    return await new Promise((resolve, reject) => {
 
-      matched.forEach(match => {
-        const out = match.split("|");
-
-        if(out[0] === DownloadEventType.NOT_LOGGED_IN && downloadInfos.password){
-          this.sendInputProcess(downloadInfos.password);
-        }
-        else if(out[0] === DownloadEventType.NOT_LOGGED_IN){
-          this.downloadProcess.kill();
-          this.utils.ipcSend(`bs-download.${DownloadEventType.NOT_LOGGED_IN}`, bsVersion);
-        }
-        else if(out[0] === DownloadEventType.GUARD_CODE){
-          this.utils.ipcSend(`bs-download.${DownloadEventType.GUARD_CODE}`);
-        }
-        else if(out[0] === DownloadEventType.TWO_FA_CODE){
-          this.utils.ipcSend(`bs-download.${DownloadEventType.GUARD_CODE}`);
-        }
-        else if(out[0] === DownloadEventType.PROGESS || (out[0] === DownloadEventType.VALIDATION && parseFloat(out[1]) < 100)){ 
-          this.utils.ipcSend(`bs-download.${DownloadEventType.PROGESS}`, parseFloat(out[1])); 
-        }
-        else if(out[0] === DownloadEventType.FINISH || (out[0] === DownloadEventType.VALIDATION && parseFloat(out[1]) == 100)){ 
-          this.utils.ipcSend(`bs-download.${DownloadEventType.FINISH}`); this.downloadProcess.kill(); 
-        }
-        else if(out[0] === DownloadEventType.ERROR){
-          this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`);
-          log.error("Download Event, Error", data.toString())
-        }
+      this.downloadProcess.stdout.on('data', data => {
+        const matched = (data.toString() as string).match(/(?:\[(.*?)\])\|(?:\[(.*?)\]\|)?(.*?)(?=$|\[)/gm) ?? [];
+  
+        matched.forEach(match => {
+          const out = match.split("|");
+  
+          if(out[0] === "[Password]" as DownloadEventType && downloadInfos.password){
+            this.sendInputProcess(downloadInfos.password);
+          }
+          else if(out[0] === "[Password]" as DownloadEventType){
+            this.downloadProcess.kill();
+            resolve({type: "[Password]", data: bsVersion});
+          }
+          else if(out[0] === "[2FA]" as DownloadEventType){
+            resolve({type: "[2FA]"});
+          }
+          else if(out[0] === "[2FA]" as DownloadEventType){
+            resolve({type: "[2FA]"});
+          }
+          else if(out[0] === "[Progress]" as DownloadEventType || (out[0] === "[Validated]" as DownloadEventType && parseFloat(out[1]) < 100)){ 
+            this.utils.newIpcSenc(`bs-download.${"[Progress]" as DownloadEventType}`, {success: true, data: parseFloat(out[1])}); 
+          }
+          else if(out[0] === "[Finished]" as DownloadEventType || (out[0] === "[Validated]" as DownloadEventType && parseFloat(out[1]) == 100)){
+            resolve({type: "[Finished]"});
+            this.downloadProcess.kill(); 
+          }
+          else if(out[0] === "[Error]" as DownloadEventType){
+            reject(out);
+            log.error("Download Event, Error", data.toString());
+          }
+        });
+        
+      })
+  
+      this.downloadProcess.stdout.on('error', (err) => {
+        log.error("BS-DOWNLOAD ERROR", err.toString());
+        reject(err);
       });
-      
-    })
+      this.downloadProcess.stderr.on('data', (err) => { 
+        log.error("BS-DOWNLOAD ERROR", err.toString());
+        reject(err);
+      });
+      this.downloadProcess.stderr.on('error', (err) => { 
+        log.error("BS-DOWNLOAD ERROR", err.toString());
+        reject(err);
+      });
 
-    this.downloadProcess.stdout.on('error', (err) => {
-      log.error("BS-DOWNLOAD ERROR", err.toString());
-      this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`); 
-    });
-    this.downloadProcess.stderr.on('data', (err) => { 
-      log.error("BS-DOWNLOAD ERROR", err.toString());
-      this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`); 
-    });
-    this.downloadProcess.stderr.on('error', (err) => { 
-      log.error("BS-DOWNLOAD ERROR", err.toString());
-      this.utils.ipcSend(`bs-download.${DownloadEventType.ERROR}`); 
-    });
+    })
   }
 
 }
@@ -153,13 +156,4 @@ export interface DownloadEvent{
   data?: any,
 }
 
-export enum DownloadEventType{
-  NOT_LOGGED_IN = "[Password]",
-  GUARD_CODE = "[Guard]",
-  TWO_FA_CODE = "[2FA]",
-  PROGESS = "[Progress]",
-  VALIDATION = "[Validated]",
-  FINISH = "[Finished]",
-  ALREADY_DOAWNLOADING = "[AlreadyDownloading]",
-  ERROR = "[Error]",
-}
+export type DownloadEventType = "[Password]" | "[Guard]" | "[2FA]" | "[Progress]" | "[Validated]" | "[Finished]" | "[AlreadyDownloading]" | "[Error]";

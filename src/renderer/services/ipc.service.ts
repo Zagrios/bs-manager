@@ -5,12 +5,16 @@ export class IpcService {
 
     private static instance: IpcService;
 
+    private readonly channelObservables: Map<string, Observable<IpcResponse<unknown>>>;
+
     public static getInstance(): IpcService{
         if(!IpcService.instance){ IpcService.instance = new IpcService(); }
         return IpcService.instance;
     }
 
-    private constructor(){}
+    private constructor(){
+        this.channelObservables = new Map<string, Observable<IpcResponse<unknown>>>();
+    }
 
     public send<T>(channel: string, request?: IpcRequest<any>): Promise<IpcResponse<T>>{
         if(!request){ request = {args: null, responceChannel: null}; }
@@ -29,12 +33,19 @@ export class IpcService {
         window.electron.ipcRenderer.sendMessage(channel, request);
     }
 
-    public watch<T>(channel: string): Observable<T>{
-        return new Observable<T>(observer => {
+    public watch<T>(channel: string): Observable<IpcResponse<T>>{
+
+        if(this.channelObservables.has(channel)){ return this.channelObservables.get(channel) as Observable<IpcResponse<T>>; }
+
+        const obs = new Observable<IpcResponse<T>>(observer => {
             window.electron.ipcRenderer.on(channel, res => {
                 observer.next(res);
             });
-        });
+        })
+
+        this.channelObservables.set(channel, obs);
+
+        return obs;
     }
 
 }

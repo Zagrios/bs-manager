@@ -1,7 +1,9 @@
-import { BehaviorSubject } from 'rxjs';
+import { DownloadEvent } from 'main/services/bs-installer.service';
+import { BehaviorSubject, distinctUntilChanged, Observable, Subscription } from 'rxjs';
 import { IpcResponse } from 'shared/models/ipc-models.model';
 import { DownloadInfo } from '../../main/ipcs/bs-download-ipcs';
 import { BSVersion } from '../../main/services/bs-version-manager.service'
+import { AuthUserService } from './auth-user.service';
 import { BSVersionManagerService } from './bs-version-manager.service';
 import { IpcService } from './ipc.service';
 import { ModalExitCode, ModalService, ModalType } from './modale.service';
@@ -10,15 +12,15 @@ export class BsDownloaderService{
 
     private static instance: BsDownloaderService;
 
-    private readonly modalService: ModalService = ModalService.getInsance();
+    private readonly modalService: ModalService;
     private readonly ipcService: IpcService;
-    private readonly bsVersionManager: BSVersionManagerService = BSVersionManagerService.getInstance();
+    private readonly bsVersionManager: BSVersionManagerService;
+    public readonly authService: AuthUserService;
 
     public readonly currentBsVersionDownload$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
     public readonly downloadProgress$: BehaviorSubject<number> = new BehaviorSubject(0);
 
     public readonly selectedBsVersion$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
-
 
     public static getInstance(): BsDownloaderService{
         if(!BsDownloaderService.instance){ BsDownloaderService.instance = new BsDownloaderService(); }
@@ -26,39 +28,17 @@ export class BsDownloaderService{
     }
 
     private constructor(){
-        this.asignListerners();
         this.ipcService = IpcService.getInstance();
+        this.modalService = ModalService.getInsance();
+        this.bsVersionManager = BSVersionManagerService.getInstance();
+        this.authService = AuthUserService.getInstance();
+        this.asignListerners();
     }
 
     private asignListerners(): void{
-        window.electron.ipcRenderer.on(`bs-download.[Password]`, async (bsVersion: BSVersion) => {
-            const res = await this.modalService.openModal(ModalType.STEAM_LOGIN);
-            if(res.exitCode !== ModalExitCode.COMPLETED){ return; }
-            if(res.data.stay){ localStorage.setItem("username", res.data.username); }
-            window.electron.ipcRenderer.sendMessage('bs-download.start', {bsVersion: bsVersion, username: res.data.username, password: res.data.password, stay: res.data.stay} as DownloadInfo)
-            this.currentBsVersionDownload$.next(bsVersion);
-        });
-
-        window.electron.ipcRenderer.on("bs-download.[Guard]", async () => {
-            const res = await this.modalService.openModal(ModalType.GUARD_CODE);
-            if(res.exitCode != ModalExitCode.COMPLETED){ return; }
-            window.electron.ipcRenderer.sendMessage("bs-download.[Guard]", res.data);
-        });
-
-        window.electron.ipcRenderer.on("bs-download.[Finished]", async () => {
-            this.downloadProgress$.next(0);
-            this.currentBsVersionDownload$.next(null);
-            this.selectedBsVersion$.next(null);
-            this.bsVersionManager.askInstalledVersions();
-        });
-
-        window.electron.ipcRenderer.on("bs-download.[Progress]", async (progress: number) => {
-            this.downloadProgress$.next(progress);
-        });
-
-        window.electron.ipcRenderer.on("bs-download.[Error]", async () => {
-            this.currentBsVersionDownload$.next(null);
-            this.downloadProgress$.next(0);
+        
+        this.ipcService.watch<number>("bs-download.[Progress]").pipe(distinctUntilChanged()).subscribe(response => {
+            this.downloadProgress$.next(response.data);
         });
 
         this.currentBsVersionDownload$.subscribe(version => {
@@ -67,23 +47,52 @@ export class BsDownloaderService{
         });
     }
 
-    public async download(bsVersion?: BSVersion): Promise<void>{
-        if(!bsVersion){ bsVersion = this.selectedBsVersion$.value; }
-        let username = localStorage.getItem("username");
-        if(!username){
+    private resetDownload(): void{
+        this.currentBsVersionDownload$.next(null);
+        this.downloadProgress$.next(0);
+        this.selectedBsVersion$.next(null);
+    }
+
+    public async send2FA(): Promise<IpcResponse<DownloadEvent>>{
+        const res = await this.modalService.openModal(ModalType.GUARD_CODE);
+        if(res.exitCode !== ModalExitCode.COMPLETED){ return {success: false}; }
+
+        return this.ipcService.send<DownloadEvent>('bs-download.2FA', {args: res.data});
+    }
+
+    public async download(bsVersion: BSVersion): Promise<IpcResponse<DownloadEvent>>{
+        let promise;
+        if(!this.authService.sessionExist()){
             const res = await this.modalService.openModal(ModalType.STEAM_LOGIN);
-            if(res.exitCode !== ModalExitCode.COMPLETED){ return; }
-            if(res.data.stay){ localStorage.setItem("username", res.data.username); }
-            window.electron.ipcRenderer.sendMessage('bs-download.start', {bsVersion: bsVersion, username: res.data.username, password: res.data.password, stay: res.data.stay} as DownloadInfo);
+            if(res.exitCode !== ModalExitCode.COMPLETED){ return {success: false}; }
+            this.authService.setSteamSession(res.data.username, res.data.stay);
+            promise = this.ipcService.send<DownloadEvent>('bs-download.start', {args: {bsVersion: bsVersion, username: res.data.username, password: res.data.password, stay: res.data.stay}});
         }
         else{
-            window.electron.ipcRenderer.sendMessage('bs-download.start', {bsVersion: bsVersion, username: username} as DownloadInfo);
+            promise = this.ipcService.send<DownloadEvent>('bs-download.start', {args: {bsVersion: bsVersion, username: this.authService.getSteamUsername()}});
         }
         this.currentBsVersionDownload$.next(bsVersion);
+
+        return promise.then(res => {
+            if(res.success){
+                if(res.data.type === "[Password]"){
+                    this.authService.deleteSteamSession();
+                    return this.download(bsVersion);
+                }
+                else if(res.data.type === "[2FA]"){
+                    return this.send2FA().then(res => {
+                        this.resetDownload();
+                        return res;
+                    });
+                }
+            }
+            this.resetDownload();
+            return res;
+        });
     }
 
     public get isDownloading(): boolean{
-        return !!this.currentBsVersionDownload$.value || !!this.downloadProgress$.value;
+        return !!this.currentBsVersionDownload$.value;
     }
 
     public async getInstallationFolder(): Promise<string>{
