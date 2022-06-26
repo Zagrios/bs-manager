@@ -11,10 +11,10 @@ import { BsmIcon, BsmIconType } from 'renderer/components/svgs/bsm-icon.componen
 import { BsmImage } from 'renderer/components/shared/bsm-image.component';
 import defaultImageVersion from "../../../assets/default-version-img.jpg"
 import { BsmButton } from 'renderer/components/shared/bsm-button.component';
-import BeatRunning from "../../../assets/beat-running.png"
 import { BSUninstallerService } from '../services/bs-uninstaller.service';
 import { BSVersionManagerService } from '../services/bs-version-manager.service';
 import { ModalExitCode, ModalService, ModalType } from '../services/modale.service';
+import DefautVersionImage from "../../../assets/default-version-img.jpg";
 
 export function VersionViewer() {
 
@@ -82,7 +82,7 @@ export function VersionViewer() {
 
   return (
     <>
-      <BsmImage className="absolute w-full h-full top-0 left-0 blur-lg object-cover brightness-100" image={state.ReleaseImg} errorImage={defaultImageVersion}/>
+      <BsmImage className="absolute w-full h-full top-0 left-0 blur-lg object-cover brightness-100" image={state.ReleaseImg || DefautVersionImage} errorImage={defaultImageVersion}/>
       <div className="relative flex items-center flex-col w-full h-full text-gray-200">
         <BsmImage className='relative object-cover h-28' image={BSLogo}/>
         <h1 className='relative text-4xl font-bold italic -top-3'>{state.BSVersion}</h1>
