@@ -17,24 +17,27 @@ export class ConfigurationService {
         }
     }
 
+    private getPropperStorage(persistant : boolean){ return persistant ? window.localStorage : window.sessionStorage; }
+
     public static getInstance(): ConfigurationService{
         if(!ConfigurationService.instance){ ConfigurationService.instance = new ConfigurationService(); }
         return ConfigurationService.instance;
     }
 
     public get<Type>(key: string | DefaultConfigKey): Type{
-        const t = JSON.parse(window.localStorage.getItem(key));
+        const t = JSON.parse(window.sessionStorage.getItem(key) || window.localStorage.getItem(key));
         if(!t){ return defaultConfiguration[key as DefaultConfigKey]; }
         return t;
     }
 
-    public set(key: string, value: any){
-        window.localStorage.setItem(key, JSON.stringify(value));
+    public set(key: string, value: any, persistant = true){
+        this.getPropperStorage(persistant).setItem(key, JSON.stringify(value));
         this.emitChange(key);
     }
 
     public delete(key: string){
-        window.localStorage.setItem(key, null);
+        window.localStorage.removeItem(key);
+        window.sessionStorage.removeItem(key);
         this.emitChange(key);
     }
 
