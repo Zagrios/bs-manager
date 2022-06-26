@@ -3,8 +3,10 @@ import { BsDownloaderService } from "../services/bs-downloader.service";
 import { Slideshow } from "renderer/components/slideshow/slideshow.component";
 import { useEffect, useState } from "react";
 import { BSVersion } from "main/services/bs-version-manager.service";
-import beatWaitingImg from "../../../assets/beat-waiting.png";
-import beatRunningImg from "../../../assets/beat-running.png"
+import { ProgressBarService } from "renderer/services/progress-bar.service";
+import { BsmButton } from "renderer/components/shared/bsm-button.component";
+import { AnimatePresence, motion } from "framer-motion";
+import { distinctUntilChanged } from "rxjs";
 
 export function AvailableVersionsList() {
 
@@ -18,13 +20,17 @@ export function AvailableVersionsList() {
     require('../../../assets/slideshow-images/image-7-blur.png'),
   ];
   const bsDownloaderService: BsDownloaderService = BsDownloaderService.getInstance();
+  const progressBarService: ProgressBarService = ProgressBarService.getInstance();
 
   const [versionSelected, setVersionSelected] = useState(null as BSVersion);
-  const [currentDownload, setCurrentDownload] = useState(null as BSVersion);
-  const [downloadProgress, setDownloadProgress] = useState(0);
+  const [progressBarVisible, setProgressBarVisible] = useState(false);
 
-  const startInstall = () => {
-    bsDownloaderService.download();
+  const startDownload = () => {
+    if(progressBarService.visible$.value){ return; }
+    progressBarService.show(bsDownloaderService.downloadProgress$);
+    bsDownloaderService.download(versionSelected).then(() => {
+      progressBarService.hide(true);
+    });
   }
 
   useEffect(() => {
@@ -32,18 +38,12 @@ export function AvailableVersionsList() {
       setVersionSelected(version);
     });
 
-    const currentDownloadSub = bsDownloaderService.currentBsVersionDownload$.subscribe(version => {
-      setCurrentDownload(version);
-    });
-
-    const downloadProgressSub = bsDownloaderService.downloadProgress$.subscribe(progress => {
-      setDownloadProgress(progress);
+    const progressBarVisibleSub = progressBarService.visible$.pipe(distinctUntilChanged()).subscribe(visible => {
+      setProgressBarVisible(visible);
     })
 
     return () => {
       versionSelectedSub.unsubscribe();
-      currentDownloadSub.unsubscribe();
-      downloadProgressSub.unsubscribe();
     }
   }, [])
 
@@ -53,27 +53,14 @@ export function AvailableVersionsList() {
       <Slideshow className="absolute w-full h-full top-0" images={slideshowImages}></Slideshow>
       <h1 className="text-gray-100 text-2xl mb-4 z-[1]">Select a Version</h1>
       <AvailableVersionsSlider/>
-      <div onClick={startInstall} className={
-        `
-          flex items-center content-center justify-center absolute bottom-9 z-10 rounded-lg bg-main-color-3 shadow-center shadow-black cursor-pointer transition-all duration-300
-          ${versionSelected && !currentDownload && "h-16 w-36"}
-          ${!versionSelected && !currentDownload && "translate-y-[120px]"}
-          ${currentDownload && !downloadProgress && "h-16 w-16 rounded-full"}
-          ${currentDownload && !!downloadProgress && "h-5 w-3/4 rounded-full p-[6px]"}
-        `
-        }>
-        {currentDownload && !!downloadProgress && (
-          <>
-            <div className="relative h-full w-full rounded-full overflow-hidden bg-main-color-1">
-              <div className="w-full h-full rounded-full download-progress -translate-x-full transition-transform" style={{transform: `translate(-${100 - downloadProgress}%, 0)`}}></div>
-              <span className="absolute w-full text-center text-white -top-[3px] left-0 text-[10px]">{`${downloadProgress}%`}</span>
-            </div>
-            <img className="h-[70px] absolute -translate-x-8 -translate-y-1 transition-all" style={{left: `${downloadProgress}%`}} src={beatRunningImg} />
-          </>
+
+      <AnimatePresence>
+        { versionSelected && !progressBarService.visible$.value && (
+          <motion.div initial={{y:"150%"}} animate={{y:"0%"}} exit={{y:"150%"}} className="absolute bottom-5" onClick={startDownload}>
+            <BsmButton text={`Download`} className="relative rounded-md text-3xl font-bold italic tracking-wide px-3 pb-2 pt-1 shadow-md shadow-black"/>
+          </motion.div>
         )}
-        {!currentDownload && <span className="flex justify-center items-center w-36 h-16 text-white font-bold tracking-wide text-xl text-center leading-6">DOWNLOAD {versionSelected?.BSVersion}</span>}
-        {currentDownload && !downloadProgress && <img className="w-14 h-14 spin-loading" src={beatWaitingImg}></img>}
-      </div>
+      </AnimatePresence>
     </div>
   )
 }
