@@ -6,8 +6,9 @@ import { BsNoteFill } from "./bs-note-fill.component";
 import { TerminalIcon } from "./terminal-icon.component";
 import { DesktopIcon } from "./desktop-icon.component";
 import { OculusIcon } from "./oculus-icon.component";
+import { AddIcon } from "./add-icon.component";
 
-export type BsmIconType = "settings"|"trash"|"favorite"|"folder"|"bsNote"|"terminal"|"desktop"|"oculus";
+export type BsmIconType = "settings"|"trash"|"favorite"|"folder"|"bsNote"|"terminal"|"desktop"|"oculus"|"add";
 
 export function BsmIcon({className, icon}: {className?: string, icon: BsmIconType}) {
 
@@ -20,6 +21,7 @@ export function BsmIcon({className, icon}: {className?: string, icon: BsmIconTyp
         if(icon === "terminal"){ return <TerminalIcon className={className}/> }
         if(icon === "desktop"){ return <DesktopIcon className={className}/> }
         if(icon === "oculus"){ return <OculusIcon className={className}/> }
+        if(icon === "add"){ return <AddIcon className={className}/> }
     }
 
   return (
