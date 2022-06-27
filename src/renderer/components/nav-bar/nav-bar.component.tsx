@@ -1,31 +1,20 @@
-import { FaPlus, } from 'react-icons/fa';
-import { AiFillSetting } from 'react-icons/ai'
 import './nav-bar.component.css'
 import BsVersionItem from './bs-version-item.component';
-import { BSVersion } from '../../../main/services/bs-version-manager.service';
-import { useEffect, useState } from 'react';
 import { BSVersionManagerService } from '../../services/bs-version-manager.service';
 import { Link } from 'react-router-dom';
 import { ConfigurationService } from 'renderer/services/configuration.service';
+import { BsmIcon } from '../svgs/bsm-icon.component';
+import { useObservable } from 'renderer/hooks/use-observable.hook';
 
 export function NavBar() {
 
   const configService = ConfigurationService.getInstance();
+  const bsVersionServoce =  BSVersionManagerService.getInstance();
 
-  const [installedVersions, setInstalledVersions] = useState([] as BSVersion[]);
+  const installedVersions = useObservable(bsVersionServoce.installedVersions$);
 
-  const [firstColor, setFirstColor] = useState(configService.get("first-color") || "#3b82ff");
-  const [secondColor, setSecondColor] = useState(configService.get("second-color") || "#ff4444");
-
-  useEffect(() => {
-    BSVersionManagerService.getInstance().installedVersions$.subscribe(versions => {
-      setInstalledVersions([]);
-      setInstalledVersions(versions);
-    });
-
-    configService.watch("first-color").subscribe(hex => setFirstColor(hex));
-    configService.watch("second-color").subscribe(hex => setSecondColor(hex));
-  }, [])
+  const firstColor = useObservable(configService.watch<string>("first-color"));
+  const secondColor = useObservable(configService.watch<string>("second-color"));
 
   return (
     <div id='nav-bar' className='z-10 flex flex-col h-full max-h-full items-center p-1 bg-gray-200 dark:bg-main-color-1'>
@@ -36,14 +25,14 @@ export function NavBar() {
         </div>
       </div>
       <div id='versions' className='w-fit relative left-[2px] grow overflow-y-hidden scrollbar-track-transparent scrollbar-thin scrollbar-thumb-neutral-900 hover:overflow-y-scroll'>
-      {installedVersions.map((version) => <BsVersionItem key={JSON.stringify(version)} version={version}/>)}
+      {installedVersions && installedVersions.map((version) => <BsVersionItem key={JSON.stringify(version)} version={version}/>)}
       </div>
       <div className='w-full p-2 flex flex-col items-center content-center justify-start'>
         <Link className='mb-2' to={"blah"}>
-          <FaPlus className='text-2xl text-blue-500 drop-shadow-lg'/>
+          <BsmIcon icon='add' className='text-blue-500 h-[34px]'/>
         </Link>
         <Link to={"settings"}>
-          <AiFillSetting className='text-2xl text-blue-500 drop-shadow-lg'/>
+          <BsmIcon icon='settings' className='text-blue-500 h-7'/>
         </Link>
       </div>
     </div>

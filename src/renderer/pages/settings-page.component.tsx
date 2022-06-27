@@ -4,10 +4,12 @@ import { SettingContainer } from "renderer/components/settings/setting-container
 import { RadioItem, SettingRadioArray } from "renderer/components/settings/setting-radio-array.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { DefaultConfigKey } from "renderer/config/default-configuration.config";
+import { useObservable } from "renderer/hooks/use-observable.hook";
 import { BsDownloaderService } from "renderer/services/bs-downloader.service";
 import { ConfigurationService } from "renderer/services/configuration.service"
 import { IpcService } from "renderer/services/ipc.service";
 import { ModalExitCode, ModalService, ModalType } from "renderer/services/modale.service";
+import { ProgressBarService } from "renderer/services/progress-bar.service";
 
 export function SettingsPage() {
 
@@ -15,25 +17,15 @@ export function SettingsPage() {
   const ipcService = IpcService.getInstance();
   const modalService = ModalService.getInsance();
   const downloaderService = BsDownloaderService.getInstance();
+  const progressBarService = ProgressBarService.getInstance();
 
-  const [firstColor, setFirstColor] = useState("#fff");
-  const [secondColor, setSecondColor] = useState("#fff");
+  const firstColor = useObservable(configService.watch<string>("first-color"));
+  const secondColor = useObservable(configService.watch<string>("second-color"));
   const[themeIdSelected, setThemeIdSelected]= useState(0);
   const [installationFolder, setInstallationFolder] = useState(null);
 
   useEffect(() => {
-    const [fColorObs, sColorObs] = [configService.watch("first-color"), configService.watch("second-color")];
-    const fColorSub = fColorObs.subscribe(color => setFirstColor(color));
-    const sColorSub = sColorObs.subscribe(color => setSecondColor(color));
-
     loadInstallationFolder();
-  
-    return () => {
-      configService.stopWatch("first-color" as DefaultConfigKey, fColorObs);
-      configService.stopWatch("second-color" as DefaultConfigKey, sColorObs);
-
-      [fColorSub, sColorSub].forEach(s => s.unsubscribe());
-    }
   }, []);
 
   const themeItem: RadioItem[] = [
@@ -91,7 +83,7 @@ export function SettingsPage() {
           </SettingContainer>
         </SettingContainer>
 
-        <SettingContainer title="Installation Folder" description="Change the default installation directory for Beat Saber instances.">
+        <SettingContainer title="Installation Folder" description="Change the default installation directory for Beat Saber instances, and other upcoming features.">
         <div className="relative flex items-center justify-between w-full h-8 bg-main-color-1 rounded-md pl-2 py-1">
           <span className="block text-ellipsis overflow-hidden min-w-0" title={installationFolder}>{installationFolder}</span>
           <BsmButton onClick={setDefaultInstallationFolder} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md hover:bg-main-color-3" text="Choose Folder" withBar={false}/>
@@ -99,12 +91,6 @@ export function SettingsPage() {
         </SettingContainer>
 
       </div>
-
-      
-
-
-      {/* <HexColorPicker onChange={setFirstColorSetting}/>
-      <HexColorPicker onChange={setSecondColorSetting}/> */}
     </div>
   )
 }
