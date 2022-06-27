@@ -6,6 +6,7 @@ import { UtilsService } from "./utils.service";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import log from "electron-log";
 import { InstallationLocationService } from "./installation-location.service";
+import { of } from "rxjs";
 
 export class BSInstallerService{
 
@@ -102,7 +103,7 @@ export class BSInstallerService{
             this.downloadProcess.kill();
             resolve({type: "[Password]", data: bsVersion});
           }
-          else if(out[0] === "[2FA]" as DownloadEventType){
+          else if(out[0] === "[Guard]" as DownloadEventType){
             resolve({type: "[2FA]"});
           }
           else if(out[0] === "[2FA]" as DownloadEventType){
@@ -115,8 +116,15 @@ export class BSInstallerService{
             resolve({type: "[Finished]"});
             this.downloadProcess.kill(); 
           }
+          else if(out[0] === "[SteamID]" as DownloadEventType){
+            this.utils.newIpcSenc("bs-download.[SteamID]", {success: true, data: out[1]});
+          }
+          else if(out[0] === "[Warning]" as DownloadEventType){
+            this.utils.newIpcSenc("bs-download.[Warning]", {success: true, data: out[1]});
+          }
           else if(out[0] === "[Error]" as DownloadEventType){
             reject(out);
+            this.downloadProcess.kill();
             log.error("Download Event, Error", data.toString());
           }
         });
@@ -125,14 +133,17 @@ export class BSInstallerService{
   
       this.downloadProcess.stdout.on('error', (err) => {
         log.error("BS-DOWNLOAD ERROR", err.toString());
+        this.downloadProcess.kill();
         reject(err);
       });
       this.downloadProcess.stderr.on('data', (err) => { 
         log.error("BS-DOWNLOAD ERROR", err.toString());
+        this.downloadProcess.kill();
         reject(err);
       });
       this.downloadProcess.stderr.on('error', (err) => { 
         log.error("BS-DOWNLOAD ERROR", err.toString());
+        this.downloadProcess.kill();
         reject(err);
       });
 
@@ -156,4 +167,4 @@ export interface DownloadEvent{
   data?: any,
 }
 
-export type DownloadEventType = "[Password]" | "[Guard]" | "[2FA]" | "[Progress]" | "[Validated]" | "[Finished]" | "[AlreadyDownloading]" | "[Error]";
+export type DownloadEventType = "[Password]" | "[Guard]" | "[2FA]" | "[Progress]" | "[Validated]" | "[Finished]" | "[AlreadyDownloading]" | "[Error]" | "[Warning]" | "[SteamID]";

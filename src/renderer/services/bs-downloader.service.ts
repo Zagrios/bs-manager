@@ -5,6 +5,7 @@ import { DownloadInfo } from '../../main/ipcs/bs-download-ipcs';
 import { BSVersion } from '../../main/services/bs-version-manager.service'
 import { AuthUserService } from './auth-user.service';
 import { BSVersionManagerService } from './bs-version-manager.service';
+import { ConfigurationService } from './configuration.service';
 import { IpcService } from './ipc.service';
 import { ModalExitCode, ModalService, ModalType } from './modale.service';
 
@@ -15,10 +16,11 @@ export class BsDownloaderService{
     private readonly modalService: ModalService;
     private readonly ipcService: IpcService;
     private readonly bsVersionManager: BSVersionManagerService;
-    public readonly authService: AuthUserService;
+    private readonly authService: AuthUserService;
 
     public readonly currentBsVersionDownload$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
     public readonly downloadProgress$: BehaviorSubject<number> = new BehaviorSubject(0);
+    public readonly downloadWarning$: BehaviorSubject<string> = new BehaviorSubject(null);
 
     public readonly selectedBsVersion$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
 
@@ -37,9 +39,11 @@ export class BsDownloaderService{
 
     private asignListerners(): void{
         
-        this.ipcService.watch<number>("bs-download.[Progress]").pipe(distinctUntilChanged()).subscribe(response => {
-            this.downloadProgress$.next(response.data);
-        });
+        this.ipcService.watch<number>("bs-download.[Progress]").pipe(distinctUntilChanged()).subscribe(response => this.downloadProgress$.next(response.data));
+
+        this.ipcService.watch<string>("bs-download.[SteamID]").subscribe(response =>  response.success && this.authService.setSteamID(response.data));
+
+        this.ipcService.watch<string>("bs-download.[Warning]").subscribe(response => response.success && this.downloadWarning$.next(response.data));
 
         this.currentBsVersionDownload$.subscribe(version => {
             if(version){ this.bsVersionManager.setInstalledVersions([...this.bsVersionManager.installedVersions$.value, version]); }
@@ -73,18 +77,14 @@ export class BsDownloaderService{
         }
         this.currentBsVersionDownload$.next(bsVersion);
 
-        return promise.then(res => {
-            if(res.success){
-                if(res.data.type === "[Password]"){
-                    this.authService.deleteSteamSession();
-                    return this.download(bsVersion);
-                }
-                else if(res.data.type === "[2FA]"){
-                    return this.send2FA().then(res => {
-                        this.resetDownload();
-                        return res;
-                    });
-                }
+        return promise.then(async res => {
+            if(!res.success){ return res; }
+            if(res.data.type === "[Password]"){
+                this.authService.deleteSteamSession();
+                res = await this.download(bsVersion);
+            }
+            else if(res.data.type === "[2FA]"){
+                res = await this.send2FA();
             }
             this.resetDownload();
             return res;
