@@ -9,7 +9,7 @@ export function BsmButton({className, style, imgClassName, icon, image, text, ty
       <div onClick={e => onClick && onClick(e)} className={`${className} overflow-hidden cursor-pointer bg-main-color-2 text-white group`} style={style}>
         { image && <BsmImage image={image} className={imgClassName}/> }
         { icon && <BsmIcon icon={icon} className="h-full w-full"/> }
-        {text && (type === "submit" ? <button>{text}</button> : <span>{text}</span>)}
+        {text && (type === "submit" ? <button className="w-full h-full">{text}</button> : <span>{text}</span>)}
         { withBar && (
           <div className="absolute bottom-0 left-0 w-full h-1 bg-red-500">
             <div className="absolute top-0 left-0 h-full w-full bg-inherit brightness-50"/>
