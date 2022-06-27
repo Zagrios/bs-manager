@@ -41,8 +41,8 @@ export class ConfigurationService {
         this.emitChange(key);
     }
 
-    public watch(key: DefaultConfigKey | string): BehaviorSubject<any>{
-        const newSub = new BehaviorSubject(this.get(key));
+    public watch<T>(key: DefaultConfigKey | string): BehaviorSubject<T>{
+        const newSub = new BehaviorSubject<T>(this.get(key));
         if(!this.subscribers.has(key)){ this.subscribers.set(key, []); }
         this.subscribers.get(key).push(newSub);
         return newSub;
