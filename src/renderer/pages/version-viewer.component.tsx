@@ -126,7 +126,7 @@ function ToogleLunchMod(props: {onClick: Function, active: boolean, text: string
   return (
     <div className={`relative rounded-full cursor-pointer group active:scale-95 transition-transform ${!props.active && "shadow-md shadow-black"}`} onClick={() => props.onClick()}>
       <div className={`absolute glow-on-hover rounded-full ${props.active && "opacity-100 blur-[2px]"}`}></div>
-      <div className='w-full h-full pl-6 pr-6 flex justify-center items-center bg-light-main-color-2 dark:bg-main-color-2 p-3 rounded-full text-gray-800 dark:text-white group-hover:bg-light-main-color-1 group-hover:dark:bg-main-color-1'>
+      <div className='w-full h-full pl-6 pr-6 flex justify-center items-center bg-light-main-color-2 dark:bg-main-color-2 p-3 rounded-full text-gray-800 dark:text-white group-hover:bg-light-main-color-1 dark:group-hover:bg-main-color-1'>
         <BsmIcon icon={props.icon} className='mr-1 h-7 text-gray-800 dark:text-white'/>
         <span className='w-fit min-w-fit h-full text-lg font-bold uppercase tracking-wide italic'>{props.text}</span>
       </div>

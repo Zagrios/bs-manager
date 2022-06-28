@@ -57,7 +57,7 @@ export function AvailableVersionsList() {
       <AnimatePresence>
         { versionSelected && !progressBarService.visible$.value && (
           <motion.div initial={{y:"150%"}} animate={{y:"0%"}} exit={{y:"150%"}} className="absolute bottom-5" onClick={startDownload}>
-            <BsmButton text={`Download`} className="relative rounded-md text-3xl font-bold italic tracking-wide px-3 pb-2 pt-1 shadow-md shadow-black"/>
+            <BsmButton text={`Download`} className="relative bg-light-main-color-2 text-gray-800 dark:text-gray-100 dark:bg-main-color-2 rounded-md text-3xl font-bold italic tracking-wide px-3 pb-2 pt-1 shadow-md shadow-black"/>
           </motion.div>
         )}
       </AnimatePresence>
