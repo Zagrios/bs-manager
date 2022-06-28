@@ -1,4 +1,4 @@
-import { BehaviorSubject, distinctUntilChanged, filter, Observable, Subscription } from "rxjs";
+import { BehaviorSubject, distinctUntilChanged, filter, map, Observable, Subscription, timer } from "rxjs";
 
 export class ProgressBarService{
 
@@ -27,16 +27,31 @@ export class ProgressBarService{
     }
 
     public unsubscribe(){
-        this.subscription.unsubscribe();
+        this.subscription && this.subscription.unsubscribe();
         this.subscription = null;
     }
 
-    public show(obs?: Observable<number>){
+    public show(obs?: Observable<number>, unsubscribe? : boolean){
+        if(unsubscribe){ this.unsubscribe(); }
         if(obs){ this.subscribreTo(obs); }
         this.visible$.next(true); 
     }
+
+    public showFake(speed: number): void{
+        const obs = timer(1000, 100).pipe(map(val => {
+            const currentProgress = speed * (val + 1);
+            return Math.round(Math.atan(currentProgress) / (Math.PI / 2) * 100 * 1000) / 1000;
+        }));
+        this.show(obs, true);
+    }
+
+    public complete(): void{
+        this.unsubscribe();
+        this.progression$.next(100);
+    }
+
     public hide(unsubscribe: boolean){
-        if(unsubscribe){ this.unsubscribe(); } 
+        if(unsubscribe){ this.unsubscribe(); this.progression$.next(0); } 
         this.visible$.next(false); 
     }
 
