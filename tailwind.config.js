@@ -3,6 +3,7 @@
 const colors = require('tailwindcss/colors');
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: ['./src/renderer/**/*.tsx'],
   mode: 'jit',
   plugins: [require('tailwind-scrollbar-hide'), require('tailwind-scrollbar')],
@@ -17,6 +18,11 @@ module.exports = {
         2: '#2C2F33',
         3: '#40444b',
       },
+      'light-main-color':{
+        1: "#E3E5E8",
+        2: "#F2F3F5",
+        3: "#FFFFFF",
+      }
     },
     extend:{
       keyframes:{

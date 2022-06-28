@@ -4,8 +4,8 @@ export function SettingContainer({className, title, minorTitle, description, chi
   return (
     <div className={className || "relative mb-5"}>
         { title && <h1 className="font-bold text-2xl mb-1 tracking-wide">{title}</h1> }
-        { minorTitle && <h2 className="font-bold mb-1 tracking-wide text-gray-400">{minorTitle}</h2> }
-        { description && <p className="mb-3 text-sm text-gray-400">{description}</p> }
+        { minorTitle && <h2 className="font-bold mb-1 tracking-wide text-gray-600 dark:text-gray-400">{minorTitle}</h2> }
+        { description && <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">{description}</p> }
         { children }
     </div>
   )

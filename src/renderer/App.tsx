@@ -6,16 +6,29 @@ import { VersionViewer } from "./pages/version-viewer.component";
 import { Modal } from "./components/modal/modal.component";
 import { SettingsPage } from "./pages/settings-page.component";
 import { BsmProgressBar } from "./components/progress-bar/bsm-progress-bar.component";
+import { useEffect } from "react";
+import { ThemeService } from "./services/theme.service";
+import { ThemeConfig } from "./config/default-configuration.config";
 
 export default function App() {
 
+  const themeService = ThemeService.getInstance();
+
+  useEffect(() => {
+    themeService.theme$.subscribe(() => {
+      if(themeService.isDark || (themeService.isOS && window.matchMedia('(prefers-color-scheme: dark)').matches)){ document.documentElement.classList.add('dark'); }
+      else { document.documentElement.classList.remove('dark'); }
+    });
+  }, [])
+  
+
   return (
-    <div className="relative w-screen h-screen overflow-hidden flex dark:bg-main-color-1 z-0 max-w-full">
+    <div className="relative w-screen h-screen overflow-hidden flex bg-light-main-color-1 dark:bg-main-color-1 z-0 max-w-full">
       <Modal/>
       <NavBar/>
       <div className="relative flex flex-col grow max-w-full min-w-0">
         <TitleBar/>
-        <div className="bg-main-color-2 relative rounded-tl-lg grow overflow-hidden max-w-full">
+        <div className="bg-light-main-color-2 dark:bg-main-color-2 relative rounded-tl-lg grow overflow-hidden max-w-full">
           <Routes>
             <Route path={"/bs-version/:versionNumber"} element={<VersionViewer/>}/>
             <Route path={"/settings"} element={<SettingsPage/>}/>

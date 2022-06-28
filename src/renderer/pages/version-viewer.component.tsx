@@ -82,8 +82,8 @@ export function VersionViewer() {
 
   return (
     <>
-      <BsmImage className="absolute w-full h-full top-0 left-0 blur-lg object-cover brightness-100" image={state.ReleaseImg || DefautVersionImage} errorImage={defaultImageVersion}/>
-      <div className="relative flex items-center flex-col w-full h-full text-gray-200">
+      <BsmImage className="absolute w-full h-full top-0 left-0 object-cover" image={state.ReleaseImg || DefautVersionImage} errorImage={defaultImageVersion}/>
+      <div className="relative flex items-center flex-col w-full h-full text-gray-200 backdrop-blur-lg">
         <BsmImage className='relative object-cover h-28' image={BSLogo}/>
         <h1 className='relative text-4xl font-bold italic -top-3'>{state.BSVersion}</h1>
         <TabNavBar className='mt-3' tabsText={["Launch", "Maps", "Mods"]} onTabChange={(i : number) => setCurrentTabIndex(i)}/>
@@ -95,19 +95,19 @@ export function VersionViewer() {
               <ToogleLunchMod icon='terminal' onClick={() => setMode(LaunchMods.DEBUG_MOD, !debugMode)} active={debugMode} text="DEBUG MOD"/>
             </div>
             <div className='grow flex justify-center items-center'>
-              <BsmButton onClick={launchBs} className='relative flex items-center text-5xl font-bold tracking-wide pt-1 pb-3 pl-7 pr-7 rounded-lg shadow-md italic shadow-black active:scale-90 transition-transform' text='Launch'/>
+              <BsmButton onClick={launchBs} className='relative text-5xl text-gray-800 dark:text-gray-200 bg-light-main-color-2 dark:bg-main-color-2 font-bold tracking-wide pt-1 pb-3 px-7 rounded-lg shadow-md italic shadow-black active:scale-90 transition-transform' text='Launch'/>
             </div>
           </div>
           <div className='shrink-0 w-full h-full flex justify-center'>
-            <div className='p-4 bg-main-color-2 h-fit rounded-md'>
+            <div className='p-4 bg-light-main-color-2 dark:bg-main-color-2 h-fit rounded-md'>
               <img src={wipGif} alt="" />
-              <span className='block w-full text-center font-bold mt-2'>Work In Progress</span>
+              <span className='block w-full text-center font-bold mt-2 text-gray-800 dark:text-white'>Work In Progress</span>
             </div>
           </div>
           <div className='shrink-0 w-full h-full flex justify-center'>
-            <div className='p-4 bg-main-color-2 h-fit rounded-md'>
+            <div className='p-4 bg-light-main-color-2 dark:bg-main-color-2 h-fit rounded-md'>
               <img src={wipGif} alt="" />
-              <span className='block w-full text-center font-bold mt-2'>Work In Progress</span>
+              <span className='block w-full text-center font-bold mt-2 text-gray-800 dark:text-white'>Work In Progress</span>
             </div>
           </div>
         </div>
@@ -126,8 +126,8 @@ function ToogleLunchMod(props: {onClick: Function, active: boolean, text: string
   return (
     <div className={`relative rounded-full cursor-pointer group active:scale-95 transition-transform ${!props.active && "shadow-md shadow-black"}`} onClick={() => props.onClick()}>
       <div className={`absolute glow-on-hover rounded-full ${props.active && "opacity-100 blur-[2px]"}`}></div>
-      <div className='w-full h-full pl-6 pr-6 flex justify-center items-center bg-main-color-2 p-3 rounded-full text-white group-hover:bg-main-color-1'>
-        <BsmIcon icon={props.icon} className='mr-1 h-7'/>
+      <div className='w-full h-full pl-6 pr-6 flex justify-center items-center bg-light-main-color-2 dark:bg-main-color-2 p-3 rounded-full text-gray-800 dark:text-white group-hover:bg-light-main-color-1 group-hover:dark:bg-main-color-1'>
+        <BsmIcon icon={props.icon} className='mr-1 h-7 text-gray-800 dark:text-white'/>
         <span className='w-fit min-w-fit h-full text-lg font-bold uppercase tracking-wide italic'>{props.text}</span>
       </div>
     </div>

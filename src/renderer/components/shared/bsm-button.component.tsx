@@ -6,9 +6,9 @@ import { BsmImage } from "./bsm-image.component";
 export function BsmButton({className, style, imgClassName, icon, image, text, type, active, withBar = true, onClickOutside, onClick}: {className?: string, style?: React.CSSProperties, imgClassName?: string, icon?: BsmIconType, image?: string, text?: string, type?: string, active?: boolean, withBar?: boolean, onClickOutside?: (e: MouseEvent) => void, onClick?: (e: React.MouseEvent) => void}) {
   return (
     <OutsideClickHandler onOutsideClick={e => onClickOutside && onClickOutside(e)}>
-      <div onClick={e => onClick && onClick(e)} className={`${className} overflow-hidden cursor-pointer bg-main-color-2 text-white group`} style={style}>
+      <div onClick={e => onClick && onClick(e)} className={`${className} overflow-hidden cursor-pointer group`} style={style}>
         { image && <BsmImage image={image} className={imgClassName}/> }
-        { icon && <BsmIcon icon={icon} className="h-full w-full"/> }
+        { icon && <BsmIcon icon={icon} className="h-full w-full text-gray-800 dark:text-white"/> }
         {text && (type === "submit" ? <button className="w-full h-full">{text}</button> : <span>{text}</span>)}
         { withBar && (
           <div className="absolute bottom-0 left-0 w-full h-1 bg-red-500">

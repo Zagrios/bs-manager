@@ -14,7 +14,7 @@ export default function SettingColorChooser({color, onChange}: {color?: string, 
             <AnimatePresence>
                 {colorVisible && 
                     <motion.div initial={{opacity: 0}} animate={{opacity: 1}} transition={{duration: .1}} exit={{opacity: 0}} className="absolute flex items-center justify-center translate-y-9 shadow-lg rounded-lg shadow-black">
-                        <div className="absolute w-2/4 aspect-square rotate-45 bg-main-color-3 -translate-y-12"></div>
+                        <div className="absolute w-2/4 aspect-square rotate-45 bg-light-main-color-3 dark:bg-main-color-3 -translate-y-12"></div>
                         <HexColorPicker color={color} onChange={onChange} className="" />
                     </motion.div>
                 }

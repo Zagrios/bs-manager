@@ -7,6 +7,7 @@ export class ModalService{
     private _modalType$: BehaviorSubject<ModalType> = new BehaviorSubject<ModalType>(null);
     private modalData: any = null;
     private resolver: any;
+    
     private constructor(){}
 
     public static getInsance(){
