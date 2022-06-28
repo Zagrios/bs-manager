@@ -38,8 +38,8 @@ export function AvailableVersionItem(props: {version: BSVersion}) {
     <div className="group m-3 relative w-72 h-60 transition-transform active:scale-[.98]" onClick={toggleSelect}>
       <div className={`absolute glow-on-hover group-hover:opacity-100 ${selected && "opacity-100"}`}></div>
       <div className={`relative flex flex-col overflow-hidden rounded-md w-72 h-60 cursor-pointer group-hover:shadow-none duration-300 bg-light-main-color-2 dark:bg-main-color-2 ${!selected && "shadow-lg shadow-gray-900"}`}>
-        <BsmImage image={props.version.ReleaseImg ? props.version.ReleaseImg : defaultImage} errorImage={defaultImage} className="absolute top-0 right-0 w-full h-full opacity-40 blur-xl object-cover" loading="lazy"/>
-        <BsmImage image={props.version.ReleaseImg ? props.version.ReleaseImg : defaultImage} errorImage={defaultImage} className="bg-black w-full h-3/4 object-cover" loading="lazy"/>
+        <BsmImage image={props.version.ReleaseImg ? props.version.ReleaseImg : defaultImage} errorImage={defaultImage} placeholder={defaultImage} className="absolute top-0 right-0 w-full h-full opacity-40 blur-xl object-cover" loading="lazy"/>
+        <BsmImage image={props.version.ReleaseImg ? props.version.ReleaseImg : defaultImage} errorImage={defaultImage} placeholder={defaultImage} className="bg-black w-full h-3/4 object-cover" loading="lazy"/>
         <div className="relative z-[1] p-2 w-full flex items-center justify-between grow">
           <div>
             <span className="block text-xl font-bold text-white tracking-wider">{props.version.BSVersion}</span>
