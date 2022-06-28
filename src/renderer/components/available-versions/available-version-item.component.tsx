@@ -43,7 +43,7 @@ export function AvailableVersionItem(props: {version: BSVersion}) {
         <div className="relative z-[1] p-2 w-full flex items-center justify-between grow">
           <div>
             <span className="block text-xl font-bold text-white tracking-wider">{props.version.BSVersion}</span>
-            <span className="text-sm text-gray-400">{formatedDate}</span>
+            <span className="text-sm text-gray-700 dark:text-gray-400">{formatedDate}</span>
           </div>
           { props.version.ReleaseURL && (
             <a onClickCapture={e => { e.stopPropagation(); openReleasePage(); }} className="relative flex flex-row justify-between items-center rounded-full bg-black bg-opacity-30 text-white pb-[1px] hover:bg-opacity-50">
