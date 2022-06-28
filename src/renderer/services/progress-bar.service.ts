@@ -1,4 +1,4 @@
-import { BehaviorSubject, distinctUntilChanged, filter, map, Observable, Subscription, timer } from "rxjs";
+import { BehaviorSubject, distinctUntilChanged, map, Observable, Subscription, timer } from "rxjs";
 
 export class ProgressBarService{
 
@@ -27,6 +27,7 @@ export class ProgressBarService{
     }
 
     public unsubscribe(){
+        this._progression$.next(0);
         this.subscription && this.subscription.unsubscribe();
         this.subscription = null;
     }
@@ -51,7 +52,7 @@ export class ProgressBarService{
     }
 
     public hide(unsubscribe: boolean){
-        if(unsubscribe){ this.unsubscribe(); this.progression$.next(0); } 
+        if(unsubscribe){ this.unsubscribe(); } 
         this.visible$.next(false); 
     }
 
