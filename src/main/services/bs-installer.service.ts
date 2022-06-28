@@ -104,10 +104,10 @@ export class BSInstallerService{
             resolve({type: "[Password]", data: bsVersion});
           }
           else if(out[0] === "[Guard]" as DownloadEventType){
-            resolve({type: "[2FA]"});
+            this.utils.newIpcSenc(`bs-download.${"[2FA]" as DownloadEventType}`, {success: true}); 
           }
           else if(out[0] === "[2FA]" as DownloadEventType){
-            resolve({type: "[2FA]"});
+            this.utils.newIpcSenc(`bs-download.${"[2FA]" as DownloadEventType}`, {success: true}); 
           }
           else if(out[0] === "[Progress]" as DownloadEventType || (out[0] === "[Validated]" as DownloadEventType && parseFloat(out[1]) < 100)){ 
             this.utils.newIpcSenc(`bs-download.${"[Progress]" as DownloadEventType}`, {success: true, data: parseFloat(out[1])}); 

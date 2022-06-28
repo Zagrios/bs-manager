@@ -31,8 +31,8 @@ ipcMain.on('bs-download.start', async (event, request: IpcRequest<DownloadInfo>)
   });
 });
 
-ipcMain.on(`bs-download.${"[2FA]" as DownloadEventType}`, async (event, args) => {
-  BSInstallerService.getInstance().sendInputProcess(args);
+ipcMain.on(`bs-download.${"[2FA]" as DownloadEventType}`, async (event, args: IpcRequest<string>) => {
+  BSInstallerService.getInstance().sendInputProcess(args.args);
 });
 
 ipcMain.on('bs-download.installation-folder', async (event, request: IpcRequest<void>) => {

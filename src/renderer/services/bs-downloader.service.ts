@@ -45,6 +45,13 @@ export class BsDownloaderService{
 
         this.ipcService.watch<string>("bs-download.[Warning]").subscribe(response => response.success && this.downloadWarning$.next(response.data));
 
+        this.ipcService.watch<void>("bs-download.[2FA]").subscribe(async response => {
+            if(!response.success){ return; }
+            const res = await this.modalService.openModal(ModalType.GUARD_CODE);
+            if(res.exitCode !== ModalExitCode.COMPLETED){ return; }
+            this.ipcService.sendLazy('bs-download.[2FA]', {args: res.data});
+        });
+
         this.currentBsVersionDownload$.subscribe(version => {
             if(version){ this.bsVersionManager.setInstalledVersions([...this.bsVersionManager.installedVersions$.value, version]); }
             else{ this.bsVersionManager.askInstalledVersions(); }
@@ -55,13 +62,6 @@ export class BsDownloaderService{
         this.currentBsVersionDownload$.next(null);
         this.downloadProgress$.next(0);
         this.selectedBsVersion$.next(null);
-    }
-
-    public async send2FA(): Promise<IpcResponse<DownloadEvent>>{
-        const res = await this.modalService.openModal(ModalType.GUARD_CODE);
-        if(res.exitCode !== ModalExitCode.COMPLETED){ return {success: false}; }
-
-        return this.ipcService.send<DownloadEvent>('bs-download.2FA', {args: res.data});
     }
 
     public async download(bsVersion: BSVersion): Promise<IpcResponse<DownloadEvent>>{
@@ -75,20 +75,20 @@ export class BsDownloaderService{
         else{
             promise = this.ipcService.send<DownloadEvent>('bs-download.start', {args: {bsVersion: bsVersion, username: this.authService.getSteamUsername()}});
         }
+
         this.currentBsVersionDownload$.next(bsVersion);
 
-        return promise.then(async res => {
-            if(!res.success){ return res; }
-            if(res.data.type === "[Password]"){
-                this.authService.deleteSteamSession();
-                res = await this.download(bsVersion);
-            }
-            else if(res.data.type === "[2FA]"){
-                res = await this.send2FA();
-            }
-            this.resetDownload();
-            return res;
-        });
+        let res = await promise;
+
+        if(!res.success){ return res; }
+        
+        if(res.data.type === "[Password]"){
+            this.authService.deleteSteamSession();
+            res = await this.download(bsVersion);
+        }
+        
+        this.resetDownload();
+        return res;
     }
 
     public get isDownloading(): boolean{
