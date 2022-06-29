@@ -64,7 +64,7 @@ export function SettingsPage() {
           setTimeout(() => {
             progressBarService.complete();
             setTimeout(() => progressBarService.hide(true), 1000);
-          }, 2000);
+          }, 1000);
           if(res.success){ setInstallationFolder(res.data); }
         });
       }
