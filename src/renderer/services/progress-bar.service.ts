@@ -1,8 +1,11 @@
 import { BehaviorSubject, distinctUntilChanged, map, Observable, Subscription, timer } from "rxjs";
+import { IpcService } from "./ipc.service";
 
 export class ProgressBarService{
 
     private static instance: ProgressBarService;
+
+    private readonly ipcService: IpcService;
 
     private readonly _progression$: BehaviorSubject<number>;
     private readonly _visible$: BehaviorSubject<boolean>;
@@ -15,8 +18,16 @@ export class ProgressBarService{
     }
 
     private constructor(){
+        this.ipcService = IpcService.getInstance();
+
         this._progression$ = new BehaviorSubject<number>(0);
         this._visible$ = new BehaviorSubject<boolean>(false);
+
+        this.progression$.subscribe(progression => this.setSystemProgression(progression));
+    }
+
+    private setSystemProgression(progression: number){
+        this.ipcService.sendLazy("window.progression", {args: progression});
     }
 
     public subscribreTo(obs: Observable<number>){
@@ -40,6 +51,7 @@ export class ProgressBarService{
 
     public showFake(speed: number): void{
         const obs = timer(1000, 100).pipe(map(val => {
+            if(this.progression$.value >= 100){ return 100; }
             const currentProgress = speed * (val + 1);
             return Math.round(Math.atan(currentProgress) / (Math.PI / 2) * 100 * 1000) / 1000;
         }));
@@ -47,7 +59,6 @@ export class ProgressBarService{
     }
 
     public complete(): void{
-        this.unsubscribe();
         this.progression$.next(100);
     }
 
