@@ -20,16 +20,16 @@ ipcMain.on('window.reset', async () => {
   getMainWindow()?.restore();
 });
 
-ipcMain.on('new-window', async (event, url: string) => {
-  shell.openExternal(url);
+ipcMain.on('new-window', async (event, request: IpcRequest<string>) => {
+  shell.openExternal(request.args);
 });
 
 ipcMain.on('choose-folder', async (event, request: IpcRequest<void>) => {
   dialog.showOpenDialog({properties: ['openDirectory']}).then(res => {
     UtilsService.getInstance().newIpcSenc(request.responceChannel, {success: true, data: res});
-  })
-})
+  });
+});
 
 ipcMain.on("window.progression", async (event, request: IpcRequest<number>) => {
   getMainWindow().setProgressBar(request.args / 100);
-})
+});

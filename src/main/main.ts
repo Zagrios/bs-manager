@@ -144,7 +144,3 @@ app
     });
   })
   .catch(console.log);
-
-  ipcMain.on('new-window', (event, url: string) => {
-    shell.openExternal(url);
-  });

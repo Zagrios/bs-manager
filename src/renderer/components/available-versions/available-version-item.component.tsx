@@ -7,10 +7,12 @@ import { distinctUntilChanged } from "rxjs";
 import defaultImage from '../../../../assets/default-version-img.jpg'
 import dateFormat from "dateformat";
 import { BsmImage } from "../shared/bsm-image.component";
+import { IpcService } from "renderer/services/ipc.service";
 
 export function AvailableVersionItem(props: {version: BSVersion}) {
 
   const bsDownloaderService = BsDownloaderService.getInstance();
+  const ipcService = IpcService.getInstance();
 
   const [selected, setSelected] = useState(false);
 
@@ -22,7 +24,7 @@ export function AvailableVersionItem(props: {version: BSVersion}) {
     else{ bsDownloaderService.selectedBsVersion$.next(props.version); }
   }
 
-  const openReleasePage = () =>  { console.log(props.version.ReleaseURL); window.electron.ipcRenderer.sendMessage("new-window", props.version.ReleaseURL); }
+  const openReleasePage = () =>  { ipcService.sendLazy("new-window", {args: props.version.ReleaseURL}); }
 
   useEffect(() => {
     const sub = bsDownloaderService.selectedBsVersion$.pipe(distinctUntilChanged()).subscribe((version) => {
