@@ -7,6 +7,7 @@ import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import log from "electron-log";
 import { InstallationLocationService } from "./installation-location.service";
 import { of } from "rxjs";
+import treeKill from "tree-kill";
 
 export class BSInstallerService{
 
@@ -69,6 +70,11 @@ export class BSInstallerService{
     }
   }
 
+  private killDownloadProcess(){
+    if(!this.downloadProcess?.connected || !this.downloadProcess?.pid){ return; }
+    treeKill(this.downloadProcess.pid);
+  }
+
   public async downloadBsVersion(downloadInfos: DownloadInfo): Promise<DownloadEvent>{
     if(this.downloadProcess?.connected){ return {type: "[AlreadyDownloading]"}; }
     const bsVersion = this.bsVersionService.getVersionDetailFromVersionNumber(downloadInfos.bsVersion.BSVersion);
@@ -92,7 +98,7 @@ export class BSInstallerService{
 
       this.downloadProcess.stdout.on('data', data => {
         const matched = (data.toString() as string).match(/(?:\[(.*?)\])\|(?:\[(.*?)\]\|)?(.*?)(?=$|\[)/gm) ?? [];
-  
+        console.log(data.toString());
         matched.forEach(match => {
           const out = match.split("|");
   
@@ -100,7 +106,7 @@ export class BSInstallerService{
             this.sendInputProcess(downloadInfos.password);
           }
           else if(out[0] === "[Password]" as DownloadEventType){
-            this.downloadProcess.kill();
+            treeKill(this.downloadProcess.pid);
             resolve({type: "[Password]", data: bsVersion});
           }
           else if(out[0] === "[Guard]" as DownloadEventType){
@@ -110,11 +116,11 @@ export class BSInstallerService{
             this.utils.newIpcSenc(`bs-download.${"[2FA]" as DownloadEventType}`, {success: true}); 
           }
           else if(out[0] === "[Progress]" as DownloadEventType || (out[0] === "[Validated]" as DownloadEventType && parseFloat(out[1]) < 100)){ 
-            this.utils.newIpcSenc(`bs-download.${"[Progress]" as DownloadEventType}`, {success: true, data: parseFloat(out[1])}); 
+            this.utils.newIpcSenc(`bs-download.${"[Progress]" as DownloadEventType}`, {success: true, data: parseFloat(out[1])});
           }
           else if(out[0] === "[Finished]" as DownloadEventType || (out[0] === "[Validated]" as DownloadEventType && parseFloat(out[1]) == 100)){
             resolve({type: "[Finished]"});
-            this.downloadProcess.kill(); 
+            this.killDownloadProcess();
           }
           else if(out[0] === "[SteamID]" as DownloadEventType){
             this.utils.newIpcSenc("bs-download.[SteamID]", {success: true, data: out[1]});
@@ -124,7 +130,7 @@ export class BSInstallerService{
           }
           else if(out[0] === "[Error]" as DownloadEventType){
             reject(out);
-            this.downloadProcess.kill();
+            this.killDownloadProcess();
             log.error("Download Event, Error", data.toString());
           }
         });

@@ -252,6 +252,7 @@
     "regedit": "^5.1.1",
     "rxjs": "^7.5.5",
     "tailwind-scrollbar-hide": "^1.1.7",
+    "tree-kill": "^1.2.2",
     "uuid": "^8.3.2"
   },
   "devEngines": {
