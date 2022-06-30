@@ -5,6 +5,7 @@ import { RadioItem, SettingRadioArray } from "renderer/components/settings/setti
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { DefaultConfigKey, ThemeConfig } from "renderer/config/default-configuration.config";
 import { useObservable } from "renderer/hooks/use-observable.hook";
+import { AuthUserService } from "renderer/services/auth-user.service";
 import { BsDownloaderService } from "renderer/services/bs-downloader.service";
 import { ConfigurationService } from "renderer/services/configuration.service"
 import { IpcService } from "renderer/services/ipc.service";
@@ -20,6 +21,7 @@ export function SettingsPage() {
   const modalService = ModalService.getInsance();
   const downloaderService = BsDownloaderService.getInstance();
   const progressBarService = ProgressBarService.getInstance();
+  const authService = AuthUserService.getInstance();
 
   const themeItem: RadioItem[] = [
     {id: 0, text: "Dark", value: "dark" as ThemeConfig},
@@ -72,13 +74,15 @@ export function SettingsPage() {
     })
   }
 
+  const deleteSteamSession = () => authService.deleteSteamSession();
+
   return (
     <div className="w-full flex justify-center px-40 pt-10 text-gray-800 dark:text-gray-200">
 
       <div className="w-fit max-w-full">
 
         <SettingContainer title="Steam" description="If you logout of your Steam account, you must reconect for download a new BS instance">
-          <BsmButton className="bg-red-500 w-fit px-3 py-[2px] text-white rounded-md hover:brightness-90" withBar={false} text="Logout of Steam"/>
+          <BsmButton onClick={deleteSteamSession} className="bg-red-500 w-fit px-3 py-[2px] text-white rounded-md hover:brightness-90" withBar={false} text="Logout of Steam"/>
         </SettingContainer>
 
         <SettingContainer title="Appearance" description="Choose the two primary colors of BSManager">
