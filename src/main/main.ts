@@ -78,7 +78,7 @@ const createWindow = async () => {
     minHeight: 500,
     frame: false,
     titleBarOverlay: false,
-    icon: getAssetPath('images/icon.png'),
+    icon: getAssetPath('icon.ico'),
     webPreferences: {
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
