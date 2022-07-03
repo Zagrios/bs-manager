@@ -1,7 +1,7 @@
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { ModalExitCode, ModalResponse } from "renderer/services/modale.service";
-import BeatConflict from "../../../../../assets/beat-conflict.png"
+import BeatConflict from "../../../../../assets/images/apngs/beat-conflict.png"
 
 export function InstallationFolderModal({resolver}: {resolver: (x: ModalResponse) => void}) {
 

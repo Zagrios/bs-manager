@@ -13,7 +13,7 @@ export class SteamService{
   private steamPath: string = '';
 
   private constructor(){
-    const vbsDirectory = path.join(this.utils.getAssetsPath(), "node-regedit", "vbs");
+    const vbsDirectory = path.join(this.utils.getAssetsScriptsPath(), "node-regedit", "vbs");
     regedit.setExternalVBSLocation(vbsDirectory);
   }
 

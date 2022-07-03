@@ -1,7 +1,7 @@
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { AnimatePresence, motion } from "framer-motion";
-import BeatRunningImg from "../../../../assets/beat-running.png"
-import BeatWaitingImg from "../../../../assets/beat-waiting.png"
+import BeatRunningImg from "../../../../assets/images/apngs/beat-running.png"
+import BeatWaitingImg from "../../../../assets/images/apngs/beat-waiting.png"
 import { useObservable } from "renderer/hooks/use-observable.hook";
 
 export function BsmProgressBar() {

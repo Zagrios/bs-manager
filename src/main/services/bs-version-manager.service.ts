@@ -40,13 +40,13 @@ export class BSVersionManagerService{
   }
 
   private async getLocalVersions(): Promise<BSVersion[]>{
-    const localVersionsPath = path.join(this.utilsService.getAssetsPath(), BSVersionManagerService.VERSIONS_FILE);
+    const localVersionsPath = path.join(this.utilsService.getAssestsJsonsPath(), BSVersionManagerService.VERSIONS_FILE);
     const rawVersion = (await this.utilsService.readFileAsync(localVersionsPath)).toString();
     return JSON.parse(rawVersion);
   }
 
   private async updateLocalVersions(versions: BSVersion[]): Promise<void>{
-    const localVersionsPath = path.join(this.utilsService.getAssetsPath(), BSVersionManagerService.VERSIONS_FILE);
+    const localVersionsPath = path.join(this.utilsService.getAssestsJsonsPath(), BSVersionManagerService.VERSIONS_FILE);
     writeFileSync(localVersionsPath, JSON.stringify(versions, null, "\t"), {encoding: 'utf-8', flag: 'w'});
   };
 

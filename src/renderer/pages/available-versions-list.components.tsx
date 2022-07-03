@@ -11,13 +11,13 @@ import { distinctUntilChanged } from "rxjs";
 export function AvailableVersionsList() {
 
   const slideshowImages = [
-    require('../../../assets/slideshow-images/image-1-blur.jpg'),
-    require('../../../assets/slideshow-images/image-2-blur.jpg'),
-    require('../../../assets/slideshow-images/image-3-blur.jpg'),
-    require('../../../assets/slideshow-images/image-4-blur.jpg'),
-    require('../../../assets/slideshow-images/image-5-blur.png'),
-    require('../../../assets/slideshow-images/image-6-blur.png'),
-    require('../../../assets/slideshow-images/image-7-blur.png'),
+    require('../../../assets/images/slideshow-images/image-1-blur.jpg'),
+    require('../../../assets/images/slideshow-images/image-2-blur.jpg'),
+    require('../../../assets/images/slideshow-images/image-3-blur.jpg'),
+    require('../../../assets/images/slideshow-images/image-4-blur.jpg'),
+    require('../../../assets/images/slideshow-images/image-5-blur.png'),
+    require('../../../assets/images/slideshow-images/image-6-blur.png'),
+    require('../../../assets/images/slideshow-images/image-7-blur.png'),
   ];
   const bsDownloaderService: BsDownloaderService = BsDownloaderService.getInstance();
   const progressBarService: ProgressBarService = ProgressBarService.getInstance();

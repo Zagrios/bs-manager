@@ -1,5 +1,5 @@
 import { ModalExitCode, ModalResponse, ModalService } from "../../../services/modale.service";
-import BeatConflict from "../../../../../assets/beat-conflict.png"
+import BeatConflict from "../../../../../assets/images/apngs/beat-conflict.png"
 import { BSVersion } from "main/services/bs-version-manager.service";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";

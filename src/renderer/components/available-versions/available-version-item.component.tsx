@@ -4,7 +4,7 @@ import { SteamIcon } from "../svgs/steam-icon.component";
 import { useEffect, useState } from "react";
 import { BsDownloaderService } from "renderer/services/bs-downloader.service";
 import { distinctUntilChanged } from "rxjs";
-import defaultImage from '../../../../assets/default-version-img.jpg'
+import defaultImage from '../../../../assets/images/default-version-img.jpg'
 import dateFormat from "dateformat";
 import { BsmImage } from "../shared/bsm-image.component";
 import { IpcService } from "renderer/services/ipc.service";

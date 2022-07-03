@@ -1,20 +1,19 @@
 import { BSVersion } from '../../main/services/bs-version-manager.service';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import BSLogo from '../../../assets/bs-logo.png';
+import BSLogo from '../../../assets/images/apngs/bs-logo.png';
 import { BSLauncherService, LaunchMods, LaunchResult } from '../services/bs-launcher.service';
 import { TabNavBar } from 'renderer/components/shared/tab-nav-bar.component';
-import wipGif from "../../../assets/wip.gif"
+import wipGif from "../../../assets/images/gifs/wip.gif"
 import { ConfigurationService } from 'renderer/services/configuration.service';
 import { BsmDropdownButton } from 'renderer/components/shared/bsm-dropdown-button.component';
 import { BsmIcon, BsmIconType } from 'renderer/components/svgs/bsm-icon.component';
 import { BsmImage } from 'renderer/components/shared/bsm-image.component';
-import defaultImageVersion from "../../../assets/default-version-img.jpg"
 import { BsmButton } from 'renderer/components/shared/bsm-button.component';
 import { BSUninstallerService } from '../services/bs-uninstaller.service';
 import { BSVersionManagerService } from '../services/bs-version-manager.service';
 import { ModalExitCode, ModalService, ModalType } from '../services/modale.service';
-import DefautVersionImage from "../../../assets/default-version-img.jpg";
+import DefautVersionImage from "../../../assets/images/default-version-img.jpg";
 
 export function VersionViewer() {
 
@@ -82,7 +81,7 @@ export function VersionViewer() {
 
   return (
     <>
-      <BsmImage className="absolute w-full h-full top-0 left-0 object-cover" image={state.ReleaseImg || DefautVersionImage} errorImage={defaultImageVersion}/>
+      <BsmImage className="absolute w-full h-full top-0 left-0 object-cover" image={state.ReleaseImg || DefautVersionImage} errorImage={DefautVersionImage}/>
       <div className="relative flex items-center flex-col w-full h-full text-gray-200 backdrop-blur-lg">
         <BsmImage className='relative object-cover h-28' image={BSLogo}/>
         <h1 className='relative text-4xl font-bold italic -top-3'>{state.BSVersion}</h1>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { ModalExitCode, ModalResponse } from "renderer/services/modale.service";
-import BeatImpatient from '../../../../../assets/beat-impatient.png'
+import BeatImpatient from '../../../../../assets/images/apngs/beat-impatient.png'
 
 export function LoginModal({resolver}: {resolver: (x: ModalResponse) => void}) {
 

@@ -6,7 +6,6 @@ import { UtilsService } from "./utils.service";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import log from "electron-log";
 import { InstallationLocationService } from "./installation-location.service";
-import { of } from "rxjs";
 import treeKill from "tree-kill";
 
 export class BSInstallerService{
@@ -39,7 +38,7 @@ export class BSInstallerService{
   }
 
   private getDepotDownloaderExePath(): string{
-    return path.join(this.utils.getAssetsPath(), 'depot-downloader', 'DepotDownloader.exe');
+    return path.join(this.utils.getAssetsScriptsPath(), 'depot-downloader', 'DepotDownloader.exe');
   }
 
   public async getInstalledBsVersion(): Promise<BSVersion[]>{

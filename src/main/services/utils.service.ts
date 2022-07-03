@@ -24,6 +24,9 @@ export class UtilsService{
   public setAssetsPath(path: string): void{ this.assetsPath = path; }
   public getAssetsPath(): string{ return this.assetsPath; }
 
+  public getAssetsScriptsPath(): string { return path.join(this.getAssetsPath(), 'scripts'); }
+  public getAssestsJsonsPath(): string { return path.join(this.getAssetsPath(), 'jsons'); }
+
   public setMainWindow(win: BrowserWindow){ this.mainWindow = win; }
 
   //à supprimer
