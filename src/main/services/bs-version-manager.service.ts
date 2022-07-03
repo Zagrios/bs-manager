@@ -6,7 +6,7 @@ import { createInterface } from 'readline';
 
 export class BSVersionManagerService{
 
-  private static readonly REMOTE_BS_VERSIONS_URL: string = "https://raw.githubusercontent.com/Zagrios/bs-manager/master/assets/bs-versions.json"
+  private static readonly REMOTE_BS_VERSIONS_URL: string = "https://raw.githubusercontent.com/Zagrios/bs-manager/master/assets/jsons/bs-versions.json"
   private static readonly VERSIONS_FILE: string = "bs-versions.json";
 
   private static instance: BSVersionManagerService;
