@@ -1,8 +1,13 @@
 *       text    eol=lf
 *.exe   binary
+*.dll   binary
+*.pdb   binary
+*.wsf   binary
+*.vbs   binary
 *.png   binary
 *.jpg   binary
 *.jpeg  binary
+*.gif   binary
 *.ico   binary
 *.icns  binary
 *.eot   binary
