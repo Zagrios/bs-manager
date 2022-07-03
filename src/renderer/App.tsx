@@ -8,7 +8,7 @@ import { SettingsPage } from "./pages/settings-page.component";
 import { BsmProgressBar } from "./components/progress-bar/bsm-progress-bar.component";
 import { useEffect } from "react";
 import { ThemeService } from "./services/theme.service";
-import { ThemeConfig } from "./config/default-configuration.config";
+import { NotificationOverlay } from "./components/notification/notification-overlay.component";
 
 export default function App() {
 
@@ -26,6 +26,7 @@ export default function App() {
     <div className="relative w-screen h-screen overflow-hidden flex bg-light-main-color-1 dark:bg-main-color-1 z-0 max-w-full">
       <Modal/>
       <NavBar/>
+      <NotificationOverlay/>
       <div className="relative flex flex-col grow max-w-full min-w-0">
         <TitleBar/>
         <div className="bg-light-main-color-2 dark:bg-main-color-2 relative rounded-tl-lg grow overflow-hidden max-w-full">

@@ -7,8 +7,9 @@ import { TerminalIcon } from "./terminal-icon.component";
 import { DesktopIcon } from "./desktop-icon.component";
 import { OculusIcon } from "./oculus-icon.component";
 import { AddIcon } from "./add-icon.component";
+import CrossIcon from "./cross-icon.component";
 
-export type BsmIconType = "settings"|"trash"|"favorite"|"folder"|"bsNote"|"terminal"|"desktop"|"oculus"|"add";
+export type BsmIconType = "settings"|"trash"|"favorite"|"folder"|"bsNote"|"terminal"|"desktop"|"oculus"|"add"|"cross";
 
 export function BsmIcon({className, icon}: {className?: string, icon: BsmIconType}) {
 
@@ -22,6 +23,7 @@ export function BsmIcon({className, icon}: {className?: string, icon: BsmIconTyp
         if(icon === "desktop"){ return <DesktopIcon className={className}/> }
         if(icon === "oculus"){ return <OculusIcon className={className}/> }
         if(icon === "add"){ return <AddIcon className={className}/> }
+        if(icon === "cross"){ return <CrossIcon className={className}/> }
     }
 
   return (
