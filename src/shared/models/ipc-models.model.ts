@@ -1,3 +1,5 @@
+import { BsmException } from "./bsm-exception.model";
+
 export interface IpcRequest<T>{
     args?: T,
     responceChannel?: string
@@ -5,6 +7,6 @@ export interface IpcRequest<T>{
 
 export interface IpcResponse<T>{
     data?: T,
-    error?: any,
+    error?: BsmException,
     success: boolean,
 }
