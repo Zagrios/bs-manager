@@ -14,17 +14,13 @@ export class NotificationService{
 
     private constructor(){
         this.notifications$ = new BehaviorSubject<ResolvableNotification[]>([]);
-
-        setInterval(() => {
-            this.notify({title: "coucou le testaze aze azeazeaze", desc: "ceci est un test de notification ne rien faire", actions:[{id: "1",title: "Continuer"}, {id: "1",title: "Faire autre"}, {id: "1",title: "Annuler", cancel: true}]});
-        }, 5000)
     }
 
     public notify(notification: Notification): Promise<NotificationResult|string>{
         let resovableNotification: ResolvableNotification;
         const promise = new Promise<NotificationResult|string>(resolve => {
             resovableNotification = {id: uuidv4(), notification: notification, resolver: resolve }
-            setTimeout(() => resolve(NotificationResult.NO_CHOICE), notification.duration || 10000);
+            setTimeout(() => resolve(NotificationResult.NO_CHOICE), notification.duration || 7000);
         });
 
         this.notifications$.next([...this.notifications$.value, resovableNotification]);
@@ -34,6 +30,21 @@ export class NotificationService{
         })
 
         return promise;
+    }
+
+    public notifyError(notification: Notification): Promise<NotificationResult|string>{
+        notification.type = NotificationType.ERROR;
+        return this.notify(notification);
+    }
+
+    public notifyWarning(notification: Notification): Promise<NotificationResult|string>{
+        notification.type = NotificationType.WARNING;
+        return this.notify(notification);
+    }
+
+    public notifySuccess(notification: Notification): Promise<NotificationResult|string>{
+        notification.type = NotificationType.SUCCESS;
+        return this.notify(notification);
     }
 
 }

@@ -19,6 +19,7 @@ export class BsDownloaderService{
     private readonly authService: AuthUserService;
 
     public readonly currentBsVersionDownload$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
+
     public readonly downloadProgress$: BehaviorSubject<number> = new BehaviorSubject(0);
     public readonly downloadWarning$: BehaviorSubject<string> = new BehaviorSubject(null);
 
