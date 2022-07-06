@@ -9,15 +9,24 @@ import { BsmProgressBar } from "./components/progress-bar/bsm-progress-bar.compo
 import { useEffect } from "react";
 import { ThemeService } from "./services/theme.service";
 import { NotificationOverlay } from "./components/notification/notification-overlay.component";
+import { BsDownloaderService } from "./services/bs-downloader.service";
+import { NotificationService } from "./services/notification.service";
+import { distinctUntilChanged, filter, throttleTime } from "rxjs";
 
 export default function App() {
 
   const themeService = ThemeService.getInstance();
+  const bsDownloadService = BsDownloaderService.getInstance();
+  const notificationService = NotificationService.getInstance();
 
   useEffect(() => {
     themeService.theme$.subscribe(() => {
       if(themeService.isDark || (themeService.isOS && window.matchMedia('(prefers-color-scheme: dark)').matches)){ document.documentElement.classList.add('dark'); }
       else { document.documentElement.classList.remove('dark'); }
+    });
+
+    bsDownloadService.downloadWarning$.pipe(throttleTime(1000), filter(v => !!v), distinctUntilChanged()).subscribe(() => {
+      notificationService.notifyWarning({title: "Warning", desc: "Your connection seems unstable"});
     });
   }, [])
   

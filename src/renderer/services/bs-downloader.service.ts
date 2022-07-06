@@ -1,11 +1,9 @@
 import { DownloadEvent } from 'main/services/bs-installer.service';
-import { BehaviorSubject, distinctUntilChanged, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, distinctUntilChanged } from 'rxjs';
 import { IpcResponse } from 'shared/models/ipc-models.model';
-import { DownloadInfo } from '../../main/ipcs/bs-download-ipcs';
 import { BSVersion } from '../../main/services/bs-version-manager.service'
 import { AuthUserService } from './auth-user.service';
 import { BSVersionManagerService } from './bs-version-manager.service';
-import { ConfigurationService } from './configuration.service';
 import { IpcService } from './ipc.service';
 import { ModalExitCode, ModalService, ModalType } from './modale.service';
 

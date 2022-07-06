@@ -7,6 +7,7 @@ import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { AnimatePresence, motion } from "framer-motion";
 import { distinctUntilChanged } from "rxjs";
+import { NotificationService } from "renderer/services/notification.service";
 
 export function AvailableVersionsList() {
 
@@ -21,6 +22,7 @@ export function AvailableVersionsList() {
   ];
   const bsDownloaderService: BsDownloaderService = BsDownloaderService.getInstance();
   const progressBarService: ProgressBarService = ProgressBarService.getInstance();
+  const notificationService: NotificationService = NotificationService.getInstance();
 
   const [versionSelected, setVersionSelected] = useState(null as BSVersion);
   const [progressBarVisible, setProgressBarVisible] = useState(false);
@@ -28,8 +30,11 @@ export function AvailableVersionsList() {
   const startDownload = () => {
     if(progressBarService.visible$.value){ return; }
     progressBarService.show(bsDownloaderService.downloadProgress$);
-    bsDownloaderService.download(versionSelected).then(() => {
+    bsDownloaderService.download(versionSelected).then(res => {
       progressBarService.hide(true);
+
+      if(res.success){ notificationService.notifySuccess({title: 'Download Complete', duration: 3000}); }
+      else{ notificationService.notifyError({title: 'Error', desc: res.data as any as string}); }
     });
   }
 
