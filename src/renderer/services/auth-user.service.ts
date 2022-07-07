@@ -1,3 +1,5 @@
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
 import { ConfigurationService } from "./configuration.service";
 
 export class AuthUserService {
@@ -20,6 +22,10 @@ export class AuthUserService {
 
     public sessionExist(): boolean{
         return !!this.configService.get(this.STEAM_USERNAME_KEY);
+    }
+
+    public get sessionExist$(): Observable<boolean>{
+        return this.configService.watch(this.STEAM_USERNAME_KEY).pipe(map(v => !!v));
     }
 
     public setSteamSession(username: string, stay = true): void{

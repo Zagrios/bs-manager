@@ -10,18 +10,20 @@ import { BsDownloaderService } from "renderer/services/bs-downloader.service";
 import { ConfigurationService } from "renderer/services/configuration.service"
 import { IpcService } from "renderer/services/ipc.service";
 import { ModalExitCode, ModalService, ModalType } from "renderer/services/modale.service";
+import { NotificationService } from "renderer/services/notification.service";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { ThemeService } from "renderer/services/theme.service";
 
 export function SettingsPage() {
 
-  const configService = ConfigurationService.getInstance();
-  const themeService = ThemeService.getInstance();
-  const ipcService = IpcService.getInstance();
-  const modalService = ModalService.getInsance();
-  const downloaderService = BsDownloaderService.getInstance();
-  const progressBarService = ProgressBarService.getInstance();
-  const authService = AuthUserService.getInstance();
+  const configService: ConfigurationService = ConfigurationService.getInstance();
+  const themeService: ThemeService = ThemeService.getInstance();
+  const ipcService: IpcService = IpcService.getInstance();
+  const modalService: ModalService = ModalService.getInsance();
+  const downloaderService: BsDownloaderService = BsDownloaderService.getInstance();
+  const progressBarService: ProgressBarService = ProgressBarService.getInstance();
+  const authService: AuthUserService = AuthUserService.getInstance();
+  const notificationService: NotificationService = NotificationService.getInstance();
 
   const themeItem: RadioItem[] = [
     {id: 0, text: "Dark", value: "dark" as ThemeConfig},
@@ -31,6 +33,7 @@ export function SettingsPage() {
 
   const firstColor = useObservable(configService.watch<string>("first-color"));
   const secondColor = useObservable(configService.watch<string>("second-color"));
+  const sessionExist = useObservable(authService.sessionExist$);
   const[themeIdSelected, setThemeIdSelected]= useState(themeItem.find(e => e.value === themeService.getTheme()).id);
   const [installationFolder, setInstallationFolder] = useState(null);
 
@@ -67,14 +70,21 @@ export function SettingsPage() {
             progressBarService.complete();
             setTimeout(() => progressBarService.hide(true), 1000);
           }, 1000);
-          if(res.success){ setInstallationFolder(res.data); }
+          if(res.success){ 
+            setInstallationFolder(res.data); 
+            notificationService.notifySuccess({title: "Transfer completed", duration: 3000});
+          }
         });
       }
 
     })
   }
 
-  const deleteSteamSession = () => authService.deleteSteamSession();
+  const deleteSteamSession = () => {
+    if(!sessionExist){ return; }
+    authService.deleteSteamSession();
+    notificationService.notifySuccess({title: "Disconnected from Steam", duration: 3000});
+  };
 
   return (
     <div className="w-full flex justify-center px-40 pt-10 text-gray-800 dark:text-gray-200">
@@ -82,7 +92,7 @@ export function SettingsPage() {
       <div className="w-fit max-w-full">
 
         <SettingContainer title="Steam" description="If you logout of your Steam account, you must reconect for download a new BS instance">
-          <BsmButton onClick={deleteSteamSession} className="bg-red-500 w-fit px-3 py-[2px] text-white rounded-md hover:brightness-90" withBar={false} text="Logout of Steam"/>
+          <BsmButton onClick={deleteSteamSession} className={`bg-red-500 w-fit px-3 py-[2px] text-white rounded-md`} withBar={false} text="Logout of Steam" disabled={!sessionExist}/>
         </SettingContainer>
 
         <SettingContainer title="Appearance" description="Choose the two primary colors of BSManager">

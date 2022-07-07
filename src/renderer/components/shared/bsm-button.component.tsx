@@ -3,10 +3,10 @@ import OutsideClickHandler from 'react-outside-click-handler';
 import React from "react";
 import { BsmImage } from "./bsm-image.component";
 
-export function BsmButton({className, style, imgClassName, icon, image, text, type, active, withBar = true, onClickOutside, onClick}: {className?: string, style?: React.CSSProperties, imgClassName?: string, icon?: BsmIconType, image?: string, text?: string, type?: string, active?: boolean, withBar?: boolean, onClickOutside?: (e: MouseEvent) => void, onClick?: (e: React.MouseEvent) => void}) {
+export function BsmButton({className, style, imgClassName, icon, image, text, type, active, withBar = true, disabled, onClickOutside, onClick}: {className?: string, style?: React.CSSProperties, imgClassName?: string, icon?: BsmIconType, image?: string, text?: string, type?: string, active?: boolean, withBar?: boolean, disabled?: boolean, onClickOutside?: (e: MouseEvent) => void, onClick?: (e: React.MouseEvent) => void}) {
   return (
     <OutsideClickHandler onOutsideClick={e => onClickOutside && onClickOutside(e)}>
-      <div onClick={e => onClick && onClick(e)} className={`${className} overflow-hidden cursor-pointer group`} style={style}>
+      <div onClick={e => onClick && onClick(e)} className={`${className} overflow-hidden cursor-pointer group ${disabled && "brightness-75 cursor-not-allowed"}`} style={style}>
         { image && <BsmImage image={image} className={imgClassName}/> }
         { icon && <BsmIcon icon={icon} className="h-full w-full text-gray-800 dark:text-white"/> }
         {text && (type === "submit" ? <button className="w-full h-full">{text}</button> : <span>{text}</span>)}
