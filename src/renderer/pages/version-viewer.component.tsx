@@ -2,7 +2,7 @@ import { BSVersion } from '../../main/services/bs-version-manager.service';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import BSLogo from '../../../assets/images/apngs/bs-logo.png';
-import { BSLauncherService, LaunchMods, LaunchResult } from '../services/bs-launcher.service';
+import { BSLauncherService, LaunchMods } from '../services/bs-launcher.service';
 import { TabNavBar } from 'renderer/components/shared/tab-nav-bar.component';
 import wipGif from "../../../assets/images/gifs/wip.gif"
 import { ConfigurationService } from 'renderer/services/configuration.service';
@@ -14,6 +14,9 @@ import { BSUninstallerService } from '../services/bs-uninstaller.service';
 import { BSVersionManagerService } from '../services/bs-version-manager.service';
 import { ModalExitCode, ModalService, ModalType } from '../services/modale.service';
 import DefautVersionImage from "../../../assets/images/default-version-img.jpg";
+import { NotificationService } from 'renderer/services/notification.service';
+import { BsDownloaderService } from 'renderer/services/bs-downloader.service';
+import { ProgressBarService } from 'renderer/services/progress-bar.service';
 
 export function VersionViewer() {
 
@@ -30,6 +33,9 @@ export function VersionViewer() {
   const bsUninstallerService = BSUninstallerService.getInstance();
   const bsVersionManagerService = BSVersionManagerService.getInstance();
   const modalService = ModalService.getInsance();
+  const notificationService = NotificationService.getInstance();
+  const bsDownloaderService = BsDownloaderService.getInstance();
+  const progressService = ProgressBarService.getInstance();
 
   const [launchRes, setLaunchRes] = useState(null);
 
@@ -73,9 +79,28 @@ export function VersionViewer() {
     }
   }
 
+  const verifyFiles = () => {
+    progressService.show(bsDownloaderService.downloadProgress$);
+    bsDownloaderService.download(state).then(res => { 
+      progressService.hide(true);
+      if(!res.success){ notificationService.notifyError({title: "Unable to verify", desc: "Unable to verify, please try later"}); }
+      else(notificationService.notifySuccess({title: "Verification complete"}));
+    })
+  }
+  
   const launchBs = () => {
     bsLauncherService.launch(state, oculusMode, desktopMode, debugMode).then(res => {
-      setLaunchRes(res);
+      if(!res.success){ notificationService.notifyError({title: 'Unable to launch', desc: res.error.title}); }
+      else if(res.data === "STEAM_NOT_RUNNING"){ notificationService.notifyWarning({title: "Steam not running", desc: "Steam must be running to launch Beat Saber."}); }
+      else if(res.data === "BS_ALREADY_RUNNING"){ notificationService.notifyWarning({title: "Beat Saber already running", desc: "Please close Beat Saber to launch."}); }
+      else if(res.data === "EXE_NOT_FINDED"){
+        notificationService.notifyError({title: "Files missing", desc: "Some files are missing, please verify the download", actions: [{id: "0", title:"Verfiy"}]}).then(res => {
+          if(res !== "0"){ return; }
+          verifyFiles();
+        });
+      }
+      else if(res.data === "LAUNCHED"){ notificationService.notifySuccess({title: "Launching..."}) }
+      else(notificationService.notifyError({title: res.data || res.error.title}));
     });
   }
 
