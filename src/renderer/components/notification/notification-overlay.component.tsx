@@ -13,7 +13,7 @@ export function NotificationOverlay() {
   return (
     <motion.ul className="absolute h-full w-0 top-0 right-0 z-40 bg-red-500 pt-10">
         <AnimatePresence>
-            {notifications?.map((n, index) => <NotificationItem key={n.id} index={index} resolver={n.resolver} notification={n.notification}/>)}
+            {notifications?.map(n => <NotificationItem key={n.id} resolver={n.resolver} notification={n.notification}/>)}
         </AnimatePresence>
     </motion.ul>
   )

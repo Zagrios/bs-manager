@@ -7,7 +7,7 @@ import BeatWaitingImg from "../../../../assets/images/apngs/beat-waiting.png";
 import BeatImpatientImg from "../../../../assets/images/apngs/beat-impatient.png";
 import { BsmButton } from "../shared/bsm-button.component";
 
-export function NotificationItem({resolver, index, notification}: {resolver?: (value: NotificationResult|string) => void, index: number, notification: Notification}) {
+export function NotificationItem({resolver, notification}: {resolver?: (value: NotificationResult|string) => void, notification: Notification}) {
 
   const renderImage = () => {
     if(notification.type === NotificationType.SUCCESS){ return BeatRunningImg; }
