@@ -33,8 +33,9 @@ export function AvailableVersionsList() {
     bsDownloaderService.download(versionSelected).then(res => {
       progressBarService.hide(true);
 
-      if(res.success){ notificationService.notifySuccess({title: 'Download Complete', duration: 3000}); }
-      else{ notificationService.notifyError({title: 'Error', desc: res.data as any as string}); }
+      if(res.success){
+        notificationService.notifySuccess({title: 'Download Complete', duration: 3000});
+      }
     });
   }
 

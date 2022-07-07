@@ -11,7 +11,7 @@ import { ThemeService } from "./services/theme.service";
 import { NotificationOverlay } from "./components/notification/notification-overlay.component";
 import { BsDownloaderService } from "./services/bs-downloader.service";
 import { NotificationService } from "./services/notification.service";
-import { distinctUntilChanged, filter, throttleTime } from "rxjs";
+import { debounceTime, distinctUntilChanged, filter } from "rxjs";
 
 export default function App() {
 
@@ -25,9 +25,13 @@ export default function App() {
       else { document.documentElement.classList.remove('dark'); }
     });
 
-    bsDownloadService.downloadWarning$.pipe(throttleTime(1000), filter(v => !!v), distinctUntilChanged()).subscribe(() => {
+    bsDownloadService.downloadWarning$.pipe(filter(v => !!v),  distinctUntilChanged(), debounceTime(100)).subscribe(() => {
       notificationService.notifyWarning({title: "Warning", desc: "Your connection seems unstable"});
     });
+
+    bsDownloadService.downloadError$.pipe(filter(v => !!v), distinctUntilChanged(), debounceTime(100)).subscribe(err => {
+      notificationService.notifyError({title: "Error", desc: err});
+    })
   }, [])
   
 

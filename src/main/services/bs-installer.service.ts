@@ -129,6 +129,7 @@ export class BSInstallerService{
           }
           else if(out[0] === "[Error]" as DownloadEventType){
             reject(out[1]);
+            this.utils.newIpcSenc("bs-download.[Error]", {success: false, data: out[1]});
             this.killDownloadProcess();
             log.error("Download Event, Error", data.toString());
           }

@@ -20,6 +20,7 @@ export class BsDownloaderService{
 
     public readonly downloadProgress$: BehaviorSubject<number> = new BehaviorSubject(0);
     public readonly downloadWarning$: BehaviorSubject<string> = new BehaviorSubject(null);
+    public readonly downloadError$: BehaviorSubject<string> = new BehaviorSubject(null);
 
     public readonly selectedBsVersion$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
 
@@ -42,7 +43,9 @@ export class BsDownloaderService{
 
         this.ipcService.watch<string>("bs-download.[SteamID]").subscribe(response =>  response.success && this.authService.setSteamID(response.data));
 
-        this.ipcService.watch<string>("bs-download.[Warning]").subscribe(response => response.success && this.downloadWarning$.next(response.data));
+        this.ipcService.watch<string>("bs-download.[Warning]").subscribe(response => this.downloadWarning$.next(response.data));
+
+        this.ipcService.watch<string>("bs-download.[Error]").subscribe(response => this.downloadError$.next(response.data));
 
         this.ipcService.watch<void>("bs-download.[2FA]").subscribe(async response => {
             if(!response.success){ return; }
