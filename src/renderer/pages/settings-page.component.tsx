@@ -5,9 +5,11 @@ import { RadioItem, SettingRadioArray } from "renderer/components/settings/setti
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { DefaultConfigKey, ThemeConfig } from "renderer/config/default-configuration.config";
 import { useObservable } from "renderer/hooks/use-observable.hook";
+import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { AuthUserService } from "renderer/services/auth-user.service";
 import { BsDownloaderService } from "renderer/services/bs-downloader.service";
 import { ConfigurationService } from "renderer/services/configuration.service"
+import { I18nService } from "renderer/services/i18n.service";
 import { IpcService } from "renderer/services/ipc.service";
 import { ModalExitCode, ModalService, ModalType } from "renderer/services/modale.service";
 import { NotificationService } from "renderer/services/notification.service";
@@ -24,6 +26,12 @@ export function SettingsPage() {
   const progressBarService: ProgressBarService = ProgressBarService.getInstance();
   const authService: AuthUserService = AuthUserService.getInstance();
   const notificationService: NotificationService = NotificationService.getInstance();
+  const i18nService: I18nService = I18nService.getInstance();
+
+  const firstColor = useObservable(configService.watch<string>("first-color"));
+  const secondColor = useObservable(configService.watch<string>("second-color"));
+  const sessionExist = useObservable(authService.sessionExist$);
+  const t = useTranslation();
 
   const themeItem: RadioItem[] = [
     {id: 0, text: "Dark", value: "dark" as ThemeConfig},
@@ -31,11 +39,15 @@ export function SettingsPage() {
     {id: 3, text: "Operating System", value: "os" as ThemeConfig}
   ];
 
-  const firstColor = useObservable(configService.watch<string>("first-color"));
-  const secondColor = useObservable(configService.watch<string>("second-color"));
-  const sessionExist = useObservable(authService.sessionExist$);
+  const languagesItems: RadioItem[] = i18nService.getSupportedLanguages().map((l, index) => { 
+    return {id: index, text: t(`pages.settings.languages.${l}`), value: l, textIcon:t(`pages.settings.languages.translated.${l}`), icon: "trash"}; 
+  });
+
   const[themeIdSelected, setThemeIdSelected]= useState(themeItem.find(e => e.value === themeService.getTheme()).id);
+  const[languageSelected, setLanguageSelected]= useState(languagesItems.find(e => e.value === i18nService.currentLanguage).id);
   const [installationFolder, setInstallationFolder] = useState(null);
+
+  console.log(t("test"));
 
   useEffect(() => {
     loadInstallationFolder();
@@ -56,6 +68,12 @@ export function SettingsPage() {
   const handleChangeTheme = (id: number) => {
     setThemeIdSelected(id);
     themeService.setTheme(themeItem.find(e => e.id === id).value);
+  }
+
+  const handleChangeLanguage = (id: number) => {
+    const selectedLanguage = languagesItems.find(l => l.id === id).value;
+    i18nService.setLanguage(selectedLanguage);
+    setLanguageSelected(languagesItems.find(l => l.value === i18nService.currentLanguage).id);
   }
 
   const setDefaultInstallationFolder = () => {
@@ -87,9 +105,9 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="w-full flex justify-center px-40 pt-10 text-gray-800 dark:text-gray-200">
+    <div className="w-full h-full flex justify-center overflow-y-scroll pb-12 scrollbar-thin scrollbar-thumb-neutral-900 text-gray-800 dark:text-gray-200">
 
-      <div className="w-fit max-w-full">
+      <div className="w-fit max-w-full mt-10">
 
         <SettingContainer title="Steam" description="If you logout of your Steam account, you must reconect for download a new BS instance">
           <BsmButton onClick={deleteSteamSession} className={`bg-red-500 w-fit px-3 py-[2px] text-white rounded-md`} withBar={false} text="Logout of Steam" disabled={!sessionExist}/>
@@ -114,6 +132,12 @@ export function SettingsPage() {
           <BsmButton onClick={setDefaultInstallationFolder} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md bg-light-main-color-2 dark:bg-main-color-2 hover:bg-light-main-color-3 dark:hover:bg-main-color-3" text="Choose Folder" withBar={false}/>
         </div>
         </SettingContainer>
+
+        <SettingContainer title="Language" description="Select a language">
+          <SettingRadioArray items={languagesItems} selectedItem={languageSelected} onItemSelected={handleChangeLanguage}/>
+        </SettingContainer>
+
+        <div className="h-10"></div>
 
       </div>
     </div>

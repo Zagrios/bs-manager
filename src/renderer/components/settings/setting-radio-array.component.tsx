@@ -14,12 +14,10 @@ export function SettingRadioArray({items, selectedItem = items[0].id, onItemSele
                     <h2 className="font-extrabold">{i.text}</h2>
                 </div>
                 {i.icon && (
-                    <>
-                        <div className="flex items-center">
-                            {i.textIcon && <span>{i.textIcon}</span>}
-                        </div>
+                    <div className="flex items-center">
+                        {i.textIcon && <span className="text-sm">{i.textIcon}</span>}
                         <BsmIcon icon={i.icon}/>
-                    </>
+                    </div>
                 )}
             </div>
         )) }

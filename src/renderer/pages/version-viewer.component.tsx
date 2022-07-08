@@ -37,8 +37,6 @@ export function VersionViewer() {
   const bsDownloaderService = BsDownloaderService.getInstance();
   const progressService = ProgressBarService.getInstance();
 
-  const [launchRes, setLaunchRes] = useState(null);
-
   useEffect(() => {
     setOculusMode(!!configService.get<boolean>(LaunchMods.OCULUS_MOD));
     setDesktopMode(!!configService.get<boolean>(LaunchMods.DESKTOP_MOD));

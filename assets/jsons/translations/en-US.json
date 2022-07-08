@@ -1,0 +1,18 @@
+{
+    "pages":{
+        "settings":{
+            "languages":{
+                "en-EN": "English, UK",
+                "en-US": "English, US",
+                "fr-FR": "Français",
+                "es-ES": "Español",
+                "translated":{
+                    "en-EN": "English, United Kingdom",
+                    "en-US": "English, United States",
+                    "fr-FR": "French",
+                    "es-ES": "Spanish"
+                }
+            }
+        }
+    }
+}
