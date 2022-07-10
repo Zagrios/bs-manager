@@ -42,13 +42,11 @@ export function SettingsPage() {
 
   const languagesItems: RadioItem[] = i18nService.getSupportedLanguages().map((l, index) => {
     return {id: index, text: t(`pages.settings.languages.${l}`), value: l, textIcon:t(`pages.settings.languages.translated.${l}`), icon: `${l}-flag` as BsmIconType};
-  });
+  }).sort((a, b) => a.text.localeCompare(b.text));
 
   const[themeIdSelected, setThemeIdSelected]= useState(themeItem.find(e => e.value === themeService.getTheme()).id);
   const[languageSelected, setLanguageSelected]= useState(languagesItems.find(e => e.value === i18nService.currentLanguage).id);
   const [installationFolder, setInstallationFolder] = useState(null);
-
-  console.log(t("test"));
 
   useEffect(() => {
     loadInstallationFolder();
