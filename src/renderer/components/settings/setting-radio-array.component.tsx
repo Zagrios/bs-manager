@@ -16,7 +16,7 @@ export function SettingRadioArray({items, selectedItem = items[0].id, onItemSele
                 {i.icon && (
                     <div className="flex items-center">
                         {i.textIcon && <span className="text-sm">{i.textIcon}</span>}
-                        <BsmIcon icon={i.icon}/>
+                        <BsmIcon icon={i.icon} className="max-h-5 w-fit ml-2"/>
                     </div>
                 )}
             </div>

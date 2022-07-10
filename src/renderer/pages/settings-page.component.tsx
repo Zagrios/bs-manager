@@ -3,6 +3,7 @@ import SettingColorChooser from "renderer/components/settings/setting-color-choo
 import { SettingContainer } from "renderer/components/settings/setting-container.component";
 import { RadioItem, SettingRadioArray } from "renderer/components/settings/setting-radio-array.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
+import { BsmIconType } from "renderer/components/svgs/bsm-icon.component";
 import { DefaultConfigKey, ThemeConfig } from "renderer/config/default-configuration.config";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
@@ -39,8 +40,8 @@ export function SettingsPage() {
     {id: 3, text: "Operating System", value: "os" as ThemeConfig}
   ];
 
-  const languagesItems: RadioItem[] = i18nService.getSupportedLanguages().map((l, index) => { 
-    return {id: index, text: t(`pages.settings.languages.${l}`), value: l, textIcon:t(`pages.settings.languages.translated.${l}`), icon: "trash"}; 
+  const languagesItems: RadioItem[] = i18nService.getSupportedLanguages().map((l, index) => {
+    return {id: index, text: t(`pages.settings.languages.${l}`), value: l, textIcon:t(`pages.settings.languages.translated.${l}`), icon: `${l}-flag` as BsmIconType};
   });
 
   const[themeIdSelected, setThemeIdSelected]= useState(themeItem.find(e => e.value === themeService.getTheme()).id);
@@ -88,8 +89,8 @@ export function SettingsPage() {
             progressBarService.complete();
             setTimeout(() => progressBarService.hide(true), 1000);
           }, 1000);
-          if(res.success){ 
-            setInstallationFolder(res.data); 
+          if(res.success){
+            setInstallationFolder(res.data);
             notificationService.notifySuccess({title: "Transfer completed", duration: 3000});
           }
         });
