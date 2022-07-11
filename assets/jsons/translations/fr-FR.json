@@ -1,18 +1,43 @@
 {
-    "pages":{
-        "settings":{
-            "languages":{
-                "en-EN": "English, UK",
-                "en-US": "English, US",
-                "fr-FR": "Français",
-                "es-ES": "Español",
-                "translated":{
-                    "en-EN": "Anglais, Royaume-Uni",
-                    "en-US": "Anglais, États-Unis",
-                    "fr-FR": "Français",
-                    "es-ES": "Espagnol"
-                }
-            }
-        }
-    }
+   "pages":{
+      "settings":{
+         "steam":{
+         	"title":"Steam",
+         	"description":"Si tu te déconnectes de Steam, tu devras te reconnecter pour télécharger une nouvelle version de Beat Saber.",
+         	"logout":"Déconnexion"
+         },
+         "appearance":{
+         	"title":"Apparence",
+         	"description":"Choisi les deux couleurs principales de BSManager.",
+         	"reset":"Réinitialiser",
+         	"sub-title":"Thème",
+         	"themes":{
+             	"dark":"Sombre",
+             	"light": "Clair",
+             	"os": "Synchroniser avec l'ordinateur"
+           	}
+         },
+         "installation-folder":{
+         	"title":"Dossier d'installation",
+         	"description":"Change le dossier par défaut pour les versions de Beat Saber et d'autres fonctionnalités à venir.",
+         	"choose-folder":"Choisir un dossier"
+         },
+         "language":{
+         	"title":"Langage",
+         	"description":"Sélectionne un langage.",
+         	"languages":{
+             	"en-EN": "English, UK",
+             	"en-US": "English, US",
+             	"fr-FR": "Français",
+             	"es-ES": "Español",
+             	"translated":{
+                 	"en-EN": "Anglais, Royaume-Uni",
+                 	"en-US": "Anglais, États-Unis",
+                 	"fr-FR": "Français",
+                 	"es-ES": "Espagnol"
+             	}
+           	}
+         }
+      }
+   }
 }

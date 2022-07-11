@@ -1,18 +1,43 @@
 {
-    "pages":{
-        "settings":{
-            "languages":{
-                "en-EN": "English, UK",
-                "en-US": "English, US",
-                "fr-FR": "Français",
-                "es-ES": "Español",
-                "translated":{
-                    "en-EN": "English, United Kingdom",
-                    "en-US": "English, United States",
-                    "fr-FR": "French",
-                    "es-ES": "Spanish"
-                }
+   "pages":{
+      "settings":{
+         "steam":{
+            "title":"Steam",
+            "description":"If you log out of Steam, you will have to log back in to download a new version of Beat Saber.",
+            "logout":"Log out"
+         },
+         "appearance":{
+            "title":"Appearance",
+            "description":"Choose the two main colors of BSManager.",
+            "reset":"Reset",
+            "sub-title":"Theme",
+            "themes":{
+               "dark":"Dark",
+               "light": "Light",
+               "os": "Sync with computer"
             }
-        }
-    }
+         },
+         "installation-folder":{
+            "title":"Installation folder",
+            "description":"Change the default folder for Beat Saber versions and other upcoming features.",
+            "choose-folder":"Choose folder"
+         },
+         "language":{
+            "title":"Language",
+        		"description":"Selects a language.",
+            "languages":{
+               "en-EN": "English, UK",
+               "en-US": "English, US",
+               "fr-FR": "Français",
+               "es-ES": "Español",
+               "translated":{
+                  "en-EN": "English, United Kingdom",
+                  "en-US": "English, United States",
+                  "fr-FR": "French",
+                  "es-ES": "Spanish"
+               }
+            }
+         }
+      }
+   }
 }

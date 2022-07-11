@@ -32,16 +32,15 @@ export function SettingsPage() {
   const firstColor = useObservable(configService.watch<string>("first-color"));
   const secondColor = useObservable(configService.watch<string>("second-color"));
   const sessionExist = useObservable(authService.sessionExist$);
-  const t = useTranslation();
 
   const themeItem: RadioItem[] = [
-    {id: 0, text: "Dark", value: "dark" as ThemeConfig},
-    {id: 1, text: "Light", value: "light" as ThemeConfig},
-    {id: 3, text: "Operating System", value: "os" as ThemeConfig}
+    {id: 0, text: "pages.settings.appearance.themes.dark", value: "dark" as ThemeConfig},
+    {id: 1, text: "pages.settings.appearance.themes.light", value: "light" as ThemeConfig},
+    {id: 3, text: "pages.settings.appearance.themes.os", value: "os" as ThemeConfig}
   ];
 
   const languagesItems: RadioItem[] = i18nService.getSupportedLanguages().map((l, index) => {
-    return {id: index, text: t(`pages.settings.languages.${l}`), value: l, textIcon:t(`pages.settings.languages.translated.${l}`), icon: `${l}-flag` as BsmIconType};
+    return {id: index, text: `pages.settings.language.languages.${l}`, value: l, textIcon:`pages.settings.language.languages.translated.${l}`, icon: `${l}-flag` as BsmIconType};
   }).sort((a, b) => a.text.localeCompare(b.text));
 
   const[themeIdSelected, setThemeIdSelected]= useState(themeItem.find(e => e.value === themeService.getTheme()).id);
@@ -106,33 +105,33 @@ export function SettingsPage() {
   return (
     <div className="w-full h-full flex justify-center overflow-y-scroll pb-12 scrollbar-thin scrollbar-thumb-neutral-900 text-gray-800 dark:text-gray-200">
 
-      <div className="w-fit max-w-full mt-10">
+      <div className="max-w-2xl w-full mt-10">
 
-        <SettingContainer title="Steam" description="If you logout of your Steam account, you must reconect for download a new BS instance">
-          <BsmButton onClick={deleteSteamSession} className={`bg-red-500 w-fit px-3 py-[2px] text-white rounded-md`} withBar={false} text="Logout of Steam" disabled={!sessionExist}/>
+        <SettingContainer title="pages.settings.steam.title" description="pages.settings.steam.description">
+          <BsmButton onClick={deleteSteamSession} className={`bg-red-500 w-fit px-3 py-[2px] text-white rounded-md`} withBar={false} text="pages.settings.steam.logout" disabled={!sessionExist}/>
         </SettingContainer>
 
-        <SettingContainer title="Appearance" description="Choose the two primary colors of BSManager">
+        <SettingContainer title="pages.settings.appearance.title" description="pages.settings.appearance.description">
           <div className="relative w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 flex justify-center rounded-md py-1">
             <SettingColorChooser color={firstColor} onChange={setFirstColorSetting}/>
             <SettingColorChooser color={secondColor} onChange={setSecondColorSetting}/>
             <div className="absolute right-2 top-0 h-full flex items-center">
-              <BsmButton onClick={resetColors} className="px-2 font-bold italic text-sm rounded-md bg-light-main-color-2 dark:bg-main-color-2 hover:bg-light-main-color-3 dark:hover:bg-main-color-3" text="Reset" withBar={false}/>
+              <BsmButton onClick={resetColors} className="px-2 font-bold italic text-sm rounded-md bg-light-main-color-2 dark:bg-main-color-2 hover:bg-light-main-color-3 dark:hover:bg-main-color-3" text="pages.settings.appearance.reset" withBar={false}/>
             </div>
           </div>
-          <SettingContainer minorTitle="Theme" className="mt-3">
+          <SettingContainer minorTitle="pages.settings.appearance.sub-title" className="mt-3">
             <SettingRadioArray items={themeItem} selectedItem={themeIdSelected} onItemSelected={handleChangeTheme}/>
           </SettingContainer>
         </SettingContainer>
 
-        <SettingContainer title="Installation Folder" description="Change the default installation directory for Beat Saber instances, and other upcoming features.">
+        <SettingContainer title="pages.settings.installation-folder.title" description="pages.settings.installation-folder.description">
         <div className="relative flex items-center justify-between w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 rounded-md pl-2 py-1">
           <span className="block text-ellipsis overflow-hidden min-w-0" title={installationFolder}>{installationFolder}</span>
-          <BsmButton onClick={setDefaultInstallationFolder} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md bg-light-main-color-2 dark:bg-main-color-2 hover:bg-light-main-color-3 dark:hover:bg-main-color-3" text="Choose Folder" withBar={false}/>
+          <BsmButton onClick={setDefaultInstallationFolder} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md bg-light-main-color-2 dark:bg-main-color-2 hover:bg-light-main-color-3 dark:hover:bg-main-color-3" text="pages.settings.installation-folder.choose-folder" withBar={false}/>
         </div>
         </SettingContainer>
 
-        <SettingContainer title="Language" description="Select a language">
+        <SettingContainer title="pages.settings.language.title" description="pages.settings.language.description">
           <SettingRadioArray items={languagesItems} selectedItem={languageSelected} onItemSelected={handleChangeLanguage}/>
         </SettingContainer>
 

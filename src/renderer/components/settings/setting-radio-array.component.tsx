@@ -1,7 +1,10 @@
 import { motion } from "framer-motion"
+import { useTranslation } from "renderer/hooks/use-translation.hook"
 import { BsmIcon, BsmIconType } from "../svgs/bsm-icon.component"
 
 export function SettingRadioArray({items, selectedItem = items[0].id, onItemSelected}: {items: RadioItem[], selectedItem?: number, onItemSelected?: (id: number) => void}) {
+
+  const t = useTranslation();
 
   return (
     <div className="w-full">
@@ -11,11 +14,11 @@ export function SettingRadioArray({items, selectedItem = items[0].id, onItemSele
                     <div className="h-5 rounded-full aspect-square border-2 border-gray-800 dark:border-white p-[3px] mr-2">
                         <motion.span initial={{scale: 0}} animate={{scale: i.id === selectedItem ? 1 : 0}} className="h-full w-full block bg-gray-800 dark:bg-white rounded-full"/>
                     </div>
-                    <h2 className="font-extrabold">{i.text}</h2>
+                    <h2 className="font-extrabold">{t(i.text)}</h2>
                 </div>
                 {i.icon && (
                     <div className="flex items-center">
-                        {i.textIcon && <span className="text-sm">{i.textIcon}</span>}
+                        {i.textIcon && <span className="text-sm">{t(i.textIcon)}</span>}
                         <BsmIcon icon={i.icon} className="max-h-5 w-fit ml-2"/>
                     </div>
                 )}

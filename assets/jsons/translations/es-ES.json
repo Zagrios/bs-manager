@@ -1,18 +1,43 @@
 {
-    "pages":{
-        "settings":{
-            "languages":{
-                "en-EN": "English, UK",
-                "en-US": "English, US",
-                "fr-FR": "Français",
-                "es-ES": "Español",
-                "translated":{
-                    "en-EN": "Inglés, Reino Unido",
-                    "en-US": "Inglés, Estados Unidos",
-                    "fr-FR": "Francés",
-                    "es-ES": "Español"
-                }
+	"pages":{
+		"settings":{
+			"steam":{
+            "title":"Steam",
+            "description":"Si sales de Steam, tendrás que volver a entrar para descargar una nueva versión de Beat Saber.",
+            "logout":"Desconectar"
+         },
+         "appearance":{
+            "title":"Apariencia",
+            "description":"Elija los dos colores principales de BSManager.",
+            "reset":"Reiniciar",
+            "sub-title":"Tema",
+            "themes":{
+               "dark":"Oscuro",
+               "light": "Claro",
+               "os": "Sincronizar con ordenador"
             }
-        }
-    }
+         },
+         "installation-folder":{
+            "title":"Carpeta de instalación",
+            "description":"Cambia la carpeta por defecto para las versiones de Beat Saber y otras características próximas.",
+            "choose-folder":"Elija la carpeta"
+         },
+    		"language":{
+        		"title":"Idioma",
+        		"description":"Selecciona un idioma.",
+        		"languages":{
+            	"en-EN": "English, UK",
+            	"en-US": "English, US",
+            	"fr-FR": "Français",
+            	"es-ES": "Español",
+            	"translated":{
+              		"en-EN": "Inglés, Reino Unido",
+              		"en-US": "Inglés, Estados Unidos",
+              		"fr-FR": "Francés",
+              		"es-ES": "Español"
+            	}
+        		}
+      	}
+    	}
+  	}
 }
