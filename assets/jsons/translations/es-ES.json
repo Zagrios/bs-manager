@@ -1,9 +1,24 @@
 {
    "misc":{
       "download": "Descargar",
-      "verify": "Verificar"
+      "verify": "Verificar",
+      "launch": "Lanzar",
+      "mods": "Mods",
+      "maps": "Maps"
    },
 	"pages":{
+      "version-viewer":{
+         "launch-mods":{
+            "oculus": "Oculus Mod",
+            "desktop": "Desktop Mod",
+            "debug": "Debug Mod"
+         },
+         "dropdown":{
+            "open-folder": "Abrir la carpeta",
+            "verify-files": "Verificar los archivos",
+            "uninstall": "Desinstalar"
+         }
+      },
       "available-versions":{
          "title": "Seleccione una versión"
       },

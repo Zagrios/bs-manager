@@ -1,9 +1,24 @@
 {
    "misc":{
       "download": "Télécharger",
-      "verify": "Vérifier"
+      "verify": "Vérifier",
+      "launch": "Lancer",
+      "mods": "Modes",
+      "maps": "Maps"
    },
    "pages":{
+      "version-viewer":{
+         "launch-mods":{
+            "oculus": "Mode Oculus",
+            "desktop": "Mode Bureau",
+            "debug": "Mode Debug"
+         },
+         "dropdown":{
+            "open-folder": "Ouvrir le dossier",
+            "verify-files": "Vérifier les fichiers",
+            "uninstall": "Désinstaller"
+         }
+      },
       "available-versions":{
          "title": "Choisi une version"
       },

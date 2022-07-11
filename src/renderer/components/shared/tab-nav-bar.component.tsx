@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "renderer/hooks/use-translation.hook";
 
 export function TabNavBar(props: {tabsText: string[], onTabChange: Function, className?: string}) {
 
     const [currentTabIndex, setCurrentTabIndex] = useState(0);
     const tabsWrapper = useRef(null);
     const [tabsWidth, setTabsWidth] = useState(0);
+    const t = useTranslation();
 
     const selectYear = (tab: string) => {
         const newIndex = props.tabsText.indexOf(tab);
@@ -26,7 +28,7 @@ export function TabNavBar(props: {tabsText: string[], onTabChange: Function, cla
         </div>
         <div ref={tabsWrapper} className="grid" style={{gridTemplateColumns: `repeat(${props.tabsText.length}, minmax(0, 1fr))`}}>
             { props.tabsText.map((y, index) => 
-                <span className="pr-4 pl-4 h-full inline-block bg-light-main-color-2 text-gray-800 dark:bg-main-color-2 dark:text-gray-200 text-lg font-bold text-center hover:bg-light-main-color-1 dark:hover:bg-main-color-1" key={index} onClick={() => selectYear(y)}>{y}</span>
+                <span className="pr-4 pl-4 h-full inline-block bg-light-main-color-2 text-gray-800 dark:bg-main-color-2 dark:text-gray-200 text-lg font-bold text-center hover:bg-light-main-color-1 dark:hover:bg-main-color-1" key={index} onClick={() => selectYear(y)}>{t(y)}</span>
             )}
         </div>
         

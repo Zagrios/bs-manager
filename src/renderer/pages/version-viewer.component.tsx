@@ -17,6 +17,7 @@ import DefautVersionImage from "../../../assets/images/default-version-img.jpg";
 import { NotificationService } from 'renderer/services/notification.service';
 import { BsDownloaderService } from 'renderer/services/bs-downloader.service';
 import { ProgressBarService } from 'renderer/services/progress-bar.service';
+import { useTranslation } from 'renderer/hooks/use-translation.hook';
 
 export function VersionViewer() {
 
@@ -60,7 +61,7 @@ export function VersionViewer() {
   }
 
   const dropDownActions = async (id: number) => {
-    if(id === 4){
+    if(id === 3){
       const modalCompleted = await modalService.openModal(ModalType.UNINSTALL, state)
       if(modalCompleted.exitCode === ModalExitCode.COMPLETED){
         bsUninstallerService.uninstall(state)
@@ -72,7 +73,7 @@ export function VersionViewer() {
         .catch((e) => {console.log("*** ", e)}) 
       }
     }
-    else if(id === 2){
+    else if(id === 1){
       window.electron.ipcRenderer.sendMessage("bs-version.open-folder", state);
     }
   }
@@ -108,16 +109,16 @@ export function VersionViewer() {
       <div className="relative flex items-center flex-col w-full h-full text-gray-200 backdrop-blur-lg">
         <BsmImage className='relative object-cover h-28' image={BSLogo}/>
         <h1 className='relative text-4xl font-bold italic -top-3'>{state.BSVersion}</h1>
-        <TabNavBar className='mt-3' tabsText={["Launch", "Maps", "Mods"]} onTabChange={(i : number) => setCurrentTabIndex(i)}/>
+        <TabNavBar className='mt-3' tabsText={["misc.launch", "misc.maps", "misc.mods"]} onTabChange={(i : number) => setCurrentTabIndex(i)}/>
         <div className='mt-2 w-full grow flex transition-transform duration-300 pt-5' style={{transform: `translate(${-(currentTabIndex * 100)}%, 0)`}}>
           <div className='w-full shrink-0 items-center relative flex flex-col justify-start -top-2'>
             <div className='grid grid-flow-col grid-cols-3 gap-6'>
-              <ToogleLunchMod icon='oculus' onClick={() => setMode(LaunchMods.OCULUS_MOD, !oculusMode)} active={oculusMode} text="OCULUS MOD"/>
-              <ToogleLunchMod icon='desktop' onClick={() => setMode(LaunchMods.DESKTOP_MOD, !desktopMode)} active={desktopMode} text="DESKTOP MOD"/>
-              <ToogleLunchMod icon='terminal' onClick={() => setMode(LaunchMods.DEBUG_MOD, !debugMode)} active={debugMode} text="DEBUG MOD"/>
+              <ToogleLunchMod icon='oculus' onClick={() => setMode(LaunchMods.OCULUS_MOD, !oculusMode)} active={oculusMode} text="pages.version-viewer.launch-mods.oculus"/>
+              <ToogleLunchMod icon='desktop' onClick={() => setMode(LaunchMods.DESKTOP_MOD, !desktopMode)} active={desktopMode} text="pages.version-viewer.launch-mods.desktop"/>
+              <ToogleLunchMod icon='terminal' onClick={() => setMode(LaunchMods.DEBUG_MOD, !debugMode)} active={debugMode} text="pages.version-viewer.launch-mods.debug"/>
             </div>
             <div className='grow flex justify-center items-center'>
-              <BsmButton onClick={launchBs} className='relative text-5xl text-gray-800 dark:text-gray-200 bg-light-main-color-2 dark:bg-main-color-2 font-bold tracking-wide pt-1 pb-3 px-7 rounded-lg shadow-md italic shadow-black active:scale-90 transition-transform' text='Launch'/>
+              <BsmButton onClick={launchBs} className='relative text-5xl text-gray-800 dark:text-gray-200 bg-light-main-color-2 dark:bg-main-color-2 font-bold tracking-wide pt-1 pb-3 px-7 rounded-lg shadow-md italic shadow-black active:scale-90 transition-transform' text="misc.launch"/>
             </div>
           </div>
           <div className='shrink-0 w-full h-full flex justify-center'>
@@ -135,22 +136,24 @@ export function VersionViewer() {
         </div>
       </div>
       <BsmDropdownButton className='absolute top-5 right-5 h-9 w-9' onItemClick={dropDownActions} items={[
-          {id: 1, text: "Add to favorites (wip)", icon:"favorite"},
-          {id: 2, text: "Open folder", icon: "folder"},
-          {id: 3, text: "Verify files (WIP)", icon: "folder"},
-          {id: 4, text: "Uninstall", icon:"trash"}
+          {id: 1, text: "pages.version-viewer.dropdown.open-folder", icon: "folder"},
+          {id: 2, text: "pages.version-viewer.dropdown.verify-files", icon: "folder"},
+          {id: 3, text: "pages.version-viewer.dropdown.uninstall", icon:"trash"}
         ]}/>
     </>
   )
 }
 
 function ToogleLunchMod(props: {onClick: Function, active: boolean, text: string, icon: BsmIconType}) {
+
+   const t = useTranslation();
+
   return (
     <div className={`relative rounded-full cursor-pointer group active:scale-95 transition-transform ${!props.active && "shadow-md shadow-black"}`} onClick={() => props.onClick()}>
       <div className={`absolute glow-on-hover rounded-full ${props.active && "opacity-100 blur-[2px]"}`}></div>
       <div className='w-full h-full pl-6 pr-6 flex justify-center items-center bg-light-main-color-2 dark:bg-main-color-2 p-3 rounded-full text-gray-800 dark:text-white group-hover:bg-light-main-color-1 dark:group-hover:bg-main-color-1'>
         <BsmIcon icon={props.icon} className='mr-1 h-7 text-gray-800 dark:text-white'/>
-        <span className='w-fit min-w-fit h-full text-lg font-bold uppercase tracking-wide italic'>{props.text}</span>
+        <span className='w-fit min-w-fit h-full text-lg font-bold uppercase tracking-wide italic'>{t(props.text)}</span>
       </div>
     </div>
   );
