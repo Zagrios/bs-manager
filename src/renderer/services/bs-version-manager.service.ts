@@ -51,6 +51,10 @@ export class BSVersionManagerService {
       return [...new Set(this.availableVersions$.value.map(v => v.year))].sort((a, b) => b.localeCompare(a));
     }
 
+    public isVersionInstalled(version: BSVersion): boolean{
+      return !!this.getInstalledVersions().find(v => v.BSVersion === version.BSVersion && v.steam === version.steam);
+    }
+
     public getAvaibleVersionsOfYear(year: string): BSVersion[]{
       return this.availableVersions$.value.filter(v => v.year === year).sort((a, b) => +b.ReleaseDate - +a.ReleaseDate);
     }

@@ -6,6 +6,9 @@ export function useTranslation(): (translationKey: string) => string{
     const i18nService = I18nService.getInstance();
 
     return (key: string) => {
-        return useMemo(() => i18nService.translate(key), [key, i18nService.currentLanguage]);
+        return useMemo(() => {
+         const tranlatables = key.split(" ");
+         return tranlatables.map((key) => i18nService.translate(key)).join(" ");
+      }, [key, i18nService.currentLanguage]);
     }
 }

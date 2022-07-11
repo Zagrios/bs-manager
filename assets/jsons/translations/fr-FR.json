@@ -1,5 +1,12 @@
 {
+   "misc":{
+      "download": "Télécharger",
+      "verify": "Vérifier"
+   },
    "pages":{
+      "available-versions":{
+         "title": "Choisi une version"
+      },
       "settings":{
          "steam":{
          	"title":"Steam",
