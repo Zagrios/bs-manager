@@ -1,7 +1,7 @@
 import { BSVersion } from "main/services/bs-version-manager.service";
 import './available-version-item.component.css';
 import { SteamIcon } from "../svgs/steam-icon.component";
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { BsDownloaderService } from "renderer/services/bs-downloader.service";
 import { distinctUntilChanged } from "rxjs";
 import defaultImage from '../../../../assets/images/default-version-img.jpg'
@@ -9,7 +9,7 @@ import dateFormat from "dateformat";
 import { BsmImage } from "../shared/bsm-image.component";
 import { IpcService } from "renderer/services/ipc.service";
 
-export function AvailableVersionItem(props: {version: BSVersion}) {
+export const AvailableVersionItem = memo(function AvailableVersionItem(props: {version: BSVersion}) {
 
   const bsDownloaderService = BsDownloaderService.getInstance();
   const ipcService = IpcService.getInstance();
@@ -57,4 +57,4 @@ export function AvailableVersionItem(props: {version: BSVersion}) {
       </div>
     </div>
   )
-}
+})
