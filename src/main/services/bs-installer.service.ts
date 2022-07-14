@@ -108,28 +108,25 @@ export class BSInstallerService{
             treeKill(this.downloadProcess.pid);
             resolve({type: "[Password]", data: bsVersion});
           }
-          else if(out[0] === "[Guard]" as DownloadEventType){
-            this.utils.newIpcSenc(`bs-download.${"[2FA]" as DownloadEventType}`, {success: true}); 
-          }
-          else if(out[0] === "[2FA]" as DownloadEventType){
-            this.utils.newIpcSenc(`bs-download.${"[2FA]" as DownloadEventType}`, {success: true}); 
+          else if(out[0] === "[2FA]" as DownloadEventType || out[0] === "[Guard]" as DownloadEventType){
+            this.sendDownloadEvent("[2FA]")
           }
           else if(out[0] === "[Progress]" as DownloadEventType || (out[0] === "[Validated]" as DownloadEventType && parseFloat(out[1]) < 100)){ 
-            this.utils.newIpcSenc(`bs-download.${"[Progress]" as DownloadEventType}`, {success: true, data: parseFloat(out[1])});
+            this.sendDownloadEvent("[Progress]", parseFloat(out[1]));
           }
           else if(out[0] === "[Finished]" as DownloadEventType || (out[0] === "[Validated]" as DownloadEventType && parseFloat(out[1]) == 100)){
             resolve({type: "[Finished]"});
             this.killDownloadProcess();
           }
           else if(out[0] === "[SteamID]" as DownloadEventType){
-            this.utils.newIpcSenc("bs-download.[SteamID]", {success: true, data: out[1]});
+            this.sendDownloadEvent("[SteamID]", out[1]);
           }
           else if(out[0] === "[Warning]" as DownloadEventType){
-            this.utils.newIpcSenc("bs-download.[Warning]", {success: true, data: out[1]});
+            this.sendDownloadEvent("[Warning]", out[1]);
           }
           else if(out[0] === "[Error]" as DownloadEventType){
             reject(out[1]);
-            this.utils.newIpcSenc("bs-download.[Error]", {success: false, data: out[1]});
+            this.sendDownloadEvent("[Error]", out[1], false);
             this.killDownloadProcess();
             log.error("Download Event, Error", data.toString());
           }
@@ -155,6 +152,11 @@ export class BSInstallerService{
 
     })
   }
+
+   private sendDownloadEvent(event: DownloadEventType, data?: string|number, success: boolean = true): void{
+      if(typeof data === "string"){ data = data.replaceAll(/\[|\]/g, ""); }
+      this.utils.newIpcSenc(`bs-download.${event}`, { success: success, data: data });
+   }
 
 }
 
