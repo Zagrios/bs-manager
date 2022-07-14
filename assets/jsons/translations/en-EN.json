@@ -20,7 +20,8 @@
          }
       },
       "available-versions":{
-         "title": "Select a version"
+         "title": "Select a version",
+         "steam-release":"Release page"
       },
       "settings":{
          "steam":{
@@ -60,6 +61,96 @@
                }
             }
          } 
+      }
+   },
+   "notifications":{
+      "types":{
+         "error": "🚨 Error",
+         "warning": "⚠️ Warning",
+         "success": "🎉 Success"
+      },
+      "bs-download":{
+         "success":{
+            "titles":{
+               "download-success": "Download complete",
+               "verification-finished":"Verification complete"
+            }
+         },
+         "warnings":{
+            "msg":{
+               "ManifestChecksum": "The previously downloaded manifest does not match the new 🤔",
+               "ConnectionTimeout": "Your internet connection seems unstable 🥶",
+               "Unknown": "Something strange has happened 🤔 Your connection is probably unstable."
+            }
+         },
+         "errors":{
+            "titles":{
+               "verification-failed":"The verification failed."
+            },
+            "msg":{
+               "Password": "Password is invalid.",
+               "InvalidCredentials": "Your e-mail or password is invalid 😴",
+               "NoManifest": "No manifest was found",
+               "DirectoryCreate": "Unable to install the necessary folders.",
+               "NotAvailableApp": "Are you trying to download BeatSaber when you don't have it ? 🤣",
+               "DepotNotFound": "Unable to download BeatSaber 😥 try again later 😕",
+               "NotCompleted": "The download could not complete ¯\\_(ツ)_/¯",
+               "InvalidManifest": "Unable to download BeatSaber 😥 try again later 😕",
+               "NoValidKey": "Unable to download BeatSaber 😥 try again later 😕",
+               "NoManifestCode": "Unable to download BeatSaber 😥 try again later 😕",
+               "401": "Steam doesn't seem to want to let us download BeatSaber 😢",
+               "404": "Unable to contact Steam servers.",
+               "Unknown": "An unknown error occurred ¯\\_(ツ)_/¯",
+               "NoServer": "Unable to contact Steam servers.",
+               "NotAllowed": "Apparently you are not allowed to download BeatSaber 🥱",
+               "ConnectionTimeout": "Cannot connect to Steam 😕",
+               "SteamLib": "If you have this error, report the bug on GitHub with the logs pls.",
+               "ConnectionError": "Unable to connect to Steam after 10 tries 🤯",
+               "LicenceError": "Unable to get the list of licenses.",
+               "verification-failed": "Verification failed, try again later." 
+            }
+         }
+      },
+      "settings":{
+         "move-folder":{
+            "success":{
+               "titles":{
+                  "transfer-finished":"Transfer complete"
+               }
+            },
+            "errors":{
+               "titles":{
+                  "transfer-failed":"Transfer failed 😕"
+               }
+            }
+         },
+         "steam":{
+            "success":{
+               "titles":{
+                  "logout": "Disconnected from Steam."
+               }
+            }
+         }
+      },
+      "bs-launch":{
+         "success":{
+            "titles":{
+               "launching": "Launching...🚀"
+            }
+         },
+         "errors":{
+            "titles":{
+               "UNABLE_TO_LAUNCH": "Unable to launch",
+               "STEAM_NOT_RUNNING": "Steam is not running",
+               "BS_ALREADY_RUNNING": "BeatSaber already running",
+               "EXE_NOT_FINDED": "Missing files"
+            },
+            "msg":{
+               "STEAM_NOT_RUNNING": "Steam must be running to launch BeatSaber.",
+               "BS_ALREADY_RUNNING": "Close BeatSaber before launching it again.",
+               "EXE_NOT_FINDED": "Some files seem to be missing, try to verify the files."
+            }
+         }
       }
    }
 }

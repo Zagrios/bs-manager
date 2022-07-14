@@ -75,31 +75,34 @@ export function SettingsPage() {
   }
 
   const setDefaultInstallationFolder = () => {
-    modalService.openModal(ModalType.INSTALLATION_FOLDER).then(async res => {
-      if(res.exitCode !== ModalExitCode.COMPLETED){ return; }
-      const fileChooserRes = await ipcService.send<{canceled: boolean, filePaths: string[]}>("choose-folder");
+      modalService.openModal(ModalType.INSTALLATION_FOLDER).then(async res => {
+         if(res.exitCode !== ModalExitCode.COMPLETED){ return; }
+         const fileChooserRes = await ipcService.send<{canceled: boolean, filePaths: string[]}>("choose-folder");
 
-      if(fileChooserRes.success && !fileChooserRes.data.canceled && fileChooserRes.data.filePaths?.length){
-        progressBarService.showFake(.008);
-        downloaderService.setInstallationFolder(fileChooserRes.data.filePaths[0]).then(res => {
-          setTimeout(() => {
-            progressBarService.complete();
-            setTimeout(() => progressBarService.hide(true), 1000);
-          }, 1000);
-          if(res.success){
-            setInstallationFolder(res.data);
-            notificationService.notifySuccess({title: "Transfer completed", duration: 3000});
-          }
-        });
-      }
+         if(fileChooserRes.success && !fileChooserRes.data.canceled && fileChooserRes.data.filePaths?.length){
+            progressBarService.showFake(.008);
+            downloaderService.setInstallationFolder(fileChooserRes.data.filePaths[0]).then(res => {
+               setTimeout(() => {
+                  progressBarService.complete();
+                  setTimeout(() => progressBarService.hide(true), 1000);
+               }, 1000);
+               if(res.success){
+                  setInstallationFolder(res.data);
+                  notificationService.notifySuccess({title: "notifications.settings.move-folder.success.titles.transfer-finished", duration: 3000});
+               }
+               else{
+                  notificationService.notifyError({title: "notifications.settings.move-folder.errors.titles.transfer-failed", desc: res?.error?.title});
+               }
+            });
+         }
 
-    })
-  }
+      });
+   }
 
   const deleteSteamSession = () => {
     if(!sessionExist){ return; }
     authService.deleteSteamSession();
-    notificationService.notifySuccess({title: "Disconnected from Steam", duration: 3000});
+    notificationService.notifySuccess({title: "notifications.settings.steam.success.titles.logout", duration: 3000});
   };
 
   return (

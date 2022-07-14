@@ -47,7 +47,6 @@ export class I18nService {
    public translate(translationKey: string): string{
       const cachedTranlation = this.cache.get(translationKey);
       if(!!cachedTranlation){ return cachedTranlation; }
-      console.log(translationKey);
       const tranlated = getProperty(this.dictionary, translationKey);
       tranlated && this.cache.set(translationKey, tranlated);
       return tranlated || translationKey;

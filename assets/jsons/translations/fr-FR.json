@@ -20,7 +20,8 @@
          }
       },
       "available-versions":{
-         "title": "Choisi une version"
+         "title": "Choisi une version",
+         "steam-release":"Notes de version"
       },
       "settings":{
          "steam":{
@@ -59,6 +60,96 @@
                  	"es-ES": "Espagnol"
              	}
            	}
+         }
+      }
+   },
+   "notifications":{
+      "types":{
+         "error": "🚨 Erreur",
+         "warning": "⚠️ Attention",
+         "success": "🎉 Succès"
+      },
+      "bs-download":{
+         "success":{
+            "titles":{
+               "download-success": "Téléchargement terminé",
+               "verification-finished":"Vérification terminée"
+            }
+         },
+         "warnings":{
+            "msg":{
+               "ManifestChecksum": "Le manifest télécharger précédemment ne correspond pas au nouveau 🤔",
+               "ConnectionTimeout": "Ta connexion internet semble instable 🥶",
+               "Unknown": "Quelque chose d'étrange c'est produit 🤔 Votre connexion est surement instable."
+            }
+         },
+         "errors":{
+            "titles":{
+               "verification-failed":"La vérification a échoué."
+            },
+            "msg":{
+               "Password": "Le mot de passe est invalide.",
+               "InvalidCredentials": "Ton e-mail ou mot de passe est invalide 😴",
+               "NoManifest": "Aucun manifest n'a été trouvé.",
+               "DirectoryCreate": "Impossible d'installer les dossiers nécessaires.",
+               "NotAvailableApp": "Tu essayes de télécharger BeatSaber alors que tu ne l'as pas ? 🤣",
+               "DepotNotFound": "Impossible de télécharger BeatSaber 😥 réessaye plus tard 😕",
+               "NotCompleted": "Le téléchargement n'a pas pu se terminer ¯\\_(ツ)_/¯",
+               "InvalidManifest": "Impossible de télécharger BeatSaber 😥 réessaye plus tard 😕",
+               "NoValidKey": "Impossible de télécharger BeatSaber 😥 réessaye plus tard 😕",
+               "NoManifestCode": "Impossible de télécharger BeatSaber 😥 réessaye plus tard 😕",
+               "401": "Steam semble pas vouloir nous laisser télécharger BeatSaber 😢",
+               "404": "Impossible de contacter les serveurs de Steam.",
+               "Unknown": "Une erreur inconnue c'est produite ¯\\_(ツ)_/¯",
+               "NoServer": "Impossible de contacter les serveurs de Steam.",
+               "NotAllowed": "Apparemment tu n'es pas autorisé à télécharger BeatSaber 🥱",
+               "ConnectionTimeout": "Impossible de se connecter à Steam 😕",
+               "SteamLib": "Si tu à cette erreur, report le bug sur GitHub avec les logs stp.",
+               "ConnectionError": "Impossible de se connecter à Steam après 10 essais 🤯",
+               "LicenceError": "Impossible d'obtenir la liste des licences.",
+               "verification-failed": "La vérification a échoué, réessaye plus tard." 
+            }
+         }
+      },
+      "settings":{
+         "move-folder":{
+            "success":{
+               "titles":{
+                  "transfer-finished":"Transfert terminé 👌"
+               }
+            },
+            "errors":{
+               "titles":{
+                  "transfer-failed":"Le transfert a échoué 😕"
+               }
+            }
+         },
+         "steam":{
+            "success":{
+               "titles":{
+                  "logout": "Déconnecté de Steam."
+               }
+            }
+         }
+      },
+      "bs-launch":{
+         "success":{
+            "titles":{
+               "launching": "Lancement...🚀"
+            }
+         },
+         "errors":{
+            "titles":{
+               "UNABLE_TO_LAUNCH": "Lancement impossible",
+               "STEAM_NOT_RUNNING": "Steam n'est pas lancé",
+               "BS_ALREADY_RUNNING": "BeatSaber est déjà lancé",
+               "EXE_NOT_FINDED": "Fichiers manquants"
+            },
+            "msg":{
+               "STEAM_NOT_RUNNING": "Steam doit être en cours d'exécution pour lancer BeatSaber.",
+               "BS_ALREADY_RUNNING": "Ferme BeatSaber avant de le lancer à nouveau.",
+               "EXE_NOT_FINDED": "Quelques fichiers semblent manquants. Essaye de vérifier les fichiers."
+            }
          }
       }
    }

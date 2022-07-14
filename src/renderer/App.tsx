@@ -25,13 +25,13 @@ export default function App() {
       else { document.documentElement.classList.remove('dark'); }
     });
 
-    bsDownloadService.downloadWarning$.pipe(filter(v => !!v),  distinctUntilChanged(), debounceTime(100)).subscribe(() => {
-      notificationService.notifyWarning({title: "Warning", desc: "Your connection seems unstable"});
+    bsDownloadService.downloadWarning$.pipe(filter(v => !!v),  distinctUntilChanged(), debounceTime(100)).subscribe((warning) => {
+      notificationService.notifyWarning({title: "notifications.types.warning", desc: `notifications.bs-download.warnings.msg.${warning}`});
     });
 
     bsDownloadService.downloadError$.pipe(filter(v => !!v), distinctUntilChanged(), debounceTime(100)).subscribe(err => {
-      notificationService.notifyError({title: "Error", desc: err});
-    })
+      notificationService.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.errors.msg.${err}`});
+    });
   }, [])
   
 

@@ -47,7 +47,7 @@ ipcMain.on('bs-download.set-installation-folder', (event, request: IpcRequest<st
     UtilsService.getInstance().newIpcSenc(request.responceChannel, {success: true, data: res});
   }).catch(err => {
     console.log(err);
-    UtilsService.getInstance().newIpcSenc(request.responceChannel, {success: false, error: err});
+    UtilsService.getInstance().newIpcSenc(request.responceChannel, {success: false, error: {title: err, type: 'error'}});
   });
 })
 

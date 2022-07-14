@@ -8,6 +8,7 @@ import defaultImage from '../../../../assets/images/default-version-img.jpg'
 import dateFormat from "dateformat";
 import { BsmImage } from "../shared/bsm-image.component";
 import { IpcService } from "renderer/services/ipc.service";
+import { useTranslation } from "renderer/hooks/use-translation.hook";
 
 export const AvailableVersionItem = memo(function AvailableVersionItem(props: {version: BSVersion}) {
 
@@ -15,6 +16,7 @@ export const AvailableVersionItem = memo(function AvailableVersionItem(props: {v
   const ipcService = IpcService.getInstance();
 
   const [selected, setSelected] = useState(false);
+  const t = useTranslation();
 
   const formatedDate = (() => { return dateFormat(+props.version.ReleaseDate*1000, "ddd. dS mmm yyyy"); })()
 
@@ -50,7 +52,7 @@ export const AvailableVersionItem = memo(function AvailableVersionItem(props: {v
           { props.version.ReleaseURL && (
             <a onClickCapture={e => { e.stopPropagation(); openReleasePage(); }} className="relative flex flex-row justify-between items-center rounded-full bg-black bg-opacity-30 text-white pb-[1px] hover:bg-opacity-50">
               <SteamIcon className="w-[25px] h-[25px] transition-transform group-hover:rotate-[-360deg] duration-300"/>
-              <span className="relative -left-[2px] text-sm w-0 text-center overflow-hidden h-full whitespace-nowrap pb-[3px] transition-all group-hover:w-24 duration-300">Release Page</span>
+              <span className="relative -left-[2px] text-sm w-fit max-w-0 text-center overflow-hidden h-full whitespace-nowrap pb-[3px] transition-all group-hover:max-w-[200px] group-hover:px-1 duration-300">{t("pages.available-versions.steam-release")}</span>
             </a>
           )}
         </div>

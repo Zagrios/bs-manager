@@ -38,7 +38,7 @@ export function AvailableVersionsList() {
       progressBarService.hide(true);
 
       if(res.success){
-        notificationService.notifySuccess({title: 'Download Complete', duration: 3000});
+        notificationService.notifySuccess({title: "notifications.bs-download.success.titles.download-success", duration: 3000});
       }
     });
   }

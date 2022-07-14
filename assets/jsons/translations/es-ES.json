@@ -20,7 +20,8 @@
          }
       },
       "available-versions":{
-         "title": "Seleccione una versión"
+         "title": "Seleccione una versión",
+         "steam-release":"Publicación Página"
       },
 		"settings":{
 			"steam":{
@@ -61,5 +62,96 @@
         		}
       	}
     	}
-  	}
+  	},
+   
+     "notifications":{
+      "types":{
+         "error": "🚨 Error",
+         "warning": "⚠️ Advertencia",
+         "success": "🎉 Éxito"
+      },
+      "bs-download":{
+         "success":{
+            "titles":{
+               "download-success": "Descargar completo",
+               "verification-finished":"Verificación completa"
+            }
+         },
+         "warnings":{
+            "msg":{
+               "ManifestChecksum": "El manifiesto descargado anteriormente no coincide con el nuevo 🤔",
+               "ConnectionTimeout": "Su conexión a Internet parece inestable 🥶",
+               "Unknown": "Algo extraño ha ocurrido 🤔 Tu conexión es probablemente inestable."
+            }
+         },
+         "errors":{
+            "titles":{
+               "verification-failed":"La verificación falló."
+            },
+            "msg":{
+               "Password": "La contraseña es inválida.",
+               "InvalidCredentials": "Su correo electrónico o contraseña no son válidos 😴",
+               "NoManifest": "No se ha encontrado el manifiesto",
+               "DirectoryCreate": "No se pueden instalar las carpetas necesarias.",
+               "NotAvailableApp": "¿Intentas descargar BeatSaber cuando no lo tienes? 🤣",
+               "DepotNotFound": "No se puede descargar BeatSaber 😥 inténtalo más tarde 😕",
+               "NotCompleted": "La descarga no pudo completarse ¯\\_(ツ)_/¯",
+               "InvalidManifest": "No se puede descargar BeatSaber 😥 inténtalo más tarde 😕",
+               "NoValidKey": "No se puede descargar BeatSaber 😥 inténtalo más tarde 😕",
+               "NoManifestCode": "No se puede descargar BeatSaber 😥 inténtalo más tarde 😕",
+               "401": "Parece que Steam no quiere dejarnos descargar BeatSaber 😢",
+               "404": "No se puede contactar con los servidores de Steam",
+               "Unknown": "Se ha producido un error desconocido ¯\\_(ツ)_/¯",
+               "NoServer": "No se puede contactar con los servidores de Steam.",
+               "NotAllowed": "Aparentemente no tienes permiso para descargar BeatSaber 🥱",
+               "ConnectionTimeout": "No se puede conectar a Steam 😕",
+               "SteamLib": "Si tienes este error, reporta el bug en GitHub con los logs por favor.",
+               "ConnectionError": "No se puede conectar a Steam después de 10 intentos 🤯",
+               "LicenceError": "No se puede obtener la lista de licencias.",
+               "verification-failed": "Verificación fallida, inténtelo más tarde." 
+            }
+         }
+      },
+      "settings":{
+         "move-folder":{
+            "success":{
+               "titles":{
+                  "transfer-finished":"Transferencia completa"
+               }
+            },
+            "errors":{
+               "titles":{
+                  "transfer-failed":"Transferencia fallida 😕"
+               }
+            }
+         },
+         "steam":{
+            "success":{
+               "titles":{
+                  "logout": "Desconectado de Steam."
+               }
+            }
+         }
+      },
+      "bs-launch":{
+         "success":{
+            "titles":{
+               "launching": "Lanzamiento...🚀"
+            }
+         },
+         "errors":{
+            "titles":{
+               "UNABLE_TO_LAUNCH": "No se puede lanzar",
+               "STEAM_NOT_RUNNING": "Steam no funciona",
+               "BS_ALREADY_RUNNING": "BeatSaber ya está en marcha",
+               "EXE_NOT_FINDED": "Archivos perdidos"
+            },
+            "msg":{
+               "STEAM_NOT_RUNNING": "Para iniciar BeatSaber es necesario que Steam esté en funcionamiento.",
+               "BS_ALREADY_RUNNING": "Cierra BeatSaber antes de volver a lanzarlo.",
+               "EXE_NOT_FINDED": "Parece que faltan algunos archivos, intente verificar los archivos."
+            }
+         }
+      }
+   }
 }

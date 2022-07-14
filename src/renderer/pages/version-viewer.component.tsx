@@ -73,6 +73,9 @@ export function VersionViewer() {
         .catch((e) => {console.log("*** ", e)}) 
       }
     }
+    else if(id === 2){
+      verifyFiles();
+    }
     else if(id === 1){
       window.electron.ipcRenderer.sendMessage("bs-version.open-folder", state);
     }
@@ -82,23 +85,23 @@ export function VersionViewer() {
     progressService.show(bsDownloaderService.downloadProgress$);
     bsDownloaderService.download(state).then(res => { 
       progressService.hide(true);
-      if(!res.success){ notificationService.notifyError({title: "Unable to verify", desc: "Unable to verify, please try later"}); }
-      else(notificationService.notifySuccess({title: "Verification complete"}));
+      if(!res.success){ notificationService.notifyError({title: "notifications.bs-download.errors.titles.verification-failed", desc: "notifications.bs-download.errors.msg.verification-failed"}); }
+      else(notificationService.notifySuccess({title: "notifications.bs-download.success.titles.verification-finished"}));
     })
   }
   
   const launchBs = () => {
     bsLauncherService.launch(state, oculusMode, desktopMode, debugMode).then(res => {
-      if(!res.success){ notificationService.notifyError({title: 'Unable to launch', desc: res.error.title}); }
-      else if(res.data === "STEAM_NOT_RUNNING"){ notificationService.notifyWarning({title: "Steam not running", desc: "Steam must be running to launch Beat Saber."}); }
-      else if(res.data === "BS_ALREADY_RUNNING"){ notificationService.notifyWarning({title: "Beat Saber already running", desc: "Please close Beat Saber to launch."}); }
+      if(!res.success){ notificationService.notifyError({title: "notifications.bs-launch.errors.titles.UNABLE_TO_LAUNCH", desc: res.error.title}); }
+      else if(res.data === "STEAM_NOT_RUNNING"){ notificationService.notifyError({title: "notifications.bs-launch.errors.titles.STEAM_NOT_RUNNING", desc: "notifications.bs-launch.errors.msg.STEAM_NOT_RUNNING"}); }
+      else if(res.data === "BS_ALREADY_RUNNING"){ notificationService.notifyError({title: "notifications.bs-launch.errors.titles.UNABLE_TO_LAUNCH", desc: "notifications.bs-launch.errors.msg.UNABLE_TO_LAUNCH"}); }
       else if(res.data === "EXE_NOT_FINDED"){
-        notificationService.notifyError({title: "Files missing", desc: "Some files are missing, please verify the download", actions: [{id: "0", title:"Verfiy"}]}).then(res => {
+        notificationService.notifyError({title: "notifications.bs-launch.errors.titles.EXE_NOT_FINDED", desc: "notifications.bs-launch.errors.msg.EXE_NOT_FINDED", actions: [{id: "0", title:"misc.verify"}]}).then(res => {
           if(res !== "0"){ return; }
           verifyFiles();
         });
       }
-      else if(res.data === "LAUNCHED"){ notificationService.notifySuccess({title: "Launching..."}) }
+      else if(res.data === "LAUNCHED"){ notificationService.notifySuccess({title: "notifications.bs-launch.success.titles.launching"}) }
       else(notificationService.notifyError({title: res.data || res.error.title}));
     });
   }
