@@ -81,12 +81,15 @@
             "msg":{
                "ManifestChecksum": "Le manifest télécharger précédemment ne correspond pas au nouveau 🤔",
                "ConnectionTimeout": "Ta connexion internet semble instable 🥶",
+               "ConnectionLost": "La connexion a été perdue, retentative...",
+               "ConnectionError": "Impossible de se connecter à Steam, retentative...",
                "Unknown": "Quelque chose d'étrange c'est produit 🤔 Votre connexion est surement instable."
             }
          },
          "errors":{
             "titles":{
-               "verification-failed":"La vérification a échoué."
+               "already-downloading": "Un téléchargement est déjà en cours",
+               "verification-failed": "La vérification a échoué."
             },
             "msg":{
                "Password": "Le mot de passe est invalide.",

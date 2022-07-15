@@ -82,11 +82,14 @@
             "msg":{
                "ManifestChecksum": "El manifiesto descargado anteriormente no coincide con el nuevo 🤔",
                "ConnectionTimeout": "Su conexión a Internet parece inestable 🥶",
+               "ConnectionLost": "Se ha perdido la conexión, inténtelo de nuevo...",
+               "ConnectionError": "No se puede conectar a Steam, reintentar...",
                "Unknown": "Algo extraño ha ocurrido 🤔 Tu conexión es probablemente inestable."
             }
          },
          "errors":{
             "titles":{
+               "already-downloading": "La descarga ya está en curso",
                "verification-failed":"La verificación falló."
             },
             "msg":{

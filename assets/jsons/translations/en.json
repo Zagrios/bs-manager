@@ -81,11 +81,14 @@
             "msg":{
                "ManifestChecksum": "The previously downloaded manifest does not match the new 🤔",
                "ConnectionTimeout": "Your internet connection seems unstable 🥶",
+               "ConnectionLost": "The connection has been lost, try again...",
+               "ConnectionError": "Unable to connect to Steam, retry...",
                "Unknown": "Something strange has happened 🤔 Your connection is probably unstable."
             }
          },
          "errors":{
             "titles":{
+               "already-downloading": "A download is already in progress",
                "verification-failed":"The verification failed."
             },
             "msg":{
