@@ -9,28 +9,15 @@ import { BsmProgressBar } from "./components/progress-bar/bsm-progress-bar.compo
 import { useEffect } from "react";
 import { ThemeService } from "./services/theme.service";
 import { NotificationOverlay } from "./components/notification/notification-overlay.component";
-import { BsDownloaderService } from "./services/bs-downloader.service";
-import { NotificationService } from "./services/notification.service";
-import { debounceTime, distinctUntilChanged, filter } from "rxjs";
 
 export default function App() {
 
   const themeService = ThemeService.getInstance();
-  const bsDownloadService = BsDownloaderService.getInstance();
-  const notificationService = NotificationService.getInstance();
 
   useEffect(() => {
     themeService.theme$.subscribe(() => {
       if(themeService.isDark || (themeService.isOS && window.matchMedia('(prefers-color-scheme: dark)').matches)){ document.documentElement.classList.add('dark'); }
       else { document.documentElement.classList.remove('dark'); }
-    });
-
-    bsDownloadService.downloadWarning$.pipe(filter(v => !!v),  distinctUntilChanged(), debounceTime(100)).subscribe((warning) => {
-      notificationService.notifyWarning({title: "notifications.types.warning", desc: `notifications.bs-download.warnings.msg.${warning}`});
-    });
-
-    bsDownloadService.downloadError$.pipe(filter(v => !!v), distinctUntilChanged(), debounceTime(100)).subscribe(err => {
-      notificationService.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.errors.msg.${err}`});
     });
   }, [])
   
