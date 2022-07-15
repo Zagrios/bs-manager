@@ -26,7 +26,7 @@ export class I18nService {
 
       this.currentLanguage$.pipe(filter(l => !!l), distinctUntilChanged()).subscribe(lang => {
          this.cache.clear();
-         this.dictionary = require(`../../../assets/jsons/translations/${lang}.json`);
+         this.dictionary = require(`../../../assets/jsons/translations/${lang.split("-")[0]}.json`);
       });
     }
 
