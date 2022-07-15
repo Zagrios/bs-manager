@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
+import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { ModalExitCode, ModalResponse } from "renderer/services/modale.service";
 import BeatImpatient from '../../../../../assets/images/apngs/beat-impatient.png'
 
@@ -9,6 +10,7 @@ export function LoginModal({resolver}: {resolver: (x: ModalResponse) => void}) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [stay, setStay] = useState(true);
+    const t = useTranslation();
 
     const loggin = () => {
         if(!username || !password){ return; }
@@ -17,23 +19,23 @@ export function LoginModal({resolver}: {resolver: (x: ModalResponse) => void}) {
 
   return (
     <form onSubmit={(e) => {e.preventDefault(); loggin();}}>
-        <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">Steam Login</h1>
+        <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t("modals.steam-login.title")}</h1>
         <BsmImage className="mx-auto h-20" image={BeatImpatient} />
         <div className="mb-2">
-            <label className="block font-bold cursor-pointer tracking-wide text-gray-800 dark:text-gray-200" htmlFor="username">Username</label>
-            <input className="w-full bg-light-main-color-1 dark:bg-main-color-1 px-1 py-[2px] rounded-md outline-none" onChange={e => setUsername(e.target.value)} value={username} type="text" name="username" id="username" placeholder="Enter your username"/>
+            <label className="block font-bold cursor-pointer tracking-wide text-gray-800 dark:text-gray-200" htmlFor="username">{t("modals.steam-login.inputs.username.label")}</label>
+            <input className="w-full bg-light-main-color-1 dark:bg-main-color-1 px-1 py-[2px] rounded-md outline-none" onChange={e => setUsername(e.target.value)} value={username} type="text" name="username" id="username" placeholder={t("modals.steam-login.inputs.username.placeholder")}/>
         </div>
         <div className="mb-2">
-            <label className="block font-bold cursor-pointer tracking-wide text-gray-800 dark:text-gray-200" htmlFor="password">Password</label>
-            <input className="w-full bg-light-main-color-1 dark:bg-main-color-1 px-1 py-[2px] rounded-md outline-none" onChange={e => setPassword(e.target.value)} value={password} type="password" name="password" id="password" placeholder="Enter your password"/>
+            <label className="block font-bold cursor-pointer tracking-wide text-gray-800 dark:text-gray-200" htmlFor="password">{t("modals.steam-login.inputs.password.label")}</label>
+            <input className="w-full bg-light-main-color-1 dark:bg-main-color-1 px-1 py-[2px] rounded-md outline-none" onChange={e => setPassword(e.target.value)} value={password} type="password" name="password" id="password" placeholder={t("modals.steam-login.inputs.password.placeholder")}/>
         </div>
         <div className="flex items-center content-center justify-start mb-3">
             <input onChange={e => setStay(e.target.checked)} checked={stay} className="mr-1" type="checkbox" name="stay" id="stay" />
-            <label className="cursor-pointer text-gray-800 dark:text-gray-200" htmlFor="stay">Stay connected</label>
+            <label className="cursor-pointer text-gray-800 dark:text-gray-200" htmlFor="stay">{t("modals.steam-login.inputs.stay.label")}</label>
         </div>
         <div className="grid grid-flow-col grid-cols-2 gap-4">
-            <BsmButton className="rounded-md text-center bg-gray-500 hover:brightness-110 transition-all" onClick={() => {resolver({exitCode: ModalExitCode.CANCELED})}} withBar={false} text="Cancel"/>
-            <BsmButton className="rounded-md text-center bg-blue-500 hover:brightness-110 transition-all" type="submit" withBar={false} text="Login"/>
+            <BsmButton className="rounded-md text-center bg-gray-500 hover:brightness-110 transition-all" onClick={() => {resolver({exitCode: ModalExitCode.CANCELED})}} withBar={false} text="misc.cancel"/>
+            <BsmButton className="rounded-md text-center bg-blue-500 hover:brightness-110 transition-all" type="submit" withBar={false} text={t("modals.steam-login.buttons.submit")}/>
         </div>
     </form>
   )

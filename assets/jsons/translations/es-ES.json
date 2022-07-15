@@ -4,7 +4,8 @@
       "verify": "Verificar",
       "launch": "Lanzar",
       "mods": "Mods",
-      "maps": "Maps"
+      "maps": "Maps",
+      "cancel": "Cancelar"
    },
 	"pages":{
       "version-viewer":{
@@ -63,7 +64,7 @@
       	}
     	}
   	},
-   
+
      "notifications":{
       "types":{
          "error": "🚨 Error",
@@ -151,6 +152,53 @@
                "BS_ALREADY_RUNNING": "Cierra BeatSaber antes de volver a lanzarlo.",
                "EXE_NOT_FINDED": "Parece que faltan algunos archivos, intente verificar los archivos."
             }
+         }
+      }
+   },
+   "modals":{
+      "guard":{
+         "title": "Steam Guard",
+         "inputs":{
+            "guard-code":{
+               "label": "Guard Código",
+               "placeholder": "Introduzca su código Guard"
+            }
+         },
+         "buttons":{
+            "submit": "Conéctate"
+         }
+      },
+      "steam-login":{
+         "title": "Steam Conectar",
+         "inputs":{
+            "username":{
+               "label": "Nombre de usuario",
+               "placeholder": "Introduzca su nombre de usuario"
+            },
+            "password":{
+               "label": "Contraseña",
+               "placeholder": "Introduzca su contraseña"
+            },
+            "stay":{
+               "label": "Manténgase conectado"
+            }
+         },
+         "buttons":{
+            "submit": "Inicio de sesión"
+         }  
+      },
+      "bs-uninstall":{
+         "title": "Desinstalar",
+         "description": "¿Estás seguro de que quieres desinstalar BeatSaber {version}? Tendrás que descargarlo de nuevo para poder jugar.",
+         "buttons":{
+            "submit": "Desinstalar"
+         }
+      },
+      "install-folder":{
+         "title": "Instalación Carpeta",
+         "description": "Al cambiar la carpeta de instalación por defecto, se moverán todos los datos instalados a la nueva carpeta.",
+         "buttons":{
+            "submit": "Elija la carpeta"
          }
       }
    }

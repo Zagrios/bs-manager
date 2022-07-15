@@ -4,7 +4,8 @@
       "verify": "Vérifier",
       "launch": "Lancer",
       "mods": "Modes",
-      "maps": "Maps"
+      "maps": "Maps",
+      "cancel": "Annuler"
    },
    "pages":{
       "version-viewer":{
@@ -150,6 +151,53 @@
                "BS_ALREADY_RUNNING": "Ferme BeatSaber avant de le lancer à nouveau.",
                "EXE_NOT_FINDED": "Quelques fichiers semblent manquants. Essaye de vérifier les fichiers."
             }
+         }
+      }
+   },
+   "modals":{
+      "guard":{
+         "title": "Steam Guard",
+         "inputs":{
+            "guard-code":{
+               "label": "Code Guard",
+               "placeholder": "Entre ton code Guard"
+            }
+         },
+         "buttons":{
+            "submit": "Se connecter"
+         }
+      },
+      "steam-login":{
+         "title": "Connexion Steam",
+         "inputs":{
+            "username":{
+               "label": "Nom d'utilisateur",
+               "placeholder": "Entre ton nom d'utilisateur"
+            },
+            "password":{
+               "label": "Mot de passe",
+               "placeholder": "Entre ton mot de passe"
+            },
+            "stay":{
+               "label": "Rester connecté"
+            }
+         },
+         "buttons":{
+            "submit": "Se connecter"
+         }  
+      },
+      "bs-uninstall":{
+         "title": "Désinstaller",
+         "description": "Est tu sûr de vouloir désinstaller BeatSaber {version} ? Tu vas devoir la retélécharger pour y jouer.",
+         "buttons":{
+            "submit": "Désinstaller"
+         }
+      },
+      "install-folder":{
+         "title": "Dossier d'installation",
+         "description": "Changer le dossier d'installation par défaut, va engendrer le déplacement de toutes les données installer vers le nouveau dossier.",
+         "buttons":{
+            "submit": "Choisir un dossier"
          }
       }
    }
