@@ -14,9 +14,7 @@ import { BSUninstallerService } from '../services/bs-uninstaller.service';
 import { BSVersionManagerService } from '../services/bs-version-manager.service';
 import { ModalExitCode, ModalService, ModalType } from '../services/modale.service';
 import DefautVersionImage from "../../../assets/images/default-version-img.jpg";
-import { NotificationService } from 'renderer/services/notification.service';
 import { BsDownloaderService } from 'renderer/services/bs-downloader.service';
-import { ProgressBarService } from 'renderer/services/progress-bar.service';
 import { useTranslation } from 'renderer/hooks/use-translation.hook';
 
 export function VersionViewer() {
@@ -34,9 +32,7 @@ export function VersionViewer() {
   const bsUninstallerService = BSUninstallerService.getInstance();
   const bsVersionManagerService = BSVersionManagerService.getInstance();
   const modalService = ModalService.getInsance();
-  const notificationService = NotificationService.getInstance();
   const bsDownloaderService = BsDownloaderService.getInstance();
-  const progressService = ProgressBarService.getInstance();
 
   useEffect(() => {
     setOculusMode(!!configService.get<boolean>(LaunchMods.OCULUS_MOD));
@@ -81,30 +77,13 @@ export function VersionViewer() {
     }
   }
 
-  const verifyFiles = () => {
-    progressService.show(bsDownloaderService.downloadProgress$);
-    bsDownloaderService.download(state).then(res => { 
-      progressService.hide(true);
-      if(!res.success){ notificationService.notifyError({title: "notifications.bs-download.errors.titles.verification-failed", desc: "notifications.bs-download.errors.msg.verification-failed"}); }
-      else(notificationService.notifySuccess({title: "notifications.bs-download.success.titles.verification-finished"}));
-    })
-  }
+   const verifyFiles = () => {
+      bsDownloaderService.download(state, true);
+   }
   
-  const launchBs = () => {
-    bsLauncherService.launch(state, oculusMode, desktopMode, debugMode).then(res => {
-      if(!res.success){ notificationService.notifyError({title: "notifications.bs-launch.errors.titles.UNABLE_TO_LAUNCH", desc: res.error.title}); }
-      else if(res.data === "STEAM_NOT_RUNNING"){ notificationService.notifyError({title: "notifications.bs-launch.errors.titles.STEAM_NOT_RUNNING", desc: "notifications.bs-launch.errors.msg.STEAM_NOT_RUNNING"}); }
-      else if(res.data === "BS_ALREADY_RUNNING"){ notificationService.notifyError({title: "notifications.bs-launch.errors.titles.UNABLE_TO_LAUNCH", desc: "notifications.bs-launch.errors.msg.UNABLE_TO_LAUNCH"}); }
-      else if(res.data === "EXE_NOT_FINDED"){
-        notificationService.notifyError({title: "notifications.bs-launch.errors.titles.EXE_NOT_FINDED", desc: "notifications.bs-launch.errors.msg.EXE_NOT_FINDED", actions: [{id: "0", title:"misc.verify"}]}).then(res => {
-          if(res !== "0"){ return; }
-          verifyFiles();
-        });
-      }
-      else if(res.data === "LAUNCHED"){ notificationService.notifySuccess({title: "notifications.bs-launch.success.titles.launching"}) }
-      else(notificationService.notifyError({title: res.data || res.error.title}));
-    });
-  }
+   const launchBs = () => {
+      bsLauncherService.launch(state, oculusMode, desktopMode, debugMode);
+   }
 
   return (
     <>
