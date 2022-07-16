@@ -226,6 +226,7 @@
   "dependencies": {
     "@node-steam/vdf": "^2.2.0",
     "@reduxjs/toolkit": "^1.8.3",
+    "ctrlc-windows": "^2.0.0",
     "dateformat": "^5.0.3",
     "dot-prop": "^7.2.0",
     "electron-debug": "^3.2.0",
@@ -243,7 +244,6 @@
     "regedit": "^5.1.1",
     "rxjs": "^7.5.5",
     "tailwind-scrollbar-hide": "^1.1.7",
-    "tree-kill": "^1.2.2",
     "uuid": "^8.3.2"
   },
   "devEngines": {

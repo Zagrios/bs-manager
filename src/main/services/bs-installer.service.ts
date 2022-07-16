@@ -6,7 +6,7 @@ import { UtilsService } from "./utils.service";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import log from "electron-log";
 import { InstallationLocationService } from "./installation-location.service";
-import treeKill from "tree-kill";
+import { ctrlc } from "ctrlc-windows";
 
 export class BSInstallerService{
 
@@ -69,13 +69,20 @@ export class BSInstallerService{
     }
   }
 
-  private killDownloadProcess(){
-    if(!this.downloadProcess?.connected || !this.downloadProcess?.pid){ return; }
-    treeKill(this.downloadProcess.pid);
-  }
+   public killDownloadProcess(): Promise<boolean>{
+      return new Promise(resolve => {
+         if(this.downloadProcess?.killed && !this.downloadProcess?.pid){ return resolve(false); }
+
+         this.downloadProcess.on('close', () => resolve(true));
+
+         ctrlc(this.downloadProcess.pid);
+         if(!this.downloadProcess.kill()){ return resolve(false); }
+         setTimeout(() => resolve(false), 2000);
+      });
+   }
 
   public async downloadBsVersion(downloadInfos: DownloadInfo): Promise<DownloadEvent>{
-    if(this.downloadProcess?.connected){ return {type: "[AlreadyDownloading]"}; }
+    if(this.downloadProcess && !this.downloadProcess?.killed){ console.log("*** AlreadyDownloading ***"); return {type: "[AlreadyDownloading]"}; }
     const bsVersion = this.bsVersionService.getVersionDetailFromVersionNumber(downloadInfos.bsVersion.BSVersion);
     if(!bsVersion){ return {type: "[Error]"}; }
 
@@ -91,7 +98,7 @@ export class BSInstallerService{
         (downloadInfos.stay || !downloadInfos.password) && "-remember-password"
       ],
       {shell: true, cwd: this.installationFolder}
-    )
+    );
 
     return await new Promise((resolve, reject) => {
 
@@ -105,14 +112,14 @@ export class BSInstallerService{
             this.sendInputProcess(downloadInfos.password);
           }
           else if(out[0] === "[Password]" as DownloadEventType){
-            treeKill(this.downloadProcess.pid);
+            this.killDownloadProcess();
             resolve({type: "[Password]", data: bsVersion});
           }
           else if(out[0] === "[2FA]" as DownloadEventType || out[0] === "[Guard]" as DownloadEventType){
             this.sendDownloadEvent("[2FA]")
           }
           else if(out[0] === "[Progress]" as DownloadEventType || (out[0] === "[Validated]" as DownloadEventType && parseFloat(out[1]) < 100)){ 
-            this.sendDownloadEvent("[Progress]", parseFloat(out[1]));
+            this.sendDownloadEvent("[Progress]", parseFloat(out[1].replaceAll(",", ".")));
           }
           else if(out[0] === "[Finished]" as DownloadEventType || (out[0] === "[Validated]" as DownloadEventType && parseFloat(out[1]) == 100)){
             resolve({type: "[Finished]"});
@@ -150,6 +157,8 @@ export class BSInstallerService{
         reject(err);
       });
 
+      this.downloadProcess.on('close', (code) => reject({type: "[Exit]", data: code}));
+
     })
   }
 
@@ -175,4 +184,4 @@ export interface DownloadEvent{
   data?: any,
 }
 
-export type DownloadEventType = "[Password]" | "[Guard]" | "[2FA]" | "[Progress]" | "[Validated]" | "[Finished]" | "[AlreadyDownloading]" | "[Error]" | "[Warning]" | "[SteamID]";
+export type DownloadEventType = "[Password]" | "[Guard]" | "[2FA]" | "[Progress]" | "[Validated]" | "[Finished]" | "[AlreadyDownloading]" | "[Error]" | "[Warning]" | "[SteamID]" | "[Exit]";
