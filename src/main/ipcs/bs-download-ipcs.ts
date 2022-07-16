@@ -35,6 +35,11 @@ ipcMain.on(`bs-download.${"[2FA]" as DownloadEventType}`, async (event, args: Ip
   BSInstallerService.getInstance().sendInputProcess(args.args);
 });
 
+ipcMain.on('bs-download.kill', async (event, request: IpcRequest<void>) => {
+   const res = await BSInstallerService.getInstance().killDownloadProcess();
+   if(request.responceChannel){ UtilsService.getInstance().newIpcSenc(request.responceChannel, {success: res}); }
+});
+
 ipcMain.on('bs-download.installation-folder', async (event, request: IpcRequest<void>) => {
   const installationFolder = InstallationLocationService.getInstance().installationDirectory;
   UtilsService.getInstance().newIpcSenc(request.responceChannel, {success: true, data: installationFolder});

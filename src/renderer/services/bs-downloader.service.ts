@@ -20,12 +20,10 @@ export class BsDownloaderService{
     private readonly progressBarService: ProgressBarService;
     private readonly notificationService: NotificationService;
 
+    private _isVerification: boolean = false;
+
     public readonly currentBsVersionDownload$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
-
     public readonly downloadProgress$: BehaviorSubject<number> = new BehaviorSubject(0);
-    public readonly downloadWarning$: BehaviorSubject<string> = new BehaviorSubject(null);
-    public readonly downloadError$: BehaviorSubject<string> = new BehaviorSubject(null);
-
     public readonly selectedBsVersion$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
 
     public static getInstance(): BsDownloaderService{
@@ -57,9 +55,9 @@ export class BsDownloaderService{
       });
 
       this.ipcService.watch<void>("bs-download.[2FA]").subscribe(async response => {
-         if(!response.success){ return; }
+         if(!response.success){ this.ipcService.sendLazy("bs-download.kill"); return; }
          const res = await this.modalService.openModal(ModalType.GUARD_CODE);
-         if(res.exitCode !== ModalExitCode.COMPLETED){ return; }
+         if(res.exitCode !== ModalExitCode.COMPLETED){ this.ipcService.sendLazy("bs-download.kill"); return; }
          this.ipcService.sendLazy('bs-download.[2FA]', {args: res.data});
       });
 
@@ -75,13 +73,13 @@ export class BsDownloaderService{
         this.selectedBsVersion$.next(null);
     }
 
-   public async download(bsVersion: BSVersion, isVerification?: boolean): Promise<IpcResponse<DownloadEvent>>{
-      if(this.progressBarService.visible$.value){ 
-         this.notificationService.notifyError({title: "notifications.bs-download.errors.titles.already-downloading"});
-         return {success: false};
-      }
+   public cancelDownload(): Promise<IpcResponse<boolean>>{
+      return this.ipcService.send<boolean>("bs-download.kill");
+   }
 
+   public async download(bsVersion: BSVersion, isVerification?: boolean): Promise<IpcResponse<DownloadEvent>>{
       this.progressBarService.show(this.downloadProgress$);
+      this._isVerification = !!isVerification;
 
       let promise;
       if(!this.authService.sessionExist()){
@@ -106,12 +104,12 @@ export class BsDownloaderService{
       this.progressBarService.hide(true);
       this.resetDownload();
       res.success && this.notificationService.notifySuccess({title: `notifications.bs-download.success.titles.${isVerification ? "verification-finished" : "download-success"}`, duration: 3000});
+
       return res;
    }
 
-   public get isDownloading(): boolean{
-      return !!this.currentBsVersionDownload$.value;
-   }
+   public get isDownloading(): boolean{ return !!this.currentBsVersionDownload$.value; }
+   public get isVerification(): boolean{ return this._isVerification; }
 
    public async getInstallationFolder(): Promise<string>{
       const res = await this.ipcService.send<string>("bs-download.installation-folder");

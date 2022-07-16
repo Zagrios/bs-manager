@@ -20,12 +20,14 @@ export class BSUninstallerService {
         this.bsInstallerService = BSInstallerService.getInstance();
     }
 
-    public async uninstall(version :BSVersion){
-        if(version.steam){ throw "Cannot uninstall steam version"; }
-        const versionFolder = path.join(this.bsInstallerService.installationFolder, version.BSVersion);
-        if(!this.utilsService.folderExist(versionFolder)){ throw "Version folder not exist"; }
+   public async uninstall(version :BSVersion): Promise<boolean>{
+      if(version.steam){ return false; }
+      const versionFolder = path.join(this.bsInstallerService.installationFolder, version.BSVersion);
+      if(!this.utilsService.folderExist(versionFolder)){ return true; }
 
-        return await this.utilsService.deleteFolder(versionFolder);
-    }
+      return this.utilsService.deleteFolder(versionFolder)
+         .then(() => { return true; })
+         .catch(() => { return false; })
+   }
 
 }
