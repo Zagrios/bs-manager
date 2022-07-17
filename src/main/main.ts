@@ -13,7 +13,7 @@ import { app, BrowserWindow, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { resolveHtmlPath } from './util';
-import './ipcs/custom-ipcs';
+import './ipcs';
 import { UtilsService } from './services/utils.service';
 
 export default class AppUpdater {
