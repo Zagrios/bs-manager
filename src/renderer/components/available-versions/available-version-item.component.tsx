@@ -1,6 +1,5 @@
 import { BSVersion } from "main/services/bs-version-manager.service";
 import './available-version-item.component.css';
-import { SteamIcon } from "../svgs/steam-icon.component";
 import { useEffect, useState, memo } from "react";
 import { BsDownloaderService } from "renderer/services/bs-downloader.service";
 import { distinctUntilChanged } from "rxjs";
@@ -9,6 +8,7 @@ import dateFormat from "dateformat";
 import { BsmImage } from "../shared/bsm-image.component";
 import { IpcService } from "renderer/services/ipc.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { BsmIcon } from "../svgs/bsm-icon.component";
 
 export const AvailableVersionItem = memo(function AvailableVersionItem(props: {version: BSVersion}) {
 
@@ -51,7 +51,7 @@ export const AvailableVersionItem = memo(function AvailableVersionItem(props: {v
           </div>
           { props.version.ReleaseURL && (
             <a onClickCapture={e => { e.stopPropagation(); openReleasePage(); }} className="relative flex flex-row justify-between items-center rounded-full bg-black bg-opacity-30 text-white pb-[1px] hover:bg-opacity-50">
-              <SteamIcon className="w-[25px] h-[25px] transition-transform group-hover:rotate-[-360deg] duration-300"/>
+              <BsmIcon icon="steam" className="w-[25px] h-[25px] transition-transform group-hover:rotate-[-360deg] duration-300"/>
               <span className="relative -left-[2px] text-sm w-fit max-w-0 text-center overflow-hidden h-full whitespace-nowrap pb-[3px] transition-all group-hover:max-w-[200px] group-hover:px-1 duration-300">{t("pages.available-versions.steam-release")}</span>
             </a>
           )}
