@@ -1,7 +1,6 @@
 import { BS_APP_ID, BS_DEPOT } from "../constants";
 import path from "path";
 import { BSVersion, BSVersionManagerService } from "./bs-version-manager.service";
-import { SteamService } from "./steam.service";
 import { UtilsService } from "./utils.service";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import log from "electron-log";
@@ -10,12 +9,9 @@ import { ctrlc } from "ctrlc-windows";
 
 export class BSInstallerService{
 
-  private static readonly INSTALLATION_FOLDER = "BSInstances";
-
   private static instance: BSInstallerService;
 
   private readonly utils: UtilsService;
-  private readonly steamService: SteamService;
   private readonly bsVersionService: BSVersionManagerService;
   private readonly installLocationService: InstallationLocationService;
 
@@ -24,12 +20,7 @@ export class BSInstallerService{
   private constructor(){
     this.bsVersionService = BSVersionManagerService.getInstance();
     this.utils =  UtilsService.getInstance();
-    this.steamService = SteamService.getInstance();
     this.installLocationService = InstallationLocationService.getInstance();
-  }
-
-  public get installationFolder(): string{
-    return path.join(this.installLocationService.installationDirectory, BSInstallerService.INSTALLATION_FOLDER);
   }
 
   public static getInstance(){
@@ -41,27 +32,10 @@ export class BSInstallerService{
     return path.join(this.utils.getAssetsScriptsPath(), 'depot-downloader', 'DepotDownloader.exe');
   }
 
-  public async getInstalledBsVersion(): Promise<BSVersion[]>{
-    const versions: BSVersion[] = [];
-    const steamBsFolder = await this.steamService.getGameFolder(BS_APP_ID, "Beat Saber")
-    if(steamBsFolder && this.utils.pathExist(steamBsFolder)){
-      const steamBsVersion = await this.bsVersionService.getVersionOfBSFolder(steamBsFolder);
-      if(steamBsVersion){
-        const steamVersionDetails = this.bsVersionService.getVersionDetailFromVersionNumber(steamBsVersion);
-        versions.push(steamVersionDetails ? {...steamVersionDetails, steam: true} : {BSVersion: steamBsVersion, steam: true});
-      }
-    }
-
-    if(!this.utils.folderExist(this.installationFolder)){ return versions }
-
-    const folderInInstallation = this.utils.listDirsInDir(this.installationFolder);
-
-    folderInInstallation.forEach(f => {
-      const version = this.bsVersionService.getVersionDetailFromVersionNumber(f);
-      versions.push(version);
-    })
-    return versions;
-  }
+   private sendDownloadEvent(event: DownloadEventType, data?: string|number, success: boolean = true): void{
+      if(typeof data === "string"){ data = data.replaceAll(/\[|\]/g, ""); }
+      this.utils.newIpcSenc(`bs-download.${event}`, { success: success, data: data });
+   }
 
   public sendInputProcess(input: string){
     if(this.downloadProcess.stdin.writable){
@@ -86,7 +60,7 @@ export class BSInstallerService{
     const bsVersion = this.bsVersionService.getVersionDetailFromVersionNumber(downloadInfos.bsVersion.BSVersion);
     if(!bsVersion){ return {type: "[Error]"}; }
 
-    this.utils.createFolderIfNotExist(this.installationFolder);
+    this.utils.createFolderIfNotExist(this.installLocationService.versionsDirectory);
     this.downloadProcess = spawn(
       this.getDepotDownloaderExePath(),
       [
@@ -97,7 +71,7 @@ export class BSInstallerService{
         `-dir ${bsVersion.BSVersion}`,
         (downloadInfos.stay || !downloadInfos.password) && "-remember-password"
       ],
-      {shell: true, cwd: this.installationFolder}
+      {shell: true, cwd: this.installLocationService.versionsDirectory}
     );
 
     return await new Promise((resolve, reject) => {
@@ -161,11 +135,6 @@ export class BSInstallerService{
 
     })
   }
-
-   private sendDownloadEvent(event: DownloadEventType, data?: string|number, success: boolean = true): void{
-      if(typeof data === "string"){ data = data.replaceAll(/\[|\]/g, ""); }
-      this.utils.newIpcSenc(`bs-download.${event}`, { success: success, data: data });
-   }
 
 }
 

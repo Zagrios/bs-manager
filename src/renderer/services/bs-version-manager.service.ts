@@ -37,7 +37,7 @@ export class BSVersionManagerService {
    }
 
    public askAvailableVersions(): void{
-      this.ipcService.send<BSVersion[]>("bs-version.request-versions").then(res => this.availableVersions$.next(res.data));
+      this.ipcService.send<BSVersion[]>("bs-version.get-version-dict").then(res => this.availableVersions$.next(res.data));
    }
 
    public askInstalledVersions(): void{

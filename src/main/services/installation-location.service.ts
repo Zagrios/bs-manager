@@ -9,6 +9,7 @@ export class InstallationLocationService {
     private static instance: InstallationLocationService;
 
     private readonly INSTALLATION_FOLDER = "BSManager";
+    private readonly VERSIONS_FOLDER = "BSInstances";
     private readonly STORE_INSTALLATION_PATH_KEY = "installation-folder";
 
 
@@ -33,9 +34,8 @@ export class InstallationLocationService {
         this._installationDirectory = (this.configService.get(this.STORE_INSTALLATION_PATH_KEY) || this.utilsService.getUserDocumentsFolder()) as string;
     }
 
-    public get installationDirectory(): string{
-        return path.join(this._installationDirectory, this.INSTALLATION_FOLDER);
-    }
+    public get installationDirectory(): string{ return path.join(this._installationDirectory, this.INSTALLATION_FOLDER); }
+    public get versionsDirectory(): string { return path.join(this.installationDirectory, this.VERSIONS_FOLDER); }
 
     public setInstallationDirectory(newDir: string): Promise<string>{
         const oldDir = this.installationDirectory;
