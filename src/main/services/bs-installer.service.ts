@@ -1,6 +1,6 @@
 import { BS_APP_ID, BS_DEPOT } from "../constants";
 import path from "path";
-import { BSVersion, BSVersionManagerService } from "./bs-version-manager.service";
+import { BSVersion, BSVersionLibService } from "./bs-version-lib.service";
 import { UtilsService } from "./utils.service";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import log from "electron-log";
@@ -12,13 +12,13 @@ export class BSInstallerService{
   private static instance: BSInstallerService;
 
   private readonly utils: UtilsService;
-  private readonly bsVersionService: BSVersionManagerService;
+  private readonly bsVersionService: BSVersionLibService;
   private readonly installLocationService: InstallationLocationService;
 
   private downloadProcess: ChildProcessWithoutNullStreams;
 
   private constructor(){
-    this.bsVersionService = BSVersionManagerService.getInstance();
+    this.bsVersionService = BSVersionLibService.getInstance();
     this.utils =  UtilsService.getInstance();
     this.installLocationService = InstallationLocationService.getInstance();
   }
@@ -34,7 +34,7 @@ export class BSInstallerService{
 
    private sendDownloadEvent(event: DownloadEventType, data?: string|number, success: boolean = true): void{
       if(typeof data === "string"){ data = data.replaceAll(/\[|\]/g, ""); }
-      this.utils.newIpcSenc(`bs-download.${event}`, { success: success, data: data });
+      this.utils.ipcSend(`bs-download.${event}`, { success: success, data: data });
    }
 
   public sendInputProcess(input: string){
@@ -57,7 +57,7 @@ export class BSInstallerService{
 
   public async downloadBsVersion(downloadInfos: DownloadInfo): Promise<DownloadEvent>{
     if(this.downloadProcess && !this.downloadProcess?.killed){ console.log("*** AlreadyDownloading ***"); return {type: "[AlreadyDownloading]"}; }
-    const bsVersion = this.bsVersionService.getVersionDetailFromVersionNumber(downloadInfos.bsVersion.BSVersion);
+    const bsVersion = this.bsVersionService.getVersionDetails(downloadInfos.bsVersion.BSVersion);
     if(!bsVersion){ return {type: "[Error]"}; }
 
     this.utils.createFolderIfNotExist(this.installLocationService.versionsDirectory);

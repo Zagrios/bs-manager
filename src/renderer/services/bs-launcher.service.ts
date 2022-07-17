@@ -1,5 +1,5 @@
 import { LauchOption } from "../../shared/models/launch-models.model";
-import { BSVersion } from "../../main/services/bs-version-manager.service";
+import { BSVersion } from "../../main/services/bs-version-lib.service";
 import { IpcService } from "./ipc.service";
 import { BsLaunchResult } from "../../shared/models/launch-models.model";
 import { NotificationResult, NotificationService } from "./notification.service";

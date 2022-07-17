@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
-import { BSVersion } from '../services/bs-version-manager.service';
+import { BSVersion } from '../services/bs-version-lib.service';
 import { BSInstallerService, DownloadEventType } from '../services/bs-installer.service';
-import { IpcRequest } from '../../shared/models/ipc-models.model';
+import { IpcRequest } from 'shared/models/ipc';
 import { InstallationLocationService } from '../services/installation-location.service';
 import { UtilsService } from '../services/utils.service';
 
@@ -25,9 +25,9 @@ export interface DownloadInfo {
 
 ipcMain.on('bs-download.start', async (event, request: IpcRequest<DownloadInfo>) => {
   BSInstallerService.getInstance().downloadBsVersion(request.args).then(res => {
-    UtilsService.getInstance().newIpcSenc(request.responceChannel, {success: true, data: res});
+    UtilsService.getInstance().ipcSend(request.responceChannel, {success: true, data: res});
   }).catch(e => {
-    UtilsService.getInstance().newIpcSenc(request.responceChannel, {success: false, data: e});
+    UtilsService.getInstance().ipcSend(request.responceChannel, {success: false, data: e});
   });
 });
 
@@ -37,22 +37,22 @@ ipcMain.on(`bs-download.${"[2FA]" as DownloadEventType}`, async (event, args: Ip
 
 ipcMain.on('bs-download.kill', async (event, request: IpcRequest<void>) => {
    const res = await BSInstallerService.getInstance().killDownloadProcess();
-   if(request.responceChannel){ UtilsService.getInstance().newIpcSenc(request.responceChannel, {success: res}); }
+   if(request.responceChannel){ UtilsService.getInstance().ipcSend(request.responceChannel, {success: res}); }
 });
 
 ipcMain.on('bs-download.installation-folder', async (event, request: IpcRequest<void>) => {
   const installationFolder = InstallationLocationService.getInstance().installationDirectory;
-  UtilsService.getInstance().newIpcSenc(request.responceChannel, {success: true, data: installationFolder});
+  UtilsService.getInstance().ipcSend(request.responceChannel, {success: true, data: installationFolder});
 });
 
 ipcMain.on('bs-download.set-installation-folder', (event, request: IpcRequest<string>) => {
   const installerService = InstallationLocationService.getInstance();
   installerService.setInstallationDirectory(request.args).then(res => {
     console.log("déplacement terminer");
-    UtilsService.getInstance().newIpcSenc(request.responceChannel, {success: true, data: res});
+    UtilsService.getInstance().ipcSend(request.responceChannel, {success: true, data: res});
   }).catch(err => {
     console.log(err);
-    UtilsService.getInstance().newIpcSenc(request.responceChannel, {success: false, error: {title: err, type: 'error'}});
+    UtilsService.getInstance().ipcSend(request.responceChannel, {success: false, error: {title: err, type: 'error'}});
   });
 })
 

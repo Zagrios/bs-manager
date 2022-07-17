@@ -4,7 +4,7 @@ import { homedir } from "os";
 import path from "path";
 import { BrowserWindow } from "electron";
 import { rm } from "fs/promises";
-import { IpcResponse } from "shared/models/ipc-models.model";
+import { IpcResponse } from "shared/models/ipc";
 
 export class UtilsService{
 
@@ -68,11 +68,7 @@ export class UtilsService{
     return rm(folderPath, {recursive: true});
   }
 
-  public ipcSend(channel: string, args?: any){
-    this.mainWindow.webContents.send(channel, args);
-  }
-
-  public newIpcSenc(channel: string, response: IpcResponse<any>): void{
+  public ipcSend(channel: string, response: IpcResponse<any>): void{
     this.mainWindow.webContents.send(channel, response);
   }
 

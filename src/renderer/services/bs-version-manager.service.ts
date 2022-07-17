@@ -1,4 +1,4 @@
-import { BSVersion } from "../../main/services/bs-version-manager.service";
+import { BSVersion } from "../../main/services/bs-version-lib.service";
 import { BehaviorSubject } from "rxjs";
 import { IpcService } from "./ipc.service";
 

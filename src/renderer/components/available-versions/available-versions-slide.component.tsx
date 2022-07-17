@@ -1,4 +1,4 @@
-import { BSVersion } from "main/services/bs-version-manager.service";
+import { BSVersion } from "main/services/bs-version-lib.service";
 import { useEffect, useState } from "react"
 import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
 import { filter, take } from "rxjs";

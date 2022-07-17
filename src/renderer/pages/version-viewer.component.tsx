@@ -1,4 +1,4 @@
-import { BSVersion } from '../../main/services/bs-version-manager.service';
+import { BSVersion } from '../../main/services/bs-version-lib.service';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import BSLogo from '../../../assets/images/apngs/bs-logo.png';
@@ -16,8 +16,16 @@ import { ModalExitCode, ModalService, ModalType } from '../services/modale.servi
 import DefautVersionImage from "../../../assets/images/default-version-img.jpg";
 import { BsDownloaderService } from 'renderer/services/bs-downloader.service';
 import { useTranslation } from 'renderer/hooks/use-translation.hook';
+import { IpcService } from 'renderer/services/ipc.service';
 
 export function VersionViewer() {
+
+  const configService = ConfigurationService.getInstance();
+  const bsUninstallerService = BSUninstallerService.getInstance();
+  const bsVersionManagerService = BSVersionManagerService.getInstance();
+  const modalService = ModalService.getInsance();
+  const bsDownloaderService = BsDownloaderService.getInstance();
+  const ipcService = IpcService.getInstance();
 
   const {state} = useLocation() as {state: BSVersion};
   const navigate = useNavigate();
@@ -27,12 +35,6 @@ export function VersionViewer() {
   const [desktopMode, setDesktopMode] = useState(false);
   const [debugMode, setDebugMode] = useState(false);
   const [currentTabIndex, setCurrentTabIndex] = useState(0);
-
-  const configService = ConfigurationService.getInstance();
-  const bsUninstallerService = BSUninstallerService.getInstance();
-  const bsVersionManagerService = BSVersionManagerService.getInstance();
-  const modalService = ModalService.getInsance();
-  const bsDownloaderService = BsDownloaderService.getInstance();
 
   useEffect(() => {
     setOculusMode(!!configService.get<boolean>(LaunchMods.OCULUS_MOD));
@@ -73,7 +75,7 @@ export function VersionViewer() {
       verifyFiles();
     }
     else if(id === 1){
-      window.electron.ipcRenderer.sendMessage("bs-version.open-folder", state);
+      ipcService.sendLazy("bs-version.open-folder", {args: state});
     }
   }
 

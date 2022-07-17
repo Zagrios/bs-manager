@@ -1,7 +1,7 @@
 import { DownloadEvent } from 'main/services/bs-installer.service';
 import { BehaviorSubject, distinctUntilChanged, filter, debounceTime } from 'rxjs';
-import { IpcResponse } from 'shared/models/ipc-models.model';
-import { BSVersion } from '../../main/services/bs-version-manager.service'
+import { IpcResponse } from 'shared/models/ipc';
+import { BSVersion } from '../../main/services/bs-version-lib.service'
 import { AuthUserService } from './auth-user.service';
 import { BSVersionManagerService } from './bs-version-manager.service';
 import { IpcService } from './ipc.service';

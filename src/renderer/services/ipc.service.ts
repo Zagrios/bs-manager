@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { IpcRequest, IpcResponse } from "../../shared/models/ipc-models.model";
+import { IpcRequest, IpcResponse } from "shared/models/ipc";
 
 export class IpcService {
 
@@ -34,7 +34,6 @@ export class IpcService {
     }
 
     public watch<T>(channel: string): Observable<IpcResponse<T>>{
-
         if(this.channelObservables.has(channel)){ return this.channelObservables.get(channel) as Observable<IpcResponse<T>>; }
 
         const obs = new Observable<IpcResponse<T>>(observer => {

@@ -1,4 +1,4 @@
-import { BSVersion, BSVersionManagerService } from "./bs-version-manager.service";
+import { BSVersion, BSVersionLibService } from "./bs-version-lib.service";
 import { InstallationLocationService } from "./installation-location.service";
 import { SteamService } from "./steam.service";
 import { UtilsService } from "./utils.service";
@@ -14,7 +14,7 @@ export class BSLocalVersionService{
    private readonly installLocationService: InstallationLocationService;
    private readonly utilsService: UtilsService;
    private readonly steamService: SteamService;
-   private readonly remoteVersionService: BSVersionManagerService;
+   private readonly remoteVersionService: BSVersionLibService;
 
    public static getInstance(): BSLocalVersionService{
       if(!BSLocalVersionService.instance){ BSLocalVersionService.instance = new BSLocalVersionService(); }
@@ -25,7 +25,7 @@ export class BSLocalVersionService{
       this.installLocationService = InstallationLocationService.getInstance();
       this.utilsService = UtilsService.getInstance();
       this.steamService = SteamService.getInstance();
-      this.remoteVersionService = BSVersionManagerService.getInstance();
+      this.remoteVersionService = BSVersionLibService.getInstance();
    }
 
    private async getVersionOfBSFolder(bsPath: string): Promise<string>{
@@ -53,7 +53,7 @@ export class BSLocalVersionService{
       if(steamBsFolder && this.utilsService.pathExist(steamBsFolder)){
          const steamBsVersion = await this.getVersionOfBSFolder(steamBsFolder);
          if(steamBsVersion){
-           const steamVersionDetails = this.remoteVersionService.getVersionDetailFromVersionNumber(steamBsVersion);
+           const steamVersionDetails = this.remoteVersionService.getVersionDetails(steamBsVersion);
            versions.push(steamVersionDetails ? {...steamVersionDetails, steam: true} : {BSVersion: steamBsVersion, steam: true});
          }
       }
@@ -63,7 +63,7 @@ export class BSLocalVersionService{
       const folderInInstallation = this.utilsService.listDirsInDir(this.installLocationService.versionsDirectory);
 
       folderInInstallation.forEach(f => {
-         const version = this.remoteVersionService.getVersionDetailFromVersionNumber(f);
+         const version = this.remoteVersionService.getVersionDetails(f);
          versions.push(version);
       })
       return versions;

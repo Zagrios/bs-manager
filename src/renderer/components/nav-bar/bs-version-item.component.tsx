@@ -1,4 +1,4 @@
-import { BSVersion } from "main/services/bs-version-manager.service";
+import { BSVersion } from "main/services/bs-version-lib.service";
 import { Link, useLocation } from "react-router-dom";
 import { BsDownloaderService } from "renderer/services/bs-downloader.service";
 import { useEffect, useState } from "react";
