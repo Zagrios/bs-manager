@@ -7,13 +7,22 @@ import path from 'path';
 import { exec } from 'child_process';
 import { SteamService } from '../services/steam.service';
 import { BS_APP_ID } from '../constants';
+import { IpcRequest } from 'shared/models/ipc-models.model';
 
-ipcMain.on('bs-version.request-versions', async (event, args) => {
-    UtilsService.getInstance().ipcSend('bs-version.request-versions', await BSVersionManagerService.getInstance().getAvailableVersions());
+ipcMain.on('bs-version.request-versions', (event, req: IpcRequest<void>) => {
+   BSVersionManagerService.getInstance().getAvailableVersions().then(versions => {
+      UtilsService.getInstance().newIpcSenc(req.responceChannel, {success: true, data: versions});
+   }).catch(() => {
+      UtilsService.getInstance().newIpcSenc(req.responceChannel, {success: false});
+   })
 });
 
-ipcMain.on('bs-version.installed-versions', async (event, args) => {
-    UtilsService.getInstance().ipcSend('bs-version.installed-versions', await BSInstallerService.getInstance().getInstalledBsVersion())
+ipcMain.on('bs-version.installed-versions', async (event, req: IpcRequest<void>) => {
+   BSInstallerService.getInstance().getInstalledBsVersion().then(versions => {
+      UtilsService.getInstance().newIpcSenc(req.responceChannel, {success: true, data: versions});
+   }).catch(() => {
+      UtilsService.getInstance().newIpcSenc(req.responceChannel, {success: false});
+   })
 });
 
 ipcMain.on("bs-version.open-folder", async (event, args: BSVersion) => {
