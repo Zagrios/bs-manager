@@ -17,6 +17,7 @@
          "dropdown":{
             "open-folder": "Open folder",
             "verify-files": "Verify files",
+            "clone": "Clone",
             "uninstall": "Uninstall"
          }
       },
