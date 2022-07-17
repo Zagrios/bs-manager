@@ -13,15 +13,8 @@ export class BSVersionManagerService {
 
    private constructor(){
       this.ipcService = IpcService.getInstance();
-
-        window.electron.ipcRenderer.on('bs-version.request-versions', (versions: BSVersion[]) => {
-            this.availableVersions$.next(versions);
-        });
-        window.electron.ipcRenderer.on('bs-version.installed-versions', (versions: BSVersion[]) => {
-            this.setInstalledVersions(versions);
-        }); 
-        this.askAvailableVersions();
-        this.askInstalledVersions();
+      this.askAvailableVersions();
+      this.askInstalledVersions();
     } 
 
    public static getInstance(){
