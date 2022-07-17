@@ -1,4 +1,4 @@
-import { BSVersion } from "main/services/bs-version-lib.service";
+import { BSVersion } from 'shared/bs-version.interface';
 import './available-version-item.component.css';
 import { useEffect, useState, memo } from "react";
 import { BsDownloaderService } from "renderer/services/bs-downloader.service";

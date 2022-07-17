@@ -1,6 +1,6 @@
 import path from "path";
-import { BsLaunchResult, LauchOption } from "shared/models/launch-models.model";
-import { BSVersion } from "./bs-version-lib.service";
+import { LaunchResult, LauchOption } from "shared/models/bs-launch";
+import { BSVersion } from 'shared/bs-version.interface';
 import { UtilsService } from "./utils.service";
 import { BS_EXECUTABLE, BS_APP_ID } from "../constants";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
@@ -37,7 +37,7 @@ export class BSLauncherService{
         return this.utilsService.pathExist(exePath);
     }
 
-    public async launch(launchOptions: LauchOption): Promise<BsLaunchResult>{
+    public async launch(launchOptions: LauchOption): Promise<LaunchResult>{
         if(!this.steamService.steamRunning()){ return "STEAM_NOT_RUNNING" }
         if(!this.isExeExist(launchOptions.version)){ return "EXE_NOT_FINDED"; }
         if(this.isBsRunning()){ return "BS_ALREADY_RUNNING" }

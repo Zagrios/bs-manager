@@ -1,7 +1,6 @@
-import { LauchOption } from "../../shared/models/launch-models.model";
-import { BSVersion } from "../../main/services/bs-version-lib.service";
+import { LauchOption, LaunchResult } from "shared/models/bs-launch";
+import { BSVersion } from 'shared/bs-version.interface';
 import { IpcService } from "./ipc.service";
-import { BsLaunchResult } from "../../shared/models/launch-models.model";
 import { NotificationResult, NotificationService } from "./notification.service";
 import { BsDownloaderService } from "./bs-downloader.service";
 
@@ -26,7 +25,7 @@ export class BSLauncherService{
 
    public launch(version: BSVersion, oculus: boolean, desktop: boolean, debug: boolean): Promise<NotificationResult|string>{
       const lauchOption: LauchOption = {debug, oculus, desktop, version};
-      return this.ipcService.send<BsLaunchResult>("bs-launch.launch", {args: lauchOption}).then(res => {
+      return this.ipcService.send<LaunchResult>("bs-launch.launch", {args: lauchOption}).then(res => {
          if(!res.success){ return this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.UNABLE_TO_LAUNCH", desc: res.error.title}); }
          if(res.data === "EXE_NOT_FINDED"){
             this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.EXE_NOT_FINDED", desc: "notifications.bs-launch.errors.msg.EXE_NOT_FINDED", actions: [{id: "0", title:"misc.verify"}]}).then(res => {

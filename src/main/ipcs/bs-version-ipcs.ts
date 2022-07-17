@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
 import { UtilsService } from '../services/utils.service';
 import { BSVersionLibService } from '../services/bs-version-lib.service'
-import { BSVersion } from "main/services/bs-version-lib.service";
+import { BSVersion } from 'shared/bs-version.interface';
 import path from 'path';
 import { exec } from 'child_process';
 import { SteamService } from '../services/steam.service';

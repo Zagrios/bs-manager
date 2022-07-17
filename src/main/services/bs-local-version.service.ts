@@ -1,4 +1,5 @@
-import { BSVersion, BSVersionLibService } from "./bs-version-lib.service";
+import { BSVersionLibService } from "./bs-version-lib.service";
+import { BSVersion } from 'shared/bs-version.interface';
 import { InstallationLocationService } from "./installation-location.service";
 import { SteamService } from "./steam.service";
 import { UtilsService } from "./utils.service";

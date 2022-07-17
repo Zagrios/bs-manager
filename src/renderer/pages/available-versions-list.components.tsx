@@ -2,7 +2,7 @@ import { AvailableVersionsSlider } from "../components/available-versions/availa
 import { BsDownloaderService } from "../services/bs-downloader.service";
 import { Slideshow } from "renderer/components/slideshow/slideshow.component";
 import { useEffect, useState } from "react";
-import { BSVersion } from "main/services/bs-version-lib.service";
+import { BSVersion } from 'shared/bs-version.interface';
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "renderer/hooks/use-translation.hook";

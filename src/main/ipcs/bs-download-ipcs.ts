@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { BSVersion } from '../services/bs-version-lib.service';
+import { BSVersion } from 'shared/bs-version.interface';
 import { BSInstallerService, DownloadEventType } from '../services/bs-installer.service';
 import { IpcRequest } from 'shared/models/ipc';
 import { InstallationLocationService } from '../services/installation-location.service';

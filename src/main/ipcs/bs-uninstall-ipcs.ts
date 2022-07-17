@@ -1,5 +1,5 @@
 import { ipcMain } from "electron";
-import { BSVersion } from "main/services/bs-version-lib.service";
+import { BSVersion } from 'shared/bs-version.interface';
 import { UtilsService } from "../services/utils.service";
 import { IpcRequest } from "shared/models/ipc";
 import { BSLocalVersionService } from "../services/bs-local-version.service";

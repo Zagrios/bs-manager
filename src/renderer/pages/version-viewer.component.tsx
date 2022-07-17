@@ -1,4 +1,4 @@
-import { BSVersion } from '../../main/services/bs-version-lib.service';
+import { BSVersion } from 'shared/bs-version.interface';
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import BSLogo from '../../../assets/images/apngs/bs-logo.png';

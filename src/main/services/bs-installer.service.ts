@@ -1,6 +1,7 @@
 import { BS_APP_ID, BS_DEPOT } from "../constants";
 import path from "path";
-import { BSVersion, BSVersionLibService } from "./bs-version-lib.service";
+import { BSVersionLibService } from "./bs-version-lib.service";
+import { BSVersion } from 'shared/bs-version.interface';
 import { UtilsService } from "./utils.service";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import log from "electron-log";

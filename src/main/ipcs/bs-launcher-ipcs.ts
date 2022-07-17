@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 import { UtilsService } from '../services/utils.service'
-import { LauchOption } from "../../shared/models/launch-models.model";
+import { LauchOption } from "shared/models/bs-launch";
 import { BSLauncherService } from "../services/bs-launcher.service"
 import { IpcRequest } from 'shared/models/ipc';
 
