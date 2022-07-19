@@ -73,7 +73,7 @@ export class BSLocalVersionService{
       this.setCustomVersions(customVersions.filter(v => (v.name !== version.name || v.BSVersion !== version.BSVersion || v.color !== version.color)));
    }
 
-   private async getVersionPath(version: BSVersion): Promise<string>{
+   public async getVersionPath(version: BSVersion): Promise<string>{
       if(version.steam){ return await this.steamService.getGameFolder(BS_APP_ID, "Beat Saber") }
       return path.join(
          this.installLocationService.versionsDirectory,
@@ -86,7 +86,6 @@ export class BSLocalVersionService{
    }
 
    public getVersionFolder(version: BSVersion){
-      console.log(version.name ? `${version.BSVersion}-${version.name}` : version.BSVersion)
       return version.name ? `${version.BSVersion}-${version.name}` : version.BSVersion;
    }
 
@@ -160,7 +159,7 @@ export class BSLocalVersionService{
       const originPath = await this.getVersionPath(version);
       const cloneVersion: BSVersion = version.BSVersion === name 
          ? {...version, name: undefined, color}
-         : {...version, name: this.removeSpecialChar(name), color};
+         : {...version, name: this.removeSpecialChar(name), color, steam: false};
       const newPath = await this.getVersionPath(cloneVersion);
 
       if(originPath === newPath){
