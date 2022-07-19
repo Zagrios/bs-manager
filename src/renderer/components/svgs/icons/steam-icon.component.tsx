@@ -1,6 +1,8 @@
-export function SteamIcon({className}: {className: string}) {
+import { CSSProperties } from "react";
+
+export function SteamIcon(props: {className?: string, style?: CSSProperties}) {
   return (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 233 233">
+    <svg className={props.className} style={props.style} xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 233 233">
     <defs>
         <linearGradient id="a" x2="50%" x1="50%" y2="100%">
             <stop stopColor="#111D2E" offset="0"/>

@@ -1,6 +1,8 @@
-export function FranceIcon(props: {className: string}) {
+import { CSSProperties } from "react";
+
+export function FranceIcon(props: {className?: string, style?: CSSProperties}) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="71" height="48" viewBox="0 0 71 48" version="1.1" className={props.className}>
+    <svg xmlns="http://www.w3.org/2000/svg" width="71" height="48" viewBox="0 0 71 48" version="1.1" className={props.className} style={props.style}>
     <defs/>
       <g id="Flags" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd" transform="translate(-324.000000, -744.000000)">
           <g transform="translate(70.000000, 70.000000)" fillRule="nonzero" id="France-3">
