@@ -28,8 +28,8 @@ ipcMain.on('bs-version.installed-versions', async (event, req: IpcRequest<void>)
 });
 
 ipcMain.on("bs-version.open-folder", async (event, req: IpcRequest<BSVersion>) => {
-   const locationService = InstallationLocationService.getInstance();
-   const versionFolder = req.args.steam ? await SteamService.getInstance().getGameFolder(BS_APP_ID, "Beat Saber") : path.join(locationService.versionsDirectory, req.args.BSVersion);
+   const localVersionService = BSLocalVersionService.getInstance();
+   const versionFolder = await localVersionService.getVersionPath(req.args);
    UtilsService.getInstance().folderExist(versionFolder) && exec(`start "" "${versionFolder}"`);
 });
 
