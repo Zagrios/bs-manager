@@ -5,6 +5,7 @@ export function useTranslation(): (translationKey: string, args?: Record<string,
    const i18nService = I18nService.getInstance();
 
    return (key: string, args?: Record<string, string>) => {
+      if(!key){ return key; }
       const tranlatables = key.split(" ");
       return tranlatables.map((key) => i18nService.translate(key, args)).join(" ");
    }
