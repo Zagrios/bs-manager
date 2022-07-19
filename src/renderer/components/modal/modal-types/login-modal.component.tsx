@@ -5,7 +5,7 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { ModalExitCode, ModalResponse } from "renderer/services/modale.service";
 import BeatImpatient from '../../../../../assets/images/apngs/beat-impatient.png'
 
-export function LoginModal({resolver}: {resolver: (x: ModalResponse) => void}) {
+export function LoginModal({resolver}: {resolver: (x: ModalResponse<any>) => void}) {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');

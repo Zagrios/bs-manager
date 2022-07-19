@@ -32,14 +32,14 @@ export class ModalService{
         return this.resolver;
     }
 
-    public resolve(data: ModalResponse): void{
+    public resolve(data: ModalResponse<unknown>): void{
         this.resolver(data);
     }
 
-    public async openModal(modalType: ModalType, data?: any): Promise<ModalResponse>{
+    public async openModal<T>(modalType: ModalType, data?: any): Promise<ModalResponse<T>>{
         this.close();
         await timeout(100); //Must wait resolve
-        const promise = new Promise<ModalResponse>((resolve) => { this.resolver = resolve; });
+        const promise = new Promise<ModalResponse<T>>((resolve) => { this.resolver = resolve; });
         promise.then(() => this.close());
         this.modalType$.next(modalType);
         if(data){ this.modalData = data; }
@@ -54,6 +54,8 @@ export enum ModalType {
     GUARD_CODE = "GUARD_CODE",
     UNINSTALL = "UNINSTALL",
     INSTALLATION_FOLDER = "INSTALLATION_FOLDER",
+    EDIT_VERSION = "EDIT_VERSION",
+    CLONE_VERSION = "CLONE_VERSION"
 }
 
 export enum ModalExitCode {
@@ -63,7 +65,7 @@ export enum ModalExitCode {
     CANCELED = 2,
 }
 
-export interface ModalResponse {
+export interface ModalResponse<T> {
     exitCode: ModalExitCode,
-    data?: any
+    data?: T
 }

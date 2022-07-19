@@ -5,7 +5,7 @@ import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 
-export function GuardModal({resolver}: {resolver: (x: ModalResponse) => void}) {
+export function GuardModal({resolver}: {resolver: (x: ModalResponse<string>) => void}) {
 
     const [guardCode, setGuardCode] = useState('');
     const t = useTranslation();
