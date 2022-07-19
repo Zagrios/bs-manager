@@ -38,7 +38,7 @@ export function NotificationItem({resolver, notification}: {resolver?: (value: N
          </div>
          {notification.actions && (
             <div className="flex pb-1 w-full flex-wrap px-[2px]">
-               {notification.actions.map(a => <span onClick={() => resolver(a.id)} className={`px-1 cursor-pointer flex-1 grow rounded-md text-center bg-blue-500 hover:brightness-110 transition-all text-gray-200 whitespace-nowrap m-[3px] ${a.cancel && "!bg-gray-500"}`}>{t(a.title)}</span>)}
+               {notification.actions.map(a => <span key={a.id} onClick={() => resolver(a.id)} className={`px-1 cursor-pointer flex-1 grow rounded-md text-center bg-blue-500 hover:brightness-110 transition-all text-gray-200 whitespace-nowrap m-[3px] ${a.cancel && "!bg-gray-500"}`}>{t(a.title)}</span>)}
             </div>
          )}
       </div>
