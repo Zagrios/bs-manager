@@ -4,6 +4,7 @@ import { BSInstallerService, DownloadEventType } from '../services/bs-installer.
 import { IpcRequest } from 'shared/models/ipc';
 import { InstallationLocationService } from '../services/installation-location.service';
 import { UtilsService } from '../services/utils.service';
+import { BsmException } from 'shared/models/bsm-exception.model';
 
 
 export interface InitDownloadInfoInterface {
@@ -50,9 +51,9 @@ ipcMain.on('bs-download.set-installation-folder', (event, request: IpcRequest<st
   installerService.setInstallationDirectory(request.args).then(res => {
     console.log("déplacement terminer");
     UtilsService.getInstance().ipcSend(request.responceChannel, {success: true, data: res});
-  }).catch(err => {
+  }).catch((err: BsmException) => {
     console.log(err);
-    UtilsService.getInstance().ipcSend(request.responceChannel, {success: false, error: {title: err, type: 'error'}});
+    UtilsService.getInstance().ipcSend(request.responceChannel, {success: false, error: err});
   });
 })
 
