@@ -83,7 +83,7 @@ export class BsDownloaderService{
 
       let promise;
       if(!this.authService.sessionExist()){
-         const res = await this.modalService.openModal(ModalType.STEAM_LOGIN);
+         const res = await this.modalService.openModal<{username: string, stay: boolean, password: string}>(ModalType.STEAM_LOGIN);
          if(res.exitCode !== ModalExitCode.COMPLETED){ return {success: false}; }
          this.authService.setSteamSession(res.data.username, res.data.stay);
          promise = this.ipcService.send<DownloadEvent>('bs-download.start', {args: {bsVersion: bsVersion, username: res.data.username, password: res.data.password, stay: res.data.stay}});
