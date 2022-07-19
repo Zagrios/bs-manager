@@ -28,7 +28,7 @@ export class BSLauncherService{
       return this.ipcService.send<LaunchResult>("bs-launch.launch", {args: lauchOption}).then(res => {
          if(!res.success){ return this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.UNABLE_TO_LAUNCH", desc: res.error.title}); }
          if(res.data === "EXE_NOT_FINDED"){
-            this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.EXE_NOT_FINDED", desc: "notifications.bs-launch.errors.msg.EXE_NOT_FINDED", actions: [{id: "0", title:"misc.verify"}]}).then(res => {
+            return this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.EXE_NOT_FINDED", desc: "notifications.bs-launch.errors.msg.EXE_NOT_FINDED", actions: [{id: "0", title:"misc.verify"}]}).then(res => {
                if(res === "0"){ this.bsDownloaderService.download(version, true); }
                return res;
             });
