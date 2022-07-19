@@ -91,7 +91,7 @@ export function SettingsPage() {
                   notificationService.notifySuccess({title: "notifications.settings.move-folder.success.titles.transfer-finished", duration: 3000});
                }
                else{
-                  notificationService.notifyError({title: "notifications.settings.move-folder.errors.titles.transfer-failed", desc: res?.error?.title});
+                  notificationService.notifyError({title: "notifications.settings.move-folder.errors.titles.transfer-failed"});
                }
             });
          }
