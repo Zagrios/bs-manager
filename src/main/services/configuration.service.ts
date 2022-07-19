@@ -21,8 +21,8 @@ export class ConfigurationService {
         this.store.set(key, value);
     }
 
-    public get(key: string): any{
-        return this.store.get(key);
+    public get<T>(key: string): T{
+        return this.store.get(key) as T;
     }
 
     public delete(key: string): void{

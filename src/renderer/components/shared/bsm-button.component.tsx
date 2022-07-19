@@ -12,7 +12,7 @@ export function BsmButton({className, style, imgClassName, icon, image, text, ty
 
   return (
     <OutsideClickHandler onOutsideClick={e => onClickOutside && onClickOutside(e)}>
-      <div onClick={e => onClick && onClick(e)} className={`${className} overflow-hidden cursor-pointer group ${disabled && "brightness-75 cursor-not-allowed"} ${typeColor == "error" && 'bg-red-500'}`} style={style}>
+      <div onClick={e => onClick && onClick(e)} className={`${className} overflow-hidden cursor-pointer group ${disabled && "brightness-75 cursor-not-allowed"} ${typeColor === "error" && 'bg-red-500'} ${typeColor == "primary" && 'bg-blue-500'}`} style={style}>
         { image && <BsmImage image={image} className={imgClassName}/> }
         { icon && <BsmIcon icon={icon} className="h-full w-full text-gray-800 dark:text-white"/> }
         {text && (type === "submit" ? <button className="w-full h-full">{t(text)}</button> : <span>{t(text)}</span>)}

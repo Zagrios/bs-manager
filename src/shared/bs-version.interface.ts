@@ -5,5 +5,7 @@ export interface BSVersion {
    ReleaseImg?: string,
    ReleaseDate?: string,
    year?: string,
-   steam?: boolean
+   steam?: boolean,
+   name?: string,
+   color?: string
 }

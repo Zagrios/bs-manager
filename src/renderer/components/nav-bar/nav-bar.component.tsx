@@ -24,7 +24,7 @@ export function NavBar() {
           <span id='logo-top' className='bg-red-500 aspect-square w-16' style={{backgroundColor: secondColor}}> </span>
         </div>
       </div>
-      <div id='versions' className='w-fit relative left-[2px] grow overflow-y-hidden scrollbar-track-transparent scrollbar-thin scrollbar-thumb-neutral-900 hover:overflow-y-scroll'>
+      <div id='versions' className='w-fit max-w-[120px] relative left-[2px] grow overflow-y-hidden scrollbar-track-transparent scrollbar-thin scrollbar-thumb-neutral-900 hover:overflow-y-scroll'>
          {installedVersions && installedVersions.map((version) => <BsVersionItem key={JSON.stringify(version)} version={version}/>)}
       </div>
       <div className='w-full p-2 flex flex-col items-center content-center justify-start'>

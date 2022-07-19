@@ -3,7 +3,7 @@ import { HexColorPicker } from "react-colorful";
 import { motion, AnimatePresence } from "framer-motion"
 import OutsideClickHandler from "react-outside-click-handler";
 
-export default function SettingColorChooser({color, onChange}: {color?: string, onChange?: (color: string) => void}) {
+export default function SettingColorChooser({color, onChange, pickerClassName}: {color?: string, onChange?: (color: string) => void, pickerClassName?: string}) {
 
     const [colorVisible, setColorVisible] = useState(false);
 
@@ -13,9 +13,9 @@ export default function SettingColorChooser({color, onChange}: {color?: string, 
             <span className="z-[1] block h-full w-full border-2 border-white rounded-full" onClick={() => setColorVisible(!colorVisible)} style={{backgroundColor: color}}/>
             <AnimatePresence>
                 {colorVisible && 
-                    <motion.div initial={{opacity: 0}} animate={{opacity: 1}} transition={{duration: .1}} exit={{opacity: 0}} className="absolute flex items-center justify-center translate-y-9 shadow-lg rounded-lg shadow-black">
+                    <motion.div initial={{opacity: 0}} animate={{opacity: 1}} transition={{duration: .1}} exit={{opacity: 0}} className="fixed flex items-center justify-center translate-y-9 shadow-lg rounded-lg shadow-black">
                         <div className="absolute w-2/4 aspect-square rotate-45 bg-light-main-color-3 dark:bg-main-color-3 -translate-y-12"></div>
-                        <HexColorPicker color={color} onChange={onChange} className="" />
+                        <HexColorPicker color={color} onChange={onChange} className={pickerClassName} />
                     </motion.div>
                 }
             </AnimatePresence>

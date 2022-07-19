@@ -7,6 +7,7 @@ import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import log from "electron-log";
 import { InstallationLocationService } from "./installation-location.service";
 import { ctrlc } from "ctrlc-windows";
+import { BSLocalVersionService } from "./bs-local-version.service";
 
 export class BSInstallerService{
 
@@ -15,6 +16,7 @@ export class BSInstallerService{
   private readonly utils: UtilsService;
   private readonly bsVersionService: BSVersionLibService;
   private readonly installLocationService: InstallationLocationService;
+  private readonly localVersionService: BSLocalVersionService;
 
   private downloadProcess: ChildProcessWithoutNullStreams;
 
@@ -22,6 +24,7 @@ export class BSInstallerService{
     this.bsVersionService = BSVersionLibService.getInstance();
     this.utils =  UtilsService.getInstance();
     this.installLocationService = InstallationLocationService.getInstance();
+    this.localVersionService = BSLocalVersionService.getInstance();
   }
 
   public static getInstance(){
@@ -58,7 +61,7 @@ export class BSInstallerService{
 
   public async downloadBsVersion(downloadInfos: DownloadInfo): Promise<DownloadEvent>{
     if(this.downloadProcess && !this.downloadProcess?.killed){ console.log("*** AlreadyDownloading ***"); return {type: "[AlreadyDownloading]"}; }
-    const bsVersion = this.bsVersionService.getVersionDetails(downloadInfos.bsVersion.BSVersion);
+    const bsVersion = downloadInfos.bsVersion;
     if(!bsVersion){ return {type: "[Error]"}; }
 
     this.utils.createFolderIfNotExist(this.installLocationService.versionsDirectory);
@@ -69,7 +72,7 @@ export class BSInstallerService{
         `-depot ${BS_DEPOT}`,
         `-manifest ${bsVersion.BSManifest}`,
         `-username ${downloadInfos.username}`,
-        `-dir ${bsVersion.BSVersion}`,
+        `-dir \"${this.localVersionService.getVersionFolder(bsVersion)}\"`,
         (downloadInfos.stay || !downloadInfos.password) && "-remember-password"
       ],
       {shell: true, cwd: this.installLocationService.versionsDirectory}

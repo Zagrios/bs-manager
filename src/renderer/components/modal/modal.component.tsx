@@ -7,6 +7,7 @@ import { LoginModal } from "./modal-types/login-modal.component";
 import { GuardModal } from "./modal-types/guard-modal.component";
 import { UninstallModal } from "./modal-types/uninstall-modal.component";
 import { InstallationFolderModal } from "./modal-types/installation-folder-modal.component";
+import { EditVersionModal } from "./modal-types/edit-version-modal.component";
 
 export function Modal() {
 
@@ -41,6 +42,8 @@ export function Modal() {
             {modalType === ModalType.GUARD_CODE && <GuardModal resolver={modalSevice.getResolver()}/>}
             {modalType === ModalType.UNINSTALL && <UninstallModal resolver={modalSevice.getResolver()}/>}
             {modalType === ModalType.INSTALLATION_FOLDER && <InstallationFolderModal resolver={modalSevice.getResolver()}/>}
+            {modalType === ModalType.EDIT_VERSION && <EditVersionModal resolver={modalSevice.getResolver()}/>}
+            {modalType === ModalType.CLONE_VERSION && <EditVersionModal resolver={modalSevice.getResolver()} clone/>}
           </div>
         </motion.div>
       </div>

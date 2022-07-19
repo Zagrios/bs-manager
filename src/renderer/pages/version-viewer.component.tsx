@@ -40,9 +40,12 @@ export function VersionViewer() {
     setOculusMode(!!configService.get<boolean>(LaunchMods.OCULUS_MOD));
     setDesktopMode(!!configService.get<boolean>(LaunchMods.DESKTOP_MOD));
     setDebugMode(!!configService.get<boolean>(LaunchMods.DEBUG_MOD));
-  }, [])
-  
+  }, []);
 
+   const navigateToVersion = (version: BSVersion) => {
+      navigate(`/bs-version/${version.BSVersion}`, {state: version});
+   }
+  
   const setMode = (mode: LaunchMods, value: boolean) => {
     if(mode === LaunchMods.DEBUG_MOD){ setDebugMode(value); }
     else if(mode === LaunchMods.OCULUS_MOD){ 
@@ -58,26 +61,22 @@ export function VersionViewer() {
     configService.set(mode, value);
   }
 
-  const dropDownActions = async (id: number) => {
-    if(id === 4){
+   const openFolder = () => {
+      ipcService.sendLazy("bs-version.open-folder", {args: state});
+   }
+
+   const uninstall = async () => {
       const modalCompleted = await modalService.openModal(ModalType.UNINSTALL, state)
       if(modalCompleted.exitCode === ModalExitCode.COMPLETED){
         bsUninstallerService.uninstall(state)
         .then(() => {
           bsVersionManagerService.askInstalledVersions();
           const newVersionPage = bsVersionManagerService.getInstalledVersions()[0];
-          navigate("/bs-version/"+newVersionPage.BSVersion, {state: newVersionPage});
+          navigateToVersion(newVersionPage);
         })
         .catch((e) => {console.log("*** ", e)}) 
       }
-    }
-    else if(id === 2){
-      verifyFiles();
-    }
-    else if(id === 1){
-      ipcService.sendLazy("bs-version.open-folder", {args: state});
-    }
-  }
+   }
 
    const verifyFiles = () => {
       bsDownloaderService.download(state, true);
@@ -87,12 +86,26 @@ export function VersionViewer() {
       bsLauncherService.launch(state, oculusMode, desktopMode, debugMode);
    }
 
+   const edit = () => {
+      bsVersionManagerService.editVersion(state).then(newVersion => {
+         if(!newVersion){ return; }
+         navigateToVersion(newVersion);
+      });
+   }
+
+   const clone = () => {
+      bsVersionManagerService.cloneVersion(state).then(newVersion => {
+         if(!newVersion){ return; }
+         navigateToVersion(newVersion);
+      });
+   }
+
   return (
     <>
       <BsmImage className="absolute w-full h-full top-0 left-0 object-cover" image={state.ReleaseImg || DefautVersionImage} errorImage={DefautVersionImage}/>
       <div className="relative flex items-center flex-col w-full h-full text-gray-200 backdrop-blur-lg">
         <BsmImage className='relative object-cover h-28' image={BSLogo}/>
-        <h1 className='relative text-4xl font-bold italic -top-3'>{state.BSVersion}</h1>
+        <h1 className='relative text-4xl font-bold italic -top-3'>{state.name ? `${state.BSVersion} - ${state.name}` : state.BSVersion}</h1>
         <TabNavBar className='mt-3' tabsText={["misc.launch", "misc.maps", "misc.mods"]} onTabChange={(i : number) => setCurrentTabIndex(i)}/>
         <div className='mt-2 w-full grow flex transition-transform duration-300 pt-5' style={{transform: `translate(${-(currentTabIndex * 100)}%, 0)`}}>
           <div className='w-full shrink-0 items-center relative flex flex-col justify-start -top-2'>
@@ -119,11 +132,12 @@ export function VersionViewer() {
           </div>
         </div>
       </div>
-      <BsmDropdownButton className='absolute top-5 right-5 h-9 w-9' onItemClick={dropDownActions} items={[
-          {id: 1, text: "pages.version-viewer.dropdown.open-folder", icon: "folder"},
-          {id: 2, text: "pages.version-viewer.dropdown.verify-files", icon: "task"},
-          {id: 3, text: "pages.version-viewer.dropdown.clone (WIP)", icon: "copy"},
-          {id: 4, text: "pages.version-viewer.dropdown.uninstall", icon:"trash"}
+      <BsmDropdownButton className='absolute top-5 right-5 h-9 w-9' items={[
+          {text: "pages.version-viewer.dropdown.open-folder", icon: "folder", onClick: openFolder},
+          {text: "pages.version-viewer.dropdown.verify-files", icon: "task", onClick: verifyFiles},
+          (!state.steam && {text: "Editer (WIP)", icon: "task", onClick: edit}),
+          {text: "pages.version-viewer.dropdown.clone (WIP)", icon: "copy", onClick: clone},
+          {text: "pages.version-viewer.dropdown.uninstall", icon:"trash", onClick: uninstall}
         ]}/>
     </>
   )

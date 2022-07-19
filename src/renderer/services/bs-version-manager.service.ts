@@ -1,18 +1,24 @@
 import { BSVersion } from 'shared/bs-version.interface';
 import { BehaviorSubject } from "rxjs";
 import { IpcService } from "./ipc.service";
+import { ModalExitCode, ModalService, ModalType } from './modale.service';
+import { NotificationService } from './notification.service';
 
 export class BSVersionManagerService {
 
    private static instance: BSVersionManagerService;
 
-   public readonly ipcService: IpcService;
+   private readonly ipcService: IpcService;
+   private readonly modalService: ModalService;
+   private readonly notificationService: NotificationService;
 
    public readonly installedVersions$: BehaviorSubject<BSVersion[]> = new BehaviorSubject([]);
    public readonly availableVersions$: BehaviorSubject<BSVersion[]> = new BehaviorSubject([]); 
 
    private constructor(){
       this.ipcService = IpcService.getInstance();
+      this.modalService = ModalService.getInsance();
+      this.notificationService = NotificationService.getInstance();
       this.askAvailableVersions();
       this.askInstalledVersions();
     } 
@@ -28,7 +34,7 @@ export class BSVersionManagerService {
       if(steamIndex > 0){
          [sorted[0], sorted[steamIndex]] = [sorted[steamIndex], sorted[0]];
       }
-      const cleanedSort = [...new Map(sorted.map(version => [`${version.BSVersion}-${version.steam}`, version])).values()]
+      const cleanedSort = [...new Map(sorted.map(version => [`${version.BSVersion}-${version.name}-${version.steam}`, version])).values()]
       this.installedVersions$.next(cleanedSort);
     }
 
@@ -54,6 +60,34 @@ export class BSVersionManagerService {
 
    public getAvaibleVersionsOfYear(year: string): BSVersion[]{
       return this.availableVersions$.value.filter(v => v.year === year).sort((a, b) => +b.ReleaseDate - +a.ReleaseDate);
+   }
+
+   public async editVersion(version: BSVersion): Promise<BSVersion>{
+      const modalRes = await this.modalService.openModal<{name: string, color: string}>(ModalType.EDIT_VERSION, version);
+      if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return null; }
+      if(modalRes.data.name?.length < 2){ return null; }
+      return this.ipcService.send<BSVersion>("bs-version.rename", {args: {version, name: modalRes.data.name, color: modalRes.data.color}}).then(res => {
+         if(!res.success){
+            this.notificationService.notifyError({title: res.error.title});
+            return null;
+         }
+         this.askInstalledVersions();
+         return res.data;
+      });
+   }
+
+   public async cloneVersion(version: BSVersion): Promise<BSVersion>{
+      const modalRes = await this.modalService.openModal<{name: string, color: string}>(ModalType.CLONE_VERSION, version);
+      if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return null; }
+      if(modalRes.data.name?.length < 2){ return null; }
+      return this.ipcService.send<BSVersion>("bs-version.clone", {args: {version, name: modalRes.data.name, color: modalRes.data.color}}).then(res => {
+         if(!res.success){
+            this.notificationService.notifyError({title: res.error.title});
+            return null;
+         }
+         this.askInstalledVersions();
+         return res.data;
+      })
    }
 
 }

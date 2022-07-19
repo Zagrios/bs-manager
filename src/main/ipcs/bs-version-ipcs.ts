@@ -9,6 +9,7 @@ import { BS_APP_ID } from '../constants';
 import { IpcRequest } from 'shared/models/ipc';
 import { BSLocalVersionService } from '../services/bs-local-version.service';
 import { InstallationLocationService } from '../services/installation-location.service';
+import { BsmException } from 'shared/models/bsm-exception.model';
 
 ipcMain.on('bs-version.get-version-dict', (event, req: IpcRequest<void>) => {
    BSVersionLibService.getInstance().getAvailableVersions().then(versions => {
@@ -30,4 +31,24 @@ ipcMain.on("bs-version.open-folder", async (event, req: IpcRequest<BSVersion>) =
    const locationService = InstallationLocationService.getInstance();
    const versionFolder = req.args.steam ? await SteamService.getInstance().getGameFolder(BS_APP_ID, "Beat Saber") : path.join(locationService.versionsDirectory, req.args.BSVersion);
    UtilsService.getInstance().folderExist(versionFolder) && exec(`start "" "${versionFolder}"`);
+});
+
+ipcMain.on("bs-version.rename", async (event, req: IpcRequest<{version: BSVersion, name: string, color: string}>) => {
+   BSLocalVersionService.getInstance().editVersion(req.args.version, req.args.name, req.args.color).then(res => {
+      console.log(res);
+      UtilsService.getInstance().ipcSend(req.responceChannel, {success: !!res, data: res});
+   }).catch((error: BsmException) => {
+      UtilsService.getInstance().ipcSend(req.responceChannel, {success: false, error});
+      console.log(error);
+   });
+});
+
+ipcMain.on("bs-version.clone", async (event, req: IpcRequest<{version: BSVersion, name: string, color: string}>) => {
+   BSLocalVersionService.getInstance().cloneVersion(req.args.version, req.args.name, req.args.color).then(res => {
+      console.log(res);
+      UtilsService.getInstance().ipcSend(req.responceChannel, {success: !!res, data: res});
+   }).catch((error: BsmException) => {
+      UtilsService.getInstance().ipcSend(req.responceChannel, {success: false, error});
+      console.log(error);
+   });
 });
