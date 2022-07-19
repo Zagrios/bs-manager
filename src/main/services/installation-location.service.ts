@@ -3,6 +3,8 @@ import { ConfigurationService } from "./configuration.service";
 import { UtilsService } from "./utils.service";
 import fs from 'fs-extra';
 import log from "electron-log";
+import { app } from "electron/main";
+import { BsmException } from "shared/models/bsm-exception.model";
 
 export class InstallationLocationService {
 
@@ -31,7 +33,7 @@ export class InstallationLocationService {
     }
 
     private initInstallationLocation(): void{
-        this._installationDirectory = (this.configService.get(this.STORE_INSTALLATION_PATH_KEY) || this.utilsService.getUserDocumentsFolder()) as string;
+        this._installationDirectory = this.configService.get<string>(this.STORE_INSTALLATION_PATH_KEY) || app.getPath("documents");
     }
 
     public get installationDirectory(): string{ return path.join(this._installationDirectory, this.INSTALLATION_FOLDER); }
@@ -46,8 +48,8 @@ export class InstallationLocationService {
                 this._installationDirectory = newDir;
                 this.configService.store.set(this.STORE_INSTALLATION_PATH_KEY, newDir);
                 resolve(this.installationDirectory);
-            }).catch(err => {
-                reject(err);
+            }).catch((err: Error) => {
+                reject({title: "CantMoveFolder", error: err} as BsmException);
                 log.error(err);
             })
         })
