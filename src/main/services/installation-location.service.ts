@@ -3,7 +3,7 @@ import { ConfigurationService } from "./configuration.service";
 import { UtilsService } from "./utils.service";
 import fs from 'fs-extra';
 import log from "electron-log";
-import { app } from "electron/main";
+import { app } from "electron";
 import { BsmException } from "shared/models/bsm-exception.model";
 
 export class InstallationLocationService {
