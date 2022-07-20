@@ -2,7 +2,7 @@ import { BSVersion } from 'shared/bs-version.interface';
 import './available-version-item.component.css';
 import { useEffect, useState, memo } from "react";
 import { BsDownloaderService } from "renderer/services/bs-downloader.service";
-import { distinctUntilChanged } from "rxjs";
+import { distinctUntilChanged } from "rxjs/operators";
 import defaultImage from '../../../../assets/images/default-version-img.jpg'
 import dateFormat from "dateformat";
 import { BsmImage } from "../shared/bsm-image.component";

@@ -1,4 +1,5 @@
-import { BehaviorSubject, distinctUntilChanged, map, Observable, Subscription, timer } from "rxjs";
+import { distinctUntilChanged, map } from "rxjs/operators";
+import { BehaviorSubject, Observable, Subscription, timer } from "rxjs";
 import { IpcService } from "./ipc.service";
 
 export class ProgressBarService{

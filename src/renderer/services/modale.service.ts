@@ -1,4 +1,5 @@
-import { BehaviorSubject, timeout } from "rxjs";
+import { BehaviorSubject } from "rxjs";
+import { timeout } from "rxjs/operators";
 
 export class ModalService{
 

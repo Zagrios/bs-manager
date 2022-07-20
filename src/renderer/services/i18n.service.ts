@@ -1,5 +1,6 @@
 import { DefaultConfigKey } from "renderer/config/default-configuration.config";
-import { distinctUntilChanged, filter, map, Observable } from "rxjs";
+import { distinctUntilChanged, filter, map } from "rxjs/operators";
+import { Observable } from "rxjs";
 import { ConfigurationService } from "./configuration.service";
 import { getProperty } from "dot-prop";
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { BSVersionManagerService } from "../../services/bs-version-manager.service";
 import { AvailableVersionsSlide } from "./available-versions-slide.component";
-import { filter, take } from "rxjs";
+import { filter, take } from "rxjs/operators";
 import { TabNavBar } from "../shared/tab-nav-bar.component";
 
 export function AvailableVersionsSlider() {

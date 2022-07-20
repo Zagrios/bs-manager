@@ -1,7 +1,7 @@
 import { BSVersion } from 'shared/bs-version.interface';
 import { useEffect, useState } from "react"
 import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
-import { filter, take } from "rxjs";
+import { filter, take } from "rxjs/operators";
 import { AvailableVersionItem } from "./available-version-item.component";
 
 export function AvailableVersionsSlide(props: {year: string}) {
