@@ -80,7 +80,7 @@ export function BsVersionItem(props: {version: BSVersion}) {
             {props.version.steam && <BsmIcon icon="steam" className="w-[19px] h-[19px] mr-[5px] shrink-0"/>}
             {!props.version.steam && <BsmIcon icon="bsNote" className="w-[19px] h-[19px] mr-[5px] shrink-0" style={{color: color}}/>}
             <div className="overflow-hidden whitespace-nowrap text-xl dark:text-gray-200 text-gray-800 font-bold tracking-wide">
-               <ReactFitty maxSize={19} minSize={10} className='align-middle pb-[2px] max-w-full overflow-hidden text-ellipsis'>{props.version.name || props.version.BSVersion}</ReactFitty>
+               <ReactFitty maxSize={19} minSize={9} className='align-middle pb-[2px] max-w-full overflow-hidden text-ellipsis'>{props.version.name || props.version.BSVersion}</ReactFitty>
             </div>
          </Link>
          {downloading && <BsmButton onClick={cancel} className="my-1 text-xs text-white rounded-md text-center hover:brightness-125" withBar={false} text="misc.cancel" typeColor="error"/>}

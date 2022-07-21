@@ -33,7 +33,7 @@ ipcMain.on("bs-version.open-folder", async (event, req: IpcRequest<BSVersion>) =
    UtilsService.getInstance().folderExist(versionFolder) && exec(`start "" "${versionFolder}"`);
 });
 
-ipcMain.on("bs-version.rename", async (event, req: IpcRequest<{version: BSVersion, name: string, color: string}>) => {
+ipcMain.on("bs-version.edit", async (event, req: IpcRequest<{version: BSVersion, name: string, color: string}>) => {
    BSLocalVersionService.getInstance().editVersion(req.args.version, req.args.name, req.args.color).then(res => {
       console.log(res);
       UtilsService.getInstance().ipcSend(req.responceChannel, {success: !!res, data: res});
