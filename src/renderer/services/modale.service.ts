@@ -21,7 +21,7 @@ export class ModalService{
         this.modalType$.next(null);
     }
 
-    public get modalType$(): BehaviorSubject<any>{
+    public get modalType$(): BehaviorSubject<ModalType>{
         return this._modalType$;
     }
 
