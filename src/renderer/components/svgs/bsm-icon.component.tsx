@@ -16,11 +16,12 @@ import { TaskIcon } from "./icons/task-icon.component";
 import { CopyIcon } from "./icons/copy-icon.component";
 import { SteamIcon } from "./icons/steam-icon.component";
 import { CSSProperties } from "react";
+import EditIcon from "./icons/edit-icon.component";
 
 export type BsmIconType = (
    "settings"|"trash"|"favorite"|"folder"|"bsNote"|
    "terminal"|"desktop"|"oculus"|"add"|"cross"|"task"|
-   "copy"|"steam"|
+   "copy"|"steam"|"edit"|
    "fr-FR-flag"|"es-ES-flag"|"en-US-flag"|"en-EN-flag"
 );
 
@@ -44,6 +45,7 @@ export function BsmIcon({className, icon, style}: {className?: string, icon: Bsm
         if(icon === "task"){ return <TaskIcon className={className} style={style}/> }
         if(icon === "copy"){ return <CopyIcon className={className} style={style}/> }
         if(icon === "steam"){ return <SteamIcon className={className} style={style}/> }
+        if(icon === "edit"){ return <EditIcon className={className} style={style}/> }
         return <TrashIcon className={className} style={style}/>
     }
 
