@@ -135,8 +135,8 @@ export function VersionViewer() {
       <BsmDropdownButton className='absolute top-5 right-5 h-9 w-9' items={[
           {text: "pages.version-viewer.dropdown.open-folder", icon: "folder", onClick: openFolder},
           {text: "pages.version-viewer.dropdown.verify-files", icon: "task", onClick: verifyFiles},
-          (!state.steam && {text: "Editer (WIP)", icon: "task", onClick: edit}),
-          {text: "pages.version-viewer.dropdown.clone (WIP)", icon: "copy", onClick: clone},
+          (!state.steam && {text: "pages.version-viewer.dropdown.edit", icon: "task", onClick: edit}),
+          {text: "pages.version-viewer.dropdown.clone", icon: "copy", onClick: clone},
           {text: "pages.version-viewer.dropdown.uninstall", icon:"trash", onClick: uninstall}
         ]}/>
     </>

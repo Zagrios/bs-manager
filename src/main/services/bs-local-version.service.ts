@@ -131,7 +131,7 @@ export class BSLocalVersionService{
    }
 
    public async editVersion(version: BSVersion, name: string, color: string): Promise<BSVersion>{
-      if(version.steam){ throw {title: "CantEditSteam"} as BsmException; }
+      if(version.steam){ throw {title: "CantEditSteam", msg: "CantEditSteam"} as BsmException; }
       const oldPath = await this.getVersionPath(version);
       const editedVersion: BSVersion = version.BSVersion === name 
          ? {...version, name: undefined, color}
@@ -168,8 +168,9 @@ export class BSLocalVersionService{
          return cloneVersion;
       }
 
+      if(this.utilsService.pathExist(newPath)){ throw {title: "VersionAlreadExist"} as BsmException; }
+
       return fs.copy(originPath, newPath).then(() => {
-         this.deleteCustomVersion(version);
          this.addCustomVersion(cloneVersion);
          return cloneVersion;
       }).catch((err: Error) => {

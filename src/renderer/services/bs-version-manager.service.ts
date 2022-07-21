@@ -3,6 +3,7 @@ import { BehaviorSubject } from "rxjs";
 import { IpcService } from "./ipc.service";
 import { ModalExitCode, ModalService, ModalType } from './modale.service';
 import { NotificationService } from './notification.service';
+import { ProgressBarService } from './progress-bar.service';
 
 export class BSVersionManagerService {
 
@@ -11,6 +12,7 @@ export class BSVersionManagerService {
    private readonly ipcService: IpcService;
    private readonly modalService: ModalService;
    private readonly notificationService: NotificationService;
+   private readonly progressBarService: ProgressBarService;
 
    public readonly installedVersions$: BehaviorSubject<BSVersion[]> = new BehaviorSubject([]);
    public readonly availableVersions$: BehaviorSubject<BSVersion[]> = new BehaviorSubject([]); 
@@ -19,6 +21,7 @@ export class BSVersionManagerService {
       this.ipcService = IpcService.getInstance();
       this.modalService = ModalService.getInsance();
       this.notificationService = NotificationService.getInstance();
+      this.progressBarService = ProgressBarService.getInstance();
       this.askAvailableVersions();
       this.askInstalledVersions();
     } 
@@ -66,9 +69,12 @@ export class BSVersionManagerService {
       const modalRes = await this.modalService.openModal<{name: string, color: string}>(ModalType.EDIT_VERSION, version);
       if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return null; }
       if(modalRes.data.name?.length < 2){ return null; }
-      return this.ipcService.send<BSVersion>("bs-version.rename", {args: {version, name: modalRes.data.name, color: modalRes.data.color}}).then(res => {
+      return this.ipcService.send<BSVersion>("bs-version.edit", {args: {version, name: modalRes.data.name, color: modalRes.data.color}}).then(res => {
          if(!res.success){
-            this.notificationService.notifyError({title: res.error.title});
+            this.notificationService.notifyError({
+               title: `notifications.custom-version.errors.titles.${res.error.title}`,
+               ...(res.error.msg && {desc: `notifications.custom-version.errors.msg.${res.error.msg}`})
+            });
             return null;
          }
          this.askInstalledVersions();
@@ -80,11 +86,17 @@ export class BSVersionManagerService {
       const modalRes = await this.modalService.openModal<{name: string, color: string}>(ModalType.CLONE_VERSION, version);
       if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return null; }
       if(modalRes.data.name?.length < 2){ return null; }
+      this.progressBarService.showFake(0.01);
       return this.ipcService.send<BSVersion>("bs-version.clone", {args: {version, name: modalRes.data.name, color: modalRes.data.color}}).then(res => {
+         this.progressBarService.hide(true);
          if(!res.success){
-            this.notificationService.notifyError({title: res.error.title});
+            this.notificationService.notifyError({
+               title: `notifications.custom-version.errors.titles.${res.error.title}`,
+               ...(res.error.msg && {desc: `notifications.custom-version.errors.msg.${res.error.msg}`})
+            });
             return null;
          }
+         this.notificationService.notifySuccess({title: "notifications.custom-version.success.titles.CloningFinished"});
          this.askInstalledVersions();
          return res.data;
       })
