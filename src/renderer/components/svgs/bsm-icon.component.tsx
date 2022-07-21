@@ -15,7 +15,7 @@ import { UkIcon } from "./flags/uk-icon.component";
 import { TaskIcon } from "./icons/task-icon.component";
 import { CopyIcon } from "./icons/copy-icon.component";
 import { SteamIcon } from "./icons/steam-icon.component";
-import { CSSProperties } from "react";
+import { CSSProperties, memo } from "react";
 import EditIcon from "./icons/edit-icon.component";
 
 export type BsmIconType = (
@@ -25,7 +25,7 @@ export type BsmIconType = (
    "fr-FR-flag"|"es-ES-flag"|"en-US-flag"|"en-EN-flag"
 );
 
-export function BsmIcon({className, icon, style}: {className?: string, icon: BsmIconType, style?: CSSProperties}) {
+export const BsmIcon = memo(function({className, icon, style}: {className?: string, icon: BsmIconType, style?: CSSProperties}) {
 
     const renderIcon = () => {
         if(icon === "settings"){ return <SettingIcon className={className} style={style}/> }
@@ -54,4 +54,4 @@ export function BsmIcon({className, icon, style}: {className?: string, icon: Bsm
         {renderIcon()}
     </>
   )
-}
+})
