@@ -18,6 +18,7 @@
             "open-folder": "Abrir la carpeta",
             "verify-files": "Verificar los archivos",
             "clone": "Clonar",
+            "edit": "Editar",
             "uninstall": "Desinstalar"
          }
       },
@@ -157,6 +158,24 @@
                "EXE_NOT_FINDED": "Parece que faltan algunos archivos, intente verificar los archivos."
             }
          }
+      },
+      "custom-version":{
+         "errors":{
+            "titles":{
+               "CantEditSteam": "Imposible editar",
+               "CantRename": "El renombramiento es imposible",
+               "VersionAlreadExist": "Esta versión ya existe",
+               "CantClone": "Clonación imposible"
+            },
+            "msg":{
+               "CantEditSteam": "No puedes editar la versión de Steam. Sin embargo, puedes clonarla."
+            }
+         },
+         "success":{
+            "titles":{
+               "CloningFinished": "Clonación completa 🎉"
+            }
+         }
       }
    },
    "modals":{
@@ -203,6 +222,19 @@
          "description": "Al cambiar la carpeta de instalación por defecto, se moverán todos los datos instalados a la nueva carpeta.",
          "buttons":{
             "submit": "Elija la carpeta"
+         }
+      },
+      "edit-version":{
+         "title": "Editar la versión",
+         "buttons":{
+            "submit": "Editar"
+         }
+      },
+      "clone-version":{
+         "title": "Versión clonada",
+         "description": "La clonación de la versión le permite separar el contenido adicional de BeatSaber entre dos versiones.",
+         "buttons":{
+            "submit": "Clonar"
          }
       }
    }

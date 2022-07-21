@@ -30,10 +30,10 @@ export function EditVersionModal({resolver, clone = false}: {resolver: (x: Modal
 
    return (
       <form className="static" onSubmit={(e) => {e.preventDefault(); rename();}}>
-         <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t(!clone ? "Editer la version" : "Cloner_la_version")}</h1>
+         <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t(!clone ? "modals.edit-version.title" : "modals.clone-version.title")}</h1>
          <BsmIcon className="w-full h-11 my-3" icon="bsNote" style={{color: color}}/>
          { clone && (
-            <p className="max-w-sm mb-2 text-gray-800 dark:text-gray-200">Cloner la version te permet de séparer le contenu additionnel de BeatSaber entre deux même versions</p>
+            <p className="max-w-sm mb-2 text-gray-800 dark:text-gray-200">{t("modals.clone-version.description")}</p>
          )}
          <div className="mb-3">
             <label className="block font-bold cursor-pointer tracking-wide text-gray-800 dark:text-gray-200" htmlFor="name">{t("Nom")}</label>
@@ -50,7 +50,7 @@ export function EditVersionModal({resolver, clone = false}: {resolver: (x: Modal
          </div>
          <div className="grid grid-flow-col grid-cols-2 gap-4">
             <BsmButton className="rounded-md text-center bg-gray-500 hover:brightness-110 transition-all" onClick={() => {resolver({exitCode: ModalExitCode.CANCELED})}} withBar={false} text="misc.cancel"/>
-            <BsmButton typeColor="primary" className="z-0 px-1 rounded-md text-center hover:brightness-110 transition-all" type="submit" withBar={false} text={t("Editer")}/>
+            <BsmButton typeColor="primary" className="z-0 px-1 rounded-md text-center hover:brightness-110 transition-all" type="submit" withBar={false} text={!clone ? "modals.edit-version.buttons.submit" : "modals.clone-version.buttons.submit"}/>
          </div>
       </form>
    )
