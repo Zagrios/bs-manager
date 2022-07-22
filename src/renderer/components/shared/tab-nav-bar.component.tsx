@@ -1,12 +1,18 @@
 import { useEffect, useRef, useState } from "react";
+import { DefaultConfigKey } from "renderer/config/default-configuration.config";
+import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { ConfigurationService } from "renderer/services/configuration.service";
 
 export function TabNavBar(props: {tabsText: string[], onTabChange: Function, className?: string}) {
+
+    const configService = ConfigurationService.getInstance();
 
     const [currentTabIndex, setCurrentTabIndex] = useState(0);
     const tabsWrapper = useRef(null);
     const [tabsWidth, setTabsWidth] = useState(0);
     const t = useTranslation();
+    const secondColor = useObservable(configService.watch("second-color" as DefaultConfigKey));
 
     const selectYear = (tab: string) => {
         const newIndex = props.tabsText.indexOf(tab);
@@ -21,10 +27,10 @@ export function TabNavBar(props: {tabsText: string[], onTabChange: Function, cla
 
   return (
     <div className={`relative h-8 shrink-0 cursor-pointer rounded-md overflow-hidden mb-3 shadow-md shadow-black ${props.className}`}>
-        <div className="absolute w-full h-1 bottom-0">  
-          <span className="absolute h-full w-full bg-red-500 brightness-50"></span>
-          <span className="absolute h-full block bg-red-500 transition-transform duration-300 shadow-lg shadow-red-500" style={{transform: `translate(${currentTabIndex * 100}%, 0)`, width: `${tabsWidth}px`}}></span>
-          <span className="fixed h-1 block shadow-center bg-transparent shadow-red-500 transition-transform duration-300" style={{transform: `translate(${currentTabIndex * 100}%, 0)`, width: `${tabsWidth}px`}}></span>
+        <div className="absolute w-full h-1 bottom-0" style={{color: secondColor}}>  
+          <span className="absolute h-full w-full bg-current brightness-50" />
+          <span className="absolute h-full block bg-current transition-transform duration-300" style={{transform: `translate(${currentTabIndex * 100}%, 0)`, width: `${tabsWidth}px`}}/>
+          <span className="fixed h-1 block shadow-center bg-transparent shadow-current transition-transform duration-300" style={{transform: `translate(${currentTabIndex * 100}%, 0)`, width: `${tabsWidth}px`}}></span>
         </div>
         <div ref={tabsWrapper} className="grid" style={{gridTemplateColumns: `repeat(${props.tabsText.length}, minmax(0, 1fr))`}}>
             { props.tabsText.map((y, index) => 
