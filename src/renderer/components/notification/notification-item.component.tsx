@@ -33,7 +33,7 @@ export function NotificationItem({resolver, notification}: {resolver?: (value: N
             <BsmImage className="h-14 mr-1" image={renderImage()}/>
             <div className="flex flex-col py-2">
                <h1 className="font-bold leading-4 tracking-wide pr-5 my-1">{t(notification.title)}</h1>
-               {notification.desc && <p className="text-xs">{t(notification.desc)}</p>}
+               {notification.desc && <p className="text-xs pr-1">{t(notification.desc)}</p>}
             </div>
          </div>
          {notification.actions && (

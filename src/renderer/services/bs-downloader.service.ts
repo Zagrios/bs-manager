@@ -1,6 +1,6 @@
 import { DownloadEvent } from 'main/services/bs-installer.service';
 import { BehaviorSubject } from 'rxjs';
-import { distinctUntilChanged, debounceTime, filter } from 'rxjs/operators';
+import { distinctUntilChanged, filter, throttleTime } from 'rxjs/operators';
 import { IpcResponse } from 'shared/models/ipc';
 import { BSVersion } from 'shared/bs-version.interface';
 import { AuthUserService } from './auth-user.service';
@@ -47,11 +47,11 @@ export class BsDownloaderService{
 
       this.ipcService.watch<string>("bs-download.[SteamID]").pipe(filter(r => r.success && !!r.data)).subscribe(response => this.authService.setSteamID(response.data));
 
-      this.ipcService.watch<string>("bs-download.[Warning]").pipe(filter(v => !!v && !!v.data),  distinctUntilChanged(), debounceTime(1000)).subscribe(warning => {
+      this.ipcService.watch<string>("bs-download.[Warning]").pipe(filter(v => !!v && !!v.data),  distinctUntilChanged(), throttleTime(1000)).subscribe(warning => {
          this.notificationService.notifyWarning({title: "notifications.types.warning", desc: `notifications.bs-download.warnings.msg.${warning.data}`});
       });
 
-      this.ipcService.watch<string>("bs-download.[Error]").pipe(filter(v => !!v && !!v.data),  distinctUntilChanged(), debounceTime(1000)).subscribe(err => {
+      this.ipcService.watch<string>("bs-download.[Error]").pipe(filter(v => !!v && !!v.data),  distinctUntilChanged(), throttleTime(1000)).subscribe(err => {
          this.notificationService.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.errors.msg.${err.data}`});
       });
 
