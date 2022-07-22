@@ -11,6 +11,7 @@ import { BSVersionManagerService } from "renderer/services/bs-version-manager.se
 import { BsmIcon } from "../svgs/bsm-icon.component";
 import { ReactFitty } from "react-fitty";
 import { DefaultConfigKey } from 'renderer/config/default-configuration.config';
+import { useThemeColor } from 'renderer/hooks/use-theme-color.hook';
 
 export function BsVersionItem(props: {version: BSVersion}) {
 
@@ -25,6 +26,8 @@ export function BsVersionItem(props: {version: BSVersion}) {
   const [downloading, setDownloading] = useState(false);
   const [downloadPercent, setDownloadPercent] = useState(0);
   const [color, setColor] = useState("");
+  const firstColor = useThemeColor("first-color");
+  const secondColor = useThemeColor("second-color");
 
   const isActive = (): boolean => {
     return props.version?.BSVersion === state?.BSVersion && props?.version.steam === state?.steam && props?.version.name === state?.name;
@@ -74,7 +77,7 @@ export function BsVersionItem(props: {version: BSVersion}) {
 
   return (
     <div className={`outline-none relative p-[1px] overflow-hidden rounded-xl flex justify-center items-center mb-1 ${downloading && "nav-item-download"} active:translate-y-[1px]`}>
-      <div className="progress absolute top-0 w-full h-full" style={{transform: `translate(${-(100 - downloadPercent)}%, 0)`}}></div>
+      <div className="download-progress absolute top-0 w-full h-full" style={{transform: `translate(${-(100 - downloadPercent)}%, 0)`, background: `linear-gradient(90deg, ${firstColor}, ${secondColor}, ${firstColor}, ${secondColor})`}}></div>
       <div className={`wrapper z-[1] px-1 py-[3px] w-full rounded-xl ${downloading && 'bg-black'} ${!downloading && "hover:bg-light-main-color-3 dark:hover:bg-main-color-3"} ${(isActive() && !downloading) && "bg-light-main-color-3 dark:bg-main-color-3"}`}>
          <Link onDoubleClick={handleDoubleClick} to={`/bs-version/${props.version.BSVersion}`} state={props.version} title={props.version.name && `${props.version.BSVersion} - ${props.version.name}`} className="w-full flex items-center justify-start content-center max-w-full">
             {props.version.steam && <BsmIcon icon="steam" className="w-[19px] h-[19px] mr-[5px] shrink-0"/>}

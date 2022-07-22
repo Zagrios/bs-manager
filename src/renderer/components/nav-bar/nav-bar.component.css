@@ -26,12 +26,6 @@
   scrollbar-gutter: stable;
 }
 
-.nav-item-download > .progress{
-  background-size: 500% !important;
-  background: linear-gradient(90deg, rgb(62, 51, 255), rgb(255, 0, 0), rgb(62, 51, 255), rgb(255, 0, 0));
-  animation: rainbow 2s linear 0s infinite;
-}
-
 .nav-item-download > .wrapper > a > *{
   animation: opacity 3s ease-in-out 0s infinite;
 }

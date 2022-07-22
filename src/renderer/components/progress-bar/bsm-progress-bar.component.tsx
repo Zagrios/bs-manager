@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import BeatRunningImg from "../../../../assets/images/apngs/beat-running.png"
 import BeatWaitingImg from "../../../../assets/images/apngs/beat-waiting.png"
 import { useObservable } from "renderer/hooks/use-observable.hook";
+import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 
 export function BsmProgressBar() {
 
@@ -10,6 +11,8 @@ export function BsmProgressBar() {
 
     const progress= useObservable(progressBarService.progression$);
     const visible = useObservable(progressBarService.visible$);
+    const firstColor = useThemeColor("first-color");
+    const secondColor = useThemeColor("second-color");
 
   return (
     <AnimatePresence> { visible && 
@@ -18,7 +21,7 @@ export function BsmProgressBar() {
             { !!progress && (
             <>
                 <div className="relative flex items-center h-full w-full rounded-full bg-black">
-                    <div className="w-0 h-full relative rounded-full download-progress flex items-center transition-all" style={{width: `${progress}%`}}>
+                    <div className="w-0 h-full relative rounded-full download-progress flex items-center transition-all" style={{width: `${progress}%`, background: `linear-gradient(90deg, ${firstColor}, ${secondColor}, ${firstColor}, ${secondColor})`}}>
                         <img className="h-[70px] w-[70px] min-w-fit absolute z-[1] -translate-y-1 -right-8 transition-all" src={BeatRunningImg} />
                     </div>
                     <span className="absolute w-full text-center text-white -top-[3px] left-0 text-[10px]">{`${Math.floor(progress)}%`}</span>
