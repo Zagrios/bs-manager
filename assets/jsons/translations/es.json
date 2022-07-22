@@ -114,7 +114,8 @@
                "SteamLib": "Si tienes este error, reporta el bug en GitHub con los logs por favor.",
                "ConnectionError": "No se puede conectar a Steam después de 10 intentos 🤯",
                "LicenceError": "No se puede obtener la lista de licencias.",
-               "verification-failed": "Verificación fallida, inténtelo más tarde." 
+               "verification-failed": "Verificación fallida, inténtelo más tarde.",
+               "RateLimitExceeded": "Lo has intentado demasiadas veces, espera un poco y vuelve a intentarlo más tarde."
             }
          }
       },
