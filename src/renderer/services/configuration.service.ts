@@ -44,7 +44,6 @@ export class ConfigurationService {
     public watch<T>(key: DefaultConfigKey | string): BehaviorSubject<T>{
         if(this.observers.has(key)){ return this.observers.get(key); }
         this.observers.set(key, new BehaviorSubject(this.get(key)));
-        console.log(this.observers);
         return this.observers.get(key);
     }
 }
