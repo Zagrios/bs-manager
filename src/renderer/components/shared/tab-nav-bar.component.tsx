@@ -1,18 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import { DefaultConfigKey } from "renderer/config/default-configuration.config";
-import { useObservable } from "renderer/hooks/use-observable.hook";
+import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import { ConfigurationService } from "renderer/services/configuration.service";
 
 export function TabNavBar(props: {tabsText: string[], onTabChange: Function, className?: string}) {
-
-    const configService = ConfigurationService.getInstance();
 
     const [currentTabIndex, setCurrentTabIndex] = useState(0);
     const tabsWrapper = useRef(null);
     const [tabsWidth, setTabsWidth] = useState(0);
     const t = useTranslation();
-    const secondColor = useObservable(configService.watch("second-color" as DefaultConfigKey));
+    const secondColor = useThemeColor("second-color");
 
     const selectYear = (tab: string) => {
         const newIndex = props.tabsText.indexOf(tab);

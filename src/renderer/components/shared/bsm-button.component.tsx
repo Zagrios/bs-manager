@@ -3,18 +3,14 @@ import OutsideClickHandler from 'react-outside-click-handler';
 import React from "react";
 import { BsmImage } from "./bsm-image.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import { useObservable } from "renderer/hooks/use-observable.hook";
-import { ConfigurationService } from "renderer/services/configuration.service";
-import { DefaultConfigKey } from "renderer/config/default-configuration.config";
+import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 
 type BsmButtonType = "primary"|"success"|"cancel"|"error";
 
 export function BsmButton({className, style, imgClassName, icon, image, text, type, active, withBar = true, disabled, onClickOutside, onClick, typeColor}: {className?: string, style?: React.CSSProperties, imgClassName?: string, icon?: BsmIconType, image?: string, text?: string, type?: string, active?: boolean, withBar?: boolean, disabled?: boolean, onClickOutside?: (e: MouseEvent) => void, onClick?: (e: React.MouseEvent) => void, typeColor?:BsmButtonType}) {
 
-  const configService = ConfigurationService.getInstance();
-
   const t = useTranslation();
-  const secondColor = useObservable(configService.watch("second-color" as DefaultConfigKey));
+  const secondColor = useThemeColor("second-color");
 
   return (
     <OutsideClickHandler onOutsideClick={e => onClickOutside && onClickOutside(e)}>
