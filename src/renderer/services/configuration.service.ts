@@ -4,16 +4,16 @@ import { DefaultConfigKey, defaultConfiguration } from "renderer/config/default-
 export class ConfigurationService {
     
     private static instance: ConfigurationService;
-    private subscribers: Map<string, BehaviorSubject<any>[]>;
+    private observers: Map<string, BehaviorSubject<any>>;
     
     private constructor(){
-        this.subscribers = new Map<string, BehaviorSubject<any>[]>();
+        this.observers = new Map<string, BehaviorSubject<any>>();
     }
 
     private emitChange(key: string){
-        if(this.subscribers.has(key)){
+        if(this.observers.has(key)){
             const val = this.get(key);
-            this.subscribers.get(key).forEach(sub => sub.next(val));
+            this.observers.get(key).next(val);
         }
     }
 
@@ -42,14 +42,9 @@ export class ConfigurationService {
     }
 
     public watch<T>(key: DefaultConfigKey | string): BehaviorSubject<T>{
-        const newSub = new BehaviorSubject<T>(this.get(key));
-        if(!this.subscribers.has(key)){ this.subscribers.set(key, []); }
-        this.subscribers.get(key).push(newSub);
-        return newSub;
+        if(this.observers.has(key)){ return this.observers.get(key); }
+        this.observers.set(key, new BehaviorSubject(this.get(key)));
+        console.log(this.observers);
+        return this.observers.get(key);
     }
-
-    public stopWatch(key: string, obs: BehaviorSubject<string>){
-        const subs = this.subscribers.get(key);
-        subs.splice(subs.indexOf(obs), 1);
-    };
 }
