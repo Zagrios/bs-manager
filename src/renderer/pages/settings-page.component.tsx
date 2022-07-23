@@ -6,7 +6,7 @@ import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmIconType } from "renderer/components/svgs/bsm-icon.component";
 import { DefaultConfigKey, ThemeConfig } from "renderer/config/default-configuration.config";
 import { useObservable } from "renderer/hooks/use-observable.hook";
-import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { AuthUserService } from "renderer/services/auth-user.service";
 import { BsDownloaderService } from "renderer/services/bs-downloader.service";
 import { ConfigurationService } from "renderer/services/configuration.service"
@@ -29,8 +29,7 @@ export function SettingsPage() {
   const notificationService: NotificationService = NotificationService.getInstance();
   const i18nService: I18nService = I18nService.getInstance();
 
-  const firstColor = useObservable(configService.watch<string>("first-color"));
-  const secondColor = useObservable(configService.watch<string>("second-color"));
+  const {firstColor, secondColor} = useThemeColor();
   const sessionExist = useObservable(authService.sessionExist$);
 
   const themeItem: RadioItem[] = [

@@ -6,17 +6,14 @@ import { UninstallModal } from "./modal-types/uninstall-modal.component";
 import { InstallationFolderModal } from "./modal-types/installation-folder-modal.component";
 import { EditVersionModal } from "./modal-types/edit-version-modal.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
-import { ConfigurationService } from "renderer/services/configuration.service";
-import { DefaultConfigKey } from "renderer/config/default-configuration.config";
+import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 
 export function Modal() {
 
    const modalSevice = ModalService.getInsance();
-   const configService = ConfigurationService.getInstance();
 
    const modalType = useObservable(modalSevice.modalType$);
-   const firstColor = useObservable(configService.watch("first-color" as DefaultConfigKey));
-   const secondColor = useObservable(configService.watch("second-color" as DefaultConfigKey));
+   const {firstColor, secondColor} = useThemeColor();
 
   return  (
       <AnimatePresence>

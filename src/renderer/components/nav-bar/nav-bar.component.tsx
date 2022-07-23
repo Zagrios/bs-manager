@@ -2,19 +2,16 @@ import './nav-bar.component.css'
 import { BsVersionItem } from './bs-version-item.component';
 import { BSVersionManagerService } from '../../services/bs-version-manager.service';
 import { Link } from 'react-router-dom';
-import { ConfigurationService } from 'renderer/services/configuration.service';
 import { BsmIcon } from '../svgs/bsm-icon.component';
 import { useObservable } from 'renderer/hooks/use-observable.hook';
+import { useThemeColor } from 'renderer/hooks/use-theme-color.hook';
 
 export function NavBar() {
 
-  const configService = ConfigurationService.getInstance();
   const bsVersionServoce =  BSVersionManagerService.getInstance();
 
   const installedVersions = useObservable(bsVersionServoce.installedVersions$);
-
-  const firstColor = useObservable(configService.watch<string>("first-color"));
-  const secondColor = useObservable(configService.watch<string>("second-color"));
+  const {firstColor, secondColor} = useThemeColor();
 
   return (
     <div id='nav-bar' className='z-10 flex flex-col h-full max-h-full items-center p-1 bg-light-main-color-1 dark:bg-main-color-1'>

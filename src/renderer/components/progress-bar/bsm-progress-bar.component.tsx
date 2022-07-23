@@ -9,10 +9,9 @@ export function BsmProgressBar() {
 
     const progressBarService = ProgressBarService.getInstance();
 
-    const progress= useObservable(progressBarService.progression$);
+    const progress = useObservable(progressBarService.progression$);
     const visible = useObservable(progressBarService.visible$);
-    const firstColor = useThemeColor("first-color");
-    const secondColor = useThemeColor("second-color");
+    const {firstColor, secondColor} = useThemeColor();
 
   return (
     <AnimatePresence> { visible && 
