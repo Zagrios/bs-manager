@@ -4,6 +4,7 @@ import { IpcService } from "./ipc.service";
 import { ModalExitCode, ModalService, ModalType } from './modale.service';
 import { NotificationService } from './notification.service';
 import { ProgressBarService } from './progress-bar.service';
+import { IpcResponse } from 'shared/models/ipc';
 
 export class BSVersionManagerService {
 
@@ -22,8 +23,7 @@ export class BSVersionManagerService {
       this.modalService = ModalService.getInsance();
       this.notificationService = NotificationService.getInstance();
       this.progressBarService = ProgressBarService.getInstance();
-      this.askAvailableVersions();
-      this.askInstalledVersions();
+      this.askAvailableVersions().then(() => this.askInstalledVersions());
     } 
 
    public static getInstance(){
@@ -45,13 +45,19 @@ export class BSVersionManagerService {
       return this.installedVersions$.value;
    }
 
-   public askAvailableVersions(): void{
-      this.ipcService.send<BSVersion[]>("bs-version.get-version-dict").then(res => this.availableVersions$.next(res.data));
-   }
+    public askAvailableVersions(): Promise<BSVersion[]>{
+        return this.ipcService.send<BSVersion[]>("bs-version.get-version-dict").then(res => {
+            this.availableVersions$.next(res.data);
+            return res.data;
+        });
+    }
 
-   public askInstalledVersions(): void{
-      this.ipcService.send<BSVersion[]>("bs-version.installed-versions").then(res => this.setInstalledVersions(res.data));
-   }
+    public askInstalledVersions(): Promise<BSVersion[]>{
+        return this.ipcService.send<BSVersion[]>("bs-version.installed-versions").then(res => {
+            this.setInstalledVersions(res.data);
+            return res.data;
+        });
+    }
 
    public getAvailableYears(): string[]{
       return [...new Set(this.availableVersions$.value.map(v => v.year))].sort((a, b) => b.localeCompare(a));

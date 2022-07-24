@@ -3,6 +3,7 @@ import { UtilsService } from './utils.service';
 import path from 'path';
 import { writeFileSync } from 'fs';
 import { BSVersion } from 'shared/bs-version.interface';
+import isOnline from 'is-online';
 
 export class BSVersionLibService{
 
@@ -34,7 +35,7 @@ export class BSVersionLibService{
                this.bsVersions = JSON.parse(body);
                resolve(this.bsVersions);
             });
-            res.on('error', (err) => reject(null))
+            res.on('error', () => reject(null))
          })
       })
    }
@@ -52,7 +53,7 @@ export class BSVersionLibService{
 
    private async loadBsVersions(): Promise<BSVersion[]>{
       const [localVersions, remoteVersions] = await Promise.all([
-         this.getLocalVersions(), this.getRemoteVersions()
+         this.getLocalVersions(),  (await isOnline({timeout: 1500}) && this.getRemoteVersions())
       ]);
       let resVersions = localVersions;
       if(remoteVersions && remoteVersions.length){ resVersions = remoteVersions; this.updateLocalVersions(resVersions); }
