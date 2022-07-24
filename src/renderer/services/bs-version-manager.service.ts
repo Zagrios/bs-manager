@@ -4,7 +4,6 @@ import { IpcService } from "./ipc.service";
 import { ModalExitCode, ModalService, ModalType } from './modale.service';
 import { NotificationService } from './notification.service';
 import { ProgressBarService } from './progress-bar.service';
-import { IpcResponse } from 'shared/models/ipc';
 
 export class BSVersionManagerService {
 
