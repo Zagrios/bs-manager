@@ -65,7 +65,7 @@ export class BSLocalVersionService{
    }
 
    private getCustomVersions(): BSVersion[]{
-      return this.configService.get<BSVersion[]>(this.CUSTOM_VERSIONS_KEY);
+      return this.configService.get<BSVersion[]>(this.CUSTOM_VERSIONS_KEY) || [];
    }
 
    private deleteCustomVersion(version: BSVersion): void{
@@ -99,11 +99,9 @@ export class BSLocalVersionService{
            versions.push(steamVersionDetails ? {...steamVersionDetails, steam: true} : {BSVersion: steamBsVersion, steam: true});
          }
       }
-
-      if(!this.utilsService.folderExist(this.installLocationService.versionsDirectory)){ return versions }
+      if(!this.utilsService.pathExist(this.installLocationService.versionsDirectory)){ return versions }
 
       const folderInInstallation = this.utilsService.listDirsInDir(this.installLocationService.versionsDirectory);
-
       folderInInstallation.forEach(f => {
          let version = this.remoteVersionService.getVersionDetails(f);
          if(version){ version = this.getCustomVersions().find(v => v.BSVersion === version.BSVersion && v.name === version.name) ?? version; }
