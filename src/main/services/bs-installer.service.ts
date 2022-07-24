@@ -1,6 +1,5 @@
 import { BS_APP_ID, BS_DEPOT } from "../constants";
 import path from "path";
-import { BSVersionLibService } from "./bs-version-lib.service";
 import { BSVersion } from 'shared/bs-version.interface';
 import { UtilsService } from "./utils.service";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
@@ -14,14 +13,12 @@ export class BSInstallerService{
   private static instance: BSInstallerService;
 
   private readonly utils: UtilsService;
-  private readonly bsVersionService: BSVersionLibService;
   private readonly installLocationService: InstallationLocationService;
   private readonly localVersionService: BSLocalVersionService;
 
   private downloadProcess: ChildProcessWithoutNullStreams;
 
   private constructor(){
-    this.bsVersionService = BSVersionLibService.getInstance();
     this.utils =  UtilsService.getInstance();
     this.installLocationService = InstallationLocationService.getInstance();
     this.localVersionService = BSLocalVersionService.getInstance();
