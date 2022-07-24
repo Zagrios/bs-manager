@@ -7,6 +7,7 @@ import log from "electron-log";
 import { InstallationLocationService } from "./installation-location.service";
 import { ctrlc } from "ctrlc-windows";
 import { BSLocalVersionService } from "./bs-local-version.service";
+import { getMainWindow } from "../main";
 
 export class BSInstallerService{
 
@@ -22,6 +23,10 @@ export class BSInstallerService{
     this.utils =  UtilsService.getInstance();
     this.installLocationService = InstallationLocationService.getInstance();
     this.localVersionService = BSLocalVersionService.getInstance();
+
+    getMainWindow().on("close", () => {
+        this.killDownloadProcess();
+    });
   }
 
   public static getInstance(){
