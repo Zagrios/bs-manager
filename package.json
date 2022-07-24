@@ -35,10 +35,10 @@
     ],
     "productName": "BSManager",
     "appId": "org.erb.BSManager",
-    "asar": true,
+    "asar": false,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
-      "dist",
+      "dist/**/*",
       "node_modules",
       "package.json"
     ],
