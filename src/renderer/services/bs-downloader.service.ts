@@ -58,7 +58,11 @@ export class BsDownloaderService{
       this.ipcService.watch<void>("bs-download.[2FA]").subscribe(async response => {
          if(!response.success){ this.ipcService.sendLazy("bs-download.kill"); return; }
          const res = await this.modalService.openModal(ModalType.GUARD_CODE);
-         if(res.exitCode !== ModalExitCode.COMPLETED){ this.ipcService.sendLazy("bs-download.kill"); return; }
+         if(res.exitCode !== ModalExitCode.COMPLETED){
+            this.progressBarService.hide(true);
+            this.ipcService.sendLazy("bs-download.kill"); 
+            return; 
+        }
          this.ipcService.sendLazy('bs-download.[2FA]', {args: res.data});
       });
 
@@ -85,7 +89,10 @@ export class BsDownloaderService{
       let promise;
       if(!this.authService.sessionExist()){
          const res = await this.modalService.openModal<{username: string, stay: boolean, password: string}>(ModalType.STEAM_LOGIN);
-         if(res.exitCode !== ModalExitCode.COMPLETED){ return {success: false}; }
+         if(res.exitCode !== ModalExitCode.COMPLETED){
+            this.progressBarService.hide(true);
+            return {success: false}; 
+        }
          this.authService.setSteamSession(res.data.username, res.data.stay);
          promise = this.ipcService.send<DownloadEvent>('bs-download.start', {args: {bsVersion: bsVersion, username: res.data.username, password: res.data.password, stay: res.data.stay}});
       }
