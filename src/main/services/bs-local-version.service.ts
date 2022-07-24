@@ -121,7 +121,7 @@ export class BSLocalVersionService{
    public async deleteVersion(version: BSVersion): Promise<boolean>{
       if(version.steam){ return false; }
       const versionFolder = await this.getVersionPath(version);
-      if(!this.utilsService.folderExist(versionFolder)){ return true; }
+      if(!this.utilsService.pathExist(versionFolder)){ return true; }
 
       return this.utilsService.deleteFolder(versionFolder)
          .then(() => { return true; })

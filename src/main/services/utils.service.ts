@@ -5,6 +5,7 @@ import path from "path";
 import { BrowserWindow } from "electron";
 import { rm } from "fs/promises";
 import { IpcResponse } from "shared/models/ipc";
+import log from "electron-log";
 
 export class UtilsService{
 
@@ -29,13 +30,10 @@ export class UtilsService{
 
   public setMainWindow(win: BrowserWindow){ this.mainWindow = win; }
 
-  //à supprimer
-  public folderExist(path: string): boolean{ return existsSync(path); }
-
   public pathExist(path: string): boolean{ return existsSync(path); }
 
   public createFolderIfNotExist(path: string): void{
-    if(!this.folderExist(path)){ mkdirSync(path, {recursive: true}); }
+    if(!this.pathExist(path)){ mkdirSync(path, {recursive: true}); }
   }
 
   public taskRunning(task: string): boolean{
@@ -69,7 +67,11 @@ export class UtilsService{
   }
 
   public ipcSend(channel: string, response: IpcResponse<any>): void{
-    this.mainWindow.webContents.send(channel, response);
+    try {
+        this.mainWindow.webContents.send(channel, response);
+    } catch (error) {
+        log.error(error);
+    }
   }
 
 }

@@ -30,7 +30,7 @@ ipcMain.on('bs-version.installed-versions', async (event, req: IpcRequest<void>)
 ipcMain.on("bs-version.open-folder", async (event, req: IpcRequest<BSVersion>) => {
    const localVersionService = BSLocalVersionService.getInstance();
    const versionFolder = await localVersionService.getVersionPath(req.args);
-   UtilsService.getInstance().folderExist(versionFolder) && exec(`start "" "${versionFolder}"`);
+   UtilsService.getInstance().pathExist(versionFolder) && exec(`start "" "${versionFolder}"`);
 });
 
 ipcMain.on("bs-version.edit", async (event, req: IpcRequest<{version: BSVersion, name: string, color: string}>) => {

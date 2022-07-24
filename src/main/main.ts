@@ -88,8 +88,6 @@ const createWindow = async () => {
 
   UtilsService.getInstance().setMainWindow(mainWindow);
 
-
-
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {
