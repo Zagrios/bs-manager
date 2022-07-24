@@ -3,6 +3,7 @@ import { distinctUntilChanged, filter, map } from "rxjs/operators";
 import { Observable } from "rxjs";
 import { ConfigurationService } from "./configuration.service";
 import { getProperty } from "dot-prop";
+import { i18n } from "dateformat";
 
 export class I18nService {
 
@@ -28,6 +29,10 @@ export class I18nService {
       this.currentLanguage$.pipe(filter(l => !!l), distinctUntilChanged()).subscribe(lang => {
          this.cache.clear();
          this.dictionary = require(`../../../assets/jsons/translations/${lang.split("-")[0]}.json`);
+
+        i18n.dayNames = getProperty(this.dictionary, "dateformat.dayNames");
+        i18n.monthNames = getProperty(this.dictionary, "dateformat.monthNames");
+        i18n.timeNames = getProperty(this.dictionary, "dateformat.timeNames");
       });
     }
 

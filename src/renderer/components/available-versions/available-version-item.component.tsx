@@ -18,7 +18,7 @@ export const AvailableVersionItem = memo(function AvailableVersionItem(props: {v
   const [selected, setSelected] = useState(false);
   const t = useTranslation();
 
-  const formatedDate = (() => { return dateFormat(+props.version.ReleaseDate*1000, "ddd. dS mmm yyyy"); })()
+  const formatedDate = (() => { return dateFormat(+props.version.ReleaseDate*1000, "ddd. d mmm yyyy"); })()
 
   const toggleSelect = () => {
     if(bsDownloaderService.isDownloading){ return; }

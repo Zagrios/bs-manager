@@ -237,5 +237,19 @@
             "submit": "Cloner"
          }
       }
+   },
+   "dateformat":{
+        "dayNames": [
+            "Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam",
+            "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"
+        ],
+        "monthNames": [
+            "Jan", "Fév", "Mar", "Avr", "Mai", "Jun", "Juil", "Aou", "Sept", "Oct", "Nov", "Déc",
+            "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+            "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+        ],
+        "timeNames": [
+            "a", "p", "am", "pm", "A", "P", "AM", "PM"
+        ]
    }
 }
