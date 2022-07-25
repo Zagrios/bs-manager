@@ -110,7 +110,7 @@ export function SettingsPage() {
       <div className="max-w-2xl w-full mt-10">
 
         <SettingContainer title="pages.settings.steam.title" description="pages.settings.steam.description">
-          <BsmButton onClick={deleteSteamSession} className={`bg-red-500 w-fit px-3 py-[2px] text-white rounded-md`} withBar={false} text="pages.settings.steam.logout" disabled={!sessionExist}/>
+          <BsmButton onClick={deleteSteamSession} className={`w-fit px-3 py-[2px] text-white rounded-md`} withBar={false} text="pages.settings.steam.logout" typeColor="error" disabled={!sessionExist}/>
         </SettingContainer>
 
         <SettingContainer title="pages.settings.appearance.title" description="pages.settings.appearance.description">
