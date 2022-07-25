@@ -7,13 +7,29 @@ import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 
 type BsmButtonType = "primary"|"success"|"cancel"|"error";
 
-export function BsmButton({className, style, imgClassName, icon, image, text, type, active, withBar = true, disabled, onClickOutside, onClick, typeColor}: {className?: string, style?: React.CSSProperties, imgClassName?: string, icon?: BsmIconType, image?: string, text?: string, type?: string, active?: boolean, withBar?: boolean, disabled?: boolean, onClickOutside?: (e: MouseEvent) => void, onClick?: (e: React.MouseEvent) => void, typeColor?:BsmButtonType}) {
+type propsType = {
+    className?: string,
+    style?: React.CSSProperties,
+    imgClassName?: string,
+    icon?: BsmIconType,
+    image?: string,
+    text?: string,
+    type?: string,
+    active?: boolean,
+    withBar?: boolean,
+    disabled?: boolean,
+    onClickOutside?: (e: MouseEvent) => void,
+    onClick?: (e: React.MouseEvent) => void,
+    typeColor?:BsmButtonType
+}
+
+export function BsmButton({className, style, imgClassName, icon, image, text, type, active, withBar = true, disabled, onClickOutside, onClick, typeColor}: propsType) {
 
   const t = useTranslation();
   const secondColor = useThemeColor("second-color");
 
   const primaryColor = typeColor === "primary" ? useThemeColor("first-color") : null;
-  
+
   const textColor = !primaryColor ? null : (() => {
     const hex = primaryColor.replaceAll("#", "");
     const uicolors = [parseInt(hex.substring(0, 2), 16) / 255, parseInt(hex.substring(0, 2), 16) / 255, parseInt(hex.substring(0, 2), 16) / 255];
