@@ -1,11 +1,9 @@
 import path from "path";
 import { LaunchResult, LauchOption } from "shared/models/bs-launch";
-import { BSVersion } from 'shared/bs-version.interface';
 import { UtilsService } from "./utils.service";
 import { BS_EXECUTABLE, BS_APP_ID } from "../constants";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { SteamService } from "./steam.service";
-import { InstallationLocationService } from "./installation-location.service";
 import { BSLocalVersionService } from "./bs-local-version.service";
 
 export class BSLauncherService{
@@ -14,7 +12,6 @@ export class BSLauncherService{
 
     private readonly utilsService: UtilsService;
     private readonly steamService: SteamService;
-    private readonly installLocationService: InstallationLocationService;
     private readonly localVersionService: BSLocalVersionService;
 
     private bsProcess: ChildProcessWithoutNullStreams;
@@ -27,7 +24,6 @@ export class BSLauncherService{
     private constructor(){
         this.utilsService = UtilsService.getInstance();
         this.steamService = SteamService.getInstance();
-        this.installLocationService = InstallationLocationService.getInstance();
         this.localVersionService = BSLocalVersionService.getInstance();
     }
 
@@ -50,7 +46,7 @@ export class BSLauncherService{
 
         this.bsProcess.on('message', msg => { /** EMIT HERE **/ });
         this.bsProcess.on('error', err => { /** EMIT HERE **/ });
-        this.bsProcess.on('exit', code => this.utilsService.ipcSend("bs-launch.exit", {data: code, success: true}));
+        this.bsProcess.on('exit', code => this.utilsService.ipcSend("bs-launch.exit", {data: code, success: code === 0}));
 
         return "LAUNCHED";
     }
