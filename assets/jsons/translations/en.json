@@ -150,12 +150,14 @@
                "UNABLE_TO_LAUNCH": "Unable to launch",
                "STEAM_NOT_RUNNING": "Steam is not running",
                "BS_ALREADY_RUNNING": "BeatSaber already running",
-               "EXE_NOT_FINDED": "Missing files"
+               "EXE_NOT_FINDED": "Missing files",
+               "EXIT": "Abrupt stop"
             },
             "msg":{
                "STEAM_NOT_RUNNING": "Steam must be running to launch BeatSaber.",
                "BS_ALREADY_RUNNING": "Close BeatSaber before launching it again.",
-               "EXE_NOT_FINDED": "Some files seem to be missing, try to verify the files."
+               "EXE_NOT_FINDED": "Some files seem to be missing, try to verify the files.",
+               "EXIT": "BeatSaber stopped abruptly, tries to check the files."
             }
          }
       },

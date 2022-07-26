@@ -32,7 +32,7 @@ export class BSLauncherService{
             const version = this.launchState$.value;
             this.launchState$.next(null);
             if(res.success){ return; }
-            this.notificationService.notifyError({title: "Arrêt brutal", desc: "BeatSaber s'est arrêté brusquement, essaye de vérifier les fichiers", actions: [{id: "0", title: "misc.verify"}]}).then(res => {
+            this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.EXIT", desc: "notifications.bs-launch.errors.msg.EXIT", actions: [{id: "0", title: "misc.verify"}]}).then(res => {
                 if(res === "0"){ this.bsDownloaderService.download(version, true); }
             });
         });
