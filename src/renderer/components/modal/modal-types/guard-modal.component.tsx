@@ -24,8 +24,8 @@ export function GuardModal({resolver}: {resolver: (x: ModalResponse<string>) => 
             <input className="w-full bg-light-main-color-1 dark:bg-main-color-1 px-2 rounded-md py-[2px]" onChange={e => setGuardCode(e.target.value.toUpperCase())} value={guardCode} type="guard" name="guard" id="guard" placeholder={t("modals.guard.inputs.guard-code.placeholder")}/>
         </div>
         <div className="grid grid-flow-col grid-cols-2 gap-4">
-            <BsmButton className="rounded-md text-center bg-gray-500 hover:brightness-110 transition-all" onClick={() => {resolver({exitCode: ModalExitCode.CANCELED})}} withBar={false} text="misc.cancel"/>
-            <BsmButton className="rounded-md text-center bg-blue-500 hover:brightness-110 transition-all" type="submit" withBar={false} text="modals.guard.buttons.submit"/>
+            <BsmButton typeColor="cancel" className="rounded-md text-center transition-all" onClick={() => {resolver({exitCode: ModalExitCode.CANCELED})}} withBar={false} text="misc.cancel"/>
+            <BsmButton typeColor="primary" className="rounded-md text-center transition-all" type="submit" withBar={false} text="modals.guard.buttons.submit"/>
         </div>
     </form>
   )

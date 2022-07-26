@@ -77,7 +77,7 @@ export function BsVersionItem(props: {version: BSVersion}) {
                <ReactFitty maxSize={19} minSize={9} className='align-middle pb-[2px] max-w-full overflow-hidden text-ellipsis'>{props.version.name || props.version.BSVersion}</ReactFitty>
             </div>
          </Link>
-         {downloading && <BsmButton onClick={cancel} className="my-1 text-xs text-white rounded-md text-center hover:brightness-125" withBar={false} text="misc.cancel" typeColor="error"/>}
+         {downloading && <BsmButton onClick={cancel} className="my-1 text-xs text-white rounded-md text-center" withBar={false} text="misc.cancel" typeColor="error"/>}
       </div>
     </div>
 

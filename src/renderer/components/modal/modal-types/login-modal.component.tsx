@@ -34,8 +34,8 @@ export function LoginModal({resolver}: {resolver: (x: ModalResponse<any>) => voi
             <label className="cursor-pointer text-gray-800 dark:text-gray-200" htmlFor="stay">{t("modals.steam-login.inputs.stay.label")}</label>
         </div>
         <div className="grid grid-flow-col grid-cols-2 gap-4">
-            <BsmButton className="rounded-md text-center bg-gray-500 hover:brightness-110 transition-all" onClick={() => {resolver({exitCode: ModalExitCode.CANCELED})}} withBar={false} text="misc.cancel"/>
-            <BsmButton className="rounded-md text-center bg-blue-500 hover:brightness-110 transition-all" type="submit" withBar={false} text={t("modals.steam-login.buttons.submit")}/>
+            <BsmButton typeColor="cancel" className="rounded-md text-center transition-all" onClick={() => {resolver({exitCode: ModalExitCode.CANCELED})}} withBar={false} text="misc.cancel"/>
+            <BsmButton typeColor="primary" className="rounded-md text-center transition-all" type="submit" withBar={false} text={t("modals.steam-login.buttons.submit")}/>
         </div>
     </form>
   )

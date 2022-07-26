@@ -44,13 +44,13 @@ export function EditVersionModal({resolver, clone = false}: {resolver: (x: Modal
             <div className="relative w-full h-7 mb-4 bg-light-main-color-1 dark:bg-main-color-1 flex justify-center rounded-md py-1 z-[1]">
                <SettingColorChooser color={color} onChange={setColor} pickerClassName="!h-32 !w-32"/>
                <div className="absolute right-2 top-0 h-full flex items-center">
-                  <BsmButton onClick={resetColor} className="px-2 font-bold italic text-sm rounded-md bg-light-main-color-2 dark:bg-main-color-2 hover:bg-light-main-color-3 dark:hover:bg-main-color-3" text="pages.settings.appearance.reset" withBar={false}/>
+                  <BsmButton onClick={resetColor} className="px-2 font-bold italic text-sm rounded-md" text="pages.settings.appearance.reset" withBar={false}/>
                </div>
             </div>
          </div>
          <div className="grid grid-flow-col grid-cols-2 gap-4">
-            <BsmButton className="rounded-md text-center bg-gray-500 hover:brightness-110 transition-all" onClick={() => {resolver({exitCode: ModalExitCode.CANCELED})}} withBar={false} text="misc.cancel"/>
-            <BsmButton typeColor="primary" className="z-0 px-1 rounded-md text-center hover:brightness-110 transition-all" type="submit" withBar={false} text={!clone ? "modals.edit-version.buttons.submit" : "modals.clone-version.buttons.submit"}/>
+            <BsmButton typeColor="cancel" className="rounded-md text-center transition-all" onClick={() => {resolver({exitCode: ModalExitCode.CANCELED})}} withBar={false} text="misc.cancel"/>
+            <BsmButton typeColor="primary" className="z-0 px-1 rounded-md text-center transition-all" type="submit" withBar={false} text={!clone ? "modals.edit-version.buttons.submit" : "modals.clone-version.buttons.submit"}/>
          </div>
       </form>
    )

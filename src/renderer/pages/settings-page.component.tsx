@@ -118,7 +118,7 @@ export function SettingsPage() {
             <SettingColorChooser color={firstColor} onChange={setFirstColorSetting}/>
             <SettingColorChooser color={secondColor} onChange={setSecondColorSetting}/>
             <div className="absolute right-2 top-0 h-full flex items-center">
-              <BsmButton onClick={resetColors} className="px-2 font-bold italic text-sm rounded-md bg-light-main-color-2 dark:bg-main-color-2 hover:bg-light-main-color-3 dark:hover:bg-main-color-3" text="pages.settings.appearance.reset" withBar={false}/>
+              <BsmButton onClick={resetColors} className="px-2 font-bold italic text-sm rounded-md" text="pages.settings.appearance.reset" withBar={false}/>
             </div>
           </div>
           <SettingContainer minorTitle="pages.settings.appearance.sub-title" className="mt-3">
@@ -129,7 +129,7 @@ export function SettingsPage() {
         <SettingContainer title="pages.settings.installation-folder.title" description="pages.settings.installation-folder.description">
         <div className="relative flex items-center justify-between w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 rounded-md pl-2 py-1">
           <span className="block text-ellipsis overflow-hidden min-w-0" title={installationFolder}>{installationFolder}</span>
-          <BsmButton onClick={setDefaultInstallationFolder} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md bg-light-main-color-2 dark:bg-main-color-2 hover:bg-light-main-color-3 dark:hover:bg-main-color-3" text="pages.settings.installation-folder.choose-folder" withBar={false}/>
+          <BsmButton onClick={setDefaultInstallationFolder} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="pages.settings.installation-folder.choose-folder" withBar={false}/>
         </div>
         </SettingContainer>
 

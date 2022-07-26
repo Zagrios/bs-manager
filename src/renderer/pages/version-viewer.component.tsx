@@ -115,7 +115,7 @@ export function VersionViewer() {
               <ToogleLunchMod icon='terminal' onClick={() => setMode(LaunchMods.DEBUG_MOD, !debugMode)} active={debugMode} text="pages.version-viewer.launch-mods.debug"/>
             </div>
             <div className='grow flex justify-center items-center'>
-              <BsmButton onClick={launchBs} className='relative text-5xl text-gray-800 dark:text-gray-200 bg-light-main-color-2 dark:bg-main-color-2 font-bold tracking-wide pt-1 pb-3 px-7 rounded-lg shadow-md italic shadow-black active:scale-90 transition-transform' text="misc.launch"/>
+              <BsmButton onClick={launchBs} className='relative text-5xl text-gray-800 dark:text-gray-200 font-bold tracking-wide pt-1 pb-3 px-7 rounded-lg shadow-md italic shadow-black active:scale-90 transition-transform' text="misc.launch"/>
             </div>
           </div>
           <div className='shrink-0 w-full h-full flex justify-center'>
