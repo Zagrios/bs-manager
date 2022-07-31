@@ -8,6 +8,7 @@ import { InstallationLocationService } from "./installation-location.service";
 import { ctrlc } from "ctrlc-windows";
 import { BSLocalVersionService } from "./bs-local-version.service";
 import { getMainWindow } from "../main";
+import isOnline from 'is-online';
 
 export class BSInstallerService{
 
@@ -62,9 +63,10 @@ export class BSInstallerService{
    }
 
   public async downloadBsVersion(downloadInfos: DownloadInfo): Promise<DownloadEvent>{
-    if(this.downloadProcess && !this.downloadProcess?.killed){ console.log("*** AlreadyDownloading ***"); return {type: "[AlreadyDownloading]"}; }
+    if(this.downloadProcess && !this.downloadProcess?.killed){ return {type: "[AlreadyDownloading]"}; }
     const bsVersion = downloadInfos.bsVersion;
     if(!bsVersion){ return {type: "[Error]"}; }
+    if(!(await isOnline({timeout: 1500}))){ throw "no-internet"; }
 
     this.utils.createFolderIfNotExist(this.installLocationService.versionsDirectory);
     this.downloadProcess = spawn(
@@ -159,4 +161,4 @@ export interface DownloadEvent{
   data?: any,
 }
 
-export type DownloadEventType = "[Password]" | "[Guard]" | "[2FA]" | "[Progress]" | "[Validated]" | "[Finished]" | "[AlreadyDownloading]" | "[Error]" | "[Warning]" | "[SteamID]" | "[Exit]";
+export type DownloadEventType = "[Password]" | "[Guard]" | "[2FA]" | "[Progress]" | "[Validated]" | "[Finished]" | "[AlreadyDownloading]" | "[Error]" | "[Warning]" | "[SteamID]" | "[Exit]" | "[NoInternet]";

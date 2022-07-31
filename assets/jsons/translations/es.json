@@ -92,7 +92,8 @@
          "errors":{
             "titles":{
                "already-downloading": "La descarga ya está en curso",
-               "verification-failed":"La verificación falló."
+               "verification-failed":"La verificación falló.",
+               "no-internet": "Sin conexión a Internet."
             },
             "msg":{
                "Password": "La contraseña es inválida.",

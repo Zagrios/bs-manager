@@ -91,7 +91,8 @@
          "errors":{
             "titles":{
                "already-downloading": "A download is already in progress",
-               "verification-failed":"The verification failed."
+               "verification-failed":"The verification failed.",
+               "no-internet": "No internet connection."
             },
             "msg":{
                "Password": "Password is invalid.",

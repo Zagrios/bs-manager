@@ -111,7 +111,8 @@ export class BsDownloaderService{
       
       this.progressBarService.hide(true);
       this.resetDownload();
-      res.success && this.notificationService.notifySuccess({title: `notifications.bs-download.success.titles.${isVerification ? "verification-finished" : "download-success"}`, duration: 3000});
+      if(res.success){ this.notificationService.notifySuccess({title: `notifications.bs-download.success.titles.${isVerification ? "verification-finished" : "download-success"}`, duration: 3000}); }
+      else{ this.notificationService.notifyError({title: `notifications.bs-download.errors.titles.${res.data}`, duration: 3000}); }
 
       return res;
    }

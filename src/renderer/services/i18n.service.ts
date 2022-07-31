@@ -51,6 +51,7 @@ export class I18nService {
    }
 
    public translate(translationKey: string, args?: Record<string, string>): string{
+      console.log(translationKey);
       let translated = this.cache.get(translationKey);
       if(!translated){
          translated = getProperty(this.dictionary, translationKey);
