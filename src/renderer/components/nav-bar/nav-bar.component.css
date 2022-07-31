@@ -1,27 +1,3 @@
-#logo-bottom{
-  position: absolute;
-  /* width: 200px; height: 200px; */
-  display: block;
-  background-image: url('../../../../assets/images/logo1.png');
-  -webkit-mask-image: url('../../../../assets/images/logo1.png');
-  -webkit-mask-size: cover;
-  -webkit-mask-mode: alpha;
-  background-blend-mode: luminosity;
-  background-size: 100%;
-}
-
-#logo-top{
-  position: absolute;
-  /* width: 200px; height: 200px; */
-  display: block;
-  background-image: url('../../../../assets/images/logo2.png');
-  -webkit-mask-image: url('../../../../assets/images/logo2.png');
-  -webkit-mask-size: cover;
-  -webkit-mask-mode: alpha;
-  background-blend-mode: luminosity;
-  background-size: 100%;
-}
-
 #versions{
   scrollbar-gutter: stable;
 }
@@ -30,10 +6,6 @@
   animation: opacity 3s ease-in-out 0s infinite;
 }
 
-@keyframes rainbow {
-  0% { background-position: 84% 0 }
-  100% { background-position: 0 0% }
-}
 @keyframes opacity{
   0% { opacity: 1; }
   50% { opacity: .6; }
