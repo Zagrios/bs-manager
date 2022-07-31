@@ -73,6 +73,16 @@
          "warning": "⚠️ Advertencia",
          "success": "🎉 Éxito"
       },
+      "shared":{
+        "errors":{
+            "titles":{
+                "operation-running": "Operación en curso"
+            },
+            "msg":{
+                "operation-running": "Espere a que termine la operación actual y vuelva a empezar."
+            }
+        }
+      },
       "bs-download":{
          "success":{
             "titles":{

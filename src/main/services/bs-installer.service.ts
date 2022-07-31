@@ -139,8 +139,7 @@ export class BSInstallerService{
         reject(err);
       });
 
-      this.downloadProcess.on('close', (code) => reject({type: "[Exit]", data: code}));
-
+      this.downloadProcess.on('close', () => reject());
     })
   }
 

@@ -82,7 +82,12 @@ export class BsDownloaderService{
       return this.ipcService.send<boolean>("bs-download.kill");
    }
 
-   public async download(bsVersion: BSVersion, isVerification?: boolean): Promise<IpcResponse<DownloadEvent>>{
+   public async download(bsVersion: BSVersion, isVerification?: boolean, isFirstCall: boolean = true): Promise<IpcResponse<DownloadEvent>>{
+      if(isFirstCall && this.progressBarService.isVisible){
+        this.notificationService.notifyError({title: "notifications.shared.errors.titles.operation-running", desc: "notifications.shared.errors.msg.operation-running", duration: 3000});
+        return {success: false};
+      }
+
       this.progressBarService.show(this.downloadProgress$);
       this._isVerification = !!isVerification;
 
@@ -104,15 +109,15 @@ export class BsDownloaderService{
 
       let res = await promise;
         
-      if(res.data.type === "[Password]"){
+      if(res.data?.type === "[Password]"){
          this.authService.deleteSteamSession();
-         res = await this.download(bsVersion);
+         res = await this.download(bsVersion, isVerification, false);
       }
       
       this.progressBarService.hide(true);
       this.resetDownload();
       if(res.success){ this.notificationService.notifySuccess({title: `notifications.bs-download.success.titles.${isVerification ? "verification-finished" : "download-success"}`, duration: 3000}); }
-      else{ this.notificationService.notifyError({title: `notifications.bs-download.errors.titles.${res.data}`, duration: 3000}); }
+      else if(res.data){ this.notificationService.notifyError({title: `notifications.bs-download.errors.titles.${res.data}`, duration: 3000}); }
 
       return res;
    }

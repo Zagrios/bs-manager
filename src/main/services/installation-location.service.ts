@@ -43,7 +43,7 @@ export class InstallationLocationService {
         const oldDir = this.installationDirectory;
         const newDest = path.join(newDir, this.INSTALLATION_FOLDER);
         return new Promise<string>((resolve, reject) => {
-            if(!this.utilsService.folderExist(oldDir)){ this.utilsService.createFolderIfNotExist(oldDir); }
+            if(!this.utilsService.pathExist(oldDir)){ this.utilsService.createFolderIfNotExist(oldDir); }
             fs.move(oldDir, newDest, { overwrite: true }).then(() => {
                 this._installationDirectory = newDir;
                 this.configService.store.set(this.STORE_INSTALLATION_PATH_KEY, newDir);

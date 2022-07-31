@@ -74,6 +74,11 @@ export function SettingsPage() {
   }
 
   const setDefaultInstallationFolder = () => {
+      if(progressBarService.isVisible){
+         notificationService.notifyError({title: "notifications.shared.errors.titles.operation-running", desc: "notifications.shared.errors.msg.operation-running", duration: 3000});
+         return;
+      }
+
       modalService.openModal(ModalType.INSTALLATION_FOLDER).then(async res => {
          if(res.exitCode !== ModalExitCode.COMPLETED){ return; }
          const fileChooserRes = await ipcService.send<{canceled: boolean, filePaths: string[]}>("choose-folder");

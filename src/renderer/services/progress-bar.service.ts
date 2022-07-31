@@ -70,6 +70,7 @@ export class ProgressBarService{
 
     public get progression$(): BehaviorSubject<number>{ return this._progression$; }
     public get visible$(): BehaviorSubject<boolean>{ return this._visible$; }
+    public get isVisible(): boolean{ return this._visible$.value; }
 
 
 
