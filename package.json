@@ -74,7 +74,8 @@
     "win": {
       "target": [
         "nsis"
-      ]
+      ],
+      "icon": "assets/favicon.ico"
     },
     "linux": {
       "target": [
