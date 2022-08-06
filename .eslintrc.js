@@ -25,7 +25,10 @@ module.exports = {
     "jsx-a11y/no-static-element-interactions": "off",
     "react/require-default-props": "off",
     "consistent-return": "off",
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    "no-restricted-syntax": "off",
+    "@typescript-eslint/no-throw-literal": "off",
+    "@typescript-eslint/no-unused-expressions": "off"
   },
   parserOptions: {
     ecmaVersion: 2020,

@@ -41,12 +41,16 @@ export class BSLocalVersionService{
       const versionFilePath = path.join(bsPath, 'Beat Saber_Data', 'globalgamemanagers');
       if(!this.utilsService.pathExist(versionFilePath)){ return null; }
       const versionsAvailable = await this.remoteVersionService.getAvailableVersions();
-      return new Promise<string>(async (resolve, reject) => { 
+      return new Promise<string>((resolve, reject) => { 
          const readLine = createInterface({ input: createReadStream(versionFilePath) });
          let findVersion: string = null;
          readLine.on('line', (line) => {
             for(const version of versionsAvailable){
-               if(line.includes(version.BSVersion)){ findVersion = version.BSVersion; readLine.close(); }
+               if(line.includes(version.BSVersion)){ 
+                    findVersion = version.BSVersion;
+                    readLine.close();
+                    break;
+                }
             }
          });
          readLine.on('close', () => {
@@ -74,7 +78,7 @@ export class BSLocalVersionService{
    }
 
    public async getVersionPath(version: BSVersion): Promise<string>{
-      if(version.steam){ return await this.steamService.getGameFolder(BS_APP_ID, "Beat Saber") }
+      if(version.steam){ return this.steamService.getGameFolder(BS_APP_ID, "Beat Saber") }
       return path.join(
          this.installLocationService.versionsDirectory,
          this.getVersionFolder(version)
@@ -82,6 +86,7 @@ export class BSLocalVersionService{
    }
 
    private removeSpecialChar(seq: string): string{
+      // eslint-disable-next-line no-useless-escape
       return seq.replace( /[<>:"\/\\|?*]+/g, '' );
    }
 

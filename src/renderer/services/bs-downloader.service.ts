@@ -96,10 +96,10 @@ export class BsDownloaderService{
             return {success: false}; 
         }
          this.authService.setSteamSession(res.data.username, res.data.stay);
-         promise = this.ipcService.send<DownloadEvent>('bs-download.start', {args: {bsVersion: bsVersion, username: res.data.username, password: res.data.password, stay: res.data.stay}});
+         promise = this.ipcService.send<DownloadEvent>('bs-download.start', {args: {bsVersion, username: res.data.username, password: res.data.password, stay: res.data.stay}});
       }
       else{
-         promise = this.ipcService.send<DownloadEvent>('bs-download.start', {args: {bsVersion: bsVersion, username: this.authService.getSteamUsername()}});
+         promise = this.ipcService.send<DownloadEvent>('bs-download.start', {args: {bsVersion, username: this.authService.getSteamUsername()}});
       }
 
       this.currentBsVersionDownload$.next(bsVersion);
