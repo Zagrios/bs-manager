@@ -6,6 +6,11 @@
   html {
     font-family: acumin-pro, sans-serif;
   }
+
+  html.dark{
+    background-color: #202225;
+  }
+
 }
 
 *{
