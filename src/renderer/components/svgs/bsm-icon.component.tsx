@@ -17,15 +17,16 @@ import { CopyIcon } from "./icons/copy-icon.component";
 import { SteamIcon } from "./icons/steam-icon.component";
 import { CSSProperties, memo } from "react";
 import EditIcon from "./icons/edit-icon.component";
+import { ExportIcon } from "./icons/export-icon.component";
 
 export type BsmIconType = (
    "settings"|"trash"|"favorite"|"folder"|"bsNote"|
    "terminal"|"desktop"|"oculus"|"add"|"cross"|"task"|
-   "copy"|"steam"|"edit"|
+   "copy"|"steam"|"edit"|"export"|
    "fr-FR-flag"|"es-ES-flag"|"en-US-flag"|"en-EN-flag"
 );
 
-export const BsmIcon = memo(function({className, icon, style}: {className?: string, icon: BsmIconType, style?: CSSProperties}) {
+export const BsmIcon = memo(({className, icon, style}: {className?: string, icon: BsmIconType, style?: CSSProperties}) => {
 
     const renderIcon = () => {
         if(icon === "settings"){ return <SettingIcon className={className} style={style}/> }
@@ -46,6 +47,7 @@ export const BsmIcon = memo(function({className, icon, style}: {className?: stri
         if(icon === "copy"){ return <CopyIcon className={className} style={style}/> }
         if(icon === "steam"){ return <SteamIcon className={className} style={style}/> }
         if(icon === "edit"){ return <EditIcon className={className} style={style}/> }
+        if(icon === "export"){ return <ExportIcon className={className} style={style}/> }
         return <TrashIcon className={className} style={style}/>
     }
 

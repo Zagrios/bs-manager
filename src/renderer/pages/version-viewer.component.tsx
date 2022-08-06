@@ -18,6 +18,7 @@ import { BsDownloaderService } from 'renderer/services/bs-downloader.service';
 import { useTranslation } from 'renderer/hooks/use-translation.hook';
 import { IpcService } from 'renderer/services/ipc.service';
 import { useObservable } from 'renderer/hooks/use-observable.hook';
+import { MapService } from 'renderer/services/maps.service';
 
 export function VersionViewer() {
 
@@ -27,6 +28,7 @@ export function VersionViewer() {
   const modalService = ModalService.getInsance();
   const bsDownloaderService = BsDownloaderService.getInstance();
   const ipcService = IpcService.getInstance();
+  const mapService = MapService.getInstance();
 
   const {state} = useLocation() as {state: BSVersion};
   const navigate = useNavigate();
@@ -95,12 +97,16 @@ export function VersionViewer() {
       });
    }
 
-   const clone = () => {
-      bsVersionManagerService.cloneVersion(state).then(newVersion => {
-         if(!newVersion){ return; }
-         navigateToVersion(newVersion);
-      });
-   }
+    const clone = () => {
+        bsVersionManagerService.cloneVersion(state).then(newVersion => {
+            if(!newVersion){ return; }
+            navigateToVersion(newVersion);
+        });
+    }
+
+    const exportMaps = () => {
+        mapService.exportVersionMaps(state);
+    }
 
   return (
     <>
@@ -137,6 +143,7 @@ export function VersionViewer() {
       <BsmDropdownButton className='absolute top-5 right-5 h-9 w-9' items={[
           {text: "pages.version-viewer.dropdown.open-folder", icon: "folder", onClick: openFolder},
           (!state.steam && {text: "pages.version-viewer.dropdown.verify-files", icon: "task", onClick: verifyFiles}),
+          (!state.steam && {text: "Exporter les misc.maps", icon: "export", onClick: exportMaps}),
           (!state.steam && {text: "pages.version-viewer.dropdown.edit", icon: "edit", onClick: edit}),
           {text: "pages.version-viewer.dropdown.clone", icon: "copy", onClick: clone},
           (!state.steam && {text: "pages.version-viewer.dropdown.uninstall", icon:"trash", onClick: uninstall})
@@ -145,17 +152,17 @@ export function VersionViewer() {
   )
 }
 
-function ToogleLunchMod(props: {onClick: Function, active: boolean, text: string, icon: BsmIconType}) {
+function ToogleLunchMod(props: {onClick: () => void, active: boolean, text: string, icon: BsmIconType}) {
 
    const t = useTranslation();
 
-  return (
-    <div className={`relative rounded-full cursor-pointer group active:scale-95 transition-transform ${!props.active && "shadow-md shadow-black"}`} onClick={() => props.onClick()}>
-      <div className={`absolute glow-on-hover rounded-full ${props.active && "opacity-100 blur-[2px]"}`}></div>
-      <div className='w-full h-full pl-6 pr-6 flex justify-center items-center bg-light-main-color-2 dark:bg-main-color-2 p-3 rounded-full text-gray-800 dark:text-white group-hover:bg-light-main-color-1 dark:group-hover:bg-main-color-1'>
-        <BsmIcon icon={props.icon} className='mr-1 h-7 text-gray-800 dark:text-white'/>
-        <span className='w-fit min-w-fit h-full text-lg font-bold uppercase tracking-wide italic'>{t(props.text)}</span>
-      </div>
-    </div>
-  );
+    return (
+        <div className={`relative rounded-full cursor-pointer group active:scale-95 transition-transform ${!props.active && "shadow-md shadow-black"}`} onClick={() => props.onClick()}>
+            <div className={`absolute glow-on-hover rounded-full ${props.active && "opacity-100 blur-[2px]"}`}/>
+            <div className='w-full h-full pl-6 pr-6 flex justify-center items-center bg-light-main-color-2 dark:bg-main-color-2 p-3 rounded-full text-gray-800 dark:text-white group-hover:bg-light-main-color-1 dark:group-hover:bg-main-color-1'>
+                <BsmIcon icon={props.icon} className='mr-1 h-7 text-gray-800 dark:text-white'/>
+                <span className='w-fit min-w-fit h-full text-lg font-bold uppercase tracking-wide italic'>{t(props.text)}</span>
+            </div>
+        </div>
+    );
 }

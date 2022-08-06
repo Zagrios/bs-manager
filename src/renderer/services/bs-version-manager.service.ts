@@ -88,10 +88,7 @@ export class BSVersionManagerService {
    }
 
    public async cloneVersion(version: BSVersion): Promise<BSVersion>{
-      if(this.progressBarService.isVisible){
-         this.notificationService.notifyError({title: "notifications.shared.errors.titles.operation-running", desc: "notifications.shared.errors.msg.operation-running", duration: 3000});
-         return null;
-      }
+      if(!this.progressBarService.require()){ return null; }
       const modalRes = await this.modalService.openModal<{name: string, color: string}>(ModalType.CLONE_VERSION, version);
       if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return null; }
       if(modalRes.data.name?.length < 2){ return null; }

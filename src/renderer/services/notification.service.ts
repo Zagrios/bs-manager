@@ -17,7 +17,7 @@ export class NotificationService{
     }
 
     public notify(notification: Notification): Promise<NotificationResult|string>{
-        let resovableNotification: ResolvableNotification = {id: uuidv4(), notification: notification, resolver: null };
+        const resovableNotification: ResolvableNotification = {id: uuidv4(), notification, resolver: null };
         const promise = new Promise<NotificationResult|string>(resolve => {
             resovableNotification.resolver = resolve;
             setTimeout(() => resolve(NotificationResult.NO_CHOICE), notification.duration || 7000);

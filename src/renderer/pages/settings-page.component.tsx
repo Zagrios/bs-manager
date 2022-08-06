@@ -74,10 +74,7 @@ export function SettingsPage() {
   }
 
   const setDefaultInstallationFolder = () => {
-      if(progressBarService.isVisible){
-         notificationService.notifyError({title: "notifications.shared.errors.titles.operation-running", desc: "notifications.shared.errors.msg.operation-running", duration: 3000});
-         return;
-      }
+      if(!progressBarService.require()){ return; }
 
       modalService.openModal(ModalType.INSTALLATION_FOLDER).then(async res => {
          if(res.exitCode !== ModalExitCode.COMPLETED){ return; }
@@ -110,12 +107,12 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="w-full h-full flex justify-center overflow-y-scroll pb-12 scrollbar-thin scrollbar-thumb-neutral-900 text-gray-800 dark:text-gray-200">
+    <div className="w-full h-full flex justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-neutral-900 text-gray-800 dark:text-gray-200">
 
       <div className="max-w-2xl w-full mt-10">
 
         <SettingContainer title="pages.settings.steam.title" description="pages.settings.steam.description">
-          <BsmButton onClick={deleteSteamSession} className={`w-fit px-3 py-[2px] text-white rounded-md`} withBar={false} text="pages.settings.steam.logout" typeColor="error" disabled={!sessionExist}/>
+          <BsmButton onClick={deleteSteamSession} className="w-fit px-3 py-[2px] text-white rounded-md" withBar={false} text="pages.settings.steam.logout" typeColor="error" disabled={!sessionExist}/>
         </SettingContainer>
 
         <SettingContainer title="pages.settings.appearance.title" description="pages.settings.appearance.description">
@@ -142,7 +139,7 @@ export function SettingsPage() {
           <SettingRadioArray items={languagesItems} selectedItem={languageSelected} onItemSelected={handleChangeLanguage}/>
         </SettingContainer>
 
-        <div className="h-10"></div>
+        <div className="h-10"/>
 
       </div>
     </div>

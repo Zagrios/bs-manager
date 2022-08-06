@@ -1,12 +1,14 @@
 import { distinctUntilChanged, map } from "rxjs/operators";
 import { BehaviorSubject, Observable, Subscription, timer } from "rxjs";
 import { IpcService } from "./ipc.service";
+import { NotificationService } from "./notification.service";
 
 export class ProgressBarService{
 
     private static instance: ProgressBarService;
 
     private readonly ipcService: IpcService;
+    private notificationService: NotificationService;
 
     private readonly _progression$: BehaviorSubject<number>;
     private readonly _visible$: BehaviorSubject<boolean>;
@@ -20,6 +22,7 @@ export class ProgressBarService{
 
     private constructor(){
         this.ipcService = IpcService.getInstance();
+        this.notificationService = NotificationService.getInstance();
 
         this._progression$ = new BehaviorSubject<number>(0);
         this._visible$ = new BehaviorSubject<boolean>(false);
@@ -66,6 +69,14 @@ export class ProgressBarService{
     public hide(unsubscribe: boolean){
         if(unsubscribe){ this.unsubscribe(); } 
         this.visible$.next(false); 
+    }
+
+    public require(): boolean{
+        if(this.isVisible){
+            this.notificationService.notifyError({title: "notifications.shared.errors.titles.operation-running", desc: "notifications.shared.errors.msg.operation-running", duration: 3000});
+            return false;
+        }
+        return true;
     }
 
     public get progression$(): BehaviorSubject<number>{ return this._progression$; }

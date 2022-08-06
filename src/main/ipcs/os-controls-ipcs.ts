@@ -32,3 +32,11 @@ ipcMain.on('choose-folder', async (event, request: IpcRequest<void>) => {
 ipcMain.on("window.progression", async (event, request: IpcRequest<number>) => {
   getMainWindow().setProgressBar(request.args / 100);
 });
+
+ipcMain.on('save-file', async (event, request: IpcRequest<{filename?: string, filters?: Electron.FileFilter[]}>) => {
+    dialog.showSaveDialog({properties: ['showOverwriteConfirmation'], defaultPath: request.args.filename, filters: request.args.filters}).then(res => {
+        const utils = UtilsService.getInstance();
+        if(res.canceled || !res.filePath){ utils.ipcSend(request.responceChannel, {success: false}); }
+        UtilsService.getInstance().ipcSend(request.responceChannel, {success: true, data: res.filePath});
+    })
+});

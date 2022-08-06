@@ -16,7 +16,7 @@ export class IpcService {
         this.channelObservables = new Map<string, Observable<IpcResponse<unknown>>>();
     }
 
-    public send<T>(channel: string, request?: IpcRequest<any>): Promise<IpcResponse<T>>{
+    public send<T, U = unknown>(channel: string, request?: IpcRequest<U>): Promise<IpcResponse<T>>{
         if(!request){ request = {args: null, responceChannel: null}; }
         if(!request.responceChannel){ request.responceChannel = `${channel}_responce_${new Date().getTime()}`; }
 

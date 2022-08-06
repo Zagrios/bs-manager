@@ -82,11 +82,8 @@ export class BsDownloaderService{
       return this.ipcService.send<boolean>("bs-download.kill");
    }
 
-   public async download(bsVersion: BSVersion, isVerification?: boolean, isFirstCall: boolean = true): Promise<IpcResponse<DownloadEvent>>{
-      if(isFirstCall && this.progressBarService.isVisible){
-        this.notificationService.notifyError({title: "notifications.shared.errors.titles.operation-running", desc: "notifications.shared.errors.msg.operation-running", duration: 3000});
-        return {success: false};
-      }
+   public async download(bsVersion: BSVersion, isVerification?: boolean, isFirstCall = true): Promise<IpcResponse<DownloadEvent>>{
+      if(isFirstCall && !this.progressBarService.require()){ return {success: false}; }
 
       this.progressBarService.show(this.downloadProgress$);
       this._isVerification = !!isVerification;

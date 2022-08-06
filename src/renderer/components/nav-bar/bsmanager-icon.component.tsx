@@ -1,6 +1,6 @@
 import { memo } from "react"
 
-export const BsManagerIcon = memo(function ({className, color1, color2}: {className: string, color1: string, color2: string}) {
+export const BsManagerIcon = memo(({className, color1, color2}: {className: string, color1: string, color2: string}) => {
   return (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
     <g fill={color1}>
