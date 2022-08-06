@@ -7,11 +7,25 @@ module.exports = {
     // Since React 17 and typescript 4.1 you can safely disable the rule
     'react/react-in-jsx-scope': 'off',
     'prettier/prettier': 0,
-    "global-require": 0
+    "global-require": 0,
     "import/prefer-default-export": "off",
     "no-empty-function": "off",
     "@typescript-eslint/no-empty-function": "off",
-    "@angular-eslint/no-empty-lifecycle-method": "off"
+    '@typescript-eslint/lines-between-class-members': "off",
+    "class-methods-use-this": "off",
+    "promise/catch-or-return": "off",
+    "promise/always-return": "off",
+    "import/order": "off",
+    "react/destructuring-assignment": "off",
+    "promise/no-nesting": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "@typescript-eslint/no-shadow": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    "react/require-default-props": "off",
+    "consistent-return": "off",
+    "no-underscore-dangle": "off"
   },
   parserOptions: {
     ecmaVersion: 2020,
