@@ -157,7 +157,7 @@ export interface DownloadInfo {
 
 export interface DownloadEvent{
   type: DownloadEventType,
-  data?: any,
+  data?: unknown,
 }
 
 export type DownloadEventType = "[Password]" | "[Guard]" | "[2FA]" | "[Progress]" | "[Validated]" | "[Finished]" | "[AlreadyDownloading]" | "[Error]" | "[Warning]" | "[SteamID]" | "[Exit]" | "[NoInternet]";
