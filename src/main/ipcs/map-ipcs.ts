@@ -10,4 +10,4 @@ ipcMain.on("map.export-version", (event, request: IpcRequest<ExportVersionMapsOp
     mapService.exportVersionMaps(request.args.version, request.args.path).then(() => {
         utils.ipcSend(request.responceChannel, {success: true});
     }).catch(() => utils.ipcSend(request.responceChannel, {success: false, error: {title: "", msg: ""}}));
-})
+});
