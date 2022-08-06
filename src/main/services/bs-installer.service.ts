@@ -39,14 +39,14 @@ export class BSInstallerService{
     return path.join(this.utils.getAssetsScriptsPath(), 'depot-downloader', 'DepotDownloader.exe');
   }
 
-   private sendDownloadEvent(event: DownloadEventType, data?: string|number, success: boolean = true): void{
+   private sendDownloadEvent(event: DownloadEventType, data?: string|number, success = true): void{
       if(typeof data === "string"){ data = data.replaceAll(/\[|\]/g, ""); }
-      this.utils.ipcSend(`bs-download.${event}`, { success: success, data: data });
+      this.utils.ipcSend(`bs-download.${event}`, { success, data });
    }
 
   public sendInputProcess(input: string){
     if(this.downloadProcess.stdin.writable){
-      this.downloadProcess.stdin.write(input+"\n");
+      this.downloadProcess.stdin.write(`${input}\n`);
     }
   }
 
@@ -64,7 +64,7 @@ export class BSInstallerService{
 
   public async downloadBsVersion(downloadInfos: DownloadInfo): Promise<DownloadEvent>{
     if(this.downloadProcess && !this.downloadProcess?.killed){ return {type: "[AlreadyDownloading]"}; }
-    const bsVersion = downloadInfos.bsVersion;
+    const {bsVersion} = downloadInfos;
     if(!bsVersion){ return {type: "[Error]"}; }
     if(!(await isOnline({timeout: 1500}))){ throw "no-internet"; }
 
@@ -82,7 +82,7 @@ export class BSInstallerService{
       {shell: true, cwd: this.installLocationService.versionsDirectory}
     );
 
-    return await new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
       this.downloadProcess.stdout.on('data', data => {
         const matched = (data.toString() as string).match(/(?:\[(.*?)\])\|(?:\[(.*?)\]\|)?(.*?)(?=$|\[)/gm) ?? [];
@@ -103,7 +103,7 @@ export class BSInstallerService{
           else if(out[0] === "[Progress]" as DownloadEventType || (out[0] === "[Validated]" as DownloadEventType && parseFloat(out[1]) < 100)){ 
             this.sendDownloadEvent("[Progress]", parseFloat(out[1].replaceAll(",", ".")));
           }
-          else if(out[0] === "[Finished]" as DownloadEventType || (out[0] === "[Validated]" as DownloadEventType && parseFloat(out[1]) == 100)){
+          else if(out[0] === "[Finished]" as DownloadEventType || (out[0] === "[Validated]" as DownloadEventType && parseFloat(out[1]) === 100)){
             resolve({type: "[Finished]"});
             this.killDownloadProcess();
           }

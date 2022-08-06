@@ -28,7 +28,9 @@ module.exports = {
     "no-underscore-dangle": "off",
     "no-restricted-syntax": "off",
     "@typescript-eslint/no-throw-literal": "off",
-    "@typescript-eslint/no-unused-expressions": "off"
+    "@typescript-eslint/no-unused-expressions": "off",
+    "no-param-reassign": "off",
+    "no-useless-escape": "off"
   },
   parserOptions: {
     ecmaVersion: 2020,

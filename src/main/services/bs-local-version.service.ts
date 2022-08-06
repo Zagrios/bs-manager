@@ -41,7 +41,7 @@ export class BSLocalVersionService{
       const versionFilePath = path.join(bsPath, 'Beat Saber_Data', 'globalgamemanagers');
       if(!this.utilsService.pathExist(versionFilePath)){ return null; }
       const versionsAvailable = await this.remoteVersionService.getAvailableVersions();
-      return new Promise<string>((resolve, reject) => { 
+      return new Promise<string>(resolve => { 
          const readLine = createInterface({ input: createReadStream(versionFilePath) });
          let findVersion: string = null;
          readLine.on('line', (line) => {
