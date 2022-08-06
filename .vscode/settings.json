@@ -27,5 +27,7 @@
     "package-lock.json": true,
     "*.{css,sass,scss}.d.ts": true
   },
-  "editor.detectIndentation": false
+  "editor.detectIndentation": false,
+  "editor.tabSize": 4
+  
 }
