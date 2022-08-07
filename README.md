@@ -2,8 +2,8 @@
 	<a href="https://github.com/RiskiVR/BSLegacyLauncher">
 		<img src="https://raw.githubusercontent.com/Zagrios/bs-manager/master/resources/readme/icon.svg" alt="logo" width="250px"/>
 	</a>
-	<h3 align="center" style="font-size: 28px">BSManager</h3>
-	<p align="center" style="width: 500px; margin: auto">Simple and fancy tools that alow you to download, manage and launch BeatSaber versions. And in the near future download and manage Mods and Maps.</p>
+	<h3 align="center">BSManager</h3>
+	<p align="center">Simple and fancy tools that alow you to download, launch and manage BeatSaber versions, Maps and Mods easily and quickly.</p>
 </p>
 
 <p align="center">
@@ -12,7 +12,7 @@
 
 <details open="open">
 	<summary>
-        <h2 style="display: inline-block">Table of Contents</h2>
+        <h2>Table of Contents</h2>
     </summary>
 	<ol>
 		<li>
@@ -36,10 +36,11 @@ BSManager is designed to download any BeatSaber version from Steam's depots, and
 <b>In the near future</b><br/>
 - You can Create a master Maps folder and link it across all versions!<br/>
 - You can download Maps with "OneClick"!<br/>
+- You can download Maps from BSManager!<br/>
 - You can download and manage Mods for each versions!<br/>
 - And even more!
 </p>
-<h3 id="built-with" style="margin:0">Built With</h3>
+<h3 id="built-with">Built With</h3>
 <ul>
 	<li>
 		<a href="https://github.com/electron-react-boilerplate/electron-react-boilerplate">Electron React Boilerplate</a>
