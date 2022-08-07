@@ -21,7 +21,6 @@
 		</li>
 		<li><a href="#how-to-use">How To Use</a></li>
 		<li><a href="#having-problems">Having problems?</a></li>
-		<li><a href="#contact">Contact</a></li>
 		<li><a href="#acknowledgements">Acknowledgements</a></li>
 	</ol>
 </details>
