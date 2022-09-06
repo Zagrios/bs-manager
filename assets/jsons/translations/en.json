@@ -63,7 +63,16 @@
                   "es-ES": "Spanish"
                }
             }
-         } 
+         },
+        "patreon":{
+            "title":"Support BSManager 💖",
+            "description": "Support the project and help us to provide continuous improvements to BSManager.",
+            "buttons":{
+                "support": "Support BSManager",
+                "supporters":"Supporters 👀"
+            }
+    
+        }
       }
    },
    "notifications":{

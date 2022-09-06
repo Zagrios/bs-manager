@@ -106,6 +106,10 @@ export function SettingsPage() {
     notificationService.notifySuccess({title: "notifications.settings.steam.success.titles.logout", duration: 3000});
   };
 
+  const openPatreonPage = () => {
+    ipcService.sendLazy("new-window", {args: "https://www.patreon.com/bsmanager?fan_landing=true"})
+  }
+
   return (
     <div className="w-full h-full flex justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-neutral-900 text-gray-800 dark:text-gray-200">
 
@@ -137,6 +141,13 @@ export function SettingsPage() {
 
         <SettingContainer title="pages.settings.language.title" description="pages.settings.language.description">
           <SettingRadioArray items={languagesItems} selectedItem={languageSelected} onItemSelected={handleChangeLanguage}/>
+        </SettingContainer>
+
+        <SettingContainer title="pages.settings.patreon.title" description="pages.settings.patreon.description">
+            <div className="flex">
+                <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 whitespace-nowrap mr-2 !text-white" iconClassName="mr-1" text="pages.settings.patreon.buttons.support" icon="patreon" color="#EC6350" withBar={false} onClick={openPatreonPage}></BsmButton>
+                <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="pages.settings.patreon.buttons.supporters" color="#6c5ce7"></BsmButton>
+            </div>
         </SettingContainer>
 
         <div className="h-10"/>
