@@ -18,15 +18,16 @@ import { UtilsService } from './services/utils.service';
 
 export default class AppUpdater {
   constructor() {
-    log.transports.file.level = 'info';
-    log.transports.file.resolvePath = (() => {
-        const now = new Date();
-        return path.join(app.getPath("logs"), `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}.log`);
-    });
     autoUpdater.logger = log;
     //autoUpdater.checkForUpdatesAndNotify();
   }
 }
+
+log.transports.file.level = 'info';
+log.transports.file.resolvePath = (() => {
+    const now = new Date();
+    return path.join(app.getPath("logs"), `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}.log`);
+});
 
 log.catchErrors();
 
