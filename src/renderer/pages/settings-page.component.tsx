@@ -16,6 +16,7 @@ import { ModalExitCode, ModalService, ModalType } from "renderer/services/modale
 import { NotificationService } from "renderer/services/notification.service";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { ThemeService } from "renderer/services/theme.service";
+import { SupportersView } from "renderer/components/settings/supporters-view/supporters-view.component";
 
 export function SettingsPage() {
 
@@ -45,6 +46,7 @@ export function SettingsPage() {
   const[themeIdSelected, setThemeIdSelected]= useState(themeItem.find(e => e.value === themeService.getTheme()).id);
   const[languageSelected, setLanguageSelected]= useState(languagesItems.find(e => e.value === i18nService.currentLanguage).id);
   const [installationFolder, setInstallationFolder] = useState(null);
+  const [showSupporters, setShowSupporters] = useState(true);
 
   useEffect(() => {
     loadInstallationFolder();
@@ -110,49 +112,56 @@ export function SettingsPage() {
     ipcService.sendLazy("new-window", {args: "https://www.patreon.com/bsmanager?fan_landing=true"})
   }
 
-  return (
-    <div className="w-full h-full flex justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-neutral-900 text-gray-800 dark:text-gray-200">
+  const toogleShowSupporters = () => {
+    setShowSupporters(show => !show);
+  }
 
-      <div className="max-w-2xl w-full mt-10">
+    return (
+        <div className="w-full h-full flex justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-neutral-900 text-gray-800 dark:text-gray-200">
 
-        <SettingContainer title="pages.settings.steam.title" description="pages.settings.steam.description">
-          <BsmButton onClick={deleteSteamSession} className="w-fit px-3 py-[2px] text-white rounded-md" withBar={false} text="pages.settings.steam.logout" typeColor="error" disabled={!sessionExist}/>
-        </SettingContainer>
+            <div className="max-w-2xl w-full mt-10">
 
-        <SettingContainer title="pages.settings.appearance.title" description="pages.settings.appearance.description">
-          <div className="relative w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 flex justify-center rounded-md py-1">
-            <SettingColorChooser color={firstColor} onChange={setFirstColorSetting}/>
-            <SettingColorChooser color={secondColor} onChange={setSecondColorSetting}/>
-            <div className="absolute right-2 top-0 h-full flex items-center">
-              <BsmButton onClick={resetColors} className="px-2 font-bold italic text-sm rounded-md" text="pages.settings.appearance.reset" withBar={false}/>
+                <SettingContainer title="pages.settings.steam.title" description="pages.settings.steam.description">
+                    <BsmButton onClick={deleteSteamSession} className="w-fit px-3 py-[2px] text-white rounded-md" withBar={false} text="pages.settings.steam.logout" typeColor="error" disabled={!sessionExist}/>
+                </SettingContainer>
+
+                <SettingContainer title="pages.settings.appearance.title" description="pages.settings.appearance.description">
+                    <div className="relative w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 flex justify-center rounded-md py-1">
+                        <SettingColorChooser color={firstColor} onChange={setFirstColorSetting}/>
+                        <SettingColorChooser color={secondColor} onChange={setSecondColorSetting}/>
+                        <div className="absolute right-2 top-0 h-full flex items-center">
+                            <BsmButton onClick={resetColors} className="px-2 font-bold italic text-sm rounded-md" text="pages.settings.appearance.reset" withBar={false}/>
+                        </div>
+                    </div>
+                    <SettingContainer minorTitle="pages.settings.appearance.sub-title" className="mt-3">
+                        <SettingRadioArray items={themeItem} selectedItem={themeIdSelected} onItemSelected={handleChangeTheme}/>
+                    </SettingContainer>
+                </SettingContainer>
+
+                <SettingContainer title="pages.settings.installation-folder.title" description="pages.settings.installation-folder.description">
+                    <div className="relative flex items-center justify-between w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 rounded-md pl-2 py-1">
+                        <span className="block text-ellipsis overflow-hidden min-w-0" title={installationFolder}>{installationFolder}</span>
+                        <BsmButton onClick={setDefaultInstallationFolder} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="pages.settings.installation-folder.choose-folder" withBar={false}/>
+                    </div>
+                </SettingContainer>
+
+                <SettingContainer title="pages.settings.language.title" description="pages.settings.language.description">
+                    <SettingRadioArray items={languagesItems} selectedItem={languageSelected} onItemSelected={handleChangeLanguage}/>
+                </SettingContainer>
+
+                <SettingContainer title="pages.settings.patreon.title" description="pages.settings.patreon.description">
+                    <div className="flex">
+                        <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 whitespace-nowrap mr-2 !text-white" iconClassName="mr-1" text="pages.settings.patreon.buttons.support" icon="patreon" color="#EC6350" withBar={false} onClick={openPatreonPage}></BsmButton>
+                        <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="pages.settings.patreon.buttons.supporters" color="#6c5ce7" onClick={toogleShowSupporters}></BsmButton>
+                    </div>
+                </SettingContainer>
+
+                <div className="h-10"/>
+
             </div>
-          </div>
-          <SettingContainer minorTitle="pages.settings.appearance.sub-title" className="mt-3">
-            <SettingRadioArray items={themeItem} selectedItem={themeIdSelected} onItemSelected={handleChangeTheme}/>
-          </SettingContainer>
-        </SettingContainer>
 
-        <SettingContainer title="pages.settings.installation-folder.title" description="pages.settings.installation-folder.description">
-        <div className="relative flex items-center justify-between w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 rounded-md pl-2 py-1">
-          <span className="block text-ellipsis overflow-hidden min-w-0" title={installationFolder}>{installationFolder}</span>
-          <BsmButton onClick={setDefaultInstallationFolder} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="pages.settings.installation-folder.choose-folder" withBar={false}/>
+            <SupportersView isVisible={showSupporters} setVisible={setShowSupporters}/>
+
         </div>
-        </SettingContainer>
-
-        <SettingContainer title="pages.settings.language.title" description="pages.settings.language.description">
-          <SettingRadioArray items={languagesItems} selectedItem={languageSelected} onItemSelected={handleChangeLanguage}/>
-        </SettingContainer>
-
-        <SettingContainer title="pages.settings.patreon.title" description="pages.settings.patreon.description">
-            <div className="flex">
-                <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 whitespace-nowrap mr-2 !text-white" iconClassName="mr-1" text="pages.settings.patreon.buttons.support" icon="patreon" color="#EC6350" withBar={false} onClick={openPatreonPage}></BsmButton>
-                <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="pages.settings.patreon.buttons.supporters" color="#6c5ce7"></BsmButton>
-            </div>
-        </SettingContainer>
-
-        <div className="h-10"/>
-
-      </div>
-    </div>
-  )
+    )
 }
