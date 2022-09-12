@@ -1,4 +1,4 @@
-import { ipcMain, shell, dialog } from 'electron';
+import { ipcMain, shell, dialog, app } from 'electron';
 import { UtilsService } from '../services/utils.service';
 import { IpcRequest } from 'shared/models/ipc';
 import { getMainWindow } from '../main';
@@ -39,4 +39,8 @@ ipcMain.on('save-file', async (event, request: IpcRequest<{filename?: string, fi
         if(res.canceled || !res.filePath){ utils.ipcSend(request.responceChannel, {success: false}); }
         UtilsService.getInstance().ipcSend(request.responceChannel, {success: true, data: res.filePath});
     })
+});
+
+ipcMain.on("current-version", async (event, request: IpcRequest<void>) => {
+    UtilsService.getInstance().ipcSend(request.responceChannel, {success: true, data: app.getVersion()});
 });

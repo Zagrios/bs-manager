@@ -47,9 +47,11 @@ export function SettingsPage() {
   const[languageSelected, setLanguageSelected]= useState(languagesItems.find(e => e.value === i18nService.currentLanguage).id);
   const [installationFolder, setInstallationFolder] = useState(null);
   const [showSupporters, setShowSupporters] = useState(false);
+  const [appVersion, setAppVersion] = useState("");
 
   useEffect(() => {
     loadInstallationFolder();
+    ipcService.send<string>("current-version").then(res => setAppVersion(res.data));
   }, []);
 
   const resetColors = () => {
@@ -155,6 +157,8 @@ export function SettingsPage() {
                         <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="pages.settings.patreon.buttons.supporters" color="#6c5ce7" onClick={toogleShowSupporters}/>
                     </div>
                 </SettingContainer>
+
+                <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right">v{appVersion}</span>
 
                 <div className="h-10"/>
 
