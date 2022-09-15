@@ -21,14 +21,14 @@ jobs:
       - name: Install Node and NPM
         uses: actions/setup-node@v1
         with:
-          node-version: 14
+          node-version: 16
           cache: npm
 
       - name: Install and build
         run: |
           npm install
           npm run postinstall
-          npm run package
+          npm run build
       - name: Publish releases
         env:
           CSC_LINK: ${{ secrets.CSC_LINK }}
