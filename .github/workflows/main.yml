@@ -1,0 +1,37 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [windows-latest]
+
+    steps:
+      - name: Checkout git repo
+        uses: actions/checkout@v1
+
+      - name: Install Node and NPM
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+          cache: npm
+
+      - name: Install and build
+        run: |
+          npm install
+          npm run postinstall
+          npm run build
+      - name: Publish releases
+        env:
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+        run: |
+          npm exec electron-builder -- --publish always --win
