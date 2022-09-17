@@ -109,15 +109,10 @@
     "url": "https://github.com/Zagrios/bs-manager/issues"
   },
   "keywords": [
-    "electron",
-    "boilerplate",
-    "react",
-    "typescript",
-    "ts",
-    "sass",
-    "webpack",
-    "hot",
-    "reload"
+    "downgrade",
+    "launcher-application",
+    "beatsaber",
+    "beat-saber"
   ],
   "homepage": "https://github.com/Zagrios/bs-manager#readme",
   "jest": {
@@ -253,7 +248,7 @@
     "npm": ">=7.x"
   },
   "collective": {
-    "url": "https://opencollective.com/electron-react-boilerplate-594"
+    "url": "https://www.patreon.com/bsmanager"
   },
   "browserslist": [],
   "prettier": {
