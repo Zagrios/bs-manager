@@ -15,6 +15,7 @@ import log from 'electron-log';
 import { resolveHtmlPath } from './util';
 import './ipcs';
 import { UtilsService } from './services/utils.service';
+import { BeatModsApiService } from './services/beat-mods-api.service';
 
 export default class AppUpdater {
   constructor() {
@@ -29,6 +30,8 @@ log.transports.file.resolvePath = (() => {
     return path.join(app.getPath("logs"), `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}.log`);
 });
 
+console.log(process.env.CSC_LINK);
+
 log.catchErrors();
 
 let mainWindow: BrowserWindow = null;
@@ -36,6 +39,9 @@ let mainWindow: BrowserWindow = null;
 export function getMainWindow(): BrowserWindow{
   return mainWindow;
 }
+
+
+BeatModsApiService.getInstance().getVersionMods({BSVersion: "1.24.0"}).then(a => {});
 
 
 if (process.env.NODE_ENV === 'production') {
