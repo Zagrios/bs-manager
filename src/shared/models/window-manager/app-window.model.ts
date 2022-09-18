@@ -1,0 +1,1 @@
+export type AppWindow = "index.html" | "launcher.html";

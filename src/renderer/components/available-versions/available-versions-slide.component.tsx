@@ -10,9 +10,6 @@ export function AvailableVersionsSlide(props: {year: string}) {
 
   const versionsService = BSVersionManagerService.getInstance();
 
-  console.log("*** AVAILABLE VERISON");
-  console.log(availableVersions);
-
   useEffect(() => {
     versionsService.availableVersions$.pipe(filter(versions => !!versions?.length), take(1)).subscribe(() => {
       setAvailableVersions(versionsService.getAvaibleVersionsOfYear(props.year));

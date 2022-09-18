@@ -143,6 +143,18 @@ const configuration: webpack.Configuration = {
       isBrowser: false,
       isDevelopment: process.env.NODE_ENV !== 'production',
     }),
+
+    new HtmlWebpackPlugin({
+      filename: 'launcher.html',
+      template: path.join(webpackPaths.srcRendererPath, 'launcher.ejs'),
+      minify: {
+        collapseWhitespace: true,
+        removeAttributeQuotes: true,
+        removeComments: true,
+      },
+      isBrowser: false,
+      isDevelopment: process.env.NODE_ENV !== 'production',
+    })
   ],
 };
 

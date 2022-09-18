@@ -17,7 +17,6 @@ export function AvailableVersionsSlider() {
 
   useEffect(() => {
     versionManagerService.availableVersions$.pipe(filter(versions => !!versions?.length), take(1)).subscribe(() => {
-      console.log("ouiiii");
       setAvailableYears(versionManagerService.getAvailableYears());
     });
   }, [])

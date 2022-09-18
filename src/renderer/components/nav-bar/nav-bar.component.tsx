@@ -4,7 +4,6 @@ import { BSVersionManagerService } from '../../services/bs-version-manager.servi
 import { Link } from 'react-router-dom';
 import { BsmIcon } from '../svgs/bsm-icon.component';
 import { useObservable } from 'renderer/hooks/use-observable.hook';
-import { useThemeColor } from 'renderer/hooks/use-theme-color.hook';
 import { BsManagerIcon } from './bsmanager-icon.component';
 
 export function NavBar() {
@@ -12,12 +11,11 @@ export function NavBar() {
   const bsVersionServoce =  BSVersionManagerService.getInstance();
 
   const installedVersions = useObservable(bsVersionServoce.installedVersions$);
-  const {firstColor, secondColor} = useThemeColor();
 
   return (
     <div id='nav-bar' className='z-10 flex flex-col h-full max-h-full items-center p-1 bg-light-main-color-1 dark:bg-main-color-1'>
       <div className='w-full flex items-start content-start justify-center relative mb-3'>
-        <BsManagerIcon className='relative aspect-square w-16 h-16' color1={firstColor} color2={secondColor}/>
+        <BsManagerIcon className='relative aspect-square w-16 h-16'/>
       </div>
       <div id='versions' className='w-fit max-w-[120px] relative left-[2px] grow overflow-y-hidden scrollbar-track-transparent scrollbar-thin scrollbar-thumb-neutral-900 hover:overflow-y-scroll'>
          {installedVersions && installedVersions.map((version) => <BsVersionItem key={JSON.stringify(version)} version={version}/>)}

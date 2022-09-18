@@ -108,14 +108,10 @@
             }
          },
          "errors":{
-            "titles":{
-               "already-downloading": "A download is already in progress",
-               "verification-failed":"The verification failed.",
-               "no-internet": "No internet connection."
-            },
             "msg":{
                "Password": "Password is invalid.",
                "InvalidCredentials": "Your e-mail or password is invalid 😴",
+               "InvalidPassword": "Your password is invalid 😕",
                "NoManifest": "No manifest was found",
                "DirectoryCreate": "Unable to install the necessary folders.",
                "NotAvailableApp": "Are you trying to download BeatSaber when you don't have it ? 🤣",
@@ -134,7 +130,9 @@
                "ConnectionError": "Unable to connect to Steam after 10 tries 🤯",
                "LicenceError": "Unable to get the list of licenses.",
                "verification-failed": "Verification failed, try again later.",
-               "RateLimitExceeded": "You've tried too many times, wait a while and try again later."
+               "RateLimitExceeded": "You've tried too many times, wait a while and try again later.",
+               "AlreadyDownloading": "A download is already in progress",
+               "no-internet": "No internet connection."
             }
          }
       },
@@ -259,6 +257,10 @@
             "submit": "Clone"
          }
       }
+   },
+   "auto-update":{
+       "checking": "Checking for updates",
+       "downloading": "Downloading updates"
    },
    "dateformat":{
         "dayNames": [

@@ -30,8 +30,6 @@ export class MapService{
         const versionPath = await this.localVersionService.getVersionPath(version);
         const mapsPath = this.getMapsPath(versionPath);
 
-        console.log(outputZip);
-
         const output = createWriteStream(outputZip);
         const archive = archiver("zip", {zlib: {level: 9}});
 

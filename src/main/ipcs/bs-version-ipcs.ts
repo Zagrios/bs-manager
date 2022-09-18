@@ -35,20 +35,16 @@ ipcMain.on("bs-version.open-folder", async (event, req: IpcRequest<BSVersion>) =
 
 ipcMain.on("bs-version.edit", async (event, req: IpcRequest<{version: BSVersion, name: string, color: string}>) => {
    BSLocalVersionService.getInstance().editVersion(req.args.version, req.args.name, req.args.color).then(res => {
-      console.log(res);
       UtilsService.getInstance().ipcSend(req.responceChannel, {success: !!res, data: res});
    }).catch((error: BsmException) => {
       UtilsService.getInstance().ipcSend(req.responceChannel, {success: false, error});
-      console.log(error);
    });
 });
 
 ipcMain.on("bs-version.clone", async (event, req: IpcRequest<{version: BSVersion, name: string, color: string}>) => {
    BSLocalVersionService.getInstance().cloneVersion(req.args.version, req.args.name, req.args.color).then(res => {
-      console.log(res);
       UtilsService.getInstance().ipcSend(req.responceChannel, {success: !!res, data: res});
    }).catch((error: BsmException) => {
       UtilsService.getInstance().ipcSend(req.responceChannel, {success: false, error});
-      console.log(error);
    });
 });

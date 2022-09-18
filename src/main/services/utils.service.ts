@@ -23,12 +23,13 @@ export class UtilsService{
   }
 
   public setAssetsPath(path: string): void{ this.assetsPath = path; }
-  public getAssetsPath(): string{ return this.assetsPath; }
+  public getAssetsPath(pathToFile: string): string{ return path.join(this.assetsPath, pathToFile); }
 
-  public getAssetsScriptsPath(): string { return path.join(this.getAssetsPath(), 'scripts'); }
-  public getAssestsJsonsPath(): string { return path.join(this.getAssetsPath(), 'jsons'); }
+  public getAssetsScriptsPath(): string { return this.getAssetsPath("scripts") }
+  public getAssestsJsonsPath(): string { return this.getAssetsPath("jsons"); }
 
   public setMainWindow(win: BrowserWindow){ this.mainWindow = win; }
+  public getMainWindow(){ return this.mainWindow; }
 
   public pathExist(path: string): boolean{ return existsSync(path); }
 

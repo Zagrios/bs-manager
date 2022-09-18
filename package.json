@@ -13,7 +13,8 @@
     "start:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only ./src/main/main.ts",
     "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
     "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
-    "test": "jest"
+    "test": "jest",
+    "publish": "npm run build && electron-builder --publish always --win --x64"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -90,8 +91,7 @@
     },
     "publish": {
       "provider": "github",
-      "owner": "Zagrios",
-      "repo": "bs-manager"
+      "owner": "Zagrios"
     }
   },
   "repository": {
@@ -228,7 +228,7 @@
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.8",
     "electron-store": "^8.1.0",
-    "electron-updater": "^5.2.1",
+    "electron-updater": "^5.2.4",
     "framer-motion": "^7.2.1",
     "history": "^5.3.0",
     "is-online": "^9.0.1",

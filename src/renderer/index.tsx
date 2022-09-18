@@ -1,14 +1,21 @@
+//@ts-ignore
 import { createRoot } from 'react-dom/client';
 import { HashRouter } from 'react-router-dom';
 import App from './App';
+import Launcher from './Launcher';
 import 'tailwindcss/tailwind.css';
 import './index.css'
 
-const container = document.getElementById('root')!;
-const root = createRoot(container);
+const launcherContainer = document.getElementById('launcher');
 
-root.render(
-  <HashRouter>
-    <App />
-  </HashRouter>
-);
+if(!!launcherContainer){
+    createRoot(launcherContainer).render(<Launcher/>)
+}
+else{
+    const root = document.getElementById('root');
+    createRoot(root).render(
+        <HashRouter>
+            <App />
+        </HashRouter>
+    );
+}

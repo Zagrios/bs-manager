@@ -78,7 +78,6 @@ export function VersionViewer() {
           const newVersionPage = bsVersionManagerService.getInstalledVersions()[0];
           navigateToVersion(newVersionPage);
         })
-        .catch((e) => {console.log("*** ", e)}) 
       }
    }
 
