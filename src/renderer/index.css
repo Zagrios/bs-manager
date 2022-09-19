@@ -22,10 +22,6 @@
     padding: 0;
     margin: 0;
     display: inline;
-  }
-
-::-webkit-scrollbar-thumb {
-  border-radius: 20px;
 }
 
 .download-progress{

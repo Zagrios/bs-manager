@@ -108,14 +108,10 @@
             }
          },
          "errors":{
-            "titles":{
-               "already-downloading": "La descarga ya está en curso",
-               "verification-failed":"La verificación falló.",
-               "no-internet": "Sin conexión a Internet."
-            },
             "msg":{
                "Password": "La contraseña es inválida.",
                "InvalidCredentials": "Su correo electrónico o contraseña no son válidos 😴",
+               "InvalidPassword": "Su contraseña no es válida 😕",
                "NoManifest": "No se ha encontrado el manifiesto",
                "DirectoryCreate": "No se pueden instalar las carpetas necesarias.",
                "NotAvailableApp": "¿Intentas descargar BeatSaber cuando no lo tienes? 🤣",
@@ -134,7 +130,9 @@
                "ConnectionError": "No se puede conectar a Steam después de 10 intentos 🤯",
                "LicenceError": "No se puede obtener la lista de licencias.",
                "verification-failed": "Verificación fallida, inténtelo más tarde.",
-               "RateLimitExceeded": "Lo has intentado demasiadas veces, espera un poco y vuelve a intentarlo más tarde."
+               "RateLimitExceeded": "Lo has intentado demasiadas veces, espera un poco y vuelve a intentarlo más tarde.",
+               "AlreadyDownloading": "La descarga ya está en curso",
+               "no-internet": "Sin conexión a Internet."
             }
          }
       },
@@ -259,6 +257,10 @@
             "submit": "Clonar"
          }
       }
+   },
+   "auto-update":{
+       "checking": "Comprobar las actualizaciones",
+       "downloading": "Descargar actualizaciones"
    },
    "dateformat":{
         "dayNames": [

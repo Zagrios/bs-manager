@@ -38,6 +38,8 @@ export class BSLauncherService{
         const cwd = await this.localVersionService.getVersionPath(launchOptions.version);
         const exePath = path.join(cwd, BS_EXECUTABLE);
 
+        console.log(exePath);
+
         if(!this.utilsService.pathExist(exePath)){ return "EXE_NOT_FINDED"; }
         
         const launchMods = [launchOptions.oculus && "-vrmode oculus", launchOptions.desktop && "fpfc", launchOptions.debug && "--verbose"];

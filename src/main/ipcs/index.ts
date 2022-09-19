@@ -5,3 +5,5 @@ import './bs-version-ipcs';
 import './bs-uninstall-ipcs';
 import './map-ipcs';
 import './supporters-ipcs';
+import './launcher-ipcs';
+import './window-manager-ipcs';

@@ -29,7 +29,7 @@ export class IpcService {
         return promise;
     }
 
-    public sendLazy(channel: string, request?: IpcRequest<any>): void{
+    public sendLazy<T = any>(channel: string, request?: IpcRequest<T>): void{
         window.electron.ipcRenderer.sendMessage(channel, request);
     }
 

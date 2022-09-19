@@ -13,7 +13,8 @@
     "start:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only ./src/main/main.ts",
     "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
     "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
-    "test": "jest"
+    "test": "jest",
+    "publish": "npm run build && electron-builder --publish always --win --x64"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -90,8 +91,7 @@
     },
     "publish": {
       "provider": "github",
-      "owner": "Zagrios",
-      "repo": "bs-manager"
+      "owner": "Zagrios"
     }
   },
   "repository": {
@@ -169,7 +169,7 @@
     "core-js": "^3.24.1",
     "cross-env": "^7.0.3",
     "css-loader": "^6.7.1",
-    "css-minimizer-webpack-plugin": "^3.4.1",
+    "css-minimizer-webpack-plugin": "^4.1.0",
     "detect-port": "^1.3.0",
     "electron": "^20.0.3",
     "electron-builder": "^23.3.3",
@@ -206,7 +206,7 @@
     "sass": "^1.54.5",
     "sass-loader": "^12.6.0",
     "style-loader": "^3.3.1",
-    "tailwind-scrollbar": "^1.3.1",
+    "tailwind-scrollbar": "^2.0.1",
     "tailwindcss": "^3.1.8",
     "terser-webpack-plugin": "^5.3.5",
     "ts-jest": "^27.1.5",
@@ -228,7 +228,7 @@
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.8",
     "electron-store": "^8.1.0",
-    "electron-updater": "^5.2.1",
+    "electron-updater": "^5.2.4",
     "framer-motion": "^7.2.1",
     "history": "^5.3.0",
     "is-online": "^9.0.1",
@@ -241,7 +241,7 @@
     "regedit": "^5.1.1",
     "rxjs": "^7.5.6",
     "tailwind-scrollbar-hide": "^1.1.7",
-    "uuid": "^8.3.2"
+    "uuid": "^9.0.0"
   },
   "devEngines": {
     "node": ">=14.x",

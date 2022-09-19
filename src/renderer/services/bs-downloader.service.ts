@@ -113,8 +113,8 @@ export class BsDownloaderService{
       
       this.progressBarService.hide(true);
       this.resetDownload();
-      if(res.success){ this.notificationService.notifySuccess({title: `notifications.bs-download.success.titles.${isVerification ? "verification-finished" : "download-success"}`, duration: 3000}); }
-      else if(res.data){ this.notificationService.notifyError({title: `notifications.bs-download.errors.titles.${res.data}`, duration: 3000}); }
+      if(res.success && isFirstCall){ this.notificationService.notifySuccess({title: `notifications.bs-download.success.titles.${isVerification ? "verification-finished" : "download-success"}`, duration: 3000}); }
+      else if(res.data && isFirstCall){ console.log("aaaa"); this.notificationService.notifyError({title: `notifications.types.error`, desc: `notifications.bs-download.errors.msg.${res.data}`, duration: 3000}); }
 
       return res;
    }

@@ -66,7 +66,7 @@ Otherwise you can add on to existing issues if one matches what you're encounter
 </p>
 <h2 id="acknowledgements">Acknowledgement</h2>
 <ul>
-	<li><a href="https://github.com/Zagrios">Zagrios</a> (Mathieu GRIES) - Founder, Lead Developer & Project Lead</li>
+	<li><a href="https://github.com/Zagrios">Zagrios</a> - Founder, Lead Developer & Project Lead</li>
 	<li><a href="https://github.com/Iluhadesu">Iluhadesu</a> - Custom DepotDownloader Developer</li>
 	<li><a href="https://github.com/GaetanGrd">Gaëtan Gerard</a> - Main Alpha Tester</li>
 </ul>

@@ -10,9 +10,6 @@ export function AvailableVersionsSlide(props: {year: string}) {
 
   const versionsService = BSVersionManagerService.getInstance();
 
-  console.log("*** AVAILABLE VERISON");
-  console.log(availableVersions);
-
   useEffect(() => {
     versionsService.availableVersions$.pipe(filter(versions => !!versions?.length), take(1)).subscribe(() => {
       setAvailableVersions(versionsService.getAvaibleVersionsOfYear(props.year));
@@ -21,7 +18,7 @@ export function AvailableVersionsSlide(props: {year: string}) {
 
 
   return (
-    <div className="w-full max-w-full max-h-full shrink-0 flex items-start justify-center overflow-x-hidden overflow-y-scroll content-start scrollbar-thin hover:scrollbar-thumb-neutral-900">
+    <div className="w-full max-w-full max-h-full shrink-0 flex items-start justify-center overflow-x-hidden overflow-y-scroll content-start scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900">
       <div className="relative left-[2px] flex justify-center items-start content-start flex-wrap max-w-6xl pb-4">
         {availableVersions.map((version, index) =>
           <AvailableVersionItem key={index} version={version}></AvailableVersionItem>

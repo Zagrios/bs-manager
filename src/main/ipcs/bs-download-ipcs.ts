@@ -49,10 +49,8 @@ ipcMain.on('bs-download.installation-folder', async (event, request: IpcRequest<
 ipcMain.on('bs-download.set-installation-folder', (event, request: IpcRequest<string>) => {
   const installerService = InstallationLocationService.getInstance();
   installerService.setInstallationDirectory(request.args).then(res => {
-    console.log("déplacement terminer");
     UtilsService.getInstance().ipcSend(request.responceChannel, {success: true, data: res});
   }).catch((err: BsmException) => {
-    console.log(err);
     UtilsService.getInstance().ipcSend(request.responceChannel, {success: false, error: err});
   });
 })

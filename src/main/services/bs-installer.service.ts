@@ -7,7 +7,6 @@ import log from "electron-log";
 import { InstallationLocationService } from "./installation-location.service";
 import { ctrlc } from "ctrlc-windows";
 import { BSLocalVersionService } from "./bs-local-version.service";
-import { getMainWindow } from "../main";
 import isOnline from 'is-online';
 
 export class BSInstallerService{
@@ -25,7 +24,7 @@ export class BSInstallerService{
     this.installLocationService = InstallationLocationService.getInstance();
     this.localVersionService = BSLocalVersionService.getInstance();
 
-    getMainWindow().on("close", () => {
+    this.utils.getMainWindow().on("close", () => {
         this.killDownloadProcess();
     });
   }
@@ -35,14 +34,16 @@ export class BSInstallerService{
     return BSInstallerService.instance;
   }
 
-  private getDepotDownloaderExePath(): string{
-    return path.join(this.utils.getAssetsScriptsPath(), 'depot-downloader', 'DepotDownloader.exe');
-  }
+    private getDepotDownloaderExePath(): string{
+        return path.join(this.utils.getAssetsScriptsPath(), 'depot-downloader', 'DepotDownloader.exe');
+    }
 
-   private sendDownloadEvent(event: DownloadEventType, data?: string|number, success = true): void{
-      if(typeof data === "string"){ data = data.replaceAll(/\[|\]/g, ""); }
-      this.utils.ipcSend(`bs-download.${event}`, { success, data });
-   }
+    private removeSpecialSchar(txt: string): string{ return txt.replaceAll(/\[|\]/g, ""); }
+
+    private sendDownloadEvent(event: DownloadEventType, data?: string|number, success = true): void{
+        if(typeof data === "string"){ data = this.removeSpecialSchar(data); }
+        this.utils.ipcSend(`bs-download.${event}`, { success, data });
+    }
 
   public sendInputProcess(input: string){
     if(this.downloadProcess.stdin.writable){
@@ -54,16 +55,16 @@ export class BSInstallerService{
       return new Promise(resolve => {
          if(this.downloadProcess?.killed && !this.downloadProcess?.pid){ return resolve(false); }
 
-         this.downloadProcess.on('close', () => resolve(true));
+         this.downloadProcess.once('exit', () => resolve(true));
 
          ctrlc(this.downloadProcess.pid);
-         if(!this.downloadProcess.kill()){ return resolve(false); }
-         setTimeout(() => resolve(false), 2000);
+         setTimeout(() => resolve(false), 3000);
       });
    }
 
   public async downloadBsVersion(downloadInfos: DownloadInfo): Promise<DownloadEvent>{
-    if(this.downloadProcess && !this.downloadProcess?.killed){ return {type: "[AlreadyDownloading]"}; }
+
+    if(this.downloadProcess && this.downloadProcess.connected){ throw "AlreadyDownloading"; }
     const {bsVersion} = downloadInfos;
     if(!bsVersion){ return {type: "[Error]"}; }
     if(!(await isOnline({timeout: 1500}))){ throw "no-internet"; }
@@ -86,9 +87,10 @@ export class BSInstallerService{
 
       this.downloadProcess.stdout.on('data', data => {
         const matched = (data.toString() as string).match(/(?:\[(.*?)\])\|(?:\[(.*?)\]\|)?(.*?)(?=$|\[)/gm) ?? [];
-        console.log(data.toString());
         matched.forEach(match => {
           const out = match.split("|");
+
+          if(out[0] !== "[Progress]" && out[0] !== "[Validated]"){ log.info(data.toString()); }
   
           if(out[0] === "[Password]" as DownloadEventType && downloadInfos.password){
             this.sendInputProcess(downloadInfos.password);
@@ -114,8 +116,7 @@ export class BSInstallerService{
             this.sendDownloadEvent("[Warning]", out[1]);
           }
           else if(out[0] === "[Error]" as DownloadEventType){
-            reject(out[1]);
-            this.sendDownloadEvent("[Error]", out[1], false);
+            reject(this.removeSpecialSchar(out[1]));
             this.killDownloadProcess();
             log.error("Download Event, Error", data.toString());
           }
@@ -125,18 +126,18 @@ export class BSInstallerService{
   
       this.downloadProcess.stdout.on('error', (err) => {
         log.error("BS-DOWNLOAD ERROR", err.toString());
-        this.downloadProcess.kill();
-        reject(err);
+        this.killDownloadProcess();
+        reject();
       });
       this.downloadProcess.stderr.on('data', (err) => { 
         log.error("BS-DOWNLOAD ERROR", err.toString());
-        this.downloadProcess.kill();
-        reject(err);
+        this.killDownloadProcess();
+        reject();
       });
       this.downloadProcess.stderr.on('error', (err) => { 
         log.error("BS-DOWNLOAD ERROR", err.toString());
-        this.downloadProcess.kill();
-        reject(err);
+        this.killDownloadProcess();
+        reject();
       });
 
       this.downloadProcess.on('close', () => reject());

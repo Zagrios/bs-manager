@@ -21,7 +21,7 @@ export function EditVersionModal({resolver, clone = false}: {resolver: (x: Modal
 
    const rename = () => {
       if(!name){ return; }
-      resolver({exitCode: ModalExitCode.COMPLETED, data: {name, color}})
+      resolver({exitCode: ModalExitCode.COMPLETED, data: {name: name.trim(), color}})
    }
 
    const resetColor = () => {
