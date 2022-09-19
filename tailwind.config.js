@@ -6,10 +6,7 @@ module.exports = {
   darkMode: 'class',
   content: ['./src/renderer/**/*.tsx'],
   mode: 'jit',
-  plugins: [require('tailwind-scrollbar-hide'), require('tailwind-scrollbar')],
-  variants: {
-    scrollbar: ['rounded']
-  },
+  plugins: [require('tailwind-scrollbar-hide'), require('tailwind-scrollbar')({ nocompatible: true })],
   theme:{
     colors:{
       ...colors,

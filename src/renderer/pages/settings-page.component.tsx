@@ -119,7 +119,7 @@ export function SettingsPage() {
   }
 
     return (
-        <div className="w-full h-full flex justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-neutral-900 text-gray-800 dark:text-gray-200">
+        <div className="w-full h-full flex justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 text-gray-800 dark:text-gray-200">
 
             <div className="max-w-2xl w-full mt-10">
 
