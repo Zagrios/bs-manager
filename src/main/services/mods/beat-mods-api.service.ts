@@ -1,6 +1,6 @@
 import { BSVersion } from "shared/bs-version.interface";
 import { Mod } from "shared/models/mods/mod.interface";
-import { RequestService } from "./request.service";
+import { RequestService } from "../request.service";
 
 export class BeatModsApiService {
 

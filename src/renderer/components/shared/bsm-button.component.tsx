@@ -44,7 +44,7 @@ export function BsmButton({className, style, imgClassName, iconClassName, icon, 
   })();
 
   const renderTypeColor = (() => {
-    if(typeColor === "primary"){ return null; }
+    if(typeColor === "primary"){ return ""; }
     if(!typeColor){ return `bg-light-main-color-2 dark:bg-main-color-2 ${!withBar && "hover:bg-light-main-color-3 dark:hover:bg-main-color-3"}`; }
     if(typeColor === "cancel"){ return "bg-gray-500"; }
     if(typeColor === "error"){ return "bg-red-500"; }
@@ -54,7 +54,7 @@ export function BsmButton({className, style, imgClassName, iconClassName, icon, 
 
   return (
     <OutsideClickHandler onOutsideClick={e => onClickOutside && onClickOutside(e)}>
-      <div onClick={e => onClick && onClick(e)} className={`${className} overflow-hidden cursor-pointer group ${!withBar && (!!typeColor || !!color) && "hover:brightness-[1.15]"} ${disabled && "brightness-75 cursor-not-allowed"} ${renderTypeColor}`} style={{...style, ...((!!primaryColor || !!color) && {backgroundColor: primaryColor ?? color})}}>
+      <div onClick={e => onClick && onClick(e)} className={`${className} overflow-hidden cursor-pointer group ${(!withBar && (!!typeColor || !!color)) && "hover:brightness-[1.15]"} ${disabled && "brightness-75 cursor-not-allowed"} ${renderTypeColor}`} style={{...style, ...((!!primaryColor || !!color) && {backgroundColor: primaryColor ?? color})}}>
         { image && <BsmImage image={image} className={imgClassName}/> }
         { icon && <BsmIcon icon={icon} className={iconClassName ?? "h-full w-full text-gray-800 dark:text-white"}/> }
         {text && (type === "submit" ? <button className="w-full h-full" style={{...(!!textColor && {color: textColor})}}>{t(text)}</button> : <span style={{...(!!textColor && {color: textColor})}} >{t(text)}</span>)}
