@@ -53,11 +53,10 @@ export class I18nService {
    public translate(translationKey: string, args?: Record<string, string>): string{
       let translated = this.cache.get(translationKey);
       if(!translated){
-         console.log(translationKey);
          translated = getProperty(this.dictionary, translationKey);
          translated ? this.cache.set(translated, translationKey) : translated = translationKey;
       }
-      args && Object.keys(args).forEach(key => translated = translated.replaceAll(`{${key}}`, args[key]));
+      args && Object.keys(args).forEach(key => {translated = translated.replaceAll(`{${key}}`, args[key])});
       return translated;
    }
 

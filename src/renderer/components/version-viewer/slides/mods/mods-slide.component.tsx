@@ -22,14 +22,12 @@ export function ModsSlide({version}: {version: BSVersion}) {
     }
 
     useEffect(() => {
-        if(!isVisible){ return; }
 
-        if(!modsAvailable){
-            console.log("OUI");
-            modsManager.getAvailableMods(version).then(mods => setModsAvailable(modsToCategoryMap(mods)));
-            modsManager.getInstalledMods(version).then(mods => setModsInstalled(modsToCategoryMap(mods)));
-        }
-    }, [isVisible]);
+        if(!isVisible){ return; }
+        modsManager.getAvailableMods(version).then(mods => setModsAvailable(modsToCategoryMap(mods)));
+        modsManager.getInstalledMods(version).then(mods => setModsInstalled(modsToCategoryMap(mods)));
+        
+    }, [isVisible, version]);
     
 
     return (
