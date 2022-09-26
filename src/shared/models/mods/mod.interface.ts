@@ -13,6 +13,7 @@ export interface Mod {
     downloads: DownloadLink[],
     required: boolean,
     dependencies: Mod[],
+    status: string
 
 }
 

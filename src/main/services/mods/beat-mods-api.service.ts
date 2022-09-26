@@ -13,11 +13,10 @@ export class BeatModsApiService {
 
     private readonly BEAT_MODS_API_URL = "https://beatmods.com/api/v1/";
 
-    private readonly versionsCache: BSVersion[] = [];
     private readonly aliasesCache = new Map<string, BSVersion[]>();
     private readonly versionModsCache = new Map<string, Mod[]>();
 
-    private readonly allModsCache: Mod[] = [];
+    private allModsCache: Mod[];
 
     public static getInstance(): BeatModsApiService{
         if(!BeatModsApiService.instance){ BeatModsApiService.instance = new BeatModsApiService(); }
@@ -30,6 +29,10 @@ export class BeatModsApiService {
 
     private getVersionModsUrl(version: BSVersion): string{
         return `${this.BEAT_MODS_API_URL}mod?status=approved&gameVersion=${version.BSVersion}&sort=&sortDirection=1`;
+    }
+
+    private getAllModsUrl(): string{
+        return `${this.BEAT_MODS_API_URL}mod`;
     }
 
     private async getVersionAlias(): Promise<Map<string, BSVersion[]>>{
@@ -65,8 +68,19 @@ export class BeatModsApiService {
             this.versionModsCache.set(version.BSVersion, mods);
             return mods;
         });
-
     }
+
+    public async getAllMods(): Promise<Mod[]>{
+        if(!!this.allModsCache){ return this.allModsCache; }
+        return this.requestService.get<Mod[]>(this.getAllModsUrl()).then(mods => {
+            this.allModsCache = mods;
+            return this.allModsCache;
+        });
+    }
+
+    public loadAllMods(){ return this.getAllMods(); }
+
+
 
 
 
