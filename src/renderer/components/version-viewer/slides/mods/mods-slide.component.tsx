@@ -53,13 +53,20 @@ export function ModsSlide({version}: {version: BSVersion}) {
 
     useEffect(() => {
 
-        if(!isVisible){ return; }
-        modsManager.getAvailableMods(version).then(mods => {
-            setModsAvailable(modsToCategoryMap(mods));
-            const defaultMods = configService.get<string[]>("default_mods" as DefaultConfigKey);
-            setModsSelected(mods.filter(m => m.required || defaultMods.some(d => m.name === d)));
-        });
-        modsManager.getInstalledMods(version).then(mods => setModsInstalled(modsToCategoryMap(mods)));
+        if(isVisible){
+            modsManager.getAvailableMods(version).then(mods => {
+                setModsAvailable(modsToCategoryMap(mods));
+                const defaultMods = configService.get<string[]>("default_mods" as DefaultConfigKey);
+                setModsSelected(mods.filter(m => m.required || defaultMods.some(d => m.name === d)));
+            });
+            modsManager.getInstalledMods(version).then(mods => setModsInstalled(modsToCategoryMap(mods)));
+        }
+
+        return () => {
+            setMoreInfoMod(null);
+            setModsAvailable(null);
+            setModsInstalled(null);
+        }
         
     }, [isVisible, version]);
     
