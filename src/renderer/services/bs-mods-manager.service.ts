@@ -21,8 +21,8 @@ export class BsModsManagerService {
         return this.ipcService.send<Mod[], BSVersion>("get-available-mods", {args: version}).then(res => res.data);
     }
 
-    public async getInstalledMods(version: BSVersion): Promise<Mod[]>{
-        return [];
+    public getInstalledMods(version: BSVersion): Promise<Mod[]>{
+        return this.ipcService.send<Mod[], BSVersion>("get-installed-mods", {args: version}).then(res => res.data);
     }
 
     public installMods(mods: Mod[], version: BSVersion){

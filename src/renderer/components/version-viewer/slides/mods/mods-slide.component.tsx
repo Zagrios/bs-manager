@@ -8,7 +8,10 @@ import { ConfigurationService } from "renderer/services/configuration.service";
 import { DefaultConfigKey } from "renderer/config/default-configuration.config";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { IpcService } from "renderer/services/ipc.service";
-
+import BeatWaitingImg from "../../../../../../assets/images/apngs/beat-waiting.png"
+import { SpoilerClick } from "renderer/components/shared/UwU/spoiler-click.component";
+import YuruYuriDance from "../../../../../../assets/images/gifs/yuruyuri-dance.gif"
+ 
 export function ModsSlide({version}: {version: BSVersion}) {
 
     const modsManager = BsModsManagerService.getInstance();
@@ -54,12 +57,15 @@ export function ModsSlide({version}: {version: BSVersion}) {
     useEffect(() => {
 
         if(isVisible){
-            modsManager.getAvailableMods(version).then(mods => {
-                setModsAvailable(modsToCategoryMap(mods));
+            Promise.all([
+                modsManager.getAvailableMods(version),
+                modsManager.getInstalledMods(version)
+            ]).then(([available, installed]) => {
                 const defaultMods = configService.get<string[]>("default_mods" as DefaultConfigKey);
-                setModsSelected(mods.filter(m => m.required || defaultMods.some(d => m.name === d)));
+                setModsAvailable(modsToCategoryMap(available));
+                setModsSelected(available.filter(m => m.required || defaultMods.some(d => m.name === d)));
+                setModsInstalled(modsToCategoryMap(installed))
             });
-            modsManager.getInstalledMods(version).then(mods => setModsInstalled(modsToCategoryMap(mods)));
         }
 
         return () => {
@@ -75,13 +81,25 @@ export function ModsSlide({version}: {version: BSVersion}) {
         <VisibilitySensor onChange={setIsVisible}>
             <div className='shrink-0 w-full h-full px-8 pb-7 flex justify-center'>
                 <div className='relative flex flex-col grow-0 bg-light-main-color-2 dark:bg-main-color-2 h-full w-full rounded-md shadow-black shadow-center overflow-hidden'>
-                    <div className="overflow-scroll w-full shrink min-h-0 scrollbar-thin scrollbar-thumb-neutral-900 scrollbar-thumb-rounded-full">
-                        <ModsGrid modsMap={modsAvailable} installed={modsInstalled} modsSelected={modsSelected} onModChange={handleModChange} moreInfoMod={moreInfoMod} onWantInfos={handleMoreInfo}/>
-                    </div>
-                    <div className="h-10 shrink-0 flex items-center justify-between px-3">
-                        <BsmButton className="rounded-md px-2 py-[2px]" text="Plus d'infos" typeColor="cancel" withBar={false} disabled={!moreInfoMod} onClick={handleOpenMoreInfo}/>
-                        <BsmButton className="rounded-md px-2 py-[2px]" text="Installer ou mettre à jour" withBar={false} typeColor="primary" onClick={installMods}/>
-                    </div>
+                    {modsAvailable ? (
+                        <>
+                            <div className="overflow-scroll w-full shrink min-h-0 scrollbar-thin scrollbar-thumb-neutral-900 scrollbar-thumb-rounded-full">
+                                <ModsGrid modsMap={modsAvailable} installed={modsInstalled} modsSelected={modsSelected} onModChange={handleModChange} moreInfoMod={moreInfoMod} onWantInfos={handleMoreInfo}/>
+                            </div>
+                            <div className="h-10 shrink-0 flex items-center justify-between px-3">
+                                <BsmButton className="rounded-md px-2 py-[2px]" text="Plus d'infos" typeColor="cancel" withBar={false} disabled={!moreInfoMod} onClick={handleOpenMoreInfo}/>
+                                <BsmButton className="rounded-md px-2 py-[2px]" text="Installer ou mettre à jour" withBar={false} typeColor="primary" onClick={installMods}/>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center relative">
+                            <img className="w-32 h-32 spin-loading" src={BeatWaitingImg}></img>
+                            <span className="text-xl mt-3 h-0 italic">Chargement des mods...</span>
+                            <SpoilerClick className="absolute right-5 w-20 h-[120px] bottom-5 cursor-pointer">
+                                <img className="relative w-full" src={YuruYuriDance}/>
+                            </SpoilerClick>
+                        </div>
+                    )}
                 </div>
             </div>
         </VisibilitySensor>

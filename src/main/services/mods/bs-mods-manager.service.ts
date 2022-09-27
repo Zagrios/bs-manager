@@ -14,6 +14,8 @@ export class BsModsManagerService {
     private bsLocalService: BSLocalVersionService;
     private utilsService: UtilsService;
 
+    private manifestMatches: Mod[];
+
     public static getInstance(): BsModsManagerService{
         if(!BsModsManagerService.instance){ BsModsManagerService.instance = new BsModsManagerService(); }
         return BsModsManagerService.instance;
@@ -51,12 +53,24 @@ export class BsModsManagerService {
             return (async() => {
                 const filePath = path.join(modsPath, f)
                 const ext = path.extname(f);
-                if(ext !== ".dll" && ext !== ".exe" && ext !== ".manifest"){ return; }
+                if(ext !== ".dll" && ext !== ".exe" && ext !== ".manifest"){ return undefined; }
                 const hash = await md5File(filePath);
-                return this.getModFromHash(hash);
+                const mod = await this.getModFromHash(hash);
+                if(!mod){ return undefined; }
+                if(ext === ".manifest"){
+                    this.manifestMatches.push(mod);
+                    return undefined;
+                }
+                if(filePath.includes("Libs")){
+                    if(!this.manifestMatches.some(m => m.name === mod.name)){ return undefined; }
+                    const modIndex = this.manifestMatches.indexOf(mod);
+                    if(modIndex > -1){ this.manifestMatches.splice(modIndex, 1); }
+                }
+                return mod;
             })()
         });
-        return Promise.all(promises)
+        const mods = await Promise.all(promises)
+        return mods.filter(m => !!m);
     }
 
     private async getBsipaInstalled(version: BSVersion): Promise<Mod>{
@@ -72,10 +86,17 @@ export class BsModsManagerService {
     }
 
     public async getInstalledMods(version: BSVersion): Promise<Mod[]>{
+        this.manifestMatches = [];
         await this.beatModsApi.loadAllMods();
-        this.getBsipaInstalled(version).then(bsipa => console.log(bsipa));
-        this.getModsInDir(version, ModsInstallFolder.LIBS).then(mods => console.log(mods));
-        return [];
+        const bsipa = await this.getBsipaInstalled(version);
+        return Promise.all([
+            this.getModsInDir(version, ModsInstallFolder.PLUGINS_PENDING),
+            this.getModsInDir(version, ModsInstallFolder.LIBS_PENDING),
+            this.getModsInDir(version, ModsInstallFolder.PLUGINS),
+            this.getModsInDir(version, ModsInstallFolder.LIBS)
+        ]).then(dirMods => {
+            return [((!!bsipa) && bsipa), ...Array.from(new Map<string, Mod>(dirMods.flat().map(m => [m.name, m])).values())];
+        })
     }
 
     public installMods(mods: Mod[], version: BSVersion){

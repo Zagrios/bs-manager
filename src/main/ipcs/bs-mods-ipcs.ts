@@ -12,3 +12,12 @@ ipcMain.on("get-available-mods", (event, request: IpcRequest<BSVersion>) => {
         utils.ipcSend(request.responceChannel, {success: true, data: mods});
     }).catch(() => utils.ipcSend(request.responceChannel, {success: false}));
 });
+
+ipcMain.on("get-installed-mods", (event, request: IpcRequest<BSVersion>) => {
+    const utils = UtilsService.getInstance();
+    const modsManager = BsModsManagerService.getInstance();
+
+    modsManager.getInstalledMods(request.args).then(mods => {
+        utils.ipcSend(request.responceChannel, {success: true, data: mods});
+    }).catch(() => utils.ipcSend(request.responceChannel, {success: false}));
+});

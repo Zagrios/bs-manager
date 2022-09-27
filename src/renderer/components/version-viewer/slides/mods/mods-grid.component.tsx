@@ -36,7 +36,7 @@ export function ModsGrid({modsMap, installed, modsSelected, onModChange, moreInf
     }
 
   return modsMap && (
-        <div className="grid gap-y-1 grid-cols-[40px_min-content_min-content_min-content_1fr_min-content]">
+        <div className="grid gap-y-1 grid-cols-[40px_min-content_min-content_min-content_1fr_min-content]"> 
             <span className="absolute z-10 top-0 w-full h-8 bg-main-color-2"/>
             <span className="z-10 sticky flex items-center justify-center top-0 bg-main-color-2 border-b-2 border-main-color-1">
                 <div className="pl-4">
