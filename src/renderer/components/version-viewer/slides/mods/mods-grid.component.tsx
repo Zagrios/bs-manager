@@ -51,9 +51,9 @@ export function ModsGrid({modsMap, installed, modsSelected, onModChange, moreInf
                 ))}
             </span>
             
-            <span className="z-10 sticky flex items-center justify-center text-base top-0 bg-main-color-2 border-b-2 border-main-color-1 h-8 px-2">Installé</span>
-            <span className="z-10 sticky flex items-center justify-center text-base top-0 bg-main-color-2 border-b-2 border-main-color-1 h-8 px-2">Récent</span>
-            <span className="z-10 sticky flex items-center justify-center text-base top-0 bg-main-color-2 border-b-2 border-main-color-1 h-8">Description</span>
+            <span className="z-10 sticky flex items-center justify-center top-0 bg-main-color-2 border-b-2 border-main-color-1 h-8 px-2">Installé</span>
+            <span className="z-10 sticky flex items-center justify-center top-0 bg-main-color-2 border-b-2 border-main-color-1 h-8 px-2">Récent</span>
+            <span className="z-10 sticky flex items-center justify-center top-0 bg-main-color-2 border-b-2 border-main-color-1 h-8">Description</span>
             <span className="z-10 sticky top-0 bg-main-color-2 border-b-2 border-main-color-1 h-8"></span>
             
             {

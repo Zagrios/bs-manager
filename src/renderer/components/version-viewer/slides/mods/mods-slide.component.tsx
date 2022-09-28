@@ -83,7 +83,7 @@ export function ModsSlide({version}: {version: BSVersion}) {
                 <div className='relative flex flex-col grow-0 bg-light-main-color-2 dark:bg-main-color-2 h-full w-full rounded-md shadow-black shadow-center overflow-hidden'>
                     {modsAvailable ? (
                         <>
-                            <div className="overflow-scroll w-full shrink min-h-0 scrollbar-thin scrollbar-thumb-neutral-900 scrollbar-thumb-rounded-full">
+                            <div className="overflow-scroll w-full min-h-0 scrollbar-thin scrollbar-thumb-neutral-900 scrollbar-thumb-rounded-full">
                                 <ModsGrid modsMap={modsAvailable} installed={modsInstalled} modsSelected={modsSelected} onModChange={handleModChange} moreInfoMod={moreInfoMod} onWantInfos={handleMoreInfo}/>
                             </div>
                             <div className="h-10 shrink-0 flex items-center justify-between px-3">
