@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readdirSync, readFile } from "fs";
 import { spawnSync } from "child_process";
 import { homedir } from "os";
 import path from "path";
-import { BrowserWindow } from "electron";
+import { app, BrowserWindow } from "electron";
 import { rm } from "fs/promises";
 import { IpcResponse } from "shared/models/ipc";
 import log from "electron-log";
@@ -27,6 +27,7 @@ export class UtilsService{
 
   public getAssetsScriptsPath(): string { return this.getAssetsPath("scripts") }
   public getAssestsJsonsPath(): string { return this.getAssetsPath("jsons"); }
+  public getTempPath(): string{ return path.join(app.getPath("temp"), app.getName()) }
 
   public setMainWindow(win: BrowserWindow){ this.mainWindow = win; }
   public getMainWindow(){ return this.mainWindow; }

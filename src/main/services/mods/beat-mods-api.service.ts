@@ -6,12 +6,13 @@ export class BeatModsApiService {
 
     private static instance: BeatModsApiService;
 
-    private readonly requestService: RequestService
+    private readonly requestService: RequestService;
 
     private readonly BEAT_MODS_VERSIONS = "https://versions.beatmods.com/versions.json";
     private readonly BEAT_MODS_ALIAS = "https://alias.beatmods.com/aliases.json";
 
     private readonly BEAT_MODS_API_URL = "https://beatmods.com/api/v1/";
+    public readonly BEAT_MODS_URL = "https://beatmods.com";
 
     private readonly aliasesCache = new Map<string, BSVersion[]>();
     private readonly versionModsCache = new Map<string, Mod[]>();

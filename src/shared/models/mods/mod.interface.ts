@@ -24,10 +24,12 @@ export interface ModAuthor {
 }
 
 export interface DownloadLink {
-    type: string,
+    type: DownloadLinkType,
     url: string,
     hashMd5: FileHashes[]
 }
+
+export type DownloadLinkType = "universal"|"steam"|"oculus";
 
 export interface FileHashes {
     hash: string,

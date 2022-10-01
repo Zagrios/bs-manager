@@ -1,4 +1,5 @@
 import { get } from "https";
+import { createWriteStream, unlink } from "fs";
 
 export class RequestService {
 
@@ -22,6 +23,22 @@ export class RequestService {
                 res.on('error', (err) => reject(err))
             });
         });
-    } 
+    }
+    
+    public downloadFile(url: string, dest: string): Promise<string>{
+        return new Promise((resolve, reject) => {
+            const file = createWriteStream(dest);
+            get(url, res => {
+                res.pipe(file);
+                file.on("close", () => {
+                    file.close(() => resolve(dest))
+                }).on("error", err => {
+                    unlink(dest, () => reject(err));
+                });
+            }).on("error", err => {
+                unlink(dest, () => reject(err));
+            });
+        });
+    }
 
 }

@@ -90,11 +90,16 @@ export class BSLocalVersionService{
       return seq.replace( /[<>:"\/\\|?*]+/g, '' );
    }
 
-   public getVersionFolder(version: BSVersion){
-      return version.name ? `${version.BSVersion}-${version.name}` : version.BSVersion;
-   }
+    public getVersionFolder(version: BSVersion){
+        return version.name ? `${version.BSVersion}-${version.name}` : version.BSVersion;
+    }
 
-   public async getInstalledVersions(): Promise<BSVersion[]>{
+    public getVersionType(version: BSVersion): "steam"|"universal"{
+        if(version.steam){ return "steam"; }
+        return "universal"
+    }
+
+    public async getInstalledVersions(): Promise<BSVersion[]>{
       const versions: BSVersion[] = [];
       const steamBsFolder = await this.steamService.getGameFolder(BS_APP_ID, "Beat Saber")
       if(steamBsFolder && this.utilsService.pathExist(steamBsFolder)){

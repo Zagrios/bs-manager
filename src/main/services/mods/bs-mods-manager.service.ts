@@ -5,14 +5,17 @@ import path from "path";
 import { UtilsService } from "../utils.service";
 import md5File from "md5-file";
 import fs from "fs"
+import StreamZip from "node-stream-zip";
+import { RequestService } from "../request.service";
 
 export class BsModsManagerService {
 
     private static instance: BsModsManagerService;
 
-    private beatModsApi: BeatModsApiService;
-    private bsLocalService: BSLocalVersionService;
-    private utilsService: UtilsService;
+    private readonly beatModsApi: BeatModsApiService;
+    private readonly bsLocalService: BSLocalVersionService;
+    private readonly utilsService: UtilsService;
+    private readonly requestService: RequestService
 
     private manifestMatches: Mod[];
 
@@ -25,6 +28,7 @@ export class BsModsManagerService {
         this.beatModsApi = BeatModsApiService.getInstance();
         this.bsLocalService = BSLocalVersionService.getInstance();
         this.utilsService = UtilsService.getInstance();
+        this.requestService = RequestService.getInstance();
     }
 
     private async getModFromHash(hash: string): Promise<Mod>{
@@ -81,6 +85,59 @@ export class BsModsManagerService {
         return this.getIpaFromHash(injectorMd5);
     }
 
+    private downloadZip(zipUrl: string): Promise<StreamZip.StreamZipAsync>{
+        zipUrl = path.join(this.beatModsApi.BEAT_MODS_URL, zipUrl);
+        const fileName = path.basename(zipUrl);
+        const tempPath = this.utilsService.getTempPath();
+        this.utilsService.createFolderIfNotExist(this.utilsService.getTempPath());
+        const dest = path.join(tempPath, fileName);
+        return this.requestService.downloadFile(zipUrl, dest).then(zipPath => new StreamZip.async({file : zipPath}));
+    }
+
+    private executeBSIPA(version: BSVersion){
+
+    }
+
+    private installBSIPA(mod: Mod, version: BSVersion){
+        this.installMod(mod, version).then(res => {
+            this.executeBSIPA(version); //TODO
+        })
+    }
+
+    public async installMod(mod: Mod, version: BSVersion): Promise<boolean>{
+        const download = mod.downloads.find(download => {
+            const type = download.type.toLowerCase()
+            return type === "universal" || type === this.bsLocalService.getVersionType(version);
+        });
+
+        if(!download){ return false; }
+
+        const zip = await this.downloadZip(download.url);
+
+        if(!zip){ return false; }
+
+        const crypto = require('crypto');
+        const entries = await zip.entries();
+
+        const checkedEntries = (await Promise.all(Object.values(entries).map(async (entry) => {
+            if(!entry.isFile){ return undefined; }
+            const data = await zip.entryData(entry);
+            const entryMd5 = crypto.createHash('md5').update(data).digest('hex')
+            return download.hashMd5.some(md5 => md5.hash === entryMd5) ? entry : undefined;
+        }))).filter(entry => !!entry);
+
+        if(checkedEntries.length != download.hashMd5.length){ return false; }
+
+        const verionPath = await this.bsLocalService.getVersionPath(version);
+        if(!this.utilsService.pathExist(verionPath)){ return false; }
+
+        const destDir = mod.name.toLowerCase() === "bsipa" ? verionPath : path.join(verionPath, ModsInstallFolder.PENDING);
+
+        await zip.extract(null, destDir);
+
+        return true;
+    }
+
     public getAvailableMods(version: BSVersion): Promise<Mod[]>{
         return this.beatModsApi.getVersionMods(version);
     }
@@ -116,6 +173,7 @@ export class BsModsManagerService {
 const enum ModsInstallFolder {
     PLUGINS = "Plugins",
     LIBS = "Libs",
+    PENDING = "IPA/Pending",
     PLUGINS_PENDING = "IPA/Pending/Plugins",
     LIBS_PENDING = "IPA/Pending/Libs"
 }
