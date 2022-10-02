@@ -78,7 +78,7 @@ export function VersionViewer() {
           <ModsSlide version={state}/>
         </div>
       </div>
-      <BsmDropdownButton className='absolute top-5 right-5 h-9 w-9' items={[
+      <BsmDropdownButton className='absolute top-5 right-5 h-9 w-9 bg-light-main-color-2 dark:bg-main-color-2 rounded-md' items={[
           {text: "pages.version-viewer.dropdown.open-folder", icon: "folder", onClick: openFolder},
           (!state.steam && {text: "pages.version-viewer.dropdown.verify-files", icon: "task", onClick: verifyFiles}),
           (!state.steam && {text: "Exporter les misc.maps", icon: "export", onClick: exportMaps}),

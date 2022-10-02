@@ -1,9 +1,9 @@
-import { existsSync, mkdirSync, readdirSync, readFile } from "fs";
+import { existsSync, mkdirSync, readdirSync, readFile, unlinkSync } from "fs";
 import { spawnSync } from "child_process";
 import { homedir } from "os";
 import path from "path";
 import { app, BrowserWindow } from "electron";
-import { rm } from "fs/promises";
+import { rm, unlink } from "fs/promises";
 import { IpcResponse } from "shared/models/ipc";
 import log from "electron-log";
 
@@ -38,6 +38,16 @@ export class UtilsService{
     if(!this.pathExist(path)){ mkdirSync(path, {recursive: true}); }
   }
 
+  public async unlinkIfExist(pathToFile: string): Promise<void>{
+    if(!this.pathExist(pathToFile)){ return }
+    return unlink(pathToFile);
+  }
+
+  public rmDirIfExist(path: string): Promise<void>{
+    if(!this.pathExist(path)){ return; }
+    return rm(path, {recursive: true, force: true});
+  }
+
   public taskRunning(task: string): boolean{
     const tasks = spawnSync('tasklist').stdout.toString();
     return tasks.includes(task);
@@ -68,7 +78,7 @@ export class UtilsService{
     return rm(folderPath, {recursive: true});
   }
 
-  public ipcSend(channel: string, response: IpcResponse<any>): void{
+  public ipcSend<T = any>(channel: string, response: IpcResponse<T>): void{
     try {
         this.mainWindow.webContents.send(channel, response);
     } catch (error) {

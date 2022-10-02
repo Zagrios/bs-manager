@@ -232,7 +232,7 @@
       },
       "bs-uninstall":{
          "title": "Désinstaller",
-         "description": "Est tu sûr de vouloir désinstaller BeatSaber {version} ? Tu vas devoir la retélécharger pour y jouer.",
+         "description": "Est-tu sûr de vouloir désinstaller BeatSaber {version} ? Tu vas devoir la retélécharger pour y jouer.",
          "buttons":{
             "submit": "Désinstaller"
          }
@@ -256,7 +256,12 @@
          "buttons":{
             "submit": "Cloner"
          }
-      }
+      },
+        "uninstall-mod":{
+            "title": "Désinstaller",
+            "description": "Est-tu sûr de vouloir désinstaller {mod} ? Cela pourrait faire dysfonctionner d'autres mods installés.",
+            "description-bsipa": "Est-tu sûr de vouloir désinstaller BSIPA ? Après cela, tous les mods installés ne fonctionneront plus."
+        }
    },
    "auto-update":{
        "checking": "Vérification des mises à jour",

@@ -55,7 +55,7 @@ export class BeatModsApiService {
     }
 
     private asignDependencies(mod: Mod, mods: Mod[]): Mod{
-        mod.dependencies.map(dep => mods.find(mod => mod.name === dep.name));
+        mod.dependencies = mod.dependencies.map(dep => mods.find(mod => mod.name === dep.name));
         return mod;
     }
 
@@ -65,7 +65,7 @@ export class BeatModsApiService {
         const alias = await this.getAliasOfVersion(version);
 
         return this.requestService.get<Mod[]>(this.getVersionModsUrl(alias)).then(mods => {
-            mods.map(mod => this.asignDependencies(mod, mods));
+            mods = mods.map(mod => this.asignDependencies(mod, mods));
             this.versionModsCache.set(version.BSVersion, mods);
             return mods;
         });

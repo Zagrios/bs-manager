@@ -11,11 +11,13 @@ export function BsmProgressBar() {
 
     const progress = useObservable(progressBarService.progression$);
     const visible = useObservable(progressBarService.visible$);
+    const style = useObservable(progressBarService.style$);
+
     const {firstColor, secondColor} = useThemeColor();
 
   return (
     <AnimatePresence> { visible && 
-        <motion.div initial={{y: "120%"}} animate={{y:"0%"}} exit={{y:"120%"}} className="w-full absolute h-14 flex justify-center items-center bottom-2">
+        <motion.div initial={{y: "120%"}} animate={{y:"0%"}} exit={{y:"120%"}} className="w-full absolute h-14 flex justify-center items-center bottom-2 pointer-events-none" style={style}>
             <div className={`flex items-center content-center justify-center bottom-9 z-10 rounded-lg bg-light-main-color-2 dark:bg-main-color-2 shadow-center shadow-black cursor-pointer transition-all duration-300 ${!progress && "h-14 w-14 !rounded-full"} ${!!progress && "h-5 w-3/4 !rounded-full p-[6px]"}`}>
             { !!progress && (
                 <div className="relative flex items-center h-full w-full rounded-full bg-black">

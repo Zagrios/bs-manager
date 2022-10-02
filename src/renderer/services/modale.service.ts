@@ -50,23 +50,24 @@ export class ModalService{
 
 }
 
-export enum ModalType {
+export const enum ModalType {
     STEAM_LOGIN = "STEAM_LOGIN",
     GUARD_CODE = "GUARD_CODE",
     UNINSTALL = "UNINSTALL",
     INSTALLATION_FOLDER = "INSTALLATION_FOLDER",
     EDIT_VERSION = "EDIT_VERSION",
-    CLONE_VERSION = "CLONE_VERSION"
+    CLONE_VERSION = "CLONE_VERSION",
+    UNINSTALL_MOD = "UNINSTALL_MOD"
 }
 
-export enum ModalExitCode {
+export const enum ModalExitCode {
     NO_CHOICE = -1,
     COMPLETED = 0,
     CLOSED = 1,
     CANCELED = 2,
 }
 
-export interface ModalResponse<T> {
+export interface ModalResponse<T = unknown> {
     exitCode: ModalExitCode,
     data?: T
 }

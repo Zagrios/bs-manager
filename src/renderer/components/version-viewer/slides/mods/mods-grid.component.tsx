@@ -1,12 +1,18 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
+import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-button.component";
+import { BsModsManagerService } from "renderer/services/bs-mods-manager.service";
+import { PageStateService } from "renderer/services/page-state.service";
 import { Mod } from "shared/models/mods/mod.interface"
 import { ModItem } from "./mod-item.component"
 
 type Props = {modsMap: Map<string, Mod[]>, installed: Map<string, Mod[]>, modsSelected: Mod[], onModChange: (selected: boolean, mod: Mod) => void, moreInfoMod?: Mod, onWantInfos: (mod: Mod) => void}
 
 export function ModsGrid({modsMap, installed, modsSelected, onModChange, moreInfoMod, onWantInfos}: Props) {
+
+    const pageState = PageStateService.getInstance();
+    const modsManager = BsModsManagerService.getInstance();
 
     const [filter, setFilter] = useState("");
     const [filterEnabled, setFilterEnabled] = useState(false);
@@ -35,15 +41,17 @@ export function ModsGrid({modsMap, installed, modsSelected, onModChange, moreInf
         setFilterEnabled(b => !b);
     }
 
-  return modsMap && (
-        <div className="grid gap-y-1 grid-cols-[40px_min-content_min-content_min-content_1fr_min-content]"> 
-            <span className="absolute z-10 top-0 w-full h-8 bg-main-color-2"/>
-            <span className="z-10 sticky flex items-center justify-center top-0 bg-main-color-2 border-b-2 border-main-color-1">
-                <div className="pl-4">
-                    <BsmButton className="rounded-full h-6 p-[2px]" withBar={false} icon="search" onClick={handleToogleFilter}/>
-                </div>
+    const handleUninstallAll = () => {
+        modsManager.uninstallAllMods(pageState.getState())
+    }
+
+    return modsMap && (
+        <div className="grid gap-y-1 grid-cols-[40px_min-content_min-content_min-content_1fr_min-content] bg-light-main-color-2 dark:bg-main-color-2 text-main-color-1 dark:text-light-main-color-1"> 
+            <span className="absolute z-10 top-0 w-full h-8 bg-inherit"/>
+            <span className="z-10 sticky flex items-center justify-end top-0 bg-inherit border-b-2 border-main-color-1">
+                    <BsmButton className="rounded-full h-6 w-6 p-[2px]" withBar={false} icon="search" onClick={handleToogleFilter}/>
             </span>
-            <span className="z-10 sticky top-0 flex items-center bg-main-color-2 border-main-color-1 border-b-2 h-8 px-1">
+            <span className="z-10 sticky top-0 flex items-center bg-inherit border-main-color-1 border-b-2 h-8 px-1">
                 {(filterEnabled ? (
                     <motion.input autoFocus className="bg-main-color-1 rounded-md h-6 px-2" initial={{width: 0}} animate={{width: "250px"}} transition={{ease:"easeInOut", duration:.15}} onChange={e => handleInput(e.target.value)}/>   
                 ):(
@@ -51,10 +59,14 @@ export function ModsGrid({modsMap, installed, modsSelected, onModChange, moreInf
                 ))}
             </span>
             
-            <span className="z-10 sticky flex items-center justify-center top-0 bg-main-color-2 border-b-2 border-main-color-1 h-8 px-2">Installé</span>
-            <span className="z-10 sticky flex items-center justify-center top-0 bg-main-color-2 border-b-2 border-main-color-1 h-8 px-2">Récent</span>
-            <span className="z-10 sticky flex items-center justify-center top-0 bg-main-color-2 border-b-2 border-main-color-1 h-8">Description</span>
-            <span className="z-10 sticky top-0 bg-main-color-2 border-b-2 border-main-color-1 h-8"></span>
+            <span className="z-10 sticky flex items-center justify-center top-0 bg-inherit border-b-2 border-main-color-1 h-8 px-2">Installé</span>
+            <span className="z-10 sticky flex items-center justify-center top-0 bg-inherit border-b-2 border-main-color-1 h-8 px-2">Récent</span>
+            <span className="z-10 sticky flex items-center justify-center top-0 bg-inherit border-b-2 border-main-color-1 h-8">Description</span>
+            <span className="z-10 sticky top-0 bg-inherit border-b-2 border-main-color-1 h-8 flex justify-start items-center py-1 pl-[3px] min-w-[50px]">
+                    <BsmDropdownButton className="h-full aspect-square relative rounded-full bg-light-main-color-1 dark:bg-main-color-3" withBar={false} icon="three-dots" buttonClassName="!rounded-full !p-[2px] !bg-light-main-color-2 dark:!bg-main-color-2 hover:!bg-light-main-color-1 dark:hover:!bg-main-color-3" menuTranslationY="5px" items={[
+                        ({text: "Tout désintaller", icon: "trash", onClick: handleUninstallAll}),
+                    ]}/>
+            </span>
             
             {
                 Array.from(modsMap.keys()).map(key => modsMap.get(key).some(mod => mod.name.toLowerCase().includes(filter)) && (
@@ -64,11 +76,10 @@ export function ModsGrid({modsMap, installed, modsSelected, onModChange, moreInf
                             <div className="contents cursor-pointer" onClick={() => onWantInfos(mod)} key={mod.name}>
                                 <ModItem mod={mod} installedVersion={installedModVersion(key, mod)} isDependency={isDependency(mod)} isSelected={isSelected(mod)} onChange={(val) => onModChange(val, mod)} wantInfo={mod.name === moreInfoMod?.name}/>
                             </div>
-                            
                         ))}
                     </div>
                 ))
             }
         </div>
-  )
+    )
 }

@@ -35,3 +35,8 @@ export interface FileHashes {
     hash: string,
     file: string
 }
+
+export interface ModInstallProgression{
+    name: string,
+    progression: number
+}

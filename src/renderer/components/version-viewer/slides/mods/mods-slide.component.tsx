@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BsModsManagerService } from "renderer/services/bs-mods-manager.service";
 import { BSVersion } from "shared/bs-version.interface";
 import VisibilitySensor  from 'react-visibility-sensor';
@@ -11,6 +11,9 @@ import { IpcService } from "renderer/services/ipc.service";
 import BeatWaitingImg from "../../../../../../assets/images/apngs/beat-waiting.png"
 import { SpoilerClick } from "renderer/components/shared/UwU/spoiler-click.component";
 import YuruYuriDance from "../../../../../../assets/images/gifs/yuruyuri-dance.gif"
+import { useObservable } from "renderer/hooks/use-observable.hook";
+import { skip, filter } from "rxjs/operators";
+import { Subscription } from "rxjs";
  
 export function ModsSlide({version}: {version: BSVersion}) {
 
@@ -22,7 +25,11 @@ export function ModsSlide({version}: {version: BSVersion}) {
     const [modsAvailable, setModsAvailable] = useState(null as Map<string, Mod[]>);
     const [modsInstalled, setModsInstalled] = useState(null as Map<string, Mod[]>);
     const [modsSelected, setModsSelected] = useState([] as Mod[]);
-    const [moreInfoMod, setMoreInfoMod] = useState(null as Mod); 
+    const [moreInfoMod, setMoreInfoMod] = useState(null as Mod);
+    const installing = useObservable(modsManager.isInstalling$);
+
+    const downloadRef = useRef(null);
+    const [downloadWith, setDownloadWidth] = useState(0);
 
     const modsToCategoryMap = (mods: Mod[]): Map<string, Mod[]> => {
         if(!mods){ return new Map<string, Mod[]>(); }
@@ -49,32 +56,50 @@ export function ModsSlide({version}: {version: BSVersion}) {
     }
 
     const installMods = () => {
-        // NEXT THING TO DO
+        if(installing){ return; }
+        modsManager.installMods(modsSelected, version).then(() => {
+            loadMods();
+        });
     }
 
-    console.log(modsSelected);
+    const loadMods = () => {
+        Promise.all([
+            modsManager.getAvailableMods(version),
+            modsManager.getInstalledMods(version)
+        ]).then(([available, installed]) => {
+            const defaultMods = configService.get<string[]>("default_mods" as DefaultConfigKey);
+            setModsAvailable(modsToCategoryMap(available));
+            setModsSelected(available.filter(m => m.required || defaultMods.some(d => m.name.toLowerCase() === d.toLowerCase()) || installed.some(i => m.name === i.name)));
+            setModsInstalled(modsToCategoryMap(installed))
+        });
+    }
 
     useEffect(() => {
 
+        const subs: Subscription[] = [];
+
         if(isVisible){
-            Promise.all([
-                modsManager.getAvailableMods(version),
-                modsManager.getInstalledMods(version)
-            ]).then(([available, installed]) => {
-                const defaultMods = configService.get<string[]>("default_mods" as DefaultConfigKey);
-                setModsAvailable(modsToCategoryMap(available));
-                setModsSelected(available.filter(m => m.required || defaultMods.some(d => m.name === d)));
-                setModsInstalled(modsToCategoryMap(installed))
-            });
+            loadMods();
+            subs.push(modsManager.isUninstalling$.pipe(skip(1), filter(uninstalling => !uninstalling)).subscribe(() => {
+                loadMods();
+            }))
         }
 
         return () => {
             setMoreInfoMod(null);
             setModsAvailable(null);
             setModsInstalled(null);
+            subs.forEach(s => s.unsubscribe());
         }
         
     }, [isVisible, version]);
+    
+
+    useLayoutEffect(() => {
+        if(modsAvailable){
+            setDownloadWidth(downloadRef?.current?.offsetWidth)
+        }
+    }, [modsAvailable])
     
 
     return (
@@ -87,8 +112,10 @@ export function ModsSlide({version}: {version: BSVersion}) {
                                 <ModsGrid modsMap={modsAvailable} installed={modsInstalled} modsSelected={modsSelected} onModChange={handleModChange} moreInfoMod={moreInfoMod} onWantInfos={handleMoreInfo}/>
                             </div>
                             <div className="h-10 shrink-0 flex items-center justify-between px-3">
-                                <BsmButton className="rounded-md px-2 py-[2px]" text="Plus d'infos" typeColor="cancel" withBar={false} disabled={!moreInfoMod} onClick={handleOpenMoreInfo}/>
-                                <BsmButton className="rounded-md px-2 py-[2px]" text="Installer ou mettre à jour" withBar={false} typeColor="primary" onClick={installMods}/>
+                                <BsmButton className="text-center rounded-md px-2 py-[2px]" text="Plus d'infos" typeColor="cancel" withBar={false} disabled={!moreInfoMod} onClick={handleOpenMoreInfo} style={{width: downloadWith}}/>
+                                <div ref={downloadRef}>
+                                    <BsmButton className="text-center rounded-md px-2 py-[2px]" text="Installer ou mettre à jour" withBar={false} disabled={installing} typeColor="primary" onClick={installMods}/>
+                                </div>
                             </div>
                         </>
                     ) : (

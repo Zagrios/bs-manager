@@ -1,6 +1,6 @@
 import { NavBar } from "./components/nav-bar/nav-bar.component";
 import TitleBar from "./components/title-bar/title-bar.component";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { AvailableVersionsList } from "./pages/available-versions-list.components";
 import { VersionViewer } from "./pages/version-viewer.component";
 import { Modal } from "./components/modal/modal.component";
@@ -9,17 +9,23 @@ import { BsmProgressBar } from "./components/progress-bar/bsm-progress-bar.compo
 import { useEffect } from "react";
 import { ThemeService } from "./services/theme.service";
 import { NotificationOverlay } from "./components/notification/notification-overlay.component";
+import { PageStateService } from "./services/page-state.service";
 
 export default function App() {
 
-  const themeService = ThemeService.getInstance();
+    const themeService = ThemeService.getInstance();
+    const pageState = PageStateService.getInstance();
 
-  useEffect(() => {
-    themeService.theme$.subscribe(() => {
-      if(themeService.isDark || (themeService.isOS && window.matchMedia('(prefers-color-scheme: dark)').matches)){ document.documentElement.classList.add('dark'); }
-      else { document.documentElement.classList.remove('dark'); }
-    });
-  }, []);
+    const location = useLocation();
+
+    pageState.setState(location.state);
+
+    useEffect(() => {
+        themeService.theme$.subscribe(() => {
+            if(themeService.isDark || (themeService.isOS && window.matchMedia('(prefers-color-scheme: dark)').matches)){ return document.documentElement.classList.add('dark'); }
+            document.documentElement.classList.remove('dark');
+        });
+    }, []);
   
 
   return (

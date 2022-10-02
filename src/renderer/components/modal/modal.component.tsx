@@ -7,6 +7,7 @@ import { InstallationFolderModal } from "./modal-types/installation-folder-modal
 import { EditVersionModal } from "./modal-types/edit-version-modal.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
+import { UninstallModModal } from "./modal-types/uninstall-mod-modal.component";
 
 export function Modal() {
 
@@ -29,6 +30,7 @@ export function Modal() {
                      {modalType === ModalType.INSTALLATION_FOLDER && <InstallationFolderModal resolver={modalSevice.getResolver()}/>}
                      {modalType === ModalType.EDIT_VERSION && <EditVersionModal resolver={modalSevice.getResolver()}/>}
                      {modalType === ModalType.CLONE_VERSION && <EditVersionModal resolver={modalSevice.getResolver()} clone/>}
+                     {modalType === ModalType.UNINSTALL_MOD && <UninstallModModal resolver={modalSevice.getResolver()}/>}
                   </div>
                </motion.div>
             </div>

@@ -2,6 +2,7 @@ import { distinctUntilChanged, map } from "rxjs/operators";
 import { BehaviorSubject, Observable, Subscription, timer } from "rxjs";
 import { IpcService } from "./ipc.service";
 import { NotificationService } from "./notification.service";
+import { CSSProperties } from "react";
 
 export class ProgressBarService{
 
@@ -12,6 +13,7 @@ export class ProgressBarService{
 
     private readonly _progression$: BehaviorSubject<number>;
     private readonly _visible$: BehaviorSubject<boolean>;
+    private readonly _style$: BehaviorSubject<CSSProperties>; 
 
     private subscription: Subscription;
 
@@ -26,6 +28,7 @@ export class ProgressBarService{
 
         this._progression$ = new BehaviorSubject<number>(0);
         this._visible$ = new BehaviorSubject<boolean>(false);
+        this._style$ = new BehaviorSubject<CSSProperties>(undefined);
 
         this.progression$.subscribe(progression => this.setSystemProgression(progression));
     }
@@ -47,13 +50,14 @@ export class ProgressBarService{
         this.subscription = null;
     }
 
-    public show(obs?: Observable<number>, unsubscribe? : boolean){
+    public show(obs?: Observable<number>, unsubscribe? : boolean, style?: CSSProperties){
         if(unsubscribe){ this.unsubscribe(); }
         if(obs){ this.subscribreTo(obs); }
-        this.visible$.next(true); 
+        this.visible$.next(true);
+        this._style$.next(style);
     }
 
-    public showFake(speed: number): void{
+    public showFake(speed: number, style?: CSSProperties): void{
         const obs = timer(1000, 100).pipe(map(val => {
             if(this.progression$.value >= 100){ return 100; }
             const currentProgress = speed * (val + 1);
@@ -66,7 +70,7 @@ export class ProgressBarService{
         this.progression$.next(100);
     }
 
-    public hide(unsubscribe: boolean){
+    public hide(unsubscribe: boolean = true){
         if(unsubscribe){ this.unsubscribe(); } 
         this.visible$.next(false); 
     }
@@ -82,6 +86,7 @@ export class ProgressBarService{
     public get progression$(): BehaviorSubject<number>{ return this._progression$; }
     public get visible$(): BehaviorSubject<boolean>{ return this._visible$; }
     public get isVisible(): boolean{ return this._visible$.value; }
+    public get style$(): BehaviorSubject<CSSProperties>{ return this._style$; }
 
 
 

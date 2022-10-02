@@ -256,7 +256,12 @@
          "buttons":{
             "submit": "Clone"
          }
-      }
+      },
+        "uninstall-mod":{
+            "title": "Uninstall",
+            "description": "Are you sure you want to uninstall {mod}? It could cause other installed mods to malfunction.",
+            "description-bsipa": "Are you sure you want to uninstall BSIPA? After that all installed mods will not work anymore."
+        }
    },
    "auto-update":{
        "checking": "Checking for updates",

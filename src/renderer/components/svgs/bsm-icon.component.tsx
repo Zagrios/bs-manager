@@ -21,9 +21,10 @@ import { ExportIcon } from "./icons/export-icon.component";
 import PatreonIcon from "./icons/patreon-icon.component";
 import { SearchIcon } from "./icons/search-icon.component";
 import { CheckIcon } from "./icons/check-icon.component";
+import { ThreeDotsIcon } from "./icons/three-dots-icon.component";
 
 export type BsmIconType = (
-   "settings"|"trash"|"favorite"|"folder"|"bsNote"|"check"|
+   "settings"|"trash"|"favorite"|"folder"|"bsNote"|"check"|"three-dots"|
    "terminal"|"desktop"|"oculus"|"add"|"cross"|"task"|
    "copy"|"steam"|"edit"|"export"|"patreon"|"search"|
    "fr-FR-flag"|"es-ES-flag"|"en-US-flag"|"en-EN-flag"
@@ -54,6 +55,7 @@ export const BsmIcon = memo(({className, icon, style}: {className?: string, icon
         if(icon === "patreon"){ return <PatreonIcon className={className} style={style}/> }
         if(icon === "search"){ return <SearchIcon className={className} style={style}/> }
         if(icon === "check"){ return <CheckIcon className={className} style={style}/> }
+        if(icon === "three-dots"){ return <ThreeDotsIcon className={className} style={style}/> }
         return <TrashIcon className={className} style={style}/>
     }
 
