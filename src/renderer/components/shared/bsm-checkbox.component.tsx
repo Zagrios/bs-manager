@@ -6,8 +6,7 @@ import { getCorrectTextColor } from "renderer/helpers/correct-text-color"
 type Props = {className?:string, checked?: boolean, onChange?: (val: boolean) => void, disabled?: boolean}
 
 export function BsmCheckbox({className, checked, onChange, disabled} : Props) {
-
-    if(checked){ console.log(checked) }
+    
     const checkedColor = useThemeColor("first-color");
     const iconColor = getCorrectTextColor(checkedColor);
 

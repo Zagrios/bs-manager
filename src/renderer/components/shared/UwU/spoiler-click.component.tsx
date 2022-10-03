@@ -6,9 +6,7 @@ type Props = {className?: string, nbClickToShow?: number, children?: JSX.Element
 export function SpoilerClick({className, children, nbClickToShow = 5}: Props) {
 
     const [remainingClicks, setRemainingClicks] = useState(nbClickToShow);
-    const [translateY, setTranslateY] = useState("100%")
-
-    console.log(translateY);
+    const [translateY, setTranslateY] = useState("100%");
 
     const handleClicks = () => {
         if(remainingClicks - 1 > 0){ setRemainingClicks(nb => nb - 1); }

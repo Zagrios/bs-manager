@@ -11,9 +11,7 @@ export class PageStateService {
         return PageStateService.instance;
     }
 
-    private constructor(){
-        this.state$.subscribe(a => console.log(a))
-    }
+    private constructor(){}
 
     public setState(state: unknown){
         this._state$.next(state);
