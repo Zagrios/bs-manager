@@ -1,6 +1,5 @@
 <a name="readme-top"></a>
 
-
 <!-- PROJECT SHIELDS -->
 <!--
 *** I'm using markdown "reference style" links for readability.
@@ -9,20 +8,7 @@
 *** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
-<div align="center">
-<a href="https://github.com/Zagrios/bs-manager/stargazers"><img src ="https://img.shields.io/github/stars/Zagrios/bs-manager?style=for-the-badge" alt="Stargazers"/></a>
-<a href="https://github.com/Zagrios/bs-manager/network/members"><img src ="https://img.shields.io/github/forks/Zagrios/bs-manager?style=for-the-badge" alt="Forks"/></a>
-<br>
-<a href="https://github.com/Zagrios/bs-manager/graphs/contributors"><img src ="https://img.shields.io/github/contributors/Zagrios/bs-manager?style=for-the-badge" alt="Contributors"/></a>
-<a href="https://github.com/Zagrios/bs-manager/issues"><img src ="https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge" alt="Issues"/></a>
-<br>
-<a href=""><img src ="https://img.shields.io/badge/-DISCORD%20-grey?style=for-the-badge&logo=Discord" alt="Discord"/></a>
-<a href="https://www.patreon.com/bsmanager"><img src ="https://img.shields.io/badge/-Patreon-052d49?style=for-the-badge&logo=patreon" alt="Patreon"/></a>
-<br>
-<a href="https://github.com/Zagrios/bs-manager/blob/master/LICENSE"><img src ="https://img.shields.io/github/license/Zagrios/bs-manager?style=for-the-badge" alt="License"/></a>
-</div>
 
----------------
 <!-- PROJECT LOGO -->
 
 <div align="center">
@@ -38,6 +24,18 @@
     <a href="https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=enhancement&template=feature_request.md&title=%5BAME%5D">Request Feature</a>
     <br><img src="https://github.com/Zagrios/bs-manager/blob/master/resources/readme/beat-running.png?raw=true" width="130"/>
   </p>
+</div>
+<div align="center">
+<a href="https://github.com/Zagrios/bs-manager/stargazers"><img src ="https://img.shields.io/github/stars/Zagrios/bs-manager?style=for-the-badge" alt="Stargazers"/></a>
+<a href="https://github.com/Zagrios/bs-manager/network/members"><img src ="https://img.shields.io/github/forks/Zagrios/bs-manager?style=for-the-badge" alt="Forks"/></a>
+<br>
+<a href="https://github.com/Zagrios/bs-manager/graphs/contributors"><img src ="https://img.shields.io/github/contributors/Zagrios/bs-manager?style=for-the-badge" alt="Contributors"/></a>
+<a href="https://github.com/Zagrios/bs-manager/issues"><img src ="https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge" alt="Issues"/></a>
+<br>
+<a href=""><img src ="https://img.shields.io/badge/-DISCORD%20-grey?style=for-the-badge&logo=Discord" alt="Discord"/></a>
+<a href="https://www.patreon.com/bsmanager"><img src ="https://img.shields.io/badge/-Patreon-052d49?style=for-the-badge&logo=patreon" alt="Patreon"/></a>
+<br>
+<a href="https://github.com/Zagrios/bs-manager/blob/master/LICENSE"><img src ="https://img.shields.io/github/license/Zagrios/bs-manager?style=for-the-badge" alt="License"/></a>
 </div>
 
 ---------------
@@ -69,3 +67,8 @@
 </details>
 
 ---------------
+
+## About The Project
+<div align="center">
+<img src ="https://picsum.photos/800/600" >
+</div>
