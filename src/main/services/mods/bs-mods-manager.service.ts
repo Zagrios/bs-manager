@@ -1,5 +1,6 @@
 import { BSVersion } from "shared/bs-version.interface";
-import { DownloadLink, Mod, ModInstallProgression } from "shared/models/mods/mod.interface";import { BeatModsApiService } from "./beat-mods-api.service";
+import { DownloadLink, InstallModsResult, Mod, ModInstallProgression, UninstallModsResult } from "shared/models/mods";
+import { BeatModsApiService } from "./beat-mods-api.service";
 import { BSLocalVersionService } from "../bs-local-version.service"
 import path from "path";
 import { UtilsService } from "../utils.service";
@@ -127,8 +128,7 @@ export class BsModsManagerService {
 
     private async installMod(mod: Mod, version: BSVersion): Promise<boolean>{
     
-        this.nbInstalledMods++;
-        this.utilsService.ipcSend<ModInstallProgression>("mod-installed", {success: true, data: {name: mod.name, progression: (this.nbInstalledMods / this.nbModsToInstall) * 100}}) 
+        this.utilsService.ipcSend<ModInstallProgression>("mod-installed", {success: true, data: {name: mod.name, progression: ((this.nbInstalledMods + 1) / this.nbModsToInstall) * 100}}) 
 
         const download = this.getModDownload(mod, version);
 
@@ -154,9 +154,11 @@ export class BsModsManagerService {
         const isBSIPA = mod.name.toLowerCase() === "bsipa";
         const destDir = isBSIPA ? verionPath : path.join(verionPath, ModsInstallFolder.PENDING);
 
-        await zip.extract(null, destDir).catch(err => console.log(err));
+        const extracted = await zip.extract(null, destDir).then(() => true).catch(err => {return false});
 
-        const res = isBSIPA ? await this.executeBSIPA(version, ["-n"]) : true;
+        const res = isBSIPA ? (await this.executeBSIPA(version, ["-n"]) && extracted) : extracted;
+
+        res && this.nbInstalledMods++;
 
         return res;
     }
@@ -239,8 +241,8 @@ export class BsModsManagerService {
         });
     }
 
-    public async installMods(mods: Mod[], version: BSVersion): Promise<number>{
-        if(!mods){ throw "no-mod"; }
+    public async installMods(mods: Mod[], version: BSVersion): Promise<InstallModsResult>{
+        if(!mods || !mods.length){ throw "no-mods"; }
 
         const deps = await this.resolveDependencies(mods, version);
         mods.push(...deps);
@@ -256,17 +258,18 @@ export class BsModsManagerService {
             if(!installed){ throw "cannot-install-bsipa"; }
         }
 
-        let nbInstalledMods = bsipa ? 1 : 0;
-
         for(const mod of mods){
-            await this.installMod(mod, version).then(installed => installed && nbInstalledMods++)
+            await this.installMod(mod, version);
         }
 
-        return nbInstalledMods;
+        return {
+            nbModsToInstall: this.nbModsToInstall, 
+            nbInstalledMods: this.nbInstalledMods
+        };
     }
 
-    public async uninstallMods(mods: Mod[], version: BSVersion): Promise<number>{
-        if(!mods){ throw "no-mod"; }
+    public async uninstallMods(mods: Mod[], version: BSVersion): Promise<UninstallModsResult>{
+        if(!mods || !mods.length){ throw "no-mods"; }
 
         this.nbModsToUninstall = mods.length;
         this.nbUninstalledMods = 0;
@@ -275,11 +278,16 @@ export class BsModsManagerService {
             await this.uninstallMod(mod, version);
         }
 
-        return this.nbUninstalledMods;
+        return {
+            nbModsToUninstall: this.nbModsToUninstall,
+            nbUninstalledMods: this.nbUninstalledMods
+        };
     }
 
-    public async uninstallAllMods(version: BSVersion): Promise<number>{
+    public async uninstallAllMods(version: BSVersion): Promise<UninstallModsResult>{
         const mods = await this.getInstalledMods(version);
+
+        if(!mods || !mods.length){ throw "no-mods"; }
 
         this.nbModsToUninstall = mods.length;
         this.nbUninstalledMods = 0;
@@ -294,7 +302,12 @@ export class BsModsManagerService {
         this.utilsService.rmDirIfExist(path.join(versionPath, ModsInstallFolder.LIBS));
         this.utilsService.rmDirIfExist(path.join(versionPath, ModsInstallFolder.IPA));
 
-        return this.nbUninstalledMods;
+        path.resolve
+
+        return {
+            nbModsToUninstall: this.nbModsToUninstall,
+            nbUninstalledMods: this.nbUninstalledMods
+        };
     }
 
 }

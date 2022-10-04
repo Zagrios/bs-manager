@@ -4,6 +4,7 @@ import { UtilsService } from "../services/utils.service";
 import { BSVersion } from "shared/bs-version.interface";
 import { IpcRequest } from "shared/models/ipc";
 import { Mod } from "shared/models/mods/mod.interface";
+import { InstallModsResult } from "shared/models/mods";
 
 ipcMain.on("get-available-mods", (event, request: IpcRequest<BSVersion>) => {
     const utils = UtilsService.getInstance();
@@ -28,7 +29,7 @@ ipcMain.on("install-mods", (event, request: IpcRequest<{mods: Mod[], version: BS
     const modsManager = BsModsManagerService.getInstance();
 
     modsManager.installMods(request.args.mods, request.args.version).then(nbInstalled => {
-        utils.ipcSend(request.responceChannel, {success: true, data: nbInstalled})
+        utils.ipcSend<InstallModsResult>(request.responceChannel, {success: true, data: nbInstalled})
     }).catch(err => {
         utils.ipcSend(request.responceChannel, {success: false, error: err});
     })

@@ -81,6 +81,11 @@
          "warning": "⚠️ Attention",
          "success": "🎉 Succès"
       },
+        "common":{
+            "msg":{
+                "error-occurred": "Une erreur c'est produite"
+            }
+        },
       "shared":{
         "errors":{
             "titles":{
@@ -196,7 +201,44 @@
                "CloningFinished": "Clonage terminer 🎉"
             }
          }
-      }
+      },
+        "mods":{
+            "install-mods":{
+                "titles":{
+                    "success": "Mods installés 🎉",
+                    "warning": "Mods installés 🤔"
+                },
+                "msg":{
+                    "success": "Tous les mods on été installés.",
+                    "warning": "Un ou plusieurs mods n'ont pas pu être installés.",
+                    "errors":{
+                        "no-mods": "Aucun mods à installer.",
+                        "cannot-install-bsipa": "L'installation de BSIPA à échoué 😨"
+                    }
+                }
+            },
+            "uninstall-mod":{
+                "titles":{
+                    "success": "Mod désintallé 🎉"
+                },
+                "msg":{
+                    "errors":{
+                        "no-mods": "Ce mod n'est pas installé 😑"
+                    }
+                }
+            },
+            "uninstall-all-mods":{
+                "titles":{
+                    "success": "Mods désintallés 🎉"
+                },
+                "msg":{
+                    "success": "Tous les mods on été désintallés.",
+                    "errors": {
+                        "no-mods": "Aucun mod n'est installé dans dans cette version 😑"
+                    }
+                }
+            }
+        }
    },
    "modals":{
       "guard":{
