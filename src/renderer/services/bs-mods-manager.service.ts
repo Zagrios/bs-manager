@@ -53,9 +53,12 @@ export class BsModsManagerService {
         });
     }
     public async uninstallMod(mod: Mod, version: BSVersion){
+
+        if(!this.progressBar.require()){ return; }
+
         const modalRes = await this.modals.openModal(ModalType.UNINSTALL_MOD, mod);
 
-        if(modalRes.exitCode !== ModalExitCode.COMPLETED || !this.progressBar.require()){ return; }
+        if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return; }
 
         const progress$ = this.ipcService.watch<ModInstallProgression>("mod-uninstalled").pipe(map(res => res.data.progression));
         this.progressBar.show(progress$, true, {paddingLeft: "190px", paddingRight: "190px", bottom: "20px"});
@@ -69,7 +72,11 @@ export class BsModsManagerService {
 
     public async uninstallAllMods(version: BSVersion){
 
-        //TODO MODAL
+        if(!this.progressBar.require()){ return; }
+
+        const modalRes = await this.modals.openModal(ModalType.UNINSTALL_ALL_MODS, version);
+
+        if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return; }
 
         const progress$ = this.ipcService.watch<ModInstallProgression>("mod-uninstalled").pipe(map(res => res.data.progression));
         this.progressBar.show(progress$, true, {paddingLeft: "190px", paddingRight: "190px", bottom: "20px"});

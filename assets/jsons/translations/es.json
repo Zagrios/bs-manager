@@ -261,6 +261,10 @@
             "title": "Desinstalar",
             "description": "¿Estás seguro de que quieres desinstalar {mod}? Podría provocar el mal funcionamiento de otros mods instalados.",
             "description-bsipa": "¿Estás seguro de que quieres desinstalar BSIPA? Después de eso, todos los mods instalados dejarán de funcionar."
+        },
+        "uninstall-all-mods":{
+            "title": "Desinstalación de mods",
+            "description": "¿Estás seguro de que quieres desinstalar todos los mods de la versión {version}? Esta operación no se puede deshacer."
         }
    },
    "auto-update":{

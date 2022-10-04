@@ -3,7 +3,7 @@
       "download": "Télécharger",
       "verify": "Vérifier",
       "launch": "Lancer",
-      "mods": "Modes",
+      "mods": "Mods",
       "maps": "Maps",
       "cancel": "Annuler"
    },
@@ -259,8 +259,12 @@
       },
         "uninstall-mod":{
             "title": "Désinstaller",
-            "description": "Est-tu sûr de vouloir désinstaller {mod} ? Cela pourrait faire dysfonctionner d'autres mods installés.",
-            "description-bsipa": "Est-tu sûr de vouloir désinstaller BSIPA ? Après cela, tous les mods installés ne fonctionneront plus."
+            "description": "Es-tu sûr de vouloir désinstaller {mod} ? Cela pourrait faire dysfonctionner d'autres mods installés.",
+            "description-bsipa": "Es-tu sûr de vouloir désinstaller BSIPA ? Après cela, tous les mods installés ne fonctionneront plus."
+        },
+        "uninstall-all-mods":{
+            "title": "Désinstaller les mods",
+            "description": "Es-tu sûr de vouloir désinstaller tous les mods de la version {version} ? Cette opération ne pourra pas être annulée."
         }
    },
    "auto-update":{

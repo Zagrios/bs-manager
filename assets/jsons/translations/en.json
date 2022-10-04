@@ -261,6 +261,10 @@
             "title": "Uninstall",
             "description": "Are you sure you want to uninstall {mod}? It could cause other installed mods to malfunction.",
             "description-bsipa": "Are you sure you want to uninstall BSIPA? After that all installed mods will not work anymore."
+        },
+        "uninstall-all-mods":{
+            "title": "Uninstalling mods",
+            "description": "Are you sure you want to uninstall all the mods from version {version}? This operation cannot be undone."
         }
    },
    "auto-update":{
