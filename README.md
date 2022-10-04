@@ -12,11 +12,14 @@
 <div align="center">
 <a href="https://github.com/Zagrios/bs-manager/stargazers"><img src ="https://img.shields.io/github/stars/Zagrios/bs-manager?style=for-the-badge" alt="Stargazers"/></a>
 <a href="https://github.com/Zagrios/bs-manager/network/members"><img src ="https://img.shields.io/github/forks/Zagrios/bs-manager?style=for-the-badge" alt="Forks"/></a>
-<a href=""><img src ="https://img.shields.io/badge/-DISCORD%20-grey?style=for-the-badge&logo=Discord" alt="Discord"/></a>
-<a href="https://github.com/Zagrios/bs-manager/blob/master/LICENSE"><img src ="https://img.shields.io/github/license/Zagrios/bs-manager?style=for-the-badge" alt="License"/></a>
-<a href="https://www.patreon.com/bsmanager"><img src ="https://img.shields.io/badge/-Patreon-052d49?style=for-the-badge&logo=patreon" alt="Patreon"/></a>
+<br>
 <a href="https://github.com/Zagrios/bs-manager/graphs/contributors"><img src ="https://img.shields.io/github/contributors/Zagrios/bs-manager?style=for-the-badge" alt="Contributors"/></a>
 <a href="https://github.com/Zagrios/bs-manager/issues"><img src ="https://img.shields.io/github/issues/othneildrew/Best-README-Template.svg?style=for-the-badge" alt="Issues"/></a>
+<br>
+<a href=""><img src ="https://img.shields.io/badge/-DISCORD%20-grey?style=for-the-badge&logo=Discord" alt="Discord"/></a>
+<a href="https://www.patreon.com/bsmanager"><img src ="https://img.shields.io/badge/-Patreon-052d49?style=for-the-badge&logo=patreon" alt="Patreon"/></a>
+<br>
+<a href="https://github.com/Zagrios/bs-manager/blob/master/LICENSE"><img src ="https://img.shields.io/github/license/Zagrios/bs-manager?style=for-the-badge" alt="License"/></a>
 </div>
 
 ---------------
