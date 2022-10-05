@@ -76,9 +76,9 @@
 <h4>BSMangager will allow you to:</h4>
 <ul>
 <li><b>Manage instances of multiple versions</b>, designed for people who need to play on different versions or have multiple profiles for the same version.</li>
-<li><b>Install your mods in one click, just like <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a></b>, <a href="">BSMangager<a> will allow you to install your mods quickly and securely depending on the version you choose.</li>
+<li><b>Install your mods in one click, just like <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a></b>, <a href="../../">BSManager<a> will allow you to install your mods quickly and securely depending on the version you choose.</li>
 <li><b>Download your maps in the same way</b>, in addition to that, the maps are not version dependent, so you will be able to find your maps whatever version you are using without having to transfer them.</li>
-<li><b>Customize your interface</b>, we know that some of you like to customize your interfaces to the maximum. That's why BS manager brings you peace of mind on this point, you can change the name of the versions, their color and you can even change the color of the logo! Of course, a dark theme has been added to protect your eyes at night.</li>
+<li><b>Customize your interface</b>, we know that some of you like to customize your interfaces to the maximum. That's why <a href="../../">BSManager<a> brings you peace of mind on this point, you can change the name of the versions, their color and you can even change the color of the logo! Of course, a dark theme has been added to protect your eyes at night.</li>
 </ul>
 </p>
   
