@@ -82,3 +82,22 @@
 </ul>
 </p>
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
+  
+### Built With
+<ul>
+  <li><a href="https://electron-react-boilerplate.js.org/">
+    <img src="https://img.shields.io/badge/-Electron%20React%20Boilerplate-black?style=for-the-badge&logo=Electron" alt="Electron React Boilerplate">
+  </a></li>
+  <li><a href="https://github.com/SteamRE/DepotDownloader">
+    <img src="https://img.shields.io/badge/-Depot%20Downloader-2a475e?style=for-the-badge&logo=steam" alt="Depot Downloader">
+  </a></li>
+  <li><a href="https://rxjs.dev/">
+    <img src="https://img.shields.io/badge/-RxJs-purple?style=for-the-badge&logo=ReactiveX" alt="RxJs">
+  </a></li>
+  <li><a href="https://tailwindcss.com/">
+    <img src="https://img.shields.io/badge/-Tailwind%20CSS-white?style=for-the-badge&logo=Tailwind%20CSS" alt="TailWind CSS">
+  </a></li>
+</ul>
+
+
+<p align="right">[<a href="#readme-top">Return to top</a>]</p>
