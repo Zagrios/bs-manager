@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-button.component";
+import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { BsModsManagerService } from "renderer/services/bs-mods-manager.service";
 import { PageStateService } from "renderer/services/page-state.service";
 import { Mod } from "shared/models/mods/mod.interface"
@@ -16,6 +17,7 @@ export function ModsGrid({modsMap, installed, modsSelected, onModChange, moreInf
 
     const [filter, setFilter] = useState("");
     const [filterEnabled, setFilterEnabled] = useState(false);
+    const t = useTranslation();
 
     const installedModVersion = (key: string, mod: Mod): string => {
         if(!installed || !installed.get(key)){ return undefined; }
@@ -55,16 +57,16 @@ export function ModsGrid({modsMap, installed, modsSelected, onModChange, moreInf
                 {(filterEnabled ? (
                     <motion.input autoFocus className="bg-main-color-1 rounded-md h-6 px-2" initial={{width: 0}} animate={{width: "250px"}} transition={{ease:"easeInOut", duration:.15}} onChange={e => handleInput(e.target.value)}/>   
                 ):(
-                    <span className="w-full text-center">Nom</span>
+                    <span className="w-full text-center">{t("pages.version-viewer.mods.mods-grid.header-bar.name")}</span>
                 ))}
             </span>
             
-            <span className="z-10 sticky flex items-center justify-center top-0 bg-inherit border-b-2 border-main-color-1 h-8 px-2">Installé</span>
-            <span className="z-10 sticky flex items-center justify-center top-0 bg-inherit border-b-2 border-main-color-1 h-8 px-2">Récent</span>
-            <span className="z-10 sticky flex items-center justify-center top-0 bg-inherit border-b-2 border-main-color-1 h-8">Description</span>
+            <span className="z-10 sticky flex items-center justify-center top-0 bg-inherit border-b-2 border-main-color-1 h-8 px-2">{t("pages.version-viewer.mods.mods-grid.header-bar.installed")}</span>
+            <span className="z-10 sticky flex items-center justify-center top-0 bg-inherit border-b-2 border-main-color-1 h-8 px-2">{t("pages.version-viewer.mods.mods-grid.header-bar.latest")}</span>
+            <span className="z-10 sticky flex items-center justify-center top-0 bg-inherit border-b-2 border-main-color-1 h-8">{t("pages.version-viewer.mods.mods-grid.header-bar.description")}</span>
             <span className="z-10 sticky top-0 bg-inherit border-b-2 border-main-color-1 h-8 flex justify-start items-center py-1 pl-[3px] min-w-[50px]">
                     <BsmDropdownButton className="h-full aspect-square relative rounded-full bg-light-main-color-1 dark:bg-main-color-3" withBar={false} icon="three-dots" buttonClassName="!rounded-full !p-[2px] !bg-light-main-color-2 dark:!bg-main-color-2 hover:!bg-light-main-color-1 dark:hover:!bg-main-color-3" menuTranslationY="5px" items={[
-                        ({text: "Tout désintaller", icon: "trash", onClick: handleUninstallAll}),
+                        ({text: "pages.version-viewer.mods.mods-grid.header-bar.dropdown.uninstall-all", icon: "trash", onClick: handleUninstallAll}),
                     ]}/>
             </span>
             

@@ -14,6 +14,24 @@
             "desktop": "Desktop Mod",
             "debug": "Debug Mod"
          },
+         "mods":{
+            "loading-mods": "Loading mods...",
+            "buttons":{
+                "more-infos": "More info",
+                "install-or-update": "Install or update"
+            },
+            "mods-grid":{
+                "header-bar":{
+                    "name": "Name",
+                    "installed": "Installed",
+                    "latest": "Latest",
+                    "description":"Description",
+                    "dropdown":{
+                        "uninstall-all":"Uninstall all"
+                    }
+                }
+            }
+         },
          "dropdown":{
             "open-folder": "Open folder",
             "verify-files": "Verify files",

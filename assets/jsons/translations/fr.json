@@ -14,6 +14,24 @@
             "desktop": "Mode Bureau",
             "debug": "Mode Debug"
          },
+         "mods":{
+            "loading-mods": "Chargement des mods...",
+            "buttons":{
+                "more-infos": "Plus d'infos",
+                "install-or-update": "Installer ou mettre à jour"
+            },
+            "mods-grid":{
+                "header-bar":{
+                    "name": "Nom",
+                    "installed": "Installé",
+                    "latest": "Récent",
+                    "description":"Description",
+                    "dropdown":{
+                        "uninstall-all":"Tout désinstaller"
+                    }
+                }
+            }
+         },
          "dropdown":{
             "open-folder": "Ouvrir le dossier",
             "verify-files": "Vérifier les fichiers",

@@ -14,6 +14,7 @@ import YuruYuriDance from "../../../../../../assets/images/gifs/yuruyuri-dance.g
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { skip, filter } from "rxjs/operators";
 import { Subscription } from "rxjs";
+import { useTranslation } from "renderer/hooks/use-translation.hook";
  
 export function ModsSlide({version}: {version: BSVersion}) {
 
@@ -27,6 +28,7 @@ export function ModsSlide({version}: {version: BSVersion}) {
     const [modsSelected, setModsSelected] = useState([] as Mod[]);
     const [moreInfoMod, setMoreInfoMod] = useState(null as Mod);
     const installing = useObservable(modsManager.isInstalling$);
+    const t  = useTranslation();
 
     const downloadRef = useRef(null);
     const [downloadWith, setDownloadWidth] = useState(0);
@@ -112,16 +114,16 @@ export function ModsSlide({version}: {version: BSVersion}) {
                                 <ModsGrid modsMap={modsAvailable} installed={modsInstalled} modsSelected={modsSelected} onModChange={handleModChange} moreInfoMod={moreInfoMod} onWantInfos={handleMoreInfo}/>
                             </div>
                             <div className="h-10 shrink-0 flex items-center justify-between px-3">
-                                <BsmButton className="text-center rounded-md px-2 py-[2px]" text="Plus d'infos" typeColor="cancel" withBar={false} disabled={!moreInfoMod} onClick={handleOpenMoreInfo} style={{width: downloadWith}}/>
+                                <BsmButton className="text-center rounded-md px-2 py-[2px]" text="pages.version-viewer.mods.buttons.more-infos" typeColor="cancel" withBar={false} disabled={!moreInfoMod} onClick={handleOpenMoreInfo} style={{width: downloadWith}}/>
                                 <div ref={downloadRef}>
-                                    <BsmButton className="text-center rounded-md px-2 py-[2px]" text="Installer ou mettre à jour" withBar={false} disabled={installing} typeColor="primary" onClick={installMods}/>
+                                    <BsmButton className="text-center rounded-md px-2 py-[2px]" text="pages.version-viewer.mods.buttons.install-or-update" withBar={false} disabled={installing} typeColor="primary" onClick={installMods}/>
                                 </div>
                             </div>
                         </>
                     ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center relative">
                             <img className="w-32 h-32 spin-loading" src={BeatWaitingImg}></img>
-                            <span className="text-xl mt-3 h-0 italic">Chargement des mods...</span>
+                            <span className="text-xl mt-3 h-0 italic">{t("pages.version-viewer.mods.loading-mods")}</span>
                             <SpoilerClick className="absolute right-5 w-20 h-[120px] bottom-5 cursor-pointer">
                                 <img className="relative w-full" src={YuruYuriDance}/>
                             </SpoilerClick>
