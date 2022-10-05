@@ -106,21 +106,21 @@
 ### Manage Versions
 
 <div align="center">
-<img src="https://github.com/Zagrios/bs-manager/blob/master/resources/readme/wip.gif" alt="(WIP)">
+<img src="/resources/readme/wip.gif">
 </div>
 
 ### Install Mods
 
 <div align="center">
 <h3>Coming soon</h3>
-<img src="https://github.com/Zagrios/bs-manager/blob/master/resources/readme/wip.gif" alt="(WIP)">
+<img src="/resources/readme/wip.gif" alt="(WIP)">
 </div>
 
 ### Install Maps
 
 <div align="center">
 <h3>Coming soon</h3>
-<img src="https://github.com/Zagrios/bs-manager/blob/master/resources/readme/wip.gif" alt="(WIP)">
+<img src="/resources/readme/wip.gif" alt="(WIP)">
 </div>
 
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
