@@ -34,6 +34,8 @@
 <br><br>
 <a href=""><img src ="https://img.shields.io/badge/-DISCORD%20-grey?style=for-the-badge&logo=Discord" alt="Discord"/></a>
 <a href="https://www.patreon.com/bsmanager"><img src ="https://img.shields.io/badge/-Patreon-052d49?style=for-the-badge&logo=patreon" alt="Patreon"/></a>
+<br>
+<p align="center">[<a href="#readme-bot">go to bot</a>]</p>
 </div>
 
 ---------------
@@ -48,14 +50,12 @@
         <li><a href="#built-with">Built With</a></li>
       </ul>
     </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
     <li><a href="#usage">Usage</a></li>
+    <ul>
+        <li><a href="#manage-versions">Manage Versions</a></li>
+        <li><a href="#install-mods">Install Mods</a></li>
+        <li><a href="#install-maps">Install Maps</a></li>
+      </ul>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
@@ -71,17 +71,16 @@
 <img src ="https://user-images.githubusercontent.com/40648115/194020303-954e298f-4436-4900-9d27-a52162273318.png" width="800" height="533">
 </div>
 <br><br>
-<p>Beat Saber Manager was created to unify and improve the two most used tools in the community (BS legacy launcher and ModAssistant).
+<p>Beat Saber Manager was created to unify and improve the two most used tools in the community (<a href="https://github.com/RiskiVR/BSLegacyLauncher">BS legacy launcher</a> and <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>).
 
 <h4>BS mangager will allow you to:</h4>
 <ul>
 <li><b>Manage instances of multiple versions</b>, designed for people who need to play on different versions or have multiple profiles for the same version.</li>
-<li><b>Install your mods in one click, just like ModAssistant</b>, BS mangager will allow you to install your mods quickly and securely depending on the version you choose.</li>
+<li><b>Install your mods in one click, just like <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a></b>, BS mangager will allow you to install your mods quickly and securely depending on the version you choose.</li>
 <li><b>Download your maps in the same way</b>, in addition to that, the maps are not version dependent, so you will be able to find your maps whatever version you are using without having to transfer them.</li>
 <li><b>Customize your interface</b>, we know that some of you like to customize your interfaces to the maximum. That's why BS manager brings you peace of mind on this point, you can change the name of the versions, their color and you can even change the color of the logo! Of course, a dark theme has been added to protect your eyes at night.</li>
 </ul>
 </p>
-<p align="right">[<a href="#readme-top">Return to top</a>]</p>
   
 ### Built With
 <ul>
@@ -101,3 +100,33 @@
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
   
 ---------------
+
+## Usage
+
+### Manage Versions
+
+<div align="center">
+<img src="https://github.com/Zagrios/bs-manager/blob/master/resources/readme/wip.gif" alt="(WIP)">
+</div>
+
+### Install Mods
+
+<div align="center">
+<h3>Coming soon</h3>
+<img src="https://github.com/Zagrios/bs-manager/blob/master/resources/readme/wip.gif" alt="(WIP)">
+</div>
+
+### Install Maps
+
+<div align="center">
+<h3>Coming soon</h3>
+<img src="https://github.com/Zagrios/bs-manager/blob/master/resources/readme/wip.gif" alt="(WIP)">
+</div>
+
+<p align="right">[<a href="#readme-top">Return to top</a>]</p>
+
+---------------
+
+
+
+<a name="readme-bot"></a>
