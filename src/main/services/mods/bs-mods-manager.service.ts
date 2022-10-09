@@ -199,11 +199,10 @@ export class BsModsManagerService {
 
         if(!hasIPADir || !hasIPAExe){ return; }
 
-        await this.executeBSIPA(version, ["--revert", "-n"]).then(res => console.log("BSIPA", res));
+        await this.executeBSIPA(version, ["--revert", "-n"]);
 
         const promises = download.hashMd5.map(files => {
             const file = files.file.replaceAll("IPA/", "").replaceAll("Data", "Beat Saber_Data");
-            console.log("DELETE", file);
             return this.utilsService.unlinkIfExist(path.join(verionPath, file));
         })
         

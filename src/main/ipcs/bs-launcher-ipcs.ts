@@ -10,7 +10,6 @@ ipcMain.on('bs-launch.launch', (event, request: IpcRequest<LauchOption>) => {
   const utilsService = UtilsService.getInstance();
 
   launcherService.launch(request.args).then(res => {
-    console.log("BEAT SABER LANCER");
     utilsService.ipcSend(request.responceChannel, {success: true, data: res});
   }).catch((err: BsmException) => {
     utilsService.ipcSend(request.responceChannel, {success: false, error: err});
