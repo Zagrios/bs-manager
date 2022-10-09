@@ -93,13 +93,17 @@ export class BsModsManagerService {
         return this.getIpaFromHash(injectorMd5);
     }
 
-    private downloadZip(zipUrl: string): Promise<StreamZip.StreamZipAsync>{
+    private async downloadZip(zipUrl: string): Promise<{zip: StreamZip.StreamZipAsync, zipPath: string}>{
         zipUrl = path.join(this.beatModsApi.BEAT_MODS_URL, zipUrl);
         const fileName = path.basename(zipUrl);
         const tempPath = this.utilsService.getTempPath();
         this.utilsService.createFolderIfNotExist(this.utilsService.getTempPath());
         const dest = path.join(tempPath, fileName);
-        return this.requestService.downloadFile(zipUrl, dest).then(zipPath => new StreamZip.async({file : zipPath}));
+
+        const zipPath = await this.requestService.downloadFile(zipUrl, dest);
+        const zip = new StreamZip.async({file : zipPath});
+
+        return {zip, zipPath};
     }
 
     private async executeBSIPA(version: BSVersion, args: string[]): Promise<boolean>{
@@ -134,7 +138,7 @@ export class BsModsManagerService {
 
         if(!download){ return false; }
 
-        const zip = await this.downloadZip(download.url);
+        const {zip, zipPath} = await this.downloadZip(download.url);
 
         if(!zip){ return false; }
 
@@ -154,9 +158,12 @@ export class BsModsManagerService {
         const isBSIPA = mod.name.toLowerCase() === "bsipa";
         const destDir = isBSIPA ? verionPath : path.join(verionPath, ModsInstallFolder.PENDING);
 
-        const extracted = await zip.extract(null, destDir).then(() => true).catch(err => {return false});
+        const extracted = await zip.extract(null, destDir).then(() => true).catch(() => {return false});
 
-        const res = isBSIPA ? (await this.executeBSIPA(version, ["-n"]) && extracted) : extracted;
+        await zip.close();
+        await this.utilsService.unlinkIfExist(zipPath);
+
+        const res = isBSIPA ? (extracted && (await this.executeBSIPA(version, ["-n"]))) : extracted;
 
         res && this.nbInstalledMods++;
 
