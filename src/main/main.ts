@@ -30,7 +30,6 @@ log.catchErrors();
 const utilsService = UtilsService.getInstance();
 utilsService.setAssetsPath(app.isPackaged ? path.join(process.resourcesPath, 'assets') : path.join(__dirname, '../../assets'));
 
-
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();

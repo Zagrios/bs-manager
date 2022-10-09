@@ -14,6 +14,24 @@
             "desktop": "Desktop Mod",
             "debug": "Debug Mod"
          },
+         "mods":{
+            "loading-mods": "Loading mods...",
+            "buttons":{
+                "more-infos": "More info",
+                "install-or-update": "Install or update"
+            },
+            "mods-grid":{
+                "header-bar":{
+                    "name": "Name",
+                    "installed": "Installed",
+                    "latest": "Latest",
+                    "description":"Description",
+                    "dropdown":{
+                        "uninstall-all":"Uninstall all"
+                    }
+                }
+            }
+         },
          "dropdown":{
             "open-folder": "Open folder",
             "verify-files": "Verify files",
@@ -81,6 +99,11 @@
          "warning": "⚠️ Warning",
          "success": "🎉 Success"
       },
+        "common":{
+            "msg":{
+                "error-occurred": "An error has occurred"
+            }
+        },
       "shared":{
         "errors":{
             "titles":{
@@ -196,7 +219,44 @@
                "CloningFinished": "Cloning complete 🎉"
             }
          }
-      }
+      },
+        "mods":{
+            "install-mods":{
+                "titles":{
+                    "success": "Mods installed 🎉",
+                    "warning": "Mods installed 🤔"
+                },
+                "msg":{
+                    "success": "All mods have been installed.",
+                    "warning": "One or more mods could not be installed.",
+                    "errors":{
+                        "no-mods": "No mods to install.",
+                        "cannot-install-bsipa": "BSIPA installation failed 😨"
+                    }
+                }
+            },
+            "uninstall-mod":{
+                "titles":{
+                    "success": "Mod uninstalled 🎉"
+                },
+                "msg":{
+                    "errors":{
+                        "no-mods": "This mod isn't installed 😑"
+                    }
+                }
+            },
+            "uninstall-all-mods":{
+                "titles":{
+                    "success": "Mods uninstalled 🎉"
+                },
+                "msg":{
+                    "success": "All mods have been uninstalled.",
+                    "errors": {
+                        "no-mods": "No mod is installed in this version 😑"
+                    }
+                }
+            }
+        }
    },
    "modals":{
       "guard":{
@@ -256,7 +316,16 @@
          "buttons":{
             "submit": "Clone"
          }
-      }
+      },
+        "uninstall-mod":{
+            "title": "Uninstall",
+            "description": "Are you sure you want to uninstall {mod}? It could cause other installed mods to malfunction.",
+            "description-bsipa": "Are you sure you want to uninstall BSIPA? After that all installed mods will not work anymore."
+        },
+        "uninstall-all-mods":{
+            "title": "Uninstalling mods",
+            "description": "Are you sure you want to uninstall all the mods from version {version}? This operation cannot be undone."
+        }
    },
    "auto-update":{
        "checking": "Checking for updates",

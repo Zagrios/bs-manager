@@ -7,3 +7,4 @@ import './map-ipcs';
 import './supporters-ipcs';
 import './launcher-ipcs';
 import './window-manager-ipcs';
+import './bs-mods-ipcs';

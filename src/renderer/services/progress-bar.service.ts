@@ -2,6 +2,8 @@ import { distinctUntilChanged, map } from "rxjs/operators";
 import { BehaviorSubject, Observable, Subscription, timer } from "rxjs";
 import { IpcService } from "./ipc.service";
 import { NotificationService } from "./notification.service";
+import { CSSProperties } from "react";
+import { ProgressionInterface } from "shared/models/progress-bar";
 
 export class ProgressBarService{
 
@@ -10,8 +12,9 @@ export class ProgressBarService{
     private readonly ipcService: IpcService;
     private notificationService: NotificationService;
 
-    private readonly _progression$: BehaviorSubject<number>;
+    private readonly _progression$: BehaviorSubject<ProgressionInterface>;
     private readonly _visible$: BehaviorSubject<boolean>;
+    private readonly _style$: BehaviorSubject<CSSProperties>; 
 
     private subscription: Subscription;
 
@@ -24,51 +27,55 @@ export class ProgressBarService{
         this.ipcService = IpcService.getInstance();
         this.notificationService = NotificationService.getInstance();
 
-        this._progression$ = new BehaviorSubject<number>(0);
+        this._progression$ = new BehaviorSubject<ProgressionInterface>({progression: 0});
         this._visible$ = new BehaviorSubject<boolean>(false);
+        this._style$ = new BehaviorSubject<CSSProperties>(undefined);
 
-        this.progression$.subscribe(progression => this.setSystemProgression(progression));
+        this.progress$.subscribe(value => this.setSystemProgression(value));
     }
 
     private setSystemProgression(progression: number){
         this.ipcService.sendLazy("window.progression", {args: progression});
     }
 
-    public subscribreTo(obs: Observable<number>){
+    public subscribreTo(obs: Observable<ProgressionInterface|number>){
         if(this.subscription){ this.unsubscribe(); }
         this.subscription = obs.pipe(distinctUntilChanged()).subscribe(value => {
-            this.progression$.next(value);
+            if(typeof value === "number"){ return this._progression$.next({progression: value}); }
+            this._progression$.next(value);
         });
     }
 
     public unsubscribe(){
-        this._progression$.next(0);
+        this._progression$.next({progression: 0});
         this.subscription && this.subscription.unsubscribe();
         this.subscription = null;
     }
 
-    public show(obs?: Observable<number>, unsubscribe? : boolean){
+    public show(obs?: Observable<ProgressionInterface|number>, unsubscribe? : boolean, style?: CSSProperties){
         if(unsubscribe){ this.unsubscribe(); }
         if(obs){ this.subscribreTo(obs); }
-        this.visible$.next(true); 
+        this._visible$.next(true);
+        this._style$.next(style);
     }
 
-    public showFake(speed: number): void{
-        const obs = timer(1000, 100).pipe(map(val => {
-            if(this.progression$.value >= 100){ return 100; }
+    public showFake(speed: number, style?: CSSProperties): void{
+        const obs: Observable<ProgressionInterface> = timer(1000, 100).pipe(map(val => {
+            if(this._progression$.value.progression >= 100){ return {progression: 100}; }
             const currentProgress = speed * (val + 1);
-            return Math.round(Math.atan(currentProgress) / (Math.PI / 2) * 100 * 1000) / 1000;
+            const progress = Math.round(Math.atan(currentProgress) / (Math.PI / 2) * 100 * 1000) / 1000;
+            return {progression: progress} as ProgressionInterface;
         }));
-        this.show(obs, true);
+        this.show(obs, true, style);
     }
 
     public complete(): void{
-        this.progression$.next(100);
+        this._progression$.next({progression: 100});
     }
 
-    public hide(unsubscribe: boolean){
+    public hide(unsubscribe: boolean = true){
         if(unsubscribe){ this.unsubscribe(); } 
-        this.visible$.next(false); 
+        this._visible$.next(false); 
     }
 
     public require(): boolean{
@@ -79,9 +86,13 @@ export class ProgressBarService{
         return true;
     }
 
-    public get progression$(): BehaviorSubject<number>{ return this._progression$; }
-    public get visible$(): BehaviorSubject<boolean>{ return this._visible$; }
+    public get progressData$(): Observable<ProgressionInterface>{ return this._progression$.asObservable(); }
+    public get progress$(): Observable<number>{ return this._progression$.pipe(map(data => data.progression)); }
+    public get progressLabel(): Observable<string>{ return this._progression$.pipe(map(data => data?.label)); }
+
+    public get visible$(): Observable<boolean>{ return this._visible$.asObservable(); }
     public get isVisible(): boolean{ return this._visible$.value; }
+    public get style$(): Observable<CSSProperties>{ return this._style$.asObservable(); }
 
 
 

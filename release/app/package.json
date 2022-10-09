@@ -1,5 +1,5 @@
 {
-  "name": "BSManager",
+  "name": "bs-manager",
   "version": "0.1.0",
   "description": "A foundation for scalable desktop apps",
   "main": "./dist/main/main.js",

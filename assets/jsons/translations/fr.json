@@ -3,7 +3,7 @@
       "download": "Télécharger",
       "verify": "Vérifier",
       "launch": "Lancer",
-      "mods": "Modes",
+      "mods": "Mods",
       "maps": "Maps",
       "cancel": "Annuler"
    },
@@ -13,6 +13,24 @@
             "oculus": "Mode Oculus",
             "desktop": "Mode Bureau",
             "debug": "Mode Debug"
+         },
+         "mods":{
+            "loading-mods": "Chargement des mods...",
+            "buttons":{
+                "more-infos": "Plus d'infos",
+                "install-or-update": "Installer ou mettre à jour"
+            },
+            "mods-grid":{
+                "header-bar":{
+                    "name": "Nom",
+                    "installed": "Installé",
+                    "latest": "Récent",
+                    "description":"Description",
+                    "dropdown":{
+                        "uninstall-all":"Tout désinstaller"
+                    }
+                }
+            }
          },
          "dropdown":{
             "open-folder": "Ouvrir le dossier",
@@ -81,6 +99,11 @@
          "warning": "⚠️ Attention",
          "success": "🎉 Succès"
       },
+        "common":{
+            "msg":{
+                "error-occurred": "Une erreur c'est produite"
+            }
+        },
       "shared":{
         "errors":{
             "titles":{
@@ -196,7 +219,44 @@
                "CloningFinished": "Clonage terminer 🎉"
             }
          }
-      }
+      },
+        "mods":{
+            "install-mods":{
+                "titles":{
+                    "success": "Mods installés 🎉",
+                    "warning": "Mods installés 🤔"
+                },
+                "msg":{
+                    "success": "Tous les mods on été installés.",
+                    "warning": "Un ou plusieurs mods n'ont pas pu être installés.",
+                    "errors":{
+                        "no-mods": "Aucun mods à installer.",
+                        "cannot-install-bsipa": "L'installation de BSIPA à échoué 😨"
+                    }
+                }
+            },
+            "uninstall-mod":{
+                "titles":{
+                    "success": "Mod désintallé 🎉"
+                },
+                "msg":{
+                    "errors":{
+                        "no-mods": "Ce mod n'est pas installé 😑"
+                    }
+                }
+            },
+            "uninstall-all-mods":{
+                "titles":{
+                    "success": "Mods désintallés 🎉"
+                },
+                "msg":{
+                    "success": "Tous les mods on été désintallés.",
+                    "errors": {
+                        "no-mods": "Aucun mod n'est installé dans dans cette version 😑"
+                    }
+                }
+            }
+        }
    },
    "modals":{
       "guard":{
@@ -232,7 +292,7 @@
       },
       "bs-uninstall":{
          "title": "Désinstaller",
-         "description": "Est tu sûr de vouloir désinstaller BeatSaber {version} ? Tu vas devoir la retélécharger pour y jouer.",
+         "description": "Est-tu sûr de vouloir désinstaller BeatSaber {version} ? Tu vas devoir la retélécharger pour y jouer.",
          "buttons":{
             "submit": "Désinstaller"
          }
@@ -256,7 +316,16 @@
          "buttons":{
             "submit": "Cloner"
          }
-      }
+      },
+        "uninstall-mod":{
+            "title": "Désinstaller",
+            "description": "Es-tu sûr de vouloir désinstaller {mod} ? Cela pourrait faire dysfonctionner d'autres mods installés.",
+            "description-bsipa": "Es-tu sûr de vouloir désinstaller BSIPA ? Après cela, tous les mods installés ne fonctionneront plus."
+        },
+        "uninstall-all-mods":{
+            "title": "Désinstaller les mods",
+            "description": "Es-tu sûr de vouloir désinstaller tous les mods de la version {version} ? Cette opération ne pourra pas être annulée."
+        }
    },
    "auto-update":{
        "checking": "Vérification des mises à jour",

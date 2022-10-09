@@ -3,6 +3,7 @@ import { UtilsService } from './utils.service';
 import path from 'path';
 import { writeFileSync } from 'fs';
 import { BSVersion } from 'shared/bs-version.interface';
+import { RequestService } from "./request.service"
 import isOnline from 'is-online';
 
 export class BSVersionLibService{
@@ -13,11 +14,13 @@ export class BSVersionLibService{
    private static instance: BSVersionLibService;
 
    private utilsService: UtilsService;
+   private requestService: RequestService
 
    private bsVersions: BSVersion[] = [];
 
    private constructor(){
       this.utilsService = UtilsService.getInstance();
+      this.requestService = RequestService.getInstance();
    }
 
 
@@ -26,19 +29,9 @@ export class BSVersionLibService{
       return BSVersionLibService.instance;
    }
 
-   private getRemoteVersions(): Promise<BSVersion[]>{
-      return new Promise<BSVersion[]>((resolve, reject) => {
-         let body = ''
-         get(this.REMOTE_BS_VERSIONS_URL, (res) => {
-            res.on('data', chunk => body += chunk);
-            res.on('end', () => {
-               this.bsVersions = JSON.parse(body);
-               resolve(this.bsVersions);
-            });
-            res.on('error', () => reject(null))
-         })
-      })
-   }
+    private getRemoteVersions(): Promise<BSVersion[]>{
+        return this.requestService.get<BSVersion[]>(this.REMOTE_BS_VERSIONS_URL);
+    }
 
    private async getLocalVersions(): Promise<BSVersion[]>{
       const localVersionsPath = path.join(this.utilsService.getAssestsJsonsPath(), this.VERSIONS_FILE);
