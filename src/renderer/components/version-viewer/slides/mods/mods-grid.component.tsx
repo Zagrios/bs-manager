@@ -48,7 +48,7 @@ export function ModsGrid({modsMap, installed, modsSelected, onModChange, moreInf
     }
 
     return modsMap && (
-        <div className="grid gap-y-1 grid-cols-[40px_min-content_min-content_min-content_1fr_min-content] bg-light-main-color-2 dark:bg-main-color-2 text-main-color-1 dark:text-light-main-color-1"> 
+        <div className="grid gap-y-1 grid-cols-[40px_min-content_min-content_min-content_1fr_min-content] bg-light-main-color-2 dark:bg-main-color-2 text-main-color-1 dark:text-light-main-color-1">
             <span className="absolute z-10 top-0 w-full h-8 bg-inherit"/>
             <span className="z-10 sticky flex items-center justify-end top-0 bg-inherit border-b-2 border-main-color-1">
                     <BsmButton className="rounded-full h-6 w-6 p-[2px]" withBar={false} icon="search" onClick={handleToogleFilter}/>
@@ -60,7 +60,6 @@ export function ModsGrid({modsMap, installed, modsSelected, onModChange, moreInf
                     <span className="w-full text-center">{t("pages.version-viewer.mods.mods-grid.header-bar.name")}</span>
                 ))}
             </span>
-            
             <span className="z-10 sticky flex items-center justify-center top-0 bg-inherit border-b-2 border-main-color-1 h-8 px-2">{t("pages.version-viewer.mods.mods-grid.header-bar.installed")}</span>
             <span className="z-10 sticky flex items-center justify-center top-0 bg-inherit border-b-2 border-main-color-1 h-8 px-2">{t("pages.version-viewer.mods.mods-grid.header-bar.latest")}</span>
             <span className="z-10 sticky flex items-center justify-center top-0 bg-inherit border-b-2 border-main-color-1 h-8">{t("pages.version-viewer.mods.mods-grid.header-bar.description")}</span>
@@ -69,17 +68,16 @@ export function ModsGrid({modsMap, installed, modsSelected, onModChange, moreInf
                         ({text: "pages.version-viewer.mods.mods-grid.header-bar.dropdown.uninstall-all", icon: "trash", onClick: handleUninstallAll}),
                     ]}/>
             </span>
-            
             {
                 Array.from(modsMap.keys()).map(key => modsMap.get(key).some(mod => mod.name.toLowerCase().includes(filter)) && (
-                    <div key={key} className="contents">
-                        <span className="col-span-full py-1 font-bold pl-3">{key}</span>
+                    <ul key={key} className="contents">
+                        <h2 className="col-span-full py-1 font-bold pl-3">{key}</h2>
                         {modsMap.get(key).map(mod => mod.name.toLowerCase().includes(filter) && (
-                            <div className="contents cursor-pointer" onClick={() => onWantInfos(mod)} key={mod.name}>
+                            <li className="contents cursor-pointer" onClick={() => onWantInfos(mod)} key={mod.name}>
                                 <ModItem mod={mod} installedVersion={installedModVersion(key, mod)} isDependency={isDependency(mod)} isSelected={isSelected(mod)} onChange={(val) => onModChange(val, mod)} wantInfo={mod.name === moreInfoMod?.name}/>
-                            </div>
+                            </li>
                         ))}
-                    </div>
+                    </ul>
                 ))
             }
         </div>
