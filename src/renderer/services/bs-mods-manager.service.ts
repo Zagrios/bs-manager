@@ -1,8 +1,10 @@
+import { Observable } from "rxjs";
 import { BehaviorSubject } from "rxjs";
 import { map } from "rxjs/operators";
 import { BSVersion } from "shared/bs-version.interface";
 import { InstallModsResult, UninstallModsResult } from "shared/models/mods";
 import { Mod, ModInstallProgression } from "shared/models/mods";
+import { ProgressionInterface } from "shared/models/progress-bar";
 import { IpcService } from "./ipc.service";
 import { ModalExitCode, ModalService, ModalType } from "./modale.service";
 import { NotificationService, NotificationType } from "./notification.service";
@@ -42,10 +44,13 @@ export class BsModsManagerService {
         return this.ipcService.send<Mod[], BSVersion>("get-installed-mods", {args: version}).then(res => res.data);
     }
 
-    public installMods(mods: Mod[], version: BSVersion){
-        if(!this.progressBar.require()){ return; }
+    public installMods(mods: Mod[], version: BSVersion): Promise<void>{
+        if(!this.progressBar.require()){ return undefined; }
 
-        const progress$ = this.ipcService.watch<ModInstallProgression>("mod-installed").pipe(map(res => res.data.progression));
+        const progress$: Observable<ProgressionInterface> = this.ipcService.watch<ModInstallProgression>("mod-installed").pipe(map(res => {
+            return {progression: res.data.progression, label: res.data.name} as ProgressionInterface
+        }));
+
         this.progressBar.show(progress$, true, {paddingLeft: "190px", paddingRight: "190px", bottom: "20px"});
 
         this.isInstalling$.next(true);
@@ -65,7 +70,7 @@ export class BsModsManagerService {
             this.progressBar.hide();
         });
     }
-    public async uninstallMod(mod: Mod, version: BSVersion){
+    public async uninstallMod(mod: Mod, version: BSVersion): Promise<void>{
 
         if(!this.progressBar.require()){ return; }
 
@@ -117,9 +122,4 @@ export class BsModsManagerService {
         });
 
     }
-
-    public isModsAvailable(version: BSVersion): Promise<boolean>{
-        throw "NOT IMPLEMENTED YET";
-    }
-
 }
