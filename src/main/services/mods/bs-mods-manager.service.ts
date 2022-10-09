@@ -10,6 +10,7 @@ import StreamZip from "node-stream-zip";
 import { RequestService } from "../request.service";
 import { spawn } from "child_process";
 import { BS_EXECUTABLE } from "../../constants";
+import log from "electron-log";
 
 export class BsModsManagerService {
 
@@ -116,6 +117,7 @@ export class BsModsManagerService {
             const processIPA = spawn(`start /wait /min "" "${ipaPath}" ${args.join(" ")}`, {cwd: versionPath, detached: true, shell: true});
             processIPA.once("exit", code => {
                 if(code === 0){ return resolve(true); }
+                log.error("IPA PROCESS", "exit code", code);
                 resolve(false);
             });
 
@@ -158,7 +160,7 @@ export class BsModsManagerService {
         const isBSIPA = mod.name.toLowerCase() === "bsipa";
         const destDir = isBSIPA ? verionPath : path.join(verionPath, ModsInstallFolder.PENDING);
 
-        const extracted = await zip.extract(null, destDir).then(() => true).catch(() => {return false});
+        const extracted = await zip.extract(null, destDir).then(() => true).catch(err => {log.error(err); return false});
 
         await zip.close();
         await this.utilsService.unlinkIfExist(zipPath);
@@ -261,12 +263,12 @@ export class BsModsManagerService {
         this.nbInstalledMods = 0;
 
         if(bsipa){
-            const installed = await this.installMod(bsipa, version).catch(() => false)
+            const installed = await this.installMod(bsipa, version).catch(err => {log.error("INSTALL BSIPA", err); return false; })
             if(!installed){ throw "cannot-install-bsipa"; }
         }
 
         for(const mod of mods){
-            await this.installMod(mod, version);
+            await this.installMod(mod, version);;
         }
 
         return {
