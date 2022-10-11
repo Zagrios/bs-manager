@@ -11,6 +11,7 @@ import fs from "fs-extra";
 import { ConfigurationService } from "./configuration.service";
 import { rename } from "fs/promises";
 import { BsmException } from "shared/models/bsm-exception.model";
+import log from "electron-log";
 
 export class BSLocalVersionService{
 
@@ -113,6 +114,7 @@ export class BSLocalVersionService{
 
       const folderInInstallation = this.utilsService.listDirsInDir(this.installLocationService.versionsDirectory);
       folderInInstallation.forEach(f => {
+         log.info("try get version from folder", f);
          let version = this.remoteVersionService.getVersionDetails(f);
          if(version){ version = this.getCustomVersions().find(v => v.BSVersion === version.BSVersion && v.name === version.name) ?? version; }
          else { version = this.getCustomVersions().find(v => {
