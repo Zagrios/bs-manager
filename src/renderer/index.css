@@ -47,7 +47,6 @@
     animation: glowing 20s linear infinite;
     opacity: 0;
     transition: opacity .2s ease-in-out;
-    border-radius: 10px;
 }
 
 @keyframes glowing {
