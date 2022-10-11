@@ -73,8 +73,8 @@ export function ModsGrid({modsMap, installed, modsSelected, onModChange, moreInf
                     <ul key={key} className="contents">
                         <h2 className="col-span-full py-1 font-bold pl-3">{key}</h2>
                         {modsMap.get(key).map(mod => mod.name.toLowerCase().includes(filter) && (
-                            <li className="contents cursor-pointer" onClick={() => onWantInfos(mod)} key={mod.name}>
-                                <ModItem mod={mod} installedVersion={installedModVersion(key, mod)} isDependency={isDependency(mod)} isSelected={isSelected(mod)} onChange={(val) => onModChange(val, mod)} wantInfo={mod.name === moreInfoMod?.name}/>
+                            <li className="contents cursor-pointer" key={mod.name}>
+                                <ModItem mod={mod} installedVersion={installedModVersion(key, mod)} isDependency={isDependency(mod)} isSelected={isSelected(mod)} onChange={(val) => onModChange(val, mod)} onWantInfo={onWantInfos} wantInfo={mod.name === moreInfoMod?.name}/>
                             </li>
                         ))}
                     </ul>
