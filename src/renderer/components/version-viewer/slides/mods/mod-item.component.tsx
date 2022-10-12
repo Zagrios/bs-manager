@@ -1,7 +1,7 @@
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmCheckbox } from "renderer/components/shared/bsm-checkbox.component";
 import { Mod } from "shared/models/mods/mod.interface";
-import { CSSProperties, useRef, useState } from "react"
+import { CSSProperties, useRef} from "react"
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { BsModsManagerService } from "renderer/services/bs-mods-manager.service";
 import { useObservable } from "renderer/hooks/use-observable.hook";
