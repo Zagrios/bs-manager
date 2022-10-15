@@ -31,9 +31,12 @@ export function BsmButton({className, style, imgClassName, iconClassName, icon, 
   const t = useTranslation();
   const secondColor = useThemeColor("second-color");
 
-  const primaryColor = typeColor === "primary" ? useThemeColor("first-color") : null;
+  const primaryColor = typeColor === "primary" && useThemeColor("first-color");
 
-  const textColor = !primaryColor ? null : getCorrectTextColor(primaryColor);
+  const textColor = (() => {
+    if(primaryColor){ return getCorrectTextColor(primaryColor); }
+    return typeColor ? "white" : undefined;
+  })();
 
   const renderTypeColor = (() => {
     if(typeColor === "primary"){ return ""; }
@@ -49,7 +52,7 @@ export function BsmButton({className, style, imgClassName, iconClassName, icon, 
       <div onClick={onClick} className={`${className} overflow-hidden cursor-pointer group ${(!withBar && !disabled && (!!typeColor || !!color)) && "hover:brightness-[1.15]"} ${disabled && "brightness-75 cursor-not-allowed"} ${renderTypeColor}`} style={{...style, ...((!!primaryColor || !!color) && {backgroundColor: primaryColor ?? color})}}>
         { image && <BsmImage image={image} className={imgClassName}/> }
         { icon && <BsmIcon icon={icon} className={iconClassName ?? "h-full w-full text-gray-800 dark:text-white"}/> }
-        {text && (type === "submit" ? <button type="submit" className="w-full h-full" style={{...(!!textColor && {color: textColor})}}>{t(text)}</button> : <span style={{...(!!textColor && {color: textColor})}} >{t(text)}</span>)}
+        {text && (type === "submit" ? <button type="submit" className="w-full h-full" style={{...(!!textColor && {color: textColor})}}>{t(text)}</button> : <span style={{...(!!textColor && {color: `${textColor}`})}}>{t(text)}</span>)}
         { withBar && (
           <div className="absolute bottom-0 left-0 w-full h-1 bg-current" style={{color: secondColor}}>
             <div className="absolute top-0 left-0 h-full w-full bg-current brightness-50"/>

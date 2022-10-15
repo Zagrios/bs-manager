@@ -31,7 +31,7 @@ export function EditVersionModal({resolver, clone = false}: {resolver: (x: Modal
    return (
       <form className="static" onSubmit={(e) => {e.preventDefault(); rename();}}>
          <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t(!clone ? "modals.edit-version.title" : "modals.clone-version.title")}</h1>
-         <BsmIcon className="w-full h-11 my-3" icon="bsNote" style={{color: color}}/>
+         <BsmIcon className="w-full h-11 my-3" icon="bsNote" style={{color}}/>
          { clone && (
             <p className="max-w-sm mb-2 text-gray-800 dark:text-gray-200">{t("modals.clone-version.description")}</p>
          )}
