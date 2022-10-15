@@ -49,7 +49,7 @@ export function BsmButton({className, style, imgClassName, iconClassName, icon, 
 
   return (
     <OutsideClickHandler onOutsideClick={e => onClickOutside && onClickOutside(e)}>
-      <div onClick={onClick} className={`${className} overflow-hidden cursor-pointer group ${(!withBar && !disabled && (!!typeColor || !!color)) && "hover:brightness-[1.15]"} ${disabled && "brightness-75 cursor-not-allowed"} ${renderTypeColor}`} style={{...style, ...((!!primaryColor || !!color) && {backgroundColor: primaryColor ?? color})}}>
+      <div onClick={onClick} className={`${className} overflow-hidden cursor-pointer group ${(!withBar && !disabled && (!!typeColor || !!color)) && "hover:brightness-[1.15]"} ${disabled && "brightness-75 cursor-not-allowed"} ${renderTypeColor}`} style={{...style, backgroundColor: primaryColor || color}}>
         { image && <BsmImage image={image} className={imgClassName}/> }
         { icon && <BsmIcon icon={icon} className={iconClassName ?? "h-full w-full text-gray-800 dark:text-white"}/> }
         {text && (type === "submit" ? <button type="submit" className="w-full h-full" style={{...(!!textColor && {color: textColor})}}>{t(text)}</button> : <span style={{...(!!textColor && {color: `${textColor}`})}}>{t(text)}</span>)}
