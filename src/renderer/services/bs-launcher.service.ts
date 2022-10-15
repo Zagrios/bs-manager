@@ -42,6 +42,7 @@ export class BSLauncherService{
 
     public launch(version: BSVersion, oculus: boolean, desktop: boolean, debug: boolean): Promise<NotificationResult|string>{
         const lauchOption: LauchOption = {debug, oculus, desktop, version};
+        if(this.launchState$.value){ return this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.BS_ALREADY_RUNNING"}); }
         this.launchState$.next(version);
         return this.ipcService.send<LaunchResult>("bs-launch.launch", {args: lauchOption}).then(res => {
 
