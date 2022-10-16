@@ -89,8 +89,16 @@
                 "support": "Apoyo BSManager",
                 "supporters":"Apoyos 👀"
             }
+        },
+        "contribution":{
+            "description":"¡Sugiera nuevas características o reporte un error para ayudar a mejorar BSManager!",
+            "buttons":{
+                "request-features":"Proponer una funcionalidad",
+                "report-bug":"Informar de un error",
+                "open-logs": "Abrir los registros"
+            }
         }
-    	}
+    }
   	},
 
      "notifications":{

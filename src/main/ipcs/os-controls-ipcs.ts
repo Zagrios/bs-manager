@@ -48,3 +48,7 @@ ipcMain.on('save-file', async (event, request: IpcRequest<{filename?: string, fi
 ipcMain.on("current-version", async (event, request: IpcRequest<void>) => {
     UtilsService.getInstance().ipcSend(request.responceChannel, {success: true, data: app.getVersion()});
 });
+
+ipcMain.on("open-logs", async (event, request: IpcRequest<void>) => {
+    shell.openPath(app.getPath("logs"));
+});
