@@ -17,6 +17,7 @@ import { NotificationService } from "renderer/services/notification.service";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { ThemeService } from "renderer/services/theme.service";
 import { SupportersView } from "renderer/components/settings/supporters-view/supporters-view.component";
+import { LinkOpenerService } from "renderer/services/link-opener.service";
 
 export function SettingsPage() {
 
@@ -29,6 +30,7 @@ export function SettingsPage() {
   const authService: AuthUserService = AuthUserService.getInstance();
   const notificationService: NotificationService = NotificationService.getInstance();
   const i18nService: I18nService = I18nService.getInstance();
+  const linkOpener: LinkOpenerService = LinkOpenerService.getInstance();
 
   const {firstColor, secondColor} = useThemeColor();
   const sessionExist = useObservable(authService.sessionExist$);
@@ -111,12 +113,18 @@ export function SettingsPage() {
   };
 
   const openPatreonPage = () => {
-    ipcService.sendLazy("new-window", {args: "https://www.patreon.com/bsmanager?fan_landing=true"})
+    linkOpener.open("https://www.patreon.com/bsmanager?fan_landing=true");
   }
 
   const toogleShowSupporters = () => {
     setShowSupporters(show => !show);
   }
+
+  const openGithub = () => linkOpener.open("https://github.com/Zagrios/bs-manager");
+  const openReportBug = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&template=bug_report.md&title=%5BBUG%5D");
+  const openRequestFeatures = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=enhancement&template=feature_request.md&title=%5BAME%5D");
+
+  const openLogs = () => ipcService.sendLazy("open-logs");
 
     return (
         <div className="w-full h-full flex justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 text-gray-800 dark:text-gray-200">
@@ -156,6 +164,18 @@ export function SettingsPage() {
                         <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 whitespace-nowrap mr-2 !text-white" iconClassName="mr-1" text="pages.settings.patreon.buttons.support" icon="patreon" color="#EC6350" withBar={false} onClick={openPatreonPage}/>
                         <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="pages.settings.patreon.buttons.supporters" color="#6c5ce7" onClick={toogleShowSupporters}/>
                     </div>
+                    <SettingContainer className="pt-3" description="pages.settings.contribution.description">
+                        <div className="flex items-center justify-between w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 rounded-md pl-2 py-1">
+                            <div className="flex">
+                                <BsmButton onClick={openRequestFeatures} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="pages.settings.contribution.buttons.request-features" withBar={false}/>
+                                <BsmButton onClick={openReportBug} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="pages.settings.contribution.buttons.report-bug" withBar={false}/>
+                            </div>
+                            <div className="flex">
+                                <BsmButton onClick={openLogs} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="pages.settings.contribution.buttons.open-logs" withBar={false}/>
+                                <BsmButton onClick={openGithub} className="h-full shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" icon="github" title="GitHub" withBar={false}/>    
+                            </div>
+                        </div>
+                    </SettingContainer>
                 </SettingContainer>
 
                 <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right">v{appVersion}</span>
