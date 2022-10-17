@@ -23,10 +23,11 @@ import { SearchIcon } from "./icons/search-icon.component";
 import { CheckIcon } from "./icons/check-icon.component";
 import { ThreeDotsIcon } from "./icons/three-dots-icon.component";
 import { GitHubIcon } from "./icons/github-icon.component";
+import { CloseIcon } from "./icons/close-icon.component";
 
 export type BsmIconType = (
    "settings"|"trash"|"favorite"|"folder"|"bsNote"|"check"|"three-dots"|
-   "terminal"|"desktop"|"oculus"|"add"|"cross"|"task"|"github"|
+   "terminal"|"desktop"|"oculus"|"add"|"cross"|"task"|"github"|"close"|
    "copy"|"steam"|"edit"|"export"|"patreon"|"search"|
    "fr-FR-flag"|"es-ES-flag"|"en-US-flag"|"en-EN-flag"
 );
@@ -58,6 +59,7 @@ export const BsmIcon = memo(({className, icon, style}: {className?: string, icon
         if(icon === "check"){ return <CheckIcon className={className} style={style}/> }
         if(icon === "three-dots"){ return <ThreeDotsIcon className={className} style={style}/> }
         if(icon === "github"){ return <GitHubIcon className={className} style={style}/> }
+        if(icon === "close"){ return <CloseIcon className={className} style={style}/> }
         return <TrashIcon className={className} style={style}/>
     }
 
