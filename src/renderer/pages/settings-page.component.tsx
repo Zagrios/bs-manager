@@ -18,6 +18,7 @@ import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { ThemeService } from "renderer/services/theme.service";
 import { SupportersView } from "renderer/components/settings/supporters-view/supporters-view.component";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
+import { useNavigate } from "react-router-dom";
 
 export function SettingsPage() {
 
@@ -50,6 +51,7 @@ export function SettingsPage() {
   const [installationFolder, setInstallationFolder] = useState(null);
   const [showSupporters, setShowSupporters] = useState(false);
   const [appVersion, setAppVersion] = useState("");
+  const nav = useNavigate();
 
   useEffect(() => {
     loadInstallationFolder();
@@ -129,7 +131,13 @@ export function SettingsPage() {
     return (
         <div className="w-full h-full flex justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 text-gray-800 dark:text-gray-200">
 
-            <div className="max-w-2xl w-full mt-10">
+            
+
+            <div className="max-w-2xl w-full">
+
+                <div className="inline-block sticky top-8 left-[calc(100%)] translate-x-12 grow-0 w-9 h-9">
+                    <BsmButton className="inline-block grow-0 bg-transparent sticky h-full w-full top-20 right-20 !m-0 rounded-full p-1" onClick={() => nav(-1)} icon="close" withBar={false}/>
+                </div>
 
                 <SettingContainer title="pages.settings.steam.title" description="pages.settings.steam.description">
                     <BsmButton onClick={deleteSteamSession} className="w-fit px-3 py-[2px] text-white rounded-md" withBar={false} text="pages.settings.steam.logout" typeColor="error" disabled={!sessionExist}/>
