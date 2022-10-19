@@ -18,10 +18,10 @@ export function BsmDropdownButton({className, items, align, withBar = true, icon
    return (
       <div className={`${className}`}>
          <BsmButton onClick={() => setExpanded(!expanded)} className={buttonClassName ?? defaultButtonClassName} icon={icon} active={expanded} onClickOutside={() => {setExpanded(false)}} withBar={withBar}/>
-         <div className={`pt-1 pb-1 w-fit absolute cursor-pointer top-[calc(100%-4px)] rounded-md overflow-hidden bg-inherit text-sm text-gray-800 dark:text-gray-200 shadow-md shadow-black transition-[scale] ease-in-out ${align === "left" ? "left-0 origin-top-left" : "right-0 origin-top-right"}`} style={{scale: expanded ? "1" : "0", translate: `0 ${menuTranslationY}`}}>
+         <div className={`py-1 w-fit absolute cursor-pointer top-[calc(100%-4px)] rounded-md bg-inherit text-sm text-gray-800 dark:text-gray-200 shadow-md shadow-black transition-[scale] ease-in-out ${align === "left" ? "left-0 origin-top-left" : "right-0 origin-top-right"}`} style={{scale: expanded ? "1" : "0", translate: `0 ${menuTranslationY}`}}>
             { items?.map((i, index) => !!i &&(
-               <div key={index} onClick={!!i.onClick ? i.onClick : undefined} className="flex justify-start items-center w-full pr-3 pl-3 pt-2 pb-2 hover:backdrop-brightness-150">
-                  {i.icon && <BsmIcon icon={i.icon} className="h-5 w-5 mr-1 text-gray-800 dark:text-white"></BsmIcon>}
+               <div key={index} onClick={!!i.onClick ? i.onClick : undefined} className="flex w-full px-3 py-2 hover:backdrop-brightness-150">
+                  {i.icon && <BsmIcon icon={i.icon} className="h-5 w-5 mr-1 text-inherit"></BsmIcon>}
                   <span className="w-max">{t(i.text)}</span>
                </div>
             ))}

@@ -15,16 +15,16 @@ export function TabNavBar(props: {tabsText: string[], onTabChange: Function, cla
     }
 
     return (
-        <div className={`relative h-8 shrink-0 cursor-pointer rounded-md overflow-hidden mb-3 shadow-md shadow-black ${props.className}`}>
+        <nav className={`relative h-8 shrink-0 cursor-pointer rounded-md overflow-hidden shadow-md shadow-black ${props.className}`}>
             <div className="absolute w-full h-1 bottom-0" style={{color: secondColor}}>  
                 <span className="absolute h-full w-full bg-current brightness-50" />
                 <span className="absolute h-full block bg-current transition-transform duration-300 shadow-center shadow-current" style={{transform: `translate(${currentTabIndex * 100}%, 0)`, width: `calc(100% / ${props.tabsText.length})`}}/>
             </div>
-            <div className="grid" style={{gridTemplateColumns: `repeat(${props.tabsText.length}, minmax(0, 1fr))`}}>
+            <ul className="grid" style={{gridTemplateColumns: `repeat(${props.tabsText.length}, minmax(0, 1fr))`}}>
                 { props.tabsText.map((y, index) => 
-                    <span  className="pr-4 pl-4 h-full inline-block bg-light-main-color-2 text-gray-800 dark:bg-main-color-2 dark:text-gray-200 text-lg font-bold text-center hover:bg-light-main-color-1 dark:hover:bg-main-color-1" key={index} onClick={() => selectYear(y)}>{t(y)}</span>
+                    <li className="px-4 h-full text-center bg-light-main-color-2 text-gray-800 dark:bg-main-color-2 dark:text-gray-200 text-lg font-bold hover:bg-light-main-color-1 dark:hover:bg-main-color-1" key={index} onClick={() => selectYear(y)}>{t(y)}</li>
                 )}
-            </div>
-        </div>
+            </ul>
+        </nav>
   )
 }

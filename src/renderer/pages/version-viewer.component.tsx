@@ -66,7 +66,7 @@ export function VersionViewer() {
       <div className="relative flex items-center flex-col w-full h-full text-gray-200 backdrop-blur-lg">
         <BsmImage className='relative object-cover h-28' image={BSLogo}/>
         <h1 className='relative text-4xl font-bold italic -top-3'>{state.name ? `${state.BSVersion} - ${state.name}` : state.BSVersion}</h1>
-        <TabNavBar className='mt-3' tabsText={["misc.launch", "misc.maps", "misc.mods"]} onTabChange={(i : number) => setCurrentTabIndex(i)}/>
+        <TabNavBar className='my-3' tabsText={["misc.launch", "misc.maps", "misc.mods"]} onTabChange={(i : number) => setCurrentTabIndex(i)}/>
         <div className='mt-2 w-full min-h-0 grow flex transition-transform duration-300 pt-3' style={{transform: `translate(${-(currentTabIndex * 100)}%, 0)`}}>
           <LaunchSlide version={state}/>
           <div className='shrink-0 w-full h-full flex justify-center'>

@@ -17,6 +17,19 @@ export function Modal() {
    const modalType = useObservable(modalSevice.modalType$);
    const {firstColor, secondColor} = useThemeColor();
 
+    const renderModal = () => {
+        const resolver = modalSevice.getResolver();
+        if(modalType === ModalType.STEAM_LOGIN){ return <LoginModal resolver={resolver}/> }
+        if(modalType === ModalType.GUARD_CODE){ return <GuardModal resolver={resolver}/> }
+        if(modalType === ModalType.UNINSTALL){ return <UninstallModal resolver={resolver}/> }
+        if(modalType === ModalType.INSTALLATION_FOLDER){ return <InstallationFolderModal resolver={resolver}/> }
+        if(modalType === ModalType.EDIT_VERSION){ return <EditVersionModal resolver={resolver}/> }
+        if(modalType === ModalType.CLONE_VERSION){ return <EditVersionModal resolver={resolver}/> }
+        if(modalType === ModalType.UNINSTALL_MOD){ return <UninstallModModal resolver={resolver}/> }
+        if(modalType === ModalType.UNINSTALL_ALL_MODS){ return <UninstallAllModsModal resolver={resolver}/> }
+        return null;
+    }
+
   return  (
       <AnimatePresence>
          {modalType && (
@@ -25,14 +38,7 @@ export function Modal() {
                <motion.div key="modal" initial={{y: "100vh"}} animate={{y: 0}} exit={{y: "100vh"}}>
                   <div className="relative p-4 text-gray-800 dark:text-gray-200 overflow-hidden rounded-md shadow-lg shadow-black bg-gradient-to-br from-light-main-color-3 to-light-main-color-2 dark:from-main-color-3 dark:to-main-color-2">
                      <span className="absolute top-0 w-full left-0 h-1" style={{backgroundImage: `linear-gradient(to right, ${firstColor}, ${secondColor})`}}/>
-                     {modalType === ModalType.STEAM_LOGIN && <LoginModal resolver={modalSevice.getResolver()}/>}
-                     {modalType === ModalType.GUARD_CODE && <GuardModal resolver={modalSevice.getResolver()}/>}
-                     {modalType === ModalType.UNINSTALL && <UninstallModal resolver={modalSevice.getResolver()}/>}
-                     {modalType === ModalType.INSTALLATION_FOLDER && <InstallationFolderModal resolver={modalSevice.getResolver()}/>}
-                     {modalType === ModalType.EDIT_VERSION && <EditVersionModal resolver={modalSevice.getResolver()}/>}
-                     {modalType === ModalType.CLONE_VERSION && <EditVersionModal resolver={modalSevice.getResolver()} clone/>}
-                     {modalType === ModalType.UNINSTALL_MOD && <UninstallModModal resolver={modalSevice.getResolver()}/>}
-                     {modalType === ModalType.UNINSTALL_ALL_MODS && <UninstallAllModsModal resolver={modalSevice.getResolver()}/>}
+                     {renderModal()}
                   </div>
                </motion.div>
             </div>
