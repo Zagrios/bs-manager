@@ -45,7 +45,7 @@ export class BsModsManagerService {
     }
 
     public installMods(mods: Mod[], version: BSVersion): Promise<void>{
-        if(!this.progressBar.require()){ return undefined; }
+        if(!this.progressBar.require()){ return new Promise(res => res()); }
 
         const progress$: Observable<ProgressionInterface> = this.ipcService.watch<ModInstallProgression>("mod-installed").pipe(map(res => {
             return {progression: res.data.progression, label: res.data.name} as ProgressionInterface
