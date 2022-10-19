@@ -6,14 +6,14 @@ import { distinctUntilChanged } from "rxjs/operators";
 import defaultImage from '../../../../assets/images/default-version-img.jpg'
 import dateFormat from "dateformat";
 import { BsmImage } from "../shared/bsm-image.component";
-import { IpcService } from "renderer/services/ipc.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { BsmIcon } from "../svgs/bsm-icon.component";
+import { LinkOpenerService } from 'renderer/services/link-opener.service';
 
 export const AvailableVersionItem = memo(function AvailableVersionItem(props: {version: BSVersion}) {
 
   const bsDownloaderService = BsDownloaderService.getInstance();
-  const ipcService = IpcService.getInstance();
+  const linkOpener = LinkOpenerService.getInstance();
 
   const [selected, setSelected] = useState(false);
   const t = useTranslation();
@@ -26,7 +26,7 @@ export const AvailableVersionItem = memo(function AvailableVersionItem(props: {v
     else{ bsDownloaderService.selectedBsVersion$.next(props.version); }
   }
 
-  const openReleasePage = () =>  { ipcService.sendLazy("new-window", {args: props.version.ReleaseURL}); }
+  const openReleasePage = () =>  { linkOpener.open(props.version.ReleaseURL) }
 
   useEffect(() => {
     const sub = bsDownloaderService.selectedBsVersion$.pipe(distinctUntilChanged()).subscribe((version) => {

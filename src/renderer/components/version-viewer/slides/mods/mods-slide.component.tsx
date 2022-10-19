@@ -7,7 +7,6 @@ import { ModsGrid } from "./mods-grid.component";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { DefaultConfigKey } from "renderer/config/default-configuration.config";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
-import { IpcService } from "renderer/services/ipc.service";
 import BeatWaitingImg from "../../../../../../assets/images/apngs/beat-waiting.png"
 import { SpoilerClick } from "renderer/components/shared/UwU/spoiler-click.component";
 import YuruYuriDance from "../../../../../../assets/images/gifs/yuruyuri-dance.gif"
@@ -15,12 +14,13 @@ import { useObservable } from "renderer/hooks/use-observable.hook";
 import { skip, filter } from "rxjs/operators";
 import { Subscription } from "rxjs";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { LinkOpenerService } from "renderer/services/link-opener.service";
  
 export function ModsSlide({version}: {version: BSVersion}) {
 
     const modsManager = BsModsManagerService.getInstance();
     const configService = ConfigurationService.getInstance();
-    const ipcServive = IpcService.getInstance();
+    const linkOpener = LinkOpenerService.getInstance();
 
     const [isVisible, setIsVisible] = useState(false);
     const [modsAvailable, setModsAvailable] = useState(null as Map<string, Mod[]>);
@@ -54,7 +54,7 @@ export function ModsSlide({version}: {version: BSVersion}) {
 
     const handleOpenMoreInfo = () => {
         if(!moreInfoMod || !moreInfoMod.link){ return; }
-        ipcServive.sendLazy("new-window", {args: moreInfoMod.link});
+        linkOpener.open(moreInfoMod.link);
     }
 
     const installMods = () => {
