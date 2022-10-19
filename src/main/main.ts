@@ -62,4 +62,4 @@ app.on('window-all-closed', () => {
 
 app.whenReady().then(() => {
     createWindow();
-}).catch(console.log);
+}).catch(log.error);
