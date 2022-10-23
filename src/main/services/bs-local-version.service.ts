@@ -102,7 +102,7 @@ export class BSLocalVersionService{
 
     public async getInstalledVersions(): Promise<BSVersion[]>{
       const versions: BSVersion[] = [];
-      const steamBsFolder = await this.steamService.getGameFolder(BS_APP_ID, "Beat Saber")
+      const steamBsFolder = await this.steamService.getGameFolder(BS_APP_ID, "Beat Saber");
       if(steamBsFolder && this.utilsService.pathExist(steamBsFolder)){
          const steamBsVersion = await this.getVersionOfBSFolder(steamBsFolder);
          if(steamBsVersion){
