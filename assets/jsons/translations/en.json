@@ -88,6 +88,11 @@
             "buttons":{
                 "support": "Support BSManager",
                 "supporters":"Supporters 👀"
+            },
+            "view":{
+                "no-supporters": "No supporter yet",
+                "sponsors":"Sponsors",
+                "supporters":"Supporters"
             }
         },
         "contribution":{
