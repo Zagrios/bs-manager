@@ -25,8 +25,7 @@ export class AutoUpdaterService {
             autoUpdater.checkForUpdates().then(info => {
                 const needUpdate = (() => {
                     if(!info || !info.updateInfo){ return false; }
-                    if(gt(autoUpdater.currentVersion.version, info.updateInfo.version)){ return false; }
-                    return true;
+                    return gt(info.updateInfo.version, autoUpdater.currentVersion.version);
                 })();
                 resolve(needUpdate)}
             ).catch(() => resolve(false));
