@@ -6,6 +6,7 @@ export interface BSVersion {
    ReleaseDate?: string,
    year?: string,
    steam?: boolean,
+   oculus?: boolean,
    name?: string,
    color?: string
 }
