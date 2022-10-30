@@ -5,6 +5,7 @@ import { BS_EXECUTABLE, BS_APP_ID } from "../constants";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { SteamService } from "./steam.service";
 import { BSLocalVersionService } from "./bs-local-version.service";
+import { OculusService } from "./oculus.service";
 
 export class BSLauncherService{
 
@@ -12,6 +13,7 @@ export class BSLauncherService{
 
     private readonly utilsService: UtilsService;
     private readonly steamService: SteamService;
+    private readonly oculusService: OculusService;
     private readonly localVersionService: BSLocalVersionService;
 
     private bsProcess: ChildProcessWithoutNullStreams;
@@ -24,6 +26,7 @@ export class BSLauncherService{
     private constructor(){
         this.utilsService = UtilsService.getInstance();
         this.steamService = SteamService.getInstance();
+        this.oculusService = OculusService.getInstance();
         this.localVersionService = BSLocalVersionService.getInstance();
     }
 
@@ -32,6 +35,7 @@ export class BSLauncherService{
     }
 
     public async launch(launchOptions: LauchOption): Promise<LaunchResult>{
+        if(launchOptions.version.oculus && !this.oculusService.oculusRunning()){ return "OCULUS_NOT_RUNNING" }
         if(!this.steamService.steamRunning()){ return "STEAM_NOT_RUNNING" }
         if(this.isBsRunning()){ return "BS_ALREADY_RUNNING" }
 
@@ -42,7 +46,7 @@ export class BSLauncherService{
         
         const launchMods = [launchOptions.oculus && "-vrmode oculus", launchOptions.desktop && "fpfc", launchOptions.debug && "--verbose"];
 
-        this.bsProcess = spawn(`\"${exePath}\"`, launchMods, {shell: true, cwd: cwd, env: {...process.env, "SteamAppId": BS_APP_ID}});
+        this.bsProcess = spawn(`\"${exePath}\"`, launchMods, {shell: true, cwd, env: {...process.env, "SteamAppId": BS_APP_ID}});
 
         this.bsProcess.on('message', msg => { /** EMIT HERE **/ });
         this.bsProcess.on('error', err => { /** EMIT HERE **/ });

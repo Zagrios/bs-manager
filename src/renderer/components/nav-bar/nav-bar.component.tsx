@@ -19,10 +19,10 @@ export function NavBar() {
          {installedVersions && installedVersions.map((version) => <BsVersionItem key={JSON.stringify(version)} version={version}/>)}
       </ol>
       <div className='w-full p-2 flex flex-col items-center content-center justify-start'>
-        <Link className='mb-2' to={"blah"}>
+        <Link className='mb-2' to="blah">
           <BsmIcon icon='add' className='text-blue-500 h-[34px]'/>
         </Link>
-        <Link to={"settings"}>
+        <Link to="settings">
           <BsmIcon icon='settings' className='text-blue-500 h-7'/>
         </Link>
       </div>

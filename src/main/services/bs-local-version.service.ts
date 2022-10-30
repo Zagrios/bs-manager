@@ -154,7 +154,7 @@ export class BSLocalVersionService{
    }
 
    public async deleteVersion(version: BSVersion): Promise<boolean>{
-      if(version.steam){ return false; }
+      if(version.steam || version.oculus){ return false; }
       const versionFolder = await this.getVersionPath(version);
       if(!this.utilsService.pathExist(versionFolder)){ return true; }
 
@@ -164,7 +164,7 @@ export class BSLocalVersionService{
    }
 
    public async editVersion(version: BSVersion, name: string, color: string): Promise<BSVersion>{
-      if(version.steam){ throw {title: "CantEditSteam", msg: "CantEditSteam"} as BsmException; }
+      if(version.steam || version.oculus){ throw {title: "CantEditSteam", msg: "CantEditSteam"} as BsmException; }
       const oldPath = await this.getVersionPath(version);
       const editedVersion: BSVersion = version.BSVersion === name 
          ? {...version, name: undefined, color}
@@ -192,7 +192,7 @@ export class BSLocalVersionService{
       const originPath = await this.getVersionPath(version);
       const cloneVersion: BSVersion = version.BSVersion === name 
          ? {...version, name: undefined, color}
-         : {...version, name: this.removeSpecialChar(name), color, steam: false};
+         : {...version, name: this.removeSpecialChar(name), color, steam: false, oculus: false};
       const newPath = await this.getVersionPath(cloneVersion);
 
       if(originPath === newPath){
