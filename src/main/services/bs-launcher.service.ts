@@ -36,7 +36,7 @@ export class BSLauncherService{
 
     public async launch(launchOptions: LauchOption): Promise<LaunchResult>{
         if(launchOptions.version.oculus && !this.oculusService.oculusRunning()){ return "OCULUS_NOT_RUNNING" }
-        if(!this.steamService.steamRunning()){ return "STEAM_NOT_RUNNING" }
+        if(!launchOptions.version.oculus && !this.steamService.steamRunning()){ return "STEAM_NOT_RUNNING" }
         if(this.isBsRunning()){ return "BS_ALREADY_RUNNING" }
 
         const cwd = await this.localVersionService.getVersionPath(launchOptions.version);
