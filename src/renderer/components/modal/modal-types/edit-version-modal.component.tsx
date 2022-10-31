@@ -35,11 +35,11 @@ export const EditVersionModal: ModalComponent<{name: string, color: string}, {ve
             <p className="max-w-sm mb-2 text-gray-800 dark:text-gray-200">{t("modals.clone-version.description")}</p>
          )}
          <div className="mb-3">
-            <label className="block font-bold cursor-pointer tracking-wide text-gray-800 dark:text-gray-200" htmlFor="name">{t("Nom")}</label>
-            <input className="w-full bg-light-main-color-1 dark:bg-main-color-1 px-1 py-[2px] rounded-md outline-none" onChange={e => setName(e.target.value)} value={name} type="text" name="name" id="name" minLength={2} maxLength={15} placeholder={t("Nom de la version")}/>
+            <label className="block font-bold cursor-pointer tracking-wide text-gray-800 dark:text-gray-200" htmlFor="name">{t("modals.clone-version.inputs.name.label")}</label>
+            <input className="w-full bg-light-main-color-1 dark:bg-main-color-1 px-1 py-[2px] rounded-md outline-none" onChange={e => setName(e.target.value)} value={name} type="text" name="name" id="name" minLength={2} maxLength={15} placeholder={t("modals.clone-version.inputs.name.placeholder")}/>
          </div>
          <div>
-            <span className="block font-bold tracking-wide text-gray-800 dark:text-gray-200">Couleur</span>
+            <span className="block font-bold tracking-wide text-gray-800 dark:text-gray-200">{t("modals.clone-version.inputs.color.label")}</span>
             <div className="relative w-full h-7 mb-4 bg-light-main-color-1 dark:bg-main-color-1 flex justify-center rounded-md py-1 z-[1]">
                <SettingColorChooser color={color} onChange={setColor} pickerClassName="!h-32 !w-32"/>
                <div className="absolute right-2 top-0 h-full flex items-center">

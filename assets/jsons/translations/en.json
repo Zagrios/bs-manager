@@ -327,6 +327,15 @@
       "clone-version":{
          "title": "Clone version",
          "description": "Cloning the version allows you to separate additional BeatSaber content between two versions.",
+         "inputs":{
+            "name":{
+                "label":"Name",
+                "placeholder": "Version name"
+            },
+            "color":{
+                "label":"Color"
+            }
+         },
          "buttons":{
             "submit": "Clone"
          }

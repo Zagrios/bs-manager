@@ -328,6 +328,15 @@
       "clone-version":{
          "title": "Versión clonada",
          "description": "La clonación de la versión le permite separar el contenido adicional de BeatSaber entre dos versiones.",
+         "inputs":{
+            "name":{
+                "label":"Nombre",
+                "placeholder": "Nombre de la versión"
+            },
+            "color":{
+                "label":"Color"
+            }
+         },
          "buttons":{
             "submit": "Clonar"
          }
