@@ -6,9 +6,11 @@ import { BSVersion } from 'shared/bs-version.interface';
 import { AuthUserService } from './auth-user.service';
 import { BSVersionManagerService } from './bs-version-manager.service';
 import { IpcService } from './ipc.service';
-import { ModalExitCode, ModalService, ModalType } from './modale.service';
+import { ModalExitCode, ModalService } from './modale.service';
 import { NotificationService } from './notification.service';
 import { ProgressBarService } from './progress-bar.service';
+import { LoginModal } from 'renderer/components/modal/modal-types/login-modal.component';
+import { GuardModal } from 'renderer/components/modal/modal-types/guard-modal.component';
 
 export class BsDownloaderService{
 
@@ -57,7 +59,7 @@ export class BsDownloaderService{
 
       this.ipcService.watch<void>("bs-download.[2FA]").subscribe(async response => {
          if(!response.success){ this.ipcService.sendLazy("bs-download.kill"); return; }
-         const res = await this.modalService.openModal(ModalType.GUARD_CODE);
+         const res = await this.modalService.openModal(GuardModal);
          if(res.exitCode !== ModalExitCode.COMPLETED){
             this.progressBarService.hide(true);
             this.ipcService.sendLazy("bs-download.kill"); 
@@ -90,7 +92,7 @@ export class BsDownloaderService{
 
       let promise;
       if(!this.authService.sessionExist()){
-         const res = await this.modalService.openModal<{username: string, stay: boolean, password: string}>(ModalType.STEAM_LOGIN);
+         const res = await this.modalService.openModal(LoginModal);
          if(res.exitCode !== ModalExitCode.COMPLETED){
             this.progressBarService.hide(true);
             return {success: false}; 

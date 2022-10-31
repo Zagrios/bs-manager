@@ -8,13 +8,14 @@ import { BsmDropdownButton } from 'renderer/components/shared/bsm-dropdown-butto
 import { BsmImage } from 'renderer/components/shared/bsm-image.component';
 import { BSUninstallerService } from '../services/bs-uninstaller.service';
 import { BSVersionManagerService } from '../services/bs-version-manager.service';
-import { ModalExitCode, ModalService, ModalType } from '../services/modale.service';
+import { ModalExitCode, ModalService } from '../services/modale.service';
 import DefautVersionImage from "../../../assets/images/default-version-img.jpg";
 import { BsDownloaderService } from 'renderer/services/bs-downloader.service';
 import { IpcService } from 'renderer/services/ipc.service';
 import { MapService } from 'renderer/services/maps.service';
 import { LaunchSlide } from 'renderer/components/version-viewer/slides/launch/launch-slide.component';
 import { ModsSlide } from 'renderer/components/version-viewer/slides/mods/mods-slide.component';
+import { UninstallModal } from 'renderer/components/modal/modal-types/uninstall-modal.component';
 
 export function VersionViewer() {
 
@@ -35,7 +36,7 @@ export function VersionViewer() {
     const verifyFiles = () => bsDownloaderService.download(state, true);
 
     const uninstall = async () => {
-        const modalCompleted = await modalService.openModal(ModalType.UNINSTALL, state)
+        const modalCompleted = await modalService.openModal(UninstallModal, state);
         if(modalCompleted.exitCode === ModalExitCode.COMPLETED){
             bsUninstallerService.uninstall(state).then(() => {
                 bsVersionManagerService.askInstalledVersions();

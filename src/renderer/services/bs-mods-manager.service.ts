@@ -1,3 +1,5 @@
+import { UninstallAllModsModal } from "renderer/components/modal/modal-types/uninstall-all-mods-modal.component";
+import { UninstallModModal } from "renderer/components/modal/modal-types/uninstall-mod-modal.component";
 import { Observable } from "rxjs";
 import { BehaviorSubject } from "rxjs";
 import { map } from "rxjs/operators";
@@ -6,7 +8,7 @@ import { InstallModsResult, UninstallModsResult } from "shared/models/mods";
 import { Mod, ModInstallProgression } from "shared/models/mods";
 import { ProgressionInterface } from "shared/models/progress-bar";
 import { IpcService } from "./ipc.service";
-import { ModalExitCode, ModalService, ModalType } from "./modale.service";
+import { ModalExitCode, ModalService } from "./modale.service";
 import { NotificationService, NotificationType } from "./notification.service";
 import { ProgressBarService } from "./progress-bar.service";
 
@@ -74,7 +76,7 @@ export class BsModsManagerService {
 
         if(!this.progressBar.require()){ return; }
 
-        const modalRes = await this.modals.openModal(ModalType.UNINSTALL_MOD, mod);
+        const modalRes = await this.modals.openModal(UninstallModModal, mod);
 
         if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return; }
 
@@ -100,7 +102,7 @@ export class BsModsManagerService {
 
         if(!this.progressBar.require()){ return; }
 
-        const modalRes = await this.modals.openModal(ModalType.UNINSTALL_ALL_MODS, version);
+        const modalRes = await this.modals.openModal(UninstallAllModsModal, version);
 
         if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return; }
 

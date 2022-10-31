@@ -1,4 +1,4 @@
-import { ModalExitCode, ModalResponse, ModalService } from "../../../services/modale.service";
+import { ModalComponent, ModalExitCode } from "../../../services/modale.service";
 import BeatConflict from "../../../../../assets/images/apngs/beat-conflict.png"
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
@@ -6,9 +6,9 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { Mod } from "shared/models/mods/mod.interface";
 
 
-export function UninstallModModal({resolver}: {resolver: (x: ModalResponse) => void}) {
+export const UninstallModModal: ModalComponent<void, Mod> = ({resolver, data}) => {
 
-    const mod = ModalService.getInsance().getModalData<Mod>();
+    const mod = data;
     const t = useTranslation();
 
     const desc = mod.name.toLowerCase() === "bsipa" ? "modals.uninstall-mod.description-bsipa" : "modals.uninstall-mod.description";

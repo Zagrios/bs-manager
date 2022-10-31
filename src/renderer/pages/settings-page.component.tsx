@@ -12,13 +12,14 @@ import { BsDownloaderService } from "renderer/services/bs-downloader.service";
 import { ConfigurationService } from "renderer/services/configuration.service"
 import { I18nService } from "renderer/services/i18n.service";
 import { IpcService } from "renderer/services/ipc.service";
-import { ModalExitCode, ModalService, ModalType } from "renderer/services/modale.service";
+import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { NotificationService } from "renderer/services/notification.service";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { ThemeService } from "renderer/services/theme.service";
 import { SupportersView } from "renderer/components/settings/supporters-view/supporters-view.component";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { useNavigate } from "react-router-dom";
+import { InstallationFolderModal } from "renderer/components/modal/modal-types/installation-folder-modal.component";
 
 export function SettingsPage() {
 
@@ -84,7 +85,7 @@ export function SettingsPage() {
   const setDefaultInstallationFolder = () => {
       if(!progressBarService.require()){ return; }
 
-      modalService.openModal(ModalType.INSTALLATION_FOLDER).then(async res => {
+      modalService.openModal(InstallationFolderModal).then(async res => {
          if(res.exitCode !== ModalExitCode.COMPLETED){ return; }
          const fileChooserRes = await ipcService.send<{canceled: boolean, filePaths: string[]}>("choose-folder");
 

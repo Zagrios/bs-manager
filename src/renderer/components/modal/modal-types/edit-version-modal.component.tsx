@@ -5,18 +5,17 @@ import { BsmIcon } from "renderer/components/svgs/bsm-icon.component";
 import { DefaultConfigKey } from "renderer/config/default-configuration.config";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { ConfigurationService } from "renderer/services/configuration.service";
-import { ModalExitCode, ModalResponse, ModalService } from "renderer/services/modale.service";
+import { ModalComponent, ModalExitCode } from "renderer/services/modale.service";
 import { BSVersion } from "shared/bs-version.interface";
 
-export function EditVersionModal({resolver, clone = false}: {resolver: (x: ModalResponse<{name: string, color: string}>) => void, clone?: boolean}) {
+export const EditVersionModal: ModalComponent<{name: string, color: string}, {version: BSVersion, clone?: boolean}> = ({resolver, data}) => {
+
+    const {version, clone} = data;
 
    const configService = ConfigurationService.getInstance();
-   const modalService = ModalService.getInsance();
 
-   const modalData: BSVersion = modalService.getModalData();
-
-   const [name, setName] = useState(modalData.name || modalData.BSVersion);
-   const [color, setColor] = useState(modalData.color ?? configService.get<string>("second-color" as DefaultConfigKey));
+   const [name, setName] = useState(version.name || version.BSVersion);
+   const [color, setColor] = useState(version.color ?? configService.get<string>("second-color" as DefaultConfigKey));
    const t = useTranslation();
 
    const rename = () => {
