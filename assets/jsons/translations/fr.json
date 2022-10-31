@@ -202,12 +202,14 @@
             "titles":{
                "UNABLE_TO_LAUNCH": "Lancement impossible",
                "STEAM_NOT_RUNNING": "Steam n'est pas lancé",
+               "OCULUS_NOT_RUNNING": "Oculus n'est pas lancé",
                "BS_ALREADY_RUNNING": "BeatSaber est déjà lancé",
                "EXE_NOT_FINDED": "Fichiers manquants",
                "EXIT": "Arrêt brutal"
             },
             "msg":{
                "STEAM_NOT_RUNNING": "Steam doit être en cours d'exécution pour lancer BeatSaber.",
+               "OCULUS_NOT_RUNNING": "Oculus doit être en cours d'exécution pour lancer BeatSaber.",
                "BS_ALREADY_RUNNING": "Ferme BeatSaber avant de le lancer à nouveau.",
                "EXE_NOT_FINDED": "Quelques fichiers semblent manquants. Essaye de vérifier les fichiers.",
                "EXIT": "BeatSaber s'est arrêté brusquement, essaye de vérifier les fichiers."

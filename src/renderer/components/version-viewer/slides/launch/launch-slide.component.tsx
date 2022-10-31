@@ -6,9 +6,9 @@ import { ConfigurationService } from "renderer/services/configuration.service";
 import { BSVersion } from "shared/bs-version.interface"
 import { LaunchModToogle } from "./launch-mod-toogle.component";
 
-type props = {version: BSVersion};
+type Props = {version: BSVersion};
 
-export function LaunchSlide({version}: props) {
+export function LaunchSlide({version}: Props) {
 
     const configService = ConfigurationService.getInstance();
     const bsLauncherService = BSLauncherService.getInstance();
@@ -34,12 +34,12 @@ export function LaunchSlide({version}: props) {
         configService.set(mode, value);
     }
 
-    const launch = () => bsLauncherService.launch(version, oculusMode, desktopMode, debugMode)
+    const launch = () => bsLauncherService.launch(version, version.oculus ? false : oculusMode, desktopMode, debugMode)
 
     return (
         <div className="w-full shrink-0 items-center relative flex flex-col justify-start">
-            <div className='grid grid-flow-col grid-cols-3 gap-6'>
-              <LaunchModToogle icon='oculus' onClick={() => setMode(LaunchMods.OCULUS_MOD, !oculusMode)} active={oculusMode} text="pages.version-viewer.launch-mods.oculus"/>
+            <div className='grid grid-flow-col gap-6'>
+              {!version.oculus && <LaunchModToogle icon='oculus' onClick={() => setMode(LaunchMods.OCULUS_MOD, !oculusMode)} active={oculusMode} text="pages.version-viewer.launch-mods.oculus"/>}
               <LaunchModToogle icon='desktop' onClick={() => setMode(LaunchMods.DESKTOP_MOD, !desktopMode)} active={desktopMode} text="pages.version-viewer.launch-mods.desktop"/>
               <LaunchModToogle icon='terminal' onClick={() => setMode(LaunchMods.DEBUG_MOD, !debugMode)} active={debugMode} text="pages.version-viewer.launch-mods.debug"/>
             </div>

@@ -1,6 +1,6 @@
 export type LaunchResult = (
    "LAUNCHED"| 
-   "STEAM_NOT_RUNNING"| 
+   "STEAM_NOT_RUNNING"|"OCULUS_NOT_RUNNING"|
    "EXE_NOT_FINDED"| 
    "BS_ALREADY_RUNNING"
 )

@@ -33,10 +33,14 @@ export class BSVersionManagerService {
    public setInstalledVersions(versions: BSVersion[]){
       const sorted: BSVersion[] = versions.sort((a, b) => +b.ReleaseDate - +a.ReleaseDate)
       const steamIndex = sorted.findIndex(v => v.steam);
+      const oculusIndex = sorted.findIndex(v => v.oculus);
       if(steamIndex > 0){
          [sorted[0], sorted[steamIndex]] = [sorted[steamIndex], sorted[0]];
       }
-      const cleanedSort = [...new Map(sorted.map(version => [`${version.BSVersion}-${version.name}-${version.steam}`, version])).values()]
+      if(oculusIndex > 0){
+        [sorted[steamIndex > 0 ? 1 : 0], sorted[steamIndex]] = [sorted[steamIndex], sorted[steamIndex > 0 ? 1 : 0]];
+      }
+      const cleanedSort = [...new Map(sorted.map(version => [`${version.BSVersion}-${version.name}-${version.steam}-${version.oculus}`, version])).values()]
       this.installedVersions$.next(cleanedSort);
     }
 
@@ -63,7 +67,7 @@ export class BSVersionManagerService {
    }
 
    public isVersionInstalled(version: BSVersion): boolean{
-      return !!this.getInstalledVersions().find(v => v.BSVersion === version.BSVersion && v.steam === version.steam);
+      return !!this.getInstalledVersions().find(v => v.BSVersion === version.BSVersion && v.steam === version.steam && v.oculus === version.oculus);
    }
 
    public getAvaibleVersionsOfYear(year: string): BSVersion[]{
