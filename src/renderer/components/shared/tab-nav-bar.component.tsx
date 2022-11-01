@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 
-export function TabNavBar(props: {tabsText: string[], onTabChange: Function, className?: string}) {
+export function TabNavBar(props: {tabsText: string[], onTabChange: (index: number) => void, className?: string}) {
 
     const [currentTabIndex, setCurrentTabIndex] = useState(0);
     const t = useTranslation();
@@ -22,7 +22,7 @@ export function TabNavBar(props: {tabsText: string[], onTabChange: Function, cla
             </div>
             <ul className="grid" style={{gridTemplateColumns: `repeat(${props.tabsText.length}, minmax(0, 1fr))`}}>
                 { props.tabsText.map((y, index) => 
-                    <li className="px-4 h-full text-center text-gray-800  dark:text-gray-200 text-lg font-bold hover:bg-light-main-color-1 dark:hover:bg-main-color-1" key={index} onClick={() => selectYear(y)}>{t(y)}</li>
+                    <li className="px-4 h-full text-center text-gray-800 dark:text-gray-200 text-lg font-bold hover:backdrop-brightness-75" key={index} onClick={() => selectYear(y)}>{t(y)}</li>
                 )}
             </ul>
         </nav>
