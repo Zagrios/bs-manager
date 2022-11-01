@@ -11,15 +11,6 @@ import { useObservable } from "renderer/hooks/use-observable.hook";
 
 export function AvailableVersionsList() {
 
-  const slideshowImages = [
-    require('../../../assets/images/slideshow-images/image-1-blur.jpg'),
-    require('../../../assets/images/slideshow-images/image-2-blur.jpg'),
-    require('../../../assets/images/slideshow-images/image-3-blur.jpg'),
-    require('../../../assets/images/slideshow-images/image-4-blur.jpg'),
-    require('../../../assets/images/slideshow-images/image-5-blur.png'),
-    require('../../../assets/images/slideshow-images/image-6-blur.png'),
-    require('../../../assets/images/slideshow-images/image-7-blur.png'),
-  ];
   const bsDownloaderService: BsDownloaderService = BsDownloaderService.getInstance();
   const versionManagerService: BSVersionManagerService = BSVersionManagerService.getInstance();
 
@@ -44,7 +35,7 @@ export function AvailableVersionsList() {
 
   return (
     <div className="relative h-full w-full flex items-center flex-col pt-2">
-      <Slideshow className="absolute w-full h-full top-0" images={slideshowImages}></Slideshow>
+      <Slideshow className="absolute w-full h-full top-0"></Slideshow>
       <h1 className="text-gray-100 text-2xl mb-4 z-[1]">{t("pages.available-versions.title")}</h1>
       <AvailableVersionsSlider/>
 

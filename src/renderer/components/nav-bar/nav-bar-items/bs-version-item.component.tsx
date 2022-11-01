@@ -5,12 +5,12 @@ import { useEffect, useState } from "react";
 import { combineLatest, Subscription } from "rxjs";
 import { BSLauncherService, LaunchMods } from "renderer/services/bs-launcher.service";
 import { ConfigurationService } from "renderer/services/configuration.service";
-import { BsmButton } from "../shared/bsm-button.component";
 import { BSUninstallerService } from "renderer/services/bs-uninstaller.service";
 import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
-import { BsmIcon } from "../svgs/bsm-icon.component";
+import { BsmIcon } from "../../svgs/bsm-icon.component";
 import { ReactFitty } from "react-fitty";
 import { useThemeColor } from 'renderer/hooks/use-theme-color.hook';
+import { NavBarItem } from './nav-bar-item.component';
 
 export function BsVersionItem(props: {version: BSVersion}) {
 
@@ -24,7 +24,7 @@ export function BsVersionItem(props: {version: BSVersion}) {
 
   const [downloading, setDownloading] = useState(false);
   const [downloadPercent, setDownloadPercent] = useState(0);
-  const {firstColor, secondColor} = useThemeColor();
+  const secondColor = useThemeColor("second-color");
 
   const isActive = (): boolean => {
     return props.version?.BSVersion === state?.BSVersion && props?.version.steam === state?.steam && props?.version.oculus === state?.oculus && props?.version.name === state?.name;
@@ -77,19 +77,14 @@ export function BsVersionItem(props: {version: BSVersion}) {
     }
 
 
-  return (
-    <li className={`outline-none relative p-[1px] overflow-hidden rounded-xl flex justify-center items-center mb-1 ${downloading && "nav-item-download"} active:translate-y-[1px]`}>
-      {downloading && <div className="download-progress absolute top-0 w-full h-full" style={{transform: `translate(${-(100 - downloadPercent)}%, 0)`, background: `linear-gradient(90deg, ${firstColor}, ${secondColor}, ${firstColor}, ${secondColor})`}}/>}
-      <div className={`wrapper z-[1] px-1 py-[3px] w-full rounded-xl ${downloading && 'bg-white dark:bg-black'} ${!downloading && "hover:bg-light-main-color-3 dark:hover:bg-main-color-3"} ${(isActive() && !downloading) && "bg-light-main-color-3 dark:bg-main-color-3"}`}>
-         <Link onDoubleClick={handleDoubleClick} to={`/bs-version/${props.version.BSVersion}`} state={props.version} title={props.version.name && `${props.version.BSVersion} - ${props.version.name}`} className="w-full flex items-center justify-start content-center max-w-full">
-            {renderIcon()}
-            <div className="overflow-hidden whitespace-nowrap text-xl dark:text-gray-200 text-gray-800 font-bold tracking-wide">
-               <ReactFitty maxSize={19} minSize={9} className='align-middle pb-[2px] max-w-full overflow-hidden text-ellipsis'>{props.version.name || props.version.BSVersion}</ReactFitty>
-            </div>
-         </Link>
-         {downloading && <BsmButton onClick={cancel} className="my-1 text-xs text-white rounded-md text-center" withBar={false} text="misc.cancel" typeColor="error"/>}
-      </div>
-    </li>
-
-  )
+    return (
+        <NavBarItem onCancel={cancel} progress={downloading ? downloadPercent : 0} isActive={isActive() && !downloading} isDownloading={downloading}>
+            <Link onDoubleClick={handleDoubleClick} to={`/bs-version/${props.version.BSVersion}`} state={props.version} title={props.version.name && `${props.version.BSVersion} - ${props.version.name}`} className="w-full flex items-center justify-start content-center max-w-full">
+                {renderIcon()}
+                <div className="overflow-hidden whitespace-nowrap text-xl dark:text-gray-200 text-gray-800 font-bold tracking-wide">
+                    <ReactFitty maxSize={19} minSize={9} className='align-middle pb-[2px] max-w-full overflow-hidden text-ellipsis'>{props.version.name || props.version.BSVersion}</ReactFitty>
+                </div>
+            </Link>
+        </NavBarItem>
+    )
 }
