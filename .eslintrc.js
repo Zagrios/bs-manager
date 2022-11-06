@@ -10,6 +10,8 @@ module.exports = {
     "global-require": 0,
     "import/prefer-default-export": "off",
     "no-empty-function": "off",
+    "no-await-in-loop": "off",
+    "no-continue": "off",
     "@typescript-eslint/no-empty-function": "off",
     '@typescript-eslint/lines-between-class-members': "off",
     "class-methods-use-this": "off",
