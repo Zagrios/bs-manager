@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app } from 'electron';
+import { app, protocol } from 'electron';
 import log from 'electron-log';
 import './ipcs';
 import { UtilsService } from './services/utils.service';
@@ -63,3 +63,10 @@ app.on('window-all-closed', () => {
 app.whenReady().then(() => {
     createWindow();
 }).catch(log.error);
+
+app.whenReady().then(() => {
+    protocol.registerFileProtocol('file', (request, callback) => {
+      const pathname = decodeURI(request.url.replace('file:///', ''));
+      callback(pathname);
+    });
+  });
