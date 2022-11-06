@@ -19,7 +19,7 @@ export default function App() {
 
     const location = useLocation();
 
-    pageState.setState(location.state);
+    pageState.setLocation(location);
 
     useEffect(() => {
         themeService.theme$.subscribe(() => {
@@ -38,9 +38,9 @@ export default function App() {
         <TitleBar/>
         <div className="bg-light-main-color-2 dark:bg-main-color-2 relative rounded-tl-lg grow overflow-hidden max-w-full">
           <Routes>
-            <Route path={"/bs-version/:versionNumber"} element={<VersionViewer/>}/>
-            <Route path={"/maps"} element={<MapsPage/>}/>
-            <Route path={"/settings"} element={<SettingsPage/>}/>
+            <Route path="/bs-version/:versionNumber" element={<VersionViewer/>}/>
+            <Route path="/maps" element={<MapsPage/>}/>
+            <Route path="/settings" element={<SettingsPage/>}/>
             <Route path="*" element={<AvailableVersionsList/>}/>
           </Routes>
           <BsmProgressBar/>
