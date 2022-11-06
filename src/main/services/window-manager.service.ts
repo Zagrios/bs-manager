@@ -20,7 +20,7 @@ export class WindowManagerService{
         show: false,
         frame: false,
         titleBarOverlay: false,
-        webPreferences: { preload: PRELOAD_PATH }
+        webPreferences: { preload: PRELOAD_PATH, webSecurity: false }
     }
 
     private readonly windows: Map<AppWindow, BrowserWindow> = new Map<AppWindow, BrowserWindow>();
