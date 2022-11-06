@@ -8,3 +8,4 @@ import './supporters-ipcs';
 import './launcher-ipcs';
 import './window-manager-ipcs';
 import './bs-mods-ipcs';
+import './bs-maps-ipcs';

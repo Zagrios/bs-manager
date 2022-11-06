@@ -35,7 +35,7 @@ export function AvailableVersionsList() {
 
   return (
     <div className="relative h-full w-full flex items-center flex-col pt-2">
-      <Slideshow className="absolute w-full h-full top-0"></Slideshow>
+      <Slideshow className="absolute w-full h-full top-0"/>
       <h1 className="text-gray-100 text-2xl mb-4 z-[1]">{t("pages.available-versions.title")}</h1>
       <AvailableVersionsSlider/>
 

@@ -5,8 +5,8 @@ export default function MapsPage() {
     return (
         <div className="w-full h-full flex items-center flex-col pt-2">
             <Slideshow className="absolute w-full h-full top-0"/>
-            <h1 className="text-gray-100 text-2xl mb-4 z-[1]">Maps partagées</h1>
-            <div className="z-[1] w-full grow p-10">
+            <h1 className="text-gray-100 text-2xl z-[1]">Maps partagées</h1>
+            <div className="z-[1] w-full min-h-0 grow p-10 flex flex-col items-center justify-start">
                 <MapsPlaylistsPanel/>
             </div>
         </div>

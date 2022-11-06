@@ -68,10 +68,10 @@ export class UtilsService{
     });
   }
 
-  public listDirsInDir(dirPath: string): string[]{
+  public listDirsInDir(dirPath: string, fullPath = false): string[]{
     let files = readdirSync(dirPath, { withFileTypes:true});
     files = files.filter(f => f.isDirectory())
-    return files.map(f => f.name);
+    return files.map(f => fullPath ? path.join(dirPath, f.name) : f.name);
   }
 
   public deleteFolder(folderPath: string): Promise<void>{
