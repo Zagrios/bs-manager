@@ -1,3 +1,5 @@
+import { BsvMapCharacteristic, BsvMapDifficultyType } from "./beat-saver.model"
+
 export interface RawMapInfoData<T = unknown> {
     _version: string,
     _songName: string,
@@ -19,12 +21,12 @@ export interface RawMapInfoData<T = unknown> {
 }
 
 export interface RawDifficultySet {
-    _beatmapCharacteristicName: string,
+    _beatmapCharacteristicName: BsvMapCharacteristic,
     _difficultyBeatmaps: RawMapDifficulty[]
 }
 
 export interface RawMapDifficulty {
-    _difficulty: string,
+    _difficulty: BsvMapDifficultyType,
     _difficultyRank: string,
     _beatmapFilename: string,
     _noteJumpMovementSpeed: number,

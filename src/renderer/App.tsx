@@ -19,14 +19,17 @@ export default function App() {
 
     const location = useLocation();
 
-    pageState.setLocation(location);
-
     useEffect(() => {
         themeService.theme$.subscribe(() => {
             if(themeService.isDark || (themeService.isOS && window.matchMedia('(prefers-color-scheme: dark)').matches)){ return document.documentElement.classList.add('dark'); }
             document.documentElement.classList.remove('dark');
         });
     }, []);
+
+
+    useEffect(() => {
+        pageState.setLocation(location);
+    }, [location])
   
 
   return (

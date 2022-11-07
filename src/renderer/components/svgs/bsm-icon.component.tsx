@@ -25,9 +25,12 @@ import { ThreeDotsIcon } from "./icons/three-dots-icon.component";
 import { GitHubIcon } from "./icons/github-icon.component";
 import { CloseIcon } from "./icons/close-icon.component";
 import { BsMapDifficultyIcon } from "./icons/bs-map-difficulty-icon.component";
+import { TwitchIcon } from "./icons/twitch-icon.component";
+import EyeIcon from "./icons/eye-icon.component";
+import { PlayIcon } from "./icons/play-icon.component";
 
 export type BsmIconType = (
-   "settings"|"trash"|"favorite"|"folder"|"bsNote"|"check"|"three-dots"|
+   "settings"|"trash"|"favorite"|"folder"|"bsNote"|"check"|"three-dots"|"twitch"|"eye"|"play"|
    "terminal"|"desktop"|"oculus"|"add"|"cross"|"task"|"github"|"close"|
    "copy"|"steam"|"edit"|"export"|"patreon"|"search"|"bsMapDifficulty"|
    "fr-FR-flag"|"es-ES-flag"|"en-US-flag"|"en-EN-flag"
@@ -62,6 +65,9 @@ export const BsmIcon = memo(({className, icon, style}: {className?: string, icon
         if(icon === "github"){ return <GitHubIcon className={className} style={style}/> }
         if(icon === "close"){ return <CloseIcon className={className} style={style}/> }
         if(icon === "bsMapDifficulty"){ return <BsMapDifficultyIcon className={className} style={style}/> }
+        if(icon === "twitch"){ return <TwitchIcon className={className} style={style}/> }
+        if(icon === "eye"){ return <EyeIcon className={className} style={style}/> }
+        if(icon === "play"){ return <PlayIcon className={className} style={style}/> }
         return <TrashIcon className={className} style={style}/>
     }
 

@@ -24,7 +24,7 @@ export class PageStateService {
     }
 
     public getRoute(): string{
-        return this.location$.value.pathname;
+        return this.location$.value?.pathname;
     }
 
     public get state$(): Observable<unknown>{
@@ -32,7 +32,7 @@ export class PageStateService {
     }
 
     public get route$(): Observable<string>{
-        return this.location$.pipe(map(location => location.pathname));
+        return this.location$.pipe(map(location => location?.pathname));
     }
 
 }

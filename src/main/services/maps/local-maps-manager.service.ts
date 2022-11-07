@@ -18,7 +18,6 @@ export class LocalMapsManagerService {
 
     private readonly LEVELS_ROOT_FOLDER = "Beat Saber_Data";
     private readonly CUSTOM_LEVELS_FOLDER = "CustomLevels";
-    private readonly WIP_LEVELS_FOLDER = "CustomWIPLevels";
 
     private readonly localVersion: BSLocalVersionService;
     private readonly installLocation: InstallationLocationService;

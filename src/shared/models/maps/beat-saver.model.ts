@@ -115,10 +115,10 @@ export interface BsvMapTestplay {
 
 export interface BsvMapDifficulty {
     bombs: number,
-    characteristic: string,
+    characteristic: BsvMapCharacteristic,
     chroma: boolean,
     cinema: boolean,
-    difficulty: string,
+    difficulty: BsvMapDifficultyType,
     events: number,
     length: number,
     maxScore: number,
@@ -139,3 +139,6 @@ export interface BsvMapParitySummary {
     resets: number,
     warns: number,
 }
+
+export type BsvMapCharacteristic = ("Standard" | "OneSaber" | "NoArrows" | "90Degree" | "360Degree" | "Lightshow" | "Lawless")
+export type BsvMapDifficultyType = ("Easy" | "Normal" | "Hard" | "Expert" | "ExpertPlus")
