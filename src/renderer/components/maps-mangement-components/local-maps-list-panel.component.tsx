@@ -24,7 +24,7 @@ export function LocalMapsListPanel({version, className} : Props) {
         const subs: Subscription[] = [];
 
         if(isVisible && !maps?.length){
-            subs.push(mapsManager.getMaps(version).subscribe(localMaps => setMaps(() => localMaps)));
+            subs.push(mapsManager.getMaps(version).subscribe(localMaps => setMaps(() => [...localMaps])));
         }
     
         return () => { subs.forEach(s => s.unsubscribe()); }
@@ -53,7 +53,7 @@ export function LocalMapsListPanel({version, className} : Props) {
             autor={map.rawInfo._levelAuthorName}
             bpm={map.rawInfo._beatsPerMinute}
             duration={null}
-            diffs={extractMapDiffs(map)} mapId={null} qualified={null} ranked={null} autorLink={null}
+            diffs={extractMapDiffs(map)} mapId={map.bsaverInfo?.id} qualified={null} ranked={null} autorLink={null}
         />;
 
     }

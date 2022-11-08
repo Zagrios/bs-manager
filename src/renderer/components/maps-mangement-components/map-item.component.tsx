@@ -1,12 +1,9 @@
-import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface"
 import { BsmImage } from "../shared/bsm-image.component";
 import { BsvMapCharacteristic, BsvMapDifficultyType } from "shared/models/maps/beat-saver.model"
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
-import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { BsmLink } from "../shared/bsm-link.component";
 import { BsmIcon } from "../svgs/bsm-icon.component";
 import { BsmButton } from "../shared/bsm-button.component";
-import { MouseEventHandler } from "react";
 
 export type MapItemProps = {
     hash: string,
@@ -29,10 +26,10 @@ export function MapItem({hash, title, autor, coverUrl, songUrl, autorLink, mapId
 
     const color = useThemeColor("first-color");
 
-    const zipUrl = `https://r2cdn.beatsaver.com/${hash}.zip`
-    const previewUrl = `https://skystudioapps.com/bs-viewer/?url=${zipUrl}`
+    const zipUrl = `https://r2cdn.beatsaver.com/${hash}.zip`;
+    const previewUrl = `https://skystudioapps.com/bs-viewer/?url=${zipUrl}`;
+    const mapUrl = mapId ? `https://beatsaver.com/maps/${mapId}` : null;
 
-    console.log(diffs)
 
     const renderAutor = () => {
         if(!autor){ null; }
@@ -47,7 +44,7 @@ export function MapItem({hash, title, autor, coverUrl, songUrl, autorLink, mapId
         const colorPill = diffColors[diff] ?? "";
 
         return (
-            <li className="h-5 flex justify-center items-center gap-1 rounded-full px-2 active:brightness-75" style={{backgroundColor: colorPill}}>
+            <li key={`${charac}-${diff}`} className="h-5 flex justify-center items-center gap-1 rounded-full px-2 active:brightness-75" style={{backgroundColor: colorPill}}>
                 <BsmIcon className="h-4 w-4" icon="bsMapDifficulty"/>
                 <span className="text-xs mb-[1.5px]">{diff === "ExpertPlus" ? "Expert+" : diff}</span>
             </li>
@@ -76,7 +73,7 @@ export function MapItem({hash, title, autor, coverUrl, songUrl, autorLink, mapId
         <li className="bg-main-color-1 rounded-md flex flex-row h-[120px] min-w-[400px] shrink overflow-hidden grow text-white basis-0">
             <BsmImage className="" image={coverUrl}/>
             <div className="h-full flex flex-col grow px-3 min-w-0 shrink">
-                <h1 className={`font-bold overflow-hidden text-ellipsis whitespace-nowrap ${mapId && "cursor-pointer hover:underline"}`} style={{textDecorationColor: color}}>{title}</h1>
+                <BsmLink href={mapUrl} className={`font-bold overflow-hidden text-ellipsis whitespace-nowrap ${mapId && "cursor-pointer hover:underline"}`} style={{textDecorationColor: color}}>{title}</BsmLink>
                 {renderAutor()}
                 <ol className="flex pb-1 gap-2 overflow-x-scroll scrollbar scrollbar-thin" style={{scrollbarGutter: "stable", }} onMouseMove={scrollDiffs} onMouseLeave={resetScrollDiffs}>
                     {Array.from(diffs.entries()).map(([charac, diffs]) => diffs.map(diff => renderDiff(charac, diff)))}
