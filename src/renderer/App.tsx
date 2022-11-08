@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { ThemeService } from "./services/theme.service";
 import { NotificationOverlay } from "./components/notification/notification-overlay.component";
 import { PageStateService } from "./services/page-state.service";
+import "tailwindcss/tailwind.css";
 
 export default function App() {
 
@@ -26,7 +27,7 @@ export default function App() {
             document.documentElement.classList.remove('dark');
         });
     }, []);
-  
+
 
   return (
     <div className="relative w-screen h-screen overflow-hidden flex bg-light-main-color-1 dark:bg-main-color-1 z-0 max-w-full">
