@@ -6,6 +6,7 @@ import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { BsmLink } from "../shared/bsm-link.component";
 import { BsmIcon } from "../svgs/bsm-icon.component";
 import { BsmButton } from "../shared/bsm-button.component";
+import { MouseEventHandler } from "react";
 
 export type MapItemProps = {
     hash: string,
@@ -46,11 +47,29 @@ export function MapItem({hash, title, autor, coverUrl, songUrl, autorLink, mapId
         const colorPill = diffColors[diff] ?? "";
 
         return (
-            <li className="h-5 flex justify-center items-center gap-1 rounded-full px-2" style={{backgroundColor: colorPill}}>
+            <li className="h-5 flex justify-center items-center gap-1 rounded-full px-2 active:brightness-75" style={{backgroundColor: colorPill}}>
                 <BsmIcon className="h-4 w-4" icon="bsMapDifficulty"/>
                 <span className="text-xs mb-[1.5px]">{diff === "ExpertPlus" ? "Expert+" : diff}</span>
             </li>
         )
+    }
+
+    const scrollDiffs = (e: React.MouseEvent<HTMLOListElement, MouseEvent>) => {
+        
+        const el = e.currentTarget;
+        const rect = e.currentTarget.getBoundingClientRect();
+
+        console.log(el.scrollHeight - (el.scrollWidth - el.clientWidth))
+
+        let yProgress = (((e.clientX - rect.left) - ((el.clientWidth / el.scrollWidth) * 100)) / (rect.width));
+
+        yProgress = yProgress < 0 ? 0 : yProgress > 1 ? 1 : yProgress; 
+
+        e.currentTarget.scrollTo({left: e.currentTarget.scrollWidth * yProgress})
+    }
+
+    const resetScrollDiffs = (e: React.MouseEvent<HTMLOListElement, MouseEvent>) => {
+        e.currentTarget.scrollTo({left: 0, behavior: "smooth"});
     }
 
     return (
@@ -59,7 +78,7 @@ export function MapItem({hash, title, autor, coverUrl, songUrl, autorLink, mapId
             <div className="h-full flex flex-col grow px-3 min-w-0 shrink">
                 <h1 className={`font-bold overflow-hidden text-ellipsis whitespace-nowrap ${mapId && "cursor-pointer hover:underline"}`} style={{textDecorationColor: color}}>{title}</h1>
                 {renderAutor()}
-                <ol className="flex pb-1 gap-2 scrollbar scrollbar-width-[4px] scrollbar-thumb-black scrollbar-track-transparent" style={{scrollbarGutter: "stable", }}>
+                <ol className="flex pb-1 gap-2 overflow-x-scroll scrollbar scrollbar-thin" style={{scrollbarGutter: "stable", }} onMouseMove={scrollDiffs} onMouseLeave={resetScrollDiffs}>
                     {Array.from(diffs.entries()).map(([charac, diffs]) => diffs.map(diff => renderDiff(charac, diff)))}
                 </ol> 
             </div>
