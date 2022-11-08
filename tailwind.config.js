@@ -1,5 +1,5 @@
 const colors = require('tailwindcss/colors');
-
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',
   content: ['./src/renderer/**/*.{js,jsx,ts,tsx,ejs}'],
