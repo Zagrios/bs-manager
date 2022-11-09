@@ -1,6 +1,6 @@
 export interface BsvMapDetail {
     automapper: boolean,
-    createdAt: BsvInstant,
+    createdAt: string,
     curatedAt: BsvInstant,
     curator: BsvUserDetail,
     deletedAt: BsvInstant,
