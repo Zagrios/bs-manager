@@ -17,7 +17,7 @@
   </a>
   <h3 align="center">Beat Saber Manager</h3>
   <p align="center">
-    Download, manage and customize your version of Beat Saber with a simple click!
+    Download, manage and customize your versions of Beat Saber with a simple click!
     <br />
     <a href="https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&template=bug_report.md&title=%5BBUG%5D">Report Bug</a>
     ·
