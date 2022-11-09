@@ -53,8 +53,9 @@ export function LocalMapsListPanel({version, className} : Props) {
             autor={map.rawInfo._levelAuthorName}
             songAutor={map.rawInfo._songAuthorName}
             bpm={map.rawInfo._beatsPerMinute}
-            duration={null}
-            diffs={extractMapDiffs(map)} mapId={map.bsaverInfo?.id} qualified={null} ranked={null} autorLink={null}
+            duration={null} 
+            diffs={extractMapDiffs(map)} mapId={map.bsaverInfo?.id} qualified={null} ranked={null} autorId={map.bsaverInfo?.uploader?.id} plays={map.bsaverInfo?.stats?.plays} likes={map.bsaverInfo?.stats?.upvotes} createdAt={map.bsaverInfo?.createdAt}
+            onDelete={() => {}}
         />;
     }
 
