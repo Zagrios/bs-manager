@@ -51,11 +51,11 @@ export function LocalMapsListPanel({version, className} : Props) {
             coverUrl={map.coverUrl}
             songUrl={map.songUrl}
             autor={map.rawInfo._levelAuthorName}
+            songAutor={map.rawInfo._songAuthorName}
             bpm={map.rawInfo._beatsPerMinute}
             duration={null}
             diffs={extractMapDiffs(map)} mapId={map.bsaverInfo?.id} qualified={null} ranked={null} autorLink={null}
         />;
-
     }
 
     return (
