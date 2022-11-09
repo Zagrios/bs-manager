@@ -4,11 +4,13 @@ import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { BsmLink } from "../shared/bsm-link.component";
 import { BsmIcon } from "../svgs/bsm-icon.component";
 import { BsmButton } from "../shared/bsm-button.component";
+import { motion } from "framer-motion";
 
 export type MapItemProps = {
     hash: string,
     title: string,
     autor: string,
+    songAutor: string,
     coverUrl: string,
     songUrl: string,
     autorLink: string,
@@ -22,7 +24,7 @@ export type MapItemProps = {
     onDownload?: (id: string) => void,
 }
 
-export function MapItem({hash, title, autor, coverUrl, songUrl, autorLink, mapId, diffs, qualified, ranked, onDelete, onDownload}: MapItemProps) {
+export function MapItem({hash, title, autor, songAutor, coverUrl, songUrl, autorLink, mapId, diffs, qualified, ranked, onDelete, onDownload}: MapItemProps) {
 
     const color = useThemeColor("first-color");
 
@@ -70,22 +72,21 @@ export function MapItem({hash, title, autor, coverUrl, songUrl, autorLink, mapId
     }
 
     return (
-        <li className="bg-main-color-1 rounded-md flex flex-row h-[120px] min-w-[400px] shrink overflow-hidden grow text-white basis-0">
-            <BsmImage className="" image={coverUrl}/>
-            <div className="h-full flex flex-col grow px-3 min-w-0 shrink">
-                <BsmLink href={mapUrl} className={`font-bold overflow-hidden text-ellipsis whitespace-nowrap ${mapId && "cursor-pointer hover:underline"}`} style={{textDecorationColor: color}}>{title}</BsmLink>
-                {renderAutor()}
-                <ol className="flex pb-1 gap-2 overflow-x-scroll scrollbar scrollbar-thin" style={{scrollbarGutter: "stable", }} onMouseMove={scrollDiffs} onMouseLeave={resetScrollDiffs}>
-                    {Array.from(diffs.entries()).map(([charac, diffs]) => diffs.map(diff => renderDiff(charac, diff)))}
-                </ol> 
+        <li className="relative pl-[90px] rounded-md flex flex-row justify-end h-[100px] min-w-[400px] shrink overflow-hidden grow basis-0 text-white group">
+            <div className="absolute top-0 left-0 h-full w-[100px]">
+                <BsmImage image={coverUrl}/>
+                <span className="absolute block w-full h-full bg-transparent top-0 left-0"></span>
             </div>
-            <div className="flex flex-col shrink-0 px-2 pt-1 gap-1">
-                <BsmButton className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:backdrop-brightness-75" iconColor={color} icon="trash" title="allo" withBar={false}/>
-                <BsmButton className="w-6 h-6 p-1 rounded-md !bg-inherit hover:backdrop-brightness-75" iconColor={color} icon="twitch" title="allo" withBar={false}/>
-                <BsmButton className="w-6 h-6 pr-[2px] rounded-md !bg-inherit hover:backdrop-brightness-75" iconColor={color} icon="play" title="allo" withBar={false}/>
-                <BsmLink href={previewUrl} internal>
-                    <BsmButton className="w-6 h-6 px-[2px] rounded-md !bg-inherit hover:backdrop-brightness-75" iconColor={color} icon="eye" title="Preview" withBar={false}/>
-                </BsmLink>
+            <div className="h-full w-full z-[1] relative rounded-md overflow-hidden">
+                <BsmImage className="absolute w-full h-full object-cover" image={coverUrl}/>
+                <div className="absolute py-1 pl-2 pr-7 top-0 left-0 w-full h-full bg-gray-600 bg-opacity-80 flex flex-col group-hover:bg-main-color-2 group-hover:bg-opacity-80">
+                    <h1 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full leading-5 tracking-wide">{title}</h1>
+                    <h2 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full text-sm mb-1">par {songAutor}</h2>
+                    <h3 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full text-[13px]">mappée par <BsmLink href={autorLink} className="brightness-150 saturate-50 hover:underline" style={{color}}>{autor}</BsmLink></h3>
+                </div> 
+            </div>
+            <div className="absolute bg-main-color-3 top-0 right-0 h-full w-2 group-hover:w-7 transition-all z-10">
+                sp
             </div>
         </li>
     )
