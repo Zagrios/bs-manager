@@ -47,14 +47,14 @@ export function LocalMapsListPanel({version, className} : Props) {
         return <MapItem
             key={map.hash}
             hash={map.hash}
-            title={[map.rawInfo._songAuthorName, map.rawInfo._songName].join(" - ")}
+            title={map.rawInfo._songName}
             coverUrl={map.coverUrl}
             songUrl={map.songUrl}
             autor={map.rawInfo._levelAuthorName}
             songAutor={map.rawInfo._songAuthorName}
             bpm={map.rawInfo._beatsPerMinute}
-            duration={null} 
-            diffs={extractMapDiffs(map)} mapId={map.bsaverInfo?.id} qualified={null} ranked={null} autorId={map.bsaverInfo?.uploader?.id} plays={map.bsaverInfo?.stats?.plays} likes={map.bsaverInfo?.stats?.upvotes} createdAt={map.bsaverInfo?.createdAt}
+            duration={map.bsaverInfo?.metadata?.duration} 
+            diffs={extractMapDiffs(map)} mapId={map.bsaverInfo?.id} qualified={null} ranked={null} autorId={map.bsaverInfo?.uploader?.id} likes={map.bsaverInfo?.stats?.upvotes} createdAt={map.bsaverInfo?.createdAt}
             onDelete={() => {}}
         />;
     }
