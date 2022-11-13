@@ -16,6 +16,7 @@ import { MapService } from 'renderer/services/maps.service';
 import { LaunchSlide } from 'renderer/components/version-viewer/slides/launch/launch-slide.component';
 import { ModsSlide } from 'renderer/components/version-viewer/slides/mods/mods-slide.component';
 import { UninstallModal } from 'renderer/components/modal/modal-types/uninstall-modal.component';
+import { MapsPlaylistsPanel } from 'renderer/components/maps-mangement-components/maps-playlists-panel.component';
 
 export function VersionViewer() {
 
@@ -70,11 +71,8 @@ export function VersionViewer() {
         <TabNavBar className='my-3' tabsText={["misc.launch", "misc.maps", "misc.mods"]} onTabChange={(i : number) => setCurrentTabIndex(i)}/>
         <div className='mt-2 w-full min-h-0 grow flex transition-transform duration-300 pt-3' style={{transform: `translate(${-(currentTabIndex * 100)}%, 0)`}}>
           <LaunchSlide version={state}/>
-          <div className='shrink-0 w-full h-full flex justify-center'>
-            <div className='p-4 bg-light-main-color-2 dark:bg-main-color-2 h-fit rounded-md'>
-              <img src={wipGif} alt="" />
-              <span className='block w-full text-center font-bold mt-2 text-gray-800 dark:text-white'>Work In Progress</span>
-            </div>
+          <div className='w-full h-full shrink-0 px-6 pb-6'>
+            <MapsPlaylistsPanel version={state} oneBlock/>
           </div>
           <ModsSlide version={state}/>
         </div>
