@@ -4,7 +4,7 @@ import VisibilitySensor from "react-visibility-sensor"
 import { useEffect, useState } from "react"
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface"
 import { Subscription } from "rxjs"
-import { MapItem, MapItemProps } from "./map-item.component"
+import { MapItem, MapItemProps, ParsedMapDiff } from "./map-item.component"
 import { BsvMapCharacteristic, BsvMapDifficultyType } from "shared/models/maps/beat-saver.model"
 
 type Props = {
@@ -30,12 +30,12 @@ export function LocalMapsListPanel({version, className} : Props) {
         return () => { subs.forEach(s => s.unsubscribe()); }
     }, [isVisible])
 
-    const extractMapDiffs = (map: BsmLocalMap): Map<BsvMapCharacteristic, BsvMapDifficultyType[]> => {
-        const res = new Map<BsvMapCharacteristic, BsvMapDifficultyType[]>();
+    const extractMapDiffs = (map: BsmLocalMap): Map<BsvMapCharacteristic, ParsedMapDiff[]> => {
+        const res = new Map<BsvMapCharacteristic, ParsedMapDiff[]>();
         map.rawInfo._difficultyBeatmapSets.forEach(set => {
             set._difficultyBeatmaps.forEach(diff => {
                 const arr = res.get(set._beatmapCharacteristicName) || [];
-                arr.push(diff._difficulty);
+                arr.push({name: diff._customData?._difficultyLabel || diff._difficulty, type: diff._difficulty, stars: null});
                 res.set(set._beatmapCharacteristicName, arr);
             })
         })

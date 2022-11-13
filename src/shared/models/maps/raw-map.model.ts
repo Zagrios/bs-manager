@@ -30,5 +30,10 @@ export interface RawMapDifficulty {
     _difficultyRank: string,
     _beatmapFilename: string,
     _noteJumpMovementSpeed: number,
-    _noteJumpStartBeatOffset: number
+    _noteJumpStartBeatOffset: number,
+    _customData?: RawMapDifficultyCustomData
+}
+
+export interface RawMapDifficultyCustomData {
+    _difficultyLabel?: string
 }
