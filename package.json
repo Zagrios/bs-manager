@@ -248,6 +248,7 @@
     "semver": "^7.3.8",
     "tailwind-scrollbar-hide": "^1.1.7",
     "tailwindcss-scoped-groups": "^2.0.0",
+    "use-delayed-state": "^1.2.0",
     "use-double-click": "^1.0.5",
     "uuid": "^9.0.0"
   },
