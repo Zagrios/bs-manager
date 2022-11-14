@@ -7,6 +7,7 @@ import { Subscription } from "rxjs"
 import { MapItem, MapItemProps, ParsedMapDiff } from "./map-item.component"
 import { BsvMapCharacteristic, BsvMapDifficultyType } from "shared/models/maps/beat-saver.model"
 import { useInView } from "framer-motion"
+import { MapsToolbar } from "./maps-toolbar.component"
 
 type Props = {
     version: BSVersion,
@@ -20,6 +21,7 @@ export function LocalMapsListPanel({version, className} : Props) {
     const ref = useRef()
     const isVisible = useInView(ref, {once: true});
     const [maps, setMaps] = useState([] as BsmLocalMap[]);
+    const [selectedMaps, setSelectedMaps] = useState([] as string[]);
 
     useEffect(() => {
 
@@ -59,6 +61,18 @@ export function LocalMapsListPanel({version, className} : Props) {
         return res;
     }
 
+    const onMapSelected = (hash: string) => {
+        const hashs = [...selectedMaps];
+        if(hashs.some(selectedHash => selectedHash === hash)){
+            const i = hashs.findIndex(selectedHash => selectedHash === hash);
+            hashs.splice(i, 1);
+        }
+        else{
+            hashs.push(hash);
+        }
+        setSelectedMaps(() => hashs);
+    }
+
     const renderMapItem = (map: BsmLocalMap) => {
         
         return <MapItem
@@ -70,15 +84,20 @@ export function LocalMapsListPanel({version, className} : Props) {
             autor={map.rawInfo._levelAuthorName}
             songAutor={map.rawInfo._songAuthorName}
             bpm={map.rawInfo._beatsPerMinute}
-            duration={map.bsaverInfo?.metadata?.duration} 
+            duration={map.bsaverInfo?.metadata?.duration}
+            selected={selectedMaps.some(hash => hash === map.hash)}
             diffs={extractMapDiffs(map)} mapId={map.bsaverInfo?.id} qualified={null} ranked={map.bsaverInfo?.ranked} autorId={map.bsaverInfo?.uploader?.id} likes={map.bsaverInfo?.stats?.upvotes} createdAt={map.bsaverInfo?.createdAt}
             onDelete={() => {}}
+            onSelected={onMapSelected}
         />;
     }
 
     return (
-        <ul ref={ref} className={className}>
-            {maps.map(map => renderMapItem(map))}
-        </ul>
+        <div ref={ref} className={className}>
+            {/* <MapsToolbar className="w-full shrink-0 h-8 border-b-2 border-main-color-1"/> */}
+            <ul className="p-3 w-full grow flex flex-wrap justify-center content-start gap-2 overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900">
+                {maps.map(map => renderMapItem(map))}
+            </ul>
+        </div>
     )
 }

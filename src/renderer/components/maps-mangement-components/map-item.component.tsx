@@ -32,11 +32,13 @@ export type MapItemProps = {
     duration: number,
     likes: number,
     createdAt: string,
+    selected?: boolean,
     onDelete?: (hash: string) => void,
     onDownload?: (id: string) => void,
+    onSelected: (hash: string) => void,
 }
 
-export function MapItem({hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, qualified, ranked, bpm, duration, likes, createdAt, onDelete, onDownload}: MapItemProps) {
+export function MapItem({hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, qualified, ranked, bpm, duration, likes, createdAt, selected, onDelete, onDownload, onSelected}: MapItemProps) {
 
     const linkOpener = LinkOpenerService.getInstance();
     const audioPlayer = AudioPlayerService.getInstance();
@@ -123,7 +125,8 @@ export function MapItem({hash, title, autor, songAutor, coverUrl, songUrl, autor
     }
     
     return (
-        <motion.li className="relative h-[100px] min-w-[400px] shrink grow basis-0 text-white group" onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)} style={{zIndex: hovered && 5}}>
+        <motion.li className="relative h-[100px] min-w-[400px] shrink-0 grow basis-0 text-white group cursor-pointer" onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)} style={{zIndex: hovered && 5, transform: "translateZ(0) scale(1.0, 1.0)", backfaceVisibility: "hidden"}} onClick={e => {e.stopPropagation(); onSelected(hash)}}>
+            {(hovered || selected) && <motion.span className="glow-on-hover" animate={{opacity: 1}} transition={{duration: .1, ease: "easeIn"}}/>}
             <AnimatePresence>
                 {(diffsPanelHovered || bottomBarHovered) && (
                     <motion.ul key={hash} className="absolute top-[calc(100%-10px)] w-full h-fit max-h-[200%] pt-4 pb-2 px-2 overflow-y-scroll bg-main-color-3 brightness-125 rounded-md flex flex-col gap-3 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 shadow-sm shadow-black" initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}} transition={{duration: .15}} onHoverStart={diffsPanelHoverStart} onHoverEnd={diffsPanelHoverEnd}>
@@ -194,11 +197,11 @@ export function MapItem({hash, title, autor, songAutor, coverUrl, songUrl, autor
                         </motion.div>
                     </div> 
                 </div>
-                <div className="absolute bg-main-color-3 top-0 right-0 h-full z-[1] w-[30px] translate-x-5 group-hover:translate-x-0 transition-transform">
+                <div className="absolute bg-main-color-3 top-0 h-full z-[1] w-[30px] -right-5 group-hover:right-0 transition-all">
                     <span className="absolute w-[10px] h-[10px] top-0 right-full bg-inherit" style={{clipPath: 'path("M11 -1 L11 10 L10 10 A10 10 0 0 0 0 0 L0 -1 Z")'}}/>
                     <span className="absolute w-[10px] h-[10px] bottom-0 right-full bg-inherit" style={{clipPath: 'path("M11 11 L11 0 L10 0 A10 10 0 0 1 0 10 L 0 11 Z")'}}/>
 
-                    <div className="flex flex-col justify-center items-center gap-1 w-full h-full overflow-hidden transition-opacity opacity-0 group-hover:opacity-100">
+                    <div className="flex flex-col justify-center items-center gap-1 w-full h-full overflow-hidden opacity-0 group-hover:opacity-100">
                         {onDelete && <BsmButton className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-main-color-2" iconClassName="w-full h-full brightness-150 saturate-50" iconColor={color} icon="trash" withBar={false} onClick={e => {e.stopPropagation(); openPreview()}}/>}
                         <BsmButton className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-main-color-2" iconClassName="w-full h-full brightness-150 saturate-50" iconColor={color} icon="eye" withBar={false} onClick={e => {e.stopPropagation(); openPreview()}}/>
                         {mapId && <BsmButton className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-main-color-2" iconClassName="w-full h-full brightness-150 saturate-50" iconColor={color} icon="twitch" withBar={false} onClick={e => {e.stopPropagation(); copyBsr()}}/>}
