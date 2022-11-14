@@ -18,6 +18,6 @@ export function BsmLink({className, href, children, style, internal}: Props) {
     }
 
     return (
-        <a className={`${className} ${href && "cursor-pointer"}`} onClick={openLink} style={style}>{children}</a>
+        <a className={`${className} ${href && "cursor-pointer"}`} onClick={e => {e.stopPropagation(); openLink()}} style={style}>{children}</a>
     )
 }
