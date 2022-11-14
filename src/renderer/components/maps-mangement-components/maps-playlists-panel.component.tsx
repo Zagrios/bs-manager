@@ -18,7 +18,7 @@ export function MapsPlaylistsPanel({version, oneBlock = false}: Props) {
         <div className="w-full h-full flex flex-col bg-main-color-2 rounded-md shadow-black shadow-md overflow-hidden">
             {oneBlock && <TabNavBar className="!rounded-none shadow-sm" tabsText={["Maps", "Playlists"]} onTabChange={setTabIndex}/>}
             <div className="w-full grow min-h-0 flex flex-row items-center transition-transform duration-300" style={{transform: `translate(${-(tabIndex * 100)}%, 0)`}}>
-                <LocalMapsListPanel className="w-full h-full shrink-0 flex flex-wrap justify-center content-start gap-2 p-3 overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900" version={version}/>
+                <LocalMapsListPanel className="w-full h-full shrink-0 flex flex-col" version={version}/>
                 <div className="w-full h-full grow shrink-0">b</div>
             </div>
         </div> 
