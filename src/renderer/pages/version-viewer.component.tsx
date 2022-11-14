@@ -17,6 +17,7 @@ import { LaunchSlide } from 'renderer/components/version-viewer/slides/launch/la
 import { ModsSlide } from 'renderer/components/version-viewer/slides/mods/mods-slide.component';
 import { UninstallModal } from 'renderer/components/modal/modal-types/uninstall-modal.component';
 import { MapsPlaylistsPanel } from 'renderer/components/maps-mangement-components/maps-playlists-panel.component';
+import { LocalMapsListPanel } from 'renderer/components/maps-mangement-components/local-maps-list-panel.component';
 
 export function VersionViewer() {
 
@@ -71,8 +72,8 @@ export function VersionViewer() {
         <TabNavBar className='my-3' tabsText={["misc.launch", "misc.maps", "misc.mods"]} onTabChange={(i : number) => setCurrentTabIndex(i)}/>
         <div className='mt-2 w-full min-h-0 grow flex transition-transform duration-300 pt-3' style={{transform: `translate(${-(currentTabIndex * 100)}%, 0)`}}>
           <LaunchSlide version={state}/>
-          <div className='w-full h-full shrink-0 px-6 pb-6'>
-            <MapsPlaylistsPanel version={state} oneBlock/>
+          <div className="w-full shrink-0 px-3 pb-3">
+            <LocalMapsListPanel className='w-full h-full shrink-0 flex flex-col bg-main-color-2 rounded-md' version={state}></LocalMapsListPanel>
           </div>
           <ModsSlide version={state}/>
         </div>
