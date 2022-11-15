@@ -70,10 +70,10 @@ export function VersionViewer() {
         <BsmImage className='relative object-cover h-28' image={BSLogo}/>
         <h1 className='relative text-4xl font-bold italic -top-3'>{state.name ? `${state.BSVersion} - ${state.name}` : state.BSVersion}</h1>
         <TabNavBar className='my-3' tabsText={["misc.launch", "misc.maps", "misc.mods"]} onTabChange={(i : number) => setCurrentTabIndex(i)}/>
-        <div className='mt-2 w-full min-h-0 grow flex transition-transform duration-300 pt-3' style={{transform: `translate(${-(currentTabIndex * 100)}%, 0)`}}>
+        <div className='mt-2 w-full min-h-0 grow flex transition-transform duration-300' style={{transform: `translate(${-(currentTabIndex * 100)}%, 0)`}}>
           <LaunchSlide version={state}/>
-          <div className="w-full shrink-0 px-3 pb-3">
-            <LocalMapsListPanel className='w-full h-full shrink-0 flex flex-col bg-main-color-2 rounded-md' version={state}></LocalMapsListPanel>
+          <div className="w-full shrink-0 px-3 pb-3 flex flex-col items-center">
+            <MapsPlaylistsPanel version={state} oneBlock></MapsPlaylistsPanel>
           </div>
           <ModsSlide version={state}/>
         </div>
