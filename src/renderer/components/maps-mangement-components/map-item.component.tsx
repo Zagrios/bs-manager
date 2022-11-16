@@ -52,7 +52,7 @@ export function MapItem({hash, title, autor, songAutor, coverUrl, songUrl, autor
     const songPlaying = useObservable(audioPlayer.playing$.pipe(map(playing => playing && audioPlayer.src === songUrl)));
 
     const zipUrl = `https://r2cdn.beatsaver.com/${hash}.zip`;
-    const previewUrl = `https://skystudioapps.com/bs-viewer/?url=${zipUrl}`;
+    const previewUrl = mapId ? `https://skystudioapps.com/bs-viewer/?id=${mapId}` : null;
     const mapUrl = mapId ? `https://beatsaver.com/maps/${mapId}` : null;
     const authorUrl = autorId ? `https://beatsaver.com/profile/${autorId}` : null;
     const createdDate = createdAt ? dateFormat(createdAt, "d mmm yyyy") : null;
@@ -203,7 +203,7 @@ export function MapItem({hash, title, autor, songAutor, coverUrl, songUrl, autor
 
                     <div className="flex flex-col justify-center items-center gap-1 w-full h-full overflow-hidden opacity-0 group-hover:opacity-100">
                         {onDelete && <BsmButton className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-main-color-2" iconClassName="w-full h-full brightness-150 saturate-50" iconColor={color} icon="trash" withBar={false} onClick={e => {e.stopPropagation(); openPreview()}}/>}
-                        <BsmButton className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-main-color-2" iconClassName="w-full h-full brightness-150 saturate-50" iconColor={color} icon="eye" withBar={false} onClick={e => {e.stopPropagation(); openPreview()}}/>
+                        {previewUrl && <BsmButton className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-main-color-2" iconClassName="w-full h-full brightness-150 saturate-50" iconColor={color} icon="eye" withBar={false} onClick={e => {e.stopPropagation(); openPreview()}}/>}
                         {mapId && <BsmButton className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-main-color-2" iconClassName="w-full h-full brightness-150 saturate-50" iconColor={color} icon="twitch" withBar={false} onClick={e => {e.stopPropagation(); copyBsr()}}/>}
                     </div>
                 </div>
