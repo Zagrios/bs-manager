@@ -94,7 +94,6 @@ export function LocalMapsListPanel({version, className} : Props) {
 
     return (
         <div ref={ref} className={className}>
-            {/* <MapsToolbar className="w-full shrink-0 h-8 border-b-2 border-main-color-1"/> */}
             <ul className="p-3 w-full grow flex flex-wrap justify-center content-start gap-2 overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900">
                 {maps.map(map => renderMapItem(map))}
             </ul>
