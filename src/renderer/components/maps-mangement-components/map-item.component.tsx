@@ -164,7 +164,7 @@ export function MapItem({hash, title, autor, songAutor, coverUrl, songUrl, autor
                     <div className="pt-1 pl-2 pr-7 top-0 left-0 w-full h-full bg-gray-600 bg-opacity-80 flex flex-col justify-between group-hover:bg-main-color-1 group-hover:bg-opacity-80">
                         <h1 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full leading-5 tracking-wide text-lg" title={title}><BsmLink className="hover:underline" href={mapUrl}>{title}</BsmLink></h1>
                         <h2 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full text-sm mb-[3px]">par {songAutor}</h2>
-                        <h3 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full text-xs">{autor && (<> mappée par <BsmLink href={authorUrl} className="brightness-150 saturate-50 hover:underline" style={{color}}>{autor}</BsmLink></>)}</h3>
+                        <h3 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full text-xs">{autor && (<> mappée par <BsmLink href={authorUrl} className="brightness-150 hover:underline" style={{color}}>{autor}</BsmLink></>)}</h3>
                         <div className="w-full h-4 text-xs gap-2 flex opacity-0 group-hover:opacity-100">
                             {likesText && (
                                 <div className="h-full flex items-center">
