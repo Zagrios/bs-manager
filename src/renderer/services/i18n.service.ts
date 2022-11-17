@@ -22,6 +22,7 @@ export class I18nService {
       if(!I18nService.instance){ I18nService.instance = new I18nService(); }
       return I18nService.instance;
    }
+   
    private constructor(){
       this.configService = ConfigurationService.getInstance();
       this.cache = new Map<string, string>();
