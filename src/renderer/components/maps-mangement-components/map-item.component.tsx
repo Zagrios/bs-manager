@@ -43,6 +43,8 @@ export function MapItem({hash, title, autor, songAutor, coverUrl, songUrl, autor
     const linkOpener = LinkOpenerService.getInstance();
     const audioPlayer = AudioPlayerService.getInstance();
 
+    
+
     const color = useThemeColor("first-color");
 
     const [hovered, setHovered] = useState(false);

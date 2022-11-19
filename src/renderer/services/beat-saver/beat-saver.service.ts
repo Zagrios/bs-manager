@@ -14,6 +14,7 @@ export class BeatSaverService {
 
     private readonly bsaverApi: BeatSaverApiService;
 
+
     private constructor(){
         this.bsaverApi = BeatSaverApiService.getInstance();
     }

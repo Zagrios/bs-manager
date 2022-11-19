@@ -12,7 +12,7 @@ export interface BsvMapDetail {
     qualified: boolean,
     ranked: boolean,
     stats: BsvMapStats,
-    tags: string[],
+    tags: MapTag[],
     updatedAt: BsvInstant,
     uploaded: BsvInstant,
     uploader: BsvUserDetail,
@@ -142,3 +142,26 @@ export interface BsvMapParitySummary {
 
 export type BsvMapCharacteristic = ("Standard" | "OneSaber" | "NoArrows" | "90Degree" | "360Degree" | "Lightshow" | "Lawless")
 export type BsvMapDifficultyType = ("Easy" | "Normal" | "Hard" | "Expert" | "ExpertPlus")
+
+export type MapStyle = ("DanceStyle" | "Swing" | "Nightcore" | "Folk" | "Family" | "Ambient" | "Funk" | "Jazz" | "Classical" | "Soul" | "Speedcore" | "Punk" | "RB" | "Holiday" | "Vocaloid" | "JRock" | "Trance" | "DrumBass" | "Comedy" | "Instrumental" | "Hardcore" | "KPop" | "Indie" | "Techno" | "House" | "Game" | "Film" | "Alt" | "Dubstep" | "Metal" | "Anime" | "HipHop" | "JPop" | "Rock" | "Pop" | "Electronic")
+export type MapType = ("Accuracy" | "Balanced" | "Challenge" | "Dance" | "Fitness" | "Speed" | "Tech")
+export type MapTag = MapStyle | MapType
+
+export interface MapFilter {
+    automapper?: boolean,
+    chroma?: boolean,
+    cinema?: boolean,
+    noodle?: boolean,
+    curated?: boolean,
+    verified?: boolean,
+    from?: number,
+    to?: number,
+    fullSpread?: boolean,
+    ranked?: boolean,
+    minDuration?: number,
+    maxDuration?: number,
+    minNps?: number,
+    maxNps?: number,
+    enabledTags?: MapTag[],
+    excludedTags?: MapTag[]
+}
