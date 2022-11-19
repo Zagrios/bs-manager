@@ -22,7 +22,7 @@ const isDebug = process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD
 log.transports.file.level = 'info';
 log.transports.file.resolvePath = (() => {
     const now = new Date();
-    return path.join(app.getPath("logs"), `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}.log`);
+    return path.join(app.getPath("logs"), `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}-v${app.getVersion()}.log`);
 });
 
 log.catchErrors();

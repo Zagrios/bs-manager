@@ -493,5 +493,13 @@
 		"ReleaseImg": "https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans//32055887/52cbd15b5e226f509e051565f6e4935eb0e44e2c.png",
 		"ReleaseDate": "1665673269",
 		"year": "2022"
+	},
+	{
+		"BSVersion": "1.26.0",
+		"BSManifest": "3634450655207470002",
+		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/3414318646334948892",
+		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/clans//32055887/d18ad9d7f45a5cc2a467d75f0bdf9d32b9141b14.png",
+		"ReleaseDate": "1667923560",
+		"year": "2022"
 	}
 ]

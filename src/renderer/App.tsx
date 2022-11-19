@@ -11,6 +11,7 @@ import { ThemeService } from "./services/theme.service";
 import { NotificationOverlay } from "./components/notification/notification-overlay.component";
 import { PageStateService } from "./services/page-state.service";
 import MapsPage from "./pages/maps-page.component";
+import "tailwindcss/tailwind.css";
 
 export default function App() {
 

@@ -30,7 +30,10 @@ export default function Launcher() {
         updaterService.isUpdateAvailable().then(available => {
             if(!available){ return windowService.openThenCloseAll("index.html"); }
             setText("auto-update.downloading");
-            updaterService.downloadUpdate().then(installed => installed && updaterService.quitAndInstall());
+            updaterService.downloadUpdate().then(installed => {
+                if(!installed){ return windowService.openThenCloseAll("index.html"); }
+                updaterService.quitAndInstall()
+            });
         });
 
         return () => sub.unsubscribe();
