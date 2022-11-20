@@ -152,6 +152,7 @@ export interface MapFilter {
     chroma?: boolean,
     cinema?: boolean,
     noodle?: boolean,
+    me?: boolean,
     curated?: boolean,
     verified?: boolean,
     from?: number,

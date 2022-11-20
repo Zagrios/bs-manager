@@ -5,6 +5,7 @@ import { LocalMapsListPanel } from "./local-maps-list-panel.component"
 import {AnimatePresence, motion} from "framer-motion"
 import { BsmDropdownButton } from "../shared/bsm-dropdown-button.component"
 import { FilterPanel } from "./filter-panel.component"
+import { MapFilter } from "shared/models/maps/beat-saver.model"
 
 type Props = {
     oneBlock?: boolean,
@@ -14,6 +15,20 @@ type Props = {
 export function MapsPlaylistsPanel({version, oneBlock = false}: Props) {
     
     const [tabIndex, setTabIndex] = useState(0);
+    const [filter, setFilter] = useState<MapFilter>({
+        automapper: false,
+        chroma: false,
+        cinema: false,
+        curated: false,
+        enabledTags: [],
+        excludedTags: [],
+        fullSpread: false,
+        me: false,
+        noodle: false,
+        ranked: false,
+        verified: false,
+        
+    })
 
     return (
         <>
@@ -23,10 +38,10 @@ export function MapsPlaylistsPanel({version, oneBlock = false}: Props) {
                 <div className="h-full rounded-full bg-main-color-2 grow p-[6px]">
                     <input type="text" name="" id="" className="h-full w-full bg-main-color-1 rounded-full px-2" placeholder="Rechercher" />
                 </div>
-                <BsmDropdownButton className="h-full relative z-10 flex justify-center" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1" icon="search" text="Filtres" withBar={false}>
-                    <FilterPanel className="absolute top-[calc(100%+3px)] bg-main-color-3 origin-top w-[400px]"/>
+                <BsmDropdownButton className="h-full relative z-[1] flex justify-center" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1" icon="search" text="Filtres" withBar={false}>
+                    <FilterPanel className="absolute top-[calc(100%+3px)] bg-main-color-3 origin-top w-[500px] h-fit p-2 rounded-md shadow-md shadow-black" filter={{excludedTags: ["Accuracy"]}}/>
                 </BsmDropdownButton>
-                <BsmDropdownButton className="h-full flex aspect-square relative rounded-full z-10" buttonClassName="rounded-full h-full w-full p-[6px]" icon="three-dots" withBar={false}>
+                <BsmDropdownButton className="h-full flex aspect-square relative rounded-full z-[1]" buttonClassName="rounded-full h-full w-full p-[6px]" icon="three-dots" withBar={false}>
                     <></>
                 </BsmDropdownButton>
             </nav>

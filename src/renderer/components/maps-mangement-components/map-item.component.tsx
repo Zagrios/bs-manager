@@ -214,7 +214,7 @@ export function MapItem({hash, title, autor, songAutor, coverUrl, songUrl, autor
     )
 }
 
-const diffColors: Record<BsvMapDifficultyType, string> = {
+export const diffColors: Record<BsvMapDifficultyType, string> = {
     Easy: "#00FF9E",
     Normal: "#00FFFF",
     Hard: "#FFA700",
