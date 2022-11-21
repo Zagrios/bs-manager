@@ -5,7 +5,7 @@ import { BsmLink } from "../shared/bsm-link.component";
 import { BsmIcon } from "../svgs/bsm-icon.component";
 import { BsmButton } from "../shared/bsm-button.component";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState, Fragment } from "react";
+import { useState, Fragment, memo } from "react";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import dateFormat from "dateformat";
 import { AudioPlayerService } from "renderer/services/audio-player.service";
@@ -127,7 +127,7 @@ export function MapItem({hash, title, autor, songAutor, coverUrl, songUrl, autor
     }
     
     return (
-        <motion.li className="relative h-[100px] min-w-[400px] shrink-0 grow basis-0 text-white group cursor-pointer" onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)} style={{zIndex: hovered && 5, transform: "translateZ(0) scale(1.0, 1.0)", backfaceVisibility: "hidden"}} onClick={e => {e.stopPropagation(); onSelected(hash)}}>
+        <motion.li className="relative h-[100px] min-w-[400px] shrink-0 grow basis-0 text-white group cursor-pointer" onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)} style={{zIndex: hovered && 5, transform: "translateZ(0) scale(1.0, 1.0)", backfaceVisibility: "hidden"}} onClick={e => {onSelected(hash)}}>
             {(hovered || selected) && <motion.span className="glow-on-hover" animate={{opacity: 1}} transition={{duration: .1, ease: "easeIn"}}/>}
             <AnimatePresence>
                 {(diffsPanelHovered || bottomBarHovered) && (
