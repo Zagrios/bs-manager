@@ -13,8 +13,6 @@ export const BsManagerIcon = memo(({className}: {className?: string}) => {
 
     const bpm = audioPlayer.bpm;
 
-    console.log("bpm", bpm, playing);
-
     const transitions: Variants = {
         playing: {
             scale: [1, 1.05, 1],
