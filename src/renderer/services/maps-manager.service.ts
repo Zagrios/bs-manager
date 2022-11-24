@@ -22,7 +22,6 @@ export class MapsManagerService {
     }
 
     public getMaps(version?: BSVersion): Observable<BsmLocalMap[]>{
-        console.log("get maps")
         return new Observable(obs => {
             this.ipcService.send<BsmLocalMap[], BSVersion>("get-version-maps", {args: version}).then(res => {
                 if(!res.success){ return obs.next(null);}
@@ -36,6 +35,13 @@ export class MapsManagerService {
                 })
             });
         });
+    }
+
+    public versionHaveMapsLinked(version: BSVersion): Promise<boolean>{
+        return this.ipcService.send<boolean, BSVersion>("verion-have-maps-linked", {args: version}).then(res => {
+            if(!res.success){ throw "error"; }
+            return res.data;
+        })
     }
 
     public downloadMap(map: any, version?: BSVersion){

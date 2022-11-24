@@ -1,17 +1,23 @@
-import { useState } from "react";
+import { DetailedHTMLProps, Fragment, useState } from "react";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 
-export function TabNavBar(props: {tabsText: string[], onTabChange: (index: number) => void, className?: string}) {
+type Props = {
+    tabsText: string[],
+    onTabChange: (index: number) => void,
+    className?: string,
+    renderTab?: (props: DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>, text: string) => JSX.Element
+}
+
+export function TabNavBar(props: Props) {
 
     const [currentTabIndex, setCurrentTabIndex] = useState(0);
     const t = useTranslation();
     const secondColor = useThemeColor("second-color");
 
-    const selectYear = (tab: string) => {
-        const newIndex = props.tabsText.indexOf(tab);
-        setCurrentTabIndex(newIndex);
-        props.onTabChange(newIndex);
+    const selectTab = (index: number) => {
+        setCurrentTabIndex(index);
+        props.onTabChange(index);
     }
 
     return (
@@ -21,9 +27,16 @@ export function TabNavBar(props: {tabsText: string[], onTabChange: (index: numbe
                 <span className="absolute h-full block bg-current transition-transform duration-300 shadow-center shadow-current" style={{transform: `translate(${currentTabIndex * 100}%, 0)`, width: `calc(100% / ${props.tabsText.length})`}}/>
             </div>
             <ul className="grid" style={{gridTemplateColumns: `repeat(${props.tabsText.length}, minmax(0, 1fr))`}}>
-                { props.tabsText.map((y, index) => 
-                    <li className="px-4 h-full text-center text-gray-800 dark:text-gray-200 text-lg font-bold hover:backdrop-brightness-75" key={index} onClick={() => selectYear(y)}>{t(y)}</li>
-                )}
+                {props.tabsText.map((text, index) => (
+                        props.renderTab ? (
+                            <Fragment key={text}>
+                                {props.renderTab({onClick: () => selectTab(index)}, t(text))}
+                            </Fragment>
+                        ) : (
+                            <li className="px-4 h-full text-center text-gray-800 dark:text-gray-200 text-lg font-bold hover:backdrop-brightness-75" key={text} onClick={() => selectTab(index)}>{t(text)}</li>
+                        )
+                    
+                ))}
             </ul>
         </nav>
   )

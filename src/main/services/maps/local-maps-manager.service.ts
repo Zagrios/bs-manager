@@ -6,6 +6,7 @@ import { BSLocalVersionService } from "../bs-local-version.service";
 import { InstallationLocationService } from "../installation-location.service";
 import { UtilsService } from "../utils.service";
 import crypto from "crypto";
+import { lstat, lstatSync, symlinkSync } from "fs";
 
 export class LocalMapsManagerService {
 
@@ -29,15 +30,14 @@ export class LocalMapsManagerService {
         this.utils = UtilsService.getInstance();
     }
 
-    private async getMapsPath(version?: BSVersion): Promise<string>{
-        if(version){ return path.join(await this.localVersion.getVersionPath(version), this.LEVELS_ROOT_FOLDER); }
-        return this.installLocation.sharedMapsPath;
+    private async getMapsFolderPath(version?: BSVersion): Promise<string>{
+        if(version){ return path.join(await this.localVersion.getVersionPath(version), this.LEVELS_ROOT_FOLDER, this.CUSTOM_LEVELS_FOLDER); }
+        return path.join(this.installLocation.sharedMapsPath, this.CUSTOM_LEVELS_FOLDER);
     }
 
     private async computeMapHash(mapPath: string, rawInfoString: string): Promise<string>{
         const mapRawInfo = JSON.parse(rawInfoString);
         let content = rawInfoString;
-        console.log("oui");
         for(const set of mapRawInfo._difficultyBeatmapSets){
             for(const diff of set._difficultyBeatmaps){
                 const diffFilePath = path.join(mapPath, diff._beatmapFilename);
@@ -69,12 +69,9 @@ export class LocalMapsManagerService {
     }
 
     public async getMaps(version?: BSVersion): Promise<BsmLocalMap[]>{
-        const levelsRoot = await this.getMapsPath(version);
-        const levelsFolder = path.join(levelsRoot, this.CUSTOM_LEVELS_FOLDER);
+        const levelsFolder = await this.getMapsFolderPath(version)
 
         const levelsPath = (await this.utils.pathExist(levelsFolder)) ? this.utils.listDirsInDir(levelsFolder, true) : [];
-
-
 
         const mapsInfo = await Promise.all(levelsPath.map(levelPath => this.loadMapInfoFromPath(levelPath)))
 
@@ -86,5 +83,29 @@ export class LocalMapsManagerService {
     public deleteMap(version?: BSVersion){
 
     }
+
+    public async versionIsLinked(version: BSVersion): Promise<boolean>{
+
+        const levelsPath = await this.getMapsFolderPath(version);
+
+        console.log(levelsPath, version);
+
+        const isPathExist = await this.utils.pathExist(levelsPath);
+
+        if(!isPathExist){ return false; }
+
+        return lstatSync(levelsPath).isSymbolicLink()
+    }
+
+    public async linkVersionMaps(verion: BSVersion, includeVersionMaps: boolean): Promise<void>{
+        //TODO
+        //Can use fs.symlink to create symlink
+    }
+
+    public async unlinkVersionMaps(version: BSVersion, keepLinkedMaps: boolean): Promise<void>{
+        //TODO
+    }
+
+    
 
 }

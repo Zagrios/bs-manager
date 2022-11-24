@@ -15,4 +15,13 @@ ipcMain.on('get-version-maps', (event, request: IpcRequest<BSVersion>) => {
         utilsService.ipcSend(request.responceChannel, {success: false});
     })
     
+});
+
+ipcMain.on("verion-have-maps-linked", async (event, request: IpcRequest<BSVersion>) => {
+    const utils = UtilsService.getInstance();
+    const maps = LocalMapsManagerService.getInstance();
+
+    console.log(request.args);
+    utils.ipcSend<boolean>(request.responceChannel, {success: true, data: await maps.versionIsLinked(request.args)});
+
   });

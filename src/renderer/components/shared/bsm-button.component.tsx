@@ -45,7 +45,7 @@ export function BsmButton({className, style, imgClassName, iconClassName, icon, 
 
     const renderTypeColor = (() => {
         if(typeColor === "primary"){ return ""; }
-        if(!typeColor){ return `bg-light-main-color-2 dark:bg-main-color-2 ${!withBar && "hover:bg-light-main-color-3 dark:hover:bg-main-color-3"}`; }
+        if(!typeColor){ return `bg-light-main-color-2 dark:bg-main-color-2 ${!withBar && "hover:brightness-125"}`; }
         if(typeColor === "cancel"){ return "bg-gray-500"; }
         if(typeColor === "error"){ return "bg-red-500"; }
         if(typeColor === "success"){ return "bg-green-500"; }
