@@ -27,8 +27,15 @@ export function LocalMapsListPanel({version, className, filter, search} : Props)
 
         const subs: Subscription[] = [];
 
-        if(isVisible){
+        const loadMaps = () => {
+            console.log("LOAD MAPS");
             subs.push(mapsManager.getMaps(version).subscribe(localMaps => setMaps(() => [...localMaps])));
+        }
+
+        if(isVisible){
+            loadMaps();
+            subs.push(mapsManager.versionLinked$.subscribe(loadMaps));
+            subs.push(mapsManager.versionUnlinked$.subscribe(loadMaps));
         }
     
         return () => {

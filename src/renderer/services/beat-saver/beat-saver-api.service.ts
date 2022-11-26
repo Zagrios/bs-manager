@@ -22,9 +22,18 @@ export class BeatSaverApiService {
         
         const resp = await fetch(`${this.bsaverApiUrl}/maps/hash/${paramsHashs}`);
 
-        const data = await resp.json() as Record<Lowercase<T>, BsvMapDetail>;
+        const data = await resp.json() as Record<Lowercase<T>, BsvMapDetail> | BsvMapDetail;
 
-        return {status: resp.status, data: data};
+        if((data as BsvMapDetail).id){
+            const key = (data as BsvMapDetail).versions.at(0).hash.toLowerCase();
+            const parsedData = {
+                [key]: data as BsvMapDetail
+            } as Record<Lowercase<T>, BsvMapDetail>;
+
+            return {status: resp.status, data: parsedData}
+        }
+
+        return {status: resp.status, data: (data as Record<Lowercase<T>, BsvMapDetail>)};
 
     }
 

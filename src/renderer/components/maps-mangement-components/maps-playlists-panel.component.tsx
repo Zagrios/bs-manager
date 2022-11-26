@@ -8,7 +8,7 @@ import { MapFilter, MapTag } from "shared/models/maps/beat-saver.model"
 import { BsmButton } from "../shared/bsm-button.component"
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook"
 import { MapsManagerService } from "renderer/services/maps-manager.service"
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
 type Props = {
     oneBlock?: boolean,
@@ -31,9 +31,12 @@ export function MapsPlaylistsPanel({version, oneBlock = false}: Props) {
 
 
     useEffect(() => {
+        loadMapIsLinked();
+    }, [version]);
+
+    const loadMapIsLinked = () => {
         mapsService.versionHaveMapsLinked(version).then(setMapsLinked);
-    }, [version])
-    
+    }
 
     const handleSearch = (value: string) => {
         if(tabIndex === 0){
@@ -42,16 +45,37 @@ export function MapsPlaylistsPanel({version, oneBlock = false}: Props) {
         return setPlaylistSearch(() => value);
     }
 
-    const renderTab = (props: DetailedHTMLProps<React.HTMLAttributes<any>, any>, text: string): JSX.Element => {
+    const handleMapsLinkClick = () => {
+        if(!mapsLinked){
+            return mapsService.linkVersion(version).then(loadMapIsLinked);
+        }
+        mapsService.unlinkVersion(version).then(loadMapIsLinked);
+    }
+
+    const handlePlaylistLinkClick = () => {
+
+    }
+
+    const renderTab = (props: DetailedHTMLProps<React.HTMLAttributes<HTMLLIElement>, HTMLLIElement>, text: string, index: number): JSX.Element => {
 
         const mainColor = mapsLinked ? color : "red";
+
+        const variants: Variants = {
+            hover: {rotate: 22.5},
+            tap: {rotate: 45}
+        }
+
+        const onClickLink = (index: number) => {
+            if(index === 0){ return handleMapsLinkClick() };
+            handlePlaylistLinkClick();
+        }
 
         return (
             <li className="relative text-center text-lg font-bold hover:backdrop-brightness-75 flex justify-center items-center content-center" onClick={props.onClick}>
                 <span>{text}</span>
-                <motion.div whileHover={{rotate: [0, 20, 0]}} transition={{duration: .35}} className="absolute block p-1 right-3 h-[calc(100%-5px)] aspect-square blur-0 hover:brightness-75"> 
+                <motion.div variants={variants} whileHover="hover" whileTap="tap" initial={{rotate: 0}} className="absolute block p-1 right-3 h-[calc(100%-5px)] aspect-square blur-0 hover:brightness-75"> 
                     <span className="absolute top-0 left-0 h-full w-full rounded-full opacity-20" style={{backgroundColor: mainColor}}/>
-                    <BsmButton className="p-1 absolute top-0 left-0 h-full w-full !bg-transparent -rotate-45" iconClassName="" icon={mapsLinked ? "link" : "unlink"} withBar={false} style={{color: mainColor}}/>
+                    <BsmButton className="p-1 absolute top-0 left-0 h-full w-full !bg-transparent -rotate-45" iconClassName="" icon={mapsLinked ? "link" : "unlink"} withBar={false} style={{color: mainColor}} onClick={e => {e.stopPropagation(); onClickLink(index)}}/>
                 </motion.div>
             </li>
         )

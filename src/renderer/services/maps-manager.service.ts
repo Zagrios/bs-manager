@@ -1,4 +1,4 @@
-import { Observable } from "rxjs";
+import { Subject, Observable } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { BeatSaverService } from "./beat-saver/beat-saver.service";
@@ -15,6 +15,9 @@ export class MapsManagerService {
 
     private readonly ipcService: IpcService;
     private readonly bsaver: BeatSaverService;
+
+    private readonly lastLinkedVersion$: Subject<BSVersion> = new Subject();
+    private readonly lastUnlinkedVersion$: Subject<BSVersion> = new Subject();
 
     private constructor(){
         this.ipcService = IpcService.getInstance();
@@ -44,14 +47,30 @@ export class MapsManagerService {
         })
     }
 
-    public downloadMap(map: any, version?: BSVersion){
-
+    public linkVersion(version: BSVersion): Promise<void>{
+        return this.ipcService.send<void, {version: BSVersion, keepMaps: boolean}>("link-version-maps", {args: {version, keepMaps: true}}).then(res => {
+            if(res.success){
+                return this.lastLinkedVersion$.next(version);
+            }
+            throw res.error;
+        });
     }
 
-    public deleteMaps(maps: any[], version?: BSVersion){
-
+    public unlinkVersion(version: BSVersion): Promise<void>{
+        return this.ipcService.send<void, {version: BSVersion, keepMaps: boolean}>("unlink-version-maps", {args: {version, keepMaps: true}}).then(res => {
+            if(res.success){
+                return this.lastUnlinkedVersion$.next(version);
+            }
+            throw res.error;
+        });
     }
 
+    public get versionLinked$(): Observable<BSVersion>{
+        return this.lastLinkedVersion$.asObservable();
+    }
 
+    public get versionUnlinked$(): Observable<BSVersion>{
+        return this.lastUnlinkedVersion$.asObservable();
+    }
 
 }

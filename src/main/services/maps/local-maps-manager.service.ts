@@ -6,7 +6,8 @@ import { BSLocalVersionService } from "../bs-local-version.service";
 import { InstallationLocationService } from "../installation-location.service";
 import { UtilsService } from "../utils.service";
 import crypto from "crypto";
-import { lstat, lstatSync, symlinkSync } from "fs";
+import { lstat, lstatSync, symlinkSync, readdir, fstat, unlinkSync } from "fs";
+import { copySync } from "fs-extra";
 
 export class LocalMapsManagerService {
 
@@ -32,7 +33,11 @@ export class LocalMapsManagerService {
 
     private async getMapsFolderPath(version?: BSVersion): Promise<string>{
         if(version){ return path.join(await this.localVersion.getVersionPath(version), this.LEVELS_ROOT_FOLDER, this.CUSTOM_LEVELS_FOLDER); }
-        return path.join(this.installLocation.sharedMapsPath, this.CUSTOM_LEVELS_FOLDER);
+        const sharedMapsPath = path.join(this.installLocation.sharedMapsPath, this.CUSTOM_LEVELS_FOLDER);
+        if(!(await this.utils.pathExist(sharedMapsPath))){
+            this.utils.createFolderIfNotExist(sharedMapsPath);
+        }
+        return sharedMapsPath;
     }
 
     private async computeMapHash(mapPath: string, rawInfoString: string): Promise<string>{
@@ -42,7 +47,7 @@ export class LocalMapsManagerService {
             for(const diff of set._difficultyBeatmaps){
                 const diffFilePath = path.join(mapPath, diff._beatmapFilename);
                 if(!await this.utils.pathExist(diffFilePath)){ continue; }
-                const diffContent = (await this.utils.readFileAsync(diffFilePath)).toString()
+                const diffContent = (await this.utils.readFileAsync(diffFilePath)).toString();
                 content += diffContent;
             }
         }
@@ -69,26 +74,18 @@ export class LocalMapsManagerService {
     }
 
     public async getMaps(version?: BSVersion): Promise<BsmLocalMap[]>{
-        const levelsFolder = await this.getMapsFolderPath(version)
+        const levelsFolder = await this.getMapsFolderPath(version);
 
         const levelsPath = (await this.utils.pathExist(levelsFolder)) ? this.utils.listDirsInDir(levelsFolder, true) : [];
 
-        const mapsInfo = await Promise.all(levelsPath.map(levelPath => this.loadMapInfoFromPath(levelPath)))
-
-        console.log(mapsInfo);
+        const mapsInfo = await Promise.all(levelsPath.map(levelPath => this.loadMapInfoFromPath(levelPath)));
 
         return mapsInfo.filter(info => !!info);
-    }
-
-    public deleteMap(version?: BSVersion){
-
     }
 
     public async versionIsLinked(version: BSVersion): Promise<boolean>{
 
         const levelsPath = await this.getMapsFolderPath(version);
-
-        console.log(levelsPath, version);
 
         const isPathExist = await this.utils.pathExist(levelsPath);
 
@@ -97,13 +94,37 @@ export class LocalMapsManagerService {
         return lstatSync(levelsPath).isSymbolicLink()
     }
 
-    public async linkVersionMaps(verion: BSVersion, includeVersionMaps: boolean): Promise<void>{
-        //TODO
-        //Can use fs.symlink to create symlink
+    public async linkVersionMaps(version: BSVersion, keepMaps: boolean): Promise<void>{
+
+        if(await this.versionIsLinked(version)){ return; }
+
+        const sharedMapsPath = await this.getMapsFolderPath();
+        const versionMapsPath = await this.getMapsFolderPath(version);
+
+        if(keepMaps){
+            await this.utils.moveDirContent(versionMapsPath, sharedMapsPath);
+        }
+
+        await this.utils.deleteFolder(versionMapsPath);
+        
+        symlinkSync(sharedMapsPath, versionMapsPath, "junction");
     }
 
-    public async unlinkVersionMaps(version: BSVersion, keepLinkedMaps: boolean): Promise<void>{
-        //TODO
+    public async unlinkVersionMaps(version: BSVersion, keepMaps: boolean): Promise<void>{
+        
+        const sharedMapsPath = await this.getMapsFolderPath();
+        const versionMapsPath = await this.getMapsFolderPath(version);
+
+        if(await this.versionIsLinked(version)){
+            unlinkSync(versionMapsPath);
+        }
+
+        this.utils.createFolderIfNotExist(versionMapsPath);
+        
+        if(keepMaps){
+            copySync(sharedMapsPath, versionMapsPath);
+        }
+
     }
 
     

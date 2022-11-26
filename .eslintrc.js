@@ -32,7 +32,8 @@ module.exports = {
     "@typescript-eslint/no-throw-literal": "off",
     "@typescript-eslint/no-unused-expressions": "off",
     "no-param-reassign": "off",
-    "no-useless-escape": "off"
+    "no-useless-escape": "off",
+    "jsx-a11y/no-noninteractive-element-interactions": "off"
   },
   parserOptions: {
     ecmaVersion: 2020,

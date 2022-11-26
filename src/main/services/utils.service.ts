@@ -1,4 +1,5 @@
 import { existsSync, mkdirSync, readdirSync, readFile, unlinkSync } from "fs";
+import { moveSync } from "fs-extra"
 import { spawnSync } from "child_process";
 import { homedir } from "os";
 import path from "path";
@@ -75,8 +76,22 @@ export class UtilsService{
   }
 
   public deleteFolder(folderPath: string): Promise<void>{
+    const folderExist = this.pathExist(folderPath);
+    if(!folderExist){ return; }
     return rm(folderPath, {recursive: true});
   }
+
+    public async moveDirContent(src: string, dest: string, overwrite = false): Promise<void>{
+        const [srcExist, destExist] = await Promise.all([this.pathExist(src), this.pathExist(dest)]);
+        if(!srcExist){ return; }
+        if(!destExist){ await this.createFolderIfNotExist(dest); }
+        readdirSync(src, {encoding: "utf-8"}).forEach(file => {
+            const srcFullPath = path.join(src, file);
+            const destFullPath = path.join(dest, file);
+            if(!overwrite && this.pathExist(destFullPath)){ return; }
+            moveSync(srcFullPath, destFullPath, {overwrite});
+        });
+    }
 
   public ipcSend<T = any>(channel: string, response: IpcResponse<T>): void{
     try {

@@ -6,7 +6,7 @@ type Props = {
     tabsText: string[],
     onTabChange: (index: number) => void,
     className?: string,
-    renderTab?: (props: DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>, text: string) => JSX.Element
+    renderTab?: (props: DetailedHTMLProps<React.HTMLAttributes<any>, any>, text: string, index?: number) => JSX.Element
 }
 
 export function TabNavBar(props: Props) {
@@ -30,7 +30,7 @@ export function TabNavBar(props: Props) {
                 {props.tabsText.map((text, index) => (
                         props.renderTab ? (
                             <Fragment key={text}>
-                                {props.renderTab({onClick: () => selectTab(index)}, t(text))}
+                                {props.renderTab({onClick: () => selectTab(index)}, t(text), index)}
                             </Fragment>
                         ) : (
                             <li className="px-4 h-full text-center text-gray-800 dark:text-gray-200 text-lg font-bold hover:backdrop-brightness-75" key={text} onClick={() => selectTab(index)}>{t(text)}</li>

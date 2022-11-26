@@ -21,7 +21,30 @@ ipcMain.on("verion-have-maps-linked", async (event, request: IpcRequest<BSVersio
     const utils = UtilsService.getInstance();
     const maps = LocalMapsManagerService.getInstance();
 
-    console.log(request.args);
     utils.ipcSend<boolean>(request.responceChannel, {success: true, data: await maps.versionIsLinked(request.args)});
 
   });
+
+ipcMain.on("link-version-maps", async (event, request: IpcRequest<{version: BSVersion, keepMaps: boolean}>) => {
+    const utils = UtilsService.getInstance();
+    const maps = LocalMapsManagerService.getInstance();
+
+    maps.linkVersionMaps(request.args.version, request.args.keepMaps).then(() => {
+        utils.ipcSend<void>(request.responceChannel, {success: true});
+    }).catch(err => {
+        utils.ipcSend<void>(request.responceChannel, {success: true, error: err});
+    });
+
+});
+
+ipcMain.on("unlink-version-maps", async (event, request: IpcRequest<{version: BSVersion, keepMaps: boolean}>) => {
+    const utils = UtilsService.getInstance();
+    const maps = LocalMapsManagerService.getInstance();
+
+    maps.unlinkVersionMaps(request.args.version, request.args.keepMaps).then(() => {
+        utils.ipcSend<void>(request.responceChannel, {success: true});
+    }).catch(err => {
+        utils.ipcSend<void>(request.responceChannel, {success: true, error: err});
+    });
+
+});
