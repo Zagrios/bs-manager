@@ -1,8 +1,13 @@
+import { LinkMapsModal } from "renderer/components/modal/modal-types/link-maps-modal.component";
+import { UnlinkMapsModal } from "renderer/components/modal/modal-types/unlink-maps-modal.component";
+import { finalize } from "rxjs/operators";
 import { Subject, Observable } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { BeatSaverService } from "./beat-saver/beat-saver.service";
 import { IpcService } from "./ipc.service";
+import { ModalExitCode, ModalService } from "./modale.service";
+import { DeleteMapsModal } from "renderer/components/modal/modal-types/delete-maps-modal.component";
 
 export class MapsManagerService {
 
@@ -15,6 +20,7 @@ export class MapsManagerService {
 
     private readonly ipcService: IpcService;
     private readonly bsaver: BeatSaverService;
+    private readonly modal: ModalService
 
     private readonly lastLinkedVersion$: Subject<BSVersion> = new Subject();
     private readonly lastUnlinkedVersion$: Subject<BSVersion> = new Subject();
@@ -22,6 +28,7 @@ export class MapsManagerService {
     private constructor(){
         this.ipcService = IpcService.getInstance();
         this.bsaver = BeatSaverService.getInstance();
+        this.modal = ModalService.getInsance();
     }
 
     public getMaps(version?: BSVersion): Observable<BsmLocalMap[]>{
@@ -30,7 +37,7 @@ export class MapsManagerService {
                 if(!res.success){ return obs.next(null);}
                 obs.next(res.data);
 
-                this.bsaver.getMapDetailsFromHashs(res.data.map(localMap => localMap.hash)).subscribe(mapsDetails => {
+                this.bsaver.getMapDetailsFromHashs(res.data.map(localMap => localMap.hash)).pipe(finalize(() => obs.complete())).subscribe(mapsDetails => {
                     mapsDetails.forEach(details => {
                         res.data.find(localMap => localMap.hash === details.versions.find(details => details?.hash === localMap.hash)?.hash).bsaverInfo = details
                     });
@@ -47,22 +54,44 @@ export class MapsManagerService {
         })
     }
 
-    public linkVersion(version: BSVersion): Promise<void>{
-        return this.ipcService.send<void, {version: BSVersion, keepMaps: boolean}>("link-version-maps", {args: {version, keepMaps: true}}).then(res => {
-            if(res.success){
-                return this.lastLinkedVersion$.next(version);
-            }
-            throw res.error;
-        });
+    public async linkVersion(version: BSVersion): Promise<void>{
+
+        const modalRes = await this.modal.openModal(LinkMapsModal);
+
+        if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return; }
+
+        const res = await this.ipcService.send<void, {version: BSVersion, keepMaps: boolean}>("link-version-maps", {args: {version, keepMaps: !!modalRes.data}});
+
+        if(res.success){
+            this.lastLinkedVersion$.next(version);
+            return;
+        }
     }
 
-    public unlinkVersion(version: BSVersion): Promise<void>{
-        return this.ipcService.send<void, {version: BSVersion, keepMaps: boolean}>("unlink-version-maps", {args: {version, keepMaps: true}}).then(res => {
-            if(res.success){
-                return this.lastUnlinkedVersion$.next(version);
-            }
-            throw res.error;
-        });
+    public async unlinkVersion(version: BSVersion): Promise<void>{
+
+        const modalRes = await this.modal.openModal(UnlinkMapsModal);
+
+        if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return; }
+
+        const res = await this.ipcService.send<void, {version: BSVersion, keepMaps: boolean}>("unlink-version-maps", {args: {version, keepMaps: !!modalRes.data}});
+
+        if(res.success){
+            return this.lastUnlinkedVersion$.next(version);
+        }
+    }
+
+    public async deleteMaps(maps: BsmLocalMap[], version?: BSVersion): Promise<boolean>{
+
+        const versionLinked = await this.versionHaveMapsLinked(version);
+
+        const modalRes = await this.modal.openModal(DeleteMapsModal, {linked: versionLinked, maps});
+
+        if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return false; }
+
+        const res = await this.ipcService.send<void, {version: BSVersion, maps: BsmLocalMap[]}>("delete-maps", {args: {version, maps}});
+
+        return res.success;
     }
 
     public get versionLinked$(): Observable<BSVersion>{

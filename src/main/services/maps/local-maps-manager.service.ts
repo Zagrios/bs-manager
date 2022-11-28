@@ -127,6 +127,10 @@ export class LocalMapsManagerService {
 
     }
 
+    public async deleteMaps(maps: BsmLocalMap[], verion?: BSVersion){
+        // TODO
+    }
+
     
 
 }

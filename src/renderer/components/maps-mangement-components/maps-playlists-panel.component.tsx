@@ -49,26 +49,23 @@ export function MapsPlaylistsPanel({version, oneBlock = false}: Props) {
         if(!mapsLinked){
             return mapsService.linkVersion(version).then(loadMapIsLinked);
         }
-        mapsService.unlinkVersion(version).then(loadMapIsLinked);
+        return mapsService.unlinkVersion(version).then(loadMapIsLinked);
     }
 
     const handlePlaylistLinkClick = () => {
-
+        //TODO
     }
 
     const renderTab = (props: DetailedHTMLProps<React.HTMLAttributes<HTMLLIElement>, HTMLLIElement>, text: string, index: number): JSX.Element => {
 
         const mainColor = mapsLinked ? color : "red";
 
-        const variants: Variants = {
-            hover: {rotate: 22.5},
-            tap: {rotate: 45}
-        }
-
         const onClickLink = (index: number) => {
             if(index === 0){ return handleMapsLinkClick() };
-            handlePlaylistLinkClick();
+            return handlePlaylistLinkClick();
         }
+
+        const variants: Variants = { hover: {rotate: 22.5}, tap: {rotate: 45} };
 
         return (
             <li className="relative text-center text-lg font-bold hover:backdrop-brightness-75 flex justify-center items-center content-center" onClick={props.onClick}>

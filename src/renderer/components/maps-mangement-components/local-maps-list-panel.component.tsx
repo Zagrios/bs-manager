@@ -22,15 +22,9 @@ export function LocalMapsListPanel({version, className, filter, search} : Props)
     const isVisible = useInView(ref, {once: true});
     const [maps, setMaps] = useState([] as BsmLocalMap[]);
     const [selectedMaps, setSelectedMaps] = useState([] as string[]);
+    const [subs] = useState<Subscription[]>([]);
 
     useEffect(() => {
-
-        const subs: Subscription[] = [];
-
-        const loadMaps = () => {
-            console.log("LOAD MAPS");
-            subs.push(mapsManager.getMaps(version).subscribe(localMaps => setMaps(() => [...localMaps])));
-        }
 
         if(isVisible){
             loadMaps();
@@ -42,7 +36,15 @@ export function LocalMapsListPanel({version, className, filter, search} : Props)
             setMaps(() => []);
             subs.forEach(s => s.unsubscribe());
         }
-    }, [isVisible, version])
+    }, [isVisible, version]);
+
+    const loadMaps = () => {
+        subs.push(mapsManager.getMaps(version).subscribe(localMaps => setMaps(() => [...localMaps])));
+    }
+
+    const handleDelete = (map: BsmLocalMap) => {
+        mapsManager.deleteMaps([map], version).then(res => res && loadMaps())
+    }
 
     const extractMapDiffs = (map: BsmLocalMap): Map<BsvMapCharacteristic, ParsedMapDiff[]> => {
         const res = new Map<BsvMapCharacteristic, ParsedMapDiff[]>();
@@ -193,7 +195,7 @@ export function LocalMapsListPanel({version, className, filter, search} : Props)
             duration={map.bsaverInfo?.metadata?.duration}
             selected={selectedMaps.some(hash => hash === map.hash)}
             diffs={extractMapDiffs(map)} mapId={map.bsaverInfo?.id} qualified={null} ranked={map.bsaverInfo?.ranked} autorId={map.bsaverInfo?.uploader?.id} likes={map.bsaverInfo?.stats?.upvotes} createdAt={map.bsaverInfo?.createdAt}
-            onDelete={() => {}}
+            onDelete={() => handleDelete(map)}
             onSelected={onMapSelected}
         />;
     }
