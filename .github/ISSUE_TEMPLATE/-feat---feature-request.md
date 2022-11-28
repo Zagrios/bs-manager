@@ -1,7 +1,7 @@
 ---
-name: Feature request
+name: "[FEAT.] Feature request"
 about: Suggest an idea for this project
-title: "Feature: "
+title: "[FEAT.] : "
 labels: enhancement
 assignees: Zagrios
 
