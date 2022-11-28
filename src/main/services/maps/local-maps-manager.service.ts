@@ -6,7 +6,7 @@ import { BSLocalVersionService } from "../bs-local-version.service";
 import { InstallationLocationService } from "../installation-location.service";
 import { UtilsService } from "../utils.service";
 import crypto from "crypto";
-import { lstat, lstatSync, symlinkSync, readdir, fstat, unlinkSync } from "fs";
+import { lstatSync, symlinkSync, unlinkSync, readdirSync } from "fs";
 import { copySync } from "fs-extra";
 
 export class LocalMapsManagerService {
@@ -128,7 +128,22 @@ export class LocalMapsManagerService {
     }
 
     public async deleteMaps(maps: BsmLocalMap[], verion?: BSVersion){
-        // TODO
+       
+        const mapsFolder = await this.getMapsFolderPath(verion);
+
+        const mapsHashsToDelete = maps.map(m => m.hash);
+
+        const mapsFolders = readdirSync(mapsFolder, {withFileTypes: true});
+
+        for(const content of mapsFolders){
+            if(!content.isDirectory()){ continue; }
+            const mapFolderPath = path.join(mapsFolder, content.name);
+            const { hash } = await this.loadMapInfoFromPath(mapFolderPath);
+            if(mapsHashsToDelete.includes(hash)){
+                await this.utils.deleteFolder(mapFolderPath);
+            }
+        }
+
     }
 
     
