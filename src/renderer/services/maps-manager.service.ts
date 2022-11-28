@@ -8,6 +8,7 @@ import { BeatSaverService } from "./beat-saver/beat-saver.service";
 import { IpcService } from "./ipc.service";
 import { ModalExitCode, ModalService } from "./modale.service";
 import { DeleteMapsModal } from "renderer/components/modal/modal-types/delete-maps-modal.component";
+import { ProgressBarService } from "./progress-bar.service";
 
 export class MapsManagerService {
 
@@ -20,7 +21,8 @@ export class MapsManagerService {
 
     private readonly ipcService: IpcService;
     private readonly bsaver: BeatSaverService;
-    private readonly modal: ModalService
+    private readonly modal: ModalService;
+    private readonly progressBar: ProgressBarService;
 
     private readonly lastLinkedVersion$: Subject<BSVersion> = new Subject();
     private readonly lastUnlinkedVersion$: Subject<BSVersion> = new Subject();
@@ -29,6 +31,7 @@ export class MapsManagerService {
         this.ipcService = IpcService.getInstance();
         this.bsaver = BeatSaverService.getInstance();
         this.modal = ModalService.getInsance();
+        this.progressBar = ProgressBarService.getInstance();
     }
 
     public getMaps(version?: BSVersion): Observable<BsmLocalMap[]>{
@@ -60,11 +63,20 @@ export class MapsManagerService {
 
         if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return; }
 
+        const showProgressBar = this.progressBar.require();
+
+        if(showProgressBar){
+            this.progressBar.showFake(.01);
+        }
+
         const res = await this.ipcService.send<void, {version: BSVersion, keepMaps: boolean}>("link-version-maps", {args: {version, keepMaps: !!modalRes.data}});
+
+        if(showProgressBar){
+            this.progressBar.hide(true);
+        }
 
         if(res.success){
             this.lastLinkedVersion$.next(version);
-            return;
         }
     }
 
@@ -74,10 +86,20 @@ export class MapsManagerService {
 
         if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return; }
 
+        const showProgressBar = this.progressBar.require();
+
+        if(showProgressBar){
+            this.progressBar.showFake(.01);
+        }
+
         const res = await this.ipcService.send<void, {version: BSVersion, keepMaps: boolean}>("unlink-version-maps", {args: {version, keepMaps: !!modalRes.data}});
 
+        if(showProgressBar){
+            this.progressBar.hide(true);
+        }
+
         if(res.success){
-            return this.lastUnlinkedVersion$.next(version);
+            this.lastUnlinkedVersion$.next(version);
         }
     }
 
@@ -89,7 +111,17 @@ export class MapsManagerService {
 
         if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return false; }
 
+        const showProgressBar = this.progressBar.require(); 
+
+        if(showProgressBar && maps.length > 1){
+            this.progressBar.showFake(.008);
+        }
+
         const res = await this.ipcService.send<void, {version: BSVersion, maps: BsmLocalMap[]}>("delete-maps", {args: {version, maps}});
+
+        if(showProgressBar && maps.length > 1){
+            this.progressBar.hide(true);
+        }
 
         return res.success;
     }
