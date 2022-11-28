@@ -68,7 +68,7 @@
 
 ## About The Project
 <div align="center">
-<img src ="https://user-images.githubusercontent.com/40648115/194020303-954e298f-4436-4900-9d27-a52162273318.png" width="800" height="533">
+<img src ="resources/readme/preview01.png" width="800" height="533">
 </div>
 <br><br>
 <p>Beat Saber Manager was created to unify and improve the two most used tools in the community (<a href="https://github.com/RiskiVR/BSLegacyLauncher">BS legacy launcher</a> and <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>).
@@ -104,23 +104,23 @@
 ## Usage
 
 ### Manage Versions
-
-<div align="center">
-<img src="/resources/readme/wip.gif">
-</div>
-
-### Install Mods
-
 <div align="center">
 <h3>Coming soon</h3>
-<img src="/resources/readme/wip.gif" alt="(WIP)">
+<img src="resources/readme/wip.gif" alt="(WIP)">
+</div>
+
+
+### Install Mods
+<div align="center">
+<h3>Coming soon</h3>
+<img src="resources/readme/wip.gif" alt="(WIP)">
 </div>
 
 ### Install Maps
 
 <div align="center">
 <h3>Coming soon</h3>
-<img src="/resources/readme/wip.gif" alt="(WIP)">
+<img src="resources/readme/wip.gif" alt="(WIP)">
 </div>
 
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
