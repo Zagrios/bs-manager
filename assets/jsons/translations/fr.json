@@ -5,7 +5,8 @@
       "launch": "Lancer",
       "mods": "Mods",
       "maps": "Maps",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "delete": "Supprimer"
    },
    "pages":{
       "version-viewer":{
@@ -348,6 +349,47 @@
         "uninstall-all-mods":{
             "title": "Désinstaller les mods",
             "description": "Es-tu sûr de vouloir désinstaller tous les mods de la version {version} ? Cette opération ne pourra pas être annulée."
+        },
+        "maps-actions":{
+            "delete-maps":{
+                "title":{
+                    "single":"Supprimer la map ?",
+                    "multiple":"Supprimer les maps ?"
+                },
+                "desc":{
+                    "single":"Est-tu sur de vouloir supprimer la map {name} ?",
+                    "multiple":"Est-tu sur de vouloir supprimer les {nb} maps ?"
+                },
+                "info":{
+                    "desc":{
+                        "single":"Cette map fait partie des maps paratagées",
+                        "multiple":"Ces maps font parties des maps partagées"
+                    },
+                    "title":{
+                        "single":"Cette map sera également supprimée des versions utilisant les maps partagées",
+                        "multiple":"Ces maps seront égalements supprimées des versions utilisant les maps partagées"
+                    }
+                }
+            },
+            "link-maps":{
+                "title":"Lier les maps",
+                "desc":"La liaison des maps permet de partager les maps entre toute les version. Une fois liée, cette version profitera des maps partagées",
+                "info":"L'ajout et la suppression de maps sera également partagé",
+                "keep-maps":{
+                    "label":"Conserver les maps",
+                    "title":"Conserver les maps déplacera les maps de la version actuelle dans le dossier des maps partagées. Dans le cas contraire elles seront perdues"
+                },
+                "valid-btn":"Lier les maps"
+            },
+            "unlink-maps":{
+                "title":"Délier les maps",
+                "desc":"Attention, délier les maps ne permettra plus l'utilisation des maps paratagées pour cette version.",
+                "keep-maps":{
+                    "label":"Conserver les maps",
+                    "title":"Conserver les maps créera une copie des maps partagées pour la version actuelle. Dans le cas contraire, aucune map ne sera conservée pour cette version."
+                },
+                "valid-btn":"délier les maps"
+            }
         }
    },
    "auto-update":{

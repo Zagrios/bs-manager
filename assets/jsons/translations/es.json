@@ -5,7 +5,8 @@
       "launch": "Lanzar",
       "mods": "Mods",
       "maps": "Maps",
-      "cancel": "Cancelar"
+      "cancel": "Cancelar",
+      "delete": "Borrar"
    },
 	"pages":{
       "version-viewer":{
@@ -349,6 +350,47 @@
         "uninstall-all-mods":{
             "title": "Desinstalación de mods",
             "description": "¿Estás seguro de que quieres desinstalar todos los mods de la versión {version}? Esta operación no se puede deshacer."
+        },
+        "maps-actions":{
+            "delete-maps":{
+                "title":{
+                    "single":"¿Borrar el mapa?",
+                    "multiple":"¿Eliminar mapas?"
+                },
+                "desc":{
+                    "single":"¿Estás seguro de que quieres eliminar el mapa {name}?",
+                    "multiple":"¿Seguro que quieres eliminar los {3} mapas?"
+                },
+                "info":{
+                    "desc":{
+                        "single":"Este mapa es parte de los mapas compartidos",
+                        "multiple":"Estos mapas son parte de los mapas compartidos"
+                    },
+                    "title":{
+                        "single":"Este mapa también se eliminará de las versiones que usan mapas compartidos.",
+                        "multiple":"Estos mapas también se eliminarán de las versiones que usan mapas compartidos."
+                    }
+                }
+            },
+            "link-maps":{
+                "title":"Vincular mapas",
+                "desc":"La vinculación de mapas permite compartir mapas entre todas las versiones. Una vez vinculada, esta versión se beneficiará de los mapas compartidos",
+                "info":"También se compartirá la adición y eliminación de mapas.",
+                "keep-maps":{
+                    "label":"Mantener mapas",
+                    "title":"Mantener mapas moverá los mapas de la versión actual a la carpeta de mapas compartidos. De lo contrario, se perderán"
+                },
+                "valid-btn":"Vincular mapas"
+            },
+            "unlink-maps":{
+                "title":"Desvincular mapas",
+                "desc":"Tenga en cuenta que desvincular mapas no permitirá el uso de mapas compartidos para esta versión.",
+                "keep-maps":{
+                    "label":"Mantener mapas",
+                    "title":"Mantener los mapas creará una copia de los mapas compartidos para la versión actual. De lo contrario, no se mantendrá ningún mapa para esta versión."
+                },
+                "valid-btn":"Desvincular mapas"
+            }
         }
    },
    "auto-update":{

@@ -5,7 +5,8 @@
       "launch": "Launch",
       "mods": "Mods",
       "maps": "Maps",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "delete": "Delete"
    },
    "pages":{
       "version-viewer":{
@@ -348,6 +349,47 @@
         "uninstall-all-mods":{
             "title": "Uninstalling mods",
             "description": "Are you sure you want to uninstall all the mods from version {version}? This operation cannot be undone."
+        },
+        "maps-actions":{
+            "delete-maps":{
+                "title":{
+                    "single":"Delete the map?",
+                    "multiple":"Delete maps ?"
+                },
+                "desc":{
+                    "single":"Are you sure you want to delete the map {name}?",
+                    "multiple":"Are you sure you want to delete all {nb} maps?"
+                },
+                "info":{
+                    "desc":{
+                        "single":"This map is part of the shared maps",
+                        "multiple":"These maps are part of the shared maps"
+                    },
+                    "title":{
+                        "single":"This map will also be removed from versions using shared maps",
+                        "multiple":"These maps will also be removed from versions using shared maps"
+                    }
+                }
+            },
+            "link-maps":{
+                "title":"Link maps",
+                "desc":"Linking maps allows to share maps between all versions. Once linked, this version will benefit from the shared maps",
+                "info":"Adding and deleting maps will also be shared",
+                "keep-maps":{
+                    "label":"Keep maps",
+                    "title":"Keep maps will move the maps of the current version to the shared maps folder. Otherwise they will be lost"
+                },
+                "valid-btn":"Link maps"
+            },
+            "unlink-maps":{
+                "title":"Unlink maps",
+                "desc":"Please note that unlinking maps will not allow the use of shared maps for this version.",
+                "keep-maps":{
+                    "label":"Keep maps",
+                    "title":"Keeping the maps will create a copy of the shared maps for the current version. Otherwise, no map will be kept for this version."
+                },
+                "valid-btn":"Unlink maps"
+            }
         }
    },
    "auto-update":{
