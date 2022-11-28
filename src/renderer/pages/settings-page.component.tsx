@@ -124,8 +124,8 @@ export function SettingsPage() {
   }
 
   const openGithub = () => linkOpener.open("https://github.com/Zagrios/bs-manager");
-  const openReportBug = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&template=bug_report.md&title=%5BBUG%5D");
-  const openRequestFeatures = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=enhancement&template=feature_request.md&title=%5BAME%5D");
+  const openReportBug = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&template=-bug--bug-report.md&title=%5BBUG%5D+%3A+");
+  const openRequestFeatures = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=enhancement&template=-feat---feature-request.md&title=%5BFEAT.%5D+%3A+");
 
   const openLogs = () => ipcService.sendLazy("open-logs");
 
