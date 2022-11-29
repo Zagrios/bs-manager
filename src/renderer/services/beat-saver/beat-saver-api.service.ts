@@ -19,7 +19,6 @@ export class BeatSaverApiService {
         if(hashs.length > 50){ throw "too musch map hashs"; }
 
         const paramsHashs = hashs.join(",");
-        
         const resp = await fetch(`${this.bsaverApiUrl}/maps/hash/${paramsHashs}`);
 
         const data = await resp.json() as Record<Lowercase<T>, BsvMapDetail> | BsvMapDetail;
