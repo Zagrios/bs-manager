@@ -1,5 +1,6 @@
 import { ApiResult } from "renderer/models/api/api.model";
 import { BsvMapDetail } from "shared/models/maps";
+import { MapFilter, SearchOrder, SearchParams, SearchResponse } from "shared/models/maps/beat-saver.model";
 
 export class BeatSaverApiService {
 
@@ -34,6 +35,10 @@ export class BeatSaverApiService {
 
         return {status: resp.status, data: (data as Record<Lowercase<T>, BsvMapDetail>)};
 
+    }
+
+    public async searchMaps(params: SearchParams): Promise<ApiResult<SearchResponse>>{
+        
     }
 
 }

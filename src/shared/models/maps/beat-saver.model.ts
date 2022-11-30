@@ -166,3 +166,17 @@ export interface MapFilter {
     enabledTags?: Set<MapTag>,
     excludedTags?: Set<MapTag>
 }
+
+export interface SearchResponse {
+    docs: BsvMapDetail[],
+    redirect: string
+}
+
+export interface SearchParams {
+    order: SearchOrder,
+    filter?: MapFilter, 
+    page?: number, 
+    q?: string
+}
+
+export type SearchOrder = "Latest"|"Relevance"|"Rating"|"Curated";

@@ -243,6 +243,7 @@
     "react-fitty": "^1.0.1",
     "react-range": "^1.8.14",
     "react-router-dom": "^6.3.0",
+    "react-tooltip": "^4.5.1",
     "react-visibility-sensor": "^5.1.1",
     "regedit": "^5.1.1",
     "rxjs": "^7.5.6",

@@ -9,6 +9,7 @@ import { BsmButton } from "../shared/bsm-button.component"
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook"
 import { MapsManagerService } from "renderer/services/maps-manager.service"
 import { motion, Variants } from "framer-motion";
+import ReactTooltip from 'react-tooltip';
 
 type Props = {
     oneBlock?: boolean,
@@ -56,24 +57,44 @@ export function MapsPlaylistsPanel({version, oneBlock = false}: Props) {
         //TODO
     }
 
+    const handleMapsAddClick = () => {
+        
+    }
+
+    const handlePlaylistAddClick = () => {
+        //TODO
+    }
+
     const renderTab = (props: DetailedHTMLProps<React.HTMLAttributes<HTMLLIElement>, HTMLLIElement>, text: string, index: number): JSX.Element => {
 
         const mainColor = mapsLinked ? color : "red";
 
         const onClickLink = (index: number) => {
-            if(index === 0){ return handleMapsLinkClick() };
+            if(index === 0){ return handleMapsLinkClick(); };
             return handlePlaylistLinkClick();
+        }
+
+        const onClickAdd = (index: number) => {
+            if(index === 0){ return handleMapsAddClick(); }
+            return handlePlaylistAddClick();
         }
 
         const variants: Variants = { hover: {rotate: 22.5}, tap: {rotate: 45} };
 
         return (
-            <li className="relative text-center text-lg font-bold hover:backdrop-brightness-75 flex justify-center items-center content-center" onClick={props.onClick}>
+            <li className="relative text-center text-lg font-bold hover:backdrop-brightness-75 flex justify-center items-center content-center" onClick={props.onClick} title={mapsLinked ? "Délier les maps" : "Lier les maps"}>
                 <span>{text}</span>
                 <motion.div variants={variants} whileHover="hover" whileTap="tap" initial={{rotate: 0}} className="absolute block p-1 right-3 h-[calc(100%-5px)] aspect-square blur-0 hover:brightness-75"> 
                     <span className="absolute top-0 left-0 h-full w-full rounded-full opacity-20" style={{backgroundColor: mainColor}}/>
                     <BsmButton className="p-1 absolute top-0 left-0 h-full w-full !bg-transparent -rotate-45" iconClassName="" icon={mapsLinked ? "link" : "unlink"} withBar={false} style={{color: mainColor}} onClick={e => {e.stopPropagation(); onClickLink(index)}}/>
                 </motion.div>
+                <motion.div variants={variants} whileHover="hover" whileTap="tap" initial={{rotate: 0}} className="absolute block p-1 right-11 h-[calc(100%-5px)] aspect-square blur-0 hover:brightness-75" data-tip data-for="add-tooltip"> 
+                    <span className="absolute top-0 left-0 h-full w-full rounded-full opacity-20" style={{backgroundColor: mainColor}}/>
+                    <BsmButton className="p-0.5 absolute top-0 left-0 h-full w-full !bg-transparent" iconClassName="" icon="add" withBar={false} style={{color: mainColor}} onClick={e => {e.stopPropagation(); onClickLink(index)}}/>
+                </motion.div>
+                <ReactTooltip id="add-tooltip" effect="solid" padding="5px" >
+                    <span className="whitespace-nowrap">Ajouté des maps</span> {/* TODO TRANSLATE */}
+                </ReactTooltip>
             </li>
         )
     }
