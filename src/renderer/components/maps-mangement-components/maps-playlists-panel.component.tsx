@@ -10,6 +10,7 @@ import { useThemeColor } from "renderer/hooks/use-theme-color.hook"
 import { MapsManagerService } from "renderer/services/maps-manager.service"
 import { motion, Variants } from "framer-motion";
 import ReactTooltip from 'react-tooltip';
+import { MapsDownloaderService } from "renderer/services/maps-downloader.service"
 
 type Props = {
     oneBlock?: boolean,
@@ -19,6 +20,7 @@ type Props = {
 export function MapsPlaylistsPanel({version, oneBlock = false}: Props) {
 
     const mapsService = MapsManagerService.getInstance();
+    const mapsDownloader = MapsDownloaderService.getInstance();
     
     const [tabIndex, setTabIndex] = useState(0);
     const [mapFilter, setMapFilter] = useState<MapFilter>({
@@ -58,7 +60,7 @@ export function MapsPlaylistsPanel({version, oneBlock = false}: Props) {
     }
 
     const handleMapsAddClick = () => {
-        
+        mapsDownloader.openDownloadMapModal(version);
     }
 
     const handlePlaylistAddClick = () => {
@@ -90,7 +92,7 @@ export function MapsPlaylistsPanel({version, oneBlock = false}: Props) {
                 </motion.div>
                 <motion.div variants={variants} whileHover="hover" whileTap="tap" initial={{rotate: 0}} className="absolute block p-1 right-11 h-[calc(100%-5px)] aspect-square blur-0 hover:brightness-75" data-tip data-for="add-tooltip"> 
                     <span className="absolute top-0 left-0 h-full w-full rounded-full opacity-20" style={{backgroundColor: mainColor}}/>
-                    <BsmButton className="p-0.5 absolute top-0 left-0 h-full w-full !bg-transparent" iconClassName="" icon="add" withBar={false} style={{color: mainColor}} onClick={e => {e.stopPropagation(); onClickLink(index)}}/>
+                    <BsmButton className="p-0.5 absolute top-0 left-0 h-full w-full !bg-transparent" iconClassName="" icon="add" withBar={false} style={{color: mainColor}} onClick={e => {e.stopPropagation(); onClickAdd(index)}}/>
                 </motion.div>
                 <ReactTooltip id="add-tooltip" effect="solid" padding="5px" >
                     <span className="whitespace-nowrap">Ajouté des maps</span> {/* TODO TRANSLATE */}

@@ -2,6 +2,7 @@ import { splitIntoChunk } from "renderer/helpers/array-tools";
 import { of } from "rxjs";
 import { Observable } from "rxjs";
 import { BsvMapDetail } from "shared/models/maps";
+import { SearchParams } from "shared/models/maps/beat-saver.model";
 import { OsDiagnosticService } from "../os-diagnostic.service";
 import { BeatSaverApiService } from "./beat-saver-api.service";
 
@@ -61,8 +62,20 @@ export class BeatSaverService {
 
                 observer.complete();
             })()
-        })
+        });
+    }
+
+    public searchMaps(search: SearchParams): Promise<BsvMapDetail[]>{
+
+        return this.bsaverApi.searchMaps(search).then(res => {
+            return res.status === 200 ? res.data.docs : [];
+        }).catch(err => {
+            console.log(err);
+            return [];
+        });
 
     }
+
+
 
 }

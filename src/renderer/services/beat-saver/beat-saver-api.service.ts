@@ -15,6 +15,57 @@ export class BeatSaverApiService {
 
     private constructor(){}
 
+    private mapFilterToUrlParams(filter: MapFilter): URLSearchParams{
+
+        if(!filter){ return new URLSearchParams(); }
+
+        const enbledTagsString = Array.from(filter.enabledTags);
+        const excludedTagsString = Array.from(filter.excludedTags).map(tag => `!${tag}`);
+
+        const tags = [...enbledTagsString, excludedTagsString].join("|");
+
+        const params = {
+            automapper: String(filter.automapper ?? ""),
+            chroma: String(filter.chroma ?? ""),
+            cinema: String(filter.cinema ?? ""),
+            me: String(filter.me ?? ""),
+            noodle: String(filter.noodle ?? ""),
+            ranked: String(filter.ranked ?? ""),
+            verified: String(filter.ranked ?? ""),
+            curated: String(filter.curated ?? ""),
+            fullSpread : String(filter.fullSpread ?? ""),
+            from: String(filter.from ?? ""),
+            to: String(filter.to ?? ""),
+            tags: tags,
+            minDuration: String(filter.minDuration ?? ""),
+            maxDuration: String(filter.maxDuration ?? ""),
+            minNps: String(filter.minNps ?? ""),
+            maxNps: String(filter.maxNps ?? ""),
+        };
+
+        return new URLSearchParams(params);
+
+    }
+
+    private searchParamsToUrlParams(search: SearchParams): URLSearchParams{
+
+        if(!search){ return new URLSearchParams(); }
+
+        const searchParams = {
+            includeEmpty: String(search.includeEmpty ?? ""),
+            sortOrder: String(search.sortOrder ?? ""),
+            q: String(search.q ?? "")
+        };
+
+        const filterUrlParms = this.mapFilterToUrlParams(search.filter);
+
+        return new URLSearchParams({
+            ...searchParams,
+            ...Object.fromEntries(filterUrlParms)
+        });
+
+    }
+
     public async getMapsDetailsByHashs<T extends string>(hashs: T[]): Promise<ApiResult<Record<Lowercase<T>, BsvMapDetail>>>{
         
         if(hashs.length > 50){ throw "too musch map hashs"; }
@@ -37,8 +88,24 @@ export class BeatSaverApiService {
 
     }
 
-    public async searchMaps(params: SearchParams): Promise<ApiResult<SearchResponse>>{
-        
+    public async searchMaps(search: SearchParams): Promise<ApiResult<SearchResponse>>{
+
+        const url = new URL(`${this.bsaverApiUrl}/search/text/${search?.page ?? 0}`);
+
+        url.search = this.searchParamsToUrlParams(search).toString();
+
+        const res = await fetch(url);
+
+        console.log(res);
+
+        if(!res.ok){
+            return {status: res.status, data: null};
+        }
+
+        const data = await res.json();
+
+        return {status: res.status, data};
+
     }
 
 }

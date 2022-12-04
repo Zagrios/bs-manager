@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import BSLogo from '../../../assets/images/apngs/bs-logo.png';
 import { TabNavBar } from 'renderer/components/shared/tab-nav-bar.component';
-import wipGif from "../../../assets/images/gifs/wip.gif"
 import { BsmDropdownButton } from 'renderer/components/shared/bsm-dropdown-button.component';
 import { BsmImage } from 'renderer/components/shared/bsm-image.component';
 import { BSUninstallerService } from '../services/bs-uninstaller.service';
@@ -17,7 +16,6 @@ import { LaunchSlide } from 'renderer/components/version-viewer/slides/launch/la
 import { ModsSlide } from 'renderer/components/version-viewer/slides/mods/mods-slide.component';
 import { UninstallModal } from 'renderer/components/modal/modal-types/uninstall-modal.component';
 import { MapsPlaylistsPanel } from 'renderer/components/maps-mangement-components/maps-playlists-panel.component';
-import { LocalMapsListPanel } from 'renderer/components/maps-mangement-components/local-maps-list-panel.component';
 
 export function VersionViewer() {
 

@@ -1,8 +1,8 @@
 import { MapFilter, MapTag } from "shared/models/maps/beat-saver.model"
 import {motion} from "framer-motion"
 import { MutableRefObject} from "react"
-import { MAP_TYPES } from "renderer/partials/map-tags/map-types"
-import { MAP_STYLES } from "renderer/partials/map-tags/map-styles"
+import { MAP_TYPES } from "renderer/partials/maps/map-tags/map-types"
+import { MAP_STYLES } from "renderer/partials/maps/map-tags/map-styles"
 import { BsmCheckbox } from "../shared/bsm-checkbox.component"
 import { diffColors } from "./map-item.component"
 import { min_to_s } from "renderer/helpers/time-utils"
@@ -13,7 +13,7 @@ export type Props = {
     className?: string,
     ref?: MutableRefObject<undefined>
     playlist?: boolean,
-    filter?: MapFilter
+    filter: MapFilter
     onChange?: (filter: MapFilter) => void
 }
 
@@ -65,7 +65,7 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange}
     }
 
     const onNpssChange = ([min, max]: number[]) => {
-        const newFilter: MapFilter = {...(filter ?? {}), minNps: min, maxNps: max};
+        const newFilter: MapFilter = {...filter, minNps: min, maxNps: max};
         if(max === MAX_NPS){
             delete newFilter["maxNps"];
         }
@@ -73,7 +73,7 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange}
     }
 
     const onDurationsChange = ([min, max]: number[]) => {
-        const newFilter: MapFilter = {...(filter ?? {}), minDuration: min, maxDuration: max};
+        const newFilter: MapFilter = {...filter, minDuration: min, maxDuration: max};
         if(max === MAX_DURATION){
             delete newFilter["maxDuration"];
         }
@@ -128,40 +128,40 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange}
             <div className="w-full h-full flex gap-x-2">    {/* TODO TRADUIRE */}
                 <section className="shrink-0">
                     <h2 className="mb-1 uppercase text-sm">general</h2>
-                    <div className="flex justify-start items-center h-6 z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("automapper")}>
+                    <div className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("automapper")}>
                         <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.automapper} onChange={() => handleCheckbox("automapper")}/>
                         <span className="grow capitalize">AI</span>
                     </div>
-                    <div className="flex justify-start items-center h-6 z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("ranked")}>
+                    <div className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("ranked")}>
                         <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.ranked} onChange={() => handleCheckbox("ranked")}/>
                         <span className="grow capitalize">Rancked</span>
                     </div>
-                    <div className="flex justify-start items-center h-6 z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("curated")}>
+                    <div className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("curated")}>
                         <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.curated} onChange={() => handleCheckbox("curated")}/>
                         <span className="grow capitalize">Curated</span>
                     </div>
-                    <div className="flex justify-start items-center h-6 z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("verified")}>
+                    <div className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("verified")}>
                         <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.verified} onChange={() => handleCheckbox("verified")}/>
                         <span className="grow capitalize">Verified Mapper</span>
                     </div>
-                    <div className="flex justify-start items-center h-6 z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("fullSpread")}>
+                    <div className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("fullSpread")}>
                         <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.fullSpread} onChange={() => handleCheckbox("fullSpread")}/>
                         <span className="grow capitalize">Full Spread</span>
                     </div>
                     <h2 className="my-1 uppercase text-sm">requirements</h2>
-                    <div className="flex justify-start items-center h-6 z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("chroma")}>
+                    <div className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("chroma")}>
                         <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.chroma} onChange={() => handleCheckbox("chroma")}/>
                         <span className="grow capitalize">Chroma</span>
                     </div>
-                    <div className="flex justify-start items-center h-6 z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("noodle")}>
+                    <div className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("noodle")}>
                         <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.noodle} onChange={() => handleCheckbox("noodle")}/>
                         <span className="grow capitalize">Noodle</span>
                     </div>
-                    <div className="flex justify-start items-center h-6 z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("me")}>
+                    <div className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("me")}>
                         <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.me} onChange={() => handleCheckbox("me")}/>
                         <span className="grow capitalize" title="Mapping Extensions">Me</span>
                     </div>
-                    <div className="flex justify-start items-center h-6 z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("cinema")}>
+                    <div className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("cinema")}>
                         <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.cinema} onChange={() => handleCheckbox("cinema")}/>
                         <span className="grow capitalize">Cinema</span>
                     </div>

@@ -173,10 +173,11 @@ export interface SearchResponse {
 }
 
 export interface SearchParams {
-    order: SearchOrder,
+    sortOrder: SearchOrder,
     filter?: MapFilter, 
     page?: number, 
-    q?: string
+    q?: string,
+    includeEmpty?: boolean
 }
 
 export type SearchOrder = "Latest"|"Relevance"|"Rating"|"Curated";
