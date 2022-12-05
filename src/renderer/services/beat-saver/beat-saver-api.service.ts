@@ -19,28 +19,28 @@ export class BeatSaverApiService {
 
         if(!filter){ return new URLSearchParams(); }
 
-        const enbledTagsString = Array.from(filter.enabledTags);
-        const excludedTagsString = Array.from(filter.excludedTags).map(tag => `!${tag}`);
+        const enbledTagsString = filter.enabledTags ? Array.from(filter.enabledTags) : null;
+        const excludedTagsString = filter.excludedTags ? Array.from(filter.excludedTags).map(tag => `!${tag}`) : null;
 
-        const tags = [...enbledTagsString, excludedTagsString].join("|");
+        const tags = (enbledTagsString || excludedTagsString) ? [...enbledTagsString, excludedTagsString].join("|") : null;
 
         const params = {
-            automapper: String(filter.automapper ?? ""),
-            chroma: String(filter.chroma ?? ""),
-            cinema: String(filter.cinema ?? ""),
-            me: String(filter.me ?? ""),
-            noodle: String(filter.noodle ?? ""),
-            ranked: String(filter.ranked ?? ""),
-            verified: String(filter.ranked ?? ""),
-            curated: String(filter.curated ?? ""),
-            fullSpread : String(filter.fullSpread ?? ""),
-            from: String(filter.from ?? ""),
-            to: String(filter.to ?? ""),
-            tags: tags,
-            minDuration: String(filter.minDuration ?? ""),
-            maxDuration: String(filter.maxDuration ?? ""),
-            minNps: String(filter.minNps ?? ""),
-            maxNps: String(filter.maxNps ?? ""),
+            ...(filter.automapper && {automapper: String(filter.automapper)}),
+            ...(filter.chroma && {chroma: String(filter.chroma)}),
+            ...(filter.cinema && {cinema: String(filter.cinema)}),
+            ...(filter.me && {me: String(filter.me)}),
+            ...(filter.noodle && {noodle: String(filter.noodle)}),
+            ...(filter.ranked && {ranked: String(filter.ranked)}),
+            ...(filter.verified && {verified: String(filter.verified)}),
+            ...(filter.curated && {curated: String(filter.curated)}),
+            ...(filter.fullSpread && {fullSpread: String(filter.fullSpread)}),
+            ...(filter.from && {from: String(filter.from)}),
+            ...(filter.to && {to: String(filter.to)}),
+            ...(tags && {tags: String(tags)}),
+            ...(filter.minDuration && {minDuration: String(filter.minDuration)}),
+            ...(filter.maxDuration && {maxDuration: String(filter.maxDuration)}),
+            ...(filter.minNps && {minNps: String(filter.minNps)}),
+            ...(filter.maxNps && {maxNps: String(filter.maxNps)})
         };
 
         return new URLSearchParams(params);
@@ -52,9 +52,9 @@ export class BeatSaverApiService {
         if(!search){ return new URLSearchParams(); }
 
         const searchParams = {
-            includeEmpty: String(search.includeEmpty ?? ""),
-            sortOrder: String(search.sortOrder ?? ""),
-            q: String(search.q ?? "")
+            ...(search.includeEmpty && {includeEmpty: String(search.includeEmpty)}),
+            ...(search.sortOrder && {sortOrder: search.sortOrder}),
+            ...(search.q && {q: search.q})
         };
 
         const filterUrlParms = this.mapFilterToUrlParams(search.filter);

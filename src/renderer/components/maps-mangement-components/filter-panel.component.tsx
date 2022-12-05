@@ -171,12 +171,12 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange}
                     <h2 className="uppercase text-sm mb-1">TAGS</h2>
                     <div className="w-full flex flex-row flex-wrap items-start justify-start content-start gap-1 mb-2">
                         {MAP_TYPES.map(tag => (
-                            <span key={tag} onClick={e => handleTagClick(tag)} className={`text-sm text-black rounded-md px-1 font-bold cursor-pointer ${(!isTagActivated(tag)) && "opacity-40 hover:opacity-100"}`} style={{backgroundColor: isTagExcluded(tag) ? diffColors.Expert : diffColors.Normal}}>{tag}</span>
+                            <span key={tag} onClick={e => handleTagClick(tag)} className={`text-[12.5px] text-black rounded-md px-1 font-bold cursor-pointer ${(!isTagActivated(tag)) && "opacity-40 hover:opacity-100"}`} style={{backgroundColor: isTagExcluded(tag) ? diffColors.Expert : diffColors.Normal}}>{tag}</span>
                         ))}
                     </div>
                     <div className="w-full flex flex-row flex-wrap items-start justify-start content-start gap-1">
                         {MAP_STYLES.map(tag => (
-                            <span key={tag} onClick={e => handleTagClick(tag)} className={`text-sm text-black rounded-md px-1 font-bold cursor-pointer ${(!isTagActivated(tag)) && "opacity-40 hover:opacity-100"}`} style={{backgroundColor: isTagExcluded(tag) ? diffColors.Expert : diffColors.Easy}}>{tag}</span>
+                            <span key={tag} onClick={e => handleTagClick(tag)} className={`text-[12.5px] text-black rounded-md px-1 font-bold cursor-pointer ${(!isTagActivated(tag)) && "opacity-40 hover:opacity-100"}`} style={{backgroundColor: isTagExcluded(tag) ? diffColors.Expert : diffColors.Easy}}>{tag}</span>
                         ))}
                     </div>
                     
