@@ -86,6 +86,11 @@ export class ProgressBarService{
         return true;
     }
 
+    public setStyle(style: CSSProperties){
+        console.log("SET STYLE", style);
+        this._style$.next(style);
+    }
+
     public get progressData$(): Observable<ProgressionInterface>{ return this._progression$.asObservable(); }
     public get progress$(): Observable<number>{ return this._progression$.pipe(map(data => data.progression)); }
     public get progressLabel(): Observable<string>{ return this._progression$.pipe(map(data => data?.label)); }

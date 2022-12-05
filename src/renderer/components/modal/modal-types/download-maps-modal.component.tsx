@@ -1,26 +1,36 @@
-import { motion, useInView } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { FilterPanel } from "renderer/components/maps-mangement-components/filter-panel.component";
 import { MapItem, ParsedMapDiff } from "renderer/components/maps-mangement-components/map-item.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-button.component";
 import { BsmSelect, BsmSelectOption } from "renderer/components/shared/bsm-select.component";
+import { useObservable } from "renderer/hooks/use-observable.hook";
 import { BSV_SORT_ORDER } from "renderer/partials/beat-saver/sort-order";
 import { BeatSaverService } from "renderer/services/beat-saver/beat-saver.service";
+import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
+import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { ModalComponent } from "renderer/services/modale.service";
 import { BSVersion } from "shared/bs-version.interface";
 import { BsvMapCharacteristic, BsvMapDetail, MapFilter, SearchParams } from "shared/models/maps/beat-saver.model";
-import BeatWaitingImg from "../../../../../assets/images/apngs/beat-waiting.png"
+import BeatWaitingImg from "../../../../../assets/images/apngs/beat-waiting.png";
+import equal from "fast-deep-equal/es6";
+import { ProgressBarService } from "renderer/services/progress-bar.service";
 
 export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
 
     const beatSaver = BeatSaverService.getInstance();
+    const mapsManager = MapsManagerService.getInstance();
+    const mapsDownloader = MapsDownloaderService.getInstance();
+    const progressBar = ProgressBarService.getInstance();
 
+    const currentDownload = useObservable(mapsDownloader.currentMapDownload$);
+    const mapsInQueue = useObservable(mapsDownloader.mapsInQueue$)
     const [filter, setFilter] = useState<MapFilter>({});
     const [query, setQuery] = useState("");
     const [maps, setMaps] = useState<BsvMapDetail[]>([]);
     const [sortOrder, setSortOrder] = useState(BSV_SORT_ORDER.at(0));
-
+    const [ownedMapHashs, setOwnedMapHashs] = useState<string[]>([]);
     const [searchParams, setSearchParams] = useState<SearchParams>({
         sortOrder: sortOrder,
         filter: filter,
@@ -33,15 +43,34 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
     const sortOptions: BsmSelectOption[] = (() => {
         return BSV_SORT_ORDER.map(sort => ({text: sort, value: sort}));
     })();
-
-    const loadMaps = (params: SearchParams) => {
-        beatSaver.searchMaps(params).then((maps => setMaps(prev => [...prev, ...maps])));
-    } 
     
     useEffect(() => {
         loadMaps(searchParams);
     }, [searchParams]);
-    
+
+    useEffect(() => {
+        mapsManager.getMaps(data, false).toPromise().then(maps => setOwnedMapHashs(maps.map(map => map.hash)));
+
+        const onMapDownloaded = (map: BsvMapDetail, verion: BSVersion) => {
+            if(!equal(verion, data) || !map?.versions){ return; }
+            const downloadedHash = map.versions.at(0).hash;
+            setOwnedMapHashs((prev) => [...prev, downloadedHash]);
+        }
+        mapsDownloader.addOnMapDownloadedListener(onMapDownloaded);
+
+        if(mapsDownloader.isDownloading){
+            progressBar.setStyle(mapsDownloader.progressBarStyle);
+        }
+
+        return () => {
+            mapsDownloader.removeOnMapDownloadedListene(onMapDownloaded);
+            progressBar.setStyle(null);
+        }
+    }, [])
+
+    const loadMaps = (params: SearchParams) => {
+        beatSaver.searchMaps(params).then((maps => setMaps(prev => [...prev, ...maps])));
+    }
 
     const extractMapDiffs = (map: BsvMapDetail): Map<BsvMapCharacteristic, ParsedMapDiff[]> => {
         const res = new Map<BsvMapCharacteristic, ParsedMapDiff[]>();
@@ -57,6 +86,11 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
     }
 
     const renderMap = (map: BsvMapDetail) => {
+
+        const isMapOwned = map.versions.some(version => ownedMapHashs.includes(version.hash));
+        const isDownloading = map.id === currentDownload?.map?.id;
+        const inQueue = mapsInQueue.some(toDownload => equal(toDownload.version, data) && toDownload.map.id === map.id);
+
         return (
             <MapItem 
                 autor={map.metadata.levelAuthorName}
@@ -75,8 +109,19 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
                 diffs={extractMapDiffs(map)}
                 songUrl={map.versions.at(0).previewURL}
                 key={map.id}
+                onDownload={(!isMapOwned && !inQueue) && (() => {handleDownloadMap(map)})}
+                onCancelDownload={(inQueue && !isDownloading) && (() => {handleCancelDownload(map)})}
+                downloading={isDownloading}
             />
         )
+    }
+
+    const handleDownloadMap = (map: BsvMapDetail) => {
+        mapsDownloader.addMapToDownload({map, version: data});
+    }
+
+    const handleCancelDownload = (map: BsvMapDetail) => {
+        mapsDownloader.removeMapToDownload({map, version: data});
     }
 
     const handleSearch = () => {
@@ -103,7 +148,7 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
                 <BsmDropdownButton className="shrink-0 h-full relative z-[1] flex justify-start" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1 !bg-main-color-1" icon="search" text="Filtres" withBar={false}>
                     <FilterPanel className="absolute top-[calc(100%+3px)] bg-main-color-3 origin-top w-[450px] h-fit p-2 rounded-md shadow-md shadow-black" filter={filter} onChange={setFilter}/>
                 </BsmDropdownButton>
-                <input className="h-full bg-main-color-1 rounded-full px-2 grow pb-0.5" type="text" name="" id="" placeholder="Rechercher" value={query} onChange={e => setQuery(e.target.value.trim())}/>
+                <input className="h-full bg-main-color-1 rounded-full px-2 grow pb-0.5" type="text" name="" id="" placeholder="Rechercher une map" value={query} onChange={e => setQuery(e.target.value.trim())}/>
                 <BsmButton className="shrink-0 aspect-square rounded-full p-1 !bg-main-color-1" icon="search" withBar={false} onClick={e => {e.preventDefault(); handleSearch()}}/>
                 <BsmSelect className="bg-main-color-1 rounded-full px-2 pb-0.5" options={sortOptions} onChange={setSortOrder}/>
             </div>

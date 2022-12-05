@@ -27,6 +27,7 @@ export class RequestService {
     
     public downloadFile(url: string, dest: string): Promise<string>{
         return new Promise((resolve, reject) => {
+
             const file = createWriteStream(dest);
             get(url, res => {
                 res.pipe(file);

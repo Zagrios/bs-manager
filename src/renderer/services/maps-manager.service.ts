@@ -34,11 +34,15 @@ export class MapsManagerService {
         this.progressBar = ProgressBarService.getInstance();
     }
 
-    public getMaps(version?: BSVersion): Observable<BsmLocalMap[]>{
+    public getMaps(version?: BSVersion, withDetails = true): Observable<BsmLocalMap[]>{
         return new Observable(obs => {
             this.ipcService.send<BsmLocalMap[], BSVersion>("get-version-maps", {args: version}).then(res => {
                 if(!res.success){ return obs.next(null);}
                 obs.next(res.data);
+
+                if(!withDetails){ return obs.complete(); }
+
+                console.log("GET DETAILS");
 
                 this.bsaver.getMapDetailsFromHashs(res.data.map(localMap => localMap.hash)).pipe(finalize(() => obs.complete())).subscribe(mapsDetails => {
                     mapsDetails.forEach(details => {

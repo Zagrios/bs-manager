@@ -45,13 +45,19 @@ export class BeatSaverService {
         return new Observable(observer => {
             (async () => {
 
+                if(mapDetails.length > 0){
+                    observer.next(mapDetails);
+                }
+
                 for(const hashs of chunkHash){
 
                     const res = await this.bsaverApi.getMapsDetailsByHashs(hashs);
 
                     if(res.status === 200){
-                        mapDetails.push(...Object.values<BsvMapDetail>(res.data));
-                        mapDetails.forEach(detail => this.cachedMapsDetails.set(detail.versions.at(0).hash.toLowerCase(), detail));
+                        mapDetails.push(...Object.values<BsvMapDetail>(res.data).filter(detail => !!detail));
+                        mapDetails.forEach(detail => {
+                            this.cachedMapsDetails.set(detail.versions.at(0).hash.toLowerCase(), detail);
+                        });
                     }
 
                     if(mapDetails.length > 0){

@@ -14,6 +14,8 @@ import { map } from "rxjs/operators";
 import useDelayedState from "use-delayed-state";
 import { v4 as uuidv4 } from 'uuid';
 import equal from "fast-deep-equal/es6";
+import { getMapZipUrlFromHash } from "renderer/helpers/maps-utils";
+import { BsmBasicSpinner } from "../shared/bsm-basic-spinner/bsm-basic-spinner.component";
 
 export type ParsedMapDiff = {type: BsvMapDifficultyType, name: string, stars: number}
 
@@ -34,12 +36,14 @@ export type MapItemProps = {
     likes: number,
     createdAt: string,
     selected?: boolean,
+    downloading?: boolean,
     onDelete?: (hash: string) => void,
-    onDownload?: (id: string) => void,
+    onDownload?: (zipUrl: string) => void,
     onSelected?: (hash: string) => void,
+    onCancelDownload?: (zipUrl: string) => void
 }
 
-export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, qualified, ranked, bpm, duration, likes, createdAt, selected, onDelete, onDownload, onSelected}: MapItemProps) => {
+export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, qualified, ranked, bpm, duration, likes, createdAt, selected, downloading, onDelete, onDownload, onSelected, onCancelDownload}: MapItemProps) => {
 
     const linkOpener = LinkOpenerService.getInstance();
     const audioPlayer = AudioPlayerService.getInstance();
@@ -54,7 +58,7 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
 
     const songPlaying = useObservable(audioPlayer.playing$.pipe(map(playing => playing && audioPlayer.src === songUrl)));
 
-    const zipUrl = `https://r2cdn.beatsaver.com/${hash}.zip`;
+    const zipUrl = getMapZipUrlFromHash(hash);
     const previewUrl = mapId ? `https://skystudioapps.com/bs-viewer/?url=${zipUrl}` : null;
     const mapUrl = mapId ? `https://beatsaver.com/maps/${mapId}` : null;
     const authorUrl = autorId ? `https://beatsaver.com/profile/${autorId}` : null;
@@ -128,8 +132,8 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
     }
     
     return (
-        <motion.li className="relative h-[100px] min-w-[370px] shrink-0 grow basis-0 text-white group cursor-pointer" onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)} style={{zIndex: hovered && 5, transform: "translateZ(0) scale(1.0, 1.0)", backfaceVisibility: "hidden"}} onClick={e => {onSelected(hash)}}>
-            {(hovered || selected) && onSelected && <motion.span className="glow-on-hover" animate={{opacity: 1}} transition={{duration: .1, ease: "easeIn"}}/>}
+        <motion.li className="relative h-[100px] min-w-[370px] shrink-0 grow basis-0 text-white group cursor-pointer" onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)} style={{zIndex: hovered && 5, transform: "translateZ(0) scale(1.0, 1.0)", backfaceVisibility: "hidden"}} onClick={e => {onSelected?.(hash)}}>
+            {(hovered || selected) && onSelected && <motion.span className="glow-on-hover !transition-none" animate={{opacity: 1}} transition={{duration: .2, ease: "linear"}}/>}
             <AnimatePresence>
                 {(diffsPanelHovered || bottomBarHovered) && (
                     <motion.ul key={hash} className="absolute top-[calc(100%-10px)] w-full h-fit max-h-[200%] pt-4 pb-2 px-2 overflow-y-scroll bg-main-color-3 brightness-125 rounded-md flex flex-col gap-3 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 shadow-sm shadow-black" initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}} transition={{duration: .15}} onHoverStart={diffsPanelHoverStart} onHoverEnd={diffsPanelHoverEnd}>
@@ -205,7 +209,10 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
                     <span className="absolute w-[10px] h-[10px] bottom-0 right-full bg-inherit" style={{clipPath: 'path("M11 11 L11 0 L10 0 A10 10 0 0 1 0 10 L 0 11 Z")'}}/>
 
                     <div className="flex flex-col justify-center items-center gap-1 w-full h-full overflow-hidden opacity-0 group-hover:opacity-100">
-                        {onDelete && <BsmButton className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-main-color-2" iconClassName="w-full h-full brightness-150" iconColor={color} icon="trash" withBar={false} onClick={e => {e.stopPropagation(); onDelete(hash)}}/>}
+                        {onDelete && !downloading && <BsmButton className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-main-color-2" iconClassName="w-full h-full brightness-150" iconColor={color} icon="trash" withBar={false} onClick={e => {e.stopPropagation(); onDelete(hash)}}/>}
+                        {onDownload && !downloading && <BsmButton className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-main-color-2" iconClassName="w-full h-full brightness-150" iconColor={color} icon="download" withBar={false} onClick={e => {e.stopPropagation(); onDownload(zipUrl)}}/>}
+                        {onCancelDownload && !downloading && <BsmButton className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-main-color-2" iconClassName="w-full h-full brightness-150" iconColor={"red"} icon="cross" withBar={false} onClick={e => {e.stopPropagation(); onCancelDownload(zipUrl)}}/>}
+                        {downloading && <BsmBasicSpinner className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-main-color-2 flex items-center justify-center" spinnerClassName="brightness-150" style={{color}} thikness="3px"/>}
                         {previewUrl && <BsmButton className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-main-color-2" iconClassName="w-full h-full brightness-150" iconColor={color} icon="eye" withBar={false} onClick={e => {e.stopPropagation(); openPreview()}}/>}
                         {mapId && <BsmButton className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-main-color-2" iconClassName="w-full h-full brightness-150" iconColor={color} icon="twitch" withBar={false} onClick={e => {e.stopPropagation(); copyBsr()}}/>}
                     </div>

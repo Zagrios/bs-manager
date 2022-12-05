@@ -6,6 +6,7 @@ import { Subscription } from "rxjs"
 import { MapItem, ParsedMapDiff } from "./map-item.component"
 import { BsvMapCharacteristic, MapFilter } from "shared/models/maps/beat-saver.model"
 import { useInView } from "framer-motion"
+import { MapsDownloaderService } from "renderer/services/maps-downloader.service"
 
 type Props = {
     version: BSVersion,
@@ -17,6 +18,7 @@ type Props = {
 export function LocalMapsListPanel({version, className, filter, search} : Props) {
 
     const mapsManager = MapsManagerService.getInstance();
+    const mapsDownloader = MapsDownloaderService.getInstance();
 
     const ref = useRef()
     const isVisible = useInView(ref, {once: true});
@@ -30,11 +32,13 @@ export function LocalMapsListPanel({version, className, filter, search} : Props)
             loadMaps();
             subs.push(mapsManager.versionLinked$.subscribe(loadMaps));
             subs.push(mapsManager.versionUnlinked$.subscribe(loadMaps));
+            mapsDownloader.addOnMapDownloadedListener(loadMaps);
         }
     
         return () => {
             setMaps(() => []);
             subs.forEach(s => s.unsubscribe());
+            mapsDownloader.removeOnMapDownloadedListene(loadMaps);
         }
     }, [isVisible, version]);
 

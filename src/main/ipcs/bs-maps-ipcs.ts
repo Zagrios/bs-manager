@@ -56,7 +56,18 @@ ipcMain.on("delete-maps", async (event, request: IpcRequest<{version: BSVersion,
     maps.deleteMaps(request.args.maps, request.args.version).then(() => {
         utils.ipcSend<void>(request.responceChannel, {success: true});
     }).catch(err => {
-        utils.ipcSend<void>(request.responceChannel, {success: true, error: err});
+        utils.ipcSend<void>(request.responceChannel, {success: false, error: err});
     });
+});
 
+ipcMain.on("download-map", async (event, request: IpcRequest<{zipUrl: string, version: BSVersion}>) => {
+    const utils = UtilsService.getInstance();
+    const maps = LocalMapsManagerService.getInstance();
+
+    maps.downloadMap(request.args.zipUrl, request.args.version).then(() => {
+        utils.ipcSend(request.responceChannel, {success: true});
+    }).catch(err => {
+        console.log(err);
+        utils.ipcSend(request.responceChannel, {success: false, error: err});
+    });
 });

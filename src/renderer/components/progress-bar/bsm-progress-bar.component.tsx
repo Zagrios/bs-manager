@@ -13,6 +13,8 @@ export function BsmProgressBar() {
     const visible = useObservable(progressBarService.visible$);
     const style = useObservable(progressBarService.style$);
 
+    console.log("STYLES", style);
+
     const progressLabel = (() => {
         if(!progressData){ return ""; }
         if(progressData?.label){ return progressData.label; }
