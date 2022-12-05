@@ -13,6 +13,7 @@ import { useObservable } from "renderer/hooks/use-observable.hook";
 import { map } from "rxjs/operators";
 import useDelayedState from "use-delayed-state";
 import { v4 as uuidv4 } from 'uuid';
+import equal from "fast-deep-equal/es6";
 
 export type ParsedMapDiff = {type: BsvMapDifficultyType, name: string, stars: number}
 
@@ -35,10 +36,10 @@ export type MapItemProps = {
     selected?: boolean,
     onDelete?: (hash: string) => void,
     onDownload?: (id: string) => void,
-    onSelected: (hash: string) => void,
+    onSelected?: (hash: string) => void,
 }
 
-export function MapItem({hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, qualified, ranked, bpm, duration, likes, createdAt, selected, onDelete, onDownload, onSelected}: MapItemProps) {
+export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, qualified, ranked, bpm, duration, likes, createdAt, selected, onDelete, onDownload, onSelected}: MapItemProps) => {
 
     const linkOpener = LinkOpenerService.getInstance();
     const audioPlayer = AudioPlayerService.getInstance();
@@ -127,8 +128,8 @@ export function MapItem({hash, title, autor, songAutor, coverUrl, songUrl, autor
     }
     
     return (
-        <motion.li className="relative h-[100px] min-w-[400px] shrink-0 grow basis-0 text-white group cursor-pointer" onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)} style={{zIndex: hovered && 5, transform: "translateZ(0) scale(1.0, 1.0)", backfaceVisibility: "hidden"}} onClick={e => {onSelected(hash)}}>
-            {(hovered || selected) && <motion.span className="glow-on-hover" animate={{opacity: 1}} transition={{duration: .1, ease: "easeIn"}}/>}
+        <motion.li className="relative h-[100px] min-w-[370px] shrink-0 grow basis-0 text-white group cursor-pointer" onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)} style={{zIndex: hovered && 5, transform: "translateZ(0) scale(1.0, 1.0)", backfaceVisibility: "hidden"}} onClick={e => {onSelected(hash)}}>
+            {(hovered || selected) && onSelected && <motion.span className="glow-on-hover" animate={{opacity: 1}} transition={{duration: .1, ease: "easeIn"}}/>}
             <AnimatePresence>
                 {(diffsPanelHovered || bottomBarHovered) && (
                     <motion.ul key={hash} className="absolute top-[calc(100%-10px)] w-full h-fit max-h-[200%] pt-4 pb-2 px-2 overflow-y-scroll bg-main-color-3 brightness-125 rounded-md flex flex-col gap-3 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 shadow-sm shadow-black" initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}} transition={{duration: .15}} onHoverStart={diffsPanelHoverStart} onHoverEnd={diffsPanelHoverEnd}>
@@ -212,6 +213,10 @@ export function MapItem({hash, title, autor, songAutor, coverUrl, songUrl, autor
             </div>
         </motion.li>
     )
+}, areEqual)
+
+function areEqual(prevProps: MapItemProps, nextProps: MapItemProps): boolean {
+    return equal(prevProps, nextProps);
 }
 
 export const diffColors: Record<BsvMapDifficultyType, string> = {
