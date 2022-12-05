@@ -2,6 +2,7 @@ import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { AnimatePresence, motion } from "framer-motion";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
+import { useEffect } from "react";
 
 export function Modal() {
 
@@ -13,6 +14,27 @@ export function Modal() {
    const resolver = modalSevice.getResolver();
 
    const {firstColor, secondColor} = useThemeColor();
+
+    useEffect(() => {
+        
+        const onEscape = (e: KeyboardEvent) => {
+            if(e.key !== "Escape"){ return; }
+            resolver?.(ModalExitCode.NO_CHOICE);
+        }
+
+        if(!!ModalComponent){
+            window.addEventListener("keyup", onEscape)
+        }
+        else{
+            window.removeEventListener("keyup", onEscape);
+        }
+   
+        return () => {
+            console.log("oui");
+            window.removeEventListener("keyup", onEscape);
+        }
+   }, [ModalComponent])
+   
 
   return  (
       <AnimatePresence>
