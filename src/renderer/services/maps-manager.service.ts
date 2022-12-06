@@ -42,10 +42,10 @@ export class MapsManagerService {
 
                 if(!withDetails){ return obs.complete(); }
 
-                console.log("GET DETAILS");
-
                 this.bsaver.getMapDetailsFromHashs(res.data.map(localMap => localMap.hash)).pipe(finalize(() => obs.complete())).subscribe(mapsDetails => {
                     mapsDetails.forEach(details => {
+                        const corespondingMap = res.data.find(localMap => localMap.hash === details.versions.find(details => details?.hash === localMap.hash)?.hash);
+                        if(!corespondingMap){ return; }
                         res.data.find(localMap => localMap.hash === details.versions.find(details => details?.hash === localMap.hash)?.hash).bsaverInfo = details
                     });
                     obs.next(res.data);
