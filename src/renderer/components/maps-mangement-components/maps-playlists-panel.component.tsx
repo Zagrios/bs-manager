@@ -13,11 +13,10 @@ import ReactTooltip from 'react-tooltip';
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service"
 
 type Props = {
-    oneBlock?: boolean,
     version?: BSVersion
 }
 
-export function MapsPlaylistsPanel({version, oneBlock = false}: Props) {
+export function MapsPlaylistsPanel({version}: Props) {
 
     const mapsService = MapsManagerService.getInstance();
     const mapsDownloader = MapsDownloaderService.getInstance();
@@ -55,16 +54,8 @@ export function MapsPlaylistsPanel({version, oneBlock = false}: Props) {
         return mapsService.unlinkVersion(version).then(loadMapIsLinked);
     }
 
-    const handlePlaylistLinkClick = () => {
-        //TODO
-    }
-
     const handleMapsAddClick = () => {
         mapsDownloader.openDownloadMapModal(version);
-    }
-
-    const handlePlaylistAddClick = () => {
-        //TODO
     }
 
     const renderTab = (props: DetailedHTMLProps<React.HTMLAttributes<HTMLLIElement>, HTMLLIElement>, text: string, index: number): JSX.Element => {
@@ -72,13 +63,11 @@ export function MapsPlaylistsPanel({version, oneBlock = false}: Props) {
         const mainColor = mapsLinked ? color : "red";
 
         const onClickLink = (index: number) => {
-            if(index === 0){ return handleMapsLinkClick(); };
-            return handlePlaylistLinkClick();
+            if(index === 0){ handleMapsLinkClick(); }
         }
 
         const onClickAdd = (index: number) => {
-            if(index === 0){ return handleMapsAddClick(); }
-            return handlePlaylistAddClick();
+            if(index === 0){ handleMapsAddClick(); }
         }
 
         const variants: Variants = { hover: {rotate: 22.5}, tap: {rotate: 45} };
@@ -102,8 +91,6 @@ export function MapsPlaylistsPanel({version, oneBlock = false}: Props) {
     }
 
     return (
-        <>
-        {!oneBlock && <TabNavBar className="mb-8 w-72" tabsText={["misc.maps", "Playlists"]} onTabChange={setTabIndex}/>}
         <div className="w-full h-full flex flex-col items-center justify-center">
             <nav className="w-full shrink-0 flex h-[35px] justify-center px-40 gap-2 mb-3">
                 <div className="h-full rounded-full bg-main-color-2 grow p-[6px]">
@@ -117,14 +104,12 @@ export function MapsPlaylistsPanel({version, oneBlock = false}: Props) {
                 </BsmDropdownButton>
             </nav>
             <div className="w-full h-full flex flex-col bg-main-color-2 rounded-md shadow-black shadow-md overflow-hidden">
-                {oneBlock && <TabNavBar className="!rounded-none shadow-sm" tabsText={["misc.maps", "Playlists"]} onTabChange={setTabIndex} renderTab={renderTab}/>}
+                <TabNavBar className="!rounded-none shadow-sm" tabsText={["misc.maps", "Playlists"]} onTabChange={setTabIndex} renderTab={renderTab}/>
                 <div className="w-full grow min-h-0 flex flex-row items-center transition-transform duration-300" style={{transform: `translate(${-(tabIndex * 100)}%, 0)`}}>
                     <LocalMapsListPanel className="w-full h-full shrink-0 flex flex-col" version={version} filter={mapFilter} search={mapSearch}/>
                     <div>b</div>
                 </div>
             </div> 
         </div>
-        
-        </>
     )
 }
