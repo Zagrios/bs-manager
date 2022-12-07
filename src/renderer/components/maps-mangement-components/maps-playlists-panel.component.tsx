@@ -1,8 +1,8 @@
-import { DetailedHTMLProps, useEffect, useState } from "react"
+import { createRef, DetailedHTMLProps, useEffect, useRef, useState } from "react"
 import { BSVersion } from "shared/bs-version.interface"
 import { TabNavBar } from "../shared/tab-nav-bar.component"
 import { LocalMapsListPanel } from "./local-maps-list-panel.component"
-import { BsmDropdownButton } from "../shared/bsm-dropdown-button.component"
+import { BsmDropdownButton, DropDownItem } from "../shared/bsm-dropdown-button.component"
 import { FilterPanel } from "./filter-panel.component"
 import { MapFilter, MapTag } from "shared/models/maps/beat-saver.model"
 import { BsmButton } from "../shared/bsm-button.component"
@@ -11,6 +11,8 @@ import { MapsManagerService } from "renderer/services/maps-manager.service"
 import { motion, Variants } from "framer-motion";
 import ReactTooltip from 'react-tooltip';
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service"
+import { BehaviorSubject } from "rxjs"
+import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface"
 
 type Props = {
     version?: BSVersion
@@ -20,6 +22,7 @@ export function MapsPlaylistsPanel({version}: Props) {
 
     const mapsService = MapsManagerService.getInstance();
     const mapsDownloader = MapsDownloaderService.getInstance();
+    const mapsManager = MapsManagerService.getInstance();
     
     const [tabIndex, setTabIndex] = useState(0);
     const [mapFilter, setMapFilter] = useState<MapFilter>({
@@ -29,8 +32,9 @@ export function MapsPlaylistsPanel({version}: Props) {
     const [mapSearch, setMapSearch] = useState("");
     const [playlistSearch, setPlaylistSearch] = useState("");
     const [mapsLinked, setMapsLinked] = useState(false);
-    const color = useThemeColor("first-color")
+    const color = useThemeColor("first-color");
 
+    const mapsRef = useRef<any>();
 
     useEffect(() => {
         loadMapIsLinked();
@@ -90,6 +94,19 @@ export function MapsPlaylistsPanel({version}: Props) {
         )
     }
 
+    const dropDownItems = ((): DropDownItem[] => {
+        if(tabIndex === 1){
+            return  [
+
+            ]
+        }
+        return [
+            {icon:"export", text: "Exporter les maps", onClick: () => mapsRef.current.exportMaps?.()},
+            {icon: "trash", text: "Supprimer les maps", onClick: () => mapsRef.current.deleteMaps?.()}
+        ]
+
+    })()
+
     return (
         <div className="w-full h-full flex flex-col items-center justify-center">
             <nav className="w-full shrink-0 flex h-[35px] justify-center px-40 gap-2 mb-3">
@@ -99,14 +116,12 @@ export function MapsPlaylistsPanel({version}: Props) {
                 <BsmDropdownButton className="h-full relative z-[1] flex justify-center" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1" icon="search" text="Filtres" withBar={false}>
                     <FilterPanel className="absolute top-[calc(100%+3px)] bg-main-color-3 origin-top w-[500px] h-fit p-2 rounded-md shadow-md shadow-black" filter={mapFilter} onChange={setMapFilter}/>
                 </BsmDropdownButton>
-                <BsmDropdownButton className="h-full flex aspect-square relative rounded-full z-[1]" buttonClassName="rounded-full h-full w-full p-[6px]" icon="three-dots" withBar={false}>
-                    <></>
-                </BsmDropdownButton>
+                <BsmDropdownButton className="h-full flex aspect-square relative rounded-full z-[1] bg-main-color-3" buttonClassName="rounded-full h-full w-full p-[6px]" icon="three-dots" withBar={false} items={dropDownItems} menuTranslationY="6px" align="center"/>
             </nav>
             <div className="w-full h-full flex flex-col bg-main-color-2 rounded-md shadow-black shadow-md overflow-hidden">
                 <TabNavBar className="!rounded-none shadow-sm" tabsText={["misc.maps", "Playlists"]} onTabChange={setTabIndex} renderTab={renderTab}/>
                 <div className="w-full grow min-h-0 flex flex-row items-center transition-transform duration-300" style={{transform: `translate(${-(tabIndex * 100)}%, 0)`}}>
-                    <LocalMapsListPanel className="w-full h-full shrink-0 flex flex-col" version={version} filter={mapFilter} search={mapSearch}/>
+                    <LocalMapsListPanel ref={mapsRef} className="w-full h-full shrink-0 flex flex-col" version={version} filter={mapFilter} search={mapSearch}/>
                     <div>b</div>
                 </div>
             </div> 

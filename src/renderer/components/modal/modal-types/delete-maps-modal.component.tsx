@@ -16,6 +16,8 @@ export const DeleteMapsModal: ModalComponent<void, {linked: boolean, maps: BsmLo
     const infoText = multiple ? "modals.maps-actions.delete-maps.info.desc.multiple" : "modals.maps-actions.delete-maps.info.desc.single";
     const infoTitleText = multiple ? "modals.maps-actions.delete-maps.info.title.multiple" : "modals.maps-actions.delete-maps.info.title.single";
 
+    console.log(maps);
+
     return (
         <form className="text-gray-800 dark:text-gray-200">
             <h1 className="text-3xl uppercase tracking-wide w-full text-center">{t(titleText)}</h1>

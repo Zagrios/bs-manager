@@ -11,7 +11,7 @@ export interface DropDownItem {text: string, icon?: BsmIconType, onClick?: () =>
 type Props = {
     className?: string, 
     items?: DropDownItem[], 
-    align?: "left"|"right", 
+    align?: "left"|"right"|"center", 
     withBar?: boolean, 
     icon?: BsmIconType, 
     buttonClassName?: string, 
@@ -35,10 +35,16 @@ export function BsmDropdownButton({className, items, align, withBar = true, icon
     setExpanded(false);
    }
 
+   const alignClass = (() => {
+    if(align === "center"){ return "right-1/2 origin-top-right translate-x-[50%]" }
+    if(align === "left"){ return "left-0 origin-top-left"; }
+    return "right-0 origin-top-right";
+   })()
+
    return (
       <div ref={ref} className={className}>
          <BsmButton onClick={() => setExpanded(!expanded)} className={buttonClassName ?? defaultButtonClassName} icon={icon} active={expanded} onClickOutside={handleClickOutside} withBar={withBar} text={text}/>
-         <div className={`py-1 w-fit absolute cursor-pointer top-[calc(100%-4px)] rounded-md bg-inherit text-sm text-gray-800 dark:text-gray-200 shadow-md shadow-black transition-[scale] ease-in-out ${align === "left" ? "left-0 origin-top-left" : "right-0 origin-top-right"}`} style={{scale: expanded ? "1" : "0", translate: `0 ${menuTranslationY}`}}>
+         <div className={`py-1 w-fit absolute cursor-pointer top-[calc(100%-4px)] rounded-md bg-inherit text-sm text-gray-800 dark:text-gray-200 shadow-md shadow-black transition-[scale] ease-in-out ${alignClass}`} style={{scale: expanded ? "1" : "0", translate: `0 ${menuTranslationY}`}}>
             { items?.map((i) => (
                <div key={uuidv4()} onClick={() => i.onClick?.()} className="flex w-full px-3 py-2 hover:backdrop-brightness-150">
                   {i.icon && <BsmIcon icon={i.icon} className="h-5 w-5 mr-1 text-inherit"/>}

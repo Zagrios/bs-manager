@@ -1,6 +1,6 @@
 import { MapsManagerService } from "renderer/services/maps-manager.service"
 import { BSVersion } from "shared/bs-version.interface"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react"
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface"
 import { Subscription } from "rxjs"
 import { MapItem, ParsedMapDiff } from "./map-item.component"
@@ -15,16 +15,26 @@ type Props = {
     search?: string,
 }
 
-export function LocalMapsListPanel({version, className, filter, search} : Props) {
+export const LocalMapsListPanel = forwardRef(({version, className, filter, search} : Props, forwardRef) => {
 
     const mapsManager = MapsManagerService.getInstance();
     const mapsDownloader = MapsDownloaderService.getInstance();
 
-    const ref = useRef()
+    const ref = useRef(null)
     const isVisible = useInView(ref, {once: true});
-    const [maps, setMaps] = useState([] as BsmLocalMap[]);
-    const [selectedMaps, setSelectedMaps] = useState([] as string[]);
+    const [maps, setMaps] = useState<BsmLocalMap[]>([]);
     const [subs] = useState<Subscription[]>([]);
+    const [selectedMaps, setSelectedMaps] = useState([]);
+
+    useImperativeHandle(forwardRef ,()=>({
+        deleteMaps(){
+            const mapsToDelete = selectedMaps.length === 0 ? maps : selectedMaps
+            mapsManager.deleteMaps(mapsToDelete).finally(loadMaps);
+        },
+        exportMaps(){
+            console.log("TODO EXPORT MAPS");
+        }
+    }), [selectedMaps, maps]);
 
     useEffect(() => {
 
@@ -46,11 +56,9 @@ export function LocalMapsListPanel({version, className, filter, search} : Props)
         subs.push(mapsManager.getMaps(version).subscribe(localMaps => setMaps(() => [...localMaps])));
     }
 
-    const handleDelete = useCallback((hash: string) => {
-        const map = maps.find(map => map.hash === hash);
-        console.log(maps);
+    const handleDelete = useCallback((map: BsmLocalMap) => {
         mapsManager.deleteMaps([map], version).then(res => res && loadMaps())
-    }, [maps]);
+    }, []);
 
     const extractMapDiffs = (map: BsmLocalMap): Map<BsvMapCharacteristic, ParsedMapDiff[]> => {
         const res = new Map<BsvMapCharacteristic, ParsedMapDiff[]>();
@@ -75,16 +83,16 @@ export function LocalMapsListPanel({version, className, filter, search} : Props)
         return res;
     }
 
-    const onMapSelected = useCallback((hash: string) => {
-        const hashs = [...selectedMaps];
-        if(hashs.some(selectedHash => selectedHash === hash)){
-            const i = hashs.findIndex(selectedHash => selectedHash === hash);
-            hashs.splice(i, 1);
+    const onMapSelected = useCallback((map: BsmLocalMap) => {
+        const maps = [...selectedMaps];
+        if(maps.some(selectedMap => selectedMap.hash === map.hash)){
+            const i = maps.findIndex(selectedMap => selectedMap.hash === map.hash);
+            maps.splice(i, 1);
         }
         else{
-            hashs.push(hash);
+            maps.push(map);
         }
-        setSelectedMaps(() => hashs);
+        setSelectedMaps(() => maps);
     }, [selectedMaps]);
 
     const isMapFitFilter = (map: BsmLocalMap): boolean => {
@@ -199,11 +207,11 @@ export function LocalMapsListPanel({version, className, filter, search} : Props)
             songAutor={map.rawInfo._songAuthorName}
             bpm={map.rawInfo._beatsPerMinute}
             duration={map.bsaverInfo?.metadata?.duration}
-            selected={selectedMaps.some(hash => hash === map.hash)}
+            selected={selectedMaps.some(_map => _map.hash === map.hash)}
             diffs={extractMapDiffs(map)} mapId={map.bsaverInfo?.id} qualified={null} ranked={map.bsaverInfo?.ranked} autorId={map.bsaverInfo?.uploader?.id} likes={map.bsaverInfo?.stats?.upvotes} createdAt={map.bsaverInfo?.createdAt}
             onDelete={handleDelete}
             onSelected={onMapSelected}
-            callBackParam={map.hash}
+            callBackParam={map}
         />;
     }
 
@@ -214,4 +222,4 @@ export function LocalMapsListPanel({version, className, filter, search} : Props)
             </ul>
         </div>
     )
-}
+})
