@@ -12,6 +12,7 @@ import { NotificationOverlay } from "./components/notification/notification-over
 import { PageStateService } from "./services/page-state.service";
 import MapsPage from "./pages/maps-page.component";
 import "tailwindcss/tailwind.css";
+import { BsmIframeView } from "./components/shared/bsm-map-preview.component";
 
 export default function App() {
 
@@ -38,6 +39,7 @@ export default function App() {
       <Modal/>
       <NavBar/>
       <NotificationOverlay/>
+      <BsmIframeView/>
       <div className="relative flex flex-col grow max-w-full min-w-0">
         <TitleBar/>
         <div className="bg-light-main-color-2 dark:bg-main-color-2 relative rounded-tl-lg grow overflow-hidden max-w-full">

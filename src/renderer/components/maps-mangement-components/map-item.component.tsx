@@ -222,11 +222,6 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
 }, areEqual)
 
 function areEqual(prevProps: MapItemProps, nextProps: MapItemProps): boolean {
-    Array.from(Object.entries(prevProps)).forEach(v => {
-        if(!equal(prevProps[v[0]], nextProps[v[0]])){
-            console.log(v[0]);
-        }
-    });
     return equal(prevProps, nextProps);
 }
 
