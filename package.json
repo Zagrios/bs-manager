@@ -248,6 +248,7 @@
     "react-visibility-sensor": "^5.1.1",
     "regedit": "^5.1.1",
     "rxjs": "^7.5.6",
+    "sanitize-filename": "^1.6.3",
     "semver": "^7.3.8",
     "tailwind-scrollbar-hide": "^1.1.7",
     "tailwindcss-scoped-groups": "^2.0.0",

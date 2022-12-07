@@ -1,6 +1,6 @@
 import path from "path";
 import { BSVersion } from "shared/bs-version.interface";
-import { RawMapInfoData } from "shared/models/maps";
+import { BsvMapDetail, RawMapInfoData } from "shared/models/maps";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import { InstallationLocationService } from "../installation-location.service";
@@ -10,6 +10,7 @@ import { lstatSync, symlinkSync, unlinkSync, readdirSync } from "fs";
 import { copySync } from "fs-extra";
 import StreamZip from "node-stream-zip";
 import { RequestService } from "../request.service";
+import sanitize from "sanitize-filename";
 
 export class LocalMapsManagerService {
 
@@ -162,16 +163,19 @@ export class LocalMapsManagerService {
 
     }
 
-    public async downloadMap(zipUrl: string, version?: BSVersion){
+    public async downloadMap(map: BsvMapDetail, version?: BSVersion){
 
-        console.log(zipUrl, version);
+        if(!map.versions.at(0).hash){ throw "Cannot download map, no hash found"; }
+
+        const zipUrl = `https://r2cdn.beatsaver.com/${map.versions.at(0).hash}.zip`
 
         const mapsFolder = await this.getMapsFolderPath(version);
 
         const {zip, zipPath} = await this.downloadMapZip(zipUrl);
-        const zipName = path.parse(zipPath).name;
 
-        const mapPath = path.join(mapsFolder, zipName);
+        const mapFolderName = sanitize(`${map.id}-${map.name}`);
+
+        const mapPath = path.join(mapsFolder, mapFolderName);
 
         if(!zip){ throw `Cannot download ${zipUrl}`; }
 

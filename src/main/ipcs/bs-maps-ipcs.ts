@@ -4,6 +4,7 @@ import { UtilsService } from "../services/utils.service";
 import { BSVersion } from "shared/bs-version.interface";
 import { IpcRequest } from "shared/models/ipc";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
+import { BsvMapDetail } from "shared/models/maps";
 
 ipcMain.on('get-version-maps', (event, request: IpcRequest<BSVersion>) => {
     const utilsService = UtilsService.getInstance();
@@ -60,11 +61,11 @@ ipcMain.on("delete-maps", async (event, request: IpcRequest<{version: BSVersion,
     });
 });
 
-ipcMain.on("download-map", async (event, request: IpcRequest<{zipUrl: string, version: BSVersion}>) => {
+ipcMain.on("download-map", async (event, request: IpcRequest<{map: BsvMapDetail, version: BSVersion}>) => {
     const utils = UtilsService.getInstance();
     const maps = LocalMapsManagerService.getInstance();
 
-    maps.downloadMap(request.args.zipUrl, request.args.version).then(() => {
+    maps.downloadMap(request.args.map, request.args.version).then(() => {
         utils.ipcSend(request.responceChannel, {success: true});
     }).catch(err => {
         console.log(err);

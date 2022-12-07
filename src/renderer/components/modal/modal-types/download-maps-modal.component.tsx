@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { FilterPanel } from "renderer/components/maps-mangement-components/filter-panel.component";
 import { MapItem, ParsedMapDiff } from "renderer/components/maps-mangement-components/map-item.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
@@ -92,7 +92,7 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
         const inQueue = mapsInQueue.some(toDownload => equal(toDownload.version, data) && toDownload.map.id === map.id);
 
         return (
-            <MapItem 
+            <MapItem
                 autor={map.metadata.levelAuthorName}
                 autorId={map.uploader.id}
                 bpm={map.metadata.bpm}
@@ -109,20 +109,21 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
                 diffs={extractMapDiffs(map)}
                 songUrl={map.versions.at(0).previewURL}
                 key={map.id}
-                onDownload={(!isMapOwned && !inQueue) && (() => {handleDownloadMap(map)})}
-                onCancelDownload={(inQueue && !isDownloading) && (() => {handleCancelDownload(map)})}
+                onDownload={(!isMapOwned && !inQueue) && (handleDownloadMap)}
+                onCancelDownload={(inQueue && !isDownloading) && (handleCancelDownload)}
                 downloading={isDownloading}
+                callBackParam={map}
             />
         )
     }
 
-    const handleDownloadMap = (map: BsvMapDetail) => {
-        mapsDownloader.addMapToDownload({map, version: data});
-    }
+    const handleDownloadMap = useCallback((map: BsvMapDetail) => {
+        mapsDownloader.addMapToDownload({map, version: data})
+    }, []);
 
-    const handleCancelDownload = (map: BsvMapDetail) => {
+    const handleCancelDownload = useCallback((map: BsvMapDetail) => {
         mapsDownloader.removeMapToDownload({map, version: data});
-    }
+    }, []);
 
     const handleSearch = () => {
         const searchParams: SearchParams = {

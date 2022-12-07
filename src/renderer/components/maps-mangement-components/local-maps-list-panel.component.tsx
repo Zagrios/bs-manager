@@ -1,6 +1,6 @@
 import { MapsManagerService } from "renderer/services/maps-manager.service"
 import { BSVersion } from "shared/bs-version.interface"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface"
 import { Subscription } from "rxjs"
 import { MapItem, ParsedMapDiff } from "./map-item.component"
@@ -46,9 +46,11 @@ export function LocalMapsListPanel({version, className, filter, search} : Props)
         subs.push(mapsManager.getMaps(version).subscribe(localMaps => setMaps(() => [...localMaps])));
     }
 
-    const handleDelete = (map: BsmLocalMap) => {
+    const handleDelete = useCallback((hash: string) => {
+        const map = maps.find(map => map.hash === hash);
+        console.log(maps);
         mapsManager.deleteMaps([map], version).then(res => res && loadMaps())
-    }
+    }, [maps]);
 
     const extractMapDiffs = (map: BsmLocalMap): Map<BsvMapCharacteristic, ParsedMapDiff[]> => {
         const res = new Map<BsvMapCharacteristic, ParsedMapDiff[]>();
@@ -73,7 +75,7 @@ export function LocalMapsListPanel({version, className, filter, search} : Props)
         return res;
     }
 
-    const onMapSelected = (hash: string) => {
+    const onMapSelected = useCallback((hash: string) => {
         const hashs = [...selectedMaps];
         if(hashs.some(selectedHash => selectedHash === hash)){
             const i = hashs.findIndex(selectedHash => selectedHash === hash);
@@ -83,7 +85,7 @@ export function LocalMapsListPanel({version, className, filter, search} : Props)
             hashs.push(hash);
         }
         setSelectedMaps(() => hashs);
-    }
+    }, [selectedMaps]);
 
     const isMapFitFilter = (map: BsmLocalMap): boolean => {
         
@@ -199,8 +201,9 @@ export function LocalMapsListPanel({version, className, filter, search} : Props)
             duration={map.bsaverInfo?.metadata?.duration}
             selected={selectedMaps.some(hash => hash === map.hash)}
             diffs={extractMapDiffs(map)} mapId={map.bsaverInfo?.id} qualified={null} ranked={map.bsaverInfo?.ranked} autorId={map.bsaverInfo?.uploader?.id} likes={map.bsaverInfo?.stats?.upvotes} createdAt={map.bsaverInfo?.createdAt}
-            onDelete={() => handleDelete(map)}
+            onDelete={handleDelete}
             onSelected={onMapSelected}
+            callBackParam={map.hash}
         />;
     }
 

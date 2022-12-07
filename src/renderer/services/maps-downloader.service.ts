@@ -72,7 +72,7 @@ export class MapsDownloaderService {
 
     private async downloadMap(map: BsvMapDetail, version: BSVersion): Promise<boolean>{
         if(this.os.isOffline){ return false }
-        const res = await this.ipc.send("download-map", {args: {zipUrl: getMapZipUrlFromMapDetails(map), version}});
+        const res = await this.ipc.send<void, {map: BsvMapDetail, version: BSVersion}>("download-map", {args: {map, version}});
         return res.success;
     }
 
