@@ -11,7 +11,6 @@ import { ModalExitCode, ModalService } from '../services/modale.service';
 import DefautVersionImage from "../../../assets/images/default-version-img.jpg";
 import { BsDownloaderService } from 'renderer/services/bs-downloader.service';
 import { IpcService } from 'renderer/services/ipc.service';
-import { MapService } from 'renderer/services/maps.service';
 import { LaunchSlide } from 'renderer/components/version-viewer/slides/launch/launch-slide.component';
 import { ModsSlide } from 'renderer/components/version-viewer/slides/mods/mods-slide.component';
 import { UninstallModal } from 'renderer/components/modal/modal-types/uninstall-modal.component';
@@ -24,7 +23,6 @@ export function VersionViewer() {
     const modalService = ModalService.getInsance();
     const bsDownloaderService = BsDownloaderService.getInstance();
     const ipcService = IpcService.getInstance();
-    const mapService = MapService.getInstance();
 
     const {state} = useLocation() as {state: BSVersion};
     const navigate = useNavigate();
@@ -32,7 +30,6 @@ export function VersionViewer() {
 
     const navigateToVersion = (version: BSVersion) => navigate(`/bs-version/${version.BSVersion}`, {state: version});
     const openFolder = () => ipcService.sendLazy("bs-version.open-folder", {args: state});
-    const exportMaps = () => mapService.exportVersionMaps(state);
     const verifyFiles = () => bsDownloaderService.download(state, true);
 
     const uninstall = async () => {
@@ -71,7 +68,7 @@ export function VersionViewer() {
         <div className='mt-2 w-full min-h-0 grow flex transition-transform duration-300' style={{transform: `translate(${-(currentTabIndex * 100)}%, 0)`}}>
           <LaunchSlide version={state}/>
           <div className="w-full shrink-0 px-3 pb-3 flex flex-col items-center">
-            <MapsPlaylistsPanel version={state} oneBlock/>
+            <MapsPlaylistsPanel version={state}/>
           </div>
           <ModsSlide version={state}/>
         </div>
@@ -79,7 +76,6 @@ export function VersionViewer() {
       <BsmDropdownButton className='absolute top-5 right-5 h-9 w-9 bg-light-main-color-2 dark:bg-main-color-2 rounded-md' items={[
           {text: "pages.version-viewer.dropdown.open-folder", icon: "folder", onClick: openFolder},
           ((!state.steam && !state.oculus) && {text: "pages.version-viewer.dropdown.verify-files", icon: "task", onClick: verifyFiles}),
-          ((!state.steam && !state.oculus) && {text: "Exporter les misc.maps", icon: "export", onClick: exportMaps}),
           ((!state.steam && !state.oculus) && {text: "pages.version-viewer.dropdown.edit", icon: "edit", onClick: edit}),
           (!state.oculus && {text: "pages.version-viewer.dropdown.clone", icon: "copy", onClick: clone}),
           ((!state.steam && !state.oculus) && {text: "pages.version-viewer.dropdown.uninstall", icon:"trash", onClick: uninstall})

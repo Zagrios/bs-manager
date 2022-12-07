@@ -9,6 +9,8 @@ import { IpcService } from "./ipc.service";
 import { ModalExitCode, ModalService } from "./modale.service";
 import { DeleteMapsModal } from "renderer/components/modal/modal-types/delete-maps-modal.component";
 import { ProgressBarService } from "./progress-bar.service";
+import { OpenSaveDialogOption } from "shared/models/ipc";
+import { NotificationService } from "./notification.service";
 
 export class MapsManagerService {
 
@@ -23,6 +25,7 @@ export class MapsManagerService {
     private readonly bsaver: BeatSaverService;
     private readonly modal: ModalService;
     private readonly progressBar: ProgressBarService;
+    private readonly notifications: NotificationService
 
     private readonly lastLinkedVersion$: Subject<BSVersion> = new Subject();
     private readonly lastUnlinkedVersion$: Subject<BSVersion> = new Subject();
@@ -32,6 +35,7 @@ export class MapsManagerService {
         this.bsaver = BeatSaverService.getInstance();
         this.modal = ModalService.getInsance();
         this.progressBar = ProgressBarService.getInstance();
+        this.notifications = NotificationService.getInstance();
     }
 
     public getMaps(version?: BSVersion, withDetails = true): Observable<BsmLocalMap[]>{
@@ -128,6 +132,30 @@ export class MapsManagerService {
         }
 
         return res.success;
+    }
+
+    public async exportMaps(version: BSVersion, maps?: BsmLocalMap[]): Promise<void>{
+        if(!this.progressBar.require()){ return; }
+
+        const resFile = await this.ipcService.send<string, OpenSaveDialogOption>("save-file", {args: {
+            filename: `${version.BSVersion} Maps`,
+            filters: [{name: "zip", extensions: ["zip"]}]
+        }});
+
+        if(!resFile.success){ return; }
+
+        this.progressBar.showFake(.008);
+        
+        const resExport = await this.ipcService.send<string, {version: BSVersion, maps: BsmLocalMap[], outPath: string}>("export-maps", {args: {version, maps, outPath: resFile.data}});
+        if(!resExport.success && resExport.error.title){
+            const {title, msg} = resExport.error;
+            this.notifications.notifyError({title, desc: msg});
+        } 
+        else {
+            this.notifications.notifySuccess({title: "Export terminé 🎉", duration: 3000});
+        }
+        this.progressBar.complete();
+        this.progressBar.hide(true);
     }
 
     public get versionLinked$(): Observable<BSVersion>{

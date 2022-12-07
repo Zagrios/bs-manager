@@ -32,7 +32,7 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
             mapsManager.deleteMaps(mapsToDelete).finally(loadMaps);
         },
         exportMaps(){
-            console.log("TODO EXPORT MAPS");
+            mapsManager.exportMaps(version, selectedMaps)
         }
     }), [selectedMaps, maps]);
 

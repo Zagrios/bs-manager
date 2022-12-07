@@ -6,11 +6,12 @@ import { BSLocalVersionService } from "../bs-local-version.service";
 import { InstallationLocationService } from "../installation-location.service";
 import { UtilsService } from "../utils.service";
 import crypto from "crypto";
-import { lstatSync, symlinkSync, unlinkSync, readdirSync } from "fs";
+import { lstatSync, symlinkSync, unlinkSync, readdirSync, createWriteStream } from "fs";
 import { copySync } from "fs-extra";
 import StreamZip from "node-stream-zip";
 import { RequestService } from "../request.service";
 import sanitize from "sanitize-filename";
+import archiver from "archiver";
 
 export class LocalMapsManagerService {
 
@@ -90,6 +91,28 @@ export class LocalMapsManagerService {
         return {zip, zipPath};
     }
 
+    private async getAbsoluteFolderOfMaps(maps: BsmLocalMap[], version: BSVersion): Promise<string[]>{
+
+        const mapsFolder = await this.getMapsFolderPath(version);
+
+        const res: string[] = [];
+        const mapHashs = maps.map(map => map.hash);
+        
+        const mapsFolders = readdirSync(mapsFolder, {withFileTypes: true});
+
+        for(const content of mapsFolders){
+            if(!content.isDirectory()){ continue; }
+            const mapFolderPath = path.join(mapsFolder, content.name);
+            const { hash } = await this.loadMapInfoFromPath(mapFolderPath);
+            if(mapHashs.includes(hash)){
+                res.push(mapFolderPath);
+            }
+        }
+
+        return res;
+
+    }
+
     public async getMaps(version?: BSVersion): Promise<BsmLocalMap[]>{
         const levelsFolder = await this.getMapsFolderPath(version);
 
@@ -146,18 +169,13 @@ export class LocalMapsManagerService {
 
     public async deleteMaps(maps: BsmLocalMap[], verion?: BSVersion){
        
-        const mapsFolder = await this.getMapsFolderPath(verion);
+        const mapsFolders = await this.getAbsoluteFolderOfMaps(maps, verion);
+        const mapsHashsToDelete = maps.map(map => map.hash);
 
-        const mapsHashsToDelete = maps.map(m => m.hash);
-
-        const mapsFolders = readdirSync(mapsFolder, {withFileTypes: true});
-
-        for(const content of mapsFolders){
-            if(!content.isDirectory()){ continue; }
-            const mapFolderPath = path.join(mapsFolder, content.name);
-            const { hash } = await this.loadMapInfoFromPath(mapFolderPath);
+        for(const folder of mapsFolders){
+            const { hash } = await this.loadMapInfoFromPath(folder);
             if(mapsHashsToDelete.includes(hash)){
-                await this.utils.deleteFolder(mapFolderPath);
+                await this.utils.deleteFolder(folder);
             }
         }
 
@@ -185,6 +203,34 @@ export class LocalMapsManagerService {
         await zip.close();
 
         unlinkSync(zipPath);
+    }
+
+    public async exportMaps(version: BSVersion, maps: BsmLocalMap[], outPath: string){
+
+        const output = createWriteStream(outPath);
+        const archive = archiver("zip", {zlib: {level: 9}});
+
+        archive.pipe(output);
+        archive.on("error", (e) => {throw e});
+
+        if(!maps || maps.length === 0){
+
+            const mapsFolder = await this.getMapsFolderPath(version);
+            archive.directory(mapsFolder, false);
+            
+        }
+        else{
+
+            const mapsFolders = await this.getAbsoluteFolderOfMaps(maps, version);
+            
+            for(const folder of mapsFolders){
+                archive.directory(folder, path.basename(folder));
+            }
+
+        }
+
+        await archive.finalize();
+
     }
 
     
