@@ -143,8 +143,8 @@ export interface BsvMapParitySummary {
 export type BsvMapCharacteristic = ("Standard" | "OneSaber" | "NoArrows" | "90Degree" | "360Degree" | "Lightshow" | "Lawless")
 export type BsvMapDifficultyType = ("Easy" | "Normal" | "Hard" | "Expert" | "ExpertPlus")
 
-export type MapStyle = ("dancestyle" | "swing" | "nightcore" | "folk" | "family" | "ambient" | "funk" | "jazz" | "classical" | "soul" | "speedcore" | "punk" | "rb" | "holiday" | "vocaloid" | "jrock" | "trance" | "drumbass" | "comedy" | "instrumental" | "hardcore" | "kpop" | "indie" | "techno" | "house" | "game" | "film" | "alt" | "dubstep" | "metal" | "anime" | "hiphop" | "jpop" | "rock" | "pop" | "electronic" | "classical-orchestral")
-export type MapType = ("accuracy" | "balanced" | "challenge" | "dance" | "fitness" | "speed" | "tech")
+export type MapStyle = ("dance" | "swing" | "nightcore" | "folk" | "family" | "ambient" | "funk" | "jazz" | "classical" | "soul" | "speedcore" | "punk" | "rb" | "holiday" | "vocaloid" | "jrock" | "trance" | "drumbass" | "comedy" | "instrumental" | "hardcore" | "kpop" | "indie" | "techno" | "house" | "game" | "film" | "alt" | "dubstep" | "metal" | "anime" | "hiphop" | "jpop" | "rock" | "pop" | "electronic" | "classical-orchestral")
+export type MapType = ("accuracy" | "balanced" | "challenge" | "dancestyle" | "fitness" | "speed" | "tech")
 export type MapTag = MapStyle | MapType
 
 export interface MapFilter {
