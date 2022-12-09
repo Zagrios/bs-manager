@@ -138,7 +138,7 @@ export class MapsManagerService {
         if(!this.progressBar.require()){ return; }
 
         const resFile = await this.ipcService.send<string, OpenSaveDialogOption>("save-file", {args: {
-            filename: `${version.BSVersion} Maps`,
+            filename: version ? `${version.BSVersion}Maps` : "Maps",
             filters: [{name: "zip", extensions: ["zip"]}]
         }});
 
