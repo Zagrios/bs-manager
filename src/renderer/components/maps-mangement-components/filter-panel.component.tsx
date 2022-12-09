@@ -81,28 +81,26 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange}
     }
 
     const handleTagClick = (tag: MapTag) => {
-        if(filter.enabledTags.has(tag)){
-            filter.enabledTags.delete(tag);
-            filter.excludedTags.add(tag);
-            return onChange({
-                ...filter,
-                enabledTags: filter.enabledTags,
-                excludedTags: filter.excludedTags
-            })
+        
+        const enabledTags = filter.enabledTags ?? new Set<MapTag>();
+        const excludedTags = filter.excludedTags ?? new Set<MapTag>();
+
+        if(isTagExcluded(tag)){
+            excludedTags.delete(tag);
         }
-        if(filter.excludedTags.has(tag)){
-            filter.excludedTags.delete(tag);
-            return onChange({
-                ...filter,
-                excludedTags: filter.excludedTags
-            })
+        else if(isTagActivated(tag)){
+            excludedTags.add(tag);
+            enabledTags.delete(tag);
+        }
+        else{
+            enabledTags.add(tag);
         }
 
-        filter.enabledTags.add(tag);
         onChange({
             ...filter,
-            enabledTags: filter.enabledTags
-        })
+            enabledTags,
+            excludedTags
+        });
 
     }
 
@@ -171,12 +169,12 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange}
                     <h2 className="uppercase text-sm mb-1">TAGS</h2>
                     <div className="w-full flex flex-row flex-wrap items-start justify-start content-start gap-1 mb-2">
                         {MAP_TYPES.map(tag => (
-                            <span key={tag} onClick={e => handleTagClick(tag)} className={`text-[12.5px] text-black rounded-md px-1 font-bold cursor-pointer ${(!isTagActivated(tag)) && "opacity-40 hover:opacity-100"}`} style={{backgroundColor: isTagExcluded(tag) ? diffColors.Expert : diffColors.Normal}}>{tag}</span>
+                            <span key={tag} onClick={() => handleTagClick(tag)} className={`text-[12.5px] text-black rounded-md px-1 font-bold cursor-pointer ${(!isTagActivated(tag)) && "opacity-40 hover:opacity-90"}`} style={{backgroundColor: isTagExcluded(tag) ? diffColors.Expert : diffColors.Normal}}>{tag}</span>
                         ))}
                     </div>
                     <div className="w-full flex flex-row flex-wrap items-start justify-start content-start gap-1">
                         {MAP_STYLES.map(tag => (
-                            <span key={tag} onClick={e => handleTagClick(tag)} className={`text-[12.5px] text-black rounded-md px-1 font-bold cursor-pointer ${(!isTagActivated(tag)) && "opacity-40 hover:opacity-100"}`} style={{backgroundColor: isTagExcluded(tag) ? diffColors.Expert : diffColors.Easy}}>{tag}</span>
+                            <span key={tag} onClick={() => handleTagClick(tag)} className={`text-[12.5px] text-black rounded-md px-1 font-bold cursor-pointer ${(!isTagActivated(tag)) && "opacity-40 hover:opacity-90"}`} style={{backgroundColor: isTagExcluded(tag) ? diffColors.Expert : diffColors.Easy}}>{tag}</span>
                         ))}
                     </div>
                     
