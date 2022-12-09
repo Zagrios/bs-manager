@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import { ThemeService } from "./services/theme.service";
 import { NotificationOverlay } from "./components/notification/notification-overlay.component";
 import { PageStateService } from "./services/page-state.service";
-import MapsPage from "./pages/maps-page.component";
+import { MapsPage } from "./pages/maps-page.component";
 import "tailwindcss/tailwind.css";
 import { BsmIframeView } from "./components/shared/bsm-map-preview.component";
 

@@ -1,7 +1,7 @@
 import { MapsPlaylistsPanel } from "renderer/components/maps-mangement-components/maps-playlists-panel.component";
 import { Slideshow } from "renderer/components/slideshow/slideshow.component";
 
-export default function MapsPage() {
+export function MapsPage() {
     return (
         <div className="w-full h-full flex items-center flex-col pt-2">
             <Slideshow className="absolute w-full h-full top-0"/>
