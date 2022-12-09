@@ -4,7 +4,7 @@ export const MAP_TYPES: MapType[] = [
     "accuracy",
     "balanced",
     "challenge",
-    "dance",
+    "dancestyle",
     "fitness",
     "speed",
     "tech"

@@ -1,7 +1,7 @@
 import { MapStyle } from "shared/models/maps/beat-saver.model";
 
 export const MAP_STYLES: MapStyle[] = [
-    "dancestyle",
+    "dance",
     "swing",
     "nightcore",
     "folk",
