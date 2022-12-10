@@ -103,11 +103,15 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
             return Array.from(filter.enabledTags.values()).every(tag => map.bsaverInfo.tags.some(mapTag => mapTag === tag));
         })();
 
+        if(!fitEnabledTags){ return false; }
+
         const fitExcluedTags = (() => {
             if(!filter?.excludedTags || filter.excludedTags.size === 0){ return true; }
             if(!map?.bsaverInfo?.tags){ return true; }
             return !map.bsaverInfo.tags.some(tag => filter.excludedTags.has(tag));
         })();
+
+        if(!fitExcluedTags){ return false; }
 
         const fitMinNps = (() => {
             if(!filter?.minNps){ return true; }
@@ -117,6 +121,8 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
             });
         })();
 
+        if(!fitMinNps){ return false; }
+
         const fitMaxNps = (() => {
             if(!filter?.maxNps){ return true; }
             if(!map?.bsaverInfo?.versions?.at(0)){ return false; }
@@ -125,6 +131,8 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
             });
         })();
 
+        if(!fitMaxNps){ return false; }
+
         const fitMinDuration = (() => {
             if(!filter?.minDuration){ return true; }
             
@@ -132,11 +140,15 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
             return map.bsaverInfo.metadata.duration >= filter.minDuration;
         })();
 
+        if(!fitMinDuration){ return false; }
+
         const fitMaxDuration = (() => {
             if(!filter?.maxDuration){ return true; }
             if(!map?.bsaverInfo?.metadata?.duration){ return false; }
             return map.bsaverInfo.metadata.duration <= filter.maxDuration;
         })();
+
+        if(!fitMaxDuration){ return false; }
 
         const fitNoodle = (() => {
             if(!filter?.noodle){ return true; }
@@ -144,11 +156,15 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
             return map.bsaverInfo.versions.some(version => version.diffs.some(diff => !!diff.ne));
         })();
 
+        if(!fitNoodle){ return false; }
+
         const fitMe = (() => {
             if(!filter?.me){ return true; }
             if(!map?.bsaverInfo?.versions?.at(0)){ return false; }
             return map.bsaverInfo.versions.some(version => version.diffs.some(diff => !!diff.me));
         })();
+
+        if(!fitMe){ return false; }
 
         const fitCinema = (() => {
             if(!filter?.cinema){ return true; }
@@ -156,11 +172,15 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
             return map.bsaverInfo.versions.some(version => version.diffs.some(diff => !!diff.cinema));
         })();
 
+        if(!fitCinema){ return false; }
+
         const fitChroma =(() => {
             if(!filter?.chroma){ return true; }
             if(!map?.bsaverInfo?.versions?.at(0)){ return false; }
             return map.bsaverInfo.versions.some(version => version.diffs.some(diff => !!diff.chroma));
         })();
+
+        if(!fitChroma){ return false; }
 
         const fitFullSpread = (() => {
             if(!filter?.fullSpread){ return true; }
@@ -168,12 +188,12 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
             return map.bsaverInfo.versions.some(version => version?.diffs?.length >= 5);
         })();
 
-        const fitAutoMapper = filter?.automapper ? map.bsaverInfo?.automapper === filter.automapper : true;
-        const fitRanked = filter?.ranked ? map.bsaverInfo?.ranked === filter.ranked : true;
-        const fitCurated = filter?.curated ? !!map.bsaverInfo?.curatedAt : true;
-        const fitVerified = filter?.verified ? !!map.bsaverInfo?.uploader?.verifiedMapper : true;
+        if(!fitFullSpread){ return false; }
 
-        const filterCheck = fitEnabledTags && fitExcluedTags && fitMinNps && fitMaxNps && fitMinDuration && fitMaxDuration && fitNoodle && fitMe && fitCinema && fitChroma && fitFullSpread && fitAutoMapper && fitRanked && fitCurated && fitVerified;
+        if(!(filter?.automapper ? map.bsaverInfo?.automapper === filter.automapper : true)){ return false }
+        if(!(filter?.ranked ? map.bsaverInfo?.ranked === filter.ranked : true)){ return false }
+        if(!(filter?.curated ? !!map.bsaverInfo?.curatedAt : true)){ return false }
+        if(!(filter?.verified ? !!map.bsaverInfo?.uploader?.verifiedMapper : true)){ return false }
 
         const searchCheck = (() => {
             return (
@@ -182,7 +202,9 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
                 ((map.rawInfo?._levelAuthorName ?? map.bsaverInfo?.metadata?.levelAuthorName) || "")?.toLowerCase().includes(search.toLowerCase()));
         })();
 
-        return filterCheck && searchCheck;
+        if(!searchCheck){ return false };
+
+        return true;
 
     }
 
