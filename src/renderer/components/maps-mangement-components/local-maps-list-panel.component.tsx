@@ -96,6 +96,8 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
     }, [selectedMaps]);
 
     const isMapFitFilter = (map: BsmLocalMap): boolean => {
+
+        // Can be more clean and optimized i think
         
         const fitEnabledTags = (() => {
             if(!filter?.enabledTags || filter.enabledTags.size === 0){ return true; }
