@@ -1,5 +1,5 @@
 import { BsmIcon, BsmIconType } from "../svgs/bsm-icon.component"
-import { useEffect, useRef, CSSProperties } from "react";
+import { useRef, CSSProperties } from "react";
 import { BsmImage } from "./bsm-image.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { useClickOutside } from "renderer/hooks/use-click-outside.hook";
