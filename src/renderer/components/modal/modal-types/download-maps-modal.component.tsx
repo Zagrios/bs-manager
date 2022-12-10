@@ -12,7 +12,7 @@ import { MapsDownloaderService } from "renderer/services/maps-downloader.service
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { ModalComponent } from "renderer/services/modale.service";
 import { BSVersion } from "shared/bs-version.interface";
-import { BsvMapCharacteristic, BsvMapDetail, MapFilter, SearchParams } from "shared/models/maps/beat-saver.model";
+import { BsvMapCharacteristic, BsvMapDetail, MapFilter, SearchOrder, SearchParams } from "shared/models/maps/beat-saver.model";
 import BeatWaitingImg from "../../../../../assets/images/apngs/beat-waiting.png";
 import equal from "fast-deep-equal/es6";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
@@ -25,11 +25,11 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
     const progressBar = ProgressBarService.getInstance();
 
     const currentDownload = useObservable(mapsDownloader.currentMapDownload$);
-    const mapsInQueue = useObservable(mapsDownloader.mapsInQueue$)
+    const mapsInQueue = useObservable(mapsDownloader.mapsInQueue$);
     const [filter, setFilter] = useState<MapFilter>({});
     const [query, setQuery] = useState("");
     const [maps, setMaps] = useState<BsvMapDetail[]>([]);
-    const [sortOrder, setSortOrder] = useState(BSV_SORT_ORDER.at(0));
+    const [sortOrder, setSortOrder] = useState<SearchOrder>(BSV_SORT_ORDER.at(0));
     const [ownedMapHashs, setOwnedMapHashs] = useState<string[]>([]);
     const [searchParams, setSearchParams] = useState<SearchParams>({
         sortOrder: sortOrder,
@@ -47,6 +47,7 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
     useEffect(() => {
         loadMaps(searchParams);
     }, [searchParams]);
+    
 
     useEffect(() => {
         mapsManager.getMaps(data, false).toPromise().then(maps => setOwnedMapHashs(maps.map(map => map.hash)));
@@ -125,11 +126,17 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
         mapsDownloader.removeMapToDownload({map, version: data});
     }, []);
 
+    const handleSortChange = (newSort: string) => {
+        setSortOrder(() => newSort as SearchOrder);
+        setMaps(() => []);
+        setSearchParams(() => ({...searchParams, sortOrder: (newSort as SearchOrder)}));
+    }
+
     const handleSearch = () => {
         const searchParams: SearchParams = {
             sortOrder: sortOrder,
             filter: filter,
-            q: query,
+            q: query.trim(),
             page: 0,
         };
 
@@ -149,9 +156,9 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
                 <BsmDropdownButton className="shrink-0 h-full relative z-[1] flex justify-start" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1 !bg-main-color-1" icon="search" text="Filtres" withBar={false}>
                     <FilterPanel className="absolute top-[calc(100%+3px)] bg-main-color-3 origin-top w-[450px] h-fit p-2 rounded-md shadow-md shadow-black" filter={filter} onChange={setFilter}/>
                 </BsmDropdownButton>
-                <input className="h-full bg-main-color-1 rounded-full px-2 grow pb-0.5" type="text" name="" id="" placeholder="Rechercher une map" value={query} onChange={e => setQuery(e.target.value.trim())}/>
-                <BsmButton className="shrink-0 aspect-square rounded-full p-1 !bg-main-color-1" icon="search" withBar={false} onClick={e => {e.preventDefault(); handleSearch()}}/>
-                <BsmSelect className="bg-main-color-1 rounded-full px-2 pb-0.5" options={sortOptions} onChange={setSortOrder}/>
+                <input className="h-full bg-main-color-1 rounded-full px-2 grow pb-0.5" type="text" name="" id="" placeholder="Rechercher une map" value={query} onChange={e => setQuery(e.target.value)}/>
+                <BsmButton className="shrink-0 rounded-full py-1 px-3 !bg-main-color-1 flex justify-center items-center" icon="search" text="Rechercher" withBar={false} onClick={e => {e.preventDefault(); handleSearch()}}/>
+                <BsmSelect className="bg-main-color-1 rounded-full px-2 pb-0.5" options={sortOptions} onChange={handleSortChange}/>
             </div>
             <ul className="w-full grow flex content-start flex-wrap gap-2 px-2 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900" >
                 {maps.length === 0 ? (
