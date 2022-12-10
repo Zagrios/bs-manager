@@ -13,6 +13,7 @@ import ReactTooltip from 'react-tooltip';
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service"
 import { BsmImage } from "../shared/bsm-image.component"
 import wipGif from "../../../../assets/images/gifs/wip.gif"
+import { OsDiagnosticService } from "renderer/services/os-diagnostic.service"
 
 type Props = {
     version?: BSVersion
@@ -22,6 +23,7 @@ export function MapsPlaylistsPanel({version}: Props) {
 
     const mapsService = MapsManagerService.getInstance();
     const mapsDownloader = MapsDownloaderService.getInstance();
+    const osDiagnostic = OsDiagnosticService.getInstance();
     
     const [tabIndex, setTabIndex] = useState(0);
     const [mapFilter, setMapFilter] = useState<MapFilter>({});
@@ -29,7 +31,6 @@ export function MapsPlaylistsPanel({version}: Props) {
     const [playlistSearch, setPlaylistSearch] = useState("");
     const [mapsLinked, setMapsLinked] = useState(false);
     const color = useThemeColor("first-color");
-
     const mapsRef = useRef<any>();
 
     useEffect(() => {
@@ -86,7 +87,7 @@ export function MapsPlaylistsPanel({version}: Props) {
                         <ReactTooltip id="add-tooltip" effect="solid" padding="5px">
                             <span className="whitespace-nowrap">Ajouté des maps</span> {/* TODO TRANSLATE */}
                         </ReactTooltip>
-                        {!!version && (
+                        {(!!version && osDiagnostic.isOnline) && (
                             <motion.div variants={variants} whileHover="hover" whileTap="tap" initial={{rotate: 0}} className="block p-0.5 h-[calc(100%-5px)] aspect-square blur-0 hover:brightness-75" title={mapsLinked ? "Délier les maps" : "Lier les maps"}> 
                                 <span className="absolute top-0 left-0 h-full w-full rounded-full opacity-20" style={{backgroundColor: linkedColor}}/>
                                 <BsmButton className="p-1 absolute top-0 left-0 h-full w-full !bg-transparent -rotate-45" iconClassName="" icon={mapsLinked ? "link" : "unlink"} withBar={false} style={{color: linkedColor}} onClick={e => {e.stopPropagation(); onClickLink(index)}}/>
