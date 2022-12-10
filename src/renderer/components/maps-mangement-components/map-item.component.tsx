@@ -16,6 +16,7 @@ import { v4 as uuidv4 } from 'uuid';
 import equal from "fast-deep-equal/es6";
 import { getMapZipUrlFromHash } from "renderer/helpers/maps-utils";
 import { BsmBasicSpinner } from "../shared/bsm-basic-spinner/bsm-basic-spinner.component";
+import defaultImage from '../../../../assets/images/default-version-img.jpg'
 
 export type ParsedMapDiff = {type: BsvMapDifficultyType, name: string, stars: number}
 
@@ -160,13 +161,13 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
             </AnimatePresence>
             <div className="h-full w-full relative pl-[100px] rounded-md overflow-hidden flex flex-row justify-end">
                 <div className="absolute top-0 left-0 h-full aspect-square cursor-pointer">
-                    <BsmImage image={coverUrl}/>
+                    <BsmImage className="w-full h-full object-cover" image={coverUrl} placeholder={defaultImage} errorImage={defaultImage} loading="lazy"/>
                     <span className="absolute flex justify-center items-center w-full h-full pr-1 bg-transparent top-0 left-0 group-hover:bg-black group-hover:bg-opacity-40" style={{color}} onClick={(e) => {e.stopPropagation(); toogleMusic()}}>
                         <BsmIcon className="w-full h-full p-7 opacity-0 group-hover:opacity-100 text-white hover:text-current" icon={songPlaying ? "pause" : "play"}/>
                     </span>
                 </div>
                 <div className="relative h-full w-full z-[1] rounded-md overflow-hidden -translate-x-1">
-                    <BsmImage className="absolute top-0 left-0 w-full h-full -z-[1] object-cover" image={coverUrl}/>
+                    <BsmImage className="absolute top-0 left-0 w-full h-full -z-[1] object-cover" image={coverUrl} placeholder={defaultImage} errorImage={defaultImage} loading="lazy"/>
                     <div className="pt-1 pl-2 pr-7 top-0 left-0 w-full h-full bg-gray-600 bg-opacity-80 flex flex-col justify-between group-hover:bg-main-color-1 group-hover:bg-opacity-80">
                         <h1 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full leading-5 tracking-wide text-lg" title={title}><BsmLink className="hover:underline" href={mapUrl}>{title}</BsmLink></h1>
                         <h2 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full text-sm mb-[3px]">par {songAutor}</h2>
