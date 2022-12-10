@@ -25,7 +25,7 @@ export class MapsManagerService {
     private readonly bsaver: BeatSaverService;
     private readonly modal: ModalService;
     private readonly progressBar: ProgressBarService;
-    private readonly notifications: NotificationService
+    private readonly notifications: NotificationService;
 
     private readonly lastLinkedVersion$: Subject<BSVersion> = new Subject();
     private readonly lastUnlinkedVersion$: Subject<BSVersion> = new Subject();
@@ -41,7 +41,8 @@ export class MapsManagerService {
     public getMaps(version?: BSVersion, withDetails = true): Observable<BsmLocalMap[]>{
         return new Observable(obs => {
             this.ipcService.send<BsmLocalMap[], BSVersion>("get-version-maps", {args: version}).then(res => {
-                if(!res.success){ return obs.next(null);}
+                if(!res.success){ return obs.complete();}
+
                 obs.next(res.data);
 
                 if(!withDetails){ return obs.complete(); }
