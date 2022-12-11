@@ -83,19 +83,18 @@ export function MapsPlaylistsPanel({version}: Props) {
                 {index === 0 &&(
                     <div className="h-full flex absolute right-0 top-0 gap-1.5 items-center pr-2">
                         {isOnline && (
-                            
                             <motion.div whileHover={"hover"} whileTap={"tap"} className="relative h-[calc(100%-5px)] flex flex-row justify-center items-center shrink-0 rounded-full overflow-hidden pr-2" style={{color}} onClick={e => {e.stopPropagation(); onClickAdd(index)}}>
                                 <span className="absolute top-0 left-0 h-full w-full opacity-20" style={{backgroundColor: "currentcolor"}}/>
                                 <motion.div className="h-full p-0.5" variants={variants}>
-                                    <BsmIcon className="block h-full aspect-square" icon="add"/>
+                                    <BsmIcon className="block h-full aspect-square brightness-150" icon="add"/>
                                 </motion.div>
                                 <span className="text-sm brightness-150">Ajouter</span>
                             </motion.div>
                         )}
                         {(!!version) && (
-                            <motion.div variants={variants} whileHover="hover" whileTap="tap" initial={{rotate: 0}} className="block p-0.5 h-[calc(100%-5px)] aspect-square blur-0 hover:brightness-75" title={mapsLinked ? "Délier les maps" : "Lier les maps"}> 
+                            <motion.div variants={variants} whileHover="hover" whileTap="tap" initial={{rotate: 0}} className="block p-0.5 h-[calc(100%-5px)] aspect-square blur-0 hover:brightness-75" title={mapsLinked ? "Délier les maps" : "Lier les maps"} onClick={e => {e.stopPropagation(); onClickLink(index)}}> 
                                 <span className="absolute top-0 left-0 h-full w-full rounded-full opacity-20" style={{backgroundColor: linkedColor}}/>
-                                <BsmButton className="p-1 absolute top-0 left-0 h-full w-full !bg-transparent -rotate-45" iconClassName="" icon={mapsLinked ? "link" : "unlink"} withBar={false} style={{color: linkedColor}} onClick={e => {e.stopPropagation(); onClickLink(index)}}/>
+                                <BsmIcon className="p-1 absolute top-0 left-0 h-full w-full !bg-transparent -rotate-45 brightness-150" icon={mapsLinked ? "link" : "unlink"} style={{color: linkedColor}} />
                             </motion.div>
                         )}
                     </div>
