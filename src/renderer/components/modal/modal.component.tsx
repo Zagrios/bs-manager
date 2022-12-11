@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { useEffect } from "react";
+import { BsmIcon } from "../svgs/bsm-icon.component";
 
 export function Modal() {
 
@@ -45,6 +46,9 @@ export function Modal() {
                   <div className="relative p-4 text-gray-800 dark:text-gray-200 rounded-md shadow-lg shadow-black bg-gradient-to-br from-light-main-color-3 to-light-main-color-2 dark:from-main-color-3 dark:to-main-color-2">
                      <div className="absolute top-0 w-full left-0 h-1 rounded-t-md overflow-hidden">
                         <span className="block w-full h-full" style={{backgroundImage: `linear-gradient(to right, ${firstColor}, ${secondColor})`}}/>
+                     </div>
+                     <div className="w-2.5 h-2.5 absolute top-2.5 right-1.5 cursor-pointer" onClick={(e) => {e.stopPropagation(); resolver(ModalExitCode.CLOSED)}}>
+                        <BsmIcon className="w-full h-full" icon="cross"/>
                      </div>
                      <ModalComponent resolver={resolver} data={modalData}/>
                   </div>
