@@ -4,7 +4,8 @@
       "verify": "Verificar",
       "launch": "Lanzar",
       "mods": "Mods",
-      "maps": "Maps",
+      "maps": "Mapas",
+      "playlists":"Playlists",
       "cancel": "Cancelar",
       "delete": "Borrar"
    },
@@ -14,6 +15,32 @@
             "oculus": "Oculus Mod",
             "desktop": "Desktop Mod",
             "debug": "Debug Mod"
+         },
+         "maps":{
+            "search-bar":{
+                "search-placeholder": "Buscar en un mapa",
+                "filters-btn":"Filtros",
+                "dropdown":{
+                    "export-maps": "Exportar mapas",
+                    "delete-maps": "Borrar mapas"
+                }
+            },
+            "tabs":{
+                "maps":{
+                    "actions":{
+                        "add-maps":{
+                            "text": "Añadir"
+                        },
+                        "link-maps":{   
+                            "tooltips":{
+                                "link": "Vincular los mapas",
+                                "unlink": "Desatar los mapas"
+                            }
+                        }
+                    }
+                    
+                }
+            }
          },
          "mods":{
             "loading-mods": "Cargando mods...",
@@ -391,8 +418,93 @@
                 },
                 "valid-btn":"Desvincular mapas"
             }
+        },
+        "download-maps":{
+            "search-btn": "buscar",
+            "loading-maps":  "Cargando mapas..."
         }
-   },
+    },
+    "maps":{
+        "map-filter-panel":{
+            "duration": "Duración",
+            "tags": "tags",
+            "specificities": "general",
+            "requirements": "requisitos"
+        },
+        "map-types":{
+            "accuracy": "precisión",
+            "balanced": "equilibrado",
+            "challenge": "desafío",
+            "dancestyle": "baile",
+            "fitness": "fitness",
+            "speed": "speed",
+            "tech": "tec"
+        },
+        "map-styles":{
+            "dance": "baile",
+            "swing": "swing",
+            "nightcore": "nightcore",
+            "folk": "folk",
+            "family": "familia",
+            "ambient": "ambiente",
+            "funk": "funk",
+            "jazz": "jazz",
+            "soul": "soul",
+            "speedcore": "speedcore",
+            "punk": "punk",
+            "rb": "r&b",
+            "holiday": "vacaciones",
+            "vocaloid": "vocaloid",
+            "jrock": "j-rock",
+            "trance": "trance",
+            "drumbass": "drum & bass",
+            "comedy": "comedia",
+            "instrumental": "instrumental",
+            "hardcore": "hardcore",
+            "kpop": "k-pop",
+            "indie": "indie",
+            "techno": "tecno",
+            "house": "house",
+            "game": "videojuego",
+            "film": "film",
+            "alt": "alternativa",
+            "dubstep": "dubstep",
+            "metal": "metal",
+            "anime": "anime",
+            "hiphop": "hiphop",
+            "jpop": "j-pop",
+            "rock": "rock",
+            "pop": "pop",
+            "electronic": "electrónico",
+            "classical-orchestral": "Clásico y orquestal"
+        },
+        "map-specificities":{
+            "automapper": "IA",
+            "ranked": "ranked",
+            "curated": "recomendado",
+            "verified": "verificado",
+            "fullSpread": "panel completo"
+        },
+        "difficulties":{
+            "Easy": "fácil",
+            "Normal": "normal",
+            "Hard": "difícil",
+            "Expert": "experto",
+            "ExpertPlus": "experto+"
+        },
+        "map-item":{
+            "by": "Por {songAutor}",
+            "mapped-by":"mapeado por"
+        }
+    },
+    "beat-saver":{
+        "maps-sorts":{
+            "Latest": "Última",
+            "Relevance": "Relevancia",
+            "Rating": "Notas",
+            "Curated": "Recomendado"
+        }
+    },
    "auto-update":{
        "checking": "Comprobar las actualizaciones",
        "downloading": "Descargar actualizaciones"

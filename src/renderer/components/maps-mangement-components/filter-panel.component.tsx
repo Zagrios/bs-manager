@@ -4,13 +4,13 @@ import { MutableRefObject} from "react"
 import { MAP_TYPES } from "renderer/partials/maps/map-tags/map-types"
 import { MAP_STYLES } from "renderer/partials/maps/map-tags/map-styles"
 import { BsmCheckbox } from "../shared/bsm-checkbox.component"
-import { diffColors } from "./map-item.component"
 import { min_to_s } from "renderer/helpers/time-utils"
 import dateFormat from "dateformat"
 import { BsmRange } from "../shared/bsm-range.component"
 import { useTranslation } from "renderer/hooks/use-translation.hook"
 import { MAP_SPECIFICITIES } from "renderer/partials/maps/map-general/map-specificity"
 import { MAP_REQUIREMENTS } from "renderer/partials/maps/map-requirements/map-requirements"
+import { MAP_DIFFICULTIES_COLORS } from "renderer/partials/maps/map-difficulties/map-difficulties-colors"
 
 export type Props = {
     className?: string,
@@ -136,11 +136,11 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange}
 
     return !playlist ? (
         <motion.div ref={ref} className={className} initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}}>
-            <div className="w-full h-6 grid grid-cols-2 gap-x-10 px-4 mb-6 pt-2">
+            <div className="w-full h-6 grid grid-cols-2 gap-x-12 px-4 mb-6 pt-2">
                 <BsmRange min={MIN_NPS} max={MAX_NPS} values={npss} onChange={onNpssChange} renderLabel={renderNpsLabel} step={.1}/>
                 <BsmRange min={MIN_DURATION} max={MAX_DURATION} values={durations} onChange={onDurationsChange} renderLabel={renderDurationLabel} step={5}/>
             </div>
-            <div className="w-full h-full flex gap-x-2">    {/* TODO TRADUIRE */}
+            <div className="w-full h-full flex gap-x-2">
                 <section className="shrink-0">
 
                     <h2 className="mb-1 uppercase text-sm">{t("maps.map-filter-panel.specificities")}</h2>
@@ -164,12 +164,12 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange}
                     <h2 className="uppercase text-sm mb-1">{t("maps.map-filter-panel.tags")}</h2>
                     <div className="w-full flex flex-row flex-wrap items-start justify-start content-start gap-1 mb-2">
                         {MAP_TYPES.map(tag => (
-                            <span key={tag} onClick={() => handleTagClick(tag)} className={`text-[12.5px] text-black rounded-md px-1 font-bold cursor-pointer ${(!isTagActivated(tag)) && "opacity-40 hover:opacity-90"}`} style={{backgroundColor: isTagExcluded(tag) ? diffColors.Expert : diffColors.Normal}}>{translateMapType(tag)}</span>
+                            <span key={tag} onClick={() => handleTagClick(tag)} className={`text-[12.5px] text-black rounded-md px-1 font-bold cursor-pointer ${(!isTagActivated(tag)) && "opacity-40 hover:opacity-90"}`} style={{backgroundColor: isTagExcluded(tag) ? MAP_DIFFICULTIES_COLORS.Expert : MAP_DIFFICULTIES_COLORS.Normal}}>{translateMapType(tag)}</span>
                         ))}
                     </div>
                     <div className="w-full flex flex-row flex-wrap items-start justify-start content-start gap-1">
                         {MAP_STYLES.map(tag => (
-                            <span key={tag} onClick={() => handleTagClick(tag)} className={`text-[12.5px] text-black rounded-md px-1 font-bold cursor-pointer ${(!isTagActivated(tag)) && "opacity-40 hover:opacity-90"}`} style={{backgroundColor: isTagExcluded(tag) ? diffColors.Expert : diffColors.Easy}}>{translateMapStyle(tag)}</span>
+                            <span key={tag} onClick={() => handleTagClick(tag)} className={`text-[12.5px] text-black rounded-md px-1 font-bold cursor-pointer ${(!isTagActivated(tag)) && "opacity-40 hover:opacity-90"}`} style={{backgroundColor: isTagExcluded(tag) ? MAP_DIFFICULTIES_COLORS.Expert : MAP_DIFFICULTIES_COLORS.Easy}}>{translateMapStyle(tag)}</span>
                         ))}
                     </div>
                     

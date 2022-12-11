@@ -5,6 +5,7 @@
       "launch": "Lancer",
       "mods": "Mods",
       "maps": "Maps",
+      "playlists":"Playlists",
       "cancel": "Annuler",
       "delete": "Supprimer"
    },
@@ -24,8 +25,21 @@
                     "delete-maps": "Supprimer les maps"
                 }
             },
-            "maps-panel":{
-
+            "tabs":{
+                "maps":{
+                    "actions":{
+                        "add-maps":{
+                            "text": "Ajouter"
+                        },
+                        "link-maps":{   
+                            "tooltips":{
+                                "link": "Lier les maps",
+                                "unlink": "Délier les maps"
+                            }
+                        }
+                    }
+                    
+                }
             }
          },
          "mods":{
@@ -403,9 +417,13 @@
                 },
                 "valid-btn":"délier les maps"
             }
+        },
+        "download-maps":{
+            "search-btn": "Rechercher",
+            "loading-maps":  "Chargement des maps..."
         }
-   },
-   "maps":{
+    },
+    "maps":{
         "map-filter-panel":{
             "duration": "Durée",
             "tags": "tags",
@@ -425,8 +443,8 @@
             "dance": "dance",
             "swing": "swing",
             "nightcore": "nightcore",
-            "folk": "Folk",
-            "family": "Famille",
+            "folk": "folk",
+            "family": "famille",
             "ambient": "ambiante",
             "funk": "funk",
             "jazz": "jazz",
@@ -460,14 +478,32 @@
             "classical-orchestral": "Classique & Orchestral"
         },
         "map-specificities":{
-            "automapper": "ia",
+            "automapper": "IA",
             "ranked": "classée",
             "curated": "recommandée",
             "verified": "vérifiée",
             "fullSpread": "panel complet"
+        },
+        "difficulties":{
+            "Easy": "facile",
+            "Normal": "normal",
+            "Hard": "difficile",
+            "Expert": "expert",
+            "ExpertPlus": "expert+"
+        },
+        "map-item":{
+            "by": "Par {songAutor}",
+            "mapped-by":"mappée par"
         }
-        
-   },
+    },
+    "beat-saver":{
+        "maps-sorts":{
+            "Latest": "Dernière",
+            "Relevance": "Pertinence",
+            "Rating": "Notes",
+            "Curated": "Recommandée"
+        }
+    },
    "auto-update":{
        "checking": "Vérification des mises à jour",
        "downloading": "Téléchargement des mises à jour"

@@ -17,6 +17,9 @@ import equal from "fast-deep-equal/es6";
 import { getMapZipUrlFromHash } from "renderer/helpers/maps-utils";
 import { BsmBasicSpinner } from "../shared/bsm-basic-spinner/bsm-basic-spinner.component";
 import defaultImage from '../../../../assets/images/default-version-img.jpg'
+import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { MAP_DIFFICULTIES } from "renderer/partials/maps/map-difficulties/map-difficulties";
+import { MAP_DIFFICULTIES_COLORS } from "renderer/partials/maps/map-difficulties/map-difficulties-colors"
 
 export type ParsedMapDiff = {type: BsvMapDifficultyType, name: string, stars: number}
 
@@ -51,6 +54,7 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
     const audioPlayer = AudioPlayerService.getInstance();
 
     const color = useThemeColor("first-color");
+    const t = useTranslation();
 
     const [hovered, setHovered] = useState(false);
     const [bottomBarHovered, setBottomBarHovered, cancelBottomBarHovered] = useDelayedState(false);
@@ -73,7 +77,9 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
     })();
 
     const parseDiffLabel = (diffLabel: string) => {
-        if(diffLabel === "ExpertPlus"){ return "Expert+" }
+        if(MAP_DIFFICULTIES.includes(diffLabel as BsvMapDifficultyType)){
+            return t(`maps.difficulties.${diffLabel}`);
+        }
         return diffLabel;
     }
 
@@ -115,7 +121,7 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
                     <BsmIcon className="h-4 w-4 mr-px" icon="bsMapDifficulty"/>
                     <div className="flex py-[2px] gap-[1px] h-full">
                         {diffSet.map(diff => (
-                            <span key={diff.type} className="h-full w-[6px] rounded-full" style={{backgroundColor: diffColors[diff.type]}}/>
+                            <span key={diff.type} className="h-full w-[6px] rounded-full" style={{backgroundColor: MAP_DIFFICULTIES_COLORS[diff.type]}}/>
                         ))}
                     </div>
                 </>
@@ -142,16 +148,16 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
                                 {diffSet.map(({type, name, stars}) => (
                                     <li key={`${type}${name}${stars}`} className="w-full h-4 flex items-center gap-1">
                                         <BsmIcon className="h-full w-fit p-px" icon={charac}/>
-                                        <span className="h-full px-2 flex items-center text-xs font-bold bg-current rounded-full" style={{color: diffColors[type]}}>
+                                        <span className="h-full px-2 flex items-center text-xs font-bold bg-current rounded-full" style={{color: MAP_DIFFICULTIES_COLORS[type]}}>
                                             {
                                                 stars ? (
                                                     <span className="h-full block brightness-[.25]">★ {stars}</span>
                                                 ) : (
-                                                    <span className="h-full brightness-[.25] leading-4 pb-[2px]">{parseDiffLabel(type)}</span>
+                                                    <span className="h-full brightness-[.25] leading-4 pb-[2px] capitalize">{parseDiffLabel(type)}</span>
                                                 )
                                             }
                                         </span>
-                                        <span className="text-sm leading-4 pb-[2px]">{parseDiffLabel(name)}</span>
+                                        <span className="text-sm leading-4 pb-[2px] capitalize">{parseDiffLabel(name)}</span>
                                     </li>
                                 ))}
                             </ol>
@@ -170,8 +176,8 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
                     <BsmImage className="absolute top-0 left-0 w-full h-full -z-[1] object-cover" image={coverUrl} placeholder={defaultImage} errorImage={defaultImage} loading="lazy"/>
                     <div className="pt-1 pl-2 pr-7 top-0 left-0 w-full h-full bg-gray-600 bg-opacity-80 flex flex-col justify-between group-hover:bg-main-color-1 group-hover:bg-opacity-80">
                         <h1 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full leading-5 tracking-wide text-lg" title={title}><BsmLink className="hover:underline" href={mapUrl}>{title}</BsmLink></h1>
-                        <h2 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full text-sm mb-[3px]">par {songAutor}</h2>
-                        <h3 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full text-xs">{autor && (<> mappée par <BsmLink href={authorUrl} className="brightness-150 hover:underline" style={{color}}>{autor}</BsmLink></>)}</h3>
+                        <h2 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full text-sm mb-[3px]">{songAutor && t("maps.map-item.by", {songAutor})}</h2>
+                        <h3 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full text-xs">{autor && (<> {t("maps.map-item.mapped-by")} <BsmLink href={authorUrl} className="brightness-150 hover:underline" style={{color}}>{autor}</BsmLink></>)}</h3>
                         <div className="w-full h-4 text-xs gap-2 flex opacity-0 group-hover:opacity-100">
                             {likesText && (
                                 <div className="h-full flex items-center">
@@ -195,7 +201,7 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
                         <motion.div className="w-full h-5 pb-1 pr-7 flex items-center gap-1" onHoverStart={bottomBarHoverStart} onHoverEnd={bottomBarHoverEnd}>
                             {ranked && (
                                 <div className="text-yellow-300 bg-current rounded-full px-1 h-full flex items-center justify-center">
-                                    <span className="uppercase text-xs font-bold tracking-wide brightness-[.25]">classée</span>
+                                    <span className="uppercase text-xs font-bold tracking-wide brightness-[.25]">{t("maps.map-specificities.ranked")}</span>
                                 </div>
                             )}
                             <div className="h-full grow flex items-start content-start">
@@ -224,12 +230,4 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
 
 function areEqual(prevProps: MapItemProps, nextProps: MapItemProps): boolean {
     return equal(prevProps, nextProps);
-}
-
-export const diffColors: Record<BsvMapDifficultyType, string> = {
-    Easy: "#00FF9E",
-    Normal: "#00FFFF",
-    Hard: "#FFA700",
-    Expert: "#FF4319",
-    ExpertPlus: "#FF7EFF"
 }

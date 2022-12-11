@@ -5,6 +5,7 @@
       "launch": "Launch",
       "mods": "Mods",
       "maps": "Maps",
+      "playlists":"Playlists",
       "cancel": "Cancel",
       "delete": "Delete"
    },
@@ -14,6 +15,32 @@
             "oculus": "Oculus Mod",
             "desktop": "Desktop Mod",
             "debug": "Debug Mod"
+         },
+         "maps":{
+            "search-bar":{
+                "search-placeholder": "Search a map",
+                "filters-btn":"Filters",
+                "dropdown":{
+                    "export-maps": "Export maps",
+                    "delete-maps": "Delete maps"
+                }
+            },
+            "tabs":{
+                "maps":{
+                    "actions":{
+                        "add-maps":{
+                            "text": "Add"
+                        },
+                        "link-maps":{   
+                            "tooltips":{
+                                "link": "Link maps",
+                                "unlink": "Unling maps"
+                            }
+                        }
+                    }
+                    
+                }
+            }
          },
          "mods":{
             "loading-mods": "Loading mods...",
@@ -390,8 +417,93 @@
                 },
                 "valid-btn":"Unlink maps"
             }
+        },
+        "download-maps":{
+            "search-btn": "Search",
+            "loading-maps":  "Loading maps..."
         }
-   },
+    },
+    "maps":{
+        "map-filter-panel":{
+            "duration": "Duration",
+            "tags": "tags",
+            "specificities": "general",
+            "requirements": "requirements"
+        },
+        "map-types":{
+            "accuracy": "accuracy",
+            "balanced": "balanced",
+            "challenge": "challenge",
+            "dancestyle": "dance",
+            "fitness": "fitness",
+            "speed": "speed",
+            "tech": "tech"
+        },
+        "map-styles":{
+            "dance": "dance",
+            "swing": "swing",
+            "nightcore": "nightcore",
+            "folk": "folk",
+            "family": "family",
+            "ambient": "ambient",
+            "funk": "funk",
+            "jazz": "jazz",
+            "soul": "soul",
+            "speedcore": "speedcore",
+            "punk": "punk",
+            "rb": "r&b",
+            "holiday": "holiday",
+            "vocaloid": "vocaloid",
+            "jrock": "j-rock",
+            "trance": "trance",
+            "drumbass": "drum & bass",
+            "comedy": "comedy",
+            "instrumental": "instrumental",
+            "hardcore": "hardcore",
+            "kpop": "k-pop",
+            "indie": "indie",
+            "techno": "techno",
+            "house": "house",
+            "game": "video game",
+            "film": "film",
+            "alt": "alternative",
+            "dubstep": "dubstep",
+            "metal": "metal",
+            "anime": "anime",
+            "hiphop": "hiphop",
+            "jpop": "j-pop",
+            "rock": "rock",
+            "pop": "pop",
+            "electronic": "electronic",
+            "classical-orchestral": "Classical & Orchestral"
+        },
+        "map-specificities":{
+            "automapper": "AI",
+            "ranked": "ranked",
+            "curated": "curated",
+            "verified": "verified",
+            "fullSpread": "full spread"
+        },
+        "difficulties":{
+            "Easy": "easy",
+            "Normal": "normal",
+            "Hard": "hard",
+            "Expert": "expert",
+            "ExpertPlus": "expert+"
+        },
+        "map-item":{
+            "by": "By {songAutor}",
+            "mapped-by":"mapped by"
+        }
+    },
+    "beat-saver":{
+        "maps-sorts":{
+            "Latest": "Latest",
+            "Relevance": "Relevance",
+            "Rating": "Rating",
+            "Curated": "Curated"
+        }
+    },
    "auto-update":{
        "checking": "Checking for updates",
        "downloading": "Downloading updates"

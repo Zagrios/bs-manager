@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FilterPanel } from "renderer/components/maps-mangement-components/filter-panel.component";
 import { MapItem, ParsedMapDiff } from "renderer/components/maps-mangement-components/map-item.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
@@ -16,6 +16,7 @@ import { BsvMapCharacteristic, BsvMapDetail, MapFilter, SearchOrder, SearchParam
 import BeatWaitingImg from "../../../../../assets/images/apngs/beat-waiting.png";
 import equal from "fast-deep-equal/es6";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
+import { useTranslation } from "renderer/hooks/use-translation.hook";
 
 export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
 
@@ -26,6 +27,7 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
 
     const currentDownload = useObservable(mapsDownloader.currentMapDownload$);
     const mapsInQueue = useObservable(mapsDownloader.mapsInQueue$);
+    const t = useTranslation();
     const [filter, setFilter] = useState<MapFilter>({});
     const [query, setQuery] = useState("");
     const [maps, setMaps] = useState<BsvMapDetail[]>([]);
@@ -41,7 +43,7 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
     const loaderRef = useRef(null);
 
     const sortOptions: BsmSelectOption[] = (() => {
-        return BSV_SORT_ORDER.map(sort => ({text: sort, value: sort}));
+        return BSV_SORT_ORDER.map(sort => ({text: `beat-saver.maps-sorts.${sort}`, value: sort}));
     })();
     
     useEffect(() => {
@@ -152,19 +154,19 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
 
     return (
         <form className="text-gray-800 dark:text-gray-200 flex flex-col max-w-[95vw] w-[970px] h-[85vh] gap-3" onSubmit={e => {e.preventDefault(); handleSearch()}}>
-            <div className="flex h-8 gap-2 shrink-0">
-                <BsmDropdownButton className="shrink-0 h-full relative z-[1] flex justify-start" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1 !bg-main-color-1" icon="search" text="Filtres" withBar={false}>
+            <div className="flex h-9 gap-2 shrink-0">
+                <BsmDropdownButton className="shrink-0 h-full relative z-[1] flex justify-start" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1 !bg-main-color-1" icon="search" text="pages.version-viewer.maps.search-bar.filters-btn" withBar={false}>
                     <FilterPanel className="absolute top-[calc(100%+3px)] bg-main-color-3 origin-top w-[450px] h-fit p-2 rounded-md shadow-md shadow-black" filter={filter} onChange={setFilter}/>
                 </BsmDropdownButton>
-                <input className="h-full bg-main-color-1 rounded-full px-2 grow pb-0.5" type="text" name="" id="" placeholder="Rechercher une map" value={query} onChange={e => setQuery(e.target.value)}/>
-                <BsmButton className="shrink-0 rounded-full py-1 px-3 !bg-main-color-1 flex justify-center items-center" icon="search" text="Rechercher" withBar={false} onClick={e => {e.preventDefault(); handleSearch()}}/>
-                <BsmSelect className="bg-main-color-1 rounded-full px-2 pb-0.5" options={sortOptions} onChange={handleSortChange}/>
+                <input className="h-full bg-main-color-1 rounded-full px-2 grow pb-0.5" type="text" name="" id="" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={query} onChange={e => setQuery(e.target.value)}/>
+                <BsmButton className="shrink-0 rounded-full py-1 px-3 !bg-main-color-1 flex justify-center items-center capitalize" icon="search" text="modals.download-maps.search-btn" withBar={false} onClick={e => {e.preventDefault(); handleSearch()}}/>
+                <BsmSelect className="bg-main-color-1 rounded-full px-1 pb-0.5 text-center" options={sortOptions} onChange={handleSortChange}/>
             </div>
             <ul className="w-full grow flex content-start flex-wrap gap-2 px-2 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900" >
                 {maps.length === 0 ? (
                     <div className="w-full h-full flex flex-col items-center justify-center">
                         <img className="w-32 h-32 spin-loading" src={BeatWaitingImg}></img>
-                        <span className="text-lg">Chargement des maps...</span> {/* TODO TRANSLATE */}
+                        <span className="text-lg">{t("modals.download-maps.loading-maps")}</span>
                     </div>
                 ) : (
                     <>
