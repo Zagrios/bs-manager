@@ -1,4 +1,4 @@
-import { MapFilter, MapTag } from "shared/models/maps/beat-saver.model"
+import { MapFilter, MapSpecificity, MapStyle, MapTag, MapType } from "shared/models/maps/beat-saver.model"
 import {motion} from "framer-motion"
 import { MutableRefObject} from "react"
 import { MAP_TYPES } from "renderer/partials/maps/map-tags/map-types"
@@ -8,6 +8,9 @@ import { diffColors } from "./map-item.component"
 import { min_to_s } from "renderer/helpers/time-utils"
 import dateFormat from "dateformat"
 import { BsmRange } from "../shared/bsm-range.component"
+import { useTranslation } from "renderer/hooks/use-translation.hook"
+import { MAP_SPECIFICITIES } from "renderer/partials/maps/map-general/map-specificity"
+import { MAP_REQUIREMENTS } from "renderer/partials/maps/map-requirements/map-requirements"
 
 export type Props = {
     className?: string,
@@ -18,6 +21,8 @@ export type Props = {
 }
 
 export function FilterPanel({className, ref, playlist = false, filter, onChange}: Props) {
+
+    const t = useTranslation();
 
     const MIN_NPS = 0;
     const MAX_NPS = 17;
@@ -34,7 +39,7 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange}
     const renderDurationLabel = (sec: number): JSX.Element => {
 
         const textValue = (() => {
-            if(sec === MIN_DURATION){ return "Durée"; } //TODO TRADUIRE
+            if(sec === MIN_DURATION){ return t("maps.map-filter-panel.duration"); }
             if(sec === MAX_DURATION){ return "∞"; }
             const date = new Date(0);
             date.setSeconds(sec);
@@ -104,6 +109,18 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange}
 
     }
 
+    const translateMapType = (type: MapType): string => {
+        return t(`maps.map-types.${type}`);
+    }
+
+    const translateMapStyle = (style: MapStyle): string => {
+        return t(`maps.map-styles.${style}`)
+    }
+
+    const translateMapSpecificity = (specificity: MapSpecificity): string => {
+        return t(`maps.map-specificities.${specificity}`);
+    }
+
     type BooleanKeys<T> = { [k in keyof T]: T[k] extends boolean ? k : never }[keyof T];
 
     const handleCheckbox = (key: BooleanKeys<MapFilter>) => {
@@ -125,56 +142,34 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange}
             </div>
             <div className="w-full h-full flex gap-x-2">    {/* TODO TRADUIRE */}
                 <section className="shrink-0">
-                    <h2 className="mb-1 uppercase text-sm">general</h2>
-                    <div className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("automapper")}>
-                        <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.automapper} onChange={() => handleCheckbox("automapper")}/>
-                        <span className="grow capitalize">AI</span>
-                    </div>
-                    <div className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("ranked")}>
-                        <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.ranked} onChange={() => handleCheckbox("ranked")}/>
-                        <span className="grow capitalize">Rancked</span>
-                    </div>
-                    <div className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("curated")}>
-                        <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.curated} onChange={() => handleCheckbox("curated")}/>
-                        <span className="grow capitalize">Curated</span>
-                    </div>
-                    <div className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("verified")}>
-                        <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.verified} onChange={() => handleCheckbox("verified")}/>
-                        <span className="grow capitalize">Verified Mapper</span>
-                    </div>
-                    <div className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("fullSpread")}>
-                        <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.fullSpread} onChange={() => handleCheckbox("fullSpread")}/>
-                        <span className="grow capitalize">Full Spread</span>
-                    </div>
-                    <h2 className="my-1 uppercase text-sm">requirements</h2>
-                    <div className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("chroma")}>
-                        <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.chroma} onChange={() => handleCheckbox("chroma")}/>
-                        <span className="grow capitalize">Chroma</span>
-                    </div>
-                    <div className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("noodle")}>
-                        <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.noodle} onChange={() => handleCheckbox("noodle")}/>
-                        <span className="grow capitalize">Noodle</span>
-                    </div>
-                    <div className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("me")}>
-                        <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.me} onChange={() => handleCheckbox("me")}/>
-                        <span className="grow capitalize" title="Mapping Extensions">Me</span>
-                    </div>
-                    <div className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={e => handleCheckbox("cinema")}>
-                        <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.cinema} onChange={() => handleCheckbox("cinema")}/>
-                        <span className="grow capitalize">Cinema</span>
-                    </div>
+
+                    <h2 className="mb-1 uppercase text-sm">{t("maps.map-filter-panel.specificities")}</h2>
+                    {MAP_SPECIFICITIES.map(specificity => (
+                        <div key={specificity} className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={() => handleCheckbox(specificity)}>
+                            <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.[specificity]} onChange={() => handleCheckbox(specificity)}/>
+                            <span className="grow capitalize">{translateMapSpecificity(specificity)}</span>
+                        </div>
+                    ))}
+
+                    <h2 className="my-1 uppercase text-sm">{t("maps.map-filter-panel.requirements")}</h2>
+                    {MAP_REQUIREMENTS.map(requirement => (
+                        <div key={requirement} className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={() => handleCheckbox(requirement)}>
+                            <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.[requirement]} onChange={() => handleCheckbox(requirement)}/>
+                            <span className="grow capitalize">{requirement}</span>
+                        </div>
+                    ))}
                     
                 </section>  
                 <section className="grow capitalize">
-                    <h2 className="uppercase text-sm mb-1">TAGS</h2>
+                    <h2 className="uppercase text-sm mb-1">{t("maps.map-filter-panel.tags")}</h2>
                     <div className="w-full flex flex-row flex-wrap items-start justify-start content-start gap-1 mb-2">
                         {MAP_TYPES.map(tag => (
-                            <span key={tag} onClick={() => handleTagClick(tag)} className={`text-[12.5px] text-black rounded-md px-1 font-bold cursor-pointer ${(!isTagActivated(tag)) && "opacity-40 hover:opacity-90"}`} style={{backgroundColor: isTagExcluded(tag) ? diffColors.Expert : diffColors.Normal}}>{tag}</span>
+                            <span key={tag} onClick={() => handleTagClick(tag)} className={`text-[12.5px] text-black rounded-md px-1 font-bold cursor-pointer ${(!isTagActivated(tag)) && "opacity-40 hover:opacity-90"}`} style={{backgroundColor: isTagExcluded(tag) ? diffColors.Expert : diffColors.Normal}}>{translateMapType(tag)}</span>
                         ))}
                     </div>
                     <div className="w-full flex flex-row flex-wrap items-start justify-start content-start gap-1">
                         {MAP_STYLES.map(tag => (
-                            <span key={tag} onClick={() => handleTagClick(tag)} className={`text-[12.5px] text-black rounded-md px-1 font-bold cursor-pointer ${(!isTagActivated(tag)) && "opacity-40 hover:opacity-90"}`} style={{backgroundColor: isTagExcluded(tag) ? diffColors.Expert : diffColors.Easy}}>{tag}</span>
+                            <span key={tag} onClick={() => handleTagClick(tag)} className={`text-[12.5px] text-black rounded-md px-1 font-bold cursor-pointer ${(!isTagActivated(tag)) && "opacity-40 hover:opacity-90"}`} style={{backgroundColor: isTagExcluded(tag) ? diffColors.Expert : diffColors.Easy}}>{translateMapStyle(tag)}</span>
                         ))}
                     </div>
                     

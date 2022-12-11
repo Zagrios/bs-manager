@@ -9,7 +9,6 @@ export const MAP_STYLES: MapStyle[] = [
     "ambient",
     "funk",
     "jazz",
-    "classical",
     "soul",
     "speedcore",
     "punk",

@@ -15,6 +15,7 @@ import wipGif from "../../../../assets/images/gifs/wip.gif"
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service"
 import { useObservable } from "renderer/hooks/use-observable.hook"
 import { BsmIcon } from "../svgs/bsm-icon.component"
+import { useTranslation } from "renderer/hooks/use-translation.hook"
 
 type Props = {
     version?: BSVersion
@@ -33,6 +34,7 @@ export function MapsPlaylistsPanel({version}: Props) {
     const [mapsLinked, setMapsLinked] = useState(false);
     const isOnline = useObservable(osDiagnostic.isOnline$);
     const color = useThemeColor("first-color");
+    const t = useTranslation();
     const mapsRef = useRef<any>();
 
     useEffect(() => {
@@ -110,8 +112,8 @@ export function MapsPlaylistsPanel({version}: Props) {
             ]
         }
         return [
-            {icon:"export", text: "Exporter les maps", onClick: () => mapsRef.current.exportMaps?.()},
-            {icon: "trash", text: "Supprimer les maps", onClick: () => mapsRef.current.deleteMaps?.()}
+            {icon:"export", text: "pages.version-viewer.maps.search-bar.dropdown.export-maps", onClick: () => mapsRef.current.exportMaps?.()},
+            {icon: "trash", text: "pages.version-viewer.maps.search-bar.dropdown.delete-maps", onClick: () => mapsRef.current.deleteMaps?.()}
         ]
 
     })()
@@ -120,9 +122,9 @@ export function MapsPlaylistsPanel({version}: Props) {
         <div className="w-full h-full flex flex-col items-center justify-center">
             <nav className="w-full shrink-0 flex h-[35px] justify-center px-40 gap-2 mb-3">
                 <div className="h-full rounded-full bg-main-color-2 grow p-[6px]">
-                    <input type="text" className="h-full w-full bg-main-color-1 rounded-full px-2" placeholder="Rechercher" value={tabIndex === 0 ? mapSearch : playlistSearch} onChange={e => handleSearch(e.target.value)}/>
+                    <input type="text" className="h-full w-full bg-main-color-1 rounded-full px-2" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={tabIndex === 0 ? mapSearch : playlistSearch} onChange={e => handleSearch(e.target.value)}/>
                 </div>
-                <BsmDropdownButton className="h-full relative z-[1] flex justify-center" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1" icon="search" text="Filtres" withBar={false}>
+                <BsmDropdownButton className="h-full relative z-[1] flex justify-center" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1" icon="search" text="pages.version-viewer.maps.search-bar.filters-btn" withBar={false}>
                     <FilterPanel className="absolute top-[calc(100%+3px)] bg-main-color-3 origin-top w-[500px] h-fit p-2 rounded-md shadow-md shadow-black" filter={mapFilter} onChange={setMapFilter}/>
                 </BsmDropdownButton>
                 <BsmDropdownButton className="h-full flex aspect-square relative rounded-full z-[1] bg-main-color-3" buttonClassName="rounded-full h-full w-full p-[6px]" icon="three-dots" withBar={false} items={dropDownItems} menuTranslationY="6px" align="center"/>

@@ -15,6 +15,19 @@
             "desktop": "Mode Bureau",
             "debug": "Mode Debug"
          },
+         "maps":{
+            "search-bar":{
+                "search-placeholder": "Rechercher une map",
+                "filters-btn":"Filtres",
+                "dropdown":{
+                    "export-maps": "Exporter les maps",
+                    "delete-maps": "Supprimer les maps"
+                }
+            },
+            "maps-panel":{
+
+            }
+         },
          "mods":{
             "loading-mods": "Chargement des mods...",
             "buttons":{
@@ -391,6 +404,69 @@
                 "valid-btn":"délier les maps"
             }
         }
+   },
+   "maps":{
+        "map-filter-panel":{
+            "duration": "Durée",
+            "tags": "tags",
+            "specificities": "général",
+            "requirements": "requis"
+        },
+        "map-types":{
+            "accuracy": "précision",
+            "balanced": "équilibrée",
+            "challenge": "challenge",
+            "dancestyle": "dance",
+            "fitness": "fitness",
+            "speed": "vitesse",
+            "tech": "tech"
+        },
+        "map-styles":{
+            "dance": "dance",
+            "swing": "swing",
+            "nightcore": "nightcore",
+            "folk": "Folk",
+            "family": "Famille",
+            "ambient": "ambiante",
+            "funk": "funk",
+            "jazz": "jazz",
+            "soul": "soul",
+            "speedcore": "speedcore",
+            "punk": "punk",
+            "rb": "r&b",
+            "holiday": "vacance",
+            "vocaloid": "vocaloid",
+            "jrock": "j-rock",
+            "trance": "trance",
+            "drumbass": "drum & bass",
+            "comedy": "comédie",
+            "instrumental": "instrumental",
+            "hardcore": "hardcore",
+            "kpop": "k-pop",
+            "indie": "indé",
+            "techno": "techno",
+            "house": "house",
+            "game": "jeu vidéo",
+            "film": "film",
+            "alt": "alternative",
+            "dubstep": "dubstep",
+            "metal": "metal",
+            "anime": "anime",
+            "hiphop": "hiphop",
+            "jpop": "j-pop",
+            "rock": "rock",
+            "pop": "pop",
+            "electronic": "éléctronique",
+            "classical-orchestral": "Classique & Orchestral"
+        },
+        "map-specificities":{
+            "automapper": "ia",
+            "ranked": "classée",
+            "curated": "recommandée",
+            "verified": "vérifiée",
+            "fullSpread": "panel complet"
+        }
+        
    },
    "auto-update":{
        "checking": "Vérification des mises à jour",
