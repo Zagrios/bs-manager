@@ -155,7 +155,7 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
     return (
         <form className="text-gray-800 dark:text-gray-200 flex flex-col max-w-[95vw] w-[970px] h-[85vh] gap-3" onSubmit={e => {e.preventDefault(); handleSearch()}}>
             <div className="flex h-9 gap-2 shrink-0">
-                <BsmDropdownButton className="shrink-0 h-full relative z-[1] flex justify-start" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1 !bg-main-color-1" icon="search" text="pages.version-viewer.maps.search-bar.filters-btn" withBar={false}>
+                <BsmDropdownButton className="shrink-0 h-full relative z-[1] flex justify-start" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1 !bg-main-color-1" icon="filter" text="pages.version-viewer.maps.search-bar.filters-btn" withBar={false}>
                     <FilterPanel className="absolute top-[calc(100%+3px)] bg-main-color-3 origin-top w-[450px] h-fit p-2 rounded-md shadow-md shadow-black" filter={filter} onChange={setFilter}/>
                 </BsmDropdownButton>
                 <input className="h-full bg-main-color-1 rounded-full px-2 grow pb-0.5" type="text" name="" id="" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={query} onChange={e => setQuery(e.target.value)}/>

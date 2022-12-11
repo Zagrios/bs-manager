@@ -122,7 +122,7 @@ export function MapsPlaylistsPanel({version}: Props) {
                 <div className="h-full rounded-full bg-main-color-2 grow p-[6px]">
                     <input type="text" className="h-full w-full bg-main-color-1 rounded-full px-2" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={tabIndex === 0 ? mapSearch : playlistSearch} onChange={e => handleSearch(e.target.value)}/>
                 </div>
-                <BsmDropdownButton className="h-full relative z-[1] flex justify-center" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1" icon="search" text="pages.version-viewer.maps.search-bar.filters-btn" withBar={false}>
+                <BsmDropdownButton className="h-full relative z-[1] flex justify-center" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1" icon="filter" text="pages.version-viewer.maps.search-bar.filters-btn" withBar={false}>
                     <FilterPanel className="absolute top-[calc(100%+3px)] bg-main-color-3 origin-top w-[500px] h-fit p-2 rounded-md shadow-md shadow-black" filter={mapFilter} onChange={setMapFilter}/>
                 </BsmDropdownButton>
                 <BsmDropdownButton className="h-full flex aspect-square relative rounded-full z-[1] bg-main-color-3" buttonClassName="rounded-full h-full w-full p-[6px]" icon="three-dots" withBar={false} items={dropDownItems} menuTranslationY="6px" align="center"/>
