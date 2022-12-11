@@ -480,7 +480,7 @@
         },
         "map-specificities":{
             "automapper": "IA",
-            "ranked": "ranked",
+            "ranked": "rankado",
             "curated": "recomendado",
             "verified": "verificado",
             "fullSpread": "panel completo"
