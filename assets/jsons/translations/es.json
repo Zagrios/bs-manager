@@ -386,7 +386,7 @@
                 },
                 "desc":{
                     "single":"¿Estás seguro de que quieres eliminar el mapa {name}?",
-                    "multiple":"¿Seguro que quieres eliminar los {3} mapas?"
+                    "multiple":"¿Seguro que quieres eliminar los {nb} mapas?"
                 },
                 "info":{
                     "desc":{
