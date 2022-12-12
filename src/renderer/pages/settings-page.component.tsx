@@ -3,7 +3,7 @@ import SettingColorChooser from "renderer/components/settings/setting-color-choo
 import { SettingContainer } from "renderer/components/settings/setting-container.component";
 import { RadioItem, SettingRadioArray } from "renderer/components/settings/setting-radio-array.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
-import { BsmIconType } from "renderer/components/svgs/bsm-icon.component";
+import { BsmIcon, BsmIconType } from "renderer/components/svgs/bsm-icon.component";
 import { DefaultConfigKey, ThemeConfig } from "renderer/config/default-configuration.config";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
@@ -20,6 +20,8 @@ import { SupportersView } from "renderer/components/settings/supporters-view/sup
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { useNavigate } from "react-router-dom";
 import { InstallationFolderModal } from "renderer/components/modal/modal-types/installation-folder-modal.component";
+import { motion } from "framer-motion";
+import { BsmCheckbox } from "renderer/components/shared/bsm-checkbox.component";
 
 export function SettingsPage() {
 
@@ -162,6 +164,33 @@ export function SettingsPage() {
                         <span className="block text-ellipsis overflow-hidden min-w-0" title={installationFolder}>{installationFolder}</span>
                         <BsmButton onClick={setDefaultInstallationFolder} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="pages.settings.installation-folder.choose-folder" withBar={false}/>
                     </div>
+                </SettingContainer>
+
+                <SettingContainer title="Contenus additionnels" description="Les contenus additionnels te permet de personaliser BeatSaber !">
+
+                <SettingContainer minorTitle="Installations OneClick">
+                    <ul className="w-full flex flex-col gap-1.5">
+                        <li className="bg-main-color-1 p-3 rounded-md group-one">
+                            <div className="flex items-center gap-2">
+                                <BsmCheckbox className="relative z-[1] h-5 w-5"/>
+                                <span className="font-extrabold">Maps</span>
+                            </div>
+                        </li>
+                        <li className="bg-main-color-1 p-3 rounded-md group-one">
+                            <div className="flex items-center gap-2">
+                                <BsmCheckbox className="relative z-[1] h-5 w-5"/>
+                                <span className="font-extrabold">Playlists</span>
+                            </div>
+                        </li>
+                        <li className="bg-main-color-1 p-3 rounded-md group-one">
+                            <div className="flex items-center gap-2">
+                                <BsmCheckbox className="relative z-[1] h-5 w-5"/>
+                                <span className="font-extrabold">Modèles</span>
+                            </div>
+                        </li>
+                    </ul>
+                </SettingContainer>
+                    
                 </SettingContainer>
 
                 <SettingContainer title="pages.settings.language.title" description="pages.settings.language.description">
