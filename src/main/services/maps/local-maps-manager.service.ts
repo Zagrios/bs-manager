@@ -233,6 +233,10 @@ export class LocalMapsManagerService {
 
     }
 
+    public async enableDeepLink(){
+        // TODO
+    }
+
     
 
 }

@@ -14,6 +14,7 @@ import log from 'electron-log';
 import './ipcs';
 import { UtilsService } from './services/utils.service';
 import { WindowManagerService } from './services/window-manager.service';
+import { DeepLinkService } from './services/deep-link.service';
 
 export const PRELOAD_PATH = app.isPackaged ? path.join(__dirname, 'preload.js') : path.join(__dirname, '../../.erb/dll/preload.js')
 
@@ -59,6 +60,16 @@ app.on('window-all-closed', () => {
         app.quit();
     }
 });
+
+app.on('open-url', (event, url) => {
+    DeepLinkService.getInstance().dispatchLinkOpened(url);
+});
+
+const gotTheLock = app.requestSingleInstanceLock();
+
+if(!gotTheLock){
+    app.quit();
+}
 
 app.whenReady().then(() => {
     createWindow();

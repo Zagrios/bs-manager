@@ -160,7 +160,7 @@ export class MapsManagerService {
     }
 
     public async enableDeepLink(): Promise<boolean>{
-        return true;
+        return true; // TODO
     }
 
     public get versionLinked$(): Observable<BSVersion>{
