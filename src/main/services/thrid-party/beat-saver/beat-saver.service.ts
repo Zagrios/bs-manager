@@ -22,8 +22,6 @@ export class BeatSaverService {
 
     public async getMapDetailsFromHashs(hashs: string[]): Promise<BsvMapDetail[]>{
 
-        console.log(hashs);
-
         const filtredHashs = hashs.map(h => h.toLowerCase()).filter(hash => !Array.from(this.cachedMapsDetails.keys()).includes(hash));
         const chunkHash = splitIntoChunk(filtredHashs, 50);
 
