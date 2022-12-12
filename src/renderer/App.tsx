@@ -13,6 +13,7 @@ import { PageStateService } from "./services/page-state.service";
 import { MapsPage } from "./pages/maps-page.component";
 import "tailwindcss/tailwind.css";
 import { BsmIframeView } from "./components/shared/bsm-map-preview.component";
+import 'tippy.js/dist/tippy.css';
 
 export default function App() {
 

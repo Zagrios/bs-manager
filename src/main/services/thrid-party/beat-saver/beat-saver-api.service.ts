@@ -1,6 +1,7 @@
 import { ApiResult } from "renderer/models/api/api.model";
 import { BsvMapDetail } from "shared/models/maps";
-import { MapFilter, SearchOrder, SearchParams, SearchResponse } from "shared/models/maps/beat-saver.model";
+import { MapFilter, SearchParams, SearchResponse } from "shared/models/maps/beat-saver.model";
+import  fetch from "node-fetch"
 
 export class BeatSaverApiService {
 
@@ -90,11 +91,13 @@ export class BeatSaverApiService {
 
     public async searchMaps(search: SearchParams): Promise<ApiResult<SearchResponse>>{
 
+        console.log(search);
+
         const url = new URL(`${this.bsaverApiUrl}/search/text/${search?.page ?? 0}`);
 
         url.search = this.searchParamsToUrlParams(search).toString();
 
-        const res = await fetch(url);
+        const res = await fetch(url.toString());
 
         console.log(res);
 
@@ -102,7 +105,7 @@ export class BeatSaverApiService {
             return {status: res.status, data: null};
         }
 
-        const data = await res.json();
+        const data: any = await res.json();
 
         return {status: res.status, data};
 

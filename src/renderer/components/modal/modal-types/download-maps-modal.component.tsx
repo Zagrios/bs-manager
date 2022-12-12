@@ -7,7 +7,7 @@ import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-butto
 import { BsmSelect, BsmSelectOption } from "renderer/components/shared/bsm-select.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { BSV_SORT_ORDER } from "renderer/partials/beat-saver/sort-order";
-import { BeatSaverService } from "renderer/services/beat-saver/beat-saver.service";
+import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { ModalComponent } from "renderer/services/modale.service";

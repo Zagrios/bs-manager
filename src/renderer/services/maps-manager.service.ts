@@ -4,7 +4,7 @@ import { finalize } from "rxjs/operators";
 import { Subject, Observable } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
-import { BeatSaverService } from "./beat-saver/beat-saver.service";
+import { BeatSaverService } from "./thrird-partys/beat-saver.service";
 import { IpcService } from "./ipc.service";
 import { ModalExitCode, ModalService } from "./modale.service";
 import { DeleteMapsModal } from "renderer/components/modal/modal-types/delete-maps-modal.component";
@@ -47,7 +47,7 @@ export class MapsManagerService {
 
                 if(!withDetails){ return obs.complete(); }
 
-                this.bsaver.getMapDetailsFromHashs(res.data.map(localMap => localMap.hash)).pipe(finalize(() => obs.complete())).subscribe(mapsDetails => {
+                this.bsaver.getMapDetailsFromHashs(res.data.map(localMap => localMap.hash)).then(mapsDetails => {
                     mapsDetails.forEach(details => {
                         const corespondingMap = res.data.find(localMap => localMap.hash === details.versions.find(details => details?.hash === localMap.hash)?.hash);
                         if(!corespondingMap){ return; }
@@ -157,6 +157,10 @@ export class MapsManagerService {
         }
         this.progressBar.complete();
         this.progressBar.hide(true);
+    }
+
+    public async enableDeepLink(): Promise<boolean>{
+        return true;
     }
 
     public get versionLinked$(): Observable<BSVersion>{

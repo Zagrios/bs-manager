@@ -1,6 +1,17 @@
-import { CSSProperties, SyntheticEvent, useState } from "react";
+import { CSSProperties, forwardRef, SyntheticEvent, useState } from "react";
 
-export function BsmImage({className, image, errorImage, placeholder, loading, style}: {className?: string, image: string, errorImage?: string, placeholder?: string, loading?: "lazy"|"eager", style?: CSSProperties}) {
+type Props = {
+    className?: string, 
+    image: string, 
+    errorImage?: string, 
+    placeholder?: string, 
+    loading?: "lazy"|"eager", 
+    style?: CSSProperties
+    title?: string,
+    onClick?: (e: MouseEvent) => void 
+}
+
+export const BsmImage = forwardRef(({className, image, errorImage, placeholder, loading, style, title, onClick}: Props, ref) => {
 
     const [isLoaded, setIsLoaded] = useState(false);
 
@@ -22,6 +33,7 @@ export function BsmImage({className, image, errorImage, placeholder, loading, st
     }
 
     return (
-        <img className={`${className} pointer-events-none`} src={image} loading={loading} onLoad={handleLoaded} onError={handleError} style={styles}/>
+        // @ts-ignore
+        <img ref={ref} title={title} className={className} src={image} loading={loading} onLoad={handleLoaded} onError={handleError} style={styles} onClick={(e) => onClick?.(e)}/>
     )
-}
+})
