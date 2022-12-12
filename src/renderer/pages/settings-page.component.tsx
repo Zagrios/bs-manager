@@ -20,8 +20,14 @@ import { SupportersView } from "renderer/components/settings/supporters-view/sup
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { useNavigate } from "react-router-dom";
 import { InstallationFolderModal } from "renderer/components/modal/modal-types/installation-folder-modal.component";
-import { motion } from "framer-motion";
 import { BsmCheckbox } from "renderer/components/shared/bsm-checkbox.component";
+import { BsmImage } from "renderer/components/shared/bsm-image.component";
+import modelSaberIcon from "../../../assets/images/third-party-icons/model-saber.svg";
+import beatSaverIcon from "../../../assets/images/third-party-icons/beat-saver.png";
+import beastSaberIcon from "../../../assets/images/third-party-icons/beast-saber.png";
+import scoreSaberIcon from "../../../assets/images/third-party-icons/score-saber.png";
+import Tippy from '@tippyjs/react';
+import { MapsManagerService } from "renderer/services/maps-manager.service";
 
 export function SettingsPage() {
 
@@ -35,6 +41,7 @@ export function SettingsPage() {
   const notificationService: NotificationService = NotificationService.getInstance();
   const i18nService: I18nService = I18nService.getInstance();
   const linkOpener: LinkOpenerService = LinkOpenerService.getInstance();
+  const mapsManager = MapsManagerService.getInstance();
 
   const {firstColor, secondColor} = useThemeColor();
   const sessionExist = useObservable(authService.sessionExist$);
@@ -131,6 +138,10 @@ export function SettingsPage() {
 
   const openLogs = () => ipcService.sendLazy("open-logs");
 
+    const enableMapsDeepLink = () => {
+        mapsManager.enableDeepLink();
+    }
+
     return (
         <div className="w-full h-full flex justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 text-gray-800 dark:text-gray-200">
 
@@ -170,22 +181,43 @@ export function SettingsPage() {
 
                 <SettingContainer minorTitle="Installations OneClick">
                     <ul className="w-full flex flex-col gap-1.5">
-                        <li className="bg-main-color-1 p-3 rounded-md group-one">
+                        <li className="bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3">
                             <div className="flex items-center gap-2">
-                                <BsmCheckbox className="relative z-[1] h-5 w-5"/>
+                                <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={enableMapsDeepLink}/>
                                 <span className="font-extrabold">Maps</span>
                             </div>
+                            <div className="flex h-full gap-2">
+                                <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <BsmImage className="h-8 cursor-pointer" image={beatSaverIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://beatsaver.com/")}}/>
+                                </Tippy>
+                                <Tippy content="BeastSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <BsmImage className="h-8 rounded-md cursor-pointer" image={beastSaberIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://bsaber.com/")}}/>
+                                </Tippy>
+                                <Tippy content="ScoreSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <BsmImage className="h-8 cursor-pointer" image={scoreSaberIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://scoresaber.com/")}}/>
+                                </Tippy>
+                            </div>
                         </li>
-                        <li className="bg-main-color-1 p-3 rounded-md group-one">
+                        <li className="bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3">
                             <div className="flex items-center gap-2">
                                 <BsmCheckbox className="relative z-[1] h-5 w-5"/>
                                 <span className="font-extrabold">Playlists</span>
                             </div>
+                            <div className="flex h-full">
+                                <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <BsmImage className="h-8 cursor-pointer" image={beatSaverIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://beatsaver.com/")}}/>
+                                </Tippy>
+                            </div>
                         </li>
-                        <li className="bg-main-color-1 p-3 rounded-md group-one">
+                        <li className="bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3">
                             <div className="flex items-center gap-2">
                                 <BsmCheckbox className="relative z-[1] h-5 w-5"/>
                                 <span className="font-extrabold">Modèles</span>
+                            </div>
+                            <div className="flex h-full">
+                                <Tippy content="ModelSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <BsmImage className="h-8 cursor-pointer" image={modelSaberIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://modelsaber.com/")}}/>
+                                </Tippy>
                             </div>
                         </li>
                     </ul>
