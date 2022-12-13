@@ -46,12 +46,12 @@ export class BSLocalVersionService{
       const versionFilePath = path.join(bsPath, 'Beat Saber_Data', 'globalgamemanagers');
       if(!this.utilsService.pathExist(versionFilePath)){ return null; }
       const versionsAvailable = await this.remoteVersionService.getAvailableVersions();
-      return new Promise<string>(resolve => { 
+      return new Promise<string>(resolve => {
          const readLine = createInterface({ input: createReadStream(versionFilePath) });
          let findVersion: string = null;
          readLine.on('line', (line) => {
             for(const version of versionsAvailable){
-               if(line.includes(version.BSVersion)){ 
+               if(line.includes(version.BSVersion)){
                     findVersion = version.BSVersion;
                     readLine.close();
                     break;
@@ -66,7 +66,7 @@ export class BSLocalVersionService{
    }
 
    private setCustomVersions(versions: BSVersion[]): void{
-      this.configService.set(this.CUSTOM_VERSIONS_KEY, versions);
+      this.configService.set(this.CUSTOM_VERSIONS_KEY, versions,this.CUSTOM_VERSIONS_KEY,this.installLocationService.installationDirectory);
    }
 
    private addCustomVersion(version: BSVersion): void{
@@ -74,7 +74,7 @@ export class BSLocalVersionService{
    }
 
    private getCustomVersions(): BSVersion[]{
-      return this.configService.get<BSVersion[]>(this.CUSTOM_VERSIONS_KEY) || [];
+      return this.configService.get<BSVersion[]>(this.CUSTOM_VERSIONS_KEY,this.CUSTOM_VERSIONS_KEY) || [];
    }
 
    private deleteCustomVersion(version: BSVersion): void{
@@ -126,7 +126,7 @@ export class BSLocalVersionService{
     }
 
     public async getInstalledVersions(): Promise<BSVersion[]>{
-        
+
       const versions: BSVersion[] = [];
       const steamVersion = await this.getSteamVersion();
       if(steamVersion){ versions.push(steamVersion); }
@@ -166,7 +166,7 @@ export class BSLocalVersionService{
    public async editVersion(version: BSVersion, name: string, color: string): Promise<BSVersion>{
       if(version.steam || version.oculus){ throw {title: "CantEditSteam", msg: "CantEditSteam"} as BsmException; }
       const oldPath = await this.getVersionPath(version);
-      const editedVersion: BSVersion = version.BSVersion === name 
+      const editedVersion: BSVersion = version.BSVersion === name
          ? {...version, name: undefined, color}
          : {...version, name: this.removeSpecialChar(name), color};
       const newPath = await this.getVersionPath(editedVersion);
@@ -190,7 +190,7 @@ export class BSLocalVersionService{
 
    public async cloneVersion(version: BSVersion, name: string, color: string): Promise<BSVersion>{
       const originPath = await this.getVersionPath(version);
-      const cloneVersion: BSVersion = version.BSVersion === name 
+      const cloneVersion: BSVersion = version.BSVersion === name
          ? {...version, name: undefined, color}
          : {...version, name: this.removeSpecialChar(name), color, steam: false, oculus: false};
       const newPath = await this.getVersionPath(cloneVersion);

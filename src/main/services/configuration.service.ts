@@ -1,11 +1,14 @@
+import { Console } from "console";
 import ElectronStore from "electron-store";
+
+
 
 export class ConfigurationService {
 
     private static instance: ConfigurationService;
 
     private readonly _stores: Map<string, ElectronStore>;
-    private readonly _store: ElectronStore
+    private readonly _storeFixe: ElectronStore
 
 
 
@@ -15,41 +18,43 @@ export class ConfigurationService {
     }
 
     private constructor(){
+
         this._stores = new Map();
+        this._storeFixe = new ElectronStore();
     }
 
-    public get stores(): Map<string, ElectronStore> {return this._stores}
-    public get store(): ElectronStore {return this._store}
-
-
-
-    public set(key: string, value: any, store?: string, options?: ElectronStore.Options<Record<string, any>>): void{
-
-      if(store && !this.stores.has(store)){
-        this.stores.set(store, new ElectronStore(options));
+    private getPropperStore(selectedStore?: string) : ElectronStore {
+      if(selectedStore){
+        return this._stores.get(selectedStore);
       }
+      return this._storeFixe;
 
-      const eStore = !store ? this._store : this.stores.get(store)
-      eStore.set(key, value);
     }
 
-    public get<T>(key: string,storeSelected : string): T{
 
-      if (storeSelected === "store"){
-        return this.store.get(key) as T;
+    public set(key: string, value: any, selectedStore?: string, path?: string): void{
+      if(selectedStore && !this._stores.has(selectedStore)){
+        this._stores.set(selectedStore, new ElectronStore({cwd:path,name:selectedStore}));
       }
-      if (storeSelected === "versionBsStore"){
-        return this.store.get(key) as T;
-      }
+
+      const eStore = this.getPropperStore(selectedStore);
+      eStore.set(key,value);
+
     }
 
-    public delete(key: string,storeSelected : string): void{
-      if (storeSelected === "store"){
-        this.store.delete(key);
-      }
-      else if (storeSelected === "versionBsStore"){
-        this.store.delete(key);
-      }
+    public get<T>(key: string,selectedStore?: string): T{
+
+      const eStore = this.getPropperStore(selectedStore);
+
+      if(!eStore){ return; }
+      return eStore.get(key) as T;
+
+    }
+
+    public delete(key: string,selectedStore : string): void{
+
+       this.getPropperStore(selectedStore)?.delete(key);
+
     }
 
 }

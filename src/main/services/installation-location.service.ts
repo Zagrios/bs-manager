@@ -23,7 +23,7 @@ export class InstallationLocationService {
 
     public static getInstance(): InstallationLocationService{
         if(!InstallationLocationService.instance){ InstallationLocationService.instance = new InstallationLocationService(); }
-        return InstallationLocationService.instance;   
+        return InstallationLocationService.instance;
     }
 
     private constructor(){
@@ -46,14 +46,14 @@ export class InstallationLocationService {
             if(!this.utilsService.pathExist(oldDir)){ this.utilsService.createFolderIfNotExist(oldDir); }
             fs.move(oldDir, newDest, { overwrite: true }).then(() => {
                 this._installationDirectory = newDir;
-                this.configService.store.set(this.STORE_INSTALLATION_PATH_KEY, newDir);
+                this.configService.set(this.STORE_INSTALLATION_PATH_KEY, newDir);
                 resolve(this.installationDirectory);
             }).catch((err: Error) => {
                 reject({title: "CantMoveFolder", error: err} as BsmException);
                 log.error(err);
             })
         })
-        
+
     }
 
 }
