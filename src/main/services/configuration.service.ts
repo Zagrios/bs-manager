@@ -1,13 +1,13 @@
-import { InstallationLocationService } from '../services/installation-location.service';
 import ElectronStore from "electron-store";
-import { Template } from 'webpack';
 
 export class ConfigurationService {
 
     private static instance: ConfigurationService;
 
-    private readonly _store: ElectronStore;
-    private readonly _versionBsStore: ElectronStore;
+    private readonly _stores: Map<string, ElectronStore>;
+    private readonly _store: ElectronStore
+
+
 
     public static getInstance(): ConfigurationService{
         if(!ConfigurationService.instance){ ConfigurationService.instance = new ConfigurationService(); }
@@ -15,22 +15,22 @@ export class ConfigurationService {
     }
 
     private constructor(){
-        this._store = new ElectronStore();
-        this._versionBsStore = new ElectronStore({cwd : InstallationLocationService.getInstance().installationDirectory});
+        this._stores = new Map();
     }
 
-    public get store(): ElectronStore{ return this._store; }
-    public get versionBsStore() : ElectronStore{ return this._versionBsStore;}
+    public get stores(): Map<string, ElectronStore> {return this._stores}
+    public get store(): ElectronStore {return this._store}
 
-    public set(key: string, value: any, storeSelected : string): void{
-      if (storeSelected === "store"){
-        this.store.set(key, value);
+
+
+    public set(key: string, value: any, store?: string, options?: ElectronStore.Options<Record<string, any>>): void{
+
+      if(store && !this.stores.has(store)){
+        this.stores.set(store, new ElectronStore(options));
       }
-      else if (storeSelected === "versionBsStore")
-      {
-        this.versionBsStore.set(key, value);
-      }
-      else return null;
+
+      const eStore = !store ? this._store : this.stores.get(store)
+      eStore.set(key, value);
     }
 
     public get<T>(key: string,storeSelected : string): T{
@@ -38,7 +38,7 @@ export class ConfigurationService {
       if (storeSelected === "store"){
         return this.store.get(key) as T;
       }
-      else if (storeSelected === "versionBsStore"){
+      if (storeSelected === "versionBsStore"){
         return this.store.get(key) as T;
       }
     }
