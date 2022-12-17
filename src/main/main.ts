@@ -61,23 +61,25 @@ app.on('window-all-closed', () => {
     }
 });
 
-app.on('open-url', (event, url) => {
-    DeepLinkService.getInstance().dispatchLinkOpened(url);
-});
-
 const gotTheLock = app.requestSingleInstanceLock();
 
 if(!gotTheLock){
     app.quit();
 }
+else{
 
-app.whenReady().then(() => {
-    createWindow();
-}).catch(log.error);
+    app.whenReady().then(() => {
+        
+        createWindow();
 
-app.whenReady().then(() => {
-    protocol.registerFileProtocol('file', (request, callback) => {
-      const pathname = decodeURI(request.url.replace('file:///', ''));
-      callback(pathname);
+        protocol.registerFileProtocol('file', (request, callback) => {
+            const pathname = decodeURI(request.url.replace('file:///', ''));
+            callback(pathname);
+        });
+
+    }).catch(log.error);
+
+    app.on('open-url', (event, url) => {
+        DeepLinkService.getInstance().dispatchLinkOpened(url);
     });
-  });
+}

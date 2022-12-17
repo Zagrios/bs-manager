@@ -83,3 +83,48 @@ ipcMain.on("download-map", async (event, request: IpcRequest<{map: BsvMapDetail,
         utils.ipcSend(request.responceChannel, {success: false, error: err});
     });
 });
+
+ipcMain.on("register-maps-deep-link", async (event, request: IpcRequest<void>) => {
+    
+    const maps = LocalMapsManagerService.getInstance();
+    const utils = UtilsService.getInstance();
+
+    try{
+        const res = maps.enableDeepLinks();
+        utils.ipcSend(request.responceChannel, {success: true, data: res});
+    }
+    catch(e){
+        utils.ipcSend(request.responceChannel, {success: false});
+    }
+
+});
+
+ipcMain.on("unregister-maps-deep-link", async (event, request: IpcRequest<void>) => {
+    
+    const maps = LocalMapsManagerService.getInstance();
+    const utils = UtilsService.getInstance();
+
+    try{
+        const res = maps.disableDeepLinks();
+        utils.ipcSend(request.responceChannel, {success: true, data: res});
+    }
+    catch(e){
+        utils.ipcSend(request.responceChannel, {success: false});
+    }
+    
+});
+
+ipcMain.on("is-map-deep-links-enabled", async (event, request: IpcRequest<void>) => {
+
+    const maps = LocalMapsManagerService.getInstance();
+    const utils = UtilsService.getInstance();
+
+    try{
+        const res = maps.isDeepLinksEnabled();
+        utils.ipcSend(request.responceChannel, {success: true, data: res});
+    }
+    catch(e){
+        utils.ipcSend(request.responceChannel, {success: false});
+    }
+
+});

@@ -12,6 +12,8 @@ import StreamZip from "node-stream-zip";
 import { RequestService } from "../request.service";
 import sanitize from "sanitize-filename";
 import archiver from "archiver";
+import { DeepLinkService } from "../deep-link.service";
+import log from 'electron-log';
 
 export class LocalMapsManagerService {
 
@@ -25,16 +27,31 @@ export class LocalMapsManagerService {
     private readonly LEVELS_ROOT_FOLDER = "Beat Saber_Data";
     private readonly CUSTOM_LEVELS_FOLDER = "CustomLevels";
 
+    private readonly DEEP_LINKS = {
+        BeatSaver: "beatsaver",
+        ScoreSaber: "web+bsmap"
+    };
+
     private readonly localVersion: BSLocalVersionService;
     private readonly installLocation: InstallationLocationService;
     private readonly utils: UtilsService;
-    private readonly reqService: RequestService
+    private readonly reqService: RequestService;
+    private readonly deepLink: DeepLinkService;
 
     private constructor(){
         this.localVersion = BSLocalVersionService.getInstance();
         this.installLocation = InstallationLocationService.getInstance();
         this.utils = UtilsService.getInstance();
         this.reqService = RequestService.getInstance();
+        this.deepLink = DeepLinkService.getInstance();
+
+        this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.BeatSaver, (link) => {
+            log.info("RECEIVED FROM", this.DEEP_LINKS.BeatSaver, link);
+        });
+
+        this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.ScoreSaber, (link) => {
+            log.info("RECEIVED FROM", this.DEEP_LINKS.ScoreSaber, link);
+        });
     }
 
     private async getMapsFolderPath(version?: BSVersion): Promise<string>{
@@ -212,7 +229,7 @@ export class LocalMapsManagerService {
 
         archive.pipe(output);
         archive.on("error", (e) => {throw e});
-
+        
         if(!maps || maps.length === 0){
 
             const mapsFolder = await this.getMapsFolderPath(version);
@@ -233,8 +250,16 @@ export class LocalMapsManagerService {
 
     }
 
-    public async enableDeepLink(){
-        // TODO
+    public enableDeepLinks(): boolean{
+        return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.registerDeepLink(link));
+    }
+
+    public disableDeepLinks(): boolean{
+        return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.unRegisterDeepLink(link));
+    }
+
+    public isDeepLinksEnabled(): boolean{
+        return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.isDeepLinkRegistred(link));
     }
 
     

@@ -60,12 +60,14 @@ export function SettingsPage() {
   const[languageSelected, setLanguageSelected]= useState(languagesItems.find(e => e.value === i18nService.currentLanguage).id);
   const [installationFolder, setInstallationFolder] = useState(null);
   const [showSupporters, setShowSupporters] = useState(false);
+  const [mapDeepLinksEnabled, setMapDeepLinksEnabled] = useState(false);
   const [appVersion, setAppVersion] = useState("");
   const nav = useNavigate();
 
   useEffect(() => {
     loadInstallationFolder();
     ipcService.send<string>("current-version").then(res => setAppVersion(res.data));
+    mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
   }, []);
 
   const resetColors = () => {
@@ -138,8 +140,8 @@ export function SettingsPage() {
 
   const openLogs = () => ipcService.sendLazy("open-logs");
 
-    const enableMapsDeepLink = () => {
-        mapsManager.enableDeepLink();
+    const toogleMapDeepLinks = () => {
+        mapsManager.toogleDeepLinks().finally(() => mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled)));
     }
 
     return (
@@ -183,7 +185,7 @@ export function SettingsPage() {
                     <ul className="w-full flex flex-col gap-1.5">
                         <li className="bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3">
                             <div className="flex items-center gap-2">
-                                <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={enableMapsDeepLink}/>
+                                <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={toogleMapDeepLinks} checked={mapDeepLinksEnabled}/>
                                 <span className="font-extrabold">Maps</span>
                             </div>
                             <div className="flex h-full gap-2">

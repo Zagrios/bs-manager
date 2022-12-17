@@ -1,6 +1,7 @@
 import { app } from "electron";
 import path from "path";
 import { URL } from "url";
+import log from "electron-log"
 
 export class DeepLinkService {
 
@@ -65,6 +66,9 @@ export class DeepLinkService {
     }
 
     public dispatchLinkOpened(link: string){
+
+        log.info("DEISPATCH", link);
+
         const url = new URL(link);
 
         const protocolListeners = this.listeners.get(url.protocol.replace(":", "")) ?? [];
