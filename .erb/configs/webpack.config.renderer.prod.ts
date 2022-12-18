@@ -25,6 +25,21 @@ const devtoolsConfig =
       }
     : {};
 
+
+const getHtmlPageOptions = (page: string): HtmlWebpackPlugin.Options => {
+    return {
+        filename: `${page}.html`,
+        template: path.join(webpackPaths.srcRendererPath, `${page}.ejs`),
+        minify: {
+          collapseWhitespace: true,
+          removeAttributeQuotes: true,
+          removeComments: true,
+        },
+        isBrowser: false,
+        isDevelopment: process.env.NODE_ENV !== 'production',
+    }
+}
+
 const configuration: webpack.Configuration = {
   ...devtoolsConfig,
 
@@ -128,29 +143,10 @@ const configuration: webpack.Configuration = {
       analyzerMode: process.env.ANALYZE === 'true' ? 'server' : 'disabled',
     }),
 
-    new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: path.join(webpackPaths.srcRendererPath, 'index.ejs'),
-      minify: {
-        collapseWhitespace: true,
-        removeAttributeQuotes: true,
-        removeComments: true,
-      },
-      isBrowser: false,
-      isDevelopment: process.env.NODE_ENV !== 'production',
-    }),
+    new HtmlWebpackPlugin(getHtmlPageOptions("index")),
+    new HtmlWebpackPlugin(getHtmlPageOptions("launcher")),
+    new HtmlWebpackPlugin(getHtmlPageOptions("oneclick-download-map")),
 
-    new HtmlWebpackPlugin({
-      filename: 'launcher.html',
-      template: path.join(webpackPaths.srcRendererPath, 'launcher.ejs'),
-      minify: {
-        collapseWhitespace: true,
-        removeAttributeQuotes: true,
-        removeComments: true,
-      },
-      isBrowser: false,
-      isDevelopment: process.env.NODE_ENV !== 'production',
-    })
   ],
 };
 

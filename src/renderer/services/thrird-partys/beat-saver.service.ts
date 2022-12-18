@@ -17,8 +17,14 @@ export class BeatSaverService {
     }
 
     public async getMapDetailsFromHashs(hashs: string[]): Promise<BsvMapDetail[]>{
-        const res = await this.ipc.send<BsvMapDetail[], string[]>("bsv-bet-map-details-from-hashs", {args: hashs});
+        const res = await this.ipc.send<BsvMapDetail[], string[]>("bsv-get-map-details-from-hashs", {args: hashs});
         return res.data ?? [];
+    }
+
+
+    public async getMapDetailsById(id: string): Promise<BsvMapDetail>{
+        const res = await this.ipc.send<BsvMapDetail, string>("bsv-get-map-details-by-id", {args: id});
+        return res.data ?? null;
     }
 
     public async searchMaps(search: SearchParams): Promise<BsvMapDetail[]>{

@@ -15,6 +15,9 @@ import './ipcs';
 import { UtilsService } from './services/utils.service';
 import { WindowManagerService } from './services/window-manager.service';
 import { DeepLinkService } from './services/deep-link.service';
+import { AppWindow } from 'shared/models/window-manager/app-window.model';
+import { LocalMapsManagerService } from './services/maps/local-maps-manager.service';
+import { argv } from 'process';
 
 export const PRELOAD_PATH = app.isPackaged ? path.join(__dirname, 'preload.js') : path.join(__dirname, '../../.erb/dll/preload.js')
 
@@ -48,10 +51,16 @@ const installExtensions = async () => {
     return installer.default(extensions.map((name) => installer[name]), forceDownload).catch(console.log);
 };
 
-const createWindow = async () => {
+const createWindow = async (window: AppWindow = "launcher.html") => {
     if(isDebug){ await installExtensions(); }
-    WindowManagerService.getInstance().openWindow("launcher.html");
+    WindowManagerService.getInstance().openWindow(window);
 };
+
+const initServicesMustBeInitialized = () => {
+    LocalMapsManagerService.getInstance();
+    // Playlist
+    // Model
+}
 
 app.on('window-all-closed', () => {
     // Respect the OSX convention of having the application in memory even
@@ -68,9 +77,30 @@ if(!gotTheLock){
 }
 else{
 
+    app.on('second-instance', (e, argv) => {
+
+        const deepLink = argv.find(arg => DeepLinkService.getInstance().isDeepLink(arg));
+
+        if(!deepLink){ return; }
+
+        DeepLinkService.getInstance().dispatchLinkOpened(deepLink);
+
+    });
+
     app.whenReady().then(() => {
+
+        //process.argv.push("beatsaver://2d133");
+
+        initServicesMustBeInitialized();
         
-        createWindow();
+        const deepLink = process.argv.find(arg => DeepLinkService.getInstance().isDeepLink(arg));
+
+        if(!deepLink){
+            createWindow();
+        }
+        else{
+            DeepLinkService.getInstance().dispatchLinkOpened(deepLink);
+        }
 
         protocol.registerFileProtocol('file', (request, callback) => {
             const pathname = decodeURI(request.url.replace('file:///', ''));
@@ -78,8 +108,4 @@ else{
         });
 
     }).catch(log.error);
-
-    app.on('open-url', (event, url) => {
-        DeepLinkService.getInstance().dispatchLinkOpened(url);
-    });
 }

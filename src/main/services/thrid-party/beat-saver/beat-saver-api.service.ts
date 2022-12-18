@@ -89,6 +89,16 @@ export class BeatSaverApiService {
 
     }
 
+    public async getMapDetailsById(id: string): Promise<ApiResult<BsvMapDetail>>{
+
+        const res = await fetch(`${this.bsaverApiUrl}/maps/id/${id}`);
+
+        const data = await res.json() as BsvMapDetail;
+
+        return {status: res.status, data};
+
+    }
+
     public async searchMaps(search: SearchParams): Promise<ApiResult<SearchResponse>>{
 
         console.log(search);

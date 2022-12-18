@@ -14,6 +14,9 @@ import sanitize from "sanitize-filename";
 import archiver from "archiver";
 import { DeepLinkService } from "../deep-link.service";
 import log from 'electron-log';
+import { WindowManagerService } from "../window-manager.service";
+import { ipcMain } from "electron";
+import { IpcRequest } from 'shared/models/ipc';
 
 export class LocalMapsManagerService {
 
@@ -37,6 +40,7 @@ export class LocalMapsManagerService {
     private readonly utils: UtilsService;
     private readonly reqService: RequestService;
     private readonly deepLink: DeepLinkService;
+    private readonly windows: WindowManagerService;
 
     private constructor(){
         this.localVersion = BSLocalVersionService.getInstance();
@@ -44,13 +48,16 @@ export class LocalMapsManagerService {
         this.utils = UtilsService.getInstance();
         this.reqService = RequestService.getInstance();
         this.deepLink = DeepLinkService.getInstance();
+        this.windows = WindowManagerService.getInstance();
 
         this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.BeatSaver, (link) => {
-            log.info("RECEIVED FROM", this.DEEP_LINKS.BeatSaver, link);
+            log.info("MAP RECEIVED FROM", this.DEEP_LINKS.BeatSaver, link);
+            this.openOneClickDownloadMapWindow(new URL(link).host);
         });
 
         this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.ScoreSaber, (link) => {
-            log.info("RECEIVED FROM", this.DEEP_LINKS.ScoreSaber, link);
+            log.info("MAP RECEIVED FROM", this.DEEP_LINKS.ScoreSaber, link);
+            this.openOneClickDownloadMapWindow(new URL(link).host, true);
         });
     }
 
@@ -130,6 +137,18 @@ export class LocalMapsManagerService {
 
     }
 
+    private openOneClickDownloadMapWindow(mapId: string, isHash = false): void{
+        
+        this.windows.openWindow("oneclick-download-map.html");
+
+        console.log("oui");
+
+        ipcMain.once("one-click-map-info", async (event, req: IpcRequest<void>) => {
+            this.utils.ipcSend(req.responceChannel, {success: true, data: {id: mapId, isHash}});
+        });
+
+    }
+
     public async getMaps(version?: BSVersion): Promise<BsmLocalMap[]>{
         const levelsFolder = await this.getMapsFolderPath(version);
 
@@ -185,6 +204,8 @@ export class LocalMapsManagerService {
     }
 
     public async deleteMaps(maps: BsmLocalMap[], verion?: BSVersion){
+
+        console.log(verion);
        
         const mapsFolders = await this.getAbsoluteFolderOfMaps(maps, verion);
         const mapsHashsToDelete = maps.map(map => map.hash);
@@ -198,11 +219,11 @@ export class LocalMapsManagerService {
 
     }
 
-    public async downloadMap(map: BsvMapDetail, version?: BSVersion){
+    public async downloadMap(map: BsvMapDetail, version?: BSVersion): Promise<string>{
 
         if(!map.versions.at(0).hash){ throw "Cannot download map, no hash found"; }
 
-        const zipUrl = `https://r2cdn.beatsaver.com/${map.versions.at(0).hash}.zip`
+        const zipUrl = map.versions.at(0).downloadURL;
 
         const mapsFolder = await this.getMapsFolderPath(version);
 
@@ -220,6 +241,8 @@ export class LocalMapsManagerService {
         await zip.close();
 
         unlinkSync(zipPath);
+
+        return mapPath;
     }
 
     public async exportMaps(version: BSVersion, maps: BsmLocalMap[], outPath: string){
@@ -247,6 +270,32 @@ export class LocalMapsManagerService {
         }
 
         await archive.finalize();
+
+    }
+
+    public async oneClickDownloadMap(map: BsvMapDetail): Promise<void>{
+
+        console.log("AALLLOO");
+
+        const downloadedMap = await this.downloadMap(map);
+
+        console.log(downloadedMap);
+
+        const versions = await this.localVersion.getInstalledVersions();
+
+        for(const version of versions){
+
+            if(await this.versionIsLinked(version)){ continue; }
+
+            const versionMapsPath = await this.getMapsFolderPath(version);
+
+            this.utils.createFolderIfNotExist(versionMapsPath);
+
+            console.log(downloadedMap, path.join(versionMapsPath, path.basename(downloadedMap)));
+
+            copySync(downloadedMap, path.join(versionMapsPath, path.basename(downloadedMap)), {overwrite: true});
+
+        }
 
     }
 

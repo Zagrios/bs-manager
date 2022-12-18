@@ -15,11 +15,22 @@ ipcMain.on("bsv-search-map", async (event, request: IpcRequest<SearchParams>) =>
     })
 });
 
-ipcMain.on("bsv-bet-map-details-from-hashs", async (event, request: IpcRequest<string[]>) => {
+ipcMain.on("bsv-get-map-details-from-hashs", async (event, request: IpcRequest<string[]>) => {
     const utlis = UtilsService.getInstance();
     const bsvService = BeatSaverService.getInstance();
 
     bsvService.getMapDetailsFromHashs(request.args).then(maps => {
+        utlis.ipcSend(request.responceChannel, {success: true, data: maps});
+    }).catch(e => {
+        utlis.ipcSend(request.responceChannel, {success: false, error: e});
+    })
+});
+
+ipcMain.on("bsv-get-map-details-by-id", async (event, request: IpcRequest<string>) => {
+    const utlis = UtilsService.getInstance();
+    const bsvService = BeatSaverService.getInstance();
+
+    bsvService.getMapDetailsById(request.args).then(maps => {
         utlis.ipcSend(request.responceChannel, {success: true, data: maps});
     }).catch(e => {
         utlis.ipcSend(request.responceChannel, {success: false, error: e});

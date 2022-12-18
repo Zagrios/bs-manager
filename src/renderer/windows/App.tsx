@@ -1,18 +1,18 @@
-import { NavBar } from "./components/nav-bar/nav-bar.component";
-import TitleBar from "./components/title-bar/title-bar.component";
+import { NavBar } from "../components/nav-bar/nav-bar.component";
+import TitleBar from "../components/title-bar/title-bar.component";
 import { Routes, Route, useLocation } from "react-router-dom";
-import { AvailableVersionsList } from "./pages/available-versions-list.components";
-import { VersionViewer } from "./pages/version-viewer.component";
-import { Modal } from "./components/modal/modal.component";
-import { SettingsPage } from "./pages/settings-page.component";
-import { BsmProgressBar } from "./components/progress-bar/bsm-progress-bar.component";
+import { AvailableVersionsList } from "../pages/available-versions-list.components";
+import { VersionViewer } from "../pages/version-viewer.component";
+import { Modal } from "../components/modal/modal.component";
+import { SettingsPage } from "../pages/settings-page.component";
+import { BsmProgressBar } from "../components/progress-bar/bsm-progress-bar.component";
 import { useEffect } from "react";
-import { ThemeService } from "./services/theme.service";
-import { NotificationOverlay } from "./components/notification/notification-overlay.component";
-import { PageStateService } from "./services/page-state.service";
-import { MapsPage } from "./pages/maps-page.component";
+import { ThemeService } from "../services/theme.service";
+import { NotificationOverlay } from "../components/notification/notification-overlay.component";
+import { PageStateService } from "../services/page-state.service";
+import { MapsPage } from "../pages/maps-page.component";
 import "tailwindcss/tailwind.css";
-import { BsmIframeView } from "./components/shared/bsm-map-preview.component";
+import { BsmIframeView } from "../components/shared/bsm-map-preview.component";
 import 'tippy.js/dist/tippy.css';
 
 export default function App() {

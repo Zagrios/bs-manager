@@ -58,7 +58,7 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
 
     const handleDelete = useCallback((map: BsmLocalMap) => {
         mapsManager.deleteMaps([map], version).then(res => res && loadMaps())
-    }, []);
+    }, [version]);
 
     const extractMapDiffs = (map: BsmLocalMap): Map<BsvMapCharacteristic, ParsedMapDiff[]> => {
         const res = new Map<BsvMapCharacteristic, ParsedMapDiff[]>();

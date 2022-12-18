@@ -1,6 +1,5 @@
 import { LinkMapsModal } from "renderer/components/modal/modal-types/link-maps-modal.component";
 import { UnlinkMapsModal } from "renderer/components/modal/modal-types/unlink-maps-modal.component";
-import { finalize } from "rxjs/operators";
 import { Subject, Observable } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";

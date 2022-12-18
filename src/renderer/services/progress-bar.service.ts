@@ -4,6 +4,8 @@ import { IpcService } from "./ipc.service";
 import { NotificationService } from "./notification.service";
 import { CSSProperties } from "react";
 import { ProgressionInterface } from "shared/models/progress-bar";
+import { from } from "rxjs";
+import { of } from "rxjs";
 
 export class ProgressBarService{
 
@@ -71,6 +73,10 @@ export class ProgressBarService{
 
     public complete(): void{
         this._progression$.next({progression: 100});
+    }
+
+    public open(): void{
+        this.show(of(0), true, this._style$.value);
     }
 
     public hide(unsubscribe: boolean = true){

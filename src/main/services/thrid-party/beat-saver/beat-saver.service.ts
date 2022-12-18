@@ -47,6 +47,13 @@ export class BeatSaverService {
         return mapDetails;
     }
 
+    public async getMapDetailsById(id: string): Promise<BsvMapDetail>{
+
+        const res = await this.bsaverApi.getMapDetailsById(id);
+        return res.data;
+
+    }
+
     public searchMaps(search: SearchParams): Promise<BsvMapDetail[]>{
 
         return this.bsaverApi.searchMaps(search).then(res => {

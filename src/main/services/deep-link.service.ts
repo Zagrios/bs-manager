@@ -16,6 +16,8 @@ export class DeepLinkService {
 
     private readonly listeners = new Map<string, Listerner[]>()
 
+    private constructor(){}
+
     public registerDeepLink(protocol: string): boolean{
 
         if(process.defaultApp && process.argv.length >= 2){
@@ -76,6 +78,19 @@ export class DeepLinkService {
         protocolListeners.forEach(listerner => {
             listerner(link);
         });
+
+    }
+
+    public isDeepLink(link: string): boolean{
+
+        try{
+            const url = new URL(link);
+            const protocol = url.protocol.replace(":", "");
+            return Array.from(this.listeners.keys()).some(key => key === protocol);
+        }
+        catch(e){
+            return false;
+        }
 
     }
 

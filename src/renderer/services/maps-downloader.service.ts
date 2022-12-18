@@ -122,6 +122,16 @@ export class MapsDownloaderService {
         this.downloadedListerners.splice(funcIndex, 1);
     }
 
+    public async oneClickInstallMap(map: BsvMapDetail): Promise<boolean>{
+
+        this.progressBar.showFake(0.008);
+
+        const res = await this.ipc.send<void, BsvMapDetail>("one-click-install-map", {args: map});
+
+        return res.success;
+
+    }
+
     public get isDownloading(): boolean{
         return !!this.currentDownload$.value;
     }

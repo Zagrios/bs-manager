@@ -84,6 +84,18 @@ ipcMain.on("download-map", async (event, request: IpcRequest<{map: BsvMapDetail,
     });
 });
 
+ipcMain.on("one-click-install-map", async (event, request: IpcRequest<BsvMapDetail>) => {
+    const utils = UtilsService.getInstance();
+    const maps = LocalMapsManagerService.getInstance();
+
+    maps.oneClickDownloadMap(request.args).then(() => {
+        utils.ipcSend(request.responceChannel, {success: true});
+    }).catch(err => {
+        console.log(err);
+        utils.ipcSend(request.responceChannel, {success: false, error: err});
+    });
+});
+
 ipcMain.on("register-maps-deep-link", async (event, request: IpcRequest<void>) => {
     
     const maps = LocalMapsManagerService.getInstance();
