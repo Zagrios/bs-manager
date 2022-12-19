@@ -8,6 +8,7 @@ import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { ThemeService } from "renderer/services/theme.service";
 import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
 import { WindowManagerService } from "renderer/services/window-manager.service";
+import { timer } from "rxjs";
 import { BsvMapDetail } from "shared/models/maps";
 import defaultImage from '../../../../assets/images/default-version-img.jpg'
 
@@ -46,6 +47,10 @@ export default function OneClickDownloadMap() {
                 
                 await mapsDownloader.oneClickInstallMap(mapDetails);
 
+                progressBar.complete();
+
+                await timer(300).toPromise();
+
                 resolve();
             }
             catch(e){
@@ -54,24 +59,21 @@ export default function OneClickDownloadMap() {
             
         });
 
-        promise.finally(() => {});
+        promise.finally(() => windows.closeAll("index.html"));
 
         return () => {
             sub.unsubscribe();
         }
 
-    }, [])
-    
-
-    console.log(mapInfo);
+    }, []);
 
     return (
         <div className="relative w-screen h-screen overflow-hidden">
-            <BsmImage className="absolute top-0 left-0 w-full h-full !border-none" image={cover}/>
-            <div className="w-full h-full backdrop-brightness-50 flex flex-col justify-start items-center gap-10" style={{translate: "0 0 0"}}>
+            {cover && <BsmImage className="absolute top-0 left-0 w-full h-full object-cover" image={cover}/>}
+            <div className="w-full h-full backdrop-brightness-50 backdrop-blur-md flex flex-col justify-start items-center gap-10">
                 <TitleBar template="oneclick"/>
-                <BsmImage className="aspect-square w-1/2 object-cover rounded-md shadow-black shadow-lg" placeholder={defaultImage} image={cover}/>
-                <h1 className="font-bold italic text-xl text-gray-200 tracking-wide">{mapInfo?.name ?? "Chargement de la map..."}</h1>
+                <BsmImage className="aspect-square w-1/2 object-cover rounded-md shadow-black shadow-lg" placeholder={defaultImage} image={cover} errorImage={defaultImage}/>
+                <h1 className="overflow-hidden font-bold italic text-xl text-gray-200 tracking-wide w-full text-center whitespace-nowrap text-ellipsis px-2">{mapInfo?.name ?? "Chargement de la map..."}</h1>
             </div>
             <BsmProgressBar/>
         </div>

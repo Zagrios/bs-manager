@@ -15,8 +15,10 @@ export const BsmImage = forwardRef(({className, image, errorImage, placeholder, 
 
     const [isLoaded, setIsLoaded] = useState(false);
 
+    image = image ? image : (placeholder||errorImage);
+
     const styles: CSSProperties = (() => {
-        return placeholder && {
+        return {
             ...style,
             ...(!isLoaded && {backgroundImage: `url(${placeholder})`}),
             ...(!isLoaded && {backgroundSize: "cover"}),
@@ -25,6 +27,7 @@ export const BsmImage = forwardRef(({className, image, errorImage, placeholder, 
     })();
 
     const handleError = (e: SyntheticEvent<HTMLImageElement, Event>) => {
+        console.log("ERROR");
         e.currentTarget.onerror = null;
         e.currentTarget.src = errorImage || "";
     }
@@ -35,6 +38,6 @@ export const BsmImage = forwardRef(({className, image, errorImage, placeholder, 
 
     return (
         // @ts-ignore
-        <img ref={ref} title={title} className={className} src={image} loading={loading} onLoad={handleLoaded} onError={handleError} style={styles} onClick={(e) => onClick?.(e)}/>
+        <img ref={ref} title={title} className={className} src={image} loading={loading} onLoad={handleLoaded} onError={handleError} style={styles} onClick={(e) => onClick?.(e)} alt=" "/>
     )
 })
