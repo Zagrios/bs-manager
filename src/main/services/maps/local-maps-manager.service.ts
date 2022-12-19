@@ -51,12 +51,12 @@ export class LocalMapsManagerService {
         this.windows = WindowManagerService.getInstance();
 
         this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.BeatSaver, (link) => {
-            log.info("MAP RECEIVED FROM", this.DEEP_LINKS.BeatSaver, link);
+            log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.BeatSaver, link);
             this.openOneClickDownloadMapWindow(new URL(link).host);
         });
 
         this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.ScoreSaber, (link) => {
-            log.info("MAP RECEIVED FROM", this.DEEP_LINKS.ScoreSaber, link);
+            log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.ScoreSaber, link);
             this.openOneClickDownloadMapWindow(new URL(link).host, true);
         });
     }
