@@ -16,7 +16,7 @@ import { UtilsService } from './services/utils.service';
 import { WindowManagerService } from './services/window-manager.service';
 import { DeepLinkService } from './services/deep-link.service';
 import { AppWindow } from 'shared/models/window-manager/app-window.model';
-import { LocalMapsManagerService } from './services/maps/local-maps-manager.service';
+import { LocalMapsManagerService } from './services/additional-content/local-maps-manager.service';
 
 export const PRELOAD_PATH = app.isPackaged ? path.join(__dirname, 'preload.js') : path.join(__dirname, '../../.erb/dll/preload.js')
 
