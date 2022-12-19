@@ -47,7 +47,7 @@ export class UtilsService{
     return unlink(pathToFile);
   }
 
-  public rmDirIfExist(path: string): Promise<void>{
+  public async rmDirIfExist(path: string): Promise<void>{
     if(!this.pathExist(path)){ return; }
     return rm(path, {recursive: true, force: true});
   }
