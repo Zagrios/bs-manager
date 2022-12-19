@@ -9,6 +9,8 @@ import { IpcResponse } from "shared/models/ipc";
 import log from "electron-log";
 import { AppWindow } from "shared/models/window-manager/app-window.model";
 
+// TODO : REFACTOR
+
 export class UtilsService{
 
   private static instance: UtilsService;
