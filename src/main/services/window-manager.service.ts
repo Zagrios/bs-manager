@@ -53,13 +53,9 @@ export class WindowManagerService{
         });
 
         this.windows.set(windowType, window);
-        this.utilsService.setMainWindow(window);
+        this.utilsService.setMainWindows(this.windows);
 
         return promise.then(() => window);
-    }
-
-    public closeWindow(window: AppWindow){
-        this.windows.get(window).close();
     }
 
     public closeAllWindows(except?: AppWindow){
@@ -67,6 +63,12 @@ export class WindowManagerService{
             if(key === except){ return; }
             window.close();
         })
+    }
+
+    public close(...win: AppWindow[]){
+        win.forEach(window => {
+            this.windows.get(window)?.close();
+        });
     }
 
 }

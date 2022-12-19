@@ -59,7 +59,7 @@ export default function OneClickDownloadMap() {
             
         });
 
-        promise.finally(() => windows.closeAll("index.html"));
+        promise.finally(() =>{});
 
         return () => {
             sub.unsubscribe();
@@ -71,7 +71,7 @@ export default function OneClickDownloadMap() {
         <div className="relative w-screen h-screen overflow-hidden">
             {cover && <BsmImage className="absolute top-0 left-0 w-full h-full object-cover" image={cover}/>}
             <div className="w-full h-full backdrop-brightness-50 backdrop-blur-md flex flex-col justify-start items-center gap-10">
-                <TitleBar template="oneclick"/>
+                <TitleBar template="oneclick-download-map.html"/>
                 <BsmImage className="aspect-square w-1/2 object-cover rounded-md shadow-black shadow-lg" placeholder={defaultImage} image={cover} errorImage={defaultImage}/>
                 <h1 className="overflow-hidden font-bold italic text-xl text-gray-200 tracking-wide w-full text-center whitespace-nowrap text-ellipsis px-2">{mapInfo?.name ?? "Chargement de la map..."}</h1>
             </div>

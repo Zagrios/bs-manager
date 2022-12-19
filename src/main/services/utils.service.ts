@@ -7,6 +7,7 @@ import { app, BrowserWindow } from "electron";
 import { rm, unlink } from "fs/promises";
 import { IpcResponse } from "shared/models/ipc";
 import log from "electron-log";
+import { AppWindow } from "shared/models/window-manager/app-window.model";
 
 export class UtilsService{
 
@@ -14,7 +15,7 @@ export class UtilsService{
 
   private assetsPath: string = '';
 
-  private mainWindow: BrowserWindow;
+  private windows: Map<AppWindow, BrowserWindow> = new Map<AppWindow, BrowserWindow>();
 
   private constructor(){}
 
@@ -30,8 +31,8 @@ export class UtilsService{
   public getAssestsJsonsPath(): string { return this.getAssetsPath("jsons"); }
   public getTempPath(): string{ return path.join(app.getPath("temp"), app.getName()) }
 
-  public setMainWindow(win: BrowserWindow){ this.mainWindow = win; }
-  public getMainWindow(){ return this.mainWindow; }
+  public setMainWindows(windows: Map<AppWindow, BrowserWindow>){ this.windows = windows; }
+  public getMainWindows(win: AppWindow){ return this.windows.get(win); }
 
   public pathExist(path: string): boolean{ return existsSync(path); }
 
@@ -95,7 +96,7 @@ export class UtilsService{
 
   public ipcSend<T = any>(channel: string, response: IpcResponse<T>): void{
     try {
-        this.mainWindow.webContents.send(channel, response);
+        Array.from(this.windows.values()).forEach(window => window.webContents.send(channel, response));
     } catch (error) {
         log.error(error);
     }

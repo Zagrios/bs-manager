@@ -42,7 +42,7 @@ export default function Launcher() {
 
     return (
         <div className="w-full h-full">
-            <TitleBar template="update"/>
+            <TitleBar template="launcher.html"/>
             <div className="relative flex flex-col items-center justify-center pt-10">
                 <motion.div ref={constraintsRef}>
                     <motion.div drag dragConstraints={constraintsRef} animate={{rotate: [0, 10, 0]}} transition={{ duration: .6, repeat: Infinity, repeatDelay: 1.6 }}>

@@ -1,16 +1,19 @@
 import { useState } from 'react';
 import { IpcService } from 'renderer/services/ipc.service';
+import { WindowManagerService } from 'renderer/services/window-manager.service';
+import { AppWindow } from 'shared/models/window-manager/app-window.model';
 import './title-bar.component.css'
 
-export default function TitleBar({template = "main"} : {template?: "update"|"main"|"oneclick"}) {
+export default function TitleBar({template = "index.html"} : {template: AppWindow}) {
 
    const ipcService = IpcService.getInstance();
+   const windows = WindowManagerService.getInstance();
 
    const [maximized, setMaximized] = useState(false);
 
-   const closeWindow = () => {
-      ipcService.sendLazy('window.close');
-   }
+    const closeWindow = () => {
+        return windows.close(template);
+    }
 
    const maximizeWindow = () => {
       ipcService.sendLazy('window.maximize');
@@ -30,7 +33,7 @@ export default function TitleBar({template = "main"} : {template?: "update"|"mai
       setMaximized(!maximized);
    }
 
-    if(template === "main"){
+    if(template === "index.html"){
 
         return (
             <header id="titlebar" className="min-h-[22px] bg-light-main-color-1 shrink-0 dark:bg-main-color-1 w-screen h-[22px] flex content-center items-center justify-start z-10">
@@ -54,14 +57,14 @@ export default function TitleBar({template = "main"} : {template?: "update"|"mai
         );
 
     }
-    if(template === "update"){
+    if(template === "launcher.html"){
         return (
             <header id="titlebar" className="min-h-[22px] bg-transparent w-screen h-[22px] z-10">
                 <div id="drag-region" className='grow basis-0 h-full'></div>
             </header>
         )
     }
-    if(template === "oneclick"){
+    if(template === "oneclick-download-map.html"){
         return (
             <header id="titlebar" className="min-h-[22px] bg-transparent w-screen h-[22px] flex content-center items-center justify-start z-10">
                 <div id="drag-region" className='grow h-full'>
