@@ -124,7 +124,7 @@ export class MapsDownloaderService {
 
     public async oneClickInstallMap(map: BsvMapDetail): Promise<boolean>{
 
-        this.progressBar.showFake(0.008);
+        this.progressBar.showFake(0.04);
 
         const res = await this.ipc.send<void, BsvMapDetail>("one-click-install-map", {args: map});
 
