@@ -16,10 +16,11 @@ export const BsmImage = forwardRef(({className, image, errorImage, placeholder, 
     const [isLoaded, setIsLoaded] = useState(false);
 
     const styles: CSSProperties = (() => {
-        return {
+        return placeholder && {
             ...style,
             ...(!isLoaded && {backgroundImage: `url(${placeholder})`}),
-            ...(!isLoaded && {backgroundSize: "cover"})
+            ...(!isLoaded && {backgroundSize: "cover"}),
+            ...(!isLoaded && {backgroundPosition: "center"}),
         }
     })();
 

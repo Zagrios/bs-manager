@@ -17,7 +17,6 @@ import { WindowManagerService } from './services/window-manager.service';
 import { DeepLinkService } from './services/deep-link.service';
 import { AppWindow } from 'shared/models/window-manager/app-window.model';
 import { LocalMapsManagerService } from './services/maps/local-maps-manager.service';
-import { argv } from 'process';
 
 export const PRELOAD_PATH = app.isPackaged ? path.join(__dirname, 'preload.js') : path.join(__dirname, '../../.erb/dll/preload.js')
 
@@ -89,7 +88,7 @@ else{
 
     app.whenReady().then(() => {
 
-        //process.argv.push("beatsaver://2d133");
+        process.argv.push("web+bsmap://BDE6A1F8FC7008247443CF3F810BBD8E910DD839");
 
         initServicesMustBeInitialized();
         

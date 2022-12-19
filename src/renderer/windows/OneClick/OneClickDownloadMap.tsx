@@ -7,6 +7,7 @@ import { MapsDownloaderService } from "renderer/services/maps-downloader.service
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { ThemeService } from "renderer/services/theme.service";
 import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
+import { WindowManagerService } from "renderer/services/window-manager.service";
 import { BsvMapDetail } from "shared/models/maps";
 import defaultImage from '../../../../assets/images/default-version-img.jpg'
 
@@ -17,6 +18,7 @@ export default function OneClickDownloadMap() {
     const mapsDownloader = MapsDownloaderService.getInstance();
     const themeService = ThemeService.getInstance();
     const progressBar = ProgressBarService.getInstance();
+    const windows = WindowManagerService.getInstance();
 
     const [mapInfo, setMapInfo] = useState<BsvMapDetail>(null);
 
@@ -30,24 +32,29 @@ export default function OneClickDownloadMap() {
         });
 
         progressBar.open();
-      
-        ipc.send<{id: string, isHash: boolean}>("one-click-map-info").then(res => {
 
-            console.log(res);
-        
-            if(res.data.isHash){
-                return bsv.getMapDetailsFromHashs([res.data.id]).then(res => setMapInfo(() => res.at(0)));
-            }
-    
-            bsv.getMapDetailsById(res.data.id).then(async map => {
+        const promise = new Promise<void>(async (resolve, reject) => {
+
+            try{
+                const ipcRes = await ipc.send<{id: string, isHash: boolean}>("one-click-map-info");
+
+                if(!ipcRes.success){ return reject(ipcRes.error); }
+
+                const mapDetails = ipcRes.data.isHash ? (await bsv.getMapDetailsFromHashs([ipcRes.data.id])).at(0) : await bsv.getMapDetailsById(ipcRes.data.id);
                 
-                setMapInfo(() => map);
+                setMapInfo(() => mapDetails);
+                
+                await mapsDownloader.oneClickInstallMap(mapDetails);
 
-                mapsDownloader.oneClickInstallMap(map).finally(() => ipc.sendLazy('window.close'));
-
-            });
-    
+                resolve();
+            }
+            catch(e){
+                reject(e);
+            }
+            
         });
+
+        promise.finally(() => {});
 
         return () => {
             sub.unsubscribe();
@@ -60,12 +67,10 @@ export default function OneClickDownloadMap() {
 
     return (
         <div className="relative w-screen h-screen overflow-hidden">
-            <div className="w-full h-full absolute top-0 left-0">
-                <BsmImage className="absolute top-0 left-0 w-full h-full object-cover bg-center" placeholder={defaultImage} image={cover}/>
-            </div>
-            <div className="w-full h-full absolute top-0 left-0 backdrop-blur-md backdrop-brightness-50 flex flex-col justify-start items-center gap-10">
+            <BsmImage className="absolute top-0 left-0 w-full h-full !border-none" image={cover}/>
+            <div className="w-full h-full backdrop-brightness-50 flex flex-col justify-start items-center gap-10" style={{translate: "0 0 0"}}>
                 <TitleBar template="oneclick"/>
-                <BsmImage className="aspect-square w-1/2 object-cover rounded-md bg-center shadow-black shadow-lg" placeholder={defaultImage} image={cover}/>
+                <BsmImage className="aspect-square w-1/2 object-cover rounded-md shadow-black shadow-lg" placeholder={defaultImage} image={cover}/>
                 <h1 className="font-bold italic text-xl text-gray-200 tracking-wide">{mapInfo?.name ?? "Chargement de la map..."}</h1>
             </div>
             <BsmProgressBar/>

@@ -141,8 +141,6 @@ export class LocalMapsManagerService {
         
         this.windows.openWindow("oneclick-download-map.html");
 
-        console.log("oui");
-
         ipcMain.once("one-click-map-info", async (event, req: IpcRequest<void>) => {
             this.utils.ipcSend(req.responceChannel, {success: true, data: {id: mapId, isHash}});
         });
