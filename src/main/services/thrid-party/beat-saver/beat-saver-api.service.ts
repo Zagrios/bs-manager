@@ -1,6 +1,6 @@
 import { ApiResult } from "renderer/models/api/api.model";
 import { BsvMapDetail } from "shared/models/maps";
-import { MapFilter, SearchParams, SearchResponse } from "shared/models/maps/beat-saver.model";
+import { BsvPlaylistPage, MapFilter, SearchParams, SearchResponse } from "shared/models/maps/beat-saver.model";
 import  fetch from "node-fetch"
 
 export class BeatSaverApiService {
@@ -116,6 +116,16 @@ export class BeatSaverApiService {
         }
 
         const data: any = await res.json();
+
+        return {status: res.status, data};
+
+    }
+
+    public async getPlaylistDetails(id: number): Promise<ApiResult<BsvPlaylistPage>>{
+
+        const res = await fetch(`${this.bsaverApiUrl}/playlists/id/${id}`);
+
+        const data = await res.json() as BsvPlaylistPage;
 
         return {status: res.status, data};
 

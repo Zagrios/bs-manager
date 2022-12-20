@@ -184,3 +184,45 @@ export interface SearchParams {
 }
 
 export type SearchOrder = "Latest"|"Relevance"|"Rating"|"Curated";
+
+export interface BsvMapDetailWithOrder {
+    map: BsvMapDetail,
+    order: number
+}
+
+export interface BsvPlaylist {
+    createdAt: BsvInstant,
+    curatedAt: BsvInstant,
+    curator: BsvUserDetail,
+    deletedAt: BsvInstant,
+    description: string,
+    downloadURL: string,
+    name: string,
+    owner: BsvUserDetail,
+    playlistId: number,
+    playlistImage: string,
+    playlistImage512: string,
+    public: boolean,
+    songsChangedAt: BsvInstant,
+    stats: BsvPlaylistStats,
+    updatedAt: BsvInstant,
+}
+
+export interface BsvPlaylistStats {
+    avgScore: number,
+    downVotes: number,
+    mapperCount: number,
+    maxNps: number,
+    maxNpsTwoDP: number,
+    minNps: number,
+    minNpsTwoDP: number,
+    scoreOneDP: number,
+    totalDuration: number,
+    totalMaps: number,
+    upVotes: number
+}
+
+export interface BsvPlaylistPage {
+    maps: BsvMapDetailWithOrder[],
+    playlist: BsvPlaylist
+}

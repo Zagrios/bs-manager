@@ -1,7 +1,8 @@
 import { splitIntoChunk } from "../../../helpers/array-tools";
 import { BsvMapDetail } from "shared/models/maps";
-import { SearchParams } from "shared/models/maps/beat-saver.model";
+import { BsvPlaylist, BsvPlaylistPage, SearchParams } from "shared/models/maps/beat-saver.model";
 import { BeatSaverApiService } from "./beat-saver-api.service";
+import { red } from "tailwindcss/colors";
 
 export class BeatSaverService {
 
@@ -62,6 +63,13 @@ export class BeatSaverService {
             console.log(err);
             return [];
         });
+
+    }
+
+    public async getPlaylistPage(id: number): Promise<BsvPlaylistPage>{
+
+        const res = await this.bsaverApi.getPlaylistDetails(id);
+        return res.data;
 
     }
 
