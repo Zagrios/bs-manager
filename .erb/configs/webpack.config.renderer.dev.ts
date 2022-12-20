@@ -10,6 +10,7 @@ import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import baseConfig from './webpack.config.base';
 import webpackPaths from './webpack.paths';
 import checkNodeEnv from '../scripts/check-node-env';
+import { AppWindow } from "../../src/shared/models/window-manager/app-window.model"
 
 // When an ESLint server is running, we can't set the NODE_ENV so we'll check if it's
 // at the dev webpack config is not accidentally run in a production environment
@@ -39,10 +40,10 @@ if (
   execSync('npm run postinstall');
 }
 
-const getHtmlPageOptions = (page: string): HtmlWebpackPlugin.Options => {
+const getHtmlPageOptions = (page: AppWindow): HtmlWebpackPlugin.Options => {
     return {
-        filename: path.join(`${page}.html`),
-        template: path.join(webpackPaths.srcRendererPath, `${page}.ejs`),
+        filename: path.join(page),
+        template: path.join(webpackPaths.srcRendererPath, page.replace(".html", ".ejs")),
         minify: {
           collapseWhitespace: true,
           removeAttributeQuotes: true,
@@ -163,9 +164,10 @@ const configuration: webpack.Configuration = {
 
     new ReactRefreshWebpackPlugin(),
 
-    new HtmlWebpackPlugin(getHtmlPageOptions("index")),
-    new HtmlWebpackPlugin(getHtmlPageOptions("launcher")),
-    new HtmlWebpackPlugin(getHtmlPageOptions("oneclick-download-map")),
+    new HtmlWebpackPlugin(getHtmlPageOptions("index.html")),
+    new HtmlWebpackPlugin(getHtmlPageOptions("launcher.html")),
+    new HtmlWebpackPlugin(getHtmlPageOptions("oneclick-download-map.html")),
+    new HtmlWebpackPlugin(getHtmlPageOptions("oneclick-download-playlist.html")),
 
   ],
 

@@ -138,12 +138,12 @@ export class LocalMapsManagerService {
     }
 
     private openOneClickDownloadMapWindow(mapId: string, isHash = false): void{
-        
-        this.windows.openWindow("oneclick-download-map.html");
 
         ipcMain.once("one-click-map-info", async (event, req: IpcRequest<void>) => {
             this.utils.ipcSend(req.responceChannel, {success: true, data: {id: mapId, isHash}});
         });
+        
+        this.windows.openWindow("oneclick-download-map.html");
 
     }
 

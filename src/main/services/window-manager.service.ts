@@ -13,7 +13,8 @@ export class WindowManagerService{
     private readonly appWindowsOptions: Record<AppWindow, BrowserWindowConstructorOptions> = {
         "launcher.html": {width: 380, height: 500, minWidth: 380, minHeight: 500, resizable: false},
         "index.html": {width: 1080, height: 720, minWidth: 900, minHeight: 500},
-        "oneclick-download-map.html": {width: 350, height: 400, minWidth: 350, minHeight: 400, resizable: false}
+        "oneclick-download-map.html": {width: 350, height: 400, minWidth: 350, minHeight: 400, resizable: false},
+        "oneclick-download-playlist.html": {width: 350, height: 400, minWidth: 350, minHeight: 400, resizable: false},
     }
 
     private readonly baseWindowOption: BrowserWindowConstructorOptions = {

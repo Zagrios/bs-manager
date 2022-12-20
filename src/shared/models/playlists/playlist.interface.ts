@@ -1,4 +1,4 @@
-export interface Playlist {
+export interface BPList {
     playlistTitle: string,
     playlistAuthor: string,
     playlistDescription?: string,

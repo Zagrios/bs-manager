@@ -19,7 +19,6 @@ export default function OneClickDownloadMap() {
     const mapsDownloader = MapsDownloaderService.getInstance();
     const themeService = ThemeService.getInstance();
     const progressBar = ProgressBarService.getInstance();
-    const windows = WindowManagerService.getInstance();
 
     const [mapInfo, setMapInfo] = useState<BsvMapDetail>(null);
 
