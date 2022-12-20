@@ -1,6 +1,5 @@
 import path from "path";
-import { BehaviorSubject } from "rxjs";
-import { Observable } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { BsvPlaylist, BsvPlaylistPage } from "shared/models/maps/beat-saver.model";
 import { BSLocalVersionService } from "../bs-local-version.service";
@@ -47,12 +46,12 @@ export class LocalPlaylistsManagerService {
         this.windows = WindowManagerService.getInstance();
 
         this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.BeatSaver, link => {
+
             log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.BeatSaver, link);
             const url = new URL(link);
             const bplistUrl = url.host === "playlist" ? url.pathname.replace("/", "") : "";
-            const playlistId = this.getPlaylistIdFromDownloadUrl(bplistUrl);
 
-            this.openOneClickDownloadPlaylistWindow(playlistId);
+            this.openOneClickDownloadPlaylistWindow(bplistUrl);
 
         });
 
@@ -91,10 +90,10 @@ export class LocalPlaylistsManagerService {
         // TODO
     }
 
-    private openOneClickDownloadPlaylistWindow(playlistId: string): void{
+    private openOneClickDownloadPlaylistWindow(downloadUrl: string): void{
 
-        ipcMain.once("one-click-playlist-info", async (event, req: IpcRequest<void>) => {
-            this.utils.ipcSend(req.responceChannel, {success: true, data: playlistId});
+        ipcMain.on("one-click-playlist-info", async (event, req: IpcRequest<void>) => {
+            this.utils.ipcSend(req.responceChannel, {success: true, data: {bpListUrl: downloadUrl, id: this.getPlaylistIdFromDownloadUrl(downloadUrl)}});
         });
 
         this.windows.openWindow("oneclick-download-playlist.html");

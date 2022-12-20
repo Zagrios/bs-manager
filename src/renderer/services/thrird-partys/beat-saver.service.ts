@@ -1,5 +1,5 @@
 import { BsvMapDetail } from "shared/models/maps";
-import { SearchParams } from "shared/models/maps/beat-saver.model";
+import { BsvPlaylist, BsvPlaylistPage, SearchParams } from "shared/models/maps/beat-saver.model";
 import { IpcService } from "../ipc.service";
 
 export class BeatSaverService {
@@ -30,6 +30,11 @@ export class BeatSaverService {
     public async searchMaps(search: SearchParams): Promise<BsvMapDetail[]>{
         const res = await this.ipc.send<BsvMapDetail[], SearchParams>("bsv-search-map", {args: search});
         return res.data ?? []
+    }
+
+    public async getPlaylistDetailsById(id: string): Promise<BsvPlaylist>{
+        const res = await this.ipc.send<BsvPlaylist>("bsv-get-playlist-details-by-id", {args: id});
+        return res.data ?? null;
     }
 
 

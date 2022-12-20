@@ -36,3 +36,14 @@ ipcMain.on("bsv-get-map-details-by-id", async (event, request: IpcRequest<string
         utlis.ipcSend(request.responceChannel, {success: false, error: e});
     })
 });
+
+ipcMain.on("bsv-get-playlist-details-by-id", async (event, request: IpcRequest<string>) => {
+    const utlis = UtilsService.getInstance();
+    const bsvService = BeatSaverService.getInstance();
+
+    bsvService.getPlaylistPage(request.args).then(maps => {
+        utlis.ipcSend(request.responceChannel, {success: true, data: maps});
+    }).catch(e => {
+        utlis.ipcSend(request.responceChannel, {success: false, error: e});
+    })
+});

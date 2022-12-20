@@ -66,7 +66,7 @@ export class BeatSaverService {
 
     }
 
-    public async getPlaylistPage(id: number): Promise<BsvPlaylistPage>{
+    public async getPlaylistPage(id: string): Promise<BsvPlaylist>{
 
         const res = await this.bsaverApi.getPlaylistDetails(id);
         return res.data;
