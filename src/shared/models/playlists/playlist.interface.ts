@@ -1,3 +1,5 @@
+import { BsvMapDetail } from "../maps"
+
 export interface BPList {
     playlistTitle: string,
     playlistAuthor: string,
@@ -12,4 +14,12 @@ export interface PlaylistSong {
     hash: string,
     songName: string,
     uploader?: string
+}
+
+export interface DownloadPlaylistProgression {
+    mapsPath: string[],
+    downloadedMaps: BsvMapDetail[],
+    bpListPath: string,
+    current: BsvMapDetail,
+    progression: number
 }

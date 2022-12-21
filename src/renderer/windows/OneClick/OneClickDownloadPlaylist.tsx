@@ -3,6 +3,7 @@ import { BsmProgressBar } from "renderer/components/progress-bar/bsm-progress-ba
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import TitleBar from "renderer/components/title-bar/title-bar.component";
 import { IpcService } from "renderer/services/ipc.service"
+import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { ThemeService } from "renderer/services/theme.service";
 import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
@@ -15,6 +16,7 @@ export default function OneClickDownloadPlaylist() {
     const bSaver = BeatSaverService.getInstance();
     const progress = ProgressBarService.getInstance();
     const themeService = ThemeService.getInstance();
+    const playlistDownloader = PlaylistDownloaderService.getInstance();
 
     const [playlist, setPlaylist] = useState<BsvPlaylist>(null);
 
@@ -28,18 +30,25 @@ export default function OneClickDownloadPlaylist() {
             else { document.documentElement.classList.remove('dark'); }
         });
 
-        progress.open();
-      
-        ipc.send<{bpListUrl: string, id: string}>("one-click-playlist-info").then(res => {
+        const promise = new Promise(async (resolve, reject) => {
 
-            console.log(res);
-            
-            const playlistId = res.data.id;
-            const downloadUrl = res.data.bpListUrl;
+            const infos = await ipc.send<{bpListUrl: string, id: string}>("one-click-playlist-info");
 
-            bSaver.getPlaylistDetailsById(playlistId).then(playlist => setPlaylist(() => playlist));
+            if(!infos.success){ reject(infos.error); }
+
+            bSaver.getPlaylistDetailsById(infos.data.id).then(details => setPlaylist(details));
+
+            const res = await playlistDownloader.oneClickInstallPlaylist(infos.data.bpListUrl).toPromise();
+
+            console.log("OMG C FINI");
+
+            resolve(res);
 
         });
+
+        
+
+
     
     }, []);
     

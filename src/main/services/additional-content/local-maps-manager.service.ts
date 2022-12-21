@@ -61,7 +61,7 @@ export class LocalMapsManagerService {
         });
     }
 
-    private async getMapsFolderPath(version?: BSVersion): Promise<string>{
+    public async getMapsFolderPath(version?: BSVersion): Promise<string>{
         if(version){ return path.join(await this.localVersion.getVersionPath(version), this.LEVELS_ROOT_FOLDER, this.CUSTOM_LEVELS_FOLDER); }
         const sharedMapsPath = path.join(this.installLocation.sharedMapsPath, this.CUSTOM_LEVELS_FOLDER);
         if(!(await this.utils.pathExist(sharedMapsPath))){

@@ -98,8 +98,10 @@ export class UtilsService{
 
   public ipcSend<T = any>(channel: string, response: IpcResponse<T>): void{
     try {
+        console.log(channel, ...Array.from(this.windows.keys()), response);
         Array.from(this.windows.values()).forEach(window => window.webContents.send(channel, response));
     } catch (error) {
+        console.log("ERREUR", error);
         log.error(error);
     }
   }

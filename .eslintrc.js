@@ -33,7 +33,8 @@ module.exports = {
     "@typescript-eslint/no-unused-expressions": "off",
     "no-param-reassign": "off",
     "no-useless-escape": "off",
-    "jsx-a11y/no-noninteractive-element-interactions": "off"
+    "jsx-a11y/no-noninteractive-element-interactions": "off",
+    "no-async-promise-executor": "off"
   },
   parserOptions: {
     ecmaVersion: 2020,

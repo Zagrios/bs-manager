@@ -37,8 +37,6 @@ export class WindowManagerService{
     public openWindow(windowType: AppWindow, options?: BrowserWindowConstructorOptions): Promise<BrowserWindow>{
         const window = new BrowserWindow({...this.appWindowsOptions[windowType], ...this.baseWindowOption, ...options});
 
-        console.log({...this.appWindowsOptions[windowType], ...this.baseWindowOption, ...options});
-
         const promise = window.loadURL(resolveHtmlPath(windowType));
         window.removeMenu();
         window.setMenu(null);

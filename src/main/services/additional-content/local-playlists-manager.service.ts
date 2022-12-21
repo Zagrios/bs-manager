@@ -1,7 +1,6 @@
 import path from "path";
 import { BehaviorSubject, Observable } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
-import { BsvPlaylist, BsvPlaylistPage } from "shared/models/maps/beat-saver.model";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import { DeepLinkService } from "../deep-link.service";
 import { RequestService } from "../request.service";
@@ -12,8 +11,11 @@ import { isValidUrl } from "../../helpers/url.helpers";
 import { ipcMain } from "electron";
 import { WindowManagerService } from "../window-manager.service";
 import { IpcRequest } from "shared/models/ipc";
-import { BPList } from "shared/models/playlists/playlist.interface";
-import { readFileSync } from "fs";
+import { BPList, DownloadPlaylistProgression } from "shared/models/playlists/playlist.interface";
+import { copyFileSync, readFileSync } from "fs";
+import { BeatSaverService } from "../thrid-party/beat-saver/beat-saver.service";
+import { copySync } from "fs-extra";
+import { timer } from "rxjs";
 
 export class LocalPlaylistsManagerService {
 
@@ -36,6 +38,7 @@ export class LocalPlaylistsManagerService {
     private readonly request: RequestService;
     private readonly deepLink: DeepLinkService;
     private readonly windows: WindowManagerService;
+    private readonly bsaver: BeatSaverService;
 
     private constructor(){
         this.maps = LocalMapsManagerService.getInstance();
@@ -44,6 +47,7 @@ export class LocalPlaylistsManagerService {
         this.request = RequestService.getInstance();
         this.deepLink = DeepLinkService.getInstance();
         this.windows = WindowManagerService.getInstance();
+        this.bsaver = BeatSaverService.getInstance();
 
         this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.BeatSaver, link => {
 
@@ -69,29 +73,54 @@ export class LocalPlaylistsManagerService {
         return splited[idIndex + 1];
     }
 
-    private async downloadPlaylistFile(playlist: BsvPlaylist, version: BSVersion): Promise<string>{
+    private async getPlaylistsFolder(version?: BSVersion){
 
+        if(!version){ throw "Playlists are not available to be linked yet" }
+        
         const versionFolder = await this.versions.getVersionPath(version);
-        const bpListUrl = playlist.downloadURL;
 
-        const bsListDest = path.join(versionFolder, this.PLAYLISTS_FOLDER, path.basename(bpListUrl));
+        const folder =  path.join(versionFolder, this.PLAYLISTS_FOLDER);
 
-        return this.request.downloadFile(bpListUrl, bsListDest);
+        await this.utils.createFolderIfNotExist(folder)
+
+        return folder;
+
+    }
+
+    private async installBPListFile(bpListUrlOrPath: string, version: BSVersion): Promise<string>{
+
+        const playlistFolder = await this.getPlaylistsFolder(version);
+
+        const bpListDest = path.join(playlistFolder, path.basename(bpListUrlOrPath));
+
+        console.log("INSTALL BPLIST", bpListUrlOrPath, playlistFolder);  
+
+        if(this.utils.pathExist(bpListUrlOrPath)){
+            console.log("PATH EXIST", bpListUrlOrPath);
+            console.log("COPY", bpListUrlOrPath, bpListDest);
+            copyFileSync(bpListUrlOrPath, bpListDest);
+        }
+        else{
+            await this.request.downloadFile(bpListUrlOrPath, bpListDest);
+        }
+
+        return bpListDest;
 
     }
 
     private async readPlaylistFile(path: string): Promise<BPList>{
         
-        if(!this.utils.pathExist(path)){ return null; }
+        if(!this.utils.pathExist(path)){ throw `bplist file not exist at ${path}`; }
 
-        const content = readFileSync(path).toJSON();
+        const rawContent = readFileSync(path).toString();
 
+        return JSON.parse(rawContent);
 
-        // TODO
     }
 
     private openOneClickDownloadPlaylistWindow(downloadUrl: string): void{
 
+        // TODO make once
         ipcMain.on("one-click-playlist-info", async (event, req: IpcRequest<void>) => {
             this.utils.ipcSend(req.responceChannel, {success: true, data: {bpListUrl: downloadUrl, id: this.getPlaylistIdFromDownloadUrl(downloadUrl)}});
         });
@@ -100,29 +129,97 @@ export class LocalPlaylistsManagerService {
 
     }
 
-    public downloadPlaylist(playlistPage: BsvPlaylistPage, version: BSVersion): Observable<string[]>{
+    public downloadPlaylist(bpListUrl: string, version: BSVersion): Observable<DownloadPlaylistProgression>{
 
-        const res = new BehaviorSubject<string[]>([]);
+        console.log("DOWNLOAD PLAYLIST");
+
+        const res = new BehaviorSubject<DownloadPlaylistProgression>({progression: 0, current: null, downloadedMaps: [], mapsPath: [], bpListPath: ""});
+
+        const sub = res.subscribe(process => {
+            console.log("PROGRESS", process);
+            this.utils.ipcSend("download-playlist-progress", {success: true, data: process});
+        }, err => {
+            this.utils.ipcSend("download-playlist-progress", {success: false, error: err});
+        });
 
         const observer = async () => {
-            try{
-                const bpListPath = await this.downloadPlaylistFile(playlistPage.playlist, version);
 
-                for(const map of playlistPage.maps){
-                    const mapPath = await this.maps.downloadMap(map.map, version);
-                    res.next([...res.value, mapPath]);
+            try{
+
+                const bpListPath = await this.installBPListFile(bpListUrl, version);
+
+                res.next({...res.value, bpListPath});
+
+                const bpList = await this.readPlaylistFile(bpListPath);
+
+                for(const song of bpList.songs){
+
+                    if(!song.key){ continue; }
+
+                    const map = await this.bsaver.getMapDetailsById(song.key);
+
+                    res.next({
+                        ...res.value,
+                        current: map,
+                        progression: ((res.value.downloadedMaps.length + .5) / bpList.songs.length) * 100
+                    });
+
+                    const mapPath = await this.maps.downloadMap(map, version);
+
+                    const progression = ((res.value.downloadedMaps.length + 1) / bpList.songs.length) * 100;
+
+                    res.next({
+                        ...res.value, 
+                        downloadedMaps: [...res.value.downloadedMaps, map],
+                        mapsPath: [...res.value.mapsPath, mapPath],
+                        progression
+                    });
+
                 }
 
-                res.next([...res.value, bpListPath]);
-                res.complete();
             }
             catch(e){
                 res.error(e);
             }
+
+            res.complete();
+
         }
 
-        observer();
+        observer().finally(() => sub.unsubscribe());
         return res.asObservable();
+
+    }
+
+    public async oneClickInstallPlaylist(bpListUrl: string): Promise<void>{
+
+        const versions = await this.versions.getInstalledVersions();
+
+        await timer(2);
+
+        const firstVersion = versions.shift();
+        const fistVersionLinked = await this.maps.versionIsLinked(firstVersion);
+
+        const {bpListPath, mapsPath} = await this.downloadPlaylist(bpListUrl, firstVersion).toPromise();
+
+        for(const version of versions){
+            
+            await this.installBPListFile(bpListPath, version);
+
+            const versionIsLinked = await this.maps.versionIsLinked(version);
+
+            if(fistVersionLinked && versionIsLinked){ continue; }
+
+            for(const mapPath of mapsPath){
+                const versionMapsFolder = await this.maps.getMapsFolderPath(version);
+                const mapDest = path.join(versionMapsFolder, path.basename(mapPath));
+
+                console.log("COPY MAP", mapPath, mapDest);
+
+                copySync(mapPath, mapDest, {overwrite: true});
+            }
+
+        }
 
     }
 
