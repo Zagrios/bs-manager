@@ -91,13 +91,9 @@ export class LocalPlaylistsManagerService {
 
         const playlistFolder = await this.getPlaylistsFolder(version);
 
-        const bpListDest = path.join(playlistFolder, path.basename(bpListUrlOrPath));
-
-        console.log("INSTALL BPLIST", bpListUrlOrPath, playlistFolder);  
+        const bpListDest = path.join(playlistFolder, path.basename(bpListUrlOrPath)); 
 
         if(this.utils.pathExist(bpListUrlOrPath)){
-            console.log("PATH EXIST", bpListUrlOrPath);
-            console.log("COPY", bpListUrlOrPath, bpListDest);
             copyFileSync(bpListUrlOrPath, bpListDest);
         }
         else{
@@ -131,12 +127,9 @@ export class LocalPlaylistsManagerService {
 
     public downloadPlaylist(bpListUrl: string, version: BSVersion): Observable<DownloadPlaylistProgression>{
 
-        console.log("DOWNLOAD PLAYLIST");
-
         const res = new BehaviorSubject<DownloadPlaylistProgression>({progression: 0, current: null, downloadedMaps: [], mapsPath: [], bpListPath: ""});
 
         const sub = res.subscribe(process => {
-            console.log("PROGRESS", process);
             this.utils.ipcSend("download-playlist-progress", {success: true, data: process});
         }, err => {
             this.utils.ipcSend("download-playlist-progress", {success: false, error: err});
@@ -169,7 +162,8 @@ export class LocalPlaylistsManagerService {
                     const progression = ((res.value.downloadedMaps.length + 1) / bpList.songs.length) * 100;
 
                     res.next({
-                        ...res.value, 
+                        ...res.value,
+                        current: null,
                         downloadedMaps: [...res.value.downloadedMaps, map],
                         mapsPath: [...res.value.mapsPath, mapPath],
                         progression
@@ -195,8 +189,6 @@ export class LocalPlaylistsManagerService {
 
         const versions = await this.versions.getInstalledVersions();
 
-        await timer(2);
-
         const firstVersion = versions.shift();
         const fistVersionLinked = await this.maps.versionIsLinked(firstVersion);
 
@@ -213,8 +205,6 @@ export class LocalPlaylistsManagerService {
             for(const mapPath of mapsPath){
                 const versionMapsFolder = await this.maps.getMapsFolderPath(version);
                 const mapDest = path.join(versionMapsFolder, path.basename(mapPath));
-
-                console.log("COPY MAP", mapPath, mapDest);
 
                 copySync(mapPath, mapDest, {overwrite: true});
             }

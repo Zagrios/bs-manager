@@ -64,7 +64,7 @@ export default function TitleBar({template = "index.html"} : {template: AppWindo
             </header>
         )
     }
-    if(template === "oneclick-download-map.html"){
+    if(template === "oneclick-download-map.html" || template === "oneclick-download-playlist.html"){
         return (
             <header id="titlebar" className="min-h-[22px] bg-transparent w-screen h-[22px] flex content-center items-center justify-start z-10">
                 <div id="drag-region" className='grow h-full'>

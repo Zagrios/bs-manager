@@ -34,17 +34,10 @@ export class IpcService {
     }
 
     public watch<T>(channel: string): Observable<IpcResponse<T>>{
-        console.log("watch", channel);
         if(this.channelObservables.has(channel)){ return this.channelObservables.get(channel) as Observable<IpcResponse<T>>; }
-        console.log("allo");
-
-        window.electron.ipcRenderer.on(channel, (res: IpcResponse<T>) => {
-            console.log("oui", res);
-        });
 
         const obs = new Observable<IpcResponse<T>>(observer => {
             window.electron.ipcRenderer.on(channel, (res: IpcResponse<T>) => {
-                console.log("oui", res);
                 observer.next(res);
             });
         })

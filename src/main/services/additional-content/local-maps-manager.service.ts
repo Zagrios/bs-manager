@@ -202,8 +202,6 @@ export class LocalMapsManagerService {
     }
 
     public async deleteMaps(maps: BsmLocalMap[], verion?: BSVersion){
-
-        console.log(verion);
        
         const mapsFolders = await this.getAbsoluteFolderOfMaps(maps, verion);
         const mapsHashsToDelete = maps.map(map => map.hash);
@@ -273,11 +271,7 @@ export class LocalMapsManagerService {
 
     public async oneClickDownloadMap(map: BsvMapDetail): Promise<void>{
 
-        console.log("AALLLOO");
-
         const downloadedMap = await this.downloadMap(map);
-
-        console.log(downloadedMap);
 
         const versions = await this.localVersion.getInstalledVersions();
 
@@ -288,8 +282,6 @@ export class LocalMapsManagerService {
             const versionMapsPath = await this.getMapsFolderPath(version);
 
             this.utils.createFolderIfNotExist(versionMapsPath);
-
-            console.log(downloadedMap, path.join(versionMapsPath, path.basename(downloadedMap)));
 
             copySync(downloadedMap, path.join(versionMapsPath, path.basename(downloadedMap)), {overwrite: true});
 

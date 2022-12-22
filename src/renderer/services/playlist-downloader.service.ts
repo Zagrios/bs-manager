@@ -1,4 +1,4 @@
-import { map, multicast, tap } from "rxjs/operators";
+import { map } from "rxjs/operators";
 import { Observable, Subject } from "rxjs";
 import { DownloadPlaylistProgression } from "shared/models/playlists/playlist.interface";
 import { IpcService } from "./ipc.service";
@@ -34,18 +34,31 @@ export class PlaylistDownloaderService{
         }));
     }
 
+    public get progress$(): Observable<DownloadPlaylistProgression>{
+        return this.progressWatcher$.asObservable();
+    }
+
     public oneClickInstallPlaylist(bpListUrl: string): Observable<DownloadPlaylistProgression>{
 
         if(!this.progress.require()){ return null; }
+
+        this.progressWatcher$.next(null);
 
         const res = new Subject<DownloadPlaylistProgression>();
 
         this.progress.show(this.downloadProgression$, true);
 
-        const sub = this.progressWatcher$.subscribe(progress => {console.log("progress"); res.next(progress)})
+        const sub = this.progressWatcher$.subscribe(progress => {
+            res.next(progress);
+            if(progress.progression === 100){
+                this.progress.showFake(0.08);
+            }
+        })
 
         this.ipc.send<void, string>("one-click-install-playlist", {args: bpListUrl}).then(oneClickRes => {
             sub.unsubscribe();
+            this.progress.hide(true);
+            this.progressWatcher$.next(null);
             if(!oneClickRes.success){
                 return res.error(oneClickRes.error);
             }

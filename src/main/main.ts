@@ -89,7 +89,7 @@ else{
 
     app.whenReady().then(() => {
 
-        process.argv.push("bsplaylist://playlist/https://api.beatsaver.com/playlists/id/11137/download/beatsaver-11137.bplist"); // to force deep-link (oneClick map)
+        process.argv.push("bsplaylist://playlist/https://api.beatsaver.com/playlists/id/11199/download/beatsaver-11199.bplist"); // to force deep-link (oneClick map)
 
         initServicesMustBeInitialized();
         
