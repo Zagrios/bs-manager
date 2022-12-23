@@ -29,12 +29,12 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
     useImperativeHandle(forwardRef ,()=>({
         deleteMaps(){
             const mapsToDelete = selectedMaps.length === 0 ? maps : selectedMaps
-            mapsManager.deleteMaps(mapsToDelete).finally(loadMaps);
+            mapsManager.deleteMaps(mapsToDelete, version).finally(loadMaps);
         },
         exportMaps(){
             mapsManager.exportMaps(version, selectedMaps)
         }
-    }), [selectedMaps, maps]);
+    }), [selectedMaps, maps, version]);
 
     useEffect(() => {
 
