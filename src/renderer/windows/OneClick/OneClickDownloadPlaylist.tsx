@@ -50,9 +50,12 @@ export default function OneClickDownloadPlaylist() {
         });
 
         promise.finally(() => {
-            sub.unsubscribe();
             windows.close("oneclick-download-playlist.html");
-        })
+        });
+
+        return () => {
+            sub.unsubscribe();
+        }
     
     }, []);
 
