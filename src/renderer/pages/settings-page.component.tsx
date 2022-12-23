@@ -28,6 +28,7 @@ import beastSaberIcon from "../../../assets/images/third-party-icons/beast-saber
 import scoreSaberIcon from "../../../assets/images/third-party-icons/score-saber.png";
 import Tippy from '@tippyjs/react';
 import { MapsManagerService } from "renderer/services/maps-manager.service";
+import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 
 export function SettingsPage() {
 
@@ -42,6 +43,7 @@ export function SettingsPage() {
   const i18nService: I18nService = I18nService.getInstance();
   const linkOpener: LinkOpenerService = LinkOpenerService.getInstance();
   const mapsManager = MapsManagerService.getInstance();
+  const playlistsManager = PlaylistsManagerService.getInstance();
 
   const {firstColor, secondColor} = useThemeColor();
   const sessionExist = useObservable(authService.sessionExist$);
@@ -61,6 +63,7 @@ export function SettingsPage() {
   const [installationFolder, setInstallationFolder] = useState(null);
   const [showSupporters, setShowSupporters] = useState(false);
   const [mapDeepLinksEnabled, setMapDeepLinksEnabled] = useState(false);
+  const [playlistsDeepLinkEnabled, setPlaylistsDeeppLinkEnabled] = useState(false)
   const [appVersion, setAppVersion] = useState("");
   const nav = useNavigate();
 
@@ -68,6 +71,7 @@ export function SettingsPage() {
     loadInstallationFolder();
     ipcService.send<string>("current-version").then(res => setAppVersion(res.data));
     mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
+    playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeeppLinkEnabled(() => enabled));
   }, []);
 
   const resetColors = () => {
@@ -144,6 +148,10 @@ export function SettingsPage() {
         mapsManager.toogleDeepLinks().finally(() => mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled)));
     }
 
+    const tooglePlaylistsDeepLinks = () => {
+        playlistsManager.toogleDeepLinks().finally(() => playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeeppLinkEnabled(() => enabled)));
+    }
+
     return (
         <div className="w-full h-full flex justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 text-gray-800 dark:text-gray-200">
 
@@ -202,7 +210,7 @@ export function SettingsPage() {
                         </li>
                         <li className="bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3">
                             <div className="flex items-center gap-2">
-                                <BsmCheckbox className="relative z-[1] h-5 w-5"/>
+                                <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={tooglePlaylistsDeepLinks} checked={playlistsDeepLinkEnabled}/>
                                 <span className="font-extrabold">Playlists</span>
                             </div>
                             <div className="flex h-full">

@@ -15,7 +15,6 @@ import { BPList, DownloadPlaylistProgression } from "shared/models/playlists/pla
 import { copyFileSync, readFileSync } from "fs";
 import { BeatSaverService } from "../thrid-party/beat-saver/beat-saver.service";
 import { copySync } from "fs-extra";
-import { timer } from "rxjs";
 
 export class LocalPlaylistsManagerService {
 
@@ -116,8 +115,7 @@ export class LocalPlaylistsManagerService {
 
     private openOneClickDownloadPlaylistWindow(downloadUrl: string): void{
 
-        // TODO make once
-        ipcMain.on("one-click-playlist-info", async (event, req: IpcRequest<void>) => {
+        ipcMain.once("one-click-playlist-info", async (event, req: IpcRequest<void>) => {
             this.utils.ipcSend(req.responceChannel, {success: true, data: {bpListUrl: downloadUrl, id: this.getPlaylistIdFromDownloadUrl(downloadUrl)}});
         });
 
@@ -211,6 +209,18 @@ export class LocalPlaylistsManagerService {
 
         }
 
+    }
+
+    public enableDeepLinks(): boolean{
+        return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.registerDeepLink(link));
+    }
+
+    public disableDeepLinks(): boolean{
+        return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.unRegisterDeepLink(link));
+    }
+
+    public isDeepLinksEnabled(): boolean{
+        return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.isDeepLinkRegistred(link));
     }
 
 }
