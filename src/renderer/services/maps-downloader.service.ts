@@ -1,16 +1,13 @@
 import { DownloadMapsModal } from "renderer/components/modal/modal-types/download-maps-modal.component";
 import { map, filter } from "rxjs/operators";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, timer, Observable } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { ModalResponse, ModalService } from "./modale.service";
-import { Observable } from "rxjs";
 import { ProgressBarService } from "./progress-bar.service";
 import { ProgressionInterface } from "shared/models/progress-bar";
 import { BsvMapDetail } from "shared/models/maps";
 import { IpcService } from "./ipc.service";
-import { getMapZipUrlFromMapDetails } from "renderer/helpers/maps-utils";
 import { OsDiagnosticService } from "./os-diagnostic.service";
-import { timer } from "rxjs";
 import equal from "fast-deep-equal/es6";
 import { CSSProperties } from "react";
 
@@ -41,7 +38,7 @@ export class MapsDownloaderService {
         this.os = OsDiagnosticService.getInstance();
 
         this.mapsQueue$.pipe(filter(queue => queue.length === 1 && !this.isDownloading)).subscribe(() => this.startDownloadMaps());
-        this.mapsQueue$.pipe(filter(queue => queue.length === 0)).subscribe(() => this.queueMaxLenght = 0);
+        this.mapsQueue$.pipe(filter(queue => queue.length === 0)).subscribe(() => { this.queueMaxLenght = 0 });
     }
 
     private async startDownloadMaps(){
