@@ -1,8 +1,7 @@
 import { splitIntoChunk } from "../../../helpers/array-tools";
 import { BsvMapDetail } from "shared/models/maps";
-import { BsvPlaylist, BsvPlaylistPage, SearchParams } from "shared/models/maps/beat-saver.model";
+import { BsvPlaylist, SearchParams } from "shared/models/maps/beat-saver.model";
 import { BeatSaverApiService } from "./beat-saver-api.service";
-import { red } from "tailwindcss/colors";
 
 export class BeatSaverService {
 

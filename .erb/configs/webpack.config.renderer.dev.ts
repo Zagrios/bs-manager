@@ -168,6 +168,7 @@ const configuration: webpack.Configuration = {
     new HtmlWebpackPlugin(getHtmlPageOptions("launcher.html")),
     new HtmlWebpackPlugin(getHtmlPageOptions("oneclick-download-map.html")),
     new HtmlWebpackPlugin(getHtmlPageOptions("oneclick-download-playlist.html")),
+    new HtmlWebpackPlugin(getHtmlPageOptions("oneclick-download-model.html")),
 
   ],
 

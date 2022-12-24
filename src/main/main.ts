@@ -18,6 +18,8 @@ import { DeepLinkService } from './services/deep-link.service';
 import { AppWindow } from 'shared/models/window-manager/app-window.model';
 import { LocalMapsManagerService } from './services/additional-content/local-maps-manager.service';
 import { LocalPlaylistsManagerService } from './services/additional-content/local-playlists-manager.service';
+import { ModelSaberService } from './services/thrid-party/model-saber/model-saber.service';
+import { LocalModelsManagerService } from './services/additional-content/local-models-manager.service';
 
 export const PRELOAD_PATH = app.isPackaged ? path.join(__dirname, 'preload.js') : path.join(__dirname, '../../.erb/dll/preload.js')
 
@@ -59,6 +61,7 @@ const createWindow = async (window: AppWindow = "launcher.html") => {
 const initServicesMustBeInitialized = () => {
     LocalMapsManagerService.getInstance();
     LocalPlaylistsManagerService.getInstance();
+    LocalModelsManagerService.getInstance();
     // Model
 }
 
@@ -89,7 +92,7 @@ else{
 
     app.whenReady().then(() => {
 
-        process.argv.push("bsplaylist://playlist/https://api.beatsaver.com/playlists/id/11199/download/beatsaver-11199.bplist"); // to force deep-link (oneClick map)
+        process.argv.push("modelsaber://saber/1670981586/r_Happy Crimbo!.saber"); // to force deep-link (oneClick map)
 
         initServicesMustBeInitialized();
         

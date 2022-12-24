@@ -15,6 +15,7 @@ export class WindowManagerService{
         "index.html": {width: 1080, height: 720, minWidth: 900, minHeight: 500},
         "oneclick-download-map.html": {width: 350, height: 400, minWidth: 350, minHeight: 400, resizable: false},
         "oneclick-download-playlist.html": {width: 350, height: 400, minWidth: 350, minHeight: 400, resizable: false},
+        "oneclick-download-model.html": {width: 350, height: 400, minWidth: 350, minHeight: 400, resizable: false},
     }
 
     private readonly baseWindowOption: BrowserWindowConstructorOptions = {
