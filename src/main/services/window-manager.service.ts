@@ -2,11 +2,13 @@ import { app, BrowserWindow, BrowserWindowConstructorOptions } from "electron";
 import { resolveHtmlPath } from "../util";
 import { UtilsService } from "./utils.service";
 import { AppWindow } from "shared/models/window-manager/app-window.model";
-import { PRELOAD_PATH } from "../main";
+import path from "path";
 
 export class WindowManagerService{
 
     private static instance: WindowManagerService;
+
+    private readonly PRELOAD_PATH = app.isPackaged ? path.join(__dirname, 'preload.js') : path.join(__dirname, '../../../.erb/dll/preload.js')
 
     private readonly utilsService: UtilsService = UtilsService.getInstance();
 
@@ -23,7 +25,7 @@ export class WindowManagerService{
         show: false,
         frame: false,
         titleBarOverlay: false,
-        webPreferences: { preload: PRELOAD_PATH, webSecurity: false }
+        webPreferences: { preload: this.PRELOAD_PATH, webSecurity: false }
     }
 
     private readonly windows: Map<AppWindow, BrowserWindow> = new Map<AppWindow, BrowserWindow>();

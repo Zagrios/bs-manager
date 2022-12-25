@@ -15,7 +15,7 @@ export const BsmImage = forwardRef(({className, image, errorImage, placeholder, 
 
     const [isLoaded, setIsLoaded] = useState(false);
 
-    image = image ? image : (placeholder||errorImage);
+    image = image || (placeholder||errorImage);
 
     const styles: CSSProperties = (() => {
         return {

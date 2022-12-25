@@ -1,16 +1,25 @@
 import { useEffect, useState } from "react";
+import { BsmProgressBar } from "renderer/components/progress-bar/bsm-progress-bar.component";
+import { BsmImage } from "renderer/components/shared/bsm-image.component";
+import TitleBar from "renderer/components/title-bar/title-bar.component";
 import { IpcService } from "renderer/services/ipc.service";
+import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { ThemeService } from "renderer/services/theme.service";
 import { ModelSaberService } from "renderer/services/thrird-partys/model-saber.service";
 import { MSModel } from "shared/models/model-saber/model-saber.model";
+import defaultImage from '../../../../assets/images/default-version-img.jpg'
 
 export default function OneClickDownloadModel() {
 
     const ipc = IpcService.getInstance();
     const themeService = ThemeService.getInstance();
     const modelSaber = ModelSaberService.getInstance();
+    const progress = ProgressBarService.getInstance();
 
     const [model, setModel] = useState<MSModel>(null);
+
+    const cover = model ? model.thumbnail : null;
+    const title = model ? model.name : null;
 
     useEffect(() => {
       
@@ -29,9 +38,13 @@ export default function OneClickDownloadModel() {
             
             setModel(() => model);
 
+            progress.open();
+
             // Download model
 
         });
+
+        promise.finally(() => console.log("close"));
 
         return () => {
             sub.unsubscribe();
@@ -40,6 +53,14 @@ export default function OneClickDownloadModel() {
     
 
     return (
-        <div>OneClickDownloadModel</div>
+        <div className="relative w-screen h-screen overflow-hidden">
+            {cover && <BsmImage className="absolute top-0 left-0 w-full h-full object-cover" image={cover}/>}
+            <div className="w-full h-full backdrop-brightness-50 backdrop-blur-md flex flex-col justify-start items-center gap-10">
+                <TitleBar template="oneclick-download-map.html"/>
+                <BsmImage className="aspect-[1/1] w-1/2 object-cover rounded-md shadow-black shadow-lg" placeholder={defaultImage} image={cover} errorImage={defaultImage}/>
+                <h1 className="overflow-hidden font-bold italic text-xl text-gray-200 tracking-wide w-full text-center whitespace-nowrap text-ellipsis px-2">{title}</h1>
+            </div>
+            <BsmProgressBar/>
+        </div>
     )
 }

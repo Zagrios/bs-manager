@@ -4,6 +4,8 @@ import { ipcMain } from "electron";
 import { IpcRequest } from "shared/models/ipc";
 import { UtilsService } from "../utils.service";
 import { WindowManagerService } from "../window-manager.service";
+import { MSModel, MSModelType } from "shared/models/model-saber/model-saber.model";
+import { BSVersion } from "shared/bs-version.interface";
 
 export class LocalModelsManagerService {
 
@@ -49,6 +51,16 @@ export class LocalModelsManagerService {
 
     }
 
+    private getModelFolderPath(type: MSModelType, version?: BSVersion): Promise<string>{
+        // TODO : return path of model type of version
+    }
 
+    public downloadModel(model: MSModel, version: BSVersion): Promise<string>{
+        // TODO : Download model to the version
+    }
+
+    public async oneClickDownloadModel(model: MSModel): Promise<void>{
+
+    }
 
 }

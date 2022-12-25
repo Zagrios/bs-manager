@@ -18,10 +18,7 @@ import { DeepLinkService } from './services/deep-link.service';
 import { AppWindow } from 'shared/models/window-manager/app-window.model';
 import { LocalMapsManagerService } from './services/additional-content/local-maps-manager.service';
 import { LocalPlaylistsManagerService } from './services/additional-content/local-playlists-manager.service';
-import { ModelSaberService } from './services/thrid-party/model-saber/model-saber.service';
 import { LocalModelsManagerService } from './services/additional-content/local-models-manager.service';
-
-export const PRELOAD_PATH = app.isPackaged ? path.join(__dirname, 'preload.js') : path.join(__dirname, '../../.erb/dll/preload.js')
 
 const isDebug = process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
