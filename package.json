@@ -158,7 +158,6 @@
     "@types/react-test-renderer": "^17.0.2",
     "@types/terser-webpack-plugin": "^5.0.4",
     "@types/use-double-click": "^1.0.1",
-    "@types/uuid": "^8.3.4",
     "@types/webpack-bundle-analyzer": "^4.4.2",
     "@types/webpack-env": "^1.18.0",
     "@typescript-eslint/eslint-plugin": "^5.34.0",
