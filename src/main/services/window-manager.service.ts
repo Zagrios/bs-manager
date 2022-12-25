@@ -3,6 +3,7 @@ import { resolveHtmlPath } from "../util";
 import { UtilsService } from "./utils.service";
 import { AppWindow } from "shared/models/window-manager/app-window.model";
 import path from "path";
+import { APP_NAME } from "../constants";
 
 export class WindowManagerService{
 
@@ -21,6 +22,7 @@ export class WindowManagerService{
     }
 
     private readonly baseWindowOption: BrowserWindowConstructorOptions = {
+        title: APP_NAME,
         icon: this.utilsService.getAssetsPath("favicon.ico"),
         show: false,
         frame: false,

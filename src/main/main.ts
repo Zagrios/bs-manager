@@ -19,6 +19,7 @@ import { AppWindow } from 'shared/models/window-manager/app-window.model';
 import { LocalMapsManagerService } from './services/additional-content/local-maps-manager.service';
 import { LocalPlaylistsManagerService } from './services/additional-content/local-playlists-manager.service';
 import { LocalModelsManagerService } from './services/additional-content/local-models-manager.service';
+import { APP_NAME } from './constants';
 
 const isDebug = process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
@@ -89,7 +90,9 @@ else{
 
     app.whenReady().then(() => {
 
-        // process.argv.push("modelsaber://platform/1671435302/The grinch mountain.plat"); // to force deep-link (oneClick map)
+        app.setAppUserModelId(APP_NAME);
+
+        process.argv.push("beatsaver://2d5bc"); // to force deep-link (oneClick map)
 
         initServicesMustBeInitialized();
         

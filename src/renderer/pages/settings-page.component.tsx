@@ -150,16 +150,51 @@ export function SettingsPage() {
 
   const openLogs = () => ipcService.sendLazy("open-logs");
 
+    // TODO TRANSLATE
+    const showDeepLinkError = (isDesactivation: boolean) => {
+        const desc = isDesactivation ? "Une erreur inconnue c'est produite" : "Impossible d'activer les installations OneClick";
+        notificationService.notifyError({title: "notifications.types.error", desc, duration: 3000});
+    }
+
+    const showDeepLinkSuccess = (isDesactivation: boolean) => {
+        const desc = isDesactivation ? "Les installations OneClick ont été désactivées" : "Les installations OneClick ont été activées";
+        const title = isDesactivation ? "OneClick désactivée !" : "OneClick activée !";
+        notificationService.notifySuccess({title, desc, duration: 3000});
+    }
+
+    const showDeepLinkWarning = (isDesactivation: boolean) => {
+        const desc = isDesactivation ? "Un problème est survenu lors de la désactivation des OneClicks, veuillez réessayez" : "Un problème est survenu lors de l'activation des OneClicks, veuillez réessayez";
+        notificationService.notifyWarning({title: "Attention !", desc, duration: 3000});
+    }
+
     const toogleMapDeepLinks = () => {
-        mapsManager.toogleDeepLinks().finally(() => mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled)));
+        const isDesactivation = mapDeepLinksEnabled;
+        mapsManager.toogleDeepLinks().catch(() => {
+            showDeepLinkError(isDesactivation);
+        }).then(res => {
+            if(!res){ return showDeepLinkWarning(isDesactivation); }
+            showDeepLinkSuccess(isDesactivation)
+        }).finally(() => mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled)));
     }
 
     const tooglePlaylistsDeepLinks = () => {
-        playlistsManager.toogleDeepLinks().finally(() => playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled)));
+        const isDesactivation = playlistsDeepLinkEnabled;
+        playlistsManager.toogleDeepLinks().catch(() => {
+            showDeepLinkError(isDesactivation);
+        }).then(res => {
+            if(!res){ return showDeepLinkWarning(isDesactivation); }
+            showDeepLinkSuccess(isDesactivation)
+        }).finally(() => playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled)));
     }
 
     const toogleModelsDeepLinks = () => {
-        modelsManager.toogleDeepLinks().finally(() => modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled)));
+        const isDesactivation = modelsDeepLinkEnabled;
+        modelsManager.toogleDeepLinks().catch(() => {
+            showDeepLinkError(isDesactivation)
+        }).then(res => {
+            if(!res){ return showDeepLinkWarning(isDesactivation); }
+            showDeepLinkSuccess(isDesactivation)
+        }).finally(() => modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled)));
     }
 
     return (

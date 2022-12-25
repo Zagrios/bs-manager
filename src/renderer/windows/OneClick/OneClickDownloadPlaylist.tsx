@@ -5,6 +5,7 @@ import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import TitleBar from "renderer/components/title-bar/title-bar.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { IpcService } from "renderer/services/ipc.service"
+import { NotificationService } from "renderer/services/notification.service";
 import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service";
 import { ThemeService } from "renderer/services/theme.service";
 import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
@@ -21,6 +22,7 @@ export default function OneClickDownloadPlaylist() {
     const playlistDownloader = PlaylistDownloaderService.getInstance();
     const mapsContainer = useRef<HTMLDivElement>(null);
     const windows = WindowManagerService.getInstance();
+    const notification = NotificationService.getInstance();
 
     const [playlist, setPlaylist] = useState<BsvPlaylist>(null);
     const downloadedMap = useObservable(playlistDownloader.progress$.pipe(filter(download => !!download), map(download => [...(download.downloadedMaps ?? []), download?.current])), []);
@@ -47,6 +49,16 @@ export default function OneClickDownloadPlaylist() {
 
             resolve(res);
 
+        });
+
+        // TODO TRANSLATE
+
+        promise.catch(() => {
+            notification.notifySystem({title: "Erreur", body: "Une erreur c'est produite lors de l'installation de la playlist"});
+        })
+
+        promise.then(() => {
+            notification.notifySystem({title: "OneClick", body: "Installation de la playlist terminé"});
         });
 
         promise.finally(() => {

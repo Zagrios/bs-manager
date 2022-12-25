@@ -1,6 +1,8 @@
 import { ipcMain, shell, dialog, app } from 'electron';
 import { UtilsService } from '../services/utils.service';
 import { IpcRequest } from 'shared/models/ipc';
+import { SystemNotificationOptions } from 'shared/models/notification/system-notification.model';
+import { NotificationService } from '../services/notification.service';
 
 
 // TODO IMPROVE WINDOW CONTROL BY USING WINDOW SERVICE
@@ -54,4 +56,8 @@ ipcMain.on("current-version", async (event, request: IpcRequest<void>) => {
 
 ipcMain.on("open-logs", async (event, request: IpcRequest<void>) => {
     shell.openPath(app.getPath("logs"));
+});
+
+ipcMain.on("notify-system", async (event, request: IpcRequest<SystemNotificationOptions>) => {
+    NotificationService.getInstance().notify(request.args)
 });

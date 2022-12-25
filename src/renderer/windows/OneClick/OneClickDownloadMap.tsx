@@ -4,6 +4,7 @@ import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import TitleBar from "renderer/components/title-bar/title-bar.component";
 import { IpcService } from "renderer/services/ipc.service";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
+import { NotificationService } from "renderer/services/notification.service";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { ThemeService } from "renderer/services/theme.service";
 import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
@@ -20,6 +21,7 @@ export default function OneClickDownloadMap() {
     const themeService = ThemeService.getInstance();
     const progressBar = ProgressBarService.getInstance();
     const windows = WindowManagerService.getInstance();
+    const notification = NotificationService.getInstance();
 
     const [mapInfo, setMapInfo] = useState<BsvMapDetail>(null);
 
@@ -38,6 +40,7 @@ export default function OneClickDownloadMap() {
         const promise = new Promise<void>(async (resolve, reject) => {
 
             try{
+
                 const ipcRes = await ipc.send<{id: string, isHash: boolean}>("one-click-map-info");
 
                 if(!ipcRes.success){ return reject(ipcRes.error); }
@@ -58,6 +61,16 @@ export default function OneClickDownloadMap() {
                 reject(e);
             }
             
+        });
+
+        // TODO TRANSLATE
+
+        promise.catch(() => {
+            notification.notifySystem({title: "Erreur", body: "Une erreur c'est produite lors de l'installation de la map"});
+        })
+
+        promise.then(() => {
+            notification.notifySystem({title: "OneClick", body: "Installation de la map terminé"});
         });
 
         promise.finally(() =>{
