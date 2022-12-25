@@ -121,7 +121,7 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
                     <BsmIcon className="h-4 w-4 mr-px" icon="bsMapDifficulty"/>
                     <div className="flex py-[2px] gap-[1px] h-full">
                         {diffSet.map(diff => (
-                            <span key={diff.type} className="h-full w-[6px] rounded-full" style={{backgroundColor: MAP_DIFFICULTIES_COLORS[diff.type]}}/>
+                            <span key={crypto.randomUUID()} className="h-full w-[6px] rounded-full" style={{backgroundColor: MAP_DIFFICULTIES_COLORS[diff.type]}}/>
                         ))}
                     </div>
                 </>
