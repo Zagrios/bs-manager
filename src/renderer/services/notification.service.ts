@@ -1,5 +1,4 @@
 import { BehaviorSubject } from "rxjs";
-import { v4 as uuidv4 } from 'uuid';
 
 export class NotificationService{
 
@@ -17,7 +16,7 @@ export class NotificationService{
     }
 
     public notify(notification: Notification): Promise<NotificationResult|string>{
-        const resovableNotification: ResolvableNotification = {id: uuidv4(), notification, resolver: null };
+        const resovableNotification: ResolvableNotification = {id: crypto.randomUUID(), notification, resolver: null };
         const promise = new Promise<NotificationResult|string>(resolve => {
             resovableNotification.resolver = resolve;
             setTimeout(() => resolve(NotificationResult.NO_CHOICE), notification.duration || 7000);

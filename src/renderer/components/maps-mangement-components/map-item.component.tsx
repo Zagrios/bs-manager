@@ -12,7 +12,6 @@ import { AudioPlayerService } from "renderer/services/audio-player.service";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { map } from "rxjs/operators";
 import useDelayedState from "use-delayed-state";
-import { v4 as uuidv4 } from 'uuid';
 import equal from "fast-deep-equal/es6";
 import { getMapZipUrlFromHash } from "renderer/helpers/maps-utils";
 import { BsmBasicSpinner } from "../shared/bsm-basic-spinner/bsm-basic-spinner.component";
@@ -129,7 +128,7 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
         }
         if(diffSets.length > 1){
             return diffSets.map(([diffType, diffSet]) => (
-                <Fragment key={uuidv4()}>
+                <Fragment key={crypto.randomUUID()}>
                     <BsmIcon className="h-full w-fit mr-px" icon={diffType}/>
                     <span className="mr-2 font-bold text-[15px] h-full flex items-center pb-px">{diffSet.length}</span>
                 </Fragment>
@@ -144,7 +143,7 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
                 {(diffsPanelHovered || bottomBarHovered) && (
                     <motion.ul key={hash} className="absolute top-[calc(100%-10px)] w-full h-fit max-h-[200%] pt-4 pb-2 px-2 overflow-y-scroll bg-main-color-3 brightness-125 rounded-md flex flex-col gap-3 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 shadow-sm shadow-black" initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}} transition={{duration: .15}} onHoverStart={diffsPanelHoverStart} onHoverEnd={diffsPanelHoverEnd}>
                         {Array.from(diffs.entries()).map(([charac, diffSet]) => (
-                            <ol key={uuidv4()} className="flex flex-col w-full gap-1">
+                            <ol key={crypto.randomUUID()} className="flex flex-col w-full gap-1">
                                 {diffSet.map(({type, name, stars}) => (
                                     <li key={`${type}${name}${stars}`} className="w-full h-4 flex items-center gap-1">
                                         <BsmIcon className="h-full w-fit p-px" icon={charac}/>

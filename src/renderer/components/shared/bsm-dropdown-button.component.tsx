@@ -3,7 +3,6 @@ import { BsmIconType, BsmIcon } from "../svgs/bsm-icon.component"
 import { BsmButton } from "./bsm-button.component"
 import { useTranslation } from "renderer/hooks/use-translation.hook"
 import { AnimatePresence } from "framer-motion"
-import { v4 as uuidv4 } from 'uuid';
 import { useClickOutside } from "renderer/hooks/use-click-outside.hook"
 
 export interface DropDownItem {text: string, icon?: BsmIconType, onClick?: () => void}
@@ -46,7 +45,7 @@ export function BsmDropdownButton({className, items, align, withBar = true, icon
          <BsmButton onClick={() => setExpanded(!expanded)} className={buttonClassName ?? defaultButtonClassName} icon={icon} active={expanded} onClickOutside={handleClickOutside} withBar={withBar} text={text}/>
          <div className={`py-1 w-fit absolute cursor-pointer top-[calc(100%-4px)] rounded-md bg-inherit text-sm text-gray-800 dark:text-gray-200 shadow-md shadow-black transition-[scale] ease-in-out ${alignClass}`} style={{scale: expanded ? "1" : "0", translate: `0 ${menuTranslationY}`}}>
             { items?.map((i) => (
-               <div key={uuidv4()} onClick={() => i.onClick?.()} className="flex w-full px-3 py-2 hover:backdrop-brightness-150">
+               <div key={crypto.randomUUID()} onClick={() => i.onClick?.()} className="flex w-full px-3 py-2 hover:backdrop-brightness-150">
                   {i.icon && <BsmIcon icon={i.icon} className="h-5 w-5 mr-1 text-inherit"/>}
                   <span className="w-max">{t(i.text)}</span>
                </div>
