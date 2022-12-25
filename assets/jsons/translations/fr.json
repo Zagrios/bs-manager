@@ -6,6 +6,7 @@
       "mods": "Mods",
       "maps": "Maps",
       "playlists":"Playlists",
+      "models": "Modèles",
       "cancel": "Annuler",
       "delete": "Supprimer"
    },
@@ -93,6 +94,13 @@
          	"title":"Dossier d'installation",
          	"description":"Change le dossier par défaut pour les versions de Beat Saber et d'autres fonctionnalités à venir.",
          	"choose-folder":"Choisir un dossier"
+         },
+         "additional-content":{
+            "title":"Contenus additionnels",
+            "description":"Les contenus additionnels te permet de personaliser BeatSaber !",
+            "deep-links":{
+                "sub-title":"Installations OneClick"
+            }
          },
          "language":{
          	"title":"Langage",

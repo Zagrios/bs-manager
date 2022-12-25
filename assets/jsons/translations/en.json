@@ -6,6 +6,7 @@
       "mods": "Mods",
       "maps": "Maps",
       "playlists":"Playlists",
+      "models": "Models",
       "cancel": "Cancel",
       "delete": "Delete"
    },
@@ -94,6 +95,13 @@
             "description":"Change the default folder for Beat Saber versions and other upcoming features.",
             "choose-folder":"Choose folder"
          },
+         "additional-content":{
+            "title":"Additional content",
+            "description":"Additional content allows you to customize BeatSaber!",
+            "deep-links":{
+                "sub-title":"OneClick installations"
+            }
+        },
          "language":{
             "title":"Language",
         		"description":"Select a language.",

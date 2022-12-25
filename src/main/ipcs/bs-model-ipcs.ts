@@ -14,3 +14,48 @@ ipcMain.on("one-click-install-model", async (event, request: IpcRequest<MSModel>
         utils.ipcSend(request.responceChannel, {success: false, error: e});
     })
 });
+
+ipcMain.on("register-models-deep-link", async (event, request: IpcRequest<void>) => {
+    
+    const maps = LocalModelsManagerService.getInstance();
+    const utils = UtilsService.getInstance();
+
+    try{
+        const res = maps.enableDeepLinks();
+        utils.ipcSend(request.responceChannel, {success: true, data: res});
+    }
+    catch(e){
+        utils.ipcSend(request.responceChannel, {success: false});
+    }
+
+});
+
+ipcMain.on("unregister-models-deep-link", async (event, request: IpcRequest<void>) => {
+    
+    const maps = LocalModelsManagerService.getInstance();
+    const utils = UtilsService.getInstance();
+
+    try{
+        const res = maps.disableDeepLinks();
+        utils.ipcSend(request.responceChannel, {success: true, data: res});
+    }
+    catch(e){
+        utils.ipcSend(request.responceChannel, {success: false});
+    }
+    
+});
+
+ipcMain.on("is-models-deep-links-enabled", async (event, request: IpcRequest<void>) => {
+
+    const maps = LocalModelsManagerService.getInstance();
+    const utils = UtilsService.getInstance();
+
+    try{
+        const res = maps.isDeepLinksEnabled();
+        utils.ipcSend(request.responceChannel, {success: true, data: res});
+    }
+    catch(e){
+        utils.ipcSend(request.responceChannel, {success: false});
+    }
+
+});

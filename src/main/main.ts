@@ -89,7 +89,7 @@ else{
 
     app.whenReady().then(() => {
 
-        process.argv.push("modelsaber://saber/1670981586/r_Happy Crimbo!.saber"); // to force deep-link (oneClick map)
+        // process.argv.push("modelsaber://platform/1671435302/The grinch mountain.plat"); // to force deep-link (oneClick map)
 
         initServicesMustBeInitialized();
         

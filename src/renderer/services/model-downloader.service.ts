@@ -23,7 +23,7 @@ export class ModelDownloaderService {
 
     public async oneClickInstallModel(model: MSModel): Promise<boolean>{
 
-        this.progress.showFake(0.07);
+        this.progress.showFake(0.04);
 
         const res = await this.ipc.send("one-click-install-model", {args: model});
 

@@ -6,6 +6,7 @@
       "mods": "Mods",
       "maps": "Mapas",
       "playlists":"Playlists",
+      "models": "Modelos",
       "cancel": "Cancelar",
       "delete": "Borrar"
    },
@@ -94,6 +95,13 @@
             "description":"Cambia la carpeta por defecto para las versiones de Beat Saber y otras características próximas.",
             "choose-folder":"Elija la carpeta"
          },
+         "additional-content":{
+            "title":"Contenido adicional",
+            "description":"¡El contenido adicional te permite personalizar BeatSaber!",
+            "deep-links":{
+                "sub-title":"Instalaciones OneClick"
+            }
+        },
     		"language":{
         		"title":"Idioma",
         		"description":"Selecciona un idioma.",

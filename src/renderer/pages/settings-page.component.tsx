@@ -3,7 +3,7 @@ import SettingColorChooser from "renderer/components/settings/setting-color-choo
 import { SettingContainer } from "renderer/components/settings/setting-container.component";
 import { RadioItem, SettingRadioArray } from "renderer/components/settings/setting-radio-array.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
-import { BsmIcon, BsmIconType } from "renderer/components/svgs/bsm-icon.component";
+import { BsmIconType } from "renderer/components/svgs/bsm-icon.component";
 import { DefaultConfigKey, ThemeConfig } from "renderer/config/default-configuration.config";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
@@ -29,6 +29,8 @@ import scoreSaberIcon from "../../../assets/images/third-party-icons/score-saber
 import Tippy from '@tippyjs/react';
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
+import { ModelsManagerService } from "renderer/services/models-manager.service";
+import { useTranslation } from "renderer/hooks/use-translation.hook";
 
 export function SettingsPage() {
 
@@ -44,6 +46,7 @@ export function SettingsPage() {
   const linkOpener: LinkOpenerService = LinkOpenerService.getInstance();
   const mapsManager = MapsManagerService.getInstance();
   const playlistsManager = PlaylistsManagerService.getInstance();
+  const modelsManager = ModelsManagerService.getInstance();
 
   const {firstColor, secondColor} = useThemeColor();
   const sessionExist = useObservable(authService.sessionExist$);
@@ -63,15 +66,18 @@ export function SettingsPage() {
   const [installationFolder, setInstallationFolder] = useState(null);
   const [showSupporters, setShowSupporters] = useState(false);
   const [mapDeepLinksEnabled, setMapDeepLinksEnabled] = useState(false);
-  const [playlistsDeepLinkEnabled, setPlaylistsDeeppLinkEnabled] = useState(false)
+  const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
+  const [modelsDeepLinkEnabled, setModelsDeepLinkEnabled] = useState(false);
   const [appVersion, setAppVersion] = useState("");
   const nav = useNavigate();
+  const t = useTranslation();
 
   useEffect(() => {
     loadInstallationFolder();
     ipcService.send<string>("current-version").then(res => setAppVersion(res.data));
     mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
-    playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeeppLinkEnabled(() => enabled));
+    playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
+    modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled))
   }, []);
 
   const resetColors = () => {
@@ -149,7 +155,11 @@ export function SettingsPage() {
     }
 
     const tooglePlaylistsDeepLinks = () => {
-        playlistsManager.toogleDeepLinks().finally(() => playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeeppLinkEnabled(() => enabled)));
+        playlistsManager.toogleDeepLinks().finally(() => playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled)));
+    }
+
+    const toogleModelsDeepLinks = () => {
+        modelsManager.toogleDeepLinks().finally(() => modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled)));
     }
 
     return (
@@ -187,14 +197,15 @@ export function SettingsPage() {
                     </div>
                 </SettingContainer>
 
-                <SettingContainer title="Contenus additionnels" description="Les contenus additionnels te permet de personaliser BeatSaber !">
+                {/* TODO TRANSLATE */}
+                <SettingContainer title="pages.settings.additional-content.title" description="pages.settings.additional-content.description">
 
-                <SettingContainer minorTitle="Installations OneClick">
+                <SettingContainer minorTitle="pages.settings.additional-content.deep-links.sub-title">
                     <ul className="w-full flex flex-col gap-1.5">
                         <li className="bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3">
                             <div className="flex items-center gap-2">
                                 <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={toogleMapDeepLinks} checked={mapDeepLinksEnabled}/>
-                                <span className="font-extrabold">Maps</span>
+                                <span className="font-extrabold">{t("misc.maps")}</span>
                             </div>
                             <div className="flex h-full gap-2">
                                 <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
@@ -211,7 +222,7 @@ export function SettingsPage() {
                         <li className="bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3">
                             <div className="flex items-center gap-2">
                                 <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={tooglePlaylistsDeepLinks} checked={playlistsDeepLinkEnabled}/>
-                                <span className="font-extrabold">Playlists</span>
+                                <span className="font-extrabold">{t("misc.playlists")}</span>
                             </div>
                             <div className="flex h-full">
                                 <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
@@ -221,8 +232,8 @@ export function SettingsPage() {
                         </li>
                         <li className="bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3">
                             <div className="flex items-center gap-2">
-                                <BsmCheckbox className="relative z-[1] h-5 w-5"/>
-                                <span className="font-extrabold">Modèles</span>
+                                <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={toogleModelsDeepLinks} checked={modelsDeepLinkEnabled}/>
+                                <span className="font-extrabold">{t("misc.models")}</span>
                             </div>
                             <div className="flex h-full">
                                 <Tippy content="ModelSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>

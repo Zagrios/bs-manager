@@ -11,3 +11,4 @@ import './bs-maps-ipcs';
 import './beat-saver-ipcs';
 import './bs-playlist-ipcs';
 import './model-saber.ipcs';
+import './bs-model-ipcs';

@@ -24,6 +24,7 @@ export default function OneClickDownloadMap() {
     const [mapInfo, setMapInfo] = useState<BsvMapDetail>(null);
 
     const cover = mapInfo ? mapInfo.versions.at(0).coverURL : null;
+    const title = mapInfo ? mapInfo.name : null;
 
     useEffect(() => {
 
@@ -75,7 +76,7 @@ export default function OneClickDownloadMap() {
             <div className="w-full h-full backdrop-brightness-50 backdrop-blur-md flex flex-col justify-start items-center gap-10">
                 <TitleBar template="oneclick-download-map.html"/>
                 <BsmImage className="aspect-square w-1/2 object-cover rounded-md shadow-black shadow-lg" placeholder={defaultImage} image={cover} errorImage={defaultImage}/>
-                <h1 className="overflow-hidden font-bold italic text-xl text-gray-200 tracking-wide w-full text-center whitespace-nowrap text-ellipsis px-2">{mapInfo?.name ?? "Chargement de la map..."}</h1>
+                <h1 className="overflow-hidden font-bold italic text-xl text-gray-200 tracking-wide w-full text-center whitespace-nowrap text-ellipsis px-2">{title}</h1>
             </div>
             <BsmProgressBar/>
         </div>

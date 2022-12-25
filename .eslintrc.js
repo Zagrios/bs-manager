@@ -34,7 +34,8 @@ module.exports = {
     "no-param-reassign": "off",
     "no-useless-escape": "off",
     "jsx-a11y/no-noninteractive-element-interactions": "off",
-    "no-async-promise-executor": "off"
+    "no-async-promise-executor": "off",
+    "new-cap": "off"
   },
   parserOptions: {
     ecmaVersion: 2020,
