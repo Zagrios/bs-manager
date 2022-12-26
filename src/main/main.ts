@@ -92,8 +92,6 @@ else{
 
         app.setAppUserModelId(APP_NAME);
 
-        process.argv.push("beatsaver://2d5bc"); // to force deep-link (oneClick map)
-
         initServicesMustBeInitialized();
         
         const deepLink = process.argv.find(arg => DeepLinkService.getInstance().isDeepLink(arg));
