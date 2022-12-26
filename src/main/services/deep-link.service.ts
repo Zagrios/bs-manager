@@ -33,7 +33,7 @@ export class DeepLinkService {
             return app.removeAsDefaultProtocolClient(protocol, process.execPath, [path.resolve(process.argv[1])]);
         }
 
-        app.removeAsDefaultProtocolClient(protocol);
+        return app.removeAsDefaultProtocolClient(protocol);
     }
 
     public isDeepLinkRegistred(protocol: string): boolean{
