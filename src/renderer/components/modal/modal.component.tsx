@@ -31,7 +31,6 @@ export function Modal() {
         }
    
         return () => {
-            console.log("oui");
             window.removeEventListener("keyup", onEscape);
         }
    }, [ModalComponent])

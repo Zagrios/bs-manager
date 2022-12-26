@@ -101,15 +101,11 @@ export class BeatSaverApiService {
 
     public async searchMaps(search: SearchParams): Promise<ApiResult<SearchResponse>>{
 
-        console.log(search);
-
         const url = new URL(`${this.bsaverApiUrl}/search/text/${search?.page ?? 0}`);
 
         url.search = this.searchParamsToUrlParams(search).toString();
 
         const res = await fetch(url.toString());
-
-        console.log(res);
 
         if(!res.ok){
             return {status: res.status, data: null};

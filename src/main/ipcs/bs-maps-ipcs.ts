@@ -79,7 +79,6 @@ ipcMain.on("download-map", async (event, request: IpcRequest<{map: BsvMapDetail,
     maps.downloadMap(request.args.map, request.args.version).then(() => {
         utils.ipcSend(request.responceChannel, {success: true});
     }).catch(err => {
-        console.log(err);
         utils.ipcSend(request.responceChannel, {success: false, error: err});
     });
 });
@@ -91,7 +90,6 @@ ipcMain.on("one-click-install-map", async (event, request: IpcRequest<BsvMapDeta
     maps.oneClickDownloadMap(request.args).then(() => {
         utils.ipcSend(request.responceChannel, {success: true});
     }).catch(err => {
-        console.log(err);
         utils.ipcSend(request.responceChannel, {success: false, error: err});
     });
 });

@@ -22,8 +22,6 @@ type Props = {
 
 export function BsmDropdownButton({className, items, align, withBar = true, icon = "settings", buttonClassName, menuTranslationY, children, text, textClassName}: Props) {
 
-    console.log("DROPDOWN", items);
-
    const [expanded, setExpanded] = useState(false)
    const t = useTranslation();
    const ref = useRef(null)

@@ -11,7 +11,6 @@ ipcMain.on("one-click-install-playlist", async (event, request: IpcRequest<strin
     playlists.oneClickInstallPlaylist(request.args).then(() => {
         utils.ipcSend(request.responceChannel, {success: true});
     }).catch(e => {
-        console.log(e);
         utils.ipcSend(request.responceChannel, {success: false, error: e});
     });
 });

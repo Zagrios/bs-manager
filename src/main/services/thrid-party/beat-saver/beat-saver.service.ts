@@ -59,7 +59,6 @@ export class BeatSaverService {
         return this.bsaverApi.searchMaps(search).then(res => {
             return res.status === 200 ? res.data.docs : [];
         }).catch(err => {
-            console.log(err);
             return [];
         });
 
