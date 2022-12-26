@@ -34,8 +34,8 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
     const [sortOrder, setSortOrder] = useState<SearchOrder>(BSV_SORT_ORDER.at(0));
     const [ownedMapHashs, setOwnedMapHashs] = useState<string[]>([]);
     const [searchParams, setSearchParams] = useState<SearchParams>({
-        sortOrder: sortOrder,
-        filter: filter,
+        sortOrder,
+        filter,
         page: 0,
         q: query
     });
@@ -113,6 +113,7 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
                 songUrl={map.versions.at(0).previewURL}
                 key={map.id}
                 onDownload={(!isMapOwned && !inQueue) && (handleDownloadMap)}
+                onDoubleClick={(!isMapOwned && !inQueue) && (handleDownloadMap)}
                 onCancelDownload={(inQueue && !isDownloading) && (handleCancelDownload)}
                 downloading={isDownloading}
                 callBackParam={map}
@@ -136,8 +137,8 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
 
     const handleSearch = () => {
         const searchParams: SearchParams = {
-            sortOrder: sortOrder,
-            filter: filter,
+            sortOrder,
+            filter,
             q: query.trim(),
             page: 0,
         };
@@ -165,7 +166,7 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
             <ul className="w-full grow flex content-start flex-wrap gap-2 px-2 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900" >
                 {maps.length === 0 ? (
                     <div className="w-full h-full flex flex-col items-center justify-center">
-                        <img className="w-32 h-32 spin-loading" src={BeatWaitingImg}></img>
+                        <img className="w-32 h-32 spin-loading" src={BeatWaitingImg} alt=" "/>
                         <span className="text-lg">{t("modals.download-maps.loading-maps")}</span>
                     </div>
                 ) : (

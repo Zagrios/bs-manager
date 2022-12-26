@@ -5,7 +5,7 @@ import { BsmLink } from "../shared/bsm-link.component";
 import { BsmIcon } from "../svgs/bsm-icon.component";
 import { BsmButton } from "../shared/bsm-button.component";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState, Fragment, memo } from "react";
+import { useState, Fragment, memo, useRef } from "react";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import dateFormat from "dateformat";
 import { AudioPlayerService } from "renderer/services/audio-player.service";
@@ -19,6 +19,7 @@ import defaultImage from '../../../../assets/images/default-version-img.jpg'
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { MAP_DIFFICULTIES } from "renderer/partials/maps/map-difficulties/map-difficulties";
 import { MAP_DIFFICULTIES_COLORS } from "renderer/partials/maps/map-difficulties/map-difficulties-colors"
+import useDoubleClick from "use-double-click";
 
 export type ParsedMapDiff = {type: BsvMapDifficultyType, name: string, stars: number}
 
@@ -44,10 +45,11 @@ export type MapItemProps<T = any> = {
     onDelete?: (param: T) => void,
     onDownload?: (param: T) => void,
     onSelected?: (param: T) => void,
-    onCancelDownload?: (param: T) => void
+    onCancelDownload?: (param: T) => void,
+    onDoubleClick?: (param: T) => void
 }
 
-export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, qualified, ranked, bpm, duration, likes, createdAt, selected, downloading, callBackParam, onDelete, onDownload, onSelected, onCancelDownload}: MapItemProps) => {
+export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, qualified, ranked, bpm, duration, likes, createdAt, selected, downloading, callBackParam, onDelete, onDownload, onSelected, onCancelDownload, onDoubleClick}: MapItemProps) => {
 
     const linkOpener = LinkOpenerService.getInstance();
     const audioPlayer = AudioPlayerService.getInstance();
@@ -55,9 +57,17 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
     const color = useThemeColor("first-color");
     const t = useTranslation();
 
+    const ref = useRef(null);
     const [hovered, setHovered] = useState(false);
     const [bottomBarHovered, setBottomBarHovered, cancelBottomBarHovered] = useDelayedState(false);
     const [diffsPanelHovered, setDiffsPanelHovered] = useState(false);
+
+    useDoubleClick({
+        ref,
+        latency: onDoubleClick ? 200 : 0,
+        onSingleClick: e => onSelected?.(callBackParam),
+        onDoubleClick: e => onDoubleClick?.(callBackParam)
+    })
 
     const songPlaying = useObservable(audioPlayer.playing$.pipe(map(playing => playing && audioPlayer.src === songUrl)));
 
@@ -137,7 +147,7 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
     }
     
     return (
-        <motion.li className="relative h-[100px] min-w-[370px] shrink-0 grow basis-0 text-white group cursor-pointer" onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)} style={{zIndex: hovered && 5, transform: "translateZ(0) scale(1.0, 1.0)", backfaceVisibility: "hidden"}} onClick={e => {onSelected?.(callBackParam)}}>
+        <motion.li ref={ref} className="relative h-[100px] min-w-[370px] shrink-0 grow basis-0 text-white group cursor-pointer" onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)} style={{zIndex: hovered && 5, transform: "translateZ(0) scale(1.0, 1.0)", backfaceVisibility: "hidden"}}>
             {(hovered || selected) && onSelected && <motion.span className="glow-on-hover !transition-none" animate={{opacity: 1}} transition={{duration: .2, ease: "linear"}}/>}
             <AnimatePresence>
                 {(diffsPanelHovered || bottomBarHovered) && (
@@ -216,7 +226,7 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
                     <div className="flex flex-col justify-center items-center gap-1 w-full h-full overflow-hidden opacity-0 group-hover:opacity-100">
                         {onDelete && !downloading && <BsmButton className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-main-color-2" iconClassName="w-full h-full brightness-150" iconColor={color} icon="trash" withBar={false} onClick={e => {e.stopPropagation(); onDelete(callBackParam)}}/>}
                         {onDownload && !downloading && <BsmButton className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-main-color-2" iconClassName="w-full h-full brightness-150" iconColor={color} icon="download" withBar={false} onClick={e => {e.stopPropagation(); onDownload(callBackParam)}}/>}
-                        {onCancelDownload && !downloading && <BsmButton className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-main-color-2" iconClassName="w-full h-full brightness-150" iconColor={"red"} icon="cross" withBar={false} onClick={e => {e.stopPropagation(); onCancelDownload(callBackParam)}}/>}
+                        {onCancelDownload && !downloading && <BsmButton className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-main-color-2" iconClassName="w-full h-full brightness-150" iconColor="red" icon="cross" withBar={false} onClick={e => {e.stopPropagation(); onCancelDownload(callBackParam)}}/>}
                         {downloading && <BsmBasicSpinner className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-main-color-2 flex items-center justify-center" spinnerClassName="brightness-150" style={{color}} thikness="3px"/>}
                         {previewUrl && <BsmButton className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-main-color-2" iconClassName="w-full h-full brightness-150" iconColor={color} icon="eye" withBar={false} onClick={e => {e.stopPropagation(); openPreview()}}/>}
                         {mapId && <BsmButton className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-main-color-2" iconClassName="w-full h-full brightness-150" iconColor={color} icon="twitch" withBar={false} onClick={e => {e.stopPropagation(); copyBsr()}}/>}
