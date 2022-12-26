@@ -327,6 +327,24 @@
                     }
                 }
             }
+        },
+        "maps":{
+            "one-click-install":{
+                "success":"Instalación del mapa completada",
+                "error":"Se produjo un error durante la instalación del mapa"
+            }
+        },
+        "playlists":{
+            "one-click-install":{
+                "success":"Instalación de la lista de reproducción completada",
+                "error":"Se produjo un error durante la instalación de la lista de reproducción"
+            }
+        },
+        "models":{
+            "one-click-install":{
+                "success":"Instalación del modelo completada",
+                "error":"Se produjo un error durante la instalación del modelo"
+            }
         }
     },
     "modals": {

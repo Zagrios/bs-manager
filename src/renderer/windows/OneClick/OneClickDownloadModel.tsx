@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BsmProgressBar } from "renderer/components/progress-bar/bsm-progress-bar.component";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import TitleBar from "renderer/components/title-bar/title-bar.component";
+import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { IpcService } from "renderer/services/ipc.service";
 import { ModelDownloaderService } from "renderer/services/model-downloader.service";
 import { NotificationService } from "renderer/services/notification.service";
@@ -23,6 +24,7 @@ export default function OneClickDownloadModel() {
     const notification = NotificationService.getInstance();
 
     const [model, setModel] = useState<MSModel>(null);
+    const t = useTranslation();
 
     const cover = model ? model.thumbnail : null;
     const title = model ? model.name : null;
@@ -38,26 +40,32 @@ export default function OneClickDownloadModel() {
 
             const infos = await ipc.send<{id: string, type: string}>("one-click-model-info");
 
-            if(!infos.success){ reject(); }
+            if(!infos.success){ return reject(); }
 
             const model = await modelSaber.getModelById(infos.data.id);
+
+            if(!model){ return reject(); }
             
             setModel(() => model);
 
             progress.open();
 
-            resolve(modelDownloader.oneClickInstallModel(model));
+            const res = await modelDownloader.oneClickInstallModel(model);
+
+            if(!res){ return reject(); }
+
+            resolve(res);
 
         });
 
         // TODO TRANSLATE
 
         promise.catch(() => {
-            notification.notifySystem({title: "Erreur", body: "Une erreur c'est produite lors de l'installation du model"});
+            notification.notifySystem({title: t("notifications.types.error"), body: t("notifications.models.one-click-install.error")});
         })
 
         promise.then(() => {
-            notification.notifySystem({title: "OneClick", body: "Installation du model terminé"});
+            notification.notifySystem({title: "OneClick", body: t("notifications.models.one-click-install.success")});
         });
 
         promise.finally(() => windows.close("oneclick-download-model.html"));

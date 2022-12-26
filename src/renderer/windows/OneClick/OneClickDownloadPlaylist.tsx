@@ -4,6 +4,7 @@ import { BsmProgressBar } from "renderer/components/progress-bar/bsm-progress-ba
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import TitleBar from "renderer/components/title-bar/title-bar.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
+import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { IpcService } from "renderer/services/ipc.service"
 import { NotificationService } from "renderer/services/notification.service";
 import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service";
@@ -26,6 +27,7 @@ export default function OneClickDownloadPlaylist() {
 
     const [playlist, setPlaylist] = useState<BsvPlaylist>(null);
     const downloadedMap = useObservable(playlistDownloader.progress$.pipe(filter(download => !!download), map(download => [...(download.downloadedMaps ?? []), download?.current])), []);
+    const t = useTranslation();
 
     const cover = playlist ? playlist.playlistImage : null;
     const title = playlist ? playlist.name : null;
@@ -41,24 +43,26 @@ export default function OneClickDownloadPlaylist() {
 
             const infos = await ipc.send<{bpListUrl: string, id: string}>("one-click-playlist-info");
 
-            if(!infos.success){ reject(infos.error); }
+            if(!infos.success){ return reject(infos.error); }
 
             bSaver.getPlaylistDetailsById(infos.data.id).then(details => setPlaylist(details));
 
-            const res = await playlistDownloader.oneClickInstallPlaylist(infos.data.bpListUrl).toPromise();
-
-            resolve(res);
+            playlistDownloader.oneClickInstallPlaylist(infos.data.bpListUrl).toPromise().then(res => {
+                resolve(res);
+            }).catch(() => {
+                reject();
+            });
 
         });
 
         // TODO TRANSLATE
 
         promise.catch(() => {
-            notification.notifySystem({title: "Erreur", body: "Une erreur c'est produite lors de l'installation de la playlist"});
+            notification.notifySystem({title: t("notifications.types.error"), body: t("notifications.playlists.one-click-install.error")});
         })
 
         promise.then(() => {
-            notification.notifySystem({title: "OneClick", body: "Installation de la playlist terminé"});
+            notification.notifySystem({title: "OneClick", body: t("notifications.playlists.one-click-install.success")});
         });
 
         promise.finally(() => {

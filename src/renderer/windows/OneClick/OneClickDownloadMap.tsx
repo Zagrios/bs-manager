@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BsmProgressBar } from "renderer/components/progress-bar/bsm-progress-bar.component";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import TitleBar from "renderer/components/title-bar/title-bar.component";
+import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { IpcService } from "renderer/services/ipc.service";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
 import { NotificationService } from "renderer/services/notification.service";
@@ -24,6 +25,7 @@ export default function OneClickDownloadMap() {
     const notification = NotificationService.getInstance();
 
     const [mapInfo, setMapInfo] = useState<BsvMapDetail>(null);
+    const t = useTranslation();
 
     const cover = mapInfo ? mapInfo.versions.at(0).coverURL : null;
     const title = mapInfo ? mapInfo.name : null;
@@ -49,9 +51,11 @@ export default function OneClickDownloadMap() {
                 
                 setMapInfo(() => mapDetails);
                 
-                await mapsDownloader.oneClickInstallMap(mapDetails);
+                const res = await mapsDownloader.oneClickInstallMap(mapDetails);
 
                 progressBar.complete();
+
+                if(!res){ return reject(); }
 
                 await timer(300).toPromise();
 
@@ -66,11 +70,11 @@ export default function OneClickDownloadMap() {
         // TODO TRANSLATE
 
         promise.catch(() => {
-            notification.notifySystem({title: "Erreur", body: "Une erreur c'est produite lors de l'installation de la map"});
-        })
+            notification.notifySystem({title: t("notifications.types.error"), body: t("notifications.maps.one-click-install.error")});
+        });
 
         promise.then(() => {
-            notification.notifySystem({title: "OneClick", body: "Installation de la map terminé"});
+            notification.notifySystem({title: "OneClick", body: t("notifications.maps.one-click-install.success")});
         });
 
         promise.finally(() =>{

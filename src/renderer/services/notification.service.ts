@@ -1,6 +1,5 @@
 import { BehaviorSubject } from "rxjs";
 import { SystemNotificationOptions } from "shared/models/notification/system-notification.model";
-import { I18nService } from "./i18n.service";
 import { IpcService } from "./ipc.service";
 
 export class NotificationService{
@@ -17,11 +16,9 @@ export class NotificationService{
     public readonly notifications$: BehaviorSubject<ResolvableNotification[]>;
 
     private readonly ipc: IpcService;
-    private readonly i18n: I18nService;
 
     private constructor(){
         this.ipc = IpcService.getInstance();
-        this.i18n = I18nService.getInstance();
         this.notifications$ = new BehaviorSubject<ResolvableNotification[]>([]);
     }
 
@@ -57,10 +54,6 @@ export class NotificationService{
     }
 
     public notifySystem(options: SystemNotificationOptions){
-
-        options.body = options.body && this.i18n.translate(options.body);
-        options.title = options.title && this.i18n.translate(options.title);
-
         this.ipc.sendLazy<SystemNotificationOptions>("notify-system", {args: options});
     }
 

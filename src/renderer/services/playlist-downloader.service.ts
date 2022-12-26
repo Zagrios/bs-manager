@@ -40,8 +40,6 @@ export class PlaylistDownloaderService{
 
     public oneClickInstallPlaylist(bpListUrl: string): Observable<DownloadPlaylistProgression>{
 
-        if(!this.progress.require()){ return null; }
-
         this.progressWatcher$.next(null);
 
         const res = new Subject<DownloadPlaylistProgression>();
