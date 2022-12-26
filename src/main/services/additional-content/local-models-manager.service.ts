@@ -9,7 +9,8 @@ import { BSVersion } from "shared/bs-version.interface";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import path from "path";
 import { RequestService } from "../request.service";
-import { copyFileSync, constants } from "fs-extra";
+import { copyFileSync } from "fs-extra";
+import sanitize from "sanitize-filename";
 
 export class LocalModelsManagerService {
 
@@ -82,7 +83,7 @@ export class LocalModelsManagerService {
     public async downloadModel(model: MSModel, version: BSVersion): Promise<string>{
         
         const modelFolder = await this.getModelFolderPath(model.type, version);
-        const modelDest = path.join(modelFolder, path.basename(model.download));
+        const modelDest = path.join(modelFolder, sanitize(path.basename(model.download)));
 
         return this.request.downloadFile(model.download, modelDest);
 
