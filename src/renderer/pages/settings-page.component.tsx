@@ -151,14 +151,14 @@ export function SettingsPage() {
   const openLogs = () => ipcService.sendLazy("open-logs");
 
     // TODO TRANSLATE
-    const showDeepLinkError = (isDesactivation: boolean) => {
-        const desc = isDesactivation ? "Une erreur inconnue c'est produite" : "Impossible d'activer les installations OneClick";
+    const showDeepLinkError = (isDeactivation: boolean) => {
+        const desc = isDeactivation ? "notifications.settings.additional-content.deep-link.deactivation.error.description" : "notifications.settings.additional-content.deep-link.activation.error.description";
         notificationService.notifyError({title: "notifications.types.error", desc, duration: 3000});
     }
 
-    const showDeepLinkSuccess = (isDesactivation: boolean) => {
-        const desc = isDesactivation ? "Les installations OneClick ont été désactivées" : "Les installations OneClick ont été activées";
-        const title = isDesactivation ? "OneClick désactivée !" : "OneClick activée !";
+    const showDeepLinkSuccess = (isDeactivation: boolean) => {
+        const desc = isDeactivation ? "notifications.settings.additional-content.deep-link.deactivation.success.description" : "notifications.settings.additional-content.deep-link.activation.success.description";
+        const title = isDeactivation ? "notifications.settings.additional-content.deep-link.deactivation.success.title" : "notifications.settings.additional-content.deep-link.activation.success.title";
         notificationService.notifySuccess({title, desc, duration: 3000});
     }
 

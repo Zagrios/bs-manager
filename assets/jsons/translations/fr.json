@@ -225,6 +225,28 @@
                         "logout": "Déconnecté de Steam."
                     }
                 }
+            },
+            "additional-content":{
+                "deep-link": {
+                    "activation":{
+                        "success":{
+                            "title":"OneClick activé !",
+                            "description":"Les installations OneClick ont été activées."
+                        },
+                        "error":{
+                            "description":"Impossible d'activer les installations OneClick."
+                        }
+                    },
+                    "deactivation":{
+                        "success":{
+                            "title":"OneClick désactivé !",
+                            "description":"Les installations OneClick ont été désactivées."
+                        },
+                        "error":{
+                            "description":"Une erreur inconnue s'est produite."
+                        }
+                    }
+                }
             }
         },
         "bs-launch": {
