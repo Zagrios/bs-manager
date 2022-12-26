@@ -150,7 +150,6 @@ export function SettingsPage() {
 
   const openLogs = () => ipcService.sendLazy("open-logs");
 
-    // TODO TRANSLATE
     const showDeepLinkError = (isDeactivation: boolean) => {
         const desc = isDeactivation ? "notifications.settings.additional-content.deep-link.deactivation.error.description" : "notifications.settings.additional-content.deep-link.activation.error.description";
         notificationService.notifyError({title: "notifications.types.error", desc, duration: 3000});
@@ -227,7 +226,6 @@ export function SettingsPage() {
                     </div>
                 </SettingContainer>
 
-                {/* TODO TRANSLATE */}
                 <SettingContainer title="pages.settings.additional-content.title" description="pages.settings.additional-content.description">
 
                 <SettingContainer minorTitle="pages.settings.additional-content.deep-links.sub-title">

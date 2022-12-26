@@ -55,8 +55,6 @@ export default function OneClickDownloadPlaylist() {
 
         });
 
-        // TODO TRANSLATE
-
         promise.catch(() => {
             notification.notifySystem({title: t("notifications.types.error"), body: t("notifications.playlists.one-click-install.error")});
         })

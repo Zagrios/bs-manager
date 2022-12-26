@@ -58,8 +58,6 @@ export default function OneClickDownloadModel() {
 
         });
 
-        // TODO TRANSLATE
-
         promise.catch(() => {
             notification.notifySystem({title: t("notifications.types.error"), body: t("notifications.models.one-click-install.error")});
         })

@@ -67,8 +67,6 @@ export default function OneClickDownloadMap() {
             
         });
 
-        // TODO TRANSLATE
-
         promise.catch(() => {
             notification.notifySystem({title: t("notifications.types.error"), body: t("notifications.maps.one-click-install.error")});
         });
