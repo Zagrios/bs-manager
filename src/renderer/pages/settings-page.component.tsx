@@ -162,38 +162,33 @@ export function SettingsPage() {
         notificationService.notifySuccess({title, desc, duration: 3000});
     }
 
-    const showDeepLinkWarning = (isDesactivation: boolean) => {
-        const desc = isDesactivation ? "Un problème est survenu lors de la désactivation des OneClicks, veuillez réessayez" : "Un problème est survenu lors de l'activation des OneClicks, veuillez réessayez";
-        notificationService.notifyWarning({title: "Attention !", desc, duration: 3000});
-    }
-
     const toogleMapDeepLinks = () => {
         const isDesactivation = mapDeepLinksEnabled;
-        mapsManager.toogleDeepLinks().catch(() => {
+        mapsManager.toogleDeepLinks().then(res => {
+            if(res){ return showDeepLinkSuccess(isDesactivation); }
             showDeepLinkError(isDesactivation);
-        }).then(res => {
-            if(!res){ return showDeepLinkWarning(isDesactivation); }
-            showDeepLinkSuccess(isDesactivation)
+        }).catch(() => {
+            showDeepLinkError(isDesactivation);
         }).finally(() => mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled)));
     }
 
     const tooglePlaylistsDeepLinks = () => {
         const isDesactivation = playlistsDeepLinkEnabled;
-        playlistsManager.toogleDeepLinks().catch(() => {
+        playlistsManager.toogleDeepLinks().then(res => {
+            if(res){ return showDeepLinkSuccess(isDesactivation); }
             showDeepLinkError(isDesactivation);
-        }).then(res => {
-            if(!res){ return showDeepLinkWarning(isDesactivation); }
-            showDeepLinkSuccess(isDesactivation)
+        }).catch(() => {
+            showDeepLinkError(isDesactivation);
         }).finally(() => playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled)));
     }
 
     const toogleModelsDeepLinks = () => {
         const isDesactivation = modelsDeepLinkEnabled;
-        modelsManager.toogleDeepLinks().catch(() => {
-            showDeepLinkError(isDesactivation)
-        }).then(res => {
-            if(!res){ return showDeepLinkWarning(isDesactivation); }
-            showDeepLinkSuccess(isDesactivation)
+        modelsManager.toogleDeepLinks().then(res => {
+            if(res){ return showDeepLinkSuccess(isDesactivation); }
+            showDeepLinkError(isDesactivation);
+        }).catch(() => {
+            showDeepLinkError(isDesactivation);
         }).finally(() => modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled)));
     }
 
