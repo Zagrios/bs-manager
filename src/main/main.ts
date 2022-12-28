@@ -9,13 +9,17 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app } from 'electron';
+import { app, protocol } from 'electron';
 import log from 'electron-log';
 import './ipcs';
 import { UtilsService } from './services/utils.service';
 import { WindowManagerService } from './services/window-manager.service';
-
-export const PRELOAD_PATH = app.isPackaged ? path.join(__dirname, 'preload.js') : path.join(__dirname, '../../.erb/dll/preload.js')
+import { DeepLinkService } from './services/deep-link.service';
+import { AppWindow } from 'shared/models/window-manager/app-window.model';
+import { LocalMapsManagerService } from './services/additional-content/local-maps-manager.service';
+import { LocalPlaylistsManagerService } from './services/additional-content/local-playlists-manager.service';
+import { LocalModelsManagerService } from './services/additional-content/local-models-manager.service';
+import { APP_NAME } from './constants';
 
 const isDebug = process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
@@ -47,10 +51,17 @@ const installExtensions = async () => {
     return installer.default(extensions.map((name) => installer[name]), forceDownload).catch(console.log);
 };
 
-const createWindow = async () => {
+const createWindow = async (window: AppWindow = "launcher.html") => {
     if(isDebug){ await installExtensions(); }
-    WindowManagerService.getInstance().openWindow("launcher.html");
+    WindowManagerService.getInstance().openWindow(window);
 };
+
+const initServicesMustBeInitialized = () => {
+    LocalMapsManagerService.getInstance();
+    LocalPlaylistsManagerService.getInstance();
+    LocalModelsManagerService.getInstance();
+    // Model
+}
 
 app.on('window-all-closed', () => {
     // Respect the OSX convention of having the application in memory even
@@ -60,6 +71,42 @@ app.on('window-all-closed', () => {
     }
 });
 
-app.whenReady().then(() => {
-    createWindow();
-}).catch(log.error);
+const gotTheLock = app.requestSingleInstanceLock();
+
+if(!gotTheLock){
+    app.quit();
+}
+else{
+
+    app.on('second-instance', (e, argv) => {
+
+        const deepLink = argv.find(arg => DeepLinkService.getInstance().isDeepLink(arg));
+
+        if(!deepLink){ return; }
+
+        DeepLinkService.getInstance().dispatchLinkOpened(deepLink);
+
+    });
+
+    app.whenReady().then(() => {
+
+        app.setAppUserModelId(APP_NAME);
+
+        initServicesMustBeInitialized();
+        
+        const deepLink = process.argv.find(arg => DeepLinkService.getInstance().isDeepLink(arg));
+
+        if(!deepLink){
+            createWindow();
+        }
+        else{
+            DeepLinkService.getInstance().dispatchLinkOpened(deepLink);
+        }
+
+        protocol.registerFileProtocol('file', (request, callback) => {
+            const pathname = decodeURI(request.url.replace('file:///', ''));
+            callback(pathname);
+        });
+
+    }).catch(log.error);
+}

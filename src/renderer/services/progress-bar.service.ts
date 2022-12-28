@@ -1,5 +1,5 @@
 import { distinctUntilChanged, map } from "rxjs/operators";
-import { BehaviorSubject, Observable, Subscription, timer } from "rxjs";
+import { BehaviorSubject, Observable, Subscription, timer, of } from "rxjs";
 import { IpcService } from "./ipc.service";
 import { NotificationService } from "./notification.service";
 import { CSSProperties } from "react";
@@ -73,7 +73,11 @@ export class ProgressBarService{
         this._progression$.next({progression: 100});
     }
 
-    public hide(unsubscribe: boolean = true){
+    public open(): void{
+        this.show(of(0), true, this._style$.value);
+    }
+
+    public hide(unsubscribe = true){
         if(unsubscribe){ this.unsubscribe(); } 
         this._visible$.next(false); 
     }
@@ -84,6 +88,10 @@ export class ProgressBarService{
             return false;
         }
         return true;
+    }
+
+    public setStyle(style: CSSProperties){
+        this._style$.next(style);
     }
 
     public get progressData$(): Observable<ProgressionInterface>{ return this._progression$.asObservable(); }

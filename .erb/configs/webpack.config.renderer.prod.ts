@@ -14,6 +14,7 @@ import baseConfig from './webpack.config.base';
 import webpackPaths from './webpack.paths';
 import checkNodeEnv from '../scripts/check-node-env';
 import deleteSourceMaps from '../scripts/delete-source-maps';
+import { AppWindow } from "../../src/shared/models/window-manager/app-window.model"
 
 checkNodeEnv('production');
 deleteSourceMaps();
@@ -24,6 +25,23 @@ const devtoolsConfig =
         devtool: 'source-map',
       }
     : {};
+
+
+const getHtmlPageOptions = (page: AppWindow): HtmlWebpackPlugin.Options => {
+    return {
+        filename: path.join(page),
+        template: path.join(webpackPaths.srcRendererPath, page.replace(".html", ".ejs")),
+        minify: {
+          collapseWhitespace: true,
+          removeAttributeQuotes: true,
+          removeComments: true,
+        },
+        isBrowser: false,
+        env: process.env.NODE_ENV,
+        isDevelopment: process.env.NODE_ENV !== 'production',
+        nodeModules: webpackPaths.appNodeModulesPath,
+    }
+}
 
 const configuration: webpack.Configuration = {
   ...devtoolsConfig,
@@ -128,29 +146,12 @@ const configuration: webpack.Configuration = {
       analyzerMode: process.env.ANALYZE === 'true' ? 'server' : 'disabled',
     }),
 
-    new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: path.join(webpackPaths.srcRendererPath, 'index.ejs'),
-      minify: {
-        collapseWhitespace: true,
-        removeAttributeQuotes: true,
-        removeComments: true,
-      },
-      isBrowser: false,
-      isDevelopment: process.env.NODE_ENV !== 'production',
-    }),
+    new HtmlWebpackPlugin(getHtmlPageOptions("index.html")),
+    new HtmlWebpackPlugin(getHtmlPageOptions("launcher.html")),
+    new HtmlWebpackPlugin(getHtmlPageOptions("oneclick-download-map.html")),
+    new HtmlWebpackPlugin(getHtmlPageOptions("oneclick-download-playlist.html")),
+    new HtmlWebpackPlugin(getHtmlPageOptions("oneclick-download-model.html")),
 
-    new HtmlWebpackPlugin({
-      filename: 'launcher.html',
-      template: path.join(webpackPaths.srcRendererPath, 'launcher.ejs'),
-      minify: {
-        collapseWhitespace: true,
-        removeAttributeQuotes: true,
-        removeComments: true,
-      },
-      isBrowser: false,
-      isDevelopment: process.env.NODE_ENV !== 'production',
-    })
   ],
 };
 

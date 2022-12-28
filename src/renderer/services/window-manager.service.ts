@@ -20,6 +20,12 @@ export class WindowManagerService{
         this.ipcService.sendLazy<AppWindow>("open-window-then-close-all", {args: window});
     }
 
-    
+    public closeAll(except?: AppWindow){
+        this.ipcService.sendLazy<AppWindow>("close-all-windows", {args: except});
+    }
+
+    public close(...win: AppWindow[]){
+        this.ipcService.sendLazy<AppWindow[]>("close-windows", {args: win});
+    }
 
 }

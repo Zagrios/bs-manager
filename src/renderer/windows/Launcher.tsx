@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { BsManagerIcon } from "./components/nav-bar/bsmanager-icon.component";
-import { BsmProgressBar } from "./components/progress-bar/bsm-progress-bar.component";
-import TitleBar from "./components/title-bar/title-bar.component";
-import { useTranslation } from "./hooks/use-translation.hook";
-import { AutoUpdaterService } from "./services/auto-updater.service";
-import { ThemeService } from "./services/theme.service";
-import { WindowManagerService } from "./services/window-manager.service";
+import { BsManagerIcon } from "../components/nav-bar/bsmanager-icon.component";
+import { BsmProgressBar } from "../components/progress-bar/bsm-progress-bar.component";
+import TitleBar from "../components/title-bar/title-bar.component";
+import { useTranslation } from "../hooks/use-translation.hook";
+import { AutoUpdaterService } from "../services/auto-updater.service";
+import { ThemeService } from "../services/theme.service";
+import { WindowManagerService } from "../services/window-manager.service";
 
 export default function Launcher() {
 
@@ -22,6 +22,7 @@ export default function Launcher() {
 
 
     useEffect(() => {
+
         const sub = themeService.theme$.subscribe(() => {
             if(themeService.isDark || (themeService.isOS && window.matchMedia('(prefers-color-scheme: dark)').matches)){ document.documentElement.classList.add('dark'); }
             else { document.documentElement.classList.remove('dark'); }
@@ -41,7 +42,7 @@ export default function Launcher() {
 
     return (
         <div className="w-full h-full">
-            <TitleBar template="update"/>
+            <TitleBar template="launcher.html"/>
             <div className="relative flex flex-col items-center justify-center pt-10">
                 <motion.div ref={constraintsRef}>
                     <motion.div drag dragConstraints={constraintsRef} animate={{rotate: [0, 10, 0]}} transition={{ duration: .6, repeat: Infinity, repeatDelay: 1.6 }}>

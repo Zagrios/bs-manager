@@ -4,7 +4,7 @@ module.exports = {
   darkMode: 'class',
   content: ['./src/renderer/**/*.{js,jsx,ts,tsx,ejs}'],
   mode: 'jit',
-  plugins: [require('tailwind-scrollbar-hide'), require('tailwind-scrollbar')({ nocompatible: true }), require("tailwindcss-scoped-groups")({groups: ["one"]})],
+  plugins: [require('tailwind-scrollbar-hide'), require('tailwind-scrollbar')({ nocompatible: true }), require("tailwindcss-scoped-groups")({groups: ["one"]}), require('ps-scrollbar-tailwind')],
   theme:{
     colors:{
       ...colors,
@@ -24,7 +24,7 @@ module.exports = {
       },
       boxShadow: {
         'center': '0px 0px 8px 0px',
-      }
+      },
     }
   }
 };

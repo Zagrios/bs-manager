@@ -16,10 +16,6 @@ export function AvailableVersionsSlide(props: {year: string}) {
     });
   }, [])
 
-//w-full max-w-full max-h-full flex items-start justify-center overflow-x-hidden overflow-y-scroll content-start scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900
-
-//relative left-[2px] flex justify-center items-start content-start flex-wrap max-w-6xl
-
     return (
         <ol className="w-full flex items-start justify-center gap-6 shrink-0 content-start flex-wrap p-4 overflow-x-hidden overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900">
             {availableVersions.map((version, index) =>
