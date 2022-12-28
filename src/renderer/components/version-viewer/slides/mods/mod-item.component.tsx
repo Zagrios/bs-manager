@@ -7,6 +7,7 @@ import { BsModsManagerService } from "renderer/services/bs-mods-manager.service"
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { PageStateService } from "renderer/services/page-state.service";
 import useDoubleClick from 'use-double-click';
+import { gt } from "semver";
 
 type Props = {className?: string, mod: Mod, installedVersion: string, isDependency?: boolean, isSelected?: boolean, onChange?: (val: boolean) => void, wantInfo?: boolean, onWantInfo?: (mod: Mod) => void}
 
@@ -27,7 +28,7 @@ export function ModItem({className, mod, installedVersion, isDependency, isSelec
     })
 
     const wantInfoStyle: CSSProperties = wantInfo ? {borderColor: themeColor}  : {borderColor: "transparent"};
-    const isOutDated =  installedVersion < mod.version;
+    const isOutDated =  installedVersion ? gt(mod.version, installedVersion) : false;
 
     const uninstall = () => {
         modsManager.uninstallMod(mod, pageState.getState());
