@@ -75,4 +75,8 @@ export class WindowManagerService{
         });
     }
 
+    public getWindows(window: AppWindow): BrowserWindow{
+        return this.windows.get(window);
+    }
+
 }
