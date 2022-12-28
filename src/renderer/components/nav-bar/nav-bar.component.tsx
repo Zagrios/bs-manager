@@ -22,8 +22,9 @@ export function NavBar() {
          <NavBarSpliter/>
          {installedVersions && installedVersions.map((version) => <BsVersionItem key={JSON.stringify(version)} version={version}/>)}
       </ol>
-      <div className='w-full p-2 flex flex-col items-center content-center justify-start'>
-        <Link className='mb-2' to="blah">
+      <NavBarSpliter/>
+      <div className='w-full pb-2 flex flex-col items-center content-center justify-start gap-2'>
+        <Link to="blah">
           <BsmIcon icon='add' className='text-blue-500 h-[34px]'/>
         </Link>
         <Link to="settings">
