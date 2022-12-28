@@ -248,10 +248,10 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
         <div ref={ref} className={className}>
             <ul className="p-3 w-full grow flex flex-wrap justify-center content-start gap-2 overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900">
                 {maps?.length ? renderMaps() : (
-                    <div className="h-full flex flex-col items-center justify-start pt-3">
-                        <BsmImage image={BeatConflict}/>
-                        <span className="font-bold mb-4">{t("pages.version-viewer.maps.tabs.maps.empty-maps.text")}</span>
-                        <BsmButton className="p-2 font-bold rounded-md" text="pages.version-viewer.maps.tabs.maps.empty-maps.button" typeColor="primary" withBar={false} onClick={e => {e.preventDefault(); mapsDownloader.openDownloadMapModal(version)}}/>
+                    <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1">
+                        <BsmImage className="h-32" image={BeatConflict}/>
+                        <span className="font-bold">{t("pages.version-viewer.maps.tabs.maps.empty-maps.text")}</span>
+                        <BsmButton className="font-bold rounded-md p-2" text="pages.version-viewer.maps.tabs.maps.empty-maps.button" typeColor="primary" withBar={false} onClick={e => {e.preventDefault(); mapsDownloader.openDownloadMapModal(version)}}/>
                     </div>
                 )}
             </ul>
