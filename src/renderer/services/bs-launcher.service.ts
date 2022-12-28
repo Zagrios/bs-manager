@@ -58,7 +58,21 @@ export class BSLauncherService{
                     return res;
                 });
             }
-            if(res.data){ return this.notificationService.notifyError({title: `notifications.bs-launch.errors.titles.${res.data}`}); }
+            if(res.data){
+                // TODO : too much nesting here, need refactor
+                if(res.data === "STEAM_NOT_RUNNING"){
+                    return new Promise(async resolve => {
+                        const notif = await this.notificationService.notifyError({title: `notifications.bs-launch.errors.titles.${res.data}`, actions: [{id: "0", title: `notifications.bs-launch.errors.actions.${res.data}`}]});
+                        if(notif === "0"){
+                            await this.ipcService.send<boolean>("open-steam");
+                            const lastNotif = await this.notificationService.notifySuccess({title: "notifications.steam.steam-launching.title", desc: "notifications.steam.steam-launching.description"});
+                            resolve(lastNotif);
+                        }
+                        resolve(notif)
+                    })
+                }
+                return this.notificationService.notifyError({title: `notifications.bs-launch.errors.titles.${res.data}`}); 
+            }
             return this.notificationService.notifyError({title: res.data || res.error.title});
       });
    }
