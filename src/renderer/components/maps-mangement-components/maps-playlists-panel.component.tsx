@@ -78,12 +78,12 @@ export function MapsPlaylistsPanel({version}: Props) {
 
         return (
             <li className="relative text-center text-lg font-bold hover:backdrop-brightness-75 flex justify-center items-center content-center" onClick={props.onClick}>
-                <span>{text}</span>
+                <span className="text-main-color-1 dark:text-gray-200">{text}</span>
                 {index === 0 &&(
                     <div className="h-full flex absolute right-0 top-0 gap-1.5 items-center pr-2">
                         {isOnline && (
                             <motion.div whileHover={"hover"} whileTap={"tap"} className="relative h-[calc(100%-5px)] flex flex-row justify-center items-center shrink-0 rounded-full overflow-hidden pr-2" style={{color}} onClick={e => {e.stopPropagation(); onClickAdd(index)}}>
-                                <span className="absolute top-0 left-0 h-full w-full opacity-20" style={{backgroundColor: "currentcolor"}}/>
+                                <span className="absolute top-0 left-0 h-full w-full brightness-50 opacity-75 dark:opacity-20 dark:filter-none" style={{backgroundColor: "currentcolor"}}/>
                                 <motion.div className="h-full p-0.5" variants={variants}>
                                     <BsmIcon className="block h-full aspect-square brightness-150" icon="add"/>
                                 </motion.div>
@@ -92,7 +92,7 @@ export function MapsPlaylistsPanel({version}: Props) {
                         )}
                         {(!!version) && (
                             <motion.div variants={variants} whileHover="hover" whileTap="tap" initial={{rotate: 0}} className="block p-0.5 h-[calc(100%-5px)] aspect-square blur-0 hover:brightness-75" title={t(mapsLinked ? "pages.version-viewer.maps.tabs.maps.actions.link-maps.tooltips.unlink" : "pages.version-viewer.maps.tabs.maps.actions.link-maps.tooltips.link")} onClick={e => {e.stopPropagation(); onClickLink(index)}}> 
-                                <span className="absolute top-0 left-0 h-full w-full rounded-full opacity-20" style={{backgroundColor: linkedColor}}/>
+                                <span className="absolute top-0 left-0 h-full w-full rounded-full brightness-50 opacity-75 dark:opacity-20 dark:filter-none" style={{backgroundColor: linkedColor}}/>
                                 <BsmIcon className="p-1 absolute top-0 left-0 h-full w-full !bg-transparent -rotate-45 brightness-150" icon={mapsLinked ? "link" : "unlink"} style={{color: linkedColor}} />
                             </motion.div>
                         )}
@@ -118,16 +118,16 @@ export function MapsPlaylistsPanel({version}: Props) {
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center">
-            <nav className="w-full shrink-0 flex h-9 justify-center px-40 gap-2 mb-3">
-                <div className="h-full rounded-full bg-main-color-2 grow p-[6px]">
-                    <input type="text" className="h-full w-full bg-main-color-1 rounded-full px-2" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={tabIndex === 0 ? mapSearch : playlistSearch} onChange={e => handleSearch(e.target.value)}/>
+            <nav className="w-full shrink-0 flex h-9 justify-center px-40 gap-2 mb-3 text-main-color-1 dark:text-white">
+                <div className="h-full rounded-full bg-light-main-color-2 dark:bg-main-color-2 grow p-[6px]">
+                    <input type="text" className="h-full w-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={tabIndex === 0 ? mapSearch : playlistSearch} onChange={e => handleSearch(e.target.value)}/>
                 </div>
                 <BsmDropdownButton className="h-full relative z-[1] flex justify-center" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1" icon="filter" text="pages.version-viewer.maps.search-bar.filters-btn" withBar={false}>
-                    <FilterPanel className="absolute top-[calc(100%+3px)] bg-main-color-3 origin-top w-[500px] h-fit p-2 rounded-md shadow-md shadow-black" filter={mapFilter} onChange={setMapFilter}/>
+                    <FilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[500px] h-fit p-2 rounded-md shadow-md shadow-black" filter={mapFilter} onChange={setMapFilter}/>
                 </BsmDropdownButton>
-                <BsmDropdownButton className="h-full flex aspect-square relative rounded-full z-[1] bg-main-color-3" buttonClassName="rounded-full h-full w-full p-[6px]" icon="three-dots" withBar={false} items={dropDownItems} menuTranslationY="6px" align="center"/>
+                <BsmDropdownButton className="h-full flex aspect-square relative rounded-full z-[1] bg-light-main-color-1 dark:bg-main-color-3" buttonClassName="rounded-full h-full w-full p-[6px]" icon="three-dots" withBar={false} items={dropDownItems} menuTranslationY="6px" align="center"/>
             </nav>
-            <div className="w-full h-full flex flex-col bg-main-color-2 rounded-md shadow-black shadow-md overflow-hidden">
+            <div className="w-full h-full flex flex-col bg-light-main-color-3 dark:bg-main-color-2 rounded-md shadow-black shadow-md overflow-hidden">
                 <TabNavBar className="!rounded-none shadow-sm" tabsText={["misc.maps", "misc.playlists"]} onTabChange={setTabIndex} renderTab={renderTab}/>
                 <div className="w-full grow min-h-0 flex flex-row items-center transition-transform duration-300" style={{transform: `translate(${-(tabIndex * 100)}%, 0)`}}>
                     <LocalMapsListPanel ref={mapsRef} className="w-full h-full shrink-0 flex flex-col" version={version} filter={mapFilter} search={mapSearch}/>
