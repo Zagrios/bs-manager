@@ -274,7 +274,16 @@
                     "BS_ALREADY_RUNNING": "Ferme BeatSaber avant de le lancer à nouveau.",
                     "EXE_NOT_FINDED": "Quelques fichiers semblent manquants. Essaye de vérifier les fichiers.",
                     "EXIT": "BeatSaber s'est arrêté brusquement, essaye de vérifier les fichiers."
+                },
+                "actions":{
+                    "STEAM_NOT_RUNNING": "Lancer Steam"
                 }
+            }
+        },
+        "steam":{
+            "steam-launching":{
+                "title": "Steam se lance !",
+                "description": "Steam peut mettre quelque temps à se lancer selon votre configuration."
             }
         },
         "custom-version": {

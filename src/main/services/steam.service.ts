@@ -3,6 +3,7 @@ import regedit from 'regedit'
 import path from "path";
 import { parse } from "@node-steam/vdf";
 import { readFile } from "fs/promises";
+import { spawn } from "child_process";
 
 export class SteamService{
 
@@ -61,5 +62,14 @@ export class SteamService{
     }
     return null;
   }
+
+    public openSteam(): Promise<boolean>{
+        const process = spawn("start", ["steam://open/games"], {shell: true});
+
+        return new Promise(resolve => {
+            process.on("exit", () => resolve(true));
+            process.on("error", () => resolve(false));
+        });
+    }
 
 }

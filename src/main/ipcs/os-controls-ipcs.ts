@@ -3,6 +3,7 @@ import { UtilsService } from '../services/utils.service';
 import { IpcRequest } from 'shared/models/ipc';
 import { SystemNotificationOptions } from 'shared/models/notification/system-notification.model';
 import { NotificationService } from '../services/notification.service';
+import { SteamService } from '../services/steam.service';
 
 
 // TODO IMPROVE WINDOW CONTROL BY USING WINDOW SERVICE
@@ -60,4 +61,14 @@ ipcMain.on("open-logs", async (event, request: IpcRequest<void>) => {
 
 ipcMain.on("notify-system", async (event, request: IpcRequest<SystemNotificationOptions>) => {
     NotificationService.getInstance().notify(request.args)
+});
+
+ipcMain.on("open-steam", async (event, request: IpcRequest<void>) => {
+    const steam = SteamService.getInstance();
+    const utils = UtilsService.getInstance();
+    steam.openSteam().then(res => {
+        utils.ipcSend(request.responceChannel, {success: true, data: res});
+    }).catch((e) => {
+        utils.ipcSend(request.responceChannel, {success: false, error: e});
+    });
 });
