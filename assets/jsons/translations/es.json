@@ -38,6 +38,10 @@
                                     "unlink": "Desatar los mapas"
                                 }
                             }
+                        },
+                        "empty-maps":{
+                            "text":"No hay mapas",
+                            "button":"Descargar mapas"
                         }
                     }
                 }

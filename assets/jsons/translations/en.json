@@ -38,6 +38,10 @@
                                     "unlink": "Unling maps"
                                 }
                             }
+                        },
+                        "empty-maps":{
+                            "text":"No maps",
+                            "button":"Download maps"
                         }
                     }
                 }
