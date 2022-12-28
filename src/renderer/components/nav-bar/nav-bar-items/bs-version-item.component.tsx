@@ -8,9 +8,10 @@ import { ConfigurationService } from "renderer/services/configuration.service";
 import { BSUninstallerService } from "renderer/services/bs-uninstaller.service";
 import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
 import { BsmIcon } from "../../svgs/bsm-icon.component";
-import { ReactFitty } from "react-fitty";
 import { useThemeColor } from 'renderer/hooks/use-theme-color.hook';
 import { NavBarItem } from './nav-bar-item.component';
+import useFitText from 'use-fit-text';
+import Tippy from '@tippyjs/react';
 
 export function BsVersionItem(props: {version: BSVersion}) {
 
@@ -21,6 +22,7 @@ export function BsVersionItem(props: {version: BSVersion}) {
   const bsUninstallerService = BSUninstallerService.getInstance();
 
   const { state } = useLocation() as { state: BSVersion};
+  const { fontSize, ref } = useFitText();
 
   const [downloading, setDownloading] = useState(false);
   const [downloadPercent, setDownloadPercent] = useState(0);
@@ -76,14 +78,29 @@ export function BsVersionItem(props: {version: BSVersion}) {
         return <BsmIcon icon="bsNote" className={classes} style={{color: props.version?.color ?? secondColor}}/>
     }
 
+    const renderVersionText = () => {
+        if(props.version.name){
+            return (
+                <Tippy content={props.version.BSVersion} placement="right-end" arrow={false} className="font-bold !bg-main-color-3" duration={[200, 0]}>
+                    <div className="h-8 flex items-center dark:text-gray-200 text-gray-800 overflow-hidden">
+                        <div ref={ref} className='whitespace-nowrap font-bold tracking-wide w-full text-center' style={{fontSize}}>{props.version.name}</div>
+                    </div>
+                </Tippy>
+            )
+        }
+        return (
+            <div className="h-8 flex items-center text-xl dark:text-gray-200 text-gray-800 font-bold tracking-wide">
+                <span className='pb-[2px] max-w-full text-ellipsis'>{props.version.BSVersion}</span>
+            </div>
+        )
+    }
+
 
     return (
         <NavBarItem onCancel={cancel} progress={downloading ? downloadPercent : 0} isActive={isActive() && !downloading} isDownloading={downloading}>
-            <Link onDoubleClick={handleDoubleClick} to={`/bs-version/${props.version.BSVersion}`} state={props.version} title={props.version.name && `${props.version.BSVersion} - ${props.version.name}`} className="w-full flex items-center justify-start content-center max-w-full">
+            <Link onDoubleClick={handleDoubleClick} to={`/bs-version/${props.version.BSVersion}`} state={props.version} className="w-full flex items-center justify-start content-center max-w-full">
                 {renderIcon()}
-                <div className="overflow-hidden whitespace-nowrap text-xl dark:text-gray-200 text-gray-800 font-bold tracking-wide">
-                    <ReactFitty maxSize={19} minSize={9} className='align-middle pb-[2px] max-w-full overflow-hidden text-ellipsis'>{props.version.name || props.version.BSVersion}</ReactFitty>
-                </div>
+                {renderVersionText()}
             </Link>
         </NavBarItem>
     )
