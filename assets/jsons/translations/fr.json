@@ -475,7 +475,7 @@
                     "label": "Conserver les maps",
                     "title": "Conserver les maps créera une copie des maps partagées pour la version actuelle. Dans le cas contraire, aucune map ne sera conservée pour cette version."
                 },
-                "valid-btn": "délier les maps"
+                "valid-btn": "Délier les maps"
             }
         },
         "download-maps": {

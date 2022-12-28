@@ -135,7 +135,7 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange}
     }
 
     return !playlist ? (
-        <motion.div ref={ref} className={className} initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}}>
+        <motion.div ref={ref} className={`${className} bg-light-main-color-2 dark:bg-main-color-3`} initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}}>
             <div className="w-full h-6 grid grid-cols-2 gap-x-12 px-4 mb-6 pt-2">
                 <BsmRange min={MIN_NPS} max={MAX_NPS} values={npss} onChange={onNpssChange} renderLabel={renderNpsLabel} step={.1}/>
                 <BsmRange min={MIN_DURATION} max={MAX_DURATION} values={durations} onChange={onDurationsChange} renderLabel={renderDurationLabel} step={5}/>
