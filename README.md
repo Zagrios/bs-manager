@@ -1,5 +1,5 @@
 <p align="center">
-	<a href="https://github.com/RiskiVR/BSLegacyLauncher">
+	<a href="https://github.com/Zagrios/bs-manager">
 		<img src="https://raw.githubusercontent.com/Zagrios/bs-manager/master/resources/readme/icon.svg" alt="logo" width="250px"/>
 	</a>
 	<h3 align="center">BSManager</h3>
