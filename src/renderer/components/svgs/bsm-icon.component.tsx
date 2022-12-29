@@ -43,9 +43,10 @@ import { LinkIcon } from "./icons/link-icon.component";
 import { UnlinkIcon } from "./icons/unlink-icon.component";
 import { DownloadIcon } from "./icons/download-icon.component";
 import { FilterIcon } from "./icons/filter-icon.component";
+import DiscordIcon from "./icons/discord-icon.component";
 
 export type BsmIconType = BsvMapCharacteristic | (
-   "settings"|"trash"|"favorite"|"folder"|"bsNote"|"check"|"three-dots"|"twitch"|"eye"|"play"|"checkCircleIcon"|
+   "settings"|"trash"|"favorite"|"folder"|"bsNote"|"check"|"three-dots"|"twitch"|"eye"|"play"|"checkCircleIcon"|"discord"|
    "terminal"|"desktop"|"oculus"|"add"|"cross"|"task"|"github"|"close"|"thumbUpFill"|"timerFill"|"pause"|
    "copy"|"steam"|"edit"|"export"|"patreon"|"search"|"bsMapDifficulty"|"link"|"unlink"|"download"|"filter"|
    "fr-FR-flag"|"es-ES-flag"|"en-US-flag"|"en-EN-flag"
@@ -97,6 +98,7 @@ export const BsmIcon = memo(({className, icon, style}: {className?: string, icon
         if(icon === "unlink"){ return <UnlinkIcon className={className} style={style}/> }
         if(icon === "download"){ return <DownloadIcon className={className} style={style}/> }
         if(icon === "filter"){ return <FilterIcon className={className} style={style}/> }
+        if(icon === "discord"){ return <DiscordIcon className={className} style={style}/> }
         return <TrashIcon className={className} style={style}/>
     }
 

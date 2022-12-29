@@ -134,6 +134,9 @@
                     "supporters": "Supporteurs"
                 }
             },
+            "discord":{
+                "description": "Prends part à la communauté de BSManager en rejoignant notre Discord !"
+            },
             "contribution": {
                 "description": "Propose de nouvelles fonctionnalités ou signale un bug pour contribuer à l'amélioration de BSManager !",
                 "buttons": {
