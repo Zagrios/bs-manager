@@ -1,7 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BsModsManagerService } from "renderer/services/bs-mods-manager.service";
 import { BSVersion } from "shared/bs-version.interface";
-import VisibilitySensor  from 'react-visibility-sensor';
 import { Mod } from "shared/models/mods/mod.interface";
 import { ModsGrid } from "./mods-grid.component";
 import { ConfigurationService } from "renderer/services/configuration.service";
@@ -15,14 +14,21 @@ import { skip, filter } from "rxjs/operators";
 import { Subscription } from "rxjs";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
+import { useInView } from "framer-motion";
+import { ModalExitCode, ModalService } from "renderer/services/modale.service";
+import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods-disclaimer-modal.component";
  
-export function ModsSlide({version}: {version: BSVersion}) {
+export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, onDisclamerDecline: () => void}) {
+
+    const ACCEPTED_DISCLAIMER_KEY = "accepted-mods-disclaimer";
 
     const modsManager = BsModsManagerService.getInstance();
     const configService = ConfigurationService.getInstance();
     const linkOpener = LinkOpenerService.getInstance();
+    const modals = ModalService.getInsance();
 
-    const [isVisible, setIsVisible] = useState(false);
+    const ref = useRef(null);
+    const isVisible = useInView(ref, {amount: .5});
     const [modsAvailable, setModsAvailable] = useState(null as Map<string, Mod[]>);
     const [modsInstalled, setModsInstalled] = useState(null as Map<string, Mod[]>);
     const [modsSelected, setModsSelected] = useState([] as Mod[]);
@@ -81,10 +87,27 @@ export function ModsSlide({version}: {version: BSVersion}) {
         const subs: Subscription[] = [];
 
         if(isVisible){
-            loadMods();
-            subs.push(modsManager.isUninstalling$.pipe(skip(1), filter(uninstalling => !uninstalling)).subscribe(() => {
+
+            const promise = new Promise<boolean>(async resolve => {
+                
+                if(configService.get<boolean>(ACCEPTED_DISCLAIMER_KEY)){ return resolve(true); }
+
+                const res = await modals.openModal(ModsDisclaimerModal);
+                const haveAccepted = res.exitCode === ModalExitCode.COMPLETED;
+
+                if(haveAccepted){ configService.set(ACCEPTED_DISCLAIMER_KEY, true) }
+
+                resolve(haveAccepted);
+
+            });
+
+            promise.then(canLoad => {
+                if(!canLoad){ return onDisclamerDecline?.(); }
                 loadMods();
-            }))
+                subs.push(modsManager.isUninstalling$.pipe(skip(1), filter(uninstalling => !uninstalling)).subscribe(() => {
+                    loadMods();
+                }));
+            });
         }
 
         return () => {
@@ -105,33 +128,31 @@ export function ModsSlide({version}: {version: BSVersion}) {
     
 
     return (
-        <VisibilitySensor onChange={setIsVisible}>
-            <div className='shrink-0 w-full h-full px-8 pb-7 flex justify-center'>
-                <div className='relative flex flex-col grow-0 bg-light-main-color-2 dark:bg-main-color-2 h-full w-full rounded-md shadow-black shadow-center overflow-hidden'>
-                    {modsAvailable ? (
-                        <>
-                            <div className="overflow-scroll w-full min-h-0 scrollbar-thin scrollbar-thumb-neutral-900 scrollbar-thumb-rounded-full">
-                                <ModsGrid modsMap={modsAvailable} installed={modsInstalled} modsSelected={modsSelected} onModChange={handleModChange} moreInfoMod={moreInfoMod} onWantInfos={handleMoreInfo}/>
-                            </div>
-                            <div className="h-10 shrink-0 flex items-center justify-between px-3">
-                                <BsmButton className="text-center rounded-md px-2 py-[2px]" text="pages.version-viewer.mods.buttons.more-infos" typeColor="cancel" withBar={false} disabled={!moreInfoMod} onClick={handleOpenMoreInfo} style={{width: downloadWith}}/>
-                                <div ref={downloadRef}>
-                                    <BsmButton className="text-center rounded-md px-2 py-[2px]" text="pages.version-viewer.mods.buttons.install-or-update" withBar={false} disabled={installing} typeColor="primary" onClick={installMods}/>
-                                </div>
-                            </div>
-                        </>
-                    ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center relative">
-                            <img className="w-32 h-32 spin-loading" src={BeatWaitingImg}></img>
-                            <span className="text-xl mt-3 h-0 italic">{t("pages.version-viewer.mods.loading-mods")}</span>
-                            <SpoilerClick className="absolute right-5 w-20 h-[120px] bottom-5 cursor-pointer">
-                                <img className="relative w-full" src={YuruYuriDance}/>
-                            </SpoilerClick>
+        <div ref={ref} className='shrink-0 w-full h-full px-8 pb-7 flex justify-center'>
+            <div className='relative flex flex-col grow-0 bg-light-main-color-2 dark:bg-main-color-2 h-full w-full rounded-md shadow-black shadow-center overflow-hidden'>
+                {modsAvailable ? (
+                    <>
+                        <div className="overflow-scroll w-full min-h-0 scrollbar-thin scrollbar-thumb-neutral-900 scrollbar-thumb-rounded-full">
+                            <ModsGrid modsMap={modsAvailable} installed={modsInstalled} modsSelected={modsSelected} onModChange={handleModChange} moreInfoMod={moreInfoMod} onWantInfos={handleMoreInfo}/>
                         </div>
-                    )}
-                </div>
+                        <div className="h-10 shrink-0 flex items-center justify-between px-3">
+                            <BsmButton className="text-center rounded-md px-2 py-[2px]" text="pages.version-viewer.mods.buttons.more-infos" typeColor="cancel" withBar={false} disabled={!moreInfoMod} onClick={handleOpenMoreInfo} style={{width: downloadWith}}/>
+                            <div ref={downloadRef}>
+                                <BsmButton className="text-center rounded-md px-2 py-[2px]" text="pages.version-viewer.mods.buttons.install-or-update" withBar={false} disabled={installing} typeColor="primary" onClick={installMods}/>
+                            </div>
+                        </div>
+                    </>
+                ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center relative">
+                        <img className="w-32 h-32 spin-loading" src={BeatWaitingImg} alt=" "/>
+                        <span className="text-xl mt-3 h-0 italic">{t("pages.version-viewer.mods.loading-mods")}</span>
+                        <SpoilerClick className="absolute right-5 w-20 h-[120px] bottom-5 cursor-pointer">
+                            <img className="relative w-full" src={YuruYuriDance} alt=" "/>
+                        </SpoilerClick>
+                    </div>
+                )}
             </div>
-        </VisibilitySensor>
+        </div>
         
     )
 }
