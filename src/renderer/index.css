@@ -7,6 +7,11 @@
     font-family: acumin-pro, sans-serif;
   }
 
+  html, body{
+    margin: 0; padding: 0;
+    
+  }
+
   html.dark{
     background-color: #202225;
   }
@@ -31,6 +36,28 @@
 
 .spin-loading{
   animation: spin-loading 2s cubic-bezier(.46,-0.55,.49,1.52) 0s forwards infinite;
+}
+
+.glow-on-hover {
+    border-radius: 10px;
+    background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+    position: absolute;
+    top: -4px;
+    left:-4px;
+    background-size: 400%;
+    z-index: -1;
+    filter: blur(3px);
+    width: calc(100% + 8px);
+    height: calc(100% + 8px);
+    animation: glowing 20s linear infinite;
+    opacity: 0;
+    transition: opacity .2s ease-in-out;
+}
+
+@keyframes glowing {
+    0% { background-position: 0 0; }
+    50% { background-position: 400% 0; }
+    100% { background-position: 0 0; }
 }
 
 @keyframes spin-loading{

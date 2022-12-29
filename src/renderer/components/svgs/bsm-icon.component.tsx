@@ -19,11 +19,35 @@ import { CSSProperties, memo } from "react";
 import EditIcon from "./icons/edit-icon.component";
 import { ExportIcon } from "./icons/export-icon.component";
 import PatreonIcon from "./icons/patreon-icon.component";
+import { SearchIcon } from "./icons/search-icon.component";
+import { CheckIcon } from "./icons/check-icon.component";
+import { ThreeDotsIcon } from "./icons/three-dots-icon.component";
+import { GitHubIcon } from "./icons/github-icon.component";
+import { CloseIcon } from "./icons/close-icon.component";
+import { BsMapDifficultyIcon } from "./icons/bs-map-difficulty-icon.component";
+import { TwitchIcon } from "./icons/twitch-icon.component";
+import EyeIcon from "./icons/eye-icon.component";
+import { PlayIcon } from "./icons/play-icon.component";
+import { ThumbUpFillIcon } from "./icons/thumb-up-fill-icon.component";
+import { TimerFillIcon } from "./icons/timer-fill.component";
+import { CheckCircleIcon } from "./icons/check-circle-icon.component";
+import { PauseIcon } from "./icons/pause-icon.component";
+import { BsvMapCharacteristic } from "shared/models/maps/beat-saver.model";
+import { LightshowIcon } from "./icons/lightshow-icon.component";
+import { LawlessIcon } from "./icons/lawless-icon.component";
+import { NoArrowIcon } from "./icons/no-arrow-icon.component";
+import { OneSaberIcon } from "./icons/one-saber-icon.component";
+import { NinetyDregreeIcon } from "./icons/ninety-dregree-icon.component";
+import { ThreeSixtyDegreeIcon } from "./icons/three-sixty-degree-icon.component";
+import { LinkIcon } from "./icons/link-icon.component";
+import { UnlinkIcon } from "./icons/unlink-icon.component";
+import { DownloadIcon } from "./icons/download-icon.component";
+import { FilterIcon } from "./icons/filter-icon.component";
 
-export type BsmIconType = (
-   "settings"|"trash"|"favorite"|"folder"|"bsNote"|
-   "terminal"|"desktop"|"oculus"|"add"|"cross"|"task"|
-   "copy"|"steam"|"edit"|"export"|"patreon"|
+export type BsmIconType = BsvMapCharacteristic | (
+   "settings"|"trash"|"favorite"|"folder"|"bsNote"|"check"|"three-dots"|"twitch"|"eye"|"play"|"checkCircleIcon"|
+   "terminal"|"desktop"|"oculus"|"add"|"cross"|"task"|"github"|"close"|"thumbUpFill"|"timerFill"|"pause"|
+   "copy"|"steam"|"edit"|"export"|"patreon"|"search"|"bsMapDifficulty"|"link"|"unlink"|"download"|"filter"|
    "fr-FR-flag"|"es-ES-flag"|"en-US-flag"|"en-EN-flag"
 );
 
@@ -50,6 +74,29 @@ export const BsmIcon = memo(({className, icon, style}: {className?: string, icon
         if(icon === "edit"){ return <EditIcon className={className} style={style}/> }
         if(icon === "export"){ return <ExportIcon className={className} style={style}/> }
         if(icon === "patreon"){ return <PatreonIcon className={className} style={style}/> }
+        if(icon === "search"){ return <SearchIcon className={className} style={style}/> }
+        if(icon === "check"){ return <CheckIcon className={className} style={style}/> }
+        if(icon === "three-dots"){ return <ThreeDotsIcon className={className} style={style}/> }
+        if(icon === "github"){ return <GitHubIcon className={className} style={style}/> }
+        if(icon === "close"){ return <CloseIcon className={className} style={style}/> }
+        if(icon === "bsMapDifficulty" || icon === "Standard"){ return <BsMapDifficultyIcon className={className} style={style}/> }
+        if(icon === "twitch"){ return <TwitchIcon className={className} style={style}/> }
+        if(icon === "eye"){ return <EyeIcon className={className} style={style}/> }
+        if(icon === "play"){ return <PlayIcon className={className} style={style}/> }
+        if(icon === "thumbUpFill"){ return <ThumbUpFillIcon className={className} style={style}/> }
+        if(icon === "timerFill"){ return <TimerFillIcon className={className} style={style}/> }
+        if(icon === "checkCircleIcon"){ return <CheckCircleIcon className={className} style={style}/> }
+        if(icon === "pause"){ return <PauseIcon className={className} style={style}/> }
+        if(icon === "Lawless"){ return <LawlessIcon className={className} style={style}/> }
+        if(icon === "NoArrows"){ return <NoArrowIcon className={className} style={style}/> }
+        if(icon === "OneSaber"){ return <OneSaberIcon className={className} style={style}/> }
+        if(icon === "Lightshow"){ return <LightshowIcon className={className} style={style}/> }
+        if(icon === "90Degree"){ return <NinetyDregreeIcon className={className} style={style}/> }
+        if(icon === "360Degree"){ return <ThreeSixtyDegreeIcon className={className} style={style}/> }
+        if(icon === "link"){ return <LinkIcon className={className} style={style}/> }
+        if(icon === "unlink"){ return <UnlinkIcon className={className} style={style}/> }
+        if(icon === "download"){ return <DownloadIcon className={className} style={style}/> }
+        if(icon === "filter"){ return <FilterIcon className={className} style={style}/> }
         return <TrashIcon className={className} style={style}/>
     }
 

@@ -1,13 +1,13 @@
-import { ModalExitCode, ModalResponse, ModalService } from "../../../services/modale.service";
+import { ModalComponent, ModalExitCode } from "../../../services/modale.service";
 import BeatConflict from "../../../../../assets/images/apngs/beat-conflict.png"
 import { BSVersion } from 'shared/bs-version.interface';
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 
-export function UninstallModal({resolver}: {resolver: (x: ModalResponse) => void}) {
+export const UninstallModal: ModalComponent<void, BSVersion> = ({resolver, data}) => {
 
-    const version = ModalService.getInsance().getModalData<BSVersion>();
+    const version = data;
     const t = useTranslation();
 
   return (

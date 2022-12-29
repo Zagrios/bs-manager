@@ -1,11 +1,15 @@
-import { existsSync, mkdirSync, readdirSync, readFile } from "fs";
+import { existsSync, mkdirSync, readdirSync, readFile, rmSync } from "fs";
+import { moveSync } from "fs-extra"
 import { spawnSync } from "child_process";
 import { homedir } from "os";
 import path from "path";
-import { BrowserWindow } from "electron";
-import { rm } from "fs/promises";
+import { app, BrowserWindow } from "electron";
+import { rm, unlink } from "fs/promises";
 import { IpcResponse } from "shared/models/ipc";
 import log from "electron-log";
+import { AppWindow } from "shared/models/window-manager/app-window.model";
+
+// TODO : REFACTOR
 
 export class UtilsService{
 
@@ -13,7 +17,7 @@ export class UtilsService{
 
   private assetsPath: string = '';
 
-  private mainWindow: BrowserWindow;
+  private windows: Map<AppWindow, BrowserWindow> = new Map<AppWindow, BrowserWindow>();
 
   private constructor(){}
 
@@ -27,14 +31,25 @@ export class UtilsService{
 
   public getAssetsScriptsPath(): string { return this.getAssetsPath("scripts") }
   public getAssestsJsonsPath(): string { return this.getAssetsPath("jsons"); }
+  public getTempPath(): string{ return path.join(app.getPath("temp"), app.getName()) }
 
-  public setMainWindow(win: BrowserWindow){ this.mainWindow = win; }
-  public getMainWindow(){ return this.mainWindow; }
+  public setMainWindows(windows: Map<AppWindow, BrowserWindow>){ this.windows = windows; }
+  public getMainWindows(win: AppWindow){ return this.windows.get(win); }
 
   public pathExist(path: string): boolean{ return existsSync(path); }
 
   public createFolderIfNotExist(path: string): void{
     if(!this.pathExist(path)){ mkdirSync(path, {recursive: true}); }
+  }
+
+  public async unlinkIfExist(pathToFile: string): Promise<void>{
+    if(!this.pathExist(pathToFile)){ return }
+    return unlink(pathToFile);
+  }
+
+  public async rmDirIfExist(path: string): Promise<void>{
+    if(!this.pathExist(path)){ return; }
+    return rm(path, {recursive: true, force: true});
   }
 
   public taskRunning(task: string): boolean{
@@ -57,22 +72,38 @@ export class UtilsService{
     });
   }
 
-  public listDirsInDir(dirPath: string): string[]{
+  public listDirsInDir(dirPath: string, fullPath = false): string[]{
     let files = readdirSync(dirPath, { withFileTypes:true});
     files = files.filter(f => f.isDirectory())
-    return files.map(f => f.name);
+    return files.map(f => fullPath ? path.join(dirPath, f.name) : f.name);
   }
 
-  public deleteFolder(folderPath: string): Promise<void>{
-    return rm(folderPath, {recursive: true});
+  public async deleteFolder(folderPath: string): Promise<void>{
+    const folderExist = this.pathExist(folderPath);
+    if(!folderExist){ return; }
+    return rmSync(folderPath, {recursive: true});
   }
 
-  public ipcSend(channel: string, response: IpcResponse<any>): void{
+    public async moveDirContent(src: string, dest: string, overwrite = false): Promise<void>{
+        const [srcExist, destExist] = await Promise.all([this.pathExist(src), this.pathExist(dest)]);
+        if(!srcExist){ return; }
+        if(!destExist){ await this.createFolderIfNotExist(dest); }
+        readdirSync(src, {encoding: "utf-8"}).forEach(file => {
+            const srcFullPath = path.join(src, file);
+            const destFullPath = path.join(dest, file);
+            if(!overwrite && this.pathExist(destFullPath)){ return; }
+            moveSync(srcFullPath, destFullPath, {overwrite});
+        });
+    }
+
+  public ipcSend<T = any>(channel: string, response: IpcResponse<T>): void{
     try {
-        this.mainWindow.webContents.send(channel, response);
+        Array.from(this.windows.values()).forEach(window => window.webContents.send(channel, response));
     } catch (error) {
         log.error(error);
     }
   }
+
+
 
 }

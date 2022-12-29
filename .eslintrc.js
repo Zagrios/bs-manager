@@ -10,6 +10,8 @@ module.exports = {
     "global-require": 0,
     "import/prefer-default-export": "off",
     "no-empty-function": "off",
+    "no-await-in-loop": "off",
+    "no-continue": "off",
     "@typescript-eslint/no-empty-function": "off",
     '@typescript-eslint/lines-between-class-members': "off",
     "class-methods-use-this": "off",
@@ -30,7 +32,10 @@ module.exports = {
     "@typescript-eslint/no-throw-literal": "off",
     "@typescript-eslint/no-unused-expressions": "off",
     "no-param-reassign": "off",
-    "no-useless-escape": "off"
+    "no-useless-escape": "off",
+    "jsx-a11y/no-noninteractive-element-interactions": "off",
+    "no-async-promise-executor": "off",
+    "new-cap": "off"
   },
   parserOptions: {
     ecmaVersion: 2020,

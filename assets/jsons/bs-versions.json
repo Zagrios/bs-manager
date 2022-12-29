@@ -477,5 +477,37 @@
 		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/clans//32055887/82c29d674bc57596102a6b815f66e956f217e658.png",
 		"ReleaseDate": "1661864214",
 		"year": "2022"
+	},
+	{
+		"BSVersion": "1.25.0",
+		"BSManifest": "4529582051007915041",
+		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/3312985013538143172",
+		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/clans//32055887/54ac649877eca25a2a6449662337e2c63c51bbcf.png",
+		"ReleaseDate": "1665068529",
+		"year": "2022"
+	},
+	{
+		"BSVersion": "1.25.1",
+		"BSManifest": "7372469314660649150",
+		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/5346361068670142187",
+		"ReleaseImg": "https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans//32055887/52cbd15b5e226f509e051565f6e4935eb0e44e2c.png",
+		"ReleaseDate": "1665673269",
+		"year": "2022"
+	},
+	{
+		"BSVersion": "1.26.0",
+		"BSManifest": "3634450655207470002",
+		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/3414318646334948892",
+		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/clans//32055887/d18ad9d7f45a5cc2a467d75f0bdf9d32b9141b14.png",
+		"ReleaseDate": "1667923560",
+		"year": "2022"
+	},
+	{
+		"BSVersion": "1.27.0",
+		"BSManifest": "3485516174915301618",
+		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/3629368753553708497",
+		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/clans//32055887/d9ed8771498be7fc83721aaaaa5b15a08fbeadb1.png",
+		"ReleaseDate": "1670943003",
+		"year": "2022"
 	}
 ]

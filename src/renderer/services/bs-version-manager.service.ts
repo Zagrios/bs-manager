@@ -1,9 +1,10 @@
 import { BSVersion } from 'shared/bs-version.interface';
 import { BehaviorSubject } from "rxjs";
 import { IpcService } from "./ipc.service";
-import { ModalExitCode, ModalService, ModalType } from './modale.service';
+import { ModalExitCode, ModalService } from './modale.service';
 import { NotificationService } from './notification.service';
 import { ProgressBarService } from './progress-bar.service';
+import { EditVersionModal } from 'renderer/components/modal/modal-types/edit-version-modal.component';
 
 export class BSVersionManagerService {
 
@@ -33,10 +34,14 @@ export class BSVersionManagerService {
    public setInstalledVersions(versions: BSVersion[]){
       const sorted: BSVersion[] = versions.sort((a, b) => +b.ReleaseDate - +a.ReleaseDate)
       const steamIndex = sorted.findIndex(v => v.steam);
+      const oculusIndex = sorted.findIndex(v => v.oculus);
       if(steamIndex > 0){
          [sorted[0], sorted[steamIndex]] = [sorted[steamIndex], sorted[0]];
       }
-      const cleanedSort = [...new Map(sorted.map(version => [`${version.BSVersion}-${version.name}-${version.steam}`, version])).values()]
+      if(oculusIndex > 0){
+        [sorted[steamIndex > 0 ? 1 : 0], sorted[steamIndex]] = [sorted[steamIndex], sorted[steamIndex > 0 ? 1 : 0]];
+      }
+      const cleanedSort = [...new Map(sorted.map(version => [`${version.BSVersion}-${version.name}-${version.steam}-${version.oculus}`, version])).values()]
       this.installedVersions$.next(cleanedSort);
     }
 
@@ -63,7 +68,7 @@ export class BSVersionManagerService {
    }
 
    public isVersionInstalled(version: BSVersion): boolean{
-      return !!this.getInstalledVersions().find(v => v.BSVersion === version.BSVersion && v.steam === version.steam);
+      return !!this.getInstalledVersions().find(v => v.BSVersion === version.BSVersion && v.steam === version.steam && v.oculus === version.oculus);
    }
 
    public getAvaibleVersionsOfYear(year: string): BSVersion[]{
@@ -71,7 +76,7 @@ export class BSVersionManagerService {
    }
 
    public async editVersion(version: BSVersion): Promise<BSVersion>{
-      const modalRes = await this.modalService.openModal<{name: string, color: string}>(ModalType.EDIT_VERSION, version);
+      const modalRes = await this.modalService.openModal(EditVersionModal, {version, clone: false});
       if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return null; }
       if(modalRes.data.name?.length < 2){ return null; }
       return this.ipcService.send<BSVersion>("bs-version.edit", {args: {version, name: modalRes.data.name, color: modalRes.data.color}}).then(res => {
@@ -89,7 +94,7 @@ export class BSVersionManagerService {
 
    public async cloneVersion(version: BSVersion): Promise<BSVersion>{
       if(!this.progressBarService.require()){ return null; }
-      const modalRes = await this.modalService.openModal<{name: string, color: string}>(ModalType.CLONE_VERSION, version);
+      const modalRes = await this.modalService.openModal(EditVersionModal, {version, clone: true});
       if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return null; }
       if(modalRes.data.name?.length < 2){ return null; }
       this.progressBarService.showFake(0.01);

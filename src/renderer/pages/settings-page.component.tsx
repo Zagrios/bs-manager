@@ -12,11 +12,25 @@ import { BsDownloaderService } from "renderer/services/bs-downloader.service";
 import { ConfigurationService } from "renderer/services/configuration.service"
 import { I18nService } from "renderer/services/i18n.service";
 import { IpcService } from "renderer/services/ipc.service";
-import { ModalExitCode, ModalService, ModalType } from "renderer/services/modale.service";
+import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { NotificationService } from "renderer/services/notification.service";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { ThemeService } from "renderer/services/theme.service";
 import { SupportersView } from "renderer/components/settings/supporters-view/supporters-view.component";
+import { LinkOpenerService } from "renderer/services/link-opener.service";
+import { useNavigate } from "react-router-dom";
+import { InstallationFolderModal } from "renderer/components/modal/modal-types/installation-folder-modal.component";
+import { BsmCheckbox } from "renderer/components/shared/bsm-checkbox.component";
+import { BsmImage } from "renderer/components/shared/bsm-image.component";
+import modelSaberIcon from "../../../assets/images/third-party-icons/model-saber.svg";
+import beatSaverIcon from "../../../assets/images/third-party-icons/beat-saver.png";
+import beastSaberIcon from "../../../assets/images/third-party-icons/beast-saber.png";
+import scoreSaberIcon from "../../../assets/images/third-party-icons/score-saber.png";
+import Tippy from '@tippyjs/react';
+import { MapsManagerService } from "renderer/services/maps-manager.service";
+import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
+import { ModelsManagerService } from "renderer/services/models-manager.service";
+import { useTranslation } from "renderer/hooks/use-translation.hook";
 
 export function SettingsPage() {
 
@@ -29,6 +43,10 @@ export function SettingsPage() {
   const authService: AuthUserService = AuthUserService.getInstance();
   const notificationService: NotificationService = NotificationService.getInstance();
   const i18nService: I18nService = I18nService.getInstance();
+  const linkOpener: LinkOpenerService = LinkOpenerService.getInstance();
+  const mapsManager = MapsManagerService.getInstance();
+  const playlistsManager = PlaylistsManagerService.getInstance();
+  const modelsManager = ModelsManagerService.getInstance();
 
   const {firstColor, secondColor} = useThemeColor();
   const sessionExist = useObservable(authService.sessionExist$);
@@ -47,11 +65,19 @@ export function SettingsPage() {
   const[languageSelected, setLanguageSelected]= useState(languagesItems.find(e => e.value === i18nService.currentLanguage).id);
   const [installationFolder, setInstallationFolder] = useState(null);
   const [showSupporters, setShowSupporters] = useState(false);
+  const [mapDeepLinksEnabled, setMapDeepLinksEnabled] = useState(false);
+  const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
+  const [modelsDeepLinkEnabled, setModelsDeepLinkEnabled] = useState(false);
   const [appVersion, setAppVersion] = useState("");
+  const nav = useNavigate();
+  const t = useTranslation();
 
   useEffect(() => {
     loadInstallationFolder();
     ipcService.send<string>("current-version").then(res => setAppVersion(res.data));
+    mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
+    playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
+    modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled))
   }, []);
 
   const resetColors = () => {
@@ -80,7 +106,7 @@ export function SettingsPage() {
   const setDefaultInstallationFolder = () => {
       if(!progressBarService.require()){ return; }
 
-      modalService.openModal(ModalType.INSTALLATION_FOLDER).then(async res => {
+      modalService.openModal(InstallationFolderModal).then(async res => {
          if(res.exitCode !== ModalExitCode.COMPLETED){ return; }
          const fileChooserRes = await ipcService.send<{canceled: boolean, filePaths: string[]}>("choose-folder");
 
@@ -111,17 +137,70 @@ export function SettingsPage() {
   };
 
   const openPatreonPage = () => {
-    ipcService.sendLazy("new-window", {args: "https://www.patreon.com/bsmanager?fan_landing=true"})
+    linkOpener.open("https://www.patreon.com/bsmanager?fan_landing=true");
   }
 
   const toogleShowSupporters = () => {
     setShowSupporters(show => !show);
   }
 
+  const openGithub = () => linkOpener.open("https://github.com/Zagrios/bs-manager");
+  const openReportBug = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&template=-bug--bug-report.md&title=%5BBUG%5D+%3A+");
+  const openRequestFeatures = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=enhancement&template=-feat---feature-request.md&title=%5BFEAT.%5D+%3A+");
+
+  const openLogs = () => ipcService.sendLazy("open-logs");
+
+    const showDeepLinkError = (isDeactivation: boolean) => {
+        const desc = isDeactivation ? "notifications.settings.additional-content.deep-link.deactivation.error.description" : "notifications.settings.additional-content.deep-link.activation.error.description";
+        notificationService.notifyError({title: "notifications.types.error", desc, duration: 3000});
+    }
+
+    const showDeepLinkSuccess = (isDeactivation: boolean) => {
+        const desc = isDeactivation ? "notifications.settings.additional-content.deep-link.deactivation.success.description" : "notifications.settings.additional-content.deep-link.activation.success.description";
+        const title = isDeactivation ? "notifications.settings.additional-content.deep-link.deactivation.success.title" : "notifications.settings.additional-content.deep-link.activation.success.title";
+        notificationService.notifySuccess({title, desc, duration: 3000});
+    }
+
+    const toogleMapDeepLinks = () => {
+        const isDesactivation = mapDeepLinksEnabled;
+        mapsManager.toogleDeepLinks().then(res => {
+            if(res){ return showDeepLinkSuccess(isDesactivation); }
+            showDeepLinkError(isDesactivation);
+        }).catch(() => {
+            showDeepLinkError(isDesactivation);
+        }).finally(() => mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled)));
+    }
+
+    const tooglePlaylistsDeepLinks = () => {
+        const isDesactivation = playlistsDeepLinkEnabled;
+        playlistsManager.toogleDeepLinks().then(res => {
+            if(res){ return showDeepLinkSuccess(isDesactivation); }
+            showDeepLinkError(isDesactivation);
+        }).catch(() => {
+            showDeepLinkError(isDesactivation);
+        }).finally(() => playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled)));
+    }
+
+    const toogleModelsDeepLinks = () => {
+        const isDesactivation = modelsDeepLinkEnabled;
+        modelsManager.toogleDeepLinks().then(res => {
+            if(res){ return showDeepLinkSuccess(isDesactivation); }
+            showDeepLinkError(isDesactivation);
+        }).catch(() => {
+            showDeepLinkError(isDesactivation);
+        }).finally(() => modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled)));
+    }
+
     return (
         <div className="w-full h-full flex justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 text-gray-800 dark:text-gray-200">
 
-            <div className="max-w-2xl w-full mt-10">
+            
+
+            <div className="max-w-2xl w-full">
+
+                <div className="inline-block sticky top-8 left-[calc(100%)] translate-x-12 grow-0 w-9 h-9">
+                    <BsmButton className="inline-block grow-0 bg-transparent sticky h-full w-full top-20 right-20 !m-0 rounded-full p-1" onClick={() => nav(-1)} icon="close" withBar={false}/>
+                </div>
 
                 <SettingContainer title="pages.settings.steam.title" description="pages.settings.steam.description">
                     <BsmButton onClick={deleteSteamSession} className="w-fit px-3 py-[2px] text-white rounded-md" withBar={false} text="pages.settings.steam.logout" typeColor="error" disabled={!sessionExist}/>
@@ -147,6 +226,54 @@ export function SettingsPage() {
                     </div>
                 </SettingContainer>
 
+                <SettingContainer title="pages.settings.additional-content.title" description="pages.settings.additional-content.description">
+
+                <SettingContainer minorTitle="pages.settings.additional-content.deep-links.sub-title">
+                    <ul className="w-full flex flex-col gap-1.5">
+                        <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3">
+                            <div className="flex items-center gap-2">
+                                <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={toogleMapDeepLinks} checked={mapDeepLinksEnabled}/>
+                                <span className="font-extrabold">{t("misc.maps")}</span>
+                            </div>
+                            <div className="flex h-full gap-2">
+                                <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <BsmImage className="h-8 cursor-pointer" image={beatSaverIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://beatsaver.com/")}}/>
+                                </Tippy>
+                                <Tippy content="BeastSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <BsmImage className="h-8 rounded-md cursor-pointer" image={beastSaberIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://bsaber.com/")}}/>
+                                </Tippy>
+                                <Tippy content="ScoreSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <BsmImage className="h-8 cursor-pointer" image={scoreSaberIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://scoresaber.com/")}}/>
+                                </Tippy>
+                            </div>
+                        </li>
+                        <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3">
+                            <div className="flex items-center gap-2">
+                                <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={tooglePlaylistsDeepLinks} checked={playlistsDeepLinkEnabled}/>
+                                <span className="font-extrabold">{t("misc.playlists")}</span>
+                            </div>
+                            <div className="flex h-full">
+                                <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <BsmImage className="h-8 cursor-pointer" image={beatSaverIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://beatsaver.com/")}}/>
+                                </Tippy>
+                            </div>
+                        </li>
+                        <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3">
+                            <div className="flex items-center gap-2">
+                                <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={toogleModelsDeepLinks} checked={modelsDeepLinkEnabled}/>
+                                <span className="font-extrabold">{t("misc.models")}</span>
+                            </div>
+                            <div className="flex h-full">
+                                <Tippy content="ModelSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <BsmImage className="h-8 cursor-pointer" image={modelSaberIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://modelsaber.com/")}}/>
+                                </Tippy>
+                            </div>
+                        </li>
+                    </ul>
+                </SettingContainer>
+                    
+                </SettingContainer>
+
                 <SettingContainer title="pages.settings.language.title" description="pages.settings.language.description">
                     <SettingRadioArray items={languagesItems} selectedItem={languageSelected} onItemSelected={handleChangeLanguage}/>
                 </SettingContainer>
@@ -156,6 +283,18 @@ export function SettingsPage() {
                         <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 whitespace-nowrap mr-2 !text-white" iconClassName="mr-1" text="pages.settings.patreon.buttons.support" icon="patreon" color="#EC6350" withBar={false} onClick={openPatreonPage}/>
                         <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="pages.settings.patreon.buttons.supporters" color="#6c5ce7" onClick={toogleShowSupporters}/>
                     </div>
+                    <SettingContainer className="pt-3" description="pages.settings.contribution.description">
+                        <div className="flex items-center justify-between w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 rounded-md pl-2 py-1">
+                            <div className="flex">
+                                <BsmButton onClick={openRequestFeatures} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="pages.settings.contribution.buttons.request-features" withBar={false}/>
+                                <BsmButton onClick={openReportBug} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="pages.settings.contribution.buttons.report-bug" withBar={false}/>
+                            </div>
+                            <div className="flex px-2 gap-2">
+                                <BsmButton onClick={openLogs} className="shrink-0 whitespace-nowrap px-2 font-bold italic text-sm rounded-md" text="pages.settings.contribution.buttons.open-logs" withBar={false}/>
+                                <BsmButton onClick={openGithub} className="shrink-0 px-2 rounded-md" icon="github" title="GitHub" withBar={false}/>    
+                            </div>
+                        </div>
+                    </SettingContainer>
                 </SettingContainer>
 
                 <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right">v{appVersion}</span>

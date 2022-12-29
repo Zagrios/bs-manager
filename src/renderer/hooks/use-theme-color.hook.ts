@@ -3,8 +3,8 @@ import { DefaultConfigKey } from "renderer/config/default-configuration.config";
 import { ConfigurationService } from "renderer/services/configuration.service";
 
 export function useThemeColor(): {firstColor: string, secondColor: string};
-export function useThemeColor(themeColor: "first-color"|"second-color"): string;
-export function useThemeColor(themeColor?: "first-color"|"second-color"): string|{firstColor: string, secondColor: string}{
+export function useThemeColor(themeColor: ThemeColor): string;
+export function useThemeColor(themeColor?: ThemeColor): string|{firstColor: string, secondColor: string}{
    const configService = ConfigurationService.getInstance();
 
    if(themeColor){
@@ -41,3 +41,5 @@ export function useThemeColor(themeColor?: "first-color"|"second-color"): string
    return {firstColor, secondColor}
    
 }
+
+export type ThemeColor = "first-color"|"second-color";

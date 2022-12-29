@@ -9,7 +9,6 @@ export class ConfigurationService {
     private constructor(){
         this.observers = new Map<string, BehaviorSubject<any>>();
     }
-
     private emitChange(key: string){
         if(this.observers.has(key)){
             const val = this.get(key);

@@ -12,6 +12,11 @@ export class InstallationLocationService {
 
     private readonly INSTALLATION_FOLDER = "BSManager";
     private readonly VERSIONS_FOLDER = "BSInstances";
+
+    private readonly SHARED_CONTENT_FOLDER = "SharedContent";
+    private readonly SHARED_MAPS_FOLDER = "SharedMaps";
+    private readonly SHARED_PLAYLISTS_FOLDER = "SharedPlaylists";
+
     private readonly STORE_INSTALLATION_PATH_KEY = "installation-folder";
 
 
@@ -36,9 +41,6 @@ export class InstallationLocationService {
         this._installationDirectory = this.configService.get<string>(this.STORE_INSTALLATION_PATH_KEY) || app.getPath("documents");
     }
 
-    public get installationDirectory(): string{ return path.join(this._installationDirectory, this.INSTALLATION_FOLDER); }
-    public get versionsDirectory(): string { return path.join(this.installationDirectory, this.VERSIONS_FOLDER); }
-
     public setInstallationDirectory(newDir: string): Promise<string>{
         const oldDir = this.installationDirectory;
         const newDest = path.join(newDir, this.INSTALLATION_FOLDER);
@@ -53,7 +55,15 @@ export class InstallationLocationService {
                 log.error(err);
             })
         })
-        
     }
+
+    public get installationDirectory(): string{ return path.join(this._installationDirectory, this.INSTALLATION_FOLDER); }
+
+    public get versionsDirectory(): string { return path.join(this.installationDirectory, this.VERSIONS_FOLDER); }
+
+    public get sharedContentPath(): string { return path.join(this.installationDirectory, this.SHARED_CONTENT_FOLDER); }
+    public get sharedMapsPath(): string { return path.join(this.sharedContentPath, this.SHARED_MAPS_FOLDER); }
+    public get sharedPlaylistsPath(): string { return path.join(this.sharedContentPath, this.SHARED_PLAYLISTS_FOLDER); }
+
 
 }

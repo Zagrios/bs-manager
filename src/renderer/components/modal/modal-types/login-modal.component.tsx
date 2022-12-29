@@ -2,10 +2,10 @@ import { useState } from "react";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import { ModalExitCode, ModalResponse } from "renderer/services/modale.service";
+import { ModalComponent, ModalExitCode } from "renderer/services/modale.service";
 import BeatImpatient from '../../../../../assets/images/apngs/beat-impatient.png'
 
-export function LoginModal({resolver}: {resolver: (x: ModalResponse<any>) => void}) {
+export const LoginModal: ModalComponent<{username: string, password: string, stay: boolean}> = ({resolver}) => {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -35,7 +35,7 @@ export function LoginModal({resolver}: {resolver: (x: ModalResponse<any>) => voi
         </div>
         <div className="grid grid-flow-col grid-cols-2 gap-4">
             <BsmButton typeColor="cancel" className="rounded-md text-center transition-all" onClick={() => {resolver({exitCode: ModalExitCode.CANCELED})}} withBar={false} text="misc.cancel"/>
-            <BsmButton typeColor="primary" className="rounded-md text-center transition-all" type="submit" withBar={false} text={t("modals.steam-login.buttons.submit")}/>
+            <BsmButton typeColor="primary" className="rounded-md text-center transition-all" type="submit" withBar={false} text="modals.steam-login.buttons.submit"/>
         </div>
     </form>
   )

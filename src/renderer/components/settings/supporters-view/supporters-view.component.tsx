@@ -6,12 +6,14 @@ import { SupportersService } from "renderer/services/supporters.service";
 import { SupportersBlock } from "./supporters-block.component";
 import ManheraChanGif from "../../../../../assets/images/gifs/menhera-chan.gif"
 import ManheraSadGif from "../../../../../assets/images/gifs/menhera-sad.gif"
+import { useTranslation } from "renderer/hooks/use-translation.hook";
 
 interface Props {isVisible: boolean, setVisible: (b: boolean) => void}
 
 export function SupportersView({isVisible, setVisible}: Props) {
 
     const supportersService = SupportersService.getInstance();
+    const t = useTranslation();
 
     const [supporters, setSupporters] = useState([] as Supporter[]);
     const [sponsors, setSponsors] = useState([] as Supporter[]);
@@ -33,11 +35,11 @@ export function SupportersView({isVisible, setVisible}: Props) {
                     <BsmButton className="absolute right-10 top-10 !bg-transparent w-7 h-7" icon="cross" withBar={false} onClick={() => setVisible(false)}></BsmButton>
                     {(!!sponsors.length || !!supporters.length) && <img className="absolute bottom-5 right-5 rotate-45 w-32 h-32"  src={ManheraChanGif}/>}
                     <div className="w-full h-full overflow-y-scroll">
-                        {!!sponsors.length && <SupportersBlock className="mt-12" title="sponsors" supporters={sponsors}/>}
-                        {!!supporters.length && <SupportersBlock className="mt-12" title="supporters" supporters={supporters}/>}
+                        {!!sponsors.length && <SupportersBlock className="mt-12" title="pages.settings.patreon.view.sponsors" supporters={sponsors}/>}
+                        {!!supporters.length && <SupportersBlock className="mt-12" title="pages.settings.patreon.view.supporters" supporters={supporters}/>}
                         {(!sponsors.length && !supporters.length) && (
                             <>
-                                <h2 className="w-full text-center text-3xl font-bold mt-10 mb-24">No supporter yet</h2>
+                                <h2 className="w-full text-center text-3xl font-bold mt-10 mb-24">{t("pages.settings.patreon.view.no-supporters")}</h2>
                                 <img className="m-auto" src={ManheraSadGif} />
                             </>
                         )}

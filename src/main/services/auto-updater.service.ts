@@ -1,6 +1,7 @@
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { UtilsService } from './utils.service';
+import { gt } from 'semver';
 export class AutoUpdaterService {
 
     private static instance: AutoUpdaterService;
@@ -24,8 +25,7 @@ export class AutoUpdaterService {
             autoUpdater.checkForUpdates().then(info => {
                 const needUpdate = (() => {
                     if(!info || !info.updateInfo){ return false; }
-                    if(autoUpdater.currentVersion.version === info.updateInfo.version){ return false; }
-                    return true;
+                    return gt(info.updateInfo.version, autoUpdater.currentVersion.version);
                 })();
                 resolve(needUpdate)}
             ).catch(() => resolve(false));
@@ -38,10 +38,6 @@ export class AutoUpdaterService {
         autoUpdater.addListener("download-progress", info => {
             this.utilsService.ipcSend("update-download-progress", {success: true, data: info.percent});
         });
-        // const promise = new Promise<boolean>((resolve, reject) => {
-        //     autoUpdater.addListener("update-downloaded", () => resolve(true));
-        //     autoUpdater.addListener("error", () => reject(false))
-        // });
         
         return autoUpdater.downloadUpdate().then(res => !!res && !!res.length);
     }

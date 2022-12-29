@@ -8,6 +8,7 @@ import { InstallationLocationService } from "./installation-location.service";
 import { ctrlc } from "ctrlc-windows";
 import { BSLocalVersionService } from "./bs-local-version.service";
 import isOnline from 'is-online';
+import { WindowManagerService } from "./window-manager.service";
 
 export class BSInstallerService{
 
@@ -16,6 +17,7 @@ export class BSInstallerService{
   private readonly utils: UtilsService;
   private readonly installLocationService: InstallationLocationService;
   private readonly localVersionService: BSLocalVersionService;
+  private readonly windows: WindowManagerService;
 
   private downloadProcess: ChildProcessWithoutNullStreams;
 
@@ -23,8 +25,9 @@ export class BSInstallerService{
     this.utils =  UtilsService.getInstance();
     this.installLocationService = InstallationLocationService.getInstance();
     this.localVersionService = BSLocalVersionService.getInstance();
+    this.windows = WindowManagerService.getInstance();
 
-    this.utils.getMainWindow().on("close", () => {
+    this.windows.getWindows("index.html").on("close", () => {
         this.killDownloadProcess();
     });
   }

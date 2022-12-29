@@ -1,279 +1,625 @@
 {
-   "misc":{
-      "download": "Download",
-      "verify": "Verify",
-      "launch": "Launch",
-      "mods": "Mods",
-      "maps": "Maps",
-      "cancel": "Cancel"
-   },
-   "pages":{
-      "version-viewer":{
-         "launch-mods":{
-            "oculus": "Oculus Mod",
-            "desktop": "Desktop Mod",
-            "debug": "Debug Mod"
-         },
-         "dropdown":{
-            "open-folder": "Open folder",
-            "verify-files": "Verify files",
-            "clone": "Clone",
-            "edit": "Edit",
-            "uninstall": "Uninstall"
-         }
-      },
-      "available-versions":{
-         "title": "Select a version",
-         "steam-release":"Release page"
-      },
-      "settings":{
-         "steam":{
-            "title":"Steam",
-            "description":"If you log out of Steam, you will have to log back in to download a new version of Beat Saber.",
-            "logout":"Log out"
-         },
-         "appearance":{
-            "title":"Appearance",
-            "description":"Choose the two main colours of BSManager.",
-            "reset":"Reset",
-            "sub-title":"Theme",
-            "themes":{
-               "dark":"Dark",
-               "light": "Light",
-               "os": "Sync with computer"
+    "misc": {
+        "download": "Download",
+        "verify": "Verify",
+        "launch": "Launch",
+        "mods": "Mods",
+        "maps": "Maps",
+        "playlists": "Playlists",
+        "models": "Models",
+        "cancel": "Cancel",
+        "delete": "Delete"
+    },
+    "pages": {
+        "version-viewer": {
+            "launch-mods": {
+                "oculus": "Oculus Mod",
+                "desktop": "Desktop Mod",
+                "debug": "Debug Mod"
+            },
+            "maps": {
+                "search-bar": {
+                    "search-placeholder": "Search a map",
+                    "filters-btn": "Filters",
+                    "dropdown": {
+                        "export-maps": "Export maps",
+                        "delete-maps": "Delete maps"
+                    }
+                },
+                "tabs": {
+                    "maps": {
+                        "actions": {
+                            "add-maps": {
+                                "text": "Add"
+                            },
+                            "link-maps": {
+                                "tooltips": {
+                                    "link": "Link maps",
+                                    "unlink": "Unling maps"
+                                }
+                            }
+                        },
+                        "empty-maps":{
+                            "text":"No maps",
+                            "button":"Download maps"
+                        }
+                    }
+                }
+            },
+            "mods": {
+                "loading-mods": "Loading mods...",
+                "buttons": {
+                    "more-infos": "More info",
+                    "install-or-update": "Install or update"
+                },
+                "mods-grid": {
+                    "header-bar": {
+                        "name": "Name",
+                        "installed": "Installed",
+                        "latest": "Latest",
+                        "description": "Description",
+                        "dropdown": {
+                            "uninstall-all": "Uninstall all"
+                        }
+                    }
+                }
+            },
+            "dropdown": {
+                "open-folder": "Open folder",
+                "verify-files": "Verify files",
+                "clone": "Clone",
+                "edit": "Edit",
+                "uninstall": "Uninstall"
             }
-         },
-         "installation-folder":{
-            "title":"Installation folder",
-            "description":"Change the default folder for Beat Saber versions and other upcoming features.",
-            "choose-folder":"Choose folder"
-         },
-         "language":{
-            "title":"Language",
-        		"description":"Select a language.",
-            "languages":{
-               "en-EN": "English, UK",
-               "en-US": "English, US",
-               "fr-FR": "Français",
-               "es-ES": "Español",
-               "translated":{
-                  "en-EN": "English, United Kingdom",
-                  "en-US": "English, USA",
-                  "fr-FR": "French",
-                  "es-ES": "Spanish"
-               }
+        },
+        "available-versions": {
+            "title": "Select a version",
+            "steam-release": "Release page"
+        },
+        "settings": {
+            "steam": {
+                "title": "Steam",
+                "description": "If you log out of Steam, you will have to log back in to download a new version of Beat Saber.",
+                "logout": "Log out"
+            },
+            "appearance": {
+                "title": "Appearance",
+                "description": "Choose the two main colours of BSManager.",
+                "reset": "Reset",
+                "sub-title": "Theme",
+                "themes": {
+                    "dark": "Dark",
+                    "light": "Light",
+                    "os": "Sync with computer"
+                }
+            },
+            "installation-folder": {
+                "title": "Installation folder",
+                "description": "Change the default folder for Beat Saber versions and other upcoming features.",
+                "choose-folder": "Choose folder"
+            },
+            "additional-content": {
+                "title": "Additional content",
+                "description": "Additional content allows you to customize BeatSaber!",
+                "deep-links": {
+                    "sub-title": "OneClick installations"
+                }
+            },
+            "language": {
+                "title": "Language",
+                "description": "Select a language.",
+                "languages": {
+                    "en-EN": "English, UK",
+                    "en-US": "English, US",
+                    "fr-FR": "Français",
+                    "es-ES": "Español",
+                    "translated": {
+                        "en-EN": "English, United Kingdom",
+                        "en-US": "English, USA",
+                        "fr-FR": "French",
+                        "es-ES": "Spanish"
+                    }
+                }
+            },
+            "patreon": {
+                "title": "Support BSManager 💖",
+                "description": "Support the project and help us to provide continuous improvements to BSManager.",
+                "buttons": {
+                    "support": "Support BSManager",
+                    "supporters": "Supporters 👀"
+                },
+                "view": {
+                    "no-supporters": "No supporter yet",
+                    "sponsors": "Sponsors",
+                    "supporters": "Supporters"
+                }
+            },
+            "contribution": {
+                "description": "Suggest new features or report a bug to help improve BSManager!",
+                "buttons": {
+                    "request-features": "Request a feature",
+                    "report-bug": "Report a bug",
+                    "open-logs": "Open logs"
+                }
             }
-         },
-        "patreon":{
-            "title":"Support BSManager 💖",
-            "description": "Support the project and help us to provide continuous improvements to BSManager.",
-            "buttons":{
-                "support": "Support BSManager",
-                "supporters":"Supporters 👀"
-            }
-    
         }
-      }
-   },
-   "notifications":{
-      "types":{
-         "error": "🚨 Error",
-         "warning": "⚠️ Warning",
-         "success": "🎉 Success"
-      },
-      "shared":{
-        "errors":{
-            "titles":{
-                "operation-running": "Operation running"
+    },
+    "notifications": {
+        "types": {
+            "error": "🚨 Error",
+            "warning": "⚠️ Warning",
+            "success": "🎉 Success"
+        },
+        "common": {
+            "msg": {
+                "error-occurred": "An error has occurred"
+            }
+        },
+        "shared": {
+            "errors": {
+                "titles": {
+                    "operation-running": "Operation running"
+                },
+                "msg": {
+                    "operation-running": "Wait for the end of the current operation then start again."
+                }
+            }
+        },
+        "bs-download": {
+            "success": {
+                "titles": {
+                    "download-success": "Download complete",
+                    "verification-finished": "Verification complete"
+                }
             },
-            "msg":{
-                "operation-running": "Wait for the end of the current operation then start again."
+            "warnings": {
+                "msg": {
+                    "ManifestChecksum": "The previously downloaded manifest does not match the new 🤔",
+                    "ConnectionTimeout": "Your internet connection seems unstable 🥶",
+                    "ConnectionLost": "The connection has been lost, try again...",
+                    "ConnectionError": "Unable to connect to Steam, retry...",
+                    "Unknown": "Something strange has happened 🤔 Your connection is probably unstable."
+                }
+            },
+            "errors": {
+                "msg": {
+                    "401": "Steam doesn't seem to want to let us download BeatSaber 😢",
+                    "404": "Unable to contact Steam servers.",
+                    "Password": "Password is invalid.",
+                    "InvalidCredentials": "Your e-mail or password is invalid 😴",
+                    "InvalidPassword": "Your password is invalid 😕",
+                    "NoManifest": "No manifest was found",
+                    "DirectoryCreate": "Unable to install the necessary folders.",
+                    "NotAvailableApp": "Are you trying to download BeatSaber when you don't have it ? 🤣",
+                    "DepotNotFound": "Unable to download BeatSaber 😥 try again later 😕",
+                    "NotCompleted": "The download could not complete ¯\\_(ツ)_/¯",
+                    "InvalidManifest": "Unable to download BeatSaber 😥 try again later 😕",
+                    "NoValidKey": "Unable to download BeatSaber 😥 try again later 😕",
+                    "NoManifestCode": "Unable to download BeatSaber 😥 try again later 😕",
+                    "Unknown": "An unknown error occurred ¯\\_(ツ)_/¯",
+                    "NoServer": "Unable to contact Steam servers.",
+                    "NotAllowed": "Apparently you are not allowed to download BeatSaber 🥱",
+                    "ConnectionTimeout": "Cannot connect to Steam 😕",
+                    "SteamLib": "If you have this error, report the bug on GitHub with the logs pls.",
+                    "ConnectionError": "Unable to connect to Steam after 10 tries 🤯",
+                    "LicenceError": "Unable to get the list of licenses.",
+                    "verification-failed": "Verification failed, try again later.",
+                    "RateLimitExceeded": "You've tried too many times, wait a while and try again later.",
+                    "AlreadyDownloading": "A download is already in progress",
+                    "no-internet": "No internet connection."
+                }
+            }
+        },
+        "settings": {
+            "move-folder": {
+                "success": {
+                    "titles": {
+                        "transfer-finished": "Transfer complete"
+                    }
+                },
+                "errors": {
+                    "titles": {
+                        "transfer-failed": "Transfer failed 😕"
+                    }
+                }
+            },
+            "steam": {
+                "success": {
+                    "titles": {
+                        "logout": "Disconnected from Steam."
+                    }
+                }
+            },
+            "additional-content":{
+                "deep-link": {
+                    "activation":{
+                        "success":{
+                            "title":"OneClick activated!",
+                            "description":"OneClick installations have been activated."
+                        },
+                        "error":{
+                            "description":"Unable to activate OneClick installations."
+                        }
+                    },
+                    "deactivation":{
+                        "success":{
+                            "title":"OneClick deactivated!",
+                            "description":"OneClick installations have been deactivated."
+                        },
+                        "error":{
+                            "description":"An unknown error occurred."
+                        }
+                    }
+                }
+            }
+        },
+        "bs-launch": {
+            "success": {
+                "titles": {
+                    "launching": "Launching...🚀"
+                }
+            },
+            "errors": {
+                "titles": {
+                    "UNABLE_TO_LAUNCH": "Unable to launch",
+                    "STEAM_NOT_RUNNING": "Steam is not running",
+                    "OCULUS_NOT_RUNNING": "Oculus is not running",
+                    "BS_ALREADY_RUNNING": "BeatSaber already running",
+                    "EXE_NOT_FINDED": "Missing files",
+                    "EXIT": "Abrupt stop"
+                },
+                "msg": {
+                    "STEAM_NOT_RUNNING": "Steam must be running to launch BeatSaber.",
+                    "OCULUS_NOT_RUNNING": "Oculus must be running to launch BeatSaber.",
+                    "BS_ALREADY_RUNNING": "Close BeatSaber before launching it again.",
+                    "EXE_NOT_FINDED": "Some files seem to be missing, try to verify the files.",
+                    "EXIT": "BeatSaber stopped abruptly, tries to check the files."
+                },
+                "actions":{
+                    "STEAM_NOT_RUNNING": "Launch Steam"
+                }
+            }
+        },
+        "steam":{
+            "steam-launching":{
+                "title": "Steam is launching!",
+                "description": "Steam may take some time to launch depending on your configuration."
+            }
+        },
+        "custom-version": {
+            "errors": {
+                "titles": {
+                    "CantEditSteam": "Unable to edit",
+                    "CantRename": "Renaming impossible",
+                    "VersionAlreadExist": "This version already exists",
+                    "CantClone": "Cloning impossible"
+                },
+                "msg": {
+                    "CantEditSteam": "You can't edit the Steam version. You can clone it though."
+                }
+            },
+            "success": {
+                "titles": {
+                    "CloningFinished": "Cloning complete 🎉"
+                }
+            }
+        },
+        "mods": {
+            "install-mods": {
+                "titles": {
+                    "success": "Mods installed 🎉",
+                    "warning": "Mods installed 🤔"
+                },
+                "msg": {
+                    "success": "All mods have been installed.",
+                    "warning": "One or more mods could not be installed.",
+                    "errors": {
+                        "no-mods": "No mods to install.",
+                        "cannot-install-bsipa": "BSIPA installation failed 😨"
+                    }
+                }
+            },
+            "uninstall-mod": {
+                "titles": {
+                    "success": "Mod uninstalled 🎉"
+                },
+                "msg": {
+                    "errors": {
+                        "no-mods": "This mod isn't installed 😑"
+                    }
+                }
+            },
+            "uninstall-all-mods": {
+                "titles": {
+                    "success": "Mods uninstalled 🎉"
+                },
+                "msg": {
+                    "success": "All mods have been uninstalled.",
+                    "errors": {
+                        "no-mods": "No mod is installed in this version 😑"
+                    }
+                }
+            }
+        },
+        "maps":{
+            "one-click-install":{
+                "success":"Map installation complete",
+                "error":"An error occurred while installing the map"
+            }
+        },
+        "playlists":{
+            "one-click-install":{
+                "success":"Playlist installation complete",
+                "error":"An error occurred while installing the playlist"
+            }
+        },
+        "models":{
+            "one-click-install":{
+                "success":"Model installation complete",
+                "error":"An error occurred while installing the model"
             }
         }
-      },
-      "bs-download":{
-         "success":{
-            "titles":{
-               "download-success": "Download complete",
-               "verification-finished":"Verification complete"
-            }
-         },
-         "warnings":{
-            "msg":{
-               "ManifestChecksum": "The previously downloaded manifest does not match the new 🤔",
-               "ConnectionTimeout": "Your internet connection seems unstable 🥶",
-               "ConnectionLost": "The connection has been lost, try again...",
-               "ConnectionError": "Unable to connect to Steam, retry...",
-               "Unknown": "Something strange has happened 🤔 Your connection is probably unstable."
-            }
-         },
-         "errors":{
-            "msg":{
-               "Password": "Password is invalid.",
-               "InvalidCredentials": "Your e-mail or password is invalid 😴",
-               "InvalidPassword": "Your password is invalid 😕",
-               "NoManifest": "No manifest was found",
-               "DirectoryCreate": "Unable to install the necessary folders.",
-               "NotAvailableApp": "Are you trying to download BeatSaber when you don't have it ? 🤣",
-               "DepotNotFound": "Unable to download BeatSaber 😥 try again later 😕",
-               "NotCompleted": "The download could not complete ¯\\_(ツ)_/¯",
-               "InvalidManifest": "Unable to download BeatSaber 😥 try again later 😕",
-               "NoValidKey": "Unable to download BeatSaber 😥 try again later 😕",
-               "NoManifestCode": "Unable to download BeatSaber 😥 try again later 😕",
-               "401": "Steam doesn't seem to want to let us download BeatSaber 😢",
-               "404": "Unable to contact Steam servers.",
-               "Unknown": "An unknown error occurred ¯\\_(ツ)_/¯",
-               "NoServer": "Unable to contact Steam servers.",
-               "NotAllowed": "Apparently you are not allowed to download BeatSaber 🥱",
-               "ConnectionTimeout": "Cannot connect to Steam 😕",
-               "SteamLib": "If you have this error, report the bug on GitHub with the logs pls.",
-               "ConnectionError": "Unable to connect to Steam after 10 tries 🤯",
-               "LicenceError": "Unable to get the list of licenses.",
-               "verification-failed": "Verification failed, try again later.",
-               "RateLimitExceeded": "You've tried too many times, wait a while and try again later.",
-               "AlreadyDownloading": "A download is already in progress",
-               "no-internet": "No internet connection."
-            }
-         }
-      },
-      "settings":{
-         "move-folder":{
-            "success":{
-               "titles":{
-                  "transfer-finished":"Transfer complete"
-               }
+    },
+    "modals": {
+        "guard": {
+            "title": "Steam Guard",
+            "inputs": {
+                "guard-code": {
+                    "label": "Guard Code",
+                    "placeholder": "Enter your Guard code"
+                }
             },
-            "errors":{
-               "titles":{
-                  "transfer-failed":"Transfer failed 😕"
-               }
+            "buttons": {
+                "submit": "Login"
             }
-         },
-         "steam":{
-            "success":{
-               "titles":{
-                  "logout": "Disconnected from Steam."
-               }
-            }
-         }
-      },
-      "bs-launch":{
-         "success":{
-            "titles":{
-               "launching": "Launching...🚀"
-            }
-         },
-         "errors":{
-            "titles":{
-               "UNABLE_TO_LAUNCH": "Unable to launch",
-               "STEAM_NOT_RUNNING": "Steam is not running",
-               "BS_ALREADY_RUNNING": "BeatSaber already running",
-               "EXE_NOT_FINDED": "Missing files",
-               "EXIT": "Abrupt stop"
+        },
+        "steam-login": {
+            "title": "Steam Login",
+            "inputs": {
+                "username": {
+                    "label": "Username",
+                    "placeholder": "Enter your username"
+                },
+                "password": {
+                    "label": "Password",
+                    "placeholder": "Enter your password"
+                },
+                "stay": {
+                    "label": "Stay connected"
+                }
             },
-            "msg":{
-               "STEAM_NOT_RUNNING": "Steam must be running to launch BeatSaber.",
-               "BS_ALREADY_RUNNING": "Close BeatSaber before launching it again.",
-               "EXE_NOT_FINDED": "Some files seem to be missing, try to verify the files.",
-               "EXIT": "BeatSaber stopped abruptly, tries to check the files."
+            "buttons": {
+                "submit": "Login"
             }
-         }
-      },
-      "custom-version":{
-         "errors":{
-            "titles":{
-               "CantEditSteam": "Unable to edit",
-               "CantRename": "Renaming impossible",
-               "VersionAlreadExist": "This version already exists",
-               "CantClone": "Cloning impossible"
+        },
+        "bs-uninstall": {
+            "title": "Uninstall",
+            "description": "Are you sure you want to uninstall BeatSaber {version} ? You will have to download it again to play it.",
+            "buttons": {
+                "submit": "Uninstall"
+            }
+        },
+        "install-folder": {
+            "title": "Installation folder",
+            "description": "Changing the default installation folder will result in moving all installed data to the new folder.",
+            "buttons": {
+                "submit": "Choose folder"
+            }
+        },
+        "edit-version": {
+            "title": "Edit the version",
+            "buttons": {
+                "submit": "Edit"
+            }
+        },
+        "clone-version": {
+            "title": "Clone version",
+            "description": "Cloning the version allows you to separate additional BeatSaber content between two versions.",
+            "inputs": {
+                "name": {
+                    "label": "Name",
+                    "placeholder": "Version name"
+                },
+                "color": {
+                    "label": "Color"
+                }
             },
-            "msg":{
-               "CantEditSteam": "You can't edit the Steam version. You can clone it though."
+            "buttons": {
+                "submit": "Clone"
             }
-         },
-         "success":{
-            "titles":{
-               "CloningFinished": "Cloning complete 🎉"
-            }
-         }
-      }
-   },
-   "modals":{
-      "guard":{
-         "title": "Steam Guard",
-         "inputs":{
-            "guard-code":{
-               "label": "Guard Code",
-               "placeholder": "Enter your Guard code"
-            }
-         },
-         "buttons":{
-            "submit": "Login"
-         }
-      },
-      "steam-login":{
-         "title": "Steam Login",
-         "inputs":{
-            "username":{
-               "label": "Username",
-               "placeholder": "Enter your username"
+        },
+        "uninstall-mod": {
+            "title": "Uninstall",
+            "description": "Are you sure you want to uninstall {mod}? It could cause other installed mods to malfunction.",
+            "description-bsipa": "Are you sure you want to uninstall BSIPA? After that all installed mods will not work anymore."
+        },
+        "uninstall-all-mods": {
+            "title": "Uninstalling mods",
+            "description": "Are you sure you want to uninstall all the mods from version {version}? This operation cannot be undone."
+        },
+        "maps-actions": {
+            "delete-maps": {
+                "title": {
+                    "single": "Delete the map?",
+                    "multiple": "Delete maps ?"
+                },
+                "desc": {
+                    "single": "Are you sure you want to delete the map {name}?",
+                    "multiple": "Are you sure you want to delete all {nb} maps?"
+                },
+                "info": {
+                    "desc": {
+                        "single": "This map is part of the shared maps",
+                        "multiple": "These maps are part of the shared maps"
+                    },
+                    "title": {
+                        "single": "This map will also be removed from versions using shared maps",
+                        "multiple": "These maps will also be removed from versions using shared maps"
+                    }
+                }
             },
-            "password":{
-               "label": "Password",
-               "placeholder": "Enter your password"
+            "link-maps": {
+                "title": "Link maps",
+                "desc": "Linking maps allows to share maps between all versions. Once linked, this version will benefit from the shared maps",
+                "info": "Adding and deleting maps will also be shared",
+                "keep-maps": {
+                    "label": "Keep maps",
+                    "title": "Keep maps will move the maps of the current version to the shared maps folder. Otherwise they will be lost"
+                },
+                "valid-btn": "Link maps"
             },
-            "stay":{
-               "label": "Stay connected"
+            "unlink-maps": {
+                "title": "Unlink maps",
+                "desc": "Please note that unlinking maps will not allow the use of shared maps for this version.",
+                "keep-maps": {
+                    "label": "Keep maps",
+                    "title": "Keeping the maps will create a copy of the shared maps for the current version. Otherwise, no map will be kept for this version."
+                },
+                "valid-btn": "Unlink maps"
             }
-         },
-         "buttons":{
-            "submit": "Login"
-         }  
-      },
-      "bs-uninstall":{
-         "title": "Uninstall",
-         "description": "Are you sure you want to uninstall BeatSaber {version} ? You will have to download it again to play it.",
-         "buttons":{
-            "submit": "Uninstall"
-         }
-      },
-      "install-folder":{
-         "title": "Installation folder",
-         "description": "Changing the default installation folder will result in moving all installed data to the new folder.",
-         "buttons":{
-            "submit": "Choose folder"
-         }
-      },
-      "edit-version":{
-         "title": "Edit the version",
-         "buttons":{
-            "submit": "Edit"
-         }
-      },
-      "clone-version":{
-         "title": "Clone version",
-         "description": "Cloning the version allows you to separate additional BeatSaber content between two versions.",
-         "buttons":{
-            "submit": "Clone"
-         }
-      }
-   },
-   "auto-update":{
-       "checking": "Checking for updates",
-       "downloading": "Downloading updates"
-   },
-   "dateformat":{
+        },
+        "download-maps": {
+            "search-btn": "Search",
+            "loading-maps": "Loading maps..."
+        }
+    },
+    "maps": {
+        "map-filter-panel": {
+            "duration": "Duration",
+            "tags": "tags",
+            "specificities": "general",
+            "requirements": "requirements"
+        },
+        "map-types": {
+            "accuracy": "accuracy",
+            "balanced": "balanced",
+            "challenge": "challenge",
+            "dancestyle": "dance",
+            "fitness": "fitness",
+            "speed": "speed",
+            "tech": "tech"
+        },
+        "map-styles": {
+            "dance": "dance",
+            "swing": "swing",
+            "nightcore": "nightcore",
+            "folk": "folk",
+            "family": "family",
+            "ambient": "ambient",
+            "funk": "funk",
+            "jazz": "jazz",
+            "soul": "soul",
+            "speedcore": "speedcore",
+            "punk": "punk",
+            "rb": "r&b",
+            "holiday": "holiday",
+            "vocaloid": "vocaloid",
+            "jrock": "j-rock",
+            "trance": "trance",
+            "drumbass": "drum & bass",
+            "comedy": "comedy",
+            "instrumental": "instrumental",
+            "hardcore": "hardcore",
+            "kpop": "k-pop",
+            "indie": "indie",
+            "techno": "techno",
+            "house": "house",
+            "game": "video game",
+            "film": "film",
+            "alt": "alternative",
+            "dubstep": "dubstep",
+            "metal": "metal",
+            "anime": "anime",
+            "hiphop": "hiphop",
+            "jpop": "j-pop",
+            "rock": "rock",
+            "pop": "pop",
+            "electronic": "electronic",
+            "classical-orchestral": "Classical & Orchestral"
+        },
+        "map-specificities": {
+            "automapper": "AI",
+            "ranked": "ranked",
+            "curated": "curated",
+            "verified": "verified",
+            "fullSpread": "full spread"
+        },
+        "difficulties": {
+            "Easy": "easy",
+            "Normal": "normal",
+            "Hard": "hard",
+            "Expert": "expert",
+            "ExpertPlus": "expert+"
+        },
+        "map-item": {
+            "by": "By {songAutor}",
+            "mapped-by": "mapped by"
+        }
+    },
+    "beat-saver": {
+        "maps-sorts": {
+            "Latest": "Latest",
+            "Relevance": "Relevance",
+            "Rating": "Rating",
+            "Curated": "Curated"
+        }
+    },
+    "auto-update": {
+        "checking": "Checking for updates",
+        "downloading": "Downloading updates"
+    },
+    "dateformat": {
         "dayNames": [
-            "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat",
-            "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+            "Sun",
+            "Mon",
+            "Tue",
+            "Wed",
+            "Thu",
+            "Fri",
+            "Sat",
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
         ],
         "monthNames": [
-            "Jan", "Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec",
-            "January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "June",
+            "Jul",
+            "Aug",
+            "Sept",
+            "Oct",
+            "Nov",
+            "Dec",
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
         ],
         "timeNames": [
-            "a", "p", "am", "pm", "A", "P", "AM", "PM"
+            "a",
+            "p",
+            "am",
+            "pm",
+            "A",
+            "P",
+            "AM",
+            "PM"
         ]
-   }
+    }
 }

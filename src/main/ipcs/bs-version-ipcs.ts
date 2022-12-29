@@ -2,13 +2,9 @@ import { ipcMain } from 'electron';
 import { UtilsService } from '../services/utils.service';
 import { BSVersionLibService } from '../services/bs-version-lib.service'
 import { BSVersion } from 'shared/bs-version.interface';
-import path from 'path';
 import { exec } from 'child_process';
-import { SteamService } from '../services/steam.service';
-import { BS_APP_ID } from '../constants';
 import { IpcRequest } from 'shared/models/ipc';
 import { BSLocalVersionService } from '../services/bs-local-version.service';
-import { InstallationLocationService } from '../services/installation-location.service';
 import { BsmException } from 'shared/models/bsm-exception.model';
 
 ipcMain.on('bs-version.get-version-dict', (event, req: IpcRequest<void>) => {

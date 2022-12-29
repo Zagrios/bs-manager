@@ -10,6 +10,7 @@ import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import baseConfig from './webpack.config.base';
 import webpackPaths from './webpack.paths';
 import checkNodeEnv from '../scripts/check-node-env';
+import { AppWindow } from "../../src/shared/models/window-manager/app-window.model"
 
 // When an ESLint server is running, we can't set the NODE_ENV so we'll check if it's
 // at the dev webpack config is not accidentally run in a production environment
@@ -37,6 +38,22 @@ if (
     )
   );
   execSync('npm run postinstall');
+}
+
+const getHtmlPageOptions = (page: AppWindow): HtmlWebpackPlugin.Options => {
+    return {
+        filename: path.join(page),
+        template: path.join(webpackPaths.srcRendererPath, page.replace(".html", ".ejs")),
+        minify: {
+          collapseWhitespace: true,
+          removeAttributeQuotes: true,
+          removeComments: true,
+        },
+        isBrowser: false,
+        env: process.env.NODE_ENV,
+        isDevelopment: process.env.NODE_ENV !== 'production',
+        nodeModules: webpackPaths.appNodeModulesPath,
+    }
 }
 
 const configuration: webpack.Configuration = {
@@ -76,14 +93,6 @@ const configuration: webpack.Configuration = {
             },
           },
           'sass-loader',
-          {
-            loader: 'postcss-loader',
-            options: {
-              postcssOptions: {
-                plugins: [require('tailwindcss'), require('autoprefixer')],
-              },
-            },
-          },
         ],
         include: /\.module\.s?(c|a)ss$/,
       },
@@ -96,8 +105,12 @@ const configuration: webpack.Configuration = {
           {
             loader: 'postcss-loader',
             options: {
-              postcssOptions: {
-                plugins: [require('tailwindcss'), require('autoprefixer')],
+            postcssOptions: {
+              plugins:
+                [
+                  require('tailwindcss'),
+                  require('autoprefixer'),
+                ]
               },
             },
           },
@@ -151,33 +164,12 @@ const configuration: webpack.Configuration = {
 
     new ReactRefreshWebpackPlugin(),
 
-    new HtmlWebpackPlugin({
-      filename: path.join('index.html'),
-      template: path.join(webpackPaths.srcRendererPath, 'index.ejs'),
-      minify: {
-        collapseWhitespace: true,
-        removeAttributeQuotes: true,
-        removeComments: true,
-      },
-      isBrowser: false,
-      env: process.env.NODE_ENV,
-      isDevelopment: process.env.NODE_ENV !== 'production',
-      nodeModules: webpackPaths.appNodeModulesPath,
-    }),
+    new HtmlWebpackPlugin(getHtmlPageOptions("index.html")),
+    new HtmlWebpackPlugin(getHtmlPageOptions("launcher.html")),
+    new HtmlWebpackPlugin(getHtmlPageOptions("oneclick-download-map.html")),
+    new HtmlWebpackPlugin(getHtmlPageOptions("oneclick-download-playlist.html")),
+    new HtmlWebpackPlugin(getHtmlPageOptions("oneclick-download-model.html")),
 
-    new HtmlWebpackPlugin({
-      filename: path.join('launcher.html'),
-      template: path.join(webpackPaths.srcRendererPath, 'launcher.ejs'),
-      minify: {
-        collapseWhitespace: true,
-        removeAttributeQuotes: true,
-        removeComments: true,
-      },
-      isBrowser: false,
-      env: process.env.NODE_ENV,
-      isDevelopment: process.env.NODE_ENV !== 'production',
-      nodeModules: webpackPaths.appNodeModulesPath,
-    })
   ],
 
   node: {
