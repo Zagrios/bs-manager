@@ -168,10 +168,4 @@
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
 
 
-
-<p align="right">[<a href="#readme-top">Return to top</a>]</p>
-
-
----------------
-
 <a name="readme-bot"></a>
