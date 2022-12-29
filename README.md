@@ -15,7 +15,8 @@
   <a href="https://github.com/Zagrios/bs-manager">
     <img src="https://raw.githubusercontent.com/Zagrios/bs-manager/master/resources/readme/icon.svg" alt="Logo" width="200" height="200">
   </a>
-  <h3 align="center">Beat Saber Manager</h3>
+  <br><br>
+  <h2 align="center"><b>Beat Saber Manager</b></h3>
   <p align="center">
     Download, manage and customize your versions of Beat Saber with a simple click!
     <br />
@@ -34,7 +35,7 @@
 <br><br>
 <a href=""><img src ="https://img.shields.io/badge/-DISCORD%20-grey?style=for-the-badge&logo=Discord" alt="Discord"/></a>
 <a href="https://www.patreon.com/bsmanager"><img src ="https://img.shields.io/badge/-Patreon-052d49?style=for-the-badge&logo=patreon" alt="Patreon"/></a>
-<br>
+<br><br>
 <p align="center">[<a href="#readme-bot">go to bot</a>]</p>
 </div>
 
@@ -42,7 +43,7 @@
 
 <!-- TABLE OF CONTENTS -->
 <details>
-  <summary><h3>Table of Contents<h3></summary>
+  <summary><b>Table of Contents</b></summary>
   <ol>
     <li>
       <a href="#about-the-project">About The Project</a>
@@ -66,23 +67,24 @@
 
 ---------------
 
-## About The Project
+# <div align="center"><b>About The Project</b></div>
 <div align="center">
-<img src ="resources/readme/preview01.png" width="800" height="533">
+<img src="resources/readme/wip.gif" alt="(WIP) home interface with multiple instance dl and steam & oculus.">
 </div>
-<br><br>
+<br>
 <p>Beat Saber Manager was created to unify and improve the two most used tools in the community (<a href="https://github.com/RiskiVR/BSLegacyLauncher">BS legacy launcher</a> and <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>).
 
 <h4>BSMangager will allow you to:</h4>
 <ul>
 <li><b>Manage instances of multiple versions</b>, designed for people who need to play on different versions or have multiple profiles for the same version.</li>
-<li><b>Install your mods in one click, just like <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a></b>, <a href="../../">BSManager<a> will allow you to install your mods quickly and securely depending on the version you choose.</li>
+<li><b>Install your mods in one click, just like <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a></b>, <a href="../../">BSManager</a> will allow you to install your mods quickly and securely depending on the version you choose.</li>
 <li><b>Download your maps in the same way</b>, in addition to that, the maps are not version dependent, so you will be able to find your maps whatever version you are using without having to transfer them.</li>
-<li><b>Customize your interface</b>, we know that some of you like to customize your interfaces to the maximum. That's why <a href="../../">BSManager<a> brings you peace of mind on this point, you can change the name of the versions, their color and you can even change the color of the logo! Of course, a dark theme has been added to protect your eyes at night.</li>
+<li><b>Customize your interface</b>, we know that some of you like to customize your interfaces to the maximum. That's why <a href="../../">BSManager</a> brings you peace of mind on this point, you can change the name of the versions, their color and you can even change the color of the logo! Of course, a dark theme has been added to protect your eyes at night.</li>
 </ul>
 </p>
+<br>
   
-### Built With
+## <b>Built With</b>
 <ul>
   <li><a href="https://electron-react-boilerplate.js.org/">
     <img src="https://img.shields.io/badge/-Electron%20React%20Boilerplate-black?style=for-the-badge&logo=Electron" alt="Electron React Boilerplate">
@@ -101,22 +103,38 @@
   
 ---------------
 
-## Usage
+# <div align="center"><b>Usage</b></div>
 
-### Manage Versions
+## <b>Manage Versions</b>
+<br>
+<p>Beat Saber Manager allows you to manage your versions of Beat Saber. It gives you the ability to download any version of Beat Saber as long as you have a Steam account that already owns the game. Using Beat Saber Manager, you can easily manage and update your collection of Beat Saber versions.</p>
+<br>
 <div align="center">
-<h3>Coming soon</h3>
-<img src="resources/readme/wip.gif" alt="(WIP)">
+<img src="resources/readme/wip.gif" alt="(WIP) gif with show how to DL and manage version :)">
+</div>
+<p align="right">[<a href="#readme-top">Return to top</a>]</p>
+
+
+## <b>Install Mods</b>
+<br>
+<p>Beat Saber Manager allows you to manage Beat Saber mods in a quick and easy way. It uses the BeatMod API to allow you to install, update or uninstall mods for each version of your collection. So the tool can help you manage them efficiently.</p>
+<br>
+
+<div align="center">
+<img src="resources/readme/wip.gif" alt="(WIP) gif with show how to dl and update mods">
+</div>
+<p align="right">[<a href="#readme-top">Return to top</a>]</p>
+
+
+## <b>Install Maps</b>
+
+<div align="center">
+<img src="resources/readme/wip.gif" alt="(WIP) gif with show how to dl map :D">
 </div>
 
+<p align="right">[<a href="#readme-top">Return to top</a>]</p>
 
-### Install Mods
-<div align="center">
-<h3>Coming soon</h3>
-<img src="resources/readme/wip.gif" alt="(WIP)">
-</div>
-
-### Install Maps
+## <b>OneClick</b>
 
 <div align="center">
 <h3>Coming soon</h3>
@@ -127,6 +145,19 @@
 
 ---------------
 
+<lang="fr">Ceci est un projet qui fait quelque chose de très intéressant.</lang>
 
+<lang="en">This is a project that does something very interesting.</lang>
+
+
+dzdzdzd
+
+<div lang="fr">
+Ceci est un projet qui fait quelque chose de très intéressant.
+</div>
+
+<div lang="en">
+This is a project that does something very interesting.
+</div>
 
 <a name="readme-bot"></a>
