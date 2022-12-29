@@ -49,6 +49,7 @@
       <a href="#about-the-project">About The Project</a>
       <ul>
         <li><a href="#built-with">Built With</a></li>
+            <li><a href="#contributing">Contributing</a></li>
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
@@ -58,7 +59,6 @@
         <li><a href="#install-maps">Install Maps</a></li>
       </ul>
     <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
   </ol>
 </details>
 
@@ -96,6 +96,20 @@
     <img src="https://img.shields.io/badge/-Tailwind%20CSS-white?style=for-the-badge&logo=Tailwind%20CSS" alt="TailWind CSS">
   </a></li>
 </ul>
+<p align="right">[<a href="#readme-top">Return to top</a>]</p>
+
+## <b>Contributing</b>
+
+<div align="center">
+    <h3><b><u>Main Developer</u></b></h3>
+    <br>
+    <a href="https://github.com/Zagrios"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/40181755?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a>
+    <br><br>
+    <h3><b><u>Support Developer</u></b></h3>
+    <br>
+    <a href="https://github.com/Zagrios"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/92525749?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a>‎ ‎ ‎ ‎ ‎ 
+    <a href="https://github.com/Zagrios"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/40648115?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a> 
+</div>
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
   
 ---------------
@@ -153,20 +167,7 @@
 </div>
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
 
----------------
 
-# <div align="center"><b>Contributing</b></div>
-
-<div align="center">
-    <h3><b><u>Main Developer</u></b></h3>
-    <br>
-    <a href="https://github.com/Zagrios"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/40181755?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a>
-    <br><br>
-    <h3><b><u>Support Developer</u></b></h3>
-    <br>
-    <a href="https://github.com/Zagrios"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/92525749?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a>‎ ‎ ‎ ‎ ‎ 
-    <a href="https://github.com/Zagrios"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/40648115?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a> 
-</div>
 
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
 
