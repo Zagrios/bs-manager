@@ -7,8 +7,6 @@ import { ConfigurationService } from "renderer/services/configuration.service";
 import { DefaultConfigKey } from "renderer/config/default-configuration.config";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import BeatWaitingImg from "../../../../../../assets/images/apngs/beat-waiting.png"
-import { SpoilerClick } from "renderer/components/shared/UwU/spoiler-click.component";
-import YuruYuriDance from "../../../../../../assets/images/gifs/yuruyuri-dance.gif"
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { skip, filter } from "rxjs/operators";
 import { Subscription } from "rxjs";
@@ -143,12 +141,9 @@ export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, on
                         </div>
                     </>
                 ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center relative">
+                    <div className="w-full h-full flex flex-col items-center justify-center">
                         <img className="w-32 h-32 spin-loading" src={BeatWaitingImg} alt=" "/>
                         <span className="text-xl mt-3 h-0 italic">{t("pages.version-viewer.mods.loading-mods")}</span>
-                        <SpoilerClick className="absolute right-5 w-20 h-[120px] bottom-5 cursor-pointer">
-                            <img className="relative w-full" src={YuruYuriDance} alt=" "/>
-                        </SpoilerClick>
                     </div>
                 )}
             </div>
