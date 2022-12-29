@@ -148,4 +148,13 @@
 
 ---------------
 
+# <div align="center"><b>RoadMap</b></div>
+
+<div align="center">
+<h3>Coming soon</h3>
+<img src="resources/readme/wip.gif" alt="(WIP) RoadMap img">
+</div>
+<p align="right">[<a href="#readme-top">Return to top</a>]</p>
+
+---------------
 
