@@ -77,7 +77,7 @@
 <h4>BSMangager will allow you to:</h4>
 <ul>
 <li><b>Manage instances of multiple versions</b>, designed for people who need to play on different versions or have multiple profiles for the same version.</li>
-<li><b>Install your mods in one click, just like <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a></b>, <a href="../../">BSManager</a> will allow you to install your mods quickly and securely depending on the version you choose.</li>
+<li><b>Install your mods in one click</b>, just like <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>, <a href="../../">BSManager</a> will allow you to install your mods quickly and securely depending on the version you choose.</li>
 <li><b>Download your maps in the same way</b>, in addition to that, the maps are not version dependent, so you will be able to find your maps whatever version you are using without having to transfer them.</li>
 <li><b>Customize your interface</b>, we know that some of you like to customize your interfaces to the maximum. That's why <a href="../../">BSManager</a> brings you peace of mind on this point, you can change the name of the versions, their color and you can even change the color of the logo! Of course, a dark theme has been added to protect your eyes at night.</li>
 </ul>
@@ -127,6 +127,9 @@
 
 
 ## <b>Install Maps</b>
+<br>
+<p>In addition to managing mods the tool that allows you to manage and organize custom beatmaps existing on Beat Saver, a popular site for sharing custom beatmaps for beat Saber. The tool allows you to view and organize your beatmaps, as well as link different versions of the game to share all your maps together. </p>
+<br>
 
 <div align="center">
 <img src="resources/readme/wip.gif" alt="(WIP) gif with show how to dl map :D">
@@ -134,30 +137,15 @@
 
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
 
-## <b>OneClick</b>
+## <b>OneClick (WIP)</b>
 
 <div align="center">
 <h3>Coming soon</h3>
-<img src="resources/readme/wip.gif" alt="(WIP)">
+<img src="resources/readme/wip.gif" alt="(WIP) gif with oneclick interface an use it">
 </div>
 
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
 
 ---------------
 
-<lang="fr">Ceci est un projet qui fait quelque chose de très intéressant.</lang>
 
-<lang="en">This is a project that does something very interesting.</lang>
-
-
-dzdzdzd
-
-<div lang="fr">
-Ceci est un projet qui fait quelque chose de très intéressant.
-</div>
-
-<div lang="en">
-This is a project that does something very interesting.
-</div>
-
-<a name="readme-bot"></a>
