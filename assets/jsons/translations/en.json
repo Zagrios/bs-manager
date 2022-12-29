@@ -252,6 +252,14 @@
                         "error":{
                             "description":"An unknown error occurred."
                         }
+                    },
+                    "check-all-enabled":{
+                        "title": "OneClick Disabled",
+                        "description": "One or more OneClick installations are disabled. Go to settings to enable them.",
+                        "actions":{
+                            "settings": "Settings",
+                            "not-remind": "Do not remind me"
+                        }
                     }
                 }
             }

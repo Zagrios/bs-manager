@@ -252,6 +252,14 @@
                         "error":{
                             "description":"Une erreur inconnue s'est produite."
                         }
+                    },
+                    "check-all-enabled":{
+                        "title": "OneClick désactivée(s)",
+                        "description": "Une ou plusieurs installations OneClick sont désactivées. Rendez-vous dans les paramètres pour les activer.",
+                        "actions":{
+                            "settings": "Paramètres",
+                            "not-remind": "Ne plus me rappeler"
+                        }
                     }
                 }
             }

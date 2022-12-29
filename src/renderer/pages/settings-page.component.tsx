@@ -229,7 +229,7 @@ export function SettingsPage() {
 
                 <SettingContainer title="pages.settings.additional-content.title" description="pages.settings.additional-content.description">
 
-                <SettingContainer minorTitle="pages.settings.additional-content.deep-links.sub-title">
+                <SettingContainer id="one-clicks" minorTitle="pages.settings.additional-content.deep-links.sub-title">
                     <ul className="w-full flex flex-col gap-1.5">
                         <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3">
                             <div className="flex items-center gap-2">
