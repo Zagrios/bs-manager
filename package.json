@@ -76,7 +76,8 @@
       "target": [
         "nsis"
       ],
-      "icon": "assets/favicon.ico"
+      "icon": "assets/favicon.ico",
+      "certificateSha1": "f3363a89b084f8f6b616babea3c91f9d79e15000"
     },
     "linux": {
       "target": [
