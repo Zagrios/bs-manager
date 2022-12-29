@@ -252,6 +252,14 @@
                         "error":{
                             "description":"Ocurrió un error desconocido."
                         }
+                    },
+                    "check-all-enabled":{
+                        "title": "OneClick deshabilitado",
+                        "description": "Una o más instalaciones de OneClick están deshabilitadas. Vaya a la configuración para habilitarlas.",
+                        "actions":{
+                            "settings": "Ajustes",
+                            "not-remind": "No volver a recordarme"
+                        }
                     }
                 }
             }
