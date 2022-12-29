@@ -158,3 +158,19 @@
 
 ---------------
 
+# <div align="center"><b>Contributing</b></div>
+
+<div align="center">
+    <h2><b><u>Main Develloper</u></b></h2>
+    <br>
+    <a href="https://github.com/Zagrios"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/40181755?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a>
+    <br><br>
+    <h2><b><u>Support Developer</u></b></h2>
+    <br>
+    <a href="https://github.com/Zagrios"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/92525749?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a>‎ ‎ ‎ ‎ ‎ 
+    <a href="https://github.com/Zagrios"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/40648115?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a> 
+</div>
+
+<p align="right">[<a href="#readme-top">Return to top</a>]</p>
+
+
