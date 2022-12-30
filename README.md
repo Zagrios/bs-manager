@@ -69,14 +69,14 @@
 <img src="resources/readme/wip.gif" alt="(WIP) home interface with multiple instance dl and steam & oculus.">
 </div>
 <br>
-<p>Beat Saber Manager was created to unify and improve the two most used tools in the community (<a href="https://github.com/RiskiVR/BSLegacyLauncher">BS legacy launcher</a> and <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>).
+<p><a href="../../">Beat Saber Manager</a> was created to unify and improve the two most used tools in the community (<a href="https://github.com/RiskiVR/BSLegacyLauncher">BS legacy launcher</a> and <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>).
 
-<h4>BSMangager will allow you to:</h4>
+<h4><a href="../../">Beat Saber Manager</a> will allow you to:</h4>
 <ul>
 <li><b>Manage instances of multiple versions</b>, designed for people who need to play on different versions or have multiple profiles for the same version.</li>
-<li><b>Install your mods in one click</b>, just like <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>, <a href="../../">BSManager</a> will allow you to install your mods quickly and securely depending on the version you choose.</li>
+<li><b>Install your mods in one click</b>, just like <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>, <a href="../../">Beat Saber Manager</a> will allow you to install your mods quickly and securely depending on the version you choose.</li>
 <li><b>Download your maps in the same way</b>, in addition to that, the maps are not version dependent, so you will be able to find your maps whatever version you are using without having to transfer them.</li>
-<li><b>Customize your interface</b>, we know that some of you like to customize your interfaces to the maximum. That's why <a href="../../">BSManager</a> brings you peace of mind on this point, you can change the name of the versions, their color and you can even change the color of the logo! Of course, a dark theme has been added to protect your eyes at night.</li>
+<li><b>Customize your interface</b>, we know that some of you like to customize your interfaces to the maximum. That's why <a href="../../">Beat Saber Manager</a> brings you peace of mind on this point, you can change the name of the versions, their color, and you can even change the color of the logo! Of course, a dark theme has been added to protect your eyes at night.</li>
 </ul>
 </p>
 <br>
@@ -118,7 +118,7 @@
 
 ## <b>Manage Versions</b>
 <br>
-<p>Beat Saber Manager allows you to manage your versions of Beat Saber. It gives you the ability to download any version of Beat Saber as long as you have a Steam account that already owns the game. Using Beat Saber Manager, you can easily manage and update your collection of Beat Saber versions.</p>
+<p><a href="../../">Beat Saber Manager</a> allows you to manage your versions of Beat Saber. It gives you the ability to download any version of Beat Saber as long as you have a Steam account that already owns the game. Using <a href="../../">Beat Saber Manager</a>, you can easily manage and update your collection of Beat Saber versions.</p>
 <br>
 <div align="center">
 <img src="resources/readme/wip.gif" alt="(WIP) gif with show how to DL and manage version :)">
@@ -128,7 +128,7 @@
 
 ## <b>Install Mods</b>
 <br>
-<p>Beat Saber Manager allows you to manage Beat Saber mods in a quick and easy way. It uses the BeatMod API to allow you to install, update or uninstall mods for each version of your collection. So the tool can help you manage them efficiently.</p>
+<p><a href="../../">Beat Saber Manager</a> allows you to manage Beat Saber mods in a quick and easy way. It uses the BeatMod API to allow you to install, update or uninstall mods for each version of your collection. So the tool can help you manage them efficiently.</p>
 <br>
 
 <div align="center">
@@ -139,7 +139,7 @@
 
 ## <b>Install Maps</b>
 <br>
-<p>In addition to managing mods the tool that allows you to manage and organize custom beatmaps existing on Beat Saver, a popular site for sharing custom beatmaps for beat Saber. The tool allows you to view and organize your beatmaps, as well as link different versions of the game to share all your maps together. </p>
+<p>In addition to managing mods, the tool that allows you to manage and organize custom beatmaps existing on Beat Saver, a popular site for sharing custom beatmaps for beat Saber. The tool allows you to view and organize your beatmaps, as well as link different versions of the game to share all your maps together. </p>
 <br>
 
 <div align="center">
@@ -148,7 +148,7 @@
 
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
 
-## <b>OneClick (WIP)</b>
+## <b>One Click (WIP)</b>
 
 <div align="center">
 <h3>Coming soon</h3>
