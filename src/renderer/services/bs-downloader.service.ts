@@ -52,7 +52,7 @@ export class BsDownloaderService{
 
       this.ipcService.watch<string>("bs-download.[SteamID]").pipe(filter(r => r.success && !!r.data)).subscribe(response => this.authService.setSteamID(response.data));
 
-      this.ipcService.watch<string>("bs-download.[Warning]").pipe(filter(v => !!v && !!v.data),  distinctUntilChanged(), throttleTime(1000)).subscribe(warning => {
+      this.ipcService.watch<string>("bs-download.[Warning]").pipe(filter(v => !!v && !!v.data),  distinctUntilChanged(), throttleTime(10_000)).subscribe(warning => {
          this.notificationService.notifyWarning({title: "notifications.types.warning", desc: `notifications.bs-download.warnings.msg.${warning.data}`});
       });
 
