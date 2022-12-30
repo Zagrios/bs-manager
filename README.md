@@ -162,7 +162,7 @@
 
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
 
-## <b>One Click (WIP)</b>
+## <b>One Click</b>
 
 <div align="center">
 <h3>Coming soon</h3>
