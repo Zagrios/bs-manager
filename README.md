@@ -54,6 +54,7 @@
     </li>
     <li><a href="#usage">Usage</a></li>
     <ul>
+        <li><a href="#how-to-install?">How to install?</a></li>
         <li><a href="#manage-versions">Manage Versions</a></li>
         <li><a href="#install-mods">Install Mods</a></li>
         <li><a href="#install-maps">Install Maps</a></li>
@@ -117,6 +118,18 @@
 ---------------
 
 # <div align="center"><b>Usage</b></div>
+
+## <b>How to install?</b>
+<br>
+<ul>
+	<li>
+		Download the latest release from <a href="https://github.com/Zagrios/bs-manager/releases">Releases</a>.
+	</li>
+	<li>Execute the installer and BSManager will start itself.</li>
+	<li>Once its done if you want to download a version, select a version and download it!</li>
+	<li>From the version page you can choose launch options, launch the version, and more from the dropdown menu!</li>
+</ul>
+<p align="right">[<a href="#readme-top">Return to top</a>]</p>
 
 ## <b>Manage Versions</b>
 <br>
