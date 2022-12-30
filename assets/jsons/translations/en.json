@@ -8,7 +8,9 @@
         "playlists": "Playlists",
         "models": "Models",
         "cancel": "Cancel",
-        "delete": "Delete"
+        "delete": "Delete",
+        "accept": "Accept",
+        "refuse": "Refuse"
     },
     "pages": {
         "version-viewer": {
@@ -134,6 +136,9 @@
                     "supporters": "Supporters"
                 }
             },
+            "discord": {
+                "description": "Join the BSManager community by joining our Discord!"
+            },
             "contribution": {
                 "description": "Suggest new features or report a bug to help improve BSManager!",
                 "buttons": {
@@ -248,6 +253,14 @@
                         },
                         "error":{
                             "description":"An unknown error occurred."
+                        }
+                    },
+                    "check-all-enabled":{
+                        "title": "OneClick Disabled",
+                        "description": "One or more OneClick installations are disabled. Go to settings to enable them.",
+                        "actions":{
+                            "settings": "Settings",
+                            "not-remind": "Do not remind me"
                         }
                     }
                 }
@@ -481,6 +494,14 @@
         "download-maps": {
             "search-btn": "Search",
             "loading-maps": "Loading maps..."
+        },
+        "mods-disclaimer":{
+            "title": "disclaimer",
+            "p-1": "By choosing to use mods, you understand that:",
+            "li-1": "You may experience problems that don't exist in the vanilla game. 99.9% of bugs, crashes, and lag are due to mods.",
+            "li-2": "Mods are subject to being broken by updates and that's normal - be patient and respectful when this happens, as modders are volunteers with real lives.",
+            "li-3": "Beat Games aren't purposefully trying to break mods. They wish to work on the codebase and sometimes this breaks mods, but they are not out to kill mods.",
+            "p-2": "Do not attack the game developers for issues related to mods, and vice versa - modders and game developers are two separate groups. Just don't be a jerk ok."
         }
     },
     "maps": {

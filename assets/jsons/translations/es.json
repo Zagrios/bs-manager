@@ -8,7 +8,9 @@
         "playlists": "Playlists",
         "models": "Modelos",
         "cancel": "Cancelar",
-        "delete": "Borrar"
+        "delete": "Borrar",
+        "accept": "Aceptar",
+        "refuse": "Rechazar"
     },
     "pages": {
         "version-viewer": {
@@ -134,6 +136,9 @@
                     "supporters": "Apoyos"
                 }
             },
+            "discord": {
+                "description": "¡Únete a la comunidad de BSManager uniéndote a nuestro Discord!"
+            },
             "contribution": {
                 "description": "¡Sugiera nuevas características o reporte un error para ayudar a mejorar BSManager!",
                 "buttons": {
@@ -248,6 +253,14 @@
                         },
                         "error":{
                             "description":"Ocurrió un error desconocido."
+                        }
+                    },
+                    "check-all-enabled":{
+                        "title": "OneClick deshabilitado",
+                        "description": "Una o más instalaciones de OneClick están deshabilitadas. Vaya a la configuración para habilitarlas.",
+                        "actions":{
+                            "settings": "Ajustes",
+                            "not-remind": "No volver a recordarme"
                         }
                     }
                 }
@@ -481,6 +494,14 @@
         "download-maps": {
             "search-btn": "buscar",
             "loading-maps": "Cargando mapas..."
+        },
+        "mods-disclaimer":{
+            "title": "descargo de responsabilidad",
+            "p-1": "Al elegir usar mods, entiendes y aceptas que:",
+            "li-1": "Es posible que encuentres problemas que no existen en el juego base. El 99,9% de los errores, bloqueos y ralentizaciones son debidos a los mods.",
+            "li-2": "Es probable que los mods dejen de funcionar debido a las actualizaciones y eso es normal. Sé paciente y respetuoso cuando suceda esto, ya que los modders son voluntarios y tienen una vida.",
+            "li-3": "Beat Games no está intencionalmente tratando de romper los mods. Quieren mejorar el juego base y a veces esto rompe los mods, pero no es su objetivo matar a los mods.",
+            "p-2": "No ataques a los desarrolladores por problemas relacionados con los mods y viceversa. Los modders y los desarrolladores son dos grupos distintos. No seas tonto, ¿de acuerdo?"
         }
     },
     "maps": {

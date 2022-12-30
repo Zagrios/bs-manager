@@ -147,6 +147,7 @@ export function SettingsPage() {
   const openGithub = () => linkOpener.open("https://github.com/Zagrios/bs-manager");
   const openReportBug = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&template=-bug--bug-report.md&title=%5BBUG%5D+%3A+");
   const openRequestFeatures = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=enhancement&template=-feat---feature-request.md&title=%5BFEAT.%5D+%3A+");
+  const openDiscord = () => linkOpener.open("https://discord.gg/uSqbHVpKdV");
 
   const openLogs = () => ipcService.sendLazy("open-logs");
 
@@ -228,7 +229,7 @@ export function SettingsPage() {
 
                 <SettingContainer title="pages.settings.additional-content.title" description="pages.settings.additional-content.description">
 
-                <SettingContainer minorTitle="pages.settings.additional-content.deep-links.sub-title">
+                <SettingContainer id="one-clicks" minorTitle="pages.settings.additional-content.deep-links.sub-title">
                     <ul className="w-full flex flex-col gap-1.5">
                         <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3">
                             <div className="flex items-center gap-2">
@@ -283,6 +284,9 @@ export function SettingsPage() {
                         <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 whitespace-nowrap mr-2 !text-white" iconClassName="mr-1" text="pages.settings.patreon.buttons.support" icon="patreon" color="#EC6350" withBar={false} onClick={openPatreonPage}/>
                         <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="pages.settings.patreon.buttons.supporters" color="#6c5ce7" onClick={toogleShowSupporters}/>
                     </div>
+                    <SettingContainer className="mt-3" description="pages.settings.discord.description">
+                        <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="Discord" icon="discord" iconClassName="p-0.5 mr-1" color="#5865f2" onClick={openDiscord}/>
+                    </SettingContainer>
                     <SettingContainer className="pt-3" description="pages.settings.contribution.description">
                         <div className="flex items-center justify-between w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 rounded-md pl-2 py-1">
                             <div className="flex">

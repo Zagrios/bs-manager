@@ -76,7 +76,8 @@
       "target": [
         "nsis"
       ],
-      "icon": "assets/favicon.ico"
+      "icon": "assets/favicon.ico",
+      "certificateSha1": "f3363a89b084f8f6b616babea3c91f9d79e15000"
     },
     "linux": {
       "target": [
@@ -244,7 +245,6 @@
     "react-dom": "^18.2.0",
     "react-range": "^1.8.14",
     "react-router-dom": "^6.3.0",
-    "react-visibility-sensor": "^5.1.1",
     "regedit": "^5.1.1",
     "rxjs": "^7.5.6",
     "sanitize-filename": "^1.6.3",

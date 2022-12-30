@@ -82,7 +82,7 @@ export function MapsPlaylistsPanel({version}: Props) {
                 {index === 0 &&(
                     <div className="h-full flex absolute right-0 top-0 gap-1.5 items-center pr-2">
                         {isOnline && (
-                            <motion.div whileHover={"hover"} whileTap={"tap"} className="relative h-[calc(100%-5px)] flex flex-row justify-center items-center shrink-0 rounded-full overflow-hidden pr-2" style={{color}} onClick={e => {e.stopPropagation(); onClickAdd(index)}}>
+                            <motion.div whileHover="hover" whileTap="tap" className="relative h-[calc(100%-5px)] flex flex-row justify-center items-center shrink-0 rounded-full overflow-hidden pr-2" style={{color}} onClick={e => {e.stopPropagation(); onClickAdd(index)}}>
                                 <span className="absolute top-0 left-0 h-full w-full brightness-50 opacity-75 dark:opacity-20 dark:filter-none" style={{backgroundColor: "currentcolor"}}/>
                                 <motion.div className="h-full p-0.5" variants={variants}>
                                     <BsmIcon className="block h-full aspect-square brightness-150" icon="add"/>
@@ -128,7 +128,7 @@ export function MapsPlaylistsPanel({version}: Props) {
                 <BsmDropdownButton className="h-full flex aspect-square relative rounded-full z-[1] bg-light-main-color-1 dark:bg-main-color-3" buttonClassName="rounded-full h-full w-full p-[6px]" icon="three-dots" withBar={false} items={dropDownItems} menuTranslationY="6px" align="center"/>
             </nav>
             <div className="w-full h-full flex flex-col bg-light-main-color-3 dark:bg-main-color-2 rounded-md shadow-black shadow-md overflow-hidden">
-                <TabNavBar className="!rounded-none shadow-sm" tabsText={["misc.maps", "misc.playlists"]} onTabChange={setTabIndex} renderTab={renderTab}/>
+                <TabNavBar className="!rounded-none shadow-sm" tabIndex={tabIndex} tabsText={["misc.maps", "misc.playlists"]} onTabChange={setTabIndex} renderTab={renderTab}/>
                 <div className="w-full grow min-h-0 flex flex-row items-center transition-transform duration-300" style={{transform: `translate(${-(tabIndex * 100)}%, 0)`}}>
                     <LocalMapsListPanel ref={mapsRef} className="w-full h-full shrink-0 flex flex-col" version={version} filter={mapFilter} search={mapSearch}/>
                     <div className="w-full h-full shrink-0 flex flex-col justify-center items-center content-center gap-2 overflow-hidden">
