@@ -42,8 +42,7 @@
 <h1> </h1>
 
 <!-- TABLE OF CONTENTS -->
-<details>
-  <summary><b>Table of Contents</b></summary>
+  <b>Table of Contents</b>
   <ol>
     <li>
       <a href="#about-the-project">About The Project</a>
