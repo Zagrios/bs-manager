@@ -39,7 +39,7 @@
 <p align="center">[<a href="#readme-bot">go to bot</a>]</p>
 </div>
 
----------------
+<h1> </h1>
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -65,7 +65,7 @@
   </ol>
 </details>
 
----------------
+<h1> </h1>
 
 # <div align="center"><b>About The Project</b></div>
 <div align="center">
@@ -115,7 +115,7 @@
 </div>
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
   
----------------
+<h1> </h1>
 
 # <div align="center"><b>Usage</b></div>
 
@@ -180,7 +180,7 @@ Otherwise you can add on to existing issues if one matches what you're encounter
 </p>
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
 
----------------
+<h1> </h1>
 
 # <div align="center"><b>RoadMap</b></div>
 
