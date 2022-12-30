@@ -57,6 +57,8 @@
         <li><a href="#manage-versions">Manage Versions</a></li>
         <li><a href="#install-mods">Install Mods</a></li>
         <li><a href="#install-maps">Install Maps</a></li>
+        <li><a href="#one-click">One Click</a></li>
+        <li><a href="#having-problems?">Having problems?</a></li>
       </ul>
     <li><a href="#roadmap">Roadmap</a></li>
   </ol>
@@ -157,6 +159,14 @@
 
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
 
+## <b>Having problems?</b>
+<br>
+<p>
+See the <a href="https://github.com/Zagrios/bs-manager/issues">open issues</a> for a list of known issues, from there you can create a new issue for the problem you have!  
+Otherwise you can add on to existing issues if one matches what you're encountering.
+</p>
+<p align="right">[<a href="#readme-top">Return to top</a>]</p>
+
 ---------------
 
 # <div align="center"><b>RoadMap</b></div>
@@ -166,6 +176,5 @@
 <img src="resources/readme/wip.gif" alt="(WIP) RoadMap img">
 </div>
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
-
 
 <a name="readme-bot"></a>
