@@ -54,12 +54,12 @@
     </li>
     <li><a href="#usage">Usage</a></li>
     <ul>
-        <li><a href="#how-to-install?">How to install?</a></li>
+        <li><a href="#how-to-install">How to install?</a></li>
         <li><a href="#manage-versions">Manage Versions</a></li>
         <li><a href="#install-mods">Install Mods</a></li>
         <li><a href="#install-maps">Install Maps</a></li>
         <li><a href="#one-click">One Click</a></li>
-        <li><a href="#having-problems?">Having problems?</a></li>
+        <li><a href="#having-problems">Having problems?</a></li>
       </ul>
     <li><a href="#roadmap">Roadmap</a></li>
   </ol>
