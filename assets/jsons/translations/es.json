@@ -187,6 +187,9 @@
                 }
             },
             "errors": {
+                "titles":{
+                    "dotnet-required": ".NET 6 Requerido"
+                },
                 "msg": {
                     "401": "Parece que Steam no quiere dejarnos descargar BeatSaber 😢",
                     "404": "No se puede contactar con los servidores de Steam",
@@ -211,7 +214,11 @@
                     "verification-failed": "Verificación fallida, inténtelo más tarde.",
                     "RateLimitExceeded": "Lo has intentado demasiadas veces, espera un poco y vuelve a intentarlo más tarde.",
                     "AlreadyDownloading": "La descarga ya está en curso",
-                    "no-internet": "Sin conexión a Internet."
+                    "no-internet": "Sin conexión a Internet.",
+                    "dotnet-required": "Se debe instalar el tiempo de ejecución de .NET 6 para descargar una versión de BeatSaber. Descárguelo haciendo clic en el botón de abajo."
+                },
+                "actions":{
+                    "download-dotnet": "Descargar .NET 6"
                 }
             }
         },

@@ -2,7 +2,7 @@ import { BS_APP_ID, BS_DEPOT } from "../constants";
 import path from "path";
 import { BSVersion } from 'shared/bs-version.interface';
 import { UtilsService } from "./utils.service";
-import { ChildProcessWithoutNullStreams, spawn } from "child_process";
+import { ChildProcessWithoutNullStreams, spawn, spawnSync } from "child_process";
 import log from "electron-log";
 import { InstallationLocationService } from "./installation-location.service";
 import { ctrlc } from "ctrlc-windows";
@@ -27,7 +27,7 @@ export class BSInstallerService{
     this.localVersionService = BSLocalVersionService.getInstance();
     this.windows = WindowManagerService.getInstance();
 
-    this.windows.getWindows("index.html").on("close", () => {
+    this.windows.getWindows("index.html")?.on("close", () => {
         this.killDownloadProcess();
     });
   }
@@ -64,6 +64,18 @@ export class BSInstallerService{
          setTimeout(() => resolve(false), 3000);
       });
    }
+
+    public async isDotNet6Installed(): Promise<boolean>{
+        try{
+            const process = spawnSync(this.getDepotDownloaderExePath());
+            const out = process.output.toString();
+            if(out.includes(".NET runtime can be found at")){ return false; }
+            return true;
+        }
+        catch(e){
+            return false;
+        }
+    }
 
   public async downloadBsVersion(downloadInfos: DownloadInfo): Promise<DownloadEvent>{
 

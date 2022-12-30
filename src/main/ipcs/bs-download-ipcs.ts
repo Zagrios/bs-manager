@@ -25,6 +25,14 @@ export interface DownloadInfo {
   stay?: boolean
 }
 
+ipcMain.on('is-dotnet-6-installed', async (event, request: IpcRequest<void>) => {
+    const installer = BSInstallerService.getInstance();
+    const utils = UtilsService.getInstance();
+    installer.isDotNet6Installed().then(installed => {
+        utils.ipcSend(request.responceChannel, {success: true, data: installed});
+    });
+});
+
 ipcMain.on('bs-download.start', async (event, request: IpcRequest<DownloadInfo>) => {
   BSInstallerService.getInstance().downloadBsVersion(request.args).then(async res => {
     await LocalMapsManagerService.getInstance().linkVersionMaps(request.args.bsVersion, true).catch(e => {});

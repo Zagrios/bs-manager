@@ -11,6 +11,7 @@ import { NotificationService } from './notification.service';
 import { ProgressBarService } from './progress-bar.service';
 import { LoginModal } from 'renderer/components/modal/modal-types/login-modal.component';
 import { GuardModal } from 'renderer/components/modal/modal-types/guard-modal.component';
+import { LinkOpenerService } from './link-opener.service';
 
 export class BsDownloaderService{
 
@@ -22,6 +23,7 @@ export class BsDownloaderService{
     private readonly authService: AuthUserService;
     private readonly progressBarService: ProgressBarService;
     private readonly notificationService: NotificationService;
+    private readonly linkOpener: LinkOpenerService;
 
     private _isVerification: boolean = false;
 
@@ -41,6 +43,7 @@ export class BsDownloaderService{
         this.authService = AuthUserService.getInstance();
         this.progressBarService = ProgressBarService.getInstance();
         this.notificationService = NotificationService.getInstance();
+        this.linkOpener = LinkOpenerService.getInstance();
         this.asignListerners();
     }
 
@@ -84,8 +87,28 @@ export class BsDownloaderService{
       return this.ipcService.send<boolean>("bs-download.kill");
    }
 
+    public isDotNet6Installed(): Promise<boolean>{
+        return this.ipcService.send<boolean>("is-dotnet-6-installed").then(res => res.success && res.data)
+    }
+
    public async download(bsVersion: BSVersion, isVerification?: boolean, isFirstCall = true): Promise<IpcResponse<DownloadEvent>>{
       if(isFirstCall && !this.progressBarService.require()){ return {success: false}; }
+
+      if(isFirstCall && !(await this.isDotNet6Installed())){
+
+        const choice = await this.notificationService.notifyError({
+            duration: 11_000,
+            title: "notifications.bs-download.errors.titles.dotnet-required",
+            desc: "notifications.bs-download.errors.msg.dotnet-required",
+            actions: [{id: "0", title: "notifications.bs-download.errors.actions.download-dotnet"}]
+        });
+
+        if(choice === "0"){
+            this.linkOpener.open("https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-6.0.12-windows-x64-installer");
+        }
+
+        return {success: false};
+      }
 
       this.progressBarService.show(this.downloadProgress$);
       this._isVerification = !!isVerification;
