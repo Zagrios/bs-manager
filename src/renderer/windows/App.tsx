@@ -48,7 +48,7 @@ export default function App() {
 
         if(config.get("not-remind-oneclick") === true){ return; }
 
-        await timer(2_000).toPromise();
+        await timer(3_000).toPromise();
 
         const oneClicks = await Promise.all([
             maps.isDeepLinksEnabled(),
