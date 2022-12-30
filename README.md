@@ -13,7 +13,7 @@
 
 <div align="center">
   <a href="https://github.com/Zagrios/bs-manager">
-    <img src="https://raw.githubusercontent.com/Zagrios/bs-manager/master/resources/readme/icon.svg" alt="Logo" width="200" height="200">
+    <img src="https://raw.githubusercontent.com/Zagrios/bs-manager/master/resources/readme/icon.svg" alt="Logo" width="250" height="250">
   </a>
   <br><br>
   <h2 align="center"><b>Beat Saber Manager</b></h3>
