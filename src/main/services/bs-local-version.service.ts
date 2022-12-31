@@ -66,7 +66,7 @@ export class BSLocalVersionService{
    }
 
    private setCustomVersions(versions: BSVersion[]): void{
-      this.configService.set(this.CUSTOM_VERSIONS_KEY, versions,this.CUSTOM_VERSIONS_KEY,this.installLocationService.installationDirectory);
+      this.configService.set(this.CUSTOM_VERSIONS_KEY, versions);
    }
 
    private addCustomVersion(version: BSVersion): void{
@@ -74,7 +74,7 @@ export class BSLocalVersionService{
    }
 
    private getCustomVersions(): BSVersion[]{
-      return this.configService.get<BSVersion[]>(this.CUSTOM_VERSIONS_KEY,this.CUSTOM_VERSIONS_KEY) || [];
+      return this.configService.get<BSVersion[]>(this.CUSTOM_VERSIONS_KEY) || [];
    }
 
    private deleteCustomVersion(version: BSVersion): void{
@@ -203,10 +203,11 @@ export class BSLocalVersionService{
 
       if(this.utilsService.pathExist(newPath)){ throw {title: "VersionAlreadExist"} as BsmException; }
 
-      return fs.copy(originPath, newPath).then(() => {
+      return fs.copy(originPath, newPath, {dereference: true}).then(() => {
          this.addCustomVersion(cloneVersion);
          return cloneVersion;
       }).catch((err: Error) => {
+         log.error("CLONE", err, version);
          throw {title: "CantClone", error: err} as BsmException
       })
    }
