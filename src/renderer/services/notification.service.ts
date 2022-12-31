@@ -1,23 +1,29 @@
 import { BehaviorSubject } from "rxjs";
-import { v4 as uuidv4 } from 'uuid';
+import { SystemNotificationOptions } from "shared/models/notification/system-notification.model";
+import { IpcService } from "./ipc.service";
 
 export class NotificationService{
 
     private static instance: NotificationService;
 
-    public readonly notifications$: BehaviorSubject<ResolvableNotification[]>;
+    
 
     public static getInstance(): NotificationService{
         if(!NotificationService.instance){ NotificationService.instance = new NotificationService(); }
         return NotificationService.instance;
     }
 
+    public readonly notifications$: BehaviorSubject<ResolvableNotification[]>;
+
+    private readonly ipc: IpcService;
+
     private constructor(){
+        this.ipc = IpcService.getInstance();
         this.notifications$ = new BehaviorSubject<ResolvableNotification[]>([]);
     }
 
     public notify(notification: Notification): Promise<NotificationResult|string>{
-        const resovableNotification: ResolvableNotification = {id: uuidv4(), notification, resolver: null };
+        const resovableNotification: ResolvableNotification = {id: crypto.randomUUID(), notification, resolver: null };
         const promise = new Promise<NotificationResult|string>(resolve => {
             resovableNotification.resolver = resolve;
             setTimeout(() => resolve(NotificationResult.NO_CHOICE), notification.duration || 7000);
@@ -45,6 +51,10 @@ export class NotificationService{
     public notifySuccess(notification: Notification): Promise<NotificationResult|string>{
         notification.type = NotificationType.SUCCESS;
         return this.notify(notification);
+    }
+
+    public notifySystem(options: SystemNotificationOptions){
+        this.ipc.sendLazy<SystemNotificationOptions>("notify-system", {args: options});
     }
 
 }

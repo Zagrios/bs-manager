@@ -23,10 +23,10 @@ export function AvailableVersionsSlider() {
 
     return (
         <div className="w-full h-fit max-h-full flex flex-col items-center grow min-h-0">
-            <TabNavBar className="mb-3" tabsText={availableYears} onTabChange={setSelectedYear}/>
+            <TabNavBar className="mb-3" tabIndex={yearIndex} tabsText={availableYears} onTabChange={setSelectedYear}/>
             <ol className="w-full min-h-0 flex transition-transform duration-300" style={{transform: `translate(${-(yearIndex * 100)}%, 0)`}}>
-                { availableYears.map((year, index) =>
-                    <AvailableVersionsSlide key={index} year={year}></AvailableVersionsSlide>
+                { availableYears.map(year =>
+                    <AvailableVersionsSlide key={year} year={year}/>
                 )}
             </ol>
         </div>

@@ -1,10 +1,12 @@
-import { BehaviorSubject } from "rxjs";
+import { Location } from "history";
+import { map } from "rxjs/operators";
+import { BehaviorSubject, Observable } from "rxjs";
 
 export class PageStateService {
 
     private static instance: PageStateService;
 
-    private readonly _state$: BehaviorSubject<any> = new BehaviorSubject(undefined);
+    private readonly location$: BehaviorSubject<Location> = new BehaviorSubject(null);;
 
     public static getInstance(): PageStateService{
         if(!PageStateService.instance){ PageStateService.instance = new PageStateService(); }
@@ -13,16 +15,24 @@ export class PageStateService {
 
     private constructor(){}
 
-    public setState(state: unknown){
-        this._state$.next(state);
+    public setLocation(location: Location){
+        this.location$.next(location);
     }
 
     public getState<T = unknown>(): T{
-        return this._state$.value;
+        return this.location$.getValue().state as T;
     }
 
-    public get state$(){
-        return this._state$.asObservable();
+    public getRoute(): string{
+        return this.location$.value?.pathname;
+    }
+
+    public get state$(): Observable<unknown>{
+        return this.location$.pipe(map(location => location.state));
+    }
+
+    public get route$(): Observable<string>{
+        return this.location$.pipe(map(location => location?.pathname));
     }
 
 }

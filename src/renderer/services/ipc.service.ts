@@ -37,7 +37,7 @@ export class IpcService {
         if(this.channelObservables.has(channel)){ return this.channelObservables.get(channel) as Observable<IpcResponse<T>>; }
 
         const obs = new Observable<IpcResponse<T>>(observer => {
-            window.electron.ipcRenderer.on(channel, res => {
+            window.electron.ipcRenderer.on(channel, (res: IpcResponse<T>) => {
                 observer.next(res);
             });
         })

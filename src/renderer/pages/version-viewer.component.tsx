@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import BSLogo from '../../../assets/images/apngs/bs-logo.png';
 import { TabNavBar } from 'renderer/components/shared/tab-nav-bar.component';
-import wipGif from "../../../assets/images/gifs/wip.gif"
 import { BsmDropdownButton } from 'renderer/components/shared/bsm-dropdown-button.component';
 import { BsmImage } from 'renderer/components/shared/bsm-image.component';
 import { BSUninstallerService } from '../services/bs-uninstaller.service';
@@ -12,10 +11,10 @@ import { ModalExitCode, ModalService } from '../services/modale.service';
 import DefautVersionImage from "../../../assets/images/default-version-img.jpg";
 import { BsDownloaderService } from 'renderer/services/bs-downloader.service';
 import { IpcService } from 'renderer/services/ipc.service';
-import { MapService } from 'renderer/services/maps.service';
 import { LaunchSlide } from 'renderer/components/version-viewer/slides/launch/launch-slide.component';
 import { ModsSlide } from 'renderer/components/version-viewer/slides/mods/mods-slide.component';
 import { UninstallModal } from 'renderer/components/modal/modal-types/uninstall-modal.component';
+import { MapsPlaylistsPanel } from 'renderer/components/maps-mangement-components/maps-playlists-panel.component';
 
 export function VersionViewer() {
 
@@ -24,7 +23,6 @@ export function VersionViewer() {
     const modalService = ModalService.getInsance();
     const bsDownloaderService = BsDownloaderService.getInstance();
     const ipcService = IpcService.getInstance();
-    const mapService = MapService.getInstance();
 
     const {state} = useLocation() as {state: BSVersion};
     const navigate = useNavigate();
@@ -32,7 +30,6 @@ export function VersionViewer() {
 
     const navigateToVersion = (version: BSVersion) => navigate(`/bs-version/${version.BSVersion}`, {state: version});
     const openFolder = () => ipcService.sendLazy("bs-version.open-folder", {args: state});
-    const exportMaps = () => mapService.exportVersionMaps(state);
     const verifyFiles = () => bsDownloaderService.download(state, true);
 
     const uninstall = async () => {
@@ -60,6 +57,10 @@ export function VersionViewer() {
         });
     }
 
+    const handleModsDisclaimerDecline = () => {
+        setCurrentTabIndex(() => 0);
+    }
+
 
   return (
     <>
@@ -67,22 +68,18 @@ export function VersionViewer() {
       <div className="relative flex items-center flex-col w-full h-full text-gray-200 backdrop-blur-lg">
         <BsmImage className='relative object-cover h-28' image={BSLogo}/>
         <h1 className='relative text-4xl font-bold italic -top-3'>{state.name ? `${state.BSVersion} - ${state.name}` : state.BSVersion}</h1>
-        <TabNavBar className='my-3' tabsText={["misc.launch", "misc.maps", "misc.mods"]} onTabChange={(i : number) => setCurrentTabIndex(i)}/>
-        <div className='mt-2 w-full min-h-0 grow flex transition-transform duration-300 pt-3' style={{transform: `translate(${-(currentTabIndex * 100)}%, 0)`}}>
+        <TabNavBar className='my-3' tabIndex={currentTabIndex} tabsText={["misc.launch", "misc.maps", "misc.mods"]} onTabChange={(i : number) => setCurrentTabIndex(i)}/>
+        <div className='mt-2 w-full min-h-0 grow flex transition-transform duration-300' style={{transform: `translate(${-(currentTabIndex * 100)}%, 0)`}}>
           <LaunchSlide version={state}/>
-          <div className='shrink-0 w-full h-full flex justify-center'>
-            <div className='p-4 bg-light-main-color-2 dark:bg-main-color-2 h-fit rounded-md'>
-              <img src={wipGif} alt="" />
-              <span className='block w-full text-center font-bold mt-2 text-gray-800 dark:text-white'>Work In Progress</span>
-            </div>
+          <div className="w-full shrink-0 px-3 pb-3 flex flex-col items-center">
+            <MapsPlaylistsPanel version={state}/>
           </div>
-          <ModsSlide version={state}/>
+          <ModsSlide version={state} onDisclamerDecline={handleModsDisclaimerDecline}/>
         </div>
       </div>
       <BsmDropdownButton className='absolute top-5 right-5 h-9 w-9 bg-light-main-color-2 dark:bg-main-color-2 rounded-md' items={[
           {text: "pages.version-viewer.dropdown.open-folder", icon: "folder", onClick: openFolder},
           ((!state.steam && !state.oculus) && {text: "pages.version-viewer.dropdown.verify-files", icon: "task", onClick: verifyFiles}),
-          ((!state.steam && !state.oculus) && {text: "Exporter les misc.maps", icon: "export", onClick: exportMaps}),
           ((!state.steam && !state.oculus) && {text: "pages.version-viewer.dropdown.edit", icon: "edit", onClick: edit}),
           (!state.oculus && {text: "pages.version-viewer.dropdown.clone", icon: "copy", onClick: clone}),
           ((!state.steam && !state.oculus) && {text: "pages.version-viewer.dropdown.uninstall", icon:"trash", onClick: uninstall})
