@@ -1,23 +1,37 @@
 import ElectronStore from "electron-store";
+import { InstallationLocationService } from "./installation-location.service";
 
 export class ConfigurationService {
 
     private static instance: ConfigurationService;
-
-    private readonly _store: ElectronStore;
 
     public static getInstance(): ConfigurationService{
         if(!ConfigurationService.instance){ ConfigurationService.instance = new ConfigurationService(); }
         return ConfigurationService.instance;
     }
 
+    private readonly locations: InstallationLocationService;
+
+    private store: ElectronStore;
+
     private constructor(){
-        this._store = new ElectronStore();
+        this.locations = InstallationLocationService.getInstance();
+        this.initStore();
+
+        this.locations.onInstallLocationUpdate(() => this.initStore());
+
     }
 
-    public get store(): ElectronStore{ return this._store; }
+    private initStore(){
+        const contentPath = this.locations.installationDirectory;
+        this.store = new ElectronStore({
+            cwd: contentPath,
+            name: "config",
+            fileExtension: "cfg",
+        });
+    }
 
-    public set(key: string, value: any): void{
+    public set(key: string, value: unknown): void{
         this.store.set(key, value);
     }
 
