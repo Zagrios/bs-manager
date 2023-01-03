@@ -157,7 +157,7 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
         <form className="text-gray-800 dark:text-gray-200 flex flex-col max-w-[95vw] w-[970px] h-[85vh] gap-3" onSubmit={e => {e.preventDefault(); handleSearch()}}>
             <div className="flex h-9 gap-2 shrink-0">
                 <BsmDropdownButton className="shrink-0 h-full relative z-[1] flex justify-start" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1 !bg-light-main-color-1 dark:!bg-main-color-1" icon="filter" text="pages.version-viewer.maps.search-bar.filters-btn" withBar={false}>
-                    <FilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[450px] h-fit p-2 rounded-md shadow-md shadow-black" filter={filter} onChange={setFilter}/>
+                    <FilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[450px] h-fit p-2 rounded-md shadow-md shadow-black" filter={filter} onChange={setFilter} onApply={handleSearch}/>
                 </BsmDropdownButton>
                 <input className="h-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2 grow pb-0.5" type="text" name="" id="" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={query} onChange={e => setQuery(e.target.value)}/>
                 <BsmButton className="shrink-0 rounded-full py-1 px-3 !bg-light-main-color-1 dark:!bg-main-color-1 flex justify-center items-center capitalize" icon="search" text="modals.download-maps.search-btn" withBar={false} onClick={e => {e.preventDefault(); handleSearch()}}/>

@@ -1,6 +1,6 @@
 import { MapFilter, MapSpecificity, MapStyle, MapTag, MapType } from "shared/models/maps/beat-saver.model"
 import {motion} from "framer-motion"
-import { MutableRefObject} from "react"
+import { MutableRefObject, useEffect, useRef, useState} from "react"
 import { MAP_TYPES } from "renderer/partials/maps/map-tags/map-types"
 import { MAP_STYLES } from "renderer/partials/maps/map-tags/map-styles"
 import { BsmCheckbox } from "../shared/bsm-checkbox.component"
@@ -11,6 +11,7 @@ import { useTranslation } from "renderer/hooks/use-translation.hook"
 import { MAP_SPECIFICITIES } from "renderer/partials/maps/map-general/map-specificity"
 import { MAP_REQUIREMENTS } from "renderer/partials/maps/map-requirements/map-requirements"
 import { MAP_DIFFICULTIES_COLORS } from "renderer/partials/maps/map-difficulties/map-difficulties-colors"
+import { BsmButton } from "../shared/bsm-button.component"
 
 export type Props = {
     className?: string,
@@ -18,11 +19,15 @@ export type Props = {
     playlist?: boolean,
     filter: MapFilter
     onChange?: (filter: MapFilter) => void
+    onApply?: (filter: MapFilter) => void
 }
 
-export function FilterPanel({className, ref, playlist = false, filter, onChange}: Props) {
+export function FilterPanel({className, ref, playlist = false, filter, onChange, onApply}: Props) {
 
     const t = useTranslation();
+
+    const [haveChanged, setHaveChanged] = useState(false);
+    const firstRun = useRef(true);
 
     const MIN_NPS = 0;
     const MAX_NPS = 17;
@@ -35,6 +40,15 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange}
 
     const isTagActivated = (tag: MapTag): boolean => filter?.enabledTags?.has(tag) || filter?.excludedTags?.has(tag);
     const isTagExcluded = (tag: MapTag): boolean => filter?.excludedTags?.has(tag);
+
+    useEffect(() => {
+        if(firstRun.current){
+            firstRun.current = false;
+            return; 
+        }
+        setHaveChanged(() => true);
+    }, [filter])
+    
 
     const renderDurationLabel = (sec: number): JSX.Element => {
 
@@ -172,10 +186,14 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange}
                             <span key={tag} onClick={() => handleTagClick(tag)} className={`text-[12.5px] text-black rounded-md px-1 font-bold cursor-pointer ${(!isTagActivated(tag)) && "opacity-40 hover:opacity-90"}`} style={{backgroundColor: isTagExcluded(tag) ? MAP_DIFFICULTIES_COLORS.Expert : MAP_DIFFICULTIES_COLORS.Easy}}>{translateMapStyle(tag)}</span>
                         ))}
                     </div>
-                    
-                    
                 </section>
             </div>
+            {onApply && (
+                <div className="inline float-right relative w-fit h-fit mt-2">
+                    <BsmButton className="inline float-right rounded-md font-bold px-1 py-0.5 text-sm" text="Appliquer" typeColor="primary" withBar={false} onClick={e => {e.preventDefault(); onApply(filter); setHaveChanged(() => false)}}/>
+                    {haveChanged && <div className="glow-on-hover !opacity-100"></div>}
+                </div>
+            )}
         </motion.div>
     ) : (
     <></>
