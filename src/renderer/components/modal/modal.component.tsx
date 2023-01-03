@@ -39,7 +39,7 @@ export function Modal() {
   return  (
       <AnimatePresence>
          {ModalComponent && (
-            <div className="top-0 absolute w-screen h-screen flex content-center items-center justify-center z-50">
+            <div className="top-0 absolute w-screen h-screen flex content-center items-center justify-center z-[90]">
                <motion.span key="modal-overlay" onClick={() => modalSevice.resolve({exitCode: ModalExitCode.NO_CHOICE})} className="absolute top-0 bottom-0 right-0 left-0 bg-black" initial={{opacity: 0}} animate={{opacity: ModalComponent && .60}} exit={{opacity: 0}} transition={{duration: .2}}/>
                <motion.div key="modal" initial={{y: "100vh"}} animate={{y: 0}} exit={{y: "100vh"}}>
                   <div className="relative p-4 text-gray-800 dark:text-gray-200 rounded-md shadow-lg shadow-black bg-gradient-to-br from-light-main-color-3 to-light-main-color-2 dark:from-main-color-3 dark:to-main-color-2">
