@@ -163,7 +163,7 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
                 <BsmButton className="shrink-0 rounded-full py-1 px-3 !bg-light-main-color-1 dark:!bg-main-color-1 flex justify-center items-center capitalize" icon="search" text="modals.download-maps.search-btn" withBar={false} onClick={e => {e.preventDefault(); handleSearch()}}/>
                 <BsmSelect className="bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-1 pb-0.5 text-center" options={sortOptions} onChange={handleSortChange}/>
             </div>
-            <ul className="w-full grow flex content-start flex-wrap gap-2 px-2 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900" >
+            <ul className="w-full grow flex content-start flex-wrap gap-2 px-2 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 z-0" >
                 {maps.length === 0 ? (
                     <div className="w-full h-full flex flex-col items-center justify-center">
                         <img className="w-32 h-32 spin-loading" src={BeatWaitingImg} alt=" "/>
