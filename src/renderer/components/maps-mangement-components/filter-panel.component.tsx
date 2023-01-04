@@ -190,7 +190,7 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange,
             </div>
             {onApply && (
                 <div className="inline float-right relative w-fit h-fit mt-2">
-                    <BsmButton className="inline float-right rounded-md font-bold px-1 py-0.5 text-sm" text="Appliquer" typeColor="primary" withBar={false} onClick={e => {e.preventDefault(); onApply(filter); setHaveChanged(() => false)}}/>
+                    <BsmButton className="inline float-right rounded-md font-bold px-1 py-0.5 text-sm" text="misc.apply" typeColor="primary" withBar={false} onClick={e => {e.preventDefault(); onApply(filter); setHaveChanged(() => false)}}/>
                     {haveChanged && <div className="glow-on-hover !opacity-100"></div>}
                 </div>
             )}
