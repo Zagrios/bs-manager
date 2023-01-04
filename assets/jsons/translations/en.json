@@ -10,7 +10,8 @@
         "cancel": "Cancel",
         "delete": "Delete",
         "accept": "Accept",
-        "refuse": "Refuse"
+        "refuse": "Refuse",
+        "apply": "Apply"
     },
     "pages": {
         "version-viewer": {
