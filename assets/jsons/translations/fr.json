@@ -381,6 +381,9 @@
         }
     },
     "modals": {
+        "misc":{
+            "remember-my-choice": "Se souvenir de mon choix"
+        },
         "guard": {
             "title": "Steam Guard",
             "inputs": {
