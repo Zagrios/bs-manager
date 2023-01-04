@@ -17,12 +17,13 @@ export type Props = {
     className?: string,
     ref?: MutableRefObject<undefined>
     playlist?: boolean,
-    filter: MapFilter
-    onChange?: (filter: MapFilter) => void
-    onApply?: (filter: MapFilter) => void
+    filter: MapFilter,
+    onChange?: (filter: MapFilter) => void,
+    onApply?: (filter: MapFilter) => void,
+    onClose?: (filter: MapFilter) => void
 }
 
-export function FilterPanel({className, ref, playlist = false, filter, onChange, onApply}: Props) {
+export function FilterPanel({className, ref, playlist = false, filter, onChange, onApply, onClose}: Props) {
 
     const t = useTranslation();
 
@@ -148,6 +149,12 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange,
         onChange(newFilter);
     }
 
+    const handleApply = () => {
+        onApply(filter);
+        setHaveChanged(() => false);
+        onClose?.(filter);
+    }
+
     return !playlist ? (
         <motion.div ref={ref} className={`${className} bg-light-main-color-2 dark:bg-main-color-3`} initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}}>
             <div className="w-full h-6 grid grid-cols-2 gap-x-12 px-4 mb-6 pt-2">
@@ -190,7 +197,7 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange,
             </div>
             {onApply && (
                 <div className="inline float-right relative w-fit h-fit mt-2">
-                    <BsmButton className="inline float-right rounded-md font-bold px-1 py-0.5 text-sm" text="misc.apply" typeColor="primary" withBar={false} onClick={e => {e.preventDefault(); onApply(filter); setHaveChanged(() => false)}}/>
+                    <BsmButton className="inline float-right rounded-md font-bold px-1 py-0.5 text-sm" text="Appliquer" typeColor="primary" withBar={false} onClick={handleApply}/>
                     {haveChanged && <div className="glow-on-hover !opacity-100"></div>}
                 </div>
             )}
