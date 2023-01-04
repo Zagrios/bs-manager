@@ -68,7 +68,7 @@
 
 # <div align="center"><b>About The Project</b></div>
 <div align="center">
-<img src="resources/readme/wip.gif" alt="(WIP) home interface with multiple instance dl and steam & oculus.">
+<img src="resources/readme/preview.png" alt="(WIP) home interface with multiple instance dl and steam & oculus.">
 </div>
 <br>
 <p><a href="../../">Beat Saber Manager</a> was created to unify and improve the two most used tools in the community (<a href="https://github.com/RiskiVR/BSLegacyLauncher">BS legacy launcher</a> and <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>).
@@ -135,7 +135,7 @@
 <p><a href="../../">Beat Saber Manager</a> allows you to manage your versions of Beat Saber. It gives you the ability to download any version of Beat Saber as long as you have a Steam account that already owns the game. Using <a href="../../">Beat Saber Manager</a>, you can easily manage and update your collection of Beat Saber versions.</p>
 <br>
 <div align="center">
-<img src="resources/readme/wip.gif" alt="(WIP) gif with show how to DL and manage version :)">
+<img src="resources/readme/manageVersion.gif" alt="gif with show how to DL and manage version :)">
 </div>
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
 
@@ -146,7 +146,7 @@
 <br>
 
 <div align="center">
-<img src="resources/readme/wip.gif" alt="(WIP) gif with show how to dl and update mods">
+<img src="resources/readme/installMods.gif" alt="gif with show how to dl and update mods">
 </div>
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
 
@@ -157,7 +157,7 @@
 <br>
 
 <div align="center">
-<img src="resources/readme/wip.gif" alt="(WIP) gif with show how to dl map :D">
+<img src="resources/readme/installMaps.gif" alt="gif with show how to dl map :D">
 </div>
 
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
