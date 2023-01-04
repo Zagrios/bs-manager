@@ -133,7 +133,7 @@ export function MapsPlaylistsPanel({version}: Props) {
                     <LocalMapsListPanel ref={mapsRef} className="w-full h-full shrink-0 flex flex-col" version={version} filter={mapFilter} search={mapSearch}/>
                     <div className="w-full h-full shrink-0 flex flex-col justify-center items-center content-center gap-2 overflow-hidden">
                         <BsmImage className="rounded-md" image={wipGif}/>
-                        <span>Work in progress</span>
+                        <span>Coming soon</span>
                     </div>
                 </div>
             </div> 
