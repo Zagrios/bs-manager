@@ -231,7 +231,7 @@ export function SettingsPage() {
 
                 <SettingContainer id="one-clicks" minorTitle="pages.settings.additional-content.deep-links.sub-title">
                     <ul className="w-full flex flex-col gap-1.5">
-                        <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3">
+                        <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3 cursor-pointer" onClick={toogleMapDeepLinks}>
                             <div className="flex items-center gap-2">
                                 <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={toogleMapDeepLinks} checked={mapDeepLinksEnabled}/>
                                 <span className="font-extrabold">{t("misc.maps")}</span>
@@ -248,7 +248,7 @@ export function SettingsPage() {
                                 </Tippy>
                             </div>
                         </li>
-                        <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3">
+                        <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3 cursor-pointer" onClick={tooglePlaylistsDeepLinks}>
                             <div className="flex items-center gap-2">
                                 <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={tooglePlaylistsDeepLinks} checked={playlistsDeepLinkEnabled}/>
                                 <span className="font-extrabold">{t("misc.playlists")}</span>
@@ -259,7 +259,7 @@ export function SettingsPage() {
                                 </Tippy>
                             </div>
                         </li>
-                        <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3">
+                        <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3 cursor-pointer" onClick={toogleModelsDeepLinks}>
                             <div className="flex items-center gap-2">
                                 <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={toogleModelsDeepLinks} checked={modelsDeepLinkEnabled}/>
                                 <span className="font-extrabold">{t("misc.models")}</span>
