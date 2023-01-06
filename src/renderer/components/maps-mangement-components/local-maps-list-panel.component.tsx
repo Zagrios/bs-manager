@@ -237,7 +237,7 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
             bpm={map.rawInfo._beatsPerMinute}
             duration={map.bsaverInfo?.metadata?.duration}
             selected={selectedMaps.some(_map => _map.hash === map.hash)}
-            diffs={extractMapDiffs(map)} mapId={map.bsaverInfo?.id} qualified={null} ranked={map.bsaverInfo?.ranked} autorId={map.bsaverInfo?.uploader?.id} likes={map.bsaverInfo?.stats?.upvotes} createdAt={map.bsaverInfo?.createdAt}
+            diffs={extractMapDiffs(map)} mapId={map.bsaverInfo?.id} ranked={map.bsaverInfo?.ranked} autorId={map.bsaverInfo?.uploader?.id} likes={map.bsaverInfo?.stats?.upvotes} createdAt={map.bsaverInfo?.createdAt}
             onDelete={handleDelete}
             onSelected={onMapSelected}
             callBackParam={map}

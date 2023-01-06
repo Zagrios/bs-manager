@@ -33,7 +33,6 @@ export type MapItemProps<T = any> = {
     autorId: number,
     mapId: string,
     diffs: Map<BsvMapCharacteristic, ParsedMapDiff[]>,
-    qualified: boolean,
     ranked: boolean,
     bpm: number,
     duration: number,
@@ -41,6 +40,7 @@ export type MapItemProps<T = any> = {
     createdAt: string,
     selected?: boolean,
     downloading?: boolean,
+    showOwned?: boolean,
     callBackParam: T
     onDelete?: (param: T) => void,
     onDownload?: (param: T) => void,
@@ -49,7 +49,7 @@ export type MapItemProps<T = any> = {
     onDoubleClick?: (param: T) => void
 }
 
-export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, qualified, ranked, bpm, duration, likes, createdAt, selected, downloading, callBackParam, onDelete, onDownload, onSelected, onCancelDownload, onDoubleClick}: MapItemProps) => {
+export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, ranked, bpm, duration, likes, createdAt, selected, downloading, showOwned, callBackParam, onDelete, onDownload, onSelected, onCancelDownload, onDoubleClick}: MapItemProps) => {
 
     const linkOpener = LinkOpenerService.getInstance();
     const audioPlayer = AudioPlayerService.getInstance();
@@ -175,7 +175,7 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
                 )}
             </AnimatePresence>
             <div className="h-full w-full relative pl-[100px] rounded-md overflow-hidden flex flex-row justify-end">
-                <div className="absolute top-0 left-0 h-full aspect-square cursor-pointer">
+                <div className={`absolute top-0 left-0 h-full aspect-square cursor-pointer ${showOwned && "border-l-[5px]"}`} style={{borderColor: showOwned && color}}>
                     <BsmImage className="w-full h-full object-cover" image={coverUrl} placeholder={defaultImage} errorImage={defaultImage} loading="lazy"/>
                     <span className="absolute flex justify-center items-center w-full h-full pr-1 bg-transparent top-0 left-0 group-hover:bg-black group-hover:bg-opacity-40" style={{color}} onClick={(e) => {e.stopPropagation(); e.preventDefault(); toogleMusic()}}>
                         <BsmIcon className="w-full h-full p-7 opacity-0 group-hover:opacity-100 text-white hover:text-current" icon={songPlaying ? "pause" : "play"}/>
@@ -186,7 +186,7 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
                     <div className="pt-1 pl-2 pr-7 top-0 left-0 w-full h-full bg-gray-600 bg-opacity-80 flex flex-col justify-between group-hover:bg-main-color-1 group-hover:bg-opacity-80">
                         <h1 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full leading-5 tracking-wide text-lg" title={title}><BsmLink className="hover:underline" href={mapUrl}>{title}</BsmLink></h1>
                         <h2 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full text-sm mb-[3px]">{songAutor && t("maps.map-item.by", {songAutor})}</h2>
-                        <h3 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full text-xs">{autor && (<> {t("maps.map-item.mapped-by")} <BsmLink href={authorUrl} className="brightness-150 hover:underline" style={{color}}>{autor}</BsmLink></>)}</h3>
+                        <h3 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full text-xs">{autor && (<> {t("maps.map-item.mapped-by")} <BsmLink href={authorUrl} className="brightness-200 hover:underline" style={{color}}>{autor}</BsmLink></>)}</h3>
                         <div className="w-full h-4 text-xs gap-2 flex opacity-0 group-hover:opacity-100">
                             {likesText && (
                                 <div className="h-full flex items-center">
@@ -224,12 +224,12 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
                     <span className="absolute w-[10px] h-[10px] bottom-0 right-full bg-inherit" style={{clipPath: 'path("M11 11 L11 0 L10 0 A10 10 0 0 1 0 10 L 0 11 Z")'}}/>
 
                     <div className="flex flex-col justify-center items-center gap-1 w-full h-full overflow-hidden opacity-0 group-hover:opacity-100">
-                        {onDelete && !downloading && <BsmButton className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2" iconClassName="w-full h-full brightness-150" iconColor={color} icon="trash" withBar={false} onClick={e => {e.stopPropagation(); onDelete(callBackParam)}}/>}
-                        {onDownload && !downloading && <BsmButton className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2" iconClassName="w-full h-full brightness-150" iconColor={color} icon="download" withBar={false} onClick={e => {e.stopPropagation(); onDownload(callBackParam)}}/>}
-                        {onCancelDownload && !downloading && <BsmButton className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2" iconClassName="w-full h-full brightness-150" iconColor="red" icon="cross" withBar={false} onClick={e => {e.stopPropagation(); onCancelDownload(callBackParam)}}/>}
-                        {downloading && <BsmBasicSpinner className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2 flex items-center justify-center" spinnerClassName="brightness-150" style={{color}} thikness="3px"/>}
-                        {previewUrl && <BsmButton className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2" iconClassName="w-full h-full brightness-150" iconColor={color} icon="eye" withBar={false} onClick={e => {e.stopPropagation(); openPreview()}}/>}
-                        {mapId && <BsmButton className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2" iconClassName="w-full h-full brightness-150" iconColor={color} icon="twitch" withBar={false} onClick={e => {e.stopPropagation(); copyBsr()}}/>}
+                        {onDelete && !downloading && <BsmButton className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2" iconClassName="w-full h-full brightness-200" iconColor={color} icon="trash" withBar={false} onClick={e => {e.stopPropagation(); onDelete(callBackParam)}}/>}
+                        {onDownload && !downloading && <BsmButton className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2" iconClassName="w-full h-full brightness-200" iconColor={color} icon="download" withBar={false} onClick={e => {e.stopPropagation(); onDownload(callBackParam)}}/>}
+                        {onCancelDownload && !downloading && <BsmButton className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2" iconClassName="w-full h-full brightness-200" iconColor="red" icon="cross" withBar={false} onClick={e => {e.stopPropagation(); onCancelDownload(callBackParam)}}/>}
+                        {downloading && <BsmBasicSpinner className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2 flex items-center justify-center" spinnerClassName="brightness-200" style={{color}} thikness="3px"/>}
+                        {previewUrl && <BsmButton className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2" iconClassName="w-full h-full brightness-200" iconColor={color} icon="eye" withBar={false} onClick={e => {e.stopPropagation(); openPreview()}}/>}
+                        {mapId && <BsmButton className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2" iconClassName="w-full h-full brightness-200" iconColor={color} icon="twitch" withBar={false} onClick={e => {e.stopPropagation(); copyBsr()}}/>}
                     </div>
                 </div>
             </div>

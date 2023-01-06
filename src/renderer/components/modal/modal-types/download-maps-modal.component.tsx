@@ -107,7 +107,6 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
                 likes={map.stats.upvotes}
                 mapId={map.id}
                 ranked={map.ranked}
-                qualified={map.qualified}
                 title={map.name}
                 songAutor={map.metadata.songAuthorName}
                 diffs={extractMapDiffs(map)}
@@ -117,6 +116,7 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
                 onDoubleClick={(!isMapOwned && !inQueue) && (handleDownloadMap)}
                 onCancelDownload={(inQueue && !isDownloading) && (handleCancelDownload)}
                 downloading={isDownloading}
+                showOwned={isMapOwned}
                 callBackParam={map}
             />
         )
