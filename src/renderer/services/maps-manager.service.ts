@@ -166,24 +166,19 @@ export class MapsManagerService {
         this.progressBar.hide(true);
     }
 
-    public isDeepLinksEnabled(): Promise<boolean>{
-
-        return this.ipcService.send<boolean>("is-map-deep-links-enabled").then(res => (
-            res.success ? res.data : false
-        ));
-
+    public async isDeepLinksEnabled(): Promise<boolean>{
+        const res = await this.ipcService.send<boolean>("is-map-deep-links-enabled");
+        return res.success ? res.data : false;
     }
 
-    public async toogleDeepLinks(): Promise<boolean>{
-
-        const isEnabled = await this.isDeepLinksEnabled();
-        
-        const channel = isEnabled ? "unregister-maps-deep-link" : "register-maps-deep-link";
-
-        const res = await this.ipcService.send<boolean>(channel);
-
+    public async enableDeepLink(): Promise<boolean>{
+        const res = await this.ipcService.send<boolean>("register-maps-deep-link");
         return res.success ? res.data : false;
+    }
 
+    public async disableDeepLink(): Promise<boolean>{
+        const res = await this.ipcService.send<boolean>("unregister-maps-deep-link");
+        return res.success ? res.data : false;
     }
 
     public get versionLinked$(): Observable<BSVersion>{

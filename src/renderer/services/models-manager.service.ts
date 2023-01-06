@@ -21,18 +21,14 @@ export class ModelsManagerService {
         ));
     }
 
-    public async toogleDeepLinks(): Promise<boolean>{
-
-        const isEnabled = await this.isDeepLinksEnabled();
-        
-        const channel = isEnabled ? "unregister-models-deep-link" : "register-models-deep-link";
-
-        const res = await this.ipc.send<boolean>(channel);
-
+    public async enableDeepLink(): Promise<boolean>{
+        const res = await this.ipc.send<boolean>("register-models-deep-link");
         return res.success ? res.data : false;
-
     }
 
-
+    public async disableDeepLink(): Promise<boolean>{
+        const res = await this.ipc.send<boolean>("unregister-models-deep-link");
+        return res.success ? res.data : false;
+    }
 
 }

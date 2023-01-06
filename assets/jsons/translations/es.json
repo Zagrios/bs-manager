@@ -245,6 +245,7 @@
             },
             "additional-content":{
                 "deep-link": {
+                    "select-all": "Seleccionar todo",
                     "activation":{
                         "success":{
                             "title":"¡OneClick activado!",
