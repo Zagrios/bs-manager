@@ -21,16 +21,14 @@ export class PlaylistsManagerService {
         ));
     }
 
-    public async toogleDeepLinks(): Promise<boolean>{
-
-        const isEnabled = await this.isDeepLinksEnabled();
-        
-        const channel = isEnabled ? "unregister-playlists-deep-link" : "register-playlists-deep-link";
-
-        const res = await this.ipc.send<boolean>(channel);
-
+    public async enableDeepLink(): Promise<boolean>{
+        const res = await this.ipc.send<boolean>("register-playlists-deep-link");
         return res.success ? res.data : false;
+    }
 
+    public async disableDeepLink(): Promise<boolean>{
+        const res = await this.ipc.send<boolean>("unregister-playlists-deep-link");
+        return res.success ? res.data : false;
     }
 
 }
