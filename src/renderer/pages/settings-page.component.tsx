@@ -202,8 +202,8 @@ export function SettingsPage() {
 
                 <SettingContainer title="pages.settings.appearance.title" description="pages.settings.appearance.description">
                     <div className="relative w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 flex justify-center rounded-md py-1">
-                        <SettingColorChooser color={firstColor} onChange={() => setFirstColorSetting}/>
-                        <SettingColorChooser color={secondColor} onChange={() => setSecondColorSetting}/>
+                        <SettingColorChooser color={firstColor} onChange={setFirstColorSetting}/>
+                        <SettingColorChooser color={secondColor} onChange={setSecondColorSetting}/>
                         <div className="absolute right-2 top-0 h-full flex items-center">
                             <BsmButton onClick={resetColors} className="px-2 font-bold italic text-sm rounded-md" text="pages.settings.appearance.reset" withBar={false}/>
                         </div>
