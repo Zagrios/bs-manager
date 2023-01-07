@@ -1,8 +1,8 @@
 ## Contributing
 
 [code-of-conduct]: CODE_OF_CONDUCT.md
-[fork]: /fork
-[pr]: /compare
+[fork]: https://github.com/Zagrios/bs-manager/fork
+[pr]: https://github.com/Zagrios/bs-manager/compare
 [style]: https://github.com/basarat/typescript-book/blob/master/docs/styleguide/styleguide.md
 
 Hi there! We're thrilled that you'd like to contribute to this project. Your help is essential for keeping it great.
