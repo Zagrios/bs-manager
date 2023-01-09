@@ -150,6 +150,7 @@ export function SettingsPage() {
   const openReportBug = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&template=-bug--bug-report.md&title=%5BBUG%5D+%3A+");
   const openRequestFeatures = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=enhancement&template=-feat---feature-request.md&title=%5BFEAT.%5D+%3A+");
   const openDiscord = () => linkOpener.open("https://discord.gg/uSqbHVpKdV");
+  const openTwitter = () => linkOpener.open("https://twitter.com/BSManager_");
 
   const openLogs = () => ipcService.sendLazy("open-logs");
 
@@ -293,12 +294,15 @@ export function SettingsPage() {
                 </SettingContainer>
 
                 <SettingContainer title="pages.settings.patreon.title" description="pages.settings.patreon.description">
-                    <div className="flex">
-                        <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 whitespace-nowrap mr-2 !text-white" iconClassName="mr-1" text="pages.settings.patreon.buttons.support" icon="patreon" color="#EC6350" withBar={false} onClick={openPatreonPage}/>
+                    <div className="flex gap-2">
+                        <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 whitespace-nowrap !text-white" iconClassName="mr-1" text="pages.settings.patreon.buttons.support" icon="patreon" color="#EC6350" withBar={false} onClick={openPatreonPage}/>
                         <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="pages.settings.patreon.buttons.supporters" color="#6c5ce7" onClick={() => toogleShowSupporters}/>
                     </div>
                     <SettingContainer className="mt-3" description="pages.settings.discord.description">
-                        <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="Discord" icon="discord" iconClassName="p-0.5 mr-1" color="#5865f2" onClick={openDiscord}/>
+                        <div className="flex gap-2">
+                            <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="Discord" icon="discord" iconClassName="p-0.5 mr-1" color="#5865f2" onClick={openDiscord}/>
+                            <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="Twitter" icon="twitter" iconClassName="p-0.5 mr-1" color="#1A8CD8" onClick={openTwitter}/>
+                        </div>
                     </SettingContainer>
                     <SettingContainer className="pt-3" description="pages.settings.contribution.description">
                         <div className="flex items-center justify-between w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 rounded-md pl-2 py-1">
