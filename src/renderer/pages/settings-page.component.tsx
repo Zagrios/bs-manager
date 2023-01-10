@@ -294,7 +294,7 @@ export function SettingsPage() {
                 <SettingContainer title="pages.settings.patreon.title" description="pages.settings.patreon.description">
                     <div className="flex gap-2">
                         <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 whitespace-nowrap !bg-red-500 !text-white" text="pages.settings.patreon.buttons.support" withBar={false} onClick={openSupportPage}/>
-                        <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="pages.settings.patreon.buttons.supporters" color="#6c5ce7" onClick={() => toogleShowSupporters}/>
+                        <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="pages.settings.patreon.buttons.supporters" color="#6c5ce7" onClick={toogleShowSupporters}/>
                     </div>
                     <SettingContainer className="mt-3" description="pages.settings.discord.description">
                         <div className="flex gap-2">
