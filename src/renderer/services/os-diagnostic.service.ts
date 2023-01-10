@@ -9,7 +9,7 @@ export class OsDiagnosticService {
         return OsDiagnosticService.instance;
     }
 
-    private _isOnline$ = new BehaviorSubject(true);
+    private _isOnline$ = new BehaviorSubject(navigator.onLine);
 
     private constructor(){
 

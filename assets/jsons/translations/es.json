@@ -51,6 +51,7 @@
             },
             "mods": {
                 "loading-mods": "Cargando mods...",
+                "no-internet": "Sin internet",
                 "buttons": {
                     "more-infos": "Más información",
                     "install-or-update": "Instalar o actualizar"
@@ -164,10 +165,12 @@
         "shared": {
             "errors": {
                 "titles": {
-                    "operation-running": "Operación en curso"
+                    "operation-running": "Operación en curso",
+                    "no-internet": "Sin internet"
                 },
                 "msg": {
-                    "operation-running": "Espere a que termine la operación actual y vuelva a empezar."
+                    "operation-running": "Espere a que termine la operación actual y vuelva a empezar.",
+                    "no-internet": "Comprueba tu conexión a Internet e inténtalo de nuevo."
                 }
             }
         },
@@ -506,7 +509,8 @@
         "download-maps": {
             "search-btn": "buscar",
             "loading-maps": "Cargando mapas...",
-            "no-maps-found": "No se encontraron mapas"
+            "no-maps-found": "No se encontraron mapas",
+            "no-internet": "Sin internet"
         },
         "mods-disclaimer":{
             "title": "descargo de responsabilidad",
