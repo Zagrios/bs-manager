@@ -505,7 +505,8 @@
         },
         "download-maps": {
             "search-btn": "Search",
-            "loading-maps": "Loading maps..."
+            "loading-maps": "Loading maps...",
+            "no-maps-found": "No maps found"
         },
         "mods-disclaimer":{
             "title": "disclaimer",
