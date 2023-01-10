@@ -14,6 +14,7 @@ import { ModalComponent } from "renderer/services/modale.service";
 import { BSVersion } from "shared/bs-version.interface";
 import { BsvMapCharacteristic, BsvMapDetail, MapFilter, SearchOrder, SearchParams } from "shared/models/maps/beat-saver.model";
 import BeatWaitingImg from "../../../../../assets/images/apngs/beat-waiting.png";
+import BeatConflictImg from "../../../../../assets/images/apngs/beat-conflict.png";
 import equal from "fast-deep-equal/es6";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
@@ -34,6 +35,7 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
     const [maps, setMaps] = useState<BsvMapDetail[]>([]);
     const [sortOrder, setSortOrder] = useState<SearchOrder>(BSV_SORT_ORDER.at(0));
     const [ownedMapHashs, setOwnedMapHashs] = useState<string[]>([]);
+    const [loading, setLoading] = useState(false);
     const [searchParams, setSearchParams] = useState<SearchParams>({
         sortOrder,
         filter,
@@ -73,7 +75,8 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
     }, [])
 
     const loadMaps = (params: SearchParams) => {
-        beatSaver.searchMaps(params).then((maps => setMaps(prev => [...prev, ...maps])));
+        setLoading(() => true);
+        beatSaver.searchMaps(params).then((maps => setMaps(prev => [...prev, ...maps]))).finally(() => setLoading(() => false));
     }
 
     const extractMapDiffs = (map: BsvMapDetail): Map<BsvMapCharacteristic, ParsedMapDiff[]> => {
@@ -167,8 +170,8 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
             <ul className="w-full grow flex content-start flex-wrap gap-2 px-2 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 z-0" >
                 {maps.length === 0 ? (
                     <div className="w-full h-full flex flex-col items-center justify-center">
-                        <img className="w-32 h-32 spin-loading" src={BeatWaitingImg} alt=" "/>
-                        <span className="text-lg">{t("modals.download-maps.loading-maps")}</span>
+                        <img className={`w-32 h-32 ${loading && "spin-loading"}`} src={loading ? BeatWaitingImg : BeatConflictImg} alt=" "/>
+                        <span className="text-lg">{t(loading ? "modals.download-maps.loading-maps" : "modals.download-maps.no-maps-found")}</span>
                     </div>
                 ) : (
                     <>

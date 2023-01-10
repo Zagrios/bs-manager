@@ -505,7 +505,8 @@
         },
         "download-maps": {
             "search-btn": "Rechercher",
-            "loading-maps": "Chargement des maps..."
+            "loading-maps": "Chargement des maps...",
+            "no-maps-found": "Aucune map trouvée"
         },
         "mods-disclaimer":{
             "title": "avis de non-responsabilité",
