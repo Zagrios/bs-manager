@@ -7,6 +7,7 @@ import { ConfigurationService } from "renderer/services/configuration.service";
 import { DefaultConfigKey } from "renderer/config/default-configuration.config";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import BeatWaitingImg from "../../../../../../assets/images/apngs/beat-waiting.png"
+import BeatConflictImg from "../../../../../../assets/images/apngs/beat-conflict.png"
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { skip, filter } from "rxjs/operators";
 import { Subscription } from "rxjs";
@@ -15,6 +16,7 @@ import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { useInView } from "framer-motion";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods-disclaimer-modal.component";
+import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
  
 export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, onDisclamerDecline: () => void}) {
 
@@ -24,6 +26,7 @@ export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, on
     const configService = ConfigurationService.getInstance();
     const linkOpener = LinkOpenerService.getInstance();
     const modals = ModalService.getInsance();
+    const os = OsDiagnosticService.getInstance();
 
     const ref = useRef(null);
     const isVisible = useInView(ref, {amount: .5});
@@ -31,11 +34,13 @@ export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, on
     const [modsInstalled, setModsInstalled] = useState(null as Map<string, Mod[]>);
     const [modsSelected, setModsSelected] = useState([] as Mod[]);
     const [moreInfoMod, setMoreInfoMod] = useState(null as Mod);
+    const isOnline = useObservable(os.isOnline$);
     const installing = useObservable(modsManager.isInstalling$);
     const t  = useTranslation();
 
     const downloadRef = useRef(null);
     const [downloadWith, setDownloadWidth] = useState(0);
+    
 
     const modsToCategoryMap = (mods: Mod[]): Map<string, Mod[]> => {
         if(!mods){ return new Map<string, Mod[]>(); }
@@ -69,6 +74,8 @@ export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, on
     }
 
     const loadMods = () => {
+        if(os.isOffline){ return; }
+
         Promise.all([
             modsManager.getAvailableMods(version),
             modsManager.getInstalledMods(version)
@@ -84,7 +91,7 @@ export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, on
 
         const subs: Subscription[] = [];
 
-        if(isVisible){
+        if(isVisible && isOnline){
 
             const promise = new Promise<boolean>(async resolve => {
                 
@@ -115,7 +122,7 @@ export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, on
             subs.forEach(s => s.unsubscribe());
         }
         
-    }, [isVisible, version]);
+    }, [isVisible, isOnline, version]);
     
 
     useLayoutEffect(() => {
@@ -128,7 +135,7 @@ export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, on
     return (
         <div ref={ref} className='shrink-0 w-full h-full px-8 pb-7 flex justify-center'>
             <div className='relative flex flex-col grow-0 bg-light-main-color-2 dark:bg-main-color-2 h-full w-full rounded-md shadow-black shadow-center overflow-hidden'>
-                {modsAvailable ? (
+                {isOnline && modsAvailable ? (
                     <>
                         <div className="overflow-scroll w-full min-h-0 scrollbar-thin scrollbar-thumb-neutral-900 scrollbar-thumb-rounded-full">
                             <ModsGrid modsMap={modsAvailable} installed={modsInstalled} modsSelected={modsSelected} onModChange={handleModChange} moreInfoMod={moreInfoMod} onWantInfos={handleMoreInfo}/>
@@ -142,8 +149,8 @@ export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, on
                     </>
                 ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center">
-                        <img className="w-32 h-32 spin-loading" src={BeatWaitingImg} alt=" "/>
-                        <span className="text-xl mt-3 h-0 italic">{t("pages.version-viewer.mods.loading-mods")}</span>
+                        <img className={`w-32 h-32 ${isOnline && "spin-loading"}`} src={isOnline ? BeatWaitingImg : BeatConflictImg} alt=" "/>
+                        <span className="text-xl mt-3 h-0 italic">{t(isOnline ? "pages.version-viewer.mods.loading-mods" : "pages.version-viewer.mods.no-internet")}</span>
                     </div>
                 )}
             </div>

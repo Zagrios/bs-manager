@@ -18,6 +18,7 @@ import BeatConflictImg from "../../../../../assets/images/apngs/beat-conflict.pn
 import equal from "fast-deep-equal/es6";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 
 export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
 
@@ -25,6 +26,7 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
     const mapsManager = MapsManagerService.getInstance();
     const mapsDownloader = MapsDownloaderService.getInstance();
     const progressBar = ProgressBarService.getInstance();
+    const os = OsDiagnosticService.getInstance();
 
     const currentDownload = useObservable(mapsDownloader.currentMapDownload$);
     const mapsInQueue = useObservable(mapsDownloader.mapsInQueue$);
@@ -36,6 +38,7 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
     const [sortOrder, setSortOrder] = useState<SearchOrder>(BSV_SORT_ORDER.at(0));
     const [ownedMapHashs, setOwnedMapHashs] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
+    const isOnline = useObservable(os.isOnline$);
     const [searchParams, setSearchParams] = useState<SearchParams>({
         sortOrder,
         filter,
@@ -171,7 +174,7 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
                 {maps.length === 0 ? (
                     <div className="w-full h-full flex flex-col items-center justify-center">
                         <img className={`w-32 h-32 ${loading && "spin-loading"}`} src={loading ? BeatWaitingImg : BeatConflictImg} alt=" "/>
-                        <span className="text-lg">{t(loading ? "modals.download-maps.loading-maps" : "modals.download-maps.no-maps-found")}</span>
+                        <span className="text-lg">{t(loading ? "modals.download-maps.loading-maps" : isOnline ? "modals.download-maps.no-maps-found" : "modals.download-maps.no-internet")}</span>
                     </div>
                 ) : (
                     <>

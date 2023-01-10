@@ -20,6 +20,7 @@ import { ModelsManagerService } from "renderer/services/models-manager.service";
 import { NotificationService } from "renderer/services/notification.service";
 import { timer } from "rxjs";
 import { ConfigurationService } from "renderer/services/configuration.service";
+import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 
 export default function App() {
 
@@ -30,6 +31,7 @@ export default function App() {
     const models = ModelsManagerService.getInstance();
     const notification = NotificationService.getInstance();
     const config = ConfigurationService.getInstance();
+    const os = OsDiagnosticService.getInstance();
 
     const location = useLocation();
     const navigate = useNavigate();
