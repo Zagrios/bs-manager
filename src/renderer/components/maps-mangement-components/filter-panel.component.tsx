@@ -12,6 +12,8 @@ import { MAP_SPECIFICITIES } from "renderer/partials/maps/map-general/map-specif
 import { MAP_REQUIREMENTS } from "renderer/partials/maps/map-requirements/map-requirements"
 import { MAP_DIFFICULTIES_COLORS } from "renderer/partials/maps/map-difficulties/map-difficulties-colors"
 import { BsmButton } from "../shared/bsm-button.component"
+import equal from "fast-deep-equal/es6";
+import clone from "rfdc";
 
 export type Props = {
     className?: string,
@@ -28,6 +30,7 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange,
     const t = useTranslation();
 
     const [haveChanged, setHaveChanged] = useState(false);
+    const [firstFilter,] = useState(clone()(filter));
     const firstRun = useRef(true);
 
     const MIN_NPS = 0;
@@ -47,7 +50,8 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange,
             firstRun.current = false;
             return; 
         }
-        setHaveChanged(() => true);
+        console.log(filter, firstFilter);
+        setHaveChanged(() => !equal(filter, firstFilter));
     }, [filter])
     
 
@@ -89,6 +93,9 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange,
         if(max === MAX_NPS){
             delete newFilter["maxNps"];
         }
+        if(min === MIN_NPS){
+            delete newFilter["minNps"];
+        }
         onChange(newFilter);
     }
 
@@ -96,6 +103,9 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange,
         const newFilter: MapFilter = {...filter, minDuration: min, maxDuration: max};
         if(max === MAX_DURATION){
             delete newFilter["maxDuration"];
+        }
+        if(min === MIN_DURATION){
+            delete newFilter["minDuration"];
         }
         onChange(newFilter);
     }
@@ -116,11 +126,17 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange,
             enabledTags.add(tag);
         }
 
-        onChange({
-            ...filter,
-            enabledTags,
-            excludedTags
-        });
+        const newFilter = {...filter, enabledTags, excludedTags};
+
+        if(newFilter.enabledTags.size === 0){
+            delete newFilter["enabledTags"];
+        }
+
+        if(newFilter.excludedTags.size === 0){
+            delete newFilter["excludedTags"];
+        }
+
+        onChange(newFilter);
 
     }
 
