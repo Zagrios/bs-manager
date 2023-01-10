@@ -138,6 +138,13 @@
 </div>
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
 
+## <b>Customize your instances</b>
+<p>The tool will allow you to completely customize each of your downloadable versions, you can change the color of the icon, choose a name for the instance and finally install your mods and map according to the Beat Saber version! </p>
+<br>
+<div align="center">
+<img src="resources/readme/customVersion.gif" alt="gif with show how to custom your version :)">
+</div>
+<p align="right">[<a href="#readme-top">Return to top</a>]</p>
 
 ## <b>Install Mods</b>
 <br>
@@ -145,7 +152,7 @@
 <br>
 
 <div align="center">
-<img src="resources/readme/installMods.gif" alt="gif with show how to dl and update mods" loading="lazy">
+<img src="resources/readme/installMods.gif" alt="gif with show how to dl and update mods">
 </div>
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
 
@@ -156,7 +163,7 @@
 <br>
 
 <div align="center">
-<img src="resources/readme/installMaps.gif" alt="gif with show how to dl map :D" loading="lazy">
+<img src="resources/readme/installMaps.gif" alt="gif with show how to dl map :D">
 </div>
 
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
@@ -165,7 +172,7 @@
 
 <div align="center">
 <h3>Coming soon</h3>
-<img src="resources/readme/wip.gif" alt="(WIP) gif with oneclick interface an use it" loading="lazy">
+<img src="resources/readme/wip.gif" alt="(WIP) gif with oneclick interface an use it">
 </div>
 
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
