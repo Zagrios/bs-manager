@@ -145,7 +145,7 @@
 <br>
 
 <div align="center">
-<img src="resources/readme/installMods.gif" alt="gif with show how to dl and update mods">
+<img src="resources/readme/installMods.gif" alt="gif with show how to dl and update mods" loading="lazy">
 </div>
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
 
@@ -156,7 +156,7 @@
 <br>
 
 <div align="center">
-<img src="resources/readme/installMaps.gif" alt="gif with show how to dl map :D">
+<img src="resources/readme/installMaps.gif" alt="gif with show how to dl map :D" loading="lazy">
 </div>
 
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
@@ -165,7 +165,7 @@
 
 <div align="center">
 <h3>Coming soon</h3>
-<img src="resources/readme/wip.gif" alt="(WIP) gif with oneclick interface an use it">
+<img src="resources/readme/wip.gif" alt="(WIP) gif with oneclick interface an use it" loading="lazy">
 </div>
 
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
