@@ -12,7 +12,7 @@ import { NotificationOverlay } from "../components/notification/notification-ove
 import { PageStateService } from "../services/page-state.service";
 import { MapsPage } from "../pages/maps-page.component";
 import "tailwindcss/tailwind.css";
-import { BsmIframeView } from "../components/shared/bsm-map-preview.component";
+import { BsmIframeView } from "../components/shared/iframe-view.component";
 import 'tippy.js/dist/tippy.css';
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
