@@ -17,8 +17,11 @@
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Oculus Mod",
+                "oculus-description": "Si estás ejecutando Beat Saber a través de Steam, esto te permite jugar en un auricular Oculus.",
                 "desktop": "Desktop Mod",
-                "debug": "Debug Mod"
+                "desktop-description": "Esto te permite usar WASD y el mouse para navegar por el menú en juego. Esto hace que las pruebas sean mucho más fáciles, ¡porque no tienes que ponerte el auricular!",
+                "debug": "Debug Mod",
+                "debug-description": "Habilita la ventana de registro de salida para IPA. Esto mostrará la consola de depuración que usan los mods."
             },
             "maps": {
                 "search-bar": {

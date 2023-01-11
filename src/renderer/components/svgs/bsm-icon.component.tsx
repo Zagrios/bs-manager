@@ -46,9 +46,10 @@ import { FilterIcon } from "./icons/filter-icon.component";
 import DiscordIcon from "./icons/discord-icon.component";
 import { TwitterIcon } from "./icons/twitter-icon.component";
 import { Mee6Icon } from "./icons/mee6-icon.component";
+import { InfoIcon } from "./icons/info-icon.component";
 
 export type BsmIconType = BsvMapCharacteristic | (
-   "settings"|"trash"|"favorite"|"folder"|"bsNote"|"check"|"three-dots"|"twitch"|"eye"|"play"|"checkCircleIcon"|"discord"|
+   "settings"|"trash"|"favorite"|"folder"|"bsNote"|"check"|"three-dots"|"twitch"|"eye"|"play"|"checkCircleIcon"|"discord"|"info"|
    "terminal"|"desktop"|"oculus"|"add"|"cross"|"task"|"github"|"close"|"thumbUpFill"|"timerFill"|"pause"|"twitter"|
    "copy"|"steam"|"edit"|"export"|"patreon"|"search"|"bsMapDifficulty"|"link"|"unlink"|"download"|"filter"|"mee6"|
    "fr-FR-flag"|"es-ES-flag"|"en-US-flag"|"en-EN-flag"
@@ -103,6 +104,7 @@ export const BsmIcon = memo(({className, icon, style}: {className?: string, icon
         if(icon === "discord"){ return <DiscordIcon className={className} style={style}/> }
         if(icon === "twitter"){ return <TwitterIcon className={className} style={style}/> }
         if(icon === "mee6"){ return <Mee6Icon className={className} style={style}/> }
+        if(icon === "info"){ return <InfoIcon className={className} style={style}/> }
         return <TrashIcon className={className} style={style}/>
     }
 
