@@ -39,9 +39,9 @@ export function LaunchSlide({version}: Props) {
     return (
         <div className="w-full shrink-0 items-center relative flex flex-col justify-start">
             <div className='grid grid-flow-col gap-6'>
-              {!version.oculus && <LaunchModToogle icon='oculus' onClick={() => setMode(LaunchMods.OCULUS_MOD, !oculusMode)} active={oculusMode} text="pages.version-viewer.launch-mods.oculus"/>}
-              <LaunchModToogle icon='desktop' onClick={() => setMode(LaunchMods.DESKTOP_MOD, !desktopMode)} active={desktopMode} text="pages.version-viewer.launch-mods.desktop"/>
-              <LaunchModToogle icon='terminal' onClick={() => setMode(LaunchMods.DEBUG_MOD, !debugMode)} active={debugMode} text="pages.version-viewer.launch-mods.debug"/>
+              {!version.oculus && <LaunchModToogle infoText="pages.version-viewer.launch-mods.oculus-description" icon='oculus' onClick={() => setMode(LaunchMods.OCULUS_MOD, !oculusMode)} active={oculusMode} text="pages.version-viewer.launch-mods.oculus"/>}
+              <LaunchModToogle infoText="pages.version-viewer.launch-mods.desktop-description" icon='desktop' onClick={() => setMode(LaunchMods.DESKTOP_MOD, !desktopMode)} active={desktopMode} text="pages.version-viewer.launch-mods.desktop"/>
+              <LaunchModToogle infoText="pages.version-viewer.launch-mods.debug-description" icon='terminal' onClick={() => setMode(LaunchMods.DEBUG_MOD, !debugMode)} active={debugMode} text="pages.version-viewer.launch-mods.debug"/>
             </div>
             <div className='grow flex justify-center items-center'>
               <BsmButton onClick={launch} active={JSON.stringify(version) === JSON.stringify(launchState)} className='relative text-5xl text-gray-800 dark:text-gray-200 font-bold tracking-wide pt-1 pb-3 px-7 rounded-lg shadow-md italic shadow-black active:scale-90 transition-transform' text="misc.launch"/>
