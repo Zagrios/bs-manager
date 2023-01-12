@@ -50,6 +50,9 @@ export class OculusService {
     public async getGameFolder(gameFolder: string): Promise<string>{
         
         const libsFolders = await this.getOculusLibsPath();
+
+        if(!libsFolders){ return null; }
+
         const rootLibDir = "Software"
 
         for(const lib of libsFolders){
