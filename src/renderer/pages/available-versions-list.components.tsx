@@ -7,7 +7,6 @@ import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
-import { useObservable } from "renderer/hooks/use-observable.hook";
 
 export function AvailableVersionsList() {
 
@@ -15,12 +14,15 @@ export function AvailableVersionsList() {
   const versionManagerService: BSVersionManagerService = BSVersionManagerService.getInstance();
 
   const [versionSelected, setVersionSelected] = useState(null as BSVersion);
-  const currentVersionDownloading = useObservable(bsDownloaderService.currentBsVersionDownload$);
+  const [downloading, setDownloading] = useState(false);
   const t = useTranslation();
 
-   const startDownload = () => {
-      bsDownloaderService.download(versionSelected, versionManagerService.isVersionInstalled(versionSelected));
-   }
+    const startDownload = () => {
+        setDownloading(() => true)
+        bsDownloaderService.download(versionSelected, versionManagerService.isVersionInstalled(versionSelected)).finally(() => {
+            setDownloading(() => false);
+        });
+    }
 
   useEffect(() => {
     const versionSelectedSub = bsDownloaderService.selectedBsVersion$.subscribe(version => {
@@ -40,7 +42,7 @@ export function AvailableVersionsList() {
       <AvailableVersionsSlider/>
 
       <AnimatePresence>
-        { versionSelected && !currentVersionDownloading && (
+        { versionSelected && !downloading && (
           <motion.div initial={{y:"150%"}} animate={{y:"0%"}} exit={{y:"150%"}} className="absolute bottom-5" onClick={startDownload}>
             <BsmButton text={versionManagerService.isVersionInstalled(versionSelected) ? "misc.verify" : "misc.download"} className="relative text-gray-800 dark:text-gray-100 rounded-md text-3xl font-bold italic tracking-wide px-3 pb-2 pt-1 shadow-md shadow-black"/>
           </motion.div>
