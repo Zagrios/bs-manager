@@ -28,7 +28,13 @@ export function VersionViewer() {
     const navigate = useNavigate();
     const [currentTabIndex, setCurrentTabIndex] = useState(0);
 
-    const navigateToVersion = (version: BSVersion) => navigate(`/bs-version/${version.BSVersion}`, {state: version});
+    const navigateToVersion = (version?: BSVersion) => {
+        console.log(version);
+        if(!version){
+            return navigate("/available-versions");
+        }
+        navigate(`/bs-version/${version.BSVersion}`, {state: version});
+    }
     const openFolder = () => ipcService.sendLazy("bs-version.open-folder", {args: state});
     const verifyFiles = () => bsDownloaderService.download(state, true);
 
@@ -36,9 +42,9 @@ export function VersionViewer() {
         const modalCompleted = await modalService.openModal(UninstallModal, state);
         if(modalCompleted.exitCode === ModalExitCode.COMPLETED){
             bsUninstallerService.uninstall(state).then(() => {
-                bsVersionManagerService.askInstalledVersions();
-                const newVersionPage = bsVersionManagerService.getInstalledVersions()[0];
-                navigateToVersion(newVersionPage);
+                bsVersionManagerService.askInstalledVersions().then(versions => {
+                    navigateToVersion(versions?.at(0));
+                });
             })
         }
     }
