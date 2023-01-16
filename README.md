@@ -9,8 +9,6 @@
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
 
-<!-- PROJECT LOGO -->
-
 <div align="center">
   <a href="https://github.com/Zagrios/bs-manager">
     <img src="https://raw.githubusercontent.com/Zagrios/bs-manager/master/resources/readme/icon.svg" alt="Logo" width="250" height="250">
@@ -55,6 +53,7 @@
     <ul>
         <li><a href="#how-to-install">How to install?</a></li>
         <li><a href="#manage-versions">Manage Versions</a></li>
+        <li><a href="#customize-your-instances">Customize your instances</a></li>
         <li><a href="#install-mods">Install Mods</a></li>
         <li><a href="#install-maps">Install Maps</a></li>
         <li><a href="#one-click">One Click</a></li>
