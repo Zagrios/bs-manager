@@ -13,6 +13,10 @@
         "refuse": "Refuser",
         "apply": "Appliquer"
     },
+    "nav-bar":{
+        "add-version": "Ajouter une version",
+        "settings": "Paramètres"
+    },
     "pages": {
         "version-viewer": {
             "launch-mods": {
