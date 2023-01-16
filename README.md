@@ -123,7 +123,7 @@
 	<li>
 		Download the latest release from <a href="https://github.com/Zagrios/bs-manager/releases">Releases</a>.
 	</li>
-	<li>Execute the installer and BSManager will start itself.</li>
+	<li>Execute the installer and <a href="../../">BS Manager</a> will start itself.</li>
 	<li>Once its done if you want to download a version, select a version and download it!</li>
 	<li>From the version page you can choose launch options, launch the version, and more from the dropdown menu!</li>
 </ul>
@@ -169,9 +169,11 @@
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
 
 ## <b>One Click</b>
+<p>
+The "One-Click" feature of <a href="../../">BS Manager</a> is an incredibly convenient tool for Beat Saber users. It allows for easy and quick installation of models for all existing versions of Beat Saber. With this system, you will no longer need to spend hours manually installing models for each specific version of Beat Saber. All you need is one simple click to install models on all versions of Beat Saber you own.
+</p>
 
 <div align="center">
-<h3>Coming soon</h3>
 <img src="resources/readme/wip.gif" alt="(WIP) gif with oneclick interface an use it">
 </div>
 
