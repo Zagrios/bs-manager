@@ -134,7 +134,7 @@
 <br>
 <div align="center">
 
-[![Watch the video](resources/readme/preview.png)](resources/readme/manageVersions.mov)
+https://github.com/Zagrios/bs-manager/blob/feature/readme-update/resources/readme/manageVersions.mov
 
 </div>
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
