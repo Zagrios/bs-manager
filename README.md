@@ -134,7 +134,7 @@
 <br>
 <div align="center">
 
-https://github.com/Zagrios/bs-manager/blob/feature/readme-update/resources/readme/manageVersions.mov
+https://user-images.githubusercontent.com/40648115/213008824-25cfdda3-6350-42dc-aa53-2132b4b8e838.mov
 
 </div>
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
