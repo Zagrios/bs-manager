@@ -133,7 +133,9 @@
 <p><a href="../../">BSManager</a> allows you to manage your versions of Beat Saber. It gives you the ability to download any version of Beat Saber as long as you have a Steam account that already owns the game. Using <a href="../../">BSManager</a>, you can easily manage and update your collection of Beat Saber versions.</p>
 <br>
 <div align="center">
-<img src="resources/readme/manageVersion.gif" alt="gif with show how to DL and manage version :)">
+
+[![Watch the video](resources/readme/preview.png)](resources/readme/manageVersions.mov)
+
 </div>
 <p align="right">[<a href="#readme-top">Return to top</a>]</p>
 
