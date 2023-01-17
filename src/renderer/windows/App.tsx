@@ -14,6 +14,7 @@ import { MapsPage } from "../pages/maps-page.component";
 import "tailwindcss/tailwind.css";
 import { BsmIframeView } from "../components/shared/iframe-view.component";
 import 'tippy.js/dist/tippy.css';
+import 'tippy.js/animations/shift-away-subtle.css';
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { ModelsManagerService } from "renderer/services/models-manager.service";
