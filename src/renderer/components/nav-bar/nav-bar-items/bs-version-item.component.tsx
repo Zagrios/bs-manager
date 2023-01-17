@@ -81,11 +81,9 @@ export function BsVersionItem(props: {version: BSVersion}) {
     const renderVersionText = () => {
         if(props.version.name){
             return (
-                <Tippy content={props.version.BSVersion} placement="right-end" arrow={false} className="font-bold !bg-main-color-3" duration={[200, 0]}>
-                    <div className="h-8 flex items-center dark:text-gray-200 text-gray-800 overflow-hidden">
-                        <div ref={ref} className='whitespace-nowrap font-bold tracking-wide w-full text-center' style={{fontSize}}>{props.version.name}</div>
-                    </div>
-                </Tippy>
+                <div className="h-8 flex items-center dark:text-gray-200 text-gray-800 overflow-hidden">
+                    <div ref={ref} className='whitespace-nowrap font-bold tracking-wide w-full text-center' style={{fontSize}}>{props.version.name}</div>
+                </div>
             )
         }
         return (
@@ -98,10 +96,20 @@ export function BsVersionItem(props: {version: BSVersion}) {
 
     return (
         <NavBarItem onCancel={cancel} progress={downloading ? downloadPercent : 0} isActive={isActive() && !downloading} isDownloading={downloading}>
-            <Link onDoubleClick={handleDoubleClick} to={`/bs-version/${props.version.BSVersion}`} state={props.version} className="w-full flex items-center justify-start content-center max-w-full">
-                {renderIcon()}
-                {renderVersionText()}
-            </Link>
+            {props.version.name ? (
+                <Tippy content={props.version.BSVersion} placement="right-end" arrow={false} className="font-bold !bg-main-color-3" duration={[100, 0]} animation="shift-away-subtle">
+                    <Link onDoubleClick={handleDoubleClick} to={`/bs-version/${props.version.BSVersion}`} state={props.version} className="w-full flex items-center justify-start content-center max-w-full">
+                        {renderIcon()}
+                        {renderVersionText()}
+                    </Link>
+                </Tippy>
+            ) : (
+                <Link onDoubleClick={handleDoubleClick} to={`/bs-version/${props.version.BSVersion}`} state={props.version} className="w-full flex items-center justify-start content-center max-w-full">
+                    {renderIcon()}
+                    {renderVersionText()}
+                </Link>
+            )}
+            
         </NavBarItem>
     )
 }
