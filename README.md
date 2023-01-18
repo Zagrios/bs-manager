@@ -72,7 +72,7 @@
 
 <!-- ABOUT THE PROJECT -->
 <div align="center">
-    <h1></h1>
+    <h1> </h1>
     <h1><b>About The Project</b></h1>
 </div>
 <div>
@@ -91,6 +91,7 @@
     <img src="resources/readme/preview.png" alt="(WIP) home interface with multiple instance dl and steam & oculus.">
 </div>
 <br>
+
 <!--BUILT WITH-->
 <div>
     <h2><b>Built With</b></h2>
@@ -109,131 +110,117 @@
         </li>
     </ul>
 </div>
+<br>
 
-## <b>Contributing</b>
+<!--CONTRIBUTING-->
+<div>
+    <h2><b>Contributing</b></h2>
+</div>
 
 <div align="center">
     <h3><b><u>Main Developer</u></b></h3>
     <br>
     <a href="https://github.com/Zagrios"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/40181755?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a>
-    <img src="https://github-readme-stats.vercel.app/api?hide_title=false&hide_rank=false&show_icons=true&include_all_commits=true&count_private=true&disable_animations=false&theme=dracula&locale=en&hide_border=false&username=Zagrios" height="125" alt="stats graph"  />
-    <img src="https://github-readme-stats.vercel.app/api/top-langs?locale=en&hide_title=false&layout=compact&card_width=320&langs_count=5&theme=dracula&hide_border=false&username=Zagrios" height="125" alt="languages graph"  />
-<br><br>
+    <br><br>
     <h3><b><u>Support Developer</u></b></h3>
     <br>
-    <a href="https://github.com/Iluhadesu"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/92525749?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a><img src="https://github-readme-stats.vercel.app/api?hide_title=false&hide_rank=false&show_icons=true&include_all_commits=true&count_private=true&disable_animations=false&theme=dracula&locale=en&hide_border=false&username=Iluhadesu" height="125" alt="stats graph"  />
-    <img src="https://github-readme-stats.vercel.app/api/top-langs?locale=en&hide_title=false&layout=compact&card_width=320&langs_count=5&theme=dracula&hide_border=false&username=Iluhadesu" height="125" alt="languages graph"  />
-    <br><br>
-    <a href="https://github.com/GaetanGrd"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/40648115?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a><img src="https://github-readme-stats.vercel.app/api?hide_title=false&hide_rank=false&show_icons=true&include_all_commits=true&count_private=true&disable_animations=false&theme=dracula&locale=en&hide_border=false&username=GaetanGrd" height="125" alt="stats graph"  />
-    <img src="https://github-readme-stats.vercel.app/api/top-langs?locale=en&hide_title=false&layout=compact&card_width=320&langs_count=5&theme=dracula&hide_border=false&username=GaetanGrd" height="125" alt="languages graph"  /> 
+    <a href="https://github.com/Iluhadesu"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/92525749?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a>
+    <a href="https://github.com/GaetanGrd"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/40648115?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a>
 </div>
 <div align="right">
     [<a href="#readme-top">Return to top</a>]
 </div>
-  
-<h1> </h1>
+<br>
 
-# <div align="center"><b>Usage</b></div>
-
-## <b>How to install?</b>
-
-- Download the latest release from [Releases](https://github.com/Zagrios/bs-manager/releases).
-- Execute the installer and [BSManager](../..) will start itself.
-- Once its done if you want to download a version, select a version and download it!
-From the version page you can choose launch options, launch the version, and more from the dropdown menu!
-
-
-<div align="right">
-
-[[Return to top](#readme-top)]
-
+<!--USAGE-->
+<div align="center">
+    <h1> </h1>
+    <h1><b>Usage</b></h1>
 </div>
 
-## <b>Manage Versions</b>
+<!--HOW TO INSTALL?-->
+<div>
+    <h2><b>How to install?</b></h2>
+    <ul>
+        <li>Download the latest release from <a href="https://github.com/Zagrios/bs-manager/releases">Releases</a>.</li>
+        <li>Execute the installer and <a href="../..">BSManager</a> will start itself.</li>
+        <li>Once its done if you want to download a version, select a version and download it! </li>
+        <li>From the version page you can choose options, launch the version, and more!</li>
+</div>
+<br>
 
-<a href="../../">BSManager</a> allows you to manage your versions of Beat Saber. It gives you the ability to download any version of Beat Saber as long as you have a Steam account that already owns the game. Using <a href="../../">BSManager</a>, you can easily manage and update your collection of Beat Saber versions.
+<!--MANAGE VERSIONS-->
+<div>
+    <h2><b>Manage Versions</b></h2>
+    <span>
+        <a href="../../">BSManager</a> allows you to manage your versions of Beat Saber. It gives you the ability to download any version of Beat Saber as long as you have a Steam account that already owns the game. Using <a href="../../">BSManager</a>, you can easily manage and update your collection of Beat Saber versions.
+    </span>
+</div>
+<br>
+<div align="center">
+
+https://user-images.githubusercontent.com/40648115/213008824-25cfdda3-6350-42dc-aa53-2132b4b8e838.mov
+</div>
+
+<!--CUSTOM UR INSTANCES-->
+<div>
+    <h2><b>Customize your instances</b></h2>
+    <span>
+        The tool will allow you to completely customize each of your downloadable versions, you can change the color of the icon, choose a name for the instance and finally install your mods and map according to the Beat Saber version! 
+    </span>
+</div>
+<div align="center">
+
+https://user-images.githubusercontent.com/40648115/213008824-25cfdda3-6350-42dc-aa53-2132b4b8e838.mov
+</div>
+
+<!--INSTALL MODS-->
+<div>
+    <h2><b>Install Mods</b></h2>
+    <span>
+        <a href="../../">BSManager</a> allows you to manage Beat Saber mods in a quick and easy way. It uses the BeatMod API to allow you to install, update or uninstall mods for each version of your collection. So the tool can help you manage them efficiently.
+    </span>
+</div>
 
 <div align="center">
 
 https://user-images.githubusercontent.com/40648115/213008824-25cfdda3-6350-42dc-aa53-2132b4b8e838.mov
-
-</div>
-<div align="right">
-
-[[Return to top](#readme-top)]
-
 </div>
 
-## <b>Customize your instances</b>
-
-The tool will allow you to completely customize each of your downloadable versions, you can change the color of the icon, choose a name for the instance and finally install your mods and map according to the Beat Saber version! 
-
+<!--INSTALL MAPS-->
+<div>
+    <h2><b>Install Maps</b></h2>
+    <span>
+        In addition to managing mods, the tool that allows you to manage and organize custom beatmaps existing on <a href="https://beatsaver.com">Beat Saver</a>, a popular site for sharing custom beatmaps for beat Saber. The tool allows you to view and organize your beatmaps, as well as link different versions of the game to share all your maps together. 
+    </span>
+</div>
 <div align="center">
-<img src="resources/readme/customVersion.gif" alt="gif with show how to custom your version :)">
-</div>
-<div align="right">
 
-[[Return to top](#readme-top)]
-
+https://user-images.githubusercontent.com/40648115/213008824-25cfdda3-6350-42dc-aa53-2132b4b8e838.mov
 </div>
 
-## <b>Install Mods</b>
-<br>
-<p><a href="../../">BSManager</a> allows you to manage Beat Saber mods in a quick and easy way. It uses the BeatMod API to allow you to install, update or uninstall mods for each version of your collection. So the tool can help you manage them efficiently.</p>
-<br>
-
+<!--ONE CLICK-->
+<div>
+    <h2><b>One Click</b></h2>
+    <span>
+        The "One-Click" feature of <a href="../../">BSManager</a> is an incredibly convenient tool for Beat Saber users. It allows for easy and quick installation of models for all existing versions of Beat Saber. With this system, you will no longer need to spend hours manually installing models for each specific version of Beat Saber. All you need is one simple click to install models on all versions of Beat Saber you own.
+    </span>
+</div>
 <div align="center">
-<img src="resources/readme/installMods.gif" alt="gif with show how to dl and update mods">
+
+https://user-images.githubusercontent.com/40648115/213008824-25cfdda3-6350-42dc-aa53-2132b4b8e838.mov
 </div>
+
+<!--HAVING PROBLEMS?-->
+<div>
+    <h2><b>Having problems?</b></h2>
+    <span>
+        See the <a href="https://github.com/Zagrios/bs-manager/issues">open issues</a> for a list of known issues, from there you can create a new issue for the problem you have!  
+        Otherwise you can add on to existing issues if one matches what you're encountering.
+    </span>
 <div align="right">
-
-[[Return to top](#readme-top)]
-
-</div>
-
-
-## <b>Install Maps</b>
-<br>
-<p>In addition to managing mods, the tool that allows you to manage and organize custom beatmaps existing on Beat Saver, a popular site for sharing custom beatmaps for beat Saber. The tool allows you to view and organize your beatmaps, as well as link different versions of the game to share all your maps together. </p>
-<br>
-
-<div align="center">
-<img src="resources/readme/installMaps.gif" alt="gif with show how to dl map :D">
-</div>
-
-<div align="right">
-
-[[Return to top](#readme-top)]
-
-</div>
-
-## <b>One Click</b>
-<p>
-The "One-Click" feature of <a href="../../">BSManager</a> is an incredibly convenient tool for Beat Saber users. It allows for easy and quick installation of models for all existing versions of Beat Saber. With this system, you will no longer need to spend hours manually installing models for each specific version of Beat Saber. All you need is one simple click to install models on all versions of Beat Saber you own.
-</p>
-
-<div align="center">
-<img src="resources/readme/wip.gif" alt="(WIP) gif with oneclick interface an use it">
-</div>
-
-<div align="right">
-
-[[Return to top](#readme-top)]
-
-</div>
-
-## <b>Having problems?</b>
-<br>
-<p>
-See the <a href="https://github.com/Zagrios/bs-manager/issues">open issues</a> for a list of known issues, from there you can create a new issue for the problem you have!  
-Otherwise you can add on to existing issues if one matches what you're encountering.
-</p>
-<div align="right">
-
-[[Return to top](#readme-top)]
-
+    [<a href="#readme-top">Return to top</a>]
 </div>
 
 <h1> </h1>
-
 <a name="readme-bot"></a>
