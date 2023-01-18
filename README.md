@@ -9,45 +9,54 @@
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
 
+
+<!-- TITLE -->
 <div align="center">
-  <a href="https://github.com/Zagrios/bs-manager">
-    <img src="https://raw.githubusercontent.com/Zagrios/bs-manager/master/resources/readme/icon.svg" alt="Logo" width="250" height="250">
-  </a>
-  <br><br>
-  <h2 align="center"><b>BSManager</b></h2>
-  <i align="center">(Beat Saber Manager)</i>
-  <p align="center">
-    Download, manage and customize your versions of Beat Saber with a simple click!
-    <br />
-    <a href="https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&template=bug_report.md&title=%5BBUG%5D">Report Bug</a>
-    ·
-    <a href="https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=enhancement&template=feature_request.md&title=%5BAME%5D">Request Feature</a>
-    <br><img src="https://github.com/Zagrios/bs-manager/blob/master/resources/readme/beat-running.png?raw=true" width="130"/>
-  </p>
+    <a href="https://github.com/Zagrios/bs-manager">
+        <img src="resources/readme/icon.svg" alt="Logo" width="250" height="250">
+    </a>
+    <br><br>
+    <h2><b>BSManager</b></h2>
+    <i>(Beat Saber Manager)</i>
+    <br><br>
+    <span>
+        Download, manage and customize your versions of Beat Saber with a simple click!
+    </span>
+    <br>
+    <span>
+        <a href="https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&template=bug_report.md&title=%5BBUG%5D">Report Bug</a> 
+        ·
+        <a href="https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=enhancement&template=feature_request.md&title=%5BAME%5D">Request Feature</a>
+    </span>
 </div>
-<div align="center">
-<a href="https://github.com/Zagrios/bs-manager/stargazers"><img src ="https://img.shields.io/github/stars/Zagrios/bs-manager?style=for-the-badge" alt="Stargazers"/></a>
-<a href="https://github.com/Zagrios/bs-manager/network/members"><img src ="https://img.shields.io/github/forks/Zagrios/bs-manager?style=for-the-badge" alt="Forks"/></a>
-<a href="https://github.com/Zagrios/bs-manager/blob/master/LICENSE"><img src ="https://img.shields.io/github/license/Zagrios/bs-manager?style=for-the-badge" alt="License"/></a>
-<a href="https://github.com/Zagrios/bs-manager/graphs/contributors"><img src ="https://img.shields.io/github/contributors/Zagrios/bs-manager?style=for-the-badge" alt="Contributors"/></a>
-<a href="https://github.com/Zagrios/bs-manager/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/Zagrios/bs-manager?style=for-the-badge"></a>
+
+<!-- BADGES -->
+---
 <br>
-<a href="https://discord.gg/uSqbHVpKdV"><img src ="https://img.shields.io/badge/-DISCORD-5865f2?style=for-the-badge&logo=discord&logoColor=ffffff" alt="discord"/></a>
-<a href="https://mee6.xyz/fr/m/bsmanager"><img src ="https://img.shields.io/badge/-🥰%20Support%20BSM-EC4546?style=for-the-badge" alt="Donation"/></a>
-<a href="https://discord.gg/uSqbHVpKdV"><img src ="https://img.shields.io/badge/-Twitter-F5F8FA?style=for-the-badge&logo=Twitter" alt="Twitter"/></a>
-<br><br>
-<p align="center">[<a href="#readme-bot">go to bot</a>]</p>
+<div align="center" >
+    <a href="https://github.com/Zagrios/bs-manager/stargazers"><img src ="https://img.shields.io/github/stars/Zagrios/bs-manager?style=for-the-badge" alt="Stargazers"/></a>
+    <a href="https://github.com/Zagrios/bs-manager/network/members"><img src ="https://img.shields.io/github/forks/Zagrios/bs-manager?style=for-the-badge" alt="Forks"/></a>
+    <a href="https://github.com/Zagrios/bs-manager/blob/master/LICENSE"><img src ="https://img.shields.io/github/license/Zagrios/bs-manager?style=for-the-badge" alt="License"/></a>
+    <a href="https://github.com/Zagrios/bs-manager/graphs/contributors"><img src ="https://img.shields.io/github/contributors/Zagrios/bs-manager?style=for-the-badge" alt="Contributors"/></a>
+    <a href="https://github.com/Zagrios/bs-manager/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/Zagrios/bs-manager?style=for-the-badge"></a>
+    <br>
+    <a href="https://discord.gg/uSqbHVpKdV"><img src ="https://img.shields.io/badge/-DISCORD-5865f2?style=for-the-badge&logo=discord&logoColor=ffffff" alt="discord"/></a>
+    <a href="https://mee6.xyz/fr/m/bsmanager"><img src ="https://img.shields.io/badge/-🥰%20Support%20BSM-EC4546?style=for-the-badge" alt="Donation"/></a>
+    <a href="https://discord.gg/uSqbHVpKdV"><img src ="https://img.shields.io/badge/-Twitter-F5F8FA?style=for-the-badge&logo=Twitter" alt="Twitter"/></a>
+    <br>
+    [<a href="#readme-bot">go to bot</a>]
 </div>
-<h1> </h1>
+
+---
 <!-- TABLE OF CONTENTS -->
-  <b>Table of Contents</b>
-  <ol>
+<b>Table of Contents</b>
+<ul>
     <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
+        <a href="#about-the-project">About The Project</a>
+        <ul>
+            <li><a href="#built-with">Built With</a></li>
             <li><a href="#contributing">Contributing</a></li>
-      </ul>
+        </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
     <ul>
@@ -58,45 +67,48 @@
         <li><a href="#install-maps">Install Maps</a></li>
         <li><a href="#one-click">One Click</a></li>
         <li><a href="#having-problems">Having problems?</a></li>
-      </ul>
-  </ol>
-</details>
+    </ul>
+</ul>
 
-<h1> </h1>
-
-# <div align="center"><b>About The Project</b></div>
+<!-- ABOUT THE PROJECT -->
 <div align="center">
-<img src="resources/readme/preview.png" alt="(WIP) home interface with multiple instance dl and steam & oculus.">
+    <h1></h1>
+    <h1><b>About The Project</b></h1>
+</div>
+<div>
+    <a href="../../">BSManager</a> was created to unify and improve the two most used tools in the community (<a href="https://github.com/RiskiVR/BSLegacyLauncher">BS legacy launcher</a> and <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>).
+    <br><br>
+    <h4><a href="../../">BSManager</a> will allow you to:</h4>
+    <ul>
+        <li><b>Manage instances of multiple versions</b>, designed for people who need to play on different versions or have multiple profiles for the same version.</li>
+        <li><b>Download your maps in the same way</b>, in addition to that, the maps are not version dependent, so you will be able to find your maps whatever version you are using without having to transfer them.</li>
+        <li><b>Install your mods in one click</b>, just like <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>, <a href="../../">BSManager</a> will allow you to install your mods quickly and securely depending on the version you choose.</li>
+        <li><b>Customize your interface</b>, we know that some of you like to customize your interfaces to the maximum. That's why <a href="../../">BSManager</a> brings you peace of mind on this point, you can change the name of the versions, their color, and you can even change the color of the logo! Of course, a dark theme has been added to protect your eyes at night.</li>
+    </ul>
 </div>
 <br>
-<p><a href="../../">BSManager</a> was created to unify and improve the two most used tools in the community (<a href="https://github.com/RiskiVR/BSLegacyLauncher">BS legacy launcher</a> and <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>).
-
-<h4><a href="../../">BSManager</a> will allow you to:</h4>
-<ul>
-<li><b>Manage instances of multiple versions</b>, designed for people who need to play on different versions or have multiple profiles for the same version.</li>
-<li><b>Download your maps in the same way</b>, in addition to that, the maps are not version dependent, so you will be able to find your maps whatever version you are using without having to transfer them.</li>
-<li><b>Install your mods in one click</b>, just like <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>, <a href="../../">BSManager</a> will allow you to install your mods quickly and securely depending on the version you choose.</li>
-<li><b>Customize your interface</b>, we know that some of you like to customize your interfaces to the maximum. That's why <a href="../../">BSManager</a> brings you peace of mind on this point, you can change the name of the versions, their color, and you can even change the color of the logo! Of course, a dark theme has been added to protect your eyes at night.</li>
-</ul>
-</p>
+<div align="center">
+    <img src="resources/readme/preview.png" alt="(WIP) home interface with multiple instance dl and steam & oculus.">
+</div>
 <br>
-  
-## <b>Built With</b>
-<ul>
-  <li><a href="https://electron-react-boilerplate.js.org/">
-    <img src="https://img.shields.io/badge/-Electron%20React%20Boilerplate-black?style=for-the-badge&logo=Electron" alt="Electron React Boilerplate">
-  </a></li>
-  <li><a href="https://github.com/SteamRE/DepotDownloader">
-    <img src="https://img.shields.io/badge/-Depot%20Downloader-2a475e?style=for-the-badge&logo=steam" alt="Depot Downloader">
-  </a></li>
-  <li><a href="https://rxjs.dev/">
-    <img src="https://img.shields.io/badge/-RxJs-purple?style=for-the-badge&logo=ReactiveX" alt="RxJs">
-  </a></li>
-  <li><a href="https://tailwindcss.com/">
-    <img src="https://img.shields.io/badge/-Tailwind%20CSS-white?style=for-the-badge&logo=Tailwind%20CSS" alt="TailWind CSS">
-  </a></li>
-</ul>
-<p align="right">[<a href="#readme-top">Return to top</a>]</p>
+<!--BUILT WITH-->
+<div>
+    <h2><b>Built With</b></h2>
+    <ul>
+        <li>
+            <a href="https://electron-react-boilerplate.js.org/"><img src="https://img.shields.io/badge/-Electron%20React%20Boilerplate-black?style=for-the-badge&logo=Electron" alt="Electron React Boilerplate"></a>
+        </li>
+        <li>
+            <a href="https://github.com/SteamRE/DepotDownloader"><img src="https://img.shields.io/badge/-Depot%20Downloader-2a475e?style=for-the-badge&logo=steam" alt="Depot Downloader"></a>
+        </li>
+        <li>
+            <a href="https://rxjs.dev/"><img src="https://img.shields.io/badge/-RxJs-purple?style=for-the-badge&logo=ReactiveX" alt="RxJs"></a>
+        </li>
+        <li>
+            <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/-Tailwind%20CSS-white?style=for-the-badge&logo=Tailwind%20CSS" alt="TailWind CSS"></a>
+        </li>
+    </ul>
+</div>
 
 ## <b>Contributing</b>
 
@@ -104,48 +116,66 @@
     <h3><b><u>Main Developer</u></b></h3>
     <br>
     <a href="https://github.com/Zagrios"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/40181755?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a>
-    <br><br>
+    <img src="https://github-readme-stats.vercel.app/api?hide_title=false&hide_rank=false&show_icons=true&include_all_commits=true&count_private=true&disable_animations=false&theme=dracula&locale=en&hide_border=false&username=Zagrios" height="125" alt="stats graph"  />
+    <img src="https://github-readme-stats.vercel.app/api/top-langs?locale=en&hide_title=false&layout=compact&card_width=320&langs_count=5&theme=dracula&hide_border=false&username=Zagrios" height="125" alt="languages graph"  />
+<br><br>
     <h3><b><u>Support Developer</u></b></h3>
     <br>
-    <a href="https://github.com/Zagrios"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/92525749?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a>‎ ‎ ‎ ‎ ‎ 
-    <a href="https://github.com/Zagrios"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/40648115?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a> 
+    <a href="https://github.com/Iluhadesu"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/92525749?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a><img src="https://github-readme-stats.vercel.app/api?hide_title=false&hide_rank=false&show_icons=true&include_all_commits=true&count_private=true&disable_animations=false&theme=dracula&locale=en&hide_border=false&username=Iluhadesu" height="125" alt="stats graph"  />
+    <img src="https://github-readme-stats.vercel.app/api/top-langs?locale=en&hide_title=false&layout=compact&card_width=320&langs_count=5&theme=dracula&hide_border=false&username=Iluhadesu" height="125" alt="languages graph"  />
+    <br><br>
+    <a href="https://github.com/GaetanGrd"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/40648115?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a><img src="https://github-readme-stats.vercel.app/api?hide_title=false&hide_rank=false&show_icons=true&include_all_commits=true&count_private=true&disable_animations=false&theme=dracula&locale=en&hide_border=false&username=GaetanGrd" height="125" alt="stats graph"  />
+    <img src="https://github-readme-stats.vercel.app/api/top-langs?locale=en&hide_title=false&layout=compact&card_width=320&langs_count=5&theme=dracula&hide_border=false&username=GaetanGrd" height="125" alt="languages graph"  /> 
 </div>
-<p align="right">[<a href="#readme-top">Return to top</a>]</p>
+<div align="right">
+    [<a href="#readme-top">Return to top</a>]
+</div>
   
 <h1> </h1>
 
 # <div align="center"><b>Usage</b></div>
 
 ## <b>How to install?</b>
-<br>
-<ul>
-	<li>
-		Download the latest release from <a href="https://github.com/Zagrios/bs-manager/releases">Releases</a>.
-	</li>
-	<li>Execute the installer and <a href="../../">BSManager</a> will start itself.</li>
-	<li>Once its done if you want to download a version, select a version and download it!</li>
-	<li>From the version page you can choose launch options, launch the version, and more from the dropdown menu!</li>
-</ul>
-<p align="right">[<a href="#readme-top">Return to top</a>]</p>
+
+- Download the latest release from [Releases](https://github.com/Zagrios/bs-manager/releases).
+- Execute the installer and [BSManager](../..) will start itself.
+- Once its done if you want to download a version, select a version and download it!
+From the version page you can choose launch options, launch the version, and more from the dropdown menu!
+
+
+<div align="right">
+
+[[Return to top](#readme-top)]
+
+</div>
 
 ## <b>Manage Versions</b>
-<br>
-<p><a href="../../">BSManager</a> allows you to manage your versions of Beat Saber. It gives you the ability to download any version of Beat Saber as long as you have a Steam account that already owns the game. Using <a href="../../">BSManager</a>, you can easily manage and update your collection of Beat Saber versions.</p>
-<br>
+
+<a href="../../">BSManager</a> allows you to manage your versions of Beat Saber. It gives you the ability to download any version of Beat Saber as long as you have a Steam account that already owns the game. Using <a href="../../">BSManager</a>, you can easily manage and update your collection of Beat Saber versions.
+
 <div align="center">
 
 https://github.com/Zagrios/bs-manager/blob/feature/readme-update/resources/readme/manageVersions.mov
 
 </div>
-<p align="right">[<a href="#readme-top">Return to top</a>]</p>
+<div align="right">
+
+[[Return to top](#readme-top)]
+
+</div>
 
 ## <b>Customize your instances</b>
-<p>The tool will allow you to completely customize each of your downloadable versions, you can change the color of the icon, choose a name for the instance and finally install your mods and map according to the Beat Saber version! </p>
-<br>
+
+The tool will allow you to completely customize each of your downloadable versions, you can change the color of the icon, choose a name for the instance and finally install your mods and map according to the Beat Saber version! 
+
 <div align="center">
 <img src="resources/readme/customVersion.gif" alt="gif with show how to custom your version :)">
 </div>
-<p align="right">[<a href="#readme-top">Return to top</a>]</p>
+<div align="right">
+
+[[Return to top](#readme-top)]
+
+</div>
 
 ## <b>Install Mods</b>
 <br>
@@ -155,7 +185,11 @@ https://github.com/Zagrios/bs-manager/blob/feature/readme-update/resources/readm
 <div align="center">
 <img src="resources/readme/installMods.gif" alt="gif with show how to dl and update mods">
 </div>
-<p align="right">[<a href="#readme-top">Return to top</a>]</p>
+<div align="right">
+
+[[Return to top](#readme-top)]
+
+</div>
 
 
 ## <b>Install Maps</b>
@@ -167,7 +201,11 @@ https://github.com/Zagrios/bs-manager/blob/feature/readme-update/resources/readm
 <img src="resources/readme/installMaps.gif" alt="gif with show how to dl map :D">
 </div>
 
-<p align="right">[<a href="#readme-top">Return to top</a>]</p>
+<div align="right">
+
+[[Return to top](#readme-top)]
+
+</div>
 
 ## <b>One Click</b>
 <p>
@@ -178,7 +216,11 @@ The "One-Click" feature of <a href="../../">BSManager</a> is an incredibly conve
 <img src="resources/readme/wip.gif" alt="(WIP) gif with oneclick interface an use it">
 </div>
 
-<p align="right">[<a href="#readme-top">Return to top</a>]</p>
+<div align="right">
+
+[[Return to top](#readme-top)]
+
+</div>
 
 ## <b>Having problems?</b>
 <br>
@@ -186,7 +228,11 @@ The "One-Click" feature of <a href="../../">BSManager</a> is an incredibly conve
 See the <a href="https://github.com/Zagrios/bs-manager/issues">open issues</a> for a list of known issues, from there you can create a new issue for the problem you have!  
 Otherwise you can add on to existing issues if one matches what you're encountering.
 </p>
-<p align="right">[<a href="#readme-top">Return to top</a>]</p>
+<div align="right">
+
+[[Return to top](#readme-top)]
+
+</div>
 
 <h1> </h1>
 
