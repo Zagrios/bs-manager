@@ -155,7 +155,7 @@ From the version page you can choose launch options, launch the version, and mor
 
 <div align="center">
 
-https://github.com/Zagrios/bs-manager/blob/feature/readme-update/resources/readme/manageVersions.mov
+https://user-images.githubusercontent.com/40648115/213008824-25cfdda3-6350-42dc-aa53-2132b4b8e838.mov
 
 </div>
 <div align="right">
