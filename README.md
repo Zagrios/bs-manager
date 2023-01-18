@@ -169,9 +169,10 @@ https://user-images.githubusercontent.com/40648115/213008824-25cfdda3-6350-42dc-
         The tool will allow you to completely customize each of your downloadable versions, you can change the color of the icon, choose a name for the instance and finally install your mods and map according to the Beat Saber version! 
     </span>
 </div>
+<br>
 <div align="center">
 
-https://user-images.githubusercontent.com/40648115/213296374-16e222e4-e79f-4b31-94c2-a0962bc36845.mov
+https://user-images.githubusercontent.com/40648115/213296794-74a1e20b-12dc-44ec-a67f-e25d7010bd3d.mov
 </div>
 
 <!--INSTALL MODS-->
@@ -181,10 +182,10 @@ https://user-images.githubusercontent.com/40648115/213296374-16e222e4-e79f-4b31-
         <a href="../../">BSManager</a> allows you to manage Beat Saber mods in a quick and easy way. It uses the BeatMod API to allow you to install, update or uninstall mods for each version of your collection. So the tool can help you manage them efficiently.
     </span>
 </div>
-
+<br>
 <div align="center">
 
-https://user-images.githubusercontent.com/40648115/213296433-60b8ccf4-9aa0-490e-8cea-130e8b377363.mov
+https://user-images.githubusercontent.com/40648115/213296816-bdaafc90-da76-4835-8d83-9ac6a4e1c549.mov
 </div>
 
 <!--INSTALL MAPS-->
@@ -194,9 +195,10 @@ https://user-images.githubusercontent.com/40648115/213296433-60b8ccf4-9aa0-490e-
         In addition to managing mods, the tool that allows you to manage and organize custom beatmaps existing on <a href="https://beatsaver.com">Beat Saver</a>, a popular site for sharing custom beatmaps for beat Saber. The tool allows you to view and organize your beatmaps, as well as link different versions of the game to share all your maps together. 
     </span>
 </div>
+<br>
 <div align="center">
 
-https://user-images.githubusercontent.com/40648115/213296460-f72a332a-0968-419d-b083-b66abba7a23e.mov
+https://user-images.githubusercontent.com/40648115/213296838-f775fe83-866d-4764-a7d0-648dbb8ec983.mov
 </div>
 
 <!--ONE CLICK-->
