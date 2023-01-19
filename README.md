@@ -116,7 +116,7 @@
 
 <!--CONTRIBUTING-->
 <div>
-    <h2><b>Contributing</b></h2>
+    <h2><b>Contribution</b></h2>
 </div>
 
 <div align="center">
