@@ -208,9 +208,12 @@ https://user-images.githubusercontent.com/40648115/213296838-f775fe83-866d-4764-
         The "One-Click" feature of <a href="../../">BSManager</a> is an incredibly convenient tool for Beat Saber users. It allows for easy and quick installation of models for all existing versions of Beat Saber. With this system, you will no longer need to spend hours manually installing models for each specific version of Beat Saber. All you need is one simple click to install models on all versions of Beat Saber you own.
     </span>
 </div>
+<br>
 <div align="center">
 
-MOV COMING SOON....
+
+
+https://user-images.githubusercontent.com/40648115/213423435-f0fc9dda-1328-449f-ab54-39d28cb6a8ac.mov
 </div>
 
 <!--HAVING PROBLEMS?-->
