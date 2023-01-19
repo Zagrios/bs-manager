@@ -78,7 +78,7 @@
     <h1><b>About The Project</b></h1>
 </div>
 <div>
-    <a href="https://github.com/Zagrios/bs-manager">BSManager</a> was created to unify and improve the two most used tools in the community (<a href="https://github.com/RiskiVR/BSLegacyLauncher">BS legacy launcher</a> and <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>).
+    <a href="https://github.com/Zagrios/bs-manager">BSManager</a> was created to unify and improve the two most used Apps in the community (<a href="https://github.com/RiskiVR/BSLegacyLauncher">BS legacy launcher</a> and <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>).
     <br><br>
     <h4><a href="https://github.com/Zagrios/bs-manager">BSManager</a> will allow you to:</h4>
     <ul>
@@ -181,7 +181,7 @@ https://user-images.githubusercontent.com/40648115/213296794-74a1e20b-12dc-44ec-
 <div>
     <h2><b>Install Mods</b></h2>
     <span>
-        <a href="https://github.com/Zagrios/bs-manager">BSManager</a> allows you to manage Beat Saber mods in a quick and easy way. It uses the BeatMod API to allow you to install, update or uninstall mods for each version of your collection. So the tool can help you manage them efficiently.
+        <a href="https://github.com/Zagrios/bs-manager">BSManager</a> allows you to manage Beat Saber mods in a quick and easy way. It uses the BeatMod API to allow you to install, update or uninstall mods for each version of your collection. So the app can help you manage them efficiently.
     </span>
 </div>
 <br>
@@ -194,7 +194,7 @@ https://user-images.githubusercontent.com/40648115/213296816-bdaafc90-da76-4835-
 <div>
     <h2><b>Install Maps</b></h2>
     <span>
-        In addition to managing mods, the tool that allows you to manage and organize custom beatmaps existing on <a href="https://beatsaver.com">Beat Saver</a>, a popular site for sharing custom beatmaps for beat Saber. The tool allows you to view and organize your beatmaps, as well as link different versions of the game to share all your maps together. 
+        In addition to managing mods, <a href="https://github.com/Zagrios/bs-manager">BSManager</a> that allows you to manage and organize custom beatmaps existing on <a href="https://beatsaver.com">Beat Saver</a>, a popular site for sharing custom beatmaps for beat Saber. <a href="https://github.com/Zagrios/bs-manager">BSManager</a> allows you to view and organize your beatmaps, as well as link different versions of the game to share all your maps together. 
     </span>
 </div>
 <br>
@@ -207,7 +207,7 @@ https://user-images.githubusercontent.com/40648115/213296838-f775fe83-866d-4764-
 <div>
     <h2><b>One Click</b></h2>
     <span>
-        The "One-Click" feature of <a href="https://github.com/Zagrios/bs-manager">BSManager</a> is an incredibly convenient tool for Beat Saber users. It allows for easy and quick installation of models for all existing versions of Beat Saber. With this system, you will no longer need to spend hours manually installing models for each specific version of Beat Saber. All you need is one simple click to install models on all versions of Beat Saber you own.
+        The "One-Click" feature of <a href="https://github.com/Zagrios/bs-manager">BSManager</a> is an incredibly convenient app for Beat Saber users. It allows for easy and quick installation of models for all existing versions of Beat Saber. With this system, you will no longer need to spend hours manually installing models for each specific version of Beat Saber. All you need is one simple click to install models on all versions of Beat Saber you own.
     </span>
 </div>
 <br>
