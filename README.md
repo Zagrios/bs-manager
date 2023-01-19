@@ -24,9 +24,11 @@
     </span>
     <br>
     <span>
-        <a href="https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&template=bug_report.md&title=%5BBUG%5D">Report Bug</a> 
+        <a href="https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&template=-bug--bug-report.md&title=%5BBUG%5D+%3A+">Report Bug</a> 
         ·
-        <a href="https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=enhancement&template=feature_request.md&title=%5BAME%5D">Request Feature</a>
+        <a href="https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=enhancement&template=-feat---feature-request.md&title=%5BFEAT.%5D+%3A+">Request Feature</a>
+        ·
+        <a href="https://github.com/Zagrios/bs-manager/security/policy">Report a security vulnerability</a>
     </span>
 </div>
 
