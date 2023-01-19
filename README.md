@@ -90,7 +90,7 @@
 </div>
 <br>
 <div align="center">
-    <img src="resources/readme/preview.png" alt="(WIP) home interface with multiple instance dl and steam & oculus.">
+    <img src="resources/readme/preview.png" alt="preview">
 </div>
 <br>
 
