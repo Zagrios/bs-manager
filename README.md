@@ -78,14 +78,14 @@
     <h1><b>About The Project</b></h1>
 </div>
 <div>
-    <a href="../../">BSManager</a> was created to unify and improve the two most used tools in the community (<a href="https://github.com/RiskiVR/BSLegacyLauncher">BS legacy launcher</a> and <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>).
+    <a href="https://github.com/Zagrios/bs-manager">BSManager</a> was created to unify and improve the two most used tools in the community (<a href="https://github.com/RiskiVR/BSLegacyLauncher">BS legacy launcher</a> and <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>).
     <br><br>
-    <h4><a href="../../">BSManager</a> will allow you to:</h4>
+    <h4><a href="https://github.com/Zagrios/bs-manager">BSManager</a> will allow you to:</h4>
     <ul>
         <li><b>Manage instances of multiple versions</b>, designed for people who need to play on different versions or have multiple profiles for the same version.</li>
         <li><b>Download your maps in the same way</b>, in addition to that, the maps are not version dependent, so you will be able to find your maps whatever version you are using without having to transfer them.</li>
-        <li><b>Install your mods in one click</b>, just like <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>, <a href="../../">BSManager</a> will allow you to install your mods quickly and securely depending on the version you choose.</li>
-        <li><b>Customize your interface</b>, we know that some of you like to customize your interfaces to the maximum. That's why <a href="../../">BSManager</a> brings you peace of mind on this point, you can change the name of the versions, their color, and you can even change the color of the logo! Of course, a dark theme has been added to protect your eyes at night.</li>
+        <li><b>Install your mods in one click</b>, just like <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>, <a href="https://github.com/Zagrios/bs-manager">BSManager</a> will allow you to install your mods quickly and securely depending on the version you choose.</li>
+        <li><b>Customize your interface</b>, we know that some of you like to customize your interfaces to the maximum. That's why <a href="https://github.com/Zagrios/bs-manager">BSManager</a> brings you peace of mind on this point, you can change the name of the versions, their color, and you can even change the color of the logo! Of course, a dark theme has been added to protect your eyes at night.</li>
     </ul>
 </div>
 <br>
@@ -155,7 +155,7 @@
 <div>
     <h2><b>Manage Versions</b></h2>
     <span>
-        <a href="../../">BSManager</a> allows you to manage your versions of Beat Saber. It gives you the ability to download any version of Beat Saber as long as you have a Steam account that already owns the game. Using <a href="../../">BSManager</a>, you can easily manage and update your collection of Beat Saber versions.
+        <a href="https://github.com/Zagrios/bs-manager">BSManager</a> allows you to manage your versions of Beat Saber. It gives you the ability to download any version of Beat Saber as long as you have a Steam account that already owns the game. Using <a href="https://github.com/Zagrios/bs-manager">BSManager</a>, you can easily manage and update your collection of Beat Saber versions.
     </span>
 </div>
 <br>
@@ -181,7 +181,7 @@ https://user-images.githubusercontent.com/40648115/213296794-74a1e20b-12dc-44ec-
 <div>
     <h2><b>Install Mods</b></h2>
     <span>
-        <a href="../../">BSManager</a> allows you to manage Beat Saber mods in a quick and easy way. It uses the BeatMod API to allow you to install, update or uninstall mods for each version of your collection. So the tool can help you manage them efficiently.
+        <a href="https://github.com/Zagrios/bs-manager">BSManager</a> allows you to manage Beat Saber mods in a quick and easy way. It uses the BeatMod API to allow you to install, update or uninstall mods for each version of your collection. So the tool can help you manage them efficiently.
     </span>
 </div>
 <br>
@@ -207,7 +207,7 @@ https://user-images.githubusercontent.com/40648115/213296838-f775fe83-866d-4764-
 <div>
     <h2><b>One Click</b></h2>
     <span>
-        The "One-Click" feature of <a href="../../">BSManager</a> is an incredibly convenient tool for Beat Saber users. It allows for easy and quick installation of models for all existing versions of Beat Saber. With this system, you will no longer need to spend hours manually installing models for each specific version of Beat Saber. All you need is one simple click to install models on all versions of Beat Saber you own.
+        The "One-Click" feature of <a href="https://github.com/Zagrios/bs-manager">BSManager</a> is an incredibly convenient tool for Beat Saber users. It allows for easy and quick installation of models for all existing versions of Beat Saber. With this system, you will no longer need to spend hours manually installing models for each specific version of Beat Saber. All you need is one simple click to install models on all versions of Beat Saber you own.
     </span>
 </div>
 <br>
