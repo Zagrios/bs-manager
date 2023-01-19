@@ -144,7 +144,7 @@
 <div>
     <h2><b>How to install?</b></h2>
     <ul>
-        <li>Download the latest release from <a href="https://github.com/Zagrios/bs-manager/releases">Releases</a>.</li>
+        <li>Download the <a href="https://github.com/Zagrios/bs-manager/releases/latest">latest release</a> from <a href="https://github.com/Zagrios/bs-manager/releases">Releases</a>.</li>
         <li>Execute the installer and <a href="../..">BSManager</a> will start itself.</li>
         <li>Once its done if you want to download a version, select a version and download it! </li>
         <li>From the version page you can choose options, launch the version, and more!</li>
