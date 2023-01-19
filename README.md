@@ -194,7 +194,7 @@ https://user-images.githubusercontent.com/40648115/213296816-bdaafc90-da76-4835-
 <div>
     <h2><b>Install Maps</b></h2>
     <span>
-        In addition to managing mods, <a href="https://github.com/Zagrios/bs-manager">BSManager</a> that allows you to manage and organize custom beatmaps existing on <a href="https://beatsaver.com">Beat Saver</a>, a popular site for sharing custom beatmaps for beat Saber. <a href="https://github.com/Zagrios/bs-manager">BSManager</a> allows you to view and organize your beatmaps, as well as link different versions of the game to share all your maps together. 
+        In addition to managing mods, <a href="https://github.com/Zagrios/bs-manager">BSManager</a> allows you to manage and organize custom beatmaps existing on <a href="https://beatsaver.com">Beat Saver</a>, a popular site for sharing custom beatmaps for beat Saber. Moreover the app allow you to share your maps across all your versions. 
     </span>
 </div>
 <br>
