@@ -64,7 +64,7 @@
     <ul>
         <li><a href="#how-to-install">How to install?</a></li>
         <li><a href="#manage-versions">Manage Versions</a></li>
-        <li><a href="#customize-your-instances">Customize your versions</a></li>
+        <li><a href="#customize-your-versions">Customize your versions</a></li>
         <li><a href="#install-mods">Install Mods</a></li>
         <li><a href="#install-maps">Install Maps</a></li>
         <li><a href="#one-click">One Click</a></li>
@@ -164,11 +164,11 @@
 https://user-images.githubusercontent.com/40648115/213008824-25cfdda3-6350-42dc-aa53-2132b4b8e838.mov
 </div>
 
-<!--CUSTOM UR INSTANCES-->
+<!--CUSTOM UR VERSIONS-->
 <div>
-    <h2><b>Customize your instances</b></h2>
+    <h2><b>Customize your versions</b></h2>
     <span>
-        The tool will allow you to completely customize each of your downloadable versions, you can change the color of the icon, choose a name for the instance and finally install your mods and map according to the Beat Saber version! 
+        <a href="https://github.com/Zagrios/bs-manager">BSManager</a> will allow you to completely customize each of your downloaded  versions, you can change the color of the icon, choose a name for the version and finally install your mods,maps and other contents according to the Beat Saber version! 
     </span>
 </div>
 <br>
