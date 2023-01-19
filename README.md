@@ -46,7 +46,7 @@
     <a href="https://mee6.xyz/fr/m/bsmanager"><img src ="https://img.shields.io/badge/-🥰%20Support%20BSM-EC4546?style=for-the-badge" alt="Donation"/></a>
     <a href="https://discord.gg/uSqbHVpKdV"><img src ="https://img.shields.io/badge/-Twitter-F5F8FA?style=for-the-badge&logo=Twitter" alt="Twitter"/></a>
     <br>
-    [<a href="#readme-bot">go to bot</a>]
+    [<a href="#readme-bot">go to bottom</a>]
 </div>
 
 ---
@@ -64,7 +64,7 @@
     <ul>
         <li><a href="#how-to-install">How to install?</a></li>
         <li><a href="#manage-versions">Manage Versions</a></li>
-        <li><a href="#customize-your-instances">Customize your instances</a></li>
+        <li><a href="#customize-your-instances">Customize your versions</a></li>
         <li><a href="#install-mods">Install Mods</a></li>
         <li><a href="#install-maps">Install Maps</a></li>
         <li><a href="#one-click">One Click</a></li>
