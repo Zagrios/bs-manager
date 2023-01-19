@@ -207,7 +207,7 @@ https://user-images.githubusercontent.com/40648115/213296838-f775fe83-866d-4764-
 <div>
     <h2><b>One Click</b></h2>
     <span>
-        The "One-Click" feature of <a href="https://github.com/Zagrios/bs-manager">BSManager</a> is an incredibly convenient feature for Beat Saber users. It allows for easy and quick installation of models,maps and playlist for all existing versions of Beat Saber. With this system, you will no longer need to spend hours manually installing models for each specific version of Beat Saber. All you need is one simple click to install models on all versions of Beat Saber you own.
+        The "One-Click" feature of <a href="https://github.com/Zagrios/bs-manager">BSManager</a> is an incredibly convenient feature for Beat Saber users. It allows easy and quick installation of models, maps and playlists for all versions of Beat Saber you own.
     </span>
 </div>
 <br>
