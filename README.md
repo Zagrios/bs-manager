@@ -181,7 +181,7 @@ https://user-images.githubusercontent.com/40648115/213296794-74a1e20b-12dc-44ec-
 <div>
     <h2><b>Install Mods</b></h2>
     <span>
-        <a href="https://github.com/Zagrios/bs-manager">BSManager</a> allows you to manage Beat Saber mods in a quick and easy way. It uses the BeatMod API to allow you to install, update or uninstall mods for each version of your collection. So the app can help you manage them efficiently.
+        <a href="https://github.com/Zagrios/bs-manager">BSManager</a> allows you to manage Beat Saber mods in a quick and easy way. It uses the <a href="https://beatmods.com/#/">BeatMod API</a> to allow you to install, update or uninstall mods for each version of your collection. So the app can help you manage them efficiently.
     </span>
 </div>
 <br>
