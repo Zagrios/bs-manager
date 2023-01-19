@@ -220,7 +220,7 @@ https://user-images.githubusercontent.com/40648115/213435051-7feb815d-f32b-4135-
 <div>
     <h2><b>Having problems?</b></h2>
     <span>
-        See the <a href="https://github.com/Zagrios/bs-manager/issues">open issues</a> show the list of known issues, from there you can create a new issue for your problem!  
+        See the <a href="https://github.com/Zagrios/bs-manager/issues">open issues</a> to show the list of known issues, from there you can create a new issue for your problem!  
         Otherwise you can add on to existing issues if one matches what you're encountering.
     </span>
 <div align="right">
