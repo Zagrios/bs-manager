@@ -4,6 +4,8 @@ import { motion, Variants } from "framer-motion";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { AudioPlayerService } from "renderer/services/audio-player.service";
 
+// Thanks to cheddZy for the icon : https://github.com/cheddZy
+
 export const BsManagerIcon = memo(({className}: {className?: string}) => {
 
     const audioPlayer = AudioPlayerService.getInstance();
