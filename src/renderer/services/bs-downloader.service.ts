@@ -156,4 +156,9 @@ export class BsDownloaderService{
       return this.ipcService.send<string>("bs-download.set-installation-folder", {args: path});
    }
 
+   public async importVersion(pathToImport: string): Promise<boolean>{
+      const res = await this.ipcService.send<void>("bs-download.import-version", {args: pathToImport});
+      return res.success;
+   }
+
 }

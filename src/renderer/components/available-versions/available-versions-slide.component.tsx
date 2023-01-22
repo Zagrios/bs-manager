@@ -1,7 +1,7 @@
 import { BSVersion } from 'shared/bs-version.interface';
 import { useEffect, useState } from "react"
 import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
-import { filter, take } from "rxjs/operators";
+import { filter } from "rxjs/operators";
 import { AvailableVersionItem } from "./available-version-item.component";
 
 export function AvailableVersionsSlide(props: {year: string}) {
@@ -11,7 +11,7 @@ export function AvailableVersionsSlide(props: {year: string}) {
   const versionsService = BSVersionManagerService.getInstance();
 
   useEffect(() => {
-    versionsService.availableVersions$.pipe(filter(versions => !!versions?.length), take(1)).subscribe(() => {
+    versionsService.availableVersions$.pipe(filter(versions => !!versions?.length)).subscribe(() => {
       setAvailableVersions(versionsService.getAvaibleVersionsOfYear(props.year));
     });
   }, [])

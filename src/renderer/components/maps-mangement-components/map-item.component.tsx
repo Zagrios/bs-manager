@@ -20,6 +20,7 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { MAP_DIFFICULTIES } from "renderer/partials/maps/map-difficulties/map-difficulties";
 import { MAP_DIFFICULTIES_COLORS } from "renderer/partials/maps/map-difficulties/map-difficulties-colors"
 import useDoubleClick from "use-double-click";
+import { GlowEffect } from "../shared/glow-effect.component";
 
 export type ParsedMapDiff = {type: BsvMapDifficultyType, name: string, stars: number}
 
@@ -148,7 +149,7 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
     
     return (
         <motion.li className="relative h-[100px] min-w-[370px] shrink-0 grow basis-0 text-white group cursor-pointer" onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)} style={{zIndex: hovered && 5, transform: "translateZ(0) scale(1.0, 1.0)", backfaceVisibility: "hidden"}}>
-            {(hovered || selected) && onSelected && <motion.span className="glow-on-hover !transition-none" animate={{opacity: 1}} transition={{duration: .2, ease: "linear"}}/>}
+            <GlowEffect visible={hovered || selected && !!onSelected}/>
             <AnimatePresence>
                 {(diffsPanelHovered || bottomBarHovered) && (
                     <motion.ul key={hash} className="absolute top-[calc(100%-10px)] w-full h-fit max-h-[200%] pt-4 pb-2 px-2 overflow-y-scroll bg-light-main-color-3 dark:bg-main-color-3 text-main-color-1 dark:text-current brightness-125 rounded-md flex flex-col gap-3 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 shadow-sm shadow-black" initial={{opacity: 0}} animate={{opacity: 1}} exit={{opacity: 0}} transition={{duration: .15}} onHoverStart={diffsPanelHoverStart} onHoverEnd={diffsPanelHoverEnd}>

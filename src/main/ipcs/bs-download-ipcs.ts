@@ -65,4 +65,14 @@ ipcMain.on('bs-download.set-installation-folder', (event, request: IpcRequest<st
   });
 })
 
+ipcMain.on('bs-download.import-version', (event, request: IpcRequest<string>) => {
+    const utils = UtilsService.getInstance();
+    const installer = BSInstallerService.getInstance();
+    installer.importVersion(request.args).catch(e => {
+        utils.ipcSend(request.responceChannel, {success: false, error: e});
+    }).then(() => {
+        utils.ipcSend(request.responceChannel, {success: true});
+    });
+})
+
 

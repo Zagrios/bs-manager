@@ -14,6 +14,7 @@ import { MAP_DIFFICULTIES_COLORS } from "renderer/partials/maps/map-difficulties
 import { BsmButton } from "../shared/bsm-button.component"
 import equal from "fast-deep-equal/es6";
 import clone from "rfdc";
+import { GlowEffect } from "../shared/glow-effect.component"
 
 export type Props = {
     className?: string,
@@ -214,7 +215,7 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange,
             {onApply && (
                 <div className="inline float-right relative w-fit h-fit mt-2">
                     <BsmButton className="inline float-right rounded-md font-bold px-1 py-0.5 text-sm" text="Appliquer" typeColor="primary" withBar={false} onClick={handleApply}/>
-                    {haveChanged && <div className="glow-on-hover !opacity-100"></div>}
+                    <GlowEffect visible={haveChanged}/>
                 </div>
             )}
         </motion.div>

@@ -33,7 +33,7 @@ ipcMain.on('new-window', async (event, request: IpcRequest<string>) => {
 });
 
 ipcMain.on('choose-folder', async (event, request: IpcRequest<void>) => {
-  dialog.showOpenDialog({properties: ['openDirectory']}).then(res => {
+  dialog.showOpenDialog({properties: ['openDirectory'],}).then(res => {
     UtilsService.getInstance().ipcSend(request.responceChannel, {success: true, data: res});
   });
 });

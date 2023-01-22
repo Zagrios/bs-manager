@@ -20,7 +20,7 @@ export function NavBar() {
     const color = useThemeColor("first-color");
     const t = useTranslation();
 
-    const _ = useObservable(I18nService.getInstance().currentLanguage$)
+    useObservable(I18nService.getInstance().currentLanguage$)
 
   return (
     <nav id='nav-bar' className='z-10 flex flex-col h-full max-h-full items-center p-1 bg-light-main-color-1 dark:bg-main-color-1'>

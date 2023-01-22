@@ -50,8 +50,6 @@
     width: calc(100% + 8px);
     height: calc(100% + 8px);
     animation: glowing 20s linear infinite;
-    opacity: 0;
-    transition: opacity .2s ease-in-out;
 }
 
 @keyframes glowing {
