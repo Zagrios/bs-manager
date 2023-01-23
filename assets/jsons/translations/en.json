@@ -85,7 +85,11 @@
         },
         "available-versions": {
             "title": "Select a version",
-            "steam-release": "Release page"
+            "steam-release": "Release page",
+            "dropdown": {
+                "refresh": "Refresh list",
+                "import-version" :"Import a version"
+            }
         },
         "settings": {
             "steam": {
@@ -230,6 +234,22 @@
                 },
                 "actions":{
                     "download-dotnet": "Download .NET 6"
+                }
+            }
+        },
+        "bs-import-version":{
+            "success":{
+                "start-import": {
+                    "title": "Import in progress 👌",
+                    "desc": "The import may take several minutes depending on your configuration."
+                },
+                "imported": {
+                    "title": "Imported version 🎉"
+                }
+            },
+            "errors":{
+                "import-error":{
+                    "desc": "Check that the selected folder is a BeatSaber installation."
                 }
             }
         },
@@ -425,6 +445,13 @@
             },
             "buttons": {
                 "submit": "Login"
+            }
+        },
+        "bs-import-version":{
+            "title": "Import a version",
+            "description": "Imports a version of BeatSaber to use with BSManager. The import will copy the selected BeatSaber installation folder to the BSManager versions folder.",
+            "buttons":{
+                "submit": "Import a version"
             }
         },
         "bs-uninstall": {

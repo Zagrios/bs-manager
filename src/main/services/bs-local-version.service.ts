@@ -1,5 +1,5 @@
 import { BSVersionLibService } from "./bs-version-lib.service";
-import { BSVersion } from 'shared/bs-version.interface';
+import { BSVersion, PartialBSVersion } from 'shared/bs-version.interface';
 import { InstallationLocationService } from "./installation-location.service";
 import { SteamService } from "./steam.service";
 import { UtilsService } from "./utils.service";
@@ -33,27 +33,32 @@ export class BSLocalVersionService{
       return BSLocalVersionService.instance;
    }
 
-   private constructor(){
-      this.installLocationService = InstallationLocationService.getInstance();
-      this.utilsService = UtilsService.getInstance();
-      this.steamService = SteamService.getInstance();
-      this.oculusService = OculusService.getInstance();
-      this.remoteVersionService = BSVersionLibService.getInstance();
-      this.configService = ConfigurationService.getInstance();
-   }
+    private constructor(){
+        this.installLocationService = InstallationLocationService.getInstance();
+        this.utilsService = UtilsService.getInstance();
+        this.steamService = SteamService.getInstance();
+        this.oculusService = OculusService.getInstance();
+        this.remoteVersionService = BSVersionLibService.getInstance();
+        this.configService = ConfigurationService.getInstance();
+    }
 
-   private async getVersionOfBSFolder(bsPath: string): Promise<string>{
+    
+
+   public async getVersionOfBSFolder(bsPath: string): Promise<PartialBSVersion>{
       const versionFilePath = path.join(bsPath, 'Beat Saber_Data', 'globalgamemanagers');
       if(!this.utilsService.pathExist(versionFilePath)){ return null; }
       const versionsAvailable = await this.remoteVersionService.getAvailableVersions();
-      return new Promise<string>(resolve => {
+      return new Promise<PartialBSVersion>(resolve => {
          const stream = createReadStream(versionFilePath);
-         let findVersion: string = null;
+         let findVersion: PartialBSVersion = null;
          stream.on('data', (line) => {
             line = line.toString();
             for(const version of versionsAvailable){
                if(line.includes(version.BSVersion)){
-                    findVersion = version.BSVersion;
+                    findVersion = {BSVersion: version.BSVersion};
+                    if(findVersion.BSVersion !== path.basename(bsPath)){
+                        findVersion.name = path.basename(bsPath);
+                    }
                     stream.close();
                     stream.destroy();
                     break;
@@ -118,7 +123,7 @@ export class BSLocalVersionService{
         const steamBsVersion = await this.getVersionOfBSFolder(steamBsFolder);
 
         if(!steamBsVersion){ return null; }
-        const version = await this.remoteVersionService.getVersionDetails(steamBsVersion);
+        const version = await this.remoteVersionService.getVersionDetails(steamBsVersion.BSVersion);
         if(!version){ return null; }
         return {...version, steam: true};
     }
@@ -128,7 +133,7 @@ export class BSLocalVersionService{
         if(!oculusBsFolder){ return null; }
         const oculusBsVersion = await this.getVersionOfBSFolder(oculusBsFolder);
         if(!oculusBsVersion){ return null; }
-        const version = await this.remoteVersionService.getVersionDetails(oculusBsVersion);
+        const version = await this.remoteVersionService.getVersionDetails(oculusBsVersion.BSVersion);
         if(!version){ return null; }
         return {...version, oculus: true};
     }
@@ -151,7 +156,7 @@ export class BSLocalVersionService{
             log.info("try get version from folder", f);
             const rawVersion = await this.getVersionOfBSFolder(f);
             if(!rawVersion){ continue; }
-            const bsVersion = {...await this.remoteVersionService.getVersionDetails(rawVersion)};
+            const bsVersion = {...await this.remoteVersionService.getVersionDetails(rawVersion.BSVersion)};
             if(!bsVersion){ continue; }
             bsVersion.name = path.basename(f) !== bsVersion.BSVersion ? path.basename(f) : undefined;
             

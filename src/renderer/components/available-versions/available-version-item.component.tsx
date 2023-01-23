@@ -8,6 +8,8 @@ import { BsmImage } from "../shared/bsm-image.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { BsmIcon } from "../svgs/bsm-icon.component";
 import { LinkOpenerService } from 'renderer/services/link-opener.service';
+import { motion } from 'framer-motion';
+import { GlowEffect } from '../shared/glow-effect.component';
 
 export const AvailableVersionItem = memo(function AvailableVersionItem(props: {version: BSVersion}) {
 
@@ -15,6 +17,7 @@ export const AvailableVersionItem = memo(function AvailableVersionItem(props: {v
   const linkOpener = LinkOpenerService.getInstance();
 
   const [selected, setSelected] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const t = useTranslation();
 
   const formatedDate = (() => { return dateFormat(+props.version.ReleaseDate*1000, "ddd. d mmm yyyy"); })()
@@ -38,8 +41,8 @@ export const AvailableVersionItem = memo(function AvailableVersionItem(props: {v
   }, [])
 
     return (
-        <li className="group relative w-72 h-60 transition-transform active:scale-[.98]" onClick={toggleSelect}>
-        <span className={`absolute glow-on-hover group-hover:opacity-100 ${selected && "!opacity-100"}`}/>
+        <motion.li className="group relative w-72 h-60 transition-transform active:scale-[.98]" onClick={toggleSelect} onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)}>
+            <GlowEffect visible={hovered} className="absolute"/>
             <div className={`relative flex flex-col overflow-hidden rounded-md w-72 h-60 cursor-pointer group-hover:shadow-none duration-300 bg-light-main-color-2 dark:bg-main-color-2 ${!selected && "shadow-lg shadow-gray-900"}`}>
                 <BsmImage image={props.version.ReleaseImg ? props.version.ReleaseImg : defaultImage} errorImage={defaultImage} placeholder={defaultImage} className="absolute top-0 right-0 w-full h-full opacity-40 blur-xl object-cover" loading="lazy"/>
                 <BsmImage image={props.version.ReleaseImg ? props.version.ReleaseImg : defaultImage} errorImage={defaultImage} placeholder={defaultImage} className="bg-black w-full h-3/4 object-cover" loading="lazy"/>
@@ -56,6 +59,6 @@ export const AvailableVersionItem = memo(function AvailableVersionItem(props: {v
                     )}
                 </div>
             </div>
-        </li>
+        </motion.li>
     )
 })

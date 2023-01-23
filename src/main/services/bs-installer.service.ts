@@ -1,6 +1,6 @@
 import { BS_APP_ID, BS_DEPOT } from "../constants";
 import path from "path";
-import { BSVersion } from 'shared/bs-version.interface';
+import { BSVersion, PartialBSVersion } from 'shared/bs-version.interface';
 import { UtilsService } from "./utils.service";
 import { ChildProcessWithoutNullStreams, spawn, spawnSync } from "child_process";
 import log from "electron-log";
@@ -9,6 +9,7 @@ import { ctrlc } from "ctrlc-windows";
 import { BSLocalVersionService } from "./bs-local-version.service";
 import isOnline from 'is-online';
 import { WindowManagerService } from "./window-manager.service";
+import { copy, copySync } from "fs-extra";
 
 export class BSInstallerService{
 
@@ -158,6 +159,29 @@ export class BSInstallerService{
       this.downloadProcess.on('close', () => reject());
     })
   }
+
+    public async importVersion(path: string): Promise<PartialBSVersion>{
+        
+        const rawBsVersion = await this.localVersionService.getVersionOfBSFolder(path);
+
+        if(!rawBsVersion){ throw new Error("NOT_BS_FOLDER"); }
+
+        const originalPath = await this.localVersionService.getVersionPath(rawBsVersion);
+        let destPath = originalPath;
+        let folderExist = this.utils.pathExist(destPath);
+        let i = 0;
+
+        while(folderExist){
+            i++;
+            destPath = `${originalPath} (${i})`;
+            folderExist = this.utils.pathExist(destPath);
+        }
+
+        await copy(path, destPath, {dereference: true});
+
+        return rawBsVersion;
+
+    }
 
 }
 
