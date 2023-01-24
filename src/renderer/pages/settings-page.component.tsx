@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import SettingColorChooser from "renderer/components/settings/setting-color-chooser.component";
 import { SettingContainer } from "renderer/components/settings/setting-container.component";
 import { RadioItem, SettingRadioArray } from "renderer/components/settings/setting-radio-array.component";
@@ -80,6 +80,8 @@ export function SettingsPage() {
     modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled))
   }, []);
 
+  const allDeepLinkEnabled = mapDeepLinksEnabled && playlistsDeepLinkEnabled && modelsDeepLinkEnabled;
+
   const resetColors = () => {
     configService.delete("first-color" as DefaultConfigKey);
     configService.delete("second-color" as DefaultConfigKey);
@@ -136,18 +138,17 @@ export function SettingsPage() {
     notificationService.notifySuccess({title: "notifications.settings.steam.success.titles.logout", duration: 3000});
   };
 
-  const openPatreonPage = () => {
-    linkOpener.open("https://www.patreon.com/bsmanager?fan_landing=true");
-  }
-
+  
   const toogleShowSupporters = () => {
-    setShowSupporters(show => !show);
-  }
-
+      setShowSupporters(show => !show);
+    }
+    
+  const openSupportPage = () => linkOpener.open("https://mee6.gg/m/bsmanager");
   const openGithub = () => linkOpener.open("https://github.com/Zagrios/bs-manager");
   const openReportBug = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&template=-bug--bug-report.md&title=%5BBUG%5D+%3A+");
   const openRequestFeatures = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=enhancement&template=-feat---feature-request.md&title=%5BFEAT.%5D+%3A+");
   const openDiscord = () => linkOpener.open("https://discord.gg/uSqbHVpKdV");
+  const openTwitter = () => linkOpener.open("https://twitter.com/BSManager_");
 
   const openLogs = () => ipcService.sendLazy("open-logs");
 
@@ -162,42 +163,33 @@ export function SettingsPage() {
         notificationService.notifySuccess({title, desc, duration: 3000});
     }
 
-    const toogleMapDeepLinks = () => {
-        const isDesactivation = mapDeepLinksEnabled;
-        mapsManager.toogleDeepLinks().then(res => {
-            if(res){ return showDeepLinkSuccess(isDesactivation); }
-            showDeepLinkError(isDesactivation);
-        }).catch(() => {
-            showDeepLinkError(isDesactivation);
-        }).finally(() => mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled)));
+    const switchDeepLink = async (manager: MapsManagerService|PlaylistsManagerService|ModelsManagerService, enable: boolean, showNotification: boolean, setter: Dispatch<SetStateAction<boolean>>) => {
+        const res = await (enable ? manager.enableDeepLink() : manager.disableDeepLink());
+        showNotification && (res ? showDeepLinkSuccess(!enable) : showDeepLinkError(!enable));
+        const isEnable = await manager.isDeepLinksEnabled()
+        setter(() => isEnable)
+        return res;
     }
 
-    const tooglePlaylistsDeepLinks = () => {
-        const isDesactivation = playlistsDeepLinkEnabled;
-        playlistsManager.toogleDeepLinks().then(res => {
-            if(res){ return showDeepLinkSuccess(isDesactivation); }
-            showDeepLinkError(isDesactivation);
-        }).catch(() => {
-            showDeepLinkError(isDesactivation);
-        }).finally(() => playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled)));
-    }
+    const toogleMapDeepLinks = (showNotification = true) => switchDeepLink(mapsManager, !mapDeepLinksEnabled, showNotification, setMapDeepLinksEnabled);
+    const tooglePlaylistsDeepLinks = (showNotification = true) => switchDeepLink(playlistsManager, !playlistsDeepLinkEnabled, showNotification, setPlaylistsDeepLinkEnabled);
+    const toogleModelsDeepLinks = (showNotification = true) => switchDeepLink(modelsManager, !modelsDeepLinkEnabled, showNotification, setModelsDeepLinkEnabled);
+    const toogleAllDeepLinks = async () => {
+        const res = (await Promise.all([
+            switchDeepLink(mapsManager, !allDeepLinkEnabled, false, setMapDeepLinksEnabled),
+            switchDeepLink(playlistsManager, !allDeepLinkEnabled, false, setPlaylistsDeepLinkEnabled),
+            switchDeepLink(modelsManager, !allDeepLinkEnabled, false, setModelsDeepLinkEnabled)
+        ])).every(activation => activation === true);
 
-    const toogleModelsDeepLinks = () => {
-        const isDesactivation = modelsDeepLinkEnabled;
-        modelsManager.toogleDeepLinks().then(res => {
-            if(res){ return showDeepLinkSuccess(isDesactivation); }
-            showDeepLinkError(isDesactivation);
-        }).catch(() => {
-            showDeepLinkError(isDesactivation);
-        }).finally(() => modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled)));
-    }
+        res ? showDeepLinkSuccess(allDeepLinkEnabled) : showDeepLinkError(allDeepLinkEnabled);
+    };
 
     return (
         <div className="w-full h-full flex justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 text-gray-800 dark:text-gray-200">
 
             
 
-            <div className="max-w-2xl w-full">
+            <div className="max-w-2xl w-full h-fit">
 
                 <div className="inline-block sticky top-8 left-[calc(100%)] translate-x-12 grow-0 w-9 h-9">
                     <BsmButton className="inline-block grow-0 bg-transparent sticky h-full w-full top-20 right-20 !m-0 rounded-full p-1" onClick={() => nav(-1)} icon="close" withBar={false}/>
@@ -230,10 +222,30 @@ export function SettingsPage() {
                 <SettingContainer title="pages.settings.additional-content.title" description="pages.settings.additional-content.description">
 
                 <SettingContainer id="one-clicks" minorTitle="pages.settings.additional-content.deep-links.sub-title">
-                    <ul className="w-full flex flex-col gap-1.5">
-                        <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3">
+                    <div className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3 cursor-pointer mb-1.5" onClick={toogleAllDeepLinks}>
                             <div className="flex items-center gap-2">
-                                <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={toogleMapDeepLinks} checked={mapDeepLinksEnabled}/>
+                                <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={toogleAllDeepLinks} checked={allDeepLinkEnabled}/>
+                                <span className="font-extrabold">{t("notifications.settings.additional-content.deep-link.select-all")}</span>
+                            </div>
+                            <div className="flex h-full gap-2">
+                                <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <BsmImage className="h-8 cursor-pointer" image={beatSaverIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://beatsaver.com/")}}/>
+                                </Tippy>
+                                <Tippy content="BeastSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <BsmImage className="h-8 rounded-md cursor-pointer" image={beastSaberIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://bsaber.com/")}}/>
+                                </Tippy>
+                                <Tippy content="ScoreSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <BsmImage className="h-8 cursor-pointer" image={scoreSaberIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://scoresaber.com/")}}/>
+                                </Tippy>
+                                <Tippy content="ModelSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <BsmImage className="h-8 cursor-pointer" image={modelSaberIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://modelsaber.com/")}}/>
+                                </Tippy>
+                            </div>
+                    </div>
+                    <ul className="w-full flex flex-col gap-1.5 pl-10">
+                        <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3 cursor-pointer" onClick={() => toogleMapDeepLinks()}>
+                            <div className="flex items-center gap-2">
+                                <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={() => toogleMapDeepLinks()} checked={mapDeepLinksEnabled}/>
                                 <span className="font-extrabold">{t("misc.maps")}</span>
                             </div>
                             <div className="flex h-full gap-2">
@@ -248,9 +260,9 @@ export function SettingsPage() {
                                 </Tippy>
                             </div>
                         </li>
-                        <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3">
+                        <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3 cursor-pointer" onClick={() => tooglePlaylistsDeepLinks()}>
                             <div className="flex items-center gap-2">
-                                <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={tooglePlaylistsDeepLinks} checked={playlistsDeepLinkEnabled}/>
+                                <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={() => tooglePlaylistsDeepLinks()} checked={playlistsDeepLinkEnabled}/>
                                 <span className="font-extrabold">{t("misc.playlists")}</span>
                             </div>
                             <div className="flex h-full">
@@ -259,9 +271,9 @@ export function SettingsPage() {
                                 </Tippy>
                             </div>
                         </li>
-                        <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3">
+                        <li className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md group-one flex justify-between items-center basis-0 py-2 px-3 cursor-pointer" onClick={() => toogleModelsDeepLinks()}>
                             <div className="flex items-center gap-2">
-                                <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={toogleModelsDeepLinks} checked={modelsDeepLinkEnabled}/>
+                                <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={() => toogleModelsDeepLinks()} checked={modelsDeepLinkEnabled}/>
                                 <span className="font-extrabold">{t("misc.models")}</span>
                             </div>
                             <div className="flex h-full">
@@ -280,12 +292,15 @@ export function SettingsPage() {
                 </SettingContainer>
 
                 <SettingContainer title="pages.settings.patreon.title" description="pages.settings.patreon.description">
-                    <div className="flex">
-                        <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 whitespace-nowrap mr-2 !text-white" iconClassName="mr-1" text="pages.settings.patreon.buttons.support" icon="patreon" color="#EC6350" withBar={false} onClick={openPatreonPage}/>
+                    <div className="flex gap-2">
+                        <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 whitespace-nowrap !bg-red-500 !text-white" text="pages.settings.patreon.buttons.support" withBar={false} onClick={openSupportPage}/>
                         <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="pages.settings.patreon.buttons.supporters" color="#6c5ce7" onClick={toogleShowSupporters}/>
                     </div>
                     <SettingContainer className="mt-3" description="pages.settings.discord.description">
-                        <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="Discord" icon="discord" iconClassName="p-0.5 mr-1" color="#5865f2" onClick={openDiscord}/>
+                        <div className="flex gap-2">
+                            <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="Discord" icon="discord" iconClassName="p-0.5 mr-1" color="#5865f2" onClick={openDiscord}/>
+                            <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="Twitter" icon="twitter" iconClassName="p-0.5 mr-1" color="#1A8CD8" onClick={openTwitter}/>
+                        </div>
                     </SettingContainer>
                     <SettingContainer className="pt-3" description="pages.settings.contribution.description">
                         <div className="flex items-center justify-between w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 rounded-md pl-2 py-1">
@@ -301,9 +316,7 @@ export function SettingsPage() {
                     </SettingContainer>
                 </SettingContainer>
 
-                <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right">v{appVersion}</span>
-
-                <div className="h-10"/>
+                <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5">v{appVersion}</span>
 
             </div>
 

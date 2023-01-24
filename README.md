@@ -46,7 +46,7 @@
     <a href="https://mee6.xyz/fr/m/bsmanager"><img src ="https://img.shields.io/badge/-🥰%20Support%20BSM-EC4546?style=for-the-badge" alt="Donation"/></a>
     <a href="https://twitter.com/BSManager_"><img src ="https://img.shields.io/badge/-Twitter-F5F8FA?style=for-the-badge&logo=Twitter" alt="Twitter"/></a>
     <br>
-    [<a href="#readme-bot">go to bottom</a>]
+    [<a href="#readme-bot">Go to bottom</a>]
 </div>
 
 ---
@@ -57,7 +57,6 @@
         <a href="#about-the-project">About The Project</a>
         <ul>
             <li><a href="#built-with">Built With</a></li>
-            <li><a href="#contributing">Contributing</a></li>
         </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
@@ -70,6 +69,8 @@
         <li><a href="#one-click">One Click</a></li>
         <li><a href="#having-problems">Having problems?</a></li>
     </ul>
+    <li><a href="#credits">Credits</a></li>
+    <li><a href="#contributing">Contributing</a></li>
 </ul>
 
 <!-- ABOUT THE PROJECT -->
@@ -111,26 +112,6 @@
             <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/-Tailwind%20CSS-white?style=for-the-badge&logo=Tailwind%20CSS" alt="TailWind CSS"></a>
         </li>
     </ul>
-</div>
-<br>
-
-<!--CONTRIBUTING-->
-<div>
-    <h2><b>Contribution</b></h2>
-</div>
-
-<div align="center">
-    <h3><b><u>Main Developer</u></b></h3>
-    <br>
-    <a href="https://github.com/Zagrios"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/40181755?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a>
-    <br><br>
-    <h3><b><u>Support Developer</u></b></h3>
-    <br>
-    <a href="https://github.com/Iluhadesu"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/92525749?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a>
-    <a href="https://github.com/GaetanGrd"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/40648115?v=4&h=150&w=150&fit=cover&mask=circle&maxage=7d"></a>
-</div>
-<div align="right">
-    [<a href="#readme-top">Return to top</a>]
 </div>
 <br>
 
@@ -222,6 +203,38 @@ https://user-images.githubusercontent.com/40648115/213435051-7feb815d-f32b-4135-
     <span>
         See the <a href="https://github.com/Zagrios/bs-manager/issues">open issues</a> to show the list of known issues, from there you can create a new issue for your problem!  
     </span>
+</div>
+
+<br><br><br>
+
+<!-- Credits -->
+<div>
+    <h1><b>Credits</b></h1>
+    <ul>
+        <li><a href="https://github.com/Zagrios">Zagrios</a> - Founder & Lead Developer</li>
+        <li><a href="https://github.com/Iluhadesu">Iluhadesu</a> - Project Team & Developpement help</li>
+        <li><a href="https://github.com/GaetanGrd">GaetanGrd</a> - Project Team & Developpement help</li>
+        <li><a href="https://github.com/cheddZy">cheddZy</a> - Icon creator</li>
+    </ul>
+</div>
+
+<!-- Contributing -->
+<br>
+<!--CONTRIBUTING-->
+<div>
+    <h1><b>Contributing</b></h1>
+    <p>
+        If you'd like to contribute, check out the <a href="https://github.com/Zagrios/bs-manager/blob/master/CONTRIBUTING.md">contributing guide</a>
+    </p>
+    <p>Thank you to all the people who already contributed to BSManager!</p>
+    <div>
+        <a href="https://github.com/Zagrios/bs-manager/graphs/contributors">
+            <img src="https://contrib.rocks/image?repo=Zagrios/bs-manager" />
+        </a>
+    </div>
+</div>
+<br>
+
 <div align="right">
     [<a href="#readme-top">Return to top</a>]
 </div>

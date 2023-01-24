@@ -7,8 +7,9 @@ import BeatWaitingImg from "../../../../assets/images/apngs/beat-waiting.png";
 import BeatImpatientImg from "../../../../assets/images/apngs/beat-impatient.png";
 import { BsmButton } from "../shared/bsm-button.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { ForwardedRef, forwardRef } from "react";
 
-export function NotificationItem({resolver, notification}: {resolver?: (value: NotificationResult|string) => void, notification: Notification}) {
+export const NotificationItem = forwardRef(({resolver, notification}: {resolver?: (value: NotificationResult|string) => void, notification: Notification}, fwdRef: ForwardedRef<HTMLLIElement>) => {
 
     const t = useTranslation();
 
@@ -37,7 +38,7 @@ export function NotificationItem({resolver, notification}: {resolver?: (value: N
     }
 
   return (
-   <motion.li layout drag="x" dragConstraints={{left: 0, right: 0}} dragElastic={{left: 0, right: .3}} onDragEnd={handleDragEnd} initial={{x: "110%"}} animate={{x: "0%"}} exit={{x:"110%"}} className="relative w-[290px] rounded-md overflow-hidden -left-[300px] mb-4 cursor-grab active:cursor-grabbing shadow-md shadow-black bg-gradient-to-br from-light-main-color-2 to-light-main-color-2 dark:from-main-color-2 dark:to-main-color-2 text-gray-800 dark:text-white">
+   <motion.li ref={fwdRef} drag="x" dragConstraints={{left: 0, right: 0}} dragElastic={{left: 0, right: .3}} onDragEnd={handleDragEnd} animate={{x: "-125%"}} exit={{x: 50}} className="relative w-[290px] left-14 rounded-md overflow-hidden mb-4 cursor-grab active:cursor-grabbing shadow-md shadow-black bg-gradient-to-br from-light-main-color-2 to-light-main-color-2 dark:from-main-color-2 dark:to-main-color-2 text-gray-800 dark:text-white">
       <div className="w-full flex flex-col">
          <div className="flex items-center justify-start pl-1">
             <BsmImage className="h-14 mr-1 pointer-events-none" image={renderImage}/>
@@ -56,4 +57,4 @@ export function NotificationItem({resolver, notification}: {resolver?: (value: N
       <BsmButton icon="cross" className="absolute top-2 right-2" withBar={false} onClick={() => resolver(NotificationResult.CLOSE)}/>
    </motion.li>
   )
-}
+})

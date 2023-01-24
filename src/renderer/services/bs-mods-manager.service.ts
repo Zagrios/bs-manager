@@ -10,6 +10,7 @@ import { ProgressionInterface } from "shared/models/progress-bar";
 import { IpcService } from "./ipc.service";
 import { ModalExitCode, ModalService } from "./modale.service";
 import { NotificationService, NotificationType } from "./notification.service";
+import { OsDiagnosticService } from "./os-diagnostic.service";
 import { ProgressBarService } from "./progress-bar.service";
 
 export class BsModsManagerService {
@@ -22,6 +23,7 @@ export class BsModsManagerService {
     private readonly progressBar: ProgressBarService;
     private readonly modals: ModalService;
     private readonly notifications: NotificationService;
+    private readonly os: OsDiagnosticService;
 
     public readonly isInstalling$: BehaviorSubject<boolean> = new BehaviorSubject(false);
     public readonly isUninstalling$: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -36,17 +38,27 @@ export class BsModsManagerService {
         this.progressBar = ProgressBarService.getInstance();
         this.modals = ModalService.getInsance();
         this.notifications = NotificationService.getInstance();
+        this.os = OsDiagnosticService.getInstance();
     }
 
-    public getAvailableMods(version: BSVersion): Promise<Mod[]>{
+    public async getAvailableMods(version: BSVersion): Promise<Mod[]>{
         return this.ipcService.send<Mod[], BSVersion>("get-available-mods", {args: version}).then(res => res.data);
     }
 
-    public getInstalledMods(version: BSVersion): Promise<Mod[]>{
+    public async getInstalledMods(version: BSVersion): Promise<Mod[]>{
         return this.ipcService.send<Mod[], BSVersion>("get-installed-mods", {args: version}).then(res => res.data);
     }
 
     public installMods(mods: Mod[], version: BSVersion): Promise<void>{
+
+        if(this.os.isOffline){
+            this.notifications.notifyError({
+                title: "notifications.shared.errors.titles.no-internet",
+                desc: "notifications.shared.errors.msg.no-internet"
+            });
+            return new Promise(res => res());
+        }
+
         if(!this.progressBar.require()){ return new Promise(res => res()); }
 
         const progress$: Observable<ProgressionInterface> = this.ipcService.watch<ModInstallProgression>("mod-installed").pipe(map(res => {

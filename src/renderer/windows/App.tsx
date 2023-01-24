@@ -12,14 +12,16 @@ import { NotificationOverlay } from "../components/notification/notification-ove
 import { PageStateService } from "../services/page-state.service";
 import { MapsPage } from "../pages/maps-page.component";
 import "tailwindcss/tailwind.css";
-import { BsmIframeView } from "../components/shared/bsm-map-preview.component";
+import { BsmIframeView } from "../components/shared/iframe-view.component";
 import 'tippy.js/dist/tippy.css';
+import 'tippy.js/animations/shift-away-subtle.css';
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { ModelsManagerService } from "renderer/services/models-manager.service";
 import { NotificationService } from "renderer/services/notification.service";
 import { timer } from "rxjs";
 import { ConfigurationService } from "renderer/services/configuration.service";
+import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 
 export default function App() {
 
@@ -30,6 +32,7 @@ export default function App() {
     const models = ModelsManagerService.getInstance();
     const notification = NotificationService.getInstance();
     const config = ConfigurationService.getInstance();
+    const os = OsDiagnosticService.getInstance();
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -48,7 +51,7 @@ export default function App() {
 
         if(config.get("not-remind-oneclick") === true){ return; }
 
-        await timer(2_000).toPromise();
+        await timer(3_000).toPromise();
 
         const oneClicks = await Promise.all([
             maps.isDeepLinksEnabled(),

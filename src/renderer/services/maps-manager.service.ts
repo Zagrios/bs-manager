@@ -10,6 +10,7 @@ import { DeleteMapsModal } from "renderer/components/modal/modal-types/delete-ma
 import { ProgressBarService } from "./progress-bar.service";
 import { OpenSaveDialogOption } from "shared/models/ipc";
 import { NotificationService } from "./notification.service";
+import { ConfigurationService } from "./configuration.service";
 
 export class MapsManagerService {
 
@@ -20,11 +21,14 @@ export class MapsManagerService {
         return MapsManagerService.instance;
     }
 
+    public static readonly REMEMBER_CHOICE_DELETE_MAP_KEY = "not-confirm-delete-map"
+
     private readonly ipcService: IpcService;
     private readonly bsaver: BeatSaverService;
     private readonly modal: ModalService;
     private readonly progressBar: ProgressBarService;
     private readonly notifications: NotificationService;
+    private readonly config: ConfigurationService;
 
     private readonly lastLinkedVersion$: Subject<BSVersion> = new Subject();
     private readonly lastUnlinkedVersion$: Subject<BSVersion> = new Subject();
@@ -35,6 +39,7 @@ export class MapsManagerService {
         this.modal = ModalService.getInsance();
         this.progressBar = ProgressBarService.getInstance();
         this.notifications = NotificationService.getInstance();
+        this.config = ConfigurationService.getInstance();
     }
 
     public getMaps(version?: BSVersion, withDetails = true): Observable<BsmLocalMap[]>{
@@ -115,19 +120,22 @@ export class MapsManagerService {
 
         const versionLinked = await this.versionHaveMapsLinked(version);
 
-        const modalRes = await this.modal.openModal(DeleteMapsModal, {linked: versionLinked, maps});
+        const askModal = maps.length > 1 || !this.config.get<boolean>(MapsManagerService.REMEMBER_CHOICE_DELETE_MAP_KEY);
 
-        if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return false; }
+        if(askModal){
+            const modalRes = await this.modal.openModal(DeleteMapsModal, {linked: versionLinked, maps});
+            if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return false; }
+        }
 
         const showProgressBar = this.progressBar.require(); 
 
-        if(showProgressBar && maps.length > 1){
+        if(showProgressBar){
             this.progressBar.showFake(.008);
         }
 
         const res = await this.ipcService.send<void, {version: BSVersion, maps: BsmLocalMap[]}>("delete-maps", {args: {version, maps}});
 
-        if(showProgressBar && maps.length > 1){
+        if(showProgressBar){
             this.progressBar.hide(true);
         }
 
@@ -158,24 +166,19 @@ export class MapsManagerService {
         this.progressBar.hide(true);
     }
 
-    public isDeepLinksEnabled(): Promise<boolean>{
-
-        return this.ipcService.send<boolean>("is-map-deep-links-enabled").then(res => (
-            res.success ? res.data : false
-        ));
-
+    public async isDeepLinksEnabled(): Promise<boolean>{
+        const res = await this.ipcService.send<boolean>("is-map-deep-links-enabled");
+        return res.success ? res.data : false;
     }
 
-    public async toogleDeepLinks(): Promise<boolean>{
-
-        const isEnabled = await this.isDeepLinksEnabled();
-        
-        const channel = isEnabled ? "unregister-maps-deep-link" : "register-maps-deep-link";
-
-        const res = await this.ipcService.send<boolean>(channel);
-
+    public async enableDeepLink(): Promise<boolean>{
+        const res = await this.ipcService.send<boolean>("register-maps-deep-link");
         return res.success ? res.data : false;
+    }
 
+    public async disableDeepLink(): Promise<boolean>{
+        const res = await this.ipcService.send<boolean>("unregister-maps-deep-link");
+        return res.success ? res.data : false;
     }
 
     public get versionLinked$(): Observable<BSVersion>{

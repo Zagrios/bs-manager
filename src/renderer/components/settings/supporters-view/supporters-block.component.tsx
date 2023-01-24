@@ -18,7 +18,7 @@ export function SupportersBlock({className, title, supporters}: Props) {
         <div className={`mb-10 flex flex-col items-center ${className}`}>
             <h2 className="uppercase text-3xl font-bold">{t(title)}</h2>
             <div className="flex justify-center flex-wrap py-5 px-20">
-                {supporters.map(s => <SupporterItem supporter={s} delay={someDelay()}/>)}
+                {supporters.map(s => <SupporterItem key={crypto.randomUUID()} supporter={s} delay={someDelay()}/>)}
             </div>
         </div>
   )

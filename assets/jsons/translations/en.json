@@ -10,14 +10,22 @@
         "cancel": "Cancel",
         "delete": "Delete",
         "accept": "Accept",
-        "refuse": "Refuse"
+        "refuse": "Refuse",
+        "apply": "Apply"
+    },
+    "nav-bar":{
+        "add-version": "Add a version",
+        "settings": "Settings"
     },
     "pages": {
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Oculus Mod",
+                "oculus-description": "If you are running Beat Saber through Steam, this allows you to play the game on an Oculus headset.",
                 "desktop": "Desktop Mod",
-                "debug": "Debug Mod"
+                "desktop-description": "This allows you to use WASD and the mouse to navigate around the menu in game. This makes testing much easier, because you don't have to put on your headset!",
+                "debug": "Debug Mod",
+                "debug-description": "Enables the output log window for IPA. This will show the debug console that mods use."
             },
             "maps": {
                 "search-bar": {
@@ -50,6 +58,7 @@
             },
             "mods": {
                 "loading-mods": "Loading mods...",
+                "no-internet": "No internet",
                 "buttons": {
                     "more-infos": "More info",
                     "install-or-update": "Install or update"
@@ -76,7 +85,11 @@
         },
         "available-versions": {
             "title": "Select a version",
-            "steam-release": "Release page"
+            "steam-release": "Release page",
+            "dropdown": {
+                "refresh": "Refresh list",
+                "import-version" :"Import a version"
+            }
         },
         "settings": {
             "steam": {
@@ -127,7 +140,7 @@
                 "title": "Support BSManager 💖",
                 "description": "Support the project and help us to provide continuous improvements to BSManager.",
                 "buttons": {
-                    "support": "Support BSManager",
+                    "support": "Support BSManager 🥰",
                     "supporters": "Supporters 👀"
                 },
                 "view": {
@@ -137,7 +150,7 @@
                 }
             },
             "discord": {
-                "description": "Join the BSManager community by joining our Discord!"
+                "description": "Join the BSManager community by following us on our social media!"
             },
             "contribution": {
                 "description": "Suggest new features or report a bug to help improve BSManager!",
@@ -163,10 +176,12 @@
         "shared": {
             "errors": {
                 "titles": {
-                    "operation-running": "Operation running"
+                    "operation-running": "Operation running",
+                    "no-internet": "No internet"
                 },
                 "msg": {
-                    "operation-running": "Wait for the end of the current operation then start again."
+                    "operation-running": "Wait for the end of the current operation then start again.",
+                    "no-internet": "Check your connection and try again."
                 }
             }
         },
@@ -187,6 +202,9 @@
                 }
             },
             "errors": {
+                "titles":{
+                    "dotnet-required": ".NET 6 Required"
+                },
                 "msg": {
                     "401": "Steam doesn't seem to want to let us download BeatSaber 😢",
                     "404": "Unable to contact Steam servers.",
@@ -211,7 +229,27 @@
                     "verification-failed": "Verification failed, try again later.",
                     "RateLimitExceeded": "You've tried too many times, wait a while and try again later.",
                     "AlreadyDownloading": "A download is already in progress",
-                    "no-internet": "No internet connection."
+                    "no-internet": "No internet connection.",
+                    "dotnet-required": ".NET 6 Runtime must be installed in order to download a version of BeatSaber. Download it by clicking the button below."
+                },
+                "actions":{
+                    "download-dotnet": "Download .NET 6"
+                }
+            }
+        },
+        "bs-import-version":{
+            "success":{
+                "start-import": {
+                    "title": "Import in progress 👌",
+                    "desc": "The import may take several minutes depending on your configuration."
+                },
+                "imported": {
+                    "title": "Imported version 🎉"
+                }
+            },
+            "errors":{
+                "import-error":{
+                    "desc": "Check that the selected folder is a BeatSaber installation."
                 }
             }
         },
@@ -237,6 +275,7 @@
             },
             "additional-content":{
                 "deep-link": {
+                    "select-all": "Select all",
                     "activation":{
                         "success":{
                             "title":"OneClick activated!",
@@ -374,6 +413,9 @@
         }
     },
     "modals": {
+        "misc":{
+            "remember-my-choice": "Remember my choice"
+        },
         "guard": {
             "title": "Steam Guard",
             "inputs": {
@@ -403,6 +445,13 @@
             },
             "buttons": {
                 "submit": "Login"
+            }
+        },
+        "bs-import-version":{
+            "title": "Import a version",
+            "description": "Imports a version of BeatSaber to use with BSManager. The import will copy the selected BeatSaber installation folder to the BSManager versions folder.",
+            "buttons":{
+                "submit": "Import a version"
             }
         },
         "bs-uninstall": {
@@ -493,7 +542,9 @@
         },
         "download-maps": {
             "search-btn": "Search",
-            "loading-maps": "Loading maps..."
+            "loading-maps": "Loading maps...",
+            "no-maps-found": "No maps found",
+            "no-internet": "No internet"
         },
         "mods-disclaimer":{
             "title": "disclaimer",

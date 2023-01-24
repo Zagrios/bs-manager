@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react"
 import { BsmIconType, BsmIcon } from "../svgs/bsm-icon.component"
 import { BsmButton } from "./bsm-button.component"
 import { useTranslation } from "renderer/hooks/use-translation.hook"
@@ -17,30 +17,42 @@ type Props = {
     menuTranslationY?: string|number
     children?: JSX.Element,
     text?: string,
-    textClassName?: string
 }
 
-export function BsmDropdownButton({className, items, align, withBar = true, icon = "settings", buttonClassName, menuTranslationY, children, text, textClassName}: Props) {
+export const BsmDropdownButton = forwardRef(({className, items, align, withBar = true, icon = "settings", buttonClassName, menuTranslationY, children, text}: Props, fowardRed) => {
 
    const [expanded, setExpanded] = useState(false)
    const t = useTranslation();
-   const ref = useRef(null)
+   const ref = useRef(fowardRed)
    useClickOutside(ref, () => setExpanded(false));
+
+   useImperativeHandle(fowardRed, () => ({
+        close(){
+            setExpanded(() => false);
+       },
+        open(){
+            setExpanded(() => true);
+        }
+     }),
+     [],
+   )
+   
 
    const defaultButtonClassName = "relative z-[1] p-1 rounded-md text-inherit w-full h-full shadow-md shadow-black"
 
    const handleClickOutside = () => {
-    if(children){ return; }
-    setExpanded(false);
+        if(children){ return; }
+        setExpanded(false);
    }
 
    const alignClass = (() => {
-    if(align === "center"){ return "right-1/2 origin-top-right translate-x-[50%]" }
-    if(align === "left"){ return "left-0 origin-top-left"; }
-    return "right-0 origin-top-right";
+        if(align === "center"){ return "right-1/2 origin-top-right translate-x-[50%]" }
+        if(align === "left"){ return "left-0 origin-top-left"; }
+        return "right-0 origin-top-right";
    })()
 
    return (
+        // @ts-ignore
       <div ref={ref} className={className}>
          <BsmButton onClick={() => setExpanded(!expanded)} className={buttonClassName ?? defaultButtonClassName} icon={icon} active={expanded} onClickOutside={handleClickOutside} withBar={withBar} text={text}/>
          <div className={`py-1 w-fit absolute cursor-pointer top-[calc(100%-4px)] rounded-md bg-inherit text-sm text-gray-800 dark:text-gray-200 shadow-md shadow-black transition-[scale] ease-in-out ${alignClass}`} style={{scale: expanded ? "1" : "0", translate: `0 ${menuTranslationY}`}}>
@@ -60,4 +72,4 @@ export function BsmDropdownButton({className, items, align, withBar = true, icon
          )}
       </div>
   )
-}
+})
