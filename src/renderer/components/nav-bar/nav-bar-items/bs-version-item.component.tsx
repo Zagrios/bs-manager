@@ -43,9 +43,12 @@ export function BsVersionItem(props: {version: BSVersion}) {
 
     const cancel = () => {
         const versionDownload = downloaderService.currentBsVersionDownload$.value;
+        const wasVerification = downloaderService.isVerification;
         downloaderService.cancelDownload().then(async res => {
         if(!res.success){ return; }
-        bsUninstallerService.uninstall(versionDownload).then(res => res && verionManagerService.askInstalledVersions());
+        if(!wasVerification){
+            bsUninstallerService.uninstall(versionDownload).then(res => res && verionManagerService.askInstalledVersions());
+         }
       });
    }
 
