@@ -1,6 +1,5 @@
 import { ipcMain } from 'electron';
-import { BSVersion } from 'shared/bs-version.interface';
-import { BSInstallerService, DownloadEventType } from '../services/bs-installer.service';
+import { BSInstallerService, DownloadEventType, DownloadInfo } from '../services/bs-installer.service';
 import { IpcRequest } from 'shared/models/ipc';
 import { InstallationLocationService } from '../services/installation-location.service';
 import { UtilsService } from '../services/utils.service';
@@ -16,13 +15,6 @@ export interface InitDownloadInfoInterface {
   manifest: string,
   username: string,
   stay: boolean
-}
-
-export interface DownloadInfo {
-  bsVersion: BSVersion,
-  username: string,
-  password?: string,
-  stay?: boolean
 }
 
 ipcMain.on('is-dotnet-6-installed', async (event, request: IpcRequest<void>) => {

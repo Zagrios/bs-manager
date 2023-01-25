@@ -1,4 +1,4 @@
-import { DownloadEvent } from 'main/services/bs-installer.service';
+import { DownloadEvent, DownloadInfo } from 'main/services/bs-installer.service';
 import { BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged, filter, throttleTime } from 'rxjs/operators';
 import { IpcResponse } from 'shared/models/ipc';
@@ -24,6 +24,8 @@ export class BsDownloaderService{
     private readonly progressBarService: ProgressBarService;
     private readonly notificationService: NotificationService;
     private readonly linkOpener: LinkOpenerService;
+
+    private _isVerification: boolean = false;
 
     public readonly currentBsVersionDownload$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
     public readonly downloadProgress$: BehaviorSubject<number> = new BehaviorSubject(0);
@@ -94,7 +96,7 @@ export class BsDownloaderService{
         return this.ipcService.send<boolean>("is-dotnet-6-installed").then(res => res.success && res.data)
     }
 
-   public async download(bsVersion: BSVersion, isFirstCall = true): Promise<IpcResponse<DownloadEvent>>{
+   public async download(bsVersion: BSVersion, isVerification?: boolean, isFirstCall = true): Promise<IpcResponse<DownloadEvent>>{
       if(isFirstCall && !this.progressBarService.require()){ return {success: false}; }
 
       if(isFirstCall && !(await this.isDotNet6Installed())){
@@ -114,6 +116,7 @@ export class BsDownloaderService{
       }
 
       this.progressBarService.show(this.downloadProgress$);
+      this._isVerification = isVerification;
 
       let promise;
       if(!this.authService.sessionExist()){
@@ -123,22 +126,22 @@ export class BsDownloaderService{
             return {success: false}; 
         }
          this.authService.setSteamSession(res.data.username, res.data.stay);
-         promise = this.ipcService.send<DownloadEvent>('bs-download.start', {args: {bsVersion, username: res.data.username, password: res.data.password, stay: res.data.stay}});
+         promise = this.ipcService.send<DownloadEvent, DownloadInfo>('bs-download.start', {args: {bsVersion, username: res.data.username, password: res.data.password, stay: res.data.stay, isVerification}});
       }
       else{
-         promise = this.ipcService.send<DownloadEvent>('bs-download.start', {args: {bsVersion, username: this.authService.getSteamUsername()}});
+         promise = this.ipcService.send<DownloadEvent, DownloadInfo>('bs-download.start', {args: {bsVersion, username: this.authService.getSteamUsername(), isVerification}});
       }
 
       let res = await promise;
         
       if(res.data?.type === "[Password]"){
          this.authService.deleteSteamSession();
-         res = await this.download(bsVersion, false);
+         res = await this.download(bsVersion, isVerification, false);
       }
       
       this.progressBarService.hide(true);
       this.resetDownload();
-      if(res.success && isFirstCall){ this.notificationService.notifySuccess({title: "notifications.bs-download.success.titles.download-success", duration: 3000}); }
+      if(res.success && isFirstCall){ this.notificationService.notifySuccess({title: `notifications.bs-download.success.titles.${isVerification ? "verification-finished" : "download-success"}`, duration: 3000}); }
       else if(res.data && isFirstCall){  this.notificationService.notifyError({title: `notifications.types.error`, desc: `notifications.bs-download.errors.msg.${res.data}`, duration: 3000}); }
 
       return res;
@@ -150,6 +153,8 @@ export class BsDownloaderService{
       const res = await this.ipcService.send<string>("bs-download.installation-folder");
       return res.success ? res.data : "";
    }
+
+   public get isVerification(): boolean{ return this._isVerification; }
 
    public setInstallationFolder(path: string): Promise<IpcResponse<string>>{
       return this.ipcService.send<string>("bs-download.set-installation-folder", {args: path});

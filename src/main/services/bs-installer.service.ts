@@ -87,7 +87,9 @@ export class BSInstallerService{
 
     this.utils.createFolderIfNotExist(this.installLocationService.versionsDirectory);
 
-    const dest = this.getPathNotAleardyExist(await this.localVersionService.getVersionPath(bsVersion));
+    const versionPath = await this.localVersionService.getVersionPath(bsVersion)
+
+    const dest = !downloadInfos.isVerification ? this.getPathNotAleardyExist(versionPath) : versionPath;
 
     const downloadVersion: BSVersion = {...downloadInfos.bsVersion, ...(path.basename(dest) !== downloadInfos.bsVersion.BSVersion && {name: path.basename(dest)})}
 
@@ -204,7 +206,8 @@ export interface DownloadInfo {
   bsVersion: BSVersion,
   username: string,
   password?: string,
-  stay?: boolean
+  stay?: boolean,
+  isVerification: boolean
 }
 
 export interface DownloadEvent{
