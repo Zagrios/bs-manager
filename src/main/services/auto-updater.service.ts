@@ -16,7 +16,6 @@ export class AutoUpdaterService {
     constructor(){
         autoUpdater.logger = log;
         autoUpdater.autoDownload = false;
-        autoUpdater.disableWebInstaller = true
 
         this.utilsService = UtilsService.getInstance();
     }
