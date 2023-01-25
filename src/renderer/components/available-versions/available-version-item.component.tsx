@@ -42,7 +42,7 @@ export const AvailableVersionItem = memo(function AvailableVersionItem(props: {v
 
     return (
         <motion.li className="group relative w-72 h-60 transition-transform active:scale-[.98]" onClick={toggleSelect} onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)}>
-            <GlowEffect visible={hovered} className="absolute"/>
+            <GlowEffect visible={hovered || selected} className="absolute"/>
             <div className={`relative flex flex-col overflow-hidden rounded-md w-72 h-60 cursor-pointer group-hover:shadow-none duration-300 bg-light-main-color-2 dark:bg-main-color-2 ${!selected && "shadow-lg shadow-gray-900"}`}>
                 <BsmImage image={props.version.ReleaseImg ? props.version.ReleaseImg : defaultImage} errorImage={defaultImage} placeholder={defaultImage} className="absolute top-0 right-0 w-full h-full opacity-40 blur-xl object-cover" loading="lazy"/>
                 <BsmImage image={props.version.ReleaseImg ? props.version.ReleaseImg : defaultImage} errorImage={defaultImage} placeholder={defaultImage} className="bg-black w-full h-3/4 object-cover" loading="lazy"/>
