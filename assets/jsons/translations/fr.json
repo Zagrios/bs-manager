@@ -84,7 +84,7 @@
             }
         },
         "available-versions": {
-            "title": "Choisi une version",
+            "title": "Choisis une version",
             "steam-release": "Notes de version",
             "dropdown": {
                 "refresh": "Rafraichir la liste",
@@ -99,7 +99,7 @@
             },
             "appearance": {
                 "title": "Apparence",
-                "description": "Choisi les deux couleurs principales de BSManager.",
+                "description": "Choisis les deux couleurs principales de BSManager.",
                 "reset": "Réinitialiser",
                 "sub-title": "Thème",
                 "themes": {
@@ -115,7 +115,7 @@
             },
             "additional-content": {
                 "title": "Contenus additionnels",
-                "description": "Les contenus additionnels te permet de personaliser BeatSaber !",
+                "description": "Les contenus additionnels te permettent de personaliser Beat Saber!",
                 "deep-links": {
                     "sub-title": "Installations OneClick"
                 }
@@ -138,7 +138,7 @@
             },
             "patreon": {
                 "title": "Soutenir BSManager 💖",
-                "description": "Soutien le projet et aide-nous à fournir des améliorations continues à BSManager.",
+                "description": "Soutiens le projet et aide-nous à fournir des améliorations continues à BSManager.",
                 "buttons": {
                     "support": "Soutenir BSManager 🥰",
                     "supporters": "Supporteurs 👀"
@@ -170,7 +170,7 @@
         },
         "common": {
             "msg": {
-                "error-occurred": "Une erreur c'est produite"
+                "error-occurred": "Une erreur s'est produite"
             }
         },
         "shared": {
@@ -180,8 +180,8 @@
                     "no-internet": "Pas d'internet"
                 },
                 "msg": {
-                    "operation-running": "Attend la fin de l'opération en cours puis recommences.",
-                    "no-internet": "Verifie t'a connexion internet et recommence."
+                    "operation-running": "Attends la fin de l'opération en cours puis recommence.",
+                    "no-internet": "Verifie ta connexion internet et recommence."
                 }
             }
         },
@@ -194,11 +194,11 @@
             },
             "warnings": {
                 "msg": {
-                    "ManifestChecksum": "Le manifest télécharger précédemment ne correspond pas au nouveau 🤔",
+                    "ManifestChecksum": "Le manifest téléchargé précédemment ne correspond pas au nouveau 🤔",
                     "ConnectionTimeout": "Ta connexion internet semble instable 🥶",
-                    "ConnectionLost": "La connexion a été perdue, retentative...",
-                    "ConnectionError": "Impossible de se connecter à Steam, retentative...",
-                    "Unknown": "Quelque chose d'étrange c'est produit 🤔 Votre connexion est surement instable."
+                    "ConnectionLost": "La connexion a été perdue, nouvelle tentative...",
+                    "ConnectionError": "Impossible de se connecter à Steam, nouvelle tentative...",
+                    "Unknown": "Quelque chose d'étrange s'est produit 🤔 Votre connexion est surement instable."
                 }
             },
             "errors": {
@@ -206,31 +206,31 @@
                     "dotnet-required": ".NET 6 Requis"
                 },
                 "msg": {
-                    "401": "Steam semble pas vouloir nous laisser télécharger BeatSaber 😢",
+                    "401": "Steam ne semble pas vouloir nous laisser télécharger Beat Saber 😢",
                     "404": "Impossible de contacter les serveurs de Steam.",
                     "Password": "Le mot de passe est invalide.",
                     "InvalidCredentials": "Ton e-mail ou mot de passe est invalide 😴",
                     "InvalidPassword": "Ton mot de passe est invalide 😕",
                     "NoManifest": "Aucun manifest n'a été trouvé.",
                     "DirectoryCreate": "Impossible d'installer les dossiers nécessaires.",
-                    "NotAvailableApp": "Tu essayes de télécharger BeatSaber alors que tu ne l'as pas ? 🤣",
-                    "DepotNotFound": "Impossible de télécharger BeatSaber 😥 réessaye plus tard 😕",
+                    "NotAvailableApp": "Tu essayes de télécharger Beat Saber alors que tu ne l'as pas ? 🤣",
+                    "DepotNotFound": "Impossible de télécharger Beat Saber 😥 réessaye plus tard 😕",
                     "NotCompleted": "Le téléchargement n'a pas pu se terminer ¯\\_(ツ)_/¯",
-                    "InvalidManifest": "Impossible de télécharger BeatSaber 😥 réessaye plus tard 😕",
-                    "NoValidKey": "Impossible de télécharger BeatSaber 😥 réessaye plus tard 😕",
-                    "NoManifestCode": "Impossible de télécharger BeatSaber 😥 réessaye plus tard 😕",
-                    "Unknown": "Une erreur inconnue c'est produite ¯\\_(ツ)_/¯",
+                    "InvalidManifest": "Impossible de télécharger Beat Saber 😥 réessaye plus tard 😕",
+                    "NoValidKey": "Impossible de télécharger Beat Saber 😥 réessaye plus tard 😕",
+                    "NoManifestCode": "Impossible de télécharger Beat Saber 😥 réessaye plus tard 😕",
+                    "Unknown": "Une erreur inconnue s'est produite ¯\\_(ツ)_/¯",
                     "NoServer": "Impossible de contacter les serveurs de Steam.",
-                    "NotAllowed": "Apparemment tu n'es pas autorisé à télécharger BeatSaber 🥱",
+                    "NotAllowed": "Apparemment tu n'es pas autorisé à télécharger Beat Saber 🥱",
                     "ConnectionTimeout": "Impossible de se connecter à Steam 😕",
-                    "SteamLib": "Si tu à cette erreur, report le bug sur GitHub avec les logs stp.",
+                    "SteamLib": "Si tu as cette erreur, signale le bug sur GitHub avec les logs stp.",
                     "ConnectionError": "Impossible de se connecter à Steam après 10 essais 🤯",
                     "LicenceError": "Impossible d'obtenir la liste des licences.",
                     "verification-failed": "La vérification a échoué, réessaye plus tard.",
-                    "RateLimitExceeded": "Tu as essayé trop de fois attend un peu et recommence plus tard.",
+                    "RateLimitExceeded": "Tu as essayé trop de fois attends un peu et recommence plus tard.",
                     "AlreadyDownloading": "Un téléchargement est déjà en cours",
                     "no-internet": "Pas de connexion internet.",
-                    "dotnet-required": ".NET 6 Runtime doit être installé pour pouvoir télécharger une version de BeatSaber. Télécharge-le en cliquant sur le bouton ci-dessous."
+                    "dotnet-required": ".NET 6 Runtime doit être installé pour pouvoir télécharger une version de Beat Saber. Télécharge-le en cliquant sur le bouton ci-dessous."
                 },
                 "actions":{
                     "download-dotnet": "Télécharger .NET 6"
@@ -249,7 +249,7 @@
             },
             "errors":{
                 "import-error":{
-                    "desc": "Vérifier que le dossier sélectionné est une installation de BeatSaber."
+                    "desc": "Vérifier que le dossier sélectionné est une installation de Beat Saber."
                 }
             }
         },
@@ -316,14 +316,14 @@
                     "UNABLE_TO_LAUNCH": "Lancement impossible",
                     "STEAM_NOT_RUNNING": "Steam n'est pas lancé",
                     "OCULUS_NOT_RUNNING": "Oculus n'est pas lancé",
-                    "BS_ALREADY_RUNNING": "BeatSaber est déjà lancé",
+                    "BS_ALREADY_RUNNING": "Beat Saber est déjà lancé",
                     "EXE_NOT_FINDED": "Fichiers manquants",
                     "EXIT": "Arrêt brutal"
                 },
                 "msg": {
-                    "STEAM_NOT_RUNNING": "Steam doit être en cours d'exécution pour lancer BeatSaber.",
-                    "OCULUS_NOT_RUNNING": "Oculus doit être en cours d'exécution pour lancer BeatSaber.",
-                    "BS_ALREADY_RUNNING": "Ferme BeatSaber avant de le lancer à nouveau.",
+                    "STEAM_NOT_RUNNING": "Steam doit être en cours d'exécution pour lancer Beat Saber.",
+                    "OCULUS_NOT_RUNNING": "Oculus doit être en cours d'exécution pour lancer Beat Saber.",
+                    "BS_ALREADY_RUNNING": "Ferme Beat Saber avant de le lancer à nouveau.",
                     "EXE_NOT_FINDED": "Quelques fichiers semblent manquants. Essaye de vérifier les fichiers.",
                     "EXIT": "BeatSaber s'est arrêté brusquement, essaye de vérifier les fichiers."
                 },
@@ -347,12 +347,12 @@
                     "CantClone": "Clonage impossible"
                 },
                 "msg": {
-                    "CantEditSteam": "Tu ne peut pas éditer la version Steam. Tu peut la cloner par contre."
+                    "CantEditSteam": "Tu ne peux pas éditer la version Steam. Tu peux la cloner par contre."
                 }
             },
             "success": {
                 "titles": {
-                    "CloningFinished": "Clonage terminer 🎉"
+                    "CloningFinished": "Clonage terminé 🎉"
                 }
             }
         },
@@ -363,10 +363,10 @@
                     "warning": "Mods installés 🤔"
                 },
                 "msg": {
-                    "success": "Tous les mods on été installés.",
+                    "success": "Tous les mods ont été installés.",
                     "warning": "Un ou plusieurs mods n'ont pas pu être installés.",
                     "errors": {
-                        "no-mods": "Aucun mods à installer.",
+                        "no-mods": "Aucun mod à installer.",
                         "cannot-install-bsipa": "L'installation de BSIPA à échoué 😨"
                     }
                 }
@@ -386,7 +386,7 @@
                     "success": "Mods désintallés 🎉"
                 },
                 "msg": {
-                    "success": "Tous les mods on été désintallés.",
+                    "success": "Tous les mods ont été désintallés.",
                     "errors": {
                         "no-mods": "Aucun mod n'est installé dans dans cette version 😑"
                     }
@@ -456,14 +456,14 @@
         },
         "bs-uninstall": {
             "title": "Désinstaller",
-            "description": "Est-tu sûr de vouloir désinstaller BeatSaber {version} ? Tu vas devoir la retélécharger pour y jouer.",
+            "description": "Es-tu sûr de vouloir désinstaller Beat Saber {version} ? Tu vas devoir la retélécharger pour y jouer.",
             "buttons": {
                 "submit": "Désinstaller"
             }
         },
         "install-folder": {
             "title": "Dossier d'installation",
-            "description": "Changer le dossier d'installation par défaut, va engendrer le déplacement de toutes les données installer vers le nouveau dossier.",
+            "description": "Changer le dossier d'installation par défaut, cela va engendrer le déplacement de toutes les données installer vers le nouveau dossier.",
             "buttons": {
                 "submit": "Choisir un dossier"
             }
@@ -506,12 +506,12 @@
                     "multiple": "Supprimer les maps ?"
                 },
                 "desc": {
-                    "single": "Est-tu sur de vouloir supprimer la map {name} ?",
-                    "multiple": "Est-tu sur de vouloir supprimer les {nb} maps ?"
+                    "single": "Es-tu sur de vouloir supprimer la map {name} ?",
+                    "multiple": "Es-tu sur de vouloir supprimer les {nb} maps ?"
                 },
                 "info": {
                     "desc": {
-                        "single": "Cette map fait partie des maps paratagées",
+                        "single": "Cette map fait partie des maps partagées",
                         "multiple": "Ces maps font parties des maps partagées"
                     },
                     "title": {
@@ -552,7 +552,7 @@
             "li-1": "Vous pouvez rencontrer des problèmes qui n'existent pas dans le jeu de base. 99.9% des bugs, plantages et ralentissements sont dus aux mods.",
             "li-2": "Les mods sont susceptibles de ne plus fonctionner à cause des mises à jour et c'est normal - soyez patient et respectueux lorsque cela se produit, parce que les moddeurs sont bénévoles et ont une vie.",
             "li-3": "Beat Games ne cherche pas volontairement à casser les mods. Ils souhaitent améliorer la base du jeu et parfois cela casse les mods, mais ce n'est pas dans leur objectif de tuer les mods.",
-            "p-2": "N'attaquez pas les développeurs pour des problèmes relatifs aux mods, et inversement - les moddeurs et les développeurs sont deux groupes distincts. Ne sois pas idiot, d'accord ?"
+            "p-2": "N'attaquez pas les développeurs pour des problèmes relatifs aux mods, et inversement - les moddeurs et les développeurs sont deux groupes distincts. Ne soyez pas idiots, d'accord ?"
         }
     },
     "maps": {
