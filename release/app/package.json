@@ -1,6 +1,6 @@
 {
   "name": "bs-manager",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A foundation for scalable desktop apps",
   "main": "./dist/main/main.js",
   "author": {
