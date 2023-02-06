@@ -1,5 +1,5 @@
 import { BsmIcon, BsmIconType } from "../svgs/bsm-icon.component"
-import { useRef, CSSProperties } from "react";
+import { useRef, CSSProperties, MouseEvent } from "react";
 import { BsmImage } from "./bsm-image.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { useClickOutside } from "renderer/hooks/use-click-outside.hook";
@@ -45,15 +45,17 @@ export function BsmButton({className, style, imgClassName, iconClassName, icon, 
 
     const renderTypeColor = (() => {
         if(typeColor === "primary"){ return ""; }
-        if(!typeColor){ return `bg-light-main-color-2 dark:bg-main-color-2 ${!withBar && "hover:brightness-125"}`; }
+        if(!typeColor){ return `bg-light-main-color-2 dark:bg-main-color-2 ${(!withBar && !disabled) && "hover:brightness-125"}`; }
         if(typeColor === "cancel"){ return "bg-gray-500"; }
         if(typeColor === "error"){ return "bg-red-500"; }
         if(typeColor === "success"){ return "bg-green-500"; }
         return "";
     })();
 
+    const handleClick = (e: MouseEvent) => !disabled && onClick(e);
+
     return (
-        <div ref={ref} onClick={onClick} title={t(title)} className={`${className} overflow-hidden cursor-pointer group ${(!withBar && !disabled && (!!typeColor || !!color)) && "hover:brightness-[1.15]"} ${disabled && "brightness-75 cursor-not-allowed"} ${renderTypeColor}`} style={{...style, backgroundColor: primaryColor || color}}>
+        <div ref={ref} onClick={handleClick} title={t(title)} className={`${className} overflow-hidden cursor-pointer group ${(!withBar && !disabled && (!!typeColor || !!color)) && "hover:brightness-[1.15]"} ${disabled && "brightness-75 cursor-not-allowed"} ${renderTypeColor}`} style={{...style, backgroundColor: primaryColor || color}}>
             { image && <BsmImage image={image} className={imgClassName}/> }
             { icon && <BsmIcon icon={icon} className={iconClassName ?? "h-full w-full text-gray-800 dark:text-white"} style={{color: iconColor}}/> }
             {text && (type === "submit" ? <button type="submit" className={textClassName || "h-full w-full"} style={{...(!!textColor && {color: textColor})}}>{t(text)}</button> : <span className={textClassName} style={{...(!!textColor && {color: `${textColor}`})}}>{t(text)}</span>)}
