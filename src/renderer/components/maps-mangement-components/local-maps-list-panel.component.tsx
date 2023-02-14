@@ -12,6 +12,10 @@ import BeatConflict from "../../../../assets/images/apngs/beat-conflict.png"
 import { BsmButton } from "../shared/bsm-button.component"
 import { useTranslation } from "renderer/hooks/use-translation.hook"
 import BeatWaitingImg from "../../../../assets/images/apngs/beat-waiting.png"
+import { VariableSizeList } from "react-window"
+import AutoSizer from "react-virtualized-auto-sizer"
+import { MapsRow } from "./maps-row.component"
+import { motion } from "framer-motion"
 
 type Props = {
     version: BSVersion,
@@ -30,6 +34,7 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
     const [maps, setMaps] = useState<BsmLocalMap[]>(null);
     const [subs] = useState<Subscription[]>([]);
     const [selectedMaps, setSelectedMaps] = useState([]);
+    const [itemPerRow, setItemPerRow] = useState(2);
     const t = useTranslation();
 
     useImperativeHandle(forwardRef ,()=>({
@@ -66,28 +71,7 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
         mapsManager.deleteMaps([map], version).then(res => res && loadMaps())
     }, [version]);
 
-    const extractMapDiffs = (map: BsmLocalMap): Map<BsvMapCharacteristic, ParsedMapDiff[]> => {
-        const res = new Map<BsvMapCharacteristic, ParsedMapDiff[]>();
-        if(map.bsaverInfo?.versions[0]?.diffs){
-            map.bsaverInfo.versions[0].diffs.forEach(diff => {
-                const arr = res.get(diff.characteristic) || [];
-                const diffName = map.rawInfo._difficultyBeatmapSets.find(set => set._beatmapCharacteristicName === diff.characteristic)._difficultyBeatmaps.find(rawDiff => rawDiff._difficulty === diff.difficulty)?._customData?._difficultyLabel || diff.difficulty
-                arr.push({name: diffName, type: diff.difficulty, stars: diff.stars});
-                res.set(diff.characteristic, arr);
-            });
-            return res;
-        }
-
-        map.rawInfo._difficultyBeatmapSets.forEach(set => {
-            set._difficultyBeatmaps.forEach(diff => {
-                const arr = res.get(set._beatmapCharacteristicName) || [];
-                arr.push({name: diff._customData?._difficultyLabel || diff._difficulty, type: diff._difficulty, stars: null});
-                res.set(set._beatmapCharacteristicName, arr);
-            });
-        });
-
-        return res;
-    }
+    
 
     const onMapSelected = useCallback((map: BsmLocalMap) => {
         const maps = [...selectedMaps];
@@ -216,53 +200,42 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
 
     }
 
-    const renderMaps = (): JSX.Element[] => {
-        return maps.reduce((acc, current) => {
-            if(isMapFitFilter(current)){
-                acc.push(renderMapItem(current));
-            }
-            return acc
-        }, []);
-    }
 
-    const renderMapItem = (map: BsmLocalMap) => {
-        
-        return <MapItem
-            key={map.hash}
-            hash={map.hash}
-            title={map.rawInfo._songName}
-            coverUrl={map.coverUrl}
-            songUrl={map.songUrl}
-            autor={map.rawInfo._levelAuthorName}
-            songAutor={map.rawInfo._songAuthorName}
-            bpm={map.rawInfo._beatsPerMinute}
-            duration={map.bsaverInfo?.metadata?.duration}
-            selected={selectedMaps.some(_map => _map.hash === map.hash)}
-            diffs={extractMapDiffs(map)} mapId={map.bsaverInfo?.id} ranked={map.bsaverInfo?.ranked} autorId={map.bsaverInfo?.uploader?.id} likes={map.bsaverInfo?.stats?.upvotes} createdAt={map.bsaverInfo?.createdAt}
-            onDelete={handleDelete}
-            onSelected={onMapSelected}
-            callBackParam={map}
-        />;
+    const preppedMaps: BsmLocalMap[][] = (() => {
+
+        if(!maps){ return []; }
+
+        //const mapsPerRow = //Math.floor(listWidth / 400);
+        const res: BsmLocalMap[][] = [];
+        let mapsRow: BsmLocalMap[] = []
+
+        for(const [i, map] of maps.entries()){
+            if(!isMapFitFilter(map)){ continue; }
+            if(mapsRow.length === itemPerRow){
+                res.push(mapsRow);
+                mapsRow = [];
+            }
+            mapsRow.push(map);
+        }
+
+        console.log(res, "11");
+
+        return res;
+    })();
+
+    const updateItemPerRow = (listWidth: number) => {
+        const newPerRow = Math.floor(listWidth / 400);
+        if(newPerRow === itemPerRow){ return; }
+        console.log("AA");
+        setItemPerRow(newPerRow);
     }
 
     return (
         <div ref={ref} className={className}>
-            <ul className="p-3 w-full grow flex flex-wrap justify-center content-start gap-2 overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900">
-                {maps?.length ? renderMaps() : (
-                    maps === null ? (
-                        <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1">
-                            <img className="w-32 h-32 spin-loading" src={BeatWaitingImg} alt=" "/>
-                            <span className="font-bold">{t("modals.download-maps.loading-maps")}</span>
-                        </div>
-                    ) : (
-                        <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1">
-                            <BsmImage className="h-32" image={BeatConflict}/>
-                            <span className="font-bold">{t("pages.version-viewer.maps.tabs.maps.empty-maps.text")}</span>
-                            <BsmButton className="font-bold rounded-md p-2" text="pages.version-viewer.maps.tabs.maps.empty-maps.button" typeColor="primary" withBar={false} onClick={e => {e.preventDefault(); mapsDownloader.openDownloadMapModal(version)}}/>
-                        </div>
-                    ) 
-                )}
-            </ul>
+                    <VariableSizeList width={"100%"} height={ref.current?.clientHeight ||0} itemSize={() => 100} itemCount={preppedMaps.length} itemData={preppedMaps}>
+                        {(props) => <MapsRow maps={props.data[props.index]} style={props.style}/>}
+                    </VariableSizeList>
+            
         </div>
     )
 })
