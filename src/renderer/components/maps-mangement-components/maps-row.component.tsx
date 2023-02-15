@@ -62,7 +62,7 @@ export function MapsRow({maps, style}: Props) {
     }
 
     return (
-        <ul className="h-fit w-full flex flex-nowrap gap-x-2" style={style}>
+        <ul className="h-fit w-full flex flex-nowrap basis-0 gap-x-[8px] py-1 px-3" style={style}>
             {maps && maps.map(renderMapItem)}
         </ul>
   )

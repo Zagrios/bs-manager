@@ -3,19 +3,14 @@ import { BSVersion } from "shared/bs-version.interface"
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react"
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface"
 import { Subscription } from "rxjs"
-import { MapItem, ParsedMapDiff } from "./map-item.component"
-import { BsvMapCharacteristic, MapFilter } from "shared/models/maps/beat-saver.model"
+import { MapFilter } from "shared/models/maps/beat-saver.model"
 import { useInView } from "framer-motion"
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service"
-import { BsmImage } from "../shared/bsm-image.component"
-import BeatConflict from "../../../../assets/images/apngs/beat-conflict.png"
-import { BsmButton } from "../shared/bsm-button.component"
 import { useTranslation } from "renderer/hooks/use-translation.hook"
-import BeatWaitingImg from "../../../../assets/images/apngs/beat-waiting.png"
 import { VariableSizeList } from "react-window"
-import AutoSizer from "react-virtualized-auto-sizer"
 import { MapsRow } from "./maps-row.component"
-import { motion } from "framer-motion"
+import { BehaviorSubject } from "rxjs"
+import { debounceTime } from "rxjs/operators"
 
 type Props = {
     version: BSVersion,
@@ -35,6 +30,7 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
     const [subs] = useState<Subscription[]>([]);
     const [selectedMaps, setSelectedMaps] = useState([]);
     const [itemPerRow, setItemPerRow] = useState(2);
+    const [listHeight, setListHeight] = useState(0);
     const t = useTranslation();
 
     useImperativeHandle(forwardRef ,()=>({
@@ -62,6 +58,34 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
             mapsDownloader.removeOnMapDownloadedListene(loadMaps);
         }
     }, [isVisible, version]);
+
+    useEffect(() => {
+        
+        if(!isVisible){ return () => {}; }
+
+        const updateItemPerRow = (listWidth: number) => {
+            const newPerRow = Math.min(Math.floor(listWidth / 400), 3);
+            if(newPerRow === itemPerRow){ return; }
+            setItemPerRow(newPerRow);
+        };
+
+        const heightObserver$ = new BehaviorSubject(0);
+
+        const observer = new ResizeObserver(() => {
+            updateItemPerRow(ref.current?.clientWidth || 0);
+            heightObserver$.next(ref.current?.clientHeight || 0)
+        });
+
+        observer.observe(ref.current);
+
+        const sub = heightObserver$.pipe(debounceTime(100)).subscribe(setListHeight);
+
+        return () => {
+            observer.disconnect();
+            sub.unsubscribe();
+        }
+
+    }, [isVisible, itemPerRow])
 
     const loadMaps = () => {
         subs.push(mapsManager.getMaps(version).subscribe(localMaps => setMaps(() => [...localMaps])));
@@ -205,11 +229,10 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
 
         if(!maps){ return []; }
 
-        //const mapsPerRow = //Math.floor(listWidth / 400);
         const res: BsmLocalMap[][] = [];
         let mapsRow: BsmLocalMap[] = []
 
-        for(const [i, map] of maps.entries()){
+        for(const map of maps){
             if(!isMapFitFilter(map)){ continue; }
             if(mapsRow.length === itemPerRow){
                 res.push(mapsRow);
@@ -218,24 +241,18 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
             mapsRow.push(map);
         }
 
-        console.log(res, "11");
+        if(mapsRow.length){
+            res.push(mapsRow);
+        }
 
         return res;
     })();
 
-    const updateItemPerRow = (listWidth: number) => {
-        const newPerRow = Math.floor(listWidth / 400);
-        if(newPerRow === itemPerRow){ return; }
-        console.log("AA");
-        setItemPerRow(newPerRow);
-    }
-
     return (
         <div ref={ref} className={className}>
-                    <VariableSizeList width={"100%"} height={ref.current?.clientHeight ||0} itemSize={() => 100} itemCount={preppedMaps.length} itemData={preppedMaps}>
-                        {(props) => <MapsRow maps={props.data[props.index]} style={props.style}/>}
-                    </VariableSizeList>
-            
+            <VariableSizeList className="p-0 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900" width={"100%"} height={listHeight} itemSize={() => 108} itemCount={preppedMaps.length} itemData={preppedMaps} layout="vertical" style={{scrollbarGutter: "stable both-edges"}}>
+                {(props) => <MapsRow maps={props.data[props.index]} style={props.style}/>}
+            </VariableSizeList>
         </div>
     )
 })
