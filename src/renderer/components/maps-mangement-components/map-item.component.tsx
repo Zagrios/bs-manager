@@ -236,8 +236,4 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
             </div>
         </motion.li>
     )
-}, areEqual)
-
-function areEqual(prevProps: MapItemProps, nextProps: MapItemProps): boolean {
-    return equal(prevProps, nextProps);
-}
+}, equal);

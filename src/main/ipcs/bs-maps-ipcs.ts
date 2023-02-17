@@ -50,11 +50,11 @@ ipcMain.on("unlink-version-maps", async (event, request: IpcRequest<{version: BS
 
 });
 
-ipcMain.on("delete-maps", async (event, request: IpcRequest<{version: BSVersion, maps: BsmLocalMap[]}>) => {
+ipcMain.on("delete-maps", async (event, request: IpcRequest<{maps: BsmLocalMap[]}>) => {
     const utils = UtilsService.getInstance();
     const maps = LocalMapsManagerService.getInstance();
 
-    maps.deleteMaps(request.args.maps, request.args.version).then(() => {
+    maps.deleteMaps(request.args.maps).then(() => {
         utils.ipcSend<void>(request.responceChannel, {success: true});
     }).catch(err => {
         utils.ipcSend<void>(request.responceChannel, {success: false, error: err});

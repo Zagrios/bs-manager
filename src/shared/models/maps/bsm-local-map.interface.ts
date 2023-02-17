@@ -7,4 +7,5 @@ export interface BsmLocalMap {
     songUrl: string,
     rawInfo: RawMapInfoData,
     bsaverInfo?: BsvMapDetail
+    path: string
 }

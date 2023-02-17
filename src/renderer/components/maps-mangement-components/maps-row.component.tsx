@@ -1,22 +1,26 @@
-import { CSSProperties } from "react"
+import { CSSProperties, memo } from "react"
+import { useObservable } from "renderer/hooks/use-observable.hook"
+import { distinctUntilChanged, map } from "rxjs/operators"
+import { BehaviorSubject } from "rxjs"
 import { BsvMapCharacteristic } from "shared/models/maps/beat-saver.model"
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface"
 import { ParsedMapDiff, MapItem } from "./map-item.component"
+import equal from "fast-deep-equal/es6"
 
 type Props = {
     maps: BsmLocalMap[],
-    style?: CSSProperties
+    style?: CSSProperties,
+    onMapDelete: (map: BsmLocalMap) => void,
+    onMapSelect: (map: BsmLocalMap) => void,
+    selectedMaps$: BehaviorSubject<BsmLocalMap[]>
 }
 
-export function MapsRow({maps, style}: Props) {
+export const MapsRow = memo(({maps, style, selectedMaps$, onMapSelect, onMapDelete}: Props) => {
 
-    const handleDelete = () => {
-
-    }
-
-    const onMapSelected = () => {
-
-    }
+    const selectedMaps = useObservable<BsmLocalMap[]>(selectedMaps$.pipe(
+        map(selectedMaps => selectedMaps.filter(selected => maps.some(map => map.hash === selected.hash))),
+        distinctUntilChanged(equal)
+    ), []);
 
     const extractMapDiffs = (map: BsmLocalMap): Map<BsvMapCharacteristic, ParsedMapDiff[]> => {
         const res = new Map<BsvMapCharacteristic, ParsedMapDiff[]>();
@@ -53,10 +57,10 @@ export function MapsRow({maps, style}: Props) {
             songAutor={map.rawInfo._songAuthorName}
             bpm={map.rawInfo._beatsPerMinute}
             duration={map.bsaverInfo?.metadata?.duration}
-            selected={false}
+            selected={selectedMaps.some(selected => selected.hash === map.hash)}
             diffs={extractMapDiffs(map)} mapId={map.bsaverInfo?.id} ranked={map.bsaverInfo?.ranked} autorId={map.bsaverInfo?.uploader?.id} likes={map.bsaverInfo?.stats?.upvotes} createdAt={map.bsaverInfo?.createdAt}
-            onDelete={handleDelete}
-            onSelected={onMapSelected}
+            onDelete={onMapDelete}
+            onSelected={onMapSelect}
             callBackParam={map}
         />;
     }
@@ -66,4 +70,4 @@ export function MapsRow({maps, style}: Props) {
             {maps && maps.map(renderMapItem)}
         </ul>
   )
-}
+}, equal);

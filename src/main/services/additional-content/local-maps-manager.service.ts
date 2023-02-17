@@ -100,7 +100,7 @@ export class LocalMapsManagerService {
         
         const hash = await this.computeMapHash(mapPath, rawInfoString);
         
-        return {rawInfo, coverUrl, songUrl, hash};
+        return {rawInfo, coverUrl, songUrl, hash, path: mapPath};
     }
 
     private async downloadMapZip(zipUrl: string): Promise<{zip: StreamZip.StreamZipAsync, zipPath: string}>{
@@ -113,28 +113,6 @@ export class LocalMapsManagerService {
         const zip = new StreamZip.async({file : zipPath});
 
         return {zip, zipPath};
-    }
-
-    private async getAbsoluteFolderOfMaps(maps: BsmLocalMap[], version: BSVersion): Promise<string[]>{
-
-        const mapsFolder = await this.getMapsFolderPath(version);
-
-        const res: string[] = [];
-        const mapHashs = maps.map(map => map.hash);
-        
-        const mapsFolders = readdirSync(mapsFolder, {withFileTypes: true});
-
-        for(const content of mapsFolders){
-            if(!content.isDirectory()){ continue; }
-            const mapFolderPath = path.join(mapsFolder, content.name);
-            const { hash } = await this.loadMapInfoFromPath(mapFolderPath);
-            if(mapHashs.includes(hash)){
-                res.push(mapFolderPath);
-            }
-        }
-
-        return res;
-
     }
 
     private openOneClickDownloadMapWindow(mapId: string, isHash = false): void{
@@ -201,16 +179,15 @@ export class LocalMapsManagerService {
 
     }
 
-    public async deleteMaps(maps: BsmLocalMap[], verion?: BSVersion){
+    public async deleteMaps(maps: BsmLocalMap[]){
        
-        const mapsFolders = await this.getAbsoluteFolderOfMaps(maps, verion);
+        const mapsFolders = maps.map(map => map.path);
         const mapsHashsToDelete = maps.map(map => map.hash);
 
         for(const folder of mapsFolders){
             const { hash } = await this.loadMapInfoFromPath(folder);
-            if(mapsHashsToDelete.includes(hash)){
-                await this.utils.deleteFolder(folder);
-            }
+            if(!mapsHashsToDelete.includes(hash)){ continue; }
+            await this.utils.deleteFolder(folder);
         }
 
     }
@@ -257,7 +234,7 @@ export class LocalMapsManagerService {
         }
         else{
 
-            const mapsFolders = await this.getAbsoluteFolderOfMaps(maps, version);
+            const mapsFolders = maps.map(map => map.path);
             
             for(const folder of mapsFolders){
                 archive.directory(folder, path.basename(folder));

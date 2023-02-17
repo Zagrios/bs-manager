@@ -6,7 +6,6 @@ import { Subscription } from "rxjs"
 import { MapFilter } from "shared/models/maps/beat-saver.model"
 import { useInView } from "framer-motion"
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service"
-import { useTranslation } from "renderer/hooks/use-translation.hook"
 import { VariableSizeList } from "react-window"
 import { MapsRow } from "./maps-row.component"
 import { BehaviorSubject } from "rxjs"
@@ -28,20 +27,19 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
     const isVisible = useInView(ref, {once: true});
     const [maps, setMaps] = useState<BsmLocalMap[]>(null);
     const [subs] = useState<Subscription[]>([]);
-    const [selectedMaps, setSelectedMaps] = useState([]);
+    const [selectedMaps$] = useState<BehaviorSubject<BsmLocalMap[]>>(new BehaviorSubject([]));
     const [itemPerRow, setItemPerRow] = useState(2);
     const [listHeight, setListHeight] = useState(0);
-    const t = useTranslation();
 
     useImperativeHandle(forwardRef ,()=>({
         deleteMaps(){
-            const mapsToDelete = selectedMaps.length === 0 ? maps : selectedMaps
-            mapsManager.deleteMaps(mapsToDelete, version).finally(loadMaps);
+            const mapsToDelete = selectedMaps$.value.length === 0 ? maps : selectedMaps$.value
+            mapsManager.deleteMaps(mapsToDelete, version).then(res => res && removeMapsFromList(mapsToDelete));
         },
         exportMaps(){
-            mapsManager.exportMaps(version, selectedMaps)
+            mapsManager.exportMaps(version, selectedMaps$.value)
         }
-    }), [selectedMaps, maps, version]);
+    }), [selectedMaps$.value, maps, version]);
 
     useEffect(() => {
 
@@ -91,23 +89,34 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
         subs.push(mapsManager.getMaps(version).subscribe(localMaps => setMaps(() => [...localMaps])));
     }
 
-    const handleDelete = useCallback((map: BsmLocalMap) => {
-        mapsManager.deleteMaps([map], version).then(res => res && loadMaps())
-    }, [version]);
+    const removeMapsFromList = (mapsToRemove: BsmLocalMap[]) => {
+        const filtredMaps = maps.filter(map => !mapsToRemove.some(toDeleteMaps => map.hash === toDeleteMaps.hash));
+        setMaps(() => filtredMaps);
+    };
 
-    
+    const handleDelete = useCallback((map: BsmLocalMap) => {
+        mapsManager.deleteMaps([map], version).then(res => res && removeMapsFromList([map]));
+    }, [version, maps]);
 
     const onMapSelected = useCallback((map: BsmLocalMap) => {
-        const maps = [...selectedMaps];
-        if(maps.some(selectedMap => selectedMap.hash === map.hash)){
-            const i = maps.findIndex(selectedMap => selectedMap.hash === map.hash);
-            maps.splice(i, 1);
+
+        console.log(map);
+
+        const mapsCopy = [...selectedMaps$.value];
+        if(mapsCopy.some(selectedMap => selectedMap.hash === map.hash)){
+            const i = mapsCopy.findIndex(selectedMap => selectedMap.hash === map.hash);
+            mapsCopy.splice(i, 1);
         }
         else{
-            maps.push(map);
+            mapsCopy.push(map);
         }
-        setSelectedMaps(() => maps);
-    }, [selectedMaps]);
+
+        console.log(mapsCopy);
+
+        selectedMaps$.next(mapsCopy);
+    }, [selectedMaps$.value]);
+
+    console.log(selectedMaps$.value);
 
     const isMapFitFilter = (map: BsmLocalMap): boolean => {
 
@@ -250,8 +259,8 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
 
     return (
         <div ref={ref} className={className}>
-            <VariableSizeList className="p-0 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900" width={"100%"} height={listHeight} itemSize={() => 108} itemCount={preppedMaps.length} itemData={preppedMaps} layout="vertical" style={{scrollbarGutter: "stable both-edges"}}>
-                {(props) => <MapsRow maps={props.data[props.index]} style={props.style}/>}
+            <VariableSizeList className="p-0 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900" width={"100%"} height={listHeight} itemSize={() => 108} itemCount={preppedMaps.length} itemData={preppedMaps} layout="vertical" style={{scrollbarGutter: "stable both-edges"}} itemKey={(i, data) => data[i].map(map => map.hash).join()}>
+                {(props) => <MapsRow maps={props.data[props.index]} style={props.style} selectedMaps$={selectedMaps$} onMapSelect={onMapSelected} onMapDelete={handleDelete}/>}
             </VariableSizeList>
         </div>
     )

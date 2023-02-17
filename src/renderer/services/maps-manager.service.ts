@@ -133,7 +133,7 @@ export class MapsManagerService {
             this.progressBar.showFake(.008);
         }
 
-        const res = await this.ipcService.send<void, {version: BSVersion, maps: BsmLocalMap[]}>("delete-maps", {args: {version, maps}});
+        const res = await this.ipcService.send<void, {maps: BsmLocalMap[]}>("delete-maps", {args: {maps}});
 
         if(showProgressBar){
             this.progressBar.hide(true);
