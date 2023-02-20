@@ -32,8 +32,7 @@ export class BeatSaverService {
             return res;
         }, [] as BsvMapDetail[]);
 
-        for(const hashs of chunkHash){
-
+        await Promise.all(chunkHash.map(async hashs => {
             const res = await this.bsaverApi.getMapsDetailsByHashs(hashs);
 
             if(res.status === 200){
@@ -42,7 +41,7 @@ export class BeatSaverService {
                     this.cachedMapsDetails.set(detail.versions.at(0).hash.toLowerCase(), detail);
                 });
             }
-        }
+        }));
 
         return mapDetails;
     }

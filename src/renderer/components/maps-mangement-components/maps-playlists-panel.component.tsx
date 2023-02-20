@@ -59,7 +59,7 @@ export function MapsPlaylistsPanel({version}: Props) {
     }
 
     const handleMapsAddClick = () => {
-        mapsDownloader.openDownloadMapModal(version);
+        mapsDownloader.openDownloadMapModal(version, mapsRef.current.getMaps?.());
     }
 
     const renderTab = (props: DetailedHTMLProps<React.HTMLAttributes<HTMLLIElement>, HTMLLIElement>, text: string, index: number): JSX.Element => {

@@ -5,3 +5,7 @@ export interface IpcResponse<T>{
    error?: BsmException,
    success: boolean,
 }
+
+export type IpcChannel = string;
+export type IpcErrorChannel = IpcChannel & `${string}_error`;
+export type IpcCompleteChannel = IpcChannel & `${string}_complete`;

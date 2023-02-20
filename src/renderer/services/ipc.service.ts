@@ -1,5 +1,7 @@
+import { defaultIfEmpty } from "rxjs/operators";
 import { Observable } from "rxjs";
 import { IpcRequest, IpcResponse } from "shared/models/ipc";
+import { identity } from "rxjs";
 
 export class IpcService {
 
@@ -43,6 +45,32 @@ export class IpcService {
         })
 
         this.channelObservables.set(channel, obs);
+
+        return obs;
+    }
+
+    // TODO : Convert all IPCs calls to V2
+
+    public sendV2<T, U = unknown>(channel: string, request?: IpcRequest<U>, defaultValue?: T): Observable<T>{
+        if(!request){ request = {args: null, responceChannel: null}; }
+        if(!request.responceChannel){ request.responceChannel = `${channel}_responce_${new Date().getTime()}`; }
+
+        const completeChannel = `${request.responceChannel}_complete`;
+        const errorChannel = `${request.responceChannel}_error`;
+
+        const obs = new Observable<T>(observer => {
+            window.electron.ipcRenderer.on(request.responceChannel, (res: T) => observer.next(res));
+            window.electron.ipcRenderer.on(errorChannel, (err: Error) => observer.error(err));
+            window.electron.ipcRenderer.on(completeChannel, () => observer.complete());
+        }).pipe(defaultValue ? defaultIfEmpty(defaultValue) : identity);
+
+        window.electron.ipcRenderer.once(completeChannel, () => {
+            window.electron.ipcRenderer.removeAllListeners(request.responceChannel);
+            window.electron.ipcRenderer.removeAllListeners(errorChannel);
+            window.electron.ipcRenderer.removeAllListeners(completeChannel);
+        });
+
+        window.electron.ipcRenderer.sendMessage(channel, request);
 
         return obs;
     }

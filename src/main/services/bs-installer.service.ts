@@ -28,7 +28,7 @@ export class BSInstallerService{
     this.localVersionService = BSLocalVersionService.getInstance();
     this.windows = WindowManagerService.getInstance();
 
-    this.windows.getWindows("index.html")?.on("close", () => {
+    this.windows.getWindow("index.html")?.on("close", () => {
         this.killDownloadProcess();
     });
   }

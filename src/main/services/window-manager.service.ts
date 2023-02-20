@@ -75,8 +75,12 @@ export class WindowManagerService{
         });
     }
 
-    public getWindows(window: AppWindow): BrowserWindow{
+    public getWindow(window: AppWindow): BrowserWindow{
         return this.windows.get(window);
+    }
+
+    public getAppWindowFromWebContents(sender: Electron.WebContents): AppWindow{
+        return Array.from(this.windows.entries()).find(([key, value]) => value.webContents.id === sender.id)[0];
     }
 
 }
