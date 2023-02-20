@@ -10,6 +10,7 @@ import { IpcService } from "./ipc.service";
 import { OsDiagnosticService } from "./os-diagnostic.service";
 import equal from "fast-deep-equal/es6";
 import { CSSProperties } from "react";
+import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 
 export class MapsDownloaderService {
 
@@ -28,7 +29,7 @@ export class MapsDownloaderService {
     private readonly mapsQueue$: BehaviorSubject<MapDownload[]> = new BehaviorSubject([]);
     private readonly currentDownload$: BehaviorSubject<MapDownload> = new BehaviorSubject(null);
     private queueMaxLenght = 0;
-    private downloadedListerners: ((map: BsvMapDetail, version: BSVersion) => void)[] = [];
+    private downloadedListerners: ((map: BsmLocalMap, version: BSVersion) => void)[] = [];
     public readonly progressBarStyle: CSSProperties =  {zIndex: 100000, position: "fixed", bottom: "10px", right: 0};
 
     private constructor(){
@@ -50,10 +51,10 @@ export class MapsDownloaderService {
         while(this.mapsQueue$.value.at(0)){
             const toDownload = this.mapsQueue$.value.at(0);
             this.currentDownload$.next(toDownload);
-            const downloaded = await this.downloadMap(toDownload.map, toDownload.version);
+            const downloaded = await this.downloadMap(toDownload.map, toDownload.version).toPromise();
 
             if(downloaded){
-                this.downloadedListerners.forEach(func => func(toDownload.map, toDownload.version));
+                this.downloadedListerners.forEach(func => func(downloaded, toDownload.version));
             }
 
             const newArr = [...this.mapsQueue$.value];
@@ -67,14 +68,13 @@ export class MapsDownloaderService {
         this.progressBar.hide(true);
     }
 
-    private async downloadMap(map: BsvMapDetail, version: BSVersion): Promise<boolean>{
-        if(this.os.isOffline){ return false }
-        const res = await this.ipc.send<void, {map: BsvMapDetail, version: BSVersion}>("download-map", {args: {map, version}});
-        return res.success;
+    private downloadMap(map: BsvMapDetail, version: BSVersion): Observable<BsmLocalMap>{
+        if(this.os.isOffline){ return null }
+        return this.ipc.sendV2<BsmLocalMap, {map: BsvMapDetail, version: BSVersion}>("download-map", {args: {map, version}});
     }
 
-    public async openDownloadMapModal(version?: BSVersion): Promise<ModalResponse<void>>{
-        const res = await this.modals.openModal(DownloadMapsModal, version);
+    public async openDownloadMapModal(version?: BSVersion, ownedMaps: BsmLocalMap[] = []): Promise<ModalResponse<void>>{
+        const res = await this.modals.openModal(DownloadMapsModal, {version, ownedMaps});
         this.progressBar.setStyle(null);
         return res;
     }
@@ -109,11 +109,11 @@ export class MapsDownloaderService {
         return this.mapsQueue$.asObservable();
     }
 
-    public addOnMapDownloadedListener(func: (map: BsvMapDetail, version: BSVersion) => void){
+    public addOnMapDownloadedListener(func: (map: BsmLocalMap, version: BSVersion) => void){
         this.downloadedListerners.push(func);
     }
 
-    public removeOnMapDownloadedListene(func: (map: BsvMapDetail, version: BSVersion) => void){
+    public removeOnMapDownloadedListener(func: (map: BsmLocalMap, version: BSVersion) => void){
         const funcIndex = this.downloadedListerners.indexOf(func);
         if(funcIndex < 0){ return; }
         this.downloadedListerners.splice(funcIndex, 1);

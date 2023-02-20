@@ -2,8 +2,7 @@ import { LinkMapsModal } from "renderer/components/modal/modal-types/link-maps-m
 import { UnlinkMapsModal } from "renderer/components/modal/modal-types/unlink-maps-modal.component";
 import { Subject, Observable } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
-import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
-import { BeatSaverService } from "./thrird-partys/beat-saver.service";
+import { BsmLocalMapsProgress, BsmLocalMap, DeleteMapsProgress } from "shared/models/maps/bsm-local-map.interface";
 import { IpcService } from "./ipc.service";
 import { ModalExitCode, ModalService } from "./modale.service";
 import { DeleteMapsModal } from "renderer/components/modal/modal-types/delete-maps-modal.component";
@@ -11,6 +10,10 @@ import { ProgressBarService } from "./progress-bar.service";
 import { OpenSaveDialogOption } from "shared/models/ipc";
 import { NotificationService } from "./notification.service";
 import { ConfigurationService } from "./configuration.service";
+import { ArchiveProgress } from "shared/models/archive.interface";
+import { map, last, catchError } from "rxjs/operators";
+import { of } from "rxjs";
+import { ProgressionInterface } from "shared/models/progress-bar";
 
 export class MapsManagerService {
 
@@ -24,7 +27,6 @@ export class MapsManagerService {
     public static readonly REMEMBER_CHOICE_DELETE_MAP_KEY = "not-confirm-delete-map"
 
     private readonly ipcService: IpcService;
-    private readonly bsaver: BeatSaverService;
     private readonly modal: ModalService;
     private readonly progressBar: ProgressBarService;
     private readonly notifications: NotificationService;
@@ -35,32 +37,14 @@ export class MapsManagerService {
 
     private constructor(){
         this.ipcService = IpcService.getInstance();
-        this.bsaver = BeatSaverService.getInstance();
         this.modal = ModalService.getInsance();
         this.progressBar = ProgressBarService.getInstance();
         this.notifications = NotificationService.getInstance();
         this.config = ConfigurationService.getInstance();
     }
 
-    public getMaps(version?: BSVersion, withDetails = true): Observable<BsmLocalMap[]>{
-        return new Observable(obs => {
-            this.ipcService.send<BsmLocalMap[], BSVersion>("get-version-maps", {args: version}).then(res => {
-                if(!res.success){ return obs.complete();}
-
-                obs.next(res.data);
-
-                if(!withDetails){ return obs.complete(); }
-
-                this.bsaver.getMapDetailsFromHashs(res.data.map(localMap => localMap.hash)).then(mapsDetails => {
-                    mapsDetails.forEach(details => {
-                        const corespondingMap = res.data.find(localMap => localMap.hash === details.versions.find(details => details?.hash === localMap.hash)?.hash);
-                        if(!corespondingMap){ return; }
-                        res.data.find(localMap => localMap.hash === details.versions.find(details => details?.hash === localMap.hash)?.hash).bsaverInfo = details
-                    });
-                    obs.next(res.data);
-                })
-            });
-        });
+    public getMaps(version?: BSVersion): Observable<BsmLocalMapsProgress>{
+        return this.ipcService.sendV2<BsmLocalMapsProgress>("load-version-maps", {args: version}, {loaded: 0, total: 0, maps: []});
     }
 
     public versionHaveMapsLinked(version: BSVersion): Promise<boolean>{
@@ -129,17 +113,15 @@ export class MapsManagerService {
 
         const showProgressBar = this.progressBar.require(); 
 
-        if(showProgressBar){
-            this.progressBar.showFake(.008);
-        }
+        const progress$ = this.ipcService.sendV2<DeleteMapsProgress>("delete-maps", {args: maps}).pipe(map(progress => (progress.deleted / progress.total) * 100));
 
-        const res = await this.ipcService.send<void, {version: BSVersion, maps: BsmLocalMap[]}>("delete-maps", {args: {version, maps}});
+        progress$.subscribe(console.log);
 
-        if(showProgressBar){
-            this.progressBar.hide(true);
-        }
+        showProgressBar && this.progressBar.show(progress$, true);
 
-        return res.success;
+        progress$.toPromise().finally(() => this.progressBar.hide(true));
+
+        return progress$.pipe(last(), map(() => true), catchError(() => of(false))).toPromise().catch(() => false);
     }
 
     public async exportMaps(version: BSVersion, maps?: BsmLocalMap[]): Promise<void>{
@@ -152,18 +134,22 @@ export class MapsManagerService {
 
         if(!resFile.success){ return; }
 
-        this.progressBar.showFake(.008);
-        
-        const resExport = await this.ipcService.send<string, {version: BSVersion, maps: BsmLocalMap[], outPath: string}>("export-maps", {args: {version, maps, outPath: resFile.data}});
-        if(!resExport.success && resExport.error.title){
-            const {title, msg} = resExport.error;
-            this.notifications.notifyError({title, desc: msg});
-        } 
-        else {
+        const exportProgress$: Observable<ProgressionInterface> = await this.ipcService.sendV2<ArchiveProgress, {version: BSVersion, maps: BsmLocalMap[], outPath: string}>("export-maps", {args: {version, maps, outPath: resFile.data}}).pipe(
+            map(p => {
+                return { progression: (p.prossesedFiles / p.totalFiles) * 100, label: `${p.prossesedFiles} / ${p.totalFiles}` } as ProgressionInterface
+            })
+        );
+
+        this.progressBar.show(exportProgress$, true);
+
+        await exportProgress$.toPromise().catch(e => {
+            this.notifications.notifyError({title: "notifications.types.error", desc: e.message});
+        }).then(() => {
             this.notifications.notifySuccess({title: "Export terminé 🎉", duration: 3000});
-        }
-        this.progressBar.complete();
-        this.progressBar.hide(true);
+            this.progressBar.complete();
+            this.progressBar.hide(true);
+        });
+        
     }
 
     public async isDeepLinksEnabled(): Promise<boolean>{

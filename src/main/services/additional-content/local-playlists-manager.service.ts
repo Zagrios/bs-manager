@@ -163,7 +163,7 @@ export class LocalPlaylistsManagerService {
                         ...res.value,
                         current: null,
                         downloadedMaps: [...res.value.downloadedMaps, map],
-                        mapsPath: [...res.value.mapsPath, mapPath],
+                        mapsPath: [...res.value.mapsPath, mapPath.path],
                         progression
                     });
 

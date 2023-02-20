@@ -7,4 +7,16 @@ export interface BsmLocalMap {
     songUrl: string,
     rawInfo: RawMapInfoData,
     bsaverInfo?: BsvMapDetail
+    path: string
+}
+
+export interface BsmLocalMapsProgress {
+    total: number,
+    loaded: number,
+    maps: BsmLocalMap[],
+}
+
+export interface DeleteMapsProgress {
+    total: number,
+    deleted: number
 }

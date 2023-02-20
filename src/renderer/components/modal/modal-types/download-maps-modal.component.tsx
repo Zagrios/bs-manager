@@ -19,11 +19,11 @@ import equal from "fast-deep-equal/es6";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
+import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 
-export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
+export const DownloadMapsModal: ModalComponent<void, {version: BSVersion, ownedMaps: BsmLocalMap[]}> = ({resolver, data: { ownedMaps, version }}) => {
 
     const beatSaver = BeatSaverService.getInstance();
-    const mapsManager = MapsManagerService.getInstance();
     const mapsDownloader = MapsDownloaderService.getInstance();
     const progressBar = ProgressBarService.getInstance();
     const os = OsDiagnosticService.getInstance();
@@ -36,7 +36,7 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
     const [query, setQuery] = useState("");
     const [maps, setMaps] = useState<BsvMapDetail[]>([]);
     const [sortOrder, setSortOrder] = useState<SearchOrder>(BSV_SORT_ORDER.at(0));
-    const [ownedMapHashs, setOwnedMapHashs] = useState<string[]>([]);
+    const [ownedMapHashs, setOwnedMapHashs] = useState<string[]>(ownedMaps?.map(map => map.hash) ?? []);
     const [loading, setLoading] = useState(false);
     const isOnline = useObservable(os.isOnline$);
     const [searchParams, setSearchParams] = useState<SearchParams>({
@@ -58,13 +58,12 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
     
 
     useEffect(() => {
-        mapsManager.getMaps(data, false).toPromise().then(maps => setOwnedMapHashs(maps.map(map => map.hash)));
-
-        const onMapDownloaded = (map: BsvMapDetail, verion: BSVersion) => {
-            if(!equal(verion, data) || !map?.versions){ return; }
-            const downloadedHash = map.versions.at(0).hash;
+        const onMapDownloaded = (map: BsmLocalMap, targerVersion: BSVersion) => {
+            if(!equal(targerVersion, version)){ return; }
+            const downloadedHash = map.hash;
             setOwnedMapHashs((prev) => [...prev, downloadedHash]);
         }
+
         mapsDownloader.addOnMapDownloadedListener(onMapDownloaded);
 
         if(mapsDownloader.isDownloading){
@@ -72,7 +71,7 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
         }
 
         return () => {
-            mapsDownloader.removeOnMapDownloadedListene(onMapDownloaded);
+            mapsDownloader.removeOnMapDownloadedListener(onMapDownloaded);
             progressBar.setStyle(null);
         }
     }, [])
@@ -99,7 +98,7 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
 
         const isMapOwned = map.versions.some(version => ownedMapHashs.includes(version.hash));
         const isDownloading = map.id === currentDownload?.map?.id;
-        const inQueue = mapsInQueue.some(toDownload => equal(toDownload.version, data) && toDownload.map.id === map.id);
+        const inQueue = mapsInQueue.some(toDownload => equal(toDownload.version, version) && toDownload.map.id === map.id);
 
         return (
             <MapItem
@@ -129,11 +128,11 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
     }
 
     const handleDownloadMap = useCallback((map: BsvMapDetail) => {
-        mapsDownloader.addMapToDownload({map, version: data})
+        mapsDownloader.addMapToDownload({map, version})
     }, []);
 
     const handleCancelDownload = useCallback((map: BsvMapDetail) => {
-        mapsDownloader.removeMapToDownload({map, version: data});
+        mapsDownloader.removeMapToDownload({map, version});
     }, []);
 
     const handleSortChange = (newSort: string) => {
@@ -170,7 +169,7 @@ export const DownloadMapsModal: ModalComponent<void, BSVersion> = ({data}) => {
                 <BsmButton className="shrink-0 rounded-full py-1 px-3 !bg-light-main-color-1 dark:!bg-main-color-1 flex justify-center items-center capitalize" icon="search" text="modals.download-maps.search-btn" withBar={false} onClick={e => {e.preventDefault(); handleSearch()}}/>
                 <BsmSelect className="bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-1 pb-0.5 text-center" options={sortOptions} onChange={handleSortChange}/>
             </div>
-            <ul className="w-full grow flex content-start flex-wrap gap-2 px-2 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 z-0" >
+            <ul className="w-full grow flex content-start flex-wrap gap-2 pt-1.5 px-2 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 z-0" >
                 {maps.length === 0 ? (
                     <div className="w-full h-full flex flex-col items-center justify-center">
                         <img className={`w-32 h-32 ${loading && "spin-loading"}`} src={loading ? BeatWaitingImg : BeatConflictImg} alt=" "/>

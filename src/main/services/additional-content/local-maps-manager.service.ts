@@ -1,13 +1,13 @@
 import path from "path";
 import { BSVersion } from "shared/bs-version.interface";
 import { BsvMapDetail, RawMapInfoData } from "shared/models/maps";
-import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
+import { BsmLocalMap, BsmLocalMapsProgress, DeleteMapsProgress } from "shared/models/maps/bsm-local-map.interface";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import { InstallationLocationService } from "../installation-location.service";
 import { UtilsService } from "../utils.service";
 import crypto from "crypto";
 import { lstatSync, symlinkSync, unlinkSync, readdirSync, createWriteStream } from "fs";
-import { copySync } from "fs-extra";
+import { copy, copySync } from "fs-extra";
 import StreamZip from "node-stream-zip";
 import { RequestService } from "../request.service";
 import sanitize from "sanitize-filename";
@@ -17,6 +17,9 @@ import log from 'electron-log';
 import { WindowManagerService } from "../window-manager.service";
 import { ipcMain } from "electron";
 import { IpcRequest } from 'shared/models/ipc';
+import { Observable } from "rxjs";
+import { defer } from "rxjs";
+import { Archive } from "../../models/archive.class";
 
 export class LocalMapsManagerService {
 
@@ -62,6 +65,7 @@ export class LocalMapsManagerService {
     }
 
     public async getMapsFolderPath(version?: BSVersion): Promise<string>{
+
         if(version){ return path.join(await this.localVersion.getVersionPath(version), this.LEVELS_ROOT_FOLDER, this.CUSTOM_LEVELS_FOLDER); }
         const sharedMapsPath = path.join(this.installLocation.sharedMapsPath, this.CUSTOM_LEVELS_FOLDER);
         if(!(await this.utils.pathExist(sharedMapsPath))){
@@ -100,7 +104,7 @@ export class LocalMapsManagerService {
         
         const hash = await this.computeMapHash(mapPath, rawInfoString);
         
-        return {rawInfo, coverUrl, songUrl, hash};
+        return {rawInfo, coverUrl, songUrl, hash, path: mapPath};
     }
 
     private async downloadMapZip(zipUrl: string): Promise<{zip: StreamZip.StreamZipAsync, zipPath: string}>{
@@ -115,28 +119,6 @@ export class LocalMapsManagerService {
         return {zip, zipPath};
     }
 
-    private async getAbsoluteFolderOfMaps(maps: BsmLocalMap[], version: BSVersion): Promise<string[]>{
-
-        const mapsFolder = await this.getMapsFolderPath(version);
-
-        const res: string[] = [];
-        const mapHashs = maps.map(map => map.hash);
-        
-        const mapsFolders = readdirSync(mapsFolder, {withFileTypes: true});
-
-        for(const content of mapsFolders){
-            if(!content.isDirectory()){ continue; }
-            const mapFolderPath = path.join(mapsFolder, content.name);
-            const { hash } = await this.loadMapInfoFromPath(mapFolderPath);
-            if(mapHashs.includes(hash)){
-                res.push(mapFolderPath);
-            }
-        }
-
-        return res;
-
-    }
-
     private openOneClickDownloadMapWindow(mapId: string, isHash = false): void{
 
         ipcMain.once("one-click-map-info", async (event, req: IpcRequest<void>) => {
@@ -147,14 +129,36 @@ export class LocalMapsManagerService {
 
     }
 
-    public async getMaps(version?: BSVersion): Promise<BsmLocalMap[]>{
-        const levelsFolder = await this.getMapsFolderPath(version);
+    public getMaps(version?: BSVersion): Observable<BsmLocalMapsProgress>{
 
-        const levelsPath = (await this.utils.pathExist(levelsFolder)) ? this.utils.listDirsInDir(levelsFolder, true) : [];
+        const progression: BsmLocalMapsProgress = {
+            total: 0,
+            loaded: 0,
+            maps: []
+        };
 
-        const mapsInfo = await Promise.all(levelsPath.map(levelPath => this.loadMapInfoFromPath(levelPath)));
+        return new Observable<BsmLocalMapsProgress>(observer => {
+            (async () => {
+                const levelsFolder = await this.getMapsFolderPath(version);
 
-        return mapsInfo.filter(info => !!info);
+                const levelsPaths = (await this.utils.pathExist(levelsFolder)) ? this.utils.listDirsInDir(levelsFolder, true) : [];
+
+                progression.total = levelsPaths.length;
+
+                for(const levelPath of levelsPaths){
+                    const mapInfo = await this.loadMapInfoFromPath(levelPath);
+                    if(mapInfo){
+                        progression.maps.push(mapInfo);
+                        progression.loaded = progression.maps.length;
+                        observer.next({...progression, maps: []});
+                    }
+                }
+
+                observer.next(progression);
+
+                observer.complete();
+            })();
+        });
     }
 
     public async versionIsLinked(version: BSVersion): Promise<boolean>{
@@ -196,26 +200,37 @@ export class LocalMapsManagerService {
         this.utils.createFolderIfNotExist(versionMapsPath);
         
         if(keepMaps){
-            copySync(sharedMapsPath, versionMapsPath);
+            await copy(sharedMapsPath, versionMapsPath);
         }
 
     }
 
-    public async deleteMaps(maps: BsmLocalMap[], verion?: BSVersion){
+    public deleteMaps(maps: BsmLocalMap[]): Observable<DeleteMapsProgress>{
        
-        const mapsFolders = await this.getAbsoluteFolderOfMaps(maps, verion);
+        const mapsFolders = maps.map(map => map.path);
         const mapsHashsToDelete = maps.map(map => map.hash);
 
-        for(const folder of mapsFolders){
-            const { hash } = await this.loadMapInfoFromPath(folder);
-            if(mapsHashsToDelete.includes(hash)){
-                await this.utils.deleteFolder(folder);
-            }
-        }
-
+        return new Observable<DeleteMapsProgress>(observer => {
+            (async () => {
+                const progress: DeleteMapsProgress = { total: maps.length, deleted: 0 };
+                try{
+                    for(const folder of mapsFolders){
+                        const detail = await this.loadMapInfoFromPath(folder);
+                        if(!mapsHashsToDelete.includes(detail?.hash)){ continue; }
+                        await this.utils.deleteFolder(folder);
+                        progress.deleted++;
+                        observer.next(progress);
+                    }
+                }catch(e){
+                    console.log(e);
+                    observer.error(e);
+                }
+                observer.complete();
+            })();
+        });
     }
 
-    public async downloadMap(map: BsvMapDetail, version?: BSVersion): Promise<string>{
+    public async downloadMap(map: BsvMapDetail, version?: BSVersion): Promise<BsmLocalMap>{
 
         if(!map.versions.at(0).hash){ throw "Cannot download map, no hash found"; }
 
@@ -238,34 +253,26 @@ export class LocalMapsManagerService {
 
         unlinkSync(zipPath);
 
-        return mapPath;
+        const localMap = await this.loadMapInfoFromPath(mapPath);
+        localMap.bsaverInfo = map;
+
+        return localMap;
     }
 
     public async exportMaps(version: BSVersion, maps: BsmLocalMap[], outPath: string){
 
-        const output = createWriteStream(outPath);
-        const archive = archiver("zip", {zlib: {level: 9}});
-
-        archive.pipe(output);
-        archive.on("error", (e) => {throw e});
+        const archive = new Archive(outPath);
         
         if(!maps || maps.length === 0){
-
             const mapsFolder = await this.getMapsFolderPath(version);
-            archive.directory(mapsFolder, false);
-            
+            archive.addDirectory(mapsFolder, false);
         }
         else{
-
-            const mapsFolders = await this.getAbsoluteFolderOfMaps(maps, version);
-            
-            for(const folder of mapsFolders){
-                archive.directory(folder, path.basename(folder));
-            }
-
+            const mapsFolders = maps.map(map => map.path);
+            mapsFolders.forEach(maps => archive.addDirectory(maps));
         }
 
-        await archive.finalize();
+        return archive.finalize()
 
     }
 
@@ -283,7 +290,7 @@ export class LocalMapsManagerService {
 
             this.utils.createFolderIfNotExist(versionMapsPath);
 
-            copySync(downloadedMap, path.join(versionMapsPath, path.basename(downloadedMap)), {overwrite: true});
+            copySync(downloadedMap.path, path.join(versionMapsPath, path.basename(downloadedMap.path)), {overwrite: true});
 
         }
 

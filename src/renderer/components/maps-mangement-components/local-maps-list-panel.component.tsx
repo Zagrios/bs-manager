@@ -3,15 +3,21 @@ import { BSVersion } from "shared/bs-version.interface"
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react"
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface"
 import { Subscription } from "rxjs"
-import { MapItem, ParsedMapDiff } from "./map-item.component"
-import { BsvMapCharacteristic, MapFilter } from "shared/models/maps/beat-saver.model"
+import { MapFilter } from "shared/models/maps/beat-saver.model"
 import { useInView } from "framer-motion"
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service"
-import { BsmImage } from "../shared/bsm-image.component"
-import BeatConflict from "../../../../assets/images/apngs/beat-conflict.png"
-import { BsmButton } from "../shared/bsm-button.component"
+import { VariableSizeList } from "react-window"
+import { MapsRow } from "./maps-row.component"
+import { BehaviorSubject } from "rxjs"
+import { debounceTime, last, map, mergeMap, throttleTime } from "rxjs/operators"
+import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service"
+import { OsDiagnosticService } from "renderer/services/os-diagnostic.service"
 import { useTranslation } from "renderer/hooks/use-translation.hook"
 import BeatWaitingImg from "../../../../assets/images/apngs/beat-waiting.png"
+import BeatConflict from "../../../../assets/images/apngs/beat-conflict.png"
+import { BsmImage } from "../shared/bsm-image.component"
+import { BsmButton } from "../shared/bsm-button.component"
+import TextProgressBar from "../progress-bar/text-progress-bar.component"
 
 type Props = {
     version: BSVersion,
@@ -24,23 +30,36 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
 
     const mapsManager = MapsManagerService.getInstance();
     const mapsDownloader = MapsDownloaderService.getInstance();
+    const bsaver = BeatSaverService.getInstance();
+    const os = OsDiagnosticService.getInstance();
 
+    const t = useTranslation();
     const ref = useRef(null)
     const isVisible = useInView(ref, {once: true});
     const [maps, setMaps] = useState<BsmLocalMap[]>(null);
     const [subs] = useState<Subscription[]>([]);
-    const [selectedMaps, setSelectedMaps] = useState([]);
-    const t = useTranslation();
+    const [selectedMaps$] = useState(new BehaviorSubject<BsmLocalMap[]>([]));
+    const [itemPerRow, setItemPerRow] = useState(2);
+    const [listHeight, setListHeight] = useState(0);
+
+    const [loadPercent$] = useState(new BehaviorSubject(0));
 
     useImperativeHandle(forwardRef ,()=>({
         deleteMaps(){
-            const mapsToDelete = selectedMaps.length === 0 ? maps : selectedMaps
-            mapsManager.deleteMaps(mapsToDelete, version).finally(loadMaps);
+            const mapsToDelete = selectedMaps$.value.length === 0 ? maps : selectedMaps$.value;
+            mapsManager.deleteMaps(mapsToDelete, version).then(res => {
+                if(!res){ return; }
+                removeMapsFromList(mapsToDelete);
+                selectedMaps$.next([]);
+            });
         },
         exportMaps(){
-            mapsManager.exportMaps(version, selectedMaps)
+            mapsManager.exportMaps(version, selectedMaps$.value);
+        },
+        getMaps(){
+            return maps;
         }
-    }), [selectedMaps, maps, version]);
+    }), [selectedMaps$.value, maps, version]);
 
     useEffect(() => {
 
@@ -48,58 +67,100 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
             loadMaps();
             subs.push(mapsManager.versionLinked$.subscribe(loadMaps));
             subs.push(mapsManager.versionUnlinked$.subscribe(loadMaps));
-            mapsDownloader.addOnMapDownloadedListener(loadMaps);
+            mapsDownloader.addOnMapDownloadedListener((map, targerVersion) => {
+                if(targerVersion !== version){ return; }
+                setMaps(maps => maps ? [map, ...maps] : [map]);
+            });
         }
     
         return () => {
             setMaps(() => null);
+            loadPercent$.next(0);
             subs.forEach(s => s.unsubscribe());
-            mapsDownloader.removeOnMapDownloadedListene(loadMaps);
+            mapsDownloader.removeOnMapDownloadedListener(loadMaps);
         }
     }, [isVisible, version]);
 
-    const loadMaps = () => {
-        subs.push(mapsManager.getMaps(version).subscribe(localMaps => setMaps(() => [...localMaps])));
-    }
+    useEffect(() => {
+        
+        if(!isVisible){ return () => {}; }
 
-    const handleDelete = useCallback((map: BsmLocalMap) => {
-        mapsManager.deleteMaps([map], version).then(res => res && loadMaps())
-    }, [version]);
+        const updateItemPerRow = (listWidth: number) => {
+            const newPerRow = Math.min(Math.floor(listWidth / 400), 3);
+            if(newPerRow === itemPerRow){ return; }
+            setItemPerRow(newPerRow);
+        };
 
-    const extractMapDiffs = (map: BsmLocalMap): Map<BsvMapCharacteristic, ParsedMapDiff[]> => {
-        const res = new Map<BsvMapCharacteristic, ParsedMapDiff[]>();
-        if(map.bsaverInfo?.versions[0]?.diffs){
-            map.bsaverInfo.versions[0].diffs.forEach(diff => {
-                const arr = res.get(diff.characteristic) || [];
-                const diffName = map.rawInfo._difficultyBeatmapSets.find(set => set._beatmapCharacteristicName === diff.characteristic)._difficultyBeatmaps.find(rawDiff => rawDiff._difficulty === diff.difficulty)?._customData?._difficultyLabel || diff.difficulty
-                arr.push({name: diffName, type: diff.difficulty, stars: diff.stars});
-                res.set(diff.characteristic, arr);
-            });
-            return res;
-        }
+        const heightObserver$ = new BehaviorSubject(0);
 
-        map.rawInfo._difficultyBeatmapSets.forEach(set => {
-            set._difficultyBeatmaps.forEach(diff => {
-                const arr = res.get(set._beatmapCharacteristicName) || [];
-                arr.push({name: diff._customData?._difficultyLabel || diff._difficulty, type: diff._difficulty, stars: null});
-                res.set(set._beatmapCharacteristicName, arr);
-            });
+        const observer = new ResizeObserver(() => {
+            updateItemPerRow(ref.current?.clientWidth || 0);
+            heightObserver$.next(ref.current?.clientHeight || 0)
         });
 
-        return res;
+        observer.observe(ref.current);
+
+        const sub = heightObserver$.pipe(debounceTime(100)).subscribe(setListHeight);
+
+        return () => {
+            observer.disconnect();
+            sub.unsubscribe();
+        }
+
+    }, [isVisible, itemPerRow])
+
+    const loadMaps = () => {
+
+        setMaps(() => null);
+        loadPercent$.next(0);
+
+        const loadMapsObs$ = mapsManager.getMaps(version);
+
+        loadMapsObs$.pipe(map(progess => {
+            console.log(progess);
+            return Math.floor(((progess.loaded / progess.total) * 100));
+        })).subscribe(percent => loadPercent$.next(percent));
+
+        subs.push(loadMapsObs$.pipe(
+            last(),
+            mergeMap(async progress => {
+                if(os.isOffline){ return progress.maps; }
+                const maps = progress.maps;
+                const details = await bsaver.getMapDetailsFromHashs(maps.map(map => map.hash));
+                return maps.map(map => {
+                    map.bsaverInfo = details.find(d => d.versions.at(0).hash === map.hash);
+                    return map;
+                })
+            })
+        ).subscribe({
+            next: maps => setMaps(() => maps),
+            complete: () => loadPercent$.next(0)
+        }));
     }
 
+    const removeMapsFromList = (mapsToRemove: BsmLocalMap[]) => {
+        const filtredMaps = maps.filter(map => !mapsToRemove.some(toDeleteMaps => map.hash === toDeleteMaps.hash));
+        setMaps(() => filtredMaps);
+    };
+
+    const handleDelete = useCallback((map: BsmLocalMap) => {
+        mapsManager.deleteMaps([map], version).then(res => res && removeMapsFromList([map]));
+    }, [version, maps]);
+
     const onMapSelected = useCallback((map: BsmLocalMap) => {
-        const maps = [...selectedMaps];
-        if(maps.some(selectedMap => selectedMap.hash === map.hash)){
-            const i = maps.findIndex(selectedMap => selectedMap.hash === map.hash);
-            maps.splice(i, 1);
+
+        const mapsCopy = [...selectedMaps$.value];
+        if(mapsCopy.some(selectedMap => selectedMap.hash === map.hash)){
+            const i = mapsCopy.findIndex(selectedMap => selectedMap.hash === map.hash);
+            mapsCopy.splice(i, 1);
         }
         else{
-            maps.push(map);
+            mapsCopy.push(map);
         }
-        setSelectedMaps(() => maps);
-    }, [selectedMaps]);
+
+        selectedMaps$.next(mapsCopy);
+
+    }, [selectedMaps$.value]);
 
     const isMapFitFilter = (map: BsmLocalMap): boolean => {
 
@@ -216,53 +277,59 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
 
     }
 
-    const renderMaps = (): JSX.Element[] => {
-        return maps.reduce((acc, current) => {
-            if(isMapFitFilter(current)){
-                acc.push(renderMapItem(current));
+
+    const preppedMaps: BsmLocalMap[][] = (() => {
+
+        if(!maps){ return []; }
+
+        const res: BsmLocalMap[][] = [];
+        let mapsRow: BsmLocalMap[] = []
+
+        for(const map of maps){
+            if(!isMapFitFilter(map)){ continue; }
+            if(mapsRow.length === itemPerRow){
+                res.push(mapsRow);
+                mapsRow = [];
             }
-            return acc
-        }, []);
+            mapsRow.push(map);
+        }
+
+        if(mapsRow.length){
+            res.push(mapsRow);
+        }
+
+        return res;
+    })();
+
+    if(!maps){
+        return (
+            <div ref={ref} className={className}>
+                <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1">
+                    <BsmImage className="w-32 h-32 spin-loading" image={BeatWaitingImg}/>
+                    <span className="font-bold">{t("modals.download-maps.loading-maps")}</span>
+                    <TextProgressBar value$={loadPercent$}/>
+                </div>
+            </div>
+        );
     }
 
-    const renderMapItem = (map: BsmLocalMap) => {
-        
-        return <MapItem
-            key={map.hash}
-            hash={map.hash}
-            title={map.rawInfo._songName}
-            coverUrl={map.coverUrl}
-            songUrl={map.songUrl}
-            autor={map.rawInfo._levelAuthorName}
-            songAutor={map.rawInfo._songAuthorName}
-            bpm={map.rawInfo._beatsPerMinute}
-            duration={map.bsaverInfo?.metadata?.duration}
-            selected={selectedMaps.some(_map => _map.hash === map.hash)}
-            diffs={extractMapDiffs(map)} mapId={map.bsaverInfo?.id} ranked={map.bsaverInfo?.ranked} autorId={map.bsaverInfo?.uploader?.id} likes={map.bsaverInfo?.stats?.upvotes} createdAt={map.bsaverInfo?.createdAt}
-            onDelete={handleDelete}
-            onSelected={onMapSelected}
-            callBackParam={map}
-        />;
+    if(!maps.length){
+        return (
+            <div ref={ref} className={className}>
+                <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1">
+                    <BsmImage className="h-32" image={BeatConflict}/>
+                    <span className="font-bold">{t("pages.version-viewer.maps.tabs.maps.empty-maps.text")}</span>
+                    <BsmButton className="font-bold rounded-md p-2" text="pages.version-viewer.maps.tabs.maps.empty-maps.button" typeColor="primary" withBar={false} onClick={e => {e.preventDefault(); mapsDownloader.openDownloadMapModal(version)}}/>
+                </div>
+            </div>
+        );
     }
-
+    
     return (
         <div ref={ref} className={className}>
-            <ul className="p-3 w-full grow flex flex-wrap justify-center content-start gap-2 overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900">
-                {maps?.length ? renderMaps() : (
-                    maps === null ? (
-                        <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1">
-                            <img className="w-32 h-32 spin-loading" src={BeatWaitingImg} alt=" "/>
-                            <span className="font-bold">{t("modals.download-maps.loading-maps")}</span>
-                        </div>
-                    ) : (
-                        <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1">
-                            <BsmImage className="h-32" image={BeatConflict}/>
-                            <span className="font-bold">{t("pages.version-viewer.maps.tabs.maps.empty-maps.text")}</span>
-                            <BsmButton className="font-bold rounded-md p-2" text="pages.version-viewer.maps.tabs.maps.empty-maps.button" typeColor="primary" withBar={false} onClick={e => {e.preventDefault(); mapsDownloader.openDownloadMapModal(version)}}/>
-                        </div>
-                    ) 
-                )}
-            </ul>
+            <VariableSizeList className="p-0 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900" width={"100%"} height={listHeight} itemSize={() => 108} itemCount={preppedMaps.length} itemData={preppedMaps} layout="vertical" style={{scrollbarGutter: "stable both-edges"}} itemKey={(i, data) => data[i].map(map => map.hash).join()}>
+                {(props) => <MapsRow maps={props.data[props.index]} style={props.style} selectedMaps$={selectedMaps$} onMapSelect={onMapSelected} onMapDelete={handleDelete}/>}
+            </VariableSizeList>
         </div>
     )
 })

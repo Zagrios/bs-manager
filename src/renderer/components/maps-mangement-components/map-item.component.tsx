@@ -148,7 +148,7 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
     }
     
     return (
-        <motion.li className="relative h-[100px] min-w-[370px] shrink-0 grow basis-0 text-white group cursor-pointer" onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)} style={{zIndex: hovered && 5, transform: "translateZ(0) scale(1.0, 1.0)", backfaceVisibility: "hidden"}}>
+        <motion.li className="relative h-[100px] w-[400px] min-w-[370px] shrink-0 grow basis-0 text-white group cursor-pointer" onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)} style={{zIndex: hovered && 5, transform: "translateZ(0) scale(1.0, 1.0)", backfaceVisibility: "hidden"}}>
             <GlowEffect visible={hovered || selected && !!onSelected}/>
             <AnimatePresence>
                 {(diffsPanelHovered || bottomBarHovered) && (
@@ -236,8 +236,4 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
             </div>
         </motion.li>
     )
-}, areEqual)
-
-function areEqual(prevProps: MapItemProps, nextProps: MapItemProps): boolean {
-    return equal(prevProps, nextProps);
-}
+}, equal);
