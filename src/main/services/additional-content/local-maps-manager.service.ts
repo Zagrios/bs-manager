@@ -280,10 +280,6 @@ export class LocalMapsManagerService {
 
         const downloadedMap = await this.downloadMap(map);
 
-        const sharedMapsPath = await this.getMapsFolderPath();
-
-        copySync(downloadedMap.path, path.join(sharedMapsPath, path.basename(downloadedMap.path)), {overwrite: true});
-
         const versions = await this.localVersion.getInstalledVersions();
 
         for(const version of versions){
