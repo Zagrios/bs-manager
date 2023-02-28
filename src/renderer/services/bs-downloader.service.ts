@@ -1,4 +1,4 @@
-import { DownloadEvent } from 'main/services/bs-installer.service';
+import { DownloadEvent, DownloadInfo } from 'main/services/bs-installer.service';
 import { BehaviorSubject } from 'rxjs';
 import { distinctUntilChanged, filter, throttleTime } from 'rxjs/operators';
 import { IpcResponse } from 'shared/models/ipc';
@@ -71,10 +71,15 @@ export class BsDownloaderService{
          this.ipcService.sendLazy('bs-download.[2FA]', {args: res.data});
       });
 
+      this.ipcService.watch<BSVersion>("start-download-version").subscribe(res => {
+        this.currentBsVersionDownload$.next(res.data);
+      });
+
       this.currentBsVersionDownload$.subscribe(version => {
          if(version){ this.bsVersionManager.setInstalledVersions([...this.bsVersionManager.installedVersions$.value, version]); }
          else{ this.bsVersionManager.askInstalledVersions(); }
       });
+      
     }
 
     private resetDownload(): void{
@@ -111,7 +116,7 @@ export class BsDownloaderService{
       }
 
       this.progressBarService.show(this.downloadProgress$);
-      this._isVerification = !!isVerification;
+      this._isVerification = isVerification;
 
       let promise;
       if(!this.authService.sessionExist()){
@@ -121,13 +126,11 @@ export class BsDownloaderService{
             return {success: false}; 
         }
          this.authService.setSteamSession(res.data.username, res.data.stay);
-         promise = this.ipcService.send<DownloadEvent>('bs-download.start', {args: {bsVersion, username: res.data.username, password: res.data.password, stay: res.data.stay}});
+         promise = this.ipcService.send<DownloadEvent, DownloadInfo>('bs-download.start', {args: {bsVersion, username: res.data.username, password: res.data.password, stay: res.data.stay, isVerification}});
       }
       else{
-         promise = this.ipcService.send<DownloadEvent>('bs-download.start', {args: {bsVersion, username: this.authService.getSteamUsername()}});
+         promise = this.ipcService.send<DownloadEvent, DownloadInfo>('bs-download.start', {args: {bsVersion, username: this.authService.getSteamUsername(), isVerification}});
       }
-
-      this.currentBsVersionDownload$.next(bsVersion);
 
       let res = await promise;
         
@@ -145,12 +148,13 @@ export class BsDownloaderService{
    }
 
    public get isDownloading(): boolean{ return !!this.currentBsVersionDownload$.value; }
-   public get isVerification(): boolean{ return this._isVerification; }
 
    public async getInstallationFolder(): Promise<string>{
       const res = await this.ipcService.send<string>("bs-download.installation-folder");
       return res.success ? res.data : "";
    }
+
+   public get isVerification(): boolean{ return this._isVerification; }
 
    public setInstallationFolder(path: string): Promise<IpcResponse<string>>{
       return this.ipcService.send<string>("bs-download.set-installation-folder", {args: path});

@@ -31,7 +31,7 @@ export function AvailableVersionsList() {
 
     const startDownload = () => {
         setDownloading(() => true)
-        bsDownloaderService.download(versionSelected, versionManagerService.isVersionInstalled(versionSelected)).finally(() => {
+        bsDownloaderService.download(versionSelected).finally(() => {
             setDownloading(() => false);
         });
     }
@@ -91,7 +91,7 @@ export function AvailableVersionsList() {
         <AnimatePresence>
             { versionSelected && !downloading && (
                 <motion.div initial={{y:"150%"}} animate={{y:"0%"}} exit={{y:"150%"}} className="absolute bottom-5" onClick={startDownload}>
-                    <BsmButton text={versionManagerService.isVersionInstalled(versionSelected) ? "misc.verify" : "misc.download"} className="relative text-gray-800 dark:text-gray-100 rounded-md text-3xl font-bold italic tracking-wide px-3 pb-2 pt-1 shadow-md shadow-black"/>
+                    <BsmButton text="misc.download" className="relative text-gray-800 dark:text-gray-100 rounded-md text-3xl font-bold italic tracking-wide px-3 pb-2 pt-1 shadow-md shadow-black"/>
                 </motion.div>
             )}
         </AnimatePresence>

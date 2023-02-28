@@ -28,7 +28,7 @@ export class BSInstallerService{
     this.localVersionService = BSLocalVersionService.getInstance();
     this.windows = WindowManagerService.getInstance();
 
-    this.windows.getWindows("index.html")?.on("close", () => {
+    this.windows.getWindow("index.html")?.on("close", () => {
         this.killDownloadProcess();
     });
   }
@@ -86,6 +86,13 @@ export class BSInstallerService{
     if(!(await isOnline({timeout: 1500}))){ throw "no-internet"; }
 
     this.utils.createFolderIfNotExist(this.installLocationService.versionsDirectory);
+
+    const versionPath = await this.localVersionService.getVersionPath(bsVersion)
+
+    const dest = !downloadInfos.isVerification ? this.getPathNotAleardyExist(versionPath) : versionPath;
+
+    const downloadVersion: BSVersion = {...downloadInfos.bsVersion, ...(path.basename(dest) !== downloadInfos.bsVersion.BSVersion && {name: path.basename(dest)})}
+
     this.downloadProcess = spawn(
       this.getDepotDownloaderExePath(),
       [
@@ -93,11 +100,13 @@ export class BSInstallerService{
         `-depot ${BS_DEPOT}`,
         `-manifest ${bsVersion.BSManifest}`,
         `-username ${downloadInfos.username}`,
-        `-dir \"${this.localVersionService.getVersionFolder(bsVersion)}\"`,
+        `-dir \"${this.localVersionService.getVersionFolder(downloadVersion)}\"`,
         (downloadInfos.stay || !downloadInfos.password) && "-remember-password"
       ],
       {shell: true, cwd: this.installLocationService.versionsDirectory}
     );
+
+    this.utils.ipcSend("start-download-version", {success: true, data: downloadVersion});
 
     return new Promise((resolve, reject) => {
 
@@ -160,22 +169,27 @@ export class BSInstallerService{
     })
   }
 
+    private getPathNotAleardyExist(path: string): string{
+        let destPath = path;
+        let folderExist = this.utils.pathExist(destPath);
+        let i = 0;
+
+        while(folderExist){
+            i++;
+            destPath = `${path} (${i})`;
+            folderExist = this.utils.pathExist(destPath);
+        }
+
+        return destPath
+    }
+
     public async importVersion(path: string): Promise<PartialBSVersion>{
         
         const rawBsVersion = await this.localVersionService.getVersionOfBSFolder(path);
 
         if(!rawBsVersion){ throw new Error("NOT_BS_FOLDER"); }
 
-        const originalPath = await this.localVersionService.getVersionPath(rawBsVersion);
-        let destPath = originalPath;
-        let folderExist = this.utils.pathExist(destPath);
-        let i = 0;
-
-        while(folderExist){
-            i++;
-            destPath = `${originalPath} (${i})`;
-            folderExist = this.utils.pathExist(destPath);
-        }
+        const destPath = this.getPathNotAleardyExist(await this.localVersionService.getVersionPath(rawBsVersion));
 
         await copy(path, destPath, {dereference: true});
 
@@ -192,12 +206,13 @@ export interface DownloadInfo {
   bsVersion: BSVersion,
   username: string,
   password?: string,
-  stay?: boolean
+  stay?: boolean,
+  isVerification: boolean
 }
 
 export interface DownloadEvent{
   type: DownloadEventType,
-  data?: unknown,
+  data?: unknown
 }
 
 export type DownloadEventType = "[Password]" | "[Guard]" | "[2FA]" | "[Progress]" | "[Validated]" | "[Finished]" | "[AlreadyDownloading]" | "[Error]" | "[Warning]" | "[SteamID]" | "[Exit]" | "[NoInternet]";

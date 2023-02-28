@@ -1,15 +1,16 @@
-import { Channels, ReplyChannels } from 'main/preload';
+import { IpcChannel } from "shared/models/ipc/ipc-response.interface";
 
 declare global {
   interface Window {
     electron: {
       ipcRenderer: {
-        sendMessage(channel: Channels, args: any): void;
+        sendMessage(channel: IpcChannel, args: any): void;
         on(
-          channel: ReplyChannels,
+          channel: IpcChannel,
           func: (...args: any) => void
         ): (() => void) | undefined;
-        once(channel: ReplyChannels, func: (...args: any) => void): void;
+        once(channel: IpcChannel, func: (...args: any) => void): void;
+        removeAllListeners(channel: IpcChannel): void;
       };
     };
   }
