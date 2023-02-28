@@ -38,8 +38,12 @@ export class BSInstallerService{
     return BSInstallerService.instance;
   }
 
+    private escapeSpaces(path: string): string{
+        return `\"${path}\"`
+    }
+
     private getDepotDownloaderExePath(): string{
-        return path.join(this.utils.getAssetsScriptsPath(), 'depot-downloader', 'DepotDownloader.exe');
+        return this.escapeSpaces(path.join(this.utils.getAssetsScriptsPath(), 'depot-downloader', 'DepotDownloader.exe'));
     }
 
     private removeSpecialSchar(txt: string): string{ return txt.replaceAll(/\[|\]/g, ""); }
@@ -68,7 +72,7 @@ export class BSInstallerService{
 
     public async isDotNet6Installed(): Promise<boolean>{
         try{
-            const process = spawnSync(this.getDepotDownloaderExePath());
+            const process = spawnSync(this.getDepotDownloaderExePath(), {shell: true});
             const out = process.output.toString();
             if(out.includes(".NET runtime can be found at")){ return false; }
             return true;
