@@ -52,7 +52,7 @@ export function BsmButton({className, style, imgClassName, iconClassName, icon, 
         return "";
     })();
 
-    const handleClick = (e: MouseEvent) => !disabled && onClick(e);
+    const handleClick = (e: MouseEvent) => !disabled && onClick?.(e);
 
     return (
         <div ref={ref} onClick={handleClick} title={t(title)} className={`${className} overflow-hidden cursor-pointer group ${(!withBar && !disabled && (!!typeColor || !!color)) && "hover:brightness-[1.15]"} ${disabled && "brightness-75 cursor-not-allowed"} ${renderTypeColor}`} style={{...style, backgroundColor: primaryColor || color}}>
