@@ -115,8 +115,6 @@ export class MapsManagerService {
 
         const progress$ = this.ipcService.sendV2<DeleteMapsProgress>("delete-maps", {args: maps}).pipe(map(progress => (progress.deleted / progress.total) * 100));
 
-        progress$.subscribe(console.log);
-
         showProgressBar && this.progressBar.show(progress$, true);
 
         progress$.toPromise().finally(() => this.progressBar.hide(true));

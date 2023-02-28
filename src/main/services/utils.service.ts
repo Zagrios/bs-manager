@@ -9,6 +9,7 @@ import { IpcResponse } from "shared/models/ipc";
 import log from "electron-log";
 import { AppWindow } from "shared/models/window-manager/app-window.model";
 
+
 // TODO : REFACTOR
 
 export class UtilsService{
@@ -64,8 +65,8 @@ export class UtilsService{
   }
 
   public readFileAsync(path: string){
-    return new Promise<Buffer>((resolve, reject) => {
-      readFile(path, (err, data) => {
+    return new Promise<string>((resolve, reject) => {
+      readFile(path, {encoding: "utf-8", flag: "r"}, (err, data) => {
           if(err){ reject(err); }
           else{ resolve(data); }
       });
@@ -73,9 +74,12 @@ export class UtilsService{
   }
 
   public listDirsInDir(dirPath: string, fullPath = false): string[]{
-    let files = readdirSync(dirPath, { withFileTypes:true});
-    files = files.filter(f => f.isDirectory())
-    return files.map(f => fullPath ? path.join(dirPath, f.name) : f.name);
+    let files = readdirSync(dirPath, { withFileTypes:true });
+    return files.reduce((acc, f) => {
+        if(!f.isDirectory()){ return acc; }
+        acc.push(fullPath ? path.join(dirPath, f.name) : f.name);
+        return acc;
+    }, []);
   }
 
   public async deleteFolder(folderPath: string): Promise<void>{

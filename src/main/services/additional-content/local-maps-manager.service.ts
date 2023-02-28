@@ -6,19 +6,17 @@ import { BSLocalVersionService } from "../bs-local-version.service";
 import { InstallationLocationService } from "../installation-location.service";
 import { UtilsService } from "../utils.service";
 import crypto from "crypto";
-import { lstatSync, symlinkSync, unlinkSync, readdirSync, createWriteStream } from "fs";
+import { lstatSync, symlinkSync, unlinkSync } from "fs";
 import { copy, copySync } from "fs-extra";
 import StreamZip from "node-stream-zip";
 import { RequestService } from "../request.service";
 import sanitize from "sanitize-filename";
-import archiver from "archiver";
 import { DeepLinkService } from "../deep-link.service";
 import log from 'electron-log';
 import { WindowManagerService } from "../window-manager.service";
 import { ipcMain } from "electron";
 import { IpcRequest } from 'shared/models/ipc';
 import { Observable } from "rxjs";
-import { defer } from "rxjs";
 import { Archive } from "../../models/archive.class";
 
 export class LocalMapsManagerService {
@@ -53,12 +51,12 @@ export class LocalMapsManagerService {
         this.deepLink = DeepLinkService.getInstance();
         this.windows = WindowManagerService.getInstance();
 
-        this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.BeatSaver, (link) => {
+        this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.BeatSaver, link => {
             log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.BeatSaver, link);
             this.openOneClickDownloadMapWindow(new URL(link).host);
         });
 
-        this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.ScoreSaber, (link) => {
+        this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.ScoreSaber, link => {
             log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.ScoreSaber, link);
             this.openOneClickDownloadMapWindow(new URL(link).host, true);
         });
@@ -76,18 +74,16 @@ export class LocalMapsManagerService {
 
     private async computeMapHash(mapPath: string, rawInfoString: string): Promise<string>{
         const mapRawInfo = JSON.parse(rawInfoString);
-        let content = rawInfoString;
+        const shasum = crypto.createHash("sha1");
+        shasum.update(rawInfoString);
         for(const set of mapRawInfo._difficultyBeatmapSets){
             for(const diff of set._difficultyBeatmaps){
                 const diffFilePath = path.join(mapPath, diff._beatmapFilename);
-                if(!await this.utils.pathExist(diffFilePath)){ continue; }
-                const diffContent = (await this.utils.readFileAsync(diffFilePath)).toString();
-                content += diffContent;
+                const diffContent = await this.utils.readFileAsync(diffFilePath).catch(() => null);
+                diffContent && shasum.update(diffContent);
             }
         }
-
-        const shasum = crypto.createHash("sha1");
-        shasum.update(content);
+        
         return shasum.digest("hex");
     }
 
@@ -96,7 +92,7 @@ export class LocalMapsManagerService {
 
         if(!(await this.utils.pathExist(infoFilePath))){ return null; }
 
-        const rawInfoString = await (await (this.utils.readFileAsync(infoFilePath))).toString();
+        const rawInfoString = await this.utils.readFileAsync(infoFilePath);
 
         const rawInfo: RawMapInfoData = JSON.parse(rawInfoString);
         const coverUrl = new URL(`file:///${path.join(mapPath, rawInfo._coverImageFilename)}`).href;
@@ -139,24 +135,30 @@ export class LocalMapsManagerService {
 
         return new Observable<BsmLocalMapsProgress>(observer => {
             (async () => {
+                console.time()
+
                 const levelsFolder = await this.getMapsFolderPath(version);
 
                 const levelsPaths = (await this.utils.pathExist(levelsFolder)) ? this.utils.listDirsInDir(levelsFolder, true) : [];
 
                 progression.total = levelsPaths.length;
 
-                for(const levelPath of levelsPaths){
+                const promises = levelsPaths.map(async levelPath => {
                     const mapInfo = await this.loadMapInfoFromPath(levelPath);
-                    if(mapInfo){
-                        progression.maps.push(mapInfo);
-                        progression.loaded = progression.maps.length;
-                        observer.next({...progression, maps: []});
-                    }
-                }
+                    if(!mapInfo){ return null; }
+                    progression.loaded++;
+                    observer.next(progression);
+                    return mapInfo;
+                });
+
+                const mapsInfo = (await Promise.all(promises)).filter(info => info);
+                progression.maps = mapsInfo;
 
                 observer.next(progression);
 
                 observer.complete();
+
+                console.timeEnd();
             })();
         });
     }
@@ -222,7 +224,6 @@ export class LocalMapsManagerService {
                         observer.next(progress);
                     }
                 }catch(e){
-                    console.log(e);
                     observer.error(e);
                 }
                 observer.complete();

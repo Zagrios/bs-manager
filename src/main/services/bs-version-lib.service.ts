@@ -35,7 +35,7 @@ export class BSVersionLibService{
 
    private async getLocalVersions(): Promise<BSVersion[]>{
       const localVersionsPath = path.join(this.utilsService.getAssestsJsonsPath(), this.VERSIONS_FILE);
-      const rawVersion = (await this.utilsService.readFileAsync(localVersionsPath)).toString();
+      const rawVersion = await this.utilsService.readFileAsync(localVersionsPath);
       return JSON.parse(rawVersion);
    }
 

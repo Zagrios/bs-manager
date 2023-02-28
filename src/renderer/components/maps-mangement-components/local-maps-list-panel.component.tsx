@@ -117,7 +117,6 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
         const loadMapsObs$ = mapsManager.getMaps(version);
 
         loadMapsObs$.pipe(map(progess => {
-            console.log(progess);
             return Math.floor(((progess.loaded / progess.total) * 100));
         })).subscribe(percent => loadPercent$.next(percent));
 

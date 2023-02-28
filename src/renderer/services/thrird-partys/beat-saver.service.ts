@@ -17,8 +17,8 @@ export class BeatSaverService {
     }
 
     public async getMapDetailsFromHashs(hashs: string[]): Promise<BsvMapDetail[]>{
-        const res = await this.ipc.send<BsvMapDetail[], string[]>("bsv-get-map-details-from-hashs", {args: hashs});
-        return res.data ?? [];
+        //const res = await this.ipc.send<BsvMapDetail[], string[]>("bsv-get-map-details-from-hashs", {args: hashs});
+        return [];
     }
 
 

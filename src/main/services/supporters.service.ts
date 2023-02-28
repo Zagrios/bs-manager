@@ -43,7 +43,7 @@ export class SupportersService {
 
     private async getLocalSupporters(): Promise<Supporter[]>{
         const patreonsPath = path.join(this.utilsService.getAssestsJsonsPath(), this.PATREONS_FILE);
-        const rawPatreons = (await this.utilsService.readFileAsync(patreonsPath)).toString();
+        const rawPatreons = await this.utilsService.readFileAsync(patreonsPath);
         return JSON.parse(rawPatreons);
     }
 
