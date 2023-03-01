@@ -44,12 +44,21 @@ export class BSLauncherService{
 
         if(!this.utilsService.pathExist(exePath)){ return "EXE_NOT_FINDED"; }
         
-        const launchMods = [launchOptions.oculus && "-vrmode oculus", launchOptions.desktop && "fpfc", launchOptions.debug && "--verbose"];
+        const launchMods = [];
 
-        this.bsProcess = spawn(`\"${exePath}\"`, launchMods, {shell: true, cwd, env: {...process.env, "SteamAppId": BS_APP_ID}});
+        if(launchOptions.oculus){ launchMods.push("-vrmode oculus"); }
+        if(launchOptions.desktop){ launchMods.push("fpfc"); }
+        if(launchOptions.debug){ launchMods.push("--verbose"); }
 
-        this.bsProcess.on('message', msg => { /** EMIT HERE **/ });
-        this.bsProcess.on('error', err => { /** EMIT HERE **/ });
+        if(launchOptions.debug){
+            this.bsProcess = spawn(`\"${exePath}\"`, launchMods, {shell: true, cwd, env: {...process.env, "SteamAppId": BS_APP_ID}, detached: true, windowsVerbatimArguments: true });
+        }
+        else{
+            this.bsProcess = spawn(`\"${exePath}\"`, launchMods, {shell: true, cwd, env: {...process.env, "SteamAppId": BS_APP_ID} });
+        }
+
+        this.bsProcess.on('message', msg => console.log(msg));
+        this.bsProcess.on('error', err => console.log(err));
         this.bsProcess.on('exit', code => this.utilsService.ipcSend("bs-launch.exit", {data: code, success: code === 0}));
 
         return "LAUNCHED";
