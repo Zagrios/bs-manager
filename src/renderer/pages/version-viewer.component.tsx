@@ -29,7 +29,6 @@ export function VersionViewer() {
     const [currentTabIndex, setCurrentTabIndex] = useState(0);
 
     const navigateToVersion = (version?: BSVersion) => {
-        console.log(version);
         if(!version){
             return navigate("/available-versions");
         }

@@ -51,7 +51,6 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange,
             firstRun.current = false;
             return; 
         }
-        console.log(filter, firstFilter);
         setHaveChanged(() => !equal(filter, firstFilter));
     }, [filter])
     

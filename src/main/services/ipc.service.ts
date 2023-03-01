@@ -47,7 +47,6 @@ export class IpcService {
         observable.subscribe(data => {
             this.send(channel, window, data);
         }, error => {
-            console.log("LAAAA 2", error);
             this.send(this.getErrorChannel(channel), window, error);
         }, () => {
             this.send(this.getCompleteChannel(channel), window);
