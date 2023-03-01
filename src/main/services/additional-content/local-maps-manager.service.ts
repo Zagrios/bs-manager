@@ -135,8 +135,6 @@ export class LocalMapsManagerService {
 
         return new Observable<BsmLocalMapsProgress>(observer => {
             (async () => {
-                console.time()
-
                 const levelsFolder = await this.getMapsFolderPath(version);
 
                 const levelsPaths = (await this.utils.pathExist(levelsFolder)) ? this.utils.listDirsInDir(levelsFolder, true) : [];
@@ -151,14 +149,18 @@ export class LocalMapsManagerService {
                     return mapInfo;
                 });
 
-                const mapsInfo = (await Promise.all(promises)).filter(info => info);
+                const mapsInfo = (await Promise.allSettled(promises)).reduce((acc, mapInfo) => {
+                    if(mapInfo.status === "fulfilled" && mapInfo.value){
+                        acc.push(mapInfo.value);
+                    }
+                    return acc;
+                } ,[] as BsmLocalMap[]);
+
                 progression.maps = mapsInfo;
 
                 observer.next(progression);
 
                 observer.complete();
-
-                console.timeEnd();
             })();
         });
     }

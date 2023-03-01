@@ -3,6 +3,7 @@ import { UtilsService } from "../services/utils.service";
 import { IpcRequest } from "shared/models/ipc";
 import { SearchParams } from "shared/models/maps/beat-saver.model";
 import { BeatSaverService } from "../services/thrid-party/beat-saver/beat-saver.service";
+import log from "electron-log";
 
 ipcMain.on("bsv-search-map", async (event, request: IpcRequest<SearchParams>) => {
     const utlis = UtilsService.getInstance();
@@ -22,6 +23,7 @@ ipcMain.on("bsv-get-map-details-from-hashs", async (event, request: IpcRequest<s
     bsvService.getMapDetailsFromHashs(request.args).then(maps => {
         utlis.ipcSend(request.responceChannel, {success: true, data: maps});
     }).catch(e => {
+        log.error(e);
         utlis.ipcSend(request.responceChannel, {success: false, error: e});
     })
 });

@@ -32,7 +32,7 @@ export class BeatSaverService {
             return res;
         }, [] as BsvMapDetail[]);
 
-        await Promise.all(chunkHash.map(async hashs => {
+        await Promise.allSettled(chunkHash.map(async hashs => {
             const res = await this.bsaverApi.getMapsDetailsByHashs(hashs);
 
             if(res.status === 200){
