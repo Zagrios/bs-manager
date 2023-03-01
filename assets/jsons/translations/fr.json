@@ -446,9 +446,15 @@
                     "label": "Rester connecté"
                 }
             },
+            "why-credentials": "Pourquoi mes identifiants sont nécessaires ?",
             "buttons": {
                 "submit": "Se connecter"
             }
+        },
+        "steam-credentials":{
+            "title": "Steam Credentials",
+            "p-1": "Les informations d'identification ne sont utilisées que pour télécharger le jeu, car Steam doit vérifier que vous avez payé le jeu afin d'être autorisé à le télécharger. Ils ne sont pas sauvegardés et transmis directement à DepotDownloader. Si vous ne voulez pas entrer vos informations d'identification, vous pouvez suivre ce tutoriel :",
+            "p-2": "puis cliquez sur l'icône de l'engrenage dans le coin supérieur droit et sélectionnez \"Importer une version\", sélectionnez le dossier où beat saber a été téléchargé (Si vous suivez le tutoriel ci-dessus, vous devriez avoir le bon emplacement)."
         },
         "bs-import-version":{
             "title": "Importer une version",

@@ -446,9 +446,15 @@
                     "label": "Manténgase conectado"
                 }
             },
+            "why-credentials": "¿Por qué necesitas mis credenciales?",
             "buttons": {
                 "submit": "Inicio de sesión"
             }
+        },
+        "steam-credentials":{
+            "title": "Steam Credentials",
+            "p-1": "Las credenciales sólo se utilizan para descargar el juego porque steam necesita verificar que has pagado el juego para que se te permita descargarlo. No se guardan y se pasan directamente a DepotDownloader. Si no quieres introducir tus credenciales puedes seguir este tutorial :",
+            "p-2": "y, a continuación, haga clic en el icono de engranaje en la esquina superior derecha y seleccione \"Importar una versión\", seleccione la carpeta donde se ha descargado beat saber (Si usted sigue el tutorial anterior debe tener la ubicación correcta)"
         },
         "bs-import-version":{
             "title": "Importar una versión",
