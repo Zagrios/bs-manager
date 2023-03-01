@@ -93,7 +93,12 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
         return diffLabel;
     }
 
-    const openPreview = () => linkOpener.open(previewUrl, true);
+    const openPreview = () => {
+        if(audioPlayer.playing){
+            audioPlayer.pause();
+        }
+        linkOpener.open(previewUrl, true);
+    }
     const copyBsr = () => navigator.clipboard.writeText(`!bsr ${mapId}`);
     const toogleMusic = () => {
         if(songPlaying){
