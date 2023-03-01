@@ -20,16 +20,14 @@ export function LaunchSlide({version}: Props) {
     const launchState = useObservable(bsLauncherService.launchState$);
 
     const setMode = (mode: LaunchMods, value: boolean) => {
-        if(mode === LaunchMods.DEBUG_MOD){ setDebugMode(value); }
+        if(mode === LaunchMods.DEBUG_MOD){ 
+            setDebugMode(value); 
+        }
         else if(mode === LaunchMods.OCULUS_MOD){ 
-            setOculusMode(value); 
-            setDesktopMode(false);
-            configService.set(LaunchMods.DESKTOP_MOD, false);
+            setOculusMode(value);
         }
         else if(mode === LaunchMods.DESKTOP_MOD){ 
-            setDesktopMode(value); 
-            setOculusMode(false);
-            configService.set(LaunchMods.OCULUS_MOD, false);
+            setDesktopMode(value);
         }
         configService.set(mode, value);
     }
