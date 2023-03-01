@@ -18,6 +18,9 @@
         "settings": "Paramètres"
     },
     "pages": {
+        "shared-maps":{
+            "title": "Maps partagées"
+        },
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Mode Oculus",

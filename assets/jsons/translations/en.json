@@ -18,6 +18,9 @@
         "settings": "Settings"
     },
     "pages": {
+        "shared-maps":{
+            "title": "Shared maps"
+        },
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Oculus Mod",
@@ -28,6 +31,7 @@
                 "debug-description": "Enables the output log window for IPA. This will show the debug console that mods use."
             },
             "maps": {
+                "title": "Shared maps",
                 "search-bar": {
                     "search-placeholder": "Search a map",
                     "filters-btn": "Filters",
