@@ -12,7 +12,7 @@ export const LoginModal: ModalComponent<{username: string, password: string, sta
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [stay, setStay] = useState(true);
+    const [stay, setStay] = useState(false);
     const t = useTranslation();
 
     const loggin = () => {
