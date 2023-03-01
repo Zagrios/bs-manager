@@ -69,16 +69,14 @@ export function ModsGrid({modsMap, installed, modsSelected, onModChange, moreInf
                     ]}/>
             </span>
             
-            {
-                Array.from(modsMap.keys()).map(key => modsMap.get(key).some(mod => mod.name.toLowerCase().includes(filter)) && (
+                {Array.from(modsMap.keys()).map(key => modsMap.get(key).some(mod => mod.name.toLowerCase().includes(filter)) && (
                     <ul key={key} className="contents">
                         <h2 className="col-span-full py-1 font-bold pl-3">{key}</h2>
                         {modsMap.get(key).map(mod => mod.name.toLowerCase().includes(filter) && (
                             <ModItem key={mod.name} className="contents bg-light-main-color-3 dark:bg-main-color-1 text-main-color-1 dark:text-light-main-color-1 hover:cursor-pointer" mod={mod} installedVersion={installedModVersion(key, mod)} isDependency={isDependency(mod)} isSelected={isSelected(mod)} onChange={(val) => onModChange(val, mod)} onWantInfo={onWantInfos} wantInfo={mod.name === moreInfoMod?.name}/>
                         ))}
                     </ul>
-                ))
-            }
+                ))}
         </div>
     )
 }
