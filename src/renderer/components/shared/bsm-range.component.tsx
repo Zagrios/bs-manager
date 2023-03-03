@@ -11,9 +11,10 @@ type Props = {
     max: number,
     step?: number,
     renderLabel?: (value: number) => JSX.Element,
+    colors?: string[]
 }
 
-export function BsmRange({colorType = "first-color", values, onChange, onFinalChange, min, max, renderLabel, step = 1} : Props) {
+export function BsmRange({colorType = "first-color", values, onChange, onFinalChange, min, max, renderLabel, step = 1, colors} : Props) {
 
     const color = useThemeColor(colorType);
     const labelTextColor = getCorrectTextColor(color);
@@ -36,7 +37,7 @@ export function BsmRange({colorType = "first-color", values, onChange, onFinalCh
                     ...props.style,
                     background: getTrackBackground({
                         values: values,
-                        colors: ["#ccc", color, "#ccc"],
+                        colors:  colors ?? ["#ccc", color, "#ccc"],
                         min: min,
                         max: max
                     }),
