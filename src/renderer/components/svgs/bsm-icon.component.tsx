@@ -48,11 +48,14 @@ import { TwitterIcon } from "./icons/twitter-icon.component";
 import { Mee6Icon } from "./icons/mee6-icon.component";
 import { InfoIcon } from "./icons/info-icon.component";
 import { SyncIcon } from "./icons/sync-icon.component";
+import { VolumeUpIcon } from "./icons/volume-up-icon.component";
+import { VolumeOffIcon } from "./icons/volume-off-icon.component";
+import { VolumeDownIcon } from "./icons/volume-down-icon.component";
 
 export type BsmIconType = BsvMapCharacteristic | (
    "settings"|"trash"|"favorite"|"folder"|"bsNote"|"check"|"three-dots"|"twitch"|"eye"|"play"|"checkCircleIcon"|"discord"|"info"|
    "terminal"|"desktop"|"oculus"|"add"|"cross"|"task"|"github"|"close"|"thumbUpFill"|"timerFill"|"pause"|"twitter"|"sync"|
-   "copy"|"steam"|"edit"|"export"|"patreon"|"search"|"bsMapDifficulty"|"link"|"unlink"|"download"|"filter"|"mee6"|
+   "copy"|"steam"|"edit"|"export"|"patreon"|"search"|"bsMapDifficulty"|"link"|"unlink"|"download"|"filter"|"mee6"|"volume-up"|"volume-off"|"volume-down"|
    "fr-FR-flag"|"es-ES-flag"|"en-US-flag"|"en-EN-flag"
 );
 
@@ -107,6 +110,9 @@ export const BsmIcon = memo(({className, icon, style}: {className?: string, icon
         if(icon === "mee6"){ return <Mee6Icon className={className} style={style}/> }
         if(icon === "info"){ return <InfoIcon className={className} style={style}/> }
         if(icon === "sync"){ return <SyncIcon className={className} style={style}/> }
+        if(icon === "volume-up"){ return <VolumeUpIcon className={className} style={style}/> }
+        if(icon === "volume-down"){ return <VolumeDownIcon className={className} style={style}/> }
+        if(icon === "volume-off"){ return <VolumeOffIcon className={className} style={style}/> }
         return <TrashIcon className={className} style={style}/>
     }
 

@@ -11,16 +11,11 @@ import { useThemeColor } from 'renderer/hooks/use-theme-color.hook';
 import Tippy from '@tippyjs/react';
 import { useTranslation } from 'renderer/hooks/use-translation.hook';
 import { I18nService } from 'renderer/services/i18n.service';
-import { BsmRange } from '../shared/bsm-range.component';
-import { AudioPlayerService } from 'renderer/services/audio-player.service';
 
 export function NavBar() {
 
     const bsVersionServoce =  BSVersionManagerService.getInstance();
-    const audio = AudioPlayerService.getInstance();
 
-    const playing = useObservable(audio.playing$);
-    const volume = useObservable(audio.volume$);
     const installedVersions = useObservable(bsVersionServoce.installedVersions$);
     const color = useThemeColor("first-color");
     const t = useTranslation();
@@ -31,14 +26,8 @@ export function NavBar() {
     <nav id='nav-bar' className='z-10 flex flex-col h-full max-h-full items-center p-1 bg-light-main-color-1 dark:bg-main-color-1'>
       <BsManagerIcon className='relative aspect-square w-16 h-16 mb-3'/>
       <ol id='versions' className='w-fit max-w-[120px] relative left-[2px] grow overflow-y-hidden scrollbar-track-transparent scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 hover:overflow-y-scroll'>
-         <MapsNavBarItem/>
-         {playing ? (
-            <div className='relative w-[calc(100%-25px)] mx-auto my-2'>
-                <BsmRange min={0} max={.5} values={[volume]} step={.01} colors={[color, "#40444b"]} onChange={vals => audio.setVolume(vals[0])}/>
-            </div>
-         ) : (
-            <NavBarSpliter/>
-         )}
+        <MapsNavBarItem/>
+        <NavBarSpliter/>
          {installedVersions && installedVersions.map((version) => <BsVersionItem key={JSON.stringify(version)} version={version}/>)}
       </ol>
       <NavBarSpliter/>

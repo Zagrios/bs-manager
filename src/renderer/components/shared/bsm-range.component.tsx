@@ -36,10 +36,10 @@ export function BsmRange({colorType = "first-color", values, onChange, onFinalCh
                     style={{
                     ...props.style,
                     background: getTrackBackground({
-                        values: values,
+                        values,
                         colors:  colors ?? ["#ccc", color, "#ccc"],
-                        min: min,
-                        max: max
+                        min,
+                        max
                     }),
                     }}
                 >
