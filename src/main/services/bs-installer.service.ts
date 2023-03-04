@@ -1,3 +1,4 @@
+/* eslint-disable prefer-promise-reject-errors */
 import { BS_APP_ID, BS_DEPOT } from "../constants";
 import path from "path";
 import { BSVersion, PartialBSVersion } from 'shared/bs-version.interface';
@@ -71,20 +72,19 @@ export class BSInstallerService{
       });
    }
 
-    public async isDotNet6Installed(): Promise<boolean>{
+   public async isDotNet6Installed(): Promise<boolean>{
         try{
-            const process = spawnSync("(dir (Get-Command dotnet).Path.Replace('dotnet.exe', 'shared\\Microsoft.NETCore.App')).Name", {shell: "powershell.exe"});
+            const process = spawnSync(this.getDepotDownloaderExePath(), {shell: true});
             if(process.stderr.toString()){
-                log.error("try isDotNet6Installed", process.stderr.toString());
-                return false; 
+                log.error("no dotnet", process.stderr.toString());
+                return false;
             }
-            const versions = process.stdout.toString().split("\n");
-            return versions.some(version => satisfies(clean(version), "6.x"));
+            return true;
         }
         catch(e){
-            log.error("catch isDotNet6Installed", e);
+            log.error("Error while checking .NET 6", e);
             return false;
-        }
+        }   
     }
 
   public async downloadBsVersion(downloadInfos: DownloadInfo): Promise<DownloadEvent>{
@@ -109,8 +109,7 @@ export class BSInstallerService{
         `-depot ${BS_DEPOT}`,
         `-manifest ${bsVersion.BSManifest}`,
         `-username ${downloadInfos.username}`,
-        `-dir \"${this.localVersionService.getVersionFolder(downloadVersion)}\"`,
-        (downloadInfos.stay || !downloadInfos.password) && "-remember-password"
+        `-dir \"${this.localVersionService.getVersionFolder(downloadVersion)}\"`
       ],
       {shell: true, cwd: this.installLocationService.versionsDirectory}
     );
@@ -161,16 +160,25 @@ export class BSInstallerService{
       this.downloadProcess.stdout.on('error', (err) => {
         log.error("BS-DOWNLOAD ERROR", err.toString());
         this.killDownloadProcess();
+        if(err.toString().includes(".NET") || err.toString().includes("dotnet") || err.toString().includes(".dll")){ 
+            reject("dotnet"); 
+        }
         reject();
       });
       this.downloadProcess.stderr.on('data', (err) => { 
         log.error("BS-DOWNLOAD ERROR", err.toString());
         this.killDownloadProcess();
+        if(err.toString().includes(".NET") || err.toString().includes("dotnet") || err.toString().includes(".dll")){ 
+            reject("dotnet"); 
+        }
         reject();
       });
       this.downloadProcess.stderr.on('error', (err) => { 
         log.error("BS-DOWNLOAD ERROR", err.toString());
         this.killDownloadProcess();
+        if(err.toString().includes(".NET") || err.toString().includes("dotnet") || err.toString().includes(".dll")){ 
+            reject("dotnet"); 
+        }
         reject();
       });
 

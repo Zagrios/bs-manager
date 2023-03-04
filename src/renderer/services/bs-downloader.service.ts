@@ -96,11 +96,7 @@ export class BsDownloaderService{
         return this.ipcService.send<boolean>("is-dotnet-6-installed").then(res => res.success && res.data)
     }
 
-   public async download(bsVersion: BSVersion, isVerification?: boolean, isFirstCall = true): Promise<IpcResponse<DownloadEvent>>{
-      if(isFirstCall && !this.progressBarService.require()){ return {success: false}; }
-
-      if(isFirstCall && !(await this.isDotNet6Installed())){
-
+    private async showDotNetNotInstalledError(): Promise<void>{
         const choice = await this.notificationService.notifyError({
             duration: 11_000,
             title: "notifications.bs-download.errors.titles.dotnet-required",
@@ -111,7 +107,16 @@ export class BsDownloaderService{
         if(choice === "0"){
             this.linkOpener.open("https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-6.0.12-windows-x64-installer");
         }
+    }
 
+   public async download(bsVersion: BSVersion, isVerification?: boolean, isFirstCall = true): Promise<IpcResponse<DownloadEvent>>{
+
+    // TODO : to remake cause we don't need recursion anymore
+
+      if(isFirstCall && !this.progressBarService.require()){ return {success: false}; }
+
+      if(isFirstCall && !(await this.isDotNet6Installed())){
+        await this.showDotNetNotInstalledError();
         return {success: false};
       }
 
@@ -142,7 +147,13 @@ export class BsDownloaderService{
       this.progressBarService.hide(true);
       this.resetDownload();
       if(res.success && isFirstCall){ this.notificationService.notifySuccess({title: `notifications.bs-download.success.titles.${isVerification ? "verification-finished" : "download-success"}`, duration: 3000}); }
-      else if(res.data && isFirstCall){  this.notificationService.notifyError({title: `notifications.types.error`, desc: `notifications.bs-download.errors.msg.${res.data}`, duration: 3000}); }
+      else if(res.data === "dotnet" && isFirstCall){
+        await this.showDotNetNotInstalledError();
+        return res;
+      }
+      else if(res.data && isFirstCall){
+        this.notificationService.notifyError({title: `notifications.types.error`, desc: `notifications.bs-download.errors.msg.${res.data}`, duration: 3000});
+      }
 
       return res;
    }
