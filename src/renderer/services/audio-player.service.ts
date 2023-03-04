@@ -25,8 +25,6 @@ export class AudioPlayerService{
 
         this.config = ConfigurationService.getInstance();
 
-        console.log("BBB", this.config.get<PlayerVolume>("audio-level"));
-
         this._volume$ = new BehaviorSubject(
             this.config.get<PlayerVolume>("audio-level") || { volume: 0.5, muted: false } 
         );
@@ -40,7 +38,6 @@ export class AudioPlayerService{
         this.player.onended = () => this._playing$.next(false);
 
         this._volume$.subscribe(volume => {
-            console.log("AAA", volume);
             this.player.volume = volume.volume;
             this.player.muted = volume.muted;
             this.config.set("audio-level", volume);

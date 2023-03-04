@@ -16,8 +16,6 @@ export function Modal() {
 
    const {firstColor, secondColor} = useThemeColor();
 
-   console.log(ModalComponent, resolver);
-
     useEffect(() => {
         
         const onEscape = (e: KeyboardEvent) => {
