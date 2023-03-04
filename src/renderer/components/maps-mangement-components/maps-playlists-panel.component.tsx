@@ -131,7 +131,7 @@ export function MapsPlaylistsPanel({version}: Props) {
                 <TabNavBar className="!rounded-none shadow-sm" tabIndex={tabIndex} tabsText={["misc.maps", "misc.playlists"]} onTabChange={setTabIndex} renderTab={renderTab}/>
                 <div className="w-full grow min-h-0 flex flex-row items-center transition-transform duration-300" style={{transform: `translate(${-(tabIndex * 100)}%, 0)`}}>
                     <LocalMapsListPanel ref={mapsRef} className="w-full h-full shrink-0 flex flex-col" version={version} filter={mapFilter} search={mapSearch}/>
-                    <div className="w-full h-full shrink-0 flex flex-col justify-center items-center content-center gap-2 overflow-hidden">
+                    <div className="w-full h-full shrink-0 flex flex-col justify-center items-center content-center gap-2 overflow-hidden text-gray-800 dark:text-gray-200">
                         <BsmImage className="rounded-md" image={wipGif}/>
                         <span>Coming soon</span>
                     </div>

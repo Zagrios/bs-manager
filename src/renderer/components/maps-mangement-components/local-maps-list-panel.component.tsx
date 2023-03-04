@@ -303,7 +303,7 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
     if(!maps){
         return (
             <div ref={ref} className={className}>
-                <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1">
+                <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1 text-gray-800 dark:text-gray-200">
                     <BsmImage className="w-32 h-32 spin-loading" image={BeatWaitingImg}/>
                     <span className="font-bold">{t("modals.download-maps.loading-maps")}</span>
                     <TextProgressBar value$={loadPercent$}/>
@@ -315,7 +315,7 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
     if(!maps.length){
         return (
             <div ref={ref} className={className}>
-                <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1">
+                <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1 text-gray-800 dark:text-gray-200">
                     <BsmImage className="h-32" image={BeatConflict}/>
                     <span className="font-bold">{t("pages.version-viewer.maps.tabs.maps.empty-maps.text")}</span>
                     <BsmButton className="font-bold rounded-md p-2" text="pages.version-viewer.maps.tabs.maps.empty-maps.button" typeColor="primary" withBar={false} onClick={e => {e.preventDefault(); mapsDownloader.openDownloadMapModal(version)}}/>

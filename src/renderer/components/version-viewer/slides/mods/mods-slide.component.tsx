@@ -148,7 +148,7 @@ export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, on
                         </div>
                     </>
                 ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center">
+                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-800 dark:text-gray-200">
                         <img className={`w-32 h-32 ${isOnline && "spin-loading"}`} src={isOnline ? BeatWaitingImg : BeatConflictImg} alt=" "/>
                         <span className="text-xl mt-3 h-0 italic">{t(isOnline ? "pages.version-viewer.mods.loading-mods" : "pages.version-viewer.mods.no-internet")}</span>
                     </div>
