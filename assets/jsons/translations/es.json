@@ -24,7 +24,7 @@
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Oculus Mod",
-                "oculus-description": "Si estás usando Beat Saber a través de Steam, te permite omitir SteamVR, lo que puede mejorar el rendimiento. Esto no es necesario cuando se utilizan auriculares Oculus.",
+                "oculus-description": "Si estás usando Beat Saber a través de Steam, te permite usar el compositor VR de Oculus sin pasar por SteamVR, para ganar prestaciones. Esto no es necesario para usar auriculares Oculus.",
                 "desktop": "Desktop Mod",
                 "desktop-description": "Esto te permite usar WASD y el mouse para navegar por el menú en juego. Esto hace que las pruebas sean mucho más fáciles, ¡porque no tienes que ponerte el auricular!",
                 "debug": "Debug Mod",
