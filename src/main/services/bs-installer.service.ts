@@ -10,6 +10,7 @@ import { BSLocalVersionService } from "./bs-local-version.service";
 import isOnline from 'is-online';
 import { WindowManagerService } from "./window-manager.service";
 import { copy, copySync } from "fs-extra";
+import { clean, satisfies } from "semver";
 
 export class BSInstallerService{
 
@@ -72,12 +73,16 @@ export class BSInstallerService{
 
     public async isDotNet6Installed(): Promise<boolean>{
         try{
-            const process = spawnSync(this.getDepotDownloaderExePath(), {shell: true});
-            const out = process.output.toString();
-            if(out.includes(".NET runtime can be found at")){ return false; }
-            return true;
+            const process = spawnSync("(dir (Get-Command dotnet).Path.Replace('dotnet.exe', 'shared\\Microsoft.NETCore.App')).Name", {shell: "powershell.exe"});
+            if(process.stderr.toString()){
+                log.error("try isDotNet6Installed", process.stderr.toString());
+                return false; 
+            }
+            const versions = process.stdout.toString().split("\n");
+            return versions.some(version => satisfies(clean(version), "6.x"));
         }
         catch(e){
+            log.error("catch isDotNet6Installed", e);
             return false;
         }
     }
