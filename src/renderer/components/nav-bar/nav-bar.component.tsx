@@ -26,8 +26,8 @@ export function NavBar() {
     <nav id='nav-bar' className='z-10 flex flex-col h-full max-h-full items-center p-1 bg-light-main-color-1 dark:bg-main-color-1'>
       <BsManagerIcon className='relative aspect-square w-16 h-16 mb-3'/>
       <ol id='versions' className='w-fit max-w-[120px] relative left-[2px] grow overflow-y-hidden scrollbar-track-transparent scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 hover:overflow-y-scroll'>
-         <MapsNavBarItem/>
-         <NavBarSpliter/>
+        <MapsNavBarItem/>
+        <NavBarSpliter/>
          {installedVersions && installedVersions.map((version) => <BsVersionItem key={JSON.stringify(version)} version={version}/>)}
       </ol>
       <NavBarSpliter/>

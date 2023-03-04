@@ -1,37 +1,54 @@
 import { useState } from 'react';
+import { useObservable } from 'renderer/hooks/use-observable.hook';
+import { useThemeColor } from 'renderer/hooks/use-theme-color.hook';
+import { AudioPlayerService } from 'renderer/services/audio-player.service';
 import { IpcService } from 'renderer/services/ipc.service';
 import { WindowManagerService } from 'renderer/services/window-manager.service';
 import { AppWindow } from 'shared/models/window-manager/app-window.model';
+import { BsmButton } from '../shared/bsm-button.component';
+import { BsmRange } from '../shared/bsm-range.component';
+import { BsmIconType } from '../svgs/bsm-icon.component';
 import './title-bar.component.css'
 
 export default function TitleBar({template = "index.html"} : {template: AppWindow}) {
 
-   const ipcService = IpcService.getInstance();
-   const windows = WindowManagerService.getInstance();
+    const ipcService = IpcService.getInstance();
+    const windows = WindowManagerService.getInstance();
+    const audio = AudioPlayerService.getInstance();
 
-   const [maximized, setMaximized] = useState(false);
+    const volume = useObservable(audio.volume$, audio.volume);
+    const playing = useObservable(audio.playing$);
+    const color = useThemeColor("first-color");
 
-    const closeWindow = () => {
-        return windows.close(template);
+    const [maximized, setMaximized] = useState(false);
+
+        const closeWindow = () => {
+            return windows.close(template);
+        }
+
+    const maximizeWindow = () => {
+        ipcService.sendLazy('window.maximize');
     }
 
-   const maximizeWindow = () => {
-      ipcService.sendLazy('window.maximize');
-   }
+    const minimizeWindow = () => {
+        ipcService.sendLazy('window.minimize');
+    }
 
-   const minimizeWindow = () => {
-      ipcService.sendLazy('window.minimize');
-   }
+    const resetWindow = () => {
+        ipcService.sendLazy('window.reset');
+    }
 
-   const resetWindow = () => {
-      ipcService.sendLazy('window.reset');
-   }
+    const toogleMaximize = () => {
+        if(maximized){ resetWindow(); }
+        else{ maximizeWindow(); }
+        setMaximized(!maximized);
+    }
 
-   const toogleMaximize = () => {
-      if(maximized){ resetWindow(); }
-      else{ maximizeWindow(); }
-      setMaximized(!maximized);
-   }
+    const volumeIcon: BsmIconType = (() => {
+        if(volume.muted || !volume.volume){ return "volume-off"; }
+        if(volume.volume < .5){ return "volume-down"; }
+        return "volume-up";
+    })()
 
     if(template === "index.html"){
 
@@ -42,7 +59,13 @@ export default function TitleBar({template = "index.html"} : {template: AppWindo
                         <span className='text-gray-800 dark:text-gray-100 font-bold text-xs italic'>BSManager</span>
                     </div>
                 </div>
-                <div id="window-controls" className="h-full flex shrink-0">
+                <div id="window-controls" className="h-full flex shrink-0 items-center">
+                    <div className='h-full text-gray-800 dark:text-gray-200 pr-1 cursor-pointer flex flex-row justify-end items-center gap-2 group pl-5'>
+                        <div className='shrink-0 w-0 overflow-hidden transition-all group-hover:w-16 group-hover:overflow-visible group-active:w-16 group-active:overflow-visible text-main-color-3'>
+                            <BsmRange min={0} max={1} step={.01} values={[volume.muted ? 0 : volume.volume]} colors={[color, "currentColor"]} onChange={val => audio.setVolume(val[0])} onFinalChange={val => audio.setFinalVolume(val[0])}/>
+                        </div>
+                        <BsmButton className='shrink-0 h-[23px] w-[23px] aspect-square !bg-transparent flex items-start' iconClassName={volumeIcon === "volume-down" && "-translate-x-[1.8px]"} icon={volumeIcon} withBar={false} onClick={() => audio.toggleMute()}/>
+                    </div>
                     <div onClick={minimizeWindow} className="text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#4F545C] cursor-pointer w-11 h-full shrink-0 flex justify-center items-center" id="min-button" >
                         <svg aria-hidden="false" width="12" height="12" viewBox="0 0 12 12"><rect fill="currentColor" width="10" height="1" x="1" y="6"> </rect></svg>
                     </div>
