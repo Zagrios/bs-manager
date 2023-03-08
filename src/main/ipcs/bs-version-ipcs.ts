@@ -6,6 +6,11 @@ import { exec } from 'child_process';
 import { IpcRequest } from 'shared/models/ipc';
 import { BSLocalVersionService } from '../services/bs-local-version.service';
 import { BsmException } from 'shared/models/bsm-exception.model';
+import { IpcService } from '../services/ipc.service';
+import { from } from 'rxjs';
+import path from 'path';
+
+const ipc = IpcService.getInstance();
 
 ipcMain.on('bs-version.get-version-dict', (event, req: IpcRequest<void>) => {
    BSVersionLibService.getInstance().getAvailableVersions().then(versions => {
@@ -44,3 +49,20 @@ ipcMain.on("bs-version.clone", async (event, req: IpcRequest<{version: BSVersion
       UtilsService.getInstance().ipcSend(req.responceChannel, {success: false, error});
    });
 });
+
+ipc.on("get-version-full-path", async (req: IpcRequest<BSVersion>, reply) => {
+    const localVersions = BSLocalVersionService.getInstance();
+    reply(from(
+        localVersions.getVersionPath(req.args)
+    ));
+});
+
+ipc.on("relative-version-path-to-full", async (req: IpcRequest<{version: BSVersion, relative: string}>, reply) => {
+    const localVersions = BSLocalVersionService.getInstance();
+    const promise = localVersions.getVersionPath(req.args.version).catch(() => null).then(versionPath => {
+        return path.join(versionPath, req.args.relative);
+    });
+    reply(from(promise));
+});
+
+

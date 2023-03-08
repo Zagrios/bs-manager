@@ -15,6 +15,7 @@ import { LaunchSlide } from 'renderer/components/version-viewer/slides/launch/la
 import { ModsSlide } from 'renderer/components/version-viewer/slides/mods/mods-slide.component';
 import { UninstallModal } from 'renderer/components/modal/modal-types/uninstall-modal.component';
 import { MapsPlaylistsPanel } from 'renderer/components/maps-mangement-components/maps-playlists-panel.component';
+import { ShareFoldersModal } from 'renderer/components/modal/modal-types/share-folders-modal.component';
 
 export function VersionViewer() {
 
@@ -66,6 +67,10 @@ export function VersionViewer() {
         setCurrentTabIndex(() => 0);
     }
 
+    const openShareFolderModal = () => {
+        modalService.openModal(ShareFoldersModal, state);
+    }
+
 
   return (
     <>
@@ -87,6 +92,7 @@ export function VersionViewer() {
           ((!state.steam && !state.oculus) && {text: "pages.version-viewer.dropdown.verify-files", icon: "task", onClick: verifyFiles}),
           ((!state.steam && !state.oculus) && {text: "pages.version-viewer.dropdown.edit", icon: "edit", onClick: edit}),
           (!state.oculus && {text: "pages.version-viewer.dropdown.clone", icon: "copy", onClick: clone}),
+          {text: "Share folders", icon: "link", onClick: openShareFolderModal},
           ((!state.steam && !state.oculus) && {text: "pages.version-viewer.dropdown.uninstall", icon:"trash", onClick: uninstall})
         ]}/>
     </>

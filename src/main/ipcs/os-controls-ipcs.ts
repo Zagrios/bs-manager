@@ -4,9 +4,14 @@ import { IpcRequest } from 'shared/models/ipc';
 import { SystemNotificationOptions } from 'shared/models/notification/system-notification.model';
 import { NotificationService } from '../services/notification.service';
 import { SteamService } from '../services/steam.service';
+import { IpcService } from '../services/ipc.service';
+import { from } from 'rxjs';
+import { fstat, lstat } from 'fs';
 
 
 // TODO IMPROVE WINDOW CONTROL BY USING WINDOW SERVICE
+
+const ipc = IpcService.getInstance();
 
 ipcMain.on('window.close', async () => {
     const utils = UtilsService.getInstance();
@@ -32,10 +37,10 @@ ipcMain.on('new-window', async (event, request: IpcRequest<string>) => {
     shell.openExternal(request.args);
 });
 
-ipcMain.on('choose-folder', async (event, request: IpcRequest<void>) => {
-  dialog.showOpenDialog({properties: ['openDirectory'],}).then(res => {
-    UtilsService.getInstance().ipcSend(request.responceChannel, {success: true, data: res});
-  });
+ipc.on('choose-folder', async (req: IpcRequest<string>, reply) => {
+  reply(
+    from(dialog.showOpenDialog({properties: ['openDirectory'], defaultPath: req.args ?? ""}))
+  )
 });
 
 ipcMain.on("window.progression", async (event, request: IpcRequest<number>) => {
@@ -71,4 +76,16 @@ ipcMain.on("open-steam", async (event, request: IpcRequest<void>) => {
     }).catch((e) => {
         utils.ipcSend(request.responceChannel, {success: false, error: e});
     });
+});
+
+ipc.on("is-folder-symlink", async (req: IpcRequest<string>, reply) => {
+    const utils = UtilsService.getInstance();
+    const promise = new Promise<boolean>(async resolve => {
+        if(!utils.pathExist(req.args)){ return resolve(false); }
+        lstat(req.args, (err, stats) => {
+            if(err){ return resolve(false); }
+            resolve(stats.isSymbolicLink());
+        });
+    }); 
+    reply(from(promise));
 });

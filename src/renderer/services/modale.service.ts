@@ -51,7 +51,7 @@ export class ModalService{
 
 }
 
-export type ModalComponent<T = unknown, K = any> = ({resolver, data}: {resolver : (x: ModalResponse<T>) => void, data?: K}) => JSX.Element;
+export type ModalComponent<Return = unknown, Receive = any> = ({resolver, data}: {resolver : (x: ModalResponse<Return>) => void, data?: Receive}) => JSX.Element;
 
 export const enum ModalExitCode {
     NO_CHOICE = -1,
