@@ -1,4 +1,5 @@
 import { writeFileSync } from "fs";
+import { readJSON } from "fs-extra";
 import { get } from "https";
 import isOnline from "is-online";
 import path from "path";
@@ -43,8 +44,7 @@ export class SupportersService {
 
     private async getLocalSupporters(): Promise<Supporter[]>{
         const patreonsPath = path.join(this.utilsService.getAssestsJsonsPath(), this.PATREONS_FILE);
-        const rawPatreons = await this.utilsService.readFileAsync(patreonsPath);
-        return JSON.parse(rawPatreons);
+        return readJSON(patreonsPath);
     }
 
     private async loadSupporters(): Promise<Supporter[]>{

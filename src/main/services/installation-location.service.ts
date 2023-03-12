@@ -1,10 +1,10 @@
 import path from "path";
-import { UtilsService } from "./utils.service";
 import fs from 'fs-extra';
 import log from "electron-log";
 import { app } from "electron";
 import { BsmException } from "shared/models/bsm-exception.model";
 import ElectronStore from "electron-store";
+import { ensureFolderExist, pathExist } from "../helpers/fs.helpers";
 
 export class InstallationLocationService {
 
@@ -19,10 +19,8 @@ export class InstallationLocationService {
     private readonly VERSIONS_FOLDER = "BSInstances";
 
     private readonly SHARED_CONTENT_FOLDER = "SharedContent";
-    private readonly SHARED_MAPS_FOLDER = "SharedMaps";
 
     private readonly STORE_INSTALLATION_PATH_KEY = "installation-folder";
-    private readonly utilsService: UtilsService;
 
     private readonly installPathConfig: ElectronStore;
     private readonly updateListeners: Set<Listener> = new Set();
@@ -31,7 +29,6 @@ export class InstallationLocationService {
 
     private constructor(){
         this.installPathConfig = new ElectronStore({watch: true});
-        this.utilsService = UtilsService.getInstance();
         this.initInstallationLocation();
 
         this.installPathConfig.onDidChange(this.STORE_INSTALLATION_PATH_KEY, () => {
@@ -50,8 +47,8 @@ export class InstallationLocationService {
     public setInstallationDirectory(newDir: string): Promise<string>{
         const oldDir = this.installationDirectory;
         const newDest = path.join(newDir, this.INSTALLATION_FOLDER);
-        return new Promise<string>((resolve, reject) => {
-            if(!this.utilsService.pathExist(oldDir)){ this.utilsService.createFolderIfNotExist(oldDir); }
+        return new Promise<string>(async (resolve, reject) => {
+            if(!(await pathExist(oldDir))){ ensureFolderExist(oldDir); }
             fs.move(oldDir, newDest, { overwrite: true }).then(() => {
                 this._installationDirectory = newDir;
                 this.installPathConfig.set(this.STORE_INSTALLATION_PATH_KEY, newDir);
@@ -72,7 +69,6 @@ export class InstallationLocationService {
     public get versionsDirectory(): string { return path.join(this.installationDirectory, this.VERSIONS_FOLDER); }
 
     public get sharedContentPath(): string { return path.join(this.installationDirectory, this.SHARED_CONTENT_FOLDER); }
-    public get sharedMapsPath(): string { return path.join(this.sharedContentPath, this.SHARED_MAPS_FOLDER); }
 
 }
 

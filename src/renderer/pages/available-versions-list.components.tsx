@@ -54,15 +54,15 @@ export function AvailableVersionsList() {
 
         if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return; }
 
-        const folderRes = await ipc.send<{canceled: boolean, filePaths: string[]}>("choose-folder");
+        const folderRes = await ipc.sendV2<{canceled: boolean, filePaths: string[]}>("choose-folder").toPromise();
 
-        if(!folderRes.success || folderRes.data.canceled || !folderRes.data.filePaths?.length){ return; }
+        if(!folderRes || folderRes.canceled || !folderRes.filePaths?.length){ return; }
 
         notification.notifySuccess({title: "notifications.bs-import-version.success.start-import.title", desc: "notifications.bs-import-version.success.start-import.desc", duration: 6_000});
 
         progressBar.showFake(.008);
 
-        const toImport = folderRes.data.filePaths.at(0);
+        const toImport = folderRes.filePaths.at(0);
 
         const imported = await installer.importVersion(toImport);
 

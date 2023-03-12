@@ -1,6 +1,7 @@
 import { UtilsService } from "./utils.service";
 import regedit from 'regedit'
 import path from "path";
+import { pathExist } from "../helpers/fs.helpers";
 
 export class OculusService {
 
@@ -57,7 +58,7 @@ export class OculusService {
 
         for(const lib of libsFolders){
             const gameFullPath = path.join(lib, rootLibDir, gameFolder);
-            if(this.utils.pathExist(gameFullPath)){ return gameFullPath; }
+            if(await pathExist(gameFullPath)){ return gameFullPath; }
         }
 
         return null;

@@ -2,7 +2,6 @@ import { BSVersionLibService } from "./bs-version-lib.service";
 import { BSVersion, PartialBSVersion } from 'shared/bs-version.interface';
 import { InstallationLocationService } from "./installation-location.service";
 import { SteamService } from "./steam.service";
-import { UtilsService } from "./utils.service";
 import { BS_APP_ID, OCULUS_BS_DIR } from "../constants";
 import path from "path";
 import { createReadStream } from "fs";
@@ -14,6 +13,8 @@ import log from "electron-log";
 import { OculusService } from "./oculus.service";
 import { DownloadLinkType } from "shared/models/mods";
 import sanitize from "sanitize-filename";
+import { deleteFolder, getFoldersInFolder, pathExist } from "../helpers/fs.helpers";
+import { FolderLinkerService } from "./folder-linker.service";
 
 export class BSLocalVersionService{
 
@@ -22,11 +23,11 @@ export class BSLocalVersionService{
    private readonly CUSTOM_VERSIONS_KEY = "custom-versions";
 
    private readonly installLocationService: InstallationLocationService;
-   private readonly utilsService: UtilsService;
    private readonly steamService: SteamService;
    private readonly oculusService: OculusService;
    private readonly remoteVersionService: BSVersionLibService;
    private readonly configService: ConfigurationService;
+   private readonly linker: FolderLinkerService;
 
    public static getInstance(): BSLocalVersionService{
       if(!BSLocalVersionService.instance){ BSLocalVersionService.instance = new BSLocalVersionService(); }
@@ -35,18 +36,18 @@ export class BSLocalVersionService{
 
     private constructor(){
         this.installLocationService = InstallationLocationService.getInstance();
-        this.utilsService = UtilsService.getInstance();
         this.steamService = SteamService.getInstance();
         this.oculusService = OculusService.getInstance();
         this.remoteVersionService = BSVersionLibService.getInstance();
         this.configService = ConfigurationService.getInstance();
+        this.linker = FolderLinkerService.getInstance();
     }
 
     
 
    public async getVersionOfBSFolder(bsPath: string): Promise<PartialBSVersion>{
       const versionFilePath = path.join(bsPath, 'Beat Saber_Data', 'globalgamemanagers');
-      if(!this.utilsService.pathExist(versionFilePath)){ return null; }
+      if(!(await pathExist(versionFilePath))){ return null; }
       const versionsAvailable = await this.remoteVersionService.getAvailableVersions();
       return new Promise<PartialBSVersion>(resolve => {
          const stream = createReadStream(versionFilePath);
@@ -118,8 +119,7 @@ export class BSLocalVersionService{
 
     private async getSteamVersion(): Promise<BSVersion>{
         const steamBsFolder = await this.steamService.getGameFolder(BS_APP_ID, "Beat Saber");
-
-        if(!steamBsFolder || !this.utilsService.pathExist(steamBsFolder)){ return null; }
+        if(!steamBsFolder || !(await pathExist(steamBsFolder))){ return null; }
         const steamBsVersion = await this.getVersionOfBSFolder(steamBsFolder);
 
         if(!steamBsVersion){ return null; }
@@ -146,11 +146,11 @@ export class BSLocalVersionService{
         if(steamVersion){ versions.push(steamVersion); }
 
         const oculusVersion = await this.getOculusVersion();
-        if(oculusVersion){ versions.push(oculusVersion); }  
+        if(oculusVersion){ versions.push(oculusVersion); }
 
-        if(!this.utilsService.pathExist(this.installLocationService.versionsDirectory)){ return versions }
+        if(!(await pathExist(this.installLocationService.versionsDirectory))){ return versions }
 
-        const folderInInstallation = this.utilsService.listDirsInDir(this.installLocationService.versionsDirectory, true);
+        const folderInInstallation = await getFoldersInFolder(this.installLocationService.versionsDirectory);
 
         for(const f of folderInInstallation){
             log.info("try get version from folder", f);
@@ -176,9 +176,9 @@ export class BSLocalVersionService{
    public async deleteVersion(version: BSVersion): Promise<boolean>{
       if(version.steam || version.oculus){ return false; }
       const versionFolder = await this.getVersionPath(version);
-      if(!this.utilsService.pathExist(versionFolder)){ return true; }
+      if(!(await pathExist(versionFolder))){ return true; }
 
-      return this.utilsService.deleteFolder(versionFolder)
+      return deleteFolder(versionFolder)
          .then(() => { return true; })
          .catch(() => { return false; })
    }
@@ -197,7 +197,7 @@ export class BSLocalVersionService{
          return editedVersion;
       }
 
-      if(this.utilsService.pathExist(newPath) && newPath === oldPath){ throw {title: "VersionAlreadExist"} as BsmException; }
+      if((await pathExist(newPath)) && newPath === oldPath){ throw {title: "VersionAlreadExist"} as BsmException; }
 
       return rename(oldPath, newPath).then(() => {
          this.deleteCustomVersion(version);
@@ -221,7 +221,7 @@ export class BSLocalVersionService{
          this.addCustomVersion(cloneVersion);
       }
 
-      if(this.utilsService.pathExist(newPath)){ throw {title: "VersionAlreadExist"} as BsmException; }
+      if(await pathExist(newPath)){ throw {title: "VersionAlreadExist"} as BsmException; }
 
       return fs.copy(originPath, newPath, {dereference: true}).then(() => {
          this.addCustomVersion(cloneVersion);
@@ -232,4 +232,18 @@ export class BSLocalVersionService{
       })
    }
 
+    public async getLinkedFolders(version: BSVersion): Promise<string[]>{
+        const versionPath = await this.getVersionPath(version);
+        const [rootFolders, beatSaberDataFolders] = await Promise.all([
+            getFoldersInFolder(versionPath),
+            getFoldersInFolder(path.join(versionPath, "Beat Saber_Data"))
+        ]);
+
+        const linkedFolder = Promise.all([...rootFolders, ...beatSaberDataFolders].map(async folder => {
+            if(!(await this.linker.isFolderSymlink(folder))){ return null; }
+            return folder;   
+        }));
+
+        return (await linkedFolder).filter(folder => folder);
+    }
 }

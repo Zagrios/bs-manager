@@ -1,4 +1,4 @@
-import { splitIntoChunk } from "../../../helpers/array-tools";
+import { splitIntoChunk } from "../../../helpers/array.helpers";
 import { BsvMapDetail } from "shared/models/maps";
 import { BsvPlaylist, SearchParams } from "shared/models/maps/beat-saver.model";
 import { BeatSaverApiService } from "./beat-saver-api.service";

@@ -40,7 +40,7 @@ export class IpcService {
     }
 
     public send<T>(channel: IpcChannel, window: AppWindow, response?: T|Error): void{
-        this.windows.getWindow(window).webContents.send(channel, response);
+        this.windows.getWindow(window)?.webContents?.send(channel, response);
     }
 
     public connectStream(channel: IpcChannel, window: AppWindow, observable: Observable<unknown>): void{

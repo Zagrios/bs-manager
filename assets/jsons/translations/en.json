@@ -84,7 +84,8 @@
                 "verify-files": "Verify files",
                 "clone": "Clone",
                 "edit": "Edit",
-                "uninstall": "Uninstall"
+                "uninstall": "Uninstall",
+                "shared-folders": "Shared Folders"
             }
         },
         "available-versions": {
@@ -414,6 +415,14 @@
                 "success":"Model installation complete",
                 "error":"An error occurred while installing the model"
             }
+        },
+        "shared-folder": {
+            "success": {
+                "yeet-mods-disabled": {
+                    "title": "YeetMods disabled",
+                    "msg": "To prevent mod removal, the value of the 'YeetMods' variable in the 'Beat Saber IPA.json' file has been disabled"
+                }
+            }
         }
     },
     "modals": {
@@ -563,6 +572,15 @@
             "li-2": "Mods are subject to being broken by updates and that's normal - be patient and respectful when this happens, as modders are volunteers with real lives.",
             "li-3": "Beat Games aren't purposefully trying to break mods. They wish to work on the codebase and sometimes this breaks mods, but they are not out to kill mods.",
             "p-2": "Do not attack the game developers for issues related to mods, and vice versa - modders and game developers are two separate groups. Just don't be a jerk ok."
+        },
+        "shared-folders":{
+            "title": "Shared Folders",
+            "description": "Link BeatSaber folders to synchronize their contents with shared folders in other versions. Note that deleting content will also be shared.",
+            "buttons": {
+                "add-folder": "Add Folder",
+                "link-folder": "Link Folder",
+                "unlink-folder": "Unlink Folder"
+            }
         }
     },
     "maps": {

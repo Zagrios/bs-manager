@@ -24,9 +24,10 @@ type Props = {
     className?: string,
     filter?: MapFilter
     search?: string,
+    linked?: boolean
 }
 
-export const LocalMapsListPanel = forwardRef(({version, className, filter, search} : Props, forwardRef) => {
+export const LocalMapsListPanel = forwardRef(({version, className, filter, search, linked} : Props, forwardRef) => {
 
     const mapsManager = MapsManagerService.getInstance();
     const mapsDownloader = MapsDownloaderService.getInstance();
@@ -35,7 +36,7 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
 
     const t = useTranslation();
     const ref = useRef(null)
-    const isVisible = useInView(ref, {once: true});
+    const isVisible = useInView(ref, {once: true, amount: .5});
     const [maps, setMaps] = useState<BsmLocalMap[]>(null);
     const [subs] = useState<Subscription[]>([]);
     const [selectedMaps$] = useState(new BehaviorSubject<BsmLocalMap[]>([]));
@@ -65,8 +66,6 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
 
         if(isVisible){
             loadMaps();
-            subs.push(mapsManager.versionLinked$.subscribe(loadMaps));
-            subs.push(mapsManager.versionUnlinked$.subscribe(loadMaps));
             mapsDownloader.addOnMapDownloadedListener((map, targerVersion) => {
                 if(targerVersion !== version){ return; }
                 setMaps(maps => maps ? [map, ...maps] : [map]);
@@ -79,7 +78,7 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
             subs.forEach(s => s.unsubscribe());
             mapsDownloader.removeOnMapDownloadedListener(loadMaps);
         }
-    }, [isVisible, version]);
+    }, [isVisible, version, linked]);
 
     useEffect(() => {
         

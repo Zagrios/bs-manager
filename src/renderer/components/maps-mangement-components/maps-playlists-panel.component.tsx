@@ -15,6 +15,9 @@ import { OsDiagnosticService } from "renderer/services/os-diagnostic.service"
 import { useObservable } from "renderer/hooks/use-observable.hook"
 import { BsmIcon } from "../svgs/bsm-icon.component"
 import { useTranslation } from "renderer/hooks/use-translation.hook"
+import { LinkButton } from "./link-button.component"
+import { debounceTime } from "rxjs/operators"
+import { FolderLinkerService } from "renderer/services/folder-linker.service"
 
 type Props = {
     version?: BSVersion
@@ -25,12 +28,14 @@ export function MapsPlaylistsPanel({version}: Props) {
     const mapsService = MapsManagerService.getInstance();
     const mapsDownloader = MapsDownloaderService.getInstance();
     const osDiagnostic = OsDiagnosticService.getInstance();
+    const linker = FolderLinkerService.getInstance();
     
     const [tabIndex, setTabIndex] = useState(0);
     const [mapFilter, setMapFilter] = useState<MapFilter>({});
     const [mapSearch, setMapSearch] = useState("");
     const [playlistSearch, setPlaylistSearch] = useState("");
     const [mapsLinked, setMapsLinked] = useState(false);
+    const [linkingPending, setLinkingPending] = useState(false);
     const isOnline = useObservable(osDiagnostic.isOnline$);
     const color = useThemeColor("first-color");
     const t = useTranslation();
@@ -38,6 +43,23 @@ export function MapsPlaylistsPanel({version}: Props) {
 
     useEffect(() => {
         loadMapIsLinked();
+
+        const sub = mapsService.$mapsLinkingPending(version).pipe(debounceTime(50)).subscribe(setLinkingPending);
+
+        const onMapsLinked = (folder: string) => {
+            if(!folder.includes("CustomLevels")){ return; }
+            loadMapIsLinked();
+        }
+
+        linker.onFolderLinked(onMapsLinked);
+        linker.onFolderUnlinked(onMapsLinked);
+
+        return () => {
+            sub.unsubscribe();
+            linker.removeOnFolderLinked(onMapsLinked);
+            linker.removeOnFolderUnlinked(onMapsLinked);
+        }
+
     }, [version]);
 
     const loadMapIsLinked = () => {
@@ -53,9 +75,9 @@ export function MapsPlaylistsPanel({version}: Props) {
 
     const handleMapsLinkClick = () => {
         if(!mapsLinked){
-            return mapsService.linkVersion(version).then(loadMapIsLinked);
+            return mapsService.linkVersion(version);
         }
-        return mapsService.unlinkVersion(version).then(loadMapIsLinked);
+        return mapsService.unlinkVersion(version);
     }
 
     const handleMapsAddClick = () => {
@@ -63,8 +85,6 @@ export function MapsPlaylistsPanel({version}: Props) {
     }
 
     const renderTab = (props: DetailedHTMLProps<React.HTMLAttributes<HTMLLIElement>, HTMLLIElement>, text: string, index: number): JSX.Element => {
-
-        const linkedColor = mapsLinked ? color : "red";
 
         const onClickLink = (index: number) => {
             if(index === 0){ handleMapsLinkClick(); }
@@ -91,10 +111,17 @@ export function MapsPlaylistsPanel({version}: Props) {
                             </motion.div>
                         )}
                         {(!!version) && (
-                            <motion.div variants={variants} whileHover="hover" whileTap="tap" initial={{rotate: 0}} className="block p-0.5 h-[calc(100%-5px)] aspect-square blur-0 hover:brightness-75" title={t(mapsLinked ? "pages.version-viewer.maps.tabs.maps.actions.link-maps.tooltips.unlink" : "pages.version-viewer.maps.tabs.maps.actions.link-maps.tooltips.link")} onClick={e => {e.stopPropagation(); onClickLink(index)}}> 
-                                <span className="absolute top-0 left-0 h-full w-full rounded-full brightness-50 opacity-75 dark:opacity-20 dark:filter-none" style={{backgroundColor: linkedColor}}/>
-                                <BsmIcon className="p-1 absolute top-0 left-0 h-full w-full !bg-transparent -rotate-45 brightness-150" icon={mapsLinked ? "link" : "unlink"} style={{color: linkedColor}} />
-                            </motion.div>
+                            <LinkButton 
+                                variants={variants}
+                                disabled={linkingPending}
+                                whileHover="hover" 
+                                whileTap="tap" 
+                                initial={{rotate: 0}} 
+                                className="block p-0.5 h-[calc(100%-5px)] aspect-square blur-0 hover:brightness-75" 
+                                linked={mapsLinked} 
+                                title={t(mapsLinked ? "pages.version-viewer.maps.tabs.maps.actions.link-maps.tooltips.unlink" : "pages.version-viewer.maps.tabs.maps.actions.link-maps.tooltips.link")} 
+                                onClick={() => onClickLink(index)}
+                            />
                         )}
                     </div>
                 )}
@@ -130,7 +157,7 @@ export function MapsPlaylistsPanel({version}: Props) {
             <div className="w-full h-full flex flex-col bg-light-main-color-3 dark:bg-main-color-2 rounded-md shadow-black shadow-md overflow-hidden">
                 <TabNavBar className="!rounded-none shadow-sm" tabIndex={tabIndex} tabsText={["misc.maps", "misc.playlists"]} onTabChange={setTabIndex} renderTab={renderTab}/>
                 <div className="w-full grow min-h-0 flex flex-row items-center transition-transform duration-300" style={{transform: `translate(${-(tabIndex * 100)}%, 0)`}}>
-                    <LocalMapsListPanel ref={mapsRef} className="w-full h-full shrink-0 flex flex-col" version={version} filter={mapFilter} search={mapSearch}/>
+                    <LocalMapsListPanel ref={mapsRef} className="w-full h-full shrink-0 flex flex-col" version={version} filter={mapFilter} search={mapSearch} linked={mapsLinked}/>
                     <div className="w-full h-full shrink-0 flex flex-col justify-center items-center content-center gap-2 overflow-hidden text-gray-800 dark:text-gray-200">
                         <BsmImage className="rounded-md" image={wipGif}/>
                         <span>Coming soon</span>

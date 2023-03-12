@@ -11,6 +11,7 @@ import path from "path";
 import { RequestService } from "../request.service";
 import { copyFileSync } from "fs-extra";
 import sanitize from "sanitize-filename";
+import { ensureFolderExist } from "../../helpers/fs.helpers";
 
 export class LocalModelsManagerService {
 
@@ -74,7 +75,7 @@ export class LocalModelsManagerService {
         const versionPath = await this.localVersion.getVersionPath(version);
         const modelFolderPath = path.join(versionPath, this.MODEL_TYPE_FOLDER[type]);
 
-        this.utils.createFolderIfNotExist(modelFolderPath);
+        await ensureFolderExist(modelFolderPath);
 
         return modelFolderPath;
 

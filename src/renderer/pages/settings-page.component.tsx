@@ -110,11 +110,12 @@ export function SettingsPage() {
 
       modalService.openModal(InstallationFolderModal).then(async res => {
          if(res.exitCode !== ModalExitCode.COMPLETED){ return; }
-         const fileChooserRes = await ipcService.send<{canceled: boolean, filePaths: string[]}>("choose-folder");
 
-         if(fileChooserRes.success && !fileChooserRes.data.canceled && fileChooserRes.data.filePaths?.length){
+         const fileChooserRes = await ipcService.sendV2<{canceled: boolean, filePaths: string[]}>("choose-folder").toPromise();
+
+         if(!fileChooserRes.canceled && fileChooserRes.filePaths?.length){
             progressBarService.showFake(.008);
-            downloaderService.setInstallationFolder(fileChooserRes.data.filePaths[0]).then(res => {
+            downloaderService.setInstallationFolder(fileChooserRes.filePaths[0]).then(res => {
                setTimeout(() => {
                   progressBarService.complete();
                   setTimeout(() => progressBarService.hide(true), 1000);

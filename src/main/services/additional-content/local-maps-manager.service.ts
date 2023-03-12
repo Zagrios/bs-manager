@@ -6,8 +6,8 @@ import { BSLocalVersionService } from "../bs-local-version.service";
 import { InstallationLocationService } from "../installation-location.service";
 import { UtilsService } from "../utils.service";
 import crypto from "crypto";
-import { lstatSync, symlinkSync, unlinkSync } from "fs";
-import { copy, copySync } from "fs-extra";
+import { lstatSync, unlinkSync } from "fs";
+import { copySync } from "fs-extra";
 import StreamZip from "node-stream-zip";
 import { RequestService } from "../request.service";
 import sanitize from "sanitize-filename";
@@ -18,6 +18,9 @@ import { ipcMain } from "electron";
 import { IpcRequest } from 'shared/models/ipc';
 import { Observable } from "rxjs";
 import { Archive } from "../../models/archive.class";
+import { deleteFolder, ensureFolderExist, getFoldersInFolder, pathExist } from "../../helpers/fs.helpers";
+import { readFile } from "fs/promises";
+import { FolderLinkerService } from "../folder-linker.service";
 
 export class LocalMapsManagerService {
 
@@ -28,8 +31,9 @@ export class LocalMapsManagerService {
         return LocalMapsManagerService.instance;
     }
 
-    private readonly LEVELS_ROOT_FOLDER = "Beat Saber_Data";
-    private readonly CUSTOM_LEVELS_FOLDER = "CustomLevels";
+    public static readonly LEVELS_ROOT_FOLDER = "Beat Saber_Data";
+    public static readonly CUSTOM_LEVELS_FOLDER = "CustomLevels";
+    public static readonly SHARED_MAPS_FOLDER = "SharedMaps";
 
     private readonly DEEP_LINKS = {
         BeatSaver: "beatsaver",
@@ -42,6 +46,7 @@ export class LocalMapsManagerService {
     private readonly reqService: RequestService;
     private readonly deepLink: DeepLinkService;
     private readonly windows: WindowManagerService;
+    private readonly linker = FolderLinkerService.getInstance();
 
     private constructor(){
         this.localVersion = BSLocalVersionService.getInstance();
@@ -50,6 +55,7 @@ export class LocalMapsManagerService {
         this.reqService = RequestService.getInstance();
         this.deepLink = DeepLinkService.getInstance();
         this.windows = WindowManagerService.getInstance();
+        this.linker = FolderLinkerService.getInstance();
 
         this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.BeatSaver, link => {
             log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.BeatSaver, link);
@@ -64,10 +70,10 @@ export class LocalMapsManagerService {
 
     public async getMapsFolderPath(version?: BSVersion): Promise<string>{
 
-        if(version){ return path.join(await this.localVersion.getVersionPath(version), this.LEVELS_ROOT_FOLDER, this.CUSTOM_LEVELS_FOLDER); }
-        const sharedMapsPath = path.join(this.installLocation.sharedMapsPath, this.CUSTOM_LEVELS_FOLDER);
-        if(!(await this.utils.pathExist(sharedMapsPath))){
-            this.utils.createFolderIfNotExist(sharedMapsPath);
+        if(version){ return path.join(await this.localVersion.getVersionPath(version), LocalMapsManagerService.LEVELS_ROOT_FOLDER, LocalMapsManagerService.CUSTOM_LEVELS_FOLDER); }
+        const sharedMapsPath = path.join(this.installLocation.sharedContentPath, LocalMapsManagerService.SHARED_MAPS_FOLDER, LocalMapsManagerService.CUSTOM_LEVELS_FOLDER);
+        if(!(await pathExist(sharedMapsPath))){
+            await ensureFolderExist(sharedMapsPath);
         }
         return sharedMapsPath;
     }
@@ -79,7 +85,7 @@ export class LocalMapsManagerService {
         for(const set of mapRawInfo._difficultyBeatmapSets){
             for(const diff of set._difficultyBeatmaps){
                 const diffFilePath = path.join(mapPath, diff._beatmapFilename);
-                const diffContent = await this.utils.readFileAsync(diffFilePath).catch(() => null);
+                const diffContent = await readFile(diffFilePath, {encoding: "utf-8"}).catch(() => null);
                 diffContent && shasum.update(diffContent);
             }
         }
@@ -90,9 +96,9 @@ export class LocalMapsManagerService {
     private async loadMapInfoFromPath(mapPath: string): Promise<BsmLocalMap>{
         const infoFilePath = path.join(mapPath, "Info.dat");
 
-        if(!(await this.utils.pathExist(infoFilePath))){ return null; }
+        if(!(await pathExist(infoFilePath))){ return null; }
 
-        const rawInfoString = await this.utils.readFileAsync(infoFilePath);
+        const rawInfoString = await readFile(infoFilePath, {encoding: "utf-8"});
 
         const rawInfo: RawMapInfoData = JSON.parse(rawInfoString);
         const coverUrl = new URL(`file:///${path.join(mapPath, rawInfo._coverImageFilename)}`).href;
@@ -106,7 +112,7 @@ export class LocalMapsManagerService {
     private async downloadMapZip(zipUrl: string): Promise<{zip: StreamZip.StreamZipAsync, zipPath: string}>{
         const fileName = path.basename(zipUrl);
         const tempPath = this.utils.getTempPath();
-        this.utils.createFolderIfNotExist(this.utils.getTempPath());
+        await ensureFolderExist(this.utils.getTempPath());
         const dest = path.join(tempPath, fileName);
 
         const zipPath = await this.reqService.downloadFile(zipUrl, dest);
@@ -137,7 +143,7 @@ export class LocalMapsManagerService {
             (async () => {
                 const levelsFolder = await this.getMapsFolderPath(version);
 
-                const levelsPaths = (await this.utils.pathExist(levelsFolder)) ? this.utils.listDirsInDir(levelsFolder, true) : [];
+                const levelsPaths = (await pathExist(levelsFolder)) ? await getFoldersInFolder(levelsFolder) : [];
 
                 progression.total = levelsPaths.length;
 
@@ -169,7 +175,7 @@ export class LocalMapsManagerService {
 
         const levelsPath = await this.getMapsFolderPath(version);
 
-        const isPathExist = await this.utils.pathExist(levelsPath);
+        const isPathExist = await pathExist(levelsPath);
 
         if(!isPathExist){ return false; }
 
@@ -177,36 +183,13 @@ export class LocalMapsManagerService {
     }
 
     public async linkVersionMaps(version: BSVersion, keepMaps: boolean): Promise<void>{
-
-        if(await this.versionIsLinked(version)){ return; }
-
-        const sharedMapsPath = await this.getMapsFolderPath();
         const versionMapsPath = await this.getMapsFolderPath(version);
-
-        if(keepMaps){
-            await this.utils.moveDirContent(versionMapsPath, sharedMapsPath);
-        }
-
-        await this.utils.deleteFolder(versionMapsPath);
-        
-        symlinkSync(sharedMapsPath, versionMapsPath, "junction");
+        return this.linker.linkFolder(versionMapsPath, {keepContents: keepMaps, intermediateFolder: LocalMapsManagerService.SHARED_MAPS_FOLDER});
     }
 
     public async unlinkVersionMaps(version: BSVersion, keepMaps: boolean): Promise<void>{
-        
-        const sharedMapsPath = await this.getMapsFolderPath();
         const versionMapsPath = await this.getMapsFolderPath(version);
-
-        if(await this.versionIsLinked(version)){
-            unlinkSync(versionMapsPath);
-        }
-
-        this.utils.createFolderIfNotExist(versionMapsPath);
-        
-        if(keepMaps){
-            await copy(sharedMapsPath, versionMapsPath);
-        }
-
+        return this.linker.unlinkFolder(versionMapsPath, {keepContents: keepMaps, intermediateFolder: LocalMapsManagerService.SHARED_MAPS_FOLDER});
     }
 
     public deleteMaps(maps: BsmLocalMap[]): Observable<DeleteMapsProgress>{
@@ -221,7 +204,7 @@ export class LocalMapsManagerService {
                     for(const folder of mapsFolders){
                         const detail = await this.loadMapInfoFromPath(folder);
                         if(!mapsHashsToDelete.includes(detail?.hash)){ continue; }
-                        await this.utils.deleteFolder(folder);
+                        await deleteFolder(folder);
                         progress.deleted++;
                         observer.next(progress);
                     }
@@ -249,7 +232,7 @@ export class LocalMapsManagerService {
 
         if(!zip){ throw `Cannot download ${zipUrl}`; }
 
-        this.utils.createFolderIfNotExist(mapPath);
+        await ensureFolderExist(mapPath);
 
         await zip.extract(null, mapPath);
         await zip.close();
@@ -291,7 +274,7 @@ export class LocalMapsManagerService {
 
             const versionMapsPath = await this.getMapsFolderPath(version);
 
-            this.utils.createFolderIfNotExist(versionMapsPath);
+            await ensureFolderExist(versionMapsPath);
 
             copySync(downloadedMap.path, path.join(versionMapsPath, path.basename(downloadedMap.path)), {overwrite: true});
 
@@ -310,7 +293,5 @@ export class LocalMapsManagerService {
     public isDeepLinksEnabled(): boolean{
         return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.isDeepLinkRegistred(link));
     }
-
-    
 
 }
