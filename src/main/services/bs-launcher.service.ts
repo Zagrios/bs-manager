@@ -6,6 +6,7 @@ import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { SteamService } from "./steam.service";
 import { BSLocalVersionService } from "./bs-local-version.service";
 import { OculusService } from "./oculus.service";
+import { pathExist } from "../helpers/fs.helpers";
 
 export class BSLauncherService{
 
@@ -42,10 +43,11 @@ export class BSLauncherService{
         const cwd = await this.localVersionService.getVersionPath(launchOptions.version);
         const exePath = path.join(cwd, BS_EXECUTABLE);
 
-        if(!this.utilsService.pathExist(exePath)){ return "EXE_NOT_FINDED"; }
+        if(!(await pathExist(exePath))){ return "EXE_NOT_FINDED"; }
         
         const launchMods = [];
 
+        if(!launchOptions.version.steam && !launchOptions.version.oculus){ launchMods.push("--no-yeet"); }
         if(launchOptions.oculus){ launchMods.push("-vrmode oculus"); }
         if(launchOptions.desktop){ launchMods.push("fpfc"); }
         if(launchOptions.debug){ launchMods.push("--verbose"); }

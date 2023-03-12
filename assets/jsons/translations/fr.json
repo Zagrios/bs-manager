@@ -83,7 +83,8 @@
                 "verify-files": "Vérifier les fichiers",
                 "clone": "Cloner",
                 "edit": "Editer",
-                "uninstall": "Désinstaller"
+                "uninstall": "Désinstaller",
+                "shared-folders": "Dossiers Partagés"
             }
         },
         "available-versions": {
@@ -413,6 +414,14 @@
                 "success":"Installation du modèle terminée",
                 "error":"Une erreur s'est produite lors de l'installation du modèle"
             }
+        },
+        "shared-folder":{
+            "success": {
+                "yeet-mods-disabled":{
+                    "title": "YeetMods désactivé",
+                    "msg": "Pour éviter la suppression des mods, la valeur de la variable 'YeetMods' dans le fichier 'Beat Saber IPA.json' a été désactivée"
+                }
+            }
         }
     },
     "modals": {
@@ -562,6 +571,15 @@
             "li-2": "Les mods sont susceptibles de ne plus fonctionner à cause des mises à jour et c'est normal - soyez patient et respectueux lorsque cela se produit, parce que les moddeurs sont bénévoles et ont une vie.",
             "li-3": "Beat Games ne cherche pas volontairement à casser les mods. Ils souhaitent améliorer la base du jeu et parfois cela casse les mods, mais ce n'est pas dans leur objectif de tuer les mods.",
             "p-2": "N'attaquez pas les développeurs pour des problèmes relatifs aux mods, et inversement - les moddeurs et les développeurs sont deux groupes distincts. Ne soyez pas idiots, d'accord ?"
+        },
+        "shared-folders":{
+            "title": "Dossiers Partagés",
+            "description": "Liez les dossiers de BeatSaber pour synchroniser leurs contenus avec les dossiers partagés des autres versions. Notez que la suppression de contenu sera également partagée.",
+            "buttons": {
+                "add-folder": "Ajouter un dossier",
+                "link-folder": "Lier le dossier",
+                "unlink-folder": "Délier le dossier"
+            }
         }
     },
     "maps": {

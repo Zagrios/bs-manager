@@ -15,6 +15,7 @@ import { BPList, DownloadPlaylistProgression } from "shared/models/playlists/pla
 import { copyFileSync, readFileSync } from "fs";
 import { BeatSaverService } from "../thrid-party/beat-saver/beat-saver.service";
 import { copySync } from "fs-extra";
+import { ensureFolderExist, pathExist } from "../../helpers/fs.helpers";
 
 export class LocalPlaylistsManagerService {
 
@@ -80,7 +81,7 @@ export class LocalPlaylistsManagerService {
 
         const folder =  path.join(versionFolder, this.PLAYLISTS_FOLDER);
 
-        await this.utils.createFolderIfNotExist(folder)
+        await ensureFolderExist(folder)
 
         return folder;
 
@@ -92,7 +93,7 @@ export class LocalPlaylistsManagerService {
 
         const bpListDest = path.join(playlistFolder, path.basename(bpListUrlOrPath)); 
 
-        if(this.utils.pathExist(bpListUrlOrPath)){
+        if(await pathExist(bpListUrlOrPath)){
             copyFileSync(bpListUrlOrPath, bpListDest);
         }
         else{
@@ -105,7 +106,7 @@ export class LocalPlaylistsManagerService {
 
     private async readPlaylistFile(path: string): Promise<BPList>{
         
-        if(!this.utils.pathExist(path)){ throw `bplist file not exist at ${path}`; }
+        if(!(await pathExist(path))){ throw `bplist file not exist at ${path}`; }
 
         const rawContent = readFileSync(path).toString();
 

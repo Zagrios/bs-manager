@@ -92,7 +92,7 @@ export function VersionViewer() {
           ((!state.steam && !state.oculus) && {text: "pages.version-viewer.dropdown.verify-files", icon: "task", onClick: verifyFiles}),
           ((!state.steam && !state.oculus) && {text: "pages.version-viewer.dropdown.edit", icon: "edit", onClick: edit}),
           (!state.oculus && {text: "pages.version-viewer.dropdown.clone", icon: "copy", onClick: clone}),
-          {text: "Share folders", icon: "link", onClick: openShareFolderModal},
+          {text: "pages.version-viewer.dropdown.shared-folders", icon: "link", onClick: openShareFolderModal},
           ((!state.steam && !state.oculus) && {text: "pages.version-viewer.dropdown.uninstall", icon:"trash", onClick: uninstall})
         ]}/>
     </>

@@ -9,6 +9,11 @@ import { BsmException } from 'shared/models/bsm-exception.model';
 import { IpcService } from '../services/ipc.service';
 import { from } from 'rxjs';
 import path from 'path';
+import { pathExist } from '../helpers/fs.helpers';
+import { FolderLinkerService } from '../services/folder-linker.service';
+import { LocalMapsManagerService } from '../services/additional-content/local-maps-manager.service';
+import { readJSON, writeJSON } from 'fs-extra';
+import log from "electron-log"
 
 const ipc = IpcService.getInstance();
 
@@ -31,7 +36,7 @@ ipcMain.on('bs-version.installed-versions', async (event, req: IpcRequest<void>)
 ipcMain.on("bs-version.open-folder", async (event, req: IpcRequest<BSVersion>) => {
    const localVersionService = BSLocalVersionService.getInstance();
    const versionFolder = await localVersionService.getVersionPath(req.args);
-   UtilsService.getInstance().pathExist(versionFolder) && exec(`start "" "${versionFolder}"`);
+   (await pathExist(versionFolder)) && exec(`start "" "${versionFolder}"`);
 });
 
 ipcMain.on("bs-version.edit", async (event, req: IpcRequest<{version: BSVersion, name: string, color: string}>) => {
@@ -58,11 +63,68 @@ ipc.on("get-version-full-path", async (req: IpcRequest<BSVersion>, reply) => {
 });
 
 ipc.on("relative-version-path-to-full", async (req: IpcRequest<{version: BSVersion, relative: string}>, reply) => {
+    path.isAbsolute(req.args.relative) && reply(from(Promise.resolve(req.args.relative)));
+
     const localVersions = BSLocalVersionService.getInstance();
     const promise = localVersions.getVersionPath(req.args.version).catch(() => null).then(versionPath => {
         return path.join(versionPath, req.args.relative);
     });
     reply(from(promise));
+});
+
+ipc.on("full-version-path-to-relative", async (req: IpcRequest<{version: BSVersion, fullPath: string}>, reply) => {
+    const localVersions = BSLocalVersionService.getInstance();
+    const promise = localVersions.getVersionPath(req.args.version).catch(() => null).then(versionPath => {
+        return path.relative(versionPath, req.args.fullPath);
+    });
+    reply(from(promise));
+});
+
+ipc.on("get-linked-folders", async (req: IpcRequest<BSVersion>, reply) => {
+    const localVersions = BSLocalVersionService.getInstance();
+    reply(from(localVersions.getLinkedFolders(req.args)));
+});
+
+ipc.on("link-folder", async (req: IpcRequest<{ folder: string, keepContents?: boolean}>, reply) => {
+    const linker = FolderLinkerService.getInstance();
+
+    const relativeMapsFolder = path.join(LocalMapsManagerService.LEVELS_ROOT_FOLDER, LocalMapsManagerService.CUSTOM_LEVELS_FOLDER)
+
+    if(req.args.folder.includes(relativeMapsFolder)){
+        return reply(from(linker.linkFolder(req.args.folder, {keepContents: req.args.keepContents, intermediateFolder: LocalMapsManagerService.SHARED_MAPS_FOLDER})));
+    }
+
+    const res = from(linker.linkFolder(req.args.folder, {keepContents: true}));
+
+    const jsonIPAPath = path.join(req.args.folder, "Beat Saber IPA.json");
+
+    if(!(await pathExist(jsonIPAPath))){ return reply(res); }
+
+    await res.toPromise();
+
+    try{
+        const ipaData = (await readJSON(jsonIPAPath)) ?? {} as any;
+        ipaData["YeetMods"] = false;
+        await writeJSON(jsonIPAPath, ipaData, {spaces: 4});
+    }catch(e){
+        log.error("Disable YeetMods", e);
+    }
+
+    reply(res);
+
+});
+
+ipc.on("unlink-folder", async (req: IpcRequest<{folder: string, keepContents?: boolean}>, reply) => {
+    const linker = FolderLinkerService.getInstance();
+
+    const relativeMapsFolder = path.join(LocalMapsManagerService.LEVELS_ROOT_FOLDER, LocalMapsManagerService.CUSTOM_LEVELS_FOLDER)
+
+    if(req.args.folder.includes(relativeMapsFolder)){
+        return reply(from(linker.unlinkFolder(req.args.folder, {keepContents: req.args.keepContents, intermediateFolder: LocalMapsManagerService.SHARED_MAPS_FOLDER})));
+    }
+
+    reply(from(linker.unlinkFolder(req.args.folder, {keepContents: req.args.keepContents})));
+
 });
 
 

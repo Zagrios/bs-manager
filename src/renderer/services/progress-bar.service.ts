@@ -59,12 +59,12 @@ export class ProgressBarService{
         this._style$.next(style);
     }
 
-    public showFake(speed: number, style?: CSSProperties): void{
+    public showFake(speed: number, style?: CSSProperties, label?: string): void{
         const obs: Observable<ProgressionInterface> = timer(1000, 100).pipe(map(val => {
-            if(this._progression$.value.progression >= 100){ return {progression: 100}; }
+            if(this._progression$.value.progression >= 100){ return {progression: 100, label}; }
             const currentProgress = speed * (val + 1);
             const progress = Math.round(Math.atan(currentProgress) / (Math.PI / 2) * 100 * 1000) / 1000;
-            return {progression: progress} as ProgressionInterface;
+            return {progression: progress, label} as ProgressionInterface;
         }));
         this.show(obs, true, style);
     }

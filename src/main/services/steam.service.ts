@@ -4,6 +4,7 @@ import path from "path";
 import { parse } from "@node-steam/vdf";
 import { readFile } from "fs/promises";
 import { spawn } from "child_process";
+import { pathExist } from "../helpers/fs.helpers";
 
 export class SteamService{
 
@@ -50,7 +51,7 @@ export class SteamService{
 
     let libraryFolders: any = path.join(steamPath, 'steamapps', 'libraryfolders.vdf');
 
-    if(!this.utils.pathExist(libraryFolders)){ return null; }
+    if(!(await pathExist(libraryFolders))){ return null; }
     libraryFolders =  parse(await readFile(libraryFolders, {encoding: 'utf-8'}));
 
     if(!libraryFolders.libraryfolders){ return null; }

@@ -7,6 +7,7 @@ import { SteamService } from '../services/steam.service';
 import { IpcService } from '../services/ipc.service';
 import { from } from 'rxjs';
 import { fstat, lstat } from 'fs';
+import { pathExist } from '../helpers/fs.helpers';
 
 
 // TODO IMPROVE WINDOW CONTROL BY USING WINDOW SERVICE
@@ -79,9 +80,8 @@ ipcMain.on("open-steam", async (event, request: IpcRequest<void>) => {
 });
 
 ipc.on("is-folder-symlink", async (req: IpcRequest<string>, reply) => {
-    const utils = UtilsService.getInstance();
     const promise = new Promise<boolean>(async resolve => {
-        if(!utils.pathExist(req.args)){ return resolve(false); }
+        if(!(await pathExist(req.args))){ return resolve(false); }
         lstat(req.args, (err, stats) => {
             if(err){ return resolve(false); }
             resolve(stats.isSymbolicLink());

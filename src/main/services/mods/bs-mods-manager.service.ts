@@ -11,6 +11,7 @@ import { RequestService } from "../request.service";
 import { spawn } from "child_process";
 import { BS_EXECUTABLE } from "../../constants";
 import log from "electron-log";
+import { deleteFolder, ensureFolderExist, pathExist, unlinkPath } from "../../helpers/fs.helpers";
 
 export class BsModsManagerService {
 
@@ -60,7 +61,7 @@ export class BsModsManagerService {
     private async getModsInDir(version: BSVersion, modsDir: ModsInstallFolder): Promise<Mod[]>{
         const bsPath = await this.bsLocalService.getVersionPath(version);
         const modsPath = path.join(bsPath, modsDir);
-        if(!this.utilsService.pathExist(modsPath)){ return []; }
+        if(!(await pathExist(modsPath))){ return []; }
         const files = fs.readdirSync(modsPath);
         const promises = files.map(f => {
             return (async() => {
@@ -89,7 +90,7 @@ export class BsModsManagerService {
     private async getBsipaInstalled(version: BSVersion): Promise<Mod>{
         const bsPath = await this.bsLocalService.getVersionPath(version);
         const injectorPath = path.join(bsPath, "Beat Saber_Data", "Managed", "IPA.Injector.dll");
-        if(!this.utilsService.pathExist(injectorPath)){ return undefined; }
+        if(!(await pathExist(injectorPath))){ return undefined; }
         const injectorMd5 = await md5File(injectorPath);
         return this.getIpaFromHash(injectorMd5);
     }
@@ -98,7 +99,7 @@ export class BsModsManagerService {
         zipUrl = path.join(this.beatModsApi.BEAT_MODS_URL, zipUrl);
         const fileName = path.basename(zipUrl);
         const tempPath = this.utilsService.getTempPath();
-        this.utilsService.createFolderIfNotExist(this.utilsService.getTempPath());
+        await ensureFolderExist(this.utilsService.getTempPath());
         const dest = path.join(tempPath, fileName);
 
         const zipPath = await this.requestService.downloadFile(zipUrl, dest);
@@ -111,7 +112,7 @@ export class BsModsManagerService {
         const versionPath = await this.bsLocalService.getVersionPath(version);
         const ipaPath = path.join(versionPath, "IPA.exe");
         const bsExePath = path.join(versionPath, BS_EXECUTABLE);
-        if(!this.utilsService.pathExist(ipaPath) || !this.utilsService.pathExist(bsExePath)){ return false; }
+        if(!(await pathExist(ipaPath)) || !(await pathExist(bsExePath))){ return false; }
 
         return new Promise<boolean>(resolve => {
             const processIPA = spawn(`start /wait /min "" "${ipaPath}" ${args.join(" ")}`, {cwd: versionPath, detached: true, shell: true});
@@ -163,7 +164,7 @@ export class BsModsManagerService {
         const extracted = await zip.extract(null, destDir).then(() => true).catch(err => {log.error(err); return false});
 
         await zip.close();
-        await this.utilsService.unlinkIfExist(zipPath);
+        await unlinkPath(zipPath);
 
         const res = isBSIPA ? (extracted && (await this.executeBSIPA(version, ["-n"]))) : extracted;
 
@@ -194,8 +195,8 @@ export class BsModsManagerService {
         const download = this.getModDownload(mod, version);
 
         const verionPath = await this.bsLocalService.getVersionPath(version);
-        const hasIPAExe = this.utilsService.pathExist(path.join(verionPath, "IPA.exe"));
-        const hasIPADir = this.utilsService.pathExist(path.join(verionPath, "IPA"));
+        const hasIPAExe = await pathExist(path.join(verionPath, "IPA.exe"));
+        const hasIPADir = await pathExist(path.join(verionPath, "IPA"));
 
         if(!hasIPADir || !hasIPAExe){ return; }
 
@@ -203,7 +204,7 @@ export class BsModsManagerService {
 
         const promises = download.hashMd5.map(files => {
             const file = files.file.replaceAll("IPA/", "").replaceAll("Data", "Beat Saber_Data");
-            return this.utilsService.unlinkIfExist(path.join(verionPath, file));
+            return unlinkPath(path.join(verionPath, file));
         })
         
         await Promise.all(promises);
@@ -220,8 +221,10 @@ export class BsModsManagerService {
         const versionPath = await this.bsLocalService.getVersionPath(version);
 
         const promises = download.hashMd5.map(async files => {
-            this.utilsService.unlinkIfExist(path.join(versionPath, files.file));
-            this.utilsService.unlinkIfExist(path.join(versionPath, "IPA", "Pending", files.file));
+            return Promise.all([
+                unlinkPath(path.join(versionPath, files.file)),
+                unlinkPath(path.join(versionPath, "IPA", "Pending", files.file))
+            ]);
         });
 
         await Promise.all(promises);
@@ -306,9 +309,9 @@ export class BsModsManagerService {
 
         const versionPath = await this.bsLocalService.getVersionPath(version);
 
-        this.utilsService.rmDirIfExist(path.join(versionPath, ModsInstallFolder.PLUGINS));
-        this.utilsService.rmDirIfExist(path.join(versionPath, ModsInstallFolder.LIBS));
-        this.utilsService.rmDirIfExist(path.join(versionPath, ModsInstallFolder.IPA));
+        await deleteFolder(path.join(versionPath, ModsInstallFolder.PLUGINS));
+        await deleteFolder(path.join(versionPath, ModsInstallFolder.LIBS));
+        await deleteFolder(path.join(versionPath, ModsInstallFolder.IPA));
 
         path.resolve
 
