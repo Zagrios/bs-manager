@@ -80,7 +80,7 @@ export class BSLauncherService{
                 log.error(e);
                 this.restoreSteamVR();
             }).finally(() => {
-                setTimeout(() => this.restoreSteamVR(), 20_000);
+                setTimeout(() => this.restoreSteamVR(), 35_000);
             });
             await timer(2_000).toPromise();
         }
