@@ -40,7 +40,6 @@ export function SettingsPage() {
   const modalService: ModalService = ModalService.getInsance();
   const downloaderService: BsDownloaderService = BsDownloaderService.getInstance();
   const progressBarService: ProgressBarService = ProgressBarService.getInstance();
-  const authService: AuthUserService = AuthUserService.getInstance();
   const notificationService: NotificationService = NotificationService.getInstance();
   const i18nService: I18nService = I18nService.getInstance();
   const linkOpener: LinkOpenerService = LinkOpenerService.getInstance();
@@ -49,7 +48,6 @@ export function SettingsPage() {
   const modelsManager = ModelsManagerService.getInstance();
 
   const {firstColor, secondColor} = useThemeColor();
-  const sessionExist = useObservable(authService.sessionExist$);
 
   const themeItem: RadioItem[] = [
     {id: 0, text: "pages.settings.appearance.themes.dark", value: "dark" as ThemeConfig},
@@ -133,12 +131,6 @@ export function SettingsPage() {
       });
    }
 
-  const deleteSteamSession = () => {
-    if(!sessionExist){ return; }
-    authService.deleteSteamSession();
-    notificationService.notifySuccess({title: "notifications.settings.steam.success.titles.logout", duration: 3000});
-  };
-
   
   const toogleShowSupporters = () => {
       setShowSupporters(show => !show);
@@ -195,10 +187,6 @@ export function SettingsPage() {
                 <div className="inline-block sticky top-8 left-[calc(100%)] translate-x-12 grow-0 w-9 h-9">
                     <BsmButton className="inline-block grow-0 bg-transparent sticky h-full w-full top-20 right-20 !m-0 rounded-full p-1" onClick={() => nav(-1)} icon="close" withBar={false}/>
                 </div>
-
-                <SettingContainer title="pages.settings.steam.title" description="pages.settings.steam.description">
-                    <BsmButton onClick={deleteSteamSession} className="w-fit px-3 py-[2px] text-white rounded-md" withBar={false} text="pages.settings.steam.logout" typeColor="error" disabled={!sessionExist}/>
-                </SettingContainer>
 
                 <SettingContainer title="pages.settings.appearance.title" description="pages.settings.appearance.description">
                     <div className="relative w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 flex justify-center rounded-md py-1">

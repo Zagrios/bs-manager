@@ -45,18 +45,21 @@ export class BSLauncherService{
 
         if(!(await pathExist(exePath))){ return "EXE_NOT_FINDED"; }
         
-        const launchMods = [];
+        let launchArgs = [];
 
-        if(!launchOptions.version.steam && !launchOptions.version.oculus){ launchMods.push("--no-yeet"); }
-        if(launchOptions.oculus){ launchMods.push("-vrmode oculus"); }
-        if(launchOptions.desktop){ launchMods.push("fpfc"); }
-        if(launchOptions.debug){ launchMods.push("--verbose"); }
+        if(!launchOptions.version.steam && !launchOptions.version.oculus){ launchArgs.push("--no-yeet"); }
+        if(launchOptions.oculus){ launchArgs.push("-vrmode oculus"); }
+        if(launchOptions.desktop){ launchArgs.push("fpfc"); }
+        if(launchOptions.debug){ launchArgs.push("--verbose"); }
+        if(launchOptions.additionalArgs){ launchArgs.push(...launchOptions.additionalArgs); }
+
+        launchArgs = Array.from(new Set(launchArgs).values());
 
         if(launchOptions.debug){
-            this.bsProcess = spawn(`\"${exePath}\"`, launchMods, {shell: true, cwd, env: {...process.env, "SteamAppId": BS_APP_ID}, detached: true, windowsVerbatimArguments: true });
+            this.bsProcess = spawn(`\"${exePath}\"`, launchArgs, {shell: true, cwd, env: {...process.env, "SteamAppId": BS_APP_ID}, detached: true, windowsVerbatimArguments: true });
         }
         else{
-            this.bsProcess = spawn(`\"${exePath}\"`, launchMods, {shell: true, cwd, env: {...process.env, "SteamAppId": BS_APP_ID} });
+            this.bsProcess = spawn(`\"${exePath}\"`, launchArgs, {shell: true, cwd, env: {...process.env, "SteamAppId": BS_APP_ID} });
         }
 
         this.bsProcess.on('message', msg => console.log(msg));
