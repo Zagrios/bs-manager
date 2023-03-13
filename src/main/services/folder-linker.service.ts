@@ -30,6 +30,22 @@ export class FolderLinkerService {
         return path.join(this.sharedFolder, intermediateFolder ?? "", path.basename(folderPath));
     }
 
+    private getBackupFolder(folderPath: string): string {
+        return folderPath + "_backup";
+    }
+
+    private async backupFolder(folderPath: string): Promise<void> {
+        if(!await pathExist(folderPath)){ return; }
+        return copy(folderPath, this.getBackupFolder(folderPath), { overwrite: true, errorOnExist: false });
+    }
+
+    private async restoreFolder(folderPath: string): Promise<void> {
+        if(!await pathExist( this.getBackupFolder(folderPath) )){ return; }
+        return copy(this.getBackupFolder(folderPath), folderPath, { overwrite: true, errorOnExist: false }).then(() => {
+            return deleteFolder(this.getBackupFolder(folderPath));
+        });
+    }
+
     public async linkFolder(folderPath: string, options?: LinkOptions): Promise<void> {
 
         if(await this.isFolderSymlink(folderPath)){ return; }
@@ -39,10 +55,14 @@ export class FolderLinkerService {
         await ensureFolderExist(folderPath);
         await ensureFolderExist(sharedPath);
 
+        if(options?.backup === true){
+            await this.backupFolder(folderPath);
+        }
+
         if(options?.keepContents !== false){
             await moveFolderContent(folderPath, sharedPath).toPromise();
         }
-        
+
         await deleteFolder(folderPath);
 
         return symlink(sharedPath, folderPath, "junction");
@@ -57,11 +77,15 @@ export class FolderLinkerService {
 
         await ensureFolderExist(folderPath);
 
+        if(options?.backup === true){
+            return this.restoreFolder(folderPath);
+        }
+
         if(options?.keepContents === false){ return; }
 
         await ensureFolderExist(sharedPath);
 
-        return copy(sharedPath, folderPath, { errorOnExist: false });
+        return copy(sharedPath, folderPath, { errorOnExist: false, recursive: true });
     }
 
     public async isFolderSymlink(folder: string): Promise<boolean> {
@@ -80,4 +104,5 @@ export class FolderLinkerService {
 export interface LinkOptions {
     keepContents?: boolean,
     intermediateFolder?: string,
+    backup?: boolean
 }
