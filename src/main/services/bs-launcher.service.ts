@@ -1,12 +1,15 @@
 import path from "path";
 import { LaunchResult, LauchOption } from "shared/models/bs-launch";
 import { UtilsService } from "./utils.service";
-import { BS_EXECUTABLE, BS_APP_ID } from "../constants";
+import { BS_EXECUTABLE, BS_APP_ID, STEAMVR_APP_ID } from "../constants";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { SteamService } from "./steam.service";
 import { BSLocalVersionService } from "./bs-local-version.service";
 import { OculusService } from "./oculus.service";
 import { pathExist } from "../helpers/fs.helpers";
+import { rename } from "fs/promises";
+import log from "electron-log";
+import { timer } from "rxjs";
 
 export class BSLauncherService{
 
@@ -29,6 +32,23 @@ export class BSLauncherService{
         this.steamService = SteamService.getInstance();
         this.oculusService = OculusService.getInstance();
         this.localVersionService = BSLocalVersionService.getInstance();
+    }
+
+    private getSteamVRPath(): Promise<string>{
+        return this.steamService.getGameFolder(STEAMVR_APP_ID, "SteamVR");
+    }
+
+    private async backupSteamVR(): Promise<void>{
+        const steamVrFolder = await this.getSteamVRPath();
+        if(!await pathExist(steamVrFolder)){ return; }
+        return rename(steamVrFolder, steamVrFolder + ".bak");
+    }
+
+    public async restoreSteamVR(): Promise<void>{
+        const steamVrFolder = await this.getSteamVRPath();
+        const steamVrBackup = steamVrFolder + ".bak";
+        if(!await pathExist(steamVrBackup)){ return; }
+        return rename(steamVrFolder + ".bak", steamVrFolder);
     }
 
     public isBsRunning(): boolean{
@@ -55,6 +75,19 @@ export class BSLauncherService{
 
         launchArgs = Array.from(new Set(launchArgs).values());
 
+        if(launchArgs.includes("fpfc")){
+            await this.backupSteamVR().catch(e => {
+                log.error(e);
+                this.restoreSteamVR();
+            }).finally(() => {
+                setTimeout(() => this.restoreSteamVR(), 20_000);
+            });
+            await timer(2_000).toPromise();
+        }
+        else{
+            await this.restoreSteamVR();
+        }
+
         if(launchOptions.debug){
             this.bsProcess = spawn(`\"${exePath}\"`, launchArgs, {shell: true, cwd, env: {...process.env, "SteamAppId": BS_APP_ID}, detached: true, windowsVerbatimArguments: true });
         }
@@ -62,9 +95,11 @@ export class BSLauncherService{
             this.bsProcess = spawn(`\"${exePath}\"`, launchArgs, {shell: true, cwd, env: {...process.env, "SteamAppId": BS_APP_ID} });
         }
 
-        this.bsProcess.on('message', msg => console.log(msg));
-        this.bsProcess.on('error', err => console.log(err));
-        this.bsProcess.on('exit', code => this.utilsService.ipcSend("bs-launch.exit", {data: code, success: code === 0}));
+        this.bsProcess.on('error', err => log.error(err));
+        this.bsProcess.on('exit', code => {
+            this.restoreSteamVR();
+            this.utilsService.ipcSend("bs-launch.exit", {data: code, success: code === 0})
+        });
 
         return "LAUNCHED";
     }

@@ -20,6 +20,7 @@ import { LocalMapsManagerService } from './services/additional-content/local-map
 import { LocalPlaylistsManagerService } from './services/additional-content/local-playlists-manager.service';
 import { LocalModelsManagerService } from './services/additional-content/local-models-manager.service';
 import { APP_NAME } from './constants';
+import { BSLauncherService } from './services/bs-launcher.service';
 
 const isDebug = process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
@@ -63,14 +64,6 @@ const initServicesMustBeInitialized = () => {
     // Model
 }
 
-app.on('window-all-closed', () => {
-    // Respect the OSX convention of having the application in memory even
-    // after all windows have been closed
-    if (process.platform !== 'darwin') {
-        app.quit();
-    }
-});
-
 const gotTheLock = app.requestSingleInstanceLock();
 
 if(!gotTheLock){
@@ -107,6 +100,8 @@ else{
             const pathname = decodeURI(request.url.replace('file:///', ''));
             callback(pathname);
         });
+
+        BSLauncherService.getInstance().restoreSteamVR();
 
     }).catch(log.error);
 }
