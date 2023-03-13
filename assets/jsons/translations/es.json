@@ -28,7 +28,11 @@
                 "desktop": "Desktop Mod",
                 "desktop-description": "Esto te permite usar WASD y el mouse para navegar por el menú en juego. Esto hace que las pruebas sean mucho más fáciles, ¡porque no tienes que ponerte el auricular!",
                 "debug": "Debug Mod",
-                "debug-description": "Habilita la ventana de registro de salida para IPA. Esto mostrará la consola de depuración que usan los mods."
+                "debug-description": "Habilita la ventana de registro de salida para IPA. Esto mostrará la consola de depuración que usan los mods.",
+                "advanced-launch": {
+                    "button": "Lanzamiento avanzado",
+                    "placeholder": "Argumentos adicionales ej: --revert; --no-wait"
+                }
             },
             "maps": {
                 "search-bar": {

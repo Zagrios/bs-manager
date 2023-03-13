@@ -28,7 +28,11 @@
                 "desktop": "Mode Bureau",
                 "desktop-description": "Cela vous permet d'utiliser WASD et la souris pour naviguer dans le menu en jeu. Cela rend les tests beaucoup plus faciles, car vous n'avez pas à mettre votre casque!",
                 "debug": "Mode Debug",
-                "debug-description": "Active la fenêtre de log pour IPA. Cela affichera la console de débogage utilisée par les mods."
+                "debug-description": "Active la fenêtre de log pour IPA. Cela affichera la console de débogage utilisée par les mods.",
+                "advanced-launch": {
+                    "button": "Lancement avancé",
+                    "placeholder": "Arguments supplémentaires ex: --revert; --nowait"
+                }
             },
             "maps": {
                 "search-bar": {
