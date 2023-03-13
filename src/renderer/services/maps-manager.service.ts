@@ -66,7 +66,7 @@ export class MapsManagerService {
 
         const versionMapsPath = await this.getVersionMapsPath(version);
 
-        return this.linker.linkFolder(versionMapsPath, !!modalRes.data).toPromise();
+        return this.linker.linkFolder(versionMapsPath, {keepContents: !!modalRes.data}).toPromise();
     }
 
     public async unlinkVersion(version: BSVersion): Promise<void>{
@@ -77,7 +77,7 @@ export class MapsManagerService {
 
         const versionMapsPath = await this.getVersionMapsPath(version);
 
-        return this.linker.unlinkFolder(versionMapsPath, !!modalRes.data).toPromise();
+        return this.linker.unlinkFolder(versionMapsPath, {keepContents: !!modalRes.data}).toPromise();
     }
 
     public async deleteMaps(maps: BsmLocalMap[], version?: BSVersion): Promise<boolean>{

@@ -10,7 +10,7 @@ import { IpcService } from '../services/ipc.service';
 import { from } from 'rxjs';
 import path from 'path';
 import { pathExist } from '../helpers/fs.helpers';
-import { FolderLinkerService } from '../services/folder-linker.service';
+import { FolderLinkerService, LinkOptions } from '../services/folder-linker.service';
 import { LocalMapsManagerService } from '../services/additional-content/local-maps-manager.service';
 import { readJSON, writeJSON } from 'fs-extra';
 import log from "electron-log"
@@ -85,16 +85,23 @@ ipc.on("get-linked-folders", async (req: IpcRequest<BSVersion>, reply) => {
     reply(from(localVersions.getLinkedFolders(req.args)));
 });
 
-ipc.on("link-folder", async (req: IpcRequest<{ folder: string, keepContents?: boolean}>, reply) => {
+ipc.on("link-folder", async (req: IpcRequest<{ folder: string, options?: LinkOptions}>, reply) => {
+
+    req.args.options ??= {};
+
     const linker = FolderLinkerService.getInstance();
 
     const relativeMapsFolder = path.join(LocalMapsManagerService.LEVELS_ROOT_FOLDER, LocalMapsManagerService.CUSTOM_LEVELS_FOLDER)
 
     if(req.args.folder.includes(relativeMapsFolder)){
-        return reply(from(linker.linkFolder(req.args.folder, {keepContents: req.args.keepContents, intermediateFolder: LocalMapsManagerService.SHARED_MAPS_FOLDER})));
+        return reply(from(linker.linkFolder(req.args.folder, {keepContents: req.args.options?.keepContents, intermediateFolder: LocalMapsManagerService.SHARED_MAPS_FOLDER})));
     }
 
-    const res = from(linker.linkFolder(req.args.folder, {keepContents: true}));
+    if(req.args.folder.includes("UserData")){
+        req.args.options = { ...req.args.options, backup: true };
+    }
+
+    const res = from(linker.linkFolder(req.args.folder, req.args.options));
 
     const jsonIPAPath = path.join(req.args.folder, "Beat Saber IPA.json");
 
@@ -114,16 +121,23 @@ ipc.on("link-folder", async (req: IpcRequest<{ folder: string, keepContents?: bo
 
 });
 
-ipc.on("unlink-folder", async (req: IpcRequest<{folder: string, keepContents?: boolean}>, reply) => {
+ipc.on("unlink-folder", async (req: IpcRequest<{ folder: string, options?: LinkOptions}>, reply) => {
+
+    req.args.options ??= {};
+
     const linker = FolderLinkerService.getInstance();
 
     const relativeMapsFolder = path.join(LocalMapsManagerService.LEVELS_ROOT_FOLDER, LocalMapsManagerService.CUSTOM_LEVELS_FOLDER)
 
     if(req.args.folder.includes(relativeMapsFolder)){
-        return reply(from(linker.unlinkFolder(req.args.folder, {keepContents: req.args.keepContents, intermediateFolder: LocalMapsManagerService.SHARED_MAPS_FOLDER})));
+        return reply(from(linker.unlinkFolder(req.args.folder, {...req.args.options, intermediateFolder: LocalMapsManagerService.SHARED_MAPS_FOLDER})));
     }
 
-    reply(from(linker.unlinkFolder(req.args.folder, {keepContents: req.args.keepContents})));
+    if(req.args.folder.includes("UserData")){
+        req.args.options = { ...req.args.options, backup: true };
+    }
+
+    reply(from(linker.unlinkFolder(req.args.folder, req.args.options)));
 
 });
 

@@ -420,10 +420,10 @@
             }
         },
         "shared-folder":{
-            "success": {
-                "yeet-mods-disabled":{
-                    "title": "YeetMods désactivé",
-                    "msg": "Pour éviter la suppression des mods, la valeur de la variable 'YeetMods' dans le fichier 'Beat Saber IPA.json' a été désactivée"
+            "info": {
+                "userdata-backup-created":{
+                    "title": "Sauvegarde créée",
+                    "msg": "Le partage du dossier 'UserData' peut générer des erreurs, en cas de soucis déliez le dossier pour restaurer la sauvegarde"
                 }
             }
         }
