@@ -12,7 +12,7 @@ export class UtilsService{
 
   private static instance: UtilsService;
 
-  private assetsPath: string = '';
+  private assetsPath: string = app.isPackaged ? path.join(process.resourcesPath, 'assets') : path.join(__dirname, '../../../assets');
 
   private windows: Map<AppWindow, BrowserWindow> = new Map<AppWindow, BrowserWindow>();
 
