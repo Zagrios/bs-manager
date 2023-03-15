@@ -41,14 +41,15 @@ export class BSLauncherService{
     private async backupSteamVR(): Promise<void>{
         const steamVrFolder = await this.getSteamVRPath();
         if(!await pathExist(steamVrFolder)){ return; }
-        return rename(steamVrFolder, steamVrFolder + ".bak");
+        return rename(steamVrFolder, steamVrFolder + ".bak").catch(log.error);
     }
 
     public async restoreSteamVR(): Promise<void>{
+        console.log("restoreSteamVR");
         const steamVrFolder = await this.getSteamVRPath();
         const steamVrBackup = steamVrFolder + ".bak";
         if(!await pathExist(steamVrBackup)){ return; }
-        return rename(steamVrFolder + ".bak", steamVrFolder);
+        return rename(steamVrFolder + ".bak", steamVrFolder).catch(log.error);
     }
 
     public isBsRunning(): boolean{
@@ -75,12 +76,13 @@ export class BSLauncherService{
 
         launchArgs = Array.from(new Set(launchArgs).values());
 
+        let restoreTimout: NodeJS.Timeout;
+
         if(launchArgs.includes("fpfc")){
-            await this.backupSteamVR().catch(e => {
-                log.error(e);
+            await this.backupSteamVR().catch(() => {
                 this.restoreSteamVR();
             }).finally(() => {
-                setTimeout(() => this.restoreSteamVR(), 35_000);
+                restoreTimout = setTimeout(() => this.restoreSteamVR(), 35_000);
             });
             await timer(2_000).toPromise();
         }
@@ -97,7 +99,7 @@ export class BSLauncherService{
 
         this.bsProcess.on('error', err => log.error(err));
         this.bsProcess.on('exit', code => {
-            this.restoreSteamVR();
+            this.restoreSteamVR().finally(() => clearTimeout(restoreTimout));
             this.utilsService.ipcSend("bs-launch.exit", {data: code, success: code === 0})
         });
 
