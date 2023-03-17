@@ -2,11 +2,15 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { UtilsService } from './utils.service';
 import { gt } from 'semver';
+import { ConfigurationService } from './configuration.service';
 export class AutoUpdaterService {
 
     private static instance: AutoUpdaterService;
 
     private readonly utilsService: UtilsService;
+
+    private readonly configService : ConfigurationService;
+    private readonly HAVE_BEEN_UPDATED_KEY = "haveBeenUpdated";
 
     public static getInstance(): AutoUpdaterService{
         if(!AutoUpdaterService.instance){ AutoUpdaterService.instance = new AutoUpdaterService(); }
@@ -21,6 +25,7 @@ export class AutoUpdaterService {
     }
 
     public isUpdateAvailable(): Promise<boolean>{
+        this.configService.set(this.HAVE_BEEN_UPDATED_KEY, false);
         return new Promise(resolve => {
             autoUpdater.checkForUpdates().then(info => {
                 const needUpdate = (() => {
@@ -43,9 +48,7 @@ export class AutoUpdaterService {
     }
 
     public quitAndInstall(){
+        this.configService.set(this.HAVE_BEEN_UPDATED_KEY, true);
         autoUpdater.quitAndInstall();
     }
-
-
-
 }
