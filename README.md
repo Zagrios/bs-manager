@@ -43,7 +43,7 @@
     <a href="https://github.com/Zagrios/bs-manager/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/Zagrios/bs-manager?style=for-the-badge"></a>
     <br>
     <a href="https://discord.gg/uSqbHVpKdV"><img src ="https://img.shields.io/badge/-DISCORD-5865f2?style=for-the-badge&logo=discord&logoColor=ffffff" alt="discord"/></a>
-    <!--<a href="https://mee6.xyz/fr/m/bsmanager"><img src ="https://img.shields.io/badge/-🥰%20Support%20BSM-EC4546?style=for-the-badge" alt="Donation"/></a>-->
+    <a href="https://www.patreon.com/bsmanager"><img src ="https://img.shields.io/badge/-🥰%20Support%20BSM-EC4546?style=for-the-badge" alt="Donation"/></a>
     <a href="https://twitter.com/BSManager_"><img src ="https://img.shields.io/badge/-Twitter-F5F8FA?style=for-the-badge&logo=Twitter" alt="Twitter"/></a>
     <br>
     [<a href="#readme-bot">Go to bottom</a>]
