@@ -1,6 +1,6 @@
 import { LinkMapsModal } from "renderer/components/modal/modal-types/link-maps-modal.component";
 import { UnlinkMapsModal } from "renderer/components/modal/modal-types/unlink-maps-modal.component";
-import { Subject, Observable } from "rxjs";
+import { Subject, Observable, of } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { BsmLocalMapsProgress, BsmLocalMap, DeleteMapsProgress } from "shared/models/maps/bsm-local-map.interface";
 import { IpcService } from "./ipc.service";
@@ -11,9 +11,9 @@ import { OpenSaveDialogOption } from "shared/models/ipc";
 import { NotificationService } from "./notification.service";
 import { ConfigurationService } from "./configuration.service";
 import { ArchiveProgress } from "shared/models/archive.interface";
-import { map, last, catchError } from "rxjs/operators";
-import { of } from "rxjs";
+import { map, last, catchError, distinctUntilChanged, mergeMap } from "rxjs/operators";
 import { ProgressionInterface } from "shared/models/progress-bar";
+import { FolderLinkerService } from "./folder-linker.service";
 
 export class MapsManagerService {
 
@@ -31,6 +31,7 @@ export class MapsManagerService {
     private readonly progressBar: ProgressBarService;
     private readonly notifications: NotificationService;
     private readonly config: ConfigurationService;
+    private readonly linker: FolderLinkerService;
 
     private readonly lastLinkedVersion$: Subject<BSVersion> = new Subject();
     private readonly lastUnlinkedVersion$: Subject<BSVersion> = new Subject();
@@ -41,17 +42,20 @@ export class MapsManagerService {
         this.progressBar = ProgressBarService.getInstance();
         this.notifications = NotificationService.getInstance();
         this.config = ConfigurationService.getInstance();
+        this.linker = FolderLinkerService.getInstance();
+    }
+
+    private async getVersionMapsPath(version: BSVersion): Promise<string>{
+        return this.ipcService.sendV2<string>("get-version-maps-path", {args: version}).toPromise();
     }
 
     public getMaps(version?: BSVersion): Observable<BsmLocalMapsProgress>{
         return this.ipcService.sendV2<BsmLocalMapsProgress>("load-version-maps", {args: version}, {loaded: 0, total: 0, maps: []});
     }
 
-    public versionHaveMapsLinked(version: BSVersion): Promise<boolean>{
-        return this.ipcService.send<boolean, BSVersion>("verion-have-maps-linked", {args: version}).then(res => {
-            if(!res.success){ throw "error"; }
-            return res.data;
-        })
+    public async versionHaveMapsLinked(version: BSVersion): Promise<boolean>{
+        const versionMapsPath = await this.getVersionMapsPath(version);
+        return this.linker.isFolderLinked(versionMapsPath).toPromise();
     }
 
     public async linkVersion(version: BSVersion): Promise<void>{
@@ -60,21 +64,9 @@ export class MapsManagerService {
 
         if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return; }
 
-        const showProgressBar = this.progressBar.require();
+        const versionMapsPath = await this.getVersionMapsPath(version);
 
-        if(showProgressBar){
-            this.progressBar.showFake(.01);
-        }
-
-        const res = await this.ipcService.send<void, {version: BSVersion, keepMaps: boolean}>("link-version-maps", {args: {version, keepMaps: !!modalRes.data}});
-
-        if(showProgressBar){
-            this.progressBar.hide(true);
-        }
-
-        if(res.success){
-            this.lastLinkedVersion$.next(version);
-        }
+        return this.linker.linkFolder(versionMapsPath, {keepContents: !!modalRes.data}).toPromise();
     }
 
     public async unlinkVersion(version: BSVersion): Promise<void>{
@@ -83,21 +75,9 @@ export class MapsManagerService {
 
         if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return; }
 
-        const showProgressBar = this.progressBar.require();
+        const versionMapsPath = await this.getVersionMapsPath(version);
 
-        if(showProgressBar){
-            this.progressBar.showFake(.01);
-        }
-
-        const res = await this.ipcService.send<void, {version: BSVersion, keepMaps: boolean}>("unlink-version-maps", {args: {version, keepMaps: !!modalRes.data}});
-
-        if(showProgressBar){
-            this.progressBar.hide(true);
-        }
-
-        if(res.success){
-            this.lastUnlinkedVersion$.next(version);
-        }
+        return this.linker.unlinkFolder(versionMapsPath, {keepContents: !!modalRes.data}).toPromise();
     }
 
     public async deleteMaps(maps: BsmLocalMap[], version?: BSVersion): Promise<boolean>{
@@ -171,6 +151,13 @@ export class MapsManagerService {
 
     public get versionUnlinked$(): Observable<BSVersion>{
         return this.lastUnlinkedVersion$.asObservable();
+    }
+
+    public $mapsLinkingPending(version: BSVersion): Observable<boolean>{
+        return this.linker.queue$.pipe(mergeMap(async queue => {
+            const versionMapsPath = await this.getVersionMapsPath(version);
+            return queue.some(q => q.folder.includes(versionMapsPath));
+        }), distinctUntilChanged());
     }
 
 }

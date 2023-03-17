@@ -4,6 +4,8 @@ import path from "path";
 import { parse } from "@node-steam/vdf";
 import { readFile } from "fs/promises";
 import { spawn } from "child_process";
+import { pathExist } from "../helpers/fs.helpers";
+import log from "electron-log";
 
 export class SteamService{
 
@@ -46,21 +48,27 @@ export class SteamService{
   }
 
   public async getGameFolder(gameId: string, gameFolder?: string): Promise<string>{
-    const steamPath = await this.getSteamPath();
+    try{
+        const steamPath = await this.getSteamPath();
 
-    let libraryFolders: any = path.join(steamPath, 'steamapps', 'libraryfolders.vdf');
+        let libraryFolders: any = path.join(steamPath, 'steamapps', 'libraryfolders.vdf');
 
-    if(!this.utils.pathExist(libraryFolders)){ return null; }
-    libraryFolders =  parse(await readFile(libraryFolders, {encoding: 'utf-8'}));
+        if(!(await pathExist(libraryFolders))){ return null; }
+        libraryFolders =  parse(await readFile(libraryFolders, {encoding: 'utf-8'}));
 
-    if(!libraryFolders.libraryfolders){ return null; }
-    libraryFolders = libraryFolders.libraryfolders
+        if(!libraryFolders.libraryfolders){ return null; }
+        libraryFolders = libraryFolders.libraryfolders
 
-    for(const libKey in Object.keys(libraryFolders)){
-      if(!libraryFolders[libKey] || !libraryFolders[libKey]["apps"]){ continue; }
-      if(libraryFolders[libKey]["apps"][gameId]){ return path.join(libraryFolders[libKey]["path"], "steamapps", "common", gameFolder); };
+        for(const libKey in Object.keys(libraryFolders)){
+            if(!libraryFolders[libKey] || !libraryFolders[libKey]["apps"]){ continue; }
+            if(libraryFolders[libKey]["apps"][gameId] != null){ return path.join(libraryFolders[libKey]["path"], "steamapps", "common", gameFolder); };
+        }
+        return null;
     }
-    return null;
+    catch(e){
+        log.error(e);
+        return null;
+    }
   }
 
     public openSteam(): Promise<boolean>{

@@ -1,10 +1,10 @@
-import { get } from 'https'
 import { UtilsService } from './utils.service';
 import path from 'path';
 import { writeFileSync } from 'fs';
 import { BSVersion } from 'shared/bs-version.interface';
 import { RequestService } from "./request.service"
 import isOnline from 'is-online';
+import { readJSON } from 'fs-extra';
 
 export class BSVersionLibService{
 
@@ -35,8 +35,7 @@ export class BSVersionLibService{
 
    private async getLocalVersions(): Promise<BSVersion[]>{
       const localVersionsPath = path.join(this.utilsService.getAssestsJsonsPath(), this.VERSIONS_FILE);
-      const rawVersion = await this.utilsService.readFileAsync(localVersionsPath);
-      return JSON.parse(rawVersion);
+      return  readJSON(localVersionsPath);
    }
 
    private async updateLocalVersions(versions: BSVersion[]): Promise<void>{

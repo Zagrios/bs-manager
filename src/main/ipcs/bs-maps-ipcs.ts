@@ -117,3 +117,8 @@ ipc.on("is-map-deep-links-enabled", async (request: IpcRequest<void>) => {
     }
 
 });
+
+ipc.on("get-version-maps-path",  async (req: IpcRequest<BSVersion>, reply) => {
+    const maps = LocalMapsManagerService.getInstance();
+    reply(from(maps.getMapsFolderPath(req.args)));
+});

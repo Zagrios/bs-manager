@@ -53,7 +53,7 @@ export class IpcService {
 
     public sendV2<T, U = unknown>(channel: string, request?: IpcRequest<U>, defaultValue?: T): Observable<T>{
         if(!request){ request = {args: null, responceChannel: null}; }
-        if(!request.responceChannel){ request.responceChannel = `${channel}_responce_${new Date().getTime()}`; }
+        if(!request.responceChannel){ request.responceChannel = `${channel}_responce_${crypto.randomUUID()}`; }
 
         const completeChannel = `${request.responceChannel}_complete`;
         const errorChannel = `${request.responceChannel}_error`;

@@ -64,7 +64,7 @@ export default function TitleBar({template = "index.html"} : {template: AppWindo
                         <div className='shrink-0 w-0 overflow-hidden transition-all group-hover:w-16 group-hover:overflow-visible group-active:w-16 group-active:overflow-visible text-main-color-3'>
                             <BsmRange min={0} max={1} step={.01} values={[volume.muted ? 0 : volume.volume]} colors={[color, "currentColor"]} onChange={val => audio.setVolume(val[0])} onFinalChange={val => audio.setFinalVolume(val[0])}/>
                         </div>
-                        <BsmButton className='shrink-0 h-[23px] w-[23px] aspect-square !bg-transparent flex items-start' iconClassName={volumeIcon === "volume-down" && "-translate-x-[1.8px]"} icon={volumeIcon} withBar={false} onClick={() => audio.toggleMute()}/>
+                        <BsmButton className='shrink-0 h-[23px] w-[23px] aspect-square !bg-transparent flex items-start' iconClassName={volumeIcon === "volume-down" ? "-translate-x-[1.8px]" : null} icon={volumeIcon} withBar={false} onClick={() => audio.toggleMute()}/>
                     </div>
                     <div onClick={minimizeWindow} className="text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#4F545C] cursor-pointer w-11 h-full shrink-0 flex justify-center items-center" id="min-button" >
                         <svg aria-hidden="false" width="12" height="12" viewBox="0 0 12 12"><rect fill="currentColor" width="10" height="1" x="1" y="6"> </rect></svg>

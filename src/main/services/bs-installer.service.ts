@@ -12,6 +12,7 @@ import isOnline from 'is-online';
 import { WindowManagerService } from "./window-manager.service";
 import { copy, copySync } from "fs-extra";
 import { clean, satisfies } from "semver";
+import { ensureFolderExist, pathExist } from "../helpers/fs.helpers";
 
 export class BSInstallerService{
 
@@ -94,11 +95,11 @@ export class BSInstallerService{
     if(!bsVersion){ return {type: "[Error]"}; }
     if(!(await isOnline({timeout: 1500}))){ throw "no-internet"; }
 
-    this.utils.createFolderIfNotExist(this.installLocationService.versionsDirectory);
+    await ensureFolderExist(this.installLocationService.versionsDirectory);
 
     const versionPath = await this.localVersionService.getVersionPath(bsVersion)
 
-    const dest = !downloadInfos.isVerification ? this.getPathNotAleardyExist(versionPath) : versionPath;
+    const dest = !downloadInfos.isVerification ? await this.getPathNotAleardyExist(versionPath) : versionPath;
 
     const downloadVersion: BSVersion = {...downloadInfos.bsVersion, ...(path.basename(dest) !== downloadInfos.bsVersion.BSVersion && {name: path.basename(dest)})}
 
@@ -186,15 +187,15 @@ export class BSInstallerService{
     })
   }
 
-    private getPathNotAleardyExist(path: string): string{
+    private async getPathNotAleardyExist(path: string): Promise<string>{
         let destPath = path;
-        let folderExist = this.utils.pathExist(destPath);
+        let folderExist = await pathExist(destPath);
         let i = 0;
 
         while(folderExist){
             i++;
             destPath = `${path} (${i})`;
-            folderExist = this.utils.pathExist(destPath);
+            folderExist = await pathExist(destPath);
         }
 
         return destPath
@@ -206,7 +207,7 @@ export class BSInstallerService{
 
         if(!rawBsVersion){ throw new Error("NOT_BS_FOLDER"); }
 
-        const destPath = this.getPathNotAleardyExist(await this.localVersionService.getVersionPath(rawBsVersion));
+        const destPath = await this.getPathNotAleardyExist(await this.localVersionService.getVersionPath(rawBsVersion));
 
         await copy(path, destPath, {dereference: true});
 
