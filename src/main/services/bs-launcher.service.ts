@@ -45,7 +45,6 @@ export class BSLauncherService{
     }
 
     public async restoreSteamVR(): Promise<void>{
-        console.log("restoreSteamVR");
         const steamVrFolder = await this.getSteamVRPath();
         const steamVrBackup = steamVrFolder + ".bak";
         if(!await pathExist(steamVrBackup)){ return; }
