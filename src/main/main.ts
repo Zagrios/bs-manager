@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, protocol } from 'electron';
+import { app, ipcMain, protocol } from 'electron';
 import log from 'electron-log';
 import './ipcs';
 import { UtilsService } from './services/utils.service';
@@ -21,6 +21,7 @@ import { LocalPlaylistsManagerService } from './services/additional-content/loca
 import { LocalModelsManagerService } from './services/additional-content/local-models-manager.service';
 import { APP_NAME } from './constants';
 import { BSLauncherService } from './services/bs-launcher.service';
+import { IpcRequest } from 'shared/models/ipc';
 
 const isDebug = process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
@@ -99,6 +100,11 @@ else{
         });
 
         BSLauncherService.getInstance().restoreSteamVR();
+
+        // Log renderer errors
+        ipcMain.on('log-error', (event, args: IpcRequest<any>) => {
+            log.error(args?.args);
+        });
 
     }).catch(log.error);
 }
