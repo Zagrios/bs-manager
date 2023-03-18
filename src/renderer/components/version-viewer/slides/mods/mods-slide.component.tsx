@@ -17,6 +17,7 @@ import { useInView } from "framer-motion";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods-disclaimer-modal.component";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
+import { lt } from "semver";
  
 export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, onDisclamerDecline: () => void}) {
 
@@ -68,7 +69,12 @@ export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, on
 
     const installMods = () => {
         if(installing){ return; }
-        modsManager.installMods(modsSelected, version).then(() => {
+        const modsToInstall = modsSelected.filter(mod => {
+            const corespondingMod = modsAvailable.get(mod.category).find(availabeMod => availabeMod._id === mod._id);
+            if(lt(corespondingMod.version, mod.version)){ return false; }
+            return true;
+        })
+        modsManager.installMods(modsToInstall, version).then(() => {
             loadMods();
         });
     }
