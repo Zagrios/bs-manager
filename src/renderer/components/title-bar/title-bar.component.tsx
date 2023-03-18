@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useObservable } from 'renderer/hooks/use-observable.hook';
 import { useThemeColor } from 'renderer/hooks/use-theme-color.hook';
 import { AudioPlayerService } from 'renderer/services/audio-player.service';
@@ -17,8 +17,16 @@ export default function TitleBar({template = "index.html"} : {template: AppWindo
     const audio = AudioPlayerService.getInstance();
 
     const volume = useObservable(audio.volume$, audio.volume);
-    const playing = useObservable(audio.playing$);
     const color = useThemeColor("first-color");
+
+    const [previewVersion, setPreviewVersion] = useState(null);
+
+    useEffect(() => {
+        ipcService.send<string>("current-version").then(res => {
+            if(res.data.toLocaleLowerCase().includes("alpha")){ return setPreviewVersion("ALPHA"); }
+            if(res.data.toLocaleLowerCase().includes("beta")){ return setPreviewVersion("BETA"); }
+        });
+    })
 
     const [maximized, setMaximized] = useState(false);
 
@@ -57,6 +65,7 @@ export default function TitleBar({template = "index.html"} : {template: AppWindo
                 <div id="drag-region" className='grow basis-0 h-full'>
                     <div id="window-title" className='pl-1'>
                         <span className='text-gray-800 dark:text-gray-100 font-bold text-xs italic'>BSManager</span>
+                        { previewVersion && <span className='bg-main-color-1 text-white dark:text-black dark:bg-white rounded-full ml-1 text-[10px] italic px-1 uppercase h-3.5 font-bold'>{previewVersion}</span> }
                     </div>
                 </div>
                 <div id="window-controls" className="h-full flex shrink-0 items-center">

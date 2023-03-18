@@ -53,6 +53,11 @@ export class NotificationService{
         return this.notify(notification);
     }
 
+    public notifyInfo(notification: Notification): Promise<NotificationResult|string>{
+        notification.type = NotificationType.INFO;
+        return this.notify(notification);
+    }
+
     public notifySystem(options: SystemNotificationOptions){
         this.ipc.sendLazy<SystemNotificationOptions>("notify-system", {args: options});
     }
@@ -71,6 +76,7 @@ export enum NotificationType {
     SUCCESS = 0,
     WARNING = 1,
     ERROR = 2,
+    INFO = 3,
 }
 
 export interface NotificationAction {

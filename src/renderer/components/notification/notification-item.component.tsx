@@ -16,6 +16,7 @@ export const NotificationItem = forwardRef(({resolver, notification}: {resolver?
     const renderImage = (() => {
         if(notification.type === NotificationType.SUCCESS){ return BeatRunningImg; }
         if(notification.type === NotificationType.WARNING){ return BeatWaitingImg; }
+        if(notification.type === NotificationType.INFO){ return BeatWaitingImg; }
         if(notification.type === NotificationType.ERROR){ return BeatConflictImg; }
         return BeatImpatientImg;
     })();
@@ -23,6 +24,7 @@ export const NotificationItem = forwardRef(({resolver, notification}: {resolver?
     const renderNeonColors = (() => {
         if(notification.type === NotificationType.SUCCESS){ return "bg-green-400 shadow-green-400"; }
         if(notification.type === NotificationType.WARNING){ return "bg-yellow-400 shadow-yellow-400"; }
+        if(notification.type === NotificationType.INFO){ return "bg-blue-500 shadow-blue-500"; }
         if(notification.type === NotificationType.ERROR){ return "bg-red-500 shadow-red-500"; }
         return "bg-gray-800 shadow-gray-800 dark:bg-white dark:shadow-white";
     })();

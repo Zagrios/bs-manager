@@ -1,4 +1,3 @@
-import { of, timer } from "rxjs";
 import { BehaviorSubject } from "rxjs";
 import { map, distinctUntilChanged, filter } from "rxjs/operators";
 import { from } from "rxjs";
@@ -6,6 +5,7 @@ import { Observable } from "rxjs";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
 import { NotificationService } from "./notification.service";
+import { LinkOptions } from "main/services/folder-linker.service";
 
 export class FolderLinkerService {
 
@@ -86,20 +86,22 @@ export class FolderLinkerService {
 
     private specialFolderNotification(action: LinkAction): void{
         if(action.type === LinkActionType.Link && action.folder.includes("UserData")){
-            this.notification.notifySuccess({
-                title: "notifications.shared-folder.success.yeet-mods-disabled.title",
-                desc: "notifications.shared-folder.success.yeet-mods-disabled.msg"
-            })
+            this.notification.notifyInfo({
+                title: "notifications.shared-folder.info.userdata-backup-created.title",
+                desc: "notifications.shared-folder.info.userdata-backup-created.msg",
+                duration: 7000
+            });
+            return;
         }
     }
 
     private doAction(action: LinkAction): Observable<void>{
-        return this.ipc.sendV2(action.type === LinkActionType.Link ? "link-folder" : "unlink-folder", { args: { folder: action.folder, keepContents: action.keepContents } });
+        return this.ipc.sendV2<void, {folder: string, options?: LinkOptions}>(action.type === LinkActionType.Link ? "link-folder" : "unlink-folder", { args: { folder: action.folder, options: action.options } });
     }
     
-    private addFolderToQueue(folder: string, type: LinkActionType, keepContents: boolean){
+    private addFolderToQueue(folder: string, type: LinkActionType, options: LinkOptions){
         if(this._queue$.value.some(action => action.folder === folder)){ return; }
-        this._queue$.next([...this._queue$.value, {folder, type, keepContents}]);
+        this._queue$.next([...this._queue$.value, {folder, type, options}]);
     }
 
     private removeFolderFromQueue(folder: string){
@@ -123,13 +125,14 @@ export class FolderLinkerService {
         return new Map(folders.map(folder => [folder, this.linkFolder(folder)]));
     }
 
-    public linkFolder(folder: string, keepContents = true): Observable<void> {
+    public linkFolder(folder: string, options: LinkOptions = {}): Observable<void> {
+        options.keepContents ??= true;
         const promise = new Promise<void>(resolve => {
             this.onLinked(folder, resolve);
             this.onRemovedFromQueue(folder, resolve);
         });
 
-        this.addFolderToQueue(folder, LinkActionType.Link, keepContents);
+        this.addFolderToQueue(folder, LinkActionType.Link, options);
         return from(promise);
     }
 
@@ -137,13 +140,14 @@ export class FolderLinkerService {
         return new Map(folders.map(folder => [folder, this.unlinkFolder(folder)]));
     }
 
-    public unlinkFolder(folder: string, keepContents = true): Observable<void> {
+    public unlinkFolder(folder: string, options: LinkOptions = {}): Observable<void> {
+        options.keepContents ??= true;
         const promise = new Promise<void>(resolve => {
             this.onUnlinked(folder, resolve);
             this.onRemovedFromQueue(folder, resolve);
         });
 
-        this.addFolderToQueue(folder, LinkActionType.Unlink, keepContents);
+        this.addFolderToQueue(folder, LinkActionType.Unlink, options);
         return from(promise);
     }
 
@@ -172,7 +176,7 @@ export class FolderLinkerService {
 export interface LinkAction {
     folder: string;
     type: LinkActionType;
-    keepContents?: boolean;
+    options?: LinkOptions;
 }
 
 export enum LinkActionType {
