@@ -76,8 +76,6 @@ export class FolderLinkerService {
 
         const sharedPath = this.getSharedFolder(folderPath, options?.intermediateFolder);
 
-        lstat(sharedPath).then(console.log);
-
         await ensureFolderExist(folderPath);
 
         if(options?.backup === true){
