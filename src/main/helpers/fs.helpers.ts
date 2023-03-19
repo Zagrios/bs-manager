@@ -1,4 +1,4 @@
-import { move } from "fs-extra";
+import { copyFile, ensureDir, move, symlink } from "fs-extra";
 import { access, mkdir, rm, readdir, unlink, lstat, readlink } from "fs/promises";
 import path from "path";
 import { Observable } from "rxjs";
@@ -79,6 +79,27 @@ export function moveFolderContent(src: string, dest: string): Observable<Progres
 
         })();
     });
+}
+
+export async function copyDirectoryWithJunctions(source: string, destination: string): Promise<void> {
+    
+    await ensureDir(destination);
+    const items = await readdir(source);
+  
+    for (const item of items) {
+        const sourcePath = path.join(source, item);
+        const destinationPath = path.join(destination, item);
+        const stats = await lstat(sourcePath);
+
+        if (stats.isDirectory()) {
+            await copyDirectoryWithJunctions(sourcePath, destinationPath);
+        } else if (stats.isFile()) {
+            await copyFile(sourcePath, destinationPath);
+        } else if (stats.isSymbolicLink()) {
+            const symlinkTarget = await readlink(sourcePath);
+            await symlink(symlinkTarget, destinationPath, "junction");
+        }
+    }
 }
 
 export interface Progression<T = unknown>{
