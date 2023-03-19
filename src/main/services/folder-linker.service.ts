@@ -52,12 +52,13 @@ export class FolderLinkerService {
 
         const sharedPath = this.getSharedFolder(folderPath, options?.intermediateFolder);
 
-        await ensureFolderExist(folderPath);
         await ensureFolderExist(sharedPath);
 
         if(options?.backup === true){
             await this.backupFolder(folderPath);
         }
+
+        await ensureFolderExist(folderPath);
 
         if(options?.keepContents !== false){
             await moveFolderContent(folderPath, sharedPath).toPromise();
@@ -74,6 +75,8 @@ export class FolderLinkerService {
         await unlinkPath(folderPath);
 
         const sharedPath = this.getSharedFolder(folderPath, options?.intermediateFolder);
+
+        lstat(sharedPath).then(console.log);
 
         await ensureFolderExist(folderPath);
 
