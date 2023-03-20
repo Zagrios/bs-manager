@@ -17,7 +17,8 @@ import { BsmIcon } from "../svgs/bsm-icon.component"
 import { useTranslation } from "renderer/hooks/use-translation.hook"
 import { LinkButton } from "./link-button.component"
 import { debounceTime } from "rxjs/operators"
-import { FolderLinkerService } from "renderer/services/folder-linker.service"
+import { VersionFolderLinkerService, VersionLinkerActionListener } from "renderer/services/version-folder-linker.service"
+
 
 type Props = {
     version?: BSVersion
@@ -28,7 +29,7 @@ export function MapsPlaylistsPanel({version}: Props) {
     const mapsService = MapsManagerService.getInstance();
     const mapsDownloader = MapsDownloaderService.getInstance();
     const osDiagnostic = OsDiagnosticService.getInstance();
-    const linker = FolderLinkerService.getInstance();
+    const linker = VersionFolderLinkerService.getInstance();
     
     const [tabIndex, setTabIndex] = useState(0);
     const [mapFilter, setMapFilter] = useState<MapFilter>({});
@@ -46,18 +47,18 @@ export function MapsPlaylistsPanel({version}: Props) {
 
         const sub = mapsService.$mapsLinkingPending(version).pipe(debounceTime(50)).subscribe(setLinkingPending);
 
-        const onMapsLinked = (folder: string) => {
-            if(!folder.includes("CustomLevels")){ return; }
+        const onMapsLinked: VersionLinkerActionListener = (action, linked) => {
+            if(!action.relativeFolder.includes(MapsManagerService.RELATIVE_MAPS_FOLDER)){ return; }
             loadMapIsLinked();
         }
 
-        linker.onFolderLinked(onMapsLinked);
-        linker.onFolderUnlinked(onMapsLinked);
+        linker.onVersionFolderLinked(onMapsLinked);
+        linker.onVersionFolderUnlinked(onMapsLinked);
 
         return () => {
             sub.unsubscribe();
-            linker.removeOnFolderLinked(onMapsLinked);
-            linker.removeOnFolderUnlinked(onMapsLinked);
+            linker.removeVersionFolderLinkedListener(onMapsLinked);
+            linker.removeVersionFolderUnlinkedListener(onMapsLinked);
         }
 
     }, [version]);

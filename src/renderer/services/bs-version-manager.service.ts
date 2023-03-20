@@ -5,6 +5,7 @@ import { ModalExitCode, ModalService } from './modale.service';
 import { NotificationService } from './notification.service';
 import { ProgressBarService } from './progress-bar.service';
 import { EditVersionModal } from 'renderer/components/modal/modal-types/edit-version-modal.component';
+import { Observable } from 'rxjs';
 
 export class BSVersionManagerService {
 
@@ -111,6 +112,10 @@ export class BSVersionManagerService {
          this.askInstalledVersions();
          return res.data;
       })
+   }
+
+   public getVersionPath(version: BSVersion): Observable<string>{
+        return this.ipcService.sendV2("get-version-full-path", {args: version});
    }
 
 }

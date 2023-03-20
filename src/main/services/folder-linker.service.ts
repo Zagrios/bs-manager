@@ -69,7 +69,7 @@ export class FolderLinkerService {
         return symlink(sharedPath, folderPath, "junction");
     }
 
-    public async unlinkFolder(folderPath: string, options?: LinkOptions): Promise<void> {
+    public async unlinkFolder(folderPath: string, options?: UnlinkOptions): Promise<void> {
 
         if(!(await this.isFolderSymlink(folderPath))){ return; }
         await unlinkPath(folderPath);
@@ -82,10 +82,14 @@ export class FolderLinkerService {
             return this.restoreFolder(folderPath);
         }
 
+        if(options.moveContents === true){
+            return moveFolderContent(sharedPath, folderPath).toPromise().then(() => {});
+        }
+
         if(options?.keepContents === false){ return; }
 
         await ensureFolderExist(sharedPath);
-
+        
         return copy(sharedPath, folderPath, { errorOnExist: false, recursive: true });
     }
 
@@ -105,5 +109,9 @@ export class FolderLinkerService {
 export interface LinkOptions {
     keepContents?: boolean,
     intermediateFolder?: string,
-    backup?: boolean
+    backup?: boolean,
 }
+
+export interface UnlinkOptions extends LinkOptions {
+    moveContents?: boolean,
+};
