@@ -134,7 +134,7 @@ export class VersionFolderLinkerService{
     }
 
     public get currentAction$(): Observable<VersionLinkerAction>{
-        return this._queue$.pipe(map(actions => actions.at(-1)), distinctUntilChanged());
+        return this._queue$.pipe(map(actions => actions.at(0)), distinctUntilChanged());
     }
 
     public get queue$(): Observable<VersionLinkerAction[]>{
