@@ -14,6 +14,8 @@ import { FolderLinkerService, LinkOptions } from '../services/folder-linker.serv
 import { LocalMapsManagerService } from '../services/additional-content/local-maps-manager.service';
 import { readJSON, writeJSON } from 'fs-extra';
 import log from "electron-log"
+import { VersionLinkerAction } from 'renderer/services/version-folder-linker.service';
+import { VersionFolderLinkerService } from '../services/version-folder-linker.service';
 
 const ipc = IpcService.getInstance();
 
@@ -57,9 +59,7 @@ ipcMain.on("bs-version.clone", async (event, req: IpcRequest<{version: BSVersion
 
 ipc.on("get-version-full-path", async (req: IpcRequest<BSVersion>, reply) => {
     const localVersions = BSLocalVersionService.getInstance();
-    reply(from(
-        localVersions.getVersionPath(req.args)
-    ));
+    reply(from( localVersions.getVersionPath(req.args) ));
 });
 
 ipc.on("relative-version-path-to-full", async (req: IpcRequest<{version: BSVersion, relative: string}>, reply) => {
@@ -80,9 +80,9 @@ ipc.on("full-version-path-to-relative", async (req: IpcRequest<{version: BSVersi
     reply(from(promise));
 });
 
-ipc.on("get-linked-folders", async (req: IpcRequest<BSVersion>, reply) => {
-    const localVersions = BSLocalVersionService.getInstance();
-    reply(from(localVersions.getLinkedFolders(req.args)));
+ipc.on("get-linked-folders", async (req: IpcRequest<{version: BSVersion, options?: { relative?: boolean }}>, reply) => {
+    const versionLinker = VersionFolderLinkerService.getInstance();
+    reply(from(versionLinker.getLinkedFolders(req.args.version, req.args.options)));
 });
 
 ipc.on("link-folder", async (req: IpcRequest<{ folder: string, options?: LinkOptions}>, reply) => {
@@ -119,6 +119,16 @@ ipc.on("link-folder", async (req: IpcRequest<{ folder: string, options?: LinkOpt
 
     reply(res);
 
+});
+
+ipc.on("link-version-folder-action", async (req: IpcRequest<VersionLinkerAction>, reply) => {
+    const versionLinker = VersionFolderLinkerService.getInstance();
+    reply(from(versionLinker.doAction(req.args)));
+});
+
+ipc.on("is-version-folder-linked", async (req: IpcRequest<{ version: BSVersion, relativeFolder: string }>, reply) => {
+    const versionLinker = VersionFolderLinkerService.getInstance();
+    reply(from(versionLinker.isFolderLinked(req.args.version, req.args.relativeFolder)));
 });
 
 ipc.on("unlink-folder", async (req: IpcRequest<{ folder: string, options?: LinkOptions}>, reply) => {

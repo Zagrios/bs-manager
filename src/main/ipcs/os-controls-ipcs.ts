@@ -78,14 +78,3 @@ ipcMain.on("open-steam", async (event, request: IpcRequest<void>) => {
         utils.ipcSend(request.responceChannel, {success: false, error: e});
     });
 });
-
-ipc.on("is-folder-symlink", async (req: IpcRequest<string>, reply) => {
-    const promise = new Promise<boolean>(async resolve => {
-        if(!(await pathExist(req.args))){ return resolve(false); }
-        lstat(req.args, (err, stats) => {
-            if(err){ return resolve(false); }
-            resolve(stats.isSymbolicLink());
-        });
-    }); 
-    reply(from(promise));
-});

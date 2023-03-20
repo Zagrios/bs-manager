@@ -9,7 +9,7 @@ import { MapsDownloaderService } from "renderer/services/maps-downloader.service
 import { VariableSizeList } from "react-window"
 import { MapsRow } from "./maps-row.component"
 import { BehaviorSubject } from "rxjs"
-import { debounceTime, last, map, mergeMap, throttleTime } from "rxjs/operators"
+import { debounceTime, last, map, mergeMap } from "rxjs/operators"
 import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service"
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service"
 import { useTranslation } from "renderer/hooks/use-translation.hook"
@@ -63,6 +63,8 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
     }), [selectedMaps$.value, maps, version]);
 
     useEffect(() => {
+
+        console.log(linked);
 
         if(isVisible){
             loadMaps();
