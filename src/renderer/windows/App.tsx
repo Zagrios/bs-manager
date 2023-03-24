@@ -22,6 +22,8 @@ import { NotificationService } from "renderer/services/notification.service";
 import { timer } from "rxjs";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
+import {ModalService } from "renderer/services/modale.service";
+import { ChangelogModal } from "renderer/components/modal/modal-types/changelog-modal/changelog-modal.component";
 
 export default function App() {
 
@@ -33,6 +35,7 @@ export default function App() {
     const notification = NotificationService.getInstance();
     const config = ConfigurationService.getInstance();
     const os = OsDiagnosticService.getInstance();
+    const modals = ModalService.getInsance();
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -43,8 +46,10 @@ export default function App() {
             document.documentElement.classList.remove('dark');
         });
 
+        
         checkOneClicks();
-
+        if(/*config.get("haveBeenUpdated")*/ true) {modals.openModal(ChangelogModal)}
+        
     }, []);
 
     const checkOneClicks = async () => {

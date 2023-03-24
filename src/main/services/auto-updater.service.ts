@@ -25,7 +25,6 @@ export class AutoUpdaterService {
     }
 
     public isUpdateAvailable(): Promise<boolean>{
-        this.configService.set(this.HAVE_BEEN_UPDATED_KEY, false);
         return new Promise(resolve => {
             autoUpdater.checkForUpdates().then(info => {
                 const needUpdate = (() => {
