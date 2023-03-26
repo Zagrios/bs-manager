@@ -25,8 +25,9 @@ ipcMain.on("close-all-windows", async (event, request: IpcRequest<AppWindow>) =>
 });
 
 ipcMain.on("close-windows", async (event, request: IpcRequest<AppWindow[]>) => {
-    configService.set(HAVE_BEEN_UPDATED_KEY, false);    
-    await launcher.restoreSteamVR();
     const windowManager = WindowManagerService.getInstance();
+    if (request.args.includes("index.html")) {configService.set(HAVE_BEEN_UPDATED_KEY, false);}
+    await launcher.restoreSteamVR();
+
     windowManager.close(...request.args);
 });
