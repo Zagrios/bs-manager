@@ -1,9 +1,11 @@
+import { Console } from "console";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
 
 export class AutoUpdaterService{
+    
 
     private static instance: AutoUpdaterService;
 
@@ -43,7 +45,11 @@ export class AutoUpdaterService{
     public quitAndInstall(){
         this.ipcService.sendLazy("install-update");
     }
-
+    public getHaveBeenUpdated(): Observable<boolean>{
+        console.log("getHaveBeenUpdated entered")
+        return this.ipcService.sendV2<boolean>("have-been-updated");
+        
+    }
 
     
 }

@@ -24,6 +24,7 @@ import { ConfigurationService } from "renderer/services/configuration.service";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import {ModalService } from "renderer/services/modale.service";
 import { ChangelogModal } from "renderer/components/modal/modal-types/changelog-modal/changelog-modal.component";
+import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 
 export default function App() {
 
@@ -36,6 +37,7 @@ export default function App() {
     const config = ConfigurationService.getInstance();
     const os = OsDiagnosticService.getInstance();
     const modals = ModalService.getInsance();
+    const updaterService = AutoUpdaterService.getInstance();
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -46,9 +48,11 @@ export default function App() {
             document.documentElement.classList.remove('dark');
         });
 
-        
+        const test = updaterService.getHaveBeenUpdated().toPromise();
+        console.log(test);
+        updaterService.getHaveBeenUpdated().toPromise().then(v => v && modals.openModal(ChangelogModal));
         checkOneClicks();
-        if(/*config.get("haveBeenUpdated")*/ true) {modals.openModal(ChangelogModal)}
+        
         
     }, []);
 

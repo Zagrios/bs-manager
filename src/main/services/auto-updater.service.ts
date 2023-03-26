@@ -3,6 +3,8 @@ import log from 'electron-log';
 import { UtilsService } from './utils.service';
 import { gt } from 'semver';
 import { ConfigurationService } from './configuration.service';
+import { Observable } from 'rxjs';
+
 export class AutoUpdaterService {
 
     private static instance: AutoUpdaterService;
@@ -11,6 +13,7 @@ export class AutoUpdaterService {
 
     private readonly configService : ConfigurationService;
     private readonly HAVE_BEEN_UPDATED_KEY = "haveBeenUpdated";
+
 
     public static getInstance(): AutoUpdaterService{
         if(!AutoUpdaterService.instance){ AutoUpdaterService.instance = new AutoUpdaterService(); }
@@ -50,4 +53,7 @@ export class AutoUpdaterService {
         this.configService.set(this.HAVE_BEEN_UPDATED_KEY, true);
         autoUpdater.quitAndInstall();
     }
+    public getHaveBeenUpdated(): boolean {
+        return this.configService.get(this.HAVE_BEEN_UPDATED_KEY);
+      }
 }
