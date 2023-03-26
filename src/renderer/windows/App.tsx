@@ -48,8 +48,6 @@ export default function App() {
             document.documentElement.classList.remove('dark');
         });
 
-        const test = updaterService.getHaveBeenUpdated().toPromise();
-        console.log(test);
         updaterService.getHaveBeenUpdated().toPromise().then(v => v && modals.openModal(ChangelogModal));
         checkOneClicks();
         

@@ -23,7 +23,7 @@ export class AutoUpdaterService {
     constructor(){
         autoUpdater.logger = log;
         autoUpdater.autoDownload = false;
-
+        this.configService = ConfigurationService.getInstance();
         this.utilsService = UtilsService.getInstance();
     }
 
