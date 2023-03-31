@@ -5,9 +5,7 @@ import { RadioItem, SettingRadioArray } from "renderer/components/settings/setti
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmIconType } from "renderer/components/svgs/bsm-icon.component";
 import { DefaultConfigKey, ThemeConfig } from "renderer/config/default-configuration.config";
-import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
-import { AuthUserService } from "renderer/services/auth-user.service";
 import { BsDownloaderService } from "renderer/services/bs-downloader.service";
 import { ConfigurationService } from "renderer/services/configuration.service"
 import { I18nService } from "renderer/services/i18n.service";
@@ -26,6 +24,7 @@ import modelSaberIcon from "../../../assets/images/third-party-icons/model-saber
 import beatSaverIcon from "../../../assets/images/third-party-icons/beat-saver.png";
 import beastSaberIcon from "../../../assets/images/third-party-icons/beast-saber.png";
 import scoreSaberIcon from "../../../assets/images/third-party-icons/score-saber.png";
+import beatleaderIcon from "../../../assets/images/third-party-icons/beat-leader.png";
 import Tippy from '@tippyjs/react';
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
@@ -226,6 +225,9 @@ export function SettingsPage() {
                                 <Tippy content="ScoreSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
                                     <BsmImage className="h-8 cursor-pointer" image={scoreSaberIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://scoresaber.com/")}}/>
                                 </Tippy>
+                                <Tippy content="BeatLeader" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <BsmImage className="h-8 cursor-pointer" image={beatleaderIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://www.beatleader.xyz/")}}/>
+                                </Tippy>
                                 <Tippy content="ModelSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
                                     <BsmImage className="h-8 cursor-pointer" image={modelSaberIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://modelsaber.com/")}}/>
                                 </Tippy>
@@ -246,6 +248,9 @@ export function SettingsPage() {
                                 </Tippy>
                                 <Tippy content="ScoreSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
                                     <BsmImage className="h-8 cursor-pointer" image={scoreSaberIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://scoresaber.com/")}}/>
+                                </Tippy>
+                                <Tippy content="BeatLeader" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <BsmImage className="h-8 cursor-pointer" image={beatleaderIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://www.beatleader.xyz/")}}/>
                                 </Tippy>
                             </div>
                         </li>
