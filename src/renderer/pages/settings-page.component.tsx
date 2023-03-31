@@ -31,6 +31,7 @@ import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { ModelsManagerService } from "renderer/services/models-manager.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { ChangelogModal } from "renderer/components/modal/modal-types/changelog-modal/changelog-modal.component";
 
 export function SettingsPage() {
 
@@ -142,6 +143,7 @@ export function SettingsPage() {
   const openRequestFeatures = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=enhancement&template=-feat---feature-request.md&title=%5BFEAT.%5D+%3A+");
   const openDiscord = () => linkOpener.open("https://discord.gg/uSqbHVpKdV");
   const openTwitter = () => linkOpener.open("https://twitter.com/BSManager_");
+  const openChangelog = () => modalService.openModal(ChangelogModal)
 
   const openLogs = () => ipcService.sendLazy("open-logs");
 
@@ -304,9 +306,10 @@ export function SettingsPage() {
                         </div>
                     </SettingContainer>
                 </SettingContainer>
-
-                <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5">v{appVersion}</span>
-
+                
+                <Tippy content="Open changelog" placement="left" className="font-bold bg-main-color-3 " arrow={false} duration={[200, 0]}>
+                        <BsmButton className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold mb-5 float-right" text={"v"+appVersion} onClick={openChangelog} withBar={false}/>
+                </Tippy>
             </div>
 
             <SupportersView isVisible={showSupporters} setVisible={setShowSupporters}/>
