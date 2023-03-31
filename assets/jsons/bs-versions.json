@@ -518,12 +518,12 @@
 		"ReleaseDate": "1677593822",
 		"year": "2023"
 	},
-    {
-        "BSVersion": "1.29.0",
+	{
+		"BSVersion": "1.29.0",
 		"BSManifest": "3341527958186345367",
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/6169409105082976092",
 		"ReleaseImg": "https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/clans//32055887/255fd49cd96042b97089f754609be291293e783f.png",
 		"ReleaseDate": "1680188760",
 		"year": "2023"
-    }
+	}
 ]
