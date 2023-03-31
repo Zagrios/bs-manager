@@ -299,7 +299,7 @@ export function SettingsPage() {
                             </div>
                             <div className="flex px-2 gap-2">
                                 <BsmButton onClick={openLogs} className="shrink-0 whitespace-nowrap px-2 font-bold italic text-sm rounded-md" text="pages.settings.contribution.buttons.open-logs" withBar={false}/>
-                                <BsmButton onClick={openGithub} className="shrink-0 px-2 rounded-md" icon="github" title="GitHub" withBar={false}/>    
+                                <BsmButton onClick={openGithub} className="shrink-0 px-2 rounded-md h-5 p-[2px]" icon="github" title="GitHub" withBar={false}/>    
                             </div>
                         </div>
                     </SettingContainer>
