@@ -1,5 +1,5 @@
 import { BsmIcon, BsmIconType } from "../svgs/bsm-icon.component"
-import { useRef, CSSProperties, MouseEvent } from "react";
+import { useRef, CSSProperties, MouseEvent, forwardRef, ForwardedRef } from "react";
 import { BsmImage } from "./bsm-image.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { useClickOutside } from "renderer/hooks/use-click-outside.hook";
@@ -29,12 +29,12 @@ type Props = {
     textClassName?: string
 }
 
-export function BsmButton({className, style, imgClassName, iconClassName, icon, image, text, type, active, withBar = true, disabled, onClickOutside, onClick, typeColor, color, title, iconColor, textClassName}: Props) {
+export const BsmButton = forwardRef(({className, style, imgClassName, iconClassName, icon, image, text, type, active, withBar = true, disabled, onClickOutside, onClick, typeColor, color, title, iconColor, textClassName}: Props, ref :ForwardedRef<HTMLDivElement>) => {
 
     const t = useTranslation();
     const secondColor = useThemeColor("second-color");
-    const ref = useRef(null);
-    useClickOutside(ref, onClickOutside);
+    // @ts-ignore
+    //useClickOutside(ref, onClickOutside);
 
     const primaryColor = typeColor === "primary" && useThemeColor("first-color");
 
@@ -67,4 +67,4 @@ export function BsmButton({className, style, imgClassName, iconClassName, icon, 
             )}
         </div>
     )
-}
+})
