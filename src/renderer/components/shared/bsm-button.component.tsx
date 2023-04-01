@@ -1,5 +1,5 @@
 import { BsmIcon, BsmIconType } from "../svgs/bsm-icon.component"
-import { useRef, CSSProperties, MouseEvent, forwardRef, ForwardedRef } from "react";
+import { useRef, CSSProperties, MouseEvent } from "react";
 import { BsmImage } from "./bsm-image.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { useClickOutside } from "renderer/hooks/use-click-outside.hook";
@@ -29,11 +29,11 @@ type Props = {
     textClassName?: string
 }
 
-export const BsmButton = forwardRef(({className, style, imgClassName, iconClassName, icon, image, text, type, active, withBar = true, disabled, onClickOutside, onClick, typeColor, color, title, iconColor, textClassName}: Props, fwdRef :ForwardedRef<HTMLDivElement>) => {
+export function BsmButton({className, style, imgClassName, iconClassName, icon, image, text, type, active, withBar = true, disabled, onClickOutside, onClick, typeColor, color, title, iconColor, textClassName}: Props) {
 
     const t = useTranslation();
     const secondColor = useThemeColor("second-color");
-    const ref = useRef(fwdRef)
+    const ref = useRef(null);
     useClickOutside(ref, onClickOutside);
 
     const primaryColor = typeColor === "primary" && useThemeColor("first-color");
@@ -55,7 +55,6 @@ export const BsmButton = forwardRef(({className, style, imgClassName, iconClassN
     const handleClick = (e: MouseEvent) => !disabled && onClick?.(e);
 
     return (
-        // @ts-ignore
         <div ref={ref} onClick={handleClick} title={t(title)} className={`${className} overflow-hidden cursor-pointer group ${(!withBar && !disabled && (!!typeColor || !!color)) && "hover:brightness-[1.15]"} ${disabled && "brightness-75 cursor-not-allowed"} ${renderTypeColor}`} style={{...style, backgroundColor: primaryColor || color}}>
             { image && <BsmImage image={image} className={imgClassName}/> }
             { icon && <BsmIcon icon={icon} className={iconClassName ?? "h-full w-full text-gray-800 dark:text-white"} style={{color: iconColor}}/> }
@@ -68,4 +67,4 @@ export const BsmButton = forwardRef(({className, style, imgClassName, iconClassN
             )}
         </div>
     )
-})
+}
