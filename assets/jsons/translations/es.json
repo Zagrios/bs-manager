@@ -66,6 +66,7 @@
             "mods": {
                 "loading-mods": "Cargando mods...",
                 "no-internet": "Sin internet",
+                "mods-not-available": "Aún no hay mods disponibles para esta versión de Beat Saber",
                 "buttons": {
                     "more-infos": "Más información",
                     "install-or-update": "Instalar o actualizar"
