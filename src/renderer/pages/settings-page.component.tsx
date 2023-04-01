@@ -306,9 +306,8 @@ export function SettingsPage() {
                         </div>
                     </SettingContainer>
                 </SettingContainer>
-                
-                <Tippy content="Open changelog" placement="left" className="font-bold bg-main-color-3 " arrow={false} duration={[200, 0]}>
-                        <BsmButton className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold mb-5 float-right" text={"v"+appVersion} onClick={openChangelog} withBar={false}/>
+                <Tippy content="Open changelog" placement="left" className="font-bold bg-main-color-3" arrow={true} duration={[200, 0]}>
+                    <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5 hover:brightness-125 cursor-pointer" onClick={openChangelog}>v{appVersion}</span>
                 </Tippy>
             </div>
 
