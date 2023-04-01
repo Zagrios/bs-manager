@@ -138,11 +138,13 @@
                     "en-US": "English, US",
                     "fr-FR": "Français",
                     "es-ES": "Español",
+                    "de-DE": "Deutsch",
                     "translated": {
                         "en-EN": "English, United Kingdom",
                         "en-US": "English, USA",
                         "fr-FR": "French",
-                        "es-ES": "Spanish"
+                        "es-ES": "Spanish",
+                        "de-DE": "German"
                     }
                 }
             },

@@ -51,12 +51,13 @@ import { SyncIcon } from "./icons/sync-icon.component";
 import { VolumeUpIcon } from "./icons/volume-up-icon.component";
 import { VolumeOffIcon } from "./icons/volume-off-icon.component";
 import { VolumeDownIcon } from "./icons/volume-down-icon.component";
+import { GermanIcon } from "./flags/german-icon.component";
 
 export type BsmIconType = BsvMapCharacteristic | (
    "settings"|"trash"|"favorite"|"folder"|"bsNote"|"check"|"three-dots"|"twitch"|"eye"|"play"|"checkCircleIcon"|"discord"|"info"|
    "terminal"|"desktop"|"oculus"|"add"|"cross"|"task"|"github"|"close"|"thumbUpFill"|"timerFill"|"pause"|"twitter"|"sync"|
    "copy"|"steam"|"edit"|"export"|"patreon"|"search"|"bsMapDifficulty"|"link"|"unlink"|"download"|"filter"|"mee6"|"volume-up"|"volume-off"|"volume-down"|
-   "fr-FR-flag"|"es-ES-flag"|"en-US-flag"|"en-EN-flag"
+   "fr-FR-flag"|"es-ES-flag"|"en-US-flag"|"en-EN-flag"|"de-DE-flag"
 );
 
 export const BsmIcon = memo(({className, icon, style}: {className?: string, icon: BsmIconType, style?: CSSProperties}) => {
@@ -76,6 +77,7 @@ export const BsmIcon = memo(({className, icon, style}: {className?: string, icon
         if(icon === "es-ES-flag"){ return <SpainIcon className={className} style={style}/> }
         if(icon === "en-US-flag"){ return <UsaIcon className={className} style={style}/> }
         if(icon === "en-EN-flag"){ return <UkIcon className={className} style={style}/> }
+        if(icon === "de-DE-flag"){ return <GermanIcon className={className} style={style}/> }
         if(icon === "task"){ return <TaskIcon className={className} style={style}/> }
         if(icon === "copy"){ return <CopyIcon className={className} style={style}/> }
         if(icon === "steam"){ return <SteamIcon className={className} style={style}/> }
