@@ -140,11 +140,11 @@
                     "es-ES": "Español",
                     "de-DE": "Deutsch",
                     "translated": {
-                        "en-EN": "English, United Kingdom",
-                        "en-US": "English, USA",
-                        "fr-FR": "French",
-                        "es-ES": "Spanish",
-                        "de-DE": "German"
+                        "en-EN": "Englisch, Vereinigtes Königreich",
+                        "en-US": "Englisch, USA",
+                        "fr-FR": "Französisch",
+                        "es-ES": "Spanisch",
+                        "de-DE": "Deutsch"
                     }
                 }
             },
