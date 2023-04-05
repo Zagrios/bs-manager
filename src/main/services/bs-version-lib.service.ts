@@ -3,8 +3,8 @@ import path from 'path';
 import { writeFileSync } from 'fs';
 import { BSVersion } from 'shared/bs-version.interface';
 import { RequestService } from "./request.service"
-import isOnline from 'is-online';
 import { readJSON } from 'fs-extra';
+import { allSettled } from '../helpers/promise.helpers';
 
 export class BSVersionLibService{
 
@@ -43,16 +43,16 @@ export class BSVersionLibService{
       writeFileSync(localVersionsPath, JSON.stringify(versions, null, "\t"), {encoding: 'utf-8', flag: 'w'});
    };
 
-    private async loadBsVersions(): Promise<BSVersion[]>{
-        if(this.bsVersions){ return this.bsVersions; }
-        const [localVersions, remoteVersions] = await Promise.all([
-            this.getLocalVersions(),  (await isOnline({timeout: 1500}) && this.getRemoteVersions())
-        ]);
-        let resVersions = localVersions;
-        if(remoteVersions && remoteVersions.length){ resVersions = remoteVersions; this.updateLocalVersions(resVersions); }
-        this.bsVersions = resVersions;
-        return this.bsVersions;
-   }
+   private async loadBsVersions(): Promise<BSVersion[]>{
+    if(this.bsVersions){ return this.bsVersions; }
+    const [localVersions, remoteVersions] = await allSettled([
+        this.getLocalVersions(),  this.getRemoteVersions()
+    ]);
+    let resVersions = localVersions;
+    if(remoteVersions && remoteVersions.length){ resVersions = remoteVersions; this.updateLocalVersions(resVersions); }
+    this.bsVersions = resVersions;
+    return this.bsVersions;
+}
 
    public async getAvailableVersions(): Promise<BSVersion[]>{
       const bsVersions = await this.loadBsVersions();
