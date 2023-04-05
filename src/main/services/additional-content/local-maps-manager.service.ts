@@ -21,6 +21,7 @@ import { Archive } from "../../models/archive.class";
 import { deleteFolder, ensureFolderExist, getFoldersInFolder, pathExist } from "../../helpers/fs.helpers";
 import { readFile } from "fs/promises";
 import { FolderLinkerService } from "../folder-linker.service";
+import { allSettled } from "../../helpers/promise.helpers";
 
 export class LocalMapsManagerService {
 
@@ -155,12 +156,7 @@ export class LocalMapsManagerService {
                     return mapInfo;
                 });
 
-                const mapsInfo = (await Promise.allSettled(promises)).reduce((acc, mapInfo) => {
-                    if(mapInfo.status === "fulfilled" && mapInfo.value){
-                        acc.push(mapInfo.value);
-                    }
-                    return acc;
-                } ,[] as BsmLocalMap[]);
+                const mapsInfo = await allSettled(promises, {removeFalsy: true});
 
                 progression.maps = mapsInfo;
 

@@ -44,10 +44,13 @@ export class BSVersionLibService{
    };
 
    private async loadBsVersions(): Promise<BSVersion[]>{
+
     if(this.bsVersions){ return this.bsVersions; }
+
     const [localVersions, remoteVersions] = await allSettled([
         this.getLocalVersions(),  this.getRemoteVersions()
-    ]);
+    ], {keepStructure: true});
+
     let resVersions = localVersions;
     if(remoteVersions && remoteVersions.length){ resVersions = remoteVersions; this.updateLocalVersions(resVersions); }
     this.bsVersions = resVersions;
