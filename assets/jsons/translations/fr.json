@@ -585,7 +585,8 @@
             "buttons": {
                 "add-folder": "Ajouter un dossier",
                 "link-folder": "Lier le dossier",
-                "unlink-folder": "Délier le dossier"
+                "unlink-folder": "Délier le dossier",
+                "link-all": "Tout lier"
             }
         }
     },

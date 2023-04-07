@@ -586,7 +586,8 @@
             "buttons": {
                 "add-folder": "Ordner Hinzufügen",
                 "link-folder": "Ordner Verknüpfen",
-                "unlink-folder": "Ordner Verknüpfung Aufheben"
+                "unlink-folder": "Ordner Verknüpfung Aufheben",
+                "link-all": "Alle verlinken"
             }
         }
     },
