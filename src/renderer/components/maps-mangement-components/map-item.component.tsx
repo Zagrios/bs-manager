@@ -11,7 +11,6 @@ import dateFormat from "dateformat";
 import { AudioPlayerService } from "renderer/services/audio-player.service";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { map } from "rxjs/operators";
-import useDelayedState from "use-delayed-state";
 import equal from "fast-deep-equal/es6";
 import { getMapZipUrlFromHash } from "renderer/helpers/maps-utils";
 import { BsmBasicSpinner } from "../shared/bsm-basic-spinner/bsm-basic-spinner.component";
@@ -21,6 +20,7 @@ import { MAP_DIFFICULTIES } from "renderer/partials/maps/map-difficulties/map-di
 import { MAP_DIFFICULTIES_COLORS } from "renderer/partials/maps/map-difficulties/map-difficulties-colors"
 import useDoubleClick from "use-double-click";
 import { GlowEffect } from "../shared/glow-effect.component";
+import { useDelayedState } from "renderer/hooks/use-delayed-state.hook";
 
 export type ParsedMapDiff = {type: BsvMapDifficultyType, name: string, stars: number}
 
