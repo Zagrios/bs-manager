@@ -67,6 +67,10 @@ export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ data }) => 
         setFolders((prev) => prev.filter((_, i) => i !== index));
     }
 
+    const linkAll = () => {
+        folders.forEach(relativeFolder => linker.linkVersionFolder({ version: data, relativeFolder,  type: VersionLinkerActionType.Link }))
+    }
+
     return (
         <form className="w-full max-w-md ">
             <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t("modals.shared-folders.title")}</h1>
@@ -76,13 +80,15 @@ export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ data }) => 
                     <FolderItem key={index} version={data} relativeFolder={folder} onDelete={() => {removeFolder(index)}}/>
                 ))}
             </ul>
-            <div className="w-full h-12 rounded-md flex justify-center items-center cursor-pointer bg-light-main-color-1 dark:bg-main-color-1 hover:bg-light-main-color-3 hover:dark:bg-main-color-3" onClick={addFolder}>
-                <BsmIcon className="aspect-square h-8" icon="add"/>
-                <span className="font-bold">{t("modals.shared-folders.buttons.add-folder")}</span>
+            <div className="grid grid-flow-col gap-3 grid-cols-2">
+                <BsmButton icon="add" className="h-8 rounded-md flex justify-center items-center font-bold bg-light-main-color-1 dark:bg-main-color-1" iconClassName="h-6 aspect-square text-current" onClick={addFolder} withBar={false} text="modals.shared-folders.buttons.add-folder"/>
+                <BsmButton icon="link" className="h-8 rounded-md flex justify-center items-center font-bold" typeColor="primary" iconClassName="h-6 aspect-square text-current -rotate-45" onClick={linkAll} withBar={false} text="modals.shared-folders.buttons.link-all"/>
             </div>
         </form>
     )
 }
+
+// -------- FOLDER ITEM --------
 
 type FolderProps = {
     version: BSVersion;
@@ -111,8 +117,9 @@ const FolderItem = ({version, relativeFolder, onDelete}: FolderProps) => {
     const [linked, setLinked] = useState(false);
 
     useEffect(() => {
+        if(pending){ return; }
         loadFolderIsLinked();
-    }, [version, relativeFolder]);
+    }, [version, relativeFolder, pending]);
 
     const loadFolderIsLinked = () => {
         linker.isVersionFolderLinked(version, relativeFolder).toPromise().then(setLinked);
@@ -124,13 +131,14 @@ const FolderItem = ({version, relativeFolder, onDelete}: FolderProps) => {
                 version,
                 relativeFolder,
                 type: VersionLinkerActionType.Unlink,
-            }).then(loadFolderIsLinked);
+            })
         }
+
         return linker.linkVersionFolder({
             version,
             relativeFolder,
             type: VersionLinkerActionType.Link,
-        }).then(loadFolderIsLinked);
+        })
     }
 
     const cancelLink = () => {

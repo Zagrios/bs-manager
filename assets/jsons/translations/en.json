@@ -586,7 +586,8 @@
             "buttons": {
                 "add-folder": "Add Folder",
                 "link-folder": "Link Folder",
-                "unlink-folder": "Unlink Folder"
+                "unlink-folder": "Unlink Folder",
+                "link-all": "Link all"
             }
         }
     },
