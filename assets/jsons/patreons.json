@@ -1,4 +1,5 @@
 [
     {"username": "Shidorien"},
-    {"username": "Doloro", "type": "gold"}
+    {"username": "Doloro", "type": "gold"},
+    {"username": "iPixelGalaxy", "type": "diamond", "link": "https://twitch.tv/ipixelgalaxy"}
 ]
