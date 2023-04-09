@@ -21,7 +21,7 @@ export const GuardModal: ModalComponent<string> = ({resolver}) => {
         <BsmImage className="mx-auto h-24" image={BeatConflict}/>
         <div className="mb-4">
             <label className="block font-bold tracking-wide text-gray-800 dark:text-gray-200" htmlFor="guard">{t("modals.guard.inputs.guard-code.label")}</label>
-            <input className="w-full bg-light-main-color-1 dark:bg-main-color-1 px-2 rounded-md py-[2px]" onChange={e => setGuardCode(e.target.value.toUpperCase())} value={guardCode} type="guard" name="guard" id="guard" placeholder={t("modals.guard.inputs.guard-code.placeholder")}/>
+            <input className="w-full bg-light-main-color-1 dark:bg-main-color-1 px-2 rounded-md py-[2px]" onChange={e => setGuardCode(e.target.value.toUpperCase().replaceAll(" ", ""))} value={guardCode} type="guard" name="guard" id="guard" placeholder={t("modals.guard.inputs.guard-code.placeholder")}/>
         </div>
         <div className="grid grid-flow-col grid-cols-2 gap-4">
             <BsmButton typeColor="cancel" className="rounded-md text-center transition-all" onClick={() => {resolver({exitCode: ModalExitCode.CANCELED})}} withBar={false} text="misc.cancel"/>
