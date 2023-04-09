@@ -21,7 +21,7 @@ export function SupporterItem({supporter, delay}: Props) {
     })();    
 
     const renderSpan = () => {
-        return <motion.span className="text-2xl font-bold px-3 pb-1" style={additionnalStyles} initial={{y: "100%", opacity: 0}} animate={{y: 0, opacity: 1}} transition={{delay: delay}}>{supporter.username}</motion.span>;
+        return <motion.span className={`text-2xl font-bold px-3 pb-1 ${supporter.link && "cursor-pointer"}`} style={additionnalStyles} onClick={openSupporterLink} initial={{y: "100%", opacity: 0}} animate={{y: 0, opacity: 1}} transition={{delay: delay}}>{supporter.username}</motion.span>;
     }
 
     const renderItem = () => {
