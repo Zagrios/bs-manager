@@ -15,7 +15,7 @@ export function SupporterItem({supporter, delay}: Props) {
     const additionnalStyles: CSSProperties = (() => {
         const commonStyles: CSSProperties = {backgroundImage: `url(${txtBg})`, backgroundRepeat: "no-repeat", backgroundPosition: "center"}
         if(supporter.type === "gold"){ return {color: "#ffe270", textShadow: "0px 0px 10px #ffdd59", backgroundSize: "70% 15px", ...commonStyles}; }
-        if(supporter.type === "diamond"){ return {color: "#e574fc", textShadow: "0px 0px 15px #e056fd", backgroundSize: "70% 19px", ...commonStyles}; }
+        if(supporter.type === "diamond"){ return {color: "#03cffc", textShadow: "0px 0px 15px #03cffc", backgroundSize: "70% 19px", ...commonStyles}; }
         if(supporter.type === "sponsor"){ return {color: "#0be881", textShadow: "0px 0px 15px #0be881", backgroundSize: "70% 19px", ...commonStyles}; }
         return {};
     })();    
