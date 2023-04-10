@@ -1,5 +1,7 @@
 [
     {"username": "Shidorien"},
     {"username": "Doloro", "type": "gold"},
-    {"username": "iPixelGalaxy", "type": "diamond", "link": "https://twitch.tv/ipixelgalaxy"}
+    {"username": "iPixelGalaxy", "type": "diamond", "link": "https://twitch.tv/ipixelgalaxy"},
+    {"username": "Emyte", "type": "gold"},
+    {"username": "GoodOldNervy"}
 ]
