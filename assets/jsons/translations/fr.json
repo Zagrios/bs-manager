@@ -268,13 +268,21 @@
             "move-folder": {
                 "success": {
                     "titles": {
+                        "transfer-started": "Transfert en cours",
                         "transfer-finished": "Transfert terminé 👌"
+                    },
+                    "descs":{
+                        "transfer-started": "Le transfert a commencé, il peut durer plusieurs minutes selon votre configuration."
                     }
                 },
                 "errors": {
                     "titles": {
                         "transfer-failed": "Le transfert a échoué 😕"
-                    }
+                    },
+                    "descs": {
+                        "COPY_TO_SUBPATH": "Le dossier de destination ne peut pas être un sous-dossier du dossier source.",
+                        "restore-linked-folders": "Une erreur s'est produite lors de la restauration des dossiers partagés. Vous pouvez toujours les restaurer manuellement via le menu 'Dossiers partagés' sur la page des versions."
+                    } 
                 }
             },
             "steam": {

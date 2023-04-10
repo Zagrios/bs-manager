@@ -133,6 +133,10 @@ export class VersionFolderLinkerService{
         return this.ipcService.sendV2("get-linked-folders", { args: { version, options } });
     }
 
+    public relinkAllVersionsFolders(): Observable<void>{
+        return this.ipcService.sendV2("relink-all-versions-folders");
+    }
+
     public get currentAction$(): Observable<VersionLinkerAction>{
         return this._queue$.pipe(map(actions => actions.at(0)), distinctUntilChanged());
     }

@@ -96,7 +96,6 @@ export class BSLocalVersionService{
    public async getVersionPath(version: BSVersion): Promise<string>{
       if(version.steam){ return this.steamService.getGameFolder(BS_APP_ID, "Beat Saber") }
       if(version.oculus){ return this.oculusService.getGameFolder(OCULUS_BS_DIR); }
-      console.log("getVersionPath", this.getVersionFolder(version), version);
       return path.join(
          this.installLocationService.versionsDirectory,
          this.getVersionFolder(version)
@@ -184,7 +183,7 @@ export class BSLocalVersionService{
    }
 
    public async editVersion(version: BSVersion, name: string, color: string): Promise<BSVersion>{
-      if(version.steam || version.oculus){ throw {title: "CantEditSteam", msg: "CantEditSteam"} as BsmException; }
+      if(version.steam || version.oculus){ throw {title: "CantEditSteam", message: "CantEditSteam"} as BsmException; }
       const oldPath = await this.getVersionPath(version);
       const editedVersion: BSVersion = version.BSVersion === name
          ? {...version, name: undefined, color}
@@ -205,7 +204,7 @@ export class BSLocalVersionService{
          return editedVersion;
       }).catch((err: Error) => {
          log.error("edit version error", err, version, name, color);
-         throw {title: "CantRename", error: err} as BsmException;
+         throw {title: "CantRename", ...err} as BsmException;
       });
    }
 
@@ -228,7 +227,7 @@ export class BSLocalVersionService{
          return cloneVersion;
       }).catch((err: Error) => {
          log.error("clone version error", err, version, name, color);
-         throw {title: "CantClone", error: err} as BsmException
+         throw {title: "CantClone", ...err} as BsmException
       })
    }
 

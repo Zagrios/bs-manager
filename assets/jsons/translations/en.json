@@ -269,12 +269,20 @@
             "move-folder": {
                 "success": {
                     "titles": {
+                        "transfer-started": "Transfer in progress",
                         "transfer-finished": "Transfer complete"
+                    },
+                    "descs": {
+                        "transfer-started": "The transfer has started and may take several minutes depending on your configuration."
                     }
                 },
                 "errors": {
                     "titles": {
                         "transfer-failed": "Transfer failed 😕"
+                    },
+                    "descs": {
+                        "COPY_TO_SUBPATH": "The destination folder cannot be a subfolder of the source folder.",
+                        "restore-linked-folders": "An error occurred while restoring shared folders. You can still manually restore them via the 'Shared Folders' menu on the versions page."
                     }
                 }
             },

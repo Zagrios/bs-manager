@@ -151,4 +151,9 @@ ipc.on("unlink-folder", async (req: IpcRequest<{ folder: string, options?: LinkO
 
 });
 
+ipc.on("relink-all-versions-folders", async (req: IpcRequest<void>, reply) => {
+    const versionLinker = VersionFolderLinkerService.getInstance();
+    reply(from(versionLinker.relinkAllVersionsFolders()));
+});
+
 

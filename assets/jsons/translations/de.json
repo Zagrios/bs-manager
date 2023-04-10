@@ -269,12 +269,20 @@
             "move-folder": {
                 "success": {
                     "titles": {
+                        "transfer-started": "Übertragung läuft",
                         "transfer-finished": "Transfer abgeschlossen"
+                    },
+                    "descs": {
+                        "transfer-started": "Die Übertragung hat begonnen und kann je nach Konfiguration mehrere Minuten dauern."
                     }
                 },
                 "errors": {
                     "titles": {
                         "transfer-failed": "Transfer fehlgeschlagen 😕"
+                    },
+                    "descs": {
+                        "COPY_TO_SUBPATH": "Der Zielordner darf kein Unterordner des Quellordners sein.",
+                        "restore-linked-folders": "Beim Wiederherstellen von freigegebenen Ordnern ist ein Fehler aufgetreten. Sie können sie dennoch manuell über das Menü 'Freigegebene Ordner' auf der Versionsseite wiederherstellen."
                     }
                 }
             },

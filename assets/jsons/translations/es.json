@@ -268,12 +268,20 @@
             "move-folder": {
                 "success": {
                     "titles": {
+                        "transfer-started": "Transferencia en curso",
                         "transfer-finished": "Transferencia completa"
+                    },
+                    "descs": {
+                        "transfer-started": "La transferencia ha comenzado y puede tomar varios minutos dependiendo de su configuración."
                     }
                 },
                 "errors": {
                     "titles": {
                         "transfer-failed": "Transferencia fallida 😕"
+                    },
+                    "descs": {
+                        "COPY_TO_SUBPATH": "La carpeta de destino no puede ser una subcarpeta de la carpeta de origen.",
+                        "restore-linked-folders": "Se produjo un error al restaurar las carpetas compartidas. Aún puede restaurarlas manualmente a través del menú 'Carpetas compartidas' en la página de versiones."
                     }
                 }
             },

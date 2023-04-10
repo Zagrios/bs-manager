@@ -84,7 +84,7 @@ export class BSVersionManagerService {
          if(!res.success){
             this.notificationService.notifyError({
                title: `notifications.custom-version.errors.titles.${res.error.title}`,
-               ...(res.error.msg && {desc: `notifications.custom-version.errors.msg.${res.error.msg}`})
+               ...(res.error.message && {desc: `notifications.custom-version.errors.msg.${res.error.message}`})
             });
             return null;
          }
@@ -104,7 +104,7 @@ export class BSVersionManagerService {
          if(!res.success){
             this.notificationService.notifyError({
                title: `notifications.custom-version.errors.titles.${res.error.title}`,
-               ...(res.error.msg && {desc: `notifications.custom-version.errors.msg.${res.error.msg}`})
+               ...(res.error.message && {desc: `notifications.custom-version.errors.msg.${res.error.message}`})
             });
             return null;
          }

@@ -30,6 +30,7 @@ import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { ModelsManagerService } from "renderer/services/models-manager.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { VersionFolderLinkerService } from "renderer/services/version-folder-linker.service";
 
 export function SettingsPage() {
 
@@ -45,6 +46,7 @@ export function SettingsPage() {
   const mapsManager = MapsManagerService.getInstance();
   const playlistsManager = PlaylistsManagerService.getInstance();
   const modelsManager = ModelsManagerService.getInstance();
+  const versionLinker = VersionFolderLinkerService.getInstance();
 
   const {firstColor, secondColor} = useThemeColor();
 
@@ -102,33 +104,48 @@ export function SettingsPage() {
     setLanguageSelected(languagesItems.find(l => l.value === i18nService.currentLanguage).id);
   }
 
-  const setDefaultInstallationFolder = () => {
-      if(!progressBarService.require()){ return; }
+    const setDefaultInstallationFolder = () => {
+        if(!progressBarService.require()){ return; }
 
-      modalService.openModal(InstallationFolderModal).then(async res => {
-         if(res.exitCode !== ModalExitCode.COMPLETED){ return; }
+        modalService.openModal(InstallationFolderModal).then(async res => {
+            if(res.exitCode !== ModalExitCode.COMPLETED){ return; }
 
-         const fileChooserRes = await ipcService.sendV2<{canceled: boolean, filePaths: string[]}>("choose-folder").toPromise();
+            const fileChooserRes = await ipcService.sendV2<{canceled: boolean, filePaths: string[]}>("choose-folder").toPromise();
 
-         if(!fileChooserRes.canceled && fileChooserRes.filePaths?.length){
-            progressBarService.showFake(.008);
-            downloaderService.setInstallationFolder(fileChooserRes.filePaths[0]).then(res => {
-               setTimeout(() => {
-                  progressBarService.complete();
-                  setTimeout(() => progressBarService.hide(true), 1000);
-               }, 1000);
-               if(res.success){
-                  setInstallationFolder(res.data);
-                  notificationService.notifySuccess({title: "notifications.settings.move-folder.success.titles.transfer-finished", duration: 3000});
-               }
-               else{
-                  notificationService.notifyError({title: "notifications.settings.move-folder.errors.titles.transfer-failed"});
-               }
-            });
-         }
+            if(!fileChooserRes.canceled && fileChooserRes.filePaths?.length){
+                progressBarService.showFake(.008);
 
-      });
-   }
+                notificationService.notifySuccess({title: "notifications.settings.move-folder.success.titles.transfer-started", desc: "notifications.settings.move-folder.success.descs.transfer-started"});
+
+                downloaderService.setInstallationFolder(fileChooserRes.filePaths[0]).then(async res => {
+                    setTimeout(() => {
+                        progressBarService.complete();
+                        setTimeout(() => progressBarService.hide(true), 1000);
+                    }, 1000);
+
+                    if(res.success){
+                        setInstallationFolder(res.data);
+
+                        notificationService.notifySuccess({title: "notifications.settings.move-folder.success.titles.transfer-finished", duration: 3000});
+
+                        versionLinker.relinkAllVersionsFolders().toPromise().catch(() => {
+                            notificationService.notifyError({title: "notifications.types.error", desc: "notifications.settings.move-folder.errors.descs.restore-linked-folders", duration: 15_000});
+                        });
+                    }
+                    else{
+
+                        if(res?.error?.code === "COPY_TO_SUBPATH"){
+                            notificationService.notifyError({title: "notifications.settings.move-folder.errors.titles.transfer-failed", desc: "notifications.settings.move-folder.errors.descs.COPY_TO_SUBPATH", duration: 10_000});
+                            return;
+                        }
+
+                        notificationService.notifyError({title: "notifications.settings.move-folder.errors.titles.transfer-failed"});
+                    }
+                });
+            }
+
+        });
+    }
 
   
   const toogleShowSupporters = () => {
