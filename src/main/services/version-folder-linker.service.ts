@@ -43,7 +43,7 @@ export class VersionFolderLinkerService {
         for(const versionPath of versionPaths){
             const folderPath = this.relativeToFullPath(versionPath, relativeFolder);
             if(folderPath === ignorePath){ continue; }
-            if(await this.folderLinker.isFolderSymlink(folderPath)){ console.log(folderPath); return true; }
+            if(await this.folderLinker.isFolderSymlink(folderPath)){ return true; }
         }
 
         return false;
@@ -58,7 +58,7 @@ export class VersionFolderLinkerService {
         action.options = this.specialFolderOption(action.relativeFolder, action.options);
         const versionPath = await this.localVersion.getVersionPath(action.version);
         const folderPath = this.relativeToFullPath(versionPath, action.relativeFolder);
-        return this.folderLinker.linkFolder(folderPath, action.options).catch(() => false).then(() => true)
+        return this.folderLinker.linkFolder(folderPath, action.options).catch((err) => {console.log(err); return false}).then(() => true)
     }
 
     public async unlinkVersionFolder(action: VersionUnlinkFolderAction): Promise<boolean>{
@@ -85,23 +85,34 @@ export class VersionFolderLinkerService {
         return this.folderLinker.isFolderSymlink(folderPath);
     }
 
-    public async getLinkedFolders(version: BSVersion, options?: { relative?: boolean }): Promise<string[]>{
+    public async getLinkedFolders(version: BSVersion, options?: { relative?: boolean, ignoreSymlinkTargetError?: boolean }): Promise<string[]>{
         const versionPath = await this.localVersion.getVersionPath(version);
         const [rootFolders, beatSaberDataFolders] = await Promise.all([
-            getFoldersInFolder(versionPath),
-            getFoldersInFolder(path.join(versionPath, "Beat Saber_Data"))
+            getFoldersInFolder(versionPath, {ignoreSymlinkTargetError: options?.ignoreSymlinkTargetError}),
+            getFoldersInFolder(path.join(versionPath, "Beat Saber_Data"), {ignoreSymlinkTargetError: options?.ignoreSymlinkTargetError})
         ]);
 
-        const linkedFolder = await Promise.all([...rootFolders, ...beatSaberDataFolders].map(async folder => {
+        const linkedFolders = await Promise.all([...rootFolders, ...beatSaberDataFolders].map(async folder => {
             if(!(await this.folderLinker.isFolderSymlink(folder))){ return null; }
             return folder;   
         }));
 
         if(options?.relative){
-            return linkedFolder.filter(folder => folder).map(folder => path.relative(versionPath, folder));
+            return linkedFolders.filter(folder => folder).map(folder => path.relative(versionPath, folder));
         }
 
-        return linkedFolder.filter(folder => folder);
+        return linkedFolders.filter(folder => folder);
+    }
+
+    public async relinkAllVersionsFolders(): Promise<void>{
+        const versions = await this.localVersion.getInstalledVersions();
+
+        for(const version of versions){
+            const linkedFolders = await this.getLinkedFolders(version, { relative: true, ignoreSymlinkTargetError: true });
+            console.log(linkedFolders);
+            const actions = linkedFolders.map(folder => ({ type: "link", version, relativeFolder: folder } as VersionLinkFolderAction));
+            await Promise.all(actions.map(action => this.doAction(action)));
+        }
     }
 
 }

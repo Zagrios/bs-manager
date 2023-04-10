@@ -64,8 +64,6 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
 
     useEffect(() => {
 
-        console.log(linked);
-
         if(isVisible){
             loadMaps();
             mapsDownloader.addOnMapDownloadedListener((map, targerVersion) => {

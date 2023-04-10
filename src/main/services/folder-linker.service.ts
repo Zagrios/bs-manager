@@ -3,7 +3,7 @@ import log from "electron-log";
 import { deleteFolder, ensureFolderExist, moveFolderContent, pathExist, unlinkPath } from "../helpers/fs.helpers";
 import { lstat, symlink } from "fs/promises";
 import path from "path";
-import { copy } from "fs-extra";
+import { copy, readlink } from "fs-extra";
 
 export class FolderLinkerService {
 
@@ -18,12 +18,12 @@ export class FolderLinkerService {
 
     private readonly installLocationService = InstallationLocationService.getInstance();
 
-    private readonly sharedFolder: string;
-
     private constructor(){
         this.installLocationService = InstallationLocationService.getInstance();
+    }
 
-        this.sharedFolder = this.installLocationService.sharedContentPath;
+    private get sharedFolder(): string{
+        return this.installLocationService.sharedContentPath;
     }
 
     private getSharedFolder(folderPath: string, intermediateFolder?: string): string {
@@ -48,9 +48,14 @@ export class FolderLinkerService {
 
     public async linkFolder(folderPath: string, options?: LinkOptions): Promise<void> {
 
-        if(await this.isFolderSymlink(folderPath)){ return; }
-
         const sharedPath = this.getSharedFolder(folderPath, options?.intermediateFolder);
+
+        if(await this.isFolderSymlink(folderPath)){
+            const isTargetedToSharedPath = await readlink(folderPath).then(target => target === sharedPath).catch(() => false);
+            if(isTargetedToSharedPath){ return; }
+            await unlinkPath(folderPath);
+            return symlink(sharedPath, folderPath, "junction");
+        }
 
         await ensureFolderExist(sharedPath);
 

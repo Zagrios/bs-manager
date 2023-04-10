@@ -1,10 +1,8 @@
 import path from "path";
-import fs from 'fs-extra';
 import log from "electron-log";
 import { app } from "electron";
-import { BsmException } from "shared/models/bsm-exception.model";
 import ElectronStore from "electron-store";
-import { ensureFolderExist, pathExist } from "../helpers/fs.helpers";
+import { copyDirectoryWithJunctions, deleteFolder, ensureFolderExist } from "../helpers/fs.helpers";
 
 export class InstallationLocationService {
 
@@ -48,15 +46,24 @@ export class InstallationLocationService {
         const oldDir = this.installationDirectory;
         const newDest = path.join(newDir, this.INSTALLATION_FOLDER);
         return new Promise<string>(async (resolve, reject) => {
-            if(!(await pathExist(oldDir))){ ensureFolderExist(oldDir); }
-            fs.move(oldDir, newDest, { overwrite: true }).then(() => {
+            
+            await ensureFolderExist(oldDir);
+
+            try{
+                await copyDirectoryWithJunctions(oldDir, newDest, {overwrite: true});
+
                 this._installationDirectory = newDir;
                 this.installPathConfig.set(this.STORE_INSTALLATION_PATH_KEY, newDir);
-                resolve(this.installationDirectory);
-            }).catch((err: Error) => {
-                reject({title: "CantMoveFolder", error: err} as BsmException);
+
+                deleteFolder(oldDir);
+
+                return resolve(this.installationDirectory);
+            }
+            catch(err){
                 log.error(err);
-            })
+                reject(err);
+            }
+
         });
     }
 
