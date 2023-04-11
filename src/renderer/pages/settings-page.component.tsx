@@ -5,9 +5,7 @@ import { RadioItem, SettingRadioArray } from "renderer/components/settings/setti
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmIconType } from "renderer/components/svgs/bsm-icon.component";
 import { DefaultConfigKey, ThemeConfig } from "renderer/config/default-configuration.config";
-import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
-import { AuthUserService } from "renderer/services/auth-user.service";
 import { BsDownloaderService } from "renderer/services/bs-downloader.service";
 import { ConfigurationService } from "renderer/services/configuration.service"
 import { I18nService } from "renderer/services/i18n.service";
@@ -26,11 +24,13 @@ import modelSaberIcon from "../../../assets/images/third-party-icons/model-saber
 import beatSaverIcon from "../../../assets/images/third-party-icons/beat-saver.png";
 import beastSaberIcon from "../../../assets/images/third-party-icons/beast-saber.png";
 import scoreSaberIcon from "../../../assets/images/third-party-icons/score-saber.png";
+import beatleaderIcon from "../../../assets/images/third-party-icons/beat-leader.png";
 import Tippy from '@tippyjs/react';
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { ModelsManagerService } from "renderer/services/models-manager.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { VersionFolderLinkerService } from "renderer/services/version-folder-linker.service";
 import { ChangelogModal } from "renderer/components/modal/modal-types/changelog-modal/changelog-modal.component";
 
 export function SettingsPage() {
@@ -47,6 +47,7 @@ export function SettingsPage() {
   const mapsManager = MapsManagerService.getInstance();
   const playlistsManager = PlaylistsManagerService.getInstance();
   const modelsManager = ModelsManagerService.getInstance();
+  const versionLinker = VersionFolderLinkerService.getInstance();
 
   const {firstColor, secondColor} = useThemeColor();
 
@@ -104,33 +105,48 @@ export function SettingsPage() {
     setLanguageSelected(languagesItems.find(l => l.value === i18nService.currentLanguage).id);
   }
 
-  const setDefaultInstallationFolder = () => {
-      if(!progressBarService.require()){ return; }
+    const setDefaultInstallationFolder = () => {
+        if(!progressBarService.require()){ return; }
 
-      modalService.openModal(InstallationFolderModal).then(async res => {
-         if(res.exitCode !== ModalExitCode.COMPLETED){ return; }
+        modalService.openModal(InstallationFolderModal).then(async res => {
+            if(res.exitCode !== ModalExitCode.COMPLETED){ return; }
 
-         const fileChooserRes = await ipcService.sendV2<{canceled: boolean, filePaths: string[]}>("choose-folder").toPromise();
+            const fileChooserRes = await ipcService.sendV2<{canceled: boolean, filePaths: string[]}>("choose-folder").toPromise();
 
-         if(!fileChooserRes.canceled && fileChooserRes.filePaths?.length){
-            progressBarService.showFake(.008);
-            downloaderService.setInstallationFolder(fileChooserRes.filePaths[0]).then(res => {
-               setTimeout(() => {
-                  progressBarService.complete();
-                  setTimeout(() => progressBarService.hide(true), 1000);
-               }, 1000);
-               if(res.success){
-                  setInstallationFolder(res.data);
-                  notificationService.notifySuccess({title: "notifications.settings.move-folder.success.titles.transfer-finished", duration: 3000});
-               }
-               else{
-                  notificationService.notifyError({title: "notifications.settings.move-folder.errors.titles.transfer-failed"});
-               }
-            });
-         }
+            if(!fileChooserRes.canceled && fileChooserRes.filePaths?.length){
+                progressBarService.showFake(.008);
 
-      });
-   }
+                notificationService.notifySuccess({title: "notifications.settings.move-folder.success.titles.transfer-started", desc: "notifications.settings.move-folder.success.descs.transfer-started"});
+
+                downloaderService.setInstallationFolder(fileChooserRes.filePaths[0]).then(async res => {
+                    setTimeout(() => {
+                        progressBarService.complete();
+                        setTimeout(() => progressBarService.hide(true), 1000);
+                    }, 1000);
+
+                    if(res.success){
+                        setInstallationFolder(res.data);
+
+                        notificationService.notifySuccess({title: "notifications.settings.move-folder.success.titles.transfer-finished", duration: 3000});
+
+                        versionLinker.relinkAllVersionsFolders().toPromise().catch(() => {
+                            notificationService.notifyError({title: "notifications.types.error", desc: "notifications.settings.move-folder.errors.descs.restore-linked-folders", duration: 15_000});
+                        });
+                    }
+                    else{
+
+                        if(res?.error?.code === "COPY_TO_SUBPATH"){
+                            notificationService.notifyError({title: "notifications.settings.move-folder.errors.titles.transfer-failed", desc: "notifications.settings.move-folder.errors.descs.COPY_TO_SUBPATH", duration: 10_000});
+                            return;
+                        }
+
+                        notificationService.notifyError({title: "notifications.settings.move-folder.errors.titles.transfer-failed"});
+                    }
+                });
+            }
+
+        });
+    }
 
   
   const toogleShowSupporters = () => {
@@ -228,6 +244,9 @@ export function SettingsPage() {
                                 <Tippy content="ScoreSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
                                     <BsmImage className="h-8 cursor-pointer" image={scoreSaberIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://scoresaber.com/")}}/>
                                 </Tippy>
+                                <Tippy content="BeatLeader" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <BsmImage className="h-8 cursor-pointer" image={beatleaderIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://www.beatleader.xyz/")}}/>
+                                </Tippy>
                                 <Tippy content="ModelSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
                                     <BsmImage className="h-8 cursor-pointer" image={modelSaberIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://modelsaber.com/")}}/>
                                 </Tippy>
@@ -248,6 +267,9 @@ export function SettingsPage() {
                                 </Tippy>
                                 <Tippy content="ScoreSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
                                     <BsmImage className="h-8 cursor-pointer" image={scoreSaberIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://scoresaber.com/")}}/>
+                                </Tippy>
+                                <Tippy content="BeatLeader" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <BsmImage className="h-8 cursor-pointer" image={beatleaderIcon} onClick={e => {e.stopPropagation(); linkOpener.open("https://www.beatleader.xyz/")}}/>
                                 </Tippy>
                             </div>
                         </li>

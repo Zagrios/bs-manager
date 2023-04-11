@@ -3,7 +3,7 @@ import log from "electron-log";
 import { deleteFolder, ensureFolderExist, moveFolderContent, pathExist, unlinkPath } from "../helpers/fs.helpers";
 import { lstat, symlink } from "fs/promises";
 import path from "path";
-import { copy } from "fs-extra";
+import { copy, readlink } from "fs-extra";
 
 export class FolderLinkerService {
 
@@ -18,12 +18,12 @@ export class FolderLinkerService {
 
     private readonly installLocationService = InstallationLocationService.getInstance();
 
-    private readonly sharedFolder: string;
-
     private constructor(){
         this.installLocationService = InstallationLocationService.getInstance();
+    }
 
-        this.sharedFolder = this.installLocationService.sharedContentPath;
+    private get sharedFolder(): string{
+        return this.installLocationService.sharedContentPath;
     }
 
     private getSharedFolder(folderPath: string, intermediateFolder?: string): string {
@@ -48,16 +48,22 @@ export class FolderLinkerService {
 
     public async linkFolder(folderPath: string, options?: LinkOptions): Promise<void> {
 
-        if(await this.isFolderSymlink(folderPath)){ return; }
-
         const sharedPath = this.getSharedFolder(folderPath, options?.intermediateFolder);
 
-        await ensureFolderExist(folderPath);
+        if(await this.isFolderSymlink(folderPath)){
+            const isTargetedToSharedPath = await readlink(folderPath).then(target => target === sharedPath).catch(() => false);
+            if(isTargetedToSharedPath){ return; }
+            await unlinkPath(folderPath);
+            return symlink(sharedPath, folderPath, "junction");
+        }
+
         await ensureFolderExist(sharedPath);
 
         if(options?.backup === true){
             await this.backupFolder(folderPath);
         }
+
+        await ensureFolderExist(folderPath);
 
         if(options?.keepContents !== false){
             await moveFolderContent(folderPath, sharedPath).toPromise();
@@ -68,7 +74,7 @@ export class FolderLinkerService {
         return symlink(sharedPath, folderPath, "junction");
     }
 
-    public async unlinkFolder(folderPath: string, options?: LinkOptions): Promise<void> {
+    public async unlinkFolder(folderPath: string, options?: UnlinkOptions): Promise<void> {
 
         if(!(await this.isFolderSymlink(folderPath))){ return; }
         await unlinkPath(folderPath);
@@ -81,10 +87,14 @@ export class FolderLinkerService {
             return this.restoreFolder(folderPath);
         }
 
+        if(options.moveContents === true){
+            return moveFolderContent(sharedPath, folderPath).toPromise().then(() => {});
+        }
+
         if(options?.keepContents === false){ return; }
 
         await ensureFolderExist(sharedPath);
-
+        
         return copy(sharedPath, folderPath, { errorOnExist: false, recursive: true });
     }
 
@@ -104,5 +114,9 @@ export class FolderLinkerService {
 export interface LinkOptions {
     keepContents?: boolean,
     intermediateFolder?: string,
-    backup?: boolean
+    backup?: boolean,
 }
+
+export interface UnlinkOptions extends LinkOptions {
+    moveContents?: boolean,
+};

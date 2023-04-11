@@ -67,6 +67,7 @@
             "mods": {
                 "loading-mods": "Loading mods...",
                 "no-internet": "No internet",
+                "mods-not-available": "No mods are available yet for this version of Beat Saber",
                 "buttons": {
                     "more-infos": "More info",
                     "install-or-update": "Install or update"
@@ -137,11 +138,13 @@
                     "en-US": "English, US",
                     "fr-FR": "Français",
                     "es-ES": "Español",
+                    "de-DE": "Deutsch",
                     "translated": {
                         "en-EN": "English, United Kingdom",
                         "en-US": "English, USA",
                         "fr-FR": "French",
-                        "es-ES": "Spanish"
+                        "es-ES": "Spanish",
+                        "de-DE": "German"
                     }
                 }
             },
@@ -266,12 +269,20 @@
             "move-folder": {
                 "success": {
                     "titles": {
+                        "transfer-started": "Transfer in progress",
                         "transfer-finished": "Transfer complete"
+                    },
+                    "descs": {
+                        "transfer-started": "The transfer has started and may take several minutes depending on your configuration."
                     }
                 },
                 "errors": {
                     "titles": {
                         "transfer-failed": "Transfer failed 😕"
+                    },
+                    "descs": {
+                        "COPY_TO_SUBPATH": "The destination folder cannot be a subfolder of the source folder.",
+                        "restore-linked-folders": "An error occurred while restoring shared folders. You can still manually restore them via the 'Shared Folders' menu on the versions page."
                     }
                 }
             },
@@ -583,7 +594,8 @@
             "buttons": {
                 "add-folder": "Add Folder",
                 "link-folder": "Link Folder",
-                "unlink-folder": "Unlink Folder"
+                "unlink-folder": "Unlink Folder",
+                "link-all": "Link all"
             }
         }
     },

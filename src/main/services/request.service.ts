@@ -21,7 +21,7 @@ export class RequestService {
                     resolve(JSON.parse(body));
                 });
                 res.on('error', (err) => reject(err))
-            });
+            }).on("error", err => reject(err));
         });
     }
     

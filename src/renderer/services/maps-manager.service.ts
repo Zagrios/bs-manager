@@ -13,9 +13,12 @@ import { ConfigurationService } from "./configuration.service";
 import { ArchiveProgress } from "shared/models/archive.interface";
 import { map, last, catchError, distinctUntilChanged, mergeMap } from "rxjs/operators";
 import { ProgressionInterface } from "shared/models/progress-bar";
-import { FolderLinkerService } from "./folder-linker.service";
+import { VersionFolderLinkerService, VersionLinkerActionType } from "./version-folder-linker.service";
+import equal from "fast-deep-equal";
 
 export class MapsManagerService {
+
+    
 
     private static instance: MapsManagerService;
 
@@ -25,13 +28,14 @@ export class MapsManagerService {
     }
 
     public static readonly REMEMBER_CHOICE_DELETE_MAP_KEY = "not-confirm-delete-map"
+    public static readonly RELATIVE_MAPS_FOLDER = "Beat Saber_Data\\CustomLevels";
 
     private readonly ipcService: IpcService;
     private readonly modal: ModalService;
     private readonly progressBar: ProgressBarService;
     private readonly notifications: NotificationService;
     private readonly config: ConfigurationService;
-    private readonly linker: FolderLinkerService;
+    private readonly linker: VersionFolderLinkerService;
 
     private readonly lastLinkedVersion$: Subject<BSVersion> = new Subject();
     private readonly lastUnlinkedVersion$: Subject<BSVersion> = new Subject();
@@ -42,11 +46,7 @@ export class MapsManagerService {
         this.progressBar = ProgressBarService.getInstance();
         this.notifications = NotificationService.getInstance();
         this.config = ConfigurationService.getInstance();
-        this.linker = FolderLinkerService.getInstance();
-    }
-
-    private async getVersionMapsPath(version: BSVersion): Promise<string>{
-        return this.ipcService.sendV2<string>("get-version-maps-path", {args: version}).toPromise();
+        this.linker = VersionFolderLinkerService.getInstance();
     }
 
     public getMaps(version?: BSVersion): Observable<BsmLocalMapsProgress>{
@@ -54,30 +54,35 @@ export class MapsManagerService {
     }
 
     public async versionHaveMapsLinked(version: BSVersion): Promise<boolean>{
-        const versionMapsPath = await this.getVersionMapsPath(version);
-        return this.linker.isFolderLinked(versionMapsPath).toPromise();
+        return this.linker.isVersionFolderLinked(version, MapsManagerService.RELATIVE_MAPS_FOLDER).toPromise();
     }
 
-    public async linkVersion(version: BSVersion): Promise<void>{
+    public async linkVersion(version: BSVersion): Promise<boolean>{
 
         const modalRes = await this.modal.openModal(LinkMapsModal);
 
-        if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return; }
+        if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return Promise.resolve(false); }
 
-        const versionMapsPath = await this.getVersionMapsPath(version);
-
-        return this.linker.linkFolder(versionMapsPath, {keepContents: !!modalRes.data}).toPromise();
+        return this.linker.linkVersionFolder({
+            version,
+            type: VersionLinkerActionType.Link,
+            relativeFolder: MapsManagerService.RELATIVE_MAPS_FOLDER,
+            options: { keepContents: !!modalRes.data }
+        });
     }
 
-    public async unlinkVersion(version: BSVersion): Promise<void>{
+    public async unlinkVersion(version: BSVersion): Promise<boolean>{
 
         const modalRes = await this.modal.openModal(UnlinkMapsModal);
 
-        if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return; }
+        if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return Promise.resolve(false); }
 
-        const versionMapsPath = await this.getVersionMapsPath(version);
-
-        return this.linker.unlinkFolder(versionMapsPath, {keepContents: !!modalRes.data}).toPromise();
+        return this.linker.unlinkVersionFolder({
+            version,
+            type: VersionLinkerActionType.Unlink,
+            relativeFolder: MapsManagerService.RELATIVE_MAPS_FOLDER,
+            options: { keepContents: !!modalRes.data }
+        });
     }
 
     public async deleteMaps(maps: BsmLocalMap[], version?: BSVersion): Promise<boolean>{
@@ -155,8 +160,7 @@ export class MapsManagerService {
 
     public $mapsLinkingPending(version: BSVersion): Observable<boolean>{
         return this.linker.queue$.pipe(mergeMap(async queue => {
-            const versionMapsPath = await this.getVersionMapsPath(version);
-            return queue.some(q => q.folder.includes(versionMapsPath));
+            return queue.some(q => q.relativeFolder.includes(MapsManagerService.RELATIVE_MAPS_FOLDER) && equal(q.version, version));
         }), distinctUntilChanged());
     }
 

@@ -66,6 +66,7 @@
             "mods": {
                 "loading-mods": "Chargement des mods...",
                 "no-internet": "Pas d'internet",
+                "mods-not-available": "Aucun mod n'est encore disponible pour cette version de Beat Saber",
                 "buttons": {
                     "more-infos": "Plus d'infos",
                     "install-or-update": "Installer ou mettre à jour"
@@ -136,11 +137,13 @@
                     "en-US": "English, US",
                     "fr-FR": "Français",
                     "es-ES": "Español",
+                    "de-DE": "Deutsch",
                     "translated": {
                         "en-EN": "Anglais, Royaume-Uni",
                         "en-US": "Anglais, États-Unis",
                         "fr-FR": "Français",
-                        "es-ES": "Espagnol"
+                        "es-ES": "Espagnol",
+                        "de-DE": "Allemand"
                     }
                 }
             },
@@ -265,13 +268,21 @@
             "move-folder": {
                 "success": {
                     "titles": {
+                        "transfer-started": "Transfert en cours",
                         "transfer-finished": "Transfert terminé 👌"
+                    },
+                    "descs":{
+                        "transfer-started": "Le transfert a commencé, il peut durer plusieurs minutes selon votre configuration."
                     }
                 },
                 "errors": {
                     "titles": {
                         "transfer-failed": "Le transfert a échoué 😕"
-                    }
+                    },
+                    "descs": {
+                        "COPY_TO_SUBPATH": "Le dossier de destination ne peut pas être un sous-dossier du dossier source.",
+                        "restore-linked-folders": "Une erreur s'est produite lors de la restauration des dossiers partagés. Vous pouvez toujours les restaurer manuellement via le menu 'Dossiers partagés' sur la page des versions."
+                    } 
                 }
             },
             "steam": {
@@ -582,7 +593,8 @@
             "buttons": {
                 "add-folder": "Ajouter un dossier",
                 "link-folder": "Lier le dossier",
-                "unlink-folder": "Délier le dossier"
+                "unlink-folder": "Délier le dossier",
+                "link-all": "Tout lier"
             }
         }
     },

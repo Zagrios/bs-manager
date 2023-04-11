@@ -5,7 +5,6 @@ import { SteamService } from "./steam.service";
 import { BS_APP_ID, OCULUS_BS_DIR } from "../constants";
 import path from "path";
 import { createReadStream } from "fs";
-import fs from "fs-extra";
 import { ConfigurationService } from "./configuration.service";
 import { rename } from "fs/promises";
 import { BsmException } from "shared/models/bsm-exception.model";
@@ -13,7 +12,7 @@ import log from "electron-log";
 import { OculusService } from "./oculus.service";
 import { DownloadLinkType } from "shared/models/mods";
 import sanitize from "sanitize-filename";
-import { deleteFolder, getFoldersInFolder, pathExist } from "../helpers/fs.helpers";
+import { copyDirectoryWithJunctions, deleteFolder, getFoldersInFolder, pathExist } from "../helpers/fs.helpers";
 import { FolderLinkerService } from "./folder-linker.service";
 
 export class BSLocalVersionService{
@@ -184,7 +183,7 @@ export class BSLocalVersionService{
    }
 
    public async editVersion(version: BSVersion, name: string, color: string): Promise<BSVersion>{
-      if(version.steam || version.oculus){ throw {title: "CantEditSteam", msg: "CantEditSteam"} as BsmException; }
+      if(version.steam || version.oculus){ throw {title: "CantEditSteam", message: "CantEditSteam"} as BsmException; }
       const oldPath = await this.getVersionPath(version);
       const editedVersion: BSVersion = version.BSVersion === name
          ? {...version, name: undefined, color}
@@ -205,7 +204,7 @@ export class BSLocalVersionService{
          return editedVersion;
       }).catch((err: Error) => {
          log.error("edit version error", err, version, name, color);
-         throw {title: "CantRename", error: err} as BsmException;
+         throw {title: "CantRename", ...err} as BsmException;
       });
    }
 
@@ -223,12 +222,12 @@ export class BSLocalVersionService{
 
       if(await pathExist(newPath)){ throw {title: "VersionAlreadExist"} as BsmException; }
 
-      return fs.copy(originPath, newPath, {dereference: true}).then(() => {
+      return copyDirectoryWithJunctions(originPath, newPath).then(() => {
          this.addCustomVersion(cloneVersion);
          return cloneVersion;
       }).catch((err: Error) => {
          log.error("clone version error", err, version, name, color);
-         throw {title: "CantClone", error: err} as BsmException
+         throw {title: "CantClone", ...err} as BsmException
       })
    }
 

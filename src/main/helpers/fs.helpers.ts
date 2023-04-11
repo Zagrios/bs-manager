@@ -1,8 +1,9 @@
-import { move } from "fs-extra";
+import { CopyOptions, copy, ensureDir, move, symlink } from "fs-extra";
 import { access, mkdir, rm, readdir, unlink, lstat, readlink } from "fs/promises";
 import path from "path";
 import { Observable } from "rxjs";
 import log from "electron-log"
+import { BsmException } from "shared/models/bsm-exception.model";
 
 export async function pathExist(path: string): Promise<boolean> {
     try{
@@ -29,7 +30,7 @@ export async function unlinkPath(path: string): Promise<void>{
     return unlink(path);
 }
 
-export async function getFoldersInFolder(folderPath: string): Promise<string[]> {
+export async function getFoldersInFolder(folderPath: string, opts?: {ignoreSymlinkTargetError?: boolean}): Promise<string[]> {
     if(!(await pathExist(folderPath))){ return []; }
 
     const files = await readdir(folderPath, {withFileTypes: true});
@@ -40,7 +41,10 @@ export async function getFoldersInFolder(folderPath: string): Promise<string[]> 
         try{
             const targetPath = await readlink(path.join(folderPath, file.name));
             return (await lstat(targetPath)).isDirectory() ? path.join(folderPath, file.name) : undefined;
-        }catch(e){
+        }catch(e: any){
+            if(e.code === "ENOENT" && opts?.ignoreSymlinkTargetError === true && !path.extname(file.name)){
+                return path.join(folderPath, file.name);
+            }
             return undefined;
         }
     });
@@ -79,6 +83,48 @@ export function moveFolderContent(src: string, dest: string): Observable<Progres
 
         })();
     });
+}
+
+export function isSubdirectory(parent: string, child: string): boolean {
+    const parentNormalized = path.resolve(parent);
+    const childNormalized = path.resolve(child);
+
+    if (parentNormalized === childNormalized) { return false; }
+
+    const relativePath = path.relative(parentNormalized, childNormalized);
+  
+    if (path.parse(parentNormalized).root !== path.parse(childNormalized).root) { return false; }
+  
+    return relativePath && !relativePath.startsWith('..') && !path.isAbsolute(relativePath);
+}
+
+export async function copyDirectoryWithJunctions(src: string, dest: string, options?: CopyOptions): Promise<void> {
+
+    if(isSubdirectory(src, dest)){
+        throw {message: `Cannot copy directory '${src}' into itself '${dest}'.`, code: "COPY_TO_SUBPATH"} as BsmException;
+    }
+
+    await ensureDir(dest);
+    const items = await readdir(src, { withFileTypes: true });
+  
+    for (const item of items) {
+        const sourcePath = path.join(src, item.name);
+        const destinationPath = path.join(dest, item.name);
+    
+        if (item.isDirectory()) {
+            await copyDirectoryWithJunctions(sourcePath, destinationPath, options);
+        } else if (item.isFile()) {
+            await copy(sourcePath, destinationPath, options);
+        } else if (item.isSymbolicLink()) {
+            if(options?.overwrite){
+                await unlinkPath(destinationPath);
+            }
+            const symlinkTarget = await readlink(sourcePath);
+            const relativePath = path.relative(src, symlinkTarget);
+            const newTarget = path.join(dest, relativePath);
+            await symlink(newTarget, destinationPath, 'junction');
+        }
+    }
 }
 
 export interface Progression<T = unknown>{
