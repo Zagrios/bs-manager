@@ -282,7 +282,7 @@
                     },
                     "descs": {
                         "COPY_TO_SUBPATH": "Der Zielordner darf kein Unterordner des Quellordners sein.",
-                        "restore-linked-folders": "Beim Wiederherstellen von freigegebenen Ordnern ist ein Fehler aufgetreten. Sie können sie dennoch manuell über das Menü 'Freigegebene Ordner' auf der Versionsseite wiederherstellen."
+                        "restore-linked-folders": "Beim Wiederherstellen von freigegebenen Ordnern ist ein Fehler aufgetreten. Du kannst sie dennoch manuell über das Menü 'Freigegebene Ordner' auf der Versionsseite wiederherstellen."
                     }
                 }
             },
