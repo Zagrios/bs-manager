@@ -52,13 +52,13 @@ export class BSLauncherService{
     }
 
     public isBsRunning(): boolean{
-        return this.bsProcess?.connected || this.utilsService.taskRunning(BS_EXECUTABLE);
+        return this.bsProcess?.connected || this.utilsService.taskRunning(BS_EXECUTABLE) === true;
     }
 
     public async launch(launchOptions: LauchOption): Promise<LaunchResult>{
-        if(launchOptions.version.oculus && !this.oculusService.oculusRunning()){ return "OCULUS_NOT_RUNNING" }
-        if(!launchOptions.version.oculus && !this.steamService.steamRunning()){ return "STEAM_NOT_RUNNING" }
-        if(this.isBsRunning()){ return "BS_ALREADY_RUNNING" }
+        if(launchOptions.version.oculus && this.oculusService.oculusRunning() === false){ return "OCULUS_NOT_RUNNING" }
+        if(!launchOptions.version.oculus && this.steamService.steamRunning() === false){ return "STEAM_NOT_RUNNING" }
+        if(this.isBsRunning() === true){ return "BS_ALREADY_RUNNING" }
 
         const cwd = await this.localVersionService.getVersionPath(launchOptions.version);
         const exePath = path.join(cwd, BS_EXECUTABLE);
