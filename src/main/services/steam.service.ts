@@ -25,7 +25,7 @@ export class SteamService{
     return SteamService.instance;
   }
 
-  public steamRunning(): boolean{
+  public steamRunning(): boolean | null{
     return this.utils.taskRunning('steam.exe');
   }
 

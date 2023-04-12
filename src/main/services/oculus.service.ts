@@ -20,7 +20,7 @@ export class OculusService {
         this.utils = UtilsService.getInstance();
     }
 
-    public oculusRunning(): boolean{
+    public oculusRunning(): boolean | null{
         return this.utils.taskRunning("OculusClient.exe");
     }
 
