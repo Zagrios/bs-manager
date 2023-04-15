@@ -14,7 +14,7 @@
     "postinstall": "npm run electron-rebuild && npm run link-modules"
   },
   "dependencies": {
-    "ctrlc-windows": "^2.0.0"
+    "ctrlc-windows": "^2.1.0"
   },
   "license": "MIT"
 }

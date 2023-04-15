@@ -12,7 +12,6 @@ import path from 'path';
 import { app, ipcMain, protocol } from 'electron';
 import log from 'electron-log';
 import './ipcs';
-import { UtilsService } from './services/utils.service';
 import { WindowManagerService } from './services/window-manager.service';
 import { DeepLinkService } from './services/deep-link.service';
 import { AppWindow } from 'shared/models/window-manager/app-window.model';
