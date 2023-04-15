@@ -5,7 +5,7 @@
   "main": "./dist/main/main.js",
   "author": {
     "name": "Zagrios",
-    "email": "electronreactboilerplate@gmail.com",
+    "email": "admin@bsmanager.io",
     "url": "https://github.com/Zagrios/bs-manager"
   },
   "scripts": {
