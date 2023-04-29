@@ -597,6 +597,88 @@
                 "unlink-folder": "Unlink Folder",
                 "link-all": "Link all"
             }
+        },
+        "models": {
+            "link-models": {
+                "avatar": {
+                    "title": "Link Avatars",
+                    "desc": "Linking avatars allows sharing avatars between all versions. Once linked, this version will benefit from the shared avatars",
+                    "info": "Adding and deleting avatars will also be shared",
+                    "keep-models": {
+                        "label": "Keep Avatars",
+                        "title": "Keeping the avatars will move the avatars from the current version to the shared avatars folder. Otherwise, they will be lost"
+                    },
+                    "valid-btn": "Link Avatars"
+                },
+                "saber": {
+                    "title": "Link Sabers",
+                    "desc": "Linking sabers allows sharing sabers between all versions. Once linked, this version will benefit from the shared sabers",
+                    "info": "Adding and deleting sabers will also be shared",
+                    "keep-models": {
+                        "label": "Keep Sabers",
+                        "title": "Keeping the sabers will move the sabers from the current version to the shared sabers folder. Otherwise, they will be lost"
+                    },
+                    "valid-btn": "Link Sabers"
+                },
+                "platform": {
+                    "title": "Link Platforms",
+                    "desc": "Linking platforms allows sharing platforms between all versions. Once linked, this version will benefit from the shared platforms",
+                    "info": "Adding and deleting platforms will also be shared",
+                    "keep-models": {
+                        "label": "Keep Platforms",
+                        "title": "Keeping the platforms will move the platforms from the current version to the shared platforms folder. Otherwise, they will be lost"
+                    },
+                    "valid-btn": "Link Platforms"
+                },
+                "bloq": {
+                    "title": "Link Bloqs",
+                    "desc": "Linking bloqs allows sharing bloqs between all versions. Once linked, this version will benefit from the shared bloqs",
+                    "info": "Adding and deleting bloqs will also be shared",
+                    "keep-models": {
+                        "label": "Keep Bloqs",
+                        "title": "Keeping the bloqs will move the bloqs from the current version to the shared bloqs folder. Otherwise, they will be lost"
+                    },
+                    "valid-btn": "Link Bloqs"
+                }
+            },
+            "unlink-models": {
+                "avatar": {
+                    "title": "Unlink Avatars",
+                    "desc": "Be careful, unlinking avatars will no longer allow the use of shared avatars for this version.",
+                    "keep-models": {
+                        "label": "Keep Avatars",
+                        "title": "Keeping the avatars will create a copy of the shared avatars for the current version. Otherwise, no avatars will be kept for this version."
+                    },
+                    "valid-btn": "Unlink Avatars"
+                },
+                "saber": {
+                    "title": "Unlink Sabers",
+                    "desc": "Be careful, unlinking sabers will no longer allow the use of shared sabers for this version.",
+                    "keep-models": {
+                        "label": "Keep Sabers",
+                        "title": "Keeping the sabers will create a copy of the shared sabers for the current version. Otherwise, no sabers will be kept for this version."
+                    },
+                    "valid-btn": "Unlink Sabers"
+                },
+                "platform": {
+                    "title": "Unlink Platforms",
+                    "desc": "Be careful, unlinking platforms will no longer allow the use of shared platforms for this version.",
+                    "keep-models": {
+                        "label": "Keep Platforms",
+                        "title": "Keeping the platforms will create a copy of the shared platforms for the current version. Otherwise, no platforms will be kept for this version."
+                    },
+                    "valid-btn": "Unlink Platforms"
+                },
+                "bloq": {
+                    "title": "Unlink Bloqs",
+                    "desc": "Be careful, unlinking bloqs will no longer allow the use of shared bloqs for this version.",
+                    "keep-models": {
+                        "label": "Keep Bloqs",
+                        "title": "Keeping the bloqs will create a copy of the shared bloqs for the current version. Otherwise, no bloqs will be kept for this version."
+                    },
+                    "valid-btn": "Unlink Bloqs"
+                }
+            }
         }
     },
     "maps": {

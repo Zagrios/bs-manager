@@ -159,9 +159,7 @@ export class MapsManagerService {
     }
 
     public $mapsLinkingPending(version: BSVersion): Observable<boolean>{
-        return this.linker.queue$.pipe(mergeMap(async queue => {
-            return queue.some(q => q.relativeFolder.includes(MapsManagerService.RELATIVE_MAPS_FOLDER) && equal(q.version, version));
-        }), distinctUntilChanged());
+        return this.linker.$isVersionFolderPending(version, MapsManagerService.RELATIVE_MAPS_FOLDER);
     }
 
 }

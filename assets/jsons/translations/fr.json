@@ -596,6 +596,88 @@
                 "unlink-folder": "Délier le dossier",
                 "link-all": "Tout lier"
             }
+        },
+        "models": {
+            "link-models":{
+                "avatar": {
+                    "title": "Lier les avatars",
+                    "desc": "La liaison des avatars permet de partager les avatars entre toute les version. Une fois liée, cette version profitera des avatars partagés",
+                    "info": "L'ajout et la suppression d'avatars sera également partagé",
+                    "keep-models": {
+                        "label": "Conserver les avatars",
+                        "title": "Conserver les avatars déplacera les avatars de la version actuelle dans le dossier des avatars partagés. Dans le cas contraire ils seront perdus"
+                    },
+                    "valid-btn": "Lier les avatars"
+                },
+                "saber": {
+                    "title": "Lier les sabres",
+                    "desc": "La liaison des sabres permet de partager les sabres entre toute les version. Une fois liée, cette version profitera des sabres partagés",
+                    "info": "L'ajout et la suppression de sabres sera également partagé",
+                    "keep-models": {
+                        "label": "Conserver les sabres",
+                        "title": "Conserver les sabres déplacera les sabres de la version actuelle dans le dossier des sabres partagés. Dans le cas contraire ils seront perdus"
+                    },
+                    "valid-btn": "Lier les sabres"
+                },
+                "platform": {
+                    "title": "Lier les plateformes",
+                    "desc": "La liaison des plateformes permet de partager les plateformes entre toute les version. Une fois liée, cette version profitera des plateformes partagées",
+                    "info": "L'ajout et la suppression de plateformes sera également partagé",
+                    "keep-models": {
+                        "label": "Conserver les plateformes",
+                        "title": "Conserver les plateformes déplacera les plateformes de la version actuelle dans le dossier des plateformes partagées. Dans le cas contraire ils seront perdus"
+                    },
+                    "valid-btn": "Lier les plateformes"
+                },
+                "bloq": {
+                    "title": "Lier les bloqs",
+                    "desc": "La liaison des bloqs permet de partager les bloqs entre toute les version. Une fois liée, cette version profitera des bloqs partagés",
+                    "info": "L'ajout et la suppression de bloqs sera également partagé",
+                    "keep-models": {
+                        "label": "Conserver les bloqs",
+                        "title": "Conserver les bloqs déplacera les bloqs de la version actuelle dans le dossier des bloqs partagés. Dans le cas contraire ils seront perdus"
+                    },
+                    "valid-btn": "Lier les bloqs"
+                }
+            },
+            "unlink-models":{
+                "avatar": {
+                    "title": "Délier les avatars",
+                    "desc": "Attention, délier les avatars ne permettra plus l'utilisation des avatars paratagés pour cette version.",
+                    "keep-models": {
+                        "label": "Conserver les avatars",
+                        "title": "Conserver les avatars créera une copie des avatars partagés pour la version actuelle. Dans le cas contraire, aucun avatar ne sera conservé pour cette version."
+                    },
+                    "valid-btn": "Délier les avatars"
+                },
+                "saber": {
+                    "title": "Délier les sabres",
+                    "desc": "Attention, délier les sabres ne permettra plus l'utilisation des sabres paratagés pour cette version.",
+                    "keep-models": {
+                        "label": "Conserver les sabres",
+                        "title": "Conserver les sabres créera une copie des sabres partagés pour la version actuelle. Dans le cas contraire, aucun sabre ne sera conservé pour cette version."
+                    },
+                    "valid-btn": "Délier les sabres"
+                },
+                "platform": {
+                    "title": "Délier les plateformes",
+                    "desc": "Attention, délier les plateformes ne permettra plus l'utilisation des plateformes paratagées pour cette version.",
+                    "keep-models": {
+                        "label": "Conserver les plateformes",
+                        "title": "Conserver les plateformes créera une copie des plateformes partagées pour la version actuelle. Dans le cas contraire, aucune plateforme ne sera conservée pour cette version."
+                    },
+                    "valid-btn": "Délier les plateformes"
+                },
+                "bloq": {
+                    "title": "Délier les bloqs",
+                    "desc": "Attention, délier les bloqs ne permettra plus l'utilisation des bloqs paratagés pour cette version.",
+                    "keep-models": {
+                        "label": "Conserver les bloqs",
+                        "title": "Conserver les bloqs créera une copie des bloqs partagés pour la version actuelle. Dans le cas contraire, aucun bloq ne sera conservé pour cette version."
+                    },
+                    "valid-btn": "Délier les bloqs"
+                }
+            }
         }
     },
     "maps": {

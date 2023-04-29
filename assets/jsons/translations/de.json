@@ -597,6 +597,88 @@
                 "unlink-folder": "Ordner Verknüpfung Aufheben",
                 "link-all": "Alle verlinken"
             }
+        },
+        "models": {
+            "link-models": {
+                "avatar": {
+                    "title": "Avatare verbinden",
+                    "desc": "Das Verbinden von Avataren ermöglicht das Teilen von Avataren zwischen allen Versionen. Sobald verbunden, wird diese Version von den geteilten Avataren profitieren",
+                    "info": "Das Hinzufügen und Entfernen von Avataren wird ebenfalls geteilt",
+                    "keep-models": {
+                        "label": "Avatare behalten",
+                        "title": "Das Behalten der Avatare wird die Avatare der aktuellen Version in den Ordner der geteilten Avatare verschieben. Andernfalls gehen sie verloren"
+                    },
+                    "valid-btn": "Avatare verbinden"
+                },
+                "saber": {
+                    "title": "Säbel verbinden",
+                    "desc": "Das Verbinden von Säbeln ermöglicht das Teilen von Säbeln zwischen allen Versionen. Sobald verbunden, wird diese Version von den geteilten Säbeln profitieren",
+                    "info": "Das Hinzufügen und Entfernen von Säbeln wird ebenfalls geteilt",
+                    "keep-models": {
+                        "label": "Säbel behalten",
+                        "title": "Das Behalten der Säbel wird die Säbel der aktuellen Version in den Ordner der geteilten Säbel verschieben. Andernfalls gehen sie verloren"
+                    },
+                    "valid-btn": "Säbel verbinden"
+                },
+                "platform": {
+                    "title": "Plattformen verbinden",
+                    "desc": "Das Verbinden von Plattformen ermöglicht das Teilen von Plattformen zwischen allen Versionen. Sobald verbunden, wird diese Version von den geteilten Plattformen profitieren",
+                    "info": "Das Hinzufügen und Entfernen von Plattformen wird ebenfalls geteilt",
+                    "keep-models": {
+                        "label": "Plattformen behalten",
+                        "title": "Das Behalten der Plattformen wird die Plattformen der aktuellen Version in den Ordner der geteilten Plattformen verschieben. Andernfalls gehen sie verloren"
+                    },
+                    "valid-btn": "Plattformen verbinden"
+                },
+                "bloq": {
+                    "title": "Bloqs verbinden",
+                    "desc": "Das Verbinden von Bloqs ermöglicht das Teilen von Bloqs zwischen allen Versionen. Sobald verbunden, wird diese Version von den geteilten Bloqs profitieren",
+                    "info": "Das Hinzufügen und Entfernen von Bloqs wird ebenfalls geteilt",
+                    "keep-models": {
+                        "label": "Bloqs behalten",
+                        "title": "Das Behalten der Bloqs wird die Bloqs der aktuellen Version in den Ordner der geteilten Bloqs verschieben. Andernfalls gehen sie verloren"
+                    },
+                    "valid-btn": "Bloqs verbinden"
+                }
+            },
+            "unlink-models": {
+                "avatar": {
+                    "title": "Avatare trennen",
+                    "desc": "Achtung, das Trennen der Avatare wird die Nutzung der geteilten Avatare für diese Version nicht mehr ermöglichen.",
+                    "keep-models": {
+                        "label": "Avatare behalten",
+                        "title": "Das Behalten der Avatare wird eine Kopie der geteilten Avatare für die aktuelle Version erstellen. Andernfalls wird kein Avatar für diese Version aufbewahrt."
+                    },
+                    "valid-btn": "Avatare trennen"
+                },
+                "saber": {
+                    "title": "Säbel trennen",
+                    "desc": "Achtung, das Trennen der Säbel wird die Nutzung der geteilten Säbel für diese Version nicht mehr ermöglichen.",
+                    "keep-models": {
+                        "label": "Säbel behalten",
+                        "title": "Das Behalten der Säbel wird eine Kopie der geteilten Säbel für die aktuelle Version erstellen. Andernfalls wird kein Säbel für diese Version aufbewahrt."
+                    },
+                    "valid-btn": "Säbel trennen"
+                },
+                "platform": {
+                    "title": "Plattformen trennen",
+                    "desc": "Achtung, das Trennen der Plattformen wird die Nutzung der geteilten Plattformen für diese Version nicht mehr ermöglichen.",
+                    "keep-models": {
+                        "label": "Plattformen behalten",
+                        "title": "Das Behalten der Plattformen wird eine Kopie der geteilten Plattformen für die aktuelle Version erstellen. Andernfalls wird keine Plattform für diese Version aufbewahrt."
+                    },
+                    "valid-btn": "Plattformen trennen"
+                },
+                "bloq": {
+                    "title": "Bloqs trennen",
+                    "desc": "Achtung, das Trennen der Bloqs wird die Nutzung der geteilten Bloqs für diese Version nicht mehr ermöglichen.",
+                    "keep-models": {
+                        "label": "Bloqs behalten",
+                        "title": "Das Behalten der Bloqs wird eine Kopie der geteilten Bloqs für die aktuelle Version erstellen. Andernfalls wird kein Bloq für diese Version aufbewahrt."
+                    },
+                    "valid-btn": "Bloqs trennen"
+                }
+            }
         }
     },
     "maps": {

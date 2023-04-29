@@ -16,6 +16,7 @@ import { ModsSlide } from 'renderer/components/version-viewer/slides/mods/mods-s
 import { UninstallModal } from 'renderer/components/modal/modal-types/uninstall-modal.component';
 import { MapsPlaylistsPanel } from 'renderer/components/maps-mangement-components/maps-playlists-panel.component';
 import { ShareFoldersModal } from 'renderer/components/modal/modal-types/share-folders-modal.component';
+import { ModelsPanel } from 'renderer/components/models-management/models-panel.component';
 
 export function VersionViewer() {
 
@@ -78,11 +79,14 @@ export function VersionViewer() {
       <div className="relative flex items-center flex-col w-full h-full text-gray-200 backdrop-blur-lg">
         <BsmImage className='relative object-cover h-28' image={BSLogo}/>
         <h1 className='relative text-4xl font-bold italic -top-3'>{state.name ? `${state.BSVersion} - ${state.name}` : state.BSVersion}</h1>
-        <TabNavBar className='my-3' tabIndex={currentTabIndex} tabsText={["misc.launch", "misc.maps", "misc.mods"]} onTabChange={(i : number) => setCurrentTabIndex(i)}/>
+        <TabNavBar className='my-3' tabIndex={currentTabIndex} tabsText={["misc.launch", "misc.maps", "Models", "misc.mods"]} onTabChange={(i : number) => setCurrentTabIndex(i)}/>
         <div className='mt-2 w-full min-h-0 grow flex transition-transform duration-300' style={{transform: `translate(${-(currentTabIndex * 100)}%, 0)`}}>
           <LaunchSlide version={state}/>
           <div className="w-full shrink-0 px-3 pb-3 flex flex-col items-center">
             <MapsPlaylistsPanel version={state}/>
+          </div>
+          <div className="w-full shrink-0 px-3 pb-3 flex flex-col items-center">
+            <ModelsPanel version={state}/>
           </div>
           <ModsSlide version={state} onDisclamerDecline={handleModsDisclaimerDecline}/>
         </div>

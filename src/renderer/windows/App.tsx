@@ -17,7 +17,7 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/animations/shift-away-subtle.css';
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
-import { ModelsManagerService } from "renderer/services/models-manager.service";
+import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
 import { NotificationService } from "renderer/services/notification.service";
 import { timer } from "rxjs";
 import { ConfigurationService } from "renderer/services/configuration.service";

@@ -596,6 +596,88 @@
                 "unlink-folder": "Desenlazar Carpeta",
                 "link-all": "Enlazar todo"
             }
+        },
+        "models": {
+            "link-models": {
+                "avatar": {
+                    "title": "Vincular avatares",
+                    "desc": "La vinculación de avatares permite compartir avatares entre todas las versiones. Una vez vinculada, esta versión se beneficiará de los avatares compartidos",
+                    "info": "La adición y eliminación de avatares también se compartirá",
+                    "keep-models": {
+                        "label": "Conservar los avatares",
+                        "title": "Conservar los avatares moverá los avatares de la versión actual a la carpeta de avatares compartidos. De lo contrario, se perderán"
+                    },
+                    "valid-btn": "Vincular avatares"
+                },
+                "saber": {
+                    "title": "Vincular sables",
+                    "desc": "La vinculación de sables permite compartir sables entre todas las versiones. Una vez vinculada, esta versión se beneficiará de los sables compartidos",
+                    "info": "La adición y eliminación de sables también se compartirá",
+                    "keep-models": {
+                        "label": "Conservar los sables",
+                        "title": "Conservar los sables moverá los sables de la versión actual a la carpeta de sables compartidos. De lo contrario, se perderán"
+                    },
+                    "valid-btn": "Vincular sables"
+                },
+                "platform": {
+                    "title": "Vincular plataformas",
+                    "desc": "La vinculación de plataformas permite compartir plataformas entre todas las versiones. Una vez vinculada, esta versión se beneficiará de las plataformas compartidas",
+                    "info": "La adición y eliminación de plataformas también se compartirá",
+                    "keep-models": {
+                        "label": "Conservar las plataformas",
+                        "title": "Conservar las plataformas moverá las plataformas de la versión actual a la carpeta de plataformas compartidas. De lo contrario, se perderán"
+                    },
+                    "valid-btn": "Vincular plataformas"
+                },
+                "bloq": {
+                    "title": "Vincular bloqs",
+                    "desc": "La vinculación de bloqs permite compartir bloqs entre todas las versiones. Una vez vinculada, esta versión se beneficiará de los bloqs compartidos",
+                    "info": "La adición y eliminación de bloqs también se compartirá",
+                    "keep-models": {
+                        "label": "Conservar los bloqs",
+                        "title": "Conservar los bloqs moverá los bloqs de la versión actual a la carpeta de bloqs compartidos. De lo contrario, se perderán"
+                    },
+                    "valid-btn": "Vincular bloqs"
+                }
+            },
+            "unlink-models": {
+                "avatar": {
+                    "title": "Desvincular avatares",
+                    "desc": "Atención, desvincular los avatares ya no permitirá el uso de avatares compartidos para esta versión.",
+                    "keep-models": {
+                        "label": "Conservar los avatares",
+                        "title": "Conservar los avatares creará una copia de los avatares compartidos para la versión actual. En caso contrario, ningún avatar se conservará para esta versión."
+                    },
+                    "valid-btn": "Desvincular avatares"
+                },
+                "saber": {
+                    "title": "Desvincular sables",
+                    "desc": "Atención, desvincular los sables ya no permitirá el uso de sables compartidos para esta versión.",
+                    "keep-models": {
+                        "label": "Conservar los sables",
+                        "title": "Conservar los sables creará una copia de los sables compartidos para la versión actual. En caso contrario, ningún sable se conservará para esta versión."
+                    },
+                    "valid-btn": "Desvincular sables"
+                },
+                "platform": {
+                    "title": "Desvincular plataformas",
+                    "desc": "Atención, desvincular las plataformas ya no permitirá el uso de plataformas compartidas para esta versión.",
+                    "keep-models": {
+                        "label": "Conservar las plataformas",
+                        "title": "Conservar las plataformas creará una copia de las plataformas compartidas para la versión actual. En caso contrario, ninguna plataforma se conservará para esta versión."
+                    },
+                    "valid-btn": "Desvincular plataformas"
+                },
+                "bloq": {
+                    "title": "Desvincular bloqs",
+                    "desc": "Atención, desvincular los bloqs ya no permitirá el uso de bloqs compartidos para esta versión.",
+                    "keep-models": {
+                        "label": "Conservar los bloqs",
+                        "title": "Conservar los bloqs creará una copia de los bloqs compartidos para la versión actual. En caso contrario, ningún bloq se conservará para esta versión."
+                    },
+                    "valid-btn": "Desvincular bloqs"
+                }
+            }
         }
     },
     "maps": {

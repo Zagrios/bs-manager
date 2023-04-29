@@ -17,8 +17,18 @@ export interface MSModel {
     date: string
 }
 
-export type MSModelType = "saber"|"platform"|"bloq"|"misc"|"avatar";
-export type MSModelPlatform = "pc"|"quest"|"all";
+export enum MSModelType {
+    Avatar = "avatar",
+    Saber = "saber",
+    Platfrom = "platform",
+    Bloq = "bloq"
+};
+
+export enum MSModelPlatform {
+    PC = "pc",
+    QUEST = "quest",
+    ALL = "all"
+};
 
 export interface MSGetQuery {
     type?: MSModelType;

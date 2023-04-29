@@ -4,7 +4,7 @@ import { ipcMain } from "electron";
 import { IpcRequest } from "shared/models/ipc";
 import { UtilsService } from "../utils.service";
 import { WindowManagerService } from "../window-manager.service";
-import { MSModel, MSModelType } from "shared/models/model-saber/model-saber.model";
+import { MSModel, MSModelType } from "../../../shared/models/model-saber/model-saber.model";
 import { BSVersion } from "shared/bs-version.interface";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import path from "path";
@@ -12,6 +12,7 @@ import { RequestService } from "../request.service";
 import { copyFileSync } from "fs-extra";
 import sanitize from "sanitize-filename";
 import { ensureFolderExist } from "../../helpers/fs.helpers";
+import { MODEL_TYPE_FOLDERS } from "../../../shared/models/model-saber/models-constants";
 
 export class LocalModelsManagerService {
 
@@ -25,13 +26,6 @@ export class LocalModelsManagerService {
     private readonly DEEP_LINKS = {
         ModelSaber: "modelsaber",
     };
-
-    private readonly MODEL_TYPE_FOLDER: Record<Exclude<MSModelType, "misc">, string>  = {
-        avatar: "CustomAvatars",
-        bloq: "CustomNotes",
-        platform: "CustomPlatforms",
-        saber: "CustomSabers"
-    }
 
     private readonly deepLink: DeepLinkService;
     private readonly utils: UtilsService;
@@ -70,10 +64,9 @@ export class LocalModelsManagerService {
     private async getModelFolderPath(type: MSModelType, version?: BSVersion): Promise<string>{
 
         if(!version){ throw "will be implemented whith models management" }
-        if(type === "misc"){ throw "model type not supported"; }
 
         const versionPath = await this.localVersion.getVersionPath(version);
-        const modelFolderPath = path.join(versionPath, this.MODEL_TYPE_FOLDER[type]);
+        const modelFolderPath = path.join(versionPath, MODEL_TYPE_FOLDERS[type]);
 
         await ensureFolderExist(modelFolderPath);
 

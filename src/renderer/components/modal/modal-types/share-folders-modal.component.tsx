@@ -1,11 +1,9 @@
 import Tippy from "@tippyjs/react";
 import { Variants } from "framer-motion";
-import { version } from "os";
 import { useEffect, useState } from "react";
 import { LinkButton } from "renderer/components/maps-mangement-components/link-button.component";
 import { BsmBasicSpinner } from "renderer/components/shared/bsm-basic-spinner/bsm-basic-spinner.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
-import { BsmIcon } from "renderer/components/svgs/bsm-icon.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
