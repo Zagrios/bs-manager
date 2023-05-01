@@ -21,7 +21,7 @@ import { Archive } from "../../models/archive.class";
 import { deleteFolder, ensureFolderExist, getFoldersInFolder, pathExist } from "../../helpers/fs.helpers";
 import { readFile } from "fs/promises";
 import { FolderLinkerService } from "../folder-linker.service";
-import { allSettled } from "../../helpers/promise.helpers";
+import { allSettled } from "../../../shared/helpers/promise.helpers";
 
 export class LocalMapsManagerService {
 

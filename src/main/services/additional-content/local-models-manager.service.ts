@@ -4,15 +4,22 @@ import { ipcMain } from "electron";
 import { IpcRequest } from "shared/models/ipc";
 import { UtilsService } from "../utils.service";
 import { WindowManagerService } from "../window-manager.service";
-import { MSModel, MSModelType } from "../../../shared/models/model-saber/model-saber.model";
+import { MSModel, MSModelType } from "../../../shared/models/models/model-saber.model";
 import { BSVersion } from "shared/bs-version.interface";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import path from "path";
 import { RequestService } from "../request.service";
 import { copyFileSync } from "fs-extra";
 import sanitize from "sanitize-filename";
-import { ensureFolderExist } from "../../helpers/fs.helpers";
-import { MODEL_TYPE_FOLDERS } from "../../../shared/models/model-saber/models-constants";
+import { Progression, ensureFolderExist, extname } from "../../helpers/fs.helpers";
+import { MODEL_TYPE_FOLDERS } from "../../../shared/models/models/constants";
+import { InstallationLocationService } from "../installation-location.service";
+import { Observable } from "rxjs";
+import { readdir } from "fs/promises";
+import md5File from "md5-file";
+import { allSettled } from "../../../shared/helpers/promise.helpers";
+import { ModelSaberService } from "../thrid-party/model-saber/model-saber.service";
+import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 
 export class LocalModelsManagerService {
 
@@ -31,7 +38,9 @@ export class LocalModelsManagerService {
     private readonly utils: UtilsService;
     private readonly windows: WindowManagerService;
     private readonly localVersion: BSLocalVersionService;
+    private readonly installPaths: InstallationLocationService;
     private readonly request: RequestService;
+    private readonly modelSaber: ModelSaberService;
 
     private constructor(){
         this.deepLink = DeepLinkService.getInstance();
@@ -39,6 +48,8 @@ export class LocalModelsManagerService {
         this.windows = WindowManagerService.getInstance();
         this.localVersion = BSLocalVersionService.getInstance();
         this.request = RequestService.getInstance();
+        this.installPaths = InstallationLocationService.getInstance();
+        this.modelSaber = ModelSaberService.getInstance();
 
         this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.ModelSaber, (link) => {
             log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.ModelSaber, link);
@@ -63,10 +74,8 @@ export class LocalModelsManagerService {
 
     private async getModelFolderPath(type: MSModelType, version?: BSVersion): Promise<string>{
 
-        if(!version){ throw "will be implemented whith models management" }
-
-        const versionPath = await this.localVersion.getVersionPath(version);
-        const modelFolderPath = path.join(versionPath, MODEL_TYPE_FOLDERS[type]);
+        const rootPath = !!version ? await this.localVersion.getVersionPath(version) : this.installPaths.sharedContentPath;
+        const modelFolderPath = path.join(rootPath, MODEL_TYPE_FOLDERS[type]);
 
         await ensureFolderExist(modelFolderPath);
 
@@ -105,6 +114,54 @@ export class LocalModelsManagerService {
 
     }
 
+    private async getModelsPaths(type: MSModelType, version?: BSVersion): Promise<string[]>{
+        const modelsPath = await this.getModelFolderPath(type, version);
+        const files = await readdir(modelsPath, {withFileTypes: true});
+
+        return files.filter(file => file.isFile() && extname(file.name, false) === type).map(file => path.join(modelsPath, file.name));
+    }
+
+    public getModels(type: MSModelType, version?: BSVersion): Observable<Progression<BsmLocalModel[]>>{
+
+        const progression: Progression<BsmLocalModel[]> = {
+            total: 0,
+            current: 0,
+            extra: null
+        };
+
+        return new Observable<Progression<BsmLocalModel[]>>(subscriber => {
+            (async () => {
+                const modelsPaths = await this.getModelsPaths(type, version);
+                progression.total = modelsPaths.length;
+
+                const models = await allSettled(modelsPaths.map(async modelPath => {
+                    
+                    const hash = await md5File(modelPath)
+                    
+                    const localModel: BsmLocalModel = {
+                        path: modelPath,
+                        fileName: path.basename(modelPath),
+                        model: await this.modelSaber.getModelByHash(hash),
+                        type, hash
+                    }
+
+                    progression.current++;
+
+                    subscriber.next(progression);
+
+                    return localModel;
+                }));
+
+                progression.extra = models;
+                subscriber.next(progression);
+
+            })().catch(e => subscriber.error(e)).finally(() => subscriber.complete());
+        });
+
+    }
+
+
+
     public enableDeepLinks(): boolean{
         return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.registerDeepLink(link));
     }
@@ -117,4 +174,10 @@ export class LocalModelsManagerService {
         return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.isDeepLinkRegistred(link));
     }
 
+}
+
+export interface BsmLocalModelsProgress {
+    total: number;
+    loaded: number;
+    models: MSModel[];
 }

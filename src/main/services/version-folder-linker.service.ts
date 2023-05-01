@@ -5,7 +5,7 @@ import { BSVersion } from "shared/bs-version.interface";
 import { LocalMapsManagerService } from "./additional-content/local-maps-manager.service";
 import { BSLocalVersionService } from "./bs-local-version.service";
 import { FolderLinkerService, LinkOptions } from "./folder-linker.service";
-import { allSettled } from "../helpers/promise.helpers";
+import { allSettled } from "../../shared/helpers/promise.helpers";
 
 export class VersionFolderLinkerService {
 

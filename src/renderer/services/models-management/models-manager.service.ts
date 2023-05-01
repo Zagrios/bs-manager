@@ -1,12 +1,14 @@
-import { MSModelType } from "shared/models/model-saber/model-saber.model";
+import { MSModelType } from "shared/models/models/model-saber.model";
 import { IpcService } from "../ipc.service";
 import { VersionFolderLinkerService, VersionLinkerActionType } from "../version-folder-linker.service";
-import { MODEL_TYPE_FOLDERS } from "shared/models/model-saber/models-constants";
+import { MODEL_TYPE_FOLDERS } from "shared/models/models/constants";
 import { Observable, distinctUntilChanged, lastValueFrom, mergeMap, share } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { ModalExitCode, ModalService } from "../modale.service";
 import { LinkModelsModal } from "renderer/components/modal/modal-types/models/link-models-modal.component";
 import { UnlinkModelsModal } from "renderer/components/modal/modal-types/models/unlink-models-modal.component";
+import { Progression } from "main/helpers/fs.helpers";
+import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 
 export class ModelsManagerService {
 
@@ -61,6 +63,10 @@ export class ModelsManagerService {
             type: VersionLinkerActionType.Unlink,
             options: { keepContents: res.data !== false }
         });
+    }
+
+    public $getModels(type: MSModelType, version?: BSVersion): Observable<Progression<BsmLocalModel[]>>{
+        return this.ipc.sendV2<Progression<BsmLocalModel[]>>("get-version-models", { args: { version, type } });
     }
 
     public isDeepLinksEnabled(): Promise<boolean>{

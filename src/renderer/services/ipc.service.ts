@@ -1,4 +1,4 @@
-import { defaultIfEmpty } from "rxjs/operators";
+import { defaultIfEmpty, share } from "rxjs/operators";
 import { Observable } from "rxjs";
 import { IpcRequest, IpcResponse } from "shared/models/ipc";
 import { identity } from "rxjs";
@@ -62,7 +62,7 @@ export class IpcService {
             window.electron.ipcRenderer.on(request.responceChannel, (res: T) => observer.next(res));
             window.electron.ipcRenderer.on(errorChannel, (err: Error) => observer.error(err));
             window.electron.ipcRenderer.on(completeChannel, () => observer.complete());
-        }).pipe(defaultValue ? defaultIfEmpty(defaultValue) : identity);
+        }).pipe(defaultValue ? defaultIfEmpty(defaultValue) : identity, share());
 
         window.electron.ipcRenderer.once(completeChannel, () => {
             window.electron.ipcRenderer.removeAllListeners(request.responceChannel);

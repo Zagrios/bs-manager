@@ -1,5 +1,5 @@
 import { timer } from "rxjs";
-import { MSModel } from "shared/models/model-saber/model-saber.model";
+import { MSModel } from "shared/models/models/model-saber.model";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
 

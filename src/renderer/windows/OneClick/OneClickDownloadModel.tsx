@@ -10,7 +10,7 @@ import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { ThemeService } from "renderer/services/theme.service";
 import { ModelSaberService } from "renderer/services/thrird-partys/model-saber.service";
 import { WindowManagerService } from "renderer/services/window-manager.service";
-import { MSModel } from "shared/models/model-saber/model-saber.model";
+import { MSModel } from "shared/models/models/model-saber.model";
 import defaultImage from '../../../../assets/images/default-version-img.jpg'
 
 export default function OneClickDownloadModel() {

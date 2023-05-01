@@ -1,38 +1,38 @@
 import { BSVersion } from "shared/bs-version.interface"
-import { TabNavBar } from "../shared/tab-nav-bar.component"
-import { MSModelType } from "shared/models/model-saber/model-saber.model"
+import { MSModelType } from "../../../shared/models/models/model-saber.model"
 import { LinkButton } from "../maps-mangement-components/link-button.component"
-import { Variants } from "framer-motion"
-import { DetailedHTMLProps, useEffect, useState } from "react"
-import { useTranslation } from "renderer/hooks/use-translation.hook"
-import { useThemeColor } from "renderer/hooks/use-theme-color.hook"
+import { DetailedHTMLProps, useState } from "react"
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook"
-import { useConstant } from "renderer/hooks/use-constant.hook"
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service"
+import { BsContentNavBar, BsContentNavBarTab } from "../shared/bs-content-nav-bar.component"
+import { useConstant } from "renderer/hooks/use-constant.hook"
 
 type Props = {
+    className?: string,
     version?: BSVersion
     tabIndex: number,
     onTabChange: (index: number) => void
 }
 
-export function ModelsTabsNavbar({version, tabIndex, onTabChange}: Props) {
+export function ModelsTabsNavbar({className, version, tabIndex, onTabChange}: Props) {
 
-    const renderTab = (props: DetailedHTMLProps<React.HTMLAttributes<any>, any>, text: string, index?: number) => {
-        return <ModelTab version={version} index={index} modelType={Object.values(MSModelType).at(index)} onClick={props.onClick}/>
-    }
+    const tabs = useConstant<BsContentNavBarTab<MSModelType>[]>(() => {
+        return Array.from(Object.values(MSModelType)).map(type => ({
+            text: type, // <= TODO: Translate
+            extra: type
+        }))
+    }) 
 
     return (
-        <TabNavBar className="!rounded-none shadow-sm" tabsText={
-            ["Avatars", "Sabers", "Platforms", "Bloqs"]
-        } tabIndex={tabIndex} onTabChange={onTabChange} renderTab={renderTab}/>
+        <BsContentNavBar className={`!rounded-none shadow-sm ${className ?? ""}`} tabIndex={tabIndex} onTabChange={onTabChange} tabs={tabs} renderTab={(props, tab) => (
+            <ModelTab version={version} modelType={tab.extra} {...props}/>
+        )}/>
     )
 }
 
 type TabProps = {
     version?: BSVersion,
     modelType: MSModelType,
-    index: number,
     onLink?: (type: MSModelType) => void,
     onUnlink?: (type: MSModelType) => void,
 } & DetailedHTMLProps<React.HTMLAttributes<HTMLLIElement>, HTMLLIElement>;
@@ -69,9 +69,9 @@ function ModelTab({version, modelType, onClick, onLink, onUnlink}: TabProps){
     }
 
     return (
-        <li className="relative text-center text-lg font-bold hover:backdrop-brightness-75 flex justify-center items-center content-center" onClick={onClick}>
-            <span className="text-main-color-1 dark:text-gray-200">{modelType}</span>
-                <div className="h-full flex absolute right-0 top-0 gap-1.5 items-center pr-2">
+        <li className="relative w-full text-center text-lg font-bold hover:backdrop-brightness-75 flex justify-center items-center content-center px-6" onClick={onClick}>
+            <span className="text-main-color-1 dark:text-gray-200 font-thin italic text-xs">{modelType}</span>
+                <div className="flex items-center absolute top-0 left-0">
                     {!!version && (
                         <LinkButton 
                             variants={{ hover: {rotate: 22.5}, tap: {rotate: 45} }}
@@ -79,7 +79,7 @@ function ModelTab({version, modelType, onClick, onLink, onUnlink}: TabProps){
                             whileHover="hover" 
                             whileTap="tap" 
                             initial={{rotate: 0}} 
-                            className="block p-0.5 h-[calc(100%-5px)] aspect-square blur-0 hover:brightness-75" 
+                            className="block w-6 h-6 aspect-square blur-0 hover:brightness-75" 
                             linked={modelsAreLinked} 
                             title={"aaa"} 
                             onClick={onClickLink}

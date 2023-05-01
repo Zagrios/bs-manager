@@ -61,7 +61,7 @@ export default function TitleBar({template = "index.html"} : {template: AppWindo
     if(template === "index.html"){
 
         return (
-            <header id="titlebar" className="min-h-[22px] bg-light-main-color-1 shrink-0 dark:bg-main-color-1 w-screen h-[22px] flex content-center items-center justify-start z-10">
+            <header id="titlebar" className="min-h-[22px] w-screen h-[22px] flex content-center items-center justify-start z-10">
                 <div id="drag-region" className='grow basis-0 h-full'>
                     <div id="window-title" className='pl-1'>
                         <span className='text-gray-800 dark:text-gray-100 font-bold text-xs italic'>BSManager</span>

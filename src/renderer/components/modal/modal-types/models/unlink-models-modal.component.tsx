@@ -5,7 +5,7 @@ import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { ModalComponent, ModalExitCode } from "renderer/services/modale.service";
 import BeatConflict from '../../../../../../assets/images/apngs/beat-conflict.png'
-import { MSModelType } from "shared/models/model-saber/model-saber.model";
+import { MSModelType } from "shared/models/models/model-saber.model";
 
 export const UnlinkModelsModal: ModalComponent<boolean, MSModelType> = ({resolver, data}) => {
 

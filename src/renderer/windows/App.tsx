@@ -22,6 +22,11 @@ import { NotificationService } from "renderer/services/notification.service";
 import { timer } from "rxjs";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
+import { IpcService } from "../services/ipc.service";
+import { MSModelType } from "shared/models/models/model-saber.model";
+import { BsmLocalModelsProgress } from "main/services/additional-content/local-models-manager.service";
+import { Progression } from "main/helpers/fs.helpers";
+import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 
 export default function App() {
 

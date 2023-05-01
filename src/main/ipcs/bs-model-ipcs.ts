@@ -1,8 +1,12 @@
 import { ipcMain } from "electron";
 import { UtilsService } from "../services/utils.service";
 import { IpcRequest } from "shared/models/ipc";
-import { MSModel } from "shared/models/model-saber/model-saber.model";
+import { MSModel, MSModelType } from "shared/models/models/model-saber.model";
 import { LocalModelsManagerService } from "../services/additional-content/local-models-manager.service";
+import { IpcService } from "../services/ipc.service";
+import { BSVersion } from "shared/bs-version.interface";
+
+const ipc = IpcService.getInstance();
 
 ipcMain.on("one-click-install-model", async (event, request: IpcRequest<MSModel>) => {
     const utils = UtilsService.getInstance();
@@ -58,4 +62,10 @@ ipcMain.on("is-models-deep-links-enabled", async (event, request: IpcRequest<voi
         utils.ipcSend(request.responceChannel, {success: false});
     }
 
+});
+
+ipc.on<{version: BSVersion, type: MSModelType}>("get-version-models", async (req, reply) => {
+    const models = LocalModelsManagerService.getInstance();
+    const res = await models.getModels(req.args.type, req.args.version);
+    reply(res);
 });

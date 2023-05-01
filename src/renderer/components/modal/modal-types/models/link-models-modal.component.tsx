@@ -4,7 +4,7 @@ import { BsmCheckbox } from "renderer/components/shared/bsm-checkbox.component"
 import { BsmImage } from "renderer/components/shared/bsm-image.component"
 import { useTranslation } from "renderer/hooks/use-translation.hook"
 import { ModalComponent, ModalExitCode } from "renderer/services/modale.service"
-import { MSModelType } from "shared/models/model-saber/model-saber.model"
+import { MSModelType } from "shared/models/models/model-saber.model"
 import BeatRunning from '../../../../../../assets/images/apngs/beat-running.png'
 
 export const LinkModelsModal: ModalComponent<boolean, MSModelType> = ({resolver, data}) => {

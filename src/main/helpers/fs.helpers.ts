@@ -127,6 +127,12 @@ export async function copyDirectoryWithJunctions(src: string, dest: string, opti
     }
 }
 
+export function extname(filePath: string, withDot = true){
+    const ext = path.extname(filePath);
+    if(withDot){ return ext; }
+    return ext.split('.').at(-1);
+}
+
 export interface Progression<T = unknown>{
     total: number;
     current: number;
