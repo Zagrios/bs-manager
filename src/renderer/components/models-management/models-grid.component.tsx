@@ -25,6 +25,9 @@ export function ModelsGrid({className, version, type}: Props) {
 
     const [models, setModelsLoadObservable] = useSwitchableObservable<Progression<BsmLocalModel[]>>();
 
+    const isLoading = !models || !models?.extra;
+    const hasModels = !isLoading && models?.extra.length;
+
     console.log(models);
 
     useOnUpdate(() => {
@@ -37,22 +40,22 @@ export function ModelsGrid({className, version, type}: Props) {
 
     return (
         <div ref={ref} className={`w-full h-full flex-shrink-0 ${className ?? ""}`}>
-            {!models || !models?.extra ? (
-                <>loading</>
-            ) : !models?.extra.length ? (
-                <>no models</>
-            ) : (
+            {isLoading && <>loading</>}
+            {!hasModels && <>no models</>}
+            {hasModels && !isLoading && (
                 <ul className="flex w-full h-full overflow-scroll p-4 gap-4">
                     {models.extra.map(localModel => (
                         <ModelItem 
                             key={localModel.model?.hash ?? localModel.hash}
-                            modelHash={localModel.model?.hash ?? localModel.hash}
-                            modelId={localModel.model?.id}
-                            modelType={localModel.type}
-                            modelName={localModel.model?.name ?? localModel.fileName}
-                            modelImage={localModel.model?.thumbnail}
-                            modelAuthor={localModel.model?.author}
-                            modelTags={localModel.model?.tags}
+                            hash={localModel.model?.hash ?? localModel.hash}
+                            id={localModel.model?.id}
+                            type={localModel.type}
+                            name={localModel.model?.name ?? localModel.fileName}
+                            thumbnail={localModel.model?.thumbnail}
+                            author={localModel.model?.author}
+                            discord={localModel.model?.discord}
+                            discordid={localModel.model?.discordid}
+                            tags={localModel.model?.tags}
                             selected={false}
                         />
                     ))}

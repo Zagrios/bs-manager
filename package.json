@@ -259,6 +259,7 @@
     "semver": "^7.3.8",
     "tailwind-scrollbar-hide": "^1.1.7",
     "tailwindcss-scoped-groups": "^2.0.0",
+    "tippy.js": "^6.3.7",
     "use-double-click": "^1.0.5",
     "use-fit-text": "^2.4.0"
   },
