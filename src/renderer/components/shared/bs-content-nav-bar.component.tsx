@@ -1,4 +1,5 @@
 import { DetailedHTMLProps, Fragment } from "react";
+import { BsmIconType } from "../svgs/bsm-icon.component";
 
 type Props<T> = {
     className?: string;
@@ -10,6 +11,7 @@ type Props<T> = {
 
 export type BsContentNavBarTab<T = unknown> = {
     text: string;
+    icon?: BsmIconType;
     extra?: T
 }
 

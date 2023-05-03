@@ -1,7 +1,7 @@
 import { Observable } from "rxjs";
 import { useState, useEffect } from "react";
 
-export function useSwitchableObservable<T>(observable?: Observable<T>, clearOnSwitch = true): [T, React.Dispatch<React.SetStateAction<Observable<T>>>]{
+export function useSwitchableObservable<T>(observable?: Observable<T>, clearOnSwitch = true): [T, React.Dispatch<React.SetStateAction<Observable<T>>>, Observable<T>]{
     
     const [currentObs, setCurrentObs] = useState(observable);
     const [obsValue, setObsValue] = useState<T>();
@@ -15,5 +15,5 @@ export function useSwitchableObservable<T>(observable?: Observable<T>, clearOnSw
         }
     }, [currentObs])
     
-    return [obsValue, setCurrentObs];
+    return [obsValue, setCurrentObs, currentObs];
 }

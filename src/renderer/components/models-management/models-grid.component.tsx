@@ -43,7 +43,7 @@ export function ModelsGrid({className, version, type}: Props) {
             {isLoading && <>loading</>}
             {!hasModels && <>no models</>}
             {hasModels && !isLoading && (
-                <ul className="flex w-full h-full overflow-scroll p-4 gap-4">
+                <ul className="flex flex-wrap justify-center w-full h-full overflow-scroll p-4 gap-4">
                     {models.extra.map(localModel => (
                         <ModelItem 
                             key={localModel.model?.hash ?? localModel.hash}

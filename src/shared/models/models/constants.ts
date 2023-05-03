@@ -15,3 +15,10 @@ export const MODELS_TYPE_MS_PAGE_ROOT = {
     [MSModelType.Platfrom]: "Platforms",
     [MSModelType.Saber]: "Sabers"
 }
+
+export const MODEL_FILE_EXTENSIONS = {
+    [MSModelType.Avatar]: ".avatar",
+    [MSModelType.Bloq]: ".bloq",
+    [MSModelType.Platfrom]: ".plat",
+    [MSModelType.Saber]: ".saber"
+}

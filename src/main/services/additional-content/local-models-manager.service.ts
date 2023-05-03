@@ -11,8 +11,8 @@ import path from "path";
 import { RequestService } from "../request.service";
 import { copyFileSync } from "fs-extra";
 import sanitize from "sanitize-filename";
-import { Progression, ensureFolderExist, extname } from "../../helpers/fs.helpers";
-import { MODEL_TYPE_FOLDERS } from "../../../shared/models/models/constants";
+import { Progression, ensureFolderExist } from "../../helpers/fs.helpers";
+import { MODEL_FILE_EXTENSIONS, MODEL_TYPE_FOLDERS } from "../../../shared/models/models/constants";
 import { InstallationLocationService } from "../installation-location.service";
 import { Observable } from "rxjs";
 import { readdir } from "fs/promises";
@@ -118,7 +118,12 @@ export class LocalModelsManagerService {
         const modelsPath = await this.getModelFolderPath(type, version);
         const files = await readdir(modelsPath, {withFileTypes: true});
 
-        return files.filter(file => file.isFile() && extname(file.name, false) === type).map(file => path.join(modelsPath, file.name));
+        //return files.filter(file => file.isFile() && path.extname(file.name) === MODEL_FILE_EXTENSIONS[type]).map(file => path.join(modelsPath, file.name));
+        return files.reduce((acc, file) => {
+            if(!file.isFile() || path.extname(file.name) !== MODEL_FILE_EXTENSIONS[type]){ return acc; }
+            acc.push(path.join(modelsPath, file.name));
+            return acc;
+        }, []);
     }
 
     public getModels(type: MSModelType, version?: BSVersion): Observable<Progression<BsmLocalModel[]>>{
