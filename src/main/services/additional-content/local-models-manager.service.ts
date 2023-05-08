@@ -12,14 +12,16 @@ import { RequestService } from "../request.service";
 import { copyFileSync } from "fs-extra";
 import sanitize from "sanitize-filename";
 import { Progression, ensureFolderExist } from "../../helpers/fs.helpers";
-import { MODEL_FILE_EXTENSIONS, MODEL_TYPE_FOLDERS } from "../../../shared/models/models/constants";
+import { MODEL_FILE_EXTENSIONS, MODEL_TYPES, MODEL_TYPE_FOLDERS } from "../../../shared/models/models/constants";
 import { InstallationLocationService } from "../installation-location.service";
-import { Observable } from "rxjs";
+import { Observable, lastValueFrom } from "rxjs";
 import { readdir } from "fs/promises";
 import md5File from "md5-file";
 import { allSettled } from "../../../shared/helpers/promise.helpers";
 import { ModelSaberService } from "../thrid-party/model-saber/model-saber.service";
 import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
+import { ArchiveProgress } from "shared/models/archive.interface";
+import { Archive } from "../../models/archive.class";
 
 export class LocalModelsManagerService {
 
@@ -145,7 +147,7 @@ export class LocalModelsManagerService {
                     
                     const localModel: BsmLocalModel = {
                         path: modelPath,
-                        fileName: path.basename(modelPath),
+                        fileName: path.basename(modelPath, MODEL_FILE_EXTENSIONS[type]),
                         model: await this.modelSaber.getModelByHash(hash),
                         type, hash
                     }
@@ -163,6 +165,20 @@ export class LocalModelsManagerService {
             })().catch(e => subscriber.error(e)).finally(() => subscriber.complete());
         });
 
+    }
+
+    public async exportModels(output: string, version?: BSVersion, models?: BsmLocalModel[]): Promise<Observable<ArchiveProgress>>{
+        const archive = new Archive(output);
+        if(models?.length){
+            models.forEach(model => archive.addFile(model.path));
+        }
+        else{
+            for(const type of MODEL_TYPES){
+                archive.addDirectory(await this.getModelFolderPath(type, version));
+            }
+        }
+
+        return archive.finalize();
     }
 
 

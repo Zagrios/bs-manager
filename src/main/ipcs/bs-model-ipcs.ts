@@ -5,6 +5,9 @@ import { MSModel, MSModelType } from "shared/models/models/model-saber.model";
 import { LocalModelsManagerService } from "../services/additional-content/local-models-manager.service";
 import { IpcService } from "../services/ipc.service";
 import { BSVersion } from "shared/bs-version.interface";
+import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
+import { from } from "rxjs";
+import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 
 const ipc = IpcService.getInstance();
 
@@ -68,4 +71,9 @@ ipc.on<{version: BSVersion, type: MSModelType}>("get-version-models", async (req
     const models = LocalModelsManagerService.getInstance();
     const res = await models.getModels(req.args.type, req.args.version);
     reply(res);
+});
+
+ipc.on<{version: BSVersion, models: BsmLocalModel[], outPath: string}>("export-models", async (req, reply) => {
+    const models = LocalModelsManagerService.getInstance();
+    reply(await models.exportModels(req.args.outPath, req.args.version, req.args.models));
 });

@@ -22,3 +22,5 @@ export const MODEL_FILE_EXTENSIONS = {
     [MSModelType.Platfrom]: ".plat",
     [MSModelType.Saber]: ".saber"
 }
+
+export const MODEL_TYPES = Array.from(Object.values(MSModelType));

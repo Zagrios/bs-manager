@@ -52,8 +52,13 @@ import { VolumeUpIcon } from "./icons/volume-up-icon.component";
 import { VolumeOffIcon } from "./icons/volume-off-icon.component";
 import { VolumeDownIcon } from "./icons/volume-down-icon.component";
 import { GermanIcon } from "./flags/german-icon.component";
+import { MSModelType } from "shared/models/models/model-saber.model";
+import { ModelTypeAvatarIcon } from "./icons/model-type-avatar-icon.component";
+import { ModelTypeSaberIcon } from "./icons/model-type-saber-icon.component";
+import { ModelTypePlatformIcon } from "./icons/model-type-platform-icon.component";
+import { ModelTypeBloqIcon } from "./icons/model-type-bloq-icon.component";
 
-export type BsmIconType = BsvMapCharacteristic | (
+export type BsmIconType = BsvMapCharacteristic | MSModelType | (
    "settings"|"trash"|"favorite"|"folder"|"bsNote"|"check"|"three-dots"|"twitch"|"eye"|"play"|"checkCircleIcon"|"discord"|"info"|
    "terminal"|"desktop"|"oculus"|"add"|"cross"|"task"|"github"|"close"|"thumbUpFill"|"timerFill"|"pause"|"twitter"|"sync"|
    "copy"|"steam"|"edit"|"export"|"patreon"|"search"|"bsMapDifficulty"|"link"|"unlink"|"download"|"filter"|"mee6"|"volume-up"|"volume-off"|"volume-down"|
@@ -61,6 +66,8 @@ export type BsmIconType = BsvMapCharacteristic | (
 );
 
 export const BsmIcon = memo(({className, icon, style}: {className?: string, icon: BsmIconType, style?: CSSProperties}) => {
+
+    // TODO : Very ugly very messy, need to find a better way to do this
 
     const renderIcon = () => {
         if(icon === "settings"){ return <SettingIcon className={className} style={style}/> }
@@ -115,6 +122,10 @@ export const BsmIcon = memo(({className, icon, style}: {className?: string, icon
         if(icon === "volume-up"){ return <VolumeUpIcon className={className} style={style}/> }
         if(icon === "volume-down"){ return <VolumeDownIcon className={className} style={style}/> }
         if(icon === "volume-off"){ return <VolumeOffIcon className={className} style={style}/> }
+        if(icon === MSModelType.Avatar){ return <ModelTypeAvatarIcon className={className} style={style}/> }
+        if(icon === MSModelType.Saber){ return <ModelTypeSaberIcon className={className} style={style}/> }
+        if(icon === MSModelType.Platfrom){ return <ModelTypePlatformIcon className={className} style={style}/> }
+        if(icon === MSModelType.Bloq){ return <ModelTypeBloqIcon className={className} style={style}/> }
         return <TrashIcon className={className} style={style}/>
     }
 

@@ -117,7 +117,7 @@ export class MapsManagerService {
 
         if(!resFile.success){ return; }
 
-        const exportProgress$: Observable<ProgressionInterface> = await this.ipcService.sendV2<ArchiveProgress, {version: BSVersion, maps: BsmLocalMap[], outPath: string}>("export-maps", {args: {version, maps, outPath: resFile.data}}).pipe(
+        const exportProgress$: Observable<ProgressionInterface> = this.ipcService.sendV2<ArchiveProgress, {version: BSVersion, maps: BsmLocalMap[], outPath: string}>("export-maps", {args: {version, maps, outPath: resFile.data}}).pipe(
             map(p => {
                 return { progression: (p.prossesedFiles / p.totalFiles) * 100, label: `${p.prossesedFiles} / ${p.totalFiles}` } as ProgressionInterface
             })
@@ -128,6 +128,7 @@ export class MapsManagerService {
         await exportProgress$.toPromise().catch(e => {
             this.notifications.notifyError({title: "notifications.types.error", desc: e.message});
         }).then(() => {
+            // TODO TRANSLATE
             this.notifications.notifySuccess({title: "Export terminé 🎉", duration: 3000});
             this.progressBar.complete();
             this.progressBar.hide(true);

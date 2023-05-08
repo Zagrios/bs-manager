@@ -1,7 +1,6 @@
 import { BSVersion } from 'shared/bs-version.interface';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import BSLogo from '../../../assets/images/apngs/bs-logo.png';
 import { TabNavBar } from 'renderer/components/shared/tab-nav-bar.component';
 import { BsmDropdownButton } from 'renderer/components/shared/bsm-dropdown-button.component';
 import { BsmImage } from 'renderer/components/shared/bsm-image.component';
@@ -77,8 +76,6 @@ export function VersionViewer() {
     <>
       <BsmImage className="absolute w-full h-full top-0 left-0 object-cover" image={state.ReleaseImg || DefautVersionImage} errorImage={DefautVersionImage}/>
       <div className="relative flex items-center flex-col w-full h-full text-gray-200 backdrop-blur-lg">
-        <BsmImage className='relative object-cover h-28' image={BSLogo}/>
-        <h1 className='relative text-4xl font-bold italic -top-3'>{state.name ? `${state.BSVersion} - ${state.name}` : state.BSVersion}</h1>
         <TabNavBar className='my-3' tabIndex={currentTabIndex} tabsText={["misc.launch", "misc.maps", "Models", "misc.mods"]} onTabChange={(i : number) => setCurrentTabIndex(i)}/>
         <div className='mt-2 w-full min-h-0 grow flex transition-transform duration-300' style={{transform: `translate(${-(currentTabIndex * 100)}%, 0)`}}>
           <LaunchSlide version={state}/>

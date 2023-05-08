@@ -1,6 +1,6 @@
 import { useInView } from "framer-motion";
 import { BSVersion } from "shared/bs-version.interface";
-import { MutableRefObject, useRef, useState } from "react";
+import { useRef, forwardRef, useImperativeHandle } from "react";
 import { MSModelType } from "shared/models/models/model-saber.model";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useConstant } from "renderer/hooks/use-constant.hook";
@@ -9,6 +9,7 @@ import { useSwitchableObservable } from "renderer/hooks/use-switchable-observabl
 import { Progression } from "main/helpers/fs.helpers";
 import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 import { ModelItem } from "./model-item.component";
+import { useBehaviorSubject } from "renderer/hooks/use-behavior-subject.hook";
 
 type Props = {
     className?: string,
@@ -16,7 +17,7 @@ type Props = {
     type: MSModelType
 }
 
-export function ModelsGrid({className, version, type}: Props) {
+export const ModelsGrid = forwardRef(({className, version, type}: Props, forwardRef) => {
 
     const modelsManager = useConstant(() => ModelsManagerService.getInstance());
 
@@ -24,26 +25,38 @@ export function ModelsGrid({className, version, type}: Props) {
     const isVisible = useInView(ref, {once: true, amount: .1});
 
     const [models, setModelsLoadObservable] = useSwitchableObservable<Progression<BsmLocalModel[]>>();
-
+    const [modelsSelected, modelsSelected$] = useBehaviorSubject<Set<BsmLocalModel>>(new Set());
     const isLoading = !models || !models?.extra;
     const hasModels = !isLoading && models?.extra.length;
 
-    console.log(models);
+    useImperativeHandle(forwardRef, () => ({
+        getSelectedModels: () => {
+            return Array.from(modelsSelected)
+        },
+    }), [modelsSelected]);
 
     useOnUpdate(() => {
-        
         if(!isVisible){ return; }
-
         setModelsLoadObservable(() => modelsManager.$getModels(type, version));
-
     }, [version, isVisible, type]);
+
+    const handleModelClick = (model: BsmLocalModel) => {
+        const newSet = new Set(modelsSelected);
+        if(newSet.has(model)){
+            newSet.delete(model);
+        } 
+        else {
+            newSet.add(model);
+        }
+        modelsSelected$.next(newSet);
+    }
 
     return (
         <div ref={ref} className={`w-full h-full flex-shrink-0 ${className ?? ""}`}>
             {isLoading && <>loading</>}
             {!hasModels && <>no models</>}
             {hasModels && !isLoading && (
-                <ul className="flex flex-wrap justify-center w-full h-full overflow-scroll p-4 gap-4">
+                <ul className="flex flex-wrap shrink-0 justify-start content-start w-full h-full overflow-y-scroll overflow-x-hidden p-4 gap-4 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900">
                     {models.extra.map(localModel => (
                         <ModelItem 
                             key={localModel.model?.hash ?? localModel.hash}
@@ -56,11 +69,13 @@ export function ModelsGrid({className, version, type}: Props) {
                             discord={localModel.model?.discord}
                             discordid={localModel.model?.discordid}
                             tags={localModel.model?.tags}
-                            selected={false}
+                            selected={modelsSelected.has(localModel)}
+                            path={localModel.path}
+                            onClick={() => handleModelClick(localModel)}
                         />
                     ))}
                 </ul>
             )}
         </div>
     )
-}
+})

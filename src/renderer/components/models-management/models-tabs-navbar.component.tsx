@@ -7,6 +7,7 @@ import { ModelsManagerService } from "renderer/services/models-management/models
 import { BsContentNavBar, BsContentNavBarTab } from "../shared/bs-content-nav-bar.component"
 import { useConstant } from "renderer/hooks/use-constant.hook"
 import { BsmIcon } from "../svgs/bsm-icon.component"
+import { MODEL_TYPES } from "../../../shared/models/models/constants";
 
 type Props = {
     className?: string,
@@ -18,7 +19,7 @@ type Props = {
 export function ModelsTabsNavbar({className, version, tabIndex, onTabChange}: Props) {
 
     const tabs = useConstant<BsContentNavBarTab<MSModelType>[]>(() => {
-        return Array.from(Object.values(MSModelType)).map(type => ({
+        return MODEL_TYPES.map(type => ({
             text: type, // <= TODO: Translate
             extra: type
         }))
@@ -71,12 +72,12 @@ function ModelTab({version, modelType, active, onClick, onLink, onUnlink}: TabPr
     }
 
     return (
-        <li className={`relative w-full text-center text-lg font-bold hover:backdrop-brightness-75 flex justify-center items-center content-center px-6 ${active ? "backdrop-brightness-75" : ""}`} onClick={onClick}>
-            <div className="flex flex-col gap-0.5">
-                <BsmIcon icon="trash"/>
+        <li className={`relative w-full cursor-pointer flex-1 text-center text-lg font-bold hover:backdrop-brightness-75 flex justify-center items-center content-center px-7 ${active ? "backdrop-brightness-75" : ""}`} onClick={onClick}>
+            <div className="flex flex-col gap-0.5 justify-start items-center">
+                <BsmIcon icon={modelType} className="w-7 h-7"/>
                 <span className="text-main-color-1 dark:text-gray-200 font-thin italic text-xs">{modelType}</span>
             </div>
-            <div className="flex items-center absolute top-1 left-1">
+            <div className="flex items-center absolute top-1.5 left-1.5">
                 {!!version && (
                     <LinkButton 
                         variants={{ hover: {rotate: 22.5}, tap: {rotate: 45} }}
@@ -84,7 +85,7 @@ function ModelTab({version, modelType, active, onClick, onLink, onUnlink}: TabPr
                         whileHover="hover" 
                         whileTap="tap" 
                         initial={{rotate: 0}} 
-                        className="block w-6 h-6 aspect-square blur-0 hover:brightness-75" 
+                        className="block w-6 h-6 aspect-square blur-0 cursor-pointer hover:brightness-75" 
                         linked={modelsAreLinked}
                         title={"aaa"} //TODO ADD TRANSLATION
                         onClick={onClickLink}
