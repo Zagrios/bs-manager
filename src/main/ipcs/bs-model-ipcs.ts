@@ -77,3 +77,9 @@ ipc.on<{version: BSVersion, models: BsmLocalModel[], outPath: string}>("export-m
     const models = LocalModelsManagerService.getInstance();
     reply(await models.exportModels(req.args.outPath, req.args.version, req.args.models));
 });
+
+ipc.on<BsmLocalModel[]>("delete-models", async (req, reply) => {
+    console.log("LAAAAA");
+    const models = LocalModelsManagerService.getInstance();
+    reply(models.deleteModels(req.args));
+});

@@ -112,11 +112,11 @@ export class ModelsManagerService {
 
     }
 
-    public async deleteModels(models: BsmLocalModel[], version?: BSVersion){
+    public async deleteModels(models: BsmLocalModel[], version?: BSVersion): Promise<boolean>{
         
         const types = Array.from(new Set(models.map(m => m.type)));
 
-        const modelsLinked = await (async () => {
+        const modelsLinked = await (async () => { // USE AND COMPUTE ONLY IF NEEDED (askModal)
             for(const type of types){
                 if(!(await this.isModelsLinked(version, type))){ continue; }
                 return true;
@@ -127,7 +127,18 @@ export class ModelsManagerService {
 
         const askModal = models.length > 1 || !this.config.get<boolean>(ModelsManagerService.REMEMBER_CHOICE_DELETE_MODEL_KEY);
 
-        console.log(modelsLinked, askModal);
+        // ADD MODAL HERE
+
+        const showProgressBar = this.progressBar.require(); 
+
+        const progress$ = this.ipc.sendV2<Progression>("delete-models", {args: models}).pipe(map(progress => (progress.current / progress.total) * 100));
+
+        if(showProgressBar){ this.progressBar.show(progress$); }
+
+        return lastValueFrom(progress$)
+            .catch(() => false)
+            .then(() => true)
+            .finally(() => this.progressBar.hide(true));
 
     }
 

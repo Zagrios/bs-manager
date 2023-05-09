@@ -11,7 +11,7 @@ import path from "path";
 import { RequestService } from "../request.service";
 import { copyFileSync } from "fs-extra";
 import sanitize from "sanitize-filename";
-import { Progression, ensureFolderExist } from "../../helpers/fs.helpers";
+import { Progression, ensureFolderExist, unlinkPath } from "../../helpers/fs.helpers";
 import { MODEL_FILE_EXTENSIONS, MODEL_TYPES, MODEL_TYPE_FOLDERS } from "../../../shared/models/models/constants";
 import { InstallationLocationService } from "../installation-location.service";
 import { Observable, lastValueFrom } from "rxjs";
@@ -168,6 +168,7 @@ export class LocalModelsManagerService {
     }
 
     public async exportModels(output: string, version?: BSVersion, models?: BsmLocalModel[]): Promise<Observable<ArchiveProgress>>{
+        // TOTO NOT ASYNC
         const archive = new Archive(output);
         if(models?.length){
             models.forEach(model => archive.addFile(model.path));
@@ -181,7 +182,24 @@ export class LocalModelsManagerService {
         return archive.finalize();
     }
 
+    public deleteModels(models: BsmLocalModel[]): Observable<Progression>{
+        return new Observable<Progression>(subscriber => {
+            (async () => {
+                const progression: Progression = {
+                    total: models.length,
+                    current: 0,
+                    extra: null
+                };
 
+                for(const model of models){
+                    await unlinkPath(model.path);
+                    progression.current += 1;
+                    subscriber.next(progression);
+                }
+
+            })().catch(e => subscriber.error(e)).finally(() => subscriber.complete());
+        });
+    }
 
     public enableDeepLinks(): boolean{
         return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.registerDeepLink(link));

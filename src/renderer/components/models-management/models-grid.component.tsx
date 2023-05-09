@@ -30,10 +30,17 @@ export const ModelsGrid = forwardRef(({className, version, type}: Props, forward
     const hasModels = !isLoading && models?.extra.length;
 
     useImperativeHandle(forwardRef, () => ({
+        getModels: () => {
+            console.log(type, models?.extra);
+            return models?.extra ?? [];
+        },
         getSelectedModels: () => {
             return Array.from(modelsSelected)
         },
-    }), [modelsSelected]);
+        reloadModels: () => {
+            setModelsLoadObservable(() => modelsManager.$getModels(type, version));
+        }
+    }), [modelsSelected, models]);
 
     useOnUpdate(() => {
         if(!isVisible){ return; }

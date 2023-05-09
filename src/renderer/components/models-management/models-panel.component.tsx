@@ -1,5 +1,5 @@
 import { BSVersion } from "shared/bs-version.interface";
-import { useRef, useState } from "react";
+import { useRef, useState, MutableRefObject } from "react";
 import { ModelsTabsNavbar } from "./models-tabs-navbar.component";
 import { ModelsGrid } from "./models-grid.component";
 import { MSModelType } from "shared/models/models/model-saber.model";
@@ -14,20 +14,40 @@ export function ModelsPanel({version}: {version?: BSVersion}) {
     const [avatarsRef, sabersRef, platformsRef, bloqsRef] = [useRef(null), useRef(null), useRef(null), useRef(null)];
     const [modelTypeTab, setModelTypeTab] = useState<ModelTabType>(ModelTabType.Avatars);
 
-    const getSelectedModels = () => [avatarsRef, sabersRef, platformsRef, bloqsRef].map(ref =>(ref.current?.getSelectedModels() as BsmLocalModel[])).flat()
+    console.log(modelTypeTab);
+
+    const getSelectedModels = (ref?: MutableRefObject<any>) => {
+        if(ref){ return (ref.current?.getSelectedModels() as BsmLocalModel[]); }
+        return [avatarsRef, sabersRef, platformsRef, bloqsRef].map(ref =>(ref.current?.getSelectedModels() as BsmLocalModel[])).flat()
+    };
+    const getAllModels = (ref?: MutableRefObject<any>) => {
+        if(ref){ return (ref.current?.getModels() as BsmLocalModel[]); }
+        return [avatarsRef, sabersRef, platformsRef, bloqsRef].map(ref =>(ref.current?.getModels() as BsmLocalModel[])).flat();
+    }
+    const reloadModels = (ref?: MutableRefObject<any>) => {
+        if(ref){ return (ref.current?.reloadModels()); }
+        return [avatarsRef, sabersRef, platformsRef, bloqsRef].forEach(ref => ref.current?.reloadModels())
+    };
+    
+    const getActiveTabRef = (activeTab: ModelTabType) => [avatarsRef, sabersRef, platformsRef, bloqsRef][modelTypeTab];
 
     const exportModels = () => {
         modelsManager.exportModels(getSelectedModels(), version);
     }
 
     const deleteModels = () => {
-        modelsManager.deleteModels(getSelectedModels(), version);
+        const activeTab = getActiveTabRef(modelTypeTab);
+        const models = getSelectedModels(activeTab)?.length ? getSelectedModels(activeTab) : getAllModels(activeTab);
+        modelsManager.deleteModels(models, version).then(deleted => {
+            if(!deleted){ return; }
+            reloadModels(activeTab);
+        });
     }
 
-    const threeDotsItems = useConstant<DropDownItem[]>(() => [
+    const threeDotsItems: DropDownItem[] = [
         {text: "TODO TRANSLATE EXPORT", onClick: exportModels, icon: "export"},
         {text: "TODO TRANSLATE DELETE", onClick: deleteModels, icon: "trash"},
-    ]);
+    ];
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center">
