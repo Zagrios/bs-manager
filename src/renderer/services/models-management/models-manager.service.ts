@@ -15,6 +15,7 @@ import { ProgressionInterface } from "shared/models/progress-bar";
 import { ArchiveProgress } from "shared/models/archive.interface";
 import { NotificationService } from "../notification.service";
 import { ConfigurationService } from "../configuration.service";
+import { DeleteModelsModal } from "renderer/components/modal/modal-types/models/delete-models-modal.component";
 
 export class ModelsManagerService {
 
@@ -113,21 +114,26 @@ export class ModelsManagerService {
     }
 
     public async deleteModels(models: BsmLocalModel[], version?: BSVersion): Promise<boolean>{
-        
-        const types = Array.from(new Set(models.map(m => m.type)));
-
-        const modelsLinked = await (async () => { // USE AND COMPUTE ONLY IF NEEDED (askModal)
-            for(const type of types){
-                if(!(await this.isModelsLinked(version, type))){ continue; }
-                return true;
-            }
-            return false;
-        })();
-        
 
         const askModal = models.length > 1 || !this.config.get<boolean>(ModelsManagerService.REMEMBER_CHOICE_DELETE_MODEL_KEY);
 
-        // ADD MODAL HERE
+        console.log(models);
+
+        if(askModal){
+
+            const types = Array.from(new Set(models.map(m => m.type)));
+
+            const linked = await (async () => {
+                for(const type of types){
+                    if(!(await this.isModelsLinked(version, type))){ continue; }
+                    return true;
+                }
+                return false;
+            })();
+
+            const res = await this.modalService.openModal(DeleteModelsModal, { models, linked });
+            if(res.exitCode !== ModalExitCode.COMPLETED){ return false; }
+        }
 
         const showProgressBar = this.progressBar.require(); 
 
