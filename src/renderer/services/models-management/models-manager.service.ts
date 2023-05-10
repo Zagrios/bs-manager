@@ -21,7 +21,7 @@ export class ModelsManagerService {
 
     private static instance: ModelsManagerService;
 
-    private static readonly REMEMBER_CHOICE_DELETE_MODEL_KEY = "not-confirm-delete-model"
+    public static readonly REMEMBER_CHOICE_DELETE_MODEL_KEY = "not-confirm-delete-model"
 
     public static getInstance(): ModelsManagerService{
         if(!ModelsManagerService.instance){ ModelsManagerService.instance = new ModelsManagerService(); }

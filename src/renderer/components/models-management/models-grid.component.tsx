@@ -24,8 +24,8 @@ export const ModelsGrid = forwardRef(({className, version, type}: Props, forward
     const ref = useRef();
     const isVisible = useInView(ref, {once: true, amount: .1});
 
-    const [models, setModelsLoadObservable] = useSwitchableObservable<Progression<BsmLocalModel[]>>();
-    const [modelsSelected, modelsSelected$] = useBehaviorSubject<Set<BsmLocalModel>>(new Set());
+    const [models, setModelsLoadObservable,, setModels] = useSwitchableObservable<Progression<BsmLocalModel[]>>();
+    const [modelsSelected, modelsSelected$] = useBehaviorSubject<BsmLocalModel[]>([]);
     const isLoading = !models || !models?.extra;
     const hasModels = !isLoading && models?.extra.length;
 
@@ -35,10 +35,19 @@ export const ModelsGrid = forwardRef(({className, version, type}: Props, forward
             return models?.extra ?? [];
         },
         getSelectedModels: () => {
-            return Array.from(modelsSelected)
+            return modelsSelected;
         },
         reloadModels: () => {
             setModelsLoadObservable(() => modelsManager.$getModels(type, version));
+        },
+        deleteSelectedModels: () => {
+            modelsManager.deleteModels(modelsSelected, version).then(deleted => {
+                if(!deleted){ return; }
+                models.extra = models.extra.filter(m => !modelsSelected.some(d => d.hash === m.hash));
+                setModels(() => models);
+                modelsSelected$.next([]);
+            });
+
         }
     }), [modelsSelected, models]);
 
@@ -48,14 +57,14 @@ export const ModelsGrid = forwardRef(({className, version, type}: Props, forward
     }, [version, isVisible, type]);
 
     const handleModelClick = (model: BsmLocalModel) => {
-        const newSet = new Set(modelsSelected);
-        if(newSet.has(model)){
-            newSet.delete(model);
+        const prunedArray = Array.from(new Set(modelsSelected));
+        if(prunedArray.some(m => m.hash === model.hash)){
+            prunedArray.splice(prunedArray.findIndex(m => m.hash === model.hash), 1);
         } 
         else {
-            newSet.add(model);
+            prunedArray.push(model);
         }
-        modelsSelected$.next(newSet);
+        modelsSelected$.next(prunedArray);
     }
 
     return (
@@ -76,7 +85,7 @@ export const ModelsGrid = forwardRef(({className, version, type}: Props, forward
                             discord={localModel.model?.discord}
                             discordid={localModel.model?.discordid}
                             tags={localModel.model?.tags}
-                            selected={modelsSelected.has(localModel)}
+                            selected={modelsSelected.some(m => m.hash === localModel.hash)}
                             path={localModel.path}
                             onClick={() => handleModelClick(localModel)}
                         />

@@ -1,4 +1,4 @@
-import { get } from "https";
+import { RequestOptions, get } from "https";
 import { createWriteStream, unlink } from "fs";
 
 export class RequestService {
@@ -12,10 +12,10 @@ export class RequestService {
 
     private constructor(){}
 
-    public get<T = any>(url: string): Promise<T>{
+    public get<T = any>(options: string|RequestOptions): Promise<T>{
         return new Promise((resolve, reject) => {
             let body = ''
-            get(url, (res) => {
+            get(options, (res) => {
                 res.on('data', chunk => body += chunk);
                 res.on('end', () => {
                     resolve(JSON.parse(body));

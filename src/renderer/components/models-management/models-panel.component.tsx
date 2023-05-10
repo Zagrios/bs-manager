@@ -37,11 +37,7 @@ export function ModelsPanel({version}: {version?: BSVersion}) {
 
     const deleteModels = () => {
         const activeTab = getActiveTabRef(modelTypeTab);
-        const models = getSelectedModels(activeTab)?.length ? getSelectedModels(activeTab) : getAllModels(activeTab);
-        modelsManager.deleteModels(models, version).then(deleted => {
-            if(!deleted){ return; }
-            reloadModels(activeTab);
-        });
+        activeTab.current?.deleteSelectedModels();
     }
 
     const threeDotsItems: DropDownItem[] = [
