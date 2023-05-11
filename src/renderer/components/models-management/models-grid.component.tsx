@@ -15,9 +15,11 @@ type Props = {
     className?: string,
     version?: BSVersion,
     type: MSModelType
+    search?: string,
+    active: boolean
 }
 
-export const ModelsGrid = forwardRef(({className, version, type}: Props, forwardRef) => {
+export const ModelsGrid = forwardRef(({className, version, type, search, active}: Props, forwardRef) => {
 
     const modelsManager = useConstant(() => ModelsManagerService.getInstance());
 
@@ -67,13 +69,40 @@ export const ModelsGrid = forwardRef(({className, version, type}: Props, forward
         modelsSelected$.next(prunedArray);
     }
 
+    const filtredModels = () => {
+        if(!active){ return models?.extra; }
+        
+        const lowerSearch = search?.toLowerCase();
+
+        return models?.extra?.filter(model => {
+            const findedInRawValues = Object.values(model).some(value => {
+                if(typeof value !== "string" && typeof value !== "number"){ return false; }
+                return value.toString().toLowerCase().includes(lowerSearch);
+            });
+
+            if(findedInRawValues) { return true; }
+
+            if(!model.model){ return false; }
+
+            return Object.values(model.model).some(value => {
+                if(typeof value !== "string" && typeof value !== "number" && !Array.isArray(value)){ return false; }
+
+                if(Array.isArray(value)){
+                    return value.some(v => v.toString().toLowerCase().includes(lowerSearch));
+                }
+
+                return value.toString().toLowerCase().includes(lowerSearch);
+            });
+        })
+    }
+
     return (
         <div ref={ref} className={`w-full h-full flex-shrink-0 ${className ?? ""}`}>
-            {isLoading && <>loading</>}
-            {!hasModels && <>no models</>}
+            {isLoading && <>loading</> /** TODO that **/}
+            {!hasModels && <>no models</> /** TODO that **/}
             {hasModels && !isLoading && (
                 <ul className="flex flex-wrap shrink-0 justify-start content-start w-full h-full overflow-y-scroll overflow-x-hidden p-4 gap-4 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900">
-                    {models.extra.map(localModel => (
+                    {filtredModels().map(localModel => (
                         <ModelItem 
                             key={localModel.model?.hash ?? localModel.hash}
                             hash={localModel.model?.hash ?? localModel.hash}
