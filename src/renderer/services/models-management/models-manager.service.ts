@@ -1,6 +1,6 @@
 import { MSModelType } from "shared/models/models/model-saber.model";
 import { IpcService } from "../ipc.service";
-import { VersionFolderLinkerService, VersionLinkerActionType } from "../version-folder-linker.service";
+import { VersionFolderLinkerService, VersionLinkerActionListener, VersionLinkerActionType } from "../version-folder-linker.service";
 import { MODEL_TYPE_FOLDERS } from "shared/models/models/constants";
 import { Observable, distinctUntilChanged, lastValueFrom, map, mergeMap, share } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
@@ -50,6 +50,22 @@ export class ModelsManagerService {
 
     public $modelsLinkingPending(version: BSVersion, type: MSModelType): Observable<boolean>{
         return this.versionFolderLinked.$isVersionFolderPending(version, MODEL_TYPE_FOLDERS[type]);
+    }
+
+    public onModelsFolderLinked(callback: VersionLinkerActionListener): void{
+        return this.versionFolderLinked.onVersionFolderLinked(callback);
+    }
+
+    public onModelsFolderUnlinked(callback: VersionLinkerActionListener): void{
+        return this.versionFolderLinked.onVersionFolderUnlinked(callback);
+    }
+
+    public removeModelsFolderLinkedListener(callback: VersionLinkerActionListener): void{
+        return this.versionFolderLinked.removeVersionFolderLinkedListener(callback);
+    }
+
+    public removeModelsFolderUnlinkedListener(callback: VersionLinkerActionListener): void{
+        return this.versionFolderLinked.removeVersionFolderUnlinkedListener(callback);
     }
 
     public async linkModels(type: MSModelType, version?: BSVersion): Promise<boolean>{
