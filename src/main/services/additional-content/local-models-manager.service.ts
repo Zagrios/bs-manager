@@ -171,7 +171,7 @@ export class LocalModelsManagerService {
         // TOTO NOT ASYNC
         const archive = new Archive(output);
         if(models?.length){
-            models.forEach(model => archive.addFile(model.path));
+            models.forEach(model => archive.addFile(model.path, path.join(MODEL_TYPE_FOLDERS[model.type], path.basename(model.path))));
         }
         else{
             for(const type of MODEL_TYPES){
