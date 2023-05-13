@@ -6,7 +6,6 @@ import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
 import { useSwitchableObservable } from "renderer/hooks/use-switchable-observable.hook";
-import { Progression } from "main/helpers/fs.helpers";
 import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 import { ModelItem } from "./model-item.component";
 import { useBehaviorSubject } from "renderer/hooks/use-behavior-subject.hook";
@@ -14,10 +13,10 @@ import { BsmImage } from "../shared/bsm-image.component";
 import BeatWaitingImg from "../../../../assets/images/apngs/beat-waiting.png"
 import BeatConflict from "../../../../assets/images/apngs/beat-conflict.png"
 import TextProgressBar from "../progress-bar/text-progress-bar.component";
-import { BehaviorSubject, distinctUntilChanged, map, startWith, tap } from "rxjs";
+import { BehaviorSubject, distinctUntilChanged, map, startWith } from "rxjs";
 import { BsmButton } from "../shared/bsm-button.component";
 import equal from "fast-deep-equal";
-import { VersionLinkerAction, VersionLinkerActionListener } from "renderer/services/version-folder-linker.service";
+import { VersionLinkerAction } from "renderer/services/version-folder-linker.service";
 import { MODEL_TYPE_FOLDERS } from "shared/models/models/constants";
 
 type Props = {
@@ -64,7 +63,7 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active}
     }), [modelsSelected, models]);
 
     useOnUpdate(() => {
-        if(!isVisible){ return; }
+        if(!isVisible || !active){ return; }
         loadModels();
 
         const onLinkStateChangeCb = (action: VersionLinkerAction) => {
