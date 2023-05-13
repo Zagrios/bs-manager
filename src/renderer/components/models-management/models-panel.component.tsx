@@ -15,8 +15,6 @@ export function ModelsPanel({version}: {version?: BSVersion}) {
     const [modelTypeTab, setModelTypeTab] = useState<ModelTabType>(ModelTabType.Avatars);
     const [search, setSearch] = useState<string>("");
 
-    console.log(modelTypeTab);
-
     const getSelectedModels = (ref?: MutableRefObject<any>) => {
         if(ref){ return (ref.current?.getSelectedModels() as BsmLocalModel[]); }
         return [avatarsRef, sabersRef, platformsRef, bloqsRef].map(ref =>(ref.current?.getSelectedModels() as BsmLocalModel[])).flat()

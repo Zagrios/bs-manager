@@ -133,8 +133,6 @@ export class ModelsManagerService {
 
         const askModal = models.length > 1 || !this.config.get<boolean>(ModelsManagerService.REMEMBER_CHOICE_DELETE_MODEL_KEY);
 
-        console.log(models);
-
         if(askModal){
 
             const types = Array.from(new Set(models.map(m => m.type)));
