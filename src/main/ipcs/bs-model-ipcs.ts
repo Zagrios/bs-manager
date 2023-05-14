@@ -75,7 +75,7 @@ ipc.on<{version: BSVersion, type: MSModelType}>("get-version-models", async (req
 
 ipc.on<{version: BSVersion, models: BsmLocalModel[], outPath: string}>("export-models", async (req, reply) => {
     const models = LocalModelsManagerService.getInstance();
-    reply(await models.exportModels(req.args.outPath, req.args.version, req.args.models));
+    reply(models.exportModels(req.args.outPath, req.args.version, req.args.models));
 });
 
 ipc.on<BsmLocalModel[]>("delete-models", async (req, reply) => {

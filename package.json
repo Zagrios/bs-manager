@@ -229,7 +229,9 @@
   "dependencies": {
     "@node-steam/vdf": "^2.2.0",
     "@tippyjs/react": "^4.2.6",
+    "@types/color": "^3.0.3",
     "archiver": "^5.3.1",
+    "color": "^4.2.3",
     "dateformat": "^5.0.3",
     "dot-prop": "^8.0.0",
     "electron-debug": "^3.2.0",

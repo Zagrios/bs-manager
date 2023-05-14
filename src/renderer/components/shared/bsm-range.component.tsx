@@ -17,7 +17,7 @@ type Props = {
 export function BsmRange({colorType = "first-color", values, onChange, onFinalChange, min, max, renderLabel, step = 1, colors} : Props) {
 
     const color = useThemeColor(colorType);
-    const labelTextColor = getCorrectTextColor(color);
+    const labelTextColor = color && getCorrectTextColor(color);
 
     return (
         <Range 

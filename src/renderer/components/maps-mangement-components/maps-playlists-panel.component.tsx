@@ -108,7 +108,7 @@ export function MapsPlaylistsPanel({version}: Props) {
                                 <motion.div className="h-full p-0.5" variants={variants}>
                                     <BsmIcon className="block h-full aspect-square brightness-150" icon="add"/>
                                 </motion.div>
-                                <span className="text-sm brightness-150">{t("pages.version-viewer.maps.tabs.maps.actions.add-maps.text")}</span>
+                                <span className="text-sm brightness-150">{t("misc.add")}</span>
                             </motion.div>
                         )}
                         {(!!version) && (

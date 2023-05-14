@@ -11,7 +11,7 @@ export function BsmCheckbox({className, checked, onChange, disabled} : Props) {
 
     const [hovered, setHovered] = useState(false);
     const checkedColor = useThemeColor("first-color");
-    const iconColor = getCorrectTextColor(checkedColor);
+    const iconColor = checkedColor && getCorrectTextColor(checkedColor);
 
     const handleClick = () => {
         if(disabled){ return; }

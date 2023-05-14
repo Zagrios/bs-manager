@@ -167,19 +167,30 @@ export class LocalModelsManagerService {
 
     }
 
-    public async exportModels(output: string, version?: BSVersion, models?: BsmLocalModel[]): Promise<Observable<ArchiveProgress>>{
+    public exportModels(output: string, version?: BSVersion, models?: BsmLocalModel[]): Observable<ArchiveProgress>{
         // TOTO NOT ASYNC
-        const archive = new Archive(output);
-        if(models?.length){
-            models.forEach(model => archive.addFile(model.path, path.join(MODEL_TYPE_FOLDERS[model.type], path.basename(model.path))));
-        }
-        else{
-            for(const type of MODEL_TYPES){
-                archive.addDirectory(await this.getModelFolderPath(type, version));
-            }
-        }
+        
 
-        return archive.finalize();
+        return new Observable<ArchiveProgress>(subscriber => {
+
+            const archive = new Archive(output);
+
+            (async () => {
+                
+                if(models?.length){
+                    models.forEach(model => archive.addFile(model.path, path.join(MODEL_TYPE_FOLDERS[model.type], path.basename(model.path))));
+                }
+                else{
+                    for(const type of MODEL_TYPES){
+                        archive.addDirectory(await this.getModelFolderPath(type, version));
+                    }
+                }
+
+            })().catch(e => subscriber.error(e)).then(() => (
+                archive.finalize().subscribe(subscriber)
+            ));
+
+        });
     }
 
     public deleteModels(models: BsmLocalModel[]): Observable<Progression>{

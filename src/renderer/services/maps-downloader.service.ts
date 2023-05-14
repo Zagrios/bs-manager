@@ -51,7 +51,7 @@ export class MapsDownloaderService {
         while(this.mapsQueue$.value.at(0)){
             const toDownload = this.mapsQueue$.value.at(0);
             this.currentDownload$.next(toDownload);
-            const downloaded = await this.downloadMap(toDownload.map, toDownload.version).toPromise();
+            const downloaded = await this.downloadMap(toDownload.map, toDownload.version)?.toPromise();
 
             if(downloaded){
                 this.downloadedListerners.forEach(func => func(downloaded, toDownload.version));

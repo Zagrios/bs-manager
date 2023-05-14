@@ -7,35 +7,23 @@ import { BsmDropdownButton, DropDownItem } from "../shared/bsm-dropdown-button.c
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
 import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
+import { BsmButton } from "../shared/bsm-button.component";
 
 export function ModelsPanel({version}: {version?: BSVersion}) {
-
     const modelsManager = useConstant(() => ModelsManagerService.getInstance());
     const [avatarsRef, sabersRef, platformsRef, bloqsRef] = [useRef(null), useRef(null), useRef(null), useRef(null)];
     const [modelTypeTab, setModelTypeTab] = useState<ModelTabType>(ModelTabType.Avatars);
     const [search, setSearch] = useState<string>("");
-
-    const getSelectedModels = (ref?: MutableRefObject<any>) => {
-        if(ref){ return (ref.current?.getSelectedModels() as BsmLocalModel[]); }
-        return [avatarsRef, sabersRef, platformsRef, bloqsRef].map(ref =>(ref.current?.getSelectedModels() as BsmLocalModel[])).flat()
-    };
-    const getAllModels = (ref?: MutableRefObject<any>) => {
-        if(ref){ return (ref.current?.getModels() as BsmLocalModel[]); }
-        return [avatarsRef, sabersRef, platformsRef, bloqsRef].map(ref =>(ref.current?.getModels() as BsmLocalModel[])).flat();
-    }
-    const reloadModels = (ref?: MutableRefObject<any>) => {
-        if(ref){ return (ref.current?.reloadModels()); }
-        return [avatarsRef, sabersRef, platformsRef, bloqsRef].forEach(ref => ref.current?.reloadModels())
-    };
     
-    const getActiveTabRef = (activeTab: ModelTabType) => [avatarsRef, sabersRef, platformsRef, bloqsRef][modelTypeTab];
+    const getActiveTabRef = () => [avatarsRef, sabersRef, platformsRef, bloqsRef][modelTypeTab];
 
     const exportModels = () => {
-        modelsManager.exportModels(getSelectedModels(), version);
+        const selectedModels = [avatarsRef, sabersRef, platformsRef, bloqsRef].map(ref =>(ref.current?.getSelectedModels() as BsmLocalModel[])).flat()
+        modelsManager.exportModels(selectedModels, version);
     }
 
     const deleteModels = () => {
-        const activeTab = getActiveTabRef(modelTypeTab);
+        const activeTab = getActiveTabRef();
         activeTab.current?.deleteSelectedModels();
     }
 
@@ -47,6 +35,7 @@ export function ModelsPanel({version}: {version?: BSVersion}) {
     return (
         <div className="w-full h-full flex flex-col items-center justify-center">
             <div className="w-full shrink-0 flex h-9 justify-center px-40 gap-2 mb-3 text-main-color-1 dark:text-white">
+                <BsmButton className="flex items-center justify-center w-fit rounded-full px-2 py-1 font-bold" icon="add" text="misc.add" typeColor="primary" withBar={false}/>
                 <div className="h-full rounded-full bg-light-main-color-2 dark:bg-main-color-2 grow p-[6px]">
                     <input type="text" className="h-full w-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2" placeholder={"TODO TRANSLATE"} onChange={e => setSearch(e.target.value)}  tabIndex={-1}/>
                 </div>

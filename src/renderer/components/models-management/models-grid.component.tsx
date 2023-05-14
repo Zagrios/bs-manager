@@ -52,7 +52,7 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active}
             loadModels();
         },
         deleteSelectedModels: () => {
-            modelsManager.deleteModels(modelsSelected, version).then(deleted => {
+            modelsManager.deleteModels(!modelsSelected?.length ? models : modelsSelected, version).then(deleted => {
                 if(!deleted){ return; }
                 const newModels = models.filter(m => !modelsSelected.some(d => d.hash === m.hash));
                 setModels(() => newModels);
@@ -83,6 +83,7 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active}
 
     const loadModels = () => {
         const modelsObs$ = modelsManager.$getModels(type, version);
+        setModels(() => null);
         setModelsLoadObservable(() => modelsObs$.pipe(map(models => models?.extra), distinctUntilChanged()));
         setProgress$(modelsObs$.pipe(map(models => Math.floor((models.current / models.total) * 100)), startWith(0), distinctUntilChanged()))
     }

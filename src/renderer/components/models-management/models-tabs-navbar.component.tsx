@@ -36,11 +36,9 @@ type TabProps = {
     version?: BSVersion,
     modelType: MSModelType,
     active?: boolean,
-    onLink?: (type: MSModelType) => void,
-    onUnlink?: (type: MSModelType) => void,
 } & React.ComponentProps<"li">;
 
-function ModelTab({version, modelType, active, onClick, onLink, onUnlink}: TabProps){
+function ModelTab({version, modelType, active, onClick}: TabProps){
 
     const modelsManager = useConstant(() => ModelsManagerService.getInstance());
 
@@ -62,8 +60,8 @@ function ModelTab({version, modelType, active, onClick, onLink, onUnlink}: TabPr
         }
     }, [version]);
 
-    const linkModels = () => modelsManager.linkModels(modelType, version).then(() => onLink?.(modelType));
-    const unlinkModels = () => modelsManager.unlinkModels(modelType, version).then(() => onUnlink?.(modelType));
+    const linkModels = () => modelsManager.linkModels(modelType, version)
+    const unlinkModels = () => modelsManager.unlinkModels(modelType, version)
     
     const onClickLink = () => {
         if(!version){ return Promise.resolve(); }
