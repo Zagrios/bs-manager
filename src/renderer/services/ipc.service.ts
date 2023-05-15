@@ -3,7 +3,7 @@ import { Observable } from "rxjs";
 import { IpcRequest, IpcResponse } from "shared/models/ipc";
 import { identity } from "rxjs";
 
-export class IpcService {
+export class IpcService{
 
     private static instance: IpcService;
 

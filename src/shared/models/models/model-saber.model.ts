@@ -69,3 +69,4 @@ export enum MSGetQueryFilterType {
     ID = "id",
     SearchName = "searchName"
 }
+

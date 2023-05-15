@@ -7,7 +7,7 @@ import { RequestService } from "../request.service";
 import { UtilsService } from "../utils.service";
 import { LocalMapsManagerService } from "./local-maps-manager.service";
 import log from "electron-log"
-import { isValidUrl } from "../../helpers/url.helpers";
+import { isValidUrl } from "../../../shared/helpers/url.helpers";
 import { ipcMain } from "electron";
 import { WindowManagerService } from "../window-manager.service";
 import { IpcRequest } from "shared/models/ipc";

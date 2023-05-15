@@ -1,4 +1,4 @@
-import { MSModelType } from "./model-saber.model";
+import { MSGetSort, MSModelType } from "./model-saber.model";
 
 export const MODEL_SABER_URL = "https://modelsaber.com";
 
@@ -24,3 +24,4 @@ export const MODEL_FILE_EXTENSIONS = {
 }
 
 export const MODEL_TYPES = Array.from(Object.values(MSModelType));
+export const MS_GET_QUERY_SORTS = Array.from(Object.values(MSGetSort));

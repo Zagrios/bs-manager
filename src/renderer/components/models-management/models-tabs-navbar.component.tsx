@@ -13,7 +13,7 @@ type Props = {
     className?: string,
     version?: BSVersion
     tabIndex: number,
-    onTabChange: (index: number) => void
+    onTabChange: (index: number, tab: BsContentNavBarTab<MSModelType>) => void
 }
 
 export function ModelsTabsNavbar({className, version, tabIndex, onTabChange}: Props) {
@@ -70,10 +70,10 @@ function ModelTab({version, modelType, active, onClick}: TabProps){
     }
 
     return (
-        <li className={`relative w-full cursor-pointer flex-1 text-center text-lg font-bold hover:backdrop-brightness-75 flex justify-center items-center content-center px-7 ${active ? "backdrop-brightness-75" : ""}`} onClick={onClick}>
-            <div className="flex flex-col gap-0.5 justify-start items-center">
+        <li className={`relative w-full cursor-pointer flex-1 text-center text-lg font-bold flex justify-center items-center content-center px-7 dim-on-hover ${active ? "dim" : ""}`} onClick={onClick}>
+            <div className="flex flex-col gap-0.5 justify-start items-center text-main-color-1 dark:text-gray-200">
                 <BsmIcon icon={modelType} className="w-7 h-7"/>
-                <span className="text-main-color-1 dark:text-gray-200 font-thin italic text-xs">{modelType}</span>
+                <span className=" font-thin italic text-xs">{modelType}</span>
             </div>
             <div className="flex items-center absolute top-1.5 left-1.5">
                 {!!version && (

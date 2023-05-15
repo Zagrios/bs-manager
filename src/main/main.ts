@@ -106,7 +106,5 @@ else{
             log.error(args?.args);
         });
 
-        LocalModelsManagerService.getInstance().getModels(MSModelType.Saber, null).toPromise().catch(console.error).then(console.log);
-
     }).catch(log.error);
 }

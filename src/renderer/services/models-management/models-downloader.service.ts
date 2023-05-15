@@ -4,7 +4,7 @@ import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 import { MSModel, MSModelType } from "shared/models/models/model-saber.model";
 import { ModalResponse, ModalService } from "../modale.service";
 import { IpcService } from "../ipc.service";
-import { DownloadMapsModal } from "renderer/components/modal/modal-types/download-maps-modal.component";
+import { DownloadModelsModal } from "renderer/components/modal/modal-types/models/download-models-modal.component";
 
 export class ModelsDownloaderService {
 
@@ -20,14 +20,14 @@ export class ModelsDownloaderService {
 
     private readonly lastDownloadedModel$ = new BehaviorSubject<ModelDownload>(null);
     private readonly queue$ = new BehaviorSubject<ModelDownload[]>([]);
-    private readonly currentDownload$ = this.queue$.pipe(map(queue => queue.at(0)), distinctUntilChanged(), shareReplay(1));
+    private readonly _currentDownload$ = this.queue$.pipe(map(queue => queue.at(0)), distinctUntilChanged(), shareReplay(1));
 
     private constructor(){
 
         this.ipc = IpcService.getInstance();
         this.modal = ModalService.getInsance();
 
-        this.currentDownload$.pipe(filter(v => !!v)).subscribe(model => this.downloadModel(model));
+        this._currentDownload$.pipe(filter(v => !!v)).subscribe(model => this.downloadModel(model));
     }
 
     private downloadModel(model: ModelDownload){
@@ -56,10 +56,14 @@ export class ModelsDownloaderService {
     }
 
     public isDownloading$(model: ModelDownload): Observable<boolean>{
-        return this.currentDownload$.pipe(map(current => {
+        return this._currentDownload$.pipe(map(current => {
             if(!current){ return false; }
             return current.hash === model.hash && current.version === model.version
         }), distinctUntilChanged());
+    }
+
+    public currentDownload$(): Observable<ModelDownload>{
+        return this._currentDownload$;
     }
 
     public isPending$(model: ModelDownload): Observable<boolean>{
@@ -67,7 +71,7 @@ export class ModelsDownloaderService {
     }
 
     public openDownloadModelsModal(version: BSVersion, type?: MSModelType): Promise<ModalResponse<void>>{
-        return this.modal.openModal(DownloadMapsModal, {version: null, ownedMaps: []}); // TODO MODELS
+        return this.modal.openModal(DownloadModelsModal, {version, type}); // TODO MODELS
     }
 
 }

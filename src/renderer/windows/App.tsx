@@ -22,22 +22,18 @@ import { NotificationService } from "renderer/services/notification.service";
 import { timer } from "rxjs";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
-import { IpcService } from "../services/ipc.service";
-import { MSModelType } from "shared/models/models/model-saber.model";
-import { BsmLocalModelsProgress } from "main/services/additional-content/local-models-manager.service";
-import { Progression } from "main/helpers/fs.helpers";
-import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export default function App() {
 
-    const themeService = ThemeService.getInstance();
-    const pageState = PageStateService.getInstance();
-    const maps = MapsManagerService.getInstance();
-    const playlists = PlaylistsManagerService.getInstance();
-    const models = ModelsManagerService.getInstance();
-    const notification = NotificationService.getInstance();
-    const config = ConfigurationService.getInstance();
-    const os = OsDiagnosticService.getInstance();
+    useService(OsDiagnosticService);
+    const themeService = useService(ThemeService);
+    const pageState = useService(PageStateService);
+    const maps = useService(MapsManagerService);
+    const playlists = useService(PlaylistsManagerService);
+    const models = useService(ModelsManagerService);
+    const notification = useService(NotificationService);
+    const config = useService(ConfigurationService);
 
     const location = useLocation();
     const navigate = useNavigate();

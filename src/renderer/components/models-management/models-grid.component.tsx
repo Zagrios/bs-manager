@@ -126,6 +126,13 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active}
         })
     }
 
+    const handleDelete = (model: BsmLocalModel) => {
+        modelsManager.deleteModels([model], version).then(deleted => {
+            if(!deleted){ return; }
+            setModels(prev => prev.filter(m => m.hash !== model.hash));
+        });
+    }
+ 
     const renderContent = () => {
         if(isLoading){
             return (
@@ -151,19 +158,15 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active}
             <ul className="flex flex-wrap shrink-0 justify-start content-start w-full h-full overflow-y-scroll overflow-x-hidden p-4 gap-4 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900">
                     {filtredModels().map(localModel => (
                         <ModelItem 
+                            {...localModel?.model}
                             key={localModel.model?.hash ?? localModel.hash}
                             hash={localModel.model?.hash ?? localModel.hash}
-                            id={localModel.model?.id}
+                            path={localModel.path}
                             type={localModel.type}
                             name={localModel.model?.name ?? localModel.fileName}
-                            thumbnail={localModel.model?.thumbnail}
-                            author={localModel.model?.author}
-                            discord={localModel.model?.discord}
-                            discordid={localModel.model?.discordid}
-                            tags={localModel.model?.tags}
                             selected={modelsSelected.some(m => m.hash === localModel.hash)}
-                            path={localModel.path}
                             onClick={() => handleModelClick(localModel)}
+                            onDelete={() => handleDelete(localModel)}
                         />
                     ))}
                 </ul>

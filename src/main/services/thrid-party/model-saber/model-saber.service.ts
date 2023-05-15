@@ -1,3 +1,4 @@
+import { Observable } from "rxjs";
 import { MSGetQuery, MSGetQueryFilterType, MSModel, MSModelPlatform } from "../../../../shared/models/models/model-saber.model";
 import { ModelSaberApiService } from "./model-saber-api.service";
 import log from "electron-log";
@@ -79,6 +80,16 @@ export class ModelSaberService {
             return null;
         }
 
+    }
+
+    public searchModels(query: MSGetQuery): Observable<MSModel[]>{
+        return new Observable<MSModel[]>(observer => {
+            (async () => {
+                const res = await this.modelSaberApi.searchModel(query);
+                if(res.status !== 200){ observer.error(res.status); }
+                observer.next(Object.values(res.data));
+            })().catch(e => observer.error(e)).then(() => observer.complete());
+        });
     }
 
 }
