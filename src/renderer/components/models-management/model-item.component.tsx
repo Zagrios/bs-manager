@@ -89,7 +89,7 @@ function modelItem<T = unknown>(props: Props<T>) {
 
     return (
         // TODO TRANSLATE ALL TEXT
-        <motion.li className={`relative flex-grow min-w-[13rem] h-52 cursor-pointer ${props.className ?? ""}`} onHoverStart={() => setHovered(() => true)} onHoverEnd={() => setHovered(() => false)} onClick={props.onClick}>
+        <motion.li className={`relative flex-grow min-w-[14rem] h-56 cursor-pointer ${props.className ?? ""}`} onHoverStart={() => setHovered(() => true)} onHoverEnd={() => setHovered(() => false)} onClick={props.onClick}>
             <GlowEffect visible={props.selected || hovered}/>
             <div className="absolute top-0 left-0 w-full h-full rounded-lg overflow-hidden blur-none bg-black">
                 <BsmImage className={`absolute top-0 left-0 w-full h-full object-cover ${props.type === MSModelType.Avatar ? "object-top" : ""}`} image={thumbnailUrl} placeholder={defaultImage} loading="lazy"/>
