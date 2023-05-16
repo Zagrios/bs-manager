@@ -1,6 +1,7 @@
 import { MSGetQuery, MSGetQueryFilter, MSGetQueryFilterType, MSModel } from "shared/models/models/model-saber.model";
 import { IpcService } from "../ipc.service";
 import { Observable } from "rxjs";
+import { MS_QUERY_FILTER_TYPES } from "shared/models/models/constants";
 
 export class ModelSaberService {
 
@@ -41,6 +42,13 @@ export class ModelSaberService {
                 return {type: MSGetQueryFilterType.SearchName, value: trimed, isNegative}
             }
 
+            const [filterType, filterValue] = trimed.split(":");
+
+            if(MS_QUERY_FILTER_TYPES.includes(filterType as MSGetQueryFilterType)){
+                return {type: filterType as MSGetQueryFilterType, value: filterValue, isNegative}
+            }
+
+            return {type: MSGetQueryFilterType.SearchName, value: trimed, isNegative};
             
         });
     }
