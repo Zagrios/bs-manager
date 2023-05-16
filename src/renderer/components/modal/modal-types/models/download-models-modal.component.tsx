@@ -20,6 +20,10 @@ import { useConstant } from "renderer/hooks/use-constant.hook";
 import { MODEL_TYPES, MS_GET_QUERY_SORTS } from "shared/models/models/constants";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import equal from "fast-deep-equal";
+import { catchError, of } from "rxjs";
+import { BsmIcon } from "renderer/components/svgs/bsm-icon.component";
+import Tippy from "@tippyjs/react";
+import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 
 export const DownloadModelsModal: ModalComponent<void, {version: BSVersion, type: MSModelType}> = ({resolver, data: { version, type }}) => {
 
@@ -38,9 +42,11 @@ export const DownloadModelsModal: ModalComponent<void, {version: BSVersion, type
     })));
 
     const t = useTranslation();
+    const color = useThemeColor("first-color");
     const currentDownload = useObservable(modelsDownloader.currentDownload$(), null);
     const [msModels, msModels$] = useBehaviorSubject<MSModel[]>([]);
     const isOnline = useObservable(os.isOnline$, true);
+    const [error, error$] = useBehaviorSubject(false);
     const [isLoading, isLoading$] = useBehaviorSubject(false);
 
     console.log(msModels);
@@ -51,7 +57,11 @@ export const DownloadModelsModal: ModalComponent<void, {version: BSVersion, type
     const [getQuery, getQuery$] = useBehaviorSubject<MSGetQuery>({ type: currentType, platform: MSModelPlatform.PC, start: 0, end: 25, sort: currentSort, sortDirection: MSGetSortDirection.Descending });
 
     useOnUpdate(() => {
-        const sub = modelSaber.searchModels(getQuery).subscribe(models => msModels$.next([...msModels, ...models]));
+        error$.next(false);
+        const sub = modelSaber.searchModels(getQuery).pipe(catchError(() => {
+            error$.next(true);
+            return of([]);
+        })).subscribe(models => msModels$.next([...msModels, ...models]));
         return () => sub.unsubscribe();
     }, [getQuery])
 
@@ -97,13 +107,36 @@ export const DownloadModelsModal: ModalComponent<void, {version: BSVersion, type
     const handleDownloadModel = useCallback((model: MSModel) => {
         modelsDownloader.addModelToDownload({...model, version});
     }, []);
-    
+
+    const filterTipsHTML = useConstant(() => (
+        <div className="w-fit flex">
+            <table className="w-fit whitespace-nowrap grow shrink-0 text-base">
+                <tbody>
+                    <tr className="font-bold"><td className="mr-3 block">Tag</td><td>Description</td></tr>
+                    <tr><td className="mr-3 block">author:</td><td>Only show models by the specified author.</td></tr>
+                    <tr><td className="mr-3 block">hash:</td><td>Only show models with the specified hash.</td></tr>
+                    <tr><td className="mr-3 block">tag:</td><td>Only show models with the specified tag.</td></tr>
+                    <tr><td className="mr-3 block">name:</td><td>Only show models with the specified name.</td></tr>
+                    <tr><td className="mr-3 block">discordid:</td><td>Only show models by the user with the specified discordid.</td></tr>
+                    <tr><td className="mr-3 block">status:</td><td>Only show models with the specified approval status. (profile only, and only for the author)</td></tr>
+                </tbody>
+            </table>
+        </div>
+    ))
 
     return (
         <form className="text-gray-800 dark:text-gray-200 flex flex-col max-w-[95vw] w-[970px] h-[85vh] gap-3" onSubmit={e => {e.preventDefault(); search()}}>
             <div className="flex h-9 gap-2 shrink-0">
                 <BsmSelect className="bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-1 pb-0.5 text-center" options={modelTypesOptions} onChange={(value) => currentType$.next(value)}/>
-                <input className="h-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2 grow pb-0.5" type="text" name="" id="" placeholder="TODO TRANSLATE Rechercher un modèle" value={searhInput} onChange={e => searhInput$.next(e.target.value)}/>
+                <div className="h-ful grow relative flex justify-center items-center">
+                    <input className="h-full w-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2 pb-0.5" type="text" name="" id="" placeholder="TODO TRANSLATE Rechercher un modèle" value={searhInput} onChange={e => searhInput$.next(e.target.value)}/>
+                    <Tippy placement="bottom" content={filterTipsHTML} allowHTML={true} maxWidth={Infinity}>
+                        <div className="absolute right-0 h-full w-fit p-1 cursor-pointer">
+                            <BsmButton className="h-full rounded-full p-1 aspect-square" typeColor="primary" icon="info" withBar={false}/>
+                        </div>
+                    </Tippy>
+                    
+                </div>
                 <BsmButton className="shrink-0 rounded-full py-1 px-3 !bg-light-main-color-1 dark:!bg-main-color-1 flex justify-center items-center capitalize" icon="search" type="submit" text="modals.download-maps.search-btn" withBar={false} onClick={e => {e.preventDefault(); search()}}/>
                 <BsmSelect className="bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-1 pb-0.5 text-center" options={querySortsOptions} onChange={(value) => currentSort$.next(value)}/>
             </div>
