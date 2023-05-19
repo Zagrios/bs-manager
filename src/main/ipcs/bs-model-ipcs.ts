@@ -8,6 +8,7 @@ import { BSVersion } from "shared/bs-version.interface";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { from } from "rxjs";
 import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
+import { ModelDownload } from "renderer/services/models-management/models-downloader.service";
 
 const ipc = IpcService.getInstance();
 
@@ -65,6 +66,11 @@ ipcMain.on("is-models-deep-links-enabled", async (event, request: IpcRequest<voi
         utils.ipcSend(request.responceChannel, {success: false});
     }
 
+});
+
+ipc.on<ModelDownload>("download-model", async (req, reply) => {
+    const models = LocalModelsManagerService.getInstance();
+    reply(models.downloadModel(req.args.model, req.args.version));
 });
 
 ipc.on<{version: BSVersion, type: MSModelType}>("get-version-models", async (req, reply) => {

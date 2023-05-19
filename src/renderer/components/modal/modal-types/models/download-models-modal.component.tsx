@@ -5,9 +5,8 @@ import { ModalComponent } from "renderer/services/modale.service";
 import { BSVersion } from "shared/bs-version.interface";
 import BeatWaitingImg from "../../../../../../assets/images/apngs/beat-waiting.png";
 import BeatConflictImg from "../../../../../../assets/images/apngs/beat-conflict.png";
-import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 import { MSGetQuery, MSGetSort, MSGetSortDirection, MSModel, MSModelPlatform, MSModelType } from "shared/models/models/model-saber.model";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 import { ModelItem } from "renderer/components/models-management/model-item.component";
 import { useService } from "renderer/hooks/use-service.hook";
 import { ModelDownload, ModelsDownloaderService } from "renderer/services/models-management/models-downloader.service";
@@ -21,11 +20,10 @@ import { MODEL_TYPES, MS_GET_QUERY_SORTS } from "shared/models/models/constants"
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import equal from "fast-deep-equal";
 import { catchError, of } from "rxjs";
-import { BsmIcon } from "renderer/components/svgs/bsm-icon.component";
 import Tippy from "@tippyjs/react";
-import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
+import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 
-export const DownloadModelsModal: ModalComponent<void, {version: BSVersion, type: MSModelType}> = ({resolver, data: { version, type }}) => {
+export const DownloadModelsModal: ModalComponent<void, {version: BSVersion, type: MSModelType, owned: BsmLocalModel[]}> = ({resolver, data: { version, type, owned }}) => {
 
     const modelsDownloader = useService(ModelsDownloaderService);
     const modelSaber = useService(ModelSaberService);
@@ -42,14 +40,13 @@ export const DownloadModelsModal: ModalComponent<void, {version: BSVersion, type
     })));
 
     const t = useTranslation();
-    const color = useThemeColor("first-color");
     const currentDownload = useObservable(modelsDownloader.currentDownload$(), null);
+    const downloadQueue = useObservable(modelsDownloader.getQueue$(), []);
     const [msModels, msModels$] = useBehaviorSubject<MSModel[]>([]);
     const isOnline = useObservable(os.isOnline$, true);
     const [error, error$] = useBehaviorSubject(false);
     const [isLoading, isLoading$] = useBehaviorSubject(false);
-
-    console.log(msModels);
+    const [ownedModels, setOwnedModels] = useState<BsmLocalModel[]>(owned ?? []);
     
     const [currentType, currentType$] = useBehaviorSubject<MSModelType>(type);
     const [currentSort, currentSort$] = useBehaviorSubject<MSGetSort>(MSGetSort.Date);
@@ -57,18 +54,31 @@ export const DownloadModelsModal: ModalComponent<void, {version: BSVersion, type
     const [getQuery, getQuery$] = useBehaviorSubject<MSGetQuery>({ type: currentType, platform: MSModelPlatform.PC, start: 0, end: 25, sort: currentSort, sortDirection: MSGetSortDirection.Descending });
 
     useOnUpdate(() => {
+        const sub = modelsDownloader.onModelsDownloaded((model => {
+            if(!equal(model.version, version)) { return; }
+            setOwnedModels(prev => [...prev ?? [], model]);
+        }));
+
+        return () => sub.unsubscribe();
+    });
+
+    useOnUpdate(() => {
         error$.next(false);
+        isLoading$.next(true);
+
         const sub = modelSaber.searchModels(getQuery).pipe(catchError(() => {
             error$.next(true);
             return of([]);
-        })).subscribe(models => msModels$.next([...msModels, ...models]));
+        })).subscribe(models => {
+            msModels$.next([...msModels, ...models]);
+            isLoading$.next(false);
+        });
+
         return () => sub.unsubscribe();
     }, [getQuery])
 
     useOnUpdate(() => {
         msModels$.next([]);
-
-
 
         getQuery$.next({
             ...getQuery$.value,
@@ -81,7 +91,6 @@ export const DownloadModelsModal: ModalComponent<void, {version: BSVersion, type
     }, [currentType, currentSort]);
 
     const loadMore = () => {
-        console.log("load more");
         const currentQuery = getQuery;
         currentQuery.start += 25;
         currentQuery.end += 25;
@@ -89,8 +98,6 @@ export const DownloadModelsModal: ModalComponent<void, {version: BSVersion, type
     }
 
     const search = () => {
-
-        const filters = searhInput.split(" ").join(",");
 
         const getQuery: MSGetQuery = {
             start: 0, end: 25,
@@ -105,12 +112,24 @@ export const DownloadModelsModal: ModalComponent<void, {version: BSVersion, type
     }
 
     const handleDownloadModel = useCallback((model: MSModel) => {
-        modelsDownloader.addModelToDownload({...model, version});
+        modelsDownloader.addModelToDownload({model, version});
     }, []);
+
+    const handleCancelDownload = useCallback((model: MSModel) => {
+        modelsDownloader.removeFromDownloadQueue({model, version});
+    }, []);
+
+    const modelPendingDownload = (model: MSModel) => {
+        return downloadQueue.some(download => download.model.id === model.id && equal(download.version, version));
+    }
+
+    const isModelOwned = (model: MSModel) => {
+        return !!ownedModels.some(owned => owned.hash === model.hash);
+    }
 
     const filterTipsHTML = useConstant(() => (
         <div className="w-fit flex">
-            <table className="w-fit whitespace-nowrap grow shrink-0 text-base">
+            <table className="w-fit whitespace-nowrap grow shrink-0 text-sm">
                 <tbody>
                     <tr className="font-bold"><td className="mr-3 block">Tag</td><td>Description</td></tr>
                     <tr><td className="mr-3 block">author:</td><td>Only show models by the specified author.</td></tr>
@@ -127,7 +146,7 @@ export const DownloadModelsModal: ModalComponent<void, {version: BSVersion, type
     return (
         <form className="text-gray-800 dark:text-gray-200 flex flex-col max-w-[95vw] w-[970px] h-[85vh] gap-3" onSubmit={e => {e.preventDefault(); search()}}>
             <div className="flex h-9 gap-2 shrink-0">
-                <BsmSelect className="bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-1 pb-0.5 text-center" options={modelTypesOptions} onChange={(value) => currentType$.next(value)}/>
+                <BsmSelect className="bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-1 pb-0.5 text-center" options={modelTypesOptions} selected={currentType} onChange={(value) => currentType$.next(value)}/>
                 <div className="h-ful grow relative flex justify-center items-center">
                     <input className="h-full w-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2 pb-0.5" type="text" name="" id="" placeholder="TODO TRANSLATE Rechercher un modèle" value={searhInput} onChange={e => searhInput$.next(e.target.value)}/>
                     <Tippy placement="bottom" content={filterTipsHTML} allowHTML={true} maxWidth={Infinity}>
@@ -153,8 +172,9 @@ export const DownloadModelsModal: ModalComponent<void, {version: BSVersion, type
                                 key={model.id} 
                                 {...model}
                                 callbackValue={model}
-                                isDownloading={equal(currentDownload, {...model, version} as ModelDownload)}
-                                onDownload={handleDownloadModel}
+                                isDownloading={equal(currentDownload, {model, version} as ModelDownload)}
+                                onDownload={!isModelOwned(model) ? handleDownloadModel: undefined}
+                                onCancelDownload={modelPendingDownload(model) ? handleCancelDownload : undefined}
                             />
                         ))}
                         <motion.span onViewportEnter={loadMore} className="block w-full h-8"/>

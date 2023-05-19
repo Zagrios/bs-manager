@@ -1,3 +1,4 @@
+import { BSVersion } from "shared/bs-version.interface";
 import { MSModel, MSModelType } from "./model-saber.model";
 
 export interface BsmLocalModel{
@@ -6,4 +7,5 @@ export interface BsmLocalModel{
     readonly hash: string;
     readonly type: MSModelType;
     readonly model?: MSModel
+    readonly version?: BSVersion;
 }

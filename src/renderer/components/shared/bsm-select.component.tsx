@@ -1,23 +1,25 @@
+import equal from "fast-deep-equal";
 import { ComponentProps } from "react"
 import { useTranslation } from "renderer/hooks/use-translation.hook"
 
 type Props<T> = Omit<ComponentProps<"select">, "onChange"> & {
     options?: BsmSelectOption<T>[],
+    selected?: T,
     onChange?: (value: T) => void,
 }
 
-export function BsmSelect<T = unknown>({className, style, options, onChange}: Props<T>) {
+export function BsmSelect<T = unknown>(props: Props<T>) {
 
     const t = useTranslation();
 
     const handleChange: ComponentProps<"select">["onChange"] = (e) => {
         e.preventDefault();
-        onChange?.(options?.[parseInt(e.target.value)]?.value);
+        props.onChange?.(props.options?.[parseInt(e.target.value)]?.value);
     }
 
     return (
-        <select className={className} style={style} onChange={handleChange}>
-            {options && options.map((option, index) => (
+        <select {...props} onChange={handleChange} defaultValue={props.options?.findIndex(opt => equal(opt.value, props.selected))}>
+            {props.options && props.options.map((option, index) => (
                 <option key={index} value={index}>{t(option.text)}</option>
             ))}
         </select>

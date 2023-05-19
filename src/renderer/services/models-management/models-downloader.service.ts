@@ -1,10 +1,13 @@
-import { BehaviorSubject, Observable, Subscription, distinctUntilChanged, filter, map, shareReplay } from "rxjs";
+import { BehaviorSubject, Observable, Subscription, distinctUntilChanged, filter, lastValueFrom, map, shareReplay, startWith } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 import { MSModel, MSModelType } from "shared/models/models/model-saber.model";
 import { ModalResponse, ModalService } from "../modale.service";
 import { IpcService } from "../ipc.service";
 import { DownloadModelsModal } from "renderer/components/modal/modal-types/models/download-models-modal.component";
+import { ProgressBarService } from "../progress-bar.service";
+import { Progression } from "main/helpers/fs.helpers";
+import { ProgressionInterface } from "shared/models/progress-bar";
 
 export class ModelsDownloaderService {
 
@@ -16,9 +19,10 @@ export class ModelsDownloaderService {
     }
 
     private readonly ipc: IpcService;
-    private readonly modal: ModalService
+    private readonly modal: ModalService;
+    private readonly progress: ProgressBarService;
 
-    private readonly lastDownloadedModel$ = new BehaviorSubject<ModelDownload>(null);
+    private readonly lastDownload$ = new BehaviorSubject<BsmLocalModel>(null);
     private readonly queue$ = new BehaviorSubject<ModelDownload[]>([]);
     private readonly _currentDownload$ = this.queue$.pipe(map(queue => queue.at(0)), distinctUntilChanged(), shareReplay(1));
 
@@ -26,39 +30,60 @@ export class ModelsDownloaderService {
 
         this.ipc = IpcService.getInstance();
         this.modal = ModalService.getInsance();
+        this.progress = ProgressBarService.getInstance();
 
         this._currentDownload$.pipe(filter(v => !!v)).subscribe(model => this.downloadModel(model));
+        this._currentDownload$.pipe(filter(v => !v)).subscribe(() => this.lastDownload$.next(null));
     }
 
-    private downloadModel(model: ModelDownload){
-        // TODO: Download model
+    private async downloadModel(download: ModelDownload){
+
+        const download$ = this.ipc.sendV2<Progression<BsmLocalModel>>("download-model", {args: download});
+
+        if(!this.progress.isVisible){
+            const progress$: Observable<ProgressionInterface> = download$.pipe(map(progress => {
+                return {
+                    progression: progress.total ? (progress.current / progress.total) * 100 : 0,
+                    label: download.model.name
+                }
+            }), startWith({progression: .1, label: download.model.name}));
+            this.progress.show(progress$, true);
+        }
+
+        const downloaded = await lastValueFrom(download$);
+        this.lastDownload$.next(downloaded.data);
+
+        this.progress.hide(true);
+
+        this.queue$.next(this.queue$.value.filter(m => m.model.hash !== download.model.hash));
+
     }
 
     public addModelToDownload(model: ModelDownload): ModelDownload{
         const queue = this.queue$.value;
         queue.push(model);
-        this.queue$.next(queue);
+        this.queue$.next([...queue]);
         return model;
     }
 
-    public removeFromDownloadQueue(model: ModelDownload){
+    public removeFromDownloadQueue(download: ModelDownload){
         const queue = this.queue$.value;
-        const index = queue.findIndex(m => m.hash === model.hash);
+        const index = queue.findIndex(m => m.model.hash === download.model.hash);
         
         if(index === -1){ return; }
         
         queue.splice(index, 1);
-        this.queue$.next(queue);
+        this.queue$.next([...queue]);
     }
 
-    public onModelsDownloaded$(cb: (model: ModelDownload) => void): Subscription{
-        return this.lastDownloadedModel$.pipe(filter(v => !!v)).subscribe(cb);
+    public onModelsDownloaded(cb: (model: BsmLocalModel) => void): Subscription{
+        return this.lastDownload$.pipe(filter(download => !!download)).subscribe(cb);
     }
 
-    public isDownloading$(model: ModelDownload): Observable<boolean>{
+    public isDownloading$(download: ModelDownload): Observable<boolean>{
         return this._currentDownload$.pipe(map(current => {
             if(!current){ return false; }
-            return current.hash === model.hash && current.version === model.version
+            return current.model.hash === download.model.hash && current.version === download.version
         }), distinctUntilChanged());
     }
 
@@ -66,15 +91,21 @@ export class ModelsDownloaderService {
         return this._currentDownload$;
     }
 
-    public isPending$(model: ModelDownload): Observable<boolean>{
-        return this.queue$.pipe(map(queue => queue.at(0).hash !== model.hash && queue.at(0).version !== model.version && queue.some(m => m.hash === model.hash && m.version === model.version)), distinctUntilChanged());
+    public isPending$(download: ModelDownload): Observable<boolean>{
+        return this.queue$.pipe(map(queue => queue.at(0).model.hash !== download.model.hash && queue.at(0).version !== download.version && queue.some(d => d.model.hash === download.model.hash && d.version === download.version)), distinctUntilChanged());
     }
 
-    public openDownloadModelsModal(version: BSVersion, type?: MSModelType): Promise<ModalResponse<void>>{
-        return this.modal.openModal(DownloadModelsModal, {version, type}); // TODO MODELS
+    public getQueue$(): Observable<ModelDownload[]>{
+        return this.queue$.asObservable();
+    }
+
+    public openDownloadModelsModal(version: BSVersion, type?: MSModelType, owned?: BsmLocalModel[]): Promise<ModalResponse<void>>{
+        return this.modal.openModal(DownloadModelsModal, {version, type, owned}); // TODO MODELS
     }
 
 }
 
-export type ModelDownload = Partial<MSModel> & Pick<MSModel, "hash"> & {version: BSVersion};
-export type ModelDownloaded = BsmLocalModel & {version: BSVersion};
+export type ModelDownload = {
+    model: MSModel,
+    version: BSVersion
+}

@@ -1,42 +1,57 @@
 import { BSVersion } from "shared/bs-version.interface";
-import { useRef, useState, MutableRefObject } from "react";
+import { useRef, useState } from "react";
 import { ModelsTabsNavbar } from "./models-tabs-navbar.component";
 import { ModelsGrid } from "./models-grid.component";
 import { MSModelType } from "shared/models/models/model-saber.model";
 import { BsmDropdownButton, DropDownItem } from "../shared/bsm-dropdown-button.component";
-import { useConstant } from "renderer/hooks/use-constant.hook";
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
 import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 import { BsmButton } from "../shared/bsm-button.component";
 import { useService } from "renderer/hooks/use-service.hook";
 import { ModelsDownloaderService } from "renderer/services/models-management/models-downloader.service";
+import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
+import { NotificationService } from "renderer/services/notification.service";
+import { ConfigurationService } from "renderer/services/configuration.service";
 
-export function ModelsPanel({version}: {version?: BSVersion}) {
+export function ModelsPanel({version, isActive, goToMods}: {version?: BSVersion, isActive: boolean, goToMods: () => void}) {
     
     const modelsManager = useService(ModelsManagerService);
-    const modelDownloader = useService(ModelsDownloaderService); 
+    const modelDownloader = useService(ModelsDownloaderService);
+    const notification = useService(NotificationService);
+    const config = useService(ConfigurationService);
 
-    const [avatarsRef, sabersRef, platformsRef, bloqsRef] = [useRef(null), useRef(null), useRef(null), useRef(null)];
+    const ref = useRef();
+
+    const modelsGridRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
 
     const [modelTypeTab, setModelTypeTab] = useState<MSModelType>(MSModelType.Avatar);
     const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
 
     const [search, setSearch] = useState<string>("");
-    
-    const getActiveTabRef = () => [avatarsRef, sabersRef, platformsRef, bloqsRef][currentTabIndex];
+
+    useOnUpdate(() => {
+        if(!isActive){ return; }
+        //if(config.get("prevented-for-mods-models")){ return; }
+        config.set("prevented-for-mods-models", true);
+        notification.notifyWarning({ title: "Mods needed", desc: "Be sure to have the mods installed to use models in BeatSaber", actions: [{id: "0", title: "Go to mods"}], duration: 9_000 }).then(res => {
+            if(res !== "0"){ return; }
+            goToMods();
+        });
+    }, [isActive]);
 
     const exportModels = () => {
-        const selectedModels = [avatarsRef, sabersRef, platformsRef, bloqsRef].map(ref =>(ref.current?.getSelectedModels() as BsmLocalModel[])).flat()
+        const selectedModels = modelsGridRefs.map(ref =>(ref.current?.getSelectedModels() as BsmLocalModel[])).flat()
         modelsManager.exportModels(selectedModels, version);
     }
 
     const deleteModels = () => {
-        const activeTab = getActiveTabRef();
+        const activeTab = modelsGridRefs[currentTabIndex];
         activeTab.current?.deleteSelectedModels();
     }
 
     const openDownloadModal = () => {
-        modelDownloader.openDownloadModelsModal(version, modelTypeTab);
+        const allLoadedModels = modelsGridRefs.map(ref =>(ref.current?.getModels() as BsmLocalModel[])).flat();
+        modelDownloader.openDownloadModelsModal(version, modelTypeTab, allLoadedModels);
     }
 
     const threeDotsItems: DropDownItem[] = [
@@ -45,7 +60,7 @@ export function ModelsPanel({version}: {version?: BSVersion}) {
     ];
 
     return (
-        <div className="w-full h-full flex flex-col items-center justify-center">
+        <div ref={ref} className="w-full h-full flex flex-col items-center justify-center">
             <div className="w-full shrink-0 flex h-9 justify-center px-40 gap-2 mb-3 text-main-color-1 dark:text-white">
                 <BsmButton className="flex items-center justify-center w-fit rounded-full px-2 py-1 font-bold" icon="add" text="misc.add" typeColor="primary" withBar={false} onClick={e => {e.preventDefault(); openDownloadModal()}}/>
                 <div className="h-full rounded-full bg-light-main-color-2 dark:bg-main-color-2 grow p-[6px]">
@@ -57,10 +72,10 @@ export function ModelsPanel({version}: {version?: BSVersion}) {
                 <ModelsTabsNavbar className="flex-shrink-0" version={version} tabIndex={currentTabIndex} onTabChange={(index, tab) => {setModelTypeTab(() => tab.extra), setCurrentTabIndex(() => index)}}/>
                 
                 <div className="flex-grow h-full flex flex-col transition-all duration-300" style={{translate: `0 ${0 - currentTabIndex * 100}%`}}>
-                    <ModelsGrid ref={avatarsRef} version={version} type={MSModelType.Avatar} active={modelTypeTab === MSModelType.Avatar} search={search}/>
-                    <ModelsGrid ref={sabersRef} version={version} type={MSModelType.Saber} active={modelTypeTab === MSModelType.Saber} search={search}/>
-                    <ModelsGrid ref={platformsRef} version={version} type={MSModelType.Platfrom} active={modelTypeTab === MSModelType.Platfrom} search={search}/>
-                    <ModelsGrid ref={bloqsRef} version={version} type={MSModelType.Bloq} active={modelTypeTab === MSModelType.Bloq} search={search}/>
+                    <ModelsGrid ref={modelsGridRefs[0]} version={version} type={MSModelType.Avatar} active={isActive && modelTypeTab === MSModelType.Avatar} search={search}/>
+                    <ModelsGrid ref={modelsGridRefs[1]} version={version} type={MSModelType.Saber} active={isActive && modelTypeTab === MSModelType.Saber} search={search}/>
+                    <ModelsGrid ref={modelsGridRefs[2]} version={version} type={MSModelType.Platfrom} active={isActive && modelTypeTab === MSModelType.Platfrom} search={search}/>
+                    <ModelsGrid ref={modelsGridRefs[3]} version={version} type={MSModelType.Bloq} active={isActive && modelTypeTab === MSModelType.Bloq} search={search}/>
                 </div>
             </div>
         </div>

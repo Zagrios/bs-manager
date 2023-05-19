@@ -18,6 +18,8 @@ import { BsmButton } from "../shared/bsm-button.component";
 import equal from "fast-deep-equal";
 import { VersionLinkerAction } from "renderer/services/version-folder-linker.service";
 import { MODEL_TYPE_FOLDERS } from "shared/models/models/constants";
+import { useService } from "renderer/hooks/use-service.hook";
+import { ModelsDownloaderService } from "renderer/services/models-management/models-downloader.service";
 
 type Props = {
     className?: string,
@@ -29,13 +31,13 @@ type Props = {
 
 export const ModelsGrid = forwardRef(({className, version, type, search, active}: Props, forwardRef) => {
 
-    const modelsManager = useConstant(() => ModelsManagerService.getInstance());
+    const modelsManager = useService(ModelsManagerService);
+    const modelsDownloader = useService(ModelsDownloaderService);
 
     const ref = useRef();
-    const isVisible = useInView(ref, {once: true, amount: .1});
 
     const [models, setModelsLoadObservable,, setModels] = useSwitchableObservable<BsmLocalModel[]>();
-    const [progress$, setProgress$] = useState(new BehaviorSubject(0).asObservable());
+    const progress$ = useConstant(() => new BehaviorSubject(0));
     const [modelsSelected, modelsSelected$] = useBehaviorSubject<BsmLocalModel[]>([]);
 
     const isLoading = !models;
@@ -63,13 +65,28 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active}
     }), [modelsSelected, models]);
 
     useOnUpdate(() => {
-        if(!isVisible || !active){ return; }
+        if(!active){ return; }
+        if(models && models.length){ return; }
         loadModels();
+    }, [active]);
+
+    useOnUpdate(() => {
+        if(!active){ 
+            setModels(() => null); 
+        }
+        else { 
+            loadModels(); 
+        }
 
         const onLinkStateChangeCb = (action: VersionLinkerAction) => {
             if(!equal(version, action.version) || !action.relativeFolder.includes(MODEL_TYPE_FOLDERS[type])){ return; }
             loadModels();
         }
+
+        const sub = modelsDownloader.onModelsDownloaded(localModel => {
+            if(localModel.type !== type || !equal(localModel.version, version)){ return; }
+            setModels(models => [localModel, ...models ?? []]);
+        });
 
         modelsManager.onModelsFolderLinked(onLinkStateChangeCb);
         modelsManager.onModelsFolderUnlinked(onLinkStateChangeCb);
@@ -77,15 +94,16 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active}
         return () => {
             modelsManager.removeModelsFolderLinkedListener(onLinkStateChangeCb);
             modelsManager.removeModelsFolderUnlinkedListener(onLinkStateChangeCb);
+            sub.unsubscribe();
         }
 
-    }, [version, isVisible, type]);
+    }, [version, type]);
 
     const loadModels = () => {
         const modelsObs$ = modelsManager.$getModels(type, version);
         setModels(() => null);
-        setModelsLoadObservable(() => modelsObs$.pipe(map(models => models?.extra), distinctUntilChanged()));
-        setProgress$(modelsObs$.pipe(map(models => Math.floor((models.current / models.total) * 100)), startWith(0), distinctUntilChanged()))
+        setModelsLoadObservable(() => modelsObs$.pipe(map(models => models?.data), distinctUntilChanged()));
+        modelsObs$.pipe(map(models => Math.floor((models.current / models.total) * 100)), startWith(0), distinctUntilChanged()).subscribe({next: v => progress$.next(v)});
     }
 
     const handleModelClick = (model: BsmLocalModel) => {
@@ -159,7 +177,7 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active}
                     {filtredModels().map(localModel => (
                         <ModelItem 
                             {...localModel?.model}
-                            key={localModel.model?.hash ?? localModel.hash}
+                            key={localModel.path}
                             hash={localModel.model?.hash ?? localModel.hash}
                             path={localModel.path}
                             type={localModel.type}
@@ -178,4 +196,4 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active}
             {renderContent()}
         </div>
     )
-})
+});

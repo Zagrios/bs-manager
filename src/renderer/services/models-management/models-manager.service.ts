@@ -110,9 +110,9 @@ export class ModelsManagerService {
 
         if(!resFile.success){ return; }
 
-        const exportProgress$: Observable<ProgressionInterface> = this.ipc.sendV2<ArchiveProgress, {version: BSVersion, models: BsmLocalModel[], outPath: string}>("export-models", {args: {version, models, outPath: resFile.data}}).pipe(
+        const exportProgress$: Observable<ProgressionInterface> = this.ipc.sendV2<Progression, {version: BSVersion, models: BsmLocalModel[], outPath: string}>("export-models", {args: {version, models, outPath: resFile.data}}).pipe(
             map(p => {
-                return { progression: (p.prossesedFiles / p.totalFiles) * 100, label: `${p.prossesedFiles} / ${p.totalFiles}` } as ProgressionInterface
+                return { progression: (p.current / p.total) * 100, label: `${p.current} / ${p.total}` } as ProgressionInterface
             })
         );
 

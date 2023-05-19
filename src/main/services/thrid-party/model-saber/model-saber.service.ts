@@ -2,6 +2,7 @@ import { Observable } from "rxjs";
 import { MSGetQuery, MSGetQueryFilterType, MSModel, MSModelPlatform } from "../../../../shared/models/models/model-saber.model";
 import { ModelSaberApiService } from "./model-saber-api.service";
 import log from "electron-log";
+import striptags from "striptags"
 
 export class ModelSaberService {
 
@@ -71,6 +72,8 @@ export class ModelSaberService {
 
             const model = Array.from(Object.values(res.data)).at(0);
 
+            model.name = striptags(model.name ?? "");
+
             this.modelsHashCache.set(hash, model);
 
             return model
@@ -87,7 +90,11 @@ export class ModelSaberService {
             (async () => {
                 const res = await this.modelSaberApi.searchModel(query);
                 if(res.status !== 200){ observer.error(res.status); }
-                observer.next(Object.values(res.data));
+                observer.next(Object.values(res.data).map(model => {
+                    if(!model || !model.name){ return model; }
+                    (model as MSModel).name = striptags(model.name);
+                    return model;
+                }));
             })().catch(e => observer.error(e)).then(() => observer.complete());
         });
     }

@@ -21,7 +21,7 @@ export class ModelDownloaderService {
     }
 
 
-    public async oneClickInstallModel(model: MSModel): Promise<boolean>{
+    public async oneClickInstallModel(model: MSModel): Promise<boolean>{ // TODO : Put this function in the new ModelDownloaderService
 
         this.progress.showFake(0.04);
 

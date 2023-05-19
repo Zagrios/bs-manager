@@ -1,5 +1,5 @@
 import path from "path";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, lastValueFrom } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import { DeepLinkService } from "../deep-link.service";
@@ -97,7 +97,7 @@ export class LocalPlaylistsManagerService {
             copyFileSync(bpListUrlOrPath, bpListDest);
         }
         else{
-            await this.request.downloadFile(bpListUrlOrPath, bpListDest);
+            await lastValueFrom(this.request.downloadFile(bpListUrlOrPath, bpListDest));
         }
 
         return bpListDest;

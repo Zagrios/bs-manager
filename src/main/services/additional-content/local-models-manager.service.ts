@@ -14,7 +14,7 @@ import sanitize from "sanitize-filename";
 import { Progression, ensureFolderExist, unlinkPath } from "../../helpers/fs.helpers";
 import { MODEL_FILE_EXTENSIONS, MODEL_TYPES, MODEL_TYPE_FOLDERS } from "../../../shared/models/models/constants";
 import { InstallationLocationService } from "../installation-location.service";
-import { Observable, lastValueFrom } from "rxjs";
+import { Observable, Subscription, lastValueFrom, map } from "rxjs";
 import { readdir } from "fs/promises";
 import md5File from "md5-file";
 import { allSettled } from "../../../shared/helpers/promise.helpers";
@@ -85,13 +85,42 @@ export class LocalModelsManagerService {
 
     }
 
-    public async downloadModel(model: MSModel, version: BSVersion): Promise<string>{
-        
-        const modelFolder = await this.getModelFolderPath(model.type, version);
-        const modelDest = path.join(modelFolder, sanitize(path.basename(model.download)));
+    public downloadModel(model: MSModel, version: BSVersion): Observable<Progression<BsmLocalModel>>{
+        return new Observable<Progression<BsmLocalModel>>(subscriber => {
 
-        return this.request.downloadFile(model.download, modelDest);
+            const subs: Subscription[] = [];
 
+            (async () => {
+
+                const modelFolder = await this.getModelFolderPath(model.type, version);
+                const modelDest = path.join(modelFolder, sanitize(path.basename(model.download)));
+
+                let url = model.download.split("/");
+                url[url.length - 1] = encodeURIComponent(url[url.length - 1]);
+
+                const download$ = this.request.downloadFile(url.join("/"), modelDest);
+
+                subs.push(download$.subscribe({ next: value => subscriber.next({...value, data: undefined}), error: e => subscriber.error(e) }));
+
+                const downloaded = await lastValueFrom(download$);
+
+                const res: BsmLocalModel = {
+                    path: downloaded.data,
+                    fileName: path.basename(downloaded.data),
+                    hash: await md5File(downloaded.data),
+                    type: model.type,
+                    model,
+                    version
+                }
+
+                subscriber.next({...downloaded, data: res});
+
+            })().catch(err => subscriber.error(err)).then(() => subscriber.complete());
+
+            return () => {
+                subs.forEach(sub => sub.unsubscribe());
+            }
+        });
     }
 
     public async oneClickDownloadModel(model: MSModel): Promise<void>{
@@ -104,13 +133,13 @@ export class LocalModelsManagerService {
 
         const fisrtVersion = versions.shift();
 
-        const downloaded = await this.downloadModel(model, fisrtVersion);
+        const downloaded = await lastValueFrom(this.downloadModel(model, fisrtVersion));
 
         for(const version of versions){
 
-            const modelDest = path.join(await this.getModelFolderPath(model.type, version), path.basename(downloaded));
+            const modelDest = path.join(await this.getModelFolderPath(model.type, version), path.basename(downloaded.data.path));
 
-            copyFileSync(downloaded, modelDest);
+            copyFileSync(downloaded.data.path, modelDest);
 
         }
 
@@ -133,7 +162,7 @@ export class LocalModelsManagerService {
         const progression: Progression<BsmLocalModel[]> = {
             total: 0,
             current: 0,
-            extra: null
+            data: null
         };
 
         return new Observable<Progression<BsmLocalModel[]>>(subscriber => {
@@ -149,7 +178,7 @@ export class LocalModelsManagerService {
                         path: modelPath,
                         fileName: path.basename(modelPath, MODEL_FILE_EXTENSIONS[type]),
                         model: await this.modelSaber.getModelByHash(hash),
-                        type, hash
+                        type, hash, version
                     }
 
                     progression.current++;
@@ -159,7 +188,7 @@ export class LocalModelsManagerService {
                     return localModel;
                 }));
 
-                progression.extra = models;
+                progression.data = models;
                 subscriber.next(progression);
 
             })().catch(e => subscriber.error(e)).finally(() => subscriber.complete());
@@ -167,11 +196,9 @@ export class LocalModelsManagerService {
 
     }
 
-    public exportModels(output: string, version?: BSVersion, models?: BsmLocalModel[]): Observable<ArchiveProgress>{
-        // TOTO NOT ASYNC
-        
+    public exportModels(output: string, version?: BSVersion, models?: BsmLocalModel[]): Observable<Progression>{
 
-        return new Observable<ArchiveProgress>(subscriber => {
+        return new Observable<Progression>(subscriber => {
 
             const archive = new Archive(output);
 
@@ -199,7 +226,7 @@ export class LocalModelsManagerService {
                 const progression: Progression = {
                     total: models.length,
                     current: 0,
-                    extra: null
+                    data: null
                 };
 
                 for(const model of models){
