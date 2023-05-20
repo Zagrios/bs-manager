@@ -4,7 +4,6 @@ import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import TitleBar from "renderer/components/title-bar/title-bar.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { IpcService } from "renderer/services/ipc.service";
-import { ModelDownloaderService } from "renderer/services/model-downloader.service";
 import { NotificationService } from "renderer/services/notification.service";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { ThemeService } from "renderer/services/theme.service";
@@ -12,16 +11,18 @@ import { ModelSaberService } from "renderer/services/thrird-partys/model-saber.s
 import { WindowManagerService } from "renderer/services/window-manager.service";
 import { MSModel } from "shared/models/models/model-saber.model";
 import defaultImage from '../../../../assets/images/default-version-img.jpg'
+import { ModelsDownloaderService } from "renderer/services/models-management/models-downloader.service";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export default function OneClickDownloadModel() {
 
-    const ipc = IpcService.getInstance();
-    const themeService = ThemeService.getInstance();
-    const modelSaber = ModelSaberService.getInstance();
-    const progress = ProgressBarService.getInstance();
-    const modelDownloader = ModelDownloaderService.getInstance();
-    const windows = WindowManagerService.getInstance();
-    const notification = NotificationService.getInstance();
+    const ipc = useService(IpcService)
+    const themeService = useService(ThemeService);
+    const modelSaber = useService(ModelSaberService)
+    const progress = useService(ProgressBarService)
+    const modelDownloader = useService(ModelsDownloaderService)
+    const windows = useService(WindowManagerService)
+    const notification = useService(NotificationService)
 
     const [model, setModel] = useState<MSModel>(null);
     const t = useTranslation();

@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable, Subscription, distinctUntilChanged, filter, lastValueFrom, map, shareReplay, startWith } from "rxjs";
+import { BehaviorSubject, Observable, Subscription, distinctUntilChanged, filter, lastValueFrom, map, shareReplay, startWith, timer } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 import { MSModel, MSModelType } from "shared/models/models/model-saber.model";
@@ -101,6 +101,20 @@ export class ModelsDownloaderService {
 
     public openDownloadModelsModal(version: BSVersion, type?: MSModelType, owned?: BsmLocalModel[]): Promise<ModalResponse<void>>{
         return this.modal.openModal(DownloadModelsModal, {version, type, owned});
+    }
+
+    public async oneClickInstallModel(model: MSModel): Promise<boolean>{
+
+        this.progress.showFake(0.04);
+
+        const res = await this.ipc.send("one-click-install-model", {args: model});
+
+        this.progress.complete();
+        await timer(500).toPromise();
+        this.progress.hide(true);
+
+        return res.success;
+
     }
 
 }
