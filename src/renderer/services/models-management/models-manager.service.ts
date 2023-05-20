@@ -139,6 +139,7 @@ export class ModelsManagerService {
             const types = Array.from(new Set(models.map(m => m.type)));
 
             const linked = await (async () => {
+                if(!version){ return true; }
                 for(const type of types){
                     if(!(await this.isModelsLinked(version, type))){ continue; }
                     return true;

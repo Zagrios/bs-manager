@@ -27,10 +27,11 @@ type Props = {
     version?: BSVersion,
     type: MSModelType
     search?: string,
-    active: boolean
+    active: boolean,
+    downloadModels?: () => void
 }
 
-export const ModelsGrid = forwardRef(({className, version, type, search, active}: Props, forwardRef) => {
+export const ModelsGrid = forwardRef(({className, version, type, search, active, downloadModels}: Props, forwardRef) => {
 
     const modelsManager = useService(ModelsManagerService);
     const modelsDownloader = useService(ModelsDownloaderService);
@@ -80,6 +81,11 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active}
         else { 
             loadModels(); 
         }
+    }, [version, type]);
+
+    useOnUpdate(() => {
+
+        if(!active){ return; }
 
         const onLinkStateChangeCb = (action: VersionLinkerAction) => {
             if(!equal(version, action.version) || !action.relativeFolder.includes(MODEL_TYPE_FOLDERS[type])){ return; }
@@ -100,7 +106,7 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active}
             sub.unsubscribe();
         }
 
-    }, [version, type]);
+    }, [version, type, active]);
 
     const loadModels = () => {
         const modelsObs$ = modelsManager.$getModels(type, version);
@@ -170,7 +176,7 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active}
                 <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1 text-gray-800 dark:text-gray-200">
                     <BsmImage className="h-32" image={BeatConflict}/>
                     <span className="font-bold">{t("models.panel.grid.no-models")}</span>
-                    <BsmButton className="font-bold rounded-md p-2" text="models.panel.grid.download-models" typeColor="primary" withBar={false} onClick={e => {e.preventDefault();}}/>
+                    <BsmButton className="font-bold rounded-md p-2" text="models.panel.grid.download-models" typeColor="primary" withBar={false} onClick={e => {e.preventDefault(); downloadModels?.()}}/>
                 </div>
             )
         }

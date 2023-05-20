@@ -14,7 +14,7 @@ import { NotificationService } from "renderer/services/notification.service";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 
-export function ModelsPanel({version, isActive, goToMods}: {version?: BSVersion, isActive: boolean, goToMods: () => void}) {
+export function ModelsPanel({version, isActive, goToMods}: {version?: BSVersion, isActive: boolean, goToMods?: () => void}) {
     
     const modelsManager = useService(ModelsManagerService);
     const modelDownloader = useService(ModelsDownloaderService);
@@ -33,12 +33,14 @@ export function ModelsPanel({version, isActive, goToMods}: {version?: BSVersion,
     const [search, setSearch] = useState<string>("");
 
     useOnUpdate(() => {
-        if(!isActive){ return; }
-        if(config.get("prevented-for-mods-models")){ return; }
-        config.set("prevented-for-mods-models", true);
-        notification.notifyWarning({ title: "models.notifications.prevent-for-mods.title", desc: "models.notifications.prevent-for-mods.desc", actions: [{id: "0", title: "models.notifications.prevent-for-mods.go-to-mods"}], duration: 9_000 }).then(res => {
-            if(res !== "0"){ return; }
-            goToMods();
+        if(!isActive || !goToMods){ return; }
+        if(config.get("not-remind-mods-models")){ return; }
+        notification.notifyWarning({ title: "models.notifications.prevent-for-mods.title", desc: "models.notifications.prevent-for-mods.desc", actions: [
+            {id: "0", title: "models.notifications.prevent-for-mods.go-to-mods"},
+            {id: "1", title: "models.notifications.prevent-for-mods.not-remind", cancel: true}
+        ], duration: 12_000 }).then(res => {
+            if(res === "0"){ return goToMods(); }
+            if(res === "1"){ config.set("not-remind-mods-models", true); }
         });
     }, [isActive]);
 
@@ -63,8 +65,8 @@ export function ModelsPanel({version, isActive, goToMods}: {version?: BSVersion,
     ];
 
     return (
-        <div ref={ref} className="w-full h-full flex flex-col items-center justify-center">
-            <div className="w-full shrink-0 flex h-9 justify-center px-40 gap-2 mb-3 text-main-color-1 dark:text-white">
+        <div ref={ref} className="w-full h-full flex flex-col items-center justify-center gap-4">
+            <div className="w-full shrink-0 flex h-9 justify-center px-40 gap-2 text-main-color-1 dark:text-white">
                 <BsmButton className="flex items-center justify-center w-fit rounded-full px-2 py-1 font-bold" icon="add" text="misc.add" typeColor="primary" withBar={false} onClick={e => {e.preventDefault(); openDownloadModal()}}/>
                 <div className="h-full rounded-full bg-light-main-color-2 dark:bg-main-color-2 grow p-[6px]">
                     <input type="text" className="h-full w-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2" placeholder={t("models.panel.actions.search")} onChange={e => setSearch(e.target.value)}  tabIndex={-1}/>
@@ -75,10 +77,10 @@ export function ModelsPanel({version, isActive, goToMods}: {version?: BSVersion,
                 <ModelsTabsNavbar className="flex-shrink-0" version={version} tabIndex={currentTabIndex} onTabChange={(index, tab) => {setModelTypeTab(() => tab.extra), setCurrentTabIndex(() => index)}}/>
                 
                 <div className="flex-grow h-full flex flex-col transition-all duration-300" style={{translate: `0 ${0 - currentTabIndex * 100}%`}}>
-                    <ModelsGrid ref={modelsGridRefs[0]} version={version} type={MSModelType.Avatar} active={isActive && modelTypeTab === MSModelType.Avatar} search={search}/>
-                    <ModelsGrid ref={modelsGridRefs[1]} version={version} type={MSModelType.Saber} active={isActive && modelTypeTab === MSModelType.Saber} search={search}/>
-                    <ModelsGrid ref={modelsGridRefs[2]} version={version} type={MSModelType.Platfrom} active={isActive && modelTypeTab === MSModelType.Platfrom} search={search}/>
-                    <ModelsGrid ref={modelsGridRefs[3]} version={version} type={MSModelType.Bloq} active={isActive && modelTypeTab === MSModelType.Bloq} search={search}/>
+                    <ModelsGrid ref={modelsGridRefs[0]} version={version} type={MSModelType.Avatar} active={isActive && modelTypeTab === MSModelType.Avatar} search={search} downloadModels={openDownloadModal}/>
+                    <ModelsGrid ref={modelsGridRefs[1]} version={version} type={MSModelType.Saber} active={isActive && modelTypeTab === MSModelType.Saber} search={search} downloadModels={openDownloadModal}/>
+                    <ModelsGrid ref={modelsGridRefs[2]} version={version} type={MSModelType.Platfrom} active={isActive && modelTypeTab === MSModelType.Platfrom} search={search} downloadModels={openDownloadModal}/>
+                    <ModelsGrid ref={modelsGridRefs[3]} version={version} type={MSModelType.Bloq} active={isActive && modelTypeTab === MSModelType.Bloq} search={search} downloadModels={openDownloadModal}/>
                 </div>
             </div>
         </div>

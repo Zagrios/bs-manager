@@ -43,6 +43,8 @@ export function MapsPlaylistsPanel({version}: Props) {
     const mapsRef = useRef<any>();
 
     useEffect(() => {
+        if(!version){ return; }
+        
         loadMapIsLinked();
 
         const sub = mapsService.$mapsLinkingPending(version).pipe(debounceTime(50)).subscribe(setLinkingPending);
@@ -145,8 +147,8 @@ export function MapsPlaylistsPanel({version}: Props) {
     })()
 
     return (
-        <div className="w-full h-full flex flex-col items-center justify-center">
-            <nav className="w-full shrink-0 flex h-9 justify-center px-40 gap-2 mb-3 text-main-color-1 dark:text-white">
+        <div className="w-full h-full flex flex-col items-center justify-center gap-4">
+            <nav className="w-full shrink-0 flex h-9 justify-center px-40 gap-2 text-main-color-1 dark:text-white">
                 <div className="h-full rounded-full bg-light-main-color-2 dark:bg-main-color-2 grow p-[6px]">
                     <input type="text" className="h-full w-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={tabIndex === 0 ? mapSearch : playlistSearch} onChange={e => handleSearch(e.target.value)} tabIndex={-1}/>
                 </div>

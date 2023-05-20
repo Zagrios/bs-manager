@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import { ThemeService } from "../services/theme.service";
 import { NotificationOverlay } from "../components/notification/notification-overlay.component";
 import { PageStateService } from "../services/page-state.service";
-import { MapsPage } from "../pages/maps-page.component";
+import { SharedContentsPage } from "../pages/shared-contents-page.component";
 import "tailwindcss/tailwind.css";
 import { BsmIframeView } from "../components/shared/iframe-view.component";
 import 'tippy.js/dist/tippy.css';
@@ -109,7 +109,7 @@ export default function App() {
         <div className="bg-light-main-color-2 dark:bg-main-color-2 relative rounded-tl-lg grow overflow-hidden max-w-full">
           <Routes>
             <Route path="/bs-version/:versionNumber" element={<VersionViewer/>}/>
-            <Route path="/maps" element={<MapsPage/>}/>
+            <Route path="/shared" element={<SharedContentsPage/>}/>
             <Route path="/settings" element={<SettingsPage/>}/>
             <Route path="*" element={<AvailableVersionsList/>}/>
           </Routes>

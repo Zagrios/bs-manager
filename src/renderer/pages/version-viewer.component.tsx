@@ -76,8 +76,8 @@ export function VersionViewer() {
     <>
       <BsmImage className="absolute w-full h-full top-0 left-0 object-cover" image={state.ReleaseImg || DefautVersionImage} errorImage={DefautVersionImage}/>
       <div className="relative flex items-center flex-col w-full h-full text-gray-200 backdrop-blur-lg">
-        <TabNavBar className='my-3' tabIndex={currentTabIndex} tabsText={["misc.launch", "misc.maps", "Models", "misc.mods"]} onTabChange={(i : number) => setCurrentTabIndex(i)}/>
-        <div className='mt-2 w-full min-h-0 grow flex transition-transform duration-300' style={{transform: `translate(${-(currentTabIndex * 100)}%, 0)`}}>
+        <TabNavBar className='my-4' tabIndex={currentTabIndex} tabsText={["misc.launch", "misc.maps", "misc.models", "misc.mods"]} onTabChange={(i : number) => setCurrentTabIndex(i)}/>
+        <div className='w-full min-h-0 grow flex transition-transform duration-300' style={{transform: `translate(${-(currentTabIndex * 100)}%, 0)`}}>
           <LaunchSlide version={state}/>
           <div className="w-full shrink-0 px-3 pb-3 flex flex-col items-center">
             <MapsPlaylistsPanel version={state}/>
@@ -88,7 +88,7 @@ export function VersionViewer() {
           <ModsSlide version={state} onDisclamerDecline={handleModsDisclaimerDecline}/>
         </div>
       </div>
-      <BsmDropdownButton className='absolute top-5 right-5 h-9 w-9 bg-light-main-color-2 dark:bg-main-color-2 rounded-md' items={[
+      <BsmDropdownButton className='absolute top-3 right-4 h-9 w-9 bg-light-main-color-2 dark:bg-main-color-2 rounded-md' items={[
           {text: "pages.version-viewer.dropdown.open-folder", icon: "folder", onClick: openFolder},
           ((!state.steam && !state.oculus) && {text: "pages.version-viewer.dropdown.verify-files", icon: "task", onClick: verifyFiles}),
           ((!state.steam && !state.oculus) && {text: "pages.version-viewer.dropdown.edit", icon: "edit", onClick: edit}),

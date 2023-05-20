@@ -16,7 +16,11 @@
     },
     "nav-bar":{
         "add-version": "Add a version",
-        "settings": "Settings"
+        "settings": "Settings",
+        "shared": {
+            "text": "Shared",
+            "tooltip": "Shared contents"
+        }
     },
     "pages": {
         "shared-maps":{
@@ -674,7 +678,6 @@
         }
     },
     "models":{
-        "models": "Models",
         "types": {
             "singular": {
                 "avatar": "avatar",
@@ -825,7 +828,8 @@
             "prevent-for-mods": {
                 "title": "Required mods",
                 "desc": "Make sure you've installed the necessary mods to use models in BeatSaber",
-                "go-to-mods": "Go to mods"
+                "go-to-mods": "Go to mods",
+                "not-remind": "Do not remind me"
             },
             "export-success": {
                 "title": "Export completed 🎉"

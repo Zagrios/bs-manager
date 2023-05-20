@@ -1,5 +1,5 @@
 import { LinkOptions, UnlinkOptions } from "main/services/folder-linker.service";
-import { map, distinctUntilChanged, filter, mergeMap, share } from "rxjs/operators";
+import { map, distinctUntilChanged, filter, mergeMap, share, shareReplay } from "rxjs/operators";
 import { BehaviorSubject, Observable } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { IpcService } from "./ipc.service";
@@ -141,7 +141,7 @@ export class VersionFolderLinkerService{
     public $isVersionFolderPending(version: BSVersion, relativeFolder: string): Observable<boolean>{
         return this.queue$.pipe(mergeMap(async queue => {
             return queue.some(q => q.relativeFolder.includes(relativeFolder) && equal(q.version, version));
-        }), distinctUntilChanged(), share());
+        }), distinctUntilChanged(), shareReplay(1));
     }
 
     public get currentAction$(): Observable<VersionLinkerAction>{

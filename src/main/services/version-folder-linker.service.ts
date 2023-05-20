@@ -80,6 +80,7 @@ export class VersionFolderLinkerService {
     }
 
     public async isFolderLinked(version: BSVersion, relativeFolder: string): Promise<boolean>{
+        if(!version){ return Promise.reject("no version provided") }
         const versionPath = await this.localVersion.getVersionPath(version);
         const folderPath = this.relativeToFullPath(versionPath, relativeFolder);
         return this.folderLinker.isFolderSymlink(folderPath);

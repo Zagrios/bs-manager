@@ -50,7 +50,7 @@ function ModelTab({version, modelType, active, onClick}: TabProps){
     const [linkBtnDisabled, setLinkBtnDisabled] = useState(false);
 
     useOnUpdate(() => {
-        if(!version){ return null; }
+        if(!version){ return; }
 
         const sub = modelsManager.$modelsLinkingPending(version, modelType).subscribe(async (pending) => {
             if(pending){ return setLinkBtnDisabled(() => pending); }
