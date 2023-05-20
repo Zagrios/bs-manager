@@ -20,6 +20,7 @@ import { VersionLinkerAction } from "renderer/services/version-folder-linker.ser
 import { MODEL_TYPE_FOLDERS } from "shared/models/models/constants";
 import { useService } from "renderer/hooks/use-service.hook";
 import { ModelsDownloaderService } from "renderer/services/models-management/models-downloader.service";
+import { useTranslation } from "renderer/hooks/use-translation.hook";
 
 type Props = {
     className?: string,
@@ -33,6 +34,8 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active}
 
     const modelsManager = useService(ModelsManagerService);
     const modelsDownloader = useService(ModelsDownloaderService);
+
+    const t = useTranslation();
 
     const ref = useRef();
 
@@ -156,7 +159,7 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active}
             return (
                 <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1 text-gray-800 dark:text-gray-200">
                     <BsmImage className="w-32 h-32 spin-loading" image={BeatWaitingImg}/>
-                    <span className="font-bold">Chargement des models...</span> {/** TODO TRANSLATE **/}
+                    <span className="font-bold">{t("models.panel.grid.loading")}</span>
                     <TextProgressBar value$={progress$}/>
                 </div>
             )
@@ -166,8 +169,8 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active}
             return (
                 <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1 text-gray-800 dark:text-gray-200">
                     <BsmImage className="h-32" image={BeatConflict}/>
-                    <span className="font-bold">Aucun modelès</span> {/** TODO TRANSLATE **/}
-                    <BsmButton className="font-bold rounded-md p-2" text="Télécharger des modèles" typeColor="primary" withBar={false} onClick={e => {e.preventDefault();}}/>
+                    <span className="font-bold">{t("models.panel.grid.no-models")}</span>
+                    <BsmButton className="font-bold rounded-md p-2" text="models.panel.grid.download-models" typeColor="primary" withBar={false} onClick={e => {e.preventDefault();}}/>
                 </div>
             )
         }

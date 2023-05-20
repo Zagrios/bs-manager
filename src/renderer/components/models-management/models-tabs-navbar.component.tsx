@@ -8,6 +8,8 @@ import { BsContentNavBar, BsContentNavBarTab } from "../shared/bs-content-nav-ba
 import { useConstant } from "renderer/hooks/use-constant.hook"
 import { BsmIcon } from "../svgs/bsm-icon.component"
 import { MODEL_TYPES } from "../../../shared/models/models/constants";
+import { useService } from "renderer/hooks/use-service.hook"
+import { useTranslation } from "renderer/hooks/use-translation.hook"
 
 type Props = {
     className?: string,
@@ -20,7 +22,7 @@ export function ModelsTabsNavbar({className, version, tabIndex, onTabChange}: Pr
 
     const tabs = useConstant<BsContentNavBarTab<MSModelType>[]>(() => {
         return MODEL_TYPES.map(type => ({
-            text: type, // <= TODO: Translate
+            text: type,
             extra: type
         }))
     }) 
@@ -40,7 +42,9 @@ type TabProps = {
 
 function ModelTab({version, modelType, active, onClick}: TabProps){
 
-    const modelsManager = useConstant(() => ModelsManagerService.getInstance());
+    const modelsManager = useService(ModelsManagerService);
+
+    const t = useTranslation();
 
     const [modelsAreLinked, setModelsAreLinked] = useState(false);
     const [linkBtnDisabled, setLinkBtnDisabled] = useState(false);
@@ -73,7 +77,7 @@ function ModelTab({version, modelType, active, onClick}: TabProps){
         <li className={`relative w-full cursor-pointer flex-1 text-center text-lg font-bold flex justify-center items-center content-center px-7 dim-on-hover ${active ? "dim" : ""}`} onClick={onClick}>
             <div className="flex flex-col gap-0.5 justify-start items-center text-main-color-1 dark:text-gray-200">
                 <BsmIcon icon={modelType} className="w-7 h-7"/>
-                <span className=" font-thin italic text-xs">{modelType}</span>
+                <span className=" font-thin italic text-xs">{t(`models.types.plural.${modelType}`)}</span>
             </div>
             <div className="flex items-center absolute top-1.5 left-1.5">
                 {!!version && (
@@ -85,7 +89,7 @@ function ModelTab({version, modelType, active, onClick}: TabProps){
                         initial={{rotate: 0}} 
                         className="block w-6 h-6 aspect-square blur-0 cursor-pointer hover:brightness-75" 
                         linked={modelsAreLinked}
-                        title={"aaa"} //TODO ADD TRANSLATION
+                        title={modelsAreLinked ? "models.panel.actions.unlink-models" : "models.panel.actions.link-models"}
                         onClick={onClickLink}
                     />
                 )}

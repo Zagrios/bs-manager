@@ -118,12 +118,11 @@ export class ModelsManagerService {
 
         this.progressBar.show(exportProgress$, true);
 
-        lastValueFrom(exportProgress$).catch(e => {
-            this.notifications.notifyError({title: "notifications.types.error"});
-        }).then(() => {
-            // TODO TRANSLATE
-            this.notifications.notifySuccess({title: "TODO TRANSLATE SUCCESS", duration: 3000});
-            this.progressBar.complete();
+        lastValueFrom(exportProgress$).then(() => {
+            this.notifications.notifySuccess({title: "models.notifications.export-success.title", duration: 3000});
+        }).catch(e => {
+            this.notifications.notifyError({title: "notifications.types.error", desc: "notifications.common.msg.error-occurred", duration: 3000});
+        }).finally(() => {
             this.progressBar.hide(true);
         })
 
@@ -158,8 +157,11 @@ export class ModelsManagerService {
         if(showProgressBar){ this.progressBar.show(progress$); }
 
         return lastValueFrom(progress$)
-            .catch(() => false)
             .then(() => true)
+            .catch(() => {
+                this.notifications.notifyError({title: "notifications.types.error", desc: "notifications.common.msg.error-occurred", duration: 3000});
+                return false; 
+            })
             .finally(() => this.progressBar.hide(true));
 
     }

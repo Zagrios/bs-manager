@@ -23,13 +23,16 @@ export const DeleteModelsModal: ModalComponent<void, {models: BsmLocalModel[], l
 
     const isMultiple = data.models.length > 1;
 
+    const title = useConstant(() => isMultiple ? t("models.modals.delete-models.title") : t("models.modals.delete-model.title"));
+    const desc = useConstant(() => isMultiple ? t("models.modals.delete-models.desc", {nb: `${data.models.length}`}) : t("models.modals.delete-model.desc", {modelName: data.models[0].model?.name ?? data.models[0].fileName}));
+    const linkedAnnotation = useConstant(() => data.linked ? (isMultiple ? t("models.modals.delete-models.linked-annotation") : t("models.modals.delete-model.linked-annotation")) : undefined);
+
     return (
-        // TODO TRANSLATIONS
         <form className="text-gray-800 dark:text-gray-200">
-            <h1 className="text-3xl uppercase tracking-wide w-full text-center">{isMultiple ? "Supprimer les modèles" : "Supprimer le modèle"}</h1>
+            <h1 className="text-3xl uppercase tracking-wide w-full text-center">{title}</h1>
             <BsmImage className="mx-auto h-24" image={BeatConflict}/>
-            <p className="max-w-sm w-full">{isMultiple ? `Es-tu sur de vouloir supprimer les ${data.models.length} modèles ?` : `Es-tu sur de vouloir supprimer le modèle ${data.models[0].model?.name ?? data.models[0].fileName}`}</p>
-            {data.linked && <p className="text-sm italic mt-2 cursor-help w-fit" title="TODO TITLE">{isMultiple ? "Ces modèles seront égalements supprimées des versions utilisant les maps partagées" : "Ce modèle sera également supprimée des versions utilisant les maps partagées"}</p>}
+            <p className="max-w-sm w-full">{desc}</p>
+            {data.linked && <p className="text-sm italic mt-2 w-fit">{linkedAnnotation}</p>}
             {!isMultiple && (
                 <div className="flex items-center relative py-2 gap-1 mt-1">
                     <BsmCheckbox className="h-5 relative z-[1]" checked={remember} onChange={(val) => setRemember(val)}/>

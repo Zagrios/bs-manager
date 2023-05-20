@@ -12,6 +12,7 @@ import { ModelsDownloaderService } from "renderer/services/models-management/mod
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { NotificationService } from "renderer/services/notification.service";
 import { ConfigurationService } from "renderer/services/configuration.service";
+import { useTranslation } from "renderer/hooks/use-translation.hook";
 
 export function ModelsPanel({version, isActive, goToMods}: {version?: BSVersion, isActive: boolean, goToMods: () => void}) {
     
@@ -19,6 +20,8 @@ export function ModelsPanel({version, isActive, goToMods}: {version?: BSVersion,
     const modelDownloader = useService(ModelsDownloaderService);
     const notification = useService(NotificationService);
     const config = useService(ConfigurationService);
+
+    const t = useTranslation();
 
     const ref = useRef();
 
@@ -31,9 +34,9 @@ export function ModelsPanel({version, isActive, goToMods}: {version?: BSVersion,
 
     useOnUpdate(() => {
         if(!isActive){ return; }
-        //if(config.get("prevented-for-mods-models")){ return; }
+        if(config.get("prevented-for-mods-models")){ return; }
         config.set("prevented-for-mods-models", true);
-        notification.notifyWarning({ title: "Mods needed", desc: "Be sure to have the mods installed to use models in BeatSaber", actions: [{id: "0", title: "Go to mods"}], duration: 9_000 }).then(res => {
+        notification.notifyWarning({ title: "models.notifications.prevent-for-mods.title", desc: "models.notifications.prevent-for-mods.desc", actions: [{id: "0", title: "models.notifications.prevent-for-mods.go-to-mods"}], duration: 9_000 }).then(res => {
             if(res !== "0"){ return; }
             goToMods();
         });
@@ -55,8 +58,8 @@ export function ModelsPanel({version, isActive, goToMods}: {version?: BSVersion,
     }
 
     const threeDotsItems: DropDownItem[] = [
-        {text: "TODO TRANSLATE EXPORT", onClick: exportModels, icon: "export"},
-        {text: "TODO TRANSLATE DELETE", onClick: deleteModels, icon: "trash"},
+        {text: "models.panel.actions.drop-down.export", onClick: exportModels, icon: "export"},
+        {text: "models.panel.actions.drop-down.delete", onClick: deleteModels, icon: "trash"},
     ];
 
     return (
@@ -64,7 +67,7 @@ export function ModelsPanel({version, isActive, goToMods}: {version?: BSVersion,
             <div className="w-full shrink-0 flex h-9 justify-center px-40 gap-2 mb-3 text-main-color-1 dark:text-white">
                 <BsmButton className="flex items-center justify-center w-fit rounded-full px-2 py-1 font-bold" icon="add" text="misc.add" typeColor="primary" withBar={false} onClick={e => {e.preventDefault(); openDownloadModal()}}/>
                 <div className="h-full rounded-full bg-light-main-color-2 dark:bg-main-color-2 grow p-[6px]">
-                    <input type="text" className="h-full w-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2" placeholder={"TODO TRANSLATE"} onChange={e => setSearch(e.target.value)}  tabIndex={-1}/>
+                    <input type="text" className="h-full w-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2" placeholder={t("models.panel.actions.search")} onChange={e => setSearch(e.target.value)}  tabIndex={-1}/>
                 </div>
                 <BsmDropdownButton items={threeDotsItems} className="h-full flex aspect-square relative rounded-full z-[1] bg-light-main-color-1 dark:bg-main-color-3" buttonClassName="rounded-full h-full w-full p-[6px]" icon="three-dots" withBar={false} menuTranslationY="6px" align="center"/>
             </div>

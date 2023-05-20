@@ -15,6 +15,7 @@ import { BsmIconType } from "../svgs/bsm-icon.component";
 import { BsmButton } from "../shared/bsm-button.component";
 import { BsmBasicSpinner } from "../shared/bsm-basic-spinner/bsm-basic-spinner.component";
 import { isValidUrl } from "shared/helpers/url.helpers";
+import { useTranslation } from "renderer/hooks/use-translation.hook";
 
 type Props<T> = {
     selected?: boolean,
@@ -29,6 +30,7 @@ type Props<T> = {
 
 function modelItem<T = unknown>(props: Props<T>) {
 
+    const t = useTranslation();
     const color = useThemeColor("first-color");
     const [hovered, setHovered] = useState(false);
     const [idContentCopied, setIdContentCopied] = useState<string>(null);
@@ -59,19 +61,19 @@ function modelItem<T = unknown>(props: Props<T>) {
         return [...new Set(props.tags)];
     })();
 
-    const actionButtons = (): {text: string, icon: BsmIconType, action: () => void, iconColor?: string}[] => {
-        const buttons: {text: string, icon: BsmIconType, action: () => void, iconColor?: string}[]  = [];
+    const actionButtons = (): {icon: BsmIconType, action: () => void, iconColor?: string}[] => {
+        const buttons: {icon: BsmIconType, action: () => void, iconColor?: string}[]  = [];
         
         if(props.onDownload && !props.onCancelDownload){
-            buttons.push({ text: "Download", icon: "download", action: () => props.onDownload(props.callbackValue) }); // TODO TRANSLATE
+            buttons.push({ icon: "download", action: () => props.onDownload(props.callbackValue) });
         }
 
         if(props.onDelete){
-            buttons.push({ text: "Delete", icon: "trash", action: () => props.onDelete(props.callbackValue) }); // TODO TRANSLATE
+            buttons.push({ icon: "trash", action: () => props.onDelete(props.callbackValue) });
         }
 
         if(props.onCancelDownload){
-            buttons.push({ text: "Cancel download", icon: "cross", action: () => props.onCancelDownload(props.callbackValue), iconColor: "red" }); // TODO TRANSLATE
+            buttons.push({ icon: "cross", action: () => props.onCancelDownload(props.callbackValue), iconColor: "red" });
         }
 
         return buttons;
@@ -86,7 +88,6 @@ function modelItem<T = unknown>(props: Props<T>) {
     }
 
     return (
-        // TODO TRANSLATE ALL TEXT
         <motion.li className={`relative flex-grow min-w-[14rem] h-56 cursor-pointer ${props.className ?? ""}`} onHoverStart={() => setHovered(() => true)} onHoverEnd={() => setHovered(() => false)} onClick={props.onClick}>
             <GlowEffect visible={props.selected || hovered}/>
             <div className="absolute top-0 left-0 w-full h-full rounded-lg overflow-hidden blur-none bg-black shadow-sm shadow-black">
@@ -108,17 +109,17 @@ function modelItem<T = unknown>(props: Props<T>) {
                             <li key={tag} className="inline-block mr-1 text-xs bg-white text-black px-1 rounded-full p-0.5">{tag}</li>
                         ))}
                     </ul>
-                    <Tippy placement="top" content={idContentCopied === "hash" ? "Copied!" : "Copy hash"} followCursor="horizontal" plugins={[followCursor]} hideOnClick={false}>
+                    <Tippy placement="top" content={idContentCopied === "hash" ? t("misc.copied") : t("misc.copy")} followCursor="horizontal" plugins={[followCursor]} hideOnClick={false}>
                         <span className="mt-0.5 cursor-copy block w-full max-w-fit overflow-hidden whitespace-nowrap text-ellipsis bg-main-color-1 rounded-md p-1 uppercase text-xs" onClick={() => copyContent(`${props.hash}`, 'hash')}>{props.hash}</span>
                     </Tippy>
                         <div className="flex gap-1">
                             {props.id && (
-                                <Tippy placement="top" content={idContentCopied === "id" ? "Copied!" : "Copy id"} followCursor="horizontal" plugins={[followCursor]} hideOnClick={false}>
+                                <Tippy placement="top" content={idContentCopied === "id" ? t("misc.copied") : t("misc.copy")} followCursor="horizontal" plugins={[followCursor]} hideOnClick={false}>
                                     <span className="cursor-copy w-fit shrink-0 max-w-full overflow-hidden whitespace-nowrap text-ellipsis bg-main-color-1 rounded-md p-1 uppercase text-xs" onClick={() => copyContent(`${props.id}`, 'id')}>{props.id}</span>
                                 </Tippy>
                             )}
                             {props.path && (
-                                <Tippy placement="top" content={idContentCopied === "path" ? "Copied!" : "Copy path"} followCursor="horizontal" plugins={[followCursor]} hideOnClick={false}>
+                                <Tippy placement="top" content={idContentCopied === "path" ? t("misc.copied") : t("misc.copy")} followCursor="horizontal" plugins={[followCursor]} hideOnClick={false}>
                                     <span className="cursor-copy w-fit max-w-full overflow-hidden whitespace-nowrap text-ellipsis bg-main-color-1 rounded-md p-1 text-xs" onClick={() => copyContent(`${props.path}`, 'path')}>{props.path}</span>
                                 </Tippy>
                             )}

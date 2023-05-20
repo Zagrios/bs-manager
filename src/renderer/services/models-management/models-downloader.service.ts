@@ -100,7 +100,7 @@ export class ModelsDownloaderService {
     }
 
     public openDownloadModelsModal(version: BSVersion, type?: MSModelType, owned?: BsmLocalModel[]): Promise<ModalResponse<void>>{
-        return this.modal.openModal(DownloadModelsModal, {version, type, owned}); // TODO MODELS
+        return this.modal.openModal(DownloadModelsModal, {version, type, owned});
     }
 
 }

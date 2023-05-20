@@ -598,8 +598,148 @@
                 "unlink-folder": "Ordner Verknüpfung Aufheben",
                 "link-all": "Alle verlinken"
             }
+        }
+    },
+    "maps": {
+        "map-filter-panel": {
+            "duration": "Länge",
+            "tags": "Stichworte",
+            "specificities": "Allgemein",
+            "requirements": "Anforderungen"
         },
-        "models": {
+        "map-types": {
+            "accuracy": "Präzision",
+            "balanced": "Ausgeglichen",
+            "challenge": "Herausforderung",
+            "dancestyle": "Tanz",
+            "fitness": "Fitness",
+            "speed": "Geschwindigkeit",
+            "tech": "Tech"
+        },
+        "map-styles": {
+            "dance": "Tanz",
+            "swing": "Swing",
+            "nightcore": "Nightcore",
+            "folk": "Folk",
+            "family": "Familie",
+            "ambient": "umgebung",
+            "funk": "Funk",
+            "jazz": "Jazz",
+            "soul": "Soul",
+            "speedcore": "Speedcore",
+            "punk": "Punk",
+            "rb": "R&B",
+            "holiday": "Urlaub",
+            "vocaloid": "Vokaloid",
+            "jrock": "J-Rock",
+            "trance": "Trance",
+            "drumbass": "Basstrommel",
+            "comedy": "Komödie",
+            "instrumental": "Instrumental",
+            "hardcore": "Hardcore",
+            "kpop": "K-Pop",
+            "indie": "Indie",
+            "techno": "Techno",
+            "house": "House",
+            "game": "Videospiele",
+            "film": "Filme",
+            "alt": "Alternativ",
+            "dubstep": "Dubstep",
+            "metal": "Metal",
+            "anime": "Anime",
+            "hiphop": "HipHop",
+            "jpop": "J-Pop",
+            "rock": "Rock",
+            "pop": "Pop",
+            "electronic": "Elektronisch",
+            "classical-orchestral": "Klassisch & Orchestra"
+        },
+        "map-specificities": {
+            "automapper": "KI",
+            "ranked": "ranked",
+            "curated": "curated",
+            "verified": "verifiziert",
+            "fullSpread": "full spread"
+        },
+        "difficulties": {
+            "Easy": "einfach",
+            "Normal": "normal",
+            "Hard": "hard",
+            "Expert": "expert",
+            "ExpertPlus": "expert+"
+        },
+        "map-item": {
+            "by": "Von {songAutor}",
+            "mapped-by": "Gemapped von"
+        }
+    },
+    "models":{
+        "models": "Modelle",
+        "types": {
+            "singular": {
+                "avatar": "Avatar",
+                "saber": "Säbel",
+                "platform": "Plattform",
+                "bloq": "Block"
+            },
+            "plural": {
+                "avatar": "Avatare",
+                "saber": "Säbel",
+                "platform": "Plattformen",
+                "bloq": "Blöcke"
+            }
+        },
+        "sorts": {
+            "name": "Name",
+            "date": "Datum",
+            "author": "Autor"
+        },
+        "panel": {
+            "actions": {
+                "search": "Ein Modell suchen",
+                "drop-down": {
+                    "delete": "Modelle löschen",
+                    "export": "Modelle exportieren"
+                },
+                "link-models": "Modelle verlinken",
+                "unlink-models": "Modelle trennen"
+            },
+            "grid":{
+                "loading": "Modelle laden...",
+                "no-models": "Keine Modelle",
+                "download-models": "Modelle herunterladen"
+            }
+        },
+        "modals": {
+            "delete-model" :{
+                "title": "Das Modell löschen",
+                "desc": "Sind Sie sicher, dass Sie das Modell {modelName} löschen möchten?",
+                "linked-annotation": "Dieses Modell wird aus allen verlinkten Versionen entfernt."
+            },
+            "delete-models": {
+                "title": "Modelle löschen",
+                "desc": "Sind Sie sicher, dass Sie die {nb} Modelle löschen möchten?",
+                "linked-annotation": "Diese Modelle werden aus allen verlinkten Versionen entfernt."
+            },
+            "download-models": {
+                "search-btn": "Suche",
+                "search-placeholder": "Ein Modell suchen",
+                "search-tips": {
+                    "header": {
+                        "tag": "Tag",
+                        "desc": "Beschreibung"
+                    },
+                    "author-desc": "Nur Modelle vom angegebenen Autor anzeigen.",
+                    "hash-desc": "Nur Modelle mit dem angegebenen Hash anzeigen.",
+                    "tag-desc": "Nur Modelle mit dem angegebenen Tag anzeigen.",
+                    "name-desc": "Nur Modelle mit dem angegebenen Namen anzeigen.",
+                    "discordid-desc": "Nur Modelle vom angegebenen Discord-Benutzer anzeigen.",
+                    "status-desc": "Nur Modelle mit dem angegebenen Status anzeigen. (nur Profil, und nur für den Autor)"
+                },
+                "no-models": "Keine Modelle gefunden.",
+                "no-internet": "Keine Internetverbindung.",
+                "error-occured": "Ein Fehler ist aufgetreten, versuche es später erneut."
+            },
             "link-models": {
                 "avatar": {
                     "title": "Avatare verbinden",
@@ -680,79 +820,16 @@
                     "valid-btn": "Bloqs trennen"
                 }
             }
-        }
-    },
-    "maps": {
-        "map-filter-panel": {
-            "duration": "Länge",
-            "tags": "Stichworte",
-            "specificities": "Allgemein",
-            "requirements": "Anforderungen"
         },
-        "map-types": {
-            "accuracy": "Präzision",
-            "balanced": "Ausgeglichen",
-            "challenge": "Herausforderung",
-            "dancestyle": "Tanz",
-            "fitness": "Fitness",
-            "speed": "Geschwindigkeit",
-            "tech": "Tech"
-        },
-        "map-styles": {
-            "dance": "Tanz",
-            "swing": "Swing",
-            "nightcore": "Nightcore",
-            "folk": "Folk",
-            "family": "Familie",
-            "ambient": "umgebung",
-            "funk": "Funk",
-            "jazz": "Jazz",
-            "soul": "Soul",
-            "speedcore": "Speedcore",
-            "punk": "Punk",
-            "rb": "R&B",
-            "holiday": "Urlaub",
-            "vocaloid": "Vokaloid",
-            "jrock": "J-Rock",
-            "trance": "Trance",
-            "drumbass": "Basstrommel",
-            "comedy": "Komödie",
-            "instrumental": "Instrumental",
-            "hardcore": "Hardcore",
-            "kpop": "K-Pop",
-            "indie": "Indie",
-            "techno": "Techno",
-            "house": "House",
-            "game": "Videospiele",
-            "film": "Filme",
-            "alt": "Alternativ",
-            "dubstep": "Dubstep",
-            "metal": "Metal",
-            "anime": "Anime",
-            "hiphop": "HipHop",
-            "jpop": "J-Pop",
-            "rock": "Rock",
-            "pop": "Pop",
-            "electronic": "Elektronisch",
-            "classical-orchestral": "Klassisch & Orchestra"
-        },
-        "map-specificities": {
-            "automapper": "KI",
-            "ranked": "ranked",
-            "curated": "curated",
-            "verified": "verifiziert",
-            "fullSpread": "full spread"
-        },
-        "difficulties": {
-            "Easy": "einfach",
-            "Normal": "normal",
-            "Hard": "hard",
-            "Expert": "expert",
-            "ExpertPlus": "expert+"
-        },
-        "map-item": {
-            "by": "Von {songAutor}",
-            "mapped-by": "Gemapped von"
+        "notifications": {
+            "prevent-for-mods": {
+                "title": "Erforderliche Mods",
+                "desc": "Stellen Sie sicher, dass Sie die notwendigen Mods installiert haben, um Modelle in BeatSaber zu verwenden",
+                "go-to-mods": "Gehe zu Mods"
+            },
+            "export-success": {
+                "title": "Export abgeschlossen 🎉"
+            }
         }
     },
     "beat-saver": {

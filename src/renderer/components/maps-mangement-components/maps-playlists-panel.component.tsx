@@ -120,7 +120,7 @@ export function MapsPlaylistsPanel({version}: Props) {
                                 initial={{rotate: 0}} 
                                 className="block p-0.5 h-[calc(100%-5px)] aspect-square blur-0 hover:brightness-75" 
                                 linked={mapsLinked} 
-                                title={t(mapsLinked ? "pages.version-viewer.maps.tabs.maps.actions.link-maps.tooltips.unlink" : "pages.version-viewer.maps.tabs.maps.actions.link-maps.tooltips.link")} 
+                                title={mapsLinked ? "pages.version-viewer.maps.tabs.maps.actions.link-maps.tooltips.unlink" : "pages.version-viewer.maps.tabs.maps.actions.link-maps.tooltips.link"} 
                                 onClick={() => onClickLink(index)}
                             />
                         )}

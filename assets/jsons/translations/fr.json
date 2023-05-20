@@ -12,7 +12,9 @@
         "delete": "Supprimer",
         "accept": "Accepter",
         "refuse": "Refuser",
-        "apply": "Appliquer"
+        "apply": "Appliquer",
+        "copy": "Copier",
+        "copied": "Copié !"
     },
     "nav-bar":{
         "add-version": "Ajouter une version",
@@ -597,8 +599,148 @@
                 "unlink-folder": "Délier le dossier",
                 "link-all": "Tout lier"
             }
+        }
+    },
+    "maps": {
+        "map-filter-panel": {
+            "duration": "Durée",
+            "tags": "tags",
+            "specificities": "général",
+            "requirements": "requis"
         },
-        "models": {
+        "map-types": {
+            "accuracy": "précision",
+            "balanced": "équilibrée",
+            "challenge": "challenge",
+            "dancestyle": "dance",
+            "fitness": "fitness",
+            "speed": "vitesse",
+            "tech": "tech"
+        },
+        "map-styles": {
+            "dance": "dance",
+            "swing": "swing",
+            "nightcore": "nightcore",
+            "folk": "folk",
+            "family": "famille",
+            "ambient": "ambiante",
+            "funk": "funk",
+            "jazz": "jazz",
+            "soul": "soul",
+            "speedcore": "speedcore",
+            "punk": "punk",
+            "rb": "r&b",
+            "holiday": "vacance",
+            "vocaloid": "vocaloid",
+            "jrock": "j-rock",
+            "trance": "trance",
+            "drumbass": "drum & bass",
+            "comedy": "comédie",
+            "instrumental": "instrumental",
+            "hardcore": "hardcore",
+            "kpop": "k-pop",
+            "indie": "indé",
+            "techno": "techno",
+            "house": "house",
+            "game": "jeu vidéo",
+            "film": "film",
+            "alt": "alternative",
+            "dubstep": "dubstep",
+            "metal": "metal",
+            "anime": "anime",
+            "hiphop": "hiphop",
+            "jpop": "j-pop",
+            "rock": "rock",
+            "pop": "pop",
+            "electronic": "éléctronique",
+            "classical-orchestral": "Classique & Orchestral"
+        },
+        "map-specificities": {
+            "automapper": "IA",
+            "ranked": "classée",
+            "curated": "recommandée",
+            "verified": "vérifiée",
+            "fullSpread": "panel complet"
+        },
+        "difficulties": {
+            "Easy": "facile",
+            "Normal": "normal",
+            "Hard": "difficile",
+            "Expert": "expert",
+            "ExpertPlus": "expert+"
+        },
+        "map-item": {
+            "by": "Par {songAutor}",
+            "mapped-by": "mappée par"
+        }
+    },
+    "models":{
+        "models": "Modèles",
+        "types": {
+            "singular": {
+                "avatar": "avatar",
+                "saber": "sabre",
+                "platform": "plateforme",
+                "bloq": "bloc"
+            },
+            "plural": {
+                "avatar": "avatars",
+                "saber": "sabres",
+                "platform": "plateformes",
+                "bloq": "blocs"
+            }
+        },
+        "sorts": {
+            "name": "nom",
+            "date": "date",
+            "author": "auteur"
+        },
+        "panel": {
+            "actions": {
+                "search": "Rechercher un modèle",
+                "drop-down": {
+                    "delete": "Supprimer les modèles",
+                    "export": "Exporter les modèles"
+                },
+                "link-models": "Lier les modèles",
+                "unlink-models": "Délier les modèles"
+            },
+            "grid":{
+                "loading": "Chargement des modèles...",
+                "no-models": "Aucun modèle",
+                "download-models": "Télécharger des modèles"
+            }
+        },
+        "modals": {
+            "delete-model" :{
+                "title": "Supprimer le modèle",
+                "desc": "Est-tu sûr de vouloir supprimer le modèle {modelName} ?",
+                "linked-annotation": "Ce modèle sera supprimé de toutes les versions liées."
+            },
+            "delete-models": {
+                "title": "Supprimer les modèles",
+                "desc": "Est-tu sûr de vouloir supprimer les {nb} modèles ?",
+                "linked-annotation": "Ces modèles seront supprimés de toutes les versions liées."
+            },
+            "download-models": {
+                "search-btn": "Rechercher",
+                "search-placeholder": "Rechercher un modèle",
+                "search-tips": {
+                    "header": {
+                        "tag": "Tag",
+                        "desc": "Description"
+                    },
+                    "author-desc": "Afficher seulement les modèles de l'auteur spécifié.",
+                    "hash-desc": "Afficher seulement les modèles avec le hash spécifié.",
+                    "tag-desc": "Afficher seulement les modèles avec le tag spécifié.",
+                    "name-desc": "Afficher seulement les modèles avec le nom spécifié.",
+                    "discordid-desc": "Afficher seulement les modèles de l'utilisateur discord spécifié.",
+                    "status-desc": "Afficher seulement les modèles avec le status spécifié. (profil seulement, et seulement pour l'auteur)"
+                },
+                "no-models": "Aucun modèles trouvés.",
+                "no-internet": "Pas de connexion internet.",
+                "error-occured": "Une erreur est survenue, réessaye plus tard."
+            },
             "link-models":{
                 "avatar": {
                     "title": "Lier les avatars",
@@ -679,79 +821,16 @@
                     "valid-btn": "Délier les bloqs"
                 }
             }
-        }
-    },
-    "maps": {
-        "map-filter-panel": {
-            "duration": "Durée",
-            "tags": "tags",
-            "specificities": "général",
-            "requirements": "requis"
         },
-        "map-types": {
-            "accuracy": "précision",
-            "balanced": "équilibrée",
-            "challenge": "challenge",
-            "dancestyle": "dance",
-            "fitness": "fitness",
-            "speed": "vitesse",
-            "tech": "tech"
-        },
-        "map-styles": {
-            "dance": "dance",
-            "swing": "swing",
-            "nightcore": "nightcore",
-            "folk": "folk",
-            "family": "famille",
-            "ambient": "ambiante",
-            "funk": "funk",
-            "jazz": "jazz",
-            "soul": "soul",
-            "speedcore": "speedcore",
-            "punk": "punk",
-            "rb": "r&b",
-            "holiday": "vacance",
-            "vocaloid": "vocaloid",
-            "jrock": "j-rock",
-            "trance": "trance",
-            "drumbass": "drum & bass",
-            "comedy": "comédie",
-            "instrumental": "instrumental",
-            "hardcore": "hardcore",
-            "kpop": "k-pop",
-            "indie": "indé",
-            "techno": "techno",
-            "house": "house",
-            "game": "jeu vidéo",
-            "film": "film",
-            "alt": "alternative",
-            "dubstep": "dubstep",
-            "metal": "metal",
-            "anime": "anime",
-            "hiphop": "hiphop",
-            "jpop": "j-pop",
-            "rock": "rock",
-            "pop": "pop",
-            "electronic": "éléctronique",
-            "classical-orchestral": "Classique & Orchestral"
-        },
-        "map-specificities": {
-            "automapper": "IA",
-            "ranked": "classée",
-            "curated": "recommandée",
-            "verified": "vérifiée",
-            "fullSpread": "panel complet"
-        },
-        "difficulties": {
-            "Easy": "facile",
-            "Normal": "normal",
-            "Hard": "difficile",
-            "Expert": "expert",
-            "ExpertPlus": "expert+"
-        },
-        "map-item": {
-            "by": "Par {songAutor}",
-            "mapped-by": "mappée par"
+        "notifications": {
+            "prevent-for-mods": {
+                "title": "Mods nécessaires",
+                "desc": "Assurez-toi d'avoir installé les mods nécessaires pour utiliser des modèles dans BeatSaber",
+                "go-to-mods": "Aller aux mods"
+            },
+            "export-success": {
+                "title": "Export terminé 🎉"
+            }
         }
     },
     "beat-saver": {
