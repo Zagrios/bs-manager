@@ -156,6 +156,7 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active,
         modelsManager.deleteModels([model], version).then(deleted => {
             if(!deleted?.length){ return; }
             setModels(prev => prev.filter(m => m.hash !== model.hash));
+            modelsSelected$.next(modelsSelected.filter(m => m.hash !== model.hash));
         });
     }
  

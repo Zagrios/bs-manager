@@ -130,7 +130,7 @@ export class ModelsManagerService {
 
     public async deleteModels(models: BsmLocalModel[], version?: BSVersion): Promise<BsmLocalModel[]>{
 
-        if(!models){ return Promise.resolve([]); }
+        if(!models?.length){ return Promise.resolve([]); }
 
         const askModal = models.length > 1 || !this.config.get<boolean>(ModelsManagerService.REMEMBER_CHOICE_DELETE_MODEL_KEY);
 

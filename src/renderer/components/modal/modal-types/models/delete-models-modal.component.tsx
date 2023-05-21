@@ -15,7 +15,7 @@ export const DeleteModelsModal: ModalComponent<void, {models: BsmLocalModel[], l
 
     const config = useConstant(() => ConfigurationService.getInstance());
     const t = useTranslation();
-    const [remember, setRemember] = useState(false);
+    const [remember, setRemember] = useState(config.get<boolean>(ModelsManagerService.REMEMBER_CHOICE_DELETE_MODEL_KEY) || false);
 
     useOnUpdate(() => {
         config.set(ModelsManagerService.REMEMBER_CHOICE_DELETE_MODEL_KEY, remember);
