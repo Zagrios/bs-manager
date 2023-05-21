@@ -11,10 +11,9 @@ import { OpenSaveDialogOption } from "shared/models/ipc";
 import { NotificationService } from "./notification.service";
 import { ConfigurationService } from "./configuration.service";
 import { ArchiveProgress } from "shared/models/archive.interface";
-import { map, last, catchError, distinctUntilChanged, mergeMap } from "rxjs/operators";
+import { map, last, catchError } from "rxjs/operators";
 import { ProgressionInterface } from "shared/models/progress-bar";
 import { VersionFolderLinkerService, VersionLinkerActionType } from "./version-folder-linker.service";
-import equal from "fast-deep-equal";
 
 export class MapsManagerService {
 
