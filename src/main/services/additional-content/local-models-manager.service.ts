@@ -220,18 +220,20 @@ export class LocalModelsManagerService {
         });
     }
 
-    public deleteModels(models: BsmLocalModel[]): Observable<Progression>{
-        return new Observable<Progression>(subscriber => {
+    public deleteModels(models: BsmLocalModel[]): Observable<Progression<BsmLocalModel[]>>{
+        return new Observable<Progression<BsmLocalModel[]>>(subscriber => {
             (async () => {
-                const progression: Progression = {
+
+                const progression: Progression<BsmLocalModel[]> = {
                     total: models.length,
                     current: 0,
-                    data: null
+                    data: []
                 };
 
                 for(const model of models){
                     await unlinkPath(model.path);
-                    progression.current += 1;
+                    progression.data.push(model);
+                    progression.current = progression.data.length;
                     subscriber.next(progression);
                 }
 

@@ -128,9 +128,9 @@ export class ModelsManagerService {
 
     }
 
-    public async deleteModels(models: BsmLocalModel[], version?: BSVersion): Promise<boolean>{
+    public async deleteModels(models: BsmLocalModel[], version?: BSVersion): Promise<BsmLocalModel[]>{
 
-        if(!models){ return Promise.resolve(false); }
+        if(!models){ return Promise.resolve([]); }
 
         const askModal = models.length > 1 || !this.config.get<boolean>(ModelsManagerService.REMEMBER_CHOICE_DELETE_MODEL_KEY);
 
@@ -148,20 +148,22 @@ export class ModelsManagerService {
             })();
 
             const res = await this.modalService.openModal(DeleteModelsModal, { models, linked });
-            if(res.exitCode !== ModalExitCode.COMPLETED){ return false; }
+            if(res.exitCode !== ModalExitCode.COMPLETED){ return Promise.resolve([]); }
         }
 
         const showProgressBar = this.progressBar.require(); 
 
-        const progress$ = this.ipc.sendV2<Progression>("delete-models", {args: models}).pipe(map(progress => (progress.current / progress.total) * 100));
+        const obs$ = this.ipc.sendV2<Progression<BsmLocalModel[]>>("delete-models", {args: models});
+
+        const progress$ =obs$.pipe(map(progress => (progress.current / progress.total) * 100));
 
         if(showProgressBar){ this.progressBar.show(progress$); }
 
-        return lastValueFrom(progress$)
-            .then(() => true)
+        return lastValueFrom(obs$)
+            .then(({data}) => data ?? [])
             .catch(() => {
                 this.notifications.notifyError({title: "notifications.types.error", desc: "notifications.common.msg.error-occurred", duration: 3000});
-                return false; 
+                return []; 
             })
             .finally(() => this.progressBar.hide(true));
 

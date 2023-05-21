@@ -58,13 +58,12 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active,
             loadModels();
         },
         deleteSelectedModels: () => {
-            modelsManager.deleteModels(!modelsSelected?.length ? models : modelsSelected, version).then(deleted => {
-                if(!deleted){ return; }
-                const newModels = models.filter(m => !modelsSelected.some(d => d.hash === m.hash));
+            modelsManager.deleteModels(!modelsSelected?.length ? models : modelsSelected, version).then(deletedModels => {
+                if(!deletedModels?.length){ return; }
+                const newModels = models.filter(m => !deletedModels.some(d => d.hash === m.hash));
                 setModels(() => newModels);
                 modelsSelected$.next([]);
             });
-
         }
     }), [modelsSelected, models]);
 
@@ -85,7 +84,7 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active,
 
     useOnUpdate(() => {
 
-        if(!active){ return; }
+        if(!active && !models){ return; }
 
         const onLinkStateChangeCb = (action: VersionLinkerAction) => {
             if(!equal(version, action.version) || !action.relativeFolder.includes(MODEL_TYPE_FOLDERS[type])){ return; }
@@ -155,7 +154,7 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active,
 
     const handleDelete = (model: BsmLocalModel) => {
         modelsManager.deleteModels([model], version).then(deleted => {
-            if(!deleted){ return; }
+            if(!deleted?.length){ return; }
             setModels(prev => prev.filter(m => m.hash !== model.hash));
         });
     }
