@@ -12,7 +12,9 @@
         "delete": "Delete",
         "accept": "Accept",
         "refuse": "Refuse",
-        "apply": "Apply"
+        "apply": "Apply",
+        "copy": "Copy",
+        "copied": "Copied!"
     },
     "nav-bar":{
         "add-version": "Add a version",
@@ -830,6 +832,10 @@
                 "desc": "Make sure you've installed the necessary mods to use models in BeatSaber",
                 "go-to-mods": "Go to mods",
                 "not-remind": "Do not remind me"
+            },
+            "prevent-for-models-breaks": {
+                "title": "Broken models",
+                "desc": "Since the BeatSaber engine update, models are no longer functional for this version."
             },
             "export-success": {
                 "title": "Export completed 🎉"

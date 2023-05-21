@@ -13,6 +13,7 @@ import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { NotificationService } from "renderer/services/notification.service";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { gte, lt } from "semver";
 
 export function ModelsPanel({version, isActive, goToMods}: {version?: BSVersion, isActive: boolean, goToMods?: () => void}) {
     
@@ -43,6 +44,16 @@ export function ModelsPanel({version, isActive, goToMods}: {version?: BSVersion,
             if(res === "1"){ config.set("not-remind-mods-models", true); }
         });
     }, [isActive]);
+
+    useOnUpdate(() => {
+        if(!isActive || !version || lt(version.BSVersion, "1.29.4")){ return; }
+        if(config.get("not-remind-models-breaks")){ return; }
+        notification.notifyWarning({ title: "models.notifications.prevent-for-models-breaks.title", desc: "models.notifications.prevent-for-models-breaks.desc", actions: [
+            {id: "0", title: "models.notifications.prevent-for-mods.not-remind", cancel: true}
+        ], duration: 12_000 }).then(res => {
+            if(res === "0"){ config.set("not-remind-models-breaks", true); }
+        });
+    }, [isActive, version])
 
     const exportModels = () => {
         const selectedModels = modelsGridRefs.map(ref =>(ref.current?.getSelectedModels() as BsmLocalModel[])).flat()

@@ -832,6 +832,10 @@
                 "go-to-mods": "Aller aux mods",
                 "not-remind": "Ne plus me rappeler"
             },
+            "prevent-for-models-breaks":{
+                "title": "Modèles cassés",
+                "desc": "Depuis la mise à jour du moteur de BeatSaber, les modèles ne sont plus fonctionnels pour cette version."
+            },
             "export-success": {
                 "title": "Export terminé 🎉"
             }

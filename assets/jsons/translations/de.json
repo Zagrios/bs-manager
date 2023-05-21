@@ -12,7 +12,9 @@
         "delete": "Löschen",
         "accept": "Akzeptieren",
         "refuse": "Ablehnen",
-        "apply": "Übernehmen"
+        "apply": "Übernehmen",
+        "copy": "Kopieren",
+        "copied": "Kopiert!"
     },
     "nav-bar":{
         "add-version": "Version Hinzufügen",
@@ -830,6 +832,10 @@
                 "desc": "Stellen Sie sicher, dass Sie die notwendigen Mods installiert haben, um Modelle in BeatSaber zu verwenden",
                 "go-to-mods": "Gehe zu Mods",
                 "not-remind": "Erinnere mich nicht"
+            },
+            "prevent-for-models-breaks": {
+                "title": "Gebrochene Modelle",
+                "desc": "Seit dem Update des BeatSaber-Motors sind Modelle für diese Version nicht mehr funktional."
             },
             "export-success": {
                 "title": "Export abgeschlossen 🎉"

@@ -12,7 +12,9 @@
         "delete": "Borrar",
         "accept": "Aceptar",
         "refuse": "Rechazar",
-        "apply": "Aplicar"
+        "apply": "Aplicar",
+        "copy": "Copiar",
+        "copied": "¡Copiado!"
     },
     "nav-bar":{
         "add-version": "Agregar una versión",
@@ -829,6 +831,10 @@
                 "desc": "Asegúrate de haber instalado los mods necesarios para usar modelos en BeatSaber",
                 "go-to-mods": "Ir a mods",
                 "not-remind": "No volver a recordarme"
+            },
+            "prevent-for-models-breaks": {
+                "title": "Modelos rotos",
+                "desc": "Desde la actualización del motor de BeatSaber, los modelos ya no son funcionales para esta versión."
             },
             "export-success": {
                 "title": "Exportación completada 🎉"
