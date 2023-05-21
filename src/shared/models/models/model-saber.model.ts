@@ -12,13 +12,25 @@ export interface MSModel {
     discord?: string,
     variationid?: number,
     platform: MSModelPlatform,
-    download: string,
+    download: ModelDownloadURL,
     install_link: string,
     date: string
 }
 
-export type MSModelType = "saber"|"platform"|"bloq"|"misc"|"avatar";
-export type MSModelPlatform = "pc"|"quest"|"all";
+export type ModelDownloadURL = string;
+
+export enum MSModelType {
+    Avatar = "avatar",
+    Saber = "saber",
+    Platfrom = "platform",
+    Bloq = "bloq"
+};
+
+export enum MSModelPlatform {
+    PC = "pc",
+    QUEST = "quest",
+    ALL = "all"
+};
 
 export interface MSGetQuery {
     type?: MSModelType;
@@ -37,6 +49,24 @@ export interface MSGetQueryFilter {
 }
 
 export type MSGetResponse<T extends string = string> = Record<T, MSModel>;
-export type MSGetSort = "date"|"name"|"author"
-export type MSGetSortDirection = "asc"|"desc"
-export type MSGetQueryFilterType = "author"|"name"|"tag"|"hash"|"discordid"|"id"|"searchName"
+
+export enum MSGetSort {
+    Date = "date",
+    Name = "name",
+    Author = "author"
+}
+export enum MSGetSortDirection {
+    Ascending = "asc",
+    Descending = "desc"
+}
+
+export enum MSGetQueryFilterType {
+    Author = "author",
+    Name = "name",
+    Tag = "tag",
+    Hash = "hash",
+    DiscordID = "discordid",
+    ID = "id",
+    SearchName = "searchName"
+}
+

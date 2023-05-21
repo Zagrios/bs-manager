@@ -1,31 +1,32 @@
-import { ChangeEvent, CSSProperties } from "react"
+import equal from "fast-deep-equal";
+import { ComponentProps } from "react"
 import { useTranslation } from "renderer/hooks/use-translation.hook"
 
-type Props = {
-    className?: string,
-    style?: CSSProperties,
-    options?: BsmSelectOption[],
-    onChange?: (value: string) => void
+type Props<T> = Omit<ComponentProps<"select">, "onChange"> & {
+    options?: BsmSelectOption<T>[],
+    selected?: T,
+    onChange?: (value: T) => void,
 }
 
-export function BsmSelect({className, style, options, onChange}: Props) {
+export function BsmSelect<T = unknown>(props: Props<T>) {
 
     const t = useTranslation();
 
-    const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
-        onChange?.(event.target.value);
+    const handleChange: ComponentProps<"select">["onChange"] = (e) => {
+        e.preventDefault();
+        props.onChange?.(props.options?.[parseInt(e.target.value)]?.value);
     }
 
     return (
-        <select className={className} style={style} onChange={handleChange}>
-            {options && options.map(option => (
-                <option key={option.value} value={option.value}>{t(option.text)}</option>
+        <select {...props} onChange={handleChange} defaultValue={props.options?.findIndex(opt => equal(opt.value, props.selected))}>
+            {props.options && props.options.map((option, index) => (
+                <option key={index} value={index}>{t(option.text)}</option>
             ))}
         </select>
   )
 }
 
-export interface BsmSelectOption{
+export interface BsmSelectOption<T>{
     text: string,
-    value: string
+    value: T
 }

@@ -5,6 +5,7 @@ import recursive from "recursive-readdir";
 import { lstatSync } from "fs";
 import * as _path from "path";
 import { ArchiveProgress } from "shared/models/archive.interface";
+import { Progression } from "main/helpers/fs.helpers";
 
 export class Archive{
 
@@ -49,21 +50,21 @@ export class Archive{
     }
 
 
-    public finalize(): Observable<ArchiveProgress>{
+    public finalize(): Observable<Progression>{
 
-        const progress: ArchiveProgress = {
-            totalFiles: 0,
-            prossesedFiles: 0
+        const progress: Progression = {
+            total: 0,
+            current: 0
         };
         
-        return new Observable<ArchiveProgress>(observer => {
+        return new Observable<Progression>(observer => {
             (async () => {
 
-                progress.totalFiles = await this.loadTotalFiles();
+                progress.total = await this.loadTotalFiles();
 
                 this.archive.on("entry", e => {
                     if(e.stats.isDirectory()){ return; }
-                    progress.prossesedFiles++;
+                    progress.current++;
                     observer.next(progress);
                 });
 

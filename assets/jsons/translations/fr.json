@@ -1,6 +1,7 @@
 {
     "misc": {
         "download": "Télécharger",
+        "add": "Ajouter",
         "verify": "Vérifier",
         "launch": "Lancer",
         "mods": "Mods",
@@ -11,11 +12,17 @@
         "delete": "Supprimer",
         "accept": "Accepter",
         "refuse": "Refuser",
-        "apply": "Appliquer"
+        "apply": "Appliquer",
+        "copy": "Copier",
+        "copied": "Copié !"
     },
     "nav-bar":{
         "add-version": "Ajouter une version",
-        "settings": "Paramètres"
+        "settings": "Paramètres",
+        "shared": {
+            "text": "Partagés",
+            "tooltip": "Contenus partagés"
+        }
     },
     "pages": {
         "shared-maps":{
@@ -669,6 +676,169 @@
         "map-item": {
             "by": "Par {songAutor}",
             "mapped-by": "mappée par"
+        }
+    },
+    "models":{
+        "types": {
+            "singular": {
+                "avatar": "avatar",
+                "saber": "sabre",
+                "platform": "plateforme",
+                "bloq": "bloc"
+            },
+            "plural": {
+                "avatar": "avatars",
+                "saber": "sabres",
+                "platform": "plateformes",
+                "bloq": "blocs"
+            }
+        },
+        "sorts": {
+            "name": "nom",
+            "date": "date",
+            "author": "auteur"
+        },
+        "panel": {
+            "actions": {
+                "search": "Rechercher un modèle",
+                "drop-down": {
+                    "delete": "Supprimer les modèles",
+                    "export": "Exporter les modèles"
+                },
+                "link-models": "Lier les modèles",
+                "unlink-models": "Délier les modèles"
+            },
+            "grid":{
+                "loading": "Chargement des modèles...",
+                "no-models": "Aucun modèle",
+                "download-models": "Télécharger des modèles"
+            }
+        },
+        "modals": {
+            "delete-model" :{
+                "title": "Supprimer le modèle",
+                "desc": "Est-tu sûr de vouloir supprimer le modèle {modelName} ?",
+                "linked-annotation": "Ce modèle sera supprimé de toutes les versions liées."
+            },
+            "delete-models": {
+                "title": "Supprimer les modèles",
+                "desc": "Est-tu sûr de vouloir supprimer les {nb} modèles ?",
+                "linked-annotation": "Ces modèles seront supprimés de toutes les versions liées."
+            },
+            "download-models": {
+                "search-btn": "Rechercher",
+                "search-placeholder": "Rechercher un modèle",
+                "search-tips": {
+                    "header": {
+                        "tag": "Tag",
+                        "desc": "Description"
+                    },
+                    "author-desc": "Afficher seulement les modèles de l'auteur spécifié.",
+                    "hash-desc": "Afficher seulement les modèles avec le hash spécifié.",
+                    "tag-desc": "Afficher seulement les modèles avec le tag spécifié.",
+                    "name-desc": "Afficher seulement les modèles avec le nom spécifié.",
+                    "discordid-desc": "Afficher seulement les modèles de l'utilisateur discord spécifié.",
+                    "status-desc": "Afficher seulement les modèles avec le status spécifié. (profil seulement, et seulement pour l'auteur)"
+                },
+                "no-models": "Aucun modèles trouvés.",
+                "no-internet": "Pas de connexion internet.",
+                "error-occured": "Une erreur est survenue, réessaye plus tard."
+            },
+            "link-models":{
+                "avatar": {
+                    "title": "Lier les avatars",
+                    "desc": "La liaison des avatars permet de partager les avatars entre toute les version. Une fois liée, cette version profitera des avatars partagés",
+                    "info": "L'ajout et la suppression d'avatars sera également partagé",
+                    "keep-models": {
+                        "label": "Conserver les avatars",
+                        "title": "Conserver les avatars déplacera les avatars de la version actuelle dans le dossier des avatars partagés. Dans le cas contraire ils seront perdus"
+                    },
+                    "valid-btn": "Lier les avatars"
+                },
+                "saber": {
+                    "title": "Lier les sabres",
+                    "desc": "La liaison des sabres permet de partager les sabres entre toute les version. Une fois liée, cette version profitera des sabres partagés",
+                    "info": "L'ajout et la suppression de sabres sera également partagé",
+                    "keep-models": {
+                        "label": "Conserver les sabres",
+                        "title": "Conserver les sabres déplacera les sabres de la version actuelle dans le dossier des sabres partagés. Dans le cas contraire ils seront perdus"
+                    },
+                    "valid-btn": "Lier les sabres"
+                },
+                "platform": {
+                    "title": "Lier les plateformes",
+                    "desc": "La liaison des plateformes permet de partager les plateformes entre toute les version. Une fois liée, cette version profitera des plateformes partagées",
+                    "info": "L'ajout et la suppression de plateformes sera également partagé",
+                    "keep-models": {
+                        "label": "Conserver les plateformes",
+                        "title": "Conserver les plateformes déplacera les plateformes de la version actuelle dans le dossier des plateformes partagées. Dans le cas contraire ils seront perdus"
+                    },
+                    "valid-btn": "Lier les plateformes"
+                },
+                "bloq": {
+                    "title": "Lier les bloqs",
+                    "desc": "La liaison des bloqs permet de partager les bloqs entre toute les version. Une fois liée, cette version profitera des bloqs partagés",
+                    "info": "L'ajout et la suppression de bloqs sera également partagé",
+                    "keep-models": {
+                        "label": "Conserver les bloqs",
+                        "title": "Conserver les bloqs déplacera les bloqs de la version actuelle dans le dossier des bloqs partagés. Dans le cas contraire ils seront perdus"
+                    },
+                    "valid-btn": "Lier les bloqs"
+                }
+            },
+            "unlink-models":{
+                "avatar": {
+                    "title": "Délier les avatars",
+                    "desc": "Attention, délier les avatars ne permettra plus l'utilisation des avatars paratagés pour cette version.",
+                    "keep-models": {
+                        "label": "Conserver les avatars",
+                        "title": "Conserver les avatars créera une copie des avatars partagés pour la version actuelle. Dans le cas contraire, aucun avatar ne sera conservé pour cette version."
+                    },
+                    "valid-btn": "Délier les avatars"
+                },
+                "saber": {
+                    "title": "Délier les sabres",
+                    "desc": "Attention, délier les sabres ne permettra plus l'utilisation des sabres paratagés pour cette version.",
+                    "keep-models": {
+                        "label": "Conserver les sabres",
+                        "title": "Conserver les sabres créera une copie des sabres partagés pour la version actuelle. Dans le cas contraire, aucun sabre ne sera conservé pour cette version."
+                    },
+                    "valid-btn": "Délier les sabres"
+                },
+                "platform": {
+                    "title": "Délier les plateformes",
+                    "desc": "Attention, délier les plateformes ne permettra plus l'utilisation des plateformes paratagées pour cette version.",
+                    "keep-models": {
+                        "label": "Conserver les plateformes",
+                        "title": "Conserver les plateformes créera une copie des plateformes partagées pour la version actuelle. Dans le cas contraire, aucune plateforme ne sera conservée pour cette version."
+                    },
+                    "valid-btn": "Délier les plateformes"
+                },
+                "bloq": {
+                    "title": "Délier les bloqs",
+                    "desc": "Attention, délier les bloqs ne permettra plus l'utilisation des bloqs paratagés pour cette version.",
+                    "keep-models": {
+                        "label": "Conserver les bloqs",
+                        "title": "Conserver les bloqs créera une copie des bloqs partagés pour la version actuelle. Dans le cas contraire, aucun bloq ne sera conservé pour cette version."
+                    },
+                    "valid-btn": "Délier les bloqs"
+                }
+            }
+        },
+        "notifications": {
+            "prevent-for-mods": {
+                "title": "Mods nécessaires",
+                "desc": "Assurez-toi d'avoir installé les mods nécessaires pour utiliser des modèles dans BeatSaber",
+                "go-to-mods": "Aller aux mods",
+                "not-remind": "Ne plus me rappeler"
+            },
+            "prevent-for-models-breaks":{
+                "title": "Modèles cassés",
+                "desc": "Depuis la mise à jour du moteur de BeatSaber, les modèles ne sont plus fonctionnels pour cette version."
+            },
+            "export-success": {
+                "title": "Export terminé 🎉"
+            }
         }
     },
     "beat-saver": {

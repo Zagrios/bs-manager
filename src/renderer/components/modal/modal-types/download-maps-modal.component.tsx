@@ -48,7 +48,7 @@ export const DownloadMapsModal: ModalComponent<void, {version: BSVersion, ownedM
 
     const loaderRef = useRef(null);
 
-    const sortOptions: BsmSelectOption[] = (() => {
+    const sortOptions: BsmSelectOption<SearchOrder>[] = (() => {
         return BSV_SORT_ORDER.map(sort => ({text: `beat-saver.maps-sorts.${sort}`, value: sort}));
     })();
     
@@ -135,10 +135,10 @@ export const DownloadMapsModal: ModalComponent<void, {version: BSVersion, ownedM
         mapsDownloader.removeMapToDownload({map, version});
     }, []);
 
-    const handleSortChange = (newSort: string) => {
-        setSortOrder(() => newSort as SearchOrder);
+    const handleSortChange = (newSort: SearchOrder) => {
+        setSortOrder(() => newSort);
         setMaps(() => []);
-        setSearchParams(() => ({...searchParams, sortOrder: (newSort as SearchOrder)}));
+        setSearchParams(() => ({...searchParams, sortOrder: (newSort)}));
     }
 
     const handleSearch = () => {
@@ -167,7 +167,7 @@ export const DownloadMapsModal: ModalComponent<void, {version: BSVersion, ownedM
                 </BsmDropdownButton>
                 <input className="h-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2 grow pb-0.5" type="text" name="" id="" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={query} onChange={e => setQuery(e.target.value)}/>
                 <BsmButton className="shrink-0 rounded-full py-1 px-3 !bg-light-main-color-1 dark:!bg-main-color-1 flex justify-center items-center capitalize" icon="search" text="modals.download-maps.search-btn" withBar={false} onClick={e => {e.preventDefault(); handleSearch()}}/>
-                <BsmSelect className="bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-1 pb-0.5 text-center" options={sortOptions} onChange={handleSortChange}/>
+                <BsmSelect className="bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-1 pb-0.5 text-center" options={sortOptions} onChange={sort => handleSortChange(sort)}/>
             </div>
             <ul className="w-full grow flex content-start flex-wrap gap-2 pt-1.5 px-2 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 z-0" >
                 {maps.length === 0 ? (

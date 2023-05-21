@@ -4,7 +4,7 @@ import { writeFileSync } from 'fs';
 import { BSVersion } from 'shared/bs-version.interface';
 import { RequestService } from "./request.service"
 import { readJSON } from 'fs-extra';
-import { allSettled } from '../helpers/promise.helpers';
+import { allSettled } from '../../shared/helpers/promise.helpers';
 
 export class BSVersionLibService{
 

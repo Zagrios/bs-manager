@@ -1,6 +1,7 @@
 {
     "misc": {
         "download": "Laden",
+        "add": "Hinzufügen",
         "verify": "Prüfen",
         "launch": "Starten",
         "mods": "Mods",
@@ -11,11 +12,17 @@
         "delete": "Löschen",
         "accept": "Akzeptieren",
         "refuse": "Ablehnen",
-        "apply": "Übernehmen"
+        "apply": "Übernehmen",
+        "copy": "Kopieren",
+        "copied": "Kopiert!"
     },
     "nav-bar":{
         "add-version": "Version Hinzufügen",
-        "settings": "Einstellungen"
+        "settings": "Einstellungen",
+        "shared": {
+            "text": "Geteilt",
+            "tooltip": "Geteilte Inhalte"
+        }
     },
     "pages": {
         "shared-maps":{
@@ -670,6 +677,169 @@
         "map-item": {
             "by": "Von {songAutor}",
             "mapped-by": "Gemapped von"
+        }
+    },
+    "models":{
+        "types": {
+            "singular": {
+                "avatar": "Avatar",
+                "saber": "Säbel",
+                "platform": "Plattform",
+                "bloq": "Block"
+            },
+            "plural": {
+                "avatar": "Avatare",
+                "saber": "Säbel",
+                "platform": "Plattformen",
+                "bloq": "Blöcke"
+            }
+        },
+        "sorts": {
+            "name": "Name",
+            "date": "Datum",
+            "author": "Autor"
+        },
+        "panel": {
+            "actions": {
+                "search": "Ein Modell suchen",
+                "drop-down": {
+                    "delete": "Modelle löschen",
+                    "export": "Modelle exportieren"
+                },
+                "link-models": "Modelle verlinken",
+                "unlink-models": "Modelle trennen"
+            },
+            "grid":{
+                "loading": "Modelle laden...",
+                "no-models": "Keine Modelle",
+                "download-models": "Modelle herunterladen"
+            }
+        },
+        "modals": {
+            "delete-model" :{
+                "title": "Das Modell löschen",
+                "desc": "Sind Sie sicher, dass Sie das Modell {modelName} löschen möchten?",
+                "linked-annotation": "Dieses Modell wird aus allen verlinkten Versionen entfernt."
+            },
+            "delete-models": {
+                "title": "Modelle löschen",
+                "desc": "Sind Sie sicher, dass Sie die {nb} Modelle löschen möchten?",
+                "linked-annotation": "Diese Modelle werden aus allen verlinkten Versionen entfernt."
+            },
+            "download-models": {
+                "search-btn": "Suche",
+                "search-placeholder": "Ein Modell suchen",
+                "search-tips": {
+                    "header": {
+                        "tag": "Tag",
+                        "desc": "Beschreibung"
+                    },
+                    "author-desc": "Nur Modelle vom angegebenen Autor anzeigen.",
+                    "hash-desc": "Nur Modelle mit dem angegebenen Hash anzeigen.",
+                    "tag-desc": "Nur Modelle mit dem angegebenen Tag anzeigen.",
+                    "name-desc": "Nur Modelle mit dem angegebenen Namen anzeigen.",
+                    "discordid-desc": "Nur Modelle vom angegebenen Discord-Benutzer anzeigen.",
+                    "status-desc": "Nur Modelle mit dem angegebenen Status anzeigen. (nur Profil, und nur für den Autor)"
+                },
+                "no-models": "Keine Modelle gefunden.",
+                "no-internet": "Keine Internetverbindung.",
+                "error-occured": "Ein Fehler ist aufgetreten, versuche es später erneut."
+            },
+            "link-models": {
+                "avatar": {
+                    "title": "Avatare verbinden",
+                    "desc": "Das Verbinden von Avataren ermöglicht das Teilen von Avataren zwischen allen Versionen. Sobald verbunden, wird diese Version von den geteilten Avataren profitieren",
+                    "info": "Das Hinzufügen und Entfernen von Avataren wird ebenfalls geteilt",
+                    "keep-models": {
+                        "label": "Avatare behalten",
+                        "title": "Das Behalten der Avatare wird die Avatare der aktuellen Version in den Ordner der geteilten Avatare verschieben. Andernfalls gehen sie verloren"
+                    },
+                    "valid-btn": "Avatare verbinden"
+                },
+                "saber": {
+                    "title": "Säbel verbinden",
+                    "desc": "Das Verbinden von Säbeln ermöglicht das Teilen von Säbeln zwischen allen Versionen. Sobald verbunden, wird diese Version von den geteilten Säbeln profitieren",
+                    "info": "Das Hinzufügen und Entfernen von Säbeln wird ebenfalls geteilt",
+                    "keep-models": {
+                        "label": "Säbel behalten",
+                        "title": "Das Behalten der Säbel wird die Säbel der aktuellen Version in den Ordner der geteilten Säbel verschieben. Andernfalls gehen sie verloren"
+                    },
+                    "valid-btn": "Säbel verbinden"
+                },
+                "platform": {
+                    "title": "Plattformen verbinden",
+                    "desc": "Das Verbinden von Plattformen ermöglicht das Teilen von Plattformen zwischen allen Versionen. Sobald verbunden, wird diese Version von den geteilten Plattformen profitieren",
+                    "info": "Das Hinzufügen und Entfernen von Plattformen wird ebenfalls geteilt",
+                    "keep-models": {
+                        "label": "Plattformen behalten",
+                        "title": "Das Behalten der Plattformen wird die Plattformen der aktuellen Version in den Ordner der geteilten Plattformen verschieben. Andernfalls gehen sie verloren"
+                    },
+                    "valid-btn": "Plattformen verbinden"
+                },
+                "bloq": {
+                    "title": "Bloqs verbinden",
+                    "desc": "Das Verbinden von Bloqs ermöglicht das Teilen von Bloqs zwischen allen Versionen. Sobald verbunden, wird diese Version von den geteilten Bloqs profitieren",
+                    "info": "Das Hinzufügen und Entfernen von Bloqs wird ebenfalls geteilt",
+                    "keep-models": {
+                        "label": "Bloqs behalten",
+                        "title": "Das Behalten der Bloqs wird die Bloqs der aktuellen Version in den Ordner der geteilten Bloqs verschieben. Andernfalls gehen sie verloren"
+                    },
+                    "valid-btn": "Bloqs verbinden"
+                }
+            },
+            "unlink-models": {
+                "avatar": {
+                    "title": "Avatare trennen",
+                    "desc": "Achtung, das Trennen der Avatare wird die Nutzung der geteilten Avatare für diese Version nicht mehr ermöglichen.",
+                    "keep-models": {
+                        "label": "Avatare behalten",
+                        "title": "Das Behalten der Avatare wird eine Kopie der geteilten Avatare für die aktuelle Version erstellen. Andernfalls wird kein Avatar für diese Version aufbewahrt."
+                    },
+                    "valid-btn": "Avatare trennen"
+                },
+                "saber": {
+                    "title": "Säbel trennen",
+                    "desc": "Achtung, das Trennen der Säbel wird die Nutzung der geteilten Säbel für diese Version nicht mehr ermöglichen.",
+                    "keep-models": {
+                        "label": "Säbel behalten",
+                        "title": "Das Behalten der Säbel wird eine Kopie der geteilten Säbel für die aktuelle Version erstellen. Andernfalls wird kein Säbel für diese Version aufbewahrt."
+                    },
+                    "valid-btn": "Säbel trennen"
+                },
+                "platform": {
+                    "title": "Plattformen trennen",
+                    "desc": "Achtung, das Trennen der Plattformen wird die Nutzung der geteilten Plattformen für diese Version nicht mehr ermöglichen.",
+                    "keep-models": {
+                        "label": "Plattformen behalten",
+                        "title": "Das Behalten der Plattformen wird eine Kopie der geteilten Plattformen für die aktuelle Version erstellen. Andernfalls wird keine Plattform für diese Version aufbewahrt."
+                    },
+                    "valid-btn": "Plattformen trennen"
+                },
+                "bloq": {
+                    "title": "Bloqs trennen",
+                    "desc": "Achtung, das Trennen der Bloqs wird die Nutzung der geteilten Bloqs für diese Version nicht mehr ermöglichen.",
+                    "keep-models": {
+                        "label": "Bloqs behalten",
+                        "title": "Das Behalten der Bloqs wird eine Kopie der geteilten Bloqs für die aktuelle Version erstellen. Andernfalls wird kein Bloq für diese Version aufbewahrt."
+                    },
+                    "valid-btn": "Bloqs trennen"
+                }
+            }
+        },
+        "notifications": {
+            "prevent-for-mods": {
+                "title": "Erforderliche Mods",
+                "desc": "Stellen Sie sicher, dass Sie die notwendigen Mods installiert haben, um Modelle in BeatSaber zu verwenden",
+                "go-to-mods": "Gehe zu Mods",
+                "not-remind": "Erinnere mich nicht"
+            },
+            "prevent-for-models-breaks": {
+                "title": "Gebrochene Modelle",
+                "desc": "Seit dem Update des BeatSaber-Motors sind Modelle für diese Version nicht mehr funktional."
+            },
+            "export-success": {
+                "title": "Export abgeschlossen 🎉"
+            }
         }
     },
     "beat-saver": {

@@ -28,7 +28,7 @@ import beatleaderIcon from "../../../assets/images/third-party-icons/beat-leader
 import Tippy from '@tippyjs/react';
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
-import { ModelsManagerService } from "renderer/services/models-manager.service";
+import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { VersionFolderLinkerService } from "renderer/services/version-folder-linker.service";
 

@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import { ApiResult } from "renderer/models/api/api.model";
-import { MSGetQuery, MSGetQueryFilter, MSGetResponse } from "shared/models/model-saber/model-saber.model";
+import { MSGetQuery, MSGetQueryFilter, MSGetResponse } from "../../../../shared/models/models/model-saber.model";
 
 export class ModelSaberApiService {
 

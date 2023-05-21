@@ -1,5 +1,8 @@
-import { get } from "https";
+import { RequestOptions, get } from "https";
 import { createWriteStream, unlink } from "fs";
+import { Progression, unlinkPath } from "main/helpers/fs.helpers";
+import { Observable, buffer, shareReplay, tap } from "rxjs";
+import log from "electron-log";
 
 export class RequestService {
 
@@ -12,10 +15,11 @@ export class RequestService {
 
     private constructor(){}
 
-    public get<T = any>(url: string): Promise<T>{
+    public get<T = any>(options: string|RequestOptions): Promise<T>{
+
         return new Promise((resolve, reject) => {
             let body = ''
-            get(url, (res) => {
+            get(options, (res) => {
                 res.on('data', chunk => body += chunk);
                 res.on('end', () => {
                     resolve(JSON.parse(body));
@@ -25,21 +29,57 @@ export class RequestService {
         });
     }
     
-    public downloadFile(url: string, dest: string): Promise<string>{
-        return new Promise((resolve, reject) => {
+    public downloadFile(url: string, dest: string): Observable<Progression<string>>{
+
+        return new Observable<Progression<string>>(subscriber => {
+            const progress: Progression<string> = { current: 0, total: 0 };
 
             const file = createWriteStream(dest);
-            get(url, res => {
-                res.pipe(file);
-                file.on("close", () => {
-                    file.close(() => resolve(dest))
-                }).on("error", err => {
-                    unlink(dest, () => reject(err));
-                });
-            }).on("error", err => {
-                unlink(dest, () => reject(err));
+
+            file.on("close", () => { 
+                progress["data"] = dest;
+                subscriber.next(progress); subscriber.complete(); 
             });
-        });
+            file.on("error", err => unlink(dest, () => subscriber.error(err)));
+
+            const req = get(url, res => {
+
+                progress.total = parseInt(res.headers?.["content-length"] || "0", 10);
+
+                res.on("data", chunk => {
+                    progress.current += chunk.length;
+                    subscriber.next(progress);
+                });
+
+                res.pipe(file);
+
+            });
+
+            req.on("error", err => { subscriber.error(err); });
+
+        }).pipe(tap({error: e => log.error(e)}), shareReplay(1));
+        
+    }
+
+    public downloadBuffer(url: string): Observable<Buffer>{
+
+        return new Observable<Buffer>(subscriber => {
+            const allChunks: Buffer[] = [];
+
+            const req = get(url, res => {
+                res.on("data", chunk => {
+                    allChunks.push(chunk);
+                });
+                res.on('end', () => {
+                    subscriber.next(Buffer.concat(allChunks));
+                    subscriber.complete();
+                });
+                res.on('error', (err) => subscriber.error(err))
+            });
+
+            req.on("error", err => { subscriber.error(err); });
+
+        }).pipe(tap({error: e => log.error(e)}), shareReplay(1));
     }
 
 }

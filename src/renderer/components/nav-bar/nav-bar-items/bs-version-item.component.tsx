@@ -98,7 +98,7 @@ export function BsVersionItem(props: {version: BSVersion}) {
     return (
         <NavBarItem onCancel={cancel} progress={downloading ? downloadPercent : 0} isActive={isActive() && !downloading} isDownloading={downloading}>
             {props.version.name ? (
-                <Tippy content={props.version.BSVersion} placement="right-end" arrow={false} className="font-bold !bg-main-color-3" duration={[100, 0]} animation="shift-away-subtle">
+                <Tippy content={props.version.BSVersion} placement="right-end" arrow={false} className="font-bold !bg-neutral-900" duration={[100, 0]} animation="shift-away-subtle">
                     <Link onDoubleClick={handleDoubleClick} to={`/bs-version/${props.version.BSVersion}`} state={props.version} className="w-full flex items-center justify-start content-center max-w-full">
                         {renderIcon()}
                         {renderVersionText()}

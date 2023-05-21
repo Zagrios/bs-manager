@@ -12,6 +12,7 @@ import { spawn } from "child_process";
 import { BS_EXECUTABLE } from "../../constants";
 import log from "electron-log";
 import { deleteFolder, ensureFolderExist, pathExist, unlinkPath } from "../../helpers/fs.helpers";
+import { lastValueFrom } from "rxjs";
 
 export class BsModsManagerService {
 
@@ -102,7 +103,7 @@ export class BsModsManagerService {
         await ensureFolderExist(this.utilsService.getTempPath());
         const dest = path.join(tempPath, fileName);
 
-        const zipPath = await this.requestService.downloadFile(zipUrl, dest);
+        const zipPath = (await lastValueFrom(this.requestService.downloadFile(zipUrl, dest))).data;
         const zip = new StreamZip.async({file : zipPath});
 
         return {zip, zipPath};
