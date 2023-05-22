@@ -61,17 +61,30 @@ export class RequestService {
         
     }
 
-    public downloadBuffer(url: string): Observable<Buffer>{
+    public downloadBuffer(url: string): Observable<Progression<Buffer>>{
 
-        return new Observable<Buffer>(subscriber => {
+        return new Observable<Progression<Buffer>>(subscriber => {
+            
+            const progress: Progression<Buffer> = {
+                current: 0,
+                total: 0,
+                data: null
+            };
+
             const allChunks: Buffer[] = [];
 
             const req = get(url, res => {
+
+                progress.total = parseInt(res.headers?.["content-length"] || "0", 10);
+
                 res.on("data", chunk => {
                     allChunks.push(chunk);
+                    progress.current += chunk.length;
+                    subscriber.next(progress);
                 });
                 res.on('end', () => {
-                    subscriber.next(Buffer.concat(allChunks));
+                    progress.data = Buffer.concat(allChunks);
+                    subscriber.next(progress);
                     subscriber.complete();
                 });
                 res.on('error', (err) => subscriber.error(err))
