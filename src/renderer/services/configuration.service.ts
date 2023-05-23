@@ -1,4 +1,4 @@
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable, shareReplay } from "rxjs";
 import { DefaultConfigKey, defaultConfiguration } from "renderer/config/default-configuration.config";
 
 export class ConfigurationService {
@@ -40,9 +40,9 @@ export class ConfigurationService {
         this.emitChange(key);
     }
 
-    public watch<T>(key: DefaultConfigKey | string): BehaviorSubject<T>{
+    public watch<T>(key: DefaultConfigKey | string): Observable<T>{
         if(this.observers.has(key)){ return this.observers.get(key); }
         this.observers.set(key, new BehaviorSubject(this.get(key)));
-        return this.observers.get(key);
+        return this.observers.get(key).asObservable();
     }
 }

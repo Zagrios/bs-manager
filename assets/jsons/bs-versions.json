@@ -533,5 +533,13 @@
 		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/clans/32055887/c328e407367e9914abaf92f609501877ee5abb63.png",
 		"ReleaseDate": "1680623885",
 		"year": "2023"
+	},
+	{
+		"BSVersion": "1.29.4",
+		"BSManifest": "6291266771922375922",
+		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/3708194993422325380",
+		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/clans/32055887/9c3d476c03e4a2ac72ca5df016b7c94d242b41cb.png",
+		"ReleaseDate": "1683644991",
+		"year": "2023"
 	}
 ]

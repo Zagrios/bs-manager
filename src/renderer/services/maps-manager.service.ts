@@ -11,10 +11,9 @@ import { OpenSaveDialogOption } from "shared/models/ipc";
 import { NotificationService } from "./notification.service";
 import { ConfigurationService } from "./configuration.service";
 import { ArchiveProgress } from "shared/models/archive.interface";
-import { map, last, catchError, distinctUntilChanged, mergeMap } from "rxjs/operators";
+import { map, last, catchError } from "rxjs/operators";
 import { ProgressionInterface } from "shared/models/progress-bar";
 import { VersionFolderLinkerService, VersionLinkerActionType } from "./version-folder-linker.service";
-import equal from "fast-deep-equal";
 
 export class MapsManagerService {
 
@@ -117,7 +116,7 @@ export class MapsManagerService {
 
         if(!resFile.success){ return; }
 
-        const exportProgress$: Observable<ProgressionInterface> = await this.ipcService.sendV2<ArchiveProgress, {version: BSVersion, maps: BsmLocalMap[], outPath: string}>("export-maps", {args: {version, maps, outPath: resFile.data}}).pipe(
+        const exportProgress$: Observable<ProgressionInterface> = this.ipcService.sendV2<ArchiveProgress, {version: BSVersion, maps: BsmLocalMap[], outPath: string}>("export-maps", {args: {version, maps, outPath: resFile.data}}).pipe(
             map(p => {
                 return { progression: (p.prossesedFiles / p.totalFiles) * 100, label: `${p.prossesedFiles} / ${p.totalFiles}` } as ProgressionInterface
             })
@@ -128,6 +127,7 @@ export class MapsManagerService {
         await exportProgress$.toPromise().catch(e => {
             this.notifications.notifyError({title: "notifications.types.error", desc: e.message});
         }).then(() => {
+            // TODO TRANSLATE
             this.notifications.notifySuccess({title: "Export terminé 🎉", duration: 3000});
             this.progressBar.complete();
             this.progressBar.hide(true);
@@ -159,9 +159,7 @@ export class MapsManagerService {
     }
 
     public $mapsLinkingPending(version: BSVersion): Observable<boolean>{
-        return this.linker.queue$.pipe(mergeMap(async queue => {
-            return queue.some(q => q.relativeFolder.includes(MapsManagerService.RELATIVE_MAPS_FOLDER) && equal(q.version, version));
-        }), distinctUntilChanged());
+        return this.linker.$isVersionFolderPending(version, MapsManagerService.RELATIVE_MAPS_FOLDER);
     }
 
 }

@@ -6,12 +6,15 @@ import path from "path";
 import { UtilsService } from "../utils.service";
 import md5File from "md5-file";
 import fs from "fs"
-import StreamZip from "node-stream-zip";
 import { RequestService } from "../request.service";
 import { spawn } from "child_process";
 import { BS_EXECUTABLE } from "../../constants";
 import log from "electron-log";
-import { deleteFolder, ensureFolderExist, pathExist, unlinkPath } from "../../helpers/fs.helpers";
+import { deleteFolder, pathExist, unlinkPath } from "../../helpers/fs.helpers";
+import { lastValueFrom } from "rxjs";
+import JSZip from "jszip"
+import { extractZip } from "../../helpers/zip.helpers";
+import { ensureFolderExist } from "../../helpers/fs.helpers";
 
 export class BsModsManagerService {
 
@@ -95,17 +98,20 @@ export class BsModsManagerService {
         return this.getIpaFromHash(injectorMd5);
     }
 
-    private async downloadZip(zipUrl: string): Promise<{zip: StreamZip.StreamZipAsync, zipPath: string}>{
+    private async downloadZip(zipUrl: string): Promise<JSZip>{
         zipUrl = path.join(this.beatModsApi.BEAT_MODS_URL, zipUrl);
-        const fileName = path.basename(zipUrl);
-        const tempPath = this.utilsService.getTempPath();
-        await ensureFolderExist(this.utilsService.getTempPath());
-        const dest = path.join(tempPath, fileName);
 
-        const zipPath = await this.requestService.downloadFile(zipUrl, dest);
-        const zip = new StreamZip.async({file : zipPath});
+        const buffer = await lastValueFrom(this.requestService.downloadBuffer(zipUrl)).then(progress => progress.data).catch(e => {
+            log.error("ZIP", "Error while downloading zip", e);
+            return undefined
+        });
 
-        return {zip, zipPath};
+        if(!buffer){ return null; }
+
+        return JSZip.loadAsync(buffer).catch(e => {
+            log.error("ZIP", "Error while loading zip", e);
+            return null
+        });
     }
 
     private async executeBSIPA(version: BSVersion, args: string[]): Promise<boolean>{
@@ -134,23 +140,22 @@ export class BsModsManagerService {
     }
 
     private async installMod(mod: Mod, version: BSVersion): Promise<boolean>{
-    
+
         this.utilsService.ipcSend<ModInstallProgression>("mod-installed", {success: true, data: {name: mod.name, progression: ((this.nbInstalledMods + 1) / this.nbModsToInstall) * 100}}) 
 
         const download = this.getModDownload(mod, version);
 
         if(!download){ return false; }
 
-        const {zip, zipPath} = await this.downloadZip(download.url);
+        const zip = await this.downloadZip(download.url);
 
         if(!zip){ return false; }
 
         const crypto = require('crypto');
-        const entries = await zip.entries();
+        const files = await zip.files;
 
-        const checkedEntries = (await Promise.all(Object.values(entries).map(async (entry) => {
-            if(!entry.isFile){ return undefined; }
-            const data = await zip.entryData(entry);
+        const checkedEntries = (await Promise.all(Object.values(files).map(async (entry) => {
+            const data = await entry.async("nodebuffer");
             const entryMd5 = crypto.createHash('md5').update(data).digest('hex')
             return download.hashMd5.some(md5 => md5.hash === entryMd5) ? entry : undefined;
         }))).filter(entry => !!entry);
@@ -161,12 +166,16 @@ export class BsModsManagerService {
         const isBSIPA = mod.name.toLowerCase() === "bsipa";
         const destDir = isBSIPA ? verionPath : path.join(verionPath, ModsInstallFolder.PENDING);
 
-        const extracted = await zip.extract(null, destDir).then(() => true).catch(err => {log.error(err); return false});
+        await ensureFolderExist(destDir);
+        const extracted = await extractZip(zip, destDir).then(() => true).catch(e => {
+            log.error("EXTRACT MOD ZIP", e);
+            return false;
+        })
 
-        await zip.close();
-        await unlinkPath(zipPath);
-
-        const res = isBSIPA ? (extracted && (await this.executeBSIPA(version, ["-n"]))) : extracted;
+        const res = isBSIPA ? (extracted && (await this.executeBSIPA(version, ["-n"]).catch(e => {
+            log.error(e);
+            return false;
+        }))) : extracted;
 
         res && this.nbInstalledMods++;
 

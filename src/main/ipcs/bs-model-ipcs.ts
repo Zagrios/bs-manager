@@ -1,8 +1,16 @@
 import { ipcMain } from "electron";
 import { UtilsService } from "../services/utils.service";
 import { IpcRequest } from "shared/models/ipc";
-import { MSModel } from "shared/models/model-saber/model-saber.model";
+import { MSModel, MSModelType } from "shared/models/models/model-saber.model";
 import { LocalModelsManagerService } from "../services/additional-content/local-models-manager.service";
+import { IpcService } from "../services/ipc.service";
+import { BSVersion } from "shared/bs-version.interface";
+import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
+import { from } from "rxjs";
+import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
+import { ModelDownload } from "renderer/services/models-management/models-downloader.service";
+
+const ipc = IpcService.getInstance();
 
 ipcMain.on("one-click-install-model", async (event, request: IpcRequest<MSModel>) => {
     const utils = UtilsService.getInstance();
@@ -58,4 +66,25 @@ ipcMain.on("is-models-deep-links-enabled", async (event, request: IpcRequest<voi
         utils.ipcSend(request.responceChannel, {success: false});
     }
 
+});
+
+ipc.on<ModelDownload>("download-model", async (req, reply) => {
+    const models = LocalModelsManagerService.getInstance();
+    reply(models.downloadModel(req.args.model, req.args.version));
+});
+
+ipc.on<{version: BSVersion, type: MSModelType}>("get-version-models", async (req, reply) => {
+    const models = LocalModelsManagerService.getInstance();
+    const res = await models.getModels(req.args.type, req.args.version);
+    reply(res);
+});
+
+ipc.on<{version: BSVersion, models: BsmLocalModel[], outPath: string}>("export-models", async (req, reply) => {
+    const models = LocalModelsManagerService.getInstance();
+    reply(models.exportModels(req.args.outPath, req.args.version, req.args.models));
+});
+
+ipc.on<BsmLocalModel[]>("delete-models", async (req, reply) => {
+    const models = LocalModelsManagerService.getInstance();
+    reply(models.deleteModels(req.args));
 });

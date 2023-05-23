@@ -130,6 +130,6 @@ export async function copyDirectoryWithJunctions(src: string, dest: string, opti
 export interface Progression<T = unknown>{
     total: number;
     current: number;
-    extra?: T;
+    data?: T;
 }
 

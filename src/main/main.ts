@@ -21,6 +21,7 @@ import { LocalModelsManagerService } from './services/additional-content/local-m
 import { APP_NAME } from './constants';
 import { BSLauncherService } from './services/bs-launcher.service';
 import { IpcRequest } from 'shared/models/ipc';
+import { MSModelType } from '../shared/models/models/model-saber.model';
 
 const isDebug = process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 
