@@ -6,8 +6,9 @@ import { mkdir, writeFile } from 'fs/promises';
 export async function extractZip(zip: JSZip, dest: string): Promise<string[]>{
     if(!await pathExist(dest)){ throw new Error(`Path ${dest} does not exist`); }
     const files: string[] = [];
-    await zip.forEach(async (relativePath, entry) => {
-        if(entry.dir){ return; }
+
+    for(const [relativePath, entry] of Object.entries(zip.files)){
+        if(entry.dir){ continue; }
 
         const content = await entry.async("nodebuffer");
         const outPath = path.join(dest, relativePath);
@@ -17,7 +18,7 @@ export async function extractZip(zip: JSZip, dest: string): Promise<string[]>{
         await writeFile(outPath, content);
 
         files.push(outPath);
-    });
+    }
 
     return files;
 }
