@@ -1,5 +1,5 @@
 import equal from "fast-deep-equal";
-import { memo, useState } from "react";
+import { memo, useRef, useState } from "react";
 import { MSModel, MSModelType } from "shared/models/models/model-saber.model";
 import { BsmImage } from "../shared/bsm-image.component";
 import { motion } from "framer-motion";
@@ -16,6 +16,7 @@ import { BsmButton } from "../shared/bsm-button.component";
 import { BsmBasicSpinner } from "../shared/bsm-basic-spinner/bsm-basic-spinner.component";
 import { isValidUrl } from "shared/helpers/url.helpers";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
+import useDoubleClick from "use-double-click";
 
 type Props<T> = {
     selected?: boolean,
@@ -26,7 +27,8 @@ type Props<T> = {
     onDelete?: (value: T) => void,
     onDownload?: (value: T) => void,
     onCancelDownload?: (value: T) => void
-} & Partial<MSModel> & Partial<BsmLocalModel> & Omit<React.ComponentProps<"li">, "id">
+    onDoubleClick?: (value: T) => void
+} & Partial<MSModel> & Partial<BsmLocalModel> & Omit<React.ComponentProps<"li">, "id" | "onDoubleClick">
 
 function modelItem<T = unknown>(props: Props<T>) {
 
@@ -34,6 +36,14 @@ function modelItem<T = unknown>(props: Props<T>) {
     const color = useThemeColor("first-color");
     const [hovered, setHovered] = useState(false);
     const [idContentCopied, setIdContentCopied] = useState<string>(null);
+    const ref = useRef();
+
+    useDoubleClick({
+        ref,
+        latency: props.onDoubleClick ? 200 : 0,
+        onSingleClick: (e) => props?.onClick?.(e as unknown as React.MouseEvent<HTMLLIElement>),
+        onDoubleClick: () => props?.onDoubleClick?.(props.callbackValue)
+    });
 
     const modelPageUrl = (() => {
         if(!props.id){ return null; }
@@ -88,18 +98,20 @@ function modelItem<T = unknown>(props: Props<T>) {
     }
 
     return (
-        <motion.li className={`relative flex-grow min-w-[16rem] h-64 cursor-pointer ${props.className ?? ""}`} onHoverStart={() => setHovered(() => true)} onHoverEnd={() => setHovered(() => false)} onClick={props.onClick}>
+        <motion.li className={`relative flex-grow min-w-[16rem] h-64 cursor-pointer ${props.className ?? ""}`} onHoverStart={() => setHovered(() => true)} onHoverEnd={() => setHovered(() => false)}>
             <GlowEffect visible={props.selected || hovered}/>
             <div className="absolute top-0 left-0 w-full h-full rounded-lg overflow-hidden blur-none bg-black shadow-sm shadow-black">
-                <BsmImage className={`absolute top-0 left-0 w-full h-full object-cover ${props.type === MSModelType.Avatar ? "object-top" : ""}`} image={thumbnailUrl} placeholder={defaultImage} loading="lazy"/>
-                <div className="absolute top-0 right-0 h-full w-0 flex flex-col items-end gap-1 pt-1.5 pr-1.5">
-                    {!props.isDownloading ? (
-                        actionButtons().map((button, index) => (
-                            <BsmButton key={index} className="w-8 h-8 p-1 rounded-md transition-transform duration-150 shadow-black shadow-sm" style={{transitionDelay: `${index * 50}ms`, transform: hovered ? "translate(0%)" : "translate(150%)"}} icon={button.icon} iconColor={button.iconColor} onClick={e => {e.stopPropagation(); e.preventDefault(); button.action();}} withBar={false}/>
-                        ))
-                    ): (
-                        <BsmBasicSpinner className="w-7 h-7 p-1 rounded-md bg-main-color-2 flex items-center justify-center shadow-black shadow-sm" spinnerClassName="brightness-200" thikness="3.5px" style={{color}}/>
-                    )}
+                <div ref={ref} className="contents">
+                    <BsmImage className={`absolute top-0 left-0 w-full h-full object-cover ${props.type === MSModelType.Avatar ? "object-top" : ""}`} image={thumbnailUrl} placeholder={defaultImage} loading="lazy"/>
+                    <div className="absolute top-0 right-0 h-full w-0 flex flex-col items-end gap-1 pt-1.5 pr-1.5">
+                        {!props.isDownloading ? (
+                            actionButtons().map((button, index) => (
+                                <BsmButton key={index} className="w-8 h-8 p-1 rounded-md transition-transform duration-150 shadow-black shadow-sm" style={{transitionDelay: `${index * 50}ms`, transform: hovered ? "translate(0%)" : "translate(150%)"}} icon={button.icon} iconColor={button.iconColor} onClick={e => {e.stopPropagation(); e.preventDefault(); button.action();}} withBar={false}/>
+                            ))
+                        ): (
+                            <BsmBasicSpinner className="w-7 h-7 p-1 rounded-md bg-main-color-2 flex items-center justify-center shadow-black shadow-sm" spinnerClassName="brightness-200" thikness="3.5px" style={{color}}/>
+                        )}
+                    </div>
                 </div>
                 <motion.div className="absolute top-[83%] left-0 w-full h-full px-2 flex flex-col gap-1.5 bg-main-color-3 bg-opacity-60 backdrop-blur-md transition-all delay-150 hover:top-0 group" onClick={e =>{e.stopPropagation(); e.preventDefault()}}>
                     <div className="w-full flex justify-center items-center mt-1.5">

@@ -8,6 +8,7 @@ import { DownloadModelsModal } from "renderer/components/modal/modal-types/model
 import { ProgressBarService } from "../progress-bar.service";
 import { Progression } from "main/helpers/fs.helpers";
 import { ProgressionInterface } from "shared/models/progress-bar";
+import equal from "fast-deep-equal";
 
 export class ModelsDownloaderService {
 
@@ -59,11 +60,11 @@ export class ModelsDownloaderService {
 
     }
 
-    public addModelToDownload(model: ModelDownload): ModelDownload{
+    public addModelToDownload(model: ModelDownload): void{
+        if(this.queue$.value.some(m => equal(m, model))){ return null; }
         const queue = this.queue$.value;
         queue.push(model);
         this.queue$.next([...queue]);
-        return model;
     }
 
     public removeFromDownloadQueue(download: ModelDownload){
