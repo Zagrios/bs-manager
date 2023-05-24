@@ -182,6 +182,7 @@ export const DownloadModelsModal: ModalComponent<void, {version: BSVersion, type
                                 callbackValue={model}
                                 isDownloading={equal(currentDownload, {model, version} as ModelDownload)}
                                 onDownload={!isModelOwned(model) ? handleDownloadModel: undefined}
+                                onDoubleClick={(!isModelOwned(model)) ? handleDownloadModel: undefined}
                                 onCancelDownload={modelPendingDownload(model) ? handleCancelDownload : undefined}
                             />
                         ))}
