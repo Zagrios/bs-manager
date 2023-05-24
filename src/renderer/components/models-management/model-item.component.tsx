@@ -88,20 +88,20 @@ function modelItem<T = unknown>(props: Props<T>) {
     }
 
     return (
-        <motion.li className={`relative flex-grow min-w-[14rem] h-56 cursor-pointer ${props.className ?? ""}`} onHoverStart={() => setHovered(() => true)} onHoverEnd={() => setHovered(() => false)} onClick={props.onClick}>
+        <motion.li className={`relative flex-grow min-w-[16rem] h-64 cursor-pointer ${props.className ?? ""}`} onHoverStart={() => setHovered(() => true)} onHoverEnd={() => setHovered(() => false)} onClick={props.onClick}>
             <GlowEffect visible={props.selected || hovered}/>
             <div className="absolute top-0 left-0 w-full h-full rounded-lg overflow-hidden blur-none bg-black shadow-sm shadow-black">
                 <BsmImage className={`absolute top-0 left-0 w-full h-full object-cover ${props.type === MSModelType.Avatar ? "object-top" : ""}`} image={thumbnailUrl} placeholder={defaultImage} loading="lazy"/>
                 <div className="absolute top-0 right-0 h-full w-0 flex flex-col items-end gap-1 pt-1.5 pr-1.5">
                     {!props.isDownloading ? (
                         actionButtons().map((button, index) => (
-                            <BsmButton key={index} className="w-7 h-7 p-1 rounded-md transition-transform duration-150 shadow-black shadow-sm" style={{transitionDelay: `${index * 50}ms`, transform: hovered ? "translate(0%)" : "translate(150%)"}} icon={button.icon} iconColor={button.iconColor} onClick={e => {e.stopPropagation(); e.preventDefault(); button.action();}} withBar={false}/>
+                            <BsmButton key={index} className="w-8 h-8 p-1 rounded-md transition-transform duration-150 shadow-black shadow-sm" style={{transitionDelay: `${index * 50}ms`, transform: hovered ? "translate(0%)" : "translate(150%)"}} icon={button.icon} iconColor={button.iconColor} onClick={e => {e.stopPropagation(); e.preventDefault(); button.action();}} withBar={false}/>
                         ))
                     ): (
                         <BsmBasicSpinner className="w-7 h-7 p-1 rounded-md bg-main-color-2 flex items-center justify-center shadow-black shadow-sm" spinnerClassName="brightness-200" thikness="3.5px" style={{color}}/>
                     )}
                 </div>
-                <motion.div className="absolute top-[80%] left-0 w-full h-full px-2 flex flex-col gap-1.5 bg-main-color-3 bg-opacity-60 backdrop-blur-md transition-all delay-150 hover:top-0 group" onClick={e =>{e.stopPropagation(); e.preventDefault()}}>
+                <motion.div className="absolute top-[83%] left-0 w-full h-full px-2 flex flex-col gap-1.5 bg-main-color-3 bg-opacity-60 backdrop-blur-md transition-all delay-150 hover:top-0 group" onClick={e =>{e.stopPropagation(); e.preventDefault()}}>
                     <div className="w-full flex justify-center items-center mt-1.5">
                         <BsmLink className={`block grow overflow-hidden font-bold whitespace-nowrap text-ellipsis ${props.id ? "cursor-pointer hover:underline" : ""}`} href={modelPageUrl}>{props.name}</BsmLink>
                         <BsmIcon className="shrink-0 h-8 group-hover:rotate-180 transition-transform w-fit" icon="chevron-top"/>
