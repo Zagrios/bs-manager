@@ -11,7 +11,7 @@ import Tippy from "@tippyjs/react";
 import { followCursor } from "tippy.js"
 import defaultImage from '../../../../assets/images/default-version-img.jpg'
 import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
-import { BsmIconType } from "../svgs/bsm-icon.component";
+import { BsmIcon, BsmIconType } from "../svgs/bsm-icon.component";
 import { BsmButton } from "../shared/bsm-button.component";
 import { BsmBasicSpinner } from "../shared/bsm-basic-spinner/bsm-basic-spinner.component";
 import { isValidUrl } from "shared/helpers/url.helpers";
@@ -101,8 +101,11 @@ function modelItem<T = unknown>(props: Props<T>) {
                         <BsmBasicSpinner className="w-7 h-7 p-1 rounded-md bg-main-color-2 flex items-center justify-center shadow-black shadow-sm" spinnerClassName="brightness-200" thikness="3.5px" style={{color}}/>
                     )}
                 </div>
-                <motion.div className="absolute cursor-default top-[80%] left-0 w-full h-full px-2 pt-2.5 flex flex-col gap-1.5 bg-main-color-3 bg-opacity-60 backdrop-blur-md transition-all delay-150 hover:top-0" onClick={e =>{e.stopPropagation(); e.preventDefault()}}>
-                    <BsmLink className={`block w-fit max-w-full overflow-hidden font-bold whitespace-nowrap text-ellipsis ${props.id ? "cursor-pointer hover:underline" : ""}`} href={modelPageUrl}>{props.name}</BsmLink>
+                <motion.div className="absolute top-[80%] left-0 w-full h-full px-2 flex flex-col gap-1.5 bg-main-color-3 bg-opacity-60 backdrop-blur-md transition-all delay-150 hover:top-0 group" onClick={e =>{e.stopPropagation(); e.preventDefault()}}>
+                    <div className="w-full flex justify-center items-center mt-1.5">
+                        <BsmLink className={`block grow overflow-hidden font-bold whitespace-nowrap text-ellipsis ${props.id ? "cursor-pointer hover:underline" : ""}`} href={modelPageUrl}>{props.name}</BsmLink>
+                        <BsmIcon className="shrink-0 h-8 group-hover:rotate-180 transition-transform w-fit" icon="chevron-top"/>
+                    </div>
                     <BsmLink className={`block w-fit max-w-full overflow-hidden whitespace-nowrap text-ellipsis brightness-200 ${authorPageUrl ? "cursor-pointer hover:underline" : ""}`} style={{color}} href={authorPageUrl}>{props.author ?? ''}</BsmLink>
                     <ul className="flex flex-row flex-wrap gap-1">
                         {modelTags?.map(tag => (
