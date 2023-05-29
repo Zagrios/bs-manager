@@ -472,7 +472,8 @@
                 },
                 "password": {
                     "label": "Passwort",
-                    "placeholder": "Gebe dein Passwort ein"
+                    "placeholder": "Gebe dein Passwort ein",
+                    "max-length-warning": "Das Passwort überschreitet 64 Zeichen! Wenn das Passwort ungültig ist, versuchen Sie nur die ersten 64 Zeichen einzugeben." 
                 },
                 "stay": {
                     "label": "Verbunden bleiben"
