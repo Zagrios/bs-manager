@@ -471,7 +471,8 @@
                 },
                 "password": {
                     "label": "Mot de passe",
-                    "placeholder": "Entre ton mot de passe"
+                    "placeholder": "Entre ton mot de passe",
+                    "max-length-warning": "Le mot de passe dépasse 64 caractères ! Si le mot de passe est invalide, tente d'entrer seulement ses 64 premiers caractères." 
                 },
                 "stay": {
                     "label": "Rester connecté"

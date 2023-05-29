@@ -472,7 +472,8 @@
                 },
                 "password": {
                     "label": "Password",
-                    "placeholder": "Enter your password"
+                    "placeholder": "Enter your password",
+                    "max-length-warning": "The password exceeds 64 characters! If the password is invalid, try to put its first 64 characters." 
                 },
                 "stay": {
                     "label": "Stay connected"
