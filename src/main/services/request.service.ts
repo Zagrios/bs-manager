@@ -24,8 +24,8 @@ export class RequestService {
                 res.on('end', () => {
                     resolve(JSON.parse(body));
                 });
-                res.on('error', (err) => reject(err))
-            }).on("error", err => reject(err));
+                res.on('error', (err) => {log.error(err); reject(err)})
+            }).on("error", err =>{log.error(err); reject(err)});
         });
     }
     
