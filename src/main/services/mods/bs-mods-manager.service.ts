@@ -253,11 +253,16 @@ export class BsModsManagerService {
             this.getModsInDir(version, ModsInstallFolder.PLUGINS),
             this.getModsInDir(version, ModsInstallFolder.LIBS)
         ]).then(dirMods => {
-            const res = [];
-            if(!!bsipa){ res.push(bsipa); }
-            const installedMods = Array.from(new Map<string, Mod>(dirMods.flat().map(m => [m.name, m])).values());
-            res.push(...installedMods);
-            return res;
+            const modsDict = new Map<string, Mod>();
+
+            if(!!bsipa){ modsDict.set(bsipa.name, bsipa); }
+
+            for(const mod of dirMods.flat()){
+                if(modsDict.has(mod.name)){ continue; }
+                modsDict.set(mod.name, mod);
+            }
+
+            return Array.from(modsDict.values());
         });
     }
 
