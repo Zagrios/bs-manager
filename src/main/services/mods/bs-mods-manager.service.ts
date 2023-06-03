@@ -48,7 +48,7 @@ export class BsModsManagerService {
     private async getModFromHash(hash: string): Promise<Mod>{
         const allMods = await this.beatModsApi.getAllMods();
         return allMods.find(mod => {
-            if(mod.name.toLowerCase() === "bsipa" || mod.status === "declined"){ return false; }
+            if(mod.name.toLowerCase() === "bsipa"){ return false; }
             return mod.downloads.some(download => download.hashMd5.some(md5 => md5.hash === hash));
         })
     }
