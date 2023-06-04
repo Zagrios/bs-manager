@@ -21,7 +21,7 @@ export class RequestService {
             const response = await fetch(url, options);
 
             if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status} ${response}`);
+                throw new Error(`HTTP error! status: ${response.status} ${response}`);
             }
             
             return await response.json();

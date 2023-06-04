@@ -1,10 +1,10 @@
 import { writeFileSync } from "fs";
 import { readJSON } from "fs-extra";
-import { get } from "https";
-import isOnline from "is-online";
 import path from "path";
 import { Supporter } from "shared/models/supporters/supporter.interface";
 import { UtilsService } from "./utils.service";
+import { RequestService } from "./request.service";
+import { allSettled } from "../../shared/helpers/promise.helpers";
 
 export class SupportersService {
 
@@ -16,6 +16,8 @@ export class SupportersService {
     private cache: Supporter[];
 
     private readonly utilsService: UtilsService;
+    private readonly requestService: RequestService;
+
 
     public static getInstance(): SupportersService{
         if(!SupportersService.instance){ SupportersService.instance = new SupportersService(); }
@@ -24,6 +26,7 @@ export class SupportersService {
 
     private constructor(){
         this.utilsService = UtilsService.getInstance();
+        this.requestService = RequestService.getInstance();
     }
 
     private async updateLocalSupporters(supporters: Supporter[]): Promise<void>{
@@ -31,15 +34,8 @@ export class SupportersService {
         writeFileSync(patreonsPath, JSON.stringify(supporters, null, "\t"), {encoding: 'utf-8', flag: 'w'});
     }
 
-    private async getRemoteSupporters(): Promise<Supporter[]>{
-        return new Promise<Supporter[]>((resolve, reject) => {
-            let body = ''
-            get(this.PATREONS_URL, (res) => {
-                res.on('data', chunk => body += chunk);
-                res.on('end', () => resolve(JSON.parse(body)));
-                res.on('error', () => reject(null))
-            })
-         })
+    private getRemoteSupporters(): Promise<Supporter[]>{
+        return this.requestService.getJSON(this.PATREONS_URL);
     }
 
     private async getLocalSupporters(): Promise<Supporter[]>{
@@ -50,11 +46,9 @@ export class SupportersService {
     private async loadSupporters(): Promise<Supporter[]>{
         if(!!this.cache && this.cache.length){ return this.cache; }
 
-        const isOnlineRes = await isOnline({timeout: 1500});
-
-        const [localVersions, remoteVersions] = await Promise.all([
-            this.getLocalSupporters(),  (isOnlineRes && this.getRemoteSupporters())
-        ]);
+        const [localVersions, remoteVersions] = await allSettled([
+            this.getLocalSupporters(),  this.getRemoteSupporters()
+        ], {keepStructure: true});
         
         const supporters = remoteVersions?.length ? remoteVersions : localVersions;
 
