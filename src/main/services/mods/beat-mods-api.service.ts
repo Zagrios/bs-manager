@@ -38,7 +38,7 @@ export class BeatModsApiService {
 
     private async getVersionAlias(): Promise<Map<string, BSVersion[]>>{
         if(this.aliasesCache.size){ return this.aliasesCache; }
-        return this.requestService.get<Record<string, string[]>>(this.BEAT_MODS_ALIAS).then(rawAliases => {
+        return this.requestService.getJSON<Record<string, string[]>>(this.BEAT_MODS_ALIAS).then(rawAliases => {
             Object.entries(rawAliases).forEach(([key, value]) => {
                 this.aliasesCache.set(key, value.map(s => ({BSVersion: s} as BSVersion)));
             });
@@ -64,7 +64,7 @@ export class BeatModsApiService {
 
         const alias = await this.getAliasOfVersion(version);
 
-        return this.requestService.get<Mod[]>(this.getVersionModsUrl(alias)).then(mods => {
+        return this.requestService.getJSON<Mod[]>(this.getVersionModsUrl(alias)).then(mods => {
             mods = mods.map(mod => this.asignDependencies(mod, mods));
             this.versionModsCache.set(version.BSVersion, mods);
             return mods;
@@ -73,16 +73,10 @@ export class BeatModsApiService {
 
     public async getAllMods(): Promise<Mod[]>{
         if(!!this.allModsCache){ return this.allModsCache; }
-        return this.requestService.get<Mod[]>(this.getAllModsUrl()).then(mods => {
+        return this.requestService.getJSON<Mod[]>(this.getAllModsUrl()).then(mods => {
             this.allModsCache = mods;
             return this.allModsCache;
         });
     }
-
-    public loadAllMods(){ return this.getAllMods(); }
-
-
-
-
 
 }

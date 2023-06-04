@@ -245,7 +245,7 @@ export class BsModsManagerService {
 
     public async getInstalledMods(version: BSVersion): Promise<Mod[]>{
         this.manifestMatches = [];
-        await this.beatModsApi.loadAllMods();
+        await this.beatModsApi.getAllMods();
         const bsipa = await this.getBsipaInstalled(version);
         return Promise.all([
             this.getModsInDir(version, ModsInstallFolder.PLUGINS_PENDING),
