@@ -1,8 +1,9 @@
-import { RequestOptions, get } from "https";
+import { get } from "https";
 import { createWriteStream, unlink } from "fs";
-import { Progression, unlinkPath } from "main/helpers/fs.helpers";
-import { Observable, buffer, shareReplay, tap } from "rxjs";
+import { Progression } from "main/helpers/fs.helpers";
+import { Observable, shareReplay, tap } from "rxjs";
 import log from "electron-log";
+import fetch, { RequestInfo, RequestInit } from "node-fetch";
 
 export class RequestService {
 
@@ -15,18 +16,20 @@ export class RequestService {
 
     private constructor(){}
 
-    public get<T = any>(options: string|RequestOptions): Promise<T>{
+    public async getJSON<T = unknown>(url: RequestInfo, options?: RequestInit): Promise<T>{
+        try {
+            const response = await fetch(url, options);
 
-        return new Promise((resolve, reject) => {
-            let body = ''
-            get(options, (res) => {
-                res.on('data', chunk => body += chunk);
-                res.on('end', () => {
-                    resolve(JSON.parse(body));
-                });
-                res.on('error', (err) => {log.error(err); reject(err)})
-            }).on("error", err =>{log.error(err); reject(err)});
-        });
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status} ${response}`);
+            }
+            
+            return await response.json();
+        } 
+        catch (err) {
+            log.error(err);
+            throw err;
+        }
     }
     
     public downloadFile(url: string, dest: string): Observable<Progression<string>>{
