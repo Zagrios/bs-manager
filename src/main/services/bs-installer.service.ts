@@ -90,6 +90,8 @@ export class BSInstallerService{
 
   public async downloadBsVersion(downloadInfos: DownloadInfo): Promise<DownloadEvent>{
 
+    // TODO : Can be a lot improved by using ipcV2 and Observable
+
     if(this.downloadProcess && this.downloadProcess.connected){ throw "AlreadyDownloading"; }
     const {bsVersion} = downloadInfos;
     if(!bsVersion){ return {type: "[Error]"}; }
