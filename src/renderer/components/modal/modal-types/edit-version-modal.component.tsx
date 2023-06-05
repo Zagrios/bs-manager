@@ -41,7 +41,7 @@ export const EditVersionModal: ModalComponent<{name: string, color: string}, {ve
          <div>
             <span className="block font-bold tracking-wide text-gray-800 dark:text-gray-200">{t("modals.clone-version.inputs.color.label")}</span>
             <div className="relative w-full h-7 mb-4 bg-light-main-color-1 dark:bg-main-color-1 flex justify-center rounded-md py-1 z-[1]">
-               <SettingColorChooser color={color} onChange={setColor} pickerClassName="!h-32 !w-32"/>
+               <SettingColorChooser color={color} onChange={setColor} pickerClassName="!h-28"/>
                <div className="absolute right-2 top-0 h-full flex items-center">
                   <BsmButton onClick={resetColor} className="px-2 font-bold italic text-sm rounded-md" text="pages.settings.appearance.reset" withBar={false}/>
                </div>
