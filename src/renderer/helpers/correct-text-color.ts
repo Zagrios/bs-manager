@@ -8,5 +8,5 @@ import Color from "color";
 export function getCorrectTextColor(bgHex: string): string{
     if(!bgHex){ return "#000"; }
     const color = Color(bgHex);
-    return color.isLight() ? "#000" : "fff";
+    return color.isLight() ? "#000" : "#fff";
 }

@@ -32,19 +32,22 @@ type Props = {
 export function BsmButton({className, style, imgClassName, iconClassName, icon, image, text, type, active, withBar = true, disabled, onClickOutside, onClick, typeColor, color, title, iconColor, textClassName}: Props) {
 
     const t = useTranslation();
-    const secondColor = useThemeColor("second-color");
+    const {firstColor, secondColor} = useThemeColor();
     const ref = useRef(null);
+
     useClickOutside(ref, onClickOutside);
 
-    const primaryColor = typeColor === "primary" ? useThemeColor("first-color") : typeColor === "secondary" ? secondColor : undefined;
+    const primaryColor = typeColor === "primary" ? firstColor : typeColor === "secondary" ? secondColor : undefined;
 
     const textColor = (() => {
-        if(primaryColor){ return getCorrectTextColor(primaryColor); }
+        if(primaryColor){
+            console.log(getCorrectTextColor(primaryColor), text);
+            return getCorrectTextColor(primaryColor); 
+        }
         return typeColor ? "white" : undefined;
     })();
 
     const renderTypeColor = (() => {
-        if(typeColor === "primary"){ return ""; }
         if(!typeColor){ return `bg-light-main-color-2 dark:bg-main-color-2 ${(!withBar && !disabled) && "hover:brightness-125"}`; }
         if(typeColor === "cancel"){ return "bg-gray-500"; }
         if(typeColor === "error"){ return "bg-red-500"; }
