@@ -1,7 +1,7 @@
 {
   "name": "bs-manager",
   "version": "1.2.0-alpha.3",
-  "description": "A foundation for scalable desktop apps",
+  "description": "BSManager",
   "main": "./dist/main/main.js",
   "author": {
     "name": "Zagrios",
