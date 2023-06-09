@@ -15,6 +15,8 @@ import { lastValueFrom } from "rxjs";
 import JSZip from "jszip"
 import { extractZip } from "../../helpers/zip.helpers";
 import { ensureFolderExist } from "../../helpers/fs.helpers";
+import { readdir } from "fs-extra";
+import recursiveReadDir from "recursive-readdir";
 
 export class BsModsManagerService {
 
@@ -65,14 +67,17 @@ export class BsModsManagerService {
         const bsPath = await this.bsLocalService.getVersionPath(version);
         const modsPath = path.join(bsPath, modsDir);
         if(!(await pathExist(modsPath))){ return []; }
-        const files = fs.readdirSync(modsPath);
-        const promises = files.map(f => {
+        const files = await recursiveReadDir(modsPath);
+        const promises = files.map(filePath => {
             return (async() => {
-                const filePath = path.join(modsPath, f)
-                const ext = path.extname(f);
+
+                const ext = path.extname(filePath);
+
                 if(ext !== ".dll" && ext !== ".exe" && ext !== ".manifest"){ return undefined; }
                 const hash = await md5File(filePath);
+
                 const mod = await this.getModFromHash(hash);
+
                 if(!mod){ return undefined; }
                 if(ext === ".manifest"){
                     this.manifestMatches.push(mod);
