@@ -111,7 +111,7 @@ export class BSInstallerService{
         `-app ${BS_APP_ID}`,
         `-depot ${BS_DEPOT}`,
         `-manifest ${bsVersion.BSManifest}`,
-        `-username ${downloadInfos.username}`,
+        `-username \"${downloadInfos.username}\"`,
         `-dir \"${this.localVersionService.getVersionFolder(downloadVersion)}\"`
       ],
       {shell: true, cwd: this.installLocationService.versionsDirectory}
