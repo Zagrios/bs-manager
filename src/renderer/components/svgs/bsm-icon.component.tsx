@@ -58,9 +58,10 @@ import { ModelTypeSaberIcon } from "./icons/model-type-saber-icon.component";
 import { ModelTypePlatformIcon } from "./icons/model-type-platform-icon.component";
 import { ModelTypeBloqIcon } from "./icons/model-type-bloq-icon.component";
 import { ChevronTopIcon } from "./icons/chevron-top-icon.component";
+import { EyeCrossIcon } from "./icons/eye-cross-icon.component";
 
 export type BsmIconType = BsvMapCharacteristic | MSModelType | (
-   "settings"|"trash"|"favorite"|"folder"|"bsNote"|"check"|"three-dots"|"twitch"|"eye"|"play"|"checkCircleIcon"|"discord"|"info"|
+   "settings"|"trash"|"favorite"|"folder"|"bsNote"|"check"|"three-dots"|"twitch"|"eye"|"play"|"checkCircleIcon"|"discord"|"info"|"eye-cross"|
    "terminal"|"desktop"|"oculus"|"add"|"cross"|"task"|"github"|"close"|"thumbUpFill"|"timerFill"|"pause"|"twitter"|"sync"|"chevron-top"|
    "copy"|"steam"|"edit"|"export"|"patreon"|"search"|"bsMapDifficulty"|"link"|"unlink"|"download"|"filter"|"mee6"|"volume-up"|"volume-off"|"volume-down"|
    "fr-FR-flag"|"es-ES-flag"|"en-US-flag"|"en-EN-flag"|"de-DE-flag"
@@ -124,6 +125,7 @@ export const BsmIcon = memo(({className, icon, style}: {className?: string, icon
         if(icon === "volume-down"){ return <VolumeDownIcon className={className} style={style}/> }
         if(icon === "volume-off"){ return <VolumeOffIcon className={className} style={style}/> }
         if(icon === "chevron-top"){ return <ChevronTopIcon className={className} style={style}/> }
+        if(icon === "eye-cross"){ return <EyeCrossIcon className={className} style={style}/> }
 
         if(icon === MSModelType.Avatar){ return <ModelTypeAvatarIcon className={className} style={style}/> }
         if(icon === MSModelType.Saber){ return <ModelTypeSaberIcon className={className} style={style}/> }
