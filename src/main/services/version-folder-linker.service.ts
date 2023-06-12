@@ -5,7 +5,7 @@ import { BSVersion } from "shared/bs-version.interface";
 import { LocalMapsManagerService } from "./additional-content/local-maps-manager.service";
 import { BSLocalVersionService } from "./bs-local-version.service";
 import { FolderLinkerService, LinkOptions } from "./folder-linker.service";
-import { allSettled } from "../helpers/promise.helpers";
+import { allSettled } from "../../shared/helpers/promise.helpers";
 
 export class VersionFolderLinkerService {
 
@@ -80,6 +80,7 @@ export class VersionFolderLinkerService {
     }
 
     public async isFolderLinked(version: BSVersion, relativeFolder: string): Promise<boolean>{
+        if(!version){ return Promise.reject("no version provided") }
         const versionPath = await this.localVersion.getVersionPath(version);
         const folderPath = this.relativeToFullPath(versionPath, relativeFolder);
         return this.folderLinker.isFolderSymlink(folderPath);

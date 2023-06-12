@@ -4,7 +4,7 @@ import { writeFileSync } from 'fs';
 import { BSVersion } from 'shared/bs-version.interface';
 import { RequestService } from "./request.service"
 import { readJSON } from 'fs-extra';
-import { allSettled } from '../helpers/promise.helpers';
+import { allSettled } from '../../shared/helpers/promise.helpers';
 
 export class BSVersionLibService{
 
@@ -30,7 +30,7 @@ export class BSVersionLibService{
    }
 
     private getRemoteVersions(): Promise<BSVersion[]>{
-        return this.requestService.get<BSVersion[]>(this.REMOTE_BS_VERSIONS_URL);
+        return this.requestService.getJSON<BSVersion[]>(this.REMOTE_BS_VERSIONS_URL);
     }
 
    private async getLocalVersions(): Promise<BSVersion[]>{

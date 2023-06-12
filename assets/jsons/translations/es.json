@@ -1,6 +1,7 @@
 {
     "misc": {
         "download": "Descargar",
+        "add": "Añadir",
         "verify": "Verificar",
         "launch": "Lanzar",
         "mods": "Mods",
@@ -11,11 +12,17 @@
         "delete": "Borrar",
         "accept": "Aceptar",
         "refuse": "Rechazar",
-        "apply": "Aplicar"
+        "apply": "Aplicar",
+        "copy": "Copiar",
+        "copied": "¡Copiado!"
     },
     "nav-bar":{
         "add-version": "Agregar una versión",
-        "settings": "Ajustes"
+        "settings": "Ajustes",
+        "shared": {
+            "text": "Compartidos",
+            "tooltip": "Contenidos compartidos"
+        }
     },
     "pages": {
         "shared-maps":{
@@ -464,7 +471,8 @@
                 },
                 "password": {
                     "label": "Contraseña",
-                    "placeholder": "Introduzca su contraseña"
+                    "placeholder": "Introduzca su contraseña",
+                    "max-length-warning": "¡La contraseña supera los 64 caracteres! Si la contraseña es inválida, intenta ingresar solo sus primeros 64 caracteres." 
                 },
                 "stay": {
                     "label": "Manténgase conectado"
@@ -669,6 +677,169 @@
         "map-item": {
             "by": "Por {songAutor}",
             "mapped-by": "mapeado por"
+        }
+    },
+    "models":{
+        "types": {
+            "singular": {
+                "avatar": "avatar",
+                "saber": "sable",
+                "platform": "plataforma",
+                "bloq": "bloque"
+            },
+            "plural": {
+                "avatar": "avatares",
+                "saber": "sables",
+                "platform": "plataformas",
+                "bloq": "bloques"
+            }
+        },
+        "sorts": {
+            "name": "Nombre",
+            "date": "Fecha",
+            "author": "Autor"
+        },
+        "panel": {
+            "actions": {
+                "search": "Buscar un modelo",
+                "drop-down": {
+                    "delete": "Eliminar modelos",
+                    "export": "Exportar modelos"
+                },
+                "link-models": "Vincular modelos",
+                "unlink-models": "Desvincular los modelos"
+            },
+            "grid":{
+                "loading": "Cargando modelos...",
+                "no-models": "No hay modelos",
+                "download-models": "Descargar modelos"
+            }
+        },
+        "modals": {
+            "delete-model" :{
+                "title": "Eliminar el modelo",
+                "desc": "¿Estás seguro de que quieres eliminar el modelo {modelName}?",
+                "linked-annotation": "Este modelo será eliminado de todas las versiones vinculadas."
+            },
+            "delete-models": {
+                "title": "Eliminar modelos",
+                "desc": "¿Estás seguro de que quieres eliminar los {nb} modelos?",
+                "linked-annotation": "Estos modelos serán eliminados de todas las versiones vinculadas."
+            },
+            "download-models": {
+                "search-btn": "Buscar",
+                "search-placeholder": "Buscar un modelo",
+                "search-tips": {
+                    "header": {
+                        "tag": "Etiqueta",
+                        "desc": "Descripción"
+                    },
+                    "author-desc": "Mostrar solo modelos del autor especificado.",
+                    "hash-desc": "Mostrar solo modelos con el hash especificado.",
+                    "tag-desc": "Mostrar solo modelos con la etiqueta especificada.",
+                    "name-desc": "Mostrar solo modelos con el nombre especificado.",
+                    "discordid-desc": "Mostrar solo modelos del usuario de discord especificado.",
+                    "status-desc": "Mostrar solo modelos con el estado especificado. (solo perfil, y solo para el autor)"
+                },
+                "no-models": "No se encontraron modelos.",
+                "no-internet": "Sin conexión a Internet.",
+                "error-occured": "Ocurrió un error, inténtalo de nuevo más tarde."
+            },
+            "link-models": {
+                "avatar": {
+                    "title": "Vincular avatares",
+                    "desc": "La vinculación de avatares permite compartir avatares entre todas las versiones. Una vez vinculada, esta versión se beneficiará de los avatares compartidos",
+                    "info": "La adición y eliminación de avatares también se compartirá",
+                    "keep-models": {
+                        "label": "Conservar los avatares",
+                        "title": "Conservar los avatares moverá los avatares de la versión actual a la carpeta de avatares compartidos. De lo contrario, se perderán"
+                    },
+                    "valid-btn": "Vincular avatares"
+                },
+                "saber": {
+                    "title": "Vincular sables",
+                    "desc": "La vinculación de sables permite compartir sables entre todas las versiones. Una vez vinculada, esta versión se beneficiará de los sables compartidos",
+                    "info": "La adición y eliminación de sables también se compartirá",
+                    "keep-models": {
+                        "label": "Conservar los sables",
+                        "title": "Conservar los sables moverá los sables de la versión actual a la carpeta de sables compartidos. De lo contrario, se perderán"
+                    },
+                    "valid-btn": "Vincular sables"
+                },
+                "platform": {
+                    "title": "Vincular plataformas",
+                    "desc": "La vinculación de plataformas permite compartir plataformas entre todas las versiones. Una vez vinculada, esta versión se beneficiará de las plataformas compartidas",
+                    "info": "La adición y eliminación de plataformas también se compartirá",
+                    "keep-models": {
+                        "label": "Conservar las plataformas",
+                        "title": "Conservar las plataformas moverá las plataformas de la versión actual a la carpeta de plataformas compartidas. De lo contrario, se perderán"
+                    },
+                    "valid-btn": "Vincular plataformas"
+                },
+                "bloq": {
+                    "title": "Vincular bloqs",
+                    "desc": "La vinculación de bloqs permite compartir bloqs entre todas las versiones. Una vez vinculada, esta versión se beneficiará de los bloqs compartidos",
+                    "info": "La adición y eliminación de bloqs también se compartirá",
+                    "keep-models": {
+                        "label": "Conservar los bloqs",
+                        "title": "Conservar los bloqs moverá los bloqs de la versión actual a la carpeta de bloqs compartidos. De lo contrario, se perderán"
+                    },
+                    "valid-btn": "Vincular bloqs"
+                }
+            },
+            "unlink-models": {
+                "avatar": {
+                    "title": "Desvincular avatares",
+                    "desc": "Atención, desvincular los avatares ya no permitirá el uso de avatares compartidos para esta versión.",
+                    "keep-models": {
+                        "label": "Conservar los avatares",
+                        "title": "Conservar los avatares creará una copia de los avatares compartidos para la versión actual. En caso contrario, ningún avatar se conservará para esta versión."
+                    },
+                    "valid-btn": "Desvincular avatares"
+                },
+                "saber": {
+                    "title": "Desvincular sables",
+                    "desc": "Atención, desvincular los sables ya no permitirá el uso de sables compartidos para esta versión.",
+                    "keep-models": {
+                        "label": "Conservar los sables",
+                        "title": "Conservar los sables creará una copia de los sables compartidos para la versión actual. En caso contrario, ningún sable se conservará para esta versión."
+                    },
+                    "valid-btn": "Desvincular sables"
+                },
+                "platform": {
+                    "title": "Desvincular plataformas",
+                    "desc": "Atención, desvincular las plataformas ya no permitirá el uso de plataformas compartidas para esta versión.",
+                    "keep-models": {
+                        "label": "Conservar las plataformas",
+                        "title": "Conservar las plataformas creará una copia de las plataformas compartidas para la versión actual. En caso contrario, ninguna plataforma se conservará para esta versión."
+                    },
+                    "valid-btn": "Desvincular plataformas"
+                },
+                "bloq": {
+                    "title": "Desvincular bloqs",
+                    "desc": "Atención, desvincular los bloqs ya no permitirá el uso de bloqs compartidos para esta versión.",
+                    "keep-models": {
+                        "label": "Conservar los bloqs",
+                        "title": "Conservar los bloqs creará una copia de los bloqs compartidos para la versión actual. En caso contrario, ningún bloq se conservará para esta versión."
+                    },
+                    "valid-btn": "Desvincular bloqs"
+                }
+            }
+        },
+        "notifications": {
+            "prevent-for-mods": {
+                "title": "Mods necesarios",
+                "desc": "Asegúrate de haber instalado los mods necesarios para usar modelos en BeatSaber",
+                "go-to-mods": "Ir a mods",
+                "not-remind": "No volver a recordarme"
+            },
+            "prevent-for-models-breaks": {
+                "title": "Modelos rotos",
+                "desc": "Desde la actualización del motor de BeatSaber, los modelos ya no son funcionales para esta versión."
+            },
+            "export-success": {
+                "title": "Exportación completada 🎉"
+            }
         }
     },
     "beat-saver": {

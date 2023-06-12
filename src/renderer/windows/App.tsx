@@ -25,20 +25,20 @@ import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import {ModalService } from "renderer/services/modale.service";
 import { ChangelogModal } from "renderer/components/modal/modal-types/changelog-modal/changelog-modal.component";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export default function App() {
 
-    const themeService = ThemeService.getInstance();
-    const pageState = PageStateService.getInstance();
-    const maps = MapsManagerService.getInstance();
-    const playlists = PlaylistsManagerService.getInstance();
-    const models = ModelsManagerService.getInstance();
-    const notification = NotificationService.getInstance();
-    const config = ConfigurationService.getInstance();
-    const os = OsDiagnosticService.getInstance();
+    useService(OsDiagnosticService);
+    const themeService = useService(ThemeService);
+    const pageState = useService(PageStateService);
+    const maps = useService(MapsManagerService);
+    const playlists = useService(PlaylistsManagerService);
+    const models = useService(ModelsManagerService);
+    const notification = useService(NotificationService);
+    const config = useService(ConfigurationService);
     const modals = ModalService.getInsance();
     const updaterService = AutoUpdaterService.getInstance();
-
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -48,10 +48,8 @@ export default function App() {
             document.documentElement.classList.remove('dark');
         });
 
-        updaterService.getHaveBeenUpdated().toPromise().then(v => v && modals.openModal(ChangelogModal));
         checkOneClicks();
-        
-        
+
     }, []);
 
     const checkOneClicks = async () => {
@@ -69,7 +67,7 @@ export default function App() {
         if(!oneClicks.some(enabled => enabled === false)){ return; }
 
         const choice = await notification.notifyWarning({
-            title: "notifications.settings.additional-content.deep-link.check-all-enabled.title", 
+            title: "notifications.settings.additional-content.deep-link.check-all-enabled.title",
             desc: "notifications.settings.additional-content.deep-link.check-all-enabled.description",
             duration: 10_000,
             actions: [
@@ -102,7 +100,7 @@ export default function App() {
         el.scrollIntoView({block: "start", behavior: "smooth"});
 
     }, [location])
-  
+
 
   return (
     <div className="relative w-screen h-screen overflow-hidden flex bg-light-main-color-1 dark:bg-main-color-1 z-0 max-w-full">

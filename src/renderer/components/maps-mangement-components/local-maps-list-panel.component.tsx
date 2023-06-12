@@ -9,7 +9,7 @@ import { MapsDownloaderService } from "renderer/services/maps-downloader.service
 import { VariableSizeList } from "react-window"
 import { MapsRow } from "./maps-row.component"
 import { BehaviorSubject } from "rxjs"
-import { debounceTime, last, map, mergeMap } from "rxjs/operators"
+import { debounceTime, last, mergeMap, tap } from "rxjs/operators"
 import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service"
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service"
 import { useTranslation } from "renderer/hooks/use-translation.hook"
@@ -115,11 +115,8 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
 
         const loadMapsObs$ = mapsManager.getMaps(version);
 
-        loadMapsObs$.pipe(map(progess => {
-            return Math.floor(((progess.loaded / progess.total) * 100));
-        })).subscribe(percent => loadPercent$.next(percent));
-
         subs.push(loadMapsObs$.pipe(
+            tap(progress => loadPercent$.next(Math.floor(((progress.loaded / progress.total) * 100)))),
             last(),
             mergeMap(async progress => {
                 if(os.isOffline){ return progress.maps; }

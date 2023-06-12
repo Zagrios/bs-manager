@@ -16,12 +16,12 @@ import log from 'electron-log';
 import { WindowManagerService } from "../window-manager.service";
 import { ipcMain } from "electron";
 import { IpcRequest } from 'shared/models/ipc';
-import { Observable } from "rxjs";
+import { Observable, lastValueFrom } from "rxjs";
 import { Archive } from "../../models/archive.class";
 import { deleteFolder, ensureFolderExist, getFoldersInFolder, pathExist } from "../../helpers/fs.helpers";
 import { readFile } from "fs/promises";
 import { FolderLinkerService } from "../folder-linker.service";
-import { allSettled } from "../../helpers/promise.helpers";
+import { allSettled } from "../../../shared/helpers/promise.helpers";
 
 export class LocalMapsManagerService {
 
@@ -116,7 +116,7 @@ export class LocalMapsManagerService {
         await ensureFolderExist(this.utils.getTempPath());
         const dest = path.join(tempPath, fileName);
 
-        const zipPath = await this.reqService.downloadFile(zipUrl, dest);
+        const zipPath = (await lastValueFrom(this.reqService.downloadFile(zipUrl, dest))).data;
         const zip = new StreamZip.async({file : zipPath});
 
         return {zip, zipPath};

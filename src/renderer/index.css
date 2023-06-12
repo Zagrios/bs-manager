@@ -52,6 +52,28 @@
     animation: glowing 20s linear infinite;
 }
 
+.dim > * { z-index: 1; }
+.dim::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.dim-on-hover:hover > * { z-index: 1; }
+.dim-on-hover:hover:before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.25);
+}
+
 @keyframes glowing {
     0% { background-position: 0 0; }
     50% { background-position: 400% 0; }

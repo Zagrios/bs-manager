@@ -12,7 +12,6 @@ import path from 'path';
 import { app, ipcMain, protocol } from 'electron';
 import log from 'electron-log';
 import './ipcs';
-import { UtilsService } from './services/utils.service';
 import { WindowManagerService } from './services/window-manager.service';
 import { DeepLinkService } from './services/deep-link.service';
 import { AppWindow } from 'shared/models/window-manager/app-window.model';
@@ -22,6 +21,7 @@ import { LocalModelsManagerService } from './services/additional-content/local-m
 import { APP_NAME } from './constants';
 import { BSLauncherService } from './services/bs-launcher.service';
 import { IpcRequest } from 'shared/models/ipc';
+import { MSModelType } from '../shared/models/models/model-saber.model';
 
 const isDebug = process.env.NODE_ENV === 'development' || process.env.DEBUG_PROD === 'true';
 

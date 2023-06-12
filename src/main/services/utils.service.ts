@@ -33,10 +33,16 @@ export class UtilsService{
   public setMainWindows(windows: Map<AppWindow, BrowserWindow>){ this.windows = windows; }
   public getMainWindows(win: AppWindow){ return this.windows.get(win); }
 
-  public taskRunning(task: string): boolean{
-    const tasks = spawnSync('tasklist').stdout.toString();
-    return tasks.includes(task);
-  }
+    public taskRunning(task: string): boolean | null{
+        try{
+            const tasks = spawnSync('tasklist').stdout;
+            return tasks.toString().includes(task);
+        }
+        catch(error){
+            log.error(error);
+            return null;
+        }
+    }
 
   public ipcSend<T = any>(channel: string, response: IpcResponse<T>): void{
     try {

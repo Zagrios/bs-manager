@@ -90,6 +90,8 @@ export class BSInstallerService{
 
   public async downloadBsVersion(downloadInfos: DownloadInfo): Promise<DownloadEvent>{
 
+    // TODO : Can be a lot improved by using ipcV2 and Observable
+
     if(this.downloadProcess && this.downloadProcess.connected){ throw "AlreadyDownloading"; }
     const {bsVersion} = downloadInfos;
     if(!bsVersion){ return {type: "[Error]"}; }
@@ -109,7 +111,7 @@ export class BSInstallerService{
         `-app ${BS_APP_ID}`,
         `-depot ${BS_DEPOT}`,
         `-manifest ${bsVersion.BSManifest}`,
-        `-username ${downloadInfos.username}`,
+        `-username \"${downloadInfos.username}\"`,
         `-dir \"${this.localVersionService.getVersionFolder(downloadVersion)}\"`
       ],
       {shell: true, cwd: this.installLocationService.versionsDirectory}

@@ -1,11 +1,11 @@
 {
   "name": "bs-manager",
-  "version": "1.1.1-alpha.1",
-  "description": "A foundation for scalable desktop apps",
+  "version": "1.2.0-alpha.4",
+  "description": "BSManager",
   "main": "./dist/main/main.js",
   "author": {
     "name": "Zagrios",
-    "email": "electronreactboilerplate@gmail.com",
+    "email": "admin@bsmanager.io",
     "url": "https://github.com/Zagrios/bs-manager"
   },
   "scripts": {
@@ -14,7 +14,7 @@
     "postinstall": "npm run electron-rebuild && npm run link-modules"
   },
   "dependencies": {
-    "ctrlc-windows": "^2.0.0"
+    "ctrlc-windows": "^2.1.0"
   },
   "license": "MIT"
 }

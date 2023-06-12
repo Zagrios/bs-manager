@@ -1,44 +1,24 @@
-import { useEffect, useState } from "react";
 import { DefaultConfigKey } from "renderer/config/default-configuration.config";
 import { ConfigurationService } from "renderer/services/configuration.service";
+import { useObservable } from "./use-observable.hook";
+import { useService } from "./use-service.hook";
+import { of, throttleTime } from "rxjs";
 
 export function useThemeColor(): {firstColor: string, secondColor: string};
 export function useThemeColor(themeColor: ThemeColor): string;
 export function useThemeColor(themeColor?: ThemeColor): string|{firstColor: string, secondColor: string}{
-   const configService = ConfigurationService.getInstance();
-
-   if(themeColor){
-      const [color, setColor] = useState("");
-
-      useEffect(() => {
-         const sub = configService.watch<string>(themeColor).subscribe(color => {
-            setColor(color);
-         })
-         return () => {
-            sub.unsubscribe();
-         }
-      }, []);
-
-      return color;
-   }
    
-   const [firstColor, setFirstColor] = useState("");
-   const [secondColor, setSecondColor] = useState("");
+    const configService = useService(ConfigurationService);
 
-   useEffect(() => {
-      const sub1 = configService.watch<string>("first-color" as DefaultConfigKey).subscribe(color => {
-         setFirstColor(color);
-      });
-      const sub2 = configService.watch<string>("second-color" as DefaultConfigKey).subscribe(color => {
-         setSecondColor(color);
-      });
-      return () => {
-         sub1.unsubscribe();
-         sub2.unsubscribe();
-      }
-   }, []);
+   
+    const firstColor = useObservable(!themeColor ? configService.watch<string>("first-color" as DefaultConfigKey).pipe(throttleTime(16)) : configService.watch<string>(themeColor).pipe(throttleTime(16)));
+    const secondColor = useObservable(!themeColor ? configService.watch<string>("second-color" as DefaultConfigKey).pipe(throttleTime(16)) : of(""));
 
-   return {firstColor, secondColor}
+    if(themeColor){
+        return firstColor;
+    }
+
+    return {firstColor, secondColor}
    
 }
 
