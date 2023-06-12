@@ -48,6 +48,12 @@ export default function App() {
             document.documentElement.classList.remove('dark');
         });
 
+        updaterService.getChangelogData().then(async data => {
+            const haveBeenUpdated = await updaterService.getHaveBeenUpdated().toPromise();
+            haveBeenUpdated && data && modals.openModal(ChangelogModal, data);
+          }
+        );
+
         checkOneClicks();
 
     }, []);
