@@ -73,6 +73,7 @@ export class ModelSaberService {
             const model = Array.from(Object.values(res.data)).at(0);
 
             model.name = striptags(model.name ?? "");
+            model.author = striptags(model.author ?? "");
 
             this.modelsHashCache.set(hash, model);
 
@@ -93,6 +94,7 @@ export class ModelSaberService {
                 observer.next(Object.values(res.data).map(model => {
                     if(!model || !model.name){ return model; }
                     (model as MSModel).name = striptags(model.name);
+                    (model as MSModel).author = striptags(model.author);
                     return model;
                 }));
             })().catch(e => observer.error(e)).then(() => observer.complete());
