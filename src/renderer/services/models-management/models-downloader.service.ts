@@ -30,7 +30,7 @@ export class ModelsDownloaderService {
     private constructor(){
 
         this.ipc = IpcService.getInstance();
-        this.modal = ModalService.getInsance();
+        this.modal = ModalService.getInstance();
         this.progress = ProgressBarService.getInstance();
 
         this._currentDownload$.pipe(filter(v => !!v)).subscribe(model => this.downloadModel(model));
@@ -70,9 +70,9 @@ export class ModelsDownloaderService {
     public removeFromDownloadQueue(download: ModelDownload){
         const queue = this.queue$.value;
         const index = queue.findIndex(m => m.model.hash === download.model.hash);
-        
+
         if(index === -1){ return; }
-        
+
         queue.splice(index, 1);
         this.queue$.next([...queue]);
     }

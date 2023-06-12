@@ -23,6 +23,9 @@ import { timer } from "rxjs";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { useService } from "renderer/hooks/use-service.hook";
+import {ModalService } from "renderer/services/modale.service";
+import { ChangelogModal } from "renderer/components/modal/modal-types/changelog/changelog-modal.component";
+import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 
 export default function App() {
 
@@ -38,11 +41,20 @@ export default function App() {
     const location = useLocation();
     const navigate = useNavigate();
 
+  const modals = useService(ModalService);
+  const updaterService = AutoUpdaterService.getInstance();
+
     useEffect(() => {
         themeService.theme$.subscribe(() => {
             if(themeService.isDark || (themeService.isOS && window.matchMedia('(prefers-color-scheme: dark)').matches)){ return document.documentElement.classList.add('dark'); }
             document.documentElement.classList.remove('dark');
         });
+
+        updaterService.getChangelogs().then(async data => {
+            const haveBeenUpdated = await updaterService.getHaveBeenUpdated();
+            haveBeenUpdated && data && modals.openModal(ChangelogModal, data);
+          }
+        );
 
         checkOneClicks();
 
@@ -63,7 +75,7 @@ export default function App() {
         if(!oneClicks.some(enabled => enabled === false)){ return; }
 
         const choice = await notification.notifyWarning({
-            title: "notifications.settings.additional-content.deep-link.check-all-enabled.title", 
+            title: "notifications.settings.additional-content.deep-link.check-all-enabled.title",
             desc: "notifications.settings.additional-content.deep-link.check-all-enabled.description",
             duration: 10_000,
             actions: [
@@ -96,7 +108,7 @@ export default function App() {
         el.scrollIntoView({block: "start", behavior: "smooth"});
 
     }, [location])
-  
+
 
   return (
     <div className="relative w-screen h-screen overflow-hidden flex bg-light-main-color-1 dark:bg-main-color-1 z-0 max-w-full">

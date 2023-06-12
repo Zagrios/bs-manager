@@ -17,15 +17,15 @@ export class BSVersionManagerService {
    private readonly progressBarService: ProgressBarService;
 
    public readonly installedVersions$: BehaviorSubject<BSVersion[]> = new BehaviorSubject([]);
-   public readonly availableVersions$: BehaviorSubject<BSVersion[]> = new BehaviorSubject([]); 
+   public readonly availableVersions$: BehaviorSubject<BSVersion[]> = new BehaviorSubject([]);
 
    private constructor(){
       this.ipcService = IpcService.getInstance();
-      this.modalService = ModalService.getInsance();
+      this.modalService = ModalService.getInstance();
       this.notificationService = NotificationService.getInstance();
       this.progressBarService = ProgressBarService.getInstance();
       this.askAvailableVersions().then(() => this.askInstalledVersions());
-    } 
+    }
 
    public static getInstance(){
       if(!BSVersionManagerService.instance){ BSVersionManagerService.instance = new BSVersionManagerService(); }

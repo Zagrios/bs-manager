@@ -37,7 +37,7 @@ export function SettingsPage() {
   const configService: ConfigurationService = ConfigurationService.getInstance();
   const themeService: ThemeService = ThemeService.getInstance();
   const ipcService: IpcService = IpcService.getInstance();
-  const modalService: ModalService = ModalService.getInsance();
+  const modalService: ModalService = ModalService.getInstance();
   const downloaderService: BsDownloaderService = BsDownloaderService.getInstance();
   const progressBarService: ProgressBarService = ProgressBarService.getInstance();
   const notificationService: NotificationService = NotificationService.getInstance();
@@ -147,11 +147,11 @@ export function SettingsPage() {
         });
     }
 
-  
+
   const toogleShowSupporters = () => {
       setShowSupporters(show => !show);
     }
-    
+
   const openSupportPage = () => linkOpener.open("https://www.patreon.com/bsmanager");
   const openGithub = () => linkOpener.open("https://github.com/Zagrios/bs-manager");
   const openReportBug = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&template=-bug--bug-report.md&title=%5BBUG%5D+%3A+");
@@ -196,7 +196,7 @@ export function SettingsPage() {
     return (
         <div className="w-full h-full flex justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 text-gray-800 dark:text-gray-200">
 
-            
+
 
             <div className="max-w-2xl w-full h-fit">
 
@@ -295,7 +295,7 @@ export function SettingsPage() {
                         </li>
                     </ul>
                 </SettingContainer>
-                    
+
                 </SettingContainer>
 
                 <SettingContainer title="pages.settings.language.title" description="pages.settings.language.description">
@@ -321,13 +321,15 @@ export function SettingsPage() {
                             </div>
                             <div className="flex px-2 gap-2">
                                 <BsmButton onClick={openLogs} className="shrink-0 whitespace-nowrap px-2 font-bold italic text-sm rounded-md" text="pages.settings.contribution.buttons.open-logs" withBar={false}/>
-                                <BsmButton onClick={openGithub} className="shrink-0 px-2 rounded-md" icon="github" title="GitHub" withBar={false}/>    
+                                <BsmButton onClick={openGithub} className="shrink-0 px-2 rounded-md" icon="github" title="GitHub" withBar={false}/>
                             </div>
                         </div>
                     </SettingContainer>
                 </SettingContainer>
 
-                <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5">v{appVersion}</span>
+              <Tippy content="Open changelog" placement="left" className="font-bold bg-main-color-3" arrow={true} duration={[200, 0]}>
+                <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5 hover:brightness-125 cursor-pointer" onClick={openChangelog}>v{appVersion}</span>
+              </Tippy>
 
             </div>
 

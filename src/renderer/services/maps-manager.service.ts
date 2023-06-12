@@ -17,7 +17,7 @@ import { VersionFolderLinkerService, VersionLinkerActionType } from "./version-f
 
 export class MapsManagerService {
 
-    
+
 
     private static instance: MapsManagerService;
 
@@ -41,7 +41,7 @@ export class MapsManagerService {
 
     private constructor(){
         this.ipcService = IpcService.getInstance();
-        this.modal = ModalService.getInsance();
+        this.modal = ModalService.getInstance();
         this.progressBar = ProgressBarService.getInstance();
         this.notifications = NotificationService.getInstance();
         this.config = ConfigurationService.getInstance();
@@ -95,7 +95,7 @@ export class MapsManagerService {
             if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return false; }
         }
 
-        const showProgressBar = this.progressBar.require(); 
+        const showProgressBar = this.progressBar.require();
 
         const progress$ = this.ipcService.sendV2<DeleteMapsProgress>("delete-maps", {args: maps}).pipe(map(progress => (progress.deleted / progress.total) * 100));
 
@@ -132,7 +132,7 @@ export class MapsManagerService {
             this.progressBar.complete();
             this.progressBar.hide(true);
         });
-        
+
     }
 
     public async isDeepLinksEnabled(): Promise<boolean>{
