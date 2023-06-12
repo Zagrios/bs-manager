@@ -7,7 +7,7 @@ import { BsmIcon } from "../svgs/bsm-icon.component";
 
 export function Modal() {
 
-   const modalSevice = ModalService.getInsance();
+   const modalSevice = ModalService.getInstance();
 
    const ModalComponent = useObservable(modalSevice.getModalToShow());
 
@@ -17,7 +17,7 @@ export function Modal() {
    const {firstColor, secondColor} = useThemeColor();
 
     useEffect(() => {
-        
+
         const onEscape = (e: KeyboardEvent) => {
             if(e.key !== "Escape"){ return; }
             resolver?.(ModalExitCode.NO_CHOICE);
@@ -29,12 +29,12 @@ export function Modal() {
         else{
             window.removeEventListener("keyup", onEscape);
         }
-   
+
         return () => {
             window.removeEventListener("keyup", onEscape);
         }
    }, [ModalComponent])
-   
+
 
   return  (
       <AnimatePresence>

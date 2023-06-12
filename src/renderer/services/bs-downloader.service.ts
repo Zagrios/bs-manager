@@ -38,7 +38,7 @@ export class BsDownloaderService{
 
     private constructor(){
         this.ipcService = IpcService.getInstance();
-        this.modalService = ModalService.getInsance();
+        this.modalService = ModalService.getInstance();
         this.bsVersionManager = BSVersionManagerService.getInstance();
         this.authService = AuthUserService.getInstance();
         this.progressBarService = ProgressBarService.getInstance();
@@ -65,8 +65,8 @@ export class BsDownloaderService{
          const res = await this.modalService.openModal(GuardModal);
          if(res.exitCode !== ModalExitCode.COMPLETED){
             this.progressBarService.hide(true);
-            this.ipcService.sendLazy("bs-download.kill"); 
-            return; 
+            this.ipcService.sendLazy("bs-download.kill");
+            return;
         }
          this.ipcService.sendLazy('bs-download.[2FA]', {args: res.data});
       });
@@ -79,7 +79,7 @@ export class BsDownloaderService{
          if(version){ this.bsVersionManager.setInstalledVersions([...this.bsVersionManager.installedVersions$.value, version]); }
          else{ this.bsVersionManager.askInstalledVersions(); }
       });
-      
+
     }
 
     private resetDownload(): void{
@@ -128,7 +128,7 @@ export class BsDownloaderService{
          const res = await this.modalService.openModal(LoginModal);
          if(res.exitCode !== ModalExitCode.COMPLETED){
             this.progressBarService.hide(true);
-            return {success: false}; 
+            return {success: false};
         }
          this.authService.setSteamSession(res.data.username, res.data.stay);
          promise = this.ipcService.send<DownloadEvent, DownloadInfo>('bs-download.start', {args: {bsVersion, username: res.data.username, password: res.data.password, stay: res.data.stay, isVerification}});
@@ -138,12 +138,12 @@ export class BsDownloaderService{
       }
 
       let res = await promise;
-        
+
       if(res.data?.type === "[Password]"){
          this.authService.deleteSteamSession();
          res = await this.download(bsVersion, isVerification, false);
       }
-      
+
       this.progressBarService.hide(true);
       this.resetDownload();
       if(res.success && isFirstCall){ this.notificationService.notifySuccess({title: `notifications.bs-download.success.titles.${isVerification ? "verification-finished" : "download-success"}`, duration: 3000}); }

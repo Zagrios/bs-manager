@@ -9,10 +9,10 @@ export class ModalService{
     private _modalToShow$: BehaviorSubject<ModalComponent> = new BehaviorSubject(null);
     private modalData: any = null;
     private resolver: any;
-    
+
     private constructor(){}
 
-    public static getInsance(){
+    public static getInstance() : ModalService{
         if(!this.instance){ this.instance = new ModalService(); }
         return this.instance;
     }
@@ -24,7 +24,7 @@ export class ModalService{
 
     public getModalData<Type>(): Type{
         return this.modalData;
-    } 
+    }
 
     public getResolver(): any{
         return this.resolver;

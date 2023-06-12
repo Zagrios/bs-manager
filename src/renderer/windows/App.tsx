@@ -37,7 +37,7 @@ export default function App() {
     const models = useService(ModelsManagerService);
     const notification = useService(NotificationService);
     const config = useService(ConfigurationService);
-    const modals = ModalService.getInsance();
+    const modals = useService(ModalService);
     const updaterService = AutoUpdaterService.getInstance();
     const location = useLocation();
     const navigate = useNavigate();

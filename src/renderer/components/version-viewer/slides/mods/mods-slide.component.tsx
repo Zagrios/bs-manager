@@ -18,7 +18,7 @@ import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods-disclaimer-modal.component";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { lt } from "semver";
- 
+
 export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, onDisclamerDecline: () => void}) {
 
     const ACCEPTED_DISCLAIMER_KEY = "accepted-mods-disclaimer";
@@ -26,7 +26,7 @@ export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, on
     const modsManager = BsModsManagerService.getInstance();
     const configService = ConfigurationService.getInstance();
     const linkOpener = LinkOpenerService.getInstance();
-    const modals = ModalService.getInsance();
+    const modals = ModalService.getInstance();
     const os = OsDiagnosticService.getInstance();
 
     const ref = useRef(null);
@@ -41,7 +41,7 @@ export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, on
 
     const downloadRef = useRef(null);
     const [downloadWith, setDownloadWidth] = useState(0);
-    
+
 
     const modsToCategoryMap = (mods: Mod[]): Map<string, Mod[]> => {
         if(!mods){ return new Map<string, Mod[]>(); }
@@ -100,7 +100,7 @@ export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, on
         if(isVisible && isOnline){
 
             const promise = new Promise<boolean>(async resolve => {
-                
+
                 if(configService.get<boolean>(ACCEPTED_DISCLAIMER_KEY)){ return resolve(true); }
 
                 const res = await modals.openModal(ModsDisclaimerModal);
@@ -127,9 +127,9 @@ export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, on
             setModsInstalled(null);
             subs.forEach(s => s.unsubscribe());
         }
-        
+
     }, [isVisible, isOnline, version]);
-    
+
 
     useLayoutEffect(() => {
         if(modsAvailable){
@@ -155,7 +155,7 @@ export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, on
             </>
         )
     }
-    
+
 
     return (
         <div ref={ref} className='shrink-0 w-full h-full px-8 pb-7 flex justify-center'>
@@ -163,7 +163,7 @@ export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, on
                 {renderContent()}
             </div>
         </div>
-        
+
     )
 }
 

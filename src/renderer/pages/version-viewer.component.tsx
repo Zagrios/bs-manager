@@ -21,7 +21,7 @@ export function VersionViewer() {
 
     const bsUninstallerService = BSUninstallerService.getInstance();
     const bsVersionManagerService = BSVersionManagerService.getInstance();
-    const modalService = ModalService.getInsance();
+    const modalService = ModalService.getInstance();
     const bsDownloaderService = BsDownloaderService.getInstance();
     const ipcService = IpcService.getInstance();
 

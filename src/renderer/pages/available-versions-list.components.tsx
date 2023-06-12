@@ -20,7 +20,7 @@ export function AvailableVersionsList() {
   const bsDownloaderService = BsDownloaderService.getInstance();
   const versionManagerService = BSVersionManagerService.getInstance();
   const progressBar = ProgressBarService.getInstance();
-  const modal = ModalService.getInsance();
+  const modal = ModalService.getInstance();
   const ipc = IpcService.getInstance();
   const installer = BsDownloaderService.getInstance();
   const notification = NotificationService.getInstance();

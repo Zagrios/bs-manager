@@ -38,7 +38,7 @@ export class ModelsManagerService {
     private constructor(){
         this.ipc = IpcService.getInstance();
         this.versionFolderLinked = VersionFolderLinkerService.getInstance();
-        this.modalService = ModalService.getInsance();
+        this.modalService = ModalService.getInstance();
         this.progressBar = ProgressBarService.getInstance();
         this.notifications = NotificationService.getInstance();
         this.config = ConfigurationService.getInstance();
@@ -151,7 +151,7 @@ export class ModelsManagerService {
             if(res.exitCode !== ModalExitCode.COMPLETED){ return Promise.resolve([]); }
         }
 
-        const showProgressBar = this.progressBar.require(); 
+        const showProgressBar = this.progressBar.require();
 
         const obs$ = this.ipc.sendV2<Progression<BsmLocalModel[]>>("delete-models", {args: models});
 
@@ -163,7 +163,7 @@ export class ModelsManagerService {
             .then(({data}) => data ?? [])
             .catch(() => {
                 this.notifications.notifyError({title: "notifications.types.error", desc: "notifications.common.msg.error-occurred", duration: 3000});
-                return []; 
+                return [];
             })
             .finally(() => this.progressBar.hide(true));
 

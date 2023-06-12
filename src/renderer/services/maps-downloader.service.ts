@@ -33,7 +33,7 @@ export class MapsDownloaderService {
     public readonly progressBarStyle: CSSProperties =  {zIndex: 100000, position: "fixed", bottom: "10px", right: 0};
 
     private constructor(){
-        this.modals = ModalService.getInsance();
+        this.modals = ModalService.getInstance();
         this.progressBar = ProgressBarService.getInstance();
         this.ipc = IpcService.getInstance();
         this.os = OsDiagnosticService.getInstance();
@@ -63,7 +63,7 @@ export class MapsDownloaderService {
         }
 
         await timer(500).toPromise();
-        
+
         this.currentDownload$.next(null);
         this.progressBar.hide(true);
     }
