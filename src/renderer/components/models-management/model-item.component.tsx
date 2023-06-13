@@ -126,7 +126,7 @@ function modelItem<T = unknown>(props: Props<T>) {
                 >
                     <div className="w-full flex justify-center items-center mt-1.5">
                         <BsmLink className={`block grow overflow-hidden font-bold whitespace-nowrap text-ellipsis ${props.id ? "cursor-pointer hover:underline" : ""}`} href={modelPageUrl}>{props.name}</BsmLink>
-                        <ChevronTopIcon className="shrink-0 h-8 group-hover:rotate-180 transition-transform w-fit cursor-pointer" onClick={() => [setInfosHovered(false, 0), console.log("dallo")]}/>
+                        <ChevronTopIcon className="shrink-0 h-8 group-hover:rotate-180 transition-transform w-fit cursor-pointer" onClick={() => setInfosHovered(false, 0)}/>
                     </div>
                     <BsmLink className={`block w-fit max-w-full overflow-hidden whitespace-nowrap text-ellipsis brightness-200 ${authorPageUrl ? "cursor-pointer hover:underline" : ""}`} style={{color}} href={authorPageUrl}>{props.author ?? ''}</BsmLink>
                     <ul className="flex flex-row flex-wrap gap-1">
