@@ -3,7 +3,7 @@ import { map } from "rxjs/operators";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
 import { I18nService } from "./i18n.service";
-
+import { Changelog } from "../../shared/models/bs-launch/launch-changelog.interface"
 
 export class AutoUpdaterService{
 
@@ -55,12 +55,18 @@ export class AutoUpdaterService{
     }
 
     public async getChangelogs(): Promise<Changelog | null> {
-      try {
-        this.changelog = fetch(`https://github.com/Zagrios/bs-manager/tree/master/assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`);
-        return this.changelog;
-      } catch (error) {
-        return null;
-      }
+      const path = `../../../assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`
+      return new Promise((resolve, reject) => {
+        fetch(path)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(data => resolve(data))
+          .catch(error => reject(error));
+      });
     }
 
 }

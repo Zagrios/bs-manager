@@ -52,7 +52,7 @@ export default function App() {
 
         updaterService.getChangelogs().then(async data => {
             const haveBeenUpdated = await updaterService.getHaveBeenUpdated();
-            haveBeenUpdated && data && modals.openModal(ChangelogModal, data);
+            haveBeenUpdated && data && modals.openModal(ChangelogModal, "");
           }
         );
 
