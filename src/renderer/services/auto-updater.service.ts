@@ -50,23 +50,17 @@ export class AutoUpdaterService{
         this.ipcService.sendLazy("install-update");
     }
 
-    public getHaveBeenUpdated(): Observable<boolean>{
+    public getHaveBeenUpdated(){
         return this.ipcService.sendV2<boolean>("have-been-updated");
     }
 
-    public async getChangelogs(): Promise<Changelog | null> {
-      const path = `../../../assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`
-      return new Promise((resolve, reject) => {
-        fetch(path)
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            return response.json();
-          })
-          .then(data => resolve(data))
-          .catch(error => reject(error));
-      });
+    public getChangelogs(): Changelog | null {
+      try {
+        const changelog = require(`../../../assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`)
+        return changelog;
+      } catch (error) {
+        console.error('Erreur lors de la lecture du fichier JSON:', error);
+        return null;
+      }
     }
-
 }

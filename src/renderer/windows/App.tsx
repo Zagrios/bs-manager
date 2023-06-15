@@ -19,7 +19,7 @@ import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
 import { NotificationService } from "renderer/services/notification.service";
-import { timer } from "rxjs";
+import { lastValueFrom, timer } from 'rxjs';
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { useService } from "renderer/hooks/use-service.hook";
@@ -50,11 +50,9 @@ export default function App() {
             document.documentElement.classList.remove('dark');
         });
 
-        updaterService.getChangelogs().then(async data => {
-            const haveBeenUpdated = await updaterService.getHaveBeenUpdated();
-            haveBeenUpdated && data && modals.openModal(ChangelogModal, "");
-          }
-        );
+        const data = updaterService.getChangelogs()
+        const haveBeenUpdated = updaterService.getHaveBeenUpdated();
+        lastValueFrom(haveBeenUpdated).then(isUpdated => {if(isUpdated && data) {modals.openModal(ChangelogModal, data)}})
 
         checkOneClicks();
 
