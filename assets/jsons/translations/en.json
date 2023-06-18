@@ -31,7 +31,7 @@
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Oculus Mode",
-                "oculus-description": "If you are using Beat Saber via Steam, it allows you to use Oculus's VR composer without passing by SteamVR, to gain performances This is not necessary for using Oculus headsets.",
+                "oculus-description": "If you are using Beat Saber via Steam, it allows you to use Oculus's VR composer without passing by SteamVR, for possible performance gain. This is not necessary for using Oculus headsets.",
                 "desktop": "Desktop Mode",
                 "desktop-description": "This allows you to use WASD and the mouse to navigate around the menu in game. This makes testing much easier, because you don't have to put on your headset!",
                 "debug": "Debug Mode",
