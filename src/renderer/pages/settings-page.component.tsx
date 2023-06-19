@@ -31,9 +31,7 @@ import { PlaylistsManagerService } from "renderer/services/playlists-manager.ser
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { VersionFolderLinkerService } from "renderer/services/version-folder-linker.service";
-import { ChangelogModal } from "renderer/components/modal/modal-types/changelog/changelog-modal.component";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
-import { lastValueFrom } from 'rxjs';
 
 
 export function SettingsPage() {
@@ -168,11 +166,7 @@ export function SettingsPage() {
 
   const openLogs = () => ipcService.sendLazy("open-logs");
 
-  const openChangelog = () => {
-    updaterService.getChangelogs().then( data => {
-    const haveBeenUpdated = updaterService.getHaveBeenUpdated();
-    lastValueFrom(haveBeenUpdated).then(isUpdated => {if(isUpdated && data) {modalService.openModal(ChangelogModal, data)}})
-  })}
+  const openChangelog = () => updaterService.openChangelog()
 
     const showDeepLinkError = (isDeactivation: boolean) => {
         const desc = isDeactivation ? "notifications.settings.additional-content.deep-link.deactivation.error.description" : "notifications.settings.additional-content.deep-link.activation.error.description";
