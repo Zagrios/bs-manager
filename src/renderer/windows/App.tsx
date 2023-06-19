@@ -50,9 +50,11 @@ export default function App() {
             document.documentElement.classList.remove('dark');
         });
 
-        const data = updaterService.getChangelogs()
-        const haveBeenUpdated = updaterService.getHaveBeenUpdated();
-        lastValueFrom(haveBeenUpdated).then(isUpdated => {if(isUpdated && data) {modals.openModal(ChangelogModal, data)}})
+
+        updaterService.getChangelogs().then( data => {
+          const haveBeenUpdated = updaterService.getHaveBeenUpdated();
+          lastValueFrom(haveBeenUpdated).then(isUpdated => {if(isUpdated && data) {modals.openModal(ChangelogModal, data)}})
+        })
 
         checkOneClicks();
 

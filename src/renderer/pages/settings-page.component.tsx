@@ -31,6 +31,10 @@ import { PlaylistsManagerService } from "renderer/services/playlists-manager.ser
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { VersionFolderLinkerService } from "renderer/services/version-folder-linker.service";
+import { ChangelogModal } from "renderer/components/modal/modal-types/changelog/changelog-modal.component";
+import { AutoUpdaterService } from "renderer/services/auto-updater.service";
+import { lastValueFrom } from 'rxjs';
+
 
 export function SettingsPage() {
 
@@ -70,6 +74,7 @@ export function SettingsPage() {
   const [appVersion, setAppVersion] = useState("");
   const nav = useNavigate();
   const t = useTranslation();
+  const updaterService = AutoUpdaterService.getInstance();
 
   useEffect(() => {
     loadInstallationFolder();
@@ -77,6 +82,8 @@ export function SettingsPage() {
     mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
     playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
     modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled))
+
+
   }, []);
 
   const allDeepLinkEnabled = mapDeepLinksEnabled && playlistsDeepLinkEnabled && modelsDeepLinkEnabled;
@@ -160,6 +167,12 @@ export function SettingsPage() {
   const openTwitter = () => linkOpener.open("https://twitter.com/BSManager_");
 
   const openLogs = () => ipcService.sendLazy("open-logs");
+
+  const openChangelog = () => {
+    updaterService.getChangelogs().then( data => {
+    const haveBeenUpdated = updaterService.getHaveBeenUpdated();
+    lastValueFrom(haveBeenUpdated).then(isUpdated => {if(isUpdated && data) {modalService.openModal(ChangelogModal, data)}})
+  })}
 
     const showDeepLinkError = (isDeactivation: boolean) => {
         const desc = isDeactivation ? "notifications.settings.additional-content.deep-link.deactivation.error.description" : "notifications.settings.additional-content.deep-link.activation.error.description";

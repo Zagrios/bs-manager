@@ -54,13 +54,20 @@ export class AutoUpdaterService{
         return this.ipcService.sendV2<boolean>("have-been-updated");
     }
 
-    public getChangelogs(): Changelog | null {
-      try {
-        const changelog = require(`../../../assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`)
-        return changelog;
-      } catch (error) {
-        console.error('Erreur lors de la lecture du fichier JSON:', error);
-        return null;
-      }
-    }
+  public async getChangelogs(): Promise<Changelog | null> {
+    const path = `https://raw.githubusercontent.com/GaetanGrd/bs-manager/feature/add-changelog-modal/178/assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`
+    return new Promise((resolve) => {
+      fetch(path)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => resolve(data))
+        .catch(error => {
+          resolve(null);
+        });
+    });
+  }
 }

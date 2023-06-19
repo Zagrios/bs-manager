@@ -50,6 +50,7 @@ export class AutoUpdaterService {
     }
 
     public quitAndInstall(){
+        this.configService.set(this.HAVE_BEEN_UPDATED_KEY, true);
         autoUpdater.quitAndInstall();
     }
     public getHaveBeenUpdated(): boolean {
