@@ -92,12 +92,12 @@
     },
     "publish": {
       "provider": "github",
-      "owner": "GaetanGrd"
+      "owner": "Zagrios"
     }
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GaetanGrd/bs-manager.git"
+    "url": "git+https://github.com/Zagrios/bs-manager.git"
   },
   "author": {
     "name": "Zagrios",
