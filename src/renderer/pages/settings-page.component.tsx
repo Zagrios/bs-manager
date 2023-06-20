@@ -33,7 +33,6 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { VersionFolderLinkerService } from "renderer/services/version-folder-linker.service";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 
-
 export function SettingsPage() {
 
   const configService: ConfigurationService = ConfigurationService.getInstance();
@@ -80,8 +79,6 @@ export function SettingsPage() {
     mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
     playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
     modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled))
-
-
   }, []);
 
   const allDeepLinkEnabled = mapDeepLinksEnabled && playlistsDeepLinkEnabled && modelsDeepLinkEnabled;
