@@ -19,12 +19,10 @@ import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
 import { NotificationService } from "renderer/services/notification.service";
-import { lastValueFrom, timer } from 'rxjs';
+import { timer } from 'rxjs';
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { useService } from "renderer/hooks/use-service.hook";
-import {ModalService } from "renderer/services/modale.service";
-import { ChangelogModal } from "renderer/components/modal/modal-types/changelog/changelog-modal.component";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 
 export default function App() {
@@ -41,7 +39,6 @@ export default function App() {
     const location = useLocation();
     const navigate = useNavigate();
 
-  const modals = useService(ModalService);
   const updaterService = AutoUpdaterService.getInstance();
 
     useEffect(() => {
@@ -50,9 +47,7 @@ export default function App() {
             document.documentElement.classList.remove('dark');
         });
 
-        const data = updaterService.getChangelogs()
-        const haveBeenUpdated = updaterService.getHaveBeenUpdated();
-        lastValueFrom(haveBeenUpdated).then(isUpdated => {if(isUpdated && data) {modals.openModal(ChangelogModal, data)}})
+        updaterService.openChangelog();
 
         checkOneClicks();
 

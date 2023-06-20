@@ -1,9 +1,13 @@
-import { Observable } from "rxjs";
+import { lastValueFrom, Observable } from 'rxjs';
 import { map } from "rxjs/operators";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
 import { I18nService } from "./i18n.service";
 import { Changelog } from "../../shared/models/bs-launch/launch-changelog.interface"
+import { ModalService } from "../services/modale.service";
+import { ChangelogModal } from "../components/modal/modal-types/changelog/changelog-modal.component";
+import { useService } from "renderer/hooks/use-service.hook";
+import { OsDiagnosticService } from './os-diagnostic.service';
 
 export class AutoUpdaterService{
 
@@ -17,15 +21,19 @@ export class AutoUpdaterService{
 
     private i18nService: I18nService;
 
+    private modalService: ModalService
+
     public static getInstance(): AutoUpdaterService{
         if(!AutoUpdaterService.instance){ AutoUpdaterService.instance = new AutoUpdaterService(); }
         return AutoUpdaterService.instance;
     }
 
     private constructor(){
-        this.progressService = ProgressBarService.getInstance();
-        this.ipcService = IpcService.getInstance();
-        this.i18nService = I18nService.getInstance();
+
+      this.progressService = ProgressBarService.getInstance();
+      this.ipcService = IpcService.getInstance();
+      this.i18nService = I18nService.getInstance();
+      this.modalService = ModalService.getInstance();
 
         this.downloadProgress$ = this.ipcService.watch<number>("update-download-progress").pipe(map(res => res.success ? res.data : 0));
     }
@@ -54,13 +62,30 @@ export class AutoUpdaterService{
         return this.ipcService.sendV2<boolean>("have-been-updated");
     }
 
-    public getChangelogs(): Changelog | null {
-      try {
-        const changelog = require(`../../../assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`)
-        return changelog;
-      } catch (error) {
-        console.error('Erreur lors de la lecture du fichier JSON:', error);
-        return null;
-      }
-    }
+  public async getChangelogs(): Promise<Changelog | null> {
+    const path = `https://raw.githubusercontent.com/GaetanGrd/bs-manager/feature/add-changelog-modal/178/assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`
+    return new Promise((resolve) => {
+      fetch(path)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => resolve(data))
+        .catch(error => {
+          resolve(null);
+        });
+    });
+  }
+
+  public async openChangelog(force?: boolean): Promise<void> {
+    const isUpdated = await lastValueFrom(this.getHaveBeenUpdated());
+    if (!isUpdated && !force) {console.log("coucou"); return ;}
+
+    const data = await this.getChangelogs();
+    if (!data) {console.log("coucou2"); return ;}
+
+    return this.modalService.openModal(ChangelogModal, data).then(() =>{});
+  }
 }

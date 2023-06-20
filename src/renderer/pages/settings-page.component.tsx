@@ -31,6 +31,7 @@ import { PlaylistsManagerService } from "renderer/services/playlists-manager.ser
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { VersionFolderLinkerService } from "renderer/services/version-folder-linker.service";
+import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 
 export function SettingsPage() {
 
@@ -70,6 +71,7 @@ export function SettingsPage() {
   const [appVersion, setAppVersion] = useState("");
   const nav = useNavigate();
   const t = useTranslation();
+  const updaterService = AutoUpdaterService.getInstance();
 
   useEffect(() => {
     loadInstallationFolder();
@@ -160,6 +162,8 @@ export function SettingsPage() {
   const openTwitter = () => linkOpener.open("https://twitter.com/BSManager_");
 
   const openLogs = () => ipcService.sendLazy("open-logs");
+
+  const openChangelog = () => updaterService.openChangelog(true)
 
     const showDeepLinkError = (isDeactivation: boolean) => {
         const desc = isDeactivation ? "notifications.settings.additional-content.deep-link.deactivation.error.description" : "notifications.settings.additional-content.deep-link.activation.error.description";
