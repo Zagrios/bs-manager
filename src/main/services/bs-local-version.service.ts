@@ -211,7 +211,7 @@ export class BSLocalVersionService{
    public async cloneVersion(version: BSVersion, name: string, color: string): Promise<BSVersion>{
       const originPath = await this.getVersionPath(version);
       const cloneVersion: BSVersion = version.BSVersion === name
-         ? {...version, name: undefined, color}
+         ? {...version, name: undefined, color, steam: false, oculus: false}
          : {...version, name: this.removeSpecialChar(name), color, steam: false, oculus: false};
       const newPath = await this.getVersionPath(cloneVersion);
 
