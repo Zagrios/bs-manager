@@ -6,9 +6,13 @@ import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { Changelog } from '../../../../../shared/models/bs-launch/launch-changelog.interface';
 import DOMPurify from "dompurify";
+import { useService } from '../../../../hooks/use-service.hook';
+import { OsDiagnosticService } from '../../../../services/os-diagnostic.service';
 
 export const ChangelogModal: ModalComponent<void, Changelog> = ({ resolver, data }) => {
-  const linkOpener: LinkOpenerService = LinkOpenerService.getInstance();
+
+  useService(OsDiagnosticService);
+  const linkOpener: LinkOpenerService = useService(LinkOpenerService);
   const openGithub = () => linkOpener.open("https://github.com/Zagrios/bs-manager");
   const openTwitter = () => linkOpener.open("https://twitter.com/BSManager_");
   const openSupportPage = () => linkOpener.open("https://www.patreon.com/bsmanager");
