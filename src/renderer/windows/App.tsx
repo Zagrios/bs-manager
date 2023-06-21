@@ -19,7 +19,7 @@ import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
 import { NotificationService } from "renderer/services/notification.service";
-import { timer } from 'rxjs';
+import { lastValueFrom, timer } from 'rxjs';
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { useService } from "renderer/hooks/use-service.hook";
@@ -47,8 +47,7 @@ export default function App() {
             document.documentElement.classList.remove('dark');
         });
 
-        updaterService.openChangelog();
-
+        lastValueFrom(updaterService.getHaveBeenUpdated()).then(v => v && updaterService.openChangelog());
         checkOneClicks();
 
     }, []);

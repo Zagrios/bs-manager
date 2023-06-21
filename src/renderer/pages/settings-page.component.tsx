@@ -164,7 +164,7 @@ export function SettingsPage() {
 
   const openLogs = () => ipcService.sendLazy("open-logs");
 
-  const openChangelog = () => setModalChangelogResponse(updaterService.openChangelog(true))
+  const openChangelog = () => setModalChangelogResponse(updaterService.openChangelog())
 
     const showDeepLinkError = (isDeactivation: boolean) => {
         const desc = isDeactivation ? "notifications.settings.additional-content.deep-link.deactivation.error.description" : "notifications.settings.additional-content.deep-link.activation.error.description";

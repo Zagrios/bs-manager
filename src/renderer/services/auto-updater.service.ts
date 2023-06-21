@@ -6,8 +6,6 @@ import { I18nService } from "./i18n.service";
 import { Changelog } from "../../shared/models/bs-launch/launch-changelog.interface"
 import { ModalService } from "../services/modale.service";
 import { ChangelogModal } from "../components/modal/modal-types/changelog/changelog-modal.component";
-import { useService } from "renderer/hooks/use-service.hook";
-import { OsDiagnosticService } from './os-diagnostic.service';
 
 export class AutoUpdaterService{
 
@@ -58,7 +56,7 @@ export class AutoUpdaterService{
         this.ipcService.sendLazy("install-update");
     }
 
-    public getHaveBeenUpdated(){
+    public getHaveBeenUpdated() : Observable<boolean>{
         return this.ipcService.sendV2<boolean>("have-been-updated");
     }
 
@@ -79,12 +77,9 @@ export class AutoUpdaterService{
     });
   }
 
-  public async openChangelog(force?: boolean): Promise<void> {
-    const isUpdated = await lastValueFrom(this.getHaveBeenUpdated());
-    if (!isUpdated && !force) {console.log("coucou"); return ;}
-
+  public async openChangelog(): Promise<void> {
     const data = await this.getChangelogs();
-    if (!data) {console.log("coucou2"); return ;}
+    if (!data) {return ;}
 
     return this.modalService.openModal(ChangelogModal, data).then(() =>{});
   }
