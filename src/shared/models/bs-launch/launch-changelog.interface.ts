@@ -1,5 +1,5 @@
 export interface Changelog {
-  Title: string,
-  Body: string,
-  Version: string,
+  title: string,
+  body: string,
+  version: string,
 }

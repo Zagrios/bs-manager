@@ -14,11 +14,11 @@ export const ChangelogModal: ModalComponent<void, Changelog> = ({ resolver, data
   const openSupportPage = () => linkOpener.open("https://www.patreon.com/bsmanager");
   const openDiscord = () => linkOpener.open("https://discord.gg/uSqbHVpKdV");
 
-  const sanitizedHTML = DOMPurify.sanitize(data?.Body);
+  const sanitizedHTML = DOMPurify.sanitize(data?.body);
 
   return (
     <form className="w-[350px] text-gray-800 dark:text-gray-200 h-[70vh] flex flex-col">
-      <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{data?.Title}</h1>
+      <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{data?.title}</h1>
       <BsmImage className="mx-auto h-20" image={BeatRunning} />
       <div className="relative h-80 ">
         <div className=" absolute overflow-y-scroll h-full content grow" dangerouslySetInnerHTML={{ __html: sanitizedHTML }}/>
@@ -31,7 +31,7 @@ export const ChangelogModal: ModalComponent<void, Changelog> = ({ resolver, data
           <BsmButton onClick={openSupportPage} className=" rounded-md h-6 p-1" icon="patreon" withBar={false}/>
           <BsmButton onClick={openDiscord} className=" rounded-md h-6 p-[5px]" icon="discord" withBar={false}/>
         </div>
-        <span><i>{data?.Version}</i></span>
+        <span><i>{data?.version}</i></span>
       </div>
     </form>
   )
