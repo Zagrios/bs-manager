@@ -1,5 +1,5 @@
 {
-  "title": "test DOMPurify <div></div>",
-  "body":"<div><h1>Test de DOMPurify</h1><p>Ceci est un paragraphe de texte normal.</p><a href=\"https://example.com\">Ceci est un lien</a><script>alert(\"Ceci est un script dangereux\");</script><button onclick=\"alert('Ne pas cliquer!')\">Ne pas cliquer</button><iframe src=\"javascript:alert('xss')\"></iframe><img src=\"javascript:alert('xss');\"><a href=\"javascript:alert('xss');\">Lien dangereux</a><style>body {background-color: red;}</style><form action=\"https://example.com\"><input type=\"text\" name=\"username\"><input type=\"password\" name=\"password\"></form><object data=\"data:text/html;base64,PHNjcmlwdD5hbGVydCgnWFNTJyk8L3NjcmlwdD4=\"></object><!-- Ceci est un commentaire --></div>\n",
-  "version": "j'ai pété <div></div>"
+  "title": "",
+  "body":"",
+  "version": ""
 }
