@@ -66,10 +66,12 @@ export class AutoUpdaterService{
       const response = await fetch(path);
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        return;
       }
-
       const data = await response.json();
+      if (!data.body) {
+        return;
+      }
       return data;
 
     } catch (error) {
