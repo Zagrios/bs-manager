@@ -177,7 +177,11 @@
                     "report-bug": "Signaler un bug",
                     "open-logs": "Ouvrir les logs"
                 }
-            }
+            },
+          "release-note": {
+            "open-release-note": "Voir les notes de version",
+            "no-release-note": "Aucune note de version 😢"
+          }
         }
     },
     "notifications": {
@@ -289,7 +293,7 @@
                     "descs": {
                         "COPY_TO_SUBPATH": "Le dossier de destination ne peut pas être un sous-dossier du dossier source.",
                         "restore-linked-folders": "Une erreur s'est produite lors de la restauration des dossiers partagés. Vous pouvez toujours les restaurer manuellement via le menu 'Dossiers partagés' sur la page des versions."
-                    } 
+                    }
                 }
             },
             "steam": {
@@ -472,7 +476,7 @@
                 "password": {
                     "label": "Mot de passe",
                     "placeholder": "Entre ton mot de passe",
-                    "max-length-warning": "Le mot de passe dépasse 64 caractères ! Si le mot de passe est invalide, tente d'entrer seulement ses 64 premiers caractères." 
+                    "max-length-warning": "Le mot de passe dépasse 64 caractères ! Si le mot de passe est invalide, tente d'entrer seulement ses 64 premiers caractères."
                 },
                 "stay": {
                     "label": "Rester connecté"

@@ -178,6 +178,10 @@
                     "report-bug": "Fehler melden",
                     "open-logs": "Protokolle öffnen"
                 }
+            },
+            "release-note": {
+              "open-release-note": "Versionshinweise anzeigen",
+              "no-release-note": "Keine Versionshinweise vorhanden 😢"
             }
         }
     },
@@ -473,7 +477,7 @@
                 "password": {
                     "label": "Passwort",
                     "placeholder": "Gebe dein Passwort ein",
-                    "max-length-warning": "Das Passwort überschreitet 64 Zeichen! Wenn das Passwort ungültig ist, versuchen Sie nur die ersten 64 Zeichen einzugeben." 
+                    "max-length-warning": "Das Passwort überschreitet 64 Zeichen! Wenn das Passwort ungültig ist, versuchen Sie nur die ersten 64 Zeichen einzugeben."
                 },
                 "stay": {
                     "label": "Verbunden bleiben"

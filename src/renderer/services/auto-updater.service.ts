@@ -63,7 +63,7 @@ export class AutoUpdaterService{
     }
 
   public async getChangelogs(): Promise<Changelog | null> {
-    const path = `https://raw.githubusercontent.com/GaetanGrd/bs-manager/feature/add-changelog-modal/178/assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`
+    const path = `https://raw.githubusercontent.com/Zagrios/bs-manager/master/assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`
     return new Promise((resolve) => {
       fetch(path)
         .then(response => {

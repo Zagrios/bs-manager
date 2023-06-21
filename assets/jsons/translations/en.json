@@ -178,7 +178,11 @@
                     "report-bug": "Report a bug",
                     "open-logs": "Open logs"
                 }
-            }
+            },
+          "release-note": {
+            "open-release-note": "View release notes",
+            "no-release-note" : "No release notes 😢"
+          }
         }
     },
     "notifications": {
@@ -473,7 +477,7 @@
                 "password": {
                     "label": "Password",
                     "placeholder": "Enter your password",
-                    "max-length-warning": "The password exceeds 64 characters! If the password is invalid, try to put its first 64 characters." 
+                    "max-length-warning": "The password exceeds 64 characters! If the password is invalid, try to put its first 64 characters."
                 },
                 "stay": {
                     "label": "Stay connected"

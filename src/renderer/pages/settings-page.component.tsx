@@ -69,6 +69,7 @@ export function SettingsPage() {
   const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
   const [modelsDeepLinkEnabled, setModelsDeepLinkEnabled] = useState(false);
   const [appVersion, setAppVersion] = useState("");
+  const [modalChangelogResponse,setModalChangelogResponse]= useState(null)
   const nav = useNavigate();
   const t = useTranslation();
   const updaterService = AutoUpdaterService.getInstance();
@@ -163,7 +164,7 @@ export function SettingsPage() {
 
   const openLogs = () => ipcService.sendLazy("open-logs");
 
-  const openChangelog = () => updaterService.openChangelog(true)
+  const openChangelog = () => setModalChangelogResponse(updaterService.openChangelog(true))
 
     const showDeepLinkError = (isDeactivation: boolean) => {
         const desc = isDeactivation ? "notifications.settings.additional-content.deep-link.deactivation.error.description" : "notifications.settings.additional-content.deep-link.activation.error.description";
@@ -331,7 +332,7 @@ export function SettingsPage() {
                     </SettingContainer>
                 </SettingContainer>
 
-              <Tippy content="Open changelog" placement="left" className="font-bold bg-main-color-3" arrow={true} duration={[200, 0]}>
+              <Tippy content={!modalChangelogResponse ? t("pages.settings.release-note.open-release-note"):t("pages.settings.release-note.no-release-note")} placement="left" className="font-bold bg-main-color-3" arrow={true} duration={[200, 0]} hideOnClick={false}>
                 <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5 hover:brightness-125 cursor-pointer" onClick={openChangelog}>v{appVersion}</span>
               </Tippy>
 

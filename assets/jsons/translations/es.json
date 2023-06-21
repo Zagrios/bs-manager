@@ -177,7 +177,11 @@
                     "report-bug": "Informar de un error",
                     "open-logs": "Abrir los registros"
                 }
-            }
+            },
+          "release-note": {
+            "open-release-note": "Ver notas de lanzamiento",
+            "no-release-note": "No hay notas de lanzamiento 😢"
+          }
         }
     },
     "notifications": {
@@ -472,7 +476,7 @@
                 "password": {
                     "label": "Contraseña",
                     "placeholder": "Introduzca su contraseña",
-                    "max-length-warning": "¡La contraseña supera los 64 caracteres! Si la contraseña es inválida, intenta ingresar solo sus primeros 64 caracteres." 
+                    "max-length-warning": "¡La contraseña supera los 64 caracteres! Si la contraseña es inválida, intenta ingresar solo sus primeros 64 caracteres."
                 },
                 "stay": {
                     "label": "Manténgase conectado"
