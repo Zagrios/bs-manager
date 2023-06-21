@@ -32,22 +32,26 @@ import { ModelsManagerService } from "renderer/services/models-management/models
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { VersionFolderLinkerService } from "renderer/services/version-folder-linker.service";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
+import { useService } from '../hooks/use-service.hook';
+import { OsDiagnosticService } from '../services/os-diagnostic.service';
 
 export function SettingsPage() {
 
-  const configService: ConfigurationService = ConfigurationService.getInstance();
-  const themeService: ThemeService = ThemeService.getInstance();
-  const ipcService: IpcService = IpcService.getInstance();
-  const modalService: ModalService = ModalService.getInstance();
-  const downloaderService: BsDownloaderService = BsDownloaderService.getInstance();
-  const progressBarService: ProgressBarService = ProgressBarService.getInstance();
-  const notificationService: NotificationService = NotificationService.getInstance();
-  const i18nService: I18nService = I18nService.getInstance();
-  const linkOpener: LinkOpenerService = LinkOpenerService.getInstance();
-  const mapsManager = MapsManagerService.getInstance();
-  const playlistsManager = PlaylistsManagerService.getInstance();
-  const modelsManager = ModelsManagerService.getInstance();
-  const versionLinker = VersionFolderLinkerService.getInstance();
+  useService(OsDiagnosticService);
+  const configService: ConfigurationService = useService(ConfigurationService);
+  const themeService: ThemeService = useService(ThemeService);
+  const ipcService: IpcService = useService(IpcService);
+  const modalService: ModalService = useService(ModalService);
+  const downloaderService: BsDownloaderService = useService(BsDownloaderService);
+  const progressBarService: ProgressBarService = useService(ProgressBarService);
+  const notificationService: NotificationService = useService(NotificationService);
+  const i18nService: I18nService = useService(I18nService);
+  const linkOpener: LinkOpenerService = useService(LinkOpenerService);
+  const mapsManager = useService(MapsManagerService);
+  const playlistsManager = useService(PlaylistsManagerService);
+  const modelsManager = useService(ModelsManagerService);
+  const versionLinker = useService(VersionFolderLinkerService);
+  const updaterService = useService(AutoUpdaterService);
 
   const {firstColor, secondColor} = useThemeColor();
 
@@ -72,7 +76,6 @@ export function SettingsPage() {
   const [modalChangelogResponse,setModalChangelogResponse]= useState(null)
   const nav = useNavigate();
   const t = useTranslation();
-  const updaterService = AutoUpdaterService.getInstance();
 
   useEffect(() => {
     loadInstallationFolder();
