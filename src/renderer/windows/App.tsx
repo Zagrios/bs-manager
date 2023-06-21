@@ -35,11 +35,12 @@ export default function App() {
     const models = useService(ModelsManagerService);
     const notification = useService(NotificationService);
     const config = useService(ConfigurationService);
+    const updaterService = useService(AutoUpdaterService);
 
     const location = useLocation();
     const navigate = useNavigate();
 
-  const updaterService = AutoUpdaterService.getInstance();
+
 
     useEffect(() => {
         themeService.theme$.subscribe(() => {
