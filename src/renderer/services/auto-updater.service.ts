@@ -61,20 +61,20 @@ export class AutoUpdaterService{
     }
 
   public async getChangelogs(): Promise<Changelog | null> {
-    const path = `https://raw.githubusercontent.com/Zagrios/bs-manager/master/assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`
-    return new Promise((resolve) => {
-      fetch(path)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json();
-        })
-        .then(data => resolve(data))
-        .catch(error => {
-          resolve(null);
-        });
-    });
+    try {
+      const path = `https://raw.githubusercontent.com/Zagrios/bs-manager/master/assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`;
+      const response = await fetch(path);
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      return data;
+
+    } catch (error) {
+      return;
+    }
   }
 
   public async openChangelog(): Promise<void> {
