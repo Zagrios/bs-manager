@@ -361,7 +361,7 @@
         "steam":{
             "steam-launching":{
                 "title": "¡Steam se está iniciando!",
-                "description": "Steam puede tardar un poco en iniciarse dependiendo de tu configuración."
+                "description": "Beat Saber se lanzará automáticamente después de Steam."
             }
         },
         "custom-version": {
