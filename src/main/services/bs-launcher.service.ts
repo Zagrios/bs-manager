@@ -10,6 +10,8 @@ import { pathExist } from "../helpers/fs.helpers";
 import { rename } from "fs/promises";
 import log from "electron-log";
 import { timer } from "rxjs";
+import { NotificationService } from "./notification.service";
+import { NotificationType } from "../../shared/models/notification/notification.model";
 
 export class BSLauncherService{
 
@@ -19,6 +21,7 @@ export class BSLauncherService{
     private readonly steamService: SteamService;
     private readonly oculusService: OculusService;
     private readonly localVersionService: BSLocalVersionService;
+    private readonly notification: NotificationService;
 
     private bsProcess: ChildProcessWithoutNullStreams;
 
@@ -32,6 +35,7 @@ export class BSLauncherService{
         this.steamService = SteamService.getInstance();
         this.oculusService = OculusService.getInstance();
         this.localVersionService = BSLocalVersionService.getInstance();
+        this.notification = NotificationService.getInstance();
     }
 
     private getSteamVRPath(): Promise<string>{
@@ -55,10 +59,22 @@ export class BSLauncherService{
         return this.bsProcess?.connected || this.utilsService.taskRunning(BS_EXECUTABLE) === true;
     }
 
+    // TODO : Rework with shortcuts implementation
     public async launch(launchOptions: LauchOption): Promise<LaunchResult>{
-        if(launchOptions.version.oculus && this.oculusService.oculusRunning() === false){ return "OCULUS_NOT_RUNNING" }
-        if(!launchOptions.version.oculus && this.steamService.steamRunning() === false){ return "STEAM_NOT_RUNNING" }
         if(this.isBsRunning() === true){ return "BS_ALREADY_RUNNING" }
+        if(launchOptions.version.oculus && this.oculusService.oculusRunning() === false){ return "OCULUS_NOT_RUNNING" }
+
+        const steamRunning = await this.steamService.steamRunning().catch(() => true); // True if error (error not not means that steam is not running)
+        if(!launchOptions.version.oculus && !steamRunning){
+            
+            this.notification.notifyRenderer({
+                title: "notifications.steam.steam-launching.title",
+                desc: "notifications.steam.steam-launching.description",
+                type: NotificationType.SUCCESS,
+            });
+
+            await this.steamService.openSteam().catch(log.error);
+        }
 
         const cwd = await this.localVersionService.getVersionPath(launchOptions.version);
         const exePath = path.join(cwd, BS_EXECUTABLE);

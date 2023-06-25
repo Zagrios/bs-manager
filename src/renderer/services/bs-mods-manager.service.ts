@@ -9,9 +9,10 @@ import { Mod, ModInstallProgression } from "shared/models/mods";
 import { ProgressionInterface } from "shared/models/progress-bar";
 import { IpcService } from "./ipc.service";
 import { ModalExitCode, ModalService } from "./modale.service";
-import { NotificationService, NotificationType } from "./notification.service";
+import { NotificationType } from "../../shared/models/notification/notification.model";
 import { OsDiagnosticService } from "./os-diagnostic.service";
 import { ProgressBarService } from "./progress-bar.service";
+import { NotificationService } from "./notification.service";
 
 export class BsModsManagerService {
 

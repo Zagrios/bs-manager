@@ -1,9 +1,10 @@
 import { LauchOption, LaunchResult } from "shared/models/bs-launch";
 import { BSVersion } from 'shared/bs-version.interface';
 import { IpcService } from "./ipc.service";
-import { NotificationResult, NotificationService } from "./notification.service";
+import { NotificationService } from "./notification.service";
 import { BsDownloaderService } from "./bs-downloader.service";
 import { BehaviorSubject } from "rxjs";
+import { NotificationResult } from "shared/models/notification/notification.model";
 
 export class BSLauncherService{
 
@@ -39,7 +40,7 @@ export class BSLauncherService{
     }
 
 
-
+    // TODO : Rework with shortcuts implementation
     public launch(version: BSVersion, oculus: boolean, desktop: boolean, debug: boolean, additionalArgs?: string[]): Promise<NotificationResult|string>{
         const lauchOption: LauchOption = {debug, oculus, desktop, version, additionalArgs};
         if(this.launchState$.value){ return this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.BS_ALREADY_RUNNING"}); }
@@ -59,18 +60,6 @@ export class BSLauncherService{
                 });
             }
             if(res.data){
-                // TODO : too much nesting here, need refactor
-                if(res.data === "STEAM_NOT_RUNNING"){
-                    return new Promise(async resolve => {
-                        const notif = await this.notificationService.notifyError({title: `notifications.bs-launch.errors.titles.${res.data}`, actions: [{id: "0", title: `notifications.bs-launch.errors.actions.${res.data}`}]});
-                        if(notif === "0"){
-                            await this.ipcService.send<boolean>("open-steam");
-                            const lastNotif = await this.notificationService.notifySuccess({title: "notifications.steam.steam-launching.title", desc: "notifications.steam.steam-launching.description"});
-                            resolve(lastNotif);
-                        }
-                        resolve(notif)
-                    })
-                }
                 return this.notificationService.notifyError({title: `notifications.bs-launch.errors.titles.${res.data}`}); 
             }
             return this.notificationService.notifyError({title: res.data || res.error.title});

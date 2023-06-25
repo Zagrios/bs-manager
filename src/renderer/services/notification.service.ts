@@ -1,6 +1,7 @@
 import { BehaviorSubject } from "rxjs";
 import { SystemNotificationOptions } from "shared/models/notification/system-notification.model";
 import { IpcService } from "./ipc.service";
+import { NotificationResult, NotificationType, Notification } from "../../shared/models/notification/notification.model";
 
 export class NotificationService{
 
@@ -20,6 +21,11 @@ export class NotificationService{
     private constructor(){
         this.ipc = IpcService.getInstance();
         this.notifications$ = new BehaviorSubject<ResolvableNotification[]>([]);
+
+        // TODO : Make actions work and adapt with "watch" remork
+        this.ipc.watch<Notification>("show-notification").subscribe(notification => {
+            this.notify(notification as any as Notification);
+        });
     }
 
     public notify(notification: Notification): Promise<NotificationResult|string>{
@@ -62,32 +68,6 @@ export class NotificationService{
         this.ipc.sendLazy<SystemNotificationOptions>("notify-system", {args: options});
     }
 
-}
-
-export interface Notification {
-    title: string,
-    type?: NotificationType
-    desc?: string,
-    actions?: NotificationAction[],
-    duration?: number,
-}
-
-export enum NotificationType {
-    SUCCESS = 0,
-    WARNING = 1,
-    ERROR = 2,
-    INFO = 3,
-}
-
-export interface NotificationAction {
-    id: string,
-    title: string,
-    cancel?: boolean
-}
-
-export enum NotificationResult {
-    NO_CHOICE = "no_choice",
-    CLOSE = "close",
 }
 
 interface ResolvableNotification{

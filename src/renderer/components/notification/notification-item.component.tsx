@@ -1,4 +1,4 @@
-import { NotificationResult, NotificationType, Notification } from "renderer/services/notification.service"
+import { NotificationResult, NotificationType, Notification } from "../../../shared/models/notification/notification.model"
 import { motion, PanInfo } from "framer-motion"
 import { BsmImage } from "../shared/bsm-image.component";
 import BeatRunningImg from "../../../../assets/images/apngs/beat-running.png";

@@ -35,6 +35,7 @@ export class IpcService{
         window.electron.ipcRenderer.sendMessage(channel, request);
     }
 
+    // Also need a rework
     public watch<T>(channel: string): Observable<IpcResponse<T>>{
         if(this.channelObservables.has(channel)){ return this.channelObservables.get(channel) as Observable<IpcResponse<T>>; }
 

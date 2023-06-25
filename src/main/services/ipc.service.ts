@@ -44,7 +44,7 @@ export class IpcService {
         this.windows.getWindow(window)?.webContents?.send(channel, response);
     }
 
-    public connectStream(channel: IpcChannel, window: AppWindow, observable: Observable<unknown>): void{
+    private connectStream(channel: IpcChannel, window: AppWindow, observable: Observable<unknown>): void{
         observable.subscribe(data => {
             this.send(channel, window, data);
         }, error => {

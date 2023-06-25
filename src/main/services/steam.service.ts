@@ -25,9 +25,20 @@ export class SteamService{
     return SteamService.instance;
   }
 
-  public steamRunning(): boolean | null{
-    return this.utils.taskRunning('steam.exe');
-  }
+    public async getActiveUser(): Promise<number>{
+        const res = await regedit.promisified.list(["HKCU\\Software\\Valve\\Steam\\ActiveProcess"]);
+        const keys = res?.["HKCU\\Software\\Valve\\Steam\\ActiveProcess"];
+
+        if(!keys?.exists){ throw "Key \"HKCU\\Software\\Valve\\Steam\\ActiveProcess\" not exist"; }
+
+        return (keys.values?.ActiveUser.value || undefined) as number;
+    }
+
+    public steamRunning(): Promise<boolean>{
+        return this.getActiveUser()
+            .then(userId => !!userId)
+            .catch(e => {log.error(e); throw e})
+    }
 
   public async getSteamPath(): Promise<string>{
 
@@ -71,12 +82,25 @@ export class SteamService{
     }
   }
 
-    public openSteam(): Promise<boolean>{
+    public openSteam(): Promise<void>{
         const process = spawn("start", ["steam://open/games"], {shell: true});
 
-        return new Promise(resolve => {
-            process.on("exit", () => resolve(true));
-            process.on("error", () => resolve(false));
+        process.on("error", log.error);
+    
+        return new Promise(async (resolve, reject) => {
+            // Every 3 seconds check if steam is running
+            const interval = setInterval(async () => {
+                const steamRunning = await this.steamRunning().catch(() => false);
+                if(!steamRunning){ return; }
+                clearInterval(interval);
+                resolve();
+            }, 3000);
+
+            // If steam is not running after 60 seconds, reject
+            setTimeout(() => {
+                clearInterval(interval);
+                reject("Unable to open steam");
+            }, 60_000);
         });
     }
 
