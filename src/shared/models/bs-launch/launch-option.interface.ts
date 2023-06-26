@@ -1,6 +1,6 @@
 import { BSVersion } from "shared/bs-version.interface";
 
-export interface LauchOption {
+export interface LaunchOption {
     version: BSVersion,
     oculus: boolean,
     desktop: boolean,

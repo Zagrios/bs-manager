@@ -334,12 +334,17 @@
         "bs-launch": {
             "success": {
                 "titles": {
-                    "launching": "Lanzamiento...🚀"
+                    "BS_LAUNCHING": "Lanzamiento...🚀",
+                    "STEAM_LAUNCHING": "¡Steam se está iniciando!"
+                },
+                "msg": {
+                    "BS_LAUNCHING": "TODO",
+                    "STEAM_LAUNCHING": "Beat Saber se lanzará automáticamente después de Steam."
                 }
             },
             "errors": {
                 "titles": {
-                    "UNABLE_TO_LAUNCH": "No se puede lanzar",
+                    "UNKNOWN_ERROR": "No se puede lanzar",
                     "STEAM_NOT_RUNNING": "Steam no funciona",
                     "OCULUS_NOT_RUNNING": "Oculus no funciona",
                     "BS_ALREADY_RUNNING": "BeatSaber ya está en marcha",

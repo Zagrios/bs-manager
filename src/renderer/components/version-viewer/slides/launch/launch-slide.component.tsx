@@ -25,7 +25,7 @@ export function LaunchSlide({version}: Props) {
     const [advancedLaunch, setAdvancedLaunch] = useState(false);
     const [additionalArgsString, setAdditionalArgsString] = useState<string>(configService.get<string>("additionnal-args") || "");
 
-    const launchState = useObservable(bsLauncherService.launchState$);
+    const versionRunning = useObservable(bsLauncherService.versionRunning$);
 
     useEffect(() => {
         configService.set("additionnal-args", additionalArgsString);
@@ -69,7 +69,7 @@ export function LaunchSlide({version}: Props) {
                 </motion.div>
             </div>
             <div className='grow flex justify-center items-center'>
-              <BsmButton onClick={launch} active={JSON.stringify(version) === JSON.stringify(launchState)} className='relative -translate-y-1/2 text-5xl text-gray-800 dark:text-gray-200 font-bold tracking-wide pt-1 pb-3 px-7 rounded-lg shadow-md italic shadow-black active:scale-90 transition-transform' text="misc.launch"/>
+              <BsmButton onClick={launch} active={JSON.stringify(version) === JSON.stringify(versionRunning)} className='relative -translate-y-1/2 text-5xl text-gray-800 dark:text-gray-200 font-bold tracking-wide pt-1 pb-3 px-7 rounded-lg shadow-md italic shadow-black active:scale-90 transition-transform' text="misc.launch"/>
             </div>
         </div>
     )

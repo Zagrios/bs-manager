@@ -1,10 +1,11 @@
-import { LauchOption, LaunchResult } from "shared/models/bs-launch";
+import { LaunchOption, LaunchResult } from "shared/models/bs-launch";
 import { BSVersion } from 'shared/bs-version.interface';
 import { IpcService } from "./ipc.service";
 import { NotificationService } from "./notification.service";
 import { BsDownloaderService } from "./bs-downloader.service";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { NotificationResult } from "shared/models/notification/notification.model";
+import { BSLaunchErrorEvent, BSLaunchErrorType, BSLaunchEvent } from "../../shared/models/bs-launch";
 
 export class BSLauncherService{
 
@@ -14,7 +15,7 @@ export class BSLauncherService{
     private readonly notificationService: NotificationService;
     private readonly bsDownloaderService: BsDownloaderService;
 
-    public readonly launchState$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
+    public readonly versionRunning$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
    
     public static getInstance(){
         if(!BSLauncherService.instance){ BSLauncherService.instance = new BSLauncherService(); }
@@ -25,13 +26,13 @@ export class BSLauncherService{
         this.ipcService = IpcService.getInstance();
         this.notificationService = NotificationService.getInstance();
         this.bsDownloaderService = BsDownloaderService.getInstance();
-        this.listenBsExit();
     }
 
+    // TODO REMOVE
     private listenBsExit(): void{
         this.ipcService.watch("bs-launch.exit").subscribe(res => {
-            const version = this.launchState$.value;
-            this.launchState$.next(null);
+            const version = this.versionRunning$.value;
+            this.versionRunning$.next(null);
             if(res.success){ return; }
             this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.EXIT", desc: "notifications.bs-launch.errors.msg.EXIT", actions: [{id: "0", title: "misc.verify"}]}).then(res => {
                 if(res === "0"){ this.bsDownloaderService.download(version, true); }
@@ -41,15 +42,15 @@ export class BSLauncherService{
 
 
     // TODO : Rework with shortcuts implementation
-    public launch(version: BSVersion, oculus: boolean, desktop: boolean, debug: boolean, additionalArgs?: string[]): Promise<NotificationResult|string>{
-        const lauchOption: LauchOption = {debug, oculus, desktop, version, additionalArgs};
-        if(this.launchState$.value){ return this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.BS_ALREADY_RUNNING"}); }
-        this.launchState$.next(version);
+    public launch_old(version: BSVersion, oculus: boolean, desktop: boolean, debug: boolean, additionalArgs?: string[]): Promise<NotificationResult|string>{
+        const lauchOption: LaunchOption = {debug, oculus, desktop, version, additionalArgs};
+        if(this.versionRunning$.value){ return this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.BS_ALREADY_RUNNING"}); }
+        this.versionRunning$.next(version);
         return this.ipcService.send<LaunchResult>("bs-launch.launch", {args: lauchOption}).then(res => {
 
             if(res.data === "LAUNCHED"){ return this.notificationService.notifySuccess({title: "notifications.bs-launch.success.titles.launching"}); }
 
-            this.launchState$.next(null);
+            this.versionRunning$.next(null);
             if(!res.success){
                 return this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.UNABLE_TO_LAUNCH", desc: res.error.title}); 
             }
@@ -65,6 +66,30 @@ export class BSLauncherService{
             return this.notificationService.notifyError({title: res.data || res.error.title});
       });
    }
+
+    public launch(version: BSVersion, oculus: boolean, desktop: boolean, debug: boolean, additionalArgs?: string[]): Observable<BSLaunchEvent> {
+        const launchState$ = this.ipcService.sendV2<BSLaunchEvent, LaunchOption>("bs-launch.launch", {args: {debug, oculus, desktop, version, additionalArgs}});
+
+        this.versionRunning$.next(version);
+
+        launchState$.subscribe({
+            next: event => {
+                this.notificationService.notifySuccess({title: `notifications.bs-launch.success.titles.${event.type}`, desc: `notifications.bs-launch.success.msg.${event.type}`});
+            },
+            error: (err: BSLaunchErrorEvent) => {
+                if(err.type === BSLaunchErrorType.UNKNOWN_ERROR || !Object.values(BSLaunchErrorType).includes(err.type)){
+                    this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.UNABLE_TO_LAUNCH"});
+                } else {
+                    this.notificationService.notifyError({title: `notifications.bs-launch.errors.titles.${err.type}`, desc: `notifications.bs-launch.errors.msg.${err.type}`})
+                }
+            },
+            complete: () => {
+                this.versionRunning$.next(null);
+            }
+        })
+
+        return launchState$;
+    }
 
 }
 
