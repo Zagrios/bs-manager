@@ -151,6 +151,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.3.0",
     "@types/archiver": "^5.3.1",
+    "@types/color": "^3.0.3",
     "@types/dateformat": "^5.0.0",
     "@types/jest": "^27.5.2",
     "@types/node": "17.0.23",
@@ -230,7 +231,6 @@
   "dependencies": {
     "@node-steam/vdf": "^2.2.0",
     "@tippyjs/react": "^4.2.6",
-    "@types/color": "^3.0.3",
     "archiver": "^5.3.1",
     "color": "^4.2.3",
     "dateformat": "^5.0.3",
