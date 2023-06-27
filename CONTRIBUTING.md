@@ -19,7 +19,7 @@ We'd also love PRs. If you're thinking of a large PR, we advise opening up an is
 
 1. [Fork][fork] and clone the repository.
 1. Configure and install the dependencies: `npm install`.
-1. Create a new branch following naming convention: `git checkout -b (feature|bufix|hotfix)/(short-description)(/issue-id)`.
+1. Create a new branch following naming convention: `git checkout -b (feature|bugfix|hotfix|chore)/(short-description)(/issue-id)`.
 1. Make your change, test, and make sure BSManager work fine.
 1. Push to your fork and [submit a pull request][pr].
 1. Pat your self on the back and wait for your pull request to be reviewed and merged.
