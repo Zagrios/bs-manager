@@ -197,7 +197,7 @@ export class BSLauncherService{
 
             const launchArgs = this.buildBsLaunchArgs(launchOptions);
 
-            obs.next({type: BSLaunchEventType.BS_LAUNCHING});
+            obs.next({type: BSLaunchEventType.BS_LAUNCHING}); // Add BS_FORCE_LAUNCH when steam not succeded to launch
 
             await this.launchBSProcess(exePath, launchArgs, launchOptions.debug).catch(() => {
                 obs.error({type: BSLaunchErrorType.BS_EXIT_ERROR} as BSLaunchErrorEvent);
