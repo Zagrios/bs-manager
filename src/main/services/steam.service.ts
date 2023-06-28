@@ -1,6 +1,6 @@
 import { UtilsService } from "./utils.service";
 import regedit from 'regedit'
-import { path, join } from "path";
+import path from "path";
 import { parse } from "@node-steam/vdf";
 import { readFile } from "fs/promises";
 import { spawn } from "child_process";
