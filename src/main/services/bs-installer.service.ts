@@ -66,7 +66,7 @@ export class BSInstallerService{
       return new Promise(resolve => {
          if(this.downloadProcess?.killed && !this.downloadProcess?.pid){ return resolve(false); }
 
-         this.downloadProcess.once('exit', () => resolve(true));
+         this.downloadProcess?.once('exit', () => resolve(true));
          if (process.platform === 'win32') {
             ctrlc(this.downloadProcess.pid);
          } else {
