@@ -42,7 +42,7 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
     const [selectedMaps$] = useState(new BehaviorSubject<BsmLocalMap[]>([]));
     const [itemPerRow, setItemPerRow] = useState(2);
     const [listHeight, setListHeight] = useState(0);
-    const isActiveOnce = useChangeOnce(isActive);
+    const isActiveOnce = useChangeOnce(isActive, true);
 
     const [loadPercent$] = useState(new BehaviorSubject(0));
 
