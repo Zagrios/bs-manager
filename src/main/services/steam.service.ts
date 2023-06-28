@@ -6,6 +6,7 @@ import { readFile } from "fs/promises";
 import { spawn } from "child_process";
 import { pathExist } from "../helpers/fs.helpers";
 import log from "electron-log";
+import psList from 'ps-list';
 import { app } from "electron";
 
 export class SteamService{
@@ -26,20 +27,21 @@ export class SteamService{
     return SteamService.instance;
   }
 
-    public async getActiveUser(): Promise<number>{
-        const res = await regedit.promisified.list(["HKCU\\Software\\Valve\\Steam\\ActiveProcess"]);
-        const keys = res?.["HKCU\\Software\\Valve\\Steam\\ActiveProcess"];
+  public async getActiveUser(): Promise<number>{
+    const res = await regedit.promisified.list(["HKCU\\Software\\Valve\\Steam\\ActiveProcess"]);
+    const keys = res?.["HKCU\\Software\\Valve\\Steam\\ActiveProcess"];
+    if(!keys?.exists){ throw "Key \"HKCU\\Software\\Valve\\Steam\\ActiveProcess\" not exist"; }
+    return (keys.values?.ActiveUser.value || undefined) as number;
+  }
 
-        if(!keys?.exists){ throw "Key \"HKCU\\Software\\Valve\\Steam\\ActiveProcess\" not exist"; }
-
-        return (keys.values?.ActiveUser.value || undefined) as number;
+  public async steamRunning(): Promise<boolean>{
+    if (process.platform === 'win32') {
+      return !!(await this.getActiveUser());
     }
-
-    public steamRunning(): Promise<boolean>{
-        return this.getActiveUser()
-            .then(userId => !!userId)
-            .catch(e => {log.error(e); throw e})
-    }
+    return await psList()
+      .then(processes => !!processes.find(process => process.cmd.includes('steam')))
+      .catch(e => {log.error(e); throw e})
+  }
 
   public async getSteamPath(): Promise<string>{
 
