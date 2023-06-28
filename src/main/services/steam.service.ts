@@ -26,11 +26,21 @@ export class SteamService{
     return SteamService.instance;
   }
 
-    public async steamRunning(): Promise<boolean>{
-        return await psList()
-            .then(processes => !!processes.find(process => process.cmd.includes('steam')))
-            .catch(e => {log.error(e); throw e})
+  public async getActiveUser(): Promise<number>{
+    const res = await regedit.promisified.list(["HKCU\\Software\\Valve\\Steam\\ActiveProcess"]);
+    const keys = res?.["HKCU\\Software\\Valve\\Steam\\ActiveProcess"];
+    if(!keys?.exists){ throw "Key \"HKCU\\Software\\Valve\\Steam\\ActiveProcess\" not exist"; }
+    return (keys.values?.ActiveUser.value || undefined) as number;
+  }
+
+  public async steamRunning(): Promise<boolean>{
+    if (process.platform === 'win32') {
+      return !!(await this.getActiveUser());
     }
+    return await psList()
+      .then(processes => !!processes.find(process => process.cmd.includes('steam')))
+      .catch(e => {log.error(e); throw e})
+  }
 
   public async getSteamPath(): Promise<string>{
 
