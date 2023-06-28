@@ -17,7 +17,7 @@ export function SharedContentsPage() {
             <TabNavBar className='my-4' tabIndex={tabIndex} tabsText={["misc.maps", "misc.models"]} onTabChange={setTabIndex}/>
             <div className='w-full min-h-0 grow flex transition-transform duration-300' style={{transform: `translate(${-(tabIndex * 100)}%, 0)`}}>
                 <div className="w-full shrink-0 px-3 pb-3 flex flex-col items-center">
-                    <MapsPlaylistsPanel/>
+                    <MapsPlaylistsPanel isActive={tabIndex === 0}/>
                 </div>
                 <div className="w-full shrink-0 px-3 pb-3 flex flex-col items-center">
                     <ModelsPanel isActive={tabIndex === 1}/>
