@@ -86,7 +86,7 @@ export class MapsManagerService {
 
     public async deleteMaps(maps: BsmLocalMap[], version?: BSVersion): Promise<boolean>{
 
-        const versionLinked = await this.versionHaveMapsLinked(version);
+        const versionLinked = !version || await this.versionHaveMapsLinked(version);
 
         const askModal = maps.length > 1 || !this.config.get<boolean>(MapsManagerService.REMEMBER_CHOICE_DELETE_MAP_KEY);
 

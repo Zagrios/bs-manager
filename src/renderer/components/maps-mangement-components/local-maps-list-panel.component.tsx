@@ -137,10 +137,17 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
     const removeMapsFromList = (mapsToRemove: BsmLocalMap[]) => {
         const filtredMaps = maps.filter(map => !mapsToRemove.some(toDeleteMaps => map.hash === toDeleteMaps.hash));
         setMaps(() => filtredMaps);
+
+        const filtredSelectedMaps = selectedMaps$.value.filter(map => !mapsToRemove.some(toDeleteMaps => map.hash === toDeleteMaps.hash));
+        selectedMaps$.next(filtredSelectedMaps);
     };
 
     const handleDelete = useCallback((map: BsmLocalMap) => {
-        mapsManager.deleteMaps([map], version).then(res => res && removeMapsFromList([map]));
+        mapsManager.deleteMaps([map], version).then(res => {
+            if(!res){ return; }
+            removeMapsFromList([map]);
+
+        });
     }, [version, maps]);
 
     const onMapSelected = useCallback((map: BsmLocalMap) => {
