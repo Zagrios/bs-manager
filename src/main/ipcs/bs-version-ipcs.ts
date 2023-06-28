@@ -1,4 +1,4 @@
-import { ipcMain } from 'electron';
+import { ipcMain, shell } from 'electron';
 import { UtilsService } from '../services/utils.service';
 import { BSVersionLibService } from '../services/bs-version-lib.service'
 import { BSVersion } from 'shared/bs-version.interface';
@@ -38,7 +38,9 @@ ipcMain.on('bs-version.installed-versions', async (event, req: IpcRequest<void>)
 ipcMain.on("bs-version.open-folder", async (event, req: IpcRequest<BSVersion>) => {
    const localVersionService = BSLocalVersionService.getInstance();
    const versionFolder = await localVersionService.getVersionPath(req.args);
-   (await pathExist(versionFolder)) && exec(`start "" "${versionFolder}"`);
+   if (!(await pathExist(versionFolder)))
+     return;
+   shell.openPath(versionFolder);
 });
 
 ipcMain.on("bs-version.edit", async (event, req: IpcRequest<{version: BSVersion, name: string, color: string}>) => {
