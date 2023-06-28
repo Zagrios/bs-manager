@@ -3,11 +3,8 @@ import { MapsPlaylistsPanel } from "renderer/components/maps-mangement-component
 import { ModelsPanel } from "renderer/components/models-management/models-panel.component";
 import { TabNavBar } from "renderer/components/shared/tab-nav-bar.component";
 import { Slideshow } from "renderer/components/slideshow/slideshow.component";
-import { useTranslation } from "renderer/hooks/use-translation.hook";
 
 export function SharedContentsPage() {
-
-    const t = useTranslation();
 
     const [tabIndex, setTabIndex] = useState(0);
 
