@@ -67,8 +67,11 @@ export class BSInstallerService{
          if(this.downloadProcess?.killed && !this.downloadProcess?.pid){ return resolve(false); }
 
          this.downloadProcess.once('exit', () => resolve(true));
-
-         ctrlc(this.downloadProcess.pid);
+         if (process.platform === 'win32') {
+            ctrlc(this.downloadProcess.pid);
+         } else {
+            this.downloadProcess.kill();
+         }
          setTimeout(() => resolve(false), 3000);
       });
    }
