@@ -4,7 +4,6 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useSta
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface"
 import { Subscription } from "rxjs"
 import { MapFilter } from "shared/models/maps/beat-saver.model"
-import { useInView } from "framer-motion"
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service"
 import { VariableSizeList } from "react-window"
 import { MapsRow } from "./maps-row.component"
@@ -18,16 +17,18 @@ import BeatConflict from "../../../../assets/images/apngs/beat-conflict.png"
 import { BsmImage } from "../shared/bsm-image.component"
 import { BsmButton } from "../shared/bsm-button.component"
 import TextProgressBar from "../progress-bar/text-progress-bar.component"
+import { useChangeOnce } from "renderer/hooks/use-change-once.hook"
 
 type Props = {
     version: BSVersion,
     className?: string,
     filter?: MapFilter
     search?: string,
-    linked?: boolean
+    linked?: boolean,
+    isActive?: boolean
 }
 
-export const LocalMapsListPanel = forwardRef(({version, className, filter, search, linked} : Props, forwardRef) => {
+export const LocalMapsListPanel = forwardRef(({version, className, filter, search, linked, isActive} : Props, forwardRef) => {
 
     const mapsManager = MapsManagerService.getInstance();
     const mapsDownloader = MapsDownloaderService.getInstance();
@@ -35,13 +36,13 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
     const os = OsDiagnosticService.getInstance();
 
     const t = useTranslation();
-    const ref = useRef(null)
-    const isVisible = useInView(ref, {once: true, amount: .5});
+    const ref = useRef(null);
     const [maps, setMaps] = useState<BsmLocalMap[]>(null);
     const [subs] = useState<Subscription[]>([]);
     const [selectedMaps$] = useState(new BehaviorSubject<BsmLocalMap[]>([]));
     const [itemPerRow, setItemPerRow] = useState(2);
     const [listHeight, setListHeight] = useState(0);
+    const isActiveOnce = useChangeOnce(isActive);
 
     const [loadPercent$] = useState(new BehaviorSubject(0));
 
@@ -64,7 +65,7 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
 
     useEffect(() => {
 
-        if(isVisible){
+        if(isActiveOnce){
             loadMaps();
             mapsDownloader.addOnMapDownloadedListener((map, targerVersion) => {
                 if(targerVersion !== version){ return; }
@@ -78,11 +79,11 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
             subs.forEach(s => s.unsubscribe());
             mapsDownloader.removeOnMapDownloadedListener(loadMaps);
         }
-    }, [isVisible, version, linked]);
+    }, [isActiveOnce, version, linked]);
 
     useEffect(() => {
         
-        if(!isVisible){ return () => {}; }
+        if(!isActiveOnce){ return; }
 
         const updateItemPerRow = (listWidth: number) => {
             const newPerRow = Math.min(Math.floor(listWidth / 400), 3);
@@ -106,7 +107,7 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
             sub.unsubscribe();
         }
 
-    }, [isVisible, itemPerRow])
+    }, [isActiveOnce, itemPerRow])
 
     const loadMaps = () => {
 

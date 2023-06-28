@@ -41,7 +41,6 @@ export function BsmButton({className, style, imgClassName, iconClassName, icon, 
 
     const textColor = (() => {
         if(primaryColor){
-            console.log(getCorrectTextColor(primaryColor), text);
             return getCorrectTextColor(primaryColor); 
         }
         return typeColor ? "white" : undefined;
