@@ -80,7 +80,7 @@ export function VersionViewer() {
         <div className='w-full min-h-0 grow flex transition-transform duration-300' style={{transform: `translate(${-(currentTabIndex * 100)}%, 0)`}}>
           <LaunchSlide version={state}/>
           <div className="w-full shrink-0 px-3 pb-3 flex flex-col items-center">
-            <MapsPlaylistsPanel version={state}/>
+            <MapsPlaylistsPanel version={state} isActive={currentTabIndex === 1}/>
           </div>
           <div className="w-full shrink-0 px-3 pb-3 flex flex-col items-center">
             <ModelsPanel version={state} isActive={currentTabIndex === 2} goToMods={() => setCurrentTabIndex(() => 3)}/>

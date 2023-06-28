@@ -21,10 +21,11 @@ import { VersionFolderLinkerService, VersionLinkerActionListener } from "rendere
 
 
 type Props = {
-    version?: BSVersion
+    version?: BSVersion,
+    isActive?: boolean
 }
 
-export function MapsPlaylistsPanel({version}: Props) {
+export function MapsPlaylistsPanel({version, isActive}: Props) {
 
     const mapsService = MapsManagerService.getInstance();
     const mapsDownloader = MapsDownloaderService.getInstance();
@@ -63,7 +64,7 @@ export function MapsPlaylistsPanel({version}: Props) {
             linker.removeVersionFolderUnlinkedListener(onMapsLinked);
         }
 
-    }, [version]);
+    }, [version, isActive]);
 
     const loadMapIsLinked = () => {
         mapsService.versionHaveMapsLinked(version).then(setMapsLinked);
@@ -160,7 +161,7 @@ export function MapsPlaylistsPanel({version}: Props) {
             <div className="w-full h-full flex flex-col bg-light-main-color-3 dark:bg-main-color-2 rounded-md shadow-black shadow-md overflow-hidden">
                 <TabNavBar className="!rounded-none shadow-sm" tabIndex={tabIndex} tabsText={["misc.maps", "misc.playlists"]} onTabChange={setTabIndex} renderTab={renderTab}/>
                 <div className="w-full grow min-h-0 flex flex-row items-center transition-transform duration-300" style={{transform: `translate(${-(tabIndex * 100)}%, 0)`}}>
-                    <LocalMapsListPanel ref={mapsRef} className="w-full h-full shrink-0 flex flex-col" version={version} filter={mapFilter} search={mapSearch} linked={mapsLinked}/>
+                    <LocalMapsListPanel isActive={isActive && tabIndex === 0} ref={mapsRef} className="w-full h-full shrink-0 flex flex-col" version={version} filter={mapFilter} search={mapSearch} linked={mapsLinked}/>
                     <div className="w-full h-full shrink-0 flex flex-col justify-center items-center content-center gap-2 overflow-hidden text-gray-800 dark:text-gray-200">
                         <BsmImage className="rounded-md" image={wipGif}/>
                         <span>Coming soon</span>
