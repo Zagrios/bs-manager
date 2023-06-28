@@ -1,11 +1,12 @@
 import { UtilsService } from "./utils.service";
 import regedit from 'regedit'
-import path from "path";
+import { path, join } from "path";
 import { parse } from "@node-steam/vdf";
 import { readFile } from "fs/promises";
 import { spawn } from "child_process";
 import { pathExist } from "../helpers/fs.helpers";
 import log from "electron-log";
+import { app } from "electron";
 
 export class SteamService{
 
@@ -42,20 +43,28 @@ export class SteamService{
 
   public async getSteamPath(): Promise<string>{
 
-    if(!!this.steamPath){ return this.steamPath; }
+    if(this.steamPath){ return this.steamPath; }
 
-    const [win32Res, win64Res] = await Promise.all([
-      regedit.promisified.list(['HKLM\\SOFTWARE\\Valve\\Steam']),
-      regedit.promisified.list(['HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam'])
-    ]);
+    switch (process.platform) {
+      case "linux":
+        this.steamPath = path.join(app.getPath('home'), '.steam', "steam");
+        return this.steamPath;
+      case "win32":
+        const [win32Res, win64Res] = await Promise.all([
+          regedit.promisified.list(['HKLM\\SOFTWARE\\Valve\\Steam']),
+          regedit.promisified.list(['HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam'])
+        ]);
 
-    const [win32, win64] = [win32Res["HKLM\\SOFTWARE\\Valve\\Steam"], win64Res["HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam"]];
-    
-    let res = '';
-    if(win64.exists && win64?.values?.InstallPath?.value){ res = win64.values.InstallPath.value as string; }
-    else if(win32.exists && win32?.values?.InstallPath?.value){ res = win32.values.InstallPath.value as string; }
-    this.steamPath = res;
-    return this.steamPath;
+        const [win32, win64] = [win32Res["HKLM\\SOFTWARE\\Valve\\Steam"], win64Res["HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam"]];
+
+        let res = '';
+        if(win64.exists && win64?.values?.InstallPath?.value){ res = win64.values.InstallPath.value as string; }
+        else if(win32.exists && win32?.values?.InstallPath?.value){ res = win32.values.InstallPath.value as string; }
+        this.steamPath = res;
+        return res;
+      default:
+        return null;
+    }
   }
 
   public async getGameFolder(gameId: string, gameFolder?: string): Promise<string>{
@@ -86,7 +95,7 @@ export class SteamService{
         const process = spawn("start", ["steam://open/games"], {shell: true});
 
         process.on("error", log.error);
-    
+
         return new Promise(async (resolve, reject) => {
             // Every 3 seconds check if steam is running
             const interval = setInterval(async () => {
