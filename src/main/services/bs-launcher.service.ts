@@ -61,8 +61,8 @@ export class BSLauncherService{
 
     // TODO : Rework with shortcuts implementation
     public async launch(launchOptions: LauchOption): Promise<LaunchResult>{
-        if(this.isBsRunning() === true){ return "BS_ALREADY_RUNNING" }
-        if(launchOptions.version.oculus && this.oculusService.oculusRunning() === false){ return "OCULUS_NOT_RUNNING" }
+        if(await this.isBsRunning() === true){ return "BS_ALREADY_RUNNING" }
+        if(launchOptions.version.oculus && await this.oculusService.oculusRunning() === false){ return "OCULUS_NOT_RUNNING" }
 
         const steamRunning = await this.steamService.steamRunning().catch(() => true); // True if error (error not not means that steam is not running)
         if(!launchOptions.version.oculus && !steamRunning){
