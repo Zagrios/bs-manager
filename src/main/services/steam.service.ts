@@ -6,8 +6,7 @@ import { readFile } from "fs/promises";
 import { spawn } from "child_process";
 import { pathExist } from "../helpers/fs.helpers";
 import log from "electron-log";
-import psList from 'ps-list';
-import os from 'os';
+import { app } from "electron";
 
 export class SteamService{
 
@@ -48,7 +47,7 @@ export class SteamService{
 
     switch (process.platform) {
       case "linux":
-        this.steamPath = path.join(os.homedir(), '.steam', "steam");
+        this.steamPath = path.join(app.getPath('home'), '.steam', "steam");
         return this.steamPath;
       case "win32":
         const [win32Res, win64Res] = await Promise.all([
