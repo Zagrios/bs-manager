@@ -20,8 +20,8 @@ export class OculusService {
         this.utils = UtilsService.getInstance();
     }
 
-    public oculusRunning(): boolean | null{
-        return this.utils.taskRunning("OculusClient.exe");
+    public async oculusRunning(): Promise<boolean> {
+        return await this.utils.taskRunning("OculusClient.exe");
     }
 
     public async getOculusLibsPath(): Promise<string[]>{

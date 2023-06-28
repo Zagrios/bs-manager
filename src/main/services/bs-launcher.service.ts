@@ -55,8 +55,8 @@ export class BSLauncherService{
         return rename(steamVrFolder + ".bak", steamVrFolder).catch(log.error);
     }
 
-    public isBsRunning(): boolean{
-        return this.bsProcess?.connected || this.utilsService.taskRunning(BS_EXECUTABLE) === true;
+    public async isBsRunning(): Promise<boolean> {
+        return this.bsProcess?.connected || await this.utilsService.taskRunning(BS_EXECUTABLE) === true;
     }
 
     // TODO : Rework with shortcuts implementation
