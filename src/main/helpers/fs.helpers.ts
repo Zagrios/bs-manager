@@ -55,14 +55,11 @@ export async function getFoldersInFolder(folderPath: string, opts?: {ignoreSymli
 export async function getFilesInFolder(folderPath: string): Promise<string[]> {
     if(!(await pathExist(folderPath))){ return []; }
 
-    const files = await readdir(folderPath, {withFileTypes: true});
+    const dirEntries = await readdir(folderPath, {withFileTypes: true})
 
-    const promises = files.map(async file => {
-        if(file.isFile()){ return path.join(folderPath, file.name); }
-        return undefined;
-    });
-
-    return (await Promise.all(promises)).filter(file => file);
+    return dirEntries
+      .filter(entry => entry.isFile())
+      .map(file => path.join(folderPath, file.name));
 }
 
 export function moveFolderContent(src: string, dest: string): Observable<Progression>{
