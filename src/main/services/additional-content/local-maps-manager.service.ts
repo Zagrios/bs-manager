@@ -18,7 +18,7 @@ import { ipcMain } from "electron";
 import { IpcRequest } from 'shared/models/ipc';
 import { Observable, lastValueFrom } from "rxjs";
 import { Archive } from "../../models/archive.class";
-import { deleteFolder, ensureFolderExist, getFoldersInFolder, pathExist } from "../../helpers/fs.helpers";
+import { deleteFolder, ensureFolderExist, getFilesInFolder, getFoldersInFolder, pathExist } from "../../helpers/fs.helpers";
 import { readFile } from "fs/promises";
 import { FolderLinkerService } from "../folder-linker.service";
 import { allSettled } from "../../../shared/helpers/promise.helpers";
@@ -90,23 +90,25 @@ export class LocalMapsManagerService {
                 diffContent && shasum.update(diffContent);
             }
         }
-        
+
         return shasum.digest("hex");
     }
 
     private async loadMapInfoFromPath(mapPath: string): Promise<BsmLocalMap>{
-        const infoFilePath = path.join(mapPath, "Info.dat");
+        const files = await getFilesInFolder(mapPath);
+        const infoFile = files
+          .find(file => (path.basename(file).toLowerCase() === "info.dat"))
 
-        if(!(await pathExist(infoFilePath))){ return null; }
+        if(infoFile === null){ return null; }
 
-        const rawInfoString = await readFile(infoFilePath, {encoding: "utf-8"});
+        const rawInfoString = await readFile(infoFile, {encoding: "utf-8"});
 
         const rawInfo: RawMapInfoData = JSON.parse(rawInfoString);
         const coverUrl = new URL(`file:///${path.join(mapPath, rawInfo._coverImageFilename)}`).href;
         const songUrl = new URL(`file:///${path.join(mapPath, rawInfo._songFilename)}`).href;
-        
+
         const hash = await this.computeMapHash(mapPath, rawInfoString);
-        
+
         return {rawInfo, coverUrl, songUrl, hash, path: mapPath};
     }
 
@@ -127,7 +129,7 @@ export class LocalMapsManagerService {
         ipcMain.once("one-click-map-info", async (event, req: IpcRequest<void>) => {
             this.utils.ipcSend(req.responceChannel, {success: true, data: {id: mapId, isHash}});
         });
-        
+
         this.windows.openWindow("oneclick-download-map.html");
 
     }
@@ -189,7 +191,7 @@ export class LocalMapsManagerService {
     }
 
     public deleteMaps(maps: BsmLocalMap[]): Observable<DeleteMapsProgress>{
-       
+
         const mapsFolders = maps.map(map => map.path);
         const mapsHashsToDelete = maps.map(map => map.hash);
 
@@ -244,7 +246,7 @@ export class LocalMapsManagerService {
     public async exportMaps(version: BSVersion, maps: BsmLocalMap[], outPath: string){
 
         const archive = new Archive(outPath);
-        
+
         if(!maps || maps.length === 0){
             const mapsFolder = await this.getMapsFolderPath(version);
             archive.addDirectory(mapsFolder, false);

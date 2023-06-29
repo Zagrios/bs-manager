@@ -12,7 +12,7 @@ export async function pathExist(path: string): Promise<boolean> {
     }catch(e){
         return false;
     }
-    
+
 }
 
 export async function ensureFolderExist(path: string): Promise<void> {
@@ -52,8 +52,18 @@ export async function getFoldersInFolder(folderPath: string, opts?: {ignoreSymli
     return (await Promise.all(promises)).filter(folder => folder);
 }
 
-export function moveFolderContent(src: string, dest: string): Observable<Progression>{    
-    const progress: Progression = { current: 0, total: 0 }; 
+export async function getFilesInFolder(folderPath: string): Promise<string[]> {
+    if(!(await pathExist(folderPath))){ return []; }
+
+    const dirEntries = await readdir(folderPath, {withFileTypes: true})
+
+    return dirEntries
+      .filter(entry => entry.isFile())
+      .map(file => path.join(folderPath, file.name));
+}
+
+export function moveFolderContent(src: string, dest: string): Observable<Progression>{
+    const progress: Progression = { current: 0, total: 0 };
     return new Observable<Progression>(subscriber => {
         subscriber.next(progress);
         (async () => {
@@ -61,7 +71,7 @@ export function moveFolderContent(src: string, dest: string): Observable<Progres
             const srcExist = await pathExist(src);
 
             if(!srcExist){ return subscriber.complete(); }
-            
+
             ensureFolderExist(dest);
 
             const files = await readdir(src, {encoding: "utf-8"});
@@ -92,9 +102,9 @@ export function isSubdirectory(parent: string, child: string): boolean {
     if (parentNormalized === childNormalized) { return false; }
 
     const relativePath = path.relative(parentNormalized, childNormalized);
-  
+
     if (path.parse(parentNormalized).root !== path.parse(childNormalized).root) { return false; }
-  
+
     return relativePath && !relativePath.startsWith('..') && !path.isAbsolute(relativePath);
 }
 
@@ -106,11 +116,11 @@ export async function copyDirectoryWithJunctions(src: string, dest: string, opti
 
     await ensureDir(dest);
     const items = await readdir(src, { withFileTypes: true });
-  
+
     for (const item of items) {
         const sourcePath = path.join(src, item.name);
         const destinationPath = path.join(dest, item.name);
-    
+
         if (item.isDirectory()) {
             await copyDirectoryWithJunctions(sourcePath, destinationPath, options);
         } else if (item.isFile()) {
