@@ -2,6 +2,7 @@ import { UtilsService } from "./utils.service";
 import regedit from 'regedit'
 import path from "path";
 import { pathExist } from "../helpers/fs.helpers";
+import log from "electron-log";
 
 export class OculusService {
 
@@ -24,9 +25,15 @@ export class OculusService {
         return this.utils.taskRunning("OculusClient.exe");
     }
 
-    public async getOculusLibsPath(): Promise<string[]>{
+    public async getOculusLibsPath(): Promise<string[]> {
+        if (process.platform !== "win32") {
+            log.info("Oculus library auto-detection not supported on non-windows platforms");
+            return null;
+        }
 
-        if(this.oculusPaths){ return this.oculusPaths; }
+        if (this.oculusPaths) {
+            return this.oculusPaths;
+        }
 
         const oculusLibsRegKey = "HKCU\\SOFTWARE\\Oculus VR, LLC\\Oculus\\Libraries";
 
