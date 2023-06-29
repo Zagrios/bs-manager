@@ -96,12 +96,12 @@ export class LocalMapsManagerService {
 
     private async loadMapInfoFromPath(mapPath: string): Promise<BsmLocalMap>{
         const files = await getFilesInFolder(mapPath);
-        const infoFilePaths = files
-          .filter(file => (path.basename(file).toLowerCase() === "info.dat"))
+        const infoFile = files
+          .find(file => (path.basename(file).toLowerCase() === "info.dat"))
 
-        if(infoFilePaths.length === 0){ return null; }
+        if(infoFile === null){ return null; }
 
-        const rawInfoString = await readFile(infoFilePaths[0], {encoding: "utf-8"});
+        const rawInfoString = await readFile(infoFile, {encoding: "utf-8"});
 
         const rawInfo: RawMapInfoData = JSON.parse(rawInfoString);
         const coverUrl = new URL(`file:///${path.join(mapPath, rawInfo._coverImageFilename)}`).href;
