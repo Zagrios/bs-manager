@@ -1,4 +1,3 @@
-import { spawnSync } from "child_process";
 import path from "path";
 import { app, BrowserWindow } from "electron";
 import { IpcResponse } from "shared/models/ipc";
@@ -37,7 +36,7 @@ export class UtilsService{
     public async taskRunning(task: string): Promise<boolean> {
         try{
             const processes = await psList();
-            return !!processes.find(process => process.cmd.includes(task));
+            return processes.some(process => process.name?.includes(task) || process.cmd?.includes(task));
         }
         catch(error){
             log.error(error);

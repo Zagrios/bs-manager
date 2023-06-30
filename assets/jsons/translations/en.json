@@ -353,6 +353,7 @@
                     "EXIT": "Abrupt stop"
                 },
                 "msg": {
+                    "UNKNOWN_ERROR": "An unknown error has occurred.",
                     "STEAM_NOT_RUNNING": "Steam must be running to launch BeatSaber.",
                     "OCULUS_NOT_RUNNING": "Oculus must be running to launch BeatSaber.",
                     "BS_ALREADY_RUNNING": "Close BeatSaber before launching it again.",

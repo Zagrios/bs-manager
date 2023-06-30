@@ -58,7 +58,8 @@ const initServicesMustBeInitialized = () => {
     LocalMapsManagerService.getInstance();
     LocalPlaylistsManagerService.getInstance();
     LocalModelsManagerService.getInstance();
-    // Model
+
+    BSLauncherService.getInstance();
 }
 
 const gotTheLock = app.requestSingleInstanceLock();
@@ -79,10 +80,12 @@ else{
     });
 
     app.whenReady().then(() => {
-
+        
         app.setAppUserModelId(APP_NAME);
 
         initServicesMustBeInitialized();
+
+        //DeepLinkService.getInstance().dispatchLinkOpened("bsmanager://launch/?launchOptions=%7B%22debug%22%3Afalse%2C%22oculus%22%3Atrue%2C%22desktop%22%3Atrue%2C%22version%22%3A%7B%22BSVersion%22%3A%221.29.0%22%2C%22BSManifest%22%3A%223341527958186345367%22%2C%22ReleaseURL%22%3A%22https%3A%2F%2Fsteamcommunity.com%2Fgames%2F620980%2Fannouncements%2Fdetail%2F6169409105082976092%22%2C%22ReleaseImg%22%3A%22https%3A%2F%2Fcdn.cloudflare.steamstatic.com%2Fsteamcommunity%2Fpublic%2Fimages%2Fclans%2F%2F32055887%2F255fd49cd96042b97089f754609be291293e783f.png%22%2C%22ReleaseDate%22%3A%221680188760%22%2C%22year%22%3A%222023%22%2C%22name%22%3A%221.29.0+%281%29%22%7D%7D");
         
         const deepLink = process.argv.find(arg => DeepLinkService.getInstance().isDeepLink(arg));
 

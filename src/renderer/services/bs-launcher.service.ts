@@ -77,8 +77,8 @@ export class BSLauncherService{
                 this.notificationService.notifySuccess({title: `notifications.bs-launch.success.titles.${event.type}`, desc: `notifications.bs-launch.success.msg.${event.type}`});
             },
             error: (err: BSLaunchErrorEvent) => {
-                if(err.type === BSLaunchErrorType.UNKNOWN_ERROR || !Object.values(BSLaunchErrorType).includes(err.type)){
-                    this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.UNABLE_TO_LAUNCH"});
+                if(!Object.values(BSLaunchErrorType).includes(err.type)){
+                    this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.UNKNOWN_ERROR", desc: "notifications.bs-launch.errors.msg.UNKNOWN_ERROR"});
                 } else {
                     this.notificationService.notifyError({title: `notifications.bs-launch.errors.titles.${err.type}`, desc: `notifications.bs-launch.errors.msg.${err.type}`})
                 }

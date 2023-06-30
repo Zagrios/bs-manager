@@ -339,7 +339,7 @@
                 },
                 "msg": {
                     "BS_LAUNCHING": "N'oublie pas de t'échauffer 😉",
-                    "STEAM_LAUNCHING": "Beat Saber se lancera automatiquement après Steam"
+                    "STEAM_LAUNCHING": "Beat Saber se lancera automatiquement après Steam."
                 }
             },
             "errors": {
@@ -352,6 +352,7 @@
                     "EXIT": "Arrêt brutal"
                 },
                 "msg": {
+                    "UNKNOWN_ERROR": "Une erreur inconnue s'est produite.",
                     "STEAM_NOT_RUNNING": "Steam doit être en cours d'exécution pour lancer Beat Saber.",
                     "OCULUS_NOT_RUNNING": "Oculus doit être en cours d'exécution pour lancer Beat Saber.",
                     "BS_ALREADY_RUNNING": "Ferme Beat Saber avant de le lancer à nouveau.",

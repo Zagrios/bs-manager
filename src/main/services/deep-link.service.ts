@@ -69,7 +69,7 @@ export class DeepLinkService {
 
     public dispatchLinkOpened(link: string){
 
-        log.info("DEISPATCH", link);
+        log.info("DISPATCH", link);
 
         const url = new URL(link);
 

@@ -352,6 +352,7 @@
                     "EXIT": "Parada abrupta"
                 },
                 "msg": {
+                    "UNKNOWN_ERROR": "Se ha producido un error desconocido.",
                     "STEAM_NOT_RUNNING": "Para iniciar BeatSaber es necesario que Steam esté en funcionamiento.",
                     "OCULUS_NOT_RUNNING": "Oculus debe estar funcionando para lanzar BeatSaber.",
                     "BS_ALREADY_RUNNING": "Cierra BeatSaber antes de volver a lanzarlo.",
