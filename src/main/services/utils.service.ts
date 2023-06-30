@@ -4,6 +4,7 @@ import { app, BrowserWindow } from "electron";
 import { IpcResponse } from "shared/models/ipc";
 import log from "electron-log";
 import { AppWindow } from "shared/models/window-manager/app-window.model";
+import psList from "ps-list";
 
 
 // TODO : REFACTOR
@@ -33,10 +34,10 @@ export class UtilsService{
   public setMainWindows(windows: Map<AppWindow, BrowserWindow>){ this.windows = windows; }
   public getMainWindows(win: AppWindow){ return this.windows.get(win); }
 
-    public taskRunning(task: string): boolean | null{
+    public async taskRunning(task: string): Promise<boolean> {
         try{
-            const tasks = spawnSync('tasklist').stdout;
-            return tasks.toString().includes(task);
+            const processes = await psList();
+            return !!processes.find(process => process.cmd.includes(task));
         }
         catch(error){
             log.error(error);

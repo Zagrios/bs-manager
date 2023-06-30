@@ -55,14 +55,14 @@ export class BSLauncherService{
         return rename(steamVrFolder + ".bak", steamVrFolder).catch(log.error);
     }
 
-    public isBsRunning(): boolean{
-        return this.bsProcess?.connected || this.utilsService.taskRunning(BS_EXECUTABLE) === true;
+    public async isBsRunning(): Promise<boolean> {
+        return this.bsProcess?.connected || await this.utilsService.taskRunning(BS_EXECUTABLE) === true;
     }
 
     // TODO : Rework with shortcuts implementation
     public async launch(launchOptions: LaunchOption): Promise<LaunchResult>{
-        if(this.isBsRunning() === true){ return "BS_ALREADY_RUNNING" }
-        if(launchOptions.version.oculus && this.oculusService.oculusRunning() === false){ return "OCULUS_NOT_RUNNING" }
+        if(await this.isBsRunning() === true){ return "BS_ALREADY_RUNNING" }
+        if(launchOptions.version.oculus && await this.oculusService.oculusRunning() === false){ return "OCULUS_NOT_RUNNING" }
 
         const steamRunning = await this.steamService.steamRunning().catch(() => true); // True if error (error not not means that steam is not running)
         if(!launchOptions.version.oculus && !steamRunning){
@@ -167,7 +167,7 @@ export class BSLauncherService{
                 return obs.error({type: BSLaunchErrorType.BS_ALREADY_RUNNING} as BSLaunchErrorEvent);
             }
 
-            if(launchOptions.version.oculus && this.oculusService.oculusRunning() === false){
+            if(launchOptions.version.oculus && (await this.oculusService.oculusRunning()) === false){
                 return obs.error({type: BSLaunchErrorType.OCULUS_NOT_RUNNING} as BSLaunchErrorEvent);
             }
 

@@ -1,5 +1,12 @@
 const colors = require('tailwindcss/colors');
-/** @type {import('tailwindcss').Config} */
+
+// Suppress deprecation warnings during build
+delete colors.lightBlue;
+delete colors.warmGray;
+delete colors.trueGray;
+delete colors.coolGray;
+delete colors.blueGray;
+
 module.exports = {
   darkMode: 'class',
   content: ['./src/renderer/**/*.{js,jsx,ts,tsx,ejs}'],

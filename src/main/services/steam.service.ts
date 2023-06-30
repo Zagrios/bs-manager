@@ -6,6 +6,8 @@ import { readFile } from "fs/promises";
 import { spawn } from "child_process";
 import { pathExist } from "../helpers/fs.helpers";
 import log from "electron-log";
+import psList from 'ps-list';
+import { app } from "electron";
 
 export class SteamService{
 
@@ -25,40 +27,47 @@ export class SteamService{
         return SteamService.instance;
     }
 
-    public async getActiveUser(): Promise<number>{
-        const res = await regedit.promisified.list(["HKCU\\Software\\Valve\\Steam\\ActiveProcess"]);
-        const keys = res?.["HKCU\\Software\\Valve\\Steam\\ActiveProcess"];
+  public async getActiveUser(): Promise<number>{
+    const res = await regedit.promisified.list(["HKCU\\Software\\Valve\\Steam\\ActiveProcess"]);
+    const keys = res?.["HKCU\\Software\\Valve\\Steam\\ActiveProcess"];
+    if(!keys?.exists){ throw "Key \"HKCU\\Software\\Valve\\Steam\\ActiveProcess\" not exist"; }
+    return (keys.values?.ActiveUser.value || undefined) as number;
+  }
 
-        if(!keys?.exists){ throw "Key \"HKCU\\Software\\Valve\\Steam\\ActiveProcess\" not exist"; }
-
-        return (keys.values?.ActiveUser.value || undefined) as number;
+  public async steamRunning(): Promise<boolean>{
+    if (process.platform === 'win32') {
+      return !!(await this.getActiveUser());
     }
-
-    public steamRunning(): Promise<boolean>{
-        return this.getActiveUser()
-            .then(userId => !!userId)
-            .catch(e => {log.error(e); throw e})
-    }
+    return await psList()
+      .then(processes => !!processes.find(process => process.cmd.includes('steam')))
+      .catch(e => {log.error(e); throw e})
+  }
 
     public async getSteamPath(): Promise<string>{
 
-        if(!!this.steamPath){ return this.steamPath; }
+    if(this.steamPath){ return this.steamPath; }
 
+    switch (process.platform) {
+      case "linux":
+        this.steamPath = path.join(app.getPath('home'), '.steam', "steam");
+        return this.steamPath;
+      case "win32":
         const [win32Res, win64Res] = await Promise.all([
-            regedit.promisified.list(['HKLM\\SOFTWARE\\Valve\\Steam']),
-            regedit.promisified.list(['HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam'])
+          regedit.promisified.list(['HKLM\\SOFTWARE\\Valve\\Steam']),
+          regedit.promisified.list(['HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam'])
         ]);
 
         const [win32, win64] = [win32Res["HKLM\\SOFTWARE\\Valve\\Steam"], win64Res["HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam"]];
-    
+
         let res = '';
-        
         if(win64.exists && win64?.values?.InstallPath?.value){ res = win64.values.InstallPath.value as string; }
         else if(win32.exists && win32?.values?.InstallPath?.value){ res = win32.values.InstallPath.value as string; }
-    
         this.steamPath = res;
-        return this.steamPath;
+        return res;
+      default:
+        return null;
     }
+  }
 
     public async getGameFolder(gameId: string, gameFolder?: string): Promise<string>{
         try{
@@ -88,7 +97,7 @@ export class SteamService{
         const process = spawn("start", ["steam://open/games"], {shell: true});
 
         process.on("error", log.error);
-    
+
         return new Promise(async (resolve, reject) => {
             // Every 3 seconds check if steam is running
             const interval = setInterval(async () => {
