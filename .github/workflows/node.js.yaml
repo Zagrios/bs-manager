@@ -26,5 +26,6 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run build
-    # Tests are currently failing
-    # - run: npm test
+    - run: npm test
+      # Currently typescript, eslint, and prettier are unhappy
+      continue-on-error: true
