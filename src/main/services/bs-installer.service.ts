@@ -1,4 +1,3 @@
-/* eslint-disable prefer-promise-reject-errors */
 import { BS_APP_ID, BS_DEPOT } from "../constants";
 import path from "path";
 import { BSVersion, PartialBSVersion } from 'shared/bs-version.interface';
@@ -10,57 +9,52 @@ import { ctrlc } from "ctrlc-windows";
 import { BSLocalVersionService } from "./bs-local-version.service";
 import isOnline from 'is-online';
 import { WindowManagerService } from "./window-manager.service";
-import { copy, copySync } from "fs-extra";
-import { clean, satisfies } from "semver";
+import { copy } from "fs-extra";
 import { ensureFolderExist, pathExist } from "../helpers/fs.helpers";
 
 export class BSInstallerService{
 
-  private static instance: BSInstallerService;
+    private static instance: BSInstallerService;
 
-  private readonly utils: UtilsService;
-  private readonly installLocationService: InstallationLocationService;
-  private readonly localVersionService: BSLocalVersionService;
-  private readonly windows: WindowManagerService;
+    private readonly utils: UtilsService;
+    private readonly installLocationService: InstallationLocationService;
+    private readonly localVersionService: BSLocalVersionService;
+    private readonly windows: WindowManagerService;
 
-  private downloadProcess: ChildProcessWithoutNullStreams;
+    private downloadProcess: ChildProcessWithoutNullStreams;
 
-  private constructor(){
-    this.utils =  UtilsService.getInstance();
-    this.installLocationService = InstallationLocationService.getInstance();
-    this.localVersionService = BSLocalVersionService.getInstance();
-    this.windows = WindowManagerService.getInstance();
+    private constructor(){
+        this.utils =  UtilsService.getInstance();
+        this.installLocationService = InstallationLocationService.getInstance();
+        this.localVersionService = BSLocalVersionService.getInstance();
+        this.windows = WindowManagerService.getInstance();
 
-    this.windows.getWindow("index.html")?.on("close", () => {
-        this.killDownloadProcess();
-    });
-  }
+        this.windows.getWindow("index.html")?.on("close", () => {
+            this.killDownloadProcess();
+        });
+    }
 
-  public static getInstance(){
-    if(!BSInstallerService.instance){ BSInstallerService.instance = new BSInstallerService(); }
-    return BSInstallerService.instance;
-  }
-
-    private escapeSpaces(path: string): string{
-        return `\"${path}\"`
+    public static getInstance(){
+        if(!BSInstallerService.instance){ BSInstallerService.instance = new BSInstallerService(); }
+        return BSInstallerService.instance;
     }
 
     private getDepotDownloaderExePath(): string{
-        return this.escapeSpaces(path.join(this.utils.getAssetsScriptsPath(), 'depot-downloader', 'DepotDownloader.exe'));
+        return path.join(this.utils.getAssetsScriptsPath(), 'depot-downloader', 'DepotDownloader.exe');
     }
 
-    private removeSpecialSchar(txt: string): string{ return txt.replaceAll(/\[|\]/g, ""); }
+    private removeSpecialSchar(txt: string): string{ return txt.replaceAll(/[\[\]]/g, ""); }
 
     private sendDownloadEvent(event: DownloadEventType, data?: string|number, success = true): void{
         if(typeof data === "string"){ data = this.removeSpecialSchar(data); }
         this.utils.ipcSend(`bs-download.${event}`, { success, data });
     }
 
-  public sendInputProcess(input: string){
-    if(this.downloadProcess.stdin.writable){
-      this.downloadProcess.stdin.write(`${input}\n`);
+    public sendInputProcess(input: string){
+        if(this.downloadProcess.stdin.writable){
+            this.downloadProcess.stdin.write(`${input}\n`);
+        }
     }
-  }
 
    public killDownloadProcess(): Promise<boolean>{
       return new Promise(resolve => {
@@ -78,7 +72,7 @@ export class BSInstallerService{
 
    public async isDotNet6Installed(): Promise<boolean>{
         try{
-            const process = spawnSync(this.getDepotDownloaderExePath(), {shell: true});
+            const process = spawnSync(`"${this.getDepotDownloaderExePath()}"`, {shell: true});
             if(process.stderr.toString()){
                 log.error("no dotnet", process.stderr.toString());
                 return false;
@@ -93,9 +87,9 @@ export class BSInstallerService{
 
   public async downloadBsVersion(downloadInfos: DownloadInfo): Promise<DownloadEvent>{
 
-    // TODO : Can be a lot improved by using ipcV2 and Observable
+    // TODO : Can be a lot improved by using ipcV2 and Observable -- This will be reworked for qrCode login
 
-    if(this.downloadProcess && this.downloadProcess.connected){ throw "AlreadyDownloading"; }
+    if(this.downloadProcess?.connected){ throw "AlreadyDownloading"; }
     const {bsVersion} = downloadInfos;
     if(!bsVersion){ return {type: "[Error]"}; }
     if(!(await isOnline({timeout: 1500}))){ throw "no-internet"; }
@@ -109,13 +103,13 @@ export class BSInstallerService{
     const downloadVersion: BSVersion = {...downloadInfos.bsVersion, ...(path.basename(dest) !== downloadInfos.bsVersion.BSVersion && {name: path.basename(dest)})}
 
     this.downloadProcess = spawn(
-      this.getDepotDownloaderExePath(),
+      `"${this.getDepotDownloaderExePath()}"`,
       [
         `-app ${BS_APP_ID}`,
         `-depot ${BS_DEPOT}`,
         `-manifest ${bsVersion.BSManifest}`,
-        `-username \"${downloadInfos.username}\"`,
-        `-dir \"${this.localVersionService.getVersionFolder(downloadVersion)}\"`
+        `-username "${downloadInfos.username}"`,
+        `-dir "${this.localVersionService.getVersionFolder(downloadVersion)}"`
       ],
       {shell: true, cwd: this.installLocationService.versionsDirectory}
     );

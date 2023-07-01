@@ -12,12 +12,10 @@ export interface MSModel {
     discord?: string,
     variationid?: number,
     platform: MSModelPlatform,
-    download: ModelDownloadURL,
+    download: string,
     install_link: string,
     date: string
 }
-
-export type ModelDownloadURL = string;
 
 export enum MSModelType {
     Avatar = "avatar",

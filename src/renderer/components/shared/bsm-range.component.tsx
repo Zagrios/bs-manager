@@ -56,7 +56,7 @@ export function BsmRange({colorType = "first-color", values, onChange, onFinalCh
                         color: labelTextColor,
                     }}
                 >
-                    {renderLabel && renderLabel(values[index])}
+                    {renderLabel?.(values[index])}
                 </div>
             )}
         />
