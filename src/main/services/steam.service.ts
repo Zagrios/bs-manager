@@ -3,11 +3,10 @@ import regedit from 'regedit'
 import path from "path";
 import { parse } from "@node-steam/vdf";
 import { readFile } from "fs/promises";
-import { spawn } from "child_process";
 import { pathExist } from "../helpers/fs.helpers";
 import log from "electron-log";
 import psList from 'ps-list';
-import { app } from "electron";
+import { app, shell } from "electron";
 
 export class SteamService{
 
@@ -95,9 +94,7 @@ export class SteamService{
   }
 
     public openSteam(): Promise<void>{
-        const process = spawn("start", ["steam://open/games"], {shell: true});
-
-        process.on("error", log.error);
+        shell.openPath("steam://open/games").catch(e => log.error(e));
 
         return new Promise(async (resolve, reject) => {
             // Every 3 seconds check if steam is running

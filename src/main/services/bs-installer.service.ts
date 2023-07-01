@@ -56,23 +56,23 @@ export class BSInstallerService{
         }
     }
 
-   public killDownloadProcess(): Promise<boolean>{
-      return new Promise(resolve => {
-         if(this.downloadProcess?.killed && !this.downloadProcess?.pid){ return resolve(false); }
-
-         this.downloadProcess?.once('exit', () => resolve(true));
-         if (process.platform === 'win32') {
-            ctrlc(this.downloadProcess.pid);
-         } else {
-            this.downloadProcess.kill();
-         }
-         setTimeout(() => resolve(false), 3000);
-      });
-   }
+    public killDownloadProcess(): Promise<boolean>{
+        return new Promise(resolve => {
+           if(this.downloadProcess?.killed && !this.downloadProcess?.pid){ return resolve(false); }
+  
+           this.downloadProcess?.once('exit', () => resolve(true));
+           if (process.platform === 'win32') {
+              ctrlc(this.downloadProcess.pid);
+           } else {
+              this.downloadProcess.kill();
+           }
+           setTimeout(() => resolve(false), 3000);
+        });
+     }
 
    public async isDotNet6Installed(): Promise<boolean>{
         try{
-            const process = spawnSync(`"${this.getDepotDownloaderExePath()}"`, {shell: true});
+            const process = spawnSync(this.getDepotDownloaderExePath());
             if(process.stderr.toString()){
                 log.error("no dotnet", process.stderr.toString());
                 return false;
@@ -103,16 +103,16 @@ export class BSInstallerService{
     const downloadVersion: BSVersion = {...downloadInfos.bsVersion, ...(path.basename(dest) !== downloadInfos.bsVersion.BSVersion && {name: path.basename(dest)})}
 
     this.downloadProcess = spawn(
-      `"${this.getDepotDownloaderExePath()}"`,
-      [
-        `-app ${BS_APP_ID}`,
-        `-depot ${BS_DEPOT}`,
-        `-manifest ${bsVersion.BSManifest}`,
-        `-username "${downloadInfos.username}"`,
-        `-dir "${this.localVersionService.getVersionFolder(downloadVersion)}"`
-      ],
-      {shell: true, cwd: this.installLocationService.versionsDirectory}
-    );
+        this.getDepotDownloaderExePath(),
+        [
+            "-app", BS_APP_ID,
+            "-depot", BS_DEPOT,
+            "-manifest", bsVersion.BSManifest,
+            "-username", downloadInfos.username,
+            "-dir", this.localVersionService.getVersionFolder(downloadVersion)
+        ],
+        {cwd: this.installLocationService.versionsDirectory}
+      );
 
     this.utils.ipcSend("start-download-version", {success: true, data: downloadVersion});
 
