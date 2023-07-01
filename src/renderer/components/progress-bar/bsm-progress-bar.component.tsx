@@ -34,7 +34,7 @@ export function BsmProgressBar() {
                             <span className="absolute w-full text-center text-white -top-[3px] left-0 text-[10px]">{progressLabel}</span>
                         </div>
                     )}
-                    { !progressValue && <img className="w-12 h-12 spin-loading" src={BeatWaitingImg}></img> }
+                    { !progressValue && <img className="w-12 h-12 spin-loading" src={BeatWaitingImg}/> }
                 </div>
             </motion.div>
         } </AnimatePresence>

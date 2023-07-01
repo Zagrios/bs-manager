@@ -1,5 +1,4 @@
-import { Observable } from "rxjs";
-import { Subject } from "rxjs";
+import { Observable, Subject } from "rxjs";
 import { IpcService } from "./ipc.service";
 
 export class LinkOpenerService{

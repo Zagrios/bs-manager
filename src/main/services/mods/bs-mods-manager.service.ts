@@ -5,17 +5,14 @@ import { BSLocalVersionService } from "../bs-local-version.service"
 import path from "path";
 import { UtilsService } from "../utils.service";
 import md5File from "md5-file";
-import fs from "fs"
 import { RequestService } from "../request.service";
 import { spawn } from "child_process";
 import { BS_EXECUTABLE } from "../../constants";
 import log from "electron-log";
-import { deleteFolder, pathExist, unlinkPath } from "../../helpers/fs.helpers";
+import { deleteFolder, pathExist, unlinkPath, ensureFolderExist } from "../../helpers/fs.helpers";
 import { lastValueFrom } from "rxjs";
 import JSZip from "jszip"
 import { extractZip } from "../../helpers/zip.helpers";
-import { ensureFolderExist } from "../../helpers/fs.helpers";
-import { readdir } from "fs-extra";
 import recursiveReadDir from "recursive-readdir";
 
 export class BsModsManagerService {
@@ -133,7 +130,7 @@ export class BsModsManagerService {
                 resolve(false);
             });
 
-            setTimeout(() => resolve(false), (1 * 60) * 1000); //timeout 1min
+            setTimeout(() => resolve(false), (1 * 60) * 1000); // timeout 1min
         });
     }
 
@@ -165,7 +162,7 @@ export class BsModsManagerService {
             return download.hashMd5.some(md5 => md5.hash === entryMd5) ? entry : undefined;
         }))).filter(entry => !!entry);
 
-        if(checkedEntries.length != download.hashMd5.length){ return false; }
+        if(checkedEntries.length !== download.hashMd5.length){ return false; }
 
         const verionPath = await this.bsLocalService.getVersionPath(version);
         const isBSIPA = mod.name.toLowerCase() === "bsipa";
@@ -260,7 +257,7 @@ export class BsModsManagerService {
         ]).then(dirMods => {
             const modsDict = new Map<string, Mod>();
 
-            if(!!bsipa){ modsDict.set(bsipa.name, bsipa); }
+            if(bsipa){ modsDict.set(bsipa.name, bsipa); }
 
             for(const mod of dirMods.flat()){
                 if(modsDict.has(mod.name)){ continue; }

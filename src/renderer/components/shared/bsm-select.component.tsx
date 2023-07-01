@@ -20,7 +20,7 @@ export function BsmSelect<T = unknown>(props: Props<T>) {
     return (
         <select {...props} onChange={handleChange} defaultValue={props.options?.findIndex(opt => equal(opt.value, props.selected))}>
             {props.options && props.options.map((option, index) => (
-                <option key={index} value={index}>{t(option.text)}</option>
+                <option key={JSON.stringify(option)} value={index}>{t(option.text)}</option>
             ))}
         </select>
   )

@@ -1,7 +1,7 @@
 import { BsvMapDetail } from "shared/models/maps";
 
 export function getMapZipUrlFromMapDetails(map: BsvMapDetail){
-    const hash = map.versions.at(0).hash;
+    const { hash } = map.versions.at(0);
     return getMapZipUrlFromHash(hash);
 }
 

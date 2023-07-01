@@ -1,6 +1,6 @@
 import { MutableRefObject, useEffect } from "react";
 
-export function useClickOutside(ref: MutableRefObject<any>, handler: (e: MouseEvent) => void) {
+export function useClickOutside(ref: MutableRefObject<any>, handler: React.ComponentProps<any>["onClick"]) {
     
     useEffect(() => {
 

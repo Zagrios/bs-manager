@@ -16,7 +16,7 @@ export class I18nService {
 
    private readonly configService: ConfigurationService;
 
-   private dictionary: Object;
+   private dictionary = {};
 
    public static getInstance(): I18nService{
       if(!I18nService.instance){ I18nService.instance = new I18nService(); }

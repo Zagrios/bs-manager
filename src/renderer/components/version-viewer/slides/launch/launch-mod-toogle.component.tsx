@@ -3,7 +3,7 @@ import { GlowEffect } from "renderer/components/shared/glow-effect.component";
 import { BsmIcon, BsmIconType } from "renderer/components/svgs/bsm-icon.component"
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 
-type props = {
+type Props = {
     onClick: (active: boolean) => void,
     active: boolean,
     text: string,
@@ -11,7 +11,7 @@ type props = {
     infoText?: string,
 }
 
-export function LaunchModToogle({onClick, active, text, icon, infoText}: props) {
+export function LaunchModToogle({onClick, active, text, icon, infoText}: Props) {
 
     const t = useTranslation();
 

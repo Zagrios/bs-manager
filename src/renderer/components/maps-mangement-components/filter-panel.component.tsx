@@ -4,7 +4,7 @@ import { MutableRefObject, useEffect, useRef, useState} from "react"
 import { MAP_TYPES } from "renderer/partials/maps/map-tags/map-types"
 import { MAP_STYLES } from "renderer/partials/maps/map-tags/map-styles"
 import { BsmCheckbox } from "../shared/bsm-checkbox.component"
-import { min_to_s } from "renderer/helpers/time-utils"
+import { minToS } from "renderer/helpers/time-utils"
 import dateFormat from "dateformat"
 import { BsmRange } from "../shared/bsm-range.component"
 import { useTranslation } from "renderer/hooks/use-translation.hook"
@@ -38,7 +38,7 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange,
     const MAX_NPS = 17;
 
     const MIN_DURATION = 0;
-    const MAX_DURATION = min_to_s(30);
+    const MAX_DURATION = minToS(30);
 
     const npss = [filter?.minNps || MIN_NPS, filter?.maxNps || MAX_NPS];
     const durations = [filter?.minDuration || MIN_DURATION, filter?.maxDuration || MAX_DURATION];
@@ -80,7 +80,7 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange,
 
     }
  
-    const renderLabel = (text: unknown, isMax: boolean): JSX.Element => {
+    const renderLabel = (text: string|number, isMax: boolean): JSX.Element => {
         return (
             <span className={`bg-inherit absolute top-[calc(100%+4px)] h-5 font-bold rounded-md shadow-center shadow-black px-1 flex items-center ${isMax ? "text-lg" : "text-sm"}`}>
                 {text}
@@ -91,10 +91,10 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange,
     const onNpssChange = ([min, max]: number[]) => {
         const newFilter: MapFilter = {...filter, minNps: min, maxNps: max};
         if(max === MAX_NPS){
-            delete newFilter["maxNps"];
+            delete newFilter.maxNps;
         }
         if(min === MIN_NPS){
-            delete newFilter["minNps"];
+            delete newFilter.minNps;
         }
         onChange(newFilter);
     }
@@ -102,10 +102,10 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange,
     const onDurationsChange = ([min, max]: number[]) => {
         const newFilter: MapFilter = {...filter, minDuration: min, maxDuration: max};
         if(max === MAX_DURATION){
-            delete newFilter["maxDuration"];
+            delete newFilter.maxDuration;
         }
         if(min === MIN_DURATION){
-            delete newFilter["minDuration"];
+            delete newFilter.minDuration;
         }
         onChange(newFilter);
     }
@@ -129,11 +129,11 @@ export function FilterPanel({className, ref, playlist = false, filter, onChange,
         const newFilter = {...filter, enabledTags, excludedTags};
 
         if(newFilter.enabledTags.size === 0){
-            delete newFilter["enabledTags"];
+            delete newFilter.enabledTags;
         }
 
         if(newFilter.excludedTags.size === 0){
-            delete newFilter["excludedTags"];
+            delete newFilter.excludedTags;
         }
 
         onChange(newFilter);

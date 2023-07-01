@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react"
+import { forwardRef, useImperativeHandle, useRef, useState } from "react"
 import { BsmIconType, BsmIcon } from "../svgs/bsm-icon.component"
 import { BsmButton } from "./bsm-button.component"
 import { useTranslation } from "renderer/hooks/use-translation.hook"
@@ -52,8 +52,7 @@ export const BsmDropdownButton = forwardRef(({className, items, align, withBar =
    })()
 
    return (
-        // @ts-ignore
-      <div ref={ref} className={className}>
+      <div ref={ref as unknown as React.LegacyRef<HTMLDivElement>} className={className}>
          <BsmButton onClick={() => setExpanded(!expanded)} className={buttonClassName ?? defaultButtonClassName} icon={icon} active={expanded} onClickOutside={handleClickOutside} withBar={withBar} text={text}/>
          <div className={`py-1 w-fit absolute cursor-pointer top-[calc(100%-4px)] rounded-md bg-inherit text-sm text-gray-800 dark:text-gray-200 shadow-md shadow-black transition-[scale] ease-in-out ${alignClass}`} style={{scale: expanded ? "1" : "0", translate: `0 ${menuTranslationY}`}}>
             { items?.map((i) => i && (

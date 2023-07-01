@@ -14,13 +14,12 @@ import sanitize from "sanitize-filename";
 import { Progression, ensureFolderExist, unlinkPath } from "../../helpers/fs.helpers";
 import { MODEL_FILE_EXTENSIONS, MODEL_TYPES, MODEL_TYPE_FOLDERS } from "../../../shared/models/models/constants";
 import { InstallationLocationService } from "../installation-location.service";
-import { Observable, Subscription, lastValueFrom, map } from "rxjs";
+import { Observable, Subscription, lastValueFrom } from "rxjs";
 import { readdir } from "fs/promises";
 import md5File from "md5-file";
 import { allSettled } from "../../../shared/helpers/promise.helpers";
 import { ModelSaberService } from "../thrid-party/model-saber/model-saber.service";
 import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
-import { ArchiveProgress } from "shared/models/archive.interface";
 import { Archive } from "../../models/archive.class";
 
 export class LocalModelsManagerService {
@@ -66,7 +65,7 @@ export class LocalModelsManagerService {
 
     private openOneClickDownloadModelWindow(id: string, type: string){
         
-        ipcMain.once("one-click-model-info", async (event, req: IpcRequest<void>) => {
+        ipcMain.once("one-click-model-info", async (_event, req: IpcRequest<void>) => {
             this.utils.ipcSend(req.responceChannel, {success: true, data: {id, type}});
         });
 
@@ -76,7 +75,7 @@ export class LocalModelsManagerService {
 
     private async getModelFolderPath(type: MSModelType, version?: BSVersion): Promise<string>{
 
-        const rootPath = !!version ? await this.localVersion.getVersionPath(version) : this.installPaths.sharedContentPath;
+        const rootPath = version ? await this.localVersion.getVersionPath(version) : this.installPaths.sharedContentPath;
         const modelFolderPath = path.join(rootPath, MODEL_TYPE_FOLDERS[type]);
 
         await ensureFolderExist(modelFolderPath);
@@ -95,7 +94,7 @@ export class LocalModelsManagerService {
                 const modelFolder = await this.getModelFolderPath(model.type, version);
                 const modelDest = path.join(modelFolder, sanitize(path.basename(model.download)));
 
-                let url = model.download.split("/");
+                const url = model.download.split("/");
                 url[url.length - 1] = encodeURIComponent(url[url.length - 1]);
 
                 const download$ = this.request.downloadFile(url.join("/"), modelDest);
@@ -149,7 +148,6 @@ export class LocalModelsManagerService {
         const modelsPath = await this.getModelFolderPath(type, version);
         const files = await readdir(modelsPath, {withFileTypes: true});
 
-        //return files.filter(file => file.isFile() && path.extname(file.name) === MODEL_FILE_EXTENSIONS[type]).map(file => path.join(modelsPath, file.name));
         return files.reduce((acc, file) => {
             if(!file.isFile() || path.extname(file.name) !== MODEL_FILE_EXTENSIONS[type]){ return acc; }
             acc.push(path.join(modelsPath, file.name));

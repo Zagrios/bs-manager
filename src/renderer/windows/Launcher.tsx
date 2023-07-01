@@ -46,7 +46,7 @@ export default function Launcher() {
             <div className="relative flex flex-col items-center justify-center pt-10">
                 <motion.div ref={constraintsRef}>
                     <motion.div drag dragConstraints={constraintsRef} animate={{rotate: [0, 10, 0]}} transition={{ duration: .6, repeat: Infinity, repeatDelay: 1.6 }}>
-                        <BsManagerIcon className={"w-52 cursor-pointer"}/>
+                        <BsManagerIcon className="w-52 cursor-pointer"/>
                     </motion.div>
                 </motion.div>
                 <span className="relative text-lg mt-16 mb-24 uppercase italic text-main-color-1 dark:text-gray-200">{t(text)}</span>

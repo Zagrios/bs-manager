@@ -24,7 +24,7 @@ export function BsContentNavBar<T>({className, tabIndex, tabs, renderTab, onTabC
     return (
         <nav className={`h-full grid grid-flow-row ${className ?? ""}`}>
             {tabs.map((tab, i) => (
-                <Fragment key={i}>
+                <Fragment key={JSON.stringify(tab)}>
                     { renderTab({onClick: () => handleTabClick(i)}, tab, tabs[tabIndex]) }
                 </Fragment>
             ))}

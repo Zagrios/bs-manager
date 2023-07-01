@@ -1,5 +1,5 @@
 import { LinkOptions, UnlinkOptions } from "main/services/folder-linker.service";
-import { map, distinctUntilChanged, filter, mergeMap, share, shareReplay } from "rxjs/operators";
+import { map, distinctUntilChanged, filter, mergeMap, shareReplay } from "rxjs/operators";
 import { BehaviorSubject, Observable } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { IpcService } from "./ipc.service";

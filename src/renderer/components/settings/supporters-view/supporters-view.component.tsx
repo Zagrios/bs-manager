@@ -32,8 +32,8 @@ export function SupportersView({isVisible, setVisible}: Props) {
         <AnimatePresence>
             ({isVisible && 
                 <motion.div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-90 z-40 text-gray-200" transition={{duration: .3}} initial={{opacity: 0, y: "-100%"}} animate={{opacity: 1, y: "0%"}} exit={{opacity: 0, y: "-100%"}}>
-                    <BsmButton className="absolute right-10 top-10 !bg-transparent w-7 h-7" icon="cross" withBar={false} onClick={() => setVisible(false)}></BsmButton>
-                    {(!!sponsors.length || !!supporters.length) && <img className="absolute bottom-5 right-5 rotate-45 w-32 h-32"  src={ManheraChanGif}/>}
+                    <BsmButton className="absolute right-10 top-10 !bg-transparent w-7 h-7" icon="cross" withBar={false} onClick={() => setVisible(false)}/>
+                    {(!!sponsors.length || !!supporters.length) && <img className="absolute bottom-5 right-5 rotate-45 w-32 h-32" src={ManheraChanGif}/>}
                     <div className="w-full h-full overflow-y-scroll">
                         {!!sponsors.length && <SupportersBlock className="mt-12" title="pages.settings.patreon.view.sponsors" supporters={sponsors}/>}
                         {!!supporters.length && <SupportersBlock className="mt-12" title="pages.settings.patreon.view.supporters" supporters={supporters}/>}

@@ -13,7 +13,7 @@ import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { NotificationService } from "renderer/services/notification.service";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import { gte, lt } from "semver";
+import { lt } from "semver";
 
 export function ModelsPanel({version, isActive, goToMods}: {version?: BSVersion, isActive: boolean, goToMods?: () => void}) {
     
@@ -85,7 +85,7 @@ export function ModelsPanel({version, isActive, goToMods}: {version?: BSVersion,
                 <BsmDropdownButton items={threeDotsItems} className="h-full flex aspect-square relative rounded-full z-[1] bg-light-main-color-1 dark:bg-main-color-3" buttonClassName="rounded-full h-full w-full p-[6px]" icon="three-dots" withBar={false} menuTranslationY="6px" align="center"/>
             </div>
             <div className="w-full h-full flex flex-row bg-light-main-color-3 dark:bg-main-color-2 rounded-md shadow-black shadow-md overflow-hidden">
-                <ModelsTabsNavbar className="flex-shrink-0" version={version} tabIndex={currentTabIndex} onTabChange={(index, tab) => {setModelTypeTab(() => tab.extra), setCurrentTabIndex(() => index)}}/>
+                <ModelsTabsNavbar className="flex-shrink-0" version={version} tabIndex={currentTabIndex} onTabChange={(index, tab) => {setModelTypeTab(() => tab.extra); setCurrentTabIndex(() => index)}}/>
                 
                 <div className="flex-grow h-full flex flex-col transition-all duration-300" style={{translate: `0 ${0 - currentTabIndex * 100}%`}}>
                     <ModelsGrid ref={modelsGridRefs[0]} version={version} type={MSModelType.Avatar} active={isActive && modelTypeTab === MSModelType.Avatar} search={search} downloadModels={openDownloadModal}/>

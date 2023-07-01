@@ -1,7 +1,6 @@
-import { defaultIfEmpty, share, shareReplay } from "rxjs/operators";
-import { Observable } from "rxjs";
+import { defaultIfEmpty, shareReplay } from "rxjs/operators";
+import { Observable, identity } from "rxjs";
 import { IpcRequest, IpcResponse } from "shared/models/ipc";
-import { identity } from "rxjs";
 
 export class IpcService{
 
@@ -31,7 +30,7 @@ export class IpcService{
         return promise;
     }
 
-    public sendLazy<T = any>(channel: string, request?: IpcRequest<T>): void{
+    public sendLazy<T = unknown>(channel: string, request?: IpcRequest<T>): void{
         window.electron.ipcRenderer.sendMessage(channel, request);
     }
 

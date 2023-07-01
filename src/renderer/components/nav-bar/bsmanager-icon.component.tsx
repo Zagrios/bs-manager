@@ -13,7 +13,7 @@ export const BsManagerIcon = memo(({className}: {className?: string}) => {
     const {firstColor, secondColor} = useThemeColor();
     const playing= useObservable(audioPlayer.playing$);
 
-    const bpm = audioPlayer.bpm;
+    const { bpm } = audioPlayer;
 
     const transitions: Variants = {
         playing: {

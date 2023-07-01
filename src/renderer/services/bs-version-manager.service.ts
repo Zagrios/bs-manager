@@ -1,11 +1,10 @@
 import { BSVersion } from 'shared/bs-version.interface';
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { IpcService } from "./ipc.service";
 import { ModalExitCode, ModalService } from './modale.service';
 import { NotificationService } from './notification.service';
 import { ProgressBarService } from './progress-bar.service';
 import { EditVersionModal } from 'renderer/components/modal/modal-types/edit-version-modal.component';
-import { Observable } from 'rxjs';
 
 export class BSVersionManagerService {
 

@@ -38,7 +38,7 @@ export class SteamService{
     if (process.platform === 'win32') {
       return !!(await this.getActiveUser());
     }
-    return await psList()
+    return psList()
       .then(processes => !!processes.find(process => process.cmd.includes('steam')))
       .catch(e => {log.error(e); throw e})
   }
@@ -47,26 +47,27 @@ export class SteamService{
 
     if(this.steamPath){ return this.steamPath; }
 
-    switch (process.platform) {
-      case "linux":
+    if(process.platform === "win32"){
+        const [win32Res, win64Res] = await Promise.all([
+            regedit.promisified.list(['HKLM\\SOFTWARE\\Valve\\Steam']),
+            regedit.promisified.list(['HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam'])
+          ]);
+  
+          const [win32, win64] = [win32Res["HKLM\\SOFTWARE\\Valve\\Steam"], win64Res["HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam"]];
+  
+          let res = '';
+          if(win64.exists && win64?.values?.InstallPath?.value){ res = win64.values.InstallPath.value as string; }
+          else if(win32.exists && win32?.values?.InstallPath?.value){ res = win32.values.InstallPath.value as string; }
+          this.steamPath = res;
+          return res;
+    }
+    
+    if(process.platform === "linux"){
         this.steamPath = path.join(app.getPath('home'), '.steam', "steam");
         return this.steamPath;
-      case "win32":
-        const [win32Res, win64Res] = await Promise.all([
-          regedit.promisified.list(['HKLM\\SOFTWARE\\Valve\\Steam']),
-          regedit.promisified.list(['HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam'])
-        ]);
-
-        const [win32, win64] = [win32Res["HKLM\\SOFTWARE\\Valve\\Steam"], win64Res["HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam"]];
-
-        let res = '';
-        if(win64.exists && win64?.values?.InstallPath?.value){ res = win64.values.InstallPath.value as string; }
-        else if(win32.exists && win32?.values?.InstallPath?.value){ res = win32.values.InstallPath.value as string; }
-        this.steamPath = res;
-        return res;
-      default:
-        return null;
     }
+
+    return null;
   }
 
   public async getGameFolder(gameId: string, gameFolder?: string): Promise<string>{
@@ -82,8 +83,8 @@ export class SteamService{
         libraryFolders = libraryFolders.libraryfolders
 
         for(const libKey in Object.keys(libraryFolders)){
-            if(!libraryFolders[libKey] || !libraryFolders[libKey]["apps"]){ continue; }
-            if(libraryFolders[libKey]["apps"][gameId] != null){ return path.join(libraryFolders[libKey]["path"], "steamapps", "common", gameFolder); };
+            if(!libraryFolders[libKey] || !libraryFolders[libKey].apps){ continue; }
+            if(libraryFolders[libKey].apps[gameId] != null){ return path.join(libraryFolders[libKey].path, "steamapps", "common", gameFolder); };
         }
         return null;
     }

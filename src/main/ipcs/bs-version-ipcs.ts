@@ -19,7 +19,7 @@ import { VersionFolderLinkerService } from '../services/version-folder-linker.se
 
 const ipc = IpcService.getInstance();
 
-ipcMain.on('bs-version.get-version-dict', (event, req: IpcRequest<void>) => {
+ipcMain.on('bs-version.get-version-dict', (_event, req: IpcRequest<void>) => {
    BSVersionLibService.getInstance().getAvailableVersions().then(versions => {
       UtilsService.getInstance().ipcSend(req.responceChannel, {success: true, data: versions});
    }).catch(() => {
@@ -27,7 +27,7 @@ ipcMain.on('bs-version.get-version-dict', (event, req: IpcRequest<void>) => {
    })
 });
 
-ipcMain.on('bs-version.installed-versions', async (event, req: IpcRequest<void>) => {
+ipcMain.on('bs-version.installed-versions', async (_event, req: IpcRequest<void>) => {
    BSLocalVersionService.getInstance().getInstalledVersions().then(versions => {
       UtilsService.getInstance().ipcSend(req.responceChannel, {success: true, data: versions});
    }).catch(() => {
@@ -35,7 +35,7 @@ ipcMain.on('bs-version.installed-versions', async (event, req: IpcRequest<void>)
    })
 });
 
-ipcMain.on("bs-version.open-folder", async (event, req: IpcRequest<BSVersion>) => {
+ipcMain.on("bs-version.open-folder", async (_event, req: IpcRequest<BSVersion>) => {
    const localVersionService = BSLocalVersionService.getInstance();
    const versionFolder = await localVersionService.getVersionPath(req.args);
    if (!(await pathExist(versionFolder)))
@@ -43,7 +43,7 @@ ipcMain.on("bs-version.open-folder", async (event, req: IpcRequest<BSVersion>) =
    shell.openPath(versionFolder);
 });
 
-ipcMain.on("bs-version.edit", async (event, req: IpcRequest<{version: BSVersion, name: string, color: string}>) => {
+ipcMain.on("bs-version.edit", async (__event, req: IpcRequest<{version: BSVersion, name: string, color: string}>) => {
    BSLocalVersionService.getInstance().editVersion(req.args.version, req.args.name, req.args.color).then(res => {
       UtilsService.getInstance().ipcSend(req.responceChannel, {success: !!res, data: res});
    }).catch((error: BsmException) => {
@@ -51,7 +51,7 @@ ipcMain.on("bs-version.edit", async (event, req: IpcRequest<{version: BSVersion,
    });
 });
 
-ipcMain.on("bs-version.clone", async (event, req: IpcRequest<{version: BSVersion, name: string, color: string}>) => {
+ipcMain.on("bs-version.clone", async (_event, req: IpcRequest<{version: BSVersion, name: string, color: string}>) => {
    BSLocalVersionService.getInstance().cloneVersion(req.args.version, req.args.name, req.args.color).then(res => {
       UtilsService.getInstance().ipcSend(req.responceChannel, {success: !!res, data: res});
    }).catch((error: BsmException) => {
@@ -113,7 +113,7 @@ ipc.on("link-folder", async (req: IpcRequest<{ folder: string, options?: LinkOpt
 
     try{
         const ipaData = (await readJSON(jsonIPAPath)) ?? {} as any;
-        ipaData["YeetMods"] = false;
+        ipaData.YeetMods = false;
         await writeJSON(jsonIPAPath, ipaData, {spaces: 4});
     }catch(e){
         log.error("Disable YeetMods", e);

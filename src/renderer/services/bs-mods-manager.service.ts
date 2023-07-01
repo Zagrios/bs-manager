@@ -1,11 +1,9 @@
 import { UninstallAllModsModal } from "renderer/components/modal/modal-types/uninstall-all-mods-modal.component";
 import { UninstallModModal } from "renderer/components/modal/modal-types/uninstall-mod-modal.component";
-import { Observable } from "rxjs";
-import { BehaviorSubject } from "rxjs";
+import { Observable, BehaviorSubject } from "rxjs";
 import { map } from "rxjs/operators";
 import { BSVersion } from "shared/bs-version.interface";
-import { InstallModsResult, UninstallModsResult } from "shared/models/mods";
-import { Mod, ModInstallProgression } from "shared/models/mods";
+import { InstallModsResult, UninstallModsResult, Mod, ModInstallProgression } from "shared/models/mods";
 import { ProgressionInterface } from "shared/models/progress-bar";
 import { IpcService } from "./ipc.service";
 import { ModalExitCode, ModalService } from "./modale.service";
@@ -57,10 +55,10 @@ export class BsModsManagerService {
                 title: "notifications.shared.errors.titles.no-internet",
                 desc: "notifications.shared.errors.msg.no-internet"
             });
-            return new Promise(res => res());
+            return Promise.resolve();
         }
 
-        if(!this.progressBar.require()){ return new Promise(res => res()); }
+        if(!this.progressBar.require()){ return Promise.resolve(); }
 
         const progress$: Observable<ProgressionInterface> = this.ipcService.watch<ModInstallProgression>("mod-installed").pipe(map(res => {
             return {progression: res.data.progression, label: res.data.name} as ProgressionInterface

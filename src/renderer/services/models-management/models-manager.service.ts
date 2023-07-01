@@ -2,7 +2,7 @@ import { MSModelType } from "shared/models/models/model-saber.model";
 import { IpcService } from "../ipc.service";
 import { VersionFolderLinkerService, VersionLinkerActionListener, VersionLinkerActionType } from "../version-folder-linker.service";
 import { MODEL_TYPE_FOLDERS } from "shared/models/models/constants";
-import { Observable, distinctUntilChanged, lastValueFrom, map, mergeMap, share } from "rxjs";
+import { Observable, lastValueFrom, map } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { ModalExitCode, ModalService } from "../modale.service";
 import { LinkModelsModal } from "renderer/components/modal/modal-types/models/link-models-modal.component";
@@ -12,7 +12,6 @@ import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 import { ProgressBarService } from "../progress-bar.service";
 import { OpenSaveDialogOption } from "shared/models/os/dialog.model";
 import { ProgressionInterface } from "shared/models/progress-bar";
-import { ArchiveProgress } from "shared/models/archive.interface";
 import { NotificationService } from "../notification.service";
 import { ConfigurationService } from "../configuration.service";
 import { DeleteModelsModal } from "renderer/components/modal/modal-types/models/delete-models-modal.component";
@@ -120,7 +119,7 @@ export class ModelsManagerService {
 
         lastValueFrom(exportProgress$).then(() => {
             this.notifications.notifySuccess({title: "models.notifications.export-success.title", duration: 3000});
-        }).catch(e => {
+        }).catch(() => {
             this.notifications.notifyError({title: "notifications.types.error", desc: "notifications.common.msg.error-occurred", duration: 3000});
         }).finally(() => {
             this.progressBar.hide(true);

@@ -2,6 +2,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { UtilsService } from './utils.service';
 import { gt } from 'semver';
+
 export class AutoUpdaterService {
 
     private static instance: AutoUpdaterService;

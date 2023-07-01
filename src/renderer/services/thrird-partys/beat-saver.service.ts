@@ -1,5 +1,5 @@
 import { BsvMapDetail } from "shared/models/maps";
-import { BsvPlaylist, BsvPlaylistPage, SearchParams } from "shared/models/maps/beat-saver.model";
+import { BsvPlaylist, SearchParams } from "shared/models/maps/beat-saver.model";
 import { IpcService } from "../ipc.service";
 
 export class BeatSaverService {

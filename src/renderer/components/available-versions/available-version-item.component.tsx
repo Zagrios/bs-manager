@@ -52,6 +52,7 @@ export const AvailableVersionItem = memo(function AvailableVersionItem(props: {v
                         <span className="text-sm text-gray-700 dark:text-gray-400">{formatedDate}</span>
                     </div>
                     { props.version.ReleaseURL && (
+                        // eslint-disable-next-line jsx-a11y/anchor-is-valid -- link will be reworked
                         <a onClickCapture={e => { e.stopPropagation(); openReleasePage(); }} className="flex flex-row justify-between items-center rounded-full bg-black bg-opacity-30 text-white pb-px hover:bg-opacity-50">
                             <BsmIcon icon="steam" className="w-[25px] h-[25px] transition-transform group-hover:rotate-[-360deg] duration-300"/>
                             <span className="relative -left-px text-sm w-fit max-w-0 text-center overflow-hidden h-full whitespace-nowrap pb-[3px] transition-all group-hover:max-w-[200px] group-hover:px-1 duration-300">{t("pages.available-versions.steam-release")}</span>

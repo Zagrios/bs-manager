@@ -24,7 +24,7 @@ export class NotificationService{
 
         // TODO : Make actions work and adapt with "watch" remork
         this.ipc.watch<Notification>("show-notification").subscribe(notification => {
-            this.notify(notification as any as Notification);
+            this.notify(notification as unknown as Notification);
         });
     }
 

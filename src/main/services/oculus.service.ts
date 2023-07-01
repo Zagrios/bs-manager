@@ -21,7 +21,7 @@ export class OculusService {
     }
 
     public async oculusRunning(): Promise<boolean> {
-        return await this.utils.taskRunning("OculusClient.exe");
+        return this.utils.taskRunning("OculusClient.exe");
     }
 
     public async getOculusLibsPath(): Promise<string[]>{
@@ -36,9 +36,9 @@ export class OculusService {
 
         const libsPath = (await Promise.all(libsRegData.keys.map(async key => {
             const originalPath = (await regedit.promisified.list([`${oculusLibsRegKey}\\${key}`]))[`${oculusLibsRegKey}\\${key}`];
-            if(!originalPath.exists || !libsRegData.values || !originalPath.values["OriginalPath"]){ return null; }
+            if(!originalPath.exists || !libsRegData.values || !originalPath.values.OriginalPath){ return null; }
 
-            return originalPath.values["OriginalPath"].value as string; 
+            return originalPath.values.OriginalPath.value as string; 
 
         }, []))).filter(path => !!path);
 

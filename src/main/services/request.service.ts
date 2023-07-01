@@ -40,7 +40,7 @@ export class RequestService {
             const file = createWriteStream(dest);
 
             file.on("close", () => { 
-                progress["data"] = dest;
+                progress.data = dest;
                 subscriber.next(progress); subscriber.complete(); 
             });
             file.on("error", err => unlink(dest, () => subscriber.error(err)));

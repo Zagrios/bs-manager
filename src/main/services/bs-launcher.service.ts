@@ -45,14 +45,14 @@ export class BSLauncherService{
     private async backupSteamVR(): Promise<void>{
         const steamVrFolder = await this.getSteamVRPath();
         if(!await pathExist(steamVrFolder)){ return; }
-        return rename(steamVrFolder, steamVrFolder + ".bak").catch(log.error);
+        return rename(steamVrFolder, `${steamVrFolder}.bak`).catch(log.error);
     }
 
     public async restoreSteamVR(): Promise<void>{
         const steamVrFolder = await this.getSteamVRPath();
-        const steamVrBackup = steamVrFolder + ".bak";
+        const steamVrBackup = `${steamVrFolder}.bak`;
         if(!await pathExist(steamVrBackup)){ return; }
-        return rename(steamVrFolder + ".bak", steamVrFolder).catch(log.error);
+        return rename(steamVrBackup, steamVrFolder).catch(log.error);
     }
 
     public async isBsRunning(): Promise<boolean> {

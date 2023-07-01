@@ -32,7 +32,7 @@ type Props<T> = {
     onDoubleClick?: (value: T) => void
 } & Partial<MSModel> & Partial<BsmLocalModel> & Omit<React.ComponentProps<"li">, "id" | "onDoubleClick">
 
-function modelItem<T = unknown>(props: Props<T>) {
+function ModelItemElement<T = unknown>(props: Props<T>) {
 
     const t = useTranslation();
     const color = useThemeColor("first-color");
@@ -66,7 +66,7 @@ function modelItem<T = unknown>(props: Props<T>) {
         if(!props.thumbnail){ return null; }
         if(isValidUrl(props.thumbnail)){ return props.thumbnail; }
         const [file, ext] = props.thumbnail.split(".");
-        return props.download.split("/").slice(0, -1).join("/") + `/${file}.${ext.toLowerCase()}`;
+        return `${props.download.split("/").slice(0, -1).join("/")}/${file}.${ext.toLowerCase()}`
     })();
 
     const modelTags = (() => {
@@ -74,19 +74,19 @@ function modelItem<T = unknown>(props: Props<T>) {
         return [...new Set(props.tags)];
     })();
 
-    const actionButtons = (): {icon: BsmIconType, action: () => void, iconColor?: string}[] => {
-        const buttons: {icon: BsmIconType, action: () => void, iconColor?: string}[]  = [];
+    const actionButtons = (): {id: number, icon: BsmIconType, action: () => void, iconColor?: string}[] => {
+        const buttons: {id: number, icon: BsmIconType, action: () => void, iconColor?: string}[]  = [];
         
         if(props.onDownload && !props.onCancelDownload){
-            buttons.push({ icon: "download", action: () => props.onDownload(props.callbackValue) });
+            buttons.push({id: 0, icon: "download", action: () => props.onDownload(props.callbackValue) });
         }
 
         if(props.onDelete){
-            buttons.push({ icon: "trash", action: () => props.onDelete(props.callbackValue) });
+            buttons.push({ id: 1,icon: "trash", action: () => props.onDelete(props.callbackValue) });
         }
 
         if(props.onCancelDownload){
-            buttons.push({ icon: "cross", action: () => props.onCancelDownload(props.callbackValue), iconColor: "red" });
+            buttons.push({ id: 2,icon: "cross", action: () => props.onCancelDownload(props.callbackValue), iconColor: "red" });
         }
 
         return buttons;
@@ -105,12 +105,12 @@ function modelItem<T = unknown>(props: Props<T>) {
             <GlowEffect visible={props.selected || hovered}/>
             <div className="absolute top-0 left-0 w-full h-full rounded-lg overflow-hidden blur-none bg-black shadow-sm shadow-black">
                 <div ref={ref} className="contents">
-                    <BsmImage className={`absolute top-0 left-0 w-full h-full object-cover brightness-50 scale-[200%] blur-md`} image={thumbnailUrl} placeholder={defaultImage} loading="lazy"/>
-                    <BsmImage className={`absolute top-0 left-1/2 -translate-x-1/2 max-w-[20rem] w-full h-full object-cover`} image={thumbnailUrl} placeholder={defaultImage} loading="lazy"/>
+                    <BsmImage className="absolute top-0 left-0 w-full h-full object-cover brightness-50 scale-[200%] blur-md" image={thumbnailUrl} placeholder={defaultImage} loading="lazy"/>
+                    <BsmImage className="absolute top-0 left-1/2 -translate-x-1/2 max-w-[20rem] w-full h-full object-cover" image={thumbnailUrl} placeholder={defaultImage} loading="lazy"/>
                     <div className="absolute top-0 right-0 h-full w-0 flex flex-col items-end gap-1 pt-1.5 pr-1.5">
                         {!props.isDownloading ? (
                             actionButtons().map((button, index) => (
-                                <BsmButton key={index} className="w-8 h-8 p-1 rounded-md transition-transform duration-150 shadow-black shadow-sm" style={{transitionDelay: `${index * 50}ms`, transform: hovered ? "translate(0%)" : "translate(150%)"}} icon={button.icon} iconColor={button.iconColor} onClick={e => {e.stopPropagation(); e.preventDefault(); button.action();}} withBar={false}/>
+                                <BsmButton key={button.id} className="w-8 h-8 p-1 rounded-md transition-transform duration-150 shadow-black shadow-sm" style={{transitionDelay: `${index * 50}ms`, transform: hovered ? "translate(0%)" : "translate(150%)"}} icon={button.icon} iconColor={button.iconColor} onClick={e => {e.stopPropagation(); e.preventDefault(); button.action();}} withBar={false}/>
                             ))
                         ): (
                             <BsmBasicSpinner className="w-7 h-7 p-1 rounded-md bg-main-color-2 flex items-center justify-center shadow-black shadow-sm" spinnerClassName="brightness-200" thikness="3.5px" style={{color}}/>
@@ -157,4 +157,4 @@ function modelItem<T = unknown>(props: Props<T>) {
 
 const typedMemo: <T, P>(c: T, propsAreEqual?: (prevProps: Readonly<P>, nextProps: Readonly<P>) => boolean) => T = memo;
 
-export const ModelItem = typedMemo(modelItem, equal);
+export const ModelItem = typedMemo(ModelItemElement, equal);

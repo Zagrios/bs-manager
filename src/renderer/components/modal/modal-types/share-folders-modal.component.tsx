@@ -75,7 +75,7 @@ export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ data }) => 
             <p className="my-3">{t("modals.shared-folders.description")}</p>
             <ul className="flex flex-col gap-1 mb-2 h-[300px] max-h-[300px] overflow-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 px-1">
                 {folders.map((folder, index) => (
-                    <FolderItem key={index} version={data} relativeFolder={folder} onDelete={() => {removeFolder(index)}}/>
+                    <FolderItem key={folder} version={data} relativeFolder={folder} onDelete={() => {removeFolder(index)}}/>
                 ))}
             </ul>
             <div className="grid grid-flow-col gap-3 grid-cols-2">
@@ -151,16 +151,15 @@ const FolderItem = ({version, relativeFolder, onDelete}: FolderProps) => {
                 <Tippy placement="left" content={t(`modals.shared-folders.buttons.${linked ? "unlink-folder" : "link-folder"}`)} arrow={false}>
                     <LinkButton variants={variants} linked={linked} disabled={linkDisabled} whileHover="hover" whileTap="tap" className="p-0.5 h-7 shrink-0 aspect-square blur-0 cursor-pointer hover:brightness-75" onClick={onClickLink}/>
                 </Tippy>
-                {!processing ? (
-                    !pending ? (
-                        <BsmButton className="aspect-square h-7 rounded-md p-1" icon={"trash"} withBar={false} onClick={e => {e.preventDefault(); onDelete?.()}}/>
-                    ) : (
-                        <BsmButton className="aspect-square h-7 rounded-md p-1" icon={"cross"} withBar={false} onClick={e => {e.preventDefault(); cancelLink()}}/>
-                    )
-                ) : (
-                    <BsmBasicSpinner className="aspect-square h-7 rounded-md p-1 dark:bg-main-color-2" thikness="3.5px" style={{color}}/>
-                )}
-                
+                {(() => {
+                    if(processing){
+                        return <BsmBasicSpinner className="aspect-square h-7 rounded-md p-1 dark:bg-main-color-2" thikness="3.5px" style={{color}}/>;
+                    }
+                    if(pending){
+                        return <BsmButton className="aspect-square h-7 rounded-md p-1" icon="cross" withBar={false} onClick={e => {e.preventDefault(); cancelLink()}}/>;
+                    }
+                    return <BsmButton className="aspect-square h-7 rounded-md p-1" icon="trash" withBar={false} onClick={e => {e.preventDefault(); onDelete?.()}}/>;
+                })()}
             </div>
         </li>
     )

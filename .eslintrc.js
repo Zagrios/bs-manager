@@ -35,7 +35,17 @@ module.exports = {
     "no-useless-escape": "off",
     "jsx-a11y/no-noninteractive-element-interactions": "off",
     "no-async-promise-executor": "off",
-    "new-cap": "off"
+    "new-cap": "off",
+    "no-new": "off",
+    "no-plusplus": "off",
+    "react/jsx-props-no-spreading": "off",
+    "jsx-a11y/iframe-has-title": "off",
+    "import/no-dynamic-require": "off",
+    "radix": "off",
+    "jsx-a11y/alt-text": "off",
+    "react/prop-types": "off",
+    "import/no-cycle": "off",
+    "prefer-promise-reject-errors": "off"
   },
   parserOptions: {
     ecmaVersion: 2020,

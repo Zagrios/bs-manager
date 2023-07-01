@@ -2,12 +2,11 @@ import { MapsManagerService } from "renderer/services/maps-manager.service"
 import { BSVersion } from "shared/bs-version.interface"
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react"
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface"
-import { Subscription } from "rxjs"
+import { Subscription, BehaviorSubject } from "rxjs"
 import { MapFilter } from "shared/models/maps/beat-saver.model"
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service"
 import { VariableSizeList } from "react-window"
 import { MapsRow } from "./maps-row.component"
-import { BehaviorSubject } from "rxjs"
 import { debounceTime, last, mergeMap, tap } from "rxjs/operators"
 import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service"
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service"
@@ -121,7 +120,7 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
             last(),
             mergeMap(async progress => {
                 if(os.isOffline){ return progress.maps; }
-                const maps = progress.maps;
+                const { maps } = progress;
                 const details = await bsaver.getMapDetailsFromHashs(maps.map(map => map.hash));
                 return maps.map(map => {
                     map.bsaverInfo = details.find(d => d.versions.at(0).hash === map.hash);
@@ -330,7 +329,7 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
     
     return (
         <div ref={ref} className={className}>
-            <VariableSizeList className="p-0 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900" width={"100%"} height={listHeight} itemSize={() => 108} itemCount={preppedMaps.length} itemData={preppedMaps} layout="vertical" style={{scrollbarGutter: "stable both-edges"}} itemKey={(i, data) => data[i].map(map => map.hash).join()}>
+            <VariableSizeList className="p-0 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900" width="100%" height={listHeight} itemSize={() => 108} itemCount={preppedMaps.length} itemData={preppedMaps} layout="vertical" style={{scrollbarGutter: "stable both-edges"}} itemKey={(i, data) => data[i].map(map => map.hash).join()}>
                 {(props) => <MapsRow maps={props.data[props.index]} style={props.style} selectedMaps$={selectedMaps$} onMapSelect={onMapSelected} onMapDelete={handleDelete}/>}
             </VariableSizeList>
         </div>

@@ -23,7 +23,7 @@ export function Modal() {
             resolver?.(ModalExitCode.NO_CHOICE);
         }
 
-        if(!!ModalComponent){
+        if(ModalComponent){
             window.addEventListener("keyup", onEscape)
         }
         else{

@@ -20,8 +20,8 @@ type Props = {
     active?: boolean,
     withBar?: boolean,
     disabled?: boolean,
-    onClickOutside?: (e: MouseEvent) => void,
-    onClick?: (e: React.MouseEvent) => void,
+    onClickOutside?: React.ComponentProps<"div">["onClick"],
+    onClick?: React.ComponentProps<"div">["onClick"],
     typeColor?:BsmButtonType,
     color?: string,
     title?: string,
@@ -37,7 +37,11 @@ export function BsmButton({className, style, imgClassName, iconClassName, icon, 
 
     useClickOutside(ref, onClickOutside);
 
-    const primaryColor = typeColor === "primary" ? firstColor : typeColor === "secondary" ? secondColor : undefined;
+    const primaryColor = (() => {
+        if(typeColor === "primary"){ return firstColor; }
+        if(typeColor === "secondary"){ return secondColor; }
+        return undefined;
+    })();
 
     const textColor = (() => {
         if(primaryColor){
@@ -54,7 +58,7 @@ export function BsmButton({className, style, imgClassName, iconClassName, icon, 
         return "";
     })();
 
-    const handleClick = (e: MouseEvent) => !disabled && onClick?.(e);
+    const handleClick = (e: MouseEvent<HTMLDivElement>) => !disabled && onClick?.(e);
 
     return (
         <div ref={ref} onClick={handleClick} title={t(title)} className={`${className} overflow-hidden cursor-pointer group ${(!withBar && !disabled && (!!typeColor || !!color)) && "hover:brightness-[1.15]"} ${disabled && "brightness-75 cursor-not-allowed"} ${renderTypeColor}`} style={{...style, backgroundColor: primaryColor || color}}>

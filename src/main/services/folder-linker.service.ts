@@ -31,7 +31,7 @@ export class FolderLinkerService {
     }
 
     private getBackupFolder(folderPath: string): string {
-        return folderPath + "_backup";
+        return `${folderPath}_backup`;
     }
 
     private async backupFolder(folderPath: string): Promise<void> {
@@ -101,7 +101,7 @@ export class FolderLinkerService {
     public async isFolderSymlink(folder: string): Promise<boolean> {
         try{
             if(!(await pathExist(folder))){ return false; }
-            return lstat(folder).then(stat => stat.isSymbolicLink());
+            return await lstat(folder).then(stat => stat.isSymbolicLink());
         }
         catch(e){
             log.error(e);

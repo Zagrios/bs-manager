@@ -36,7 +36,6 @@ export const BsmImage = forwardRef(({className, image, errorImage, placeholder, 
     }
 
     return (
-        // @ts-ignore
         <img ref={ref} title={title} className={className} src={image} loading={loading} onLoad={handleLoaded} onError={handleError} style={styles} onClick={(e) => onClick?.(e)} alt=" " decoding="async"/>
     )
 })

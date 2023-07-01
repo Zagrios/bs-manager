@@ -2,9 +2,7 @@ import archiver from "archiver";
 import { createWriteStream } from "fs";
 import { Observable } from "rxjs";
 import recursive from "recursive-readdir";
-import { lstatSync } from "fs";
 import * as _path from "path";
-import { ArchiveProgress } from "shared/models/archive.interface";
 import { Progression } from "main/helpers/fs.helpers";
 
 export class Archive{
@@ -45,7 +43,7 @@ export class Archive{
 
     public addFile(path: string, destPath?: string): void{
         this.files.push(path);
-        destPath = destPath ||= _path.basename(path);
+        destPath ||= _path.basename(path);
         this.archive.file(path, {name: destPath});
     }
 

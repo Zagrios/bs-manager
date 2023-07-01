@@ -9,7 +9,6 @@ import { useObservable } from "renderer/hooks/use-observable.hook";
 import { BSV_SORT_ORDER } from "renderer/partials/beat-saver/sort-order";
 import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
-import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { ModalComponent } from "renderer/services/modale.service";
 import { BSVersion } from "shared/bs-version.interface";
 import { BsvMapCharacteristic, BsvMapDetail, MapFilter, SearchOrder, SearchParams } from "shared/models/maps/beat-saver.model";
@@ -21,7 +20,7 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 
-export const DownloadMapsModal: ModalComponent<void, {version: BSVersion, ownedMaps: BsmLocalMap[]}> = ({resolver, data: { ownedMaps, version }}) => {
+export const DownloadMapsModal: ModalComponent<void, {version: BSVersion, ownedMaps: BsmLocalMap[]}> = ({ data: { ownedMaps, version } }) => {
 
     const beatSaver = BeatSaverService.getInstance();
     const mapsDownloader = MapsDownloaderService.getInstance();
@@ -173,7 +172,11 @@ export const DownloadMapsModal: ModalComponent<void, {version: BSVersion, ownedM
                 {maps.length === 0 ? (
                     <div className="w-full h-full flex flex-col items-center justify-center">
                         <img className={`w-32 h-32 ${loading && "spin-loading"}`} src={loading ? BeatWaitingImg : BeatConflictImg} alt=" "/>
-                        <span className="text-lg">{t(loading ? "modals.download-maps.loading-maps" : isOnline ? "modals.download-maps.no-maps-found" : "modals.download-maps.no-internet")}</span>
+                        <span className="text-lg">{(() => {
+                            if(loading){ return t("modals.download-maps.loading-maps"); }
+                            if(isOnline){ return t("modals.download-maps.no-maps-found"); }
+                            return t("modals.download-maps.no-internet");
+                        })()}</span>
                     </div>
                 ) : (
                     <>

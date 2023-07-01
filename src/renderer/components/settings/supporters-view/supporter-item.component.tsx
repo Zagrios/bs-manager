@@ -21,13 +21,13 @@ export function SupporterItem({supporter, delay}: Props) {
     })();    
 
     const renderSpan = () => {
-        return <motion.span className={`text-2xl font-bold px-3 pb-1 ${supporter.link && "cursor-pointer underline"}`} style={additionnalStyles} onClick={openSupporterLink} initial={{y: "100%", opacity: 0}} animate={{y: 0, opacity: 1}} transition={{delay: delay}}>{supporter.username}</motion.span>;
+        return <motion.span className={`text-2xl font-bold px-3 pb-1 ${supporter.link && "cursor-pointer underline"}`} style={additionnalStyles} onClick={openSupporterLink} initial={{y: "100%", opacity: 0}} animate={{y: 0, opacity: 1}} transition={{delay}}>{supporter.username}</motion.span>;
     }
 
     const renderItem = () => {
         if(supporter.type !== "sponsor"){ return renderSpan(); }
         return (
-            <motion.div className={`flex flex-col justify-center items-center mx-4 ${supporter.link && "cursor-pointer underline"}`} onClick={openSupporterLink} initial={{y: "100%", opacity: 0}} animate={{y: 0, opacity: 1}} transition={{delay: delay}}>
+            <motion.div className={`flex flex-col justify-center items-center mx-4 ${supporter.link && "cursor-pointer underline"}`} onClick={openSupporterLink} initial={{y: "100%", opacity: 0}} animate={{y: 0, opacity: 1}} transition={{delay}}>
                 <img className="max-w-xs max-h-52 mb-2" src={supporter.img}/>
                 {renderSpan()}
             </motion.div>

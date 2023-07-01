@@ -72,7 +72,7 @@ export class BeatModsApiService {
     }
 
     public async getAllMods(): Promise<Mod[]>{
-        if(!!this.allModsCache){ return this.allModsCache; }
+        if(this.allModsCache){ return this.allModsCache; }
         return this.requestService.getJSON<Mod[]>(this.getAllModsUrl()).then(mods => {
             this.allModsCache = mods;
             return this.allModsCache;

@@ -18,8 +18,8 @@ export function AvailableVersionsSlide(props: {year: string}) {
 
     return (
         <ol className="w-full flex items-start justify-center gap-6 shrink-0 content-start flex-wrap p-4 overflow-x-hidden overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900">
-            {availableVersions.map((version, index) =>
-                <AvailableVersionItem key={index} version={version}></AvailableVersionItem>
+            {availableVersions.map((version) =>
+                <AvailableVersionItem key={version.BSManifest} version={version}/>
             )}
         </ol>
   )

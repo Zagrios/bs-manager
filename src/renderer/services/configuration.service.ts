@@ -1,13 +1,13 @@
-import { BehaviorSubject, Observable, shareReplay } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { DefaultConfigKey, defaultConfiguration } from "renderer/config/default-configuration.config";
 
 export class ConfigurationService {
     
     private static instance: ConfigurationService;
-    private observers: Map<string, BehaviorSubject<any>>;
+    private observers: Map<string, BehaviorSubject<unknown>>;
     
     private constructor(){
-        this.observers = new Map<string, BehaviorSubject<any>>();
+        this.observers = new Map<string, BehaviorSubject<unknown>>();
     }
     private emitChange(key: string){
         if(this.observers.has(key)){
@@ -29,7 +29,7 @@ export class ConfigurationService {
         return t;
     }
 
-    public set(key: string, value: any, persistant = true){
+    public set(key: string, value: unknown, persistant = true){
         this.getPropperStorage(persistant).setItem(key, JSON.stringify(value));
         this.emitChange(key);
     }
@@ -41,8 +41,8 @@ export class ConfigurationService {
     }
 
     public watch<T>(key: DefaultConfigKey | string): Observable<T>{
-        if(this.observers.has(key)){ return this.observers.get(key); }
+        if(this.observers.has(key)){ return this.observers.get(key).asObservable() as Observable<T>; }
         this.observers.set(key, new BehaviorSubject(this.get(key)));
-        return this.observers.get(key).asObservable();
+        return this.observers.get(key).asObservable() as Observable<T>;
     }
 }

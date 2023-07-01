@@ -157,7 +157,7 @@ export const DownloadModelsModal: ModalComponent<void, {version: BSVersion, type
                 <BsmSelect className="bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-1 pb-0.5 text-center capitalize" options={modelTypesOptions} selected={currentType} onChange={(value) => currentType$.next(value)}/>
                 <div className="h-ful grow relative flex justify-center items-center">
                     <input className="h-full w-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2 pb-0.5" type="text" name="" id="" placeholder={t("models.modals.download-models.search-placeholder")} value={searhInput} onChange={e => searhInput$.next(e.target.value)}/>
-                    <Tippy placement="bottom" content={renderFilterTips} allowHTML={true} maxWidth={Infinity}>
+                    <Tippy placement="bottom" content={renderFilterTips} allowHTML maxWidth={Infinity}>
                         <div className="absolute right-0 h-full w-fit p-1 cursor-pointer">
                             <BsmButton className="h-full rounded-full p-1 aspect-square" typeColor="primary" icon="info" withBar={false}/>
                         </div>

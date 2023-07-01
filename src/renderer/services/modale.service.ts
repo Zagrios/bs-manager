@@ -1,5 +1,4 @@
-import { Observable } from "rxjs";
-import { BehaviorSubject } from "rxjs";
+import { Observable, BehaviorSubject } from "rxjs";
 import { timeout } from "rxjs/operators";
 
 export class ModalService{
@@ -7,8 +6,8 @@ export class ModalService{
     private static instance: ModalService;
 
     private _modalToShow$: BehaviorSubject<ModalComponent> = new BehaviorSubject(null);
-    private modalData: any = null;
-    private resolver: any;
+    private modalData: unknown = null;
+    private resolver: (value: ModalResponse| PromiseLike<ModalResponse>) => void = null;;
     
     private constructor(){}
 
@@ -23,7 +22,7 @@ export class ModalService{
     }
 
     public getModalData<Type>(): Type{
-        return this.modalData;
+        return this.modalData as Type;
     } 
 
     public getResolver(): any{
@@ -36,9 +35,9 @@ export class ModalService{
 
     public async openModal<T, K>(modal: ModalComponent<T, K>, data?: K): Promise<ModalResponse<T>>{
         this.close();
-        await timeout(100); //Must wait resolve
-        const promise = new Promise<ModalResponse<T>>((resolve) => { this.resolver = resolve; });
-        this._modalToShow$.next(modal);
+        await timeout(100); // Must wait resolve
+        const promise = new Promise<ModalResponse<T>>((resolve) => { this.resolver = resolve as (value: ModalResponse| PromiseLike<ModalResponse>) => void; });
+        this._modalToShow$.next(modal as ModalComponent);
         promise.then(() => this.close());
         if(data){ this.modalData = data; }
         else{ this.modalData = null; }
@@ -51,7 +50,7 @@ export class ModalService{
 
 }
 
-export type ModalComponent<Return = unknown, Receive = any> = ({resolver, data}: {resolver : (x: ModalResponse<Return>) => void, data?: Receive}) => JSX.Element;
+export type ModalComponent<Return = unknown, Receive = unknown> = ({resolver, data}: {resolver : (x: ModalResponse<Return>) => void, data?: Receive}) => JSX.Element;
 
 export const enum ModalExitCode {
     NO_CHOICE = -1,
