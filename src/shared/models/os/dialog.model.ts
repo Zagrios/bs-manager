@@ -1,4 +1,4 @@
 export interface OpenSaveDialogOption {
-    filename?: string,
-    filters?: Electron.FileFilter[]
+    filename?: string;
+    filters?: Electron.FileFilter[];
 }

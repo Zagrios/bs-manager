@@ -1,5 +1,5 @@
 import { DeepLinkService } from "../deep-link.service";
-import log from "electron-log"
+import log from "electron-log";
 import { ipcMain } from "electron";
 import { IpcRequest } from "shared/models/ipc";
 import { UtilsService } from "../utils.service";
@@ -23,11 +23,12 @@ import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 import { Archive } from "../../models/archive.class";
 
 export class LocalModelsManagerService {
-
     private static instance: LocalModelsManagerService;
 
-    public static getInstance(): LocalModelsManagerService{
-        if(!LocalModelsManagerService.instance){ LocalModelsManagerService.instance = new LocalModelsManagerService(); }
+    public static getInstance(): LocalModelsManagerService {
+        if (!LocalModelsManagerService.instance) {
+            LocalModelsManagerService.instance = new LocalModelsManagerService();
+        }
         return LocalModelsManagerService.instance;
     }
 
@@ -43,7 +44,7 @@ export class LocalModelsManagerService {
     private readonly request: RequestService;
     private readonly modelSaber: ModelSaberService;
 
-    private constructor(){
+    private constructor() {
         this.deepLink = DeepLinkService.getInstance();
         this.utils = UtilsService.getInstance();
         this.windows = WindowManagerService.getInstance();
@@ -52,45 +53,39 @@ export class LocalModelsManagerService {
         this.installPaths = InstallationLocationService.getInstance();
         this.modelSaber = ModelSaberService.getInstance();
 
-        this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.ModelSaber, (link) => {
+        this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.ModelSaber, link => {
             log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.ModelSaber, link);
             const url = new URL(link);
 
-            const type = url.host
-            const id = url.pathname.replace("/", '').split("/").at(0);
+            const type = url.host;
+            const id = url.pathname.replace("/", "").split("/").at(0);
 
             this.openOneClickDownloadModelWindow(id, type);
         });
     }
 
-    private openOneClickDownloadModelWindow(id: string, type: string){
-        
+    private openOneClickDownloadModelWindow(id: string, type: string) {
         ipcMain.once("one-click-model-info", async (_event, req: IpcRequest<void>) => {
-            this.utils.ipcSend(req.responceChannel, {success: true, data: {id, type}});
+            this.utils.ipcSend(req.responceChannel, { success: true, data: { id, type } });
         });
 
         this.windows.openWindow("oneclick-download-model.html");
-
     }
 
-    private async getModelFolderPath(type: MSModelType, version?: BSVersion): Promise<string>{
-
+    private async getModelFolderPath(type: MSModelType, version?: BSVersion): Promise<string> {
         const rootPath = version ? await this.localVersion.getVersionPath(version) : this.installPaths.sharedContentPath;
         const modelFolderPath = path.join(rootPath, MODEL_TYPE_FOLDERS[type]);
 
         await ensureFolderExist(modelFolderPath);
 
         return modelFolderPath;
-
     }
 
-    public downloadModel(model: MSModel, version: BSVersion): Observable<Progression<BsmLocalModel>>{
+    public downloadModel(model: MSModel, version: BSVersion): Observable<Progression<BsmLocalModel>> {
         return new Observable<Progression<BsmLocalModel>>(subscriber => {
-
             const subs: Subscription[] = [];
 
             (async () => {
-
                 const modelFolder = await this.getModelFolderPath(model.type, version);
                 const modelDest = path.join(modelFolder, sanitize(path.basename(model.download)));
 
@@ -99,7 +94,7 @@ export class LocalModelsManagerService {
 
                 const download$ = this.request.downloadFile(url.join("/"), modelDest);
 
-                subs.push(download$.subscribe({ next: value => subscriber.next({...value, data: undefined}), error: e => subscriber.error(e) }));
+                subs.push(download$.subscribe({ next: value => subscriber.next({ ...value, data: undefined }), error: e => subscriber.error(e) }));
 
                 const downloaded = await lastValueFrom(download$);
 
@@ -109,58 +104,60 @@ export class LocalModelsManagerService {
                     hash: await md5File(downloaded.data),
                     type: model.type,
                     model,
-                    version
-                }
+                    version,
+                };
 
-                subscriber.next({...downloaded, data: res});
-
-            })().catch(err => subscriber.error(err)).then(() => subscriber.complete());
+                subscriber.next({ ...downloaded, data: res });
+            })()
+                .catch(err => subscriber.error(err))
+                .then(() => subscriber.complete());
 
             return () => {
                 subs.forEach(sub => sub.unsubscribe());
-            }
+            };
         });
     }
 
-    public async oneClickDownloadModel(model: MSModel): Promise<void>{
-
-        if(!model){ return; }
+    public async oneClickDownloadModel(model: MSModel): Promise<void> {
+        if (!model) {
+            return;
+        }
 
         const versions = await this.localVersion.getInstalledVersions();
 
-        if(versions?.length === 0){ return; }
+        if (versions?.length === 0) {
+            return;
+        }
 
         const fisrtVersion = versions.shift();
 
         const downloaded = await lastValueFrom(this.downloadModel(model, fisrtVersion));
 
-        for(const version of versions){
-
+        for (const version of versions) {
             const modelDest = path.join(await this.getModelFolderPath(model.type, version), path.basename(downloaded.data.path));
 
             copyFileSync(downloaded.data.path, modelDest);
-
         }
-
     }
 
-    private async getModelsPaths(type: MSModelType, version?: BSVersion): Promise<string[]>{
+    private async getModelsPaths(type: MSModelType, version?: BSVersion): Promise<string[]> {
         const modelsPath = await this.getModelFolderPath(type, version);
-        const files = await readdir(modelsPath, {withFileTypes: true});
+        const files = await readdir(modelsPath, { withFileTypes: true });
 
         return files.reduce((acc, file) => {
-            if(!file.isFile() || path.extname(file.name) !== MODEL_FILE_EXTENSIONS[type]){ return acc; }
+            if (!file.isFile() || path.extname(file.name) !== MODEL_FILE_EXTENSIONS[type]) {
+                return acc;
+            }
             acc.push(path.join(modelsPath, file.name));
             return acc;
         }, []);
     }
 
-    public getModels(type: MSModelType, version?: BSVersion): Observable<Progression<BsmLocalModel[]>>{
-
+    public getModels(type: MSModelType, version?: BSVersion): Observable<Progression<BsmLocalModel[]>> {
         const progression: Progression<BsmLocalModel[]> = {
             total: 0,
             current: 0,
-            data: null
+            data: null,
         };
 
         return new Observable<Progression<BsmLocalModel[]>>(subscriber => {
@@ -168,89 +165,85 @@ export class LocalModelsManagerService {
                 const modelsPaths = await this.getModelsPaths(type, version);
                 progression.total = modelsPaths.length;
 
-                const models = await allSettled(modelsPaths.map(async modelPath => {
-                    
-                    const hash = await md5File(modelPath)
-                    
-                    const localModel: BsmLocalModel = {
-                        path: modelPath,
-                        fileName: path.basename(modelPath, MODEL_FILE_EXTENSIONS[type]),
-                        model: await this.modelSaber.getModelByHash(hash),
-                        type, hash, version
-                    }
+                const models = await allSettled(
+                    modelsPaths.map(async modelPath => {
+                        const hash = await md5File(modelPath);
 
-                    progression.current++;
+                        const localModel: BsmLocalModel = {
+                            path: modelPath,
+                            fileName: path.basename(modelPath, MODEL_FILE_EXTENSIONS[type]),
+                            model: await this.modelSaber.getModelByHash(hash),
+                            type,
+                            hash,
+                            version,
+                        };
 
-                    subscriber.next(progression);
+                        progression.current++;
 
-                    return localModel;
-                }));
+                        subscriber.next(progression);
+
+                        return localModel;
+                    })
+                );
 
                 progression.data = models;
                 subscriber.next(progression);
-
-            })().catch(e => subscriber.error(e)).finally(() => subscriber.complete());
+            })()
+                .catch(e => subscriber.error(e))
+                .finally(() => subscriber.complete());
         });
-
     }
 
-    public exportModels(output: string, version?: BSVersion, models?: BsmLocalModel[]): Observable<Progression>{
-
+    public exportModels(output: string, version?: BSVersion, models?: BsmLocalModel[]): Observable<Progression> {
         return new Observable<Progression>(subscriber => {
-
             const archive = new Archive(output);
 
             (async () => {
-                
-                if(models?.length){
+                if (models?.length) {
                     models.forEach(model => archive.addFile(model.path, path.join(MODEL_TYPE_FOLDERS[model.type], path.basename(model.path))));
-                }
-                else{
-                    for(const type of MODEL_TYPES){
+                } else {
+                    for (const type of MODEL_TYPES) {
                         archive.addDirectory(await this.getModelFolderPath(type, version));
                     }
                 }
-
-            })().catch(e => subscriber.error(e)).then(() => (
-                archive.finalize().subscribe(subscriber)
-            ));
-
+            })()
+                .catch(e => subscriber.error(e))
+                .then(() => archive.finalize().subscribe(subscriber));
         });
     }
 
-    public deleteModels(models: BsmLocalModel[]): Observable<Progression<BsmLocalModel[]>>{
+    public deleteModels(models: BsmLocalModel[]): Observable<Progression<BsmLocalModel[]>> {
         return new Observable<Progression<BsmLocalModel[]>>(subscriber => {
             (async () => {
-
                 const progression: Progression<BsmLocalModel[]> = {
                     total: models.length,
                     current: 0,
-                    data: []
+                    data: [],
                 };
 
-                for(const model of models){
+                for (const model of models) {
                     await unlinkPath(model.path);
                     progression.data.push(model);
                     progression.current = progression.data.length;
                     subscriber.next(progression);
                 }
-
-            })().catch(e => subscriber.error(e)).finally(() => subscriber.complete());
+            })()
+                .catch(e => subscriber.error(e))
+                .finally(() => subscriber.complete());
         });
     }
 
-    public enableDeepLinks(): boolean{
+    public enableDeepLinks(): boolean {
         return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.registerDeepLink(link));
     }
 
-    public disableDeepLinks(): boolean{
+    public disableDeepLinks(): boolean {
         return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.unRegisterDeepLink(link));
     }
 
-    public isDeepLinksEnabled(): boolean{
+    public isDeepLinksEnabled(): boolean {
         return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.isDeepLinkRegistred(link));
     }
-
 }
 
 export interface BsmLocalModelsProgress {

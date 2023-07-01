@@ -1,15 +1,19 @@
-#versions{
-  scrollbar-gutter: stable;
+#versions {
+    scrollbar-gutter: stable;
 }
 
-.nav-item-download > .wrapper > a > *{
-  animation: opacity 3s ease-in-out 0s infinite;
+.nav-item-download > .wrapper > a > * {
+    animation: opacity 3s ease-in-out 0s infinite;
 }
 
-@keyframes opacity{
-  0% { opacity: 1; }
-  50% { opacity: .6; }
-  100% { opacity: 1; }
+@keyframes opacity {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+    100% {
+        opacity: 1;
+    }
 }
-
-

@@ -1,34 +1,33 @@
-import { MapsManagerService } from "renderer/services/maps-manager.service"
-import { BSVersion } from "shared/bs-version.interface"
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react"
-import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface"
-import { Subscription, BehaviorSubject } from "rxjs"
-import { MapFilter } from "shared/models/maps/beat-saver.model"
-import { MapsDownloaderService } from "renderer/services/maps-downloader.service"
-import { VariableSizeList } from "react-window"
-import { MapsRow } from "./maps-row.component"
-import { debounceTime, last, mergeMap, tap } from "rxjs/operators"
-import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service"
-import { OsDiagnosticService } from "renderer/services/os-diagnostic.service"
-import { useTranslation } from "renderer/hooks/use-translation.hook"
-import BeatWaitingImg from "../../../../assets/images/apngs/beat-waiting.png"
-import BeatConflict from "../../../../assets/images/apngs/beat-conflict.png"
-import { BsmImage } from "../shared/bsm-image.component"
-import { BsmButton } from "../shared/bsm-button.component"
-import TextProgressBar from "../progress-bar/text-progress-bar.component"
-import { useChangeOnce } from "renderer/hooks/use-change-once.hook"
+import { MapsManagerService } from "renderer/services/maps-manager.service";
+import { BSVersion } from "shared/bs-version.interface";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
+import { Subscription, BehaviorSubject } from "rxjs";
+import { MapFilter } from "shared/models/maps/beat-saver.model";
+import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
+import { VariableSizeList } from "react-window";
+import { MapsRow } from "./maps-row.component";
+import { debounceTime, last, mergeMap, tap } from "rxjs/operators";
+import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
+import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
+import { useTranslation } from "renderer/hooks/use-translation.hook";
+import BeatWaitingImg from "../../../../assets/images/apngs/beat-waiting.png";
+import BeatConflict from "../../../../assets/images/apngs/beat-conflict.png";
+import { BsmImage } from "../shared/bsm-image.component";
+import { BsmButton } from "../shared/bsm-button.component";
+import TextProgressBar from "../progress-bar/text-progress-bar.component";
+import { useChangeOnce } from "renderer/hooks/use-change-once.hook";
 
 type Props = {
-    version: BSVersion,
-    className?: string,
-    filter?: MapFilter
-    search?: string,
-    linked?: boolean,
-    isActive?: boolean
-}
+    version: BSVersion;
+    className?: string;
+    filter?: MapFilter;
+    search?: string;
+    linked?: boolean;
+    isActive?: boolean;
+};
 
-export const LocalMapsListPanel = forwardRef(({version, className, filter, search, linked, isActive} : Props, forwardRef) => {
-
+export const LocalMapsListPanel = forwardRef(({ version, className, filter, search, linked, isActive }: Props, forwardRef) => {
     const mapsManager = MapsManagerService.getInstance();
     const mapsDownloader = MapsDownloaderService.getInstance();
     const bsaver = BeatSaverService.getInstance();
@@ -45,48 +44,58 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
 
     const [loadPercent$] = useState(new BehaviorSubject(0));
 
-    useImperativeHandle(forwardRef ,()=>({
-        deleteMaps(){
-            const mapsToDelete = selectedMaps$.value.length === 0 ? maps : selectedMaps$.value;
-            mapsManager.deleteMaps(mapsToDelete, version).then(res => {
-                if(!res){ return; }
-                removeMapsFromList(mapsToDelete);
-                selectedMaps$.next([]);
-            });
-        },
-        exportMaps(){
-            mapsManager.exportMaps(version, selectedMaps$.value);
-        },
-        getMaps(){
-            return maps;
-        }
-    }), [selectedMaps$.value, maps, version]);
+    useImperativeHandle(
+        forwardRef,
+        () => ({
+            deleteMaps() {
+                const mapsToDelete = selectedMaps$.value.length === 0 ? maps : selectedMaps$.value;
+                mapsManager.deleteMaps(mapsToDelete, version).then(res => {
+                    if (!res) {
+                        return;
+                    }
+                    removeMapsFromList(mapsToDelete);
+                    selectedMaps$.next([]);
+                });
+            },
+            exportMaps() {
+                mapsManager.exportMaps(version, selectedMaps$.value);
+            },
+            getMaps() {
+                return maps;
+            },
+        }),
+        [selectedMaps$.value, maps, version]
+    );
 
     useEffect(() => {
-
-        if(isActiveOnce){
+        if (isActiveOnce) {
             loadMaps();
             mapsDownloader.addOnMapDownloadedListener((map, targerVersion) => {
-                if(targerVersion !== version){ return; }
-                setMaps(maps => maps ? [map, ...maps] : [map]);
+                if (targerVersion !== version) {
+                    return;
+                }
+                setMaps(maps => (maps ? [map, ...maps] : [map]));
             });
         }
-    
+
         return () => {
             setMaps(() => null);
             loadPercent$.next(0);
             subs.forEach(s => s.unsubscribe());
             mapsDownloader.removeOnMapDownloadedListener(loadMaps);
-        }
+        };
     }, [isActiveOnce, version, linked]);
 
     useEffect(() => {
-        
-        if(!isActiveOnce){ return; }
+        if (!isActiveOnce) {
+            return;
+        }
 
         const updateItemPerRow = (listWidth: number) => {
             const newPerRow = Math.min(Math.floor(listWidth / 400), 3);
-            if(newPerRow === itemPerRow){ return; }
+            if (newPerRow === itemPerRow) {
+                return;
+            }
             setItemPerRow(newPerRow);
         };
 
@@ -94,7 +103,7 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
 
         const observer = new ResizeObserver(() => {
             updateItemPerRow(ref.current?.clientWidth || 0);
-            heightObserver$.next(ref.current?.clientHeight || 0)
+            heightObserver$.next(ref.current?.clientHeight || 0);
         });
 
         observer.observe(ref.current);
@@ -104,34 +113,38 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
         return () => {
             observer.disconnect();
             sub.unsubscribe();
-        }
-
-    }, [isActiveOnce, itemPerRow])
+        };
+    }, [isActiveOnce, itemPerRow]);
 
     const loadMaps = () => {
-
         setMaps(() => null);
         loadPercent$.next(0);
 
         const loadMapsObs$ = mapsManager.getMaps(version);
 
-        subs.push(loadMapsObs$.pipe(
-            tap(progress => loadPercent$.next(Math.floor(((progress.loaded / progress.total) * 100)))),
-            last(),
-            mergeMap(async progress => {
-                if(os.isOffline){ return progress.maps; }
-                const { maps } = progress;
-                const details = await bsaver.getMapDetailsFromHashs(maps.map(map => map.hash));
-                return maps.map(map => {
-                    map.bsaverInfo = details.find(d => d.versions.at(0).hash === map.hash);
-                    return map;
+        subs.push(
+            loadMapsObs$
+                .pipe(
+                    tap(progress => loadPercent$.next(Math.floor((progress.loaded / progress.total) * 100))),
+                    last(),
+                    mergeMap(async progress => {
+                        if (os.isOffline) {
+                            return progress.maps;
+                        }
+                        const { maps } = progress;
+                        const details = await bsaver.getMapDetailsFromHashs(maps.map(map => map.hash));
+                        return maps.map(map => {
+                            map.bsaverInfo = details.find(d => d.versions.at(0).hash === map.hash);
+                            return map;
+                        });
+                    })
+                )
+                .subscribe({
+                    next: maps => setMaps(() => maps),
+                    complete: () => loadPercent$.next(0),
                 })
-            })
-        ).subscribe({
-            next: maps => setMaps(() => maps),
-            complete: () => loadPercent$.next(0)
-        }));
-    }
+        );
+    };
 
     const removeMapsFromList = (mapsToRemove: BsmLocalMap[]) => {
         const filtredMaps = maps.filter(map => !mapsToRemove.some(toDeleteMaps => map.hash === toDeleteMaps.hash));
@@ -141,197 +154,283 @@ export const LocalMapsListPanel = forwardRef(({version, className, filter, searc
         selectedMaps$.next(filtredSelectedMaps);
     };
 
-    const handleDelete = useCallback((map: BsmLocalMap) => {
-        mapsManager.deleteMaps([map], version).then(res => {
-            if(!res){ return; }
-            removeMapsFromList([map]);
+    const handleDelete = useCallback(
+        (map: BsmLocalMap) => {
+            mapsManager.deleteMaps([map], version).then(res => {
+                if (!res) {
+                    return;
+                }
+                removeMapsFromList([map]);
+            });
+        },
+        [version, maps]
+    );
 
-        });
-    }, [version, maps]);
+    const onMapSelected = useCallback(
+        (map: BsmLocalMap) => {
+            const mapsCopy = [...selectedMaps$.value];
+            if (mapsCopy.some(selectedMap => selectedMap.hash === map.hash)) {
+                const i = mapsCopy.findIndex(selectedMap => selectedMap.hash === map.hash);
+                mapsCopy.splice(i, 1);
+            } else {
+                mapsCopy.push(map);
+            }
 
-    const onMapSelected = useCallback((map: BsmLocalMap) => {
-
-        const mapsCopy = [...selectedMaps$.value];
-        if(mapsCopy.some(selectedMap => selectedMap.hash === map.hash)){
-            const i = mapsCopy.findIndex(selectedMap => selectedMap.hash === map.hash);
-            mapsCopy.splice(i, 1);
-        }
-        else{
-            mapsCopy.push(map);
-        }
-
-        selectedMaps$.next(mapsCopy);
-
-    }, [selectedMaps$.value]);
+            selectedMaps$.next(mapsCopy);
+        },
+        [selectedMaps$.value]
+    );
 
     const isMapFitFilter = (map: BsmLocalMap): boolean => {
-
         // Can be more clean and optimized i think
-        
+
         const fitEnabledTags = (() => {
-            if(!filter?.enabledTags || filter.enabledTags.size === 0){ return true; }
-            if(!map?.bsaverInfo?.tags){ return false; }
+            if (!filter?.enabledTags || filter.enabledTags.size === 0) {
+                return true;
+            }
+            if (!map?.bsaverInfo?.tags) {
+                return false;
+            }
             return Array.from(filter.enabledTags.values()).every(tag => map.bsaverInfo.tags.some(mapTag => mapTag === tag));
         })();
 
-        if(!fitEnabledTags){ return false; }
+        if (!fitEnabledTags) {
+            return false;
+        }
 
         const fitExcluedTags = (() => {
-            if(!filter?.excludedTags || filter.excludedTags.size === 0){ return true; }
-            if(!map?.bsaverInfo?.tags){ return true; }
+            if (!filter?.excludedTags || filter.excludedTags.size === 0) {
+                return true;
+            }
+            if (!map?.bsaverInfo?.tags) {
+                return true;
+            }
             return !map.bsaverInfo.tags.some(tag => filter.excludedTags.has(tag));
         })();
 
-        if(!fitExcluedTags){ return false; }
+        if (!fitExcluedTags) {
+            return false;
+        }
 
         const fitMinNps = (() => {
-            if(!filter?.minNps){ return true; }
-            if(!map?.bsaverInfo?.versions?.at(0)){ return false; }
+            if (!filter?.minNps) {
+                return true;
+            }
+            if (!map?.bsaverInfo?.versions?.at(0)) {
+                return false;
+            }
             return !map.bsaverInfo.versions.some(version => {
                 return version.diffs.some(diff => diff.nps < filter.minNps);
             });
         })();
 
-        if(!fitMinNps){ return false; }
+        if (!fitMinNps) {
+            return false;
+        }
 
         const fitMaxNps = (() => {
-            if(!filter?.maxNps){ return true; }
-            if(!map?.bsaverInfo?.versions?.at(0)){ return false; }
+            if (!filter?.maxNps) {
+                return true;
+            }
+            if (!map?.bsaverInfo?.versions?.at(0)) {
+                return false;
+            }
             return !map.bsaverInfo.versions.some(version => {
                 return version.diffs.some(diff => diff.nps > filter.maxNps);
             });
         })();
 
-        if(!fitMaxNps){ return false; }
+        if (!fitMaxNps) {
+            return false;
+        }
 
         const fitMinDuration = (() => {
-            if(!filter?.minDuration){ return true; }
-            
-            if(!map?.bsaverInfo?.metadata?.duration){ return false; }
+            if (!filter?.minDuration) {
+                return true;
+            }
+
+            if (!map?.bsaverInfo?.metadata?.duration) {
+                return false;
+            }
             return map.bsaverInfo.metadata.duration >= filter.minDuration;
         })();
 
-        if(!fitMinDuration){ return false; }
+        if (!fitMinDuration) {
+            return false;
+        }
 
         const fitMaxDuration = (() => {
-            if(!filter?.maxDuration){ return true; }
-            if(!map?.bsaverInfo?.metadata?.duration){ return false; }
+            if (!filter?.maxDuration) {
+                return true;
+            }
+            if (!map?.bsaverInfo?.metadata?.duration) {
+                return false;
+            }
             return map.bsaverInfo.metadata.duration <= filter.maxDuration;
         })();
 
-        if(!fitMaxDuration){ return false; }
+        if (!fitMaxDuration) {
+            return false;
+        }
 
         const fitNoodle = (() => {
-            if(!filter?.noodle){ return true; }
-            if(!map?.bsaverInfo?.versions?.at(0)){ return false; }
+            if (!filter?.noodle) {
+                return true;
+            }
+            if (!map?.bsaverInfo?.versions?.at(0)) {
+                return false;
+            }
             return map.bsaverInfo.versions.some(version => version.diffs.some(diff => !!diff.ne));
         })();
 
-        if(!fitNoodle){ return false; }
+        if (!fitNoodle) {
+            return false;
+        }
 
         const fitMe = (() => {
-            if(!filter?.me){ return true; }
-            if(!map?.bsaverInfo?.versions?.at(0)){ return false; }
+            if (!filter?.me) {
+                return true;
+            }
+            if (!map?.bsaverInfo?.versions?.at(0)) {
+                return false;
+            }
             return map.bsaverInfo.versions.some(version => version.diffs.some(diff => !!diff.me));
         })();
 
-        if(!fitMe){ return false; }
+        if (!fitMe) {
+            return false;
+        }
 
         const fitCinema = (() => {
-            if(!filter?.cinema){ return true; }
-            if(!map?.bsaverInfo?.versions?.at(0)){ return false; }
+            if (!filter?.cinema) {
+                return true;
+            }
+            if (!map?.bsaverInfo?.versions?.at(0)) {
+                return false;
+            }
             return map.bsaverInfo.versions.some(version => version.diffs.some(diff => !!diff.cinema));
         })();
 
-        if(!fitCinema){ return false; }
+        if (!fitCinema) {
+            return false;
+        }
 
-        const fitChroma =(() => {
-            if(!filter?.chroma){ return true; }
-            if(!map?.bsaverInfo?.versions?.at(0)){ return false; }
+        const fitChroma = (() => {
+            if (!filter?.chroma) {
+                return true;
+            }
+            if (!map?.bsaverInfo?.versions?.at(0)) {
+                return false;
+            }
             return map.bsaverInfo.versions.some(version => version.diffs.some(diff => !!diff.chroma));
         })();
 
-        if(!fitChroma){ return false; }
+        if (!fitChroma) {
+            return false;
+        }
 
         const fitFullSpread = (() => {
-            if(!filter?.fullSpread){ return true; }
-            if(!map?.bsaverInfo?.versions?.at(0)){ return false; }
+            if (!filter?.fullSpread) {
+                return true;
+            }
+            if (!map?.bsaverInfo?.versions?.at(0)) {
+                return false;
+            }
             return map.bsaverInfo.versions.some(version => version?.diffs?.length >= 5);
         })();
 
-        if(!fitFullSpread){ return false; }
+        if (!fitFullSpread) {
+            return false;
+        }
 
-        if(!(filter?.automapper ? map.bsaverInfo?.automapper === filter.automapper : true)){ return false }
-        if(!(filter?.ranked ? map.bsaverInfo?.ranked === filter.ranked : true)){ return false }
-        if(!(filter?.curated ? !!map.bsaverInfo?.curatedAt : true)){ return false }
-        if(!(filter?.verified ? !!map.bsaverInfo?.uploader?.verifiedMapper : true)){ return false }
+        if (!(filter?.automapper ? map.bsaverInfo?.automapper === filter.automapper : true)) {
+            return false;
+        }
+        if (!(filter?.ranked ? map.bsaverInfo?.ranked === filter.ranked : true)) {
+            return false;
+        }
+        if (!(filter?.curated ? !!map.bsaverInfo?.curatedAt : true)) {
+            return false;
+        }
+        if (!(filter?.verified ? !!map.bsaverInfo?.uploader?.verifiedMapper : true)) {
+            return false;
+        }
 
         const searchCheck = (() => {
-            return (
-                ((map.rawInfo?._songName ?? map.bsaverInfo?.name) || "")?.toLowerCase().includes(search.toLowerCase()) || 
-                ((map.rawInfo?._songAuthorName ?? map.bsaverInfo?.metadata?.songAuthorName) || "")?.toLowerCase().includes(search.toLowerCase()) ||
-                ((map.rawInfo?._levelAuthorName ?? map.bsaverInfo?.metadata?.levelAuthorName) || "")?.toLowerCase().includes(search.toLowerCase()));
+            return ((map.rawInfo?._songName ?? map.bsaverInfo?.name) || "")?.toLowerCase().includes(search.toLowerCase()) || ((map.rawInfo?._songAuthorName ?? map.bsaverInfo?.metadata?.songAuthorName) || "")?.toLowerCase().includes(search.toLowerCase()) || ((map.rawInfo?._levelAuthorName ?? map.bsaverInfo?.metadata?.levelAuthorName) || "")?.toLowerCase().includes(search.toLowerCase());
         })();
 
-        if(!searchCheck){ return false };
+        if (!searchCheck) {
+            return false;
+        }
 
         return true;
-
-    }
-
+    };
 
     const preppedMaps: BsmLocalMap[][] = (() => {
-
-        if(!maps){ return []; }
+        if (!maps) {
+            return [];
+        }
 
         const res: BsmLocalMap[][] = [];
-        let mapsRow: BsmLocalMap[] = []
+        let mapsRow: BsmLocalMap[] = [];
 
-        for(const map of maps){
-            if(!isMapFitFilter(map)){ continue; }
-            if(mapsRow.length === itemPerRow){
+        for (const map of maps) {
+            if (!isMapFitFilter(map)) {
+                continue;
+            }
+            if (mapsRow.length === itemPerRow) {
                 res.push(mapsRow);
                 mapsRow = [];
             }
             mapsRow.push(map);
         }
 
-        if(mapsRow.length){
+        if (mapsRow.length) {
             res.push(mapsRow);
         }
 
         return res;
     })();
 
-    if(!maps){
+    if (!maps) {
         return (
             <div ref={ref} className={className}>
                 <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1 text-gray-800 dark:text-gray-200">
-                    <BsmImage className="w-32 h-32 spin-loading" image={BeatWaitingImg}/>
+                    <BsmImage className="w-32 h-32 spin-loading" image={BeatWaitingImg} />
                     <span className="font-bold">{t("modals.download-maps.loading-maps")}</span>
-                    <TextProgressBar value$={loadPercent$}/>
+                    <TextProgressBar value$={loadPercent$} />
                 </div>
             </div>
         );
     }
 
-    if(!maps.length){
+    if (!maps.length) {
         return (
             <div ref={ref} className={className}>
                 <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1 text-gray-800 dark:text-gray-200">
-                    <BsmImage className="h-32" image={BeatConflict}/>
+                    <BsmImage className="h-32" image={BeatConflict} />
                     <span className="font-bold">{t("pages.version-viewer.maps.tabs.maps.empty-maps.text")}</span>
-                    <BsmButton className="font-bold rounded-md p-2" text="pages.version-viewer.maps.tabs.maps.empty-maps.button" typeColor="primary" withBar={false} onClick={e => {e.preventDefault(); mapsDownloader.openDownloadMapModal(version)}}/>
+                    <BsmButton
+                        className="font-bold rounded-md p-2"
+                        text="pages.version-viewer.maps.tabs.maps.empty-maps.button"
+                        typeColor="primary"
+                        withBar={false}
+                        onClick={e => {
+                            e.preventDefault();
+                            mapsDownloader.openDownloadMapModal(version);
+                        }}
+                    />
                 </div>
             </div>
         );
     }
-    
+
     return (
         <div ref={ref} className={className}>
-            <VariableSizeList className="p-0 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900" width="100%" height={listHeight} itemSize={() => 108} itemCount={preppedMaps.length} itemData={preppedMaps} layout="vertical" style={{scrollbarGutter: "stable both-edges"}} itemKey={(i, data) => data[i].map(map => map.hash).join()}>
-                {(props) => <MapsRow maps={props.data[props.index]} style={props.style} selectedMaps$={selectedMaps$} onMapSelect={onMapSelected} onMapDelete={handleDelete}/>}
+            <VariableSizeList className="p-0 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900" width="100%" height={listHeight} itemSize={() => 108} itemCount={preppedMaps.length} itemData={preppedMaps} layout="vertical" style={{ scrollbarGutter: "stable both-edges" }} itemKey={(i, data) => data[i].map(map => map.hash).join()}>
+                {props => <MapsRow maps={props.data[props.index]} style={props.style} selectedMaps$={selectedMaps$} onMapSelect={onMapSelected} onMapDelete={handleDelete} />}
             </VariableSizeList>
         </div>
-    )
-})
+    );
+});

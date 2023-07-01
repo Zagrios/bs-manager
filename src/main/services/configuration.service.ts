@@ -2,11 +2,12 @@ import ElectronStore from "electron-store";
 import { InstallationLocationService } from "./installation-location.service";
 
 export class ConfigurationService {
-
     private static instance: ConfigurationService;
 
-    public static getInstance(): ConfigurationService{
-        if(!ConfigurationService.instance){ ConfigurationService.instance = new ConfigurationService(); }
+    public static getInstance(): ConfigurationService {
+        if (!ConfigurationService.instance) {
+            ConfigurationService.instance = new ConfigurationService();
+        }
         return ConfigurationService.instance;
     }
 
@@ -14,15 +15,14 @@ export class ConfigurationService {
 
     private store: ElectronStore;
 
-    private constructor(){
+    private constructor() {
         this.locations = InstallationLocationService.getInstance();
         this.initStore();
 
         this.locations.onInstallLocationUpdate(() => this.initStore());
-
     }
 
-    private initStore(){
+    private initStore() {
         const contentPath = this.locations.installationDirectory;
         this.store = new ElectronStore({
             cwd: contentPath,
@@ -31,16 +31,15 @@ export class ConfigurationService {
         });
     }
 
-    public set(key: string, value: unknown): void{
+    public set(key: string, value: unknown): void {
         this.store.set(key, value);
     }
 
-    public get<T>(key: string): T{
+    public get<T>(key: string): T {
         return this.store.get(key) as T;
     }
 
-    public delete(key: string): void{
+    public delete(key: string): void {
         this.store.delete(key);
     }
-
 }

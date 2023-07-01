@@ -7,15 +7,17 @@ import { MSGetQuery } from "shared/models/models/model-saber.model";
 
 const ipc = IpcService.getInstance();
 
-ipcMain.on("ms-get-model-by-id", async (event, request: IpcRequest<string|number>) => {
+ipcMain.on("ms-get-model-by-id", async (event, request: IpcRequest<string | number>) => {
     const utils = UtilsService.getInstance();
     const ms = ModelSaberService.getInstance();
 
-    ms.getModelById(request.args).then(model => {
-        utils.ipcSend(request.responceChannel, {success: true, data: model});
-    }).catch(e => {
-        utils.ipcSend(request.responceChannel, {success: false, error: e});
-    })
+    ms.getModelById(request.args)
+        .then(model => {
+            utils.ipcSend(request.responceChannel, { success: true, data: model });
+        })
+        .catch(e => {
+            utils.ipcSend(request.responceChannel, { success: false, error: e });
+        });
 });
 
 ipc.on<MSGetQuery>("search-models", async (req, reply) => {

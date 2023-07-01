@@ -6,12 +6,13 @@ import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
 import equal from "fast-deep-equal";
 
-export class VersionFolderLinkerService{
-
+export class VersionFolderLinkerService {
     private static instance: VersionFolderLinkerService;
 
-    public static getInstance(): VersionFolderLinkerService{
-        if(!VersionFolderLinkerService.instance){ VersionFolderLinkerService.instance = new VersionFolderLinkerService() }
+    public static getInstance(): VersionFolderLinkerService {
+        if (!VersionFolderLinkerService.instance) {
+            VersionFolderLinkerService.instance = new VersionFolderLinkerService();
+        }
         return VersionFolderLinkerService.instance;
     }
 
@@ -23,19 +24,18 @@ export class VersionFolderLinkerService{
     private readonly linkListeners = new Set<VersionLinkerActionListener>();
     private readonly unlinkListeners = new Set<VersionLinkerActionListener>();
 
-    private constructor(){
+    private constructor() {
         this.ipcService = IpcService.getInstance();
         this.progress = ProgressBarService.getInstance();
 
         this.currentAction$.pipe(filter(action => !!action)).subscribe(action => this.processAction(action));
     }
 
-    private async processAction(action: VersionLinkerAction){
-
+    private async processAction(action: VersionLinkerAction) {
         let progressOpened = false;
 
-        if(!this.progress.isVisible){
-            this.progress.showFake(.01, null, action.relativeFolder.split("\\").at(-1));
+        if (!this.progress.isVisible) {
+            this.progress.showFake(0.01, null, action.relativeFolder.split("\\").at(-1));
             progressOpened = true;
         }
 
@@ -43,35 +43,34 @@ export class VersionFolderLinkerService{
 
         // Spécial notification
 
-        if(action.type === VersionLinkerActionType.Link){
+        if (action.type === VersionLinkerActionType.Link) {
             this.linkListeners.forEach(listener => listener(action, linked));
-        }
-        else{
+        } else {
             this.unlinkListeners.forEach(listener => listener(action, linked));
         }
 
-        if(progressOpened){
+        if (progressOpened) {
             this.progress.hide(true);
         }
 
         const newArr = [...this._queue$.value];
         newArr.shift();
         this._queue$.next(newArr);
-
     }
 
-    private doAction(action: VersionLinkerAction): Observable<boolean>{
+    private doAction(action: VersionLinkerAction): Observable<boolean> {
         return this.ipcService.sendV2<boolean, VersionLinkerAction>("link-version-folder-action", { args: action });
     }
 
-    public linkVersionFolder(action: VersionLinkFolderAction): Promise<boolean>{
-        const promise = new Promise<boolean>((resolve) => {
-
+    public linkVersionFolder(action: VersionLinkFolderAction): Promise<boolean> {
+        const promise = new Promise<boolean>(resolve => {
             const callBack: VersionLinkerActionListener = (performedAction, linked) => {
-                if(performedAction !== action){ return; }
+                if (performedAction !== action) {
+                    return;
+                }
                 this.removeVersionFolderLinkedListener(callBack);
                 resolve(linked);
-            }
+            };
 
             this.onVersionFolderLinked(callBack);
         });
@@ -81,14 +80,15 @@ export class VersionFolderLinkerService{
         return promise;
     }
 
-    public unlinkVersionFolder(action: VersionUnlinkFolderAction): Promise<boolean>{
-        const promise = new Promise<boolean>((resolve) => {
-
+    public unlinkVersionFolder(action: VersionUnlinkFolderAction): Promise<boolean> {
+        const promise = new Promise<boolean>(resolve => {
             const callBack: VersionLinkerActionListener = (performedAction, linked) => {
-                if(performedAction !== action){ return; }
+                if (performedAction !== action) {
+                    return;
+                }
                 this.removeVersionFolderUnlinkedListener(callBack);
                 resolve(linked);
-            }
+            };
 
             this.onVersionFolderUnlinked(callBack);
         });
@@ -98,27 +98,27 @@ export class VersionFolderLinkerService{
         return promise;
     }
 
-    public onVersionFolderLinked(listener: VersionLinkerActionListener): void{
+    public onVersionFolderLinked(listener: VersionLinkerActionListener): void {
         this.linkListeners.add(listener);
     }
 
-    public removeVersionFolderLinkedListener(listener: VersionLinkerActionListener): void{
+    public removeVersionFolderLinkedListener(listener: VersionLinkerActionListener): void {
         this.linkListeners.delete(listener);
     }
 
-    public onVersionFolderUnlinked(listener: VersionLinkerActionListener): void{
+    public onVersionFolderUnlinked(listener: VersionLinkerActionListener): void {
         this.unlinkListeners.add(listener);
     }
 
-    public removeVersionFolderUnlinkedListener(listener: VersionLinkerActionListener): void{
+    public removeVersionFolderUnlinkedListener(listener: VersionLinkerActionListener): void {
         this.unlinkListeners.delete(listener);
     }
 
-    public cancelAction(version: BSVersion, relativeFolder: string): void{
+    public cancelAction(version: BSVersion, relativeFolder: string): void {
         this._queue$.next(this._queue$.value.filter(a => a.version !== version || a.relativeFolder !== relativeFolder));
     }
 
-    public isVersionFolderLinked(version: BSVersion, relativeFolder: string): Observable<boolean>{
+    public isVersionFolderLinked(version: BSVersion, relativeFolder: string): Observable<boolean> {
         return this.ipcService.sendV2("is-version-folder-linked", { args: { version, relativeFolder } });
     }
 
@@ -127,52 +127,58 @@ export class VersionFolderLinkerService{
     }
 
     public isProcessing(version: BSVersion, relativeFolder: string): Observable<boolean> {
-        return this.currentAction$.pipe(map(action => ( action && action.version === version && action.relativeFolder === relativeFolder)));
+        return this.currentAction$.pipe(map(action => action && action.version === version && action.relativeFolder === relativeFolder));
     }
 
-    public getLinkedFolders(version: BSVersion, options?: { relative?: boolean }): Observable<string[]>{
+    public getLinkedFolders(version: BSVersion, options?: { relative?: boolean }): Observable<string[]> {
         return this.ipcService.sendV2("get-linked-folders", { args: { version, options } });
     }
 
-    public relinkAllVersionsFolders(): Observable<void>{
+    public relinkAllVersionsFolders(): Observable<void> {
         return this.ipcService.sendV2("relink-all-versions-folders");
     }
 
-    public $isVersionFolderPending(version: BSVersion, relativeFolder: string): Observable<boolean>{
-        return this.queue$.pipe(mergeMap(async queue => {
-            return queue.some(q => q.relativeFolder.includes(relativeFolder) && equal(q.version, version));
-        }), distinctUntilChanged(), shareReplay(1));
+    public $isVersionFolderPending(version: BSVersion, relativeFolder: string): Observable<boolean> {
+        return this.queue$.pipe(
+            mergeMap(async queue => {
+                return queue.some(q => q.relativeFolder.includes(relativeFolder) && equal(q.version, version));
+            }),
+            distinctUntilChanged(),
+            shareReplay(1)
+        );
     }
 
-    public get currentAction$(): Observable<VersionLinkerAction>{
-        return this._queue$.pipe(map(actions => actions.at(0)), distinctUntilChanged());
+    public get currentAction$(): Observable<VersionLinkerAction> {
+        return this._queue$.pipe(
+            map(actions => actions.at(0)),
+            distinctUntilChanged()
+        );
     }
 
-    public get queue$(): Observable<VersionLinkerAction[]>{
+    public get queue$(): Observable<VersionLinkerAction[]> {
         return this._queue$.asObservable();
     }
-
 }
 
 export const enum VersionLinkerActionType {
     Link = "link",
-    Unlink = "unlink"
+    Unlink = "unlink",
 }
 
 export interface VersionLinkerAction {
     version: BSVersion;
     relativeFolder: string;
-    type: VersionLinkerActionType
-    options?: LinkOptions
+    type: VersionLinkerActionType;
+    options?: LinkOptions;
 }
 
 export interface VersionLinkFolderAction extends VersionLinkerAction {
-    type: VersionLinkerActionType.Link
+    type: VersionLinkerActionType.Link;
 }
 
 export interface VersionUnlinkFolderAction extends VersionLinkerAction {
-    type: VersionLinkerActionType.Unlink
-    options?: UnlinkOptions
+    type: VersionLinkerActionType.Unlink;
+    options?: UnlinkOptions;
 }
 
 export type VersionLinkerActionListener = (action: VersionLinkerAction, linked: boolean) => void;

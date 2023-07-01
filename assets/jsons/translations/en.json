@@ -16,7 +16,7 @@
         "copy": "Copy",
         "copied": "Copied!"
     },
-    "nav-bar":{
+    "nav-bar": {
         "add-version": "Add a version",
         "settings": "Settings",
         "shared": {
@@ -25,7 +25,7 @@
         }
     },
     "pages": {
-        "shared-maps":{
+        "shared-maps": {
             "title": "Shared maps"
         },
         "version-viewer": {
@@ -64,9 +64,9 @@
                                 }
                             }
                         },
-                        "empty-maps":{
-                            "text":"No maps",
-                            "button":"Download maps"
+                        "empty-maps": {
+                            "text": "No maps",
+                            "button": "Download maps"
                         }
                     }
                 }
@@ -105,7 +105,7 @@
             "steam-release": "Release page",
             "dropdown": {
                 "refresh": "Refresh list",
-                "import-version" :"Import a version"
+                "import-version": "Import a version"
             }
         },
         "settings": {
@@ -221,7 +221,7 @@
                 }
             },
             "errors": {
-                "titles":{
+                "titles": {
                     "dotnet-required": ".NET 6 Required"
                 },
                 "msg": {
@@ -251,13 +251,13 @@
                     "no-internet": "No internet connection.",
                     "dotnet-required": ".NET 6 Runtime must be installed in order to download a version of BeatSaber. Download it by clicking the button below."
                 },
-                "actions":{
+                "actions": {
                     "download-dotnet": "Download .NET 6"
                 }
             }
         },
-        "bs-import-version":{
-            "success":{
+        "bs-import-version": {
+            "success": {
                 "start-import": {
                     "title": "Import in progress 👌",
                     "desc": "The import may take several minutes depending on your configuration."
@@ -266,8 +266,8 @@
                     "title": "Imported version 🎉"
                 }
             },
-            "errors":{
-                "import-error":{
+            "errors": {
+                "import-error": {
                     "desc": "Check that the selected folder is a BeatSaber installation."
                 }
             }
@@ -300,31 +300,31 @@
                     }
                 }
             },
-            "additional-content":{
+            "additional-content": {
                 "deep-link": {
                     "select-all": "Select all",
-                    "activation":{
-                        "success":{
-                            "title":"OneClick activated!",
-                            "description":"OneClick installations have been activated."
+                    "activation": {
+                        "success": {
+                            "title": "OneClick activated!",
+                            "description": "OneClick installations have been activated."
                         },
-                        "error":{
-                            "description":"Unable to activate OneClick installations."
+                        "error": {
+                            "description": "Unable to activate OneClick installations."
                         }
                     },
-                    "deactivation":{
-                        "success":{
-                            "title":"OneClick deactivated!",
-                            "description":"OneClick installations have been deactivated."
+                    "deactivation": {
+                        "success": {
+                            "title": "OneClick deactivated!",
+                            "description": "OneClick installations have been deactivated."
                         },
-                        "error":{
-                            "description":"An unknown error occurred."
+                        "error": {
+                            "description": "An unknown error occurred."
                         }
                     },
-                    "check-all-enabled":{
+                    "check-all-enabled": {
                         "title": "OneClick Disabled",
                         "description": "One or more OneClick installations are disabled. Go to settings to enable them.",
-                        "actions":{
+                        "actions": {
                             "settings": "Settings",
                             "not-remind": "Do not remind me"
                         }
@@ -354,13 +354,13 @@
                     "EXE_NOT_FINDED": "Some files seem to be missing, try to verify the files.",
                     "EXIT": "BeatSaber stopped abruptly, tries to check the files."
                 },
-                "actions":{
+                "actions": {
                     "STEAM_NOT_RUNNING": "Launch Steam"
                 }
             }
         },
-        "steam":{
-            "steam-launching":{
+        "steam": {
+            "steam-launching": {
                 "title": "Steam is launching!",
                 "description": "Beat Saber will automatically launch after Steam."
             }
@@ -420,27 +420,27 @@
                 }
             }
         },
-        "maps":{
-            "one-click-install":{
-                "success":"Map installation complete",
-                "error":"An error occurred while installing the map"
+        "maps": {
+            "one-click-install": {
+                "success": "Map installation complete",
+                "error": "An error occurred while installing the map"
             }
         },
-        "playlists":{
-            "one-click-install":{
-                "success":"Playlist installation complete",
-                "error":"An error occurred while installing the playlist"
+        "playlists": {
+            "one-click-install": {
+                "success": "Playlist installation complete",
+                "error": "An error occurred while installing the playlist"
             }
         },
-        "models":{
-            "one-click-install":{
-                "success":"Model installation complete",
-                "error":"An error occurred while installing the model"
+        "models": {
+            "one-click-install": {
+                "success": "Model installation complete",
+                "error": "An error occurred while installing the model"
             }
         },
         "shared-folder": {
             "info": {
-                "userdata-backup-created":{
+                "userdata-backup-created": {
                     "title": "Backup created",
                     "msg": "Sharing the 'UserData' folder can generate errors, in case of problems unlink the folder to restore the backup"
                 }
@@ -448,7 +448,7 @@
         }
     },
     "modals": {
-        "misc":{
+        "misc": {
             "remember-my-choice": "Remember my choice"
         },
         "guard": {
@@ -473,7 +473,7 @@
                 "password": {
                     "label": "Password",
                     "placeholder": "Enter your password",
-                    "max-length-warning": "The password exceeds 64 characters! If the password is invalid, try to put its first 64 characters." 
+                    "max-length-warning": "The password exceeds 64 characters! If the password is invalid, try to put its first 64 characters."
                 },
                 "stay": {
                     "label": "Stay connected"
@@ -484,15 +484,15 @@
                 "submit": "Login"
             }
         },
-        "steam-credentials":{
+        "steam-credentials": {
             "title": "Steam Credentials",
             "p-1": "The credentials are only used to download the game because steam need to verify that you paid the game in order to be allowed to download it. They aren't saved and directly passed to DepotDownloader. If you don't want to enter your credentials you can follow this tutorial :",
             "p-2": "and then click on the gear icon in the top right corner and select \"Import a version\", select the folder where beat saber has been downloaded (If you follow the tutorial above you should have the correct location)"
         },
-        "bs-import-version":{
+        "bs-import-version": {
             "title": "Import a version",
             "description": "Imports a version of BeatSaber to use with BSManager. The import will copy the selected BeatSaber installation folder to the BSManager versions folder.",
-            "buttons":{
+            "buttons": {
                 "submit": "Import a version"
             }
         },
@@ -588,7 +588,7 @@
             "no-maps-found": "No maps found",
             "no-internet": "No internet"
         },
-        "mods-disclaimer":{
+        "mods-disclaimer": {
             "title": "disclaimer",
             "p-1": "By choosing to use mods, you understand that:",
             "li-1": "You may experience problems that don't exist in the vanilla game. 99.9% of bugs, crashes, and lag are due to mods.",
@@ -596,7 +596,7 @@
             "li-3": "Beat Games aren't purposefully trying to break mods. They wish to work on the codebase and sometimes this breaks mods, but they are not out to kill mods.",
             "p-2": "Do not attack the game developers for issues related to mods, and vice versa - modders and game developers are two separate groups. Just don't be a jerk ok."
         },
-        "shared-folders":{
+        "shared-folders": {
             "title": "Shared Folders",
             "description": "Link BeatSaber folders to synchronize their contents with shared folders in other versions. Note that deleting content will also be shared.",
             "buttons": {
@@ -680,7 +680,7 @@
             "mapped-by": "mapped by"
         }
     },
-    "models":{
+    "models": {
         "types": {
             "singular": {
                 "avatar": "avatar",
@@ -710,14 +710,14 @@
                 "link-models": "Link models",
                 "unlink-models": "Unlink models"
             },
-            "grid":{
+            "grid": {
                 "loading": "Loading models...",
                 "no-models": "No models",
                 "download-models": "Download models"
             }
         },
         "modals": {
-            "delete-model" :{
+            "delete-model": {
                 "title": "Delete the model",
                 "desc": "Are you sure you want to delete the model {modelName}?",
                 "linked-annotation": "This model will be removed from all linked versions."
@@ -856,57 +856,8 @@
         "downloading": "Downloading updates"
     },
     "dateformat": {
-        "dayNames": [
-            "Sun",
-            "Mon",
-            "Tue",
-            "Wed",
-            "Thu",
-            "Fri",
-            "Sat",
-            "Sunday",
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday"
-        ],
-        "monthNames": [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "June",
-            "Jul",
-            "Aug",
-            "Sept",
-            "Oct",
-            "Nov",
-            "Dec",
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December"
-        ],
-        "timeNames": [
-            "a",
-            "p",
-            "am",
-            "pm",
-            "A",
-            "P",
-            "AM",
-            "PM"
-        ]
+        "dayNames": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        "monthNames": ["Jan", "Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+        "timeNames": ["a", "p", "am", "pm", "A", "P", "AM", "PM"]
     }
 }

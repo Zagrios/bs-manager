@@ -3,23 +3,23 @@
 @tailwind utilities;
 
 @layer base {
-  html {
-    font-family: acumin-pro, sans-serif;
-  }
+    html {
+        font-family: acumin-pro, sans-serif;
+    }
 
-  html, body{
-    margin: 0; padding: 0;
-    
-  }
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+    }
 
-  html.dark{
-    background-color: #202225;
-  }
-
+    html.dark {
+        background-color: #202225;
+    }
 }
 
-*{
-  user-select: none;
+* {
+    user-select: none;
 }
 
 ::-webkit-scrollbar {
@@ -29,13 +29,13 @@
     display: inline;
 }
 
-.download-progress{
-  background-size: 500% !important;
-  animation: rainbow 2s linear 0s infinite;
+.download-progress {
+    background-size: 500% !important;
+    animation: rainbow 2s linear 0s infinite;
 }
 
-.spin-loading{
-  animation: spin-loading 2s cubic-bezier(.46,-0.55,.49,1.52) 0s forwards infinite;
+.spin-loading {
+    animation: spin-loading 2s cubic-bezier(0.46, -0.55, 0.49, 1.52) 0s forwards infinite;
 }
 
 .glow-on-hover {
@@ -43,7 +43,7 @@
     background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
     position: absolute;
     top: -4px;
-    left:-4px;
+    left: -4px;
     background-size: 400%;
     z-index: -1;
     filter: blur(3px);
@@ -52,8 +52,10 @@
     animation: glowing 20s linear infinite;
 }
 
-.dim > * { z-index: 1; }
-.dim::before{
+.dim > * {
+    z-index: 1;
+}
+.dim::before {
     content: "";
     position: absolute;
     top: 0;
@@ -63,8 +65,10 @@
     background: rgba(0, 0, 0, 0.25);
 }
 
-.dim-on-hover:hover > * { z-index: 1; }
-.dim-on-hover:hover:before{
+.dim-on-hover:hover > * {
+    z-index: 1;
+}
+.dim-on-hover:hover:before {
     content: "";
     position: absolute;
     top: 0;
@@ -75,17 +79,31 @@
 }
 
 @keyframes glowing {
-    0% { background-position: 0 0; }
-    50% { background-position: 400% 0; }
-    100% { background-position: 0 0; }
+    0% {
+        background-position: 0 0;
+    }
+    50% {
+        background-position: 400% 0;
+    }
+    100% {
+        background-position: 0 0;
+    }
 }
 
-@keyframes spin-loading{
-  0%{ transform: rotate(-360deg); }
-  50%{ transform: rotate(-360deg); }
+@keyframes spin-loading {
+    0% {
+        transform: rotate(-360deg);
+    }
+    50% {
+        transform: rotate(-360deg);
+    }
 }
 
 @keyframes rainbow {
-  0% { background-position: 84% 0 }
-  100% { background-position: 0 0% }
+    0% {
+        background-position: 84% 0;
+    }
+    100% {
+        background-position: 0 0%;
+    }
 }

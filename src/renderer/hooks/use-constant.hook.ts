@@ -1,13 +1,13 @@
-import { useRef } from "react"
+import { useRef } from "react";
 
-type ResultBox<T> = { v: T }
+type ResultBox<T> = { v: T };
 
 export function useConstant<T>(fn: () => T): T {
-    const ref = useRef<ResultBox<T>>()
+    const ref = useRef<ResultBox<T>>();
 
     if (!ref.current) {
-        ref.current = { v: fn() }
+        ref.current = { v: fn() };
     }
 
-    return ref.current.v
+    return ref.current.v;
 }

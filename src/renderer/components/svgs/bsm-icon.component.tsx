@@ -1,6 +1,6 @@
-import { SettingIcon } from "./icons/setting-icon.component"
-import { TrashIcon } from "./icons/trash-icon.component"
-import { FavoriteIcon } from "./icons/favorite-icon.component"
+import { SettingIcon } from "./icons/setting-icon.component";
+import { TrashIcon } from "./icons/trash-icon.component";
+import { FavoriteIcon } from "./icons/favorite-icon.component";
 import { FolderIcon } from "./icons/folder-icon.component";
 import { BsNoteFill } from "./icons/bs-note-fill.component";
 import { TerminalIcon } from "./icons/terminal-icon.component";
@@ -60,83 +60,189 @@ import { ModelTypeBloqIcon } from "./icons/model-type-bloq-icon.component";
 import { ChevronTopIcon } from "./icons/chevron-top-icon.component";
 import { EyeCrossIcon } from "./icons/eye-cross-icon.component";
 
-export type BsmIconType = BsvMapCharacteristic | MSModelType | (
-   "settings"|"trash"|"favorite"|"folder"|"bsNote"|"check"|"three-dots"|"twitch"|"eye"|"play"|"checkCircleIcon"|"discord"|"info"|"eye-cross"|
-   "terminal"|"desktop"|"oculus"|"add"|"cross"|"task"|"github"|"close"|"thumbUpFill"|"timerFill"|"pause"|"twitter"|"sync"|"chevron-top"|
-   "copy"|"steam"|"edit"|"export"|"patreon"|"search"|"bsMapDifficulty"|"link"|"unlink"|"download"|"filter"|"mee6"|"volume-up"|"volume-off"|"volume-down"|
-   "fr-FR-flag"|"es-ES-flag"|"en-US-flag"|"en-EN-flag"|"de-DE-flag"
-);
+export type BsmIconType = BsvMapCharacteristic | MSModelType | ("settings" | "trash" | "favorite" | "folder" | "bsNote" | "check" | "three-dots" | "twitch" | "eye" | "play" | "checkCircleIcon" | "discord" | "info" | "eye-cross" | "terminal" | "desktop" | "oculus" | "add" | "cross" | "task" | "github" | "close" | "thumbUpFill" | "timerFill" | "pause" | "twitter" | "sync" | "chevron-top" | "copy" | "steam" | "edit" | "export" | "patreon" | "search" | "bsMapDifficulty" | "link" | "unlink" | "download" | "filter" | "mee6" | "volume-up" | "volume-off" | "volume-down" | "fr-FR-flag" | "es-ES-flag" | "en-US-flag" | "en-EN-flag" | "de-DE-flag");
 
-export const BsmIcon = memo(({className, icon, style}: {className?: string, icon: BsmIconType, style?: CSSProperties}) => {
-
+export const BsmIcon = memo(({ className, icon, style }: { className?: string; icon: BsmIconType; style?: CSSProperties }) => {
     // TODO : Very ugly very messy, need to find a better way to do this
 
     const renderIcon = () => {
-        if(icon === "settings"){ return <SettingIcon className={className} style={style}/> }
-        if(icon === "trash"){ return <TrashIcon className={className} style={style}/> }
-        if(icon === "favorite"){ return <FavoriteIcon className={className} style={style}/> }
-        if(icon === "folder"){ return <FolderIcon className={className} style={style}/> }
-        if(icon === "bsNote"){ return <BsNoteFill className={className} style={style}/> }
-        if(icon === "terminal"){ return <TerminalIcon className={className} style={style}/> }
-        if(icon === "desktop"){ return <DesktopIcon className={className} style={style}/> }
-        if(icon === "oculus"){ return <OculusIcon className={className} style={style}/> }
-        if(icon === "add"){ return <AddIcon className={className} style={style}/> }
-        if(icon === "cross"){ return <CrossIcon className={className} style={style}/> }
-        if(icon === "fr-FR-flag"){ return <FranceIcon className={className} style={style}/> }
-        if(icon === "es-ES-flag"){ return <SpainIcon className={className} style={style}/> }
-        if(icon === "en-US-flag"){ return <UsaIcon className={className} style={style}/> }
-        if(icon === "en-EN-flag"){ return <UkIcon className={className} style={style}/> }
-        if(icon === "de-DE-flag"){ return <GermanIcon className={className} style={style}/> }
-        if(icon === "task"){ return <TaskIcon className={className} style={style}/> }
-        if(icon === "copy"){ return <CopyIcon className={className} style={style}/> }
-        if(icon === "steam"){ return <SteamIcon className={className} style={style}/> }
-        if(icon === "edit"){ return <EditIcon className={className} style={style}/> }
-        if(icon === "export"){ return <ExportIcon className={className} style={style}/> }
-        if(icon === "patreon"){ return <PatreonIcon className={className} style={style}/> }
-        if(icon === "search"){ return <SearchIcon className={className} style={style}/> }
-        if(icon === "check"){ return <CheckIcon className={className} style={style}/> }
-        if(icon === "three-dots"){ return <ThreeDotsIcon className={className} style={style}/> }
-        if(icon === "github"){ return <GitHubIcon className={className} style={style}/> }
-        if(icon === "close"){ return <CloseIcon className={className} style={style}/> }
-        if(icon === "bsMapDifficulty" || icon === "Standard"){ return <BsMapDifficultyIcon className={className} style={style}/> }
-        if(icon === "twitch"){ return <TwitchIcon className={className} style={style}/> }
-        if(icon === "eye"){ return <EyeIcon className={className} style={style}/> }
-        if(icon === "play"){ return <PlayIcon className={className} style={style}/> }
-        if(icon === "thumbUpFill"){ return <ThumbUpFillIcon className={className} style={style}/> }
-        if(icon === "timerFill"){ return <TimerFillIcon className={className} style={style}/> }
-        if(icon === "checkCircleIcon"){ return <CheckCircleIcon className={className} style={style}/> }
-        if(icon === "pause"){ return <PauseIcon className={className} style={style}/> }
-        if(icon === "Lawless"){ return <LawlessIcon className={className} style={style}/> }
-        if(icon === "NoArrows"){ return <NoArrowIcon className={className} style={style}/> }
-        if(icon === "OneSaber"){ return <OneSaberIcon className={className} style={style}/> }
-        if(icon === "Lightshow"){ return <LightshowIcon className={className} style={style}/> }
-        if(icon === "90Degree"){ return <NinetyDregreeIcon className={className} style={style}/> }
-        if(icon === "360Degree"){ return <ThreeSixtyDegreeIcon className={className} style={style}/> }
-        if(icon === "link"){ return <LinkIcon className={className} style={style}/> }
-        if(icon === "unlink"){ return <UnlinkIcon className={className} style={style}/> }
-        if(icon === "download"){ return <DownloadIcon className={className} style={style}/> }
-        if(icon === "filter"){ return <FilterIcon className={className} style={style}/> }
-        if(icon === "discord"){ return <DiscordIcon className={className} style={style}/> }
-        if(icon === "twitter"){ return <TwitterIcon className={className} style={style}/> }
-        if(icon === "mee6"){ return <Mee6Icon className={className} style={style}/> }
-        if(icon === "info"){ return <InfoIcon className={className} style={style}/> }
-        if(icon === "sync"){ return <SyncIcon className={className} style={style}/> }
-        if(icon === "volume-up"){ return <VolumeUpIcon className={className} style={style}/> }
-        if(icon === "volume-down"){ return <VolumeDownIcon className={className} style={style}/> }
-        if(icon === "volume-off"){ return <VolumeOffIcon className={className} style={style}/> }
-        if(icon === "chevron-top"){ return <ChevronTopIcon className={className} style={style}/> }
-        if(icon === "eye-cross"){ return <EyeCrossIcon className={className} style={style}/> }
+        if (icon === "settings") {
+            return <SettingIcon className={className} style={style} />;
+        }
+        if (icon === "trash") {
+            return <TrashIcon className={className} style={style} />;
+        }
+        if (icon === "favorite") {
+            return <FavoriteIcon className={className} style={style} />;
+        }
+        if (icon === "folder") {
+            return <FolderIcon className={className} style={style} />;
+        }
+        if (icon === "bsNote") {
+            return <BsNoteFill className={className} style={style} />;
+        }
+        if (icon === "terminal") {
+            return <TerminalIcon className={className} style={style} />;
+        }
+        if (icon === "desktop") {
+            return <DesktopIcon className={className} style={style} />;
+        }
+        if (icon === "oculus") {
+            return <OculusIcon className={className} style={style} />;
+        }
+        if (icon === "add") {
+            return <AddIcon className={className} style={style} />;
+        }
+        if (icon === "cross") {
+            return <CrossIcon className={className} style={style} />;
+        }
+        if (icon === "fr-FR-flag") {
+            return <FranceIcon className={className} style={style} />;
+        }
+        if (icon === "es-ES-flag") {
+            return <SpainIcon className={className} style={style} />;
+        }
+        if (icon === "en-US-flag") {
+            return <UsaIcon className={className} style={style} />;
+        }
+        if (icon === "en-EN-flag") {
+            return <UkIcon className={className} style={style} />;
+        }
+        if (icon === "de-DE-flag") {
+            return <GermanIcon className={className} style={style} />;
+        }
+        if (icon === "task") {
+            return <TaskIcon className={className} style={style} />;
+        }
+        if (icon === "copy") {
+            return <CopyIcon className={className} style={style} />;
+        }
+        if (icon === "steam") {
+            return <SteamIcon className={className} style={style} />;
+        }
+        if (icon === "edit") {
+            return <EditIcon className={className} style={style} />;
+        }
+        if (icon === "export") {
+            return <ExportIcon className={className} style={style} />;
+        }
+        if (icon === "patreon") {
+            return <PatreonIcon className={className} style={style} />;
+        }
+        if (icon === "search") {
+            return <SearchIcon className={className} style={style} />;
+        }
+        if (icon === "check") {
+            return <CheckIcon className={className} style={style} />;
+        }
+        if (icon === "three-dots") {
+            return <ThreeDotsIcon className={className} style={style} />;
+        }
+        if (icon === "github") {
+            return <GitHubIcon className={className} style={style} />;
+        }
+        if (icon === "close") {
+            return <CloseIcon className={className} style={style} />;
+        }
+        if (icon === "bsMapDifficulty" || icon === "Standard") {
+            return <BsMapDifficultyIcon className={className} style={style} />;
+        }
+        if (icon === "twitch") {
+            return <TwitchIcon className={className} style={style} />;
+        }
+        if (icon === "eye") {
+            return <EyeIcon className={className} style={style} />;
+        }
+        if (icon === "play") {
+            return <PlayIcon className={className} style={style} />;
+        }
+        if (icon === "thumbUpFill") {
+            return <ThumbUpFillIcon className={className} style={style} />;
+        }
+        if (icon === "timerFill") {
+            return <TimerFillIcon className={className} style={style} />;
+        }
+        if (icon === "checkCircleIcon") {
+            return <CheckCircleIcon className={className} style={style} />;
+        }
+        if (icon === "pause") {
+            return <PauseIcon className={className} style={style} />;
+        }
+        if (icon === "Lawless") {
+            return <LawlessIcon className={className} style={style} />;
+        }
+        if (icon === "NoArrows") {
+            return <NoArrowIcon className={className} style={style} />;
+        }
+        if (icon === "OneSaber") {
+            return <OneSaberIcon className={className} style={style} />;
+        }
+        if (icon === "Lightshow") {
+            return <LightshowIcon className={className} style={style} />;
+        }
+        if (icon === "90Degree") {
+            return <NinetyDregreeIcon className={className} style={style} />;
+        }
+        if (icon === "360Degree") {
+            return <ThreeSixtyDegreeIcon className={className} style={style} />;
+        }
+        if (icon === "link") {
+            return <LinkIcon className={className} style={style} />;
+        }
+        if (icon === "unlink") {
+            return <UnlinkIcon className={className} style={style} />;
+        }
+        if (icon === "download") {
+            return <DownloadIcon className={className} style={style} />;
+        }
+        if (icon === "filter") {
+            return <FilterIcon className={className} style={style} />;
+        }
+        if (icon === "discord") {
+            return <DiscordIcon className={className} style={style} />;
+        }
+        if (icon === "twitter") {
+            return <TwitterIcon className={className} style={style} />;
+        }
+        if (icon === "mee6") {
+            return <Mee6Icon className={className} style={style} />;
+        }
+        if (icon === "info") {
+            return <InfoIcon className={className} style={style} />;
+        }
+        if (icon === "sync") {
+            return <SyncIcon className={className} style={style} />;
+        }
+        if (icon === "volume-up") {
+            return <VolumeUpIcon className={className} style={style} />;
+        }
+        if (icon === "volume-down") {
+            return <VolumeDownIcon className={className} style={style} />;
+        }
+        if (icon === "volume-off") {
+            return <VolumeOffIcon className={className} style={style} />;
+        }
+        if (icon === "chevron-top") {
+            return <ChevronTopIcon className={className} style={style} />;
+        }
+        if (icon === "eye-cross") {
+            return <EyeCrossIcon className={className} style={style} />;
+        }
 
-        if(icon === MSModelType.Avatar){ return <ModelTypeAvatarIcon className={className} style={style}/> }
-        if(icon === MSModelType.Saber){ return <ModelTypeSaberIcon className={className} style={style}/> }
-        if(icon === MSModelType.Platfrom){ return <ModelTypePlatformIcon className={className} style={style}/> }
-        if(icon === MSModelType.Bloq){ return <ModelTypeBloqIcon className={className} style={style}/> }
-        return <TrashIcon className={className} style={style}/>
-    }
+        if (icon === MSModelType.Avatar) {
+            return <ModelTypeAvatarIcon className={className} style={style} />;
+        }
+        if (icon === MSModelType.Saber) {
+            return <ModelTypeSaberIcon className={className} style={style} />;
+        }
+        if (icon === MSModelType.Platfrom) {
+            return <ModelTypePlatformIcon className={className} style={style} />;
+        }
+        if (icon === MSModelType.Bloq) {
+            return <ModelTypeBloqIcon className={className} style={style} />;
+        }
+        return <TrashIcon className={className} style={style} />;
+    };
 
-  return (
-    <>
-        {renderIcon()}
-    </>
-  )
-})
+    return <>{renderIcon()}</>;
+});

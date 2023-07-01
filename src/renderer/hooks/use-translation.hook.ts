@@ -1,12 +1,13 @@
-import { I18nService } from "renderer/services/i18n.service"
+import { I18nService } from "renderer/services/i18n.service";
 
-export function useTranslation(): (translationKey: string, args?: Record<string, string>) => string{
-   
-   const i18nService = I18nService.getInstance();
+export function useTranslation(): (translationKey: string, args?: Record<string, string>) => string {
+    const i18nService = I18nService.getInstance();
 
-   return (key: string, args?: Record<string, string>) => {
-      if(!key){ return key; }
-      const tranlatables = key.split(" ");
-      return tranlatables.map((key) => i18nService.translate(key, args)).join(" ");
-   }
+    return (key: string, args?: Record<string, string>) => {
+        if (!key) {
+            return key;
+        }
+        const tranlatables = key.split(" ");
+        return tranlatables.map(key => i18nService.translate(key, args)).join(" ");
+    };
 }

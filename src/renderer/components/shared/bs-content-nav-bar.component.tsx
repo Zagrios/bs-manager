@@ -7,27 +7,24 @@ type Props<T> = {
     tabs: BsContentNavBarTab<T>[];
     renderTab: (props: DetailedHTMLProps<React.HTMLAttributes<any>, any>, tab?: BsContentNavBarTab<T>, activeTab?: BsContentNavBarTab<T>) => JSX.Element;
     onTabChange?: (index: number, tab?: BsContentNavBarTab<T>) => void;
-}
+};
 
 export type BsContentNavBarTab<T = unknown> = {
     text: string;
     icon?: BsmIconType;
-    extra?: T
-}
+    extra?: T;
+};
 
-export function BsContentNavBar<T>({className, tabIndex, tabs, renderTab, onTabChange}: Props<T>) {
-
+export function BsContentNavBar<T>({ className, tabIndex, tabs, renderTab, onTabChange }: Props<T>) {
     const handleTabClick = (index: number) => {
         onTabChange?.(index, tabs[index]);
-    }
+    };
 
     return (
         <nav className={`h-full grid grid-flow-row ${className ?? ""}`}>
             {tabs.map((tab, i) => (
-                <Fragment key={JSON.stringify(tab)}>
-                    { renderTab({onClick: () => handleTabClick(i)}, tab, tabs[tabIndex]) }
-                </Fragment>
+                <Fragment key={JSON.stringify(tab)}>{renderTab({ onClick: () => handleTabClick(i) }, tab, tabs[tabIndex])}</Fragment>
             ))}
         </nav>
-    )
+    );
 }
