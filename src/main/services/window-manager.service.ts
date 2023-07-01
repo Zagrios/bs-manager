@@ -80,7 +80,7 @@ export class WindowManagerService{
     }
 
     public getAppWindowFromWebContents(sender: Electron.WebContents): AppWindow{
-        return Array.from(this.windows.entries()).find(([key, value]) => value.webContents.id === sender.id)[0];
+        return Array.from(this.windows.entries()).find(([, value]) => value.webContents.id === sender.id)[0];
     }
 
 }

@@ -1,6 +1,5 @@
-import { useInView } from "framer-motion";
 import { BSVersion } from "shared/bs-version.interface";
-import { useRef, forwardRef, useImperativeHandle, useState } from "react";
+import { useRef, forwardRef, useImperativeHandle } from "react";
 import { MSModelType } from "shared/models/models/model-saber.model";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useConstant } from "renderer/hooks/use-constant.hook";

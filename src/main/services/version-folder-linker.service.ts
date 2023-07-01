@@ -1,4 +1,4 @@
-import { getFoldersInFolder, pathExist } from "../helpers/fs.helpers";
+import { getFoldersInFolder } from "../helpers/fs.helpers";
 import path from "path";
 import { VersionLinkerAction, VersionLinkFolderAction, VersionUnlinkFolderAction } from "renderer/services/version-folder-linker.service";
 import { BSVersion } from "shared/bs-version.interface";

@@ -111,7 +111,7 @@ export class BeatSaverApiService {
             return {status: res.status, data: null};
         }
 
-        const data: any = await res.json();
+        const data = await res.json();
 
         return {status: res.status, data};
 

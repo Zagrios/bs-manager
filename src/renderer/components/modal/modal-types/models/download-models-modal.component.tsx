@@ -23,7 +23,7 @@ import { catchError, of } from "rxjs";
 import Tippy from "@tippyjs/react";
 import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 
-export const DownloadModelsModal: ModalComponent<void, {version: BSVersion, type: MSModelType, owned: BsmLocalModel[]}> = ({resolver, data: { version, type, owned }}) => {
+export const DownloadModelsModal: ModalComponent<void, {version: BSVersion, type: MSModelType, owned: BsmLocalModel[]}> = ({data: { version, type, owned }}) => {
 
     const modelsDownloader = useService(ModelsDownloaderService);
     const modelSaber = useService(ModelSaberService);

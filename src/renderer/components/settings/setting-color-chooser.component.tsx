@@ -8,7 +8,7 @@ export default function SettingColorChooser({color, onChange, pickerClassName}: 
 
     const [colorVisible, setColorVisible] = useState(false);
     const ref = useRef(null);
-    useClickOutside(ref, (e) => setColorVisible(() => false));
+    useClickOutside(ref, () => setColorVisible(() => false));
 
     return (
         <div ref={ref} className="relative cursor-pointer mx-3 h-full aspect-square flex flex-col items-center z-[1]">

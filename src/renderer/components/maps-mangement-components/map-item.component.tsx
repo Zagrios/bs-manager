@@ -24,7 +24,7 @@ import { useDelayedState } from "renderer/hooks/use-delayed-state.hook";
 
 export type ParsedMapDiff = {type: BsvMapDifficultyType, name: string, stars: number}
 
-export type MapItemProps<T = any> = {
+export type MapItemProps<T = unknown> = {
     hash: string,
     title: string,
     autor: string,
@@ -66,8 +66,8 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
     useDoubleClick({
         ref,
         latency: onDoubleClick ? 200 : 0,
-        onSingleClick: e => onSelected?.(callBackParam),
-        onDoubleClick: e => onDoubleClick?.(callBackParam)
+        onSingleClick: () => onSelected?.(callBackParam),
+        onDoubleClick: () => onDoubleClick?.(callBackParam)
     })
 
     const songPlaying = useObservable(audioPlayer.playing$.pipe(map(playing => playing && audioPlayer.src === songUrl)));
@@ -129,7 +129,7 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
         const diffSets = Array.from(diffs.entries());
 
         if(diffSets.length === 1){
-            const [diffType, diffSet] = diffSets[0];
+            const [, diffSet] = diffSets[0];
             
             return (
                 <>
@@ -150,6 +150,8 @@ export const MapItem = memo(({hash, title, autor, songAutor, coverUrl, songUrl, 
                 </Fragment>
             ));
         }
+
+        return null;
     }
     
     return (

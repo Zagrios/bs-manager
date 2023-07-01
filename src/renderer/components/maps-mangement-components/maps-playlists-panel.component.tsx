@@ -50,7 +50,7 @@ export function MapsPlaylistsPanel({version, isActive}: Props) {
 
         const sub = mapsService.$mapsLinkingPending(version).pipe(debounceTime(50)).subscribe(setLinkingPending);
 
-        const onMapsLinked: VersionLinkerActionListener = (action, linked) => {
+        const onMapsLinked: VersionLinkerActionListener = (action) => {
             if(!action.relativeFolder.includes(MapsManagerService.RELATIVE_MAPS_FOLDER)){ return; }
             loadMapIsLinked();
         }

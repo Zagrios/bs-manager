@@ -1,7 +1,7 @@
 import { BSVersion } from "shared/bs-version.interface"
 import { MSModelType } from "../../../shared/models/models/model-saber.model"
 import { LinkButton } from "../maps-mangement-components/link-button.component"
-import { DetailedHTMLProps, useState } from "react"
+import { useState } from "react"
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook"
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service"
 import { BsContentNavBar, BsContentNavBarTab } from "../shared/bs-content-nav-bar.component"

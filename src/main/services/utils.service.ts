@@ -1,4 +1,3 @@
-import { spawnSync } from "child_process";
 import path from "path";
 import { app, BrowserWindow } from "electron";
 import { IpcResponse } from "shared/models/ipc";
@@ -45,7 +44,7 @@ export class UtilsService{
         }
     }
 
-  public ipcSend<T = any>(channel: string, response: IpcResponse<T>): void{
+  public ipcSend<T = unknown>(channel: string, response: IpcResponse<T>): void{
     try {
         Array.from(this.windows.values()).forEach(window => window?.webContents?.send(channel, response));
     } catch (error) {
