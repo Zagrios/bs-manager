@@ -269,7 +269,7 @@ export class BsModsManagerService {
     }
 
     public async installMods(mods: Mod[], version: BSVersion): Promise<InstallModsResult>{
-        if(!mods || !mods.length){ throw "no-mods"; }
+        if(!mods?.length){ throw "no-mods"; }
 
         const deps = await this.resolveDependencies(mods, version);
         mods.push(...deps);
@@ -296,7 +296,7 @@ export class BsModsManagerService {
     }
 
     public async uninstallMods(mods: Mod[], version: BSVersion): Promise<UninstallModsResult>{
-        if(!mods || !mods.length){ throw "no-mods"; }
+        if(!mods?.length){ throw "no-mods"; }
 
         this.nbModsToUninstall = mods.length;
         this.nbUninstalledMods = 0;
@@ -314,7 +314,7 @@ export class BsModsManagerService {
     public async uninstallAllMods(version: BSVersion): Promise<UninstallModsResult>{
         const mods = await this.getInstalledMods(version);
 
-        if(!mods || !mods.length){ throw "no-mods"; }
+        if(!mods?.length){ throw "no-mods"; }
 
         this.nbModsToUninstall = mods.length;
         this.nbUninstalledMods = 0;
@@ -328,8 +328,6 @@ export class BsModsManagerService {
         await deleteFolder(path.join(versionPath, ModsInstallFolder.PLUGINS));
         await deleteFolder(path.join(versionPath, ModsInstallFolder.LIBS));
         await deleteFolder(path.join(versionPath, ModsInstallFolder.IPA));
-
-        path.resolve
 
         return {
             nbModsToUninstall: this.nbModsToUninstall,

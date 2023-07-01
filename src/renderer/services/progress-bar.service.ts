@@ -48,7 +48,7 @@ export class ProgressBarService{
 
     public unsubscribe(){
         this._progression$.next({progression: 0});
-        this.subscription && this.subscription.unsubscribe();
+        this.subscription?.unsubscribe();
         this.subscription = null;
     }
 

@@ -62,7 +62,7 @@ export function ModsSlide({version, onDisclamerDecline}: {version: BSVersion, on
     }
 
     const handleOpenMoreInfo = () => {
-        if(!moreInfoMod || !moreInfoMod.link){ return; }
+        if(!moreInfoMod?.link){ return; }
         linkOpener.open(moreInfoMod.link);
     }
 

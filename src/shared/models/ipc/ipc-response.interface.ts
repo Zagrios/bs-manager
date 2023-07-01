@@ -6,6 +6,5 @@ export interface IpcResponse<T>{
    success: boolean,
 }
 
-export type IpcChannel = string;
-export type IpcErrorChannel = IpcChannel & `${string}_error`;
-export type IpcCompleteChannel = IpcChannel & `${string}_complete`;
+export type IpcErrorChannel = string & `${string}_error`;
+export type IpcCompleteChannel = string & `${string}_complete`;

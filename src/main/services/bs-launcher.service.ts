@@ -106,10 +106,10 @@ export class BSLauncherService{
         }
 
         if(launchOptions.debug){
-            this.bsProcess = spawn(`\"${exePath}\"`, launchArgs, {shell: true, cwd, env: {...process.env, "SteamAppId": BS_APP_ID}, detached: true, windowsVerbatimArguments: true });
+            this.bsProcess = spawn(`"${exePath}"`, launchArgs, {shell: true, cwd, env: {...process.env, "SteamAppId": BS_APP_ID}, detached: true, windowsVerbatimArguments: true });
         }
         else{
-            this.bsProcess = spawn(`\"${exePath}\"`, launchArgs, {shell: true, cwd, env: {...process.env, "SteamAppId": BS_APP_ID} });
+            this.bsProcess = spawn(`"${exePath}"`, launchArgs, {shell: true, cwd, env: {...process.env, "SteamAppId": BS_APP_ID} });
         }
 
         this.bsProcess.on('error', err => log.error(err));

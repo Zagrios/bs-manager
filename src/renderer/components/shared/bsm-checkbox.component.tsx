@@ -15,7 +15,7 @@ export function BsmCheckbox({className, checked, onChange, disabled} : Props) {
 
     const handleClick = () => {
         if(disabled){ return; }
-        onChange && onChange(!checked);
+        onChange?.(!checked);
     }
 
     return (

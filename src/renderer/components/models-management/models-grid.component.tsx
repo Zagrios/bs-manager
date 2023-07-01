@@ -68,7 +68,7 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active,
 
     useOnUpdate(() => {
         if(!active){ return; }
-        if(models && models.length){ return; }
+        if(models?.length){ return; }
         loadModels();
     }, [active]);
 

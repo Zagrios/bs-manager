@@ -17,7 +17,7 @@ export const WhyCredentialsModal: ModalComponent<void> = () => {
             
             <p>{t("modals.steam-credentials.p-1")}</p>
             { /* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <a onClick={e => {e.preventDefault; openTutorial()}} className="underline text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-600 mb-2 block cursor-pointer">
+            <a onClick={e => {e.preventDefault(); openTutorial()}} className="underline text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-600 mb-2 block cursor-pointer">
                 https://steamcommunity.com/sharedfiles/filedetails/?id=1805934840
             </a>
             <p>{t("modals.steam-credentials.p-2")}</p>

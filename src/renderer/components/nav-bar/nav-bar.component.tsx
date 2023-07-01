@@ -28,7 +28,7 @@ export function NavBar() {
       <ol id='versions' className='w-fit max-w-[120px] relative left-[2px] grow overflow-y-hidden scrollbar-track-transparent scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 hover:overflow-y-scroll'>
         <SharedNavBarItem/>
         <NavBarSpliter/>
-         {installedVersions && installedVersions.map((version) => <BsVersionItem key={JSON.stringify(version)} version={version}/>)}
+         {installedVersions?.map((version) => <BsVersionItem key={JSON.stringify(version)} version={version}/>)}
       </ol>
       <NavBarSpliter/>
       <div className='w-full pb-2 flex flex-col items-center content-center justify-start gap-1'>

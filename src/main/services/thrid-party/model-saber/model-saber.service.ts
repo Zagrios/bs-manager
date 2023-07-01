@@ -92,9 +92,9 @@ export class ModelSaberService {
                 const res = await this.modelSaberApi.searchModel(query);
                 if(res.status !== 200){ observer.error(res.status); }
                 observer.next(Object.values(res.data).map(model => {
-                    if(!model || !model.name){ return model; }
-                    (model as MSModel).name = striptags(model.name);
-                    (model as MSModel).author = striptags(model.author);
+                    if(!model?.name){ return null; }
+                    model.name = striptags(model.name);
+                    model.author = striptags(model.author);
                     return model;
                 }));
             })().catch(e => observer.error(e)).then(() => observer.complete());

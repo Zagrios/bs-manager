@@ -20,7 +20,7 @@ export function ModsGrid({modsMap, installed, modsSelected, onModChange, moreInf
     const t = useTranslation();
 
     const installedModVersion = (key: string, mod: Mod): string => {
-        if(!installed || !installed.get(key)){ return undefined; }
+        if(!installed?.get(key)){ return undefined; }
         const installedMod = installed.get(key).find(m => m.name === mod.name);
         if(!installedMod){ return undefined }
         return installedMod.version

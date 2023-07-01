@@ -51,15 +51,15 @@ export class I18nService {
       this.configService.set("language" as DefaultConfigKey, this.getSupportedLanguages().includes(lang) ? lang : this.LANG_FALLBACK);
    }
 
-   public translate(translationKey: string, args?: Record<string, string>): string{
-      let translated = this.cache.get(translationKey);
-      if(!translated){
-         translated = getProperty(this.dictionary, translationKey);
-         translated ? this.cache.set(translated, translationKey) : translated = translationKey;
-      }
-      args && Object.keys(args).forEach(key => {translated = translated.replaceAll(`{${key}}`, args[key])});
-      return translated;
-   }
+    public translate(translationKey: string, args?: Record<string, string>): string{
+        let translated = this.cache.get(translationKey);
+        if(!translated){
+            translated = getProperty(this.dictionary, translationKey) ?? translationKey;
+            this.cache.set(translationKey, translated);
+        }
+        args && Object.keys(args).forEach(key => {translated = translated.replaceAll(`{${key}}`, args[key])});
+        return translated;
+    }
 
 
 

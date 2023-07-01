@@ -138,7 +138,7 @@ function ModelItemElement<T = unknown>(props: Props<T>) {
                         <span className="mt-0.5 cursor-copy block w-full max-w-fit overflow-hidden whitespace-nowrap text-ellipsis bg-main-color-1 rounded-md p-1 uppercase text-xs" onClick={() => copyContent(`${props.hash}`, 'hash')}>{props.hash}</span>
                     </Tippy>
                         <div className="flex gap-1">
-                            {props.id && (
+                            {!!props.id && (
                                 <Tippy placement="top" content={idContentCopied === "id" ? t("misc.copied") : t("misc.copy")} followCursor="horizontal" plugins={[followCursor]} hideOnClick={false}>
                                     <span className="cursor-copy w-fit shrink-0 max-w-full overflow-hidden whitespace-nowrap text-ellipsis bg-main-color-1 rounded-md p-1 uppercase text-xs" onClick={() => copyContent(`${props.id}`, 'id')}>{props.id}</span>
                                 </Tippy>

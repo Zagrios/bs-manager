@@ -52,16 +52,16 @@ export class BSVersionLibService{
     ], {keepStructure: true});
 
     let resVersions = localVersions;
-    if(remoteVersions && remoteVersions.length){ resVersions = remoteVersions; this.updateLocalVersions(resVersions); }
+    if(remoteVersions?.length){ resVersions = remoteVersions; this.updateLocalVersions(resVersions); }
     this.bsVersions = resVersions;
     return this.bsVersions;
 }
 
-   public async getAvailableVersions(): Promise<BSVersion[]>{
-      const bsVersions = await this.loadBsVersions();
-      if(!bsVersions || !bsVersions.length){ return []; }
-      return bsVersions;
-   }
+    public async getAvailableVersions(): Promise<BSVersion[]>{
+        const bsVersions = await this.loadBsVersions();
+        if(!bsVersions?.length){ return []; }
+        return bsVersions;
+    }
 
     public async getVersionDetails(version: string): Promise<BSVersion>{
         const versions = await this.getAvailableVersions();

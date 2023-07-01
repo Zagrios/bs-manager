@@ -1,7 +1,7 @@
 import { IpcRequest } from "shared/models/ipc";
 import { ipcMain } from "electron";
 import { Observable } from "rxjs";
-import { IpcChannel, IpcCompleteChannel, IpcErrorChannel } from "shared/models/ipc/ipc-response.interface";
+import { IpcCompleteChannel, IpcErrorChannel } from "shared/models/ipc/ipc-response.interface";
 import { AppWindow } from "shared/models/window-manager/app-window.model";
 import { WindowManagerService } from "./window-manager.service";
 import { IpcReplier } from "shared/models/ipc/ipc-request.interface";
@@ -22,15 +22,15 @@ export class IpcService {
         this.windows = WindowManagerService.getInstance();
     }
 
-    private getErrorChannel(channel: IpcChannel): IpcErrorChannel {
+    private getErrorChannel(channel: string): IpcErrorChannel {
         return `${channel}_error`;
     }
 
-    private getCompleteChannel(channel: IpcChannel): IpcCompleteChannel {
+    private getCompleteChannel(channel: string): IpcCompleteChannel {
         return `${channel}_complete`;
     }
 
-    private buildProxyListener<T>(listener: (req: IpcRequest<T>, replier: IpcReplier) => void) {
+    private buildProxyListener<T>(listener: IpcListener<T>) {
 
         return (event: Electron.IpcMainEvent, req: IpcRequest<T>) => {
             const window = this.windows.getAppWindowFromWebContents(event.sender);
@@ -40,11 +40,11 @@ export class IpcService {
 
     }
 
-    public send<T>(channel: IpcChannel, window: AppWindow, response?: T|Error): void{
+    public send<T>(channel: string, window: AppWindow, response?: T|Error): void{
         this.windows.getWindow(window)?.webContents?.send(channel, response);
     }
 
-    private connectStream(channel: IpcChannel, window: AppWindow, observable: Observable<unknown>): void{
+    private connectStream(channel: string, window: AppWindow, observable: Observable<unknown>): void{
         observable.subscribe(data => {
             this.send(channel, window, data);
         }, error => {
@@ -55,12 +55,14 @@ export class IpcService {
         });
     }
 
-    public on<T>(channel: IpcChannel, listener: (req: IpcRequest<T>, replier: IpcReplier) => void): void{
+    public on<T>(channel: string, listener: IpcListener<T>): void{
         ipcMain.on(channel, this.buildProxyListener(listener));
     }
 
-    public once<T>(channel: IpcChannel, listener: (req: IpcRequest<T>, replier: IpcReplier) => void): void{
+    public once<T>(channel: string, listener: IpcListener<T>): void{
         ipcMain.once(channel, this.buildProxyListener(listener));
     }
 
 }
+
+type IpcListener<T = unknown> = (req: IpcRequest<T>, replier: IpcReplier) => void|Promise<void>;

@@ -32,7 +32,7 @@ export class BSVersionManagerService {
    }
 
    public setInstalledVersions(versions: BSVersion[]){
-      const sorted: BSVersion[] = versions.sort((a, b) => +b.ReleaseDate - +a.ReleaseDate)
+      const sorted: BSVersion[] = [...versions].sort((a, b) => +b.ReleaseDate - +a.ReleaseDate)
       const steamIndex = sorted.findIndex(v => v.steam);
       const oculusIndex = sorted.findIndex(v => v.oculus);
       if(steamIndex > 0){
