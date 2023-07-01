@@ -2,6 +2,7 @@ import { UtilsService } from "./utils.service";
 import regedit from "regedit";
 import path from "path";
 import { pathExist } from "../helpers/fs.helpers";
+import log from "electron-log";
 
 export class OculusService {
     private static instance: OculusService;
@@ -26,6 +27,11 @@ export class OculusService {
     }
 
     public async getOculusLibsPath(): Promise<string[]> {
+        if (process.platform !== "win32") {
+            log.info("Oculus library auto-detection not supported on non-windows platforms");
+            return null;
+        }
+
         if (this.oculusPaths) {
             return this.oculusPaths;
         }
