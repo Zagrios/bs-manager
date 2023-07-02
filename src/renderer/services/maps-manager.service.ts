@@ -26,8 +26,8 @@ export class MapsManagerService {
         return MapsManagerService.instance;
     }
 
-    public static readonly REMEMBER_CHOICE_DELETE_MAP_KEY = "not-confirm-delete-map"
-    public static readonly RELATIVE_MAPS_FOLDER = "Beat Saber_Data\\CustomLevels";
+    public static readonly REMEMBER_CHOICE_DELETE_MAP_KEY = "not-confirm-delete-map";
+    public static readonly RELATIVE_MAPS_FOLDER = window.electron.path.join("Beat Saber_Data", "CustomLevels");
 
     private readonly ipcService: IpcService;
     private readonly modal: ModalService;

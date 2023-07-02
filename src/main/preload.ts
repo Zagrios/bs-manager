@@ -1,4 +1,7 @@
-import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import { contextBridge, ipcRenderer, IpcRendererEvent } from "electron";
+import { ProviderPlatform } from "shared/models/provider-platform.enum";
+
+const sep = process.platform === ProviderPlatform.WINDOWS ? "\\" : "/";
 
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: {
@@ -19,4 +22,10 @@ contextBridge.exposeInMainWorld('electron', {
         ipcRenderer.removeAllListeners(channel);
     }
   },
+    path: {
+        sep,
+        join: (...args: string[]): string => {
+            return args.join(sep);
+        }
+    }
 });

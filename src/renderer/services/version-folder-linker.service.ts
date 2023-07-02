@@ -34,8 +34,8 @@ export class VersionFolderLinkerService{
 
         let progressOpened = false;
 
-        if(!this.progress.isVisible){
-            this.progress.showFake(.01, null, action.relativeFolder.split("\\").at(-1));
+        if (!this.progress.isVisible) {
+            this.progress.showFake(0.01, null, action.relativeFolder.split(window.electron.path.sep).at(-1));
             progressOpened = true;
         }
 
