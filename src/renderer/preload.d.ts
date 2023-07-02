@@ -7,6 +7,10 @@ declare global {
                 once(channel: string, func: (...args: any) => void): void;
                 removeAllListeners(channel: string): void;
             };
+            path: {
+                sep: "/"|"\\";
+                join: (...args: string[]) => string;
+            };
         };
     }
 }

@@ -108,7 +108,7 @@ const FolderItem = ({ version, relativeFolder, onDelete }: FolderProps) => {
 
     const t = useTranslation();
 
-    const name = relativeFolder.split("\\").at(-1);
+    const name = relativeFolder.split(window.electron.path.sep).at(-1);
     const color = useThemeColor("first-color");
 
     const variants: Variants = {
