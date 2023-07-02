@@ -5,7 +5,11 @@ export const defaultConfiguration: { [key in DefaultConfigKey]: any } = {
     language: window.navigator.language.length <= 2 ? `${window.navigator.language}-${window.navigator.language.toLocaleUpperCase()}` : window.navigator.language,
     supported_languages: ["en-US", "en-EN", "fr-FR", "es-ES", "de-DE"],
     default_mods: ["SongCore", "WhyIsThereNoLeaderboard", "BeatSaverDownloader", "BeatSaverVoting", "PlaylistManager"],
-    "default-shared-folders": ["Beat Saber_Data\\CustomLevels", "Beat Saber_Data\\CustomWIPLevels", "DLC"],
+    "default-shared-folders": [
+        window.electron.path.join("Beat Saber_Data", "CustomLevels"),
+        window.electron.path.join("Beat Saber_Data", "CustomWIPLevels"),
+        "DLC"
+    ],
 };
 
 export type DefaultConfigKey = "first-color" | "second-color" | "theme" | "language" | "supported_languages" | "default_mods" | "default-shared-folders";
