@@ -31,9 +31,9 @@
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Oculus Mode",
-                "oculus-description": "If you are using Beat Saber via Steam, it allows you to use Oculus's VR composer without passing by SteamVR, for possible performance gain. This is not necessary for using Oculus headsets.",
-                "desktop": "Desktop Mode",
-                "desktop-description": "This allows you to use WASD and the mouse to navigate around the menu in game. This makes testing much easier, because you don't have to put on your headset!",
+                "oculus-description": "If you are using Beat Saber via Steam, this allows you to use Oculus's VR composer while bypassing SteamVR, for potential performance gain. This is not required to use Oculus headsets.",
+                "desktop": "FPFC Mode",
+                "desktop-description": "First Person Flying Controller mode allows you to use WASD and the mouse to navigate around the menu in game. This makes testing much easier, because you don't have to put on your headset!",
                 "debug": "Debug Mode",
                 "debug-description": "Enables the output log window for IPA. This will show the debug console that mods use.",
                 "advanced-launch": {
@@ -44,7 +44,7 @@
             "maps": {
                 "title": "Shared maps",
                 "search-bar": {
-                    "search-placeholder": "Search a map",
+                    "search-placeholder": "Search installed maps",
                     "filters-btn": "Filters",
                     "dropdown": {
                         "export-maps": "Export maps",
@@ -111,7 +111,7 @@
         "settings": {
             "steam": {
                 "title": "Steam",
-                "description": "If you log out of Steam, you will have to log back in to download a new version of Beat Saber.",
+                "description": "If you log out of Steam, you will have to log back in to download new versions of Beat Saber.",
                 "logout": "Log out"
             },
             "appearance": {
@@ -132,7 +132,7 @@
             },
             "additional-content": {
                 "title": "Additional content",
-                "description": "Additional content allows you to customize BeatSaber!",
+                "description": "Additional content that allows you to customize Beat Saber!",
                 "deep-links": {
                     "sub-title": "OneClick installations"
                 }
@@ -199,7 +199,7 @@
                     "no-internet": "No internet"
                 },
                 "msg": {
-                    "operation-running": "Wait for the end of the current operation then start again.",
+                    "operation-running": "Wait for the current operation to finish, then try again.",
                     "no-internet": "Check your connection and try again."
                 }
             }
@@ -216,7 +216,7 @@
                     "ManifestChecksum": "The previously downloaded manifest does not match the new 🤔",
                     "ConnectionTimeout": "Your internet connection seems unstable 🥶",
                     "ConnectionLost": "The connection has been lost, try again...",
-                    "ConnectionError": "Unable to connect to Steam, retry...",
+                    "ConnectionError": "Unable to connect to Steam, try again...",
                     "Unknown": "Something strange has happened 🤔 Your connection is probably unstable."
                 }
             },
@@ -225,22 +225,22 @@
                     "dotnet-required": ".NET 6 Required"
                 },
                 "msg": {
-                    "401": "Steam doesn't seem to want to let us download BeatSaber 😢",
+                    "401": "Steam doesn't seem to want to let us download Beat Saber 😢",
                     "404": "Unable to contact Steam servers.",
                     "Password": "Password is invalid.",
                     "InvalidCredentials": "Your e-mail or password is invalid 😴",
                     "InvalidPassword": "Your password is invalid 😕",
                     "NoManifest": "No manifest was found",
                     "DirectoryCreate": "Unable to install the necessary folders.",
-                    "NotAvailableApp": "Are you trying to download BeatSaber when you don't have it ? 🤣",
-                    "DepotNotFound": "Unable to download BeatSaber 😥 try again later 😕",
+                    "NotAvailableApp": "Are you trying to download Beat Saber when you don't have it? 🤣",
+                    "DepotNotFound": "Unable to download Beat Saber 😥 try again later 😕",
                     "NotCompleted": "The download could not complete ¯\\_(ツ)_/¯",
-                    "InvalidManifest": "Unable to download BeatSaber 😥 try again later 😕",
-                    "NoValidKey": "Unable to download BeatSaber 😥 try again later 😕",
-                    "NoManifestCode": "Unable to download BeatSaber 😥 try again later 😕",
+                    "InvalidManifest": "Unable to download Beat Saber 😥 try again later 😕",
+                    "NoValidKey": "Unable to download Beat Saber 😥 try again later 😕",
+                    "NoManifestCode": "Unable to download Beat Saber 😥 try again later 😕",
                     "Unknown": "An unknown error occurred ¯\\_(ツ)_/¯",
                     "NoServer": "Unable to contact Steam servers.",
-                    "NotAllowed": "Apparently you are not allowed to download BeatSaber 🥱",
+                    "NotAllowed": "Apparently you are not allowed to download Beat Saber 🥱",
                     "ConnectionTimeout": "Cannot connect to Steam 😕",
                     "SteamLib": "If you have this error, report the bug on GitHub with the logs pls.",
                     "ConnectionError": "Unable to connect to Steam after 10 tries 🤯",
@@ -249,7 +249,7 @@
                     "RateLimitExceeded": "You've tried too many times, wait a while and try again later.",
                     "AlreadyDownloading": "A download is already in progress",
                     "no-internet": "No internet connection.",
-                    "dotnet-required": ".NET 6 Runtime must be installed in order to download a version of BeatSaber. Download it by clicking the button below."
+                    "dotnet-required": ".NET 6 Runtime must be installed in order to download a version of Beat Saber. Download it by clicking the button below."
                 },
                 "actions":{
                     "download-dotnet": "Download .NET 6"
@@ -266,9 +266,9 @@
                     "title": "Imported version 🎉"
                 }
             },
-            "errors":{
-                "import-error":{
-                    "desc": "Check that the selected folder is a BeatSaber installation."
+            "errors": {
+                "import-error": {
+                    "desc": "Check that the selected folder is a Beat Saber installation."
                 }
             }
         },
@@ -302,11 +302,11 @@
             },
             "additional-content":{
                 "deep-link": {
-                    "select-all": "Select all",
-                    "activation":{
-                        "success":{
-                            "title":"OneClick activated!",
-                            "description":"OneClick installations have been activated."
+                    "select-all": "Enable all",
+                    "activation": {
+                        "success": {
+                            "title": "OneClick activated!",
+                            "description": "OneClick installations have been activated."
                         },
                         "error":{
                             "description":"Unable to activate OneClick installations."
@@ -326,7 +326,7 @@
                         "description": "One or more OneClick installations are disabled. Go to settings to enable them.",
                         "actions":{
                             "settings": "Settings",
-                            "not-remind": "Do not remind me"
+                            "not-remind": "Don't remind me"
                         }
                     }
                 }
@@ -343,16 +343,16 @@
                     "UNABLE_TO_LAUNCH": "Unable to launch",
                     "STEAM_NOT_RUNNING": "Steam is not running",
                     "OCULUS_NOT_RUNNING": "Oculus is not running",
-                    "BS_ALREADY_RUNNING": "BeatSaber already running",
+                    "BS_ALREADY_RUNNING": "Beat Saber already running",
                     "EXE_NOT_FINDED": "Missing files",
                     "EXIT": "Abrupt stop"
                 },
                 "msg": {
-                    "STEAM_NOT_RUNNING": "Steam must be running to launch BeatSaber.",
-                    "OCULUS_NOT_RUNNING": "Oculus must be running to launch BeatSaber.",
-                    "BS_ALREADY_RUNNING": "Close BeatSaber before launching it again.",
-                    "EXE_NOT_FINDED": "Some files seem to be missing, try to verify the files.",
-                    "EXIT": "BeatSaber stopped abruptly, tries to check the files."
+                    "STEAM_NOT_RUNNING": "Steam must be running to launch Beat Saber.",
+                    "OCULUS_NOT_RUNNING": "Oculus must be running to launch Beat Saber.",
+                    "BS_ALREADY_RUNNING": "Close Beat Saber before launching it again.",
+                    "EXE_NOT_FINDED": "Some files seem to be missing, try to verify the game's files.",
+                    "EXIT": "Beat Saber stopped abruptly, try to verify the game's files."
                 },
                 "actions":{
                     "STEAM_NOT_RUNNING": "Launch Steam"
@@ -415,7 +415,7 @@
                 "msg": {
                     "success": "All mods have been uninstalled.",
                     "errors": {
-                        "no-mods": "No mod is installed in this version 😑"
+                        "no-mods": "No mods are installed in this version 😑"
                     }
                 }
             }
@@ -479,7 +479,7 @@
                     "label": "Stay connected"
                 }
             },
-            "why-credentials": "Why do you need my credentials ?",
+            "why-credentials": "Why do you need my credentials?",
             "buttons": {
                 "submit": "Login"
             }
@@ -491,14 +491,14 @@
         },
         "bs-import-version":{
             "title": "Import a version",
-            "description": "Imports a version of BeatSaber to use with BSManager. The import will copy the selected BeatSaber installation folder to the BSManager versions folder.",
-            "buttons":{
+            "description": "Imports a version of Beat Saber to use with BSManager. This will copy the selected Beat Saber installation folder to the BSManager versions folder.",
+            "buttons": {
                 "submit": "Import a version"
             }
         },
         "bs-uninstall": {
             "title": "Uninstall",
-            "description": "Are you sure you want to uninstall BeatSaber {version} ? You will have to download it again to play it.",
+            "description": "Are you sure you want to uninstall Beat Saber {version}? You will have to download it again to play it.",
             "buttons": {
                 "submit": "Uninstall"
             }
@@ -518,7 +518,7 @@
         },
         "clone-version": {
             "title": "Clone version",
-            "description": "Cloning the version allows you to separate additional BeatSaber content between two versions.",
+            "description": "Cloning the version allows you to separate additional Beat Saber content between two versions.",
             "inputs": {
                 "name": {
                     "label": "Name",
@@ -544,8 +544,8 @@
         "maps-actions": {
             "delete-maps": {
                 "title": {
-                    "single": "Delete the map?",
-                    "multiple": "Delete maps ?"
+                    "single": "Delete this map?",
+                    "multiple": "Delete maps?"
                 },
                 "desc": {
                     "single": "Are you sure you want to delete the map {name}?",
@@ -564,20 +564,20 @@
             },
             "link-maps": {
                 "title": "Link maps",
-                "desc": "Linking maps allows to share maps between all versions. Once linked, this version will benefit from the shared maps",
+                "desc": "Linking maps allows sharing maps between all versions with this feature enabled. Once linked, this version will benefit from shared maps.",
                 "info": "Adding and deleting maps will also be shared",
                 "keep-maps": {
                     "label": "Keep maps",
-                    "title": "Keep maps will move the maps of the current version to the shared maps folder. Otherwise they will be lost"
+                    "title": "Keeping maps will copy all maps from the current version to the shared maps folder. Otherwise, no maps will be kept from this version and they will be lost."
                 },
                 "valid-btn": "Link maps"
             },
             "unlink-maps": {
                 "title": "Unlink maps",
-                "desc": "Please note that unlinking maps will not allow the use of shared maps for this version.",
+                "desc": "Be careful, unlinking maps will disable the use of shared maps for this version, until it is reenabled.",
                 "keep-maps": {
                     "label": "Keep maps",
-                    "title": "Keeping the maps will create a copy of the shared maps for the current version. Otherwise, no map will be kept for this version."
+                    "title": "Keeping maps will copy all maps from the shared folder to the current version after unlinking. Maps will not be lost if this is disabled."
                 },
                 "valid-btn": "Unlink maps"
             }
@@ -598,7 +598,7 @@
         },
         "shared-folders":{
             "title": "Shared Folders",
-            "description": "Link BeatSaber folders to synchronize their contents with shared folders in other versions. Note that deleting content will also be shared.",
+            "description": "Link Beat Saber folders to synchronize their contents with shared folders in other versions. Note that deleting content will also be shared.",
             "buttons": {
                 "add-folder": "Add Folder",
                 "link-folder": "Link Folder",
@@ -702,7 +702,7 @@
         },
         "panel": {
             "actions": {
-                "search": "Search a model",
+                "search": "Search installed models",
                 "drop-down": {
                     "delete": "Delete models",
                     "export": "Export models"
@@ -749,41 +749,41 @@
             "link-models": {
                 "avatar": {
                     "title": "Link Avatars",
-                    "desc": "Linking avatars allows sharing avatars between all versions. Once linked, this version will benefit from the shared avatars",
+                    "desc": "Linking avatars allows sharing avatars between all versions with this feature enabled. Once linked, this version will benefit from shared avatars.",
                     "info": "Adding and deleting avatars will also be shared",
                     "keep-models": {
                         "label": "Keep Avatars",
-                        "title": "Keeping the avatars will move the avatars from the current version to the shared avatars folder. Otherwise, they will be lost"
+                        "title": "Keeping avatars will copy all avatars from the current version to the shared avatars folder. Otherwise, no avatars will be kept from this version and they will be lost."
                     },
                     "valid-btn": "Link Avatars"
                 },
                 "saber": {
                     "title": "Link Sabers",
-                    "desc": "Linking sabers allows sharing sabers between all versions. Once linked, this version will benefit from the shared sabers",
+                    "desc": "Linking sabers allows sharing sabers between all versions with this feature enabled. Once linked, this version will benefit from shared sabers.",
                     "info": "Adding and deleting sabers will also be shared",
                     "keep-models": {
                         "label": "Keep Sabers",
-                        "title": "Keeping the sabers will move the sabers from the current version to the shared sabers folder. Otherwise, they will be lost"
+                        "title": "Keeping sabers will copy all sabers from the current version to the shared sabers folder. Otherwise, no sabers will be kept from this version and they will be lost."
                     },
                     "valid-btn": "Link Sabers"
                 },
                 "platform": {
                     "title": "Link Platforms",
-                    "desc": "Linking platforms allows sharing platforms between all versions. Once linked, this version will benefit from the shared platforms",
+                    "desc": "Linking platforms allows sharing platforms between all versions with this feature enabled. Once linked, this version will benefit from shared platforms.",
                     "info": "Adding and deleting platforms will also be shared",
                     "keep-models": {
                         "label": "Keep Platforms",
-                        "title": "Keeping the platforms will move the platforms from the current version to the shared platforms folder. Otherwise, they will be lost"
+                        "title": "Keeping platforms will copy all platforms from the current version to the shared platforms folder. Otherwise, no platforms will be kept from this version and they will be lost."
                     },
                     "valid-btn": "Link Platforms"
                 },
                 "bloq": {
                     "title": "Link Bloqs",
-                    "desc": "Linking bloqs allows sharing bloqs between all versions. Once linked, this version will benefit from the shared bloqs",
+                    "desc": "Linking bloqs allows sharing bloqs between all versions with this feature enabled. Once linked, this version will benefit from shared bloqs.",
                     "info": "Adding and deleting bloqs will also be shared",
                     "keep-models": {
                         "label": "Keep Bloqs",
-                        "title": "Keeping the bloqs will move the bloqs from the current version to the shared bloqs folder. Otherwise, they will be lost"
+                        "title": "Keeping bloqs will copy all bloqs from the current version to the shared bloqs folder. Otherwise, no bloqs will be kept from this version and they will be lost."
                     },
                     "valid-btn": "Link Bloqs"
                 }
@@ -791,37 +791,37 @@
             "unlink-models": {
                 "avatar": {
                     "title": "Unlink Avatars",
-                    "desc": "Be careful, unlinking avatars will no longer allow the use of shared avatars for this version.",
+                    "desc": "Be careful, unlinking avatars will disable the use of shared avatars for this version, until it is reenabled.",
                     "keep-models": {
                         "label": "Keep Avatars",
-                        "title": "Keeping the avatars will create a copy of the shared avatars for the current version. Otherwise, no avatars will be kept for this version."
+                        "title": "Keeping avatars will copy all avatars from the shared folder to the current version after unlinking. Avatars will not be lost if this is disabled."
                     },
                     "valid-btn": "Unlink Avatars"
                 },
                 "saber": {
                     "title": "Unlink Sabers",
-                    "desc": "Be careful, unlinking sabers will no longer allow the use of shared sabers for this version.",
+                    "desc": "Be careful, unlinking sabers will disable the use of shared sabers for this version, until it is reenabled.",
                     "keep-models": {
                         "label": "Keep Sabers",
-                        "title": "Keeping the sabers will create a copy of the shared sabers for the current version. Otherwise, no sabers will be kept for this version."
+                        "title": "Keeping sabers will copy all sabers from the shared folder to the current version after unlinking. Sabers will not be lost if this is disabled."
                     },
                     "valid-btn": "Unlink Sabers"
                 },
                 "platform": {
                     "title": "Unlink Platforms",
-                    "desc": "Be careful, unlinking platforms will no longer allow the use of shared platforms for this version.",
+                    "desc": "Be careful, unlinking platforms will disable the use of shared platforms for this version, until it is reenabled.",
                     "keep-models": {
                         "label": "Keep Platforms",
-                        "title": "Keeping the platforms will create a copy of the shared platforms for the current version. Otherwise, no platforms will be kept for this version."
+                        "title": "Keeping platforms will copy all platforms from the shared folder to the current version after unlinking. Platforms will not be lost if this is disabled."
                     },
                     "valid-btn": "Unlink Platforms"
                 },
                 "bloq": {
                     "title": "Unlink Bloqs",
-                    "desc": "Be careful, unlinking bloqs will no longer allow the use of shared bloqs for this version.",
+                    "desc": "Be careful, unlinking bloqs will disable the use of shared bloqs for this version, until it is reenabled.",
                     "keep-models": {
                         "label": "Keep Bloqs",
-                        "title": "Keeping the bloqs will create a copy of the shared bloqs for the current version. Otherwise, no bloqs will be kept for this version."
+                        "title": "Keeping bloqs will copy all bloqs from the shared folder to the current version after unlinking. Bloqs will not be lost if this is disabled."
                     },
                     "valid-btn": "Unlink Bloqs"
                 }
@@ -830,13 +830,13 @@
         "notifications": {
             "prevent-for-mods": {
                 "title": "Required mods",
-                "desc": "Make sure you've installed the necessary mods to use models in BeatSaber",
+                "desc": "Make sure you've installed the necessary mods to use models in Beat Saber",
                 "go-to-mods": "Go to mods",
-                "not-remind": "Do not remind me"
+                "not-remind": "Don't remind me"
             },
             "prevent-for-models-breaks": {
                 "title": "Broken models",
-                "desc": "Since the BeatSaber engine update, models are no longer functional for this version."
+                "desc": "Since the Beat Saber engine update, models are no longer functional for this version."
             },
             "export-success": {
                 "title": "Export completed 🎉"
