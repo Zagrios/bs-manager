@@ -302,7 +302,7 @@
             },
             "additional-content":{
                 "deep-link": {
-                    "select-all": "Select all",
+                    "select-all": "Enable all",
                     "activation": {
                         "success": {
                             "title": "OneClick activated!",
