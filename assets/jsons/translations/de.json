@@ -32,7 +32,7 @@
             "launch-mods": {
                 "oculus": "Oculus Modus",
                 "oculus-description": "Wenn du Beat Saber über Steam benutzt, es ermöglicht dir Oculus's VR-Composer zu nutzen ohne SteamVR, um bessere Leistung zu erhalten. Dies wird nicht benötigt für Oculus Headsets",
-                "desktop": "Desktop Modus",
+                "desktop": "FPFC Modus",
                 "desktop-description": "Auf diese Weise kannst du WASD und die Maus verwenden, um im Spiel durch das Menü zu navigieren. Dies erleichtert das Testen erheblich, da Du dein Headset nicht aufsetzen musst!",
                 "debug": "Debug Modus",
                 "debug-description": "Aktiviert das Ausgabeprotokollfenster für IPA. Dies zeigt die Debug-Konsole, die Mods verwenden.",
