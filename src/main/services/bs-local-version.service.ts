@@ -1,5 +1,5 @@
 import { BSVersionLibService } from "./bs-version-lib.service";
-import { BSVersion, PartialBSVersion } from 'shared/bs-version.interface';
+import { BSVersion, PartialBSVersion } from "shared/bs-version.interface";
 import { InstallationLocationService } from "./installation-location.service";
 import { SteamService } from "./steam.service";
 import { BS_APP_ID, OCULUS_BS_DIR } from "../constants";
@@ -15,25 +15,26 @@ import sanitize from "sanitize-filename";
 import { copyDirectoryWithJunctions, deleteFolder, getFoldersInFolder, pathExist } from "../helpers/fs.helpers";
 import { FolderLinkerService } from "./folder-linker.service";
 
-export class BSLocalVersionService{
+export class BSLocalVersionService {
+    private static instance: BSLocalVersionService;
 
-   private static instance: BSLocalVersionService;
+    private readonly CUSTOM_VERSIONS_KEY = "custom-versions";
 
-   private readonly CUSTOM_VERSIONS_KEY = "custom-versions";
+    private readonly installLocationService: InstallationLocationService;
+    private readonly steamService: SteamService;
+    private readonly oculusService: OculusService;
+    private readonly remoteVersionService: BSVersionLibService;
+    private readonly configService: ConfigurationService;
+    private readonly linker: FolderLinkerService;
 
-   private readonly installLocationService: InstallationLocationService;
-   private readonly steamService: SteamService;
-   private readonly oculusService: OculusService;
-   private readonly remoteVersionService: BSVersionLibService;
-   private readonly configService: ConfigurationService;
-   private readonly linker: FolderLinkerService;
+    public static getInstance(): BSLocalVersionService {
+        if (!BSLocalVersionService.instance) {
+            BSLocalVersionService.instance = new BSLocalVersionService();
+        }
+        return BSLocalVersionService.instance;
+    }
 
-   public static getInstance(): BSLocalVersionService{
-      if(!BSLocalVersionService.instance){ BSLocalVersionService.instance = new BSLocalVersionService(); }
-      return BSLocalVersionService.instance;
-   }
-
-    private constructor(){
+    private constructor() {
         this.installLocationService = InstallationLocationService.getInstance();
         this.steamService = SteamService.getInstance();
         this.oculusService = OculusService.getInstance();
@@ -51,7 +52,7 @@ export class BSLocalVersionService{
       
         const versionsAvailable = await this.remoteVersionService.getAvailableVersions();
       
-        return new Promise<PartialBSVersion>(async resolve => {
+        return new Promise<PartialBSVersion>(async (resolve, reject) => {
             const stream = createReadStream(versionFilePath);
 
             stream.on('data', async line => {
@@ -78,6 +79,15 @@ export class BSLocalVersionService{
                     return resolve(findVersion);
                 }
             });
+
+            stream.on("close", () => {
+                resolve(null);
+            });
+
+            stream.on("error", e => {
+                reject(e);
+            });
+            
         });
    }
 
@@ -143,49 +153,69 @@ export class BSLocalVersionService{
         return version.name ?? version.BSVersion;
     }
 
-    public getVersionType(version: BSVersion): DownloadLinkType{
-        if(version.steam){ return "steam"; }
-        if(version.oculus){ return "oculus"; }
-        return "universal"
+    public getVersionType(version: BSVersion): DownloadLinkType {
+        if (version.steam) {
+            return "steam";
+        }
+        if (version.oculus) {
+            return "oculus";
+        }
+        return "universal";
     }
 
-    private async getSteamVersion(): Promise<BSVersion>{
+    private async getSteamVersion(): Promise<BSVersion> {
         const steamBsFolder = await this.steamService.getGameFolder(BS_APP_ID, "Beat Saber");
-        if(!steamBsFolder || !(await pathExist(steamBsFolder))){ return null; }
+        if (!steamBsFolder || !(await pathExist(steamBsFolder))) {
+            return null;
+        }
         const steamBsVersion = await this.getVersionOfBSFolder(steamBsFolder);
 
-        if(!steamBsVersion){ return null; }
+        if (!steamBsVersion) {
+            return null;
+        }
         const version = await this.remoteVersionService.getVersionDetails(steamBsVersion.BSVersion);
-        if(!version){ return null; }
-        return {...version, steam: true};
+        if (!version) {
+            return null;
+        }
+        return { ...version, steam: true };
     }
 
-    private async getOculusVersion(): Promise<BSVersion>{
+    private async getOculusVersion(): Promise<BSVersion> {
         const oculusBsFolder = await this.oculusService.getGameFolder(OCULUS_BS_DIR);
-        if(!oculusBsFolder){ return null; }
+        if (!oculusBsFolder) {
+            return null;
+        }
         const oculusBsVersion = await this.getVersionOfBSFolder(oculusBsFolder);
 
         if(!oculusBsVersion){ return null; }
+        
         const version = await this.remoteVersionService.getVersionDetails(oculusBsVersion.BSVersion);
-        if(!version){ return null; }
-        return {...version, oculus: true};
+        if (!version) {
+            return null;
+        }
+        return { ...version, oculus: true };
     }
 
-    public async getInstalledVersions(): Promise<BSVersion[]>{
-
+    public async getInstalledVersions(): Promise<BSVersion[]> {
         const versions: BSVersion[] = [];
 
         const steamVersion = await this.getSteamVersion();
-        if(steamVersion){ versions.push(steamVersion); }
+        if (steamVersion) {
+            versions.push(steamVersion);
+        }
 
         const oculusVersion = await this.getOculusVersion();
-        if(oculusVersion){ versions.push(oculusVersion); }
+        if (oculusVersion) {
+            versions.push(oculusVersion);
+        }
 
-        if(!(await pathExist(this.installLocationService.versionsDirectory))){ return versions }
+        if (!(await pathExist(this.installLocationService.versionsDirectory))) {
+            return versions;
+        }
 
         const folderInInstallation = await getFoldersInFolder(this.installLocationService.versionsDirectory);
 
-        for(const f of folderInInstallation){
+        for (const f of folderInInstallation) {
             log.info("try get version from folder", f);
             const rawVersion = await this.getVersionOfBSFolder(f);
 
@@ -196,10 +226,10 @@ export class BSLocalVersionService{
             if(!bsVersion){ continue; }
 
             bsVersion.name = path.basename(f) !== bsVersion.BSVersion ? path.basename(f) : undefined;
-            
+
             const customVersion = this.getCustomVersions().find(custom => custom.BSVersion === bsVersion.BSVersion && custom.name === bsVersion.name);
 
-            if(customVersion){
+            if (customVersion) {
                 bsVersion.color = customVersion.color;
             }
 
@@ -272,15 +302,16 @@ export class BSLocalVersionService{
 
     public async getLinkedFolders(version: BSVersion): Promise<string[]>{
         const versionPath = await this.getVersionPath(version);
-        const [rootFolders, beatSaberDataFolders] = await Promise.all([
-            getFoldersInFolder(versionPath),
-            getFoldersInFolder(path.join(versionPath, "Beat Saber_Data"))
-        ]);
+        const [rootFolders, beatSaberDataFolders] = await Promise.all([getFoldersInFolder(versionPath), getFoldersInFolder(path.join(versionPath, "Beat Saber_Data"))]);
 
-        const linkedFolder = Promise.all([...rootFolders, ...beatSaberDataFolders].map(async folder => {
-            if(!(await this.linker.isFolderSymlink(folder))){ return null; }
-            return folder;   
-        }));
+        const linkedFolder = Promise.all(
+            [...rootFolders, ...beatSaberDataFolders].map(async folder => {
+                if (!(await this.linker.isFolderSymlink(folder))) {
+                    return null;
+                }
+                return folder;
+            })
+        );
 
         return (await linkedFolder).filter(folder => folder);
     }

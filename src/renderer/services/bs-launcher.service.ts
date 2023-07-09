@@ -1,14 +1,12 @@
-import { LaunchOption, LaunchResult } from "shared/models/bs-launch";
+import { LaunchOption, LaunchResult, BSLaunchErrorEvent, BSLaunchErrorType, BSLaunchEvent } from "shared/models/bs-launch";
 import { BSVersion } from 'shared/bs-version.interface';
 import { IpcService } from "./ipc.service";
 import { NotificationService } from "./notification.service";
 import { BsDownloaderService } from "./bs-downloader.service";
 import { BehaviorSubject, Observable } from "rxjs";
 import { NotificationResult } from "shared/models/notification/notification.model";
-import { BSLaunchErrorEvent, BSLaunchErrorType, BSLaunchEvent } from "../../shared/models/bs-launch";
 
-export class BSLauncherService{
-
+export class BSLauncherService {
     private static instance: BSLauncherService;
 
     private readonly ipcService: IpcService;
@@ -22,7 +20,7 @@ export class BSLauncherService{
         return BSLauncherService.instance;
     }
 
-    private constructor(){
+    private constructor() {
         this.ipcService = IpcService.getInstance();
         this.notificationService = NotificationService.getInstance();
         this.bsDownloaderService = BsDownloaderService.getInstance();
@@ -40,7 +38,6 @@ export class BSLauncherService{
         });
     }
 
-
     // TODO : Rework with shortcuts implementation
     public launch_old(version: BSVersion, oculus: boolean, desktop: boolean, debug: boolean, additionalArgs?: string[]): Promise<NotificationResult|string>{
         const lauchOption: LaunchOption = {debug, oculus, desktop, version, additionalArgs};
@@ -54,14 +51,16 @@ export class BSLauncherService{
             if(!res.success){
                 return this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.UNABLE_TO_LAUNCH", desc: res.error.title}); 
             }
-            if(res.data === "EXE_NOT_FINDED"){
-                return this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.EXE_NOT_FINDED", desc: "notifications.bs-launch.errors.msg.EXE_NOT_FINDED", actions: [{id: "0", title:"misc.verify"}]}).then(res => {
-                    if(res === "0"){ this.bsDownloaderService.download(version, true); }
+            if (res.data === "EXE_NOT_FINDED") {
+                return this.notificationService.notifyError({ title: "notifications.bs-launch.errors.titles.EXE_NOT_FINDED", desc: "notifications.bs-launch.errors.msg.EXE_NOT_FINDED", actions: [{ id: "0", title: "misc.verify" }] }).then(res => {
+                    if (res === "0") {
+                        this.bsDownloaderService.download(version, true);
+                    }
                     return res;
                 });
             }
-            if(res.data){
-                return this.notificationService.notifyError({title: `notifications.bs-launch.errors.titles.${res.data}`}); 
+            if (res.data) {
+                return this.notificationService.notifyError({ title: `notifications.bs-launch.errors.titles.${res.data}` });
             }
             return this.notificationService.notifyError({title: res.data || res.error.title});
       });
@@ -93,8 +92,8 @@ export class BSLauncherService{
 
 }
 
-export enum LaunchMods{
-   OCULUS_MOD = "LAUNCH_OCULUS_MOD",
-   DESKTOP_MOD = "LAUNCH_DESKTOP_MOD",
-   DEBUG_MOD ="LAUNCH_DEBUG_MOD"
+export enum LaunchMods {
+    OCULUS_MOD = "LAUNCH_OCULUS_MOD",
+    DESKTOP_MOD = "LAUNCH_DESKTOP_MOD",
+    DEBUG_MOD = "LAUNCH_DEBUG_MOD",
 }

@@ -1,4 +1,4 @@
 export interface ProgressionInterface {
-    progression: number,
-    label?: string
-};
+    progression: number;
+    label?: string;
+}

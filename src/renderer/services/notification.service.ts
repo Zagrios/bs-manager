@@ -3,14 +3,13 @@ import { SystemNotificationOptions } from "shared/models/notification/system-not
 import { IpcService } from "./ipc.service";
 import { NotificationResult, NotificationType, Notification } from "../../shared/models/notification/notification.model";
 
-export class NotificationService{
-
+export class NotificationService {
     private static instance: NotificationService;
 
-    
-
-    public static getInstance(): NotificationService{
-        if(!NotificationService.instance){ NotificationService.instance = new NotificationService(); }
+    public static getInstance(): NotificationService {
+        if (!NotificationService.instance) {
+            NotificationService.instance = new NotificationService();
+        }
         return NotificationService.instance;
     }
 
@@ -18,19 +17,19 @@ export class NotificationService{
 
     private readonly ipc: IpcService;
 
-    private constructor(){
+    private constructor() {
         this.ipc = IpcService.getInstance();
         this.notifications$ = new BehaviorSubject<ResolvableNotification[]>([]);
 
         // TODO : Make actions work and adapt with "watch" remork
         this.ipc.watch<Notification>("show-notification").subscribe(notification => {
-            this.notify(notification as any as Notification);
+            this.notify(notification as unknown as Notification);
         });
     }
 
-    public notify(notification: Notification): Promise<NotificationResult|string>{
-        const resovableNotification: ResolvableNotification = {id: crypto.randomUUID(), notification, resolver: null };
-        const promise = new Promise<NotificationResult|string>(resolve => {
+    public notify(notification: Notification): Promise<NotificationResult | string> {
+        const resovableNotification: ResolvableNotification = { id: crypto.randomUUID(), notification, resolver: null };
+        const promise = new Promise<NotificationResult | string>(resolve => {
             resovableNotification.resolver = resolve;
             setTimeout(() => resolve(NotificationResult.NO_CHOICE), notification.duration || 7000);
         });
@@ -39,39 +38,38 @@ export class NotificationService{
 
         promise.then(() => {
             this.notifications$.next(this.notifications$.value.filter(n => n.id !== resovableNotification.id));
-        })
+        });
 
         return promise;
     }
 
-    public notifyError(notification: Notification): Promise<NotificationResult|string>{
+    public notifyError(notification: Notification): Promise<NotificationResult | string> {
         notification.type = NotificationType.ERROR;
         return this.notify(notification);
     }
 
-    public notifyWarning(notification: Notification): Promise<NotificationResult|string>{
+    public notifyWarning(notification: Notification): Promise<NotificationResult | string> {
         notification.type = NotificationType.WARNING;
         return this.notify(notification);
     }
 
-    public notifySuccess(notification: Notification): Promise<NotificationResult|string>{
+    public notifySuccess(notification: Notification): Promise<NotificationResult | string> {
         notification.type = NotificationType.SUCCESS;
         return this.notify(notification);
     }
 
-    public notifyInfo(notification: Notification): Promise<NotificationResult|string>{
+    public notifyInfo(notification: Notification): Promise<NotificationResult | string> {
         notification.type = NotificationType.INFO;
         return this.notify(notification);
     }
 
-    public notifySystem(options: SystemNotificationOptions){
-        this.ipc.sendLazy<SystemNotificationOptions>("notify-system", {args: options});
+    public notifySystem(options: SystemNotificationOptions) {
+        this.ipc.sendLazy<SystemNotificationOptions>("notify-system", { args: options });
     }
-
 }
 
-interface ResolvableNotification{
-    id: string,
-    resolver: (value: NotificationResult|string) => void,
-    notification: Notification
+interface ResolvableNotification {
+    id: string;
+    resolver: (value: NotificationResult | string) => void;
+    notification: Notification;
 }

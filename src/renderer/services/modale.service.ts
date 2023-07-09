@@ -1,57 +1,63 @@
-import { Observable } from "rxjs";
-import { BehaviorSubject } from "rxjs";
+import { Observable, BehaviorSubject } from "rxjs";
 import { timeout } from "rxjs/operators";
 
-export class ModalService{
-
+export class ModalService {
     private static instance: ModalService;
 
     private _modalToShow$: BehaviorSubject<ModalComponent> = new BehaviorSubject(null);
-    private modalData: any = null;
-    private resolver: any;
-    
-    private constructor(){}
+    private modalData: unknown = null;
+    private resolver: (value: ModalResponse | PromiseLike<ModalResponse>) => void = null;
 
-    public static getInsance(){
-        if(!this.instance){ this.instance = new ModalService(); }
+    private constructor() {}
+
+    public static getInsance() {
+        if (!this.instance) {
+            this.instance = new ModalService();
+        }
         return this.instance;
     }
 
-    private close(){
-        if(this.resolver){ this.resolve({exitCode: ModalExitCode.NO_CHOICE}); }
+    private close() {
+        if (this.resolver) {
+            this.resolve({ exitCode: ModalExitCode.NO_CHOICE });
+        }
         this._modalToShow$.next(null);
     }
 
-    public getModalData<Type>(): Type{
-        return this.modalData;
-    } 
+    public getModalData<Type>(): Type {
+        return this.modalData as Type;
+    }
 
-    public getResolver(): any{
+    public getResolver(): any {
         return this.resolver;
     }
 
-    public resolve(data: ModalResponse<unknown>): void{
+    public resolve(data: ModalResponse<unknown>): void {
         this.resolver(data);
     }
 
-    public async openModal<T, K>(modal: ModalComponent<T, K>, data?: K): Promise<ModalResponse<T>>{
+    public async openModal<T, K>(modal: ModalComponent<T, K>, data?: K): Promise<ModalResponse<T>> {
         this.close();
-        await timeout(100); //Must wait resolve
-        const promise = new Promise<ModalResponse<T>>((resolve) => { this.resolver = resolve; });
-        this._modalToShow$.next(modal);
+        await timeout(100); // Must wait resolve
+        const promise = new Promise<ModalResponse<T>>(resolve => {
+            this.resolver = resolve as (value: ModalResponse | PromiseLike<ModalResponse>) => void;
+        });
+        this._modalToShow$.next(modal as ModalComponent);
         promise.then(() => this.close());
-        if(data){ this.modalData = data; }
-        else{ this.modalData = null; }
+        if (data) {
+            this.modalData = data;
+        } else {
+            this.modalData = null;
+        }
         return promise;
     }
 
-    public getModalToShow(): Observable<ModalComponent>{
+    public getModalToShow(): Observable<ModalComponent> {
         return this._modalToShow$.asObservable();
     }
-
 }
 
-export type ModalComponent<Return = unknown, Receive = any> = ({resolver, data}: {resolver : (x: ModalResponse<Return>) => void, data?: Receive}) => JSX.Element;
+export type ModalComponent<Return = unknown, Receive = unknown> = ({ resolver, data }: { resolver: (x: ModalResponse<Return>) => void; data?: Receive }) => JSX.Element;
 
 export const enum ModalExitCode {
     NO_CHOICE = -1,
@@ -61,6 +67,6 @@ export const enum ModalExitCode {
 }
 
 export interface ModalResponse<T = unknown> {
-    exitCode: ModalExitCode,
-    data?: T
+    exitCode: ModalExitCode;
+    data?: T;
 }

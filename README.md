@@ -9,7 +9,6 @@
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
 
-
 <!-- TITLE -->
 <div align="center">
     <a href="https://github.com/Zagrios/bs-manager">
@@ -32,8 +31,8 @@
     </span>
 </div>
 
-<!-- BADGES -->
----
+## <!-- BADGES -->
+
 <br>
 <div align="center" >
     <a href="https://github.com/Zagrios/bs-manager/stargazers"><img src ="https://img.shields.io/github/stars/Zagrios/bs-manager?style=for-the-badge" alt="Stargazers"/></a>
@@ -50,8 +49,11 @@
 </div>
 
 ---
+
 <!-- TABLE OF CONTENTS -->
+
 <b>Table of Contents</b>
+
 <ul>
     <li>
         <a href="#about-the-project">About The Project</a>
@@ -143,6 +145,7 @@
 <div align="center">
 
 https://user-images.githubusercontent.com/40648115/213008824-25cfdda3-6350-42dc-aa53-2132b4b8e838.mov
+
 </div>
 
 <!--CUSTOM UR VERSIONS-->
@@ -156,6 +159,7 @@ https://user-images.githubusercontent.com/40648115/213008824-25cfdda3-6350-42dc-
 <div align="center">
 
 https://user-images.githubusercontent.com/40648115/213296794-74a1e20b-12dc-44ec-a67f-e25d7010bd3d.mov
+
 </div>
 
 <!--INSTALL MODS-->
@@ -169,6 +173,7 @@ https://user-images.githubusercontent.com/40648115/213296794-74a1e20b-12dc-44ec-
 <div align="center">
 
 https://user-images.githubusercontent.com/40648115/213296816-bdaafc90-da76-4835-8d83-9ac6a4e1c549.mov
+
 </div>
 
 <!--INSTALL MAPS-->
@@ -182,6 +187,7 @@ https://user-images.githubusercontent.com/40648115/213296816-bdaafc90-da76-4835-
 <div align="center">
 
 https://user-images.githubusercontent.com/40648115/213296838-f775fe83-866d-4764-a7d0-648dbb8ec983.mov
+
 </div>
 
 <!--ONE CLICK-->
@@ -195,6 +201,7 @@ https://user-images.githubusercontent.com/40648115/213296838-f775fe83-866d-4764-
 <div align="center">
 
 https://user-images.githubusercontent.com/40648115/213435051-7feb815d-f32b-4135-b095-ef49726a836c.mov
+
 </div>
 
 <!--HAVING PROBLEMS?-->

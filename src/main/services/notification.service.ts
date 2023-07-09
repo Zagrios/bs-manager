@@ -5,11 +5,12 @@ import { Notification as NotificationRenderer } from "../../shared/models/notifi
 import { IpcService } from "./ipc.service";
 
 export class NotificationService {
-
     private static instance: NotificationService;
 
-    public static getInstance(): NotificationService{
-        if(!NotificationService.instance){ NotificationService.instance = new NotificationService(); }
+    public static getInstance(): NotificationService {
+        if (!NotificationService.instance) {
+            NotificationService.instance = new NotificationService();
+        }
         return NotificationService.instance;
     }
 
@@ -18,25 +19,22 @@ export class NotificationService {
     private readonly utils: UtilsService;
     private readonly ipc: IpcService;
 
-    private constructor(){
+    private constructor() {
         this.utils = UtilsService.getInstance();
         this.ipc = IpcService.getInstance();
         this.APP_ICON = this.utils.getAssetsPath("favicon.ico");
     }
 
-    public notify(options: SystemNotificationOptions){
-        new Notification({...options, icon: this.APP_ICON}).show();
+    public notify(options: SystemNotificationOptions) {
+        new Notification({ ...options, icon: this.APP_ICON }).show();
     }
 
     // TODO : Make actions work
-    public notifyRenderer(notification: Omit<NotificationRenderer, "actions">){
-        try{
+    public notifyRenderer(notification: Omit<NotificationRenderer, "actions">) {
+        try {
             this.ipc.send("show-notification", "index.html", notification);
-        }
-        catch(e){
+        } catch (e) {
             console.error(e);
         }
-        
     }
-
 }

@@ -5,5 +5,5 @@ export const MAP_DIFFICULTIES_COLORS: Record<BsvMapDifficultyType, string> = {
     Normal: "#00FFFF",
     Hard: "#FFA700",
     Expert: "#FF4319",
-    ExpertPlus: "#FF7EFF"
-}
+    ExpertPlus: "#FF7EFF",
+};

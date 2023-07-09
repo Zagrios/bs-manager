@@ -16,56 +16,50 @@ ipcMain.on("one-click-install-model", async (event, request: IpcRequest<MSModel>
     const utils = UtilsService.getInstance();
     const models = LocalModelsManagerService.getInstance();
 
-    models.oneClickDownloadModel(request.args).then(() => {
-        utils.ipcSend(request.responceChannel, {success: true});
-    }).catch(e => {
-        utils.ipcSend(request.responceChannel, {success: false, error: e});
-    })
+    models
+        .oneClickDownloadModel(request.args)
+        .then(() => {
+            utils.ipcSend(request.responceChannel, { success: true });
+        })
+        .catch(e => {
+            utils.ipcSend(request.responceChannel, { success: false, error: e });
+        });
 });
 
 ipcMain.on("register-models-deep-link", async (event, request: IpcRequest<void>) => {
-    
     const maps = LocalModelsManagerService.getInstance();
     const utils = UtilsService.getInstance();
 
-    try{
+    try {
         const res = maps.enableDeepLinks();
-        utils.ipcSend(request.responceChannel, {success: true, data: res});
+        utils.ipcSend(request.responceChannel, { success: true, data: res });
+    } catch (e) {
+        utils.ipcSend(request.responceChannel, { success: false });
     }
-    catch(e){
-        utils.ipcSend(request.responceChannel, {success: false});
-    }
-
 });
 
 ipcMain.on("unregister-models-deep-link", async (event, request: IpcRequest<void>) => {
-    
     const maps = LocalModelsManagerService.getInstance();
     const utils = UtilsService.getInstance();
 
-    try{
+    try {
         const res = maps.disableDeepLinks();
-        utils.ipcSend(request.responceChannel, {success: true, data: res});
+        utils.ipcSend(request.responceChannel, { success: true, data: res });
+    } catch (e) {
+        utils.ipcSend(request.responceChannel, { success: false });
     }
-    catch(e){
-        utils.ipcSend(request.responceChannel, {success: false});
-    }
-    
 });
 
 ipcMain.on("is-models-deep-links-enabled", async (event, request: IpcRequest<void>) => {
-
     const maps = LocalModelsManagerService.getInstance();
     const utils = UtilsService.getInstance();
 
-    try{
+    try {
         const res = maps.isDeepLinksEnabled();
-        utils.ipcSend(request.responceChannel, {success: true, data: res});
+        utils.ipcSend(request.responceChannel, { success: true, data: res });
+    } catch (e) {
+        utils.ipcSend(request.responceChannel, { success: false });
     }
-    catch(e){
-        utils.ipcSend(request.responceChannel, {success: false});
-    }
-
 });
 
 ipc.on<ModelDownload>("download-model", async (req, reply) => {
@@ -73,13 +67,13 @@ ipc.on<ModelDownload>("download-model", async (req, reply) => {
     reply(models.downloadModel(req.args.model, req.args.version));
 });
 
-ipc.on<{version: BSVersion, type: MSModelType}>("get-version-models", async (req, reply) => {
+ipc.on<{ version: BSVersion; type: MSModelType }>("get-version-models", async (req, reply) => {
     const models = LocalModelsManagerService.getInstance();
     const res = await models.getModels(req.args.type, req.args.version);
     reply(res);
 });
 
-ipc.on<{version: BSVersion, models: BsmLocalModel[], outPath: string}>("export-models", async (req, reply) => {
+ipc.on<{ version: BSVersion; models: BsmLocalModel[]; outPath: string }>("export-models", async (req, reply) => {
     const models = LocalModelsManagerService.getInstance();
     reply(models.exportModels(req.args.outPath, req.args.version, req.args.models));
 });

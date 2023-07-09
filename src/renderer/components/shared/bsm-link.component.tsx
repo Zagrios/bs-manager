@@ -1,23 +1,34 @@
-import { LinkOpenerService } from "renderer/services/link-opener.service"
+import { LinkOpenerService } from "renderer/services/link-opener.service";
 
 type Props = {
-    className?: string,
-    href?: string,
-    internal?: boolean
-    children?: React.ReactNode,
-    style?: React.CSSProperties
-}
+    className?: string;
+    href?: string;
+    internal?: boolean;
+    children?: React.ReactNode;
+    style?: React.CSSProperties;
+};
 
-export function BsmLink({className, href, children, style, internal}: Props) {
-
+export function BsmLink({ className, href, children, style, internal }: Props) {
     const linkOpener = LinkOpenerService.getInstance();
 
     const openLink = () => {
-        if(!href){ return; }
+        if (!href) {
+            return;
+        }
         linkOpener.open(href, internal);
-    }
+    };
 
     return (
-        <a className={`${className} ${href && "cursor-pointer"}`} onClick={e => {e.stopPropagation(); openLink()}} style={style}>{children}</a>
-    )
+        // eslint-disable-next-line jsx-a11y/anchor-is-valid -- Will be reworked later
+        <a
+            className={`${className} ${href && "cursor-pointer"}`}
+            onClick={e => {
+                e.stopPropagation();
+                openLink();
+            }}
+            style={style}
+        >
+            {children}
+        </a>
+    );
 }

@@ -1,9 +1,8 @@
-export function isValidUrl(url: string): boolean{
-    try{
+export function isValidUrl(url: string): boolean {
+    try {
         new URL(url);
         return true;
-    }
-    catch(e){
+    } catch (e) {
         return false;
     }
 }

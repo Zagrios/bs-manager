@@ -11,11 +11,12 @@ import { ProgressionInterface } from "shared/models/progress-bar";
 import equal from "fast-deep-equal";
 
 export class ModelsDownloaderService {
-
     private static instance: ModelsDownloaderService;
 
-    public static getInstance(): ModelsDownloaderService{
-        if(!ModelsDownloaderService.instance){ ModelsDownloaderService.instance = new ModelsDownloaderService(); }
+    public static getInstance(): ModelsDownloaderService {
+        if (!ModelsDownloaderService.instance) {
+            ModelsDownloaderService.instance = new ModelsDownloaderService();
+        }
         return ModelsDownloaderService.instance;
     }
 
@@ -25,10 +26,13 @@ export class ModelsDownloaderService {
 
     private readonly lastDownload$ = new BehaviorSubject<BsmLocalModel>(null);
     private readonly queue$ = new BehaviorSubject<ModelDownload[]>([]);
-    private readonly _currentDownload$ = this.queue$.pipe(map(queue => queue.at(0)), distinctUntilChanged(), shareReplay(1));
+    private readonly _currentDownload$ = this.queue$.pipe(
+        map(queue => queue.at(0)),
+        distinctUntilChanged(),
+        shareReplay(1)
+    );
 
-    private constructor(){
-
+    private constructor() {
         this.ipc = IpcService.getInstance();
         this.modal = ModalService.getInsance();
         this.progress = ProgressBarService.getInstance();
@@ -37,17 +41,19 @@ export class ModelsDownloaderService {
         this._currentDownload$.pipe(filter(v => !v)).subscribe(() => this.lastDownload$.next(null));
     }
 
-    private async downloadModel(download: ModelDownload){
+    private async downloadModel(download: ModelDownload) {
+        const download$ = this.ipc.sendV2<Progression<BsmLocalModel>>("download-model", { args: download });
 
-        const download$ = this.ipc.sendV2<Progression<BsmLocalModel>>("download-model", {args: download});
-
-        if(!this.progress.isVisible){
-            const progress$: Observable<ProgressionInterface> = download$.pipe(map(progress => {
-                return {
-                    progression: progress.total ? (progress.current / progress.total) * 100 : 0,
-                    label: download.model.name
-                }
-            }), startWith({progression: .1, label: download.model.name}));
+        if (!this.progress.isVisible) {
+            const progress$: Observable<ProgressionInterface> = download$.pipe(
+                map(progress => {
+                    return {
+                        progression: progress.total ? (progress.current / progress.total) * 100 : 0,
+                        label: download.model.name,
+                    };
+                }),
+                startWith({ progression: 0.1, label: download.model.name })
+            );
             this.progress.show(progress$, true);
         }
 
@@ -57,70 +63,78 @@ export class ModelsDownloaderService {
         this.progress.hide(true);
 
         this.queue$.next(this.queue$.value.filter(m => m.model.hash !== download.model.hash));
-
     }
 
-    public addModelToDownload(model: ModelDownload): void{
-        if(this.queue$.value.some(m => equal(m, model))){ return null; }
+    public addModelToDownload(model: ModelDownload): void {
+        if (this.queue$.value.some(m => equal(m, model))) {
+            return null;
+        }
         const queue = this.queue$.value;
         queue.push(model);
         this.queue$.next([...queue]);
     }
 
-    public removeFromDownloadQueue(download: ModelDownload){
+    public removeFromDownloadQueue(download: ModelDownload) {
         const queue = this.queue$.value;
         const index = queue.findIndex(m => m.model.hash === download.model.hash);
-        
-        if(index === -1){ return; }
-        
+
+        if (index === -1) {
+            return;
+        }
+
         queue.splice(index, 1);
         this.queue$.next([...queue]);
     }
 
-    public onModelsDownloaded(cb: (model: BsmLocalModel) => void): Subscription{
+    public onModelsDownloaded(cb: (model: BsmLocalModel) => void): Subscription {
         return this.lastDownload$.pipe(filter(download => !!download)).subscribe(cb);
     }
 
-    public isDownloading$(download: ModelDownload): Observable<boolean>{
-        return this._currentDownload$.pipe(map(current => {
-            if(!current){ return false; }
-            return current.model.hash === download.model.hash && current.version === download.version
-        }), distinctUntilChanged());
+    public isDownloading$(download: ModelDownload): Observable<boolean> {
+        return this._currentDownload$.pipe(
+            map(current => {
+                if (!current) {
+                    return false;
+                }
+                return current.model.hash === download.model.hash && current.version === download.version;
+            }),
+            distinctUntilChanged()
+        );
     }
 
-    public currentDownload$(): Observable<ModelDownload>{
+    public currentDownload$(): Observable<ModelDownload> {
         return this._currentDownload$;
     }
 
-    public isPending$(download: ModelDownload): Observable<boolean>{
-        return this.queue$.pipe(map(queue => queue.at(0).model.hash !== download.model.hash && queue.at(0).version !== download.version && queue.some(d => d.model.hash === download.model.hash && d.version === download.version)), distinctUntilChanged());
+    public isPending$(download: ModelDownload): Observable<boolean> {
+        return this.queue$.pipe(
+            map(queue => queue.at(0).model.hash !== download.model.hash && queue.at(0).version !== download.version && queue.some(d => d.model.hash === download.model.hash && d.version === download.version)),
+            distinctUntilChanged()
+        );
     }
 
-    public getQueue$(): Observable<ModelDownload[]>{
+    public getQueue$(): Observable<ModelDownload[]> {
         return this.queue$.asObservable();
     }
 
-    public openDownloadModelsModal(version: BSVersion, type?: MSModelType, owned?: BsmLocalModel[]): Promise<ModalResponse<void>>{
-        return this.modal.openModal(DownloadModelsModal, {version, type, owned});
+    public openDownloadModelsModal(version: BSVersion, type?: MSModelType, owned?: BsmLocalModel[]): Promise<ModalResponse<void>> {
+        return this.modal.openModal(DownloadModelsModal, { version, type, owned });
     }
 
-    public async oneClickInstallModel(model: MSModel): Promise<boolean>{
-
+    public async oneClickInstallModel(model: MSModel): Promise<boolean> {
         this.progress.showFake(0.04);
 
-        const res = await this.ipc.send("one-click-install-model", {args: model});
+        const res = await this.ipc.send("one-click-install-model", { args: model });
 
         this.progress.complete();
         await timer(500).toPromise();
         this.progress.hide(true);
 
         return res.success;
-
     }
-
 }
 
 export type ModelDownload = {
-    model: MSModel,
-    version: BSVersion
-}
+    model: MSModel;
+    version: BSVersion;
+};

@@ -11,10 +11,8 @@ import { rename } from "fs/promises";
 import log from "electron-log";
 import { Observable, lastValueFrom, timer } from "rxjs";
 import { BsmProtocolService } from "./bsm-protocol.service";
-import { URL } from "url";
 
-export class BSLauncherService{
-
+export class BSLauncherService {
     private static instance: BSLauncherService;
 
     private readonly utilsService: UtilsService;
@@ -25,12 +23,14 @@ export class BSLauncherService{
 
     private bsProcess: ChildProcessWithoutNullStreams;
 
-    public static getInstance(): BSLauncherService{
-        if(!BSLauncherService.instance){ BSLauncherService.instance = new BSLauncherService(); }
+    public static getInstance(): BSLauncherService {
+        if (!BSLauncherService.instance) {
+            BSLauncherService.instance = new BSLauncherService();
+        }
         return BSLauncherService.instance;
     }
 
-    private constructor(){
+    private constructor() {
         this.utilsService = UtilsService.getInstance();
         this.steamService = SteamService.getInstance();
         this.oculusService = OculusService.getInstance();
@@ -44,21 +44,25 @@ export class BSLauncherService{
         });
     }
 
-    private getSteamVRPath(): Promise<string>{
+    private getSteamVRPath(): Promise<string> {
         return this.steamService.getGameFolder(STEAMVR_APP_ID, "SteamVR");
     }
 
-    private async backupSteamVR(): Promise<void>{
+    private async backupSteamVR(): Promise<void> {
         const steamVrFolder = await this.getSteamVRPath();
-        if(!await pathExist(steamVrFolder)){ return; }
-        return rename(steamVrFolder, steamVrFolder + ".bak").catch(log.error);
+        if (!(await pathExist(steamVrFolder))) {
+            return;
+        }
+        return rename(steamVrFolder, `${steamVrFolder}.bak`).catch(log.error);
     }
 
-    public async restoreSteamVR(): Promise<void>{
+    public async restoreSteamVR(): Promise<void> {
         const steamVrFolder = await this.getSteamVRPath();
-        const steamVrBackup = steamVrFolder + ".bak";
-        if(!await pathExist(steamVrBackup)){ return; }
-        return rename(steamVrFolder + ".bak", steamVrFolder).catch(log.error);
+        const steamVrBackup = `${steamVrFolder}.bak`;
+        if (!(await pathExist(steamVrBackup))) {
+            return;
+        }
+        return rename(steamVrBackup, steamVrFolder).catch(log.error);
     }
 
     public async isBsRunning(): Promise<boolean> {
@@ -66,13 +70,23 @@ export class BSLauncherService{
     }
 
     private buildBsLaunchArgs(launchOptions: LaunchOption){
-        let launchArgs = [];
+        const launchArgs = [];
 
-        if(!launchOptions.version.steam && !launchOptions.version.oculus){ launchArgs.push("--no-yeet"); }
-        if(launchOptions.oculus){ launchArgs.push("-vrmode oculus"); }
-        if(launchOptions.desktop){ launchArgs.push("fpfc"); }
-        if(launchOptions.debug){ launchArgs.push("--verbose"); }
-        if(launchOptions.additionalArgs){ launchArgs.push(...launchOptions.additionalArgs); }
+        if (!launchOptions.version.steam && !launchOptions.version.oculus) {
+            launchArgs.push("--no-yeet");
+        }
+        if (launchOptions.oculus) {
+            launchArgs.push("-vrmode oculus");
+        }
+        if (launchOptions.desktop) {
+            launchArgs.push("fpfc");
+        }
+        if (launchOptions.debug) {
+            launchArgs.push("--verbose");
+        }
+        if (launchOptions.additionalArgs) {
+            launchArgs.push(...launchOptions.additionalArgs);
+        }
 
         return Array.from(new Set(launchArgs).values());
     }
@@ -161,5 +175,4 @@ export class BSLauncherService{
         })});
     }
      
-
 }

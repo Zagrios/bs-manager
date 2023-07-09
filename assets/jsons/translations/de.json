@@ -16,7 +16,7 @@
         "copy": "Kopieren",
         "copied": "Kopiert!"
     },
-    "nav-bar":{
+    "nav-bar": {
         "add-version": "Version Hinzufügen",
         "settings": "Einstellungen",
         "shared": {
@@ -25,14 +25,14 @@
         }
     },
     "pages": {
-        "shared-maps":{
+        "shared-maps": {
             "title": "Geteilte Maps"
         },
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Oculus Modus",
                 "oculus-description": "Wenn du Beat Saber über Steam benutzt, es ermöglicht dir Oculus's VR-Composer zu nutzen ohne SteamVR, um bessere Leistung zu erhalten. Dies wird nicht benötigt für Oculus Headsets",
-                "desktop": "Desktop Modus",
+                "desktop": "FPFC Modus",
                 "desktop-description": "Auf diese Weise kannst du WASD und die Maus verwenden, um im Spiel durch das Menü zu navigieren. Dies erleichtert das Testen erheblich, da Du dein Headset nicht aufsetzen musst!",
                 "debug": "Debug Modus",
                 "debug-description": "Aktiviert das Ausgabeprotokollfenster für IPA. Dies zeigt die Debug-Konsole, die Mods verwenden.",
@@ -64,9 +64,9 @@
                                 }
                             }
                         },
-                        "empty-maps":{
-                            "text":"Keine Maps",
-                            "button":"Maps Herunterladen"
+                        "empty-maps": {
+                            "text": "Keine Maps",
+                            "button": "Maps Herunterladen"
                         }
                     }
                 }
@@ -105,7 +105,7 @@
             "steam-release": "Versions Seite",
             "dropdown": {
                 "refresh": "Liste aktualisieren",
-                "import-version" :"Importiere eine Version"
+                "import-version": "Importiere eine Version"
             }
         },
         "settings": {
@@ -221,7 +221,7 @@
                 }
             },
             "errors": {
-                "titles":{
+                "titles": {
                     "dotnet-required": ".NET 6 Benötigt"
                 },
                 "msg": {
@@ -251,13 +251,13 @@
                     "no-internet": "Keine Internet Verbindung",
                     "dotnet-required": ".NET 6 Runtime muss installiert sein, um eine Version von BeatSaber herunterzuladen. Lade es herunter, indem Du auf die Schaltfläche unten klickst."
                 },
-                "actions":{
+                "actions": {
                     "download-dotnet": ".NET 6 Herunterladen"
                 }
             }
         },
-        "bs-import-version":{
-            "success":{
+        "bs-import-version": {
+            "success": {
                 "start-import": {
                     "title": "Import im Gange 👌",
                     "desc": "Der Import kann je nach Konfiguration einige Minuten dauern."
@@ -266,8 +266,8 @@
                     "title": "Versionen Importiert 🎉"
                 }
             },
-            "errors":{
-                "import-error":{
+            "errors": {
+                "import-error": {
                     "desc": "Überprüfe, ob der ausgewählte Ordner eine BeatSaber-Installation ist."
                 }
             }
@@ -300,31 +300,31 @@
                     }
                 }
             },
-            "additional-content":{
+            "additional-content": {
                 "deep-link": {
                     "select-all": "Alle Auswählen",
-                    "activation":{
-                        "success":{
-                            "title":"OneClick aktiviert!",
-                            "description":"OneClick-Installationen wurden aktiviert."
+                    "activation": {
+                        "success": {
+                            "title": "OneClick aktiviert!",
+                            "description": "OneClick-Installationen wurden aktiviert."
                         },
-                        "error":{
-                            "description":"OneClick-Installationen konnten nicht aktiviert werden."
+                        "error": {
+                            "description": "OneClick-Installationen konnten nicht aktiviert werden."
                         }
                     },
-                    "deactivation":{
-                        "success":{
-                            "title":"OneClick deaktiviert!",
-                            "description":"OneClick-Installationen wurden deaktiviert."
+                    "deactivation": {
+                        "success": {
+                            "title": "OneClick deaktiviert!",
+                            "description": "OneClick-Installationen wurden deaktiviert."
                         },
-                        "error":{
-                            "description":"Ein Unbekannter Fehler ist aufgetreten."
+                        "error": {
+                            "description": "Ein Unbekannter Fehler ist aufgetreten."
                         }
                     },
-                    "check-all-enabled":{
+                    "check-all-enabled": {
                         "title": "OneClick deaktiviert",
                         "description": "Eine oder mehrere OneClick-Installationen sind deaktiviert. Gehe in die Einstellungen, um sie zu aktivieren.",
-                        "actions":{
+                        "actions": {
                             "settings": "Einstellungen",
                             "not-remind": "Erinnere mich nicht"
                         }
@@ -360,13 +360,13 @@
                     "EXE_NOT_FINDED": "Einige Dateien scheinen zu fehlen, versuche die Dateien zu überprüfen.",
                     "EXIT": "BeatSaber stoppte abrupt, versuche die Dateien zu überprüfen."
                 },
-                "actions":{
+                "actions": {
                     "STEAM_NOT_RUNNING": "Starte Steam"
                 }
             }
         },
-        "steam":{
-            "steam-launching":{
+        "steam": {
+            "steam-launching": {
                 "title": "Steam startet!",
                 "description": "Beat Saber wird automatisch nach Steam gestartet."
             }
@@ -426,27 +426,27 @@
                 }
             }
         },
-        "maps":{
-            "one-click-install":{
-                "success":"Map installation abegschlossen",
-                "error":"Ein Fehler ist aufgetreten während der installation der Map"
+        "maps": {
+            "one-click-install": {
+                "success": "Map installation abegschlossen",
+                "error": "Ein Fehler ist aufgetreten während der installation der Map"
             }
         },
-        "playlists":{
-            "one-click-install":{
-                "success":"Playlist installation abgeschlossen",
-                "error":"Ein Fehler ist aufgetreten während der installation der Playlist"
+        "playlists": {
+            "one-click-install": {
+                "success": "Playlist installation abgeschlossen",
+                "error": "Ein Fehler ist aufgetreten während der installation der Playlist"
             }
         },
-        "models":{
-            "one-click-install":{
-                "success":"Modell installation abgeschlossen",
-                "error":"Ein Fehler ist aufgetreten während der installation des Modells"
+        "models": {
+            "one-click-install": {
+                "success": "Modell installation abgeschlossen",
+                "error": "Ein Fehler ist aufgetreten während der installation des Modells"
             }
         },
         "shared-folder": {
             "info": {
-                "userdata-backup-created":{
+                "userdata-backup-created": {
                     "title": "Sicherung erstellt",
                     "msg": "Das Freigeben des Ordners „UserData“ kann zu Fehlern führen. Bei Problemen trenne den Ordner, um die Sicherung wiederherzustellen"
                 }
@@ -454,7 +454,7 @@
         }
     },
     "modals": {
-        "misc":{
+        "misc": {
             "remember-my-choice": "Merke meine Wahl"
         },
         "guard": {
@@ -479,7 +479,7 @@
                 "password": {
                     "label": "Passwort",
                     "placeholder": "Gebe dein Passwort ein",
-                    "max-length-warning": "Das Passwort überschreitet 64 Zeichen! Wenn das Passwort ungültig ist, versuchen Sie nur die ersten 64 Zeichen einzugeben." 
+                    "max-length-warning": "Das Passwort überschreitet 64 Zeichen! Wenn das Passwort ungültig ist, versuchen Sie nur die ersten 64 Zeichen einzugeben."
                 },
                 "stay": {
                     "label": "Verbunden bleiben"
@@ -490,15 +490,15 @@
                 "submit": "Anmelden"
             }
         },
-        "steam-credentials":{
+        "steam-credentials": {
             "title": "Steam Anmeldeinformationen",
             "p-1": "Die Anmeldeinformationen werden nur zum Herunterladen des Spiels verwendet, da Steam überprüfen muss, ob Du das Spiel bezahlt hast, um es herunterladen zu dürfen. Sie werden nicht gespeichert und direkt an DepotDownloader weitergegeben. Wenn Du deine Anmeldeinformationen nicht eingeben möchtest, kannst Du diesem Tutorial folgen:",
             "p-2": "und klicke dann auf das Zahnradsymbol in der oberen rechten Ecke und wähle \"Version importieren\", wähle den Ordner aus, in den Beat Saber heruntergeladen wurde (Wenn Du dem obigen Tutorial folgst, solltest Du den richtigen Speicherort haben)"
         },
-        "bs-import-version":{
+        "bs-import-version": {
             "title": "Importiere eine Version",
             "description": "Importiert eine Version von BeatSaber zur Verwendung mit BSManager. Der Import kopiert den ausgewählten BeatSaber-Installationsordner in den BSManager-Versionsordner.",
-            "buttons":{
+            "buttons": {
                 "submit": "Importiere eine Version"
             }
         },
@@ -594,7 +594,7 @@
             "no-maps-found": "Keine Maps gefunden",
             "no-internet": "Kein Internet"
         },
-        "mods-disclaimer":{
+        "mods-disclaimer": {
             "title": "Haftungsausschluss",
             "p-1": "Indem Du dich für die Verwendung von Mods entscheiden, verstehst Du Folgendes:",
             "li-1": "Möglicherweise treten Probleme auf, die im Vanilla-Spiel nicht vorhanden sind. 99.9% der Fehler, Abstürze und Verzögerungen sind auf Mods zurückzuführen.",
@@ -602,7 +602,7 @@
             "li-3": "Beat Games versuchen nicht absichtlich, Mods kaputt zu machen. Sie möchten an der Codebasis arbeiten und manchmal macht dies Mods kaputt, aber sie sind nicht darauf aus, Mods zu verbieten.",
             "p-2": "Greife die Spieleentwickler nicht wegen Problemen im Zusammenhang mit Mods an und umgekehrt - Modder und Spieleentwickler sind zwei getrennte Gruppen. Sei einfach nicht gemein, okay?"
         },
-        "shared-folders":{
+        "shared-folders": {
             "title": "Geteilte Ordner",
             "description": "Verknüpfe BeatSaber-Ordner, um ihre Inhalte mit freigegebenen Ordnern in anderen Versionen zu synchronisieren. Beachte, dass auch das Löschen von Inhalten geteilt wird.",
             "buttons": {
@@ -686,7 +686,7 @@
             "mapped-by": "Gemapped von"
         }
     },
-    "models":{
+    "models": {
         "types": {
             "singular": {
                 "avatar": "Avatar",
@@ -716,14 +716,14 @@
                 "link-models": "Modelle verlinken",
                 "unlink-models": "Modelle trennen"
             },
-            "grid":{
+            "grid": {
                 "loading": "Modelle laden...",
                 "no-models": "Keine Modelle",
                 "download-models": "Modelle herunterladen"
             }
         },
         "modals": {
-            "delete-model" :{
+            "delete-model": {
                 "title": "Das Modell löschen",
                 "desc": "Sind Sie sicher, dass Sie das Modell {modelName} löschen möchten?",
                 "linked-annotation": "Dieses Modell wird aus allen verlinkten Versionen entfernt."
@@ -862,57 +862,8 @@
         "downloading": "Lade Updates Herunter"
     },
     "dateformat": {
-        "dayNames": [
-            "So",
-            "Mo",
-            "Di",
-            "Mi",
-            "Do",
-            "Fr",
-            "Sa",
-            "Sonntag",
-            "Montag",
-            "Dienstag",
-            "Mittwoch",
-            "Donnerstag",
-            "Freitag",
-            "Samstag"
-        ],
-        "monthNames": [
-            "Jan",
-            "Feb",
-            "Mär",
-            "Apr",
-            "Mai",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Okt",
-            "Nov",
-            "Dez",
-            "Januar",
-            "Februar",
-            "März",
-            "April",
-            "Mai",
-            "Juni",
-            "Juli",
-            "August",
-            "September",
-            "Oktober",
-            "November",
-            "Dezember"
-        ],
-        "timeNames": [
-            "a",
-            "p",
-            "am",
-            "pm",
-            "A",
-            "P",
-            "AM",
-            "PM"
-        ]
+        "dayNames": ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa", "Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
+        "monthNames": ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez", "Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
+        "timeNames": ["a", "p", "am", "pm", "A", "P", "AM", "PM"]
     }
 }
