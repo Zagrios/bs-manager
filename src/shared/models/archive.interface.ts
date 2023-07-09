@@ -1,4 +1,4 @@
-export interface ArchiveProgress{
+export interface ArchiveProgress {
     totalFiles: number;
     prossesedFiles: number;
 }

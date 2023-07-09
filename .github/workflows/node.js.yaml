@@ -4,28 +4,28 @@
 name: Node.js CI
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    push:
+        branches: ["master"]
+    pull_request:
+        branches: ["master"]
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+    build:
+        strategy:
+            matrix:
+                os: [ubuntu-latest, windows-latest, macos-latest]
 
-    runs-on: ${{ matrix.os }}
+        runs-on: ${{ matrix.os }}
 
-    steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18.x
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build
-    - run: npm test
-      # Currently typescript, eslint, and prettier are unhappy
-      continue-on-error: true
+        steps:
+            - uses: actions/checkout@v3
+            - name: Use Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 18.x
+                  cache: "npm"
+            - run: npm ci
+            - run: npm run build
+            - run: npm test
+              # Currently typescript, eslint, and prettier are unhappy
+              continue-on-error: true

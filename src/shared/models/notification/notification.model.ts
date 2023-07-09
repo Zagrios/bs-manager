@@ -1,9 +1,9 @@
 export interface Notification {
-    title: string,
-    type?: NotificationType
-    desc?: string,
-    actions?: NotificationAction[],
-    duration?: number,
+    title: string;
+    type?: NotificationType;
+    desc?: string;
+    actions?: NotificationAction[];
+    duration?: number;
 }
 
 export enum NotificationType {
@@ -14,9 +14,9 @@ export enum NotificationType {
 }
 
 export interface NotificationAction {
-    id: string,
-    title: string,
-    cancel?: boolean
+    id: string;
+    title: string;
+    cancel?: boolean;
 }
 
 export enum NotificationResult {

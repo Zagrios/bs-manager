@@ -17,13 +17,14 @@ import { ConfigurationService } from "../configuration.service";
 import { DeleteModelsModal } from "renderer/components/modal/modal-types/models/delete-models-modal.component";
 
 export class ModelsManagerService {
-
     private static instance: ModelsManagerService;
 
-    public static readonly REMEMBER_CHOICE_DELETE_MODEL_KEY = "not-confirm-delete-model"
+    public static readonly REMEMBER_CHOICE_DELETE_MODEL_KEY = "not-confirm-delete-model";
 
-    public static getInstance(): ModelsManagerService{
-        if(!ModelsManagerService.instance){ ModelsManagerService.instance = new ModelsManagerService(); }
+    public static getInstance(): ModelsManagerService {
+        if (!ModelsManagerService.instance) {
+            ModelsManagerService.instance = new ModelsManagerService();
+        }
         return ModelsManagerService.instance;
     }
 
@@ -34,7 +35,7 @@ export class ModelsManagerService {
     private readonly notifications: NotificationService;
     private readonly config: ConfigurationService;
 
-    private constructor(){
+    private constructor() {
         this.ipc = IpcService.getInstance();
         this.versionFolderLinked = VersionFolderLinkerService.getInstance();
         this.modalService = ModalService.getInsance();
@@ -43,145 +44,159 @@ export class ModelsManagerService {
         this.config = ConfigurationService.getInstance();
     }
 
-    public isModelsLinked(version: BSVersion, type: MSModelType): Promise<boolean>{
+    public isModelsLinked(version: BSVersion, type: MSModelType): Promise<boolean> {
         return lastValueFrom(this.versionFolderLinked.isVersionFolderLinked(version, MODEL_TYPE_FOLDERS[type]));
     }
 
-    public $modelsLinkingPending(version: BSVersion, type: MSModelType): Observable<boolean>{
+    public $modelsLinkingPending(version: BSVersion, type: MSModelType): Observable<boolean> {
         return this.versionFolderLinked.$isVersionFolderPending(version, MODEL_TYPE_FOLDERS[type]);
     }
 
-    public onModelsFolderLinked(callback: VersionLinkerActionListener): void{
+    public onModelsFolderLinked(callback: VersionLinkerActionListener): void {
         return this.versionFolderLinked.onVersionFolderLinked(callback);
     }
 
-    public onModelsFolderUnlinked(callback: VersionLinkerActionListener): void{
+    public onModelsFolderUnlinked(callback: VersionLinkerActionListener): void {
         return this.versionFolderLinked.onVersionFolderUnlinked(callback);
     }
 
-    public removeModelsFolderLinkedListener(callback: VersionLinkerActionListener): void{
+    public removeModelsFolderLinkedListener(callback: VersionLinkerActionListener): void {
         return this.versionFolderLinked.removeVersionFolderLinkedListener(callback);
     }
 
-    public removeModelsFolderUnlinkedListener(callback: VersionLinkerActionListener): void{
+    public removeModelsFolderUnlinkedListener(callback: VersionLinkerActionListener): void {
         return this.versionFolderLinked.removeVersionFolderUnlinkedListener(callback);
     }
 
-    public async linkModels(type: MSModelType, version?: BSVersion): Promise<boolean>{
-
+    public async linkModels(type: MSModelType, version?: BSVersion): Promise<boolean> {
         const res = await this.modalService.openModal(LinkModelsModal, type);
 
-        if(res.exitCode !== ModalExitCode.COMPLETED){ return null; }
+        if (res.exitCode !== ModalExitCode.COMPLETED) {
+            return null;
+        }
 
         return this.versionFolderLinked.linkVersionFolder({
             version,
             relativeFolder: MODEL_TYPE_FOLDERS[type],
             type: VersionLinkerActionType.Link,
-            options: { keepContents: res.data !== false }
+            options: { keepContents: res.data !== false },
         });
     }
 
-    public async unlinkModels(type: MSModelType, version?: BSVersion): Promise<boolean>{
-
+    public async unlinkModels(type: MSModelType, version?: BSVersion): Promise<boolean> {
         const res = await this.modalService.openModal(UnlinkModelsModal, type);
 
-        if(res.exitCode !== ModalExitCode.COMPLETED){ return null; }
+        if (res.exitCode !== ModalExitCode.COMPLETED) {
+            return null;
+        }
 
         return this.versionFolderLinked.unlinkVersionFolder({
             version,
             relativeFolder: MODEL_TYPE_FOLDERS[type],
             type: VersionLinkerActionType.Unlink,
-            options: { keepContents: res.data !== false }
+            options: { keepContents: res.data !== false },
         });
     }
 
-    public $getModels(type: MSModelType, version?: BSVersion): Observable<Progression<BsmLocalModel[]>>{
+    public $getModels(type: MSModelType, version?: BSVersion): Observable<Progression<BsmLocalModel[]>> {
         return this.ipc.sendV2<Progression<BsmLocalModel[]>>("get-version-models", { args: { version, type } });
     }
 
-    public async exportModels(models: BsmLocalModel[], version?: BSVersion){
-        if(!this.progressBar.require()){ return; }
+    public async exportModels(models: BsmLocalModel[], version?: BSVersion) {
+        if (!this.progressBar.require()) {
+            return;
+        }
 
-        const resFile = await this.ipc.send<string, OpenSaveDialogOption>("save-file", {args: {
-            filename: version ? `${version.name ?? version.BSVersion} Models` : "Models",
-            filters: [{name: "zip", extensions: ["zip"]}]
-        }});
+        const resFile = await this.ipc.send<string, OpenSaveDialogOption>("save-file", {
+            args: {
+                filename: version ? `${version.name ?? version.BSVersion} Models` : "Models",
+                filters: [{ name: "zip", extensions: ["zip"] }],
+            },
+        });
 
-        if(!resFile.success){ return; }
+        if (!resFile.success) {
+            return;
+        }
 
-        const exportProgress$: Observable<ProgressionInterface> = this.ipc.sendV2<Progression, {version: BSVersion, models: BsmLocalModel[], outPath: string}>("export-models", {args: {version, models, outPath: resFile.data}}).pipe(
+        const exportProgress$: Observable<ProgressionInterface> = this.ipc.sendV2<Progression, { version: BSVersion; models: BsmLocalModel[]; outPath: string }>("export-models", { args: { version, models, outPath: resFile.data } }).pipe(
             map(p => {
-                return { progression: (p.current / p.total) * 100, label: `${p.current} / ${p.total}` } as ProgressionInterface
+                return { progression: (p.current / p.total) * 100, label: `${p.current} / ${p.total}` } as ProgressionInterface;
             })
         );
 
         this.progressBar.show(exportProgress$, true);
 
-        lastValueFrom(exportProgress$).then(() => {
-            this.notifications.notifySuccess({title: "models.notifications.export-success.title", duration: 3000});
-        }).catch(() => {
-            this.notifications.notifyError({title: "notifications.types.error", desc: "notifications.common.msg.error-occurred", duration: 3000});
-        }).finally(() => {
-            this.progressBar.hide(true);
-        })
-
+        lastValueFrom(exportProgress$)
+            .then(() => {
+                this.notifications.notifySuccess({ title: "models.notifications.export-success.title", duration: 3000 });
+            })
+            .catch(() => {
+                this.notifications.notifyError({ title: "notifications.types.error", desc: "notifications.common.msg.error-occurred", duration: 3000 });
+            })
+            .finally(() => {
+                this.progressBar.hide(true);
+            });
     }
 
-    public async deleteModels(models: BsmLocalModel[], version?: BSVersion): Promise<BsmLocalModel[]>{
-
-        if(!models?.length){ return Promise.resolve([]); }
+    public async deleteModels(models: BsmLocalModel[], version?: BSVersion): Promise<BsmLocalModel[]> {
+        if (!models?.length) {
+            return Promise.resolve([]);
+        }
 
         const askModal = models.length > 1 || !this.config.get<boolean>(ModelsManagerService.REMEMBER_CHOICE_DELETE_MODEL_KEY);
 
-        if(askModal){
-
+        if (askModal) {
             const types = Array.from(new Set(models.map(m => m.type)));
 
             const linked = await (async () => {
-                if(!version){ return true; }
-                for(const type of types){
-                    if(!(await this.isModelsLinked(version, type))){ continue; }
+                if (!version) {
+                    return true;
+                }
+                for (const type of types) {
+                    if (!(await this.isModelsLinked(version, type))) {
+                        continue;
+                    }
                     return true;
                 }
                 return false;
             })();
 
             const res = await this.modalService.openModal(DeleteModelsModal, { models, linked });
-            if(res.exitCode !== ModalExitCode.COMPLETED){ return Promise.resolve([]); }
+            if (res.exitCode !== ModalExitCode.COMPLETED) {
+                return Promise.resolve([]);
+            }
         }
 
-        const showProgressBar = this.progressBar.require(); 
+        const showProgressBar = this.progressBar.require();
 
-        const obs$ = this.ipc.sendV2<Progression<BsmLocalModel[]>>("delete-models", {args: models});
+        const obs$ = this.ipc.sendV2<Progression<BsmLocalModel[]>>("delete-models", { args: models });
 
-        const progress$ =obs$.pipe(map(progress => (progress.current / progress.total) * 100));
+        const progress$ = obs$.pipe(map(progress => (progress.current / progress.total) * 100));
 
-        if(showProgressBar){ this.progressBar.show(progress$); }
+        if (showProgressBar) {
+            this.progressBar.show(progress$);
+        }
 
         return lastValueFrom(obs$)
-            .then(({data}) => data ?? [])
+            .then(({ data }) => data ?? [])
             .catch(() => {
-                this.notifications.notifyError({title: "notifications.types.error", desc: "notifications.common.msg.error-occurred", duration: 3000});
-                return []; 
+                this.notifications.notifyError({ title: "notifications.types.error", desc: "notifications.common.msg.error-occurred", duration: 3000 });
+                return [];
             })
             .finally(() => this.progressBar.hide(true));
-
     }
 
-    public isDeepLinksEnabled(): Promise<boolean>{
-        return this.ipc.send<boolean>("is-models-deep-links-enabled").then(res => (
-            res.success ? res.data : false
-        ));
+    public isDeepLinksEnabled(): Promise<boolean> {
+        return this.ipc.send<boolean>("is-models-deep-links-enabled").then(res => (res.success ? res.data : false));
     }
 
-    public async enableDeepLink(): Promise<boolean>{
+    public async enableDeepLink(): Promise<boolean> {
         const res = await this.ipc.send<boolean>("register-models-deep-link");
         return res.success ? res.data : false;
     }
 
-    public async disableDeepLink(): Promise<boolean>{
+    public async disableDeepLink(): Promise<boolean> {
         const res = await this.ipc.send<boolean>("unregister-models-deep-link");
         return res.success ? res.data : false;
     }
-
 }

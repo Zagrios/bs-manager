@@ -15,7 +15,6 @@ import { VersionFolderLinkerService, VersionLinkerActionType } from "renderer/se
 import { BSVersion } from "shared/bs-version.interface";
 
 export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ data }) => {
-
     const SHARED_FOLDERS_KEY = "default-shared-folders";
 
     const config = ConfigurationService.getInstance();
@@ -28,46 +27,49 @@ export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ data }) => 
     const [folders, setFolders] = useState<string[]>([]);
 
     useEffect(() => {
-
         setFolders(prev => Array.from(new Set([...prev, ...config.get<string[]>(SHARED_FOLDERS_KEY)]).values()));
 
-        linker.getLinkedFolders(data, {relative: true}).toPromise().then(linkedFolders => {
-            setFolders(prev => Array.from(new Set([...prev, ...linkedFolders]).values()));
-        });
-
+        linker
+            .getLinkedFolders(data, { relative: true })
+            .toPromise()
+            .then(linkedFolders => {
+                setFolders(prev => Array.from(new Set([...prev, ...linkedFolders]).values()));
+            });
     }, []);
 
     useEffect(() => {
-
-        if(!folders?.length){
+        if (!folders?.length) {
             config.delete(SHARED_FOLDERS_KEY);
-            return; 
+            return;
         }
-        
-        config.set(SHARED_FOLDERS_KEY, folders);
 
+        config.set(SHARED_FOLDERS_KEY, folders);
     }, [folders]);
 
     const addFolder = async () => {
         const versionPath = await versionManager.getVersionPath(data).toPromise();
-        const folder = await ipc.sendV2<{canceled: boolean, filePaths: string[]}, string>("choose-folder", {args: versionPath}).toPromise();
+        const folder = await ipc.sendV2<{ canceled: boolean; filePaths: string[] }, string>("choose-folder", { args: versionPath }).toPromise();
 
-        if(!folder || folder.canceled || !folder.filePaths?.length){ return; }
+        if (!folder || folder.canceled || !folder.filePaths?.length) {
+            return;
+        }
 
-        const relativeFolder = await ipc.sendV2<string>("full-version-path-to-relative", {args: {version: data, fullPath: folder.filePaths[0]}}).toPromise();
+        const relativeFolder = await ipc.sendV2<string>("full-version-path-to-relative", { args: { version: data, fullPath: folder.filePaths[0] } }).toPromise();
 
-        if(folders.includes(relativeFolder)){ return; }
+        if (folders.includes(relativeFolder)) {
+            return;
+        }
 
         setFolders(pre => [...pre, relativeFolder]);
-    }
+    };
 
     const removeFolder = (index: number) => {
-        setFolders((prev) => prev.filter((_, i) => i !== index));
-    }
+        setFolders(prev => prev.filter((_, i) => i !== index));
+    };
 
     const linkAll = () => {
-        folders.forEach(relativeFolder => linker.linkVersionFolder({ version: data, relativeFolder,  type: VersionLinkerActionType.Link }))
-    }
+        folders.forEach(relativeFolder => linker.linkVersionFolder({ version: data, relativeFolder, type: VersionLinkerActionType.Link }));
+    };
 
     return (
         <form className="w-full max-w-md ">
@@ -75,16 +77,23 @@ export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ data }) => 
             <p className="my-3">{t("modals.shared-folders.description")}</p>
             <ul className="flex flex-col gap-1 mb-2 h-[300px] max-h-[300px] overflow-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 px-1">
                 {folders.map((folder, index) => (
-                    <FolderItem key={folder} version={data} relativeFolder={folder} onDelete={() => {removeFolder(index)}}/>
+                    <FolderItem
+                        key={folder}
+                        version={data}
+                        relativeFolder={folder}
+                        onDelete={() => {
+                            removeFolder(index);
+                        }}
+                    />
                 ))}
             </ul>
             <div className="grid grid-flow-col gap-3 grid-cols-2">
-                <BsmButton icon="add" className="h-8 rounded-md flex justify-center items-center font-bold bg-light-main-color-1 dark:bg-main-color-1" iconClassName="h-6 aspect-square text-current" onClick={addFolder} withBar={false} text="modals.shared-folders.buttons.add-folder"/>
-                <BsmButton icon="link" className="h-8 rounded-md flex justify-center items-center font-bold" typeColor="primary" iconClassName="h-6 aspect-square text-current -rotate-45" onClick={linkAll} withBar={false} text="modals.shared-folders.buttons.link-all"/>
+                <BsmButton icon="add" className="h-8 rounded-md flex justify-center items-center font-bold bg-light-main-color-1 dark:bg-main-color-1" iconClassName="h-6 aspect-square text-current" onClick={addFolder} withBar={false} text="modals.shared-folders.buttons.add-folder" />
+                <BsmButton icon="link" className="h-8 rounded-md flex justify-center items-center font-bold" typeColor="primary" iconClassName="h-6 aspect-square text-current -rotate-45" onClick={linkAll} withBar={false} text="modals.shared-folders.buttons.link-all" />
             </div>
         </form>
-    )
-}
+    );
+};
 
 // -------- FOLDER ITEM --------
 
@@ -92,10 +101,9 @@ type FolderProps = {
     version: BSVersion;
     relativeFolder: string;
     onDelete?: () => void;
-}
+};
 
-const FolderItem = ({version, relativeFolder, onDelete}: FolderProps) => {
-
+const FolderItem = ({ version, relativeFolder, onDelete }: FolderProps) => {
     const linker = VersionFolderLinkerService.getInstance();
 
     const t = useTranslation();
@@ -103,9 +111,9 @@ const FolderItem = ({version, relativeFolder, onDelete}: FolderProps) => {
     const name = relativeFolder.split(window.electron.path.sep).at(-1);
     const color = useThemeColor("first-color");
 
-    const variants: Variants = { 
-        hover: {rotate: 22.5},
-        tap: {rotate: 45}
+    const variants: Variants = {
+        hover: { rotate: 22.5 },
+        tap: { rotate: 45 },
     };
 
     const pending = useObservable(linker.isPending(version, relativeFolder));
@@ -115,53 +123,76 @@ const FolderItem = ({version, relativeFolder, onDelete}: FolderProps) => {
     const [linked, setLinked] = useState(false);
 
     useEffect(() => {
-        if(pending){ return; }
+        if (pending) {
+            return;
+        }
         loadFolderIsLinked();
     }, [version, relativeFolder, pending]);
 
     const loadFolderIsLinked = () => {
         linker.isVersionFolderLinked(version, relativeFolder).toPromise().then(setLinked);
-    }
+    };
 
     const onClickLink = () => {
-        if(linked){
+        if (linked) {
             return linker.unlinkVersionFolder({
                 version,
                 relativeFolder,
                 type: VersionLinkerActionType.Unlink,
-            })
+            });
         }
 
         return linker.linkVersionFolder({
             version,
             relativeFolder,
             type: VersionLinkerActionType.Link,
-        })
-    }
+        });
+    };
 
     const cancelLink = () => {
         linker.cancelAction(version, relativeFolder);
         loadFolderIsLinked();
-    }
+    };
 
     return (
         <li className="w-full h-12 rounded-md shrink-0 flex flex-row items-center justify-between px-2 font-bold bg-light-main-color-1 dark:bg-main-color-1">
-            <span className="cursor-help" title={relativeFolder}>{name}</span>
+            <span className="cursor-help" title={relativeFolder}>
+                {name}
+            </span>
             <div className="flex flex-row gap-1.5">
                 <Tippy placement="left" content={t(`modals.shared-folders.buttons.${linked ? "unlink-folder" : "link-folder"}`)} arrow={false}>
-                    <LinkButton variants={variants} linked={linked} disabled={linkDisabled} whileHover="hover" whileTap="tap" className="p-0.5 h-7 shrink-0 aspect-square blur-0 cursor-pointer hover:brightness-75" onClick={onClickLink}/>
+                    <LinkButton variants={variants} linked={linked} disabled={linkDisabled} whileHover="hover" whileTap="tap" className="p-0.5 h-7 shrink-0 aspect-square blur-0 cursor-pointer hover:brightness-75" onClick={onClickLink} />
                 </Tippy>
                 {(() => {
-                    if(processing){
-                        return <BsmBasicSpinner className="aspect-square h-7 rounded-md p-1 dark:bg-main-color-2" thikness="3.5px" style={{color}}/>;
+                    if (processing) {
+                        return <BsmBasicSpinner className="aspect-square h-7 rounded-md p-1 dark:bg-main-color-2" thikness="3.5px" style={{ color }} />;
                     }
-                    if(pending){
-                        return <BsmButton className="aspect-square h-7 rounded-md p-1" icon="cross" withBar={false} onClick={e => {e.preventDefault(); cancelLink()}}/>;
+                    if (pending) {
+                        return (
+                            <BsmButton
+                                className="aspect-square h-7 rounded-md p-1"
+                                icon="cross"
+                                withBar={false}
+                                onClick={e => {
+                                    e.preventDefault();
+                                    cancelLink();
+                                }}
+                            />
+                        );
                     }
-                    return <BsmButton className="aspect-square h-7 rounded-md p-1" icon="trash" withBar={false} onClick={e => {e.preventDefault(); onDelete?.()}}/>;
+                    return (
+                        <BsmButton
+                            className="aspect-square h-7 rounded-md p-1"
+                            icon="trash"
+                            withBar={false}
+                            onClick={e => {
+                                e.preventDefault();
+                                onDelete?.();
+                            }}
+                        />
+                    );
                 })()}
             </div>
         </li>
-    )
-
-}
+    );
+};

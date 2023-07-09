@@ -1,20 +1,19 @@
 #titlebar {
-  height: 25px;
-  width: 100%;
+    height: 25px;
+    width: 100%;
 }
 
 #titlebar #drag-region {
-  -webkit-app-region: drag;
+    -webkit-app-region: drag;
 }
 
-#window-title{
-  height: 100%;
-  display: flex;
-  align-content: center;
-  align-items: center;
+#window-title {
+    height: 100%;
+    display: flex;
+    align-content: center;
+    align-items: center;
 }
-
 
 #close-button:hover {
-  background: #E81123 !important;
+    background: #e81123 !important;
 }

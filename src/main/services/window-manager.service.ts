@@ -5,21 +5,20 @@ import { AppWindow } from "shared/models/window-manager/app-window.model";
 import path from "path";
 import { APP_NAME } from "../constants";
 
-export class WindowManagerService{
-
+export class WindowManagerService {
     private static instance: WindowManagerService;
 
-    private readonly PRELOAD_PATH = app.isPackaged ? path.join(__dirname, 'preload.js') : path.join(__dirname, '../../../.erb/dll/preload.js')
+    private readonly PRELOAD_PATH = app.isPackaged ? path.join(__dirname, "preload.js") : path.join(__dirname, "../../../.erb/dll/preload.js");
 
     private readonly utilsService: UtilsService = UtilsService.getInstance();
 
     private readonly appWindowsOptions: Record<AppWindow, BrowserWindowConstructorOptions> = {
-        "launcher.html": {width: 380, height: 500, minWidth: 380, minHeight: 500, resizable: false},
-        "index.html": {width: 1080, height: 720, minWidth: 900, minHeight: 500},
-        "oneclick-download-map.html": {width: 350, height: 400, minWidth: 350, minHeight: 400, resizable: false},
-        "oneclick-download-playlist.html": {width: 350, height: 400, minWidth: 350, minHeight: 400, resizable: false},
-        "oneclick-download-model.html": {width: 350, height: 400, minWidth: 350, minHeight: 400, resizable: false},
-    }
+        "launcher.html": { width: 380, height: 500, minWidth: 380, minHeight: 500, resizable: false },
+        "index.html": { width: 1080, height: 720, minWidth: 900, minHeight: 500 },
+        "oneclick-download-map.html": { width: 350, height: 400, minWidth: 350, minHeight: 400, resizable: false },
+        "oneclick-download-playlist.html": { width: 350, height: 400, minWidth: 350, minHeight: 400, resizable: false },
+        "oneclick-download-model.html": { width: 350, height: 400, minWidth: 350, minHeight: 400, resizable: false },
+    };
 
     private readonly baseWindowOption: BrowserWindowConstructorOptions = {
         title: APP_NAME,
@@ -27,33 +26,39 @@ export class WindowManagerService{
         show: false,
         frame: false,
         titleBarOverlay: false,
-        webPreferences: { preload: this.PRELOAD_PATH, webSecurity: false }
-    }
+        webPreferences: { preload: this.PRELOAD_PATH, webSecurity: false },
+    };
 
     private readonly windows: Map<AppWindow, BrowserWindow> = new Map<AppWindow, BrowserWindow>();
 
-    public static getInstance(): WindowManagerService{
-        if(!WindowManagerService.instance){ WindowManagerService.instance = new WindowManagerService(); }
+    public static getInstance(): WindowManagerService {
+        if (!WindowManagerService.instance) {
+            WindowManagerService.instance = new WindowManagerService();
+        }
         return WindowManagerService.instance;
     }
 
-    private constructor(){}
+    private constructor() {}
 
-    public openWindow(windowType: AppWindow, options?: BrowserWindowConstructorOptions): Promise<BrowserWindow>{
-        const window = new BrowserWindow({...this.appWindowsOptions[windowType], ...this.baseWindowOption, ...options});
+    public openWindow(windowType: AppWindow, options?: BrowserWindowConstructorOptions): Promise<BrowserWindow> {
+        const window = new BrowserWindow({ ...this.appWindowsOptions[windowType], ...this.baseWindowOption, ...options });
 
         const promise = window.loadURL(resolveHtmlPath(windowType));
         window.removeMenu();
         window.setMenu(null);
 
         window.once("ready-to-show", () => {
-            if (!window) { throw new Error('"window" is not defined'); }
+            if (!window) {
+                throw new Error('"window" is not defined');
+            }
             window.show();
         });
 
         window.once("closed", () => {
             this.windows.delete(windowType);
-            if(!this.windows.size){ app.quit(); }
+            if (!this.windows.size) {
+                app.quit();
+            }
         });
 
         this.windows.set(windowType, window);
@@ -62,25 +67,26 @@ export class WindowManagerService{
         return promise.then(() => window);
     }
 
-    public closeAllWindows(except?: AppWindow){
+    public closeAllWindows(except?: AppWindow) {
         this.windows.forEach((window, key) => {
-            if(key === except){ return; }
+            if (key === except) {
+                return;
+            }
             window.close();
-        })
+        });
     }
 
-    public close(...win: AppWindow[]){
+    public close(...win: AppWindow[]) {
         win.forEach(window => {
             this.windows.get(window)?.close();
         });
     }
 
-    public getWindow(window: AppWindow): BrowserWindow{
+    public getWindow(window: AppWindow): BrowserWindow {
         return this.windows.get(window);
     }
 
-    public getAppWindowFromWebContents(sender: Electron.WebContents): AppWindow{
+    public getAppWindowFromWebContents(sender: Electron.WebContents): AppWindow {
         return Array.from(this.windows.entries()).find(([, value]) => value.webContents.id === sender.id)[0];
     }
-
 }

@@ -1,4 +1,4 @@
-export interface ApiResult<T = unknown>{
-    status: number,
-    data: T
+export interface ApiResult<T = unknown> {
+    status: number;
+    data: T;
 }

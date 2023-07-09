@@ -1,1 +1,1 @@
-export type SupporterType = "gold"|"diamond"|"sponsor"
+export type SupporterType = "gold" | "diamond" | "sponsor";
