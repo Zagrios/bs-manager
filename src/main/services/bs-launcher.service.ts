@@ -11,6 +11,8 @@ import { rename } from "fs/promises";
 import log from "electron-log";
 import { Observable, lastValueFrom, timer } from "rxjs";
 import { BsmProtocolService } from "./bsm-protocol.service";
+import { app, shell } from "electron";
+import { objectFromEntries } from "../../shared/helpers/object.helpers";
 
 export class BSLauncherService {
     private static instance: BSLauncherService;
@@ -124,6 +126,8 @@ export class BSLauncherService {
         // t.searchParams.set("launchOptions", JSON.stringify(launchOptions));
         // console.log(t.toString());
 
+        console.log(launchOptions);
+
         return new Observable<BSLaunchEvent>(obs => {(async () => {
 
             if(await this.isBsRunning()){
@@ -174,5 +178,48 @@ export class BSLauncherService {
             obs.error({type: BSLaunchErrorType.UNKNOWN_ERROR, data: err} as BSLaunchErrorEvent);
         })});
     }
+
+    private launchOptionToShortcutParams(launchOptions: LaunchOption): ShortcutParams{
+        const res: ShortcutParams = { version: launchOptions.version.BSVersion };
+
+        if(launchOptions.version.name){ res.versionName = launchOptions.version.name; }
+        if(launchOptions.version.steam){ res.versionSteam = `${launchOptions.version.steam}`; }
+        if(launchOptions.version.oculus){ res.versionOculus = `${launchOptions.version.oculus}`; }
+        if(launchOptions.version.ino){ res.versionIno = `${launchOptions.version.ino}`; }
+
+        if(launchOptions.oculus){ res.oculusMode = "true"; }
+        if(launchOptions.desktop){ res.desktopMode = "true"; }
+        if(launchOptions.debug){ res.debug = "true"; }
+        if(launchOptions.additionalArgs){ res.additionalArgs = launchOptions.additionalArgs; }
+
+        return res;
+    }
+
+    public async createLaunchShortcut(launchOptions: LaunchOption): Promise<void>{
+        const shortcutParams = this.launchOptionToShortcutParams(launchOptions);
+        const shortcutUrl =  this.bsmProtocolService.buildLink("launch", shortcutParams);
+
+        console.log(objectFromEntries(shortcutUrl.searchParams.entries()));
+
+        // shell.writeShortcutLink(path.join(app.getPath("desktop"), "test.lnk"), "create", {
+        //     target: shortcutUrl.toString(),
+        //     description: "test allo allo",
+            
+        // });
+
+
+    }
      
+}
+
+type ShortcutParams = {
+    oculusMode?: string;
+    desktopMode?: string;
+    debug?: string;
+    additionalArgs?: string[];
+    version: string;
+    versionName?: string;
+    versionIno?: string;
+    versionSteam?: string;
+    versionOculus?: string;
 }

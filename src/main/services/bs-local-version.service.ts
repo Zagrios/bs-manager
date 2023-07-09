@@ -221,11 +221,11 @@ export class BSLocalVersionService {
 
             if(!rawVersion){ continue; }
 
-            const bsVersion = {...await this.remoteVersionService.getVersionDetails(rawVersion.BSVersion)};
+            const vertionDetails = await this.remoteVersionService.getVersionDetails(rawVersion.BSVersion);
 
-            if(!bsVersion){ continue; }
+            if(!vertionDetails){ continue; }
 
-            bsVersion.name = path.basename(f) !== bsVersion.BSVersion ? path.basename(f) : undefined;
+            const bsVersion: BSVersion = {...vertionDetails, ...rawVersion};
 
             const customVersion = this.getCustomVersions().find(custom => custom.BSVersion === bsVersion.BSVersion && custom.name === bsVersion.name);
 

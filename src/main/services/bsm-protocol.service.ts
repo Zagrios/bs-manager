@@ -1,7 +1,7 @@
 import { Subject, Subscription, filter } from "rxjs";
 import { DeepLinkService } from "./deep-link.service";
 import { URL } from "url";
-import { isValidUrl } from "../../shared/helpers/url.helpers";
+import { buildUrl, isValidUrl } from "../../shared/helpers/url.helpers";
 
 export class BsmProtocolService {
 
@@ -36,6 +36,14 @@ export class BsmProtocolService {
 
     public on(host: string, listener: (link: URL) => void): Subscription {
         return this.linkeReceived$.pipe(filter(link => link.host === host)).subscribe(listener);
+    }
+
+    public buildLink(host: string, params?: Record<string, string|string[]>): URL {
+            return buildUrl({
+                protocol: this.BSM_PROTOCOL,
+                host,
+                search: params
+            });
     }
 
 }
