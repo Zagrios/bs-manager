@@ -39,11 +39,11 @@ export class BsmProtocolService {
     }
 
     public buildLink(host: string, params?: Record<string, string|string[]>): URL {
-            return buildUrl({
-                protocol: this.BSM_PROTOCOL,
-                host,
-                search: params
-            });
+        return buildUrl({
+            protocol: this.BSM_PROTOCOL,
+            host,
+            search: params
+        });
     }
 
 }

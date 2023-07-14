@@ -8,6 +8,7 @@ const launcherContainer = document.getElementById("launcher");
 const oneclickDownloadMapContainer = document.getElementById("oneclick-download-map");
 const oneclickDownloadPlaylistContainer = document.getElementById("oneclick-download-playlist");
 const oneclickDownloadModelContainer = document.getElementById("oneclick-download-model");
+const shortcutLaunchContainer = document.getElementById("shortcut-launch");
 
 const ipc = IpcService.getInstance();
 
@@ -30,6 +31,10 @@ if (launcherContainer) {
 } else if (oneclickDownloadModelContainer) {
     import("./windows/OneClick/OneClickDownloadModel").then(reactWindow => {
         createRoot(oneclickDownloadModelContainer).render(<reactWindow.default />);
+    });
+} else if (shortcutLaunchContainer) {
+    import("./windows/ShortcutLaunch").then(reactWindow => {
+        createRoot(shortcutLaunchContainer).render(<reactWindow.default />);
     });
 } else {
     const root = document.getElementById("root");

@@ -14,6 +14,7 @@
     "postinstall": "npm run electron-rebuild && npm run link-modules"
   },
   "dependencies": {
+    "@resvg/resvg-js": "^2.4.1",
     "ctrlc-windows": "^2.1.0",
     "ps-list": "^7.2.0"
   },

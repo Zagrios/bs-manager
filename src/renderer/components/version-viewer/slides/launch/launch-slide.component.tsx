@@ -50,7 +50,14 @@ export function LaunchSlide({ version }: Props) {
                   .map(arg => arg.trim())
                   .filter(arg => arg.length > 0)
             : undefined;
-        bsLauncherService.launch(version, version.oculus ? false : oculusMode, desktopMode, debugMode, additionalArgs);
+            
+        bsLauncherService.launch({
+            version,
+            oculus: version.oculus ? false : oculusMode,
+            desktop: desktopMode,
+            debug: debugMode,
+            additionalArgs
+        })
     };
 
     return (

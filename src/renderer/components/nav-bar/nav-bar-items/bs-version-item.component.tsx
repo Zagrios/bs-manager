@@ -32,7 +32,12 @@ export function BsVersionItem(props: { version: BSVersion }) {
     };
 
     const handleDoubleClick = () => {
-        launcherService.launch(state, !!configService.get<boolean>(LaunchMods.OCULUS_MOD), !!configService.get<boolean>(LaunchMods.DESKTOP_MOD), !!configService.get<boolean>(LaunchMods.DEBUG_MOD));
+        launcherService.launch({
+            version: state,
+            oculus: !!configService.get<boolean>(LaunchMods.OCULUS_MOD),
+            desktop: !!configService.get<boolean>(LaunchMods.DESKTOP_MOD),
+            debug: !!configService.get<boolean>(LaunchMods.DEBUG_MOD),
+        });
     };
 
     const cancel = () => {

@@ -861,6 +861,20 @@
         "checking": "Prüfe auf Updates",
         "downloading": "Lade Updates Herunter"
     },
+    "bs-shortcut-launch": {
+        "beat-saber-launching": "Start von Beat Saber",
+        "launching": "Starten",
+        "open-bsmanager": "BSManager öffnen",
+        "status-text": {
+            "init": "Initialisierung...",
+            "success": {
+                "BS_LAUNCHING": "Start von Beat Saber...",
+                "STEAM_LAUNCHING": "Start von Steam...",
+                "STEAM_LAUNCHED": "Steam erfolgreich gestartet!",
+                "UNABLE_TO_LAUNCH_STEAM": "Steam kann nicht gestartet werden, erzwungener Start von Beat Saber..."
+            }
+        }
+    },
     "dateformat": {
         "dayNames": ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa", "Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
         "monthNames": ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez", "Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],

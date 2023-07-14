@@ -1,7 +1,7 @@
 import path from "path";
-import { LaunchOption, BSLaunchEvent, BSLaunchErrorEvent, BSLaunchErrorType, BSLaunchEventType } from "../../shared/models/bs-launch";
+import { LaunchOption, BSLaunchEvent, BSLaunchEventData, BSLaunchWarning, BSLaunchErrorData, BSLaunchError } from "../../shared/models/bs-launch";
 import { UtilsService } from "./utils.service";
-import { BS_EXECUTABLE, BS_APP_ID, STEAMVR_APP_ID } from "../constants";
+import { BS_EXECUTABLE, BS_APP_ID, STEAMVR_APP_ID, IMAGE_CACHE_PATH } from "../constants";
 import { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio, spawn } from "child_process";
 import { SteamService } from "./steam.service";
 import { BSLocalVersionService } from "./bs-local-version.service";
@@ -9,10 +9,17 @@ import { OculusService } from "./oculus.service";
 import { pathExist } from "../helpers/fs.helpers";
 import { rename } from "fs/promises";
 import log from "electron-log";
-import { Observable, lastValueFrom, timer } from "rxjs";
+import { Observable, lastValueFrom, of, timer } from "rxjs";
 import { BsmProtocolService } from "./bsm-protocol.service";
-import { app, shell } from "electron";
+import { app} from "electron";
+import { Resvg } from "@resvg/resvg-js";
+import Color from "color";
+import { ensureDir, writeFile } from "fs-extra";
+import toIco from "to-ico";
 import { objectFromEntries } from "../../shared/helpers/object.helpers";
+import { WindowManagerService } from "./window-manager.service";
+import { IpcService } from "./ipc.service";
+import { BSVersionLibService } from "./bs-version-lib.service";
 
 export class BSLauncherService {
     private static instance: BSLauncherService;
@@ -22,8 +29,9 @@ export class BSLauncherService {
     private readonly oculusService: OculusService;
     private readonly localVersionService: BSLocalVersionService;
     private readonly bsmProtocolService: BsmProtocolService;
-
-    private bsProcess: ChildProcessWithoutNullStreams;
+    private readonly windows: WindowManagerService;
+    private readonly ipc: IpcService;
+    private readonly remoteVersion: BSVersionLibService;
 
     public static getInstance(): BSLauncherService {
         if (!BSLauncherService.instance) {
@@ -38,11 +46,14 @@ export class BSLauncherService {
         this.oculusService = OculusService.getInstance();
         this.localVersionService = BSLocalVersionService.getInstance();
         this.bsmProtocolService = BsmProtocolService.getInstance();
+        this.windows = WindowManagerService.getInstance();
+        this.ipc = IpcService.getInstance();
+        this.remoteVersion = BSVersionLibService.getInstance();
 
         this.bsmProtocolService.on("launch", link => {
             log.info("Launch from bsm protocol", link.toString());
-            if(!link.searchParams.has("launchOptions")){ return; }
-            this.launch(JSON.parse(link.searchParams.get("launchOptions"))).subscribe();
+            const shortcutParams = objectFromEntries(link.searchParams.entries()) as ShortcutParams;
+            this.openShortcutLaunchWindow(shortcutParams);
         });
     }
 
@@ -93,11 +104,7 @@ export class BSLauncherService {
         return Array.from(new Set(launchArgs).values());
     }
 
-    private launchBSProcess(bsExePath: string, args: string[], debug = false): Promise<void>{
-
-        if(this.bsProcess?.connected){
-            return Promise.reject("Beat Saber process already running");
-        }
+    private launchBSProcess(bsExePath: string, args: string[], debug = false): ChildProcessWithoutNullStreams{
 
         const spawnOptions: SpawnOptionsWithoutStdio = { shell: true, cwd: path.dirname(bsExePath), env: {...process.env, "SteamAppId": BS_APP_ID} };
 
@@ -106,54 +113,44 @@ export class BSLauncherService {
             spawnOptions.windowsVerbatimArguments = true;
         }
 
-        this.bsProcess = spawn(`\"${bsExePath}\"`, args, spawnOptions);
-
-        return new Promise((resolve, reject) => {
-            this.bsProcess.on('error', e => { log.error(e); reject(e); });
-            this.bsProcess.once('exit', code => {
-                if(code !== 0){
-                    log.error(`Beat Saber process exited with code ${code}`);
-                }
-                resolve();
-            });
-        });
+        return spawn(`\"${bsExePath}\"`, args, spawnOptions);
 
     }
 
-    public launch(launchOptions: LaunchOption): Observable<BSLaunchEvent>{
+    public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
 
-        // const t = new URL("bsmanager://launch");
-        // t.searchParams.set("launchOptions", JSON.stringify(launchOptions));
-        // console.log(t.toString());
+        return new Observable<BSLaunchEventData>(obs => {(async () => {
 
-        console.log(launchOptions);
-
-        return new Observable<BSLaunchEvent>(obs => {(async () => {
-
-            if(await this.isBsRunning()){
-                return obs.error({type: BSLaunchErrorType.BS_ALREADY_RUNNING} as BSLaunchErrorEvent);
+            if(launchOptions.skipAlreadyRunning !== true && await this.isBsRunning()){
+                return obs.error({type: BSLaunchError.BS_ALREADY_RUNNING} as BSLaunchErrorData);
             }
 
             if(launchOptions.version.oculus && (await this.oculusService.oculusRunning())){
-                return obs.error({type: BSLaunchErrorType.OCULUS_NOT_RUNNING} as BSLaunchErrorEvent);
+                return obs.error({type: BSLaunchError.OCULUS_NOT_RUNNING} as BSLaunchErrorData);
             }
 
             const bsFolderPath = await this.localVersionService.getInstalledVersionPath(launchOptions.version);
             const exePath = path.join(bsFolderPath, BS_EXECUTABLE);
 
             if(!(await pathExist(exePath))){
-                return obs.error({type: BSLaunchErrorType.BS_NOT_FOUND} as BSLaunchErrorEvent);
+                return obs.error({type: BSLaunchError.BS_NOT_FOUND} as BSLaunchErrorData);
             }
 
             // Open Steam if not running
             if(!launchOptions.version.oculus && !(await this.steamService.steamRunning())){
-                obs.next({type: BSLaunchEventType.STEAM_LAUNCHING});
-                await this.steamService.openSteam().catch(log.error);
+                obs.next({type: BSLaunchEvent.STEAM_LAUNCHING});
+
+                await this.steamService.openSteam().then(() => {
+                    obs.next({type: BSLaunchEvent.STEAM_LAUNCHED});
+                }).catch(e => {
+                    log.error(e);
+                    obs.next({type: BSLaunchWarning.UNABLE_TO_LAUNCH_STEAM});
+                });
             }
 
             // Backup SteamVR when desktop mode is enabled
             if(!launchOptions.version.oculus && launchOptions.desktop){
-                await this.backupSteamVR().catch(e => {
+                await this.backupSteamVR().catch(() => {
                     return this.restoreSteamVR();
                 });
                 await lastValueFrom(timer(2_000));
@@ -163,20 +160,50 @@ export class BSLauncherService {
 
             const launchArgs = this.buildBsLaunchArgs(launchOptions);
 
-            obs.next({type: BSLaunchEventType.BS_LAUNCHING});
+            obs.next({type: BSLaunchEvent.BS_LAUNCHING});
 
-            await this.launchBSProcess(exePath, launchArgs, launchOptions.debug).catch(err => {
-                obs.error({type: BSLaunchErrorType.BS_EXIT_ERROR, data: err} as BSLaunchErrorEvent);
-            }).finally(() => {
-                if(!launchOptions.desktop || launchOptions.version.oculus){ return; }
-                this.restoreSteamVR();
+            await new Promise<number>((resolve, reject) => {
+                const bsProcess = this.launchBSProcess(exePath, launchArgs, launchOptions.debug);
+
+                bsProcess.on("error", reject);
+                bsProcess.on("exit", resolve);
+
+                setTimeout(() => {
+                    bsProcess.removeAllListeners("error");
+                    bsProcess.removeAllListeners("exit");
+                    resolve(-1);
+                }, 4000);
+
+            }).then(exitCode => {
+                log.info("BS process exit code", exitCode);
+            }).catch(err => {
+                log.error(err);
+                obs.error({type: BSLaunchError.BS_EXIT_ERROR, data: err} as BSLaunchErrorData);
             });
 
         })().then(() => {
             obs.complete();
         }).catch(err => {
-            obs.error({type: BSLaunchErrorType.UNKNOWN_ERROR, data: err} as BSLaunchErrorEvent);
+            obs.error({type: BSLaunchError.UNKNOWN_ERROR, data: err} as BSLaunchErrorData);
         })});
+    }
+
+    private shortcutParamsToLaunchOption(params: ShortcutParams): LaunchOption{
+        const res: LaunchOption = {
+            version: {
+                BSVersion: params.version,
+                name: params.versionName,
+                steam: params.versionSteam === "true",
+                oculus: params.versionOculus === "true",
+                ino: +params.versionIno
+            },
+            oculus: params.oculusMode === "true",
+            desktop: params.desktopMode === "true",
+            debug: params.debug === "true",
+            additionalArgs: params.additionalArgs
+        };
+
+        return res;
     }
 
     private launchOptionToShortcutParams(launchOptions: LaunchOption): ShortcutParams{
@@ -195,19 +222,73 @@ export class BSLauncherService {
         return res;
     }
 
+    /**
+     * Create .ico file for the shortcut with the given color
+     * @param {Color} color
+     * @returns {Promise<string>} Path of the icon
+     */
+    private async createShortcutIco(color: Color): Promise<string>{
+
+        const svgIcon = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 406.4 406.4" height="406.4" width="406.4">
+                <rect rx="69.453" height="406.4" width="406.4" fill="${color.hex()}"/>
+                <path d="M65.467 60.6H336.4v33.867L200.933 162.2 65.467 94.467z" fill="#fff"/>
+            </svg>
+        `;
+
+        const pngBuffer = new Resvg(svgIcon, {
+            fitTo: { mode: "width", value: 256 }
+        }).render().asPng();
+
+        const icoBuffer = await toIco([pngBuffer]);
+
+        await ensureDir(IMAGE_CACHE_PATH);
+
+        const iconPath = path.join(IMAGE_CACHE_PATH, `launch_shortcut_${color.hex()}.ico`);
+
+        await writeFile(iconPath, icoBuffer);
+
+        return iconPath;
+    }
+
+    private createInternetShortcut(options: { url: string, output: string, iconFile?: string, iconIndex?: number }): Promise<void>{
+
+        const data = [
+            "[InternetShortcut]",
+            `URL=${options.url}`,
+            options.iconFile ? `IconFile=${options.iconFile}` : null,
+            `IconIndex=${options.iconIndex ?? 0}`
+        ].join("\r\n");
+
+        return writeFile(options.output, data);
+    }
+
     public async createLaunchShortcut(launchOptions: LaunchOption): Promise<void>{
         const shortcutParams = this.launchOptionToShortcutParams(launchOptions);
         const shortcutUrl =  this.bsmProtocolService.buildLink("launch", shortcutParams);
 
-        console.log(objectFromEntries(shortcutUrl.searchParams.entries()));
+        const shortcutName = ["Beat Saber", launchOptions.version.BSVersion, launchOptions.version.name].join(" ")
 
-        // shell.writeShortcutLink(path.join(app.getPath("desktop"), "test.lnk"), "create", {
-        //     target: shortcutUrl.toString(),
-        //     description: "test allo allo",
-            
-        // });
+        return this.createInternetShortcut({
+            output: path.join(app.getPath("desktop"), `${shortcutName}.url`),
+            url: shortcutUrl.toString(),
+            iconFile: await this.createShortcutIco(new Color(launchOptions.version.color, "hex")),
+        });
 
+    }
 
+    private async openShortcutLaunchWindow(launchOptions: ShortcutParams): Promise<void>{
+        const launchOption = this.shortcutParamsToLaunchOption(launchOptions);
+
+        launchOption.version = await this.localVersionService.getVersionOfBSFolder(await this.localVersionService.getInstalledVersionPath(launchOption.version));
+
+        launchOption.version = {...(await this.remoteVersion.getVersionDetails(launchOption.version.BSVersion)), ...launchOption.version};
+        
+        this.ipc.once("shortcut-launch-options", (_data, reply) => {
+            reply(of(launchOption));
+        });
+
+        this.windows.openWindow("shortcut-launch.html");
     }
      
 }

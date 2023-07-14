@@ -1,6 +1,6 @@
 import { BS_APP_ID, BS_DEPOT } from "../constants";
 import path from "path";
-import { BSVersion, PartialBSVersion } from "shared/bs-version.interface";
+import { BSVersion } from "shared/bs-version.interface";
 import { UtilsService } from "./utils.service";
 import { ChildProcessWithoutNullStreams, spawn, spawnSync } from "child_process";
 import log from "electron-log";
@@ -194,18 +194,18 @@ export class BSInstallerService {
         return destPath;
     }
 
-    public async importVersion(path: string): Promise<PartialBSVersion> {
-        const rawBsVersion = await this.localVersionService.getVersionOfBSFolder(path);
+    public async importVersion(path: string): Promise<BSVersion> {
+        const version = await this.localVersionService.getVersionOfBSFolder(path);
 
-        if (!rawBsVersion) {
+        if (!version) {
             throw new Error("NOT_BS_FOLDER");
         }
 
-        const destPath = await this.getPathNotAleardyExist(await this.localVersionService.getVersionPath(rawBsVersion));
+        const destPath = await this.getPathNotAleardyExist(await this.localVersionService.getVersionPath(version));
 
         await copy(path, destPath, { dereference: true });
 
-        return rawBsVersion;
+        return version;
     }
 }
 

@@ -1,9 +1,9 @@
-import { LaunchOption, LaunchResult, BSLaunchErrorEvent, BSLaunchErrorType, BSLaunchEvent } from "shared/models/bs-launch";
+import { LaunchOption, LaunchResult, BSLaunchEvent, BSLaunchWarning, BSLaunchEventData, BSLaunchErrorData, BSLaunchError } from "shared/models/bs-launch";
 import { BSVersion } from 'shared/bs-version.interface';
 import { IpcService } from "./ipc.service";
 import { NotificationService } from "./notification.service";
 import { BsDownloaderService } from "./bs-downloader.service";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, filter } from "rxjs";
 import { NotificationResult } from "shared/models/notification/notification.model";
 
 export class BSLauncherService {
@@ -66,26 +66,32 @@ export class BSLauncherService {
       });
    }
 
-    public launch(version: BSVersion, oculus: boolean, desktop: boolean, debug: boolean, additionalArgs?: string[]): Observable<BSLaunchEvent> {
-        const launchState$ = this.ipcService.sendV2<BSLaunchEvent, LaunchOption>("bs-launch.launch", {args: {debug, oculus, desktop, version, additionalArgs}});
+    public doLaunch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
+        return this.ipcService.sendV2<BSLaunchEventData, LaunchOption>("bs-launch.launch", {args: launchOptions});
+    }
 
-        this.versionRunning$.next(version);
+    public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData> {
+        const launchState$ = this.doLaunch(launchOptions);
 
-        launchState$.subscribe({
+        this.versionRunning$.next(launchOptions.version);
+
+        launchState$.pipe(filter(event => {
+            const eventToFilter = [...Object.values(BSLaunchWarning), BSLaunchEvent.STEAM_LAUNCHED]
+            return !eventToFilter.includes(event.type);
+        })).subscribe({
             next: event => {
                 this.notificationService.notifySuccess({title: `notifications.bs-launch.success.titles.${event.type}`, desc: `notifications.bs-launch.success.msg.${event.type}`});
             },
-            error: (err: BSLaunchErrorEvent) => {
-                if(!Object.values(BSLaunchErrorType).includes(err.type)){
+            error: (err: BSLaunchErrorData) => {
+                if(!Object.values(BSLaunchError).includes(err.type)){
                     this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.UNKNOWN_ERROR", desc: "notifications.bs-launch.errors.msg.UNKNOWN_ERROR"});
                 } else {
                     this.notificationService.notifyError({title: `notifications.bs-launch.errors.titles.${err.type}`, desc: `notifications.bs-launch.errors.msg.${err.type}`})
                 }
-            },
-            complete: () => {
-                this.versionRunning$.next(null);
             }
-        })
+        }).add(() => {
+            this.versionRunning$.next(null);
+        });
 
         return launchState$;
     }

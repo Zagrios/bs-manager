@@ -18,6 +18,7 @@ export class WindowManagerService {
         "oneclick-download-map.html": { width: 350, height: 400, minWidth: 350, minHeight: 400, resizable: false },
         "oneclick-download-playlist.html": { width: 350, height: 400, minWidth: 350, minHeight: 400, resizable: false },
         "oneclick-download-model.html": { width: 350, height: 400, minWidth: 350, minHeight: 400, resizable: false },
+        "shortcut-launch.html": { width: 600, height: 300, minWidth: 600, minHeight: 300, resizable: false },
     };
 
     private readonly baseWindowOption: BrowserWindowConstructorOptions = {
@@ -88,5 +89,16 @@ export class WindowManagerService {
 
     public getAppWindowFromWebContents(sender: Electron.WebContents): AppWindow {
         return Array.from(this.windows.entries()).find(([, value]) => value.webContents.id === sender.id)[0];
+    }
+
+    public openWindowOrFocus(window: AppWindow): Promise<void> {
+        const win = this.getWindow(window);
+        
+        if (win) {
+            win.focus();
+            return Promise.resolve();
+        }
+
+        return this.openWindow(window).then(() => {});
     }
 }
