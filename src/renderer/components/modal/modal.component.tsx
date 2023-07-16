@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import { BsmIcon } from "../svgs/bsm-icon.component";
 
 export function Modal() {
-    const modalSevice = ModalService.getInsance();
+    const modalSevice = ModalService.getInstance();
 
     const ModalComponent = useObservable(modalSevice.getModalToShow());
 

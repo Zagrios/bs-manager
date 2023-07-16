@@ -39,7 +39,7 @@ export class BsDownloaderService {
 
     private constructor() {
         this.ipcService = IpcService.getInstance();
-        this.modalService = ModalService.getInsance();
+        this.modalService = ModalService.getInstance();
         this.bsVersionManager = BSVersionManagerService.getInstance();
         this.authService = AuthUserService.getInstance();
         this.progressBarService = ProgressBarService.getInstance();

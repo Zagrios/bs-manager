@@ -37,15 +37,15 @@ import { BsmException } from "shared/models/bsm-exception.model";
 
 export function SettingsPage() {
     
-    const configService: ConfigurationService = useService(ConfigurationService);
-    const themeService: ThemeService = useService(ThemeService);
-    const ipcService: IpcService = useService(IpcService);
-    const modalService: ModalService = ModalService.getInsance();
-    const downloaderService: BsDownloaderService = useService(BsDownloaderService);
-    const progressBarService: ProgressBarService = useService(ProgressBarService);
-    const notificationService: NotificationService = useService(NotificationService);
-    const i18nService: I18nService = useService(I18nService);
-    const linkOpener: LinkOpenerService = useService(LinkOpenerService);
+    const configService = useService(ConfigurationService);
+    const themeService = useService(ThemeService);
+    const ipcService = useService(IpcService);
+    const modalService = useService(ModalService);
+    const downloaderService = useService(BsDownloaderService);
+    const progressBarService = useService(ProgressBarService);
+    const notificationService = useService(NotificationService);
+    const i18nService = useService(I18nService);
+    const linkOpener = useService(LinkOpenerService);
     const mapsManager = useService(MapsManagerService);
     const playlistsManager = useService(PlaylistsManagerService);
     const modelsManager = useService(ModelsManagerService);

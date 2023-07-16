@@ -1,8 +1,7 @@
 import { AvailableVersionsSlider } from "../components/available-versions/available-versions-slider.component";
 import { BsDownloaderService } from "../services/bs-downloader.service";
 import { Slideshow } from "renderer/components/slideshow/slideshow.component";
-import { useEffect, useState } from "react";
-import { BSVersion } from "shared/bs-version.interface";
+import { useState } from "react";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
@@ -21,7 +20,7 @@ export function AvailableVersionsList() {
     const bsDownloaderService = useService(BsDownloaderService);
     const versionManagerService = useService(BSVersionManagerService);
     const progressBar = useService(ProgressBarService);
-    const modal = ModalService.getInsance();
+    const modal = useService(ModalService);
     const ipc = useService(IpcService);
     const installer = useService(BsDownloaderService);
     const notification = useService(NotificationService);

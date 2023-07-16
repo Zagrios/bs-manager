@@ -5,9 +5,11 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { ModalComponent, ModalExitCode, ModalService } from "renderer/services/modale.service";
 import BeatImpatient from "../../../../../assets/images/apngs/beat-impatient.png";
 import { WhyCredentialsModal } from "./why-credentials-modal.component";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export const LoginModal: ModalComponent<{ username: string; password: string; stay: boolean }> = ({ resolver }) => {
-    const modal = ModalService.getInsance();
+    
+    const modal = useService(ModalService);
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");

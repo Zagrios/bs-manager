@@ -36,7 +36,7 @@ export class BsModsManagerService {
     private constructor() {
         this.ipcService = IpcService.getInstance();
         this.progressBar = ProgressBarService.getInstance();
-        this.modals = ModalService.getInsance();
+        this.modals = ModalService.getInstance();
         this.notifications = NotificationService.getInstance();
         this.os = OsDiagnosticService.getInstance();
     }

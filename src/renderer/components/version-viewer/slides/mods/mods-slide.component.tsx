@@ -26,7 +26,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
     const modsManager = useService(BsModsManagerService);
     const configService = useService(ConfigurationService);
     const linkOpener = useService(LinkOpenerService);
-    const modals = ModalService.getInsance();
+    const modals = useService(ModalService);
     const os = useService(OsDiagnosticService);
 
     const ref = useRef(null);

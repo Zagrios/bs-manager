@@ -34,7 +34,7 @@ export class ModelsDownloaderService {
 
     private constructor() {
         this.ipc = IpcService.getInstance();
-        this.modal = ModalService.getInsance();
+        this.modal = ModalService.getInstance();
         this.progress = ProgressBarService.getInstance();
 
         this._currentDownload$.pipe(filter(v => !!v)).subscribe(model => this.downloadModel(model));
