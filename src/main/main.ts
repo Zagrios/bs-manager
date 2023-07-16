@@ -49,7 +49,7 @@ const installExtensions = async () => {
             extensions.map(name => installer[name]),
             forceDownload
         )
-        .catch(console.error);
+        .catch(log.error);
 };
 
 const createWindow = async (window: AppWindow = "launcher.html") => {
@@ -72,7 +72,7 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
     app.quit();
 } else {
-    app.on("second-instance", (e, argv) => {
+    app.on("second-instance", (_, argv) => {
         const deepLink = argv.find(arg => DeepLinkService.getInstance().isDeepLink(arg));
 
         if (!deepLink) {
@@ -104,7 +104,7 @@ if (!gotTheLock) {
         BSLauncherService.getInstance().restoreSteamVR();
         
         // Log renderer errors
-        ipcMain.on("log-error", (event, args: IpcRequest<any>) => {
+        ipcMain.on("log-error", (_, args: IpcRequest<unknown>) => {
             log.error(args?.args);
         });
     
