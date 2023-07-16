@@ -5,16 +5,11 @@ import { SystemNotificationOptions } from "shared/models/notification/system-not
 import { NotificationService } from "../services/notification.service";
 import { SteamService } from "../services/steam.service";
 import { IpcService } from "../services/ipc.service";
-import { from } from "rxjs";
+import { from, of } from "rxjs";
 
 // TODO IMPROVE WINDOW CONTROL BY USING WINDOW SERVICE
 
 const ipc = IpcService.getInstance();
-
-ipcMain.on("window.close", async () => {
-    const utils = UtilsService.getInstance();
-    utils.getMainWindows("index.html")?.close();
-});
 
 ipcMain.on("window.maximize", async () => {
     const utils = UtilsService.getInstance();
@@ -35,7 +30,7 @@ ipcMain.on("new-window", async (event, request: IpcRequest<string>) => {
     shell.openExternal(request.args);
 });
 
-ipc.on("choose-folder", async (req: IpcRequest<string>, reply) => {
+ipc.on<string>("choose-folder", async (req, reply) => {
     reply(from(dialog.showOpenDialog({ properties: ["openDirectory"], defaultPath: req.args ?? "" })));
 });
 
@@ -54,8 +49,8 @@ ipcMain.on("save-file", async (event, request: IpcRequest<{ filename?: string; f
     });
 });
 
-ipcMain.on("current-version", async (event, request: IpcRequest<void>) => {
-    UtilsService.getInstance().ipcSend(request.responceChannel, { success: true, data: app.getVersion() });
+ipc.on("current-version", (_, reply) => {
+    reply(of(app.getVersion()));
 });
 
 ipcMain.on("open-logs", async (event, request: IpcRequest<void>) => {

@@ -18,16 +18,16 @@ export class WindowManagerService {
         this.ipcService = IpcService.getInstance();
     }
 
-    public openThenCloseAll(window: AppWindow) {
-        this.ipcService.sendLazy<AppWindow>("open-window-then-close-all", { args: window });
+    public openThenCloseAll(window: AppWindow): Promise<void> {
+        return lastValueFrom(this.ipcService.sendV2<void>("open-window-then-close-all", { args: window }));
     }
 
-    public closeAll(except?: AppWindow) {
-        this.ipcService.sendLazy<AppWindow>("close-all-windows", { args: except });
+    public closeAll(except?: AppWindow): Promise<void> {
+        return lastValueFrom(this.ipcService.sendV2<void>("close-all-windows", { args: except }));
     }
 
-    public close(...win: AppWindow[]) {
-        this.ipcService.sendLazy<AppWindow[]>("close-windows", { args: win });
+    public close(...win: AppWindow[]): Promise<void> {
+        return lastValueFrom(this.ipcService.sendV2<void>("close-windows", { args: win }));
     }
 
     public openWindowOrFocus(window: AppWindow): Promise<void> {

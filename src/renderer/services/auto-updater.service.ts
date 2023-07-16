@@ -1,4 +1,4 @@
-import { Observable } from "rxjs";
+import { Observable, lastValueFrom } from "rxjs";
 import { map } from "rxjs/operators";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
@@ -26,12 +26,7 @@ export class AutoUpdaterService {
     }
 
     public isUpdateAvailable(): Promise<boolean> {
-        return this.ipcService.send<boolean>("check-update").then(res => {
-            if (!res.success) {
-                return false;
-            }
-            return res.data;
-        });
+        return lastValueFrom(this.ipcService.sendV2<boolean>("check-update")).catch(() => false);
     }
 
     public downloadUpdate(): Promise<boolean> {
@@ -40,6 +35,7 @@ export class AutoUpdaterService {
         });
 
         this.progressService.show(this.downloadProgress$, true);
+        
         return promise;
     }
 

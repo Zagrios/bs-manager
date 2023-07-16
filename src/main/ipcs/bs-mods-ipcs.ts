@@ -6,35 +6,19 @@ import { IpcRequest } from "shared/models/ipc";
 import { Mod } from "shared/models/mods/mod.interface";
 import { InstallModsResult } from "shared/models/mods";
 import log from "electron-log";
+import { IpcService } from "../services/ipc.service";
+import { from } from "rxjs";
 
-ipcMain.on("get-available-mods", (event, request: IpcRequest<BSVersion>) => {
-    const utils = UtilsService.getInstance();
+const ipc = IpcService.getInstance();
+
+ipc.on<BSVersion>("get-available-mods", (req, reply) => {
     const modsManager = BsModsManagerService.getInstance();
-
-    modsManager
-        .getAvailableMods(request.args)
-        .then(mods => {
-            utils.ipcSend(request.responceChannel, { success: true, data: mods });
-        })
-        .catch(err => {
-            utils.ipcSend(request.responceChannel, { success: false });
-            log.error("ipc", "get-available-mods", err, request);
-        });
+    reply(from(modsManager.getAvailableMods(req.args)));
 });
 
-ipcMain.on("get-installed-mods", (event, request: IpcRequest<BSVersion>) => {
-    const utils = UtilsService.getInstance();
+ipc.on<BSVersion>("get-installed-mods", (req, reply) => {
     const modsManager = BsModsManagerService.getInstance();
-
-    modsManager
-        .getInstalledMods(request.args)
-        .then(mods => {
-            utils.ipcSend(request.responceChannel, { success: true, data: mods });
-        })
-        .catch(err => {
-            utils.ipcSend(request.responceChannel, { success: false });
-            log.error("ipc", "get-installed-mods", err, request);
-        });
+    reply(from(modsManager.getInstalledMods(req.args)));
 });
 
 ipcMain.on("install-mods", (event, request: IpcRequest<{ mods: Mod[]; version: BSVersion }>) => {

@@ -10,7 +10,7 @@ import BeatWaitingImg from "../../../../../../assets/images/apngs/beat-waiting.p
 import BeatConflictImg from "../../../../../../assets/images/apngs/beat-conflict.png";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { skip, filter } from "rxjs/operators";
-import { Subscription } from "rxjs";
+import { Subscription, lastValueFrom } from "rxjs";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { useInView } from "framer-motion";
@@ -97,7 +97,10 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
             return;
         }
 
-        Promise.all([modsManager.getAvailableMods(version), modsManager.getInstalledMods(version)]).then(([available, installed]) => {
+        Promise.all([
+            lastValueFrom(modsManager.getAvailableMods(version)),
+            lastValueFrom(modsManager.getInstalledMods(version))
+        ]).then(([available, installed]) => {
             const defaultMods = configService.get<string[]>("default_mods" as DefaultConfigKey);
             setModsAvailable(modsToCategoryMap(available));
             setModsSelected(available.filter(m => m.required || defaultMods.some(d => m.name.toLowerCase() === d.toLowerCase()) || installed.some(i => m.name === i.name)));
