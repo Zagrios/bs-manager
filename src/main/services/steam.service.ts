@@ -99,18 +99,19 @@ export class SteamService {
         }
     }
 
-    public openSteam(): Promise<void> {
-        shell.openPath("steam://open/games").catch(e => log.error(e));
+    public async openSteam(): Promise<void> {
+        
+        await shell.openPath("steam://open/games");
 
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             // Every 3 seconds check if steam is running
-            const interval = setInterval(async () => {
-                const steamRunning = await this.steamRunning().catch(() => false);
-                if (!steamRunning) {
-                    return;
-                }
-                clearInterval(interval);
-                resolve();
+            const interval = setInterval(() => {
+                const steamRunning = this.steamRunning().catch(() => false);
+                steamRunning.then(running => {
+                    if(!running){ return; }
+                    clearInterval(interval);
+                    resolve();
+                });
             }, 4000);
 
             // If steam is not running after 60 seconds, reject
