@@ -51,7 +51,7 @@ export class BSLauncherService {
         this.bsmProtocolService.on("launch", link => {
             log.info("Launch from bsm protocol", link.toString());
             const shortcutParams = objectFromEntries(link.searchParams.entries()) as ShortcutParams;
-            this.openShortcutLaunchWindow(shortcutParams);
+            this.openShortcutLaunchWindow(shortcutParams).catch(log.error);
         });
     }
 
@@ -293,12 +293,18 @@ export class BSLauncherService {
     private async openShortcutLaunchWindow(launchOptions: ShortcutParams): Promise<void>{
         const launchOption = this.shortcutParamsToLaunchOption(launchOptions);
 
-        const bsPath = await this.localVersionService.getInstalledVersionPath(launchOption.version);
+        const bsPath: string = await (async () => {
+            const bsPath = await this.localVersionService.getInstalledVersionPath(launchOption.version);
+            return bsPath ?? this.localVersionService.getVersionPath(launchOption.version);
+        })().catch(e => { 
+            log.error(e); 
+            return null;
+        });
 
-        launchOption.version = await this.localVersionService.getVersionOfBSFolder(bsPath, {
+        launchOption.version = (await this.localVersionService.getVersionOfBSFolder(bsPath, {
             steam: launchOption.version.steam,
             oculus: launchOption.version.oculus,    
-        });
+        })) ?? launchOption.version;
 
         launchOption.version = {...(await this.remoteVersion.getVersionDetails(launchOption.version.BSVersion)), ...launchOption.version};
         

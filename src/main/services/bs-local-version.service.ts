@@ -84,6 +84,9 @@ export class BSLocalVersionService {
             oculus?: boolean;
         }
     ): Promise<BSVersion>{
+
+        if(!bsPath){ return null; }
+
         const versionFilePath = path.join(bsPath, 'Beat Saber_Data', 'globalgamemanagers');
         const folderVersion = await this.getVersionFromGlobalGameManagerFile(versionFilePath);
 
