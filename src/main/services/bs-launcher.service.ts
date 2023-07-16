@@ -5,7 +5,6 @@ import { BS_EXECUTABLE, BS_APP_ID, STEAMVR_APP_ID, IMAGE_CACHE_PATH } from "../c
 import { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio, spawn } from "child_process";
 import { SteamService } from "./steam.service";
 import { BSLocalVersionService } from "./bs-local-version.service";
-import { OculusService } from "./oculus.service";
 import { pathExist } from "../helpers/fs.helpers";
 import { rename } from "fs/promises";
 import log from "electron-log";

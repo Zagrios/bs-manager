@@ -1,10 +1,9 @@
-import { LaunchOption, LaunchResult, BSLaunchEvent, BSLaunchWarning, BSLaunchEventData, BSLaunchErrorData, BSLaunchError } from "shared/models/bs-launch";
+import { LaunchOption, BSLaunchEvent, BSLaunchWarning, BSLaunchEventData, BSLaunchErrorData, BSLaunchError } from "shared/models/bs-launch";
 import { BSVersion } from 'shared/bs-version.interface';
 import { IpcService } from "./ipc.service";
 import { NotificationService } from "./notification.service";
 import { BsDownloaderService } from "./bs-downloader.service";
-import { BehaviorSubject, Observable, filter, of } from "rxjs";
-import { NotificationResult } from "shared/models/notification/notification.model";
+import { BehaviorSubject, Observable, filter } from "rxjs";
 import { ConfigurationService } from "./configuration.service";
 import { ThemeService } from "./theme.service";
 
@@ -13,7 +12,6 @@ export class BSLauncherService {
 
     private readonly ipcService: IpcService;
     private readonly notificationService: NotificationService;
-    private readonly bsDownloaderService: BsDownloaderService;
     private readonly config: ConfigurationService;
     private readonly theme: ThemeService;
 
@@ -27,7 +25,6 @@ export class BSLauncherService {
     private constructor() {
         this.ipcService = IpcService.getInstance();
         this.notificationService = NotificationService.getInstance();
-        this.bsDownloaderService = BsDownloaderService.getInstance();
         this.config = ConfigurationService.getInstance();
         this.theme = ThemeService.getInstance();
     }
