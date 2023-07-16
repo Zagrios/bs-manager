@@ -3,8 +3,10 @@ import { BSVersion } from 'shared/bs-version.interface';
 import { IpcService } from "./ipc.service";
 import { NotificationService } from "./notification.service";
 import { BsDownloaderService } from "./bs-downloader.service";
-import { BehaviorSubject, Observable, filter } from "rxjs";
+import { BehaviorSubject, Observable, filter, of } from "rxjs";
 import { NotificationResult } from "shared/models/notification/notification.model";
+import { ConfigurationService } from "./configuration.service";
+import { ThemeService } from "./theme.service";
 
 export class BSLauncherService {
     private static instance: BSLauncherService;
@@ -12,6 +14,8 @@ export class BSLauncherService {
     private readonly ipcService: IpcService;
     private readonly notificationService: NotificationService;
     private readonly bsDownloaderService: BsDownloaderService;
+    private readonly config: ConfigurationService;
+    private readonly theme: ThemeService;
 
     public readonly versionRunning$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
    
@@ -24,47 +28,19 @@ export class BSLauncherService {
         this.ipcService = IpcService.getInstance();
         this.notificationService = NotificationService.getInstance();
         this.bsDownloaderService = BsDownloaderService.getInstance();
+        this.config = ConfigurationService.getInstance();
+        this.theme = ThemeService.getInstance();
     }
 
-    // TODO REMOVE
-    private listenBsExit(): void{
-        this.ipcService.watch("bs-launch.exit").subscribe(res => {
-            const version = this.versionRunning$.value;
-            this.versionRunning$.next(null);
-            if(res.success){ return; }
-            this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.EXIT", desc: "notifications.bs-launch.errors.msg.EXIT", actions: [{id: "0", title: "misc.verify"}]}).then(res => {
-                if(res === "0"){ this.bsDownloaderService.download(version, true); }
-            });
-        });
+    public getLaunchOptions(version: BSVersion): LaunchOption{
+        return {
+            version,
+            oculus: this.config.get(LaunchMods.OCULUS_MOD),
+            desktop: this.config.get(LaunchMods.DESKTOP_MOD),
+            debug: this.config.get(LaunchMods.DEBUG_MOD),
+            additionalArgs: (this.config.get<string>("additionnal-args") || "").split(";").map(arg => arg.trim()).filter(arg => arg.length > 0)
+        }
     }
-
-    // TODO : Rework with shortcuts implementation
-    public launch_old(version: BSVersion, oculus: boolean, desktop: boolean, debug: boolean, additionalArgs?: string[]): Promise<NotificationResult|string>{
-        const lauchOption: LaunchOption = {debug, oculus, desktop, version, additionalArgs};
-        if(this.versionRunning$.value){ return this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.BS_ALREADY_RUNNING"}); }
-        this.versionRunning$.next(version);
-        return this.ipcService.send<LaunchResult>("bs-launch.launch", {args: lauchOption}).then(res => {
-
-            if(res.data === "LAUNCHED"){ return this.notificationService.notifySuccess({title: "notifications.bs-launch.success.titles.launching"}); }
-
-            this.versionRunning$.next(null);
-            if(!res.success){
-                return this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.UNABLE_TO_LAUNCH", desc: res.error.title}); 
-            }
-            if (res.data === "EXE_NOT_FINDED") {
-                return this.notificationService.notifyError({ title: "notifications.bs-launch.errors.titles.EXE_NOT_FINDED", desc: "notifications.bs-launch.errors.msg.EXE_NOT_FINDED", actions: [{ id: "0", title: "misc.verify" }] }).then(res => {
-                    if (res === "0") {
-                        this.bsDownloaderService.download(version, true);
-                    }
-                    return res;
-                });
-            }
-            if (res.data) {
-                return this.notificationService.notifyError({ title: `notifications.bs-launch.errors.titles.${res.data}` });
-            }
-            return this.notificationService.notifyError({title: res.data || res.error.title});
-      });
-   }
 
     public doLaunch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
         return this.ipcService.sendV2<BSLaunchEventData, LaunchOption>("bs-launch.launch", {args: launchOptions});
@@ -94,6 +70,11 @@ export class BSLauncherService {
         });
 
         return launchState$;
+    }
+
+    public createLaunchShortcut(launchOptions: LaunchOption): Observable<void>{
+        const options: LaunchOption = {...launchOptions, version: {...launchOptions.version, color: launchOptions.version.color || this.theme.getBsmColors()[1]}};
+        return this.ipcService.sendV2<void, LaunchOption>("create-launch-shortcut", {args: options});
     }
 
 }

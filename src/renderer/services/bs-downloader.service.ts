@@ -136,7 +136,7 @@ export class BsDownloaderService {
     }
 
     public async download(bsVersion: BSVersion, isVerification?: boolean, isFirstCall = true): Promise<IpcResponse<DownloadEvent>> {
-        // TODO : to remake cause we don't need recursion anymore
+        // TODO : to remake cause we don't need recursion anymore (will be rework with qr code)
 
         if (isFirstCall && !this.progressBarService.require()) {
             return { success: false };

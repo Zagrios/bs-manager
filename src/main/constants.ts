@@ -10,4 +10,4 @@ export const APP_NAME = "BSManager";
 export const STEAMVR_APP_ID = "250820";
 
 export const IMAGE_CACHE_FOLDER = "imagescache";
-export const IMAGE_CACHE_PATH = path.join(path.dirname(app.getPath("exe")), IMAGE_CACHE_FOLDER);
+export const IMAGE_CACHE_PATH = path.join(app.getPath("userData"), IMAGE_CACHE_FOLDER);

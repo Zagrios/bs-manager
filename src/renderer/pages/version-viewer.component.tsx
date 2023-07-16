@@ -16,13 +16,21 @@ import { UninstallModal } from "renderer/components/modal/modal-types/uninstall-
 import { MapsPlaylistsPanel } from "renderer/components/maps-mangement-components/maps-playlists-panel.component";
 import { ShareFoldersModal } from "renderer/components/modal/modal-types/share-folders-modal.component";
 import { ModelsPanel } from "renderer/components/models-management/models-panel.component";
+import { useService } from "renderer/hooks/use-service.hook";
+import { BSLauncherService } from "renderer/services/bs-launcher.service";
+import { CreateLaunchShortcutModal } from "renderer/components/modal/modal-types/create-launch-shortcut-modal.component";
+import { lastValueFrom } from "rxjs";
+import { NotificationService } from "renderer/services/notification.service";
 
 export function VersionViewer() {
+
     const bsUninstallerService = BSUninstallerService.getInstance();
     const bsVersionManagerService = BSVersionManagerService.getInstance();
     const modalService = ModalService.getInsance();
     const bsDownloaderService = BsDownloaderService.getInstance();
     const ipcService = IpcService.getInstance();
+    const bsLauncher = useService(BSLauncherService);
+    const notification = useService(NotificationService);
 
     const { state } = useLocation() as { state: BSVersion };
     const navigate = useNavigate();
@@ -74,6 +82,23 @@ export function VersionViewer() {
         modalService.openModal(ShareFoldersModal, state);
     };
 
+    const createLaunchShortcut = async () => {
+        const { exitCode, data } = await modalService.openModal(CreateLaunchShortcutModal, state);
+        if(exitCode !== ModalExitCode.COMPLETED){ return; }
+
+        lastValueFrom(bsLauncher.createLaunchShortcut(data)).then(() => {
+            notification.notifySuccess({
+                title: "notifications.create-launch-shortcut.success.title",
+                desc: "notifications.create-launch-shortcut.success.msg"
+            });
+        }).catch(() => {
+            notification.notifyError({
+                title: "notifications.types.error",
+                desc: "notifications.create-launch-shortcut.error.msg"
+            });
+        });
+    }
+
     return (
         <>
             <BsmImage className="absolute w-full h-full top-0 left-0 object-cover" image={state.ReleaseImg || DefautVersionImage} errorImage={DefautVersionImage} />
@@ -90,7 +115,14 @@ export function VersionViewer() {
                     <ModsSlide version={state} onDisclamerDecline={handleModsDisclaimerDecline} />
                 </div>
             </div>
-            <BsmDropdownButton className="absolute top-3 right-4 h-9 w-9 bg-light-main-color-2 dark:bg-main-color-2 rounded-md" items={[{ text: "pages.version-viewer.dropdown.open-folder", icon: "folder", onClick: openFolder }, !state.steam && !state.oculus && { text: "pages.version-viewer.dropdown.verify-files", icon: "task", onClick: verifyFiles }, !state.steam && !state.oculus && { text: "pages.version-viewer.dropdown.edit", icon: "edit", onClick: edit }, !state.oculus && { text: "pages.version-viewer.dropdown.clone", icon: "copy", onClick: clone }, { text: "pages.version-viewer.dropdown.shared-folders", icon: "link", onClick: openShareFolderModal }, !state.steam && !state.oculus && { text: "pages.version-viewer.dropdown.uninstall", icon: "trash", onClick: uninstall }]} />
+            <BsmDropdownButton className="absolute top-3 right-4 h-9 w-9 bg-light-main-color-2 dark:bg-main-color-2 rounded-md" items={[
+                { text: "pages.version-viewer.dropdown.open-folder", icon: "folder", onClick: openFolder },
+                !state.steam && !state.oculus && { text: "pages.version-viewer.dropdown.verify-files", icon: "task", onClick: verifyFiles },
+                !state.steam && !state.oculus && { text: "pages.version-viewer.dropdown.edit", icon: "edit", onClick: edit },
+                !state.oculus && { text: "pages.version-viewer.dropdown.clone", icon: "copy", onClick: clone },
+                { text: "pages.version-viewer.dropdown.shared-folders", icon: "link", onClick: openShareFolderModal },
+                { text: "pages.version-viewer.dropdown.create-shortcut", icon: "shortcut", onClick: createLaunchShortcut },
+                !state.steam && !state.oculus && { text: "pages.version-viewer.dropdown.uninstall", icon: "trash", onClick: uninstall }]} />
         </>
     );
 }

@@ -96,6 +96,7 @@
                 "clone": "Cloner",
                 "edit": "Editer",
                 "uninstall": "Désinstaller",
+                "create-shortcut": "Créer un raccourci",
                 "shared-folders": "Dossiers Partagés"
             }
         },
@@ -450,6 +451,15 @@
                     "msg": "Le partage du dossier 'UserData' peut générer des erreurs, en cas de soucis déliez le dossier pour restaurer la sauvegarde"
                 }
             }
+        },
+        "create-launch-shortcut": {
+            "success": {
+                "title": "Raccourci créé",
+                "msg": "Le raccourci a été créé sur le bureau."
+            },
+            "error": {
+                "msg": "Une erreur s'est produite lors de la création du raccourci."
+            }
         }
     },
     "modals": {
@@ -610,6 +620,13 @@
                 "unlink-folder": "Délier le dossier",
                 "link-all": "Tout lier"
             }
+        },
+        "create-launch-shortcut": {
+            "title": "Créer un raccourci",
+            "desc": "Créer un raccourci te permettra de démarrer Beat Saber avec les options choisi sans passé par BSManager.",
+            "launch-options": "Options de lancement",
+            "advanced-launch": "Lancement avancé",
+            "valid-btn": "Créer le raccourci"
         }
     },
     "maps": {

@@ -63,9 +63,9 @@ export default function ShortcutLaunch() {
             },
             error: err => {
                 if(!Object.values(BSLaunchError).includes(err.type)){
-                    notification.notifySystem({title: t("bs-launch.errors.titles.UNKNOWN_ERROR"), body: t("bs-launch.errors.msg.UNKNOWN_ERROR")});
+                    notification.notifySystem({title: t("notifications.bs-launch.errors.titles.UNKNOWN_ERROR"), body: t("notifications.bs-launch.errors.msg.UNKNOWN_ERROR")});
                 } else {
-                    notification.notifySystem({title: t(`bs-launch.errors.titles.${err.type}`), body: t(`bs-launch.errors.msg.${err.type}`)})
+                    notification.notifySystem({title: t(`notifications.bs-launch.errors.titles.${err.type}`), body: t(`notifications.bs-launch.errors.msg.${err.type}`)})
                 }
             }
         });

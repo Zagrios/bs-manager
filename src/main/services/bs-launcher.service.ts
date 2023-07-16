@@ -11,7 +11,7 @@ import { rename } from "fs/promises";
 import log from "electron-log";
 import { Observable, lastValueFrom, of, timer } from "rxjs";
 import { BsmProtocolService } from "./bsm-protocol.service";
-import { app} from "electron";
+import { app, shell} from "electron";
 import { Resvg } from "@resvg/resvg-js";
 import Color from "color";
 import { ensureDir, writeFile } from "fs-extra";
@@ -20,13 +20,13 @@ import { objectFromEntries } from "../../shared/helpers/object.helpers";
 import { WindowManagerService } from "./window-manager.service";
 import { IpcService } from "./ipc.service";
 import { BSVersionLibService } from "./bs-version-lib.service";
+import { execOnOs } from "../helpers/env.helpers";
 
 export class BSLauncherService {
     private static instance: BSLauncherService;
 
     private readonly utilsService: UtilsService;
     private readonly steamService: SteamService;
-    private readonly oculusService: OculusService;
     private readonly localVersionService: BSLocalVersionService;
     private readonly bsmProtocolService: BsmProtocolService;
     private readonly windows: WindowManagerService;
@@ -43,7 +43,6 @@ export class BSLauncherService {
     private constructor() {
         this.utilsService = UtilsService.getInstance();
         this.steamService = SteamService.getInstance();
-        this.oculusService = OculusService.getInstance();
         this.localVersionService = BSLocalVersionService.getInstance();
         this.bsmProtocolService = BsmProtocolService.getInstance();
         this.windows = WindowManagerService.getInstance();
@@ -82,14 +81,12 @@ export class BSLauncherService {
         return this.utilsService.taskRunning(BS_EXECUTABLE);
     }
 
-    private buildBsLaunchArgs(launchOptions: LaunchOption){
+    private buildBsLaunchArgs(launchOptions: LaunchOption): string[]{
         const launchArgs = [];
 
-        if (!launchOptions.version.steam && !launchOptions.version.oculus) {
-            launchArgs.push("--no-yeet");
-        }
         if (launchOptions.oculus) {
-            launchArgs.push("-vrmode oculus");
+            launchArgs.push("-vrmode");
+            launchArgs.push("oculus");
         }
         if (launchOptions.desktop) {
             launchArgs.push("fpfc");
@@ -106,14 +103,13 @@ export class BSLauncherService {
 
     private launchBSProcess(bsExePath: string, args: string[], debug = false): ChildProcessWithoutNullStreams{
 
-        const spawnOptions: SpawnOptionsWithoutStdio = { shell: true, cwd: path.dirname(bsExePath), env: {...process.env, "SteamAppId": BS_APP_ID} };
+        const spawnOptions: SpawnOptionsWithoutStdio = { detached: true, cwd: path.dirname(bsExePath), env: {...process.env, "SteamAppId": BS_APP_ID} };
 
         if(debug){
-            spawnOptions.detached = true;
             spawnOptions.windowsVerbatimArguments = true;
         }
 
-        return spawn(`\"${bsExePath}\"`, args, spawnOptions);
+        return spawn(bsExePath, args, spawnOptions);
 
     }
 
@@ -123,10 +119,6 @@ export class BSLauncherService {
 
             if(launchOptions.skipAlreadyRunning !== true && await this.isBsRunning()){
                 return obs.error({type: BSLaunchError.BS_ALREADY_RUNNING} as BSLaunchErrorData);
-            }
-
-            if(launchOptions.version.oculus && (await this.oculusService.oculusRunning())){
-                return obs.error({type: BSLaunchError.OCULUS_NOT_RUNNING} as BSLaunchErrorData);
             }
 
             const bsFolderPath = await this.localVersionService.getInstalledVersionPath(launchOptions.version);
@@ -222,13 +214,8 @@ export class BSLauncherService {
         return res;
     }
 
-    /**
-     * Create .ico file for the shortcut with the given color
-     * @param {Color} color
-     * @returns {Promise<string>} Path of the icon
-     */
-    private async createShortcutIco(color: Color): Promise<string>{
-
+    private createShortcutPngBuffer(color: Color): Buffer{
+        
         const svgIcon = `
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 406.4 406.4" height="406.4" width="406.4">
                 <rect rx="69.453" height="406.4" width="406.4" fill="${color.hex()}"/>
@@ -236,10 +223,36 @@ export class BSLauncherService {
             </svg>
         `;
 
-        const pngBuffer = new Resvg(svgIcon, {
+        return new Resvg(svgIcon, {
             fitTo: { mode: "width", value: 256 }
         }).render().asPng();
 
+    }
+
+    /**
+     * Create .png file for the shortcut with the given color
+     * @param {Color} color 
+     * @returns {Promise<string>} Path of the icon 
+     */
+    private async createShortcutPng(color: Color): Promise<string>{
+        const pngBuffer = this.createShortcutPngBuffer(color);
+
+        await ensureDir(IMAGE_CACHE_PATH);
+
+        const iconPath = path.join(IMAGE_CACHE_PATH, `launch_shortcut_${color.hex()}.png`);
+
+        await writeFile(iconPath, pngBuffer);
+
+        return iconPath;
+    }
+
+    /**
+     * Create .ico file for the shortcut with the given color
+     * @param {Color} color
+     * @returns {Promise<string>} Path of the icon
+     */
+    private async createShortcutIco(color: Color): Promise<string>{
+        const pngBuffer = this.createShortcutPngBuffer(color);
         const icoBuffer = await toIco([pngBuffer]);
 
         await ensureDir(IMAGE_CACHE_PATH);
@@ -251,36 +264,42 @@ export class BSLauncherService {
         return iconPath;
     }
 
-    private createInternetShortcut(options: { url: string, output: string, iconFile?: string, iconIndex?: number }): Promise<void>{
-
-        const data = [
-            "[InternetShortcut]",
-            `URL=${options.url}`,
-            options.iconFile ? `IconFile=${options.iconFile}` : null,
-            `IconIndex=${options.iconIndex ?? 0}`
-        ].join("\r\n");
-
-        return writeFile(options.output, data);
-    }
-
-    public async createLaunchShortcut(launchOptions: LaunchOption): Promise<void>{
+    public async createLaunchShortcut(launchOptions: LaunchOption): Promise<boolean>{
         const shortcutParams = this.launchOptionToShortcutParams(launchOptions);
-        const shortcutUrl =  this.bsmProtocolService.buildLink("launch", shortcutParams);
+        const shortcutUrl =  this.bsmProtocolService.buildLink("launch", shortcutParams).toString();
 
-        const shortcutName = ["Beat Saber", launchOptions.version.BSVersion, launchOptions.version.name].join(" ")
+        const shortcutName = ["Beat Saber", launchOptions.version.BSVersion, launchOptions.version.name].join(" ");
+        const shortcutIconColor = new Color(launchOptions.version.color, "hex");
 
-        return this.createInternetShortcut({
-            output: path.join(app.getPath("desktop"), `${shortcutName}.url`),
-            url: shortcutUrl.toString(),
-            iconFile: await this.createShortcutIco(new Color(launchOptions.version.color, "hex")),
-        });
+        return execOnOs({
+            win32: async () => (
+                shell.writeShortcutLink(path.join(app.getPath("desktop"), `${shortcutName}.lnk`), {
+                    target: shortcutUrl,
+                    icon: await this.createShortcutIco(shortcutIconColor),
+                    iconIndex: 0,
+                    description: [shortcutName, launchOptions.version.color].join(" "), // <= Need color in description to help windows know that the shortcut is different
+                })
+            ),
+            linux: async () => (
+                createDesktopUrlShortcut(path.join(app.getPath("desktop"), `${shortcutName}.desktop`), {
+                    name: shortcutName,
+                    url: shortcutUrl,
+                    icon: await this.createShortcutPng(shortcutIconColor),
+                })
+            )
+        })
 
     }
 
     private async openShortcutLaunchWindow(launchOptions: ShortcutParams): Promise<void>{
         const launchOption = this.shortcutParamsToLaunchOption(launchOptions);
 
-        launchOption.version = await this.localVersionService.getVersionOfBSFolder(await this.localVersionService.getInstalledVersionPath(launchOption.version));
+        const bsPath = await this.localVersionService.getInstalledVersionPath(launchOption.version);
+
+        launchOption.version = await this.localVersionService.getVersionOfBSFolder(bsPath, {
+            steam: launchOption.version.steam,
+            oculus: launchOption.version.oculus,    
+        });
 
         launchOption.version = {...(await this.remoteVersion.getVersionDetails(launchOption.version.BSVersion)), ...launchOption.version};
         
@@ -303,4 +322,28 @@ type ShortcutParams = {
     versionIno?: string;
     versionSteam?: string;
     versionOculus?: string;
+}
+
+/**
+ * Create .desktop file for url shortcut (only for linux)
+ * @param {string} shortcutPath 
+ * @param options 
+ * @returns 
+ */
+function createDesktopUrlShortcut(shortcutPath: string, options?: {
+    url: string
+    name: string,
+    icon: string
+}): Promise<boolean> {
+    const { url, name, icon } = options || {};
+
+    const data = [
+        "[Desktop Entry]",
+        "Type=Link",
+        `Name=${name}`,
+        `Icon=${icon}`,
+        `URL=${url}`
+    ].join("\n");
+
+    return writeFile(shortcutPath, data).then(() => true);
 }

@@ -87,12 +87,6 @@ if (!gotTheLock) {
         app.setAppUserModelId(APP_NAME);
 
         initServicesMustBeInitialized();
-
-        // TODO : to remove
-        setTimeout(() => {
-            // DeepLinkService.getInstance().dispatchLinkOpened("bsmanager://launch?version=1.29.1&versionName=Hi+Twitter&versionIno=2533274792493431&oculusMode=true&desktopMode=true&additionalArgs=--nowait&additionalArgs=-omgargs");
-        }, 3000);
-
         
         const deepLink = process.argv.find(arg => DeepLinkService.getInstance().isDeepLink(arg));
 
@@ -113,25 +107,6 @@ if (!gotTheLock) {
         ipcMain.on("log-error", (event, args: IpcRequest<any>) => {
             log.error(args?.args);
         });
-
-        // TODO : remove this
-        BSLauncherService.getInstance().createLaunchShortcut({
-            debug: false,
-            oculus: true,
-            desktop: true,
-            version: {
-              BSVersion: '1.29.1',
-              BSManifest: '886973241045584398',
-              ReleaseURL: 'https://steamcommunity.com/games/620980/announcements/detail/6169409105101272202',
-              ReleaseImg: 'https://cdn.akamai.steamstatic.com/steamcommunity/public/images/clans/32055887/c328e407367e9914abaf92f609501877ee5abb63.png',
-              ReleaseDate: '1680623885',
-              year: '2023',
-              name: 'Hi Twitter',
-              ino: 2533274792493431,
-              color: '#6545ff'
-            },
-            additionalArgs: [ '--nowait', '-omgargs' ]
-          });
     
     }).catch(log.error);
 }

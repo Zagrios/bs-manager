@@ -96,6 +96,7 @@
                 "clone": "Clonar",
                 "edit": "Editar",
                 "uninstall": "Desinstalar",
+                "create-shortcut": "Crear un atajo",
                 "shared-folders": "Carpetas Compartidas"
             }
         },
@@ -450,6 +451,15 @@
                     "msg": "Compartir la carpeta 'UserData' puede generar errores, en caso de problemas desvincular la carpeta para restaurar la copia de seguridad"
                 }
             }
+        },
+        "create-launch-shortcut": {
+            "success": {
+                "title": "Acceso directo creado",
+                "msg": "El acceso directo se ha creado en el escritorio."
+            },
+            "error": {
+                "msg": "Se produjo un error al crear el acceso directo."
+            }
         }
     },
     "modals": {
@@ -610,6 +620,13 @@
                 "unlink-folder": "Desenlazar Carpeta",
                 "link-all": "Enlazar todo"
             }
+        },
+        "create-launch-shortcut": {
+            "title": "Crear un atajo",
+            "desc": "Crear un atajo te permitirá iniciar Beat Saber con las opciones seleccionadas sin pasar por BSManager.",
+            "launch-options": "Opciones de lanzamiento",
+            "advanced-launch": "Lanzamiento avanzado",
+            "valid-btn": "Crear el atajo"
         }
     },
     "maps": {

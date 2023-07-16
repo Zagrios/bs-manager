@@ -97,6 +97,7 @@
                 "clone": "Klonen",
                 "edit": "Bearbeiten",
                 "uninstall": "Entfernen",
+                "create-shortcut": "Verknüpfung erstellen",
                 "shared-folders": "Geteilte Ordner"
             }
         },
@@ -451,6 +452,15 @@
                     "msg": "Das Freigeben des Ordners „UserData“ kann zu Fehlern führen. Bei Problemen trenne den Ordner, um die Sicherung wiederherzustellen"
                 }
             }
+        },
+        "create-launch-shortcut": {
+            "success": {
+                "title": "Verknüpfung erstellt",
+                "msg": "Die Verknüpfung wurde auf dem Desktop erstellt."
+            },
+            "error": {
+                "msg": "Beim Erstellen der Verknüpfung ist ein Fehler aufgetreten."
+            }
         }
     },
     "modals": {
@@ -611,6 +621,13 @@
                 "unlink-folder": "Ordner Verknüpfung Aufheben",
                 "link-all": "Alle verlinken"
             }
+        },
+        "create-launch-shortcut": {
+            "title": "Verknüpfung erstellen",
+            "desc": "Das Erstellen einer Verknüpfung ermöglicht es Ihnen, Beat Saber mit den ausgewählten Optionen zu starten, ohne durch BSManager zu gehen.",
+            "launch-options": "Startoptionen",
+            "advanced-launch": "Erweiterte Start",
+            "valid-btn": "Verknüpfung erstellen"
         }
     },
     "maps": {

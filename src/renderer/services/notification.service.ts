@@ -20,11 +20,6 @@ export class NotificationService {
     private constructor() {
         this.ipc = IpcService.getInstance();
         this.notifications$ = new BehaviorSubject<ResolvableNotification[]>([]);
-
-        // TODO : Make actions work and adapt with "watch" remork
-        this.ipc.watch<Notification>("show-notification").subscribe(notification => {
-            this.notify(notification as unknown as Notification);
-        });
     }
 
     public notify(notification: Notification): Promise<NotificationResult | string> {
