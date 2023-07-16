@@ -2,7 +2,6 @@ import { LaunchOption, BSLaunchEvent, BSLaunchWarning, BSLaunchEventData, BSLaun
 import { BSVersion } from 'shared/bs-version.interface';
 import { IpcService } from "./ipc.service";
 import { NotificationService } from "./notification.service";
-import { BsDownloaderService } from "./bs-downloader.service";
 import { BehaviorSubject, Observable, filter } from "rxjs";
 import { ConfigurationService } from "./configuration.service";
 import { ThemeService } from "./theme.service";
