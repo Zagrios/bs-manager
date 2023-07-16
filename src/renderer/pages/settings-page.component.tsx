@@ -32,6 +32,8 @@ import { ModelsManagerService } from "renderer/services/models-management/models
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { VersionFolderLinkerService } from "renderer/services/version-folder-linker.service";
 import { useService } from "renderer/hooks/use-service.hook";
+import { lastValueFrom } from "rxjs";
+import { BsmException } from "shared/models/bsm-exception.model";
 
 export function SettingsPage() {
     
@@ -125,31 +127,29 @@ export function SettingsPage() {
 
                 notificationService.notifySuccess({ title: "notifications.settings.move-folder.success.titles.transfer-started", desc: "notifications.settings.move-folder.success.descs.transfer-started" });
 
-                downloaderService.setInstallationFolder(fileChooserRes.filePaths[0]).then(async res => {
-                    setTimeout(() => {
-                        progressBarService.complete();
-                        setTimeout(() => progressBarService.hide(true), 1000);
-                    }, 1000);
+                lastValueFrom(downloaderService.setInstallationFolder(fileChooserRes.filePaths[0])).then(res => {
 
-                    if (res.success) {
-                        setInstallationFolder(res.data);
+                    progressBarService.complete();
+                    progressBarService.hide(true);
 
-                        notificationService.notifySuccess({ title: "notifications.settings.move-folder.success.titles.transfer-finished", duration: 3000 });
+                    setInstallationFolder(res);
 
-                        versionLinker
-                            .relinkAllVersionsFolders()
-                            .toPromise()
-                            .catch(() => {
-                                notificationService.notifyError({ title: "notifications.types.error", desc: "notifications.settings.move-folder.errors.descs.restore-linked-folders", duration: 15_000 });
-                            });
-                    } else {
-                        if (res?.error?.code === "COPY_TO_SUBPATH") {
-                            notificationService.notifyError({ title: "notifications.settings.move-folder.errors.titles.transfer-failed", desc: "notifications.settings.move-folder.errors.descs.COPY_TO_SUBPATH", duration: 10_000 });
-                            return;
-                        }
+                    notificationService.notifySuccess({ title: "notifications.settings.move-folder.success.titles.transfer-finished", duration: 3000 });
 
-                        notificationService.notifyError({ title: "notifications.settings.move-folder.errors.titles.transfer-failed" });
+                    // Restore links of external BS versions (steam, oculus, etc.)
+                    lastValueFrom(versionLinker.relinkAllVersionsFolders()).catch(() => {
+                        notificationService.notifyError({ title: "notifications.types.error", desc: "notifications.settings.move-folder.errors.descs.restore-linked-folders", duration: 15_000 });
+                    });
+
+                }).catch((err: BsmException) => {
+                    progressBarService.hide(true);
+
+                    if (err?.code === "COPY_TO_SUBPATH") {
+                        notificationService.notifyError({ title: "notifications.settings.move-folder.errors.titles.transfer-failed", desc: "notifications.settings.move-folder.errors.descs.COPY_TO_SUBPATH", duration: 10_000 });
+                        return;
                     }
+
+                    notificationService.notifyError({ title: "notifications.settings.move-folder.errors.titles.transfer-failed" });
                 });
             }
         });
