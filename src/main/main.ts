@@ -7,7 +7,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from "path";
-import { app, ipcMain, protocol } from "electron";
+import { app, ipcMain } from "electron";
 import log from "electron-log";
 import "./ipcs";
 import { WindowManagerService } from "./services/window-manager.service";
@@ -95,11 +95,6 @@ if (!gotTheLock) {
         } else {
             DeepLinkService.getInstance().dispatchLinkOpened(deepLink);
         }
-        
-        protocol.registerFileProtocol("file", (request, callback) => {
-            const pathname = decodeURI(request.url.replace("file:///", ""));
-            callback(pathname);
-        });
         
         BSLauncherService.getInstance().restoreSteamVR();
         
