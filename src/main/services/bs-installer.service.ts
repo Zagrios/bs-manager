@@ -5,12 +5,11 @@ import { UtilsService } from "./utils.service";
 import { ChildProcessWithoutNullStreams, spawn, spawnSync } from "child_process";
 import log from "electron-log";
 import { InstallationLocationService } from "./installation-location.service";
-import { ctrlc } from "ctrlc-windows";
 import { BSLocalVersionService } from "./bs-local-version.service";
-import isOnline from "is-online";
 import { WindowManagerService } from "./window-manager.service";
 import { copy } from "fs-extra";
 import { ensureFolderExist, pathExist } from "../helpers/fs.helpers";
+import { net } from "electron";
 
 export class BSInstallerService {
     private static instance: BSInstallerService;
@@ -61,20 +60,8 @@ export class BSInstallerService {
         }
     }
 
-    public killDownloadProcess(): Promise<boolean> {
-        return new Promise(resolve => {
-            if (this.downloadProcess?.killed && !this.downloadProcess?.pid) {
-                return resolve(false);
-            }
-
-            this.downloadProcess?.once("exit", () => resolve(true));
-            if (process.platform === "win32") {
-                ctrlc(this.downloadProcess.pid);
-            } else {
-                this.downloadProcess.kill();
-            }
-            setTimeout(() => resolve(false), 3000);
-        });
+    public killDownloadProcess(): boolean {
+        return this.downloadProcess.kill();
     }
 
     public async isDotNet6Installed(): Promise<boolean> {
@@ -101,7 +88,7 @@ export class BSInstallerService {
         if (!bsVersion) {
             return { type: "[Error]" };
         }
-        if (!(await isOnline({ timeout: 1500 }))) {
+        if (!net.isOnline()) {
             throw "no-internet";
         }
 
