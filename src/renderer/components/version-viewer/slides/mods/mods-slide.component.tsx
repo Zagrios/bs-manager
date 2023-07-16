@@ -109,9 +109,10 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         const subs: Subscription[] = [];
 
         if (isVisible && isOnline) {
-            const promise = new Promise<boolean>(async resolve => {
+            
+            (async () => {
                 if (configService.get<boolean>(ACCEPTED_DISCLAIMER_KEY)) {
-                    return resolve(true);
+                    return true;
                 }
 
                 const res = await modals.openModal(ModsDisclaimerModal);
@@ -121,14 +122,14 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
                     configService.set(ACCEPTED_DISCLAIMER_KEY, true);
                 }
 
-                resolve(haveAccepted);
-            });
-
-            promise.then(canLoad => {
+                return haveAccepted;
+            })().then(canLoad => {
                 if (!canLoad) {
                     return onDisclamerDecline?.();
                 }
+                
                 loadMods();
+
                 subs.push(
                     modsManager.isUninstalling$
                         .pipe(
