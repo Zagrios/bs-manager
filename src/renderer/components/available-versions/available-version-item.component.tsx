@@ -1,5 +1,5 @@
 import { BSVersion } from "shared/bs-version.interface";
-import { useEffect, useState, memo } from "react";
+import { useState, memo } from "react";
 import { BsDownloaderService } from "renderer/services/bs-downloader.service";
 import { distinctUntilChanged, map } from "rxjs/operators";
 import defaultImage from "../../../../assets/images/default-version-img.jpg";

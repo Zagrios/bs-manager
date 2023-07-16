@@ -49,7 +49,7 @@ export default function OneClickDownloadMap() {
             progressBar.complete();
 
             if (!res) {
-                throw "Failed to download map with OneClick";
+                throw new Error("Failed to download map with OneClick");
             }
 
             await timer(300).toPromise();

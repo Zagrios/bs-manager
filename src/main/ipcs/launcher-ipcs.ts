@@ -19,8 +19,6 @@ ipcMain.on("download-update", async (event, request: IpcRequest<void>) => {
 
 ipc.on("check-update", (_, reply) => {
     const updaterService = AutoUpdaterService.getInstance();
-    const utilsService = UtilsService.getInstance();
-
     reply(from(updaterService.isUpdateAvailable()));
 });
 

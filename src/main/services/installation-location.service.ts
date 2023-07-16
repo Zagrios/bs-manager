@@ -1,5 +1,4 @@
 import path from "path";
-import log from "electron-log";
 import { app } from "electron";
 import ElectronStore from "electron-store";
 import { copyDirectoryWithJunctions, deleteFolder, ensureFolderExist } from "../helpers/fs.helpers";

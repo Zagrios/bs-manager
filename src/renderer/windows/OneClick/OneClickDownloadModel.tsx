@@ -40,7 +40,7 @@ export default function OneClickDownloadModel() {
             const model = await modelSaber.getModelById(infos.data.id);
 
             if (!model) {
-                throw "Failed to get model from ModelSaber";
+                throw new Error("Failed to get model from ModelSaber");
             }
 
             setModel(() => model);
@@ -50,7 +50,7 @@ export default function OneClickDownloadModel() {
             const res = await modelDownloader.oneClickInstallModel(model);
 
             if (!res) {
-                throw "Failed to download model";
+                throw new Error("Failed to download model");
             }
         })();
 
@@ -65,7 +65,7 @@ export default function OneClickDownloadModel() {
         promise.finally(() => {
             windows.close("oneclick-download-model.html")
         });
-        
+
     }, []);
 
     return (
