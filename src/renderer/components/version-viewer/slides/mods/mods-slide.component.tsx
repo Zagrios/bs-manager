@@ -10,7 +10,7 @@ import BeatWaitingImg from "../../../../../../assets/images/apngs/beat-waiting.p
 import BeatConflictImg from "../../../../../../assets/images/apngs/beat-conflict.png";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { skip, filter } from "rxjs/operators";
-import { Subscription } from "rxjs";
+import { Subscription, lastValueFrom } from "rxjs";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { useInView } from "framer-motion";
@@ -18,15 +18,16 @@ import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods-disclaimer-modal.component";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { lt } from "semver";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion; onDisclamerDecline: () => void }) {
     const ACCEPTED_DISCLAIMER_KEY = "accepted-mods-disclaimer";
 
-    const modsManager = BsModsManagerService.getInstance();
-    const configService = ConfigurationService.getInstance();
-    const linkOpener = LinkOpenerService.getInstance();
-    const modals = ModalService.getInsance();
-    const os = OsDiagnosticService.getInstance();
+    const modsManager = useService(BsModsManagerService);
+    const configService = useService(ConfigurationService);
+    const linkOpener = useService(LinkOpenerService);
+    const modals = useService(ModalService);
+    const os = useService(OsDiagnosticService);
 
     const ref = useRef(null);
     const isVisible = useInView(ref, { amount: 0.5 });
@@ -96,7 +97,10 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
             return;
         }
 
-        Promise.all([modsManager.getAvailableMods(version), modsManager.getInstalledMods(version)]).then(([available, installed]) => {
+        Promise.all([
+            lastValueFrom(modsManager.getAvailableMods(version)),
+            lastValueFrom(modsManager.getInstalledMods(version))
+        ]).then(([available, installed]) => {
             const defaultMods = configService.get<string[]>("default_mods" as DefaultConfigKey);
             setModsAvailable(modsToCategoryMap(available));
             setModsSelected(available.filter(m => m.required || defaultMods.some(d => m.name.toLowerCase() === d.toLowerCase()) || installed.some(i => m.name === i.name)));
@@ -108,9 +112,10 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         const subs: Subscription[] = [];
 
         if (isVisible && isOnline) {
-            const promise = new Promise<boolean>(async resolve => {
+            
+            (async () => {
                 if (configService.get<boolean>(ACCEPTED_DISCLAIMER_KEY)) {
-                    return resolve(true);
+                    return true;
                 }
 
                 const res = await modals.openModal(ModsDisclaimerModal);
@@ -120,14 +125,14 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
                     configService.set(ACCEPTED_DISCLAIMER_KEY, true);
                 }
 
-                resolve(haveAccepted);
-            });
-
-            promise.then(canLoad => {
+                return haveAccepted;
+            })().then(canLoad => {
                 if (!canLoad) {
                     return onDisclamerDecline?.();
                 }
+                
                 loadMods();
+
                 subs.push(
                     modsManager.isUninstalling$
                         .pipe(

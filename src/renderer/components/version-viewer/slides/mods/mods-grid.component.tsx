@@ -7,12 +7,14 @@ import { BsModsManagerService } from "renderer/services/bs-mods-manager.service"
 import { PageStateService } from "renderer/services/page-state.service";
 import { Mod } from "shared/models/mods/mod.interface";
 import { ModItem } from "./mod-item.component";
+import { useService } from "renderer/hooks/use-service.hook";
 
 type Props = { modsMap: Map<string, Mod[]>; installed: Map<string, Mod[]>; modsSelected: Mod[]; onModChange: (selected: boolean, mod: Mod) => void; moreInfoMod?: Mod; onWantInfos: (mod: Mod) => void };
 
 export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreInfoMod, onWantInfos }: Props) {
-    const pageState = PageStateService.getInstance();
-    const modsManager = BsModsManagerService.getInstance();
+    
+    const pageState = useService(PageStateService);
+    const modsManager = useService(BsModsManagerService);
 
     const [filter, setFilter] = useState("");
     const [filterEnabled, setFilterEnabled] = useState(false);

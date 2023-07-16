@@ -1,7 +1,7 @@
 import { BSVersion } from "shared/bs-version.interface";
-import { useEffect, useState, memo } from "react";
+import { useState, memo } from "react";
 import { BsDownloaderService } from "renderer/services/bs-downloader.service";
-import { distinctUntilChanged } from "rxjs/operators";
+import { distinctUntilChanged, map } from "rxjs/operators";
 import defaultImage from "../../../../assets/images/default-version-img.jpg";
 import dateFormat from "dateformat";
 import { BsmImage } from "../shared/bsm-image.component";
@@ -10,12 +10,18 @@ import { BsmIcon } from "../svgs/bsm-icon.component";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { motion } from "framer-motion";
 import { GlowEffect } from "../shared/glow-effect.component";
+import { useService } from "renderer/hooks/use-service.hook";
+import { useObservable } from "renderer/hooks/use-observable.hook";
 
 export const AvailableVersionItem = memo(function AvailableVersionItem(props: { version: BSVersion }) {
-    const bsDownloaderService = BsDownloaderService.getInstance();
-    const linkOpener = LinkOpenerService.getInstance();
+    const bsDownloaderService = useService(BsDownloaderService)
+    const linkOpener = useService(LinkOpenerService)
+    
+    const selected = useObservable(
+        bsDownloaderService.selectedBsVersion$.pipe(distinctUntilChanged(), map(version => version?.BSVersion === props.version.BSVersion)),
+        false
+    );
 
-    const [selected, setSelected] = useState(false);
     const [hovered, setHovered] = useState(false);
     const t = useTranslation();
 
@@ -37,16 +43,6 @@ export const AvailableVersionItem = memo(function AvailableVersionItem(props: { 
     const openReleasePage = () => {
         linkOpener.open(props.version.ReleaseURL);
     };
-
-    useEffect(() => {
-        const sub = bsDownloaderService.selectedBsVersion$.pipe(distinctUntilChanged()).subscribe(version => {
-            setSelected(version?.BSVersion === props.version.BSVersion);
-        });
-
-        return () => {
-            sub.unsubscribe();
-        };
-    }, []);
 
     return (
         <motion.li className="group relative w-72 h-60 transition-transform active:scale-[.98]" onClick={toggleSelect} onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)}>

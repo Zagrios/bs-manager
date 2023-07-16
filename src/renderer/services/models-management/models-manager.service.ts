@@ -38,7 +38,7 @@ export class ModelsManagerService {
     private constructor() {
         this.ipc = IpcService.getInstance();
         this.versionFolderLinked = VersionFolderLinkerService.getInstance();
-        this.modalService = ModalService.getInsance();
+        this.modalService = ModalService.getInstance();
         this.progressBar = ProgressBarService.getInstance();
         this.notifications = NotificationService.getInstance();
         this.config = ConfigurationService.getInstance();

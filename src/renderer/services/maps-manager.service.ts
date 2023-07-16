@@ -40,7 +40,7 @@ export class MapsManagerService {
 
     private constructor() {
         this.ipcService = IpcService.getInstance();
-        this.modal = ModalService.getInsance();
+        this.modal = ModalService.getInstance();
         this.progressBar = ProgressBarService.getInstance();
         this.notifications = NotificationService.getInstance();
         this.config = ConfigurationService.getInstance();

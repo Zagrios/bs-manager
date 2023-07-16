@@ -36,17 +36,17 @@ export class BsModsManagerService {
     private constructor() {
         this.ipcService = IpcService.getInstance();
         this.progressBar = ProgressBarService.getInstance();
-        this.modals = ModalService.getInsance();
+        this.modals = ModalService.getInstance();
         this.notifications = NotificationService.getInstance();
         this.os = OsDiagnosticService.getInstance();
     }
 
-    public async getAvailableMods(version: BSVersion): Promise<Mod[]> {
-        return this.ipcService.send<Mod[], BSVersion>("get-available-mods", { args: version }).then(res => res.data);
+    public getAvailableMods(version: BSVersion): Observable<Mod[]> {
+        return this.ipcService.sendV2<Mod[], BSVersion>("get-available-mods", { args: version });
     }
 
-    public async getInstalledMods(version: BSVersion): Promise<Mod[]> {
-        return this.ipcService.send<Mod[], BSVersion>("get-installed-mods", { args: version }).then(res => res.data);
+    public getInstalledMods(version: BSVersion): Observable<Mod[]> {
+        return this.ipcService.sendV2<Mod[], BSVersion>("get-installed-mods", { args: version });
     }
 
     public installMods(mods: Mod[], version: BSVersion): Promise<void> {

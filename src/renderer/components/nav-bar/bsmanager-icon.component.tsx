@@ -3,11 +3,13 @@ import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { motion, Variants } from "framer-motion";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { AudioPlayerService } from "renderer/services/audio-player.service";
+import { useService } from "renderer/hooks/use-service.hook";
 
 // Thanks to cheddZy for the icon : https://github.com/cheddZy
 
 export const BsManagerIcon = memo(({ className }: { className?: string }) => {
-    const audioPlayer = AudioPlayerService.getInstance();
+    
+    const audioPlayer = useService(AudioPlayerService);
 
     const { firstColor, secondColor } = useThemeColor();
     const playing = useObservable(audioPlayer.playing$);

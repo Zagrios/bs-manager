@@ -3,6 +3,7 @@ import SettingColorChooser from "renderer/components/settings/setting-color-choo
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmIcon } from "renderer/components/svgs/bsm-icon.component";
 import { DefaultConfigKey } from "renderer/config/default-configuration.config";
+import { useService } from "renderer/hooks/use-service.hook";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { ModalComponent, ModalExitCode } from "renderer/services/modale.service";
@@ -11,7 +12,7 @@ import { BSVersion } from "shared/bs-version.interface";
 export const EditVersionModal: ModalComponent<{ name: string; color: string }, { version: BSVersion; clone?: boolean }> = ({ resolver, data }) => {
     const { version, clone } = data;
 
-    const configService = ConfigurationService.getInstance();
+    const configService = useService(ConfigurationService);
 
     const [name, setName] = useState(version.name || version.BSVersion);
     const [color, setColor] = useState(version.color ?? configService.get<string>("second-color" as DefaultConfigKey));

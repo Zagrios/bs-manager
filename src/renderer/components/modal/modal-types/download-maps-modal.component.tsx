@@ -19,12 +19,13 @@ import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; ownedMaps: BsmLocalMap[] }> = ({ data: { ownedMaps, version } }) => {
-    const beatSaver = BeatSaverService.getInstance();
-    const mapsDownloader = MapsDownloaderService.getInstance();
-    const progressBar = ProgressBarService.getInstance();
-    const os = OsDiagnosticService.getInstance();
+    const beatSaver = useService(BeatSaverService);
+    const mapsDownloader = useService(MapsDownloaderService);
+    const progressBar = useService(ProgressBarService);
+    const os = useService(OsDiagnosticService);
 
     const currentDownload = useObservable(mapsDownloader.currentMapDownload$);
     const mapsInQueue = useObservable(mapsDownloader.mapsInQueue$);

@@ -3,8 +3,9 @@ import { BSInstallerService, DownloadEventType, DownloadInfo } from "../services
 import { IpcRequest } from "shared/models/ipc";
 import { InstallationLocationService } from "../services/installation-location.service";
 import { UtilsService } from "../services/utils.service";
-import { BsmException } from "shared/models/bsm-exception.model";
 import { LocalMapsManagerService } from "../services/additional-content/local-maps-manager.service";
+import { IpcService } from "../services/ipc.service";
+import { from } from "rxjs";
 
 export interface InitDownloadInfoInterface {
     cwd: string;
@@ -15,6 +16,8 @@ export interface InitDownloadInfoInterface {
     username: string;
     stay: boolean;
 }
+
+const ipc = IpcService.getInstance();
 
 ipcMain.on("is-dotnet-6-installed", async (event, request: IpcRequest<void>) => {
     const installer = BSInstallerService.getInstance();
@@ -54,16 +57,9 @@ ipcMain.on("bs-download.installation-folder", async (event, request: IpcRequest<
     UtilsService.getInstance().ipcSend(request.responceChannel, { success: true, data: installationFolder });
 });
 
-ipcMain.on("bs-download.set-installation-folder", (event, request: IpcRequest<string>) => {
+ipc.on<string>("bs-download.set-installation-folder", (req, reply) => {
     const installerService = InstallationLocationService.getInstance();
-    installerService
-        .setInstallationDirectory(request.args)
-        .then(res => {
-            UtilsService.getInstance().ipcSend(request.responceChannel, { success: true, data: res });
-        })
-        .catch((err: BsmException) => {
-            UtilsService.getInstance().ipcSend(request.responceChannel, { success: false, error: err });
-        });
+    reply(from(installerService.setInstallationDirectory(req.args)));
 });
 
 ipcMain.on("bs-download.import-version", (event, request: IpcRequest<string>) => {

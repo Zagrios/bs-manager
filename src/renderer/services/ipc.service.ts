@@ -18,6 +18,9 @@ export class IpcService {
         this.channelObservables = new Map<string, Observable<IpcResponse<unknown>>>();
     }
 
+    /**
+     * @deprecated use sendV2 instead
+     */
     public send<T, U = unknown>(channel: string, request?: IpcRequest<U>): Promise<IpcResponse<T>> {
         if (!request) {
             request = { args: null, responceChannel: null };

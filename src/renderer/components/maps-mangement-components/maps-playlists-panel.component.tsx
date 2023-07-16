@@ -18,6 +18,7 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { LinkButton } from "./link-button.component";
 import { debounceTime } from "rxjs/operators";
 import { VersionFolderLinkerService, VersionLinkerActionListener } from "renderer/services/version-folder-linker.service";
+import { useService } from "renderer/hooks/use-service.hook";
 
 type Props = {
     version?: BSVersion;
@@ -25,10 +26,11 @@ type Props = {
 };
 
 export function MapsPlaylistsPanel({ version, isActive }: Props) {
-    const mapsService = MapsManagerService.getInstance();
-    const mapsDownloader = MapsDownloaderService.getInstance();
-    const osDiagnostic = OsDiagnosticService.getInstance();
-    const linker = VersionFolderLinkerService.getInstance();
+    
+    const mapsService = useService(MapsManagerService);
+    const mapsDownloader = useService(MapsDownloaderService);
+    const osDiagnostic = useService(OsDiagnosticService);
+    const linker = useService(VersionFolderLinkerService);
 
     const [tabIndex, setTabIndex] = useState(0);
     const [mapFilter, setMapFilter] = useState<MapFilter>({});

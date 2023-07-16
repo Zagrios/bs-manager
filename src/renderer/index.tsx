@@ -3,6 +3,7 @@ import { HashRouter } from "react-router-dom";
 import "tailwindcss/tailwind.css";
 import "./index.css";
 import { IpcService } from "./services/ipc.service";
+import { ThemeService } from "./services/theme.service";
 
 const launcherContainer = document.getElementById("launcher");
 const oneclickDownloadMapContainer = document.getElementById("oneclick-download-map");
@@ -11,10 +12,20 @@ const oneclickDownloadModelContainer = document.getElementById("oneclick-downloa
 const shortcutLaunchContainer = document.getElementById("shortcut-launch");
 
 const ipc = IpcService.getInstance();
+const themeService = ThemeService.getInstance();
 
 window.onerror = (...data) => {
     ipc.sendLazy("log-error", { args: data });
 };
+
+document.addEventListener("DOMContentLoaded", () => {
+    themeService.theme$.subscribe(() => {
+        if (themeService.isDark || (themeService.isOS && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+            return document.documentElement.classList.add("dark");
+        }
+        document.documentElement.classList.remove("dark");
+    });
+});
 
 if (launcherContainer) {
     import("./windows/Launcher").then(reactWindow => {
@@ -46,3 +57,5 @@ if (launcherContainer) {
         );
     });
 }
+
+

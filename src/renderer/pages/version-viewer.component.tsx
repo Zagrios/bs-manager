@@ -24,11 +24,11 @@ import { NotificationService } from "renderer/services/notification.service";
 
 export function VersionViewer() {
 
-    const bsUninstallerService = BSUninstallerService.getInstance();
-    const bsVersionManagerService = BSVersionManagerService.getInstance();
-    const modalService = ModalService.getInsance();
-    const bsDownloaderService = BsDownloaderService.getInstance();
-    const ipcService = IpcService.getInstance();
+    const bsUninstallerService = useService(BSUninstallerService);
+    const bsVersionManagerService = useService(BSVersionManagerService);
+    const modalService = useService(ModalService);
+    const bsDownloaderService = useService(BsDownloaderService);
+    const ipcService = useService(IpcService);
     const bsLauncher = useService(BSLauncherService);
     const notification = useService(NotificationService);
 

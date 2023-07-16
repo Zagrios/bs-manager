@@ -1,8 +1,7 @@
 import { AvailableVersionsSlider } from "../components/available-versions/available-versions-slider.component";
 import { BsDownloaderService } from "../services/bs-downloader.service";
 import { Slideshow } from "renderer/components/slideshow/slideshow.component";
-import { useEffect, useState } from "react";
-import { BSVersion } from "shared/bs-version.interface";
+import { useState } from "react";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
@@ -14,17 +13,19 @@ import { ImportVersionModal } from "renderer/components/modal/modal-types/import
 import { IpcService } from "renderer/services/ipc.service";
 import { NotificationService } from "renderer/services/notification.service";
 import { timer } from "rxjs";
+import { useService } from "renderer/hooks/use-service.hook";
+import { useObservable } from "renderer/hooks/use-observable.hook";
 
 export function AvailableVersionsList() {
-    const bsDownloaderService = BsDownloaderService.getInstance();
-    const versionManagerService = BSVersionManagerService.getInstance();
-    const progressBar = ProgressBarService.getInstance();
-    const modal = ModalService.getInsance();
-    const ipc = IpcService.getInstance();
-    const installer = BsDownloaderService.getInstance();
-    const notification = NotificationService.getInstance();
+    const bsDownloaderService = useService(BsDownloaderService);
+    const versionManagerService = useService(BSVersionManagerService);
+    const progressBar = useService(ProgressBarService);
+    const modal = useService(ModalService);
+    const ipc = useService(IpcService);
+    const installer = useService(BsDownloaderService);
+    const notification = useService(NotificationService);
 
-    const [versionSelected, setVersionSelected] = useState(null as BSVersion);
+    const versionSelected = useObservable(bsDownloaderService.selectedBsVersion$);
     const [downloading, setDownloading] = useState(false);
     const t = useTranslation();
 
@@ -34,16 +35,6 @@ export function AvailableVersionsList() {
             setDownloading(() => false);
         });
     };
-
-    useEffect(() => {
-        const versionSelectedSub = bsDownloaderService.selectedBsVersion$.subscribe(version => {
-            setVersionSelected(version);
-        });
-
-        return () => {
-            versionSelectedSub.unsubscribe();
-        };
-    }, []);
 
     const importVersion = async () => {
         if (!progressBar.require()) {

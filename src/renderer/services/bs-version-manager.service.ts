@@ -19,7 +19,7 @@ export class BSVersionManagerService {
 
     private constructor() {
         this.ipcService = IpcService.getInstance();
-        this.modalService = ModalService.getInsance();
+        this.modalService = ModalService.getInstance();
         this.notificationService = NotificationService.getInstance();
         this.progressBarService = ProgressBarService.getInstance();
         this.askAvailableVersions().then(() => this.askInstalledVersions());

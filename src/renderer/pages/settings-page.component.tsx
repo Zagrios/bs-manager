@@ -31,21 +31,25 @@ import { PlaylistsManagerService } from "renderer/services/playlists-manager.ser
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { VersionFolderLinkerService } from "renderer/services/version-folder-linker.service";
+import { useService } from "renderer/hooks/use-service.hook";
+import { lastValueFrom } from "rxjs";
+import { BsmException } from "shared/models/bsm-exception.model";
 
 export function SettingsPage() {
-    const configService: ConfigurationService = ConfigurationService.getInstance();
-    const themeService: ThemeService = ThemeService.getInstance();
-    const ipcService: IpcService = IpcService.getInstance();
-    const modalService: ModalService = ModalService.getInsance();
-    const downloaderService: BsDownloaderService = BsDownloaderService.getInstance();
-    const progressBarService: ProgressBarService = ProgressBarService.getInstance();
-    const notificationService: NotificationService = NotificationService.getInstance();
-    const i18nService: I18nService = I18nService.getInstance();
-    const linkOpener: LinkOpenerService = LinkOpenerService.getInstance();
-    const mapsManager = MapsManagerService.getInstance();
-    const playlistsManager = PlaylistsManagerService.getInstance();
-    const modelsManager = ModelsManagerService.getInstance();
-    const versionLinker = VersionFolderLinkerService.getInstance();
+    
+    const configService = useService(ConfigurationService);
+    const themeService = useService(ThemeService);
+    const ipcService = useService(IpcService);
+    const modalService = useService(ModalService);
+    const downloaderService = useService(BsDownloaderService);
+    const progressBarService = useService(ProgressBarService);
+    const notificationService = useService(NotificationService);
+    const i18nService = useService(I18nService);
+    const linkOpener = useService(LinkOpenerService);
+    const mapsManager = useService(MapsManagerService);
+    const playlistsManager = useService(PlaylistsManagerService);
+    const modelsManager = useService(ModelsManagerService);
+    const versionLinker = useService(VersionFolderLinkerService);
 
     const { firstColor, secondColor } = useThemeColor();
 
@@ -75,7 +79,7 @@ export function SettingsPage() {
 
     useEffect(() => {
         loadInstallationFolder();
-        ipcService.send<string>("current-version").then(res => setAppVersion(res.data));
+        lastValueFrom(ipcService.sendV2<string>("current-version")).then(res => setAppVersion(res));
         mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
@@ -123,31 +127,29 @@ export function SettingsPage() {
 
                 notificationService.notifySuccess({ title: "notifications.settings.move-folder.success.titles.transfer-started", desc: "notifications.settings.move-folder.success.descs.transfer-started" });
 
-                downloaderService.setInstallationFolder(fileChooserRes.filePaths[0]).then(async res => {
-                    setTimeout(() => {
-                        progressBarService.complete();
-                        setTimeout(() => progressBarService.hide(true), 1000);
-                    }, 1000);
+                lastValueFrom(downloaderService.setInstallationFolder(fileChooserRes.filePaths[0])).then(res => {
 
-                    if (res.success) {
-                        setInstallationFolder(res.data);
+                    progressBarService.complete();
+                    progressBarService.hide(true);
 
-                        notificationService.notifySuccess({ title: "notifications.settings.move-folder.success.titles.transfer-finished", duration: 3000 });
+                    setInstallationFolder(res);
 
-                        versionLinker
-                            .relinkAllVersionsFolders()
-                            .toPromise()
-                            .catch(() => {
-                                notificationService.notifyError({ title: "notifications.types.error", desc: "notifications.settings.move-folder.errors.descs.restore-linked-folders", duration: 15_000 });
-                            });
-                    } else {
-                        if (res?.error?.code === "COPY_TO_SUBPATH") {
-                            notificationService.notifyError({ title: "notifications.settings.move-folder.errors.titles.transfer-failed", desc: "notifications.settings.move-folder.errors.descs.COPY_TO_SUBPATH", duration: 10_000 });
-                            return;
-                        }
+                    notificationService.notifySuccess({ title: "notifications.settings.move-folder.success.titles.transfer-finished", duration: 3000 });
 
-                        notificationService.notifyError({ title: "notifications.settings.move-folder.errors.titles.transfer-failed" });
+                    // Restore links of external BS versions (steam, oculus, etc.)
+                    lastValueFrom(versionLinker.relinkAllVersionsFolders()).catch(() => {
+                        notificationService.notifyError({ title: "notifications.types.error", desc: "notifications.settings.move-folder.errors.descs.restore-linked-folders", duration: 15_000 });
+                    });
+
+                }).catch((err: BsmException) => {
+                    progressBarService.hide(true);
+
+                    if (err?.code === "COPY_TO_SUBPATH") {
+                        notificationService.notifyError({ title: "notifications.settings.move-folder.errors.titles.transfer-failed", desc: "notifications.settings.move-folder.errors.descs.COPY_TO_SUBPATH", duration: 10_000 });
+                        return;
                     }
+
+                    notificationService.notifyError({ title: "notifications.settings.move-folder.errors.titles.transfer-failed" });
                 });
             }
         });

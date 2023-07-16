@@ -1,5 +1,5 @@
 import { DownloadEvent, DownloadInfo } from "main/services/bs-installer.service";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { distinctUntilChanged, filter, throttleTime } from "rxjs/operators";
 import { IpcResponse } from "shared/models/ipc";
 import { BSVersion } from "shared/bs-version.interface";
@@ -39,7 +39,7 @@ export class BsDownloaderService {
 
     private constructor() {
         this.ipcService = IpcService.getInstance();
-        this.modalService = ModalService.getInsance();
+        this.modalService = ModalService.getInstance();
         this.bsVersionManager = BSVersionManagerService.getInstance();
         this.authService = AuthUserService.getInstance();
         this.progressBarService = ProgressBarService.getInstance();
@@ -197,8 +197,8 @@ export class BsDownloaderService {
         return this._isVerification;
     }
 
-    public setInstallationFolder(path: string): Promise<IpcResponse<string>> {
-        return this.ipcService.send<string>("bs-download.set-installation-folder", { args: path });
+    public setInstallationFolder(path: string): Observable<string> {
+        return this.ipcService.sendV2<string>("bs-download.set-installation-folder", { args: path });
     }
 
     public async importVersion(pathToImport: string): Promise<boolean> {

@@ -8,21 +8,22 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { IpcService } from "renderer/services/ipc.service";
 import { NotificationService } from "renderer/services/notification.service";
 import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service";
-import { ThemeService } from "renderer/services/theme.service";
 import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
 import { WindowManagerService } from "renderer/services/window-manager.service";
 import { map, filter } from "rxjs/operators";
 import { BsvPlaylist } from "shared/models/maps/beat-saver.model";
 import defaultImage from "../../../../assets/images/default-version-img.jpg";
+import { useService } from "renderer/hooks/use-service.hook";
+import { lastValueFrom } from "rxjs";
 
 export default function OneClickDownloadPlaylist() {
-    const ipc = IpcService.getInstance();
-    const bSaver = BeatSaverService.getInstance();
-    const themeService = ThemeService.getInstance();
-    const playlistDownloader = PlaylistDownloaderService.getInstance();
+    
+    const ipc = useService(IpcService);
+    const bSaver = useService(BeatSaverService);
+    const playlistDownloader = useService(PlaylistDownloaderService);
     const mapsContainer = useRef<HTMLDivElement>(null);
-    const windows = WindowManagerService.getInstance();
-    const notification = NotificationService.getInstance();
+    const windows = useService(WindowManagerService);
+    const notification = useService(NotificationService);
 
     const [playlist, setPlaylist] = useState<BsvPlaylist>(null);
     const downloadedMap = useObservable(
@@ -38,33 +39,18 @@ export default function OneClickDownloadPlaylist() {
     const title = playlist ? playlist.name : null;
 
     useEffect(() => {
-        const sub = themeService.theme$.subscribe(() => {
-            if (themeService.isDark || (themeService.isOS && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-                document.documentElement.classList.add("dark");
-            } else {
-                document.documentElement.classList.remove("dark");
-            }
-        });
 
-        const promise = new Promise(async (resolve, reject) => {
+        const promise = (async () => {
             const infos = await ipc.send<{ bpListUrl: string; id: string }>("one-click-playlist-info");
 
             if (!infos.success) {
-                return reject(infos.error);
+                throw infos.error;
             }
 
             bSaver.getPlaylistDetailsById(infos.data.id).then(details => setPlaylist(details));
 
-            playlistDownloader
-                .oneClickInstallPlaylist(infos.data.bpListUrl)
-                .toPromise()
-                .then(res => {
-                    resolve(res);
-                })
-                .catch(() => {
-                    reject();
-                });
-        });
+            return lastValueFrom(playlistDownloader.oneClickInstallPlaylist(infos.data.bpListUrl));
+        })();
 
         promise.catch(() => {
             notification.notifySystem({ title: t("notifications.types.error"), body: t("notifications.playlists.one-click-install.error") });
@@ -77,10 +63,6 @@ export default function OneClickDownloadPlaylist() {
         promise.finally(() => {
             windows.close("oneclick-download-playlist.html");
         });
-
-        return () => {
-            sub.unsubscribe();
-        };
     }, []);
 
     useEffect(() => {

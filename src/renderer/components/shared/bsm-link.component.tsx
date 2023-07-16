@@ -1,3 +1,4 @@
+import { useService } from "renderer/hooks/use-service.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 
 type Props = {
@@ -9,7 +10,8 @@ type Props = {
 };
 
 export function BsmLink({ className, href, children, style, internal }: Props) {
-    const linkOpener = LinkOpenerService.getInstance();
+    
+    const linkOpener = useService(LinkOpenerService);
 
     const openLink = () => {
         if (!href) {

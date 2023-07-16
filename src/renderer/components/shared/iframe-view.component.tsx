@@ -2,10 +2,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useRef } from "react";
 import { useClickOutside } from "renderer/hooks/use-click-outside.hook";
 import { useObservable } from "renderer/hooks/use-observable.hook";
+import { useService } from "renderer/hooks/use-service.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 
 export function BsmIframeView() {
-    const linkService = LinkOpenerService.getInstance();
+    const linkService = useService(LinkOpenerService);
 
     const iframeUrl = useObservable(linkService.iframeLink$);
     const ref = useRef(null);

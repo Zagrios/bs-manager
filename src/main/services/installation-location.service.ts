@@ -1,5 +1,4 @@
 import path from "path";
-import log from "electron-log";
 import { app } from "electron";
 import ElectronStore from "electron-store";
 import { copyDirectoryWithJunctions, deleteFolder, ensureFolderExist } from "../helpers/fs.helpers";
@@ -43,26 +42,20 @@ export class InstallationLocationService {
         this.updateListeners.forEach(listener => listener());
     }
 
-    public setInstallationDirectory(newDir: string): Promise<string> {
+    public async setInstallationDirectory(newDir: string): Promise<string> {
         const oldDir = this.installationDirectory;
         const newDest = path.join(newDir, this.INSTALLATION_FOLDER);
-        return new Promise<string>(async (resolve, reject) => {
-            await ensureFolderExist(oldDir);
 
-            try {
-                await copyDirectoryWithJunctions(oldDir, newDest, { overwrite: true });
+        await ensureFolderExist(oldDir);
 
-                this._installationDirectory = newDir;
-                this.installPathConfig.set(this.STORE_INSTALLATION_PATH_KEY, newDir);
+        await copyDirectoryWithJunctions(oldDir, newDest, { overwrite: true });
 
-                deleteFolder(oldDir);
+        this._installationDirectory = newDir;
+        this.installPathConfig.set(this.STORE_INSTALLATION_PATH_KEY, newDir);
 
-                return resolve(this.installationDirectory);
-            } catch (err) {
-                log.error(err);
-                reject(err);
-            }
-        });
+        deleteFolder(oldDir);
+
+        return this.installationDirectory;
     }
 
     public onInstallLocationUpdate(fn: Listener) {

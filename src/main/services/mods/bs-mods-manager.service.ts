@@ -68,12 +68,14 @@ export class BsModsManagerService {
     private async getModsInDir(version: BSVersion, modsDir: ModsInstallFolder): Promise<Mod[]> {
         const bsPath = await this.bsLocalService.getVersionPath(version);
         const modsPath = path.join(bsPath, modsDir);
+
         if (!(await pathExist(modsPath))) {
             return [];
         }
+
         const files = await recursiveReadDir(modsPath);
-        const promises = files.map(filePath => {
-            return (async () => {
+
+        const promises = files.map(async filePath => {
                 const ext = path.extname(filePath);
 
                 if (ext !== ".dll" && ext !== ".exe" && ext !== ".manifest") {
@@ -100,10 +102,10 @@ export class BsModsManagerService {
                     }
                 }
                 return mod;
-            })();
         });
+
         const mods = await Promise.all(promises);
-        return mods.filter(m => !!m);
+        return mods.filter(Boolean);
     }
 
     private async getBsipaInstalled(version: BSVersion): Promise<Mod> {

@@ -10,7 +10,7 @@ export class ModalService {
 
     private constructor() {}
 
-    public static getInsance() {
+    public static getInstance() {
         if (!this.instance) {
             this.instance = new ModalService();
         }

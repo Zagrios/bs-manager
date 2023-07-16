@@ -7,21 +7,21 @@ import { IpcService } from "renderer/services/ipc.service";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
 import { NotificationService } from "renderer/services/notification.service";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
-import { ThemeService } from "renderer/services/theme.service";
 import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
 import { WindowManagerService } from "renderer/services/window-manager.service";
 import { timer } from "rxjs";
 import { BsvMapDetail } from "shared/models/maps";
 import defaultImage from "../../../../assets/images/default-version-img.jpg";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export default function OneClickDownloadMap() {
-    const ipc = IpcService.getInstance();
-    const bsv = BeatSaverService.getInstance();
-    const mapsDownloader = MapsDownloaderService.getInstance();
-    const themeService = ThemeService.getInstance();
-    const progressBar = ProgressBarService.getInstance();
-    const windows = WindowManagerService.getInstance();
-    const notification = NotificationService.getInstance();
+    
+    const ipc = useService(IpcService);
+    const bsv = useService(BeatSaverService);
+    const mapsDownloader = useService(MapsDownloaderService);
+    const progressBar = useService(ProgressBarService);
+    const windows = useService(WindowManagerService);
+    const notification = useService(NotificationService);
 
     const [mapInfo, setMapInfo] = useState<BsvMapDetail>(null);
     const t = useTranslation();
@@ -30,43 +30,30 @@ export default function OneClickDownloadMap() {
     const title = mapInfo ? mapInfo.name : null;
 
     useEffect(() => {
-        const sub = themeService.theme$.subscribe(() => {
-            if (themeService.isDark || (themeService.isOS && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-                document.documentElement.classList.add("dark");
-            } else {
-                document.documentElement.classList.remove("dark");
-            }
-        });
 
         progressBar.open();
 
-        const promise = new Promise<void>(async (resolve, reject) => {
-            try {
-                const ipcRes = await ipc.send<{ id: string; isHash: boolean }>("one-click-map-info");
-
-                if (!ipcRes.success) {
-                    return reject(ipcRes.error);
-                }
-
-                const mapDetails = ipcRes.data.isHash ? (await bsv.getMapDetailsFromHashs([ipcRes.data.id])).at(0) : await bsv.getMapDetailsById(ipcRes.data.id);
-
-                setMapInfo(() => mapDetails);
-
-                const res = await mapsDownloader.oneClickInstallMap(mapDetails);
-
-                progressBar.complete();
-
-                if (!res) {
-                    return reject();
-                }
-
-                await timer(300).toPromise();
-
-                resolve();
-            } catch (e) {
-                reject(e);
+        const promise = (async () => {
+            const ipcRes = await ipc.send<{ id: string; isHash: boolean }>("one-click-map-info");
+            
+            if (!ipcRes.success) {
+                throw ipcRes.error;
             }
-        });
+
+            const mapDetails = ipcRes.data.isHash ? (await bsv.getMapDetailsFromHashs([ipcRes.data.id])).at(0) : await bsv.getMapDetailsById(ipcRes.data.id);
+
+            setMapInfo(() => mapDetails);
+            
+            const res = await mapsDownloader.oneClickInstallMap(mapDetails);
+
+            progressBar.complete();
+
+            if (!res) {
+                throw new Error("Failed to download map with OneClick");
+            }
+
+            await timer(300).toPromise();
+        })();
 
         promise.catch(() => {
             notification.notifySystem({ title: t("notifications.types.error"), body: t("notifications.maps.one-click-install.error") });
@@ -79,10 +66,7 @@ export default function OneClickDownloadMap() {
         promise.finally(() => {
             windows.close("oneclick-download-map.html");
         });
-
-        return () => {
-            sub.unsubscribe();
-        };
+        
     }, []);
 
     return (
