@@ -14,6 +14,7 @@ import { map, filter } from "rxjs/operators";
 import { BsvPlaylist } from "shared/models/maps/beat-saver.model";
 import defaultImage from "../../../../assets/images/default-version-img.jpg";
 import { useService } from "renderer/hooks/use-service.hook";
+import { lastValueFrom } from "rxjs";
 
 export default function OneClickDownloadPlaylist() {
     
@@ -39,25 +40,17 @@ export default function OneClickDownloadPlaylist() {
 
     useEffect(() => {
 
-        const promise = new Promise(async (resolve, reject) => {
+        const promise = (async () => {
             const infos = await ipc.send<{ bpListUrl: string; id: string }>("one-click-playlist-info");
 
             if (!infos.success) {
-                return reject(infos.error);
+                throw infos.error;
             }
 
             bSaver.getPlaylistDetailsById(infos.data.id).then(details => setPlaylist(details));
 
-            playlistDownloader
-                .oneClickInstallPlaylist(infos.data.bpListUrl)
-                .toPromise()
-                .then(res => {
-                    resolve(res);
-                })
-                .catch(() => {
-                    reject();
-                });
-        });
+            return lastValueFrom(playlistDownloader.oneClickInstallPlaylist(infos.data.bpListUrl));
+        })();
 
         promise.catch(() => {
             notification.notifySystem({ title: t("notifications.types.error"), body: t("notifications.playlists.one-click-install.error") });
