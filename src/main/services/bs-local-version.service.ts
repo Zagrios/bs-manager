@@ -1,12 +1,11 @@
 import { BSVersionLibService } from "./bs-version-lib.service";
-import { BSVersion, PartialBSVersion } from "shared/bs-version.interface";
+import { BSVersion } from "shared/bs-version.interface";
 import { InstallationLocationService } from "./installation-location.service";
 import { SteamService } from "./steam.service";
 import { BS_APP_ID, OCULUS_BS_DIR } from "../constants";
 import path from "path";
-import { createReadStream } from "fs";
 import { ConfigurationService } from "./configuration.service";
-import { rename } from "fs/promises";
+import { lstat, rename } from "fs/promises";
 import { BsmException } from "shared/models/bsm-exception.model";
 import log from "electron-log";
 import { OculusService } from "./oculus.service";
@@ -14,6 +13,8 @@ import { DownloadLinkType } from "shared/models/mods";
 import sanitize from "sanitize-filename";
 import { copyDirectoryWithJunctions, deleteFolder, getFoldersInFolder, pathExist } from "../helpers/fs.helpers";
 import { FolderLinkerService } from "./folder-linker.service";
+import { ReadStream, createReadStream } from "fs-extra";
+import readline from "readline";
 
 export class BSLocalVersionService {
     private static instance: BSLocalVersionService;
@@ -43,76 +44,128 @@ export class BSLocalVersionService {
         this.linker = FolderLinkerService.getInstance();
     }
 
-    public async getVersionOfBSFolder(bsPath: string): Promise<PartialBSVersion> {
-        const versionFilePath = path.join(bsPath, "Beat Saber_Data", "globalgamemanagers");
-        if (!(await pathExist(versionFilePath))) {
-            return null;
-        }
-        const versionsAvailable = await this.remoteVersionService.getAvailableVersions();
-        return new Promise<PartialBSVersion>(resolve => {
-            const stream = createReadStream(versionFilePath);
-            let findVersion: PartialBSVersion = null;
-            stream.on("data", line => {
-                line = line.toString();
-                for (const version of versionsAvailable) {
-                    if (line.includes(version.BSVersion)) {
-                        findVersion = { BSVersion: version.BSVersion };
-                        if (findVersion.BSVersion !== path.basename(bsPath)) {
-                            findVersion.name = path.basename(bsPath);
-                        }
+    private async getVersionFromGlobalGameManagerFile(versionFilePath: string): Promise<BSVersion> {
+
+        if(!(await pathExist(versionFilePath))){ return null; }
+
+        const versionsDict = await this.remoteVersionService.getAvailableVersions();
+
+        let stream: ReadStream;
+
+        try{
+            stream = createReadStream(versionFilePath);
+            const rl = readline.createInterface({
+                input: stream,
+                crlfDelay: Infinity
+            });
+
+            for await (const line of rl) {
+                for (const bsVersion of versionsDict) {
+                    if (line.includes(bsVersion.BSVersion)) {
                         stream.close();
-                        stream.destroy();
-                        break;
+                        return {...bsVersion};
                     }
                 }
-            });
-            stream.on("end", () => {
-                if (findVersion) {
-                    resolve(findVersion);
-                }
-                resolve(findVersion);
-            });
-            stream.on("close", () => {
-                if (findVersion) {
-                    resolve(findVersion);
-                }
-                resolve(findVersion);
-            });
+            }
+
+        } catch(e) {
+            log.error(e);
+        } finally {
+            stream?.close();
+        }
+
+        return null;
+    }
+
+    public async getVersionOfBSFolder(
+        bsPath: string, 
+        options?: {
+            steam?: boolean;
+            oculus?: boolean;
+        }
+    ): Promise<BSVersion>{
+        const versionFilePath = path.join(bsPath, 'Beat Saber_Data', 'globalgamemanagers');
+        const folderVersion = await this.getVersionFromGlobalGameManagerFile(versionFilePath);
+
+        if(!folderVersion){ return null; }
+
+        if(options?.steam || options?.oculus){
+            return {...folderVersion, ...options};
+        }
+
+        if(folderVersion.BSVersion !== path.basename(bsPath)){
+            folderVersion.name = path.basename(bsPath);
+        }
+
+        const folderStats = await lstat(bsPath);
+        if(folderStats.ino){
+            folderVersion.ino = folderStats.ino;
+        }
+
+        const customVersion = this.getCustomVersions().find(customVersion => {
+            return customVersion.BSVersion === folderVersion.BSVersion && customVersion.name === folderVersion.name;
         });
+
+        folderVersion.color = customVersion?.color;
+
+        return folderVersion;
+   }
+
+   private setCustomVersions(versions: BSVersion[]): void{
+      this.configService.set(this.CUSTOM_VERSIONS_KEY, versions);
+   }
+
+   private addCustomVersion(version: BSVersion): void{
+      this.setCustomVersions([...this.getCustomVersions() ?? [], version]);
+   }
+
+   private getCustomVersions(): BSVersion[]{
+      return this.configService.get<BSVersion[]>(this.CUSTOM_VERSIONS_KEY) || [];
+   }
+
+   private deleteCustomVersion(version: BSVersion): void{
+      const customVersions = this.getCustomVersions() || [];
+      this.setCustomVersions(customVersions.filter(v => (v.name !== version.name || v.BSVersion !== version.BSVersion || v.color !== version.color)));
+   }
+
+
+    /**
+     * Return path of a version even if it's not installed. 
+     * @param {BSVersion} version 
+     * @returns {Promise<string>}
+     */
+    public async getVersionPath(version: BSVersion): Promise<string>{
+        if(version.steam){ return this.steamService.getGameFolder(BS_APP_ID, "Beat Saber") }
+        if(version.oculus){ return this.oculusService.getGameFolder(OCULUS_BS_DIR); }
+
+        return path.join(
+            this.installLocationService.versionsDirectory,
+            this.getVersionFolder(version)
+        );
     }
 
-    private setCustomVersions(versions: BSVersion[]): void {
-        this.configService.set(this.CUSTOM_VERSIONS_KEY, versions);
-    }
+    /**
+     * Return path of an installed version. Returns null if not found.
+     * @param {BSVersion} version 
+     * @returns {Promise<string>}
+     */
+    public async getInstalledVersionPath(version: BSVersion): Promise<string>{
+        const versionPath = await this.getVersionPath(version);
+        if(await pathExist(versionPath)){ return versionPath; }
 
-    private addCustomVersion(version: BSVersion): void {
-        this.setCustomVersions([...(this.getCustomVersions() ?? []), version]);
-    }
+        const versionFolders = await getFoldersInFolder(this.installLocationService.versionsDirectory);
 
-    private getCustomVersions(): BSVersion[] {
-        return this.configService.get<BSVersion[]>(this.CUSTOM_VERSIONS_KEY) || [];
-    }
-
-    private deleteCustomVersion(version: BSVersion): void {
-        const customVersions = this.getCustomVersions() || [];
-        this.setCustomVersions(customVersions.filter(v => v.name !== version.name || v.BSVersion !== version.BSVersion || v.color !== version.color));
-    }
-
-    public async getVersionPath(version: BSVersion): Promise<string> {
-        if (version.steam) {
-            return this.steamService.getGameFolder(BS_APP_ID, "Beat Saber");
+        for(const folder of versionFolders){
+            const stats = await lstat(folder);
+            if(stats.ino === version.ino){ 
+                return folder;
+            }
         }
-        if (version.oculus) {
-            return this.oculusService.getGameFolder(OCULUS_BS_DIR);
-        }
-        return path.join(this.installLocationService.versionsDirectory, this.getVersionFolder(version));
+
+        return null;
     }
 
-    private removeSpecialChar(seq: string): string {
-        return sanitize(seq);
-    }
-
-    public getVersionFolder(version: BSVersion): string {
+    public getVersionFolder(version: BSVersion): string{
         return version.name ?? version.BSVersion;
     }
 
@@ -128,35 +181,22 @@ export class BSLocalVersionService {
 
     private async getSteamVersion(): Promise<BSVersion> {
         const steamBsFolder = await this.steamService.getGameFolder(BS_APP_ID, "Beat Saber");
+
         if (!steamBsFolder || !(await pathExist(steamBsFolder))) {
             return null;
         }
-        const steamBsVersion = await this.getVersionOfBSFolder(steamBsFolder);
 
-        if (!steamBsVersion) {
-            return null;
-        }
-        const version = await this.remoteVersionService.getVersionDetails(steamBsVersion.BSVersion);
-        if (!version) {
-            return null;
-        }
-        return { ...version, steam: true };
+        return this.getVersionOfBSFolder(steamBsFolder, { steam: true });
     }
 
     private async getOculusVersion(): Promise<BSVersion> {
         const oculusBsFolder = await this.oculusService.getGameFolder(OCULUS_BS_DIR);
+
         if (!oculusBsFolder) {
             return null;
         }
-        const oculusBsVersion = await this.getVersionOfBSFolder(oculusBsFolder);
-        if (!oculusBsVersion) {
-            return null;
-        }
-        const version = await this.remoteVersionService.getVersionDetails(oculusBsVersion.BSVersion);
-        if (!version) {
-            return null;
-        }
-        return { ...version, oculus: true };
+
+        return this.getVersionOfBSFolder(oculusBsFolder, { oculus: true });
     }
 
     public async getInstalledVersions(): Promise<BSVersion[]> {
@@ -180,103 +220,79 @@ export class BSLocalVersionService {
 
         for (const f of folderInInstallation) {
             log.info("try get version from folder", f);
-            const rawVersion = await this.getVersionOfBSFolder(f);
-            if (!rawVersion) {
-                continue;
-            }
-            const bsVersion = { ...(await this.remoteVersionService.getVersionDetails(rawVersion.BSVersion)) };
-            if (!bsVersion) {
-                continue;
-            }
-            bsVersion.name = path.basename(f) !== bsVersion.BSVersion ? path.basename(f) : undefined;
 
-            const customVersion = this.getCustomVersions().find(custom => custom.BSVersion === bsVersion.BSVersion && custom.name === bsVersion.name);
+            const version = await this.getVersionOfBSFolder(f);
 
-            if (customVersion) {
-                bsVersion.color = customVersion.color;
-            }
+            if(!version){ continue; }
 
-            versions.push(bsVersion);
-        }
+            versions.push(version);
+        };
+
         this.setCustomVersions(versions.filter(v => !!v.color));
 
         return versions;
     }
 
-    public async deleteVersion(version: BSVersion): Promise<boolean> {
-        if (version.steam || version.oculus) {
-            return false;
-        }
+    public async deleteVersion(version: BSVersion): Promise<boolean>{
+        if(version.steam || version.oculus){ return false; }
         const versionFolder = await this.getVersionPath(version);
-        if (!(await pathExist(versionFolder))) {
-            return true;
-        }
+        if(!(await pathExist(versionFolder))){ return true; }
 
         return deleteFolder(versionFolder)
-            .then(() => {
-                return true;
-            })
-            .catch(() => {
-                return false;
-            });
+            .then(() => { return true; })
+            .catch(() => { return false; })
     }
 
-    public async editVersion(version: BSVersion, name: string, color: string): Promise<BSVersion> {
-        if (version.steam || version.oculus) {
-            throw { title: "CantEditSteam", message: "CantEditSteam" } as BsmException;
-        }
-        const oldPath = await this.getVersionPath(version);
-        const editedVersion: BSVersion = version.BSVersion === name ? { ...version, name: undefined, color } : { ...version, name: this.removeSpecialChar(name), color };
-        const newPath = await this.getVersionPath(editedVersion);
+   public async editVersion(version: BSVersion, name: string, color: string): Promise<BSVersion>{
+      if(version.steam || version.oculus){ throw {title: "CantEditSteam", message: "CantEditSteam"} as BsmException; }
+      const oldPath = await this.getVersionPath(version);
+      const editedVersion: BSVersion = version.BSVersion === name
+         ? {...version, name: undefined, color}
+         : {...version, name: sanitize(name), color};
+      const newPath = await this.getVersionPath(editedVersion);
 
-        if (oldPath === newPath) {
-            this.deleteCustomVersion(version);
-            this.addCustomVersion(editedVersion);
-            return editedVersion;
-        }
+      if(oldPath === newPath){
+         this.deleteCustomVersion(version);
+         this.addCustomVersion(editedVersion);
+         return editedVersion;
+      }
 
-        if ((await pathExist(newPath)) && newPath === oldPath) {
-            throw { title: "VersionAlreadExist" } as BsmException;
-        }
+      if((await pathExist(newPath)) && newPath === oldPath){ throw {title: "VersionAlreadExist"} as BsmException; }
 
-        return rename(oldPath, newPath)
-            .then(() => {
-                this.deleteCustomVersion(version);
-                this.addCustomVersion(editedVersion);
-                return editedVersion;
-            })
-            .catch((err: Error) => {
-                log.error("edit version error", err, version, name, color);
-                throw { title: "CantRename", ...err } as BsmException;
-            });
-    }
+      return rename(oldPath, newPath).then(() => {
+         this.deleteCustomVersion(version);
+         this.addCustomVersion(editedVersion);
+         return editedVersion;
+      }).catch((err: Error) => {
+         log.error("edit version error", err, version, name, color);
+         throw {title: "CantRename", ...err} as BsmException;
+      });
+   }
 
-    public async cloneVersion(version: BSVersion, name: string, color: string): Promise<BSVersion> {
-        const originPath = await this.getVersionPath(version);
-        const cloneVersion: BSVersion = version.BSVersion === name ? { ...version, name: undefined, color, steam: false, oculus: false } : { ...version, name: this.removeSpecialChar(name), color, steam: false, oculus: false };
-        const newPath = await this.getVersionPath(cloneVersion);
+   public async cloneVersion(version: BSVersion, name: string, color: string): Promise<BSVersion>{
+      const originPath = await this.getVersionPath(version);
+      const cloneVersion: BSVersion = version.BSVersion === name
+         ? {...version, name: undefined, color, steam: false, oculus: false}
+         : {...version, name: sanitize(name), color, steam: false, oculus: false};
+      const newPath = await this.getVersionPath(cloneVersion);
 
-        if (originPath === newPath) {
-            this.deleteCustomVersion(version);
-            this.addCustomVersion(cloneVersion);
-        }
+      if(originPath === newPath){
+         this.deleteCustomVersion(version);
+         this.addCustomVersion(cloneVersion);
+      }
 
-        if (await pathExist(newPath)) {
-            throw { title: "VersionAlreadExist" } as BsmException;
-        }
+      if(await pathExist(newPath)){ throw {title: "VersionAlreadExist"} as BsmException; }
 
-        return copyDirectoryWithJunctions(originPath, newPath)
-            .then(() => {
-                this.addCustomVersion(cloneVersion);
-                return cloneVersion;
-            })
-            .catch((err: Error) => {
-                log.error("clone version error", err, version, name, color);
-                throw { title: "CantClone", ...err } as BsmException;
-            });
-    }
+      return copyDirectoryWithJunctions(originPath, newPath).then(() => {
+         this.addCustomVersion(cloneVersion);
+         return cloneVersion;
+      }).catch((err: Error) => {
+         log.error("clone version error", err, version, name, color);
+         throw {title: "CantClone", ...err} as BsmException
+      })
+   }
 
-    public async getLinkedFolders(version: BSVersion): Promise<string[]> {
+    public async getLinkedFolders(version: BSVersion): Promise<string[]>{
         const versionPath = await this.getVersionPath(version);
         const [rootFolders, beatSaberDataFolders] = await Promise.all([getFoldersInFolder(versionPath), getFoldersInFolder(path.join(versionPath, "Beat Saber_Data"))]);
 

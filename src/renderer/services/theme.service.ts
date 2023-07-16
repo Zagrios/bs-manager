@@ -1,5 +1,5 @@
 import { DefaultConfigKey, ThemeConfig } from "renderer/config/default-configuration.config";
-import { BehaviorSubject } from "rxjs";
+import { Observable } from "rxjs";
 import { ConfigurationService } from "./configuration.service";
 
 export class ThemeService {
@@ -7,7 +7,7 @@ export class ThemeService {
 
     private readonly configService: ConfigurationService;
 
-    public readonly theme$: BehaviorSubject<ThemeConfig>;
+    public readonly theme$: Observable<ThemeConfig>;
 
     public static getInstance(): ThemeService {
         if (!ThemeService.instance) {
@@ -27,6 +27,10 @@ export class ThemeService {
 
     public getTheme(): ThemeConfig {
         return this.configService.get("theme" as DefaultConfigKey);
+    }
+
+    public getBsmColors(): [string, string]{
+        return [this.configService.get("first-color" as DefaultConfigKey), this.configService.get("second-color" as DefaultConfigKey)];
     }
 
     public get isLight() {

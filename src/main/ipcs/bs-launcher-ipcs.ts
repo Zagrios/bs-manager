@@ -1,20 +1,17 @@
-import { ipcMain } from "electron";
-import { UtilsService } from "../services/utils.service";
-import { LauchOption } from "shared/models/bs-launch";
-import { BSLauncherService } from "../services/bs-launcher.service";
-import { IpcRequest } from "shared/models/ipc";
-import { BsmException } from "shared/models/bsm-exception.model";
 
-ipcMain.on("bs-launch.launch", (event, request: IpcRequest<LauchOption>) => {
-    const launcherService = BSLauncherService.getInstance();
-    const utilsService = UtilsService.getInstance();
+import { LaunchOption } from "shared/models/bs-launch";
+import { BSLauncherService } from "../services/bs-launcher.service"
+import { IpcService } from '../services/ipc.service';
+import { from } from "rxjs";
 
-    launcherService
-        .launch(request.args)
-        .then(res => {
-            utilsService.ipcSend(request.responceChannel, { success: true, data: res });
-        })
-        .catch((err: BsmException) => {
-            utilsService.ipcSend(request.responceChannel, { success: false, error: err });
-        });
+const ipc = IpcService.getInstance();
+
+ipc.on<LaunchOption>('bs-launch.launch', (req, reply) => {
+    const bsLauncher = BSLauncherService.getInstance();
+    reply(bsLauncher.launch(req.args));
+});
+
+ipc.on<LaunchOption>("create-launch-shortcut", (req, reply) => {
+    const bsLauncher = BSLauncherService.getInstance();
+    reply(from(bsLauncher.createLaunchShortcut(req.args)));
 });

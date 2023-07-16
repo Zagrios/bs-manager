@@ -96,6 +96,7 @@
                 "clone": "Clonar",
                 "edit": "Editar",
                 "uninstall": "Desinstalar",
+                "create-shortcut": "Crear un atajo",
                 "shared-folders": "Carpetas Compartidas"
             }
         },
@@ -334,12 +335,17 @@
         "bs-launch": {
             "success": {
                 "titles": {
-                    "launching": "Lanzamiento...🚀"
+                    "BS_LAUNCHING": "Lanzamiento...🚀",
+                    "STEAM_LAUNCHING": "¡Steam se está iniciando!"
+                },
+                "msg": {
+                    "BS_LAUNCHING": "No olvides calentarte 😉",
+                    "STEAM_LAUNCHING": "Beat Saber se lanzará automáticamente después de Steam."
                 }
             },
             "errors": {
                 "titles": {
-                    "UNABLE_TO_LAUNCH": "No se puede lanzar",
+                    "UNKNOWN_ERROR": "No se puede lanzar",
                     "STEAM_NOT_RUNNING": "Steam no funciona",
                     "OCULUS_NOT_RUNNING": "Oculus no funciona",
                     "BS_ALREADY_RUNNING": "BeatSaber ya está en marcha",
@@ -347,6 +353,7 @@
                     "EXIT": "Parada abrupta"
                 },
                 "msg": {
+                    "UNKNOWN_ERROR": "Se ha producido un error desconocido.",
                     "STEAM_NOT_RUNNING": "Para iniciar BeatSaber es necesario que Steam esté en funcionamiento.",
                     "OCULUS_NOT_RUNNING": "Oculus debe estar funcionando para lanzar BeatSaber.",
                     "BS_ALREADY_RUNNING": "Cierra BeatSaber antes de volver a lanzarlo.",
@@ -443,6 +450,15 @@
                     "title": "Backup creado",
                     "msg": "Compartir la carpeta 'UserData' puede generar errores, en caso de problemas desvincular la carpeta para restaurar la copia de seguridad"
                 }
+            }
+        },
+        "create-launch-shortcut": {
+            "success": {
+                "title": "Acceso directo creado",
+                "msg": "El acceso directo se ha creado en el escritorio."
+            },
+            "error": {
+                "msg": "Se produjo un error al crear el acceso directo."
             }
         }
     },
@@ -604,6 +620,13 @@
                 "unlink-folder": "Desenlazar Carpeta",
                 "link-all": "Enlazar todo"
             }
+        },
+        "create-launch-shortcut": {
+            "title": "Crear un atajo",
+            "desc": "Crear un atajo te permitirá iniciar Beat Saber con las opciones seleccionadas sin pasar por BSManager.",
+            "launch-options": "Opciones de lanzamiento",
+            "advanced-launch": "Lanzamiento avanzado",
+            "valid-btn": "Crear el atajo"
         }
     },
     "maps": {
@@ -853,6 +876,20 @@
     "auto-update": {
         "checking": "Comprobar las actualizaciones",
         "downloading": "Descargar actualizaciones"
+    },
+    "bs-shortcut-launch": {
+        "beat-saber-launching": "Iniciando Beat Saber",
+        "launching": "Iniciando",
+        "open-bsmanager": "Abrir BSManager",
+        "status-text": {
+            "init": "Inicializando...",
+            "success": {
+                "BS_LAUNCHING": "Iniciando Beat Saber...",
+                "STEAM_LAUNCHING": "Iniciando Steam...",
+                "STEAM_LAUNCHED": "¡Steam iniciado exitosamente!",
+                "UNABLE_TO_LAUNCH_STEAM": "Incapaz de iniciar Steam, forzando el inicio de Beat Saber..."
+            }
+        }
     },
     "dateformat": {
         "dayNames": ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],

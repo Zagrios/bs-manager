@@ -5,75 +5,69 @@ import { parse } from "@node-steam/vdf";
 import { readFile } from "fs/promises";
 import { pathExist } from "../helpers/fs.helpers";
 import log from "electron-log";
-import psList from "ps-list";
 import { app, shell } from "electron";
 
 export class SteamService {
+
     private static instance: SteamService;
 
     private readonly utils: UtilsService = UtilsService.getInstance();
 
-    private steamPath: string = "";
+    private steamPath: string = '';
 
-    private constructor() {
+    private constructor(){
         const vbsDirectory = path.join(this.utils.getAssetsScriptsPath(), "node-regedit", "vbs");
         regedit.setExternalVBSLocation(vbsDirectory);
     }
 
-    public static getInstance() {
-        if (!SteamService.instance) {
-            SteamService.instance = new SteamService();
-        }
+    public static getInstance(){
+        if(!SteamService.instance){ SteamService.instance = new SteamService(); }
         return SteamService.instance;
     }
 
-    public async getActiveUser(): Promise<number> {
+    public async getActiveUser(): Promise<number>{
         const res = await regedit.promisified.list(["HKCU\\Software\\Valve\\Steam\\ActiveProcess"]);
         const keys = res?.["HKCU\\Software\\Valve\\Steam\\ActiveProcess"];
-        if (!keys?.exists) {
-            throw 'Key "HKCU\\Software\\Valve\\Steam\\ActiveProcess" not exist';
-        }
+        if(!keys?.exists){ throw "Key \"HKCU\\Software\\Valve\\Steam\\ActiveProcess\" not exist"; }
         return (keys.values?.ActiveUser.value || undefined) as number;
     }
 
-    public async steamRunning(): Promise<boolean> {
-        if (process.platform === "win32") {
-            return !!(await this.getActiveUser());
-        }
-        return psList()
-            .then(processes => !!processes.find(process => process.cmd.includes("steam")))
-            .catch(e => {
-                log.error(e);
-                throw e;
-            });
+    public async steamRunning(): Promise<boolean>{
+        const steamProcessRunning = await this.utils.taskRunning("steam");
+        if(process.platform === "linux") { return steamProcessRunning; }
+
+        return steamProcessRunning && !!(await this.getActiveUser());
     }
 
-    public async getSteamPath(): Promise<string> {
-        if (this.steamPath) {
-            return this.steamPath;
+    public async getSteamPath(): Promise<string>{
+
+        if(this.steamPath){ return this.steamPath; }
+
+        switch (process.platform) {
+            case "linux":
+                this.steamPath = path.join(app.getPath('home'), '.steam', "steam");
+                return this.steamPath;
+            case "win32":
+                // eslint-disable-next-line no-case-declarations
+                const [win32Res, win64Res] = await Promise.all([
+                    regedit.promisified.list(['HKLM\\SOFTWARE\\Valve\\Steam']),
+                    regedit.promisified.list(['HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam'])
+                ]);
+
+                // eslint-disable-next-line no-case-declarations
+                const [win32, win64] = [win32Res["HKLM\\SOFTWARE\\Valve\\Steam"], win64Res["HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam"]];
+
+                if(win64.exists && win64?.values?.InstallPath?.value){ 
+                    this.steamPath = win64.values.InstallPath.value as string;
+                }
+                else if (win32.exists && win32?.values?.InstallPath?.value){
+                    this.steamPath = win32.values.InstallPath.value as string; 
+                }
+
+                return this.steamPath;
+            default:
+                return null;
         }
-
-        if (process.platform === "win32") {
-            const [win32Res, win64Res] = await Promise.all([regedit.promisified.list(["HKLM\\SOFTWARE\\Valve\\Steam"]), regedit.promisified.list(["HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam"])]);
-
-            const [win32, win64] = [win32Res["HKLM\\SOFTWARE\\Valve\\Steam"], win64Res["HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam"]];
-
-            let res = "";
-            if (win64.exists && win64?.values?.InstallPath?.value) {
-                res = win64.values.InstallPath.value as string;
-            } else if (win32.exists && win32?.values?.InstallPath?.value) {
-                res = win32.values.InstallPath.value as string;
-            }
-            this.steamPath = res;
-            return res;
-        }
-
-        if (process.platform === "linux") {
-            this.steamPath = path.join(app.getPath("home"), ".steam", "steam");
-            return this.steamPath;
-        }
-
-        return null;
     }
 
     public async getGameFolder(gameId: string, gameFolder?: string): Promise<string> {
@@ -82,25 +76,23 @@ export class SteamService {
 
             let libraryFolders: any = path.join(steamPath, "steamapps", "libraryfolders.vdf");
 
-            if (!(await pathExist(libraryFolders))) {
-                return null;
-            }
+            if (!(await pathExist(libraryFolders))) { return null; }
+            
             libraryFolders = parse(await readFile(libraryFolders, { encoding: "utf-8" }));
 
-            if (!libraryFolders.libraryfolders) {
-                return null;
-            }
+            if (!libraryFolders.libraryfolders) { return null; }
             libraryFolders = libraryFolders.libraryfolders;
 
             for (const libKey in Object.keys(libraryFolders)) {
-                if (!libraryFolders[libKey] || !libraryFolders[libKey].apps) {
-                    continue;
-                }
+                if (!libraryFolders[libKey] || !libraryFolders[libKey].apps) { continue; }
+
                 if (libraryFolders[libKey].apps[gameId] != null) {
                     return path.join(libraryFolders[libKey].path, "steamapps", "common", gameFolder);
                 }
             }
+
             return null;
+            
         } catch (e) {
             log.error(e);
             return null;
@@ -119,7 +111,7 @@ export class SteamService {
                 }
                 clearInterval(interval);
                 resolve();
-            }, 3000);
+            }, 4000);
 
             // If steam is not running after 60 seconds, reject
             setTimeout(() => {

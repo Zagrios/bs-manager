@@ -96,6 +96,7 @@
                 "clone": "Cloner",
                 "edit": "Editer",
                 "uninstall": "Désinstaller",
+                "create-shortcut": "Créer un raccourci",
                 "shared-folders": "Dossiers Partagés"
             }
         },
@@ -334,12 +335,17 @@
         "bs-launch": {
             "success": {
                 "titles": {
-                    "launching": "Lancement...🚀"
+                    "BS_LAUNCHING": "Lancement...🚀",
+                    "STEAM_LAUNCHING": "Steam se lance !"
+                },
+                "msg": {
+                    "BS_LAUNCHING": "N'oublie pas de t'échauffer 😉",
+                    "STEAM_LAUNCHING": "Beat Saber se lancera automatiquement après Steam."
                 }
             },
             "errors": {
                 "titles": {
-                    "UNABLE_TO_LAUNCH": "Lancement impossible",
+                    "UNKNOWN_ERROR": "Lancement impossible",
                     "STEAM_NOT_RUNNING": "Steam n'est pas lancé",
                     "OCULUS_NOT_RUNNING": "Oculus n'est pas lancé",
                     "BS_ALREADY_RUNNING": "Beat Saber est déjà lancé",
@@ -347,6 +353,7 @@
                     "EXIT": "Arrêt brutal"
                 },
                 "msg": {
+                    "UNKNOWN_ERROR": "Une erreur inconnue s'est produite.",
                     "STEAM_NOT_RUNNING": "Steam doit être en cours d'exécution pour lancer Beat Saber.",
                     "OCULUS_NOT_RUNNING": "Oculus doit être en cours d'exécution pour lancer Beat Saber.",
                     "BS_ALREADY_RUNNING": "Ferme Beat Saber avant de le lancer à nouveau.",
@@ -443,6 +450,15 @@
                     "title": "Sauvegarde créée",
                     "msg": "Le partage du dossier 'UserData' peut générer des erreurs, en cas de soucis déliez le dossier pour restaurer la sauvegarde"
                 }
+            }
+        },
+        "create-launch-shortcut": {
+            "success": {
+                "title": "Raccourci créé",
+                "msg": "Le raccourci a été créé sur le bureau."
+            },
+            "error": {
+                "msg": "Une erreur s'est produite lors de la création du raccourci."
             }
         }
     },
@@ -604,6 +620,13 @@
                 "unlink-folder": "Délier le dossier",
                 "link-all": "Tout lier"
             }
+        },
+        "create-launch-shortcut": {
+            "title": "Créer un raccourci",
+            "desc": "Créer un raccourci te permettra de démarrer Beat Saber avec les options choisi sans passé par BSManager.",
+            "launch-options": "Options de lancement",
+            "advanced-launch": "Lancement avancé",
+            "valid-btn": "Créer le raccourci"
         }
     },
     "maps": {
@@ -853,6 +876,20 @@
     "auto-update": {
         "checking": "Vérification des mises à jour",
         "downloading": "Téléchargement des mises à jour"
+    },
+    "bs-shortcut-launch": {
+        "beat-saber-launching": "Lancement de Beat Saber",
+        "launching": "Lancement",
+        "open-bsmanager": "Ouvrir BSManager",
+        "status-text": {
+            "init": "Initialisation...",
+            "success": {
+                "BS_LAUNCHING": "Lancement de Beat Saber...",
+                "STEAM_LAUNCHING": "Lancement de Steam...",
+                "STEAM_LAUNCHED": "Steam lancé avec succès !",
+                "UNABLE_TO_LAUNCH_STEAM": "Impossible de lancer Steam, lancement forcé de Beat Saber..."
+            }
+        }
     },
     "dateformat": {
         "dayNames": ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],

@@ -50,8 +50,9 @@ export class UtilsService {
     public async taskRunning(task: string): Promise<boolean> {
         try {
             const processes = await psList();
-            return !!processes.find(process => process.cmd.includes(task));
-        } catch (error) {
+            return processes.some(process => process.name?.includes(task) || process.cmd?.includes(task));
+        }
+        catch(error){
             log.error(error);
             return null;
         }

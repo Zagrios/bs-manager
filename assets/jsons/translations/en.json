@@ -97,6 +97,7 @@
                 "clone": "Clone",
                 "edit": "Edit",
                 "uninstall": "Uninstall",
+                "create-shortcut": "Create a shortcut",
                 "shared-folders": "Shared Folders"
             }
         },
@@ -335,12 +336,17 @@
         "bs-launch": {
             "success": {
                 "titles": {
-                    "launching": "Launching...🚀"
+                    "BS_LAUNCHING": "Launching...🚀",
+                    "STEAM_LAUNCHING": "Steam is launching!"
+                },
+                "msg": {
+                    "BS_LAUNCHING": "Don't forget to warm up 😉",
+                    "STEAM_LAUNCHING": "Beat Saber will automatically launch after Steam."
                 }
             },
             "errors": {
                 "titles": {
-                    "UNABLE_TO_LAUNCH": "Unable to launch",
+                    "UNKNOWN_ERROR": "Unable to launch",
                     "STEAM_NOT_RUNNING": "Steam is not running",
                     "OCULUS_NOT_RUNNING": "Oculus is not running",
                     "BS_ALREADY_RUNNING": "Beat Saber already running",
@@ -348,11 +354,12 @@
                     "EXIT": "Abrupt stop"
                 },
                 "msg": {
-                    "STEAM_NOT_RUNNING": "Steam must be running to launch Beat Saber.",
-                    "OCULUS_NOT_RUNNING": "Oculus must be running to launch Beat Saber.",
-                    "BS_ALREADY_RUNNING": "Close Beat Saber before launching it again.",
-                    "EXE_NOT_FINDED": "Some files seem to be missing, try to verify the game's files.",
-                    "EXIT": "Beat Saber stopped abruptly, try to verify the game's files."
+                    "UNKNOWN_ERROR": "An unknown error has occurred.",
+                    "STEAM_NOT_RUNNING": "Steam must be running to launch BeatSaber.",
+                    "OCULUS_NOT_RUNNING": "Oculus must be running to launch BeatSaber.",
+                    "BS_ALREADY_RUNNING": "Close BeatSaber before launching it again.",
+                    "EXE_NOT_FINDED": "Some files seem to be missing, try to verify the files.",
+                    "EXIT": "BeatSaber stopped abruptly, tries to check the files."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Launch Steam"
@@ -444,6 +451,15 @@
                     "title": "Backup created",
                     "msg": "Sharing the 'UserData' folder can generate errors, in case of problems unlink the folder to restore the backup"
                 }
+            }
+        },
+        "create-launch-shortcut": {
+            "success": {
+                "title": "Shortcut created",
+                "msg": "The shortcut has been created on the desktop."
+            },
+            "error": {
+                "msg": "An error occurred while creating the shortcut."
             }
         }
     },
@@ -605,6 +621,13 @@
                 "unlink-folder": "Unlink Folder",
                 "link-all": "Link all"
             }
+        },
+        "create-launch-shortcut": {
+            "title": "Create a shortcut",
+            "desc": "Creating a shortcut will allow you to start Beat Saber with the chosen options without going through BSManager.",
+            "launch-options": "Launch options",
+            "advanced-launch": "Advanced launch",
+            "valid-btn": "Create the shortcut"
         }
     },
     "maps": {
@@ -854,6 +877,20 @@
     "auto-update": {
         "checking": "Checking for updates",
         "downloading": "Downloading updates"
+    },
+    "bs-shortcut-launch": {
+        "beat-saber-launching": "Launching Beat Saber",
+        "launching": "Launching",
+        "open-bsmanager": "Open BSManager",
+        "status-text": {
+            "init": "Initializing...",
+            "success": {
+                "BS_LAUNCHING": "Launching Beat Saber...",
+                "STEAM_LAUNCHING": "Launching Steam...",
+                "STEAM_LAUNCHED": "Steam successfully launched!",
+                "UNABLE_TO_LAUNCH_STEAM": "Unable to launch Steam, forcing Beat Saber launch..."
+            }
+        }
     },
     "dateformat": {
         "dayNames": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],

@@ -1,20 +1,22 @@
 {
-    "name": "bs-manager",
-    "version": "1.2.0",
-    "description": "BSManager",
-    "main": "./dist/main/main.js",
-    "author": {
-        "name": "Zagrios",
-        "email": "admin@bsmanager.io",
-        "url": "https://github.com/Zagrios/bs-manager"
-    },
-    "scripts": {
-        "electron-rebuild": "node -r ts-node/register ../../.erb/scripts/electron-rebuild.js",
-        "link-modules": "node -r ts-node/register ../../.erb/scripts/link-modules.ts",
-        "postinstall": "npm run electron-rebuild && npm run link-modules"
-    },
-    "dependencies": {
-        "ctrlc-windows": "^2.1.0"
-    },
-    "license": "MIT"
+  "name": "bs-manager",
+  "version": "1.2.0",
+  "description": "BSManager",
+  "main": "./dist/main/main.js",
+  "author": {
+    "name": "Zagrios",
+    "email": "admin@bsmanager.io",
+    "url": "https://github.com/Zagrios/bs-manager"
+  },
+  "scripts": {
+    "electron-rebuild": "node -r ts-node/register ../../.erb/scripts/electron-rebuild.js",
+    "link-modules": "node -r ts-node/register ../../.erb/scripts/link-modules.ts",
+    "postinstall": "npm run electron-rebuild && npm run link-modules"
+  },
+  "dependencies": {
+    "@resvg/resvg-js": "^2.4.1",
+    "ctrlc-windows": "^2.1.0",
+    "ps-list": "^7.2.0"
+  },
+  "license": "MIT"
 }

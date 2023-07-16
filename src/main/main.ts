@@ -1,5 +1,3 @@
-/* eslint global-require: off, no-console: off, promise/always-return: off */
-
 /**
  * This module executes inside of electron's main process. You can start
  * electron renderer process from here and communicate with the other processes
@@ -65,8 +63,9 @@ const initServicesMustBeInitialized = () => {
     LocalMapsManagerService.getInstance();
     LocalPlaylistsManagerService.getInstance();
     LocalModelsManagerService.getInstance();
-    // Model
-};
+
+    BSLauncherService.getInstance();
+}
 
 const gotTheLock = app.requestSingleInstanceLock();
 
@@ -83,31 +82,31 @@ if (!gotTheLock) {
         DeepLinkService.getInstance().dispatchLinkOpened(deepLink);
     });
 
-    app.whenReady()
-        .then(() => {
-            app.setAppUserModelId(APP_NAME);
+    app.whenReady().then(() => {
+        
+        app.setAppUserModelId(APP_NAME);
 
-            initServicesMustBeInitialized();
+        initServicesMustBeInitialized();
+        
+        const deepLink = process.argv.find(arg => DeepLinkService.getInstance().isDeepLink(arg));
 
-            const deepLink = process.argv.find(arg => DeepLinkService.getInstance().isDeepLink(arg));
-
-            if (!deepLink) {
-                createWindow();
-            } else {
-                DeepLinkService.getInstance().dispatchLinkOpened(deepLink);
-            }
-
-            protocol.registerFileProtocol("file", (request, callback) => {
-                const pathname = decodeURI(request.url.replace("file:///", ""));
-                callback(pathname);
-            });
-
-            BSLauncherService.getInstance().restoreSteamVR();
-
-            // Log renderer errors
-            ipcMain.on("log-error", (event, args: IpcRequest<any>) => {
-                log.error(args?.args);
-            });
-        })
-        .catch(log.error);
+        if (!deepLink) {
+            createWindow();
+        } else {
+            DeepLinkService.getInstance().dispatchLinkOpened(deepLink);
+        }
+        
+        protocol.registerFileProtocol("file", (request, callback) => {
+            const pathname = decodeURI(request.url.replace("file:///", ""));
+            callback(pathname);
+        });
+        
+        BSLauncherService.getInstance().restoreSteamVR();
+        
+        // Log renderer errors
+        ipcMain.on("log-error", (event, args: IpcRequest<any>) => {
+            log.error(args?.args);
+        });
+    
+    }).catch(log.error);
 }

@@ -1,6 +1,7 @@
 export interface PartialBSVersion {
-    BSVersion: string;
-    name?: string;
+    BSVersion: string,
+    name?: string
+    ino?: number,
 }
 
 export interface BSVersion extends PartialBSVersion {

@@ -146,6 +146,7 @@
         ]
     },
     "devDependencies": {
+        "@electron/rebuild": "^3.2.13",
         "@pmmmwh/react-refresh-webpack-plugin": "0.5.5",
         "@teamsupercell/typings-for-css-modules-loader": "^2.5.1",
         "@testing-library/jest-dom": "^5.16.5",
@@ -164,6 +165,7 @@
         "@types/react-window": "^1.8.5",
         "@types/recursive-readdir": "^2.2.1",
         "@types/terser-webpack-plugin": "^5.0.4",
+        "@types/to-ico": "^1.1.1",
         "@types/use-double-click": "^1.0.1",
         "@types/webpack-bundle-analyzer": "^4.4.2",
         "@types/webpack-env": "^1.18.0",
@@ -182,7 +184,6 @@
         "electron-builder": "^24.4.0",
         "electron-devtools-installer": "^3.2.0",
         "electron-notarize": "^1.2.1",
-        "electron-rebuild": "^3.2.9",
         "electronmon": "^2.0.2",
         "eslint": "^8.22.0",
         "eslint-config-airbnb-base": "^15.0.0",
@@ -266,6 +267,7 @@
         "tailwind-scrollbar-hide": "^1.1.7",
         "tailwindcss-scoped-groups": "^2.0.0",
         "tippy.js": "^6.3.7",
+        "to-ico": "^1.1.5",
         "use-double-click": "^1.0.5",
         "use-fit-text": "^2.4.0"
     },

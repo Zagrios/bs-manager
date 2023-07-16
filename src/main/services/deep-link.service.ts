@@ -66,8 +66,9 @@ export class DeepLinkService {
         listeners.splice(fnIndex, 1);
     }
 
-    public dispatchLinkOpened(link: string) {
-        log.info("DEISPATCH", link);
+    public dispatchLinkOpened(link: string){
+
+        log.info("DISPATCH", link);
 
         const url = new URL(link);
 
