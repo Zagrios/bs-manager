@@ -30,17 +30,17 @@ export default function OneClickDownloadModel() {
 
     useEffect(() => {
 
-        const promise = new Promise(async (resolve, reject) => {
+        const promise = (async () => {
             const infos = await ipc.send<{ id: string; type: string }>("one-click-model-info");
 
             if (!infos.success) {
-                return reject();
+                throw infos.error;
             }
 
             const model = await modelSaber.getModelById(infos.data.id);
 
             if (!model) {
-                return reject();
+                throw "Failed to get model from ModelSaber";
             }
 
             setModel(() => model);
@@ -50,11 +50,9 @@ export default function OneClickDownloadModel() {
             const res = await modelDownloader.oneClickInstallModel(model);
 
             if (!res) {
-                return reject();
+                throw "Failed to download model";
             }
-
-            resolve(res);
-        });
+        })();
 
         promise.catch(() => {
             notification.notifySystem({ title: t("notifications.types.error"), body: t("notifications.models.one-click-install.error") });
