@@ -8,7 +8,6 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { IpcService } from "renderer/services/ipc.service";
 import { NotificationService } from "renderer/services/notification.service";
 import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service";
-import { ThemeService } from "renderer/services/theme.service";
 import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
 import { WindowManagerService } from "renderer/services/window-manager.service";
 import { map, filter } from "rxjs/operators";
@@ -20,7 +19,6 @@ export default function OneClickDownloadPlaylist() {
     
     const ipc = useService(IpcService);
     const bSaver = useService(BeatSaverService);
-    const themeService = useService(ThemeService);
     const playlistDownloader = useService(PlaylistDownloaderService);
     const mapsContainer = useRef<HTMLDivElement>(null);
     const windows = useService(WindowManagerService);
@@ -40,13 +38,6 @@ export default function OneClickDownloadPlaylist() {
     const title = playlist ? playlist.name : null;
 
     useEffect(() => {
-        const sub = themeService.theme$.subscribe(() => {
-            if (themeService.isDark || (themeService.isOS && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-                document.documentElement.classList.add("dark");
-            } else {
-                document.documentElement.classList.remove("dark");
-            }
-        });
 
         const promise = new Promise(async (resolve, reject) => {
             const infos = await ipc.send<{ bpListUrl: string; id: string }>("one-click-playlist-info");
@@ -79,10 +70,6 @@ export default function OneClickDownloadPlaylist() {
         promise.finally(() => {
             windows.close("oneclick-download-playlist.html");
         });
-
-        return () => {
-            sub.unsubscribe();
-        };
     }, []);
 
     useEffect(() => {

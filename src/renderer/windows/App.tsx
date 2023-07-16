@@ -7,7 +7,6 @@ import { Modal } from "../components/modal/modal.component";
 import { SettingsPage } from "../pages/settings-page.component";
 import { BsmProgressBar } from "../components/progress-bar/bsm-progress-bar.component";
 import { useEffect } from "react";
-import { ThemeService } from "../services/theme.service";
 import { NotificationOverlay } from "../components/notification/notification-overlay.component";
 import { PageStateService } from "../services/page-state.service";
 import { SharedContentsPage } from "../pages/shared-contents-page.component";
@@ -26,7 +25,6 @@ import { useService } from "renderer/hooks/use-service.hook";
 
 export default function App() {
     useService(OsDiagnosticService);
-    const themeService = useService(ThemeService);
     const pageState = useService(PageStateService);
     const maps = useService(MapsManagerService);
     const playlists = useService(PlaylistsManagerService);
@@ -38,13 +36,6 @@ export default function App() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        themeService.theme$.subscribe(() => {
-            if (themeService.isDark || (themeService.isOS && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-                return document.documentElement.classList.add("dark");
-            }
-            document.documentElement.classList.remove("dark");
-        });
-
         checkOneClicks();
     }, []);
 

@@ -7,7 +7,6 @@ import { IpcService } from "renderer/services/ipc.service";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
 import { NotificationService } from "renderer/services/notification.service";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
-import { ThemeService } from "renderer/services/theme.service";
 import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
 import { WindowManagerService } from "renderer/services/window-manager.service";
 import { timer } from "rxjs";
@@ -20,7 +19,6 @@ export default function OneClickDownloadMap() {
     const ipc = useService(IpcService);
     const bsv = useService(BeatSaverService);
     const mapsDownloader = useService(MapsDownloaderService);
-    const themeService = useService(ThemeService);
     const progressBar = useService(ProgressBarService);
     const windows = useService(WindowManagerService);
     const notification = useService(NotificationService);
@@ -32,13 +30,6 @@ export default function OneClickDownloadMap() {
     const title = mapInfo ? mapInfo.name : null;
 
     useEffect(() => {
-        const sub = themeService.theme$.subscribe(() => {
-            if (themeService.isDark || (themeService.isOS && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-                document.documentElement.classList.add("dark");
-            } else {
-                document.documentElement.classList.remove("dark");
-            }
-        });
 
         progressBar.open();
 
@@ -81,10 +72,7 @@ export default function OneClickDownloadMap() {
         promise.finally(() => {
             windows.close("oneclick-download-map.html");
         });
-
-        return () => {
-            sub.unsubscribe();
-        };
+        
     }, []);
 
     return (

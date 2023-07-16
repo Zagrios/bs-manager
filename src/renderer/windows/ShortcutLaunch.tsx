@@ -1,6 +1,5 @@
 import TitleBar from "renderer/components/title-bar/title-bar.component";
 import { useService } from "renderer/hooks/use-service.hook";
-import { ThemeService } from "renderer/services/theme.service";
 import { useEffect, useState } from "react"
 import { WindowManagerService } from "renderer/services/window-manager.service";
 import { IpcService } from "renderer/services/ipc.service";
@@ -20,8 +19,6 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 
 export default function ShortcutLaunch() {
     
-
-    const themeService = useService(ThemeService);
     const windows = useService(WindowManagerService);
     const ipc = useService(IpcService);
     const bsLauncher = useService(BSLauncherService);
@@ -34,20 +31,11 @@ export default function ShortcutLaunch() {
     const [status, setStatus] = useState<BSLaunchEventType>();
 
     useEffect(() => {
-        const sub = themeService.theme$.subscribe(() => {
-            if (themeService.isDark || (themeService.isOS && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-                document.documentElement.classList.add("dark");
-            } else {
-                document.documentElement.classList.remove("dark");
-            }
-        });
-
         const interval = setInterval(() => {
             setRotation(rotation => rotation + 45 * 3);
         }, 1500);
 
         return () => {
-            sub.unsubscribe();
             clearInterval(interval);
         }
     }, []);

@@ -5,13 +5,11 @@ import { BsmProgressBar } from "../components/progress-bar/bsm-progress-bar.comp
 import TitleBar from "../components/title-bar/title-bar.component";
 import { useTranslation } from "../hooks/use-translation.hook";
 import { AutoUpdaterService } from "../services/auto-updater.service";
-import { ThemeService } from "../services/theme.service";
 import { WindowManagerService } from "../services/window-manager.service";
 import { useService } from "renderer/hooks/use-service.hook";
 
 export default function Launcher() {
     
-    const themeService = useService(ThemeService);
     const updaterService = useService(AutoUpdaterService);
     const windowService = useService(WindowManagerService);
 
@@ -22,14 +20,6 @@ export default function Launcher() {
     const t = useTranslation();
 
     useEffect(() => {
-        const sub = themeService.theme$.subscribe(() => {
-            if (themeService.isDark || (themeService.isOS && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-                document.documentElement.classList.add("dark");
-            } else {
-                document.documentElement.classList.remove("dark");
-            }
-        });
-
         updaterService.isUpdateAvailable().then(available => {
             if (!available) {
                 return windowService.openThenCloseAll("index.html");
@@ -42,8 +32,6 @@ export default function Launcher() {
                 updaterService.quitAndInstall();
             });
         });
-
-        return () => sub.unsubscribe();
     }, []);
 
     return (
