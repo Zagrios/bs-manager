@@ -14,15 +14,17 @@ import { WindowManagerService } from "renderer/services/window-manager.service";
 import { map, filter } from "rxjs/operators";
 import { BsvPlaylist } from "shared/models/maps/beat-saver.model";
 import defaultImage from "../../../../assets/images/default-version-img.jpg";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export default function OneClickDownloadPlaylist() {
-    const ipc = IpcService.getInstance();
-    const bSaver = BeatSaverService.getInstance();
-    const themeService = ThemeService.getInstance();
-    const playlistDownloader = PlaylistDownloaderService.getInstance();
+    
+    const ipc = useService(IpcService);
+    const bSaver = useService(BeatSaverService);
+    const themeService = useService(ThemeService);
+    const playlistDownloader = useService(PlaylistDownloaderService);
     const mapsContainer = useRef<HTMLDivElement>(null);
-    const windows = WindowManagerService.getInstance();
-    const notification = NotificationService.getInstance();
+    const windows = useService(WindowManagerService);
+    const notification = useService(NotificationService);
 
     const [playlist, setPlaylist] = useState<BsvPlaylist>(null);
     const downloadedMap = useObservable(

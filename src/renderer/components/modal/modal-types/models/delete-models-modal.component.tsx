@@ -10,9 +10,10 @@ import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export const DeleteModelsModal: ModalComponent<void, { models: BsmLocalModel[]; linked: boolean }> = ({ resolver, data }) => {
-    const config = useConstant(() => ConfigurationService.getInstance());
+    const config = useService(ConfigurationService);
     const t = useTranslation();
     const [remember, setRemember] = useState(config.get<boolean>(ModelsManagerService.REMEMBER_CHOICE_DELETE_MODEL_KEY) || false);
 

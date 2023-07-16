@@ -7,6 +7,7 @@ import { SupportersBlock } from "./supporters-block.component";
 import ManheraChanGif from "../../../../../assets/images/gifs/menhera-chan.gif";
 import ManheraSadGif from "../../../../../assets/images/gifs/menhera-sad.gif";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { useService } from "renderer/hooks/use-service.hook";
 
 interface Props {
     isVisible: boolean;
@@ -14,7 +15,7 @@ interface Props {
 }
 
 export function SupportersView({ isVisible, setVisible }: Props) {
-    const supportersService = SupportersService.getInstance();
+    const supportersService = useService(SupportersService);
     const t = useTranslation();
 
     const [supporters, setSupporters] = useState([] as Supporter[]);

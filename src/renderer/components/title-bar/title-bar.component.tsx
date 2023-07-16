@@ -9,11 +9,13 @@ import { BsmButton } from "../shared/bsm-button.component";
 import { BsmRange } from "../shared/bsm-range.component";
 import { BsmIconType } from "../svgs/bsm-icon.component";
 import "./title-bar.component.css";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export default function TitleBar({ template = "index.html" }: { template: AppWindow }) {
-    const ipcService = IpcService.getInstance();
-    const windows = WindowManagerService.getInstance();
-    const audio = AudioPlayerService.getInstance();
+    
+    const ipcService = useService(IpcService);
+    const windows = useService(WindowManagerService);
+    const audio = useService(AudioPlayerService);
 
     const volume = useObservable(audio.volume$, audio.volume);
     const color = useThemeColor("first-color");

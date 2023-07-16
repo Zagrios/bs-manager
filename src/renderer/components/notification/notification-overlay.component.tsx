@@ -2,9 +2,10 @@ import { useObservable } from "renderer/hooks/use-observable.hook";
 import { NotificationService } from "renderer/services/notification.service";
 import { NotificationItem } from "./notification-item.component";
 import { AnimatePresence } from "framer-motion";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export function NotificationOverlay() {
-    const notificationService = NotificationService.getInstance();
+    const notificationService = useService(NotificationService);
 
     const notifications = useObservable(notificationService.notifications$);
 

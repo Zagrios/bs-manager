@@ -5,6 +5,7 @@ import { LinkButton } from "renderer/components/maps-mangement-components/link-b
 import { BsmBasicSpinner } from "renderer/components/shared/bsm-basic-spinner/bsm-basic-spinner.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
+import { useService } from "renderer/hooks/use-service.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
@@ -17,10 +18,10 @@ import { BSVersion } from "shared/bs-version.interface";
 export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ data }) => {
     const SHARED_FOLDERS_KEY = "default-shared-folders";
 
-    const config = ConfigurationService.getInstance();
-    const ipc = IpcService.getInstance();
-    const linker = VersionFolderLinkerService.getInstance();
-    const versionManager = BSVersionManagerService.getInstance();
+    const config = useService(ConfigurationService);
+    const ipc = useService(IpcService);
+    const linker = useService(VersionFolderLinkerService);
+    const versionManager = useService(BSVersionManagerService);
 
     const t = useTranslation();
 
@@ -104,7 +105,7 @@ type FolderProps = {
 };
 
 const FolderItem = ({ version, relativeFolder, onDelete }: FolderProps) => {
-    const linker = VersionFolderLinkerService.getInstance();
+    const linker = useService(VersionFolderLinkerService);
 
     const t = useTranslation();
 

@@ -10,16 +10,14 @@ import { NavBarSpliter } from "./nav-bar-spliter.component";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import Tippy from "@tippyjs/react";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import { I18nService } from "renderer/services/i18n.service";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export function NavBar() {
-    const bsVersionServoce = BSVersionManagerService.getInstance();
+    const bsVersionServoce = useService(BSVersionManagerService);
 
     const installedVersions = useObservable(bsVersionServoce.installedVersions$);
     const color = useThemeColor("first-color");
     const t = useTranslation();
-
-    useObservable(I18nService.getInstance().currentLanguage$);
 
     return (
         <nav id="nav-bar" className="z-10 flex flex-col h-full max-h-full items-center p-1">

@@ -3,6 +3,7 @@ import { Supporter } from "shared/models/supporters";
 import { motion } from "framer-motion";
 import txtBg from "../../../../../assets/images/gifs/txt-bg.gif";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
+import { useService } from "renderer/hooks/use-service.hook";
 
 interface Props {
     supporter: Supporter;
@@ -10,7 +11,7 @@ interface Props {
 }
 
 export function SupporterItem({ supporter, delay }: Props) {
-    const linkOpener = LinkOpenerService.getInstance();
+    const linkOpener = useService(LinkOpenerService);
 
     const openSupporterLink = () => supporter.link && linkOpener.open(supporter.link);
 

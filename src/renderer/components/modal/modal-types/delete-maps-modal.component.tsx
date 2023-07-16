@@ -8,9 +8,11 @@ import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { ModalComponent, ModalExitCode } from "renderer/services/modale.service";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import BeatConflict from "../../../../../assets/images/apngs/beat-conflict.png";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export const DeleteMapsModal: ModalComponent<void, { linked: boolean; maps: BsmLocalMap[] }> = ({ resolver, data: { linked, maps } }) => {
-    const config = ConfigurationService.getInstance();
+    
+    const config = useService(ConfigurationService);
 
     const t = useTranslation();
 

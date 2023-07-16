@@ -31,21 +31,23 @@ import { PlaylistsManagerService } from "renderer/services/playlists-manager.ser
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { VersionFolderLinkerService } from "renderer/services/version-folder-linker.service";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export function SettingsPage() {
-    const configService: ConfigurationService = ConfigurationService.getInstance();
-    const themeService: ThemeService = ThemeService.getInstance();
-    const ipcService: IpcService = IpcService.getInstance();
+    
+    const configService: ConfigurationService = useService(ConfigurationService);
+    const themeService: ThemeService = useService(ThemeService);
+    const ipcService: IpcService = useService(IpcService);
     const modalService: ModalService = ModalService.getInsance();
-    const downloaderService: BsDownloaderService = BsDownloaderService.getInstance();
-    const progressBarService: ProgressBarService = ProgressBarService.getInstance();
-    const notificationService: NotificationService = NotificationService.getInstance();
-    const i18nService: I18nService = I18nService.getInstance();
-    const linkOpener: LinkOpenerService = LinkOpenerService.getInstance();
-    const mapsManager = MapsManagerService.getInstance();
-    const playlistsManager = PlaylistsManagerService.getInstance();
-    const modelsManager = ModelsManagerService.getInstance();
-    const versionLinker = VersionFolderLinkerService.getInstance();
+    const downloaderService: BsDownloaderService = useService(BsDownloaderService);
+    const progressBarService: ProgressBarService = useService(ProgressBarService);
+    const notificationService: NotificationService = useService(NotificationService);
+    const i18nService: I18nService = useService(I18nService);
+    const linkOpener: LinkOpenerService = useService(LinkOpenerService);
+    const mapsManager = useService(MapsManagerService);
+    const playlistsManager = useService(PlaylistsManagerService);
+    const modelsManager = useService(ModelsManagerService);
+    const versionLinker = useService(VersionFolderLinkerService);
 
     const { firstColor, secondColor } = useThemeColor();
 

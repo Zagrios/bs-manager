@@ -8,12 +8,13 @@ import { useObservable } from "renderer/hooks/use-observable.hook";
 import { PageStateService } from "renderer/services/page-state.service";
 import useDoubleClick from "use-double-click";
 import { gt } from "semver";
+import { useService } from "renderer/hooks/use-service.hook";
 
 type Props = { className?: string; mod: Mod; installedVersion: string; isDependency?: boolean; isSelected?: boolean; onChange?: (val: boolean) => void; wantInfo?: boolean; onWantInfo?: (mod: Mod) => void };
 
 export function ModItem({ className, mod, installedVersion, isDependency, isSelected, onChange, wantInfo, onWantInfo }: Props) {
-    const modsManager = BsModsManagerService.getInstance();
-    const pageState = PageStateService.getInstance();
+    const modsManager = useService(BsModsManagerService);
+    const pageState = useService(PageStateService);
 
     const themeColor = useThemeColor("second-color");
     const uninstalling = useObservable(modsManager.isUninstalling$);

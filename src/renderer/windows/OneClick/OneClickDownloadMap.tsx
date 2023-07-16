@@ -13,15 +13,17 @@ import { WindowManagerService } from "renderer/services/window-manager.service";
 import { timer } from "rxjs";
 import { BsvMapDetail } from "shared/models/maps";
 import defaultImage from "../../../../assets/images/default-version-img.jpg";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export default function OneClickDownloadMap() {
-    const ipc = IpcService.getInstance();
-    const bsv = BeatSaverService.getInstance();
-    const mapsDownloader = MapsDownloaderService.getInstance();
-    const themeService = ThemeService.getInstance();
-    const progressBar = ProgressBarService.getInstance();
-    const windows = WindowManagerService.getInstance();
-    const notification = NotificationService.getInstance();
+    
+    const ipc = useService(IpcService);
+    const bsv = useService(BeatSaverService);
+    const mapsDownloader = useService(MapsDownloaderService);
+    const themeService = useService(ThemeService);
+    const progressBar = useService(ProgressBarService);
+    const windows = useService(WindowManagerService);
+    const notification = useService(NotificationService);
 
     const [mapInfo, setMapInfo] = useState<BsvMapDetail>(null);
     const t = useTranslation();

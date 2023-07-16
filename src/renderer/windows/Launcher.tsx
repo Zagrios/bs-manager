@@ -7,11 +7,13 @@ import { useTranslation } from "../hooks/use-translation.hook";
 import { AutoUpdaterService } from "../services/auto-updater.service";
 import { ThemeService } from "../services/theme.service";
 import { WindowManagerService } from "../services/window-manager.service";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export default function Launcher() {
-    const themeService = ThemeService.getInstance();
-    const updaterService = AutoUpdaterService.getInstance();
-    const windowService = WindowManagerService.getInstance();
+    
+    const themeService = useService(ThemeService);
+    const updaterService = useService(AutoUpdaterService);
+    const windowService = useService(WindowManagerService);
 
     const constraintsRef = useRef(null);
 

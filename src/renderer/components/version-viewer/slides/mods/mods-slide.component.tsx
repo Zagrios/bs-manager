@@ -18,15 +18,16 @@ import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods-disclaimer-modal.component";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { lt } from "semver";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion; onDisclamerDecline: () => void }) {
     const ACCEPTED_DISCLAIMER_KEY = "accepted-mods-disclaimer";
 
-    const modsManager = BsModsManagerService.getInstance();
-    const configService = ConfigurationService.getInstance();
-    const linkOpener = LinkOpenerService.getInstance();
+    const modsManager = useService(BsModsManagerService);
+    const configService = useService(ConfigurationService);
+    const linkOpener = useService(LinkOpenerService);
     const modals = ModalService.getInsance();
-    const os = OsDiagnosticService.getInstance();
+    const os = useService(OsDiagnosticService);
 
     const ref = useRef(null);
     const isVisible = useInView(ref, { amount: 0.5 });

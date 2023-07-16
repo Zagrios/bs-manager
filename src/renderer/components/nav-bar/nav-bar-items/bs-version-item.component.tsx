@@ -12,13 +12,14 @@ import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { NavBarItem } from "./nav-bar-item.component";
 import useFitText from "use-fit-text";
 import Tippy from "@tippyjs/react";
+import { useService } from "renderer/hooks/use-service.hook";
 
 export function BsVersionItem(props: { version: BSVersion }) {
-    const downloaderService = BsDownloaderService.getInstance();
-    const verionManagerService = BSVersionManagerService.getInstance();
-    const launcherService = BSLauncherService.getInstance();
-    const configService = ConfigurationService.getInstance();
-    const bsUninstallerService = BSUninstallerService.getInstance();
+    const downloaderService = useService(BsDownloaderService);
+    const verionManagerService = useService(BSVersionManagerService);
+    const launcherService = useService(BSLauncherService);
+    const configService = useService(ConfigurationService);
+    const bsUninstallerService = useService(BSUninstallerService);
 
     const { state } = useLocation() as { state: BSVersion };
     const { fontSize, ref } = useFitText();
