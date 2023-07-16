@@ -62,7 +62,10 @@ export default function OneClickDownloadModel() {
             notification.notifySystem({ title: "OneClick", body: t("notifications.models.one-click-install.success") });
         });
 
-        promise.finally(() => windows.close("oneclick-download-model.html"));
+        promise.finally(() => {
+            windows.close("oneclick-download-model.html")
+        });
+        
     }, []);
 
     return (
