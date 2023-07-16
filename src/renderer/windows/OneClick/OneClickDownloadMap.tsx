@@ -33,33 +33,27 @@ export default function OneClickDownloadMap() {
 
         progressBar.open();
 
-        const promise = new Promise<void>(async (resolve, reject) => {
-            try {
-                const ipcRes = await ipc.send<{ id: string; isHash: boolean }>("one-click-map-info");
-
-                if (!ipcRes.success) {
-                    return reject(ipcRes.error);
-                }
-
-                const mapDetails = ipcRes.data.isHash ? (await bsv.getMapDetailsFromHashs([ipcRes.data.id])).at(0) : await bsv.getMapDetailsById(ipcRes.data.id);
-
-                setMapInfo(() => mapDetails);
-
-                const res = await mapsDownloader.oneClickInstallMap(mapDetails);
-
-                progressBar.complete();
-
-                if (!res) {
-                    return reject();
-                }
-
-                await timer(300).toPromise();
-
-                resolve();
-            } catch (e) {
-                reject(e);
+        const promise = (async () => {
+            const ipcRes = await ipc.send<{ id: string; isHash: boolean }>("one-click-map-info");
+            
+            if (!ipcRes.success) {
+                throw ipcRes.error;
             }
-        });
+
+            const mapDetails = ipcRes.data.isHash ? (await bsv.getMapDetailsFromHashs([ipcRes.data.id])).at(0) : await bsv.getMapDetailsById(ipcRes.data.id);
+
+            setMapInfo(() => mapDetails);
+            
+            const res = await mapsDownloader.oneClickInstallMap(mapDetails);
+
+            progressBar.complete();
+
+            if (!res) {
+                throw "Failed to download map with OneClick";
+            }
+
+            await timer(300).toPromise();
+        })();
 
         promise.catch(() => {
             notification.notifySystem({ title: t("notifications.types.error"), body: t("notifications.maps.one-click-install.error") });
