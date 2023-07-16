@@ -6,8 +6,6 @@ import { NotificationService } from "../services/notification.service";
 import { SteamService } from "../services/steam.service";
 import { IpcService } from "../services/ipc.service";
 import { from } from "rxjs";
-import { fstat, lstat } from "fs";
-import { pathExist } from "../helpers/fs.helpers";
 
 // TODO IMPROVE WINDOW CONTROL BY USING WINDOW SERVICE
 

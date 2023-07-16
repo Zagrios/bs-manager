@@ -84,7 +84,7 @@ export class SteamService {
             libraryFolders = libraryFolders.libraryfolders;
 
             for (const libKey in Object.keys(libraryFolders)) {
-                if (!libraryFolders[libKey] || !libraryFolders[libKey].apps) { continue; }
+                if (!libraryFolders?.[libKey]?.apps) { continue; }
 
                 if (libraryFolders[libKey].apps[gameId] != null) {
                     return path.join(libraryFolders[libKey].path, "steamapps", "common", gameFolder);

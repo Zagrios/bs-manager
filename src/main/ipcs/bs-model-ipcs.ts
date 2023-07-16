@@ -5,8 +5,6 @@ import { MSModel, MSModelType } from "shared/models/models/model-saber.model";
 import { LocalModelsManagerService } from "../services/additional-content/local-models-manager.service";
 import { IpcService } from "../services/ipc.service";
 import { BSVersion } from "shared/bs-version.interface";
-import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
-import { from } from "rxjs";
 import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 import { ModelDownload } from "renderer/services/models-management/models-downloader.service";
 

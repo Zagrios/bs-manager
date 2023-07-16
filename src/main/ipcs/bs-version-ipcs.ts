@@ -2,7 +2,6 @@ import { ipcMain, shell } from "electron";
 import { UtilsService } from "../services/utils.service";
 import { BSVersionLibService } from "../services/bs-version-lib.service";
 import { BSVersion } from "shared/bs-version.interface";
-import { exec } from "child_process";
 import { IpcRequest } from "shared/models/ipc";
 import { BSLocalVersionService } from "../services/bs-local-version.service";
 import { BsmException } from "shared/models/bsm-exception.model";

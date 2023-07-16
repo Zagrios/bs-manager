@@ -28,7 +28,7 @@ export class AutoUpdaterService {
                 .checkForUpdates()
                 .then(info => {
                     const needUpdate = (() => {
-                        if (!info || !info.updateInfo) {
+                        if (!info?.updateInfo) {
                             return false;
                         }
                         return gt(info.updateInfo.version, autoUpdater.currentVersion.version);
