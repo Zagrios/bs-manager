@@ -147,12 +147,14 @@
                     "fr-FR": "Français",
                     "es-ES": "Español",
                     "de-DE": "Deutsch",
+                    "ru-RU": "Русский",
                     "translated": {
                         "en-EN": "Englisch, Vereinigtes Königreich",
                         "en-US": "Englisch, USA",
                         "fr-FR": "Französisch",
                         "es-ES": "Spanisch",
-                        "de-DE": "Deutsch"
+                        "de-DE": "Deutsch",
+                        "ru-RU": "Russisch"
                     }
                 }
             },
