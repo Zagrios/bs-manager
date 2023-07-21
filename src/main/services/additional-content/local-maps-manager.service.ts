@@ -7,7 +7,7 @@ import { InstallationLocationService } from "../installation-location.service";
 import { UtilsService } from "../utils.service";
 import crypto from "crypto";
 import { lstatSync, unlinkSync } from "fs";
-import { copySync } from "fs-extra";
+import { copySync, createReadStream } from "fs-extra";
 import StreamZip from "node-stream-zip";
 import { RequestService } from "../request.service";
 import sanitize from "sanitize-filename";
@@ -22,6 +22,7 @@ import { deleteFolder, ensureFolderExist, getFilesInFolder, getFoldersInFolder, 
 import { readFile } from "fs/promises";
 import { FolderLinkerService } from "../folder-linker.service";
 import { allSettled } from "../../../shared/helpers/promise.helpers";
+import { splitIntoChunk } from "../../../shared/helpers/array.helpers";
 
 export class LocalMapsManagerService {
     private static instance: LocalMapsManagerService;
@@ -82,17 +83,26 @@ export class LocalMapsManagerService {
     }
 
     private async computeMapHash(mapPath: string, rawInfoString: string): Promise<string> {
-        const mapRawInfo = JSON.parse(rawInfoString);
+        const mapRawInfo: RawMapInfoData = JSON.parse(rawInfoString);
         const shasum = crypto.createHash("sha1");
         shasum.update(rawInfoString);
+    
+        const hashFile = (filePath: string): Promise<void> => {
+            return new Promise<void>((resolve, reject) => {
+                const stream = createReadStream(filePath);
+                stream.on("data", data => shasum.update(data));
+                stream.on("error", reject);
+                stream.on("close", resolve);
+            });
+        };
+
         for (const set of mapRawInfo._difficultyBeatmapSets) {
             for (const diff of set._difficultyBeatmaps) {
                 const diffFilePath = path.join(mapPath, diff._beatmapFilename);
-                const diffContent = await readFile(diffFilePath, { encoding: "utf-8" }).catch(() => null);
-                diffContent && shasum.update(diffContent);
+                await hashFile(diffFilePath);
             }
         }
-
+    
         return shasum.digest("hex");
     }
 
@@ -146,28 +156,41 @@ export class LocalMapsManagerService {
             (async () => {
                 const levelsFolder = await this.getMapsFolderPath(version);
 
-                const levelsPaths = (await pathExist(levelsFolder)) ? await getFoldersInFolder(levelsFolder) : [];
+                if(!(await pathExist(levelsFolder))) {
+                    return observer.complete();
+                }
 
+                const levelsPaths =  (await getFoldersInFolder(levelsFolder)) ?? [];
                 progression.total = levelsPaths.length;
 
-                const promises = levelsPaths.map(async levelPath => {
-                    const mapInfo = await this.loadMapInfoFromPath(levelPath);
-                    if (!mapInfo) {
-                        return null;
-                    }
-                    progression.loaded++;
-                    observer.next(progression);
-                    return mapInfo;
-                });
+                const pathChunks = splitIntoChunk(levelsPaths, 50);
 
-                const mapsInfo = await allSettled(promises, { removeFalsy: true });
+                const loadedMaps: BsmLocalMap[] = [];
 
-                progression.maps = mapsInfo;
+                for (const chunk of pathChunks) {
+                    const mapsInfo = await allSettled(chunk.map(async mapPath => {
+                        const mapInfo = await this.loadMapInfoFromPath(mapPath);
+
+                        if(!mapInfo) {
+                            return null;
+                        }
+
+                        progression.loaded++;
+                        observer.next(progression);
+                        return mapInfo;
+                    }), {removeFalsy: true});
+
+                    loadedMaps.push(...(mapsInfo ?? []));
+                }
+
+                progression.maps = loadedMaps;
 
                 observer.next(progression);
-
+            })().then(() => {
                 observer.complete();
-            })();
+            }).catch(e=> {
+                observer.error(e);
+            });
         });
     }
 
