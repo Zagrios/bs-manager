@@ -82,11 +82,15 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         }
         const modsToInstall = modsSelected.filter(mod => {
             const corespondingMod = modsAvailable.get(mod.category).find(availabeMod => availabeMod._id === mod._id);
-            if (lt(corespondingMod.version, mod.version)) {
+            const installedMod = modsInstalled.get(mod.category)?.find(installedMod => installedMod.name === mod.name);
+
+            if (lt(corespondingMod.version, mod.version) || lt(mod.version, installedMod?.version)) {
                 return false;
             }
+
             return true;
         });
+
         modsManager.installMods(modsToInstall, version).then(() => {
             loadMods();
         });
