@@ -84,7 +84,11 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
             const corespondingMod = modsAvailable.get(mod.category).find(availabeMod => availabeMod._id === mod._id);
             const installedMod = modsInstalled.get(mod.category)?.find(installedMod => installedMod.name === mod.name);
 
-            if (lt(corespondingMod.version, mod.version) || lt(mod.version, installedMod?.version)) {
+            if (corespondingMod?.version && lt(corespondingMod.version, mod.version)) {
+                return false;
+            }
+
+            if(installedMod?.version && lt(mod.version, installedMod?.version)){
                 return false;
             }
 
