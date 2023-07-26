@@ -1,14 +1,6 @@
 {
   "25.3.0" : {
-      "title": "Changelog title",
-      "body": "<div>html body</div>"
-  },
-  "25.3.0" : {
-    "title": "Changelog title",
-    "body": "<div>html body</div>"
-  },
-  "24.7.0" : {
-      "title": "Changelog title",
-      "body": "<div>html body</div>"
+    "title": "Coucou les bg",
+    "body": "<h3>Nouvelles fonctionnalités</h3><ul><li>Ajout de la fonctionnalité X</li><li>Amélioration de la fonctionnalité Y</li></ul><h3>Correctifs de bugs</h3><ul><li>Résolution du bug Z qui causait le crash de l'application</li><li>Correction du bug A qui entraînait un comportement inattendu</li></ul>"
   }
 }

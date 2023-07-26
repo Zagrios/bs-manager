@@ -1,5 +1,5 @@
 export interface Changelog {
-    [key:string]: ChangelogVersion[];
+    [key:string]: ChangelogVersion;
 }
 
 export interface ChangelogVersion {

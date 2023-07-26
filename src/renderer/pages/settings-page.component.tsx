@@ -82,7 +82,7 @@ export function SettingsPage() {
 
     useEffect(() => {
         loadInstallationFolder();
-        lastValueFrom(ipcService.sendV2<string>("current-version")).then(res => setAppVersion(res));
+        updaterService.getAppVersion().then(res => setAppVersion(res));
         mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));

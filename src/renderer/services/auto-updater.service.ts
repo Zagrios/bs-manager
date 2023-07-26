@@ -72,7 +72,6 @@ export class AutoUpdaterService {
       if (!data) {
         return;
       }
-      console.log(data)
       return data;
 
     } catch (error) {
@@ -95,13 +94,15 @@ export class AutoUpdaterService {
 
 
   public async showChangelog(version?: string) {
-    const currentVersion = await lastValueFrom(this.ipcService.sendV2<string>("current-version"));
-    if (!currentVersion) {return ;}
-
-    console.log(version || currentVersion);
+    const currentVersion = await this.getAppVersion();
     const changelog = await this.getChangelogByVersion(version || currentVersion);
     if (!changelog) {return ;}
 
     return this.modalService.openModal(ChangelogModal, changelog).then(() =>{});
+  }
+
+  public async getAppVersion() {
+    const currentVersion = await lastValueFrom(this.ipcService.sendV2<string>("current-version"));
+    return currentVersion;
   }
 }

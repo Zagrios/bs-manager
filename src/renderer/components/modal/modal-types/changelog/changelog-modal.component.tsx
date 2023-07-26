@@ -4,13 +4,12 @@ import BeatRunning from '../../../../../../assets/images/apngs/beat-running.png'
 import "./changelog-modal.component.css"
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
-import { Changelog, ChangelogVersion } from '../../../../../shared/models/bs-launch/launch-changelog.interface';
+import { ChangelogVersion } from '../../../../../shared/models/bs-launch/launch-changelog.interface';
 import DOMPurify from "dompurify";
 import { useService } from '../../../../hooks/use-service.hook';
 import { OsDiagnosticService } from '../../../../services/os-diagnostic.service';
 
 export const ChangelogModal: ModalComponent<void, ChangelogVersion> = ({ resolver, data }) => {
-
   useService(OsDiagnosticService);
   const linkOpener: LinkOpenerService = useService(LinkOpenerService);
   const openGithub = () => linkOpener.open("https://github.com/Zagrios/bs-manager");
@@ -35,7 +34,7 @@ export const ChangelogModal: ModalComponent<void, ChangelogVersion> = ({ resolve
           <BsmButton onClick={openSupportPage} className=" rounded-md h-6 p-1" icon="patreon" withBar={false}/>
           <BsmButton onClick={openDiscord} className=" rounded-md h-6 p-[5px]" icon="discord" withBar={false}/>
         </div>
-        <span><i>{data?.version}</i></span>
+        <span><i>{}</i></span>
       </div>
     </form>
   )

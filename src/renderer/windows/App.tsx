@@ -40,7 +40,7 @@ export default function App() {
 
 
     useEffect(() => {
-        lastValueFrom(updaterService.getHaveBeenUpdated()).then(haveBeenUpdated => haveBeenUpdated && updaterService.openChangelog());
+        lastValueFrom(updaterService.getHaveBeenUpdated()).then(haveBeenUpdated => haveBeenUpdated && updaterService.showChangelog());
         checkOneClicks();
     }, []);
 

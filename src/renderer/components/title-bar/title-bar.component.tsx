@@ -11,12 +11,15 @@ import { BsmIconType } from "../svgs/bsm-icon.component";
 import "./title-bar.component.css";
 import { useService } from "renderer/hooks/use-service.hook";
 import { lastValueFrom } from "rxjs";
+import { AutoUpdaterService } from "renderer/services/auto-updater.service";
+
 
 export default function TitleBar({ template = "index.html" }: { template: AppWindow }) {
-    
+
     const ipcService = useService(IpcService);
     const windows = useService(WindowManagerService);
     const audio = useService(AudioPlayerService);
+    const updaterService = useService(AutoUpdaterService);
 
     const volume = useObservable(audio.volume$, audio.volume);
     const color = useThemeColor("first-color");
@@ -24,7 +27,7 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
     const [previewVersion, setPreviewVersion] = useState(null);
 
     useEffect(() => {
-        lastValueFrom(ipcService.sendV2<string>("current-version")).then(version => {
+        updaterService.getAppVersion().then(version => {
             if (version.toLocaleLowerCase().includes("alpha")) {
                 return setPreviewVersion("ALPHA");
             }
