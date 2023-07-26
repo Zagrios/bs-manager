@@ -58,6 +58,9 @@ public static getInstance(): AutoUpdaterService {
         this.configService.set(this.HAVE_BEEN_UPDATED_KEY, true);
         autoUpdater.quitAndInstall();
     }
+    public setHaveBeenUpdated(value : boolean) {
+      this.configService.set(this.HAVE_BEEN_UPDATED_KEY, value);
+    }
     public getHaveBeenUpdated(): boolean {
       return this.configService.get(this.HAVE_BEEN_UPDATED_KEY);
     }

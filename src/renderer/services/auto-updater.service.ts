@@ -53,6 +53,9 @@ export class AutoUpdaterService {
     public quitAndInstall() {
         this.ipcService.sendLazy("install-update");
     }
+    public setHaveBeenUpdated(value : boolean) {
+      this.ipcService.sendLazy("set-have-been-updated", { args: value });
+    }
 
     public getHaveBeenUpdated() : Observable<boolean>{
         return this.ipcService.sendV2<boolean>("have-been-updated");
@@ -98,7 +101,7 @@ export class AutoUpdaterService {
     const changelog = await this.getChangelogByVersion(version ?? currentVersion);
 
     if (!changelog) {return false;}
-    
+
     return this.modalService.openModal(ChangelogModal, changelog).then(()=> true ).catch(()=> false );
   }
 
