@@ -83,12 +83,10 @@ export class AutoUpdaterService {
   public async getChangelogByVersion(version: string): Promise<ChangelogVersion> {
     try {
       const changelogs = await this.getChangelogs();
-      if (!changelogs) {return ;}
-      console.log(changelogs)
-      const changelog = changelogs[version];
-      if (!changelog) {return ;}
-      console.log(changelog)
-      return changelog;
+      if (!changelogs) {return;}
+
+
+      return changelogVersion;
     } catch (error) {
       this.ipcService.sendLazy("log-error", { args: error });
     }
