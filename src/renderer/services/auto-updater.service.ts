@@ -85,6 +85,7 @@ export class AutoUpdaterService {
       const changelogs = await this.getChangelogs();
       if (!changelogs) {return;}
 
+      const changelogVersion = changelogs[version];
 
       return changelogVersion;
     } catch (error) {
