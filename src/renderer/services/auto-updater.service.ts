@@ -59,9 +59,9 @@ export class AutoUpdaterService {
     }
 
     // récupère le changelog en fonction de la langue de l'utilisateur
-  public async getChangelogs(): Promise<Changelog | null> {
+  public async getChangelogs(): Promise<Changelog> {
     try {
-      const path = `https://raw.githubusercontent.com/Zagrios/bs-manager/master/assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`;
+      const path = `https://raw.githubusercontent.com/Zagrios/bs-manager/feature/add-changelog-modal/178/assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`;
 
       const response = await fetch(path);
       if (!response.ok) {
@@ -72,6 +72,7 @@ export class AutoUpdaterService {
       if (!data) {
         return;
       }
+      console.log(data)
       return data;
 
     } catch (error) {
@@ -79,14 +80,14 @@ export class AutoUpdaterService {
     }
   }
 
-  public async getChangelogByVersion(version: string): Promise<ChangelogVersion | null> {
+  public async getChangelogByVersion(version: string): Promise<ChangelogVersion> {
     try {
       const changelogs = await this.getChangelogs();
       if (!changelogs) {return ;}
-
-      const changelog = changelogs[version][0];
+      console.log(changelogs)
+      const changelog = changelogs[version];
       if (!changelog) {return ;}
-
+      console.log(changelog)
       return changelog;
     } catch (error) {
       this.ipcService.sendLazy("log-error", { args: error });
