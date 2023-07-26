@@ -1,5 +1,8 @@
 export interface Changelog {
-  title: string,
-  body: string,
-  version: string,
+    [key:string]: ChangelogVersion[];
+}
+
+export interface ChangelogVersion {
+    title : string;
+    body: string;
 }

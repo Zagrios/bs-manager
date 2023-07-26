@@ -1,14 +1,10 @@
-<<<<<<< HEAD
-import { lastValueFrom, Observable } from 'rxjs';
-=======
 import { Observable, lastValueFrom } from "rxjs";
->>>>>>> master
 import { map } from "rxjs/operators";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
 import { I18nService } from "./i18n.service";
-import { Changelog } from "../../shared/models/bs-launch/launch-changelog.interface"
-import { ModalService } from "../services/modale.service";
+import { Changelog, ChangelogVersion } from "../../shared/models/bs-launch/launch-changelog.interface"
+import { ModalService } from "./modale.service";
 import { ChangelogModal } from "../components/modal/modal-types/changelog/changelog-modal.component";
 
 export class AutoUpdaterService {
@@ -23,7 +19,7 @@ export class AutoUpdaterService {
     private i18nService: I18nService;
 
     private modalService: ModalService;
-    
+
     public static getInstance(): AutoUpdaterService {
         if (!AutoUpdaterService.instance) {
             AutoUpdaterService.instance = new AutoUpdaterService();
@@ -79,13 +75,33 @@ export class AutoUpdaterService {
       return data;
 
     } catch (error) {
-      return;
+      this.ipcService.sendLazy("log-error", { args: error });
     }
   }
-  public async getChangelogByVersion(version: string): Promise<string | null> {
-    const data = await this.getChangelogs();
-    if (!data) {return ;}
 
-    return this.modalService.openModal(ChangelogModal, data).then(() =>{});
+  public async getChangelogByVersion(version: string): Promise<ChangelogVersion | null> {
+    try {
+      const changelogs = await this.getChangelogs();
+      if (!changelogs) {return ;}
+
+      const changelog = changelogs[version][0];
+      if (!changelog) {return ;}
+
+      return changelog;
+    } catch (error) {
+      this.ipcService.sendLazy("log-error", { args: error });
+    }
+  }
+
+
+  public async showChangelog(version?: string) {
+    const currentVersion = await lastValueFrom(this.ipcService.sendV2<string>("current-version"));
+    if (!currentVersion) {return ;}
+
+    console.log(version || currentVersion);
+    const changelog = await this.getChangelogByVersion(version || currentVersion);
+    if (!changelog) {return ;}
+
+    return this.modalService.openModal(ChangelogModal, changelog).then(() =>{});
   }
 }

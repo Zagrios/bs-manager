@@ -51,6 +51,7 @@ export function SettingsPage() {
     const playlistsManager = useService(PlaylistsManagerService);
     const modelsManager = useService(ModelsManagerService);
     const versionLinker = useService(VersionFolderLinkerService);
+    const updaterService = useService(AutoUpdaterService);
 
     const { firstColor, secondColor } = useThemeColor();
 
@@ -75,6 +76,7 @@ export function SettingsPage() {
     const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
     const [modelsDeepLinkEnabled, setModelsDeepLinkEnabled] = useState(false);
     const [appVersion, setAppVersion] = useState("");
+    const [modalChangelogResponse,setModalChangelogResponse]= useState(null)
     const nav = useNavigate();
     const t = useTranslation();
 
@@ -84,6 +86,7 @@ export function SettingsPage() {
         mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
+
     }, []);
 
     const allDeepLinkEnabled = mapDeepLinksEnabled && playlistsDeepLinkEnabled && modelsDeepLinkEnabled;
@@ -169,7 +172,7 @@ export function SettingsPage() {
 
     const openLogs = () => ipcService.sendLazy("open-logs");
 
-  const openChangelog = () => setModalChangelogResponse(updaterService.openChangelog())
+  const openChangelog = () => setModalChangelogResponse(updaterService.showChangelog())
 
     const showDeepLinkError = (isDeactivation: boolean) => {
         const desc = isDeactivation ? "notifications.settings.additional-content.deep-link.deactivation.error.description" : "notifications.settings.additional-content.deep-link.activation.error.description";
@@ -406,7 +409,9 @@ export function SettingsPage() {
                     </SettingContainer>
                 </SettingContainer>
 
-                <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5">v{appVersion}</span>
+                <Tippy content={!modalChangelogResponse ? t("pages.settings.release-note.open-release-note"):t("pages.settings.release-note.no-release-note")} placement="left" className="font-bold bg-main-color-3" duration={[200, 0]} hideOnClick={false}>
+                <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5 hover:brightness-125 cursor-pointer" onClick={openChangelog}>v{appVersion}</span>
+              </Tippy>
             </div>
 
             <SupportersView isVisible={showSupporters} setVisible={setShowSupporters} />

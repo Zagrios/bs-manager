@@ -4,12 +4,12 @@ import BeatRunning from '../../../../../../assets/images/apngs/beat-running.png'
 import "./changelog-modal.component.css"
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
-import { Changelog } from '../../../../../shared/models/bs-launch/launch-changelog.interface';
+import { Changelog, ChangelogVersion } from '../../../../../shared/models/bs-launch/launch-changelog.interface';
 import DOMPurify from "dompurify";
 import { useService } from '../../../../hooks/use-service.hook';
 import { OsDiagnosticService } from '../../../../services/os-diagnostic.service';
 
-export const ChangelogModal: ModalComponent<void, Changelog> = ({ resolver, data }) => {
+export const ChangelogModal: ModalComponent<void, ChangelogVersion> = ({ resolver, data }) => {
 
   useService(OsDiagnosticService);
   const linkOpener: LinkOpenerService = useService(LinkOpenerService);
