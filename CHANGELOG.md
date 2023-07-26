@@ -1,3 +1,4 @@
+
 ## [0.2.0](https://github.com/Zagrios/bs-manager/releases/tag/v0.2.0) (October 23, 2022)
 
 ### Features
