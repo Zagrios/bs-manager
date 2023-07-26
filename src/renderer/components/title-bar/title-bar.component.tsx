@@ -10,7 +10,6 @@ import { BsmRange } from "../shared/bsm-range.component";
 import { BsmIconType } from "../svgs/bsm-icon.component";
 import "./title-bar.component.css";
 import { useService } from "renderer/hooks/use-service.hook";
-import { lastValueFrom } from "rxjs";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 
 
