@@ -60,6 +60,7 @@ export class AutoUpdaterService{
         return this.ipcService.sendV2<boolean>("have-been-updated");
     }
 
+    // récupère le changelog en fonction de la langue de l'utilisateur
   public async getChangelogs(): Promise<Changelog | null> {
     try {
       const path = `https://raw.githubusercontent.com/Zagrios/bs-manager/master/assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`;
@@ -70,7 +71,7 @@ export class AutoUpdaterService{
       }
 
       const data = await response.json();
-      if (!data?.body) {
+      if (!data) {
         return;
       }
       return data;
@@ -79,8 +80,7 @@ export class AutoUpdaterService{
       return;
     }
   }
-
-  public async openChangelog(): Promise<void> {
+  public async getChangelogByVersion(version: string): Promise<string | null> {
     const data = await this.getChangelogs();
     if (!data) {return ;}
 

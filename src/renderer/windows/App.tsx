@@ -47,8 +47,8 @@ export default function App() {
             if(themeService.isDark || (themeService.isOS && window.matchMedia('(prefers-color-scheme: dark)').matches)){ return document.documentElement.classList.add('dark'); }
             document.documentElement.classList.remove('dark');
         });
-
-        lastValueFrom(updaterService.getHaveBeenUpdated()).then(v => v && updaterService.openChangelog());
+        
+        lastValueFrom(updaterService.getHaveBeenUpdated()).then(haveBeenUpdated => haveBeenUpdated && updaterService.openChangelog());
         checkOneClicks();
 
     }, []);
