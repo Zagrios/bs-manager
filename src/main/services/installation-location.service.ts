@@ -1,15 +1,15 @@
 import path from "path";
-import log from "electron-log";
 import { app } from "electron";
 import ElectronStore from "electron-store";
 import { copyDirectoryWithJunctions, deleteFolder, ensureFolderExist } from "../helpers/fs.helpers";
 
 export class InstallationLocationService {
-
     private static instance: InstallationLocationService;
 
-    public static getInstance(): InstallationLocationService{
-        if(!InstallationLocationService.instance){ InstallationLocationService.instance = new InstallationLocationService(); }
+    public static getInstance(): InstallationLocationService {
+        if (!InstallationLocationService.instance) {
+            InstallationLocationService.instance = new InstallationLocationService();
+        }
         return InstallationLocationService.instance;
     }
 
@@ -25,58 +25,54 @@ export class InstallationLocationService {
 
     private _installationDirectory: string;
 
-    private constructor(){
-        this.installPathConfig = new ElectronStore({watch: true});
+    private constructor() {
+        this.installPathConfig = new ElectronStore({ watch: true });
         this.initInstallationLocation();
 
         this.installPathConfig.onDidChange(this.STORE_INSTALLATION_PATH_KEY, () => {
             this.triggerListeners();
-        })
-    }
-
-    private initInstallationLocation(): void{
-        this._installationDirectory = this.installPathConfig.get<string>(this.STORE_INSTALLATION_PATH_KEY) as string || app.getPath("documents");
-    }
-
-    private triggerListeners(): void{
-        this.updateListeners.forEach(listener => listener());
-    }
-
-    public setInstallationDirectory(newDir: string): Promise<string>{
-        const oldDir = this.installationDirectory;
-        const newDest = path.join(newDir, this.INSTALLATION_FOLDER);
-        return new Promise<string>(async (resolve, reject) => {
-            
-            await ensureFolderExist(oldDir);
-
-            try{
-                await copyDirectoryWithJunctions(oldDir, newDest, {overwrite: true});
-
-                this._installationDirectory = newDir;
-                this.installPathConfig.set(this.STORE_INSTALLATION_PATH_KEY, newDir);
-
-                deleteFolder(oldDir);
-
-                return resolve(this.installationDirectory);
-            }
-            catch(err){
-                log.error(err);
-                reject(err);
-            }
-
         });
     }
 
-    public onInstallLocationUpdate(fn: Listener){
+    private initInstallationLocation(): void {
+        this._installationDirectory = (this.installPathConfig.get<string>(this.STORE_INSTALLATION_PATH_KEY) as string) || app.getPath("documents");
+    }
+
+    private triggerListeners(): void {
+        this.updateListeners.forEach(listener => listener());
+    }
+
+    public async setInstallationDirectory(newDir: string): Promise<string> {
+        const oldDir = this.installationDirectory;
+        const newDest = path.join(newDir, this.INSTALLATION_FOLDER);
+
+        await ensureFolderExist(oldDir);
+
+        await copyDirectoryWithJunctions(oldDir, newDest, { overwrite: true });
+
+        this._installationDirectory = newDir;
+        this.installPathConfig.set(this.STORE_INSTALLATION_PATH_KEY, newDir);
+
+        deleteFolder(oldDir);
+
+        return this.installationDirectory;
+    }
+
+    public onInstallLocationUpdate(fn: Listener) {
         this.updateListeners.add(fn);
     }
 
-    public get installationDirectory(): string{ return path.join(this._installationDirectory, this.INSTALLATION_FOLDER); }
+    public get installationDirectory(): string {
+        return path.join(this._installationDirectory, this.INSTALLATION_FOLDER);
+    }
 
-    public get versionsDirectory(): string { return path.join(this.installationDirectory, this.VERSIONS_FOLDER); }
+    public get versionsDirectory(): string {
+        return path.join(this.installationDirectory, this.VERSIONS_FOLDER);
+    }
 
-    public get sharedContentPath(): string { return path.join(this.installationDirectory, this.SHARED_CONTENT_FOLDER); }
-
+    public get sharedContentPath(): string {
+        return path.join(this.installationDirectory, this.SHARED_CONTENT_FOLDER);
+    }
 }
 
 type Listener = () => void;

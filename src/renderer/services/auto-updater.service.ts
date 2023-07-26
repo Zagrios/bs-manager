@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { lastValueFrom, Observable } from 'rxjs';
+=======
+import { Observable, lastValueFrom } from "rxjs";
+>>>>>>> master
 import { map } from "rxjs/operators";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
@@ -7,8 +11,7 @@ import { Changelog } from "../../shared/models/bs-launch/launch-changelog.interf
 import { ModalService } from "../services/modale.service";
 import { ChangelogModal } from "../components/modal/modal-types/changelog/changelog-modal.component";
 
-export class AutoUpdaterService{
-
+export class AutoUpdaterService {
     private static instance: AutoUpdaterService;
 
     private progressService: ProgressBarService;
@@ -19,40 +22,39 @@ export class AutoUpdaterService{
 
     private i18nService: I18nService;
 
-    private modalService: ModalService
-
-    public static getInstance(): AutoUpdaterService{
-        if(!AutoUpdaterService.instance){ AutoUpdaterService.instance = new AutoUpdaterService(); }
+    private modalService: ModalService;
+    
+    public static getInstance(): AutoUpdaterService {
+        if (!AutoUpdaterService.instance) {
+            AutoUpdaterService.instance = new AutoUpdaterService();
+        }
         return AutoUpdaterService.instance;
     }
 
-    private constructor(){
+    private constructor() {
+        this.progressService = ProgressBarService.getInstance();
+        this.ipcService = IpcService.getInstance();
+        this.i18nService = I18nService.getInstance();
+        this.modalService = ModalService.getInstance();
 
-      this.progressService = ProgressBarService.getInstance();
-      this.ipcService = IpcService.getInstance();
-      this.i18nService = I18nService.getInstance();
-      this.modalService = ModalService.getInstance();
-
-        this.downloadProgress$ = this.ipcService.watch<number>("update-download-progress").pipe(map(res => res.success ? res.data : 0));
+        this.downloadProgress$ = this.ipcService.watch<number>("update-download-progress").pipe(map(res => (res.success ? res.data : 0)));
     }
 
-    public isUpdateAvailable(): Promise<boolean>{
-        return this.ipcService.send<boolean>("check-update").then(res => {
-            if(!res.success){ return false; }
-            return res.data;
-        })
+    public isUpdateAvailable(): Promise<boolean> {
+        return lastValueFrom(this.ipcService.sendV2<boolean>("check-update")).catch(() => false);
     }
 
-    public downloadUpdate(): Promise<boolean>{
+    public downloadUpdate(): Promise<boolean> {
         const promise = this.ipcService.send<boolean>("download-update").then(res => {
             return res.success;
         });
 
         this.progressService.show(this.downloadProgress$, true);
+
         return promise;
     }
 
-    public quitAndInstall(){
+    public quitAndInstall() {
         this.ipcService.sendLazy("install-update");
     }
 

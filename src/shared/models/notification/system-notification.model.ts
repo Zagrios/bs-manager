@@ -1,4 +1,4 @@
 export interface SystemNotificationOptions {
-    title?: string,
-    body?: string
+    title?: string;
+    body?: string;
 }

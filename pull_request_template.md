@@ -53,8 +53,8 @@ E.g: Blocking feedback must be addressed before merging.
 
 > 🔴 This change will break something important
 
-| | | |
-| --- | --- | --- |
-| Blocking | 🔴 ❌ 🚨 | RED |
-| Non-blocking | 🟡 💡 🤔 💭 | Yellow, thinking, etc |
-| Praise | 🟢 💚 😍 👍 🙌 | Green, hearts, positive emojis, etc |
+|              |                |                                     |
+| ------------ | -------------- | ----------------------------------- |
+| Blocking     | 🔴 ❌ 🚨       | RED                                 |
+| Non-blocking | 🟡 💡 🤔 💭    | Yellow, thinking, etc               |
+| Praise       | 🟢 💚 😍 👍 🙌 | Green, hearts, positive emojis, etc |

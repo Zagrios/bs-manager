@@ -1,6 +1,5 @@
-import { useInView } from "framer-motion";
 import { BSVersion } from "shared/bs-version.interface";
-import { useRef, forwardRef, useImperativeHandle, useState } from "react";
+import { useRef, forwardRef, useImperativeHandle } from "react";
 import { MSModelType } from "shared/models/models/model-saber.model";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useConstant } from "renderer/hooks/use-constant.hook";
@@ -10,8 +9,8 @@ import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 import { ModelItem } from "./model-item.component";
 import { useBehaviorSubject } from "renderer/hooks/use-behavior-subject.hook";
 import { BsmImage } from "../shared/bsm-image.component";
-import BeatWaitingImg from "../../../../assets/images/apngs/beat-waiting.png"
-import BeatConflict from "../../../../assets/images/apngs/beat-conflict.png"
+import BeatWaitingImg from "../../../../assets/images/apngs/beat-waiting.png";
+import BeatConflict from "../../../../assets/images/apngs/beat-conflict.png";
 import TextProgressBar from "../progress-bar/text-progress-bar.component";
 import { BehaviorSubject, distinctUntilChanged, map, startWith } from "rxjs";
 import { BsmButton } from "../shared/bsm-button.component";
@@ -23,16 +22,15 @@ import { ModelsDownloaderService } from "renderer/services/models-management/mod
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 
 type Props = {
-    className?: string,
-    version?: BSVersion,
-    type: MSModelType
-    search?: string,
-    active: boolean,
-    downloadModels?: () => void
-}
+    className?: string;
+    version?: BSVersion;
+    type: MSModelType;
+    search?: string;
+    active: boolean;
+    downloadModels?: () => void;
+};
 
-export const ModelsGrid = forwardRef(({className, version, type, search, active, downloadModels}: Props, forwardRef) => {
-
+export const ModelsGrid = forwardRef(({ className, version, type, search, active, downloadModels }: Props, forwardRef) => {
     const modelsManager = useService(ModelsManagerService);
     const modelsDownloader = useService(ModelsDownloaderService);
 
@@ -40,60 +38,74 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active,
 
     const ref = useRef();
 
-    const [models, setModelsLoadObservable,, setModels] = useSwitchableObservable<BsmLocalModel[]>();
+    const [models, setModelsLoadObservable, , setModels] = useSwitchableObservable<BsmLocalModel[]>();
     const progress$ = useConstant(() => new BehaviorSubject(0));
     const [modelsSelected, modelsSelected$] = useBehaviorSubject<BsmLocalModel[]>([]);
 
     const isLoading = !models;
     const hasModels = !!models?.length;
 
-    useImperativeHandle(forwardRef, () => ({
-        getModels: () => {
-            return models ?? [];
-        },
-        getSelectedModels: () => {
-            return modelsSelected;
-        },
-        reloadModels: () => {
-            loadModels();
-        },
-        deleteSelectedModels: () => {
-            modelsManager.deleteModels(!modelsSelected?.length ? models : modelsSelected, version).then(deletedModels => {
-                if(!deletedModels?.length){ return; }
-                const newModels = models.filter(m => !deletedModels.some(d => d.hash === m.hash));
-                setModels(() => newModels);
-                modelsSelected$.next([]);
-            });
-        }
-    }), [modelsSelected, models]);
+    useImperativeHandle(
+        forwardRef,
+        () => ({
+            getModels: () => {
+                return models ?? [];
+            },
+            getSelectedModels: () => {
+                return modelsSelected;
+            },
+            reloadModels: () => {
+                loadModels();
+            },
+            deleteSelectedModels: () => {
+                modelsManager.deleteModels(!modelsSelected?.length ? models : modelsSelected, version).then(deletedModels => {
+                    if (!deletedModels?.length) {
+                        return;
+                    }
+                    const newModels = models.filter(m => !deletedModels.some(d => d.hash === m.hash));
+                    setModels(() => newModels);
+                    modelsSelected$.next([]);
+                });
+            },
+        }),
+        [modelsSelected, models]
+    );
 
     useOnUpdate(() => {
-        if(!active){ return; }
-        if(models && models.length){ return; }
+        if (!active) {
+            return;
+        }
+        if (models?.length) {
+            return;
+        }
         loadModels();
     }, [active]);
 
     useOnUpdate(() => {
-        if(!active){ 
-            setModels(() => null); 
-        }
-        else { 
-            loadModels(); 
+        if (!active) {
+            setModels(() => null);
+        } else {
+            loadModels();
         }
     }, [version, type]);
 
     useOnUpdate(() => {
-
-        if(!active && !models){ return; }
-
-        const onLinkStateChangeCb = (action: VersionLinkerAction) => {
-            if(!equal(version, action.version) || !action.relativeFolder.includes(MODEL_TYPE_FOLDERS[type])){ return; }
-            loadModels();
+        if (!active && !models) {
+            return;
         }
 
+        const onLinkStateChangeCb = (action: VersionLinkerAction) => {
+            if (!equal(version, action.version) || !action.relativeFolder.includes(MODEL_TYPE_FOLDERS[type])) {
+                return;
+            }
+            loadModels();
+        };
+
         const sub = modelsDownloader.onModelsDownloaded(localModel => {
-            if(localModel.type !== type || !equal(localModel.version, version)){ return; }
-            setModels(models => [localModel, ...models ?? []]);
+            if (localModel.type !== type || !equal(localModel.version, version)) {
+                return;
+            }
+            setModels(models => [localModel, ...(models ?? [])]);
         });
 
         modelsManager.onModelsFolderLinked(onLinkStateChangeCb);
@@ -103,106 +115,129 @@ export const ModelsGrid = forwardRef(({className, version, type, search, active,
             modelsManager.removeModelsFolderLinkedListener(onLinkStateChangeCb);
             modelsManager.removeModelsFolderUnlinkedListener(onLinkStateChangeCb);
             sub.unsubscribe();
-        }
-
+        };
     }, [version, type, active]);
 
     const loadModels = () => {
         const modelsObs$ = modelsManager.$getModels(type, version);
         setModels(() => null);
-        setModelsLoadObservable(() => modelsObs$.pipe(map(models => models?.data), distinctUntilChanged()));
-        modelsObs$.pipe(map(models => Math.floor((models.current / models.total) * 100)), startWith(0), distinctUntilChanged()).subscribe({next: v => progress$.next(v)});
-    }
+        setModelsLoadObservable(() =>
+            modelsObs$.pipe(
+                map(models => models?.data),
+                distinctUntilChanged()
+            )
+        );
+        modelsObs$
+            .pipe(
+                map(models => Math.floor((models.current / models.total) * 100)),
+                startWith(0),
+                distinctUntilChanged()
+            )
+            .subscribe({ next: v => progress$.next(v) });
+    };
 
     const handleModelClick = (model: BsmLocalModel) => {
         const prunedArray = Array.from(new Set(modelsSelected));
-        if(prunedArray.some(m => m.hash === model.hash)){
-            prunedArray.splice(prunedArray.findIndex(m => m.hash === model.hash), 1);
-        } 
-        else {
+        if (prunedArray.some(m => m.hash === model.hash)) {
+            prunedArray.splice(
+                prunedArray.findIndex(m => m.hash === model.hash),
+                1
+            );
+        } else {
             prunedArray.push(model);
         }
         modelsSelected$.next(prunedArray);
-    }
+    };
 
     const filtredModels = () => {
-        if(!active){ return models; }
-        
+        if (!active) {
+            return models;
+        }
+
         const lowerSearch = search?.toLowerCase();
 
         return models?.filter(model => {
             const findedInRawValues = Object.values(model).some(value => {
-                if(typeof value !== "string" && typeof value !== "number"){ return false; }
+                if (typeof value !== "string" && typeof value !== "number") {
+                    return false;
+                }
                 return value.toString().toLowerCase().includes(lowerSearch);
             });
 
-            if(findedInRawValues) { return true; }
+            if (findedInRawValues) {
+                return true;
+            }
 
-            if(!model.model){ return false; }
+            if (!model.model) {
+                return false;
+            }
 
             return Object.values(model.model).some(value => {
-                if(typeof value !== "string" && typeof value !== "number" && !Array.isArray(value)){ return false; }
+                if (typeof value !== "string" && typeof value !== "number" && !Array.isArray(value)) {
+                    return false;
+                }
 
-                if(Array.isArray(value)){
+                if (Array.isArray(value)) {
                     return value.some(v => v.toString().toLowerCase().includes(lowerSearch));
                 }
 
                 return value.toString().toLowerCase().includes(lowerSearch);
             });
-        })
-    }
+        });
+    };
 
     const handleDelete = (model: BsmLocalModel) => {
         modelsManager.deleteModels([model], version).then(deleted => {
-            if(!deleted?.length){ return; }
+            if (!deleted?.length) {
+                return;
+            }
             setModels(prev => prev.filter(m => m.hash !== model.hash));
             modelsSelected$.next(modelsSelected.filter(m => m.hash !== model.hash));
         });
-    }
- 
+    };
+
     const renderContent = () => {
-        if(isLoading){
+        if (isLoading) {
             return (
                 <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1 text-gray-800 dark:text-gray-200">
-                    <BsmImage className="w-32 h-32 spin-loading" image={BeatWaitingImg}/>
+                    <BsmImage className="w-32 h-32 spin-loading" image={BeatWaitingImg} />
                     <span className="font-bold">{t("models.panel.grid.loading")}</span>
-                    <TextProgressBar value$={progress$}/>
+                    <TextProgressBar value$={progress$} />
                 </div>
-            )
+            );
         }
 
-        if(!hasModels){
+        if (!hasModels) {
             return (
                 <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1 text-gray-800 dark:text-gray-200">
-                    <BsmImage className="h-32" image={BeatConflict}/>
+                    <BsmImage className="h-32" image={BeatConflict} />
                     <span className="font-bold">{t("models.panel.grid.no-models")}</span>
-                    <BsmButton className="font-bold rounded-md p-2" text="models.panel.grid.download-models" typeColor="primary" withBar={false} onClick={e => {e.preventDefault(); downloadModels?.()}}/>
+                    <BsmButton
+                        className="font-bold rounded-md p-2"
+                        text="models.panel.grid.download-models"
+                        typeColor="primary"
+                        withBar={false}
+                        onClick={e => {
+                            e.preventDefault();
+                            downloadModels?.();
+                        }}
+                    />
                 </div>
-            )
+            );
         }
 
         return (
             <ul className="flex flex-wrap shrink-0 justify-start content-start w-full h-full overflow-y-scroll overflow-x-hidden p-4 gap-4 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900">
-                    {filtredModels().map(localModel => (
-                        <ModelItem 
-                            {...localModel?.model}
-                            key={localModel.path}
-                            hash={localModel.model?.hash ?? localModel.hash}
-                            path={localModel.path}
-                            type={localModel.type}
-                            name={localModel.model?.name ?? localModel.fileName}
-                            selected={modelsSelected.some(m => m.hash === localModel.hash)}
-                            onClick={() => handleModelClick(localModel)}
-                            onDelete={() => handleDelete(localModel)}
-                        />
-                    ))}
-                </ul>
-        )
-    }
+                {filtredModels().map(localModel => (
+                    <ModelItem {...localModel?.model} key={localModel.path} hash={localModel.model?.hash ?? localModel.hash} path={localModel.path} type={localModel.type} name={localModel.model?.name ?? localModel.fileName} selected={modelsSelected.some(m => m.hash === localModel.hash)} onClick={() => handleModelClick(localModel)} onDelete={() => handleDelete(localModel)} />
+                ))}
+            </ul>
+        );
+    };
 
     return (
         <div ref={ref} className={`w-full h-full flex-shrink-0 ${className ?? ""}`}>
             {renderContent()}
         </div>
-    )
+    );
 });

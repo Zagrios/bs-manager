@@ -1,46 +1,45 @@
-import { getTrackBackground, Range } from "react-range"
-import { getCorrectTextColor } from "renderer/helpers/correct-text-color"
-import { ThemeColor, useThemeColor } from "renderer/hooks/use-theme-color.hook"
+import { getTrackBackground, Range } from "react-range";
+import { getCorrectTextColor } from "renderer/helpers/correct-text-color";
+import { ThemeColor, useThemeColor } from "renderer/hooks/use-theme-color.hook";
 
 type Props = {
-    colorType?: ThemeColor
-    values: number[],
-    onChange?: (values: number[]) => void,
-    onFinalChange?: (values: number[]) => void,
-    min: number,
-    max: number,
-    step?: number,
-    renderLabel?: (value: number) => JSX.Element,
-    colors?: string[]
-}
+    colorType?: ThemeColor;
+    values: number[];
+    onChange?: (values: number[]) => void;
+    onFinalChange?: (values: number[]) => void;
+    min: number;
+    max: number;
+    step?: number;
+    renderLabel?: (value: number) => JSX.Element;
+    colors?: string[];
+};
 
-export function BsmRange({colorType = "first-color", values, onChange, onFinalChange, min, max, renderLabel, step = 1, colors} : Props) {
-
+export function BsmRange({ colorType = "first-color", values, onChange, onFinalChange, min, max, renderLabel, step = 1, colors }: Props) {
     const color = useThemeColor(colorType);
     const labelTextColor = color && getCorrectTextColor(color);
 
     return (
-        <Range 
+        <Range
             values={values}
             min={min}
             max={max}
             step={step}
-            onChange={(v) => onChange?.(v)}
-            onFinalChange={(v) => onFinalChange?.(v)}
-            renderTrack={({props, children}) => (
+            onChange={v => onChange?.(v)}
+            onFinalChange={v => onFinalChange?.(v)}
+            renderTrack={({ props, children }) => (
                 <div
                     onMouseDown={props.onMouseDown}
                     onTouchStart={props.onTouchStart}
                     className="w-full rounded-full h-1"
                     {...props}
                     style={{
-                    ...props.style,
-                    background: getTrackBackground({
-                        values,
-                        colors:  colors ?? ["#ccc", color, "#ccc"],
-                        min,
-                        max
-                    }),
+                        ...props.style,
+                        background: getTrackBackground({
+                            values,
+                            colors: colors ?? ["#ccc", color, "#ccc"],
+                            min,
+                            max,
+                        }),
                     }}
                 >
                     {children}
@@ -56,9 +55,9 @@ export function BsmRange({colorType = "first-color", values, onChange, onFinalCh
                         color: labelTextColor,
                     }}
                 >
-                    {renderLabel && renderLabel(values[index])}
+                    {renderLabel?.(values[index])}
                 </div>
             )}
         />
-    )
+    );
 }

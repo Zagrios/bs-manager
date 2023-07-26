@@ -1,11 +1,10 @@
-import { autoUpdater } from 'electron-updater';
-import log from 'electron-log';
-import { UtilsService } from './utils.service';
-import { gt } from 'semver';
+import { autoUpdater } from "electron-updater";
+import log from "electron-log";
+import { UtilsService } from "./utils.service";
+import { gt } from "semver";
 import { ConfigurationService } from './configuration.service';
 
 export class AutoUpdaterService {
-
     private static instance: AutoUpdaterService;
 
     private readonly utilsService: UtilsService;
@@ -14,12 +13,14 @@ export class AutoUpdaterService {
 
     private readonly HAVE_BEEN_UPDATED_KEY = "haveBeenUpdated";
 
-    public static getInstance(): AutoUpdaterService{
-        if(!AutoUpdaterService.instance){ AutoUpdaterService.instance = new AutoUpdaterService(); }
+public static getInstance(): AutoUpdaterService {
+        if (!AutoUpdaterService.instance) {
+            AutoUpdaterService.instance = new AutoUpdaterService();
+        }
         return AutoUpdaterService.instance;
     }
 
-    constructor(){
+    constructor() {
         autoUpdater.logger = log;
         autoUpdater.autoDownload = false;
 
@@ -27,23 +28,27 @@ export class AutoUpdaterService {
         this.utilsService = UtilsService.getInstance();
     }
 
-    public isUpdateAvailable(): Promise<boolean>{
+    public isUpdateAvailable(): Promise<boolean> {
         return new Promise(resolve => {
-            autoUpdater.checkForUpdates().then(info => {
-                const needUpdate = (() => {
-                    if(!info || !info.updateInfo){ return false; }
-                    return gt(info.updateInfo.version, autoUpdater.currentVersion.version);
-                })();
-                resolve(needUpdate)}
-            ).catch(() => resolve(false));
+            autoUpdater
+                .checkForUpdates()
+                .then(info => {
+                    const needUpdate = (() => {
+                        if (!info?.updateInfo) {
+                            return false;
+                        }
+                        return gt(info.updateInfo.version, autoUpdater.currentVersion.version);
+                    })();
+                    resolve(needUpdate);
+                })
+                .catch(() => resolve(false));
         });
     }
 
-    public downloadUpdate(): Promise<boolean>{
-
+    public downloadUpdate(): Promise<boolean> {
         autoUpdater.removeAllListeners("download-progress");
         autoUpdater.addListener("download-progress", info => {
-            this.utilsService.ipcSend("update-download-progress", {success: true, data: info.percent});
+            this.utilsService.ipcSend("update-download-progress", { success: true, data: info.percent });
         });
 
         return autoUpdater.downloadUpdate().then(res => !!res && !!res.length);
@@ -56,7 +61,4 @@ export class AutoUpdaterService {
     public getHaveBeenUpdated(): boolean {
       return this.configService.get(this.HAVE_BEEN_UPDATED_KEY);
     }
-
-
-
 }

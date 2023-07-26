@@ -1,13 +1,13 @@
 {
-  "rules": {
-    "no-console": "off",
-    "global-require": "off",
-    "import/no-dynamic-require": "off",
-    "prettier/prettier": 0,
-    "no-await-in-loop": "off",
-    "import/prefer-default-export": "off",
-    "no-empty-function": "off",
-    "@typescript-eslint/no-empty-function": "off",
-    "@angular-eslint/no-empty-lifecycle-method": "off"
-  }
+    "rules": {
+        "no-console": "off",
+        "global-require": "off",
+        "import/no-dynamic-require": "off",
+        "prettier/prettier": 0,
+        "no-await-in-loop": "off",
+        "import/prefer-default-export": "off",
+        "no-empty-function": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "@angular-eslint/no-empty-lifecycle-method": "off"
+    }
 }

@@ -2,30 +2,23 @@ import { ipcMain } from "electron";
 import { AutoUpdaterService } from "../services/auto-updater.service";
 import { IpcRequest } from "shared/models/ipc";
 import { UtilsService } from "../services/utils.service";
-import { IpcService } from '../services/ipc.service';
-import { of } from 'rxjs';
+import { IpcService } from "../services/ipc.service";
+import { from, of } from "rxjs";
 
 const ipc = IpcService.getInstance();
 ipcMain.on("download-update", async (event, request: IpcRequest<void>) => {
-
     const updaterService = AutoUpdaterService.getInstance();
     const utilsService = UtilsService.getInstance();
 
-    updaterService.downloadUpdate().then(res => utilsService.ipcSend(request.responceChannel, {success: res}))
-    .catch(() => utilsService.ipcSend(request.responceChannel, {success: false}));
-
+    updaterService
+        .downloadUpdate()
+        .then(res => utilsService.ipcSend(request.responceChannel, { success: res }))
+        .catch(() => utilsService.ipcSend(request.responceChannel, { success: false }));
 });
 
-ipcMain.on("check-update", async (event, request: IpcRequest<void>) => {
-
+ipc.on("check-update", (_, reply) => {
     const updaterService = AutoUpdaterService.getInstance();
-    const utilsService = UtilsService.getInstance();
-
-    updaterService.isUpdateAvailable().then(updateAvailable => {
-        utilsService.ipcSend(request.responceChannel, {success: true, data: updateAvailable});
-    })
-    .catch(() => utilsService.ipcSend(request.responceChannel, {success: false}));
-
+    reply(from(updaterService.isUpdateAvailable()));
 });
 
 ipcMain.on("install-update", async (event, request: IpcRequest<void>) => {
