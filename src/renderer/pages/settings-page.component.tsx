@@ -172,7 +172,7 @@ export function SettingsPage() {
 
     const openLogs = () => ipcService.sendLazy("open-logs");
 
-  const openChangelog = () => setModalChangelogResponse(updaterService.showChangelog())
+    const openChangelog = () =>  updaterService.showChangelog().then(res => setModalChangelogResponse(res));
 
     const showDeepLinkError = (isDeactivation: boolean) => {
         const desc = isDeactivation ? "notifications.settings.additional-content.deep-link.deactivation.error.description" : "notifications.settings.additional-content.deep-link.activation.error.description";
@@ -409,7 +409,7 @@ export function SettingsPage() {
                     </SettingContainer>
                 </SettingContainer>
 
-                <Tippy content={!modalChangelogResponse ? t("pages.settings.release-note.open-release-note"):t("pages.settings.release-note.no-release-note")} placement="left" className="font-bold bg-main-color-3" duration={[200, 0]} hideOnClick={false}>
+                <Tippy content={modalChangelogResponse ? t("pages.settings.release-note.open-release-note"):t("pages.settings.release-note.no-release-note")} placement="left" className="font-bold bg-main-color-3" duration={[200, 0]} hideOnClick={false}>
                 <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5 hover:brightness-125 cursor-pointer" onClick={openChangelog}>v{appVersion}</span>
               </Tippy>
             </div>

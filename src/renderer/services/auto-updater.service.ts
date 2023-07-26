@@ -93,12 +93,13 @@ export class AutoUpdaterService {
   }
 
 
-  public async showChangelog(version?: string) {
+  public async showChangelog(version?: string) : Promise<boolean> {
     const currentVersion = await this.getAppVersion();
-    const changelog = await this.getChangelogByVersion(version || currentVersion);
-    if (!changelog) {return ;}
+    const changelog = await this.getChangelogByVersion(version ?? currentVersion);
 
-    return this.modalService.openModal(ChangelogModal, changelog).then(() =>{});
+    if (!changelog) {return false;}
+    
+    return this.modalService.openModal(ChangelogModal, changelog).then(()=> true ).catch(()=> false );
   }
 
   public async getAppVersion() {

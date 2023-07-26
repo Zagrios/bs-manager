@@ -8,14 +8,21 @@ import { ChangelogVersion } from '../../../../../shared/models/bs-launch/launch-
 import DOMPurify from "dompurify";
 import { useService } from '../../../../hooks/use-service.hook';
 import { OsDiagnosticService } from '../../../../services/os-diagnostic.service';
+import { AutoUpdaterService } from "renderer/services/auto-updater.service";
+import { useEffect, useState } from "react";
 
 export const ChangelogModal: ModalComponent<void, ChangelogVersion> = ({ resolver, data }) => {
   useService(OsDiagnosticService);
   const linkOpener: LinkOpenerService = useService(LinkOpenerService);
+  const updaterService: AutoUpdaterService = useService(AutoUpdaterService);
   const openGithub = () => linkOpener.open("https://github.com/Zagrios/bs-manager");
   const openTwitter = () => linkOpener.open("https://twitter.com/BSManager_");
   const openSupportPage = () => linkOpener.open("https://www.patreon.com/bsmanager");
   const openDiscord = () => linkOpener.open("https://discord.gg/uSqbHVpKdV");
+  const [appVersion, setAppVersion] = useState<string>("");
+  useEffect(() => {
+    updaterService.getAppVersion().then(setAppVersion);
+  }, []);
 
   const sanitizedHTML = DOMPurify.sanitize(data?.body);
 
@@ -34,7 +41,7 @@ export const ChangelogModal: ModalComponent<void, ChangelogVersion> = ({ resolve
           <BsmButton onClick={openSupportPage} className=" rounded-md h-6 p-1" icon="patreon" withBar={false}/>
           <BsmButton onClick={openDiscord} className=" rounded-md h-6 p-[5px]" icon="discord" withBar={false}/>
         </div>
-        <span><i>{}</i></span>
+        <span><i>{appVersion}</i></span>
       </div>
     </form>
   )
