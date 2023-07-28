@@ -1,4 +1,8 @@
 {
+  "1.5.0-alpha.4": {
+    "title" : "Test réussi !",
+    "body" : "<div><p>Thanks to the new supporters \uD83E\uDD70</p><h3>Features</h3><ul><li>Add models management #218</li><li>Hexadecimal field has been added in color pickers #236</li><li>\"Show Password\" button has been added in the login modal #244</li></ul><h3>Fixes</h3><ul><li>Made permission error not possible when installing mods #219</li><li>Fix progress collision when switching versions while maps are being loaded #220</li><li>Some mods do not show as installed after an update #231</li><li>Some mods are not marked as updated, after a mods update #229</li><li>Shortcut to BSManager had an incorrect description #240</li><li>Mod LookupID was never shown as installed #242</li><li>Usernames with spaces were not supported for Steam login #243</li><li>Can't clone Steam version without renaming it #248</li></ul><h3>Other changes</h3><ul><li>Some UI elements have been reorganized to make usage more pleasant #218</li><li>Initial loading of mods is now faster #232</li><li>A warning has been added when the Steam password exceeds 64 characters #225</li></ul></div>\n"
+  },
   "25.3.0" : {
     "title": "Coucou les bg",
     "body": "<h3>Nouvelles fonctionnalités</h3><ul><li>Ajout de la fonctionnalité X</li><li>Amélioration de la fonctionnalité Y</li></ul><h3>Correctifs de bugs</h3><ul><li>Résolution du bug Z qui causait le crash de l'application</li><li>Correction du bug A qui entraînait un comportement inattendu</li></ul>"
