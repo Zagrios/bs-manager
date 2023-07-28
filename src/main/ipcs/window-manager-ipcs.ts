@@ -3,7 +3,7 @@ import { AppWindow } from "shared/models/window-manager/app-window.model";
 import { BSLauncherService } from "../services/bs-launcher.service";
 import { IpcService } from "../services/ipc.service";
 import { from, of } from "rxjs";
-import { AutoUpdaterService } from "main/services/auto-updater.service";
+import { AutoUpdaterService } from "../services/auto-updater.service";
 
 const launcher = BSLauncherService.getInstance();
 const ipc = IpcService.getInstance();
