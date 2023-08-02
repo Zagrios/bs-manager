@@ -1,9 +1,10 @@
-import { app, BrowserWindow, BrowserWindowConstructorOptions } from "electron";
+import { app, BrowserWindow, BrowserWindowConstructorOptions, shell } from "electron";
 import { resolveHtmlPath } from "../util";
 import { UtilsService } from "./utils.service";
 import { AppWindow } from "shared/models/window-manager/app-window.model";
 import path from "path";
 import { APP_NAME } from "../constants";
+import { isValidUrl } from "../../shared/helpers/url.helpers";
 
 export class WindowManagerService {
     private static instance: WindowManagerService;
@@ -43,6 +44,14 @@ export class WindowManagerService {
 
     public openWindow(windowType: AppWindow, options?: BrowserWindowConstructorOptions): Promise<BrowserWindow> {
         const window = new BrowserWindow({ ...this.appWindowsOptions[windowType], ...this.baseWindowOption, ...options });
+
+        window.webContents.setWindowOpenHandler(({ url }) => {
+            if(isValidUrl(url)){
+                shell.openExternal(url);
+            }
+            
+            return { action: "deny"}
+        })
 
         const promise = window.loadURL(resolveHtmlPath(windowType));
         window.removeMenu();
