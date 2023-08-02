@@ -1,7 +1,7 @@
 import { AvailableVersionsSlider } from "../components/available-versions/available-versions-slider.component";
 import { BsDownloaderService } from "../services/bs-downloader.service";
 import { Slideshow } from "renderer/components/slideshow/slideshow.component";
-import { useState } from "react";
+import { createContext, useState } from "react";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
@@ -12,28 +12,30 @@ import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { ImportVersionModal } from "renderer/components/modal/modal-types/import-version-modal.component";
 import { IpcService } from "renderer/services/ipc.service";
 import { NotificationService } from "renderer/services/notification.service";
-import { timer } from "rxjs";
+import { lastValueFrom, map } from "rxjs";
 import { useService } from "renderer/hooks/use-service.hook";
+import { BSVersion } from "shared/bs-version.interface";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 
+export const AvailableVersionsContext = createContext<{ selectedVersion: BSVersion; setSelectedVersion: (version: BSVersion) => void }>(null);
+
 export function AvailableVersionsList() {
-    const bsDownloaderService = useService(BsDownloaderService);
-    const versionManagerService = useService(BSVersionManagerService);
+    const bsDownloader = useService(BsDownloaderService);
+    const versionManager = useService(BSVersionManagerService);
     const progressBar = useService(ProgressBarService);
     const modal = useService(ModalService);
     const ipc = useService(IpcService);
     const installer = useService(BsDownloaderService);
     const notification = useService(NotificationService);
 
-    const versionSelected = useObservable(bsDownloaderService.selectedBsVersion$);
-    const [downloading, setDownloading] = useState(false);
+    const [selectedVersion, setSelectedVersion] = useState<BSVersion>(null);
+    const downloading = useObservable(bsDownloader.currentBsVersionDownload$.pipe(map(v => !!v)));
     const t = useTranslation();
 
     const startDownload = () => {
-        setDownloading(() => true);
-        bsDownloaderService.download(versionSelected).finally(() => {
-            setDownloading(() => false);
-        });
+        bsDownloader.downloadBsVersion(selectedVersion)
+            .catch(() => {})
+            .finally(() => setSelectedVersion(null));
     };
 
     const importVersion = async () => {
@@ -47,7 +49,7 @@ export function AvailableVersionsList() {
             return;
         }
 
-        const folderRes = await ipc.sendV2<{ canceled: boolean; filePaths: string[] }>("choose-folder").toPromise();
+        const folderRes = await lastValueFrom(ipc.sendV2<{ canceled: boolean; filePaths: string[] }>("choose-folder"))
 
         if (!folderRes || folderRes.canceled || !folderRes.filePaths?.length) {
             return;
@@ -62,10 +64,9 @@ export function AvailableVersionsList() {
         const imported = await installer.importVersion(toImport);
 
         if (imported) {
-            versionManagerService.askInstalledVersions();
+            versionManager.askInstalledVersions();
             notification.notifySuccess({ title: "notifications.bs-import-version.success.imported.title", duration: 3_000 });
             progressBar.complete();
-            await timer(400).toPromise();
         } else {
             notification.notifyError({ title: "notifications.types.error", desc: "notifications.bs-import-version.errors.import-error.desc" });
         }
@@ -75,13 +76,16 @@ export function AvailableVersionsList() {
 
     return (
         <div className="relative h-full w-full flex items-center flex-col pt-2">
+            
             <Slideshow className="absolute w-full h-full top-0" />
             <h1 className="text-gray-100 text-2xl mb-4 z-[1]">{t("pages.available-versions.title")}</h1>
 
-            <AvailableVersionsSlider />
-
+            <AvailableVersionsContext.Provider value={{selectedVersion, setSelectedVersion}}>
+                <AvailableVersionsSlider />
+            </AvailableVersionsContext.Provider>
+            
             <AnimatePresence>
-                {versionSelected && !downloading && (
+                {selectedVersion && !downloading && (
                     <motion.div initial={{ y: "150%" }} animate={{ y: "0%" }} exit={{ y: "150%" }} className="absolute bottom-5" onClick={startDownload}>
                         <BsmButton text="misc.download" className="relative text-gray-800 dark:text-gray-100 rounded-md text-3xl font-bold italic tracking-wide px-3 pb-2 pt-1 shadow-md shadow-black" />
                     </motion.div>
@@ -92,7 +96,7 @@ export function AvailableVersionsList() {
                 className="absolute top-5 right-5 h-9 w-9 bg-light-main-color-2 dark:bg-main-color-2 rounded-md"
                 icon="settings"
                 items={[
-                    { icon: "sync", text: "pages.available-versions.dropdown.refresh", onClick: () => versionManagerService.askAvailableVersions() },
+                    { icon: "sync", text: "pages.available-versions.dropdown.refresh", onClick: () => versionManager.askAvailableVersions() },
                     { icon: "download", text: "pages.available-versions.dropdown.import-version", onClick: importVersion },
                 ]}
             />

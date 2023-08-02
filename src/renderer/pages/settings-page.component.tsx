@@ -34,6 +34,7 @@ import { VersionFolderLinkerService } from "renderer/services/version-folder-lin
 import { useService } from "renderer/hooks/use-service.hook";
 import { lastValueFrom } from "rxjs";
 import { BsmException } from "shared/models/bsm-exception.model";
+import { useObservable } from "renderer/hooks/use-observable.hook";
 
 export function SettingsPage() {
     
@@ -73,13 +74,12 @@ export function SettingsPage() {
     const [mapDeepLinksEnabled, setMapDeepLinksEnabled] = useState(false);
     const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
     const [modelsDeepLinkEnabled, setModelsDeepLinkEnabled] = useState(false);
-    const [appVersion, setAppVersion] = useState("");
+    const appVersion = useObservable(ipcService.sendV2<string>("current-version"));
     const nav = useNavigate();
     const t = useTranslation();
 
     useEffect(() => {
         loadInstallationFolder();
-        lastValueFrom(ipcService.sendV2<string>("current-version")).then(res => setAppVersion(res));
         mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));

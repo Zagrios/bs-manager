@@ -481,24 +481,31 @@
             }
         },
         "steam-login": {
-            "title": "Steam Conectar",
+            "title": "Inicio de sesión Steam",
             "inputs": {
                 "username": {
-                    "label": "Nombre de usuario",
-                    "placeholder": "Introduzca su nombre de usuario"
+                    "label": "Iniciar sesión con un nombre de cuenta",
+                    "placeholder": "Introduce tu nombre de cuenta"
                 },
                 "password": {
                     "label": "Contraseña",
-                    "placeholder": "Introduzca su contraseña",
+                    "placeholder": "Introduce tu contraseña",
                     "max-length-warning": "¡La contraseña supera los 64 caracteres! Si la contraseña es inválida, intenta ingresar solo sus primeros 64 caracteres."
                 },
-                "stay": {
-                    "label": "Manténgase conectado"
-                }
+                "qr":{
+                    "label": "O con un código QR",
+                    "note":{
+                        "use-the":"Usa la ",
+                        "steam-mobile-app": "aplicación Steam Mobile",
+                        "to-connect-with-qr": "para conectarte con un código QR."
+                    }
+                },
+                "stay": "Recuérdame"
             },
-            "why-credentials": "¿Por qué necesitas mis credenciales?",
+            "why-credentials": "¿Por qué son necesarias mis credenciales?",
+            "need-help-to-connect": "¡Necesito ayuda para acceder a mi cuenta!",
             "buttons": {
-                "submit": "Inicio de sesión"
+                "submit": "Iniciar sesión"
             }
         },
         "steam-credentials": {

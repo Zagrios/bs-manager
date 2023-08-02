@@ -1,22 +1,28 @@
-import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
-import { filter, map } from "rxjs/operators";
+import { useContext } from "react";
 import { AvailableVersionItem } from "./available-version-item.component";
-import { useService } from "renderer/hooks/use-service.hook";
-import { useObservable } from "renderer/hooks/use-observable.hook";
+import { BSVersion } from "shared/bs-version.interface";
+import { AvailableVersionsContext } from "renderer/pages/available-versions-list.components";
+import equal from "fast-deep-equal";
 
-export function AvailableVersionsSlide(props: { year: string }) {
-    
-    const versionsService = useService(BSVersionManagerService);
-    
-    const availableVersions = useObservable(
-        versionsService.availableVersions$.pipe(filter(versions => !!versions?.length), map(() => versionsService.getAvaibleVersionsOfYear(props.year))),
-        []
-    );
+type Props = {
+    versions: BSVersion[]
+}
+
+export function AvailableVersionsSlide({ versions }: Props) {
+
+    const context = useContext(AvailableVersionsContext);
+
+    const setSelectedVersion = (version: BSVersion) => {
+        if(equal(version, context.selectedVersion)){
+            return context.setSelectedVersion(null);
+        }
+        context.setSelectedVersion(version);
+    }
 
     return (
         <ol className="w-full flex items-start justify-center gap-6 shrink-0 content-start flex-wrap p-4 overflow-x-hidden overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900">
-            {availableVersions.map(version => (
-                <AvailableVersionItem key={version.BSManifest} version={version} />
+            {versions.map(version => (
+                <AvailableVersionItem key={version.BSManifest} version={version} selected={equal(version, context.selectedVersion)} onClick={() => setSelectedVersion(version)}/>
             ))}
         </ol>
     );

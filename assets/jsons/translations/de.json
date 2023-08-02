@@ -482,22 +482,29 @@
             }
         },
         "steam-login": {
-            "title": "Steam Login",
+            "title": "Steam Anmeldung",
             "inputs": {
                 "username": {
-                    "label": "Nutzername",
-                    "placeholder": "Gebe deinen Nutzernamen ein"
+                    "label": "Mit Accountnamen anmelden",
+                    "placeholder": "Geben Sie Ihren Accountnamen ein"
                 },
                 "password": {
                     "label": "Passwort",
-                    "placeholder": "Gebe dein Passwort ein",
-                    "max-length-warning": "Das Passwort überschreitet 64 Zeichen! Wenn das Passwort ungültig ist, versuchen Sie nur die ersten 64 Zeichen einzugeben."
+                    "placeholder": "Geben Sie Ihr Passwort ein",
+                    "max-length-warning": "Das Passwort überschreitet 64 Zeichen! Wenn das Passwort ungültig ist, versuchen Sie nur seine ersten 64 Zeichen einzugeben."
                 },
-                "stay": {
-                    "label": "Verbunden bleiben"
-                }
+                "qr":{
+                    "label": "Oder mit einem QR-Code",
+                    "note":{
+                        "use-the":"Anmelden Sie sich über die ",
+                        "steam-mobile-app": "Steam-Mobile-App",
+                        "to-connect-with-qr": " per QR-Code an."
+                    }
+                },
+                "stay": "Angemeldet bleiben"
             },
-            "why-credentials": "Warum braucht ihr meine Anmeldeinformationen?",
+            "why-credentials": "Warum sind meine Anmeldedaten notwendig?",
+            "need-help-to-connect": "Ich brauche Hilfe, um auf mein Konto zuzugreifen!",
             "buttons": {
                 "submit": "Anmelden"
             }
