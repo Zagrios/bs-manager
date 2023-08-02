@@ -32,7 +32,7 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
                 return setPreviewVersion("BETA");
             }
         });
-    });
+    }, []);
 
     const [maximized, setMaximized] = useState(false);
 
