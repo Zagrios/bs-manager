@@ -14,6 +14,7 @@ import { GuardModal } from "renderer/components/modal/modal-types/guard-modal.co
 import { LinkOpenerService } from "./link-opener.service";
 import { DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderInfoEvent, DepotDownloaderSubTypeOfEventType, DepotDownloaderWarningEvent } from "../../shared/models/depot-downloader.model";
 import equal from "fast-deep-equal";
+import { SteamMobileApproveModal } from "renderer/components/modal/modal-types/steam-mobile-approve-modal.component";
 
 export class BsDownloaderService {
     private static instance: BsDownloaderService;
@@ -123,7 +124,10 @@ export class BsDownloaderService {
             take(1),
         ).subscribe(async () => {
             const logged$ = events$.pipe(filter(event => event.subType === DepotDownloaderInfoEvent.SteamID), take(1));
-            // Show awaiting mobile confirmation modal
+            const res = await this.modalService.openModal(SteamMobileApproveModal, { logged$ });
+            if(res.exitCode !== ModalExitCode.COMPLETED){
+                return this.stopDownload();
+            }
         }));
 
         subs.push(events$.pipe(

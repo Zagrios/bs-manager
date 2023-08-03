@@ -509,6 +509,12 @@
                 "submit": "Sign in"
             }
         },
+        "steam-auth-approve":{
+            "title": "Waiting for confirmation",
+            "protected-by-mobile-auth": "Account protected by mobile authenticator.",
+            "use-steam-app-to-approve": "Use the Steam mobile app to confirm the connection...",
+            "not-access-to-steam-app": "I don't have access to the Steam mobile app"
+        },
         "steam-credentials": {
             "title": "Steam Credentials",
             "p-1": "The credentials are only used to download the game because steam need to verify that you paid the game in order to be allowed to download it. They aren't saved and directly passed to DepotDownloader. If you don't want to enter your credentials you can follow this tutorial :",

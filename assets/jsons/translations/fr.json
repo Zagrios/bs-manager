@@ -508,6 +508,12 @@
                 "submit": "Se connecter"
             }
         },
+        "steam-auth-approve":{
+            "title": "Attente de confirmation",
+            "protected-by-mobile-auth": "Compte protégé par l'authentificateur mobile.",
+            "use-steam-app-to-approve": "Utilisez l'application mobile Steam pour confirmer la connexion...",
+            "not-access-to-steam-app": "Je n'ai pas accès à l'application mobile Steam"
+        },
         "steam-credentials": {
             "title": "Steam Credentials",
             "p-1": "Les informations d'identification ne sont utilisées que pour télécharger le jeu, car Steam doit vérifier que vous avez payé le jeu afin d'être autorisé à le télécharger. Ils ne sont pas sauvegardés et transmis directement à DepotDownloader. Si vous ne voulez pas entrer vos informations d'identification, vous pouvez suivre ce tutoriel :",

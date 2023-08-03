@@ -509,6 +509,12 @@
                 "submit": "Anmelden"
             }
         },
+        "steam-auth-approve":{
+            "title": "Warten auf Bestätigung",
+            "protected-by-mobile-auth": "Konto durch mobile Authentifizierung geschützt.",
+            "use-steam-app-to-approve": "Verwenden Sie die Steam Mobile-App, um die Verbindung zu bestätigen...",
+            "not-access-to-steam-app": "Ich habe keinen Zugang zur Steam Mobile-App"
+        },
         "steam-credentials": {
             "title": "Steam Anmeldeinformationen",
             "p-1": "Die Anmeldeinformationen werden nur zum Herunterladen des Spiels verwendet, da Steam überprüfen muss, ob Du das Spiel bezahlt hast, um es herunterladen zu dürfen. Sie werden nicht gespeichert und direkt an DepotDownloader weitergegeben. Wenn Du deine Anmeldeinformationen nicht eingeben möchtest, kannst Du diesem Tutorial folgen:",

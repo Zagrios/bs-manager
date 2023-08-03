@@ -508,6 +508,12 @@
                 "submit": "Iniciar sesión"
             }
         },
+        "steam-auth-approve":{
+            "title": "Esperando confirmación",
+            "protected-by-mobile-auth": "Cuenta protegida por el autenticador móvil.",
+            "use-steam-app-to-approve": "Use la aplicación móvil de Steam para confirmar la conexión...",
+            "not-access-to-steam-app": "No tengo acceso a la aplicación móvil de Steam"
+        },
         "steam-credentials": {
             "title": "Steam Credentials",
             "p-1": "Las credenciales sólo se utilizan para descargar el juego porque steam necesita verificar que has pagado el juego para que se te permita descargarlo. No se guardan y se pasan directamente a DepotDownloader. Si no quieres introducir tus credenciales puedes seguir este tutorial :",
