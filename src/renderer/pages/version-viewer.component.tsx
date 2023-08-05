@@ -43,7 +43,7 @@ export function VersionViewer() {
         navigate(`/bs-version/${version.BSVersion}`, { state: version });
     };
     const openFolder = () => ipcService.sendLazy("bs-version.open-folder", { args: state });
-    const verifyFiles = () => bsDownloaderService.download(state, true);
+    const verifyFiles = () => bsDownloaderService.verifyBsVersionFiles(state);
 
     const uninstall = async () => {
         const modalCompleted = await modalService.openModal(UninstallModal, state);

@@ -35,7 +35,7 @@ export enum DepotDownloaderErrorEvent {
     DepotNotFound = "DepotNotFound",
     NotCompleted = "NotCompleted",
     InvalidManifest = "InvalidManifest",
-    NoValidKeys = "NoValidKeys",
+    NoValidKeys = "NoValidKey",
     NoManifestCode = "NoManifestCode",
     _401 = "401",
     _404 = "404",
@@ -46,17 +46,14 @@ export enum DepotDownloaderErrorEvent {
     ConnectionError = "ConnectionError",
     TokenRejected = "TokenRejected",
     LicenceError = "LicenceError",
+    AccessDenied = "AccessDenied",
     Unknown = "Unknown",
 }
 
 export enum DepotDownloaderWarningEvent {
     ManifestChecksum = "ManifestChecksum",
-}
-
-export const DepotDownloaderSubTypeOfEventType = {
-    [DepotDownloaderEventType.Error]: DepotDownloaderErrorEvent,
-    [DepotDownloaderEventType.Warning]: DepotDownloaderWarningEvent,
-    [DepotDownloaderEventType.Info]: DepotDownloaderInfoEvent,
+    ConnectionTimeout = "ConnectionTimeout",
+    Unknown = "Unknown",
 }
 
 export interface DepotDownloaderArgsOptions {

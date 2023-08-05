@@ -1,7 +1,6 @@
-import { DownloadEvent, DownloadInfo } from "main/services/bs-installer.service";
-import { BehaviorSubject, Observable, Subscription, identity, lastValueFrom, of, throwError } from "rxjs";
-import { distinctUntilChanged, filter, map, take, tap, throttleTime } from "rxjs/operators";
-import { IpcResponse } from "shared/models/ipc";
+import { DownloadInfo } from "main/services/bs-installer.service";
+import { BehaviorSubject, Observable, ReplaySubject, Subscription, lastValueFrom, throwError } from "rxjs";
+import { distinctUntilChanged, filter, map, share, take, tap, throttleTime } from "rxjs/operators";
 import { BSVersion } from "shared/bs-version.interface";
 import { AuthUserService } from "./auth-user.service";
 import { BSVersionManagerService } from "./bs-version-manager.service";
@@ -12,7 +11,7 @@ import { ProgressBarService } from "./progress-bar.service";
 import { LoginModal } from "renderer/components/modal/modal-types/login-modal.component";
 import { GuardModal } from "renderer/components/modal/modal-types/guard-modal.component";
 import { LinkOpenerService } from "./link-opener.service";
-import { DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderInfoEvent, DepotDownloaderSubTypeOfEventType, DepotDownloaderWarningEvent } from "../../shared/models/depot-downloader.model";
+import { DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderInfoEvent, DepotDownloaderWarningEvent } from "../../shared/models/depot-downloader.model";
 import equal from "fast-deep-equal";
 import { SteamMobileApproveModal } from "renderer/components/modal/modal-types/steam-mobile-approve-modal.component";
 
@@ -146,7 +145,10 @@ export class BsDownloaderService {
             filter(event => event.subType === DepotDownloaderInfoEvent.Finished),
             take(1),
         ).subscribe(() => {
-            console.log("show success notification");
+            if(this.isVerification){
+                return this.notificationService.notifySuccess({title: "notifications.bs-download.success.titles.verification-finished"});
+            }
+            return this.notificationService.notifySuccess({title: "notifications.bs-download.success.titles.download-success"});
         }));    
 
         return subs;
@@ -154,24 +156,37 @@ export class BsDownloaderService {
 
     private handleWarningEvents(events$: Observable<DepotDownloaderEvent>): Subscription[] {
         const subs: Subscription[] = [];
+
+        const handledWarnings = Object.values(DepotDownloaderWarningEvent);
+
+        subs.push(events$.pipe(
+            filter(event => handledWarnings.includes(event.subType as DepotDownloaderWarningEvent)),
+        ).subscribe(event => {
+            this.notificationService.notifyWarning({title: "notifications.types.warning", desc: `notifications.bs-download.warnings.msg.${event.subType}`});
+        }));
+
         return subs;
     }
 
-    private hanndleErrorEvents(events$: Observable<DepotDownloaderEvent>): Subscription[] {
-        const subs: Subscription[] = [];
-        return subs;
+    private hanndleErrorEvent(errorEvent: DepotDownloaderEvent) {
+        const handledErrors = Object.values(DepotDownloaderErrorEvent);
+
+        if(handledErrors.includes(errorEvent?.subType as DepotDownloaderErrorEvent)){
+            return this.notificationService.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.errors.msg.${errorEvent.subType}`});
+        }
+
+        return this.notificationService.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.errors.msg.${DepotDownloaderErrorEvent.Unknown}`});
     }
 
-    private wrapDownload(download$: Observable<DepotDownloaderEvent>): Observable<DepotDownloaderEvent> {
+    private wrapDownload(download$: Observable<DepotDownloaderEvent>, silent?: boolean): Observable<DepotDownloaderEvent> {
 
         return new Observable<DepotDownloaderEvent>(sub => {
 
-            const downloadSub = download$.subscribe(sub);
+            const downloadSub = download$.subscribe({next: n => sub.next(n), error: e => sub.error(e), complete: () => sub.complete()});
 
             const subs = [
                 ...this.handleInfoEvents(download$.pipe(filter(event => event.type === DepotDownloaderEventType.Info))),
-                ...this.handleWarningEvents(download$.pipe(filter(event => event.type === DepotDownloaderEventType.Warning))),
-                ...this.hanndleErrorEvents(download$.pipe(filter(event => event.type === DepotDownloaderEventType.Error)))
+                ...this.handleWarningEvents(download$.pipe(filter(event => event.type === DepotDownloaderEventType.Warning), throttleTime(10_000))),
             ];
 
             return () => {
@@ -180,7 +195,13 @@ export class BsDownloaderService {
             }
 
         }).pipe(
-            tap({error: () => this.authService.deleteSteamSession()})
+            tap({
+                error: (e) => {
+                    this.authService.deleteSteamSession();
+                    !silent && this.hanndleErrorEvent(e)
+                }
+            }),
+            share({connector: () => new ReplaySubject(1)})
         );
         
     }
@@ -193,7 +214,8 @@ export class BsDownloaderService {
 
         const infos: DownloadInfo = {...downloadInfo, username: this.authService.getSteamUsername()}
         return this.wrapDownload(
-            this.ipcService.sendV2<DepotDownloaderEvent>("auto-download-bs-version", { args: infos })
+            this.ipcService.sendV2<DepotDownloaderEvent>("auto-download-bs-version", { args: infos }),
+            true
         );
     }
 
@@ -270,6 +292,10 @@ export class BsDownloaderService {
 
     public downloadBsVersion(version: BSVersion): Promise<BSVersion> {
         return this.doDownloadBsVersion(version).then(() => version);
+    }
+
+    public verifyBsVersionFiles(version: BSVersion): Promise<BSVersion> {
+        return this.doDownloadBsVersion(version, true).then(() => version);
     }
 
     public verifyBsVersion(version: BSVersion): Promise<BSVersion> {

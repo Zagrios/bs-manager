@@ -232,7 +232,6 @@
                     "404": "Steam-Server können nicht kontaktiert werden.",
                     "Password": "Passwort ist ungültig.",
                     "InvalidCredentials": "Deine E-Mail oder Passwort ist ungültig 😴",
-                    "InvalidPassword": "Dein Passwort ist ungültig 😕",
                     "NoManifest": "Es wurde keine Manifest gefunden",
                     "DirectoryCreate": "Die erforderlichen Ordner können nicht installiert werden.",
                     "NotAvailableApp": "Versuchst du, Beat Saber herunterzuladen, wenn Du es nicht hast? 🤣",
@@ -248,10 +247,9 @@
                     "SteamLib": "Wenn dieser Fehler auftritt, melde den Fehler auf Github mit Protokollen, bitte.",
                     "ConnectionError": "Kann nach 10 Versuchen keine Verbindung zu Steam herstellen 🤯",
                     "LicenceError": "Die Liste der Lizenzen kann nicht abgerufen werden.",
-                    "verification-failed": "Verifikation fehlgeschlagen, versuche es später erneut.",
                     "RateLimitExceeded": "Du hast es zu oft versucht, warte eine Weile und versuche es später erneut.",
-                    "AlreadyDownloading": "Ein Download ist bereits im Gange",
-                    "no-internet": "Keine Internet Verbindung",
+                    "TokenRejected": "BeatSaber kann nicht heruntergeladen werden 😥 versuche es später noch einmal 😕",
+                    "AccessDenied": "Der Zugang zu Steam wurde verweigert.",
                     "dotnet-required": ".NET 6 Runtime muss installiert sein, um eine Version von BeatSaber herunterzuladen. Lade es herunter, indem Du auf die Schaltfläche unten klickst."
                 },
                 "actions": {

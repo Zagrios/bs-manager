@@ -35,6 +35,7 @@ import { useService } from "renderer/hooks/use-service.hook";
 import { lastValueFrom } from "rxjs";
 import { BsmException } from "shared/models/bsm-exception.model";
 import { useObservable } from "renderer/hooks/use-observable.hook";
+import { AuthUserService } from "renderer/services/auth-user.service";
 
 export function SettingsPage() {
     
@@ -51,6 +52,7 @@ export function SettingsPage() {
     const playlistsManager = useService(PlaylistsManagerService);
     const modelsManager = useService(ModelsManagerService);
     const versionLinker = useService(VersionFolderLinkerService);
+    const authService = useService(AuthUserService);
 
     const { firstColor, secondColor } = useThemeColor();
 
@@ -67,6 +69,9 @@ export function SettingsPage() {
         })
         .sort((a, b) => a.text.localeCompare(b.text));
 
+    const nav = useNavigate();
+    const t = useTranslation();
+
     const [themeIdSelected, setThemeIdSelected] = useState(themeItem.find(e => e.value === themeService.getTheme()).id);
     const [languageSelected, setLanguageSelected] = useState(languagesItems.find(e => e.value === i18nService.currentLanguage).id);
     const [installationFolder, setInstallationFolder] = useState(null);
@@ -75,8 +80,7 @@ export function SettingsPage() {
     const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
     const [modelsDeepLinkEnabled, setModelsDeepLinkEnabled] = useState(false);
     const appVersion = useObservable(ipcService.sendV2<string>("current-version"));
-    const nav = useNavigate();
-    const t = useTranslation();
+    const steamSessionExist = useObservable(authService.sessionExist$);
 
     useEffect(() => {
         loadInstallationFolder();
@@ -202,6 +206,10 @@ export function SettingsPage() {
                 <div className="inline-block sticky top-8 left-[calc(100%)] translate-x-12 grow-0 w-9 h-9">
                     <BsmButton className="inline-block grow-0 bg-transparent sticky h-full w-full top-20 right-20 !m-0 rounded-full p-1" onClick={() => nav(-1)} icon="close" withBar={false} />
                 </div>
+
+                <SettingContainer title="pages.settings.steam.title" description="pages.settings.steam.description">
+                    <BsmButton onClick={() => authService.deleteSteamSession()} className="w-fit px-3 py-[2px] text-white rounded-md" withBar={false} text="pages.settings.steam.logout" typeColor="error" disabled={!steamSessionExist}/>
+                </SettingContainer> 
 
                 <SettingContainer title="pages.settings.appearance.title" description="pages.settings.appearance.description">
                     <div className="relative w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 flex justify-center rounded-md py-1">

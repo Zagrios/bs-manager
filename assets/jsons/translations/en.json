@@ -232,7 +232,6 @@
                     "404": "Unable to contact Steam servers.",
                     "Password": "Password is invalid.",
                     "InvalidCredentials": "Your e-mail or password is invalid 😴",
-                    "InvalidPassword": "Your password is invalid 😕",
                     "NoManifest": "No manifest was found",
                     "DirectoryCreate": "Unable to install the necessary folders.",
                     "NotAvailableApp": "Are you trying to download Beat Saber when you don't have it? 🤣",
@@ -248,10 +247,9 @@
                     "SteamLib": "If you have this error, report the bug on GitHub with the logs pls.",
                     "ConnectionError": "Unable to connect to Steam after 10 tries 🤯",
                     "LicenceError": "Unable to get the list of licenses.",
-                    "verification-failed": "Verification failed, try again later.",
                     "RateLimitExceeded": "You've tried too many times, wait a while and try again later.",
-                    "AlreadyDownloading": "A download is already in progress",
-                    "no-internet": "No internet connection.",
+                    "TokenRejected": "Unable to download Beat Saber 😥 try again later 😕",
+                    "AccessDenied": "Access to Steam has been denied.",
                     "dotnet-required": ".NET 6 Runtime must be installed in order to download a version of Beat Saber. Download it by clicking the button below."
                 },
                 "actions": {

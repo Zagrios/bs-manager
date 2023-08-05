@@ -1,6 +1,7 @@
 import { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio, spawn } from "child_process";
 import { Observable, ReplaySubject, Subscriber, filter, map, share } from "rxjs";
-import { DepotDownloaderArgsOptions, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderEventTypes, DepotDownloaderSubTypeOfEventType } from "../../shared/models/depot-downloader.model";
+import { DepotDownloaderArgsOptions, DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderEventTypes, DepotDownloaderInfoEvent, DepotDownloaderWarningEvent } from "../../shared/models/depot-downloader.model";
+import { DownloadEvent } from "main/services/bs-installer.service";
 
 export class DepotDownloader {
 
@@ -22,7 +23,11 @@ export class DepotDownloader {
 
             subscriber.next(`[Info]|[Start]|${JSON.stringify(options.echoStartData) ?? ""}`);
             
-            this.process.stdout.on("data", data => subscriber.next(data.toString()));
+            this.process.stdout.on("data", data => {
+                const lines: string[] = data.toString().split("\n");
+                lines.forEach(line => subscriber.next(line));
+            });
+            
             this.process.stderr.on("error", error => subscriber.error(error));
             this.process.on("exit", code => subscriber.complete());
 
@@ -36,9 +41,18 @@ export class DepotDownloader {
     }
 
     public $events(): Observable<DepotDownloaderEvent<unknown>>{
+
+        const eventTypesArr = Object.values(DepotDownloaderEventType);
+
+        const DepotDownloaderSubTypeOfEventType: {[key in DepotDownloaderEventType]: DepotDownloaderEventTypes[]} = {
+            [DepotDownloaderEventType.Error]: Object.values(DepotDownloaderErrorEvent),
+            [DepotDownloaderEventType.Warning]: Object.values(DepotDownloaderWarningEvent),
+            [DepotDownloaderEventType.Info]: Object.values(DepotDownloaderInfoEvent),
+        }
+
         return this.processOut$.pipe(map(line => {
 
-            console.log(line.toString());
+            console.log(line);
 
             const matched = (line.toString() as string).match(/(?:\[(.*?)\])\|(?:\[(.*?)\]\|)?(.*?)(?=$|\[)/gm)?.[0] ?? null;
 
@@ -46,7 +60,7 @@ export class DepotDownloader {
 
             const splitedLine = matched.split("|").map(str => str.trim().replaceAll("[", "").replaceAll("]", "")) as [DepotDownloaderEventType, DepotDownloaderEventTypes, unknown];
 
-            if(!Object.values(DepotDownloaderEventType).includes(splitedLine[0]) || !Object.values(DepotDownloaderSubTypeOfEventType[splitedLine[0]]).includes(splitedLine[1])){
+            if(!eventTypesArr.includes(splitedLine[0] as DepotDownloaderEventType) || !DepotDownloaderSubTypeOfEventType[splitedLine[0]].includes(splitedLine[1])){
                 return null;
             }
 
