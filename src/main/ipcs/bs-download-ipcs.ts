@@ -1,60 +1,18 @@
-import { ipcMain } from "electron";
-import { BSInstallerService, DownloadEventType, DownloadInfo } from "../services/bs-installer.service";
-import { IpcRequest } from "shared/models/ipc";
+import { BSInstallerService, DownloadInfo } from "../services/bs-installer.service";
 import { InstallationLocationService } from "../services/installation-location.service";
-import { UtilsService } from "../services/utils.service";
-import { LocalMapsManagerService } from "../services/additional-content/local-maps-manager.service";
 import { IpcService } from "../services/ipc.service";
-import { from } from "rxjs";
-
-export interface InitDownloadInfoInterface {
-    cwd: string;
-    folder: string;
-    app: string;
-    depot: string;
-    manifest: string;
-    username: string;
-    stay: boolean;
-}
+import { from, of } from "rxjs";
 
 const ipc = IpcService.getInstance();
 
-ipcMain.on("is-dotnet-6-installed", async (event, request: IpcRequest<void>) => {
+ipc.on("is-dotnet-6-installed", (_, reply) => {
     const installer = BSInstallerService.getInstance();
-    const utils = UtilsService.getInstance();
-    installer.isDotNet6Installed().then(installed => {
-        utils.ipcSend(request.responceChannel, { success: true, data: installed });
-    });
+    reply(from(installer.isDotNet6Installed()));
 });
 
-ipcMain.on("bs-download.start", async (event, request: IpcRequest<DownloadInfo>) => {
-    BSInstallerService.getInstance()
-        .downloadBsVersion(request.args)
-        .then(async res => {
-            await LocalMapsManagerService.getInstance()
-                .linkVersionMaps(request.args.bsVersion, true)
-                .catch(e => {});
-            UtilsService.getInstance().ipcSend(request.responceChannel, { success: true, data: res });
-        })
-        .catch(e => {
-            UtilsService.getInstance().ipcSend(request.responceChannel, { success: false, data: e });
-        });
-});
-
-ipcMain.on(`bs-download.${"[2FA]" as DownloadEventType}`, async (event, args: IpcRequest<string>) => {
-    BSInstallerService.getInstance().sendInputProcess(args.args);
-});
-
-ipcMain.on("bs-download.kill", async (event, request: IpcRequest<void>) => {
-    const res = await BSInstallerService.getInstance().killDownloadProcess();
-    if (request.responceChannel) {
-        UtilsService.getInstance().ipcSend(request.responceChannel, { success: res });
-    }
-});
-
-ipcMain.on("bs-download.installation-folder", async (event, request: IpcRequest<void>) => {
-    const installationFolder = InstallationLocationService.getInstance().installationDirectory;
-    UtilsService.getInstance().ipcSend(request.responceChannel, { success: true, data: installationFolder });
+ipc.on("bs-download.installation-folder", (_, reply) => {
+    const installLocation = InstallationLocationService.getInstance();
+    reply(of(installLocation.installationDirectory));
 });
 
 ipc.on<string>("bs-download.set-installation-folder", (req, reply) => {
@@ -62,15 +20,32 @@ ipc.on<string>("bs-download.set-installation-folder", (req, reply) => {
     reply(from(installerService.setInstallationDirectory(req.args)));
 });
 
-ipcMain.on("bs-download.import-version", (event, request: IpcRequest<string>) => {
-    const utils = UtilsService.getInstance();
+ipc.on<string>("bs-download.import-version", (req, reply) => {
     const installer = BSInstallerService.getInstance();
-    installer
-        .importVersion(request.args)
-        .catch(e => {
-            utils.ipcSend(request.responceChannel, { success: false, error: e });
-        })
-        .then(() => {
-            utils.ipcSend(request.responceChannel, { success: true });
-        });
+    reply(from(installer.importVersion(req.args)));
+});
+
+ipc.on<DownloadInfo>("auto-download-bs-version", (req, reply) => {
+    const bsInstaller = BSInstallerService.getInstance();
+    reply(bsInstaller.autoDownloadBsVersion(req.args));
+});
+
+ipc.on<DownloadInfo>("download-bs-version", (req, reply) => {
+    const bsInstaller = BSInstallerService.getInstance();
+    reply(bsInstaller.downloadBsVersion(req.args))
+});
+
+ipc.on<DownloadInfo>("download-bs-version-qr", (req, reply) => {
+    const bsInstaller = BSInstallerService.getInstance();
+    reply(bsInstaller.downloadBsVersionWithQRCode(req.args))
+});
+
+ipc.on("stop-download-bs-version", (_, reply) => {
+    const bsInstaller = BSInstallerService.getInstance();
+    reply(of(bsInstaller.stopDownload()));
+});
+
+ipc.on<string>("send-input-bs-download", (req, reply) => {
+    const bsInstaller = BSInstallerService.getInstance();
+    reply(of(bsInstaller.sendInput(req.args)));
 });

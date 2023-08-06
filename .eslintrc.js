@@ -46,6 +46,7 @@ module.exports = {
         "react/prop-types": "off",
         "import/no-cycle": "off",
         "prefer-promise-reject-errors": "off",
+        "react/jsx-no-target-blank": "off"
     },
     parserOptions: {
         ecmaVersion: 2020,

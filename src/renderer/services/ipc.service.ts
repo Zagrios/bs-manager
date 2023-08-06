@@ -1,6 +1,7 @@
-import { defaultIfEmpty, shareReplay } from "rxjs/operators";
-import { Observable, identity } from "rxjs";
+import { defaultIfEmpty, share } from "rxjs/operators";
+import { Observable, ReplaySubject, identity } from "rxjs";
 import { IpcRequest, IpcResponse } from "shared/models/ipc";
+import { IpcCompleteChannel, IpcErrorChannel, IpcTearDownChannel } from "shared/models/ipc/ipc-response.interface";
 
 export class IpcService {
     private static instance: IpcService;
@@ -65,26 +66,29 @@ export class IpcService {
         if (!request) {
             request = { args: null, responceChannel: null };
         }
+
         if (!request.responceChannel) {
             request.responceChannel = `${channel}_responce_${crypto.randomUUID()}`;
         }
 
-        const completeChannel = `${request.responceChannel}_complete`;
-        const errorChannel = `${request.responceChannel}_error`;
+        const completeChannel: IpcCompleteChannel = `${request.responceChannel}_complete`;
+        const errorChannel: IpcErrorChannel = `${request.responceChannel}_error`;
+        const teardownChannel: IpcTearDownChannel = `${request.responceChannel}_teardown`;
 
         const obs = new Observable<T>(observer => {
             window.electron.ipcRenderer.on(request.responceChannel, (res: T) => observer.next(res));
             window.electron.ipcRenderer.on(errorChannel, (err: Error) => observer.error(err));
             window.electron.ipcRenderer.on(completeChannel, () => observer.complete());
-        }).pipe(defaultValue ? defaultIfEmpty(defaultValue) : identity, shareReplay(1));
 
-        window.electron.ipcRenderer.once(completeChannel, () => {
-            window.electron.ipcRenderer.removeAllListeners(request.responceChannel);
-            window.electron.ipcRenderer.removeAllListeners(errorChannel);
-            window.electron.ipcRenderer.removeAllListeners(completeChannel);
-        });
+            window.electron.ipcRenderer.sendMessage(channel, request);
 
-        window.electron.ipcRenderer.sendMessage(channel, request);
+            return () => {
+                window.electron.ipcRenderer.removeAllListeners(request.responceChannel);
+                window.electron.ipcRenderer.removeAllListeners(errorChannel);
+                window.electron.ipcRenderer.removeAllListeners(completeChannel);
+                window.electron.ipcRenderer.sendMessage(teardownChannel, null);
+            };
+        }).pipe(defaultValue ? defaultIfEmpty(defaultValue) : identity, share({connector: () => new ReplaySubject(1)}));
 
         return obs;
     }

@@ -231,8 +231,7 @@
                     "401": "Steam doesn't seem to want to let us download Beat Saber 😢",
                     "404": "Unable to contact Steam servers.",
                     "Password": "Password is invalid.",
-                    "InvalidCredentials": "Your e-mail or password is invalid 😴",
-                    "InvalidPassword": "Your password is invalid 😕",
+                    "InvalidCredentials": "Invalid login credentials, unapproved connection, or too many login attempts.",
                     "NoManifest": "No manifest was found",
                     "DirectoryCreate": "Unable to install the necessary folders.",
                     "NotAvailableApp": "Are you trying to download Beat Saber when you don't have it? 🤣",
@@ -248,10 +247,9 @@
                     "SteamLib": "If you have this error, report the bug on GitHub with the logs pls.",
                     "ConnectionError": "Unable to connect to Steam after 10 tries 🤯",
                     "LicenceError": "Unable to get the list of licenses.",
-                    "verification-failed": "Verification failed, try again later.",
                     "RateLimitExceeded": "You've tried too many times, wait a while and try again later.",
-                    "AlreadyDownloading": "A download is already in progress",
-                    "no-internet": "No internet connection.",
+                    "TokenRejected": "Unable to download Beat Saber 😥 try again later 😕",
+                    "AccessDenied": "Access to Steam has been denied.",
                     "dotnet-required": ".NET 6 Runtime must be installed in order to download a version of Beat Saber. Download it by clicking the button below."
                 },
                 "actions": {
@@ -485,22 +483,35 @@
             "title": "Steam Login",
             "inputs": {
                 "username": {
-                    "label": "Username",
-                    "placeholder": "Enter your username"
+                    "label": "Sign in with account name",
+                    "placeholder": "Enter your account name"
                 },
                 "password": {
                     "label": "Password",
                     "placeholder": "Enter your password",
-                    "max-length-warning": "The password exceeds 64 characters! If the password is invalid, try to put its first 64 characters."
+                    "max-length-warning": "The password exceeds 64 characters! If the password is invalid, try to enter only its first 64 characters."
                 },
-                "stay": {
-                    "label": "Stay connected"
-                }
+                "qr":{
+                    "label": "Or with a QR code",
+                    "note":{
+                        "use-the":"Use the ",
+                        "steam-mobile-app": "Steam Mobile App",
+                        "to-connect-with-qr": "to sign in with via QR code."
+                    }
+                },
+                "stay": "Remember me"
             },
-            "why-credentials": "Why do you need my credentials?",
+            "why-credentials": "Why are my credentials necessary?",
+            "need-help-to-connect": "I need help to access my account!",
             "buttons": {
-                "submit": "Login"
+                "submit": "Sign in"
             }
+        },
+        "steam-auth-approve":{
+            "title": "Waiting for confirmation",
+            "protected-by-mobile-auth": "Account protected by mobile authenticator.",
+            "use-steam-app-to-approve": "Use the Steam mobile app to confirm the connection...",
+            "not-access-to-steam-app": "I don't have access to the Steam mobile app"
         },
         "steam-credentials": {
             "title": "Steam Credentials",

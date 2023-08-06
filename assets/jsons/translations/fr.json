@@ -215,10 +215,7 @@
             },
             "warnings": {
                 "msg": {
-                    "ManifestChecksum": "Le manifest téléchargé précédemment ne correspond pas au nouveau 🤔",
                     "ConnectionTimeout": "Ta connexion internet semble instable 🥶",
-                    "ConnectionLost": "La connexion a été perdue, nouvelle tentative...",
-                    "ConnectionError": "Impossible de se connecter à Steam, nouvelle tentative...",
                     "Unknown": "Quelque chose d'étrange s'est produit 🤔 Votre connexion est surement instable."
                 }
             },
@@ -230,8 +227,7 @@
                     "401": "Steam ne semble pas vouloir nous laisser télécharger Beat Saber 😢",
                     "404": "Impossible de contacter les serveurs de Steam.",
                     "Password": "Le mot de passe est invalide.",
-                    "InvalidCredentials": "Ton e-mail ou mot de passe est invalide 😴",
-                    "InvalidPassword": "Ton mot de passe est invalide 😕",
+                    "InvalidCredentials": "Identifiants de connexion invalides, connexion non approuvée, ou trop de tentatives de connexion.",
                     "NoManifest": "Aucun manifest n'a été trouvé.",
                     "DirectoryCreate": "Impossible d'installer les dossiers nécessaires.",
                     "NotAvailableApp": "Tu essayes de télécharger Beat Saber alors que tu ne l'as pas ? 🤣",
@@ -247,10 +243,9 @@
                     "SteamLib": "Si tu as cette erreur, signale le bug sur GitHub avec les logs stp.",
                     "ConnectionError": "Impossible de se connecter à Steam après 10 essais 🤯",
                     "LicenceError": "Impossible d'obtenir la liste des licences.",
-                    "verification-failed": "La vérification a échoué, réessaye plus tard.",
                     "RateLimitExceeded": "Tu as essayé trop de fois attends un peu et recommence plus tard.",
-                    "AlreadyDownloading": "Un téléchargement est déjà en cours",
-                    "no-internet": "Pas de connexion internet.",
+                    "TokenRejected": "Impossible de télécharger Beat Saber 😥 réessaye plus tard 😕",
+                    "AccessDenied": "L'accès à Steam a été refusé.",
                     "dotnet-required": ".NET 6 Runtime doit être installé pour pouvoir télécharger une version de Beat Saber. Télécharge-le en cliquant sur le bouton ci-dessous."
                 },
                 "actions": {
@@ -484,22 +479,35 @@
             "title": "Connexion Steam",
             "inputs": {
                 "username": {
-                    "label": "Nom d'utilisateur",
-                    "placeholder": "Entre ton nom d'utilisateur"
+                    "label": "Se connecter avec un nom de compte",
+                    "placeholder": "Entre ton nom de compte"
                 },
                 "password": {
                     "label": "Mot de passe",
                     "placeholder": "Entre ton mot de passe",
                     "max-length-warning": "Le mot de passe dépasse 64 caractères ! Si le mot de passe est invalide, tente d'entrer seulement ses 64 premiers caractères."
                 },
-                "stay": {
-                    "label": "Rester connecté"
-                }
+                "qr":{
+                    "label": "Ou avec un QR code",
+                    "note":{
+                        "use-the":"Utilisez l'",
+                        "steam-mobile-app": "application mobile Steam",
+                        "to-connect-with-qr": "pour vous connecter avec un QR code."
+                    }
+                },
+                "stay": "Se souvenir de moi"
             },
             "why-credentials": "Pourquoi mes identifiants sont nécessaires ?",
+            "need-help-to-connect": "J'ai besoin d'aide pour accéder à mon compte !",
             "buttons": {
                 "submit": "Se connecter"
             }
+        },
+        "steam-auth-approve":{
+            "title": "Attente de confirmation",
+            "protected-by-mobile-auth": "Compte protégé par l'authentificateur mobile.",
+            "use-steam-app-to-approve": "Utilisez l'application mobile Steam pour confirmer la connexion...",
+            "not-access-to-steam-app": "Je n'ai pas accès à l'application mobile Steam"
         },
         "steam-credentials": {
             "title": "Steam Credentials",
