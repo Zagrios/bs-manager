@@ -227,7 +227,7 @@
                     "401": "Steam ne semble pas vouloir nous laisser télécharger Beat Saber 😢",
                     "404": "Impossible de contacter les serveurs de Steam.",
                     "Password": "Le mot de passe est invalide.",
-                    "InvalidCredentials": "Ton e-mail ou mot de passe est invalide 😴",
+                    "InvalidCredentials": "Identifiants de connexion invalides, connexion non approuvée, ou trop de tentatives de connexion.",
                     "NoManifest": "Aucun manifest n'a été trouvé.",
                     "DirectoryCreate": "Impossible d'installer les dossiers nécessaires.",
                     "NotAvailableApp": "Tu essayes de télécharger Beat Saber alors que tu ne l'as pas ? 🤣",

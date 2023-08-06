@@ -83,9 +83,9 @@ export const LoginModal: ModalComponent<
                 </div>
                 <div className="flex flex-col max-w-[13rem]">
                     <span className="block font-bold cursor-pointer tracking-wide ">{t("modals.steam-login.inputs.qr.label")}</span>   
-                    <div className="w-52 h-52 p-3 bg-white rounded-md max-w-xs mb-1 flex items-center justify-center">
+                    <div className="w-52 h-52 p-3 bg-light-main-color-1 dark:bg-white rounded-md max-w-xs mb-1 flex items-center justify-center">
                         {(qrCodeUrl ? 
-                            <QRCodeSVG className="w-full h-full" value={qrCodeUrl} level="H"/> : 
+                            <QRCodeSVG className="w-full h-full text-light-main-color-1 dark:text-white" value={qrCodeUrl} bgColor="currentColor" level="H"/> : 
                             <BsmBasicSpinner className="w-full h-full p-11 text-neutral-300" />
                         )}
                     </div>

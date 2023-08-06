@@ -231,7 +231,7 @@
                     "401": "Steam scheint uns BeatSaber nicht herunterladen zu lassen 😢",
                     "404": "Steam-Server können nicht kontaktiert werden.",
                     "Password": "Passwort ist ungültig.",
-                    "InvalidCredentials": "Deine E-Mail oder Passwort ist ungültig 😴",
+                    "InvalidCredentials": "Ungültige Anmeldedaten, nicht genehmigte Verbindung oder zu viele Anmeldeversuche.",
                     "NoManifest": "Es wurde keine Manifest gefunden",
                     "DirectoryCreate": "Die erforderlichen Ordner können nicht installiert werden.",
                     "NotAvailableApp": "Versuchst du, Beat Saber herunterzuladen, wenn Du es nicht hast? 🤣",

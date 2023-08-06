@@ -230,7 +230,7 @@
                     "401": "Parece que Steam no quiere dejarnos descargar BeatSaber 😢",
                     "404": "No se puede contactar con los servidores de Steam",
                     "Password": "La contraseña es inválida.",
-                    "InvalidCredentials": "Su correo electrónico o contraseña no son válidos 😴",
+                    "InvalidCredentials": "Credenciales de inicio de sesión inválidas, conexión no aprobada, o demasiados intentos de inicio de sesión.",
                     "NoManifest": "No se ha encontrado el manifiesto",
                     "DirectoryCreate": "No se pueden instalar las carpetas necesarias.",
                     "NotAvailableApp": "¿Intentas descargar BeatSaber cuando no lo tienes? 🤣",

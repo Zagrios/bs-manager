@@ -172,10 +172,10 @@ export class BsDownloaderService {
         const handledErrors = Object.values(DepotDownloaderErrorEvent);
 
         if(handledErrors.includes(errorEvent?.subType as DepotDownloaderErrorEvent)){
-            return this.notificationService.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.errors.msg.${errorEvent.subType}`});
+            return this.notificationService.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.errors.msg.${errorEvent.subType}`, duration: 10_000});
         }
 
-        return this.notificationService.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.errors.msg.${DepotDownloaderErrorEvent.Unknown}`});
+        return this.notificationService.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.errors.msg.${DepotDownloaderErrorEvent.Unknown}`, duration: 10_000});
     }
 
     private wrapDownload(download$: Observable<DepotDownloaderEvent>, silent?: boolean): Observable<DepotDownloaderEvent> {
