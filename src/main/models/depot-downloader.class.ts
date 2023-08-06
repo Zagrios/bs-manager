@@ -1,7 +1,6 @@
 import { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio, spawn } from "child_process";
 import { Observable, ReplaySubject, Subscriber, filter, map, share } from "rxjs";
 import { DepotDownloaderArgsOptions, DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderEventTypes, DepotDownloaderInfoEvent, DepotDownloaderWarningEvent } from "../../shared/models/depot-downloader.model";
-import { DownloadEvent } from "main/services/bs-installer.service";
 
 export class DepotDownloader {
 
@@ -17,8 +16,6 @@ export class DepotDownloader {
 
             this.subscriber = subscriber;
 
-            console.log(`${options.command} ${options.args?.join(" ")}}`)
-
             this.process = spawn(options.command, options.args ?? [], options.options);
 
             subscriber.next(`[Info]|[Start]|${JSON.stringify(options.echoStartData) ?? ""}`);
@@ -32,7 +29,6 @@ export class DepotDownloader {
             this.process.on("exit", code => subscriber.complete());
 
             return () => {
-                console.log("DepotDownloader process killed")
                 this.process.kill();
                 this.process = null;
             }
@@ -60,14 +56,14 @@ export class DepotDownloader {
 
             const splitedLine = matched.split("|").map(str => str.trim().replaceAll("[", "").replaceAll("]", "")) as [DepotDownloaderEventType, DepotDownloaderEventTypes, unknown];
 
-            if(!eventTypesArr.includes(splitedLine[0] as DepotDownloaderEventType) || !DepotDownloaderSubTypeOfEventType[splitedLine[0]].includes(splitedLine[1])){
+            if(!eventTypesArr.includes(splitedLine[0]) || !DepotDownloaderSubTypeOfEventType[splitedLine[0]].includes(splitedLine[1])){
                 return null;
             }
 
             return {
-                type: splitedLine[0] as DepotDownloaderEventType,
-                subType: splitedLine[1] as DepotDownloaderEventTypes,
-                data: splitedLine[2] as unknown,
+                type: splitedLine[0],
+                subType: splitedLine[1],
+                data: splitedLine[2],
             }
 
         }), 

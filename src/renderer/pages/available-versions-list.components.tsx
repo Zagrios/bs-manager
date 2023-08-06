@@ -1,7 +1,7 @@
 import { AvailableVersionsSlider } from "../components/available-versions/available-versions-slider.component";
 import { BsDownloaderService } from "../services/bs-downloader.service";
 import { Slideshow } from "renderer/components/slideshow/slideshow.component";
-import { createContext, useState } from "react";
+import { createContext, useMemo, useState } from "react";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
@@ -29,6 +29,8 @@ export function AvailableVersionsList() {
     const notification = useService(NotificationService);
 
     const [selectedVersion, setSelectedVersion] = useState<BSVersion>(null);
+    const contextValue = useMemo(() => ({ selectedVersion, setSelectedVersion }), [selectedVersion]);
+
     const downloading = useObservable(bsDownloader.currentBsVersionDownload$.pipe(map(v => !!v)));
     const t = useTranslation();
 
@@ -80,7 +82,7 @@ export function AvailableVersionsList() {
             <Slideshow className="absolute w-full h-full top-0" />
             <h1 className="text-gray-100 text-2xl mb-4 z-[1]">{t("pages.available-versions.title")}</h1>
 
-            <AvailableVersionsContext.Provider value={{selectedVersion, setSelectedVersion}}>
+            <AvailableVersionsContext.Provider value={contextValue}>
                 <AvailableVersionsSlider />
             </AvailableVersionsContext.Provider>
             

@@ -66,7 +66,8 @@ export class IpcService {
         if (!request) {
             request = { args: null, responceChannel: null };
         }
-        if (!request.responceChannel) { // TODO : Remove this
+
+        if (!request.responceChannel) {
             request.responceChannel = `${channel}_responce_${crypto.randomUUID()}`;
         }
 
@@ -81,10 +82,7 @@ export class IpcService {
 
             window.electron.ipcRenderer.sendMessage(channel, request);
 
-            console.log("Subscribe IPC", request.responceChannel, request.args); // TODO : Remove this
-
             return () => {
-                console.log("Unsubscribe IPC", request.responceChannel, request.args); // TODO : Remove this
                 window.electron.ipcRenderer.removeAllListeners(request.responceChannel);
                 window.electron.ipcRenderer.removeAllListeners(errorChannel);
                 window.electron.ipcRenderer.removeAllListeners(completeChannel);
