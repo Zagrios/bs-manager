@@ -7,7 +7,7 @@ import log from "electron-log";
 import { InstallationLocationService } from "./installation-location.service";
 import { BSLocalVersionService } from "./bs-local-version.service";
 import { WindowManagerService } from "./window-manager.service";
-import { copy } from "fs-extra";
+import { copy, ensureDir } from "fs-extra";
 import { pathExist } from "../helpers/fs.helpers";
 import { Observable, map } from "rxjs";
 import { DepotDownloaderArgsOptions, DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderInfoEvent } from "../../shared/models/depot-downloader.model";
@@ -77,12 +77,14 @@ export class BSInstallerService {
             qr
         }
 
+        await ensureDir(this.installLocationService.versionsDirectory);
+
         return new DepotDownloader({
             command: this.getDepotDownloaderExePath(),
             args: DepotDownloader.buildArgs(depotDownloaderOptions),
             options: { cwd: this.installLocationService.versionsDirectory },
             echoStartData: downloadVersion
-        });
+        }, log);
     }
 
     private buildDepotDownloaderObservable(downloadInfos: DownloadInfo, qr?: boolean): Observable<DepotDownloaderEvent> {

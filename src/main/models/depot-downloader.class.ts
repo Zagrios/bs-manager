@@ -8,9 +8,12 @@ export class DepotDownloader {
     private processOut$: Observable<string>;
     private subscriber: Subscriber<string>;
 
-    public constructor(options: {
-        command: string, args?: string[], options?: SpawnOptionsWithoutStdio, echoStartData?: unknown
-    }){
+    public constructor(
+        options: {
+            command: string, args?: string[], options?: SpawnOptionsWithoutStdio, echoStartData?: unknown
+        }, 
+        logger?: Logger
+    ){
 
         this.processOut$ = new Observable<string>(subscriber => {
 
@@ -25,11 +28,13 @@ export class DepotDownloader {
                 lines.forEach(line => subscriber.next(line));
             });
             
+            this.process.on("error", error => subscriber.error(error));
             this.process.stderr.on("error", error => subscriber.error(error));
-            this.process.on("exit", code => subscriber.complete());
+            this.process.on("exit", () => subscriber.complete());
 
             return () => {
                 this.process.kill();
+                logger?.info("DepotDownloader process end with code", this.process.exitCode);
                 this.process = null;
             }
 
@@ -47,8 +52,6 @@ export class DepotDownloader {
         }
 
         return this.processOut$.pipe(map(line => {
-
-            console.log(line);
 
             const matched = (line.toString() as string).match(/(?:\[(.*?)\])\|(?:\[(.*?)\]\|)?(.*?)(?=$|\[)/gm)?.[0] ?? null;
 
@@ -98,4 +101,10 @@ export class DepotDownloader {
         return args;
     }
 
+}
+
+interface Logger {
+    info: (...args: unknown[]) => void,
+    warn: (...args: unknown[]) => void,
+    error: (...args: unknown[]) => void,
 }
