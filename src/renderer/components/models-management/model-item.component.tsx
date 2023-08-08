@@ -112,7 +112,7 @@ function ModelItemElement<T = unknown>(props: Props<T>) {
     };
 
     return (
-        <motion.li className={`relative flex-grow min-w-[16rem] h-64 cursor-pointer ${props.className ?? ""}`} onHoverStart={() => setHovered(() => true)} onHoverEnd={() => setHovered(() => false)}>
+        <motion.li className={`relative flex-grow min-w-[16rem] h-64 cursor-pointer text-gray-200 ${props.className ?? ""}`} onHoverStart={() => setHovered(() => true)} onHoverEnd={() => setHovered(() => false)}>
             <GlowEffect visible={props.selected || hovered} />
             <div className="absolute top-0 left-0 w-full h-full rounded-lg overflow-hidden blur-none bg-black shadow-sm shadow-black">
                 <div ref={ref} className="contents">
