@@ -248,7 +248,7 @@
                     "ConnectionError": "Kann nach 10 Versuchen keine Verbindung zu Steam herstellen 🤯",
                     "LicenceError": "Die Liste der Lizenzen kann nicht abgerufen werden.",
                     "RateLimitExceeded": "Du hast es zu oft versucht, warte eine Weile und versuche es später erneut.",
-                    "TokenRejected": "BeatSaber kann nicht heruntergeladen werden 😥 versuche es später noch einmal 😕",
+                    "TokenRejected": "Ihr Anmeldetoken wurde abgelehnt 😕 Bitte versuchen Sie es erneut.",
                     "AccessDenied": "Der Zugang zu Steam wurde verweigert.",
                     "dotnet-required": ".NET 6 Runtime muss installiert sein, um eine Version von BeatSaber herunterzuladen. Lade es herunter, indem Du auf die Schaltfläche unten klickst."
                 },
