@@ -247,7 +247,7 @@
                     "ConnectionError": "No se puede conectar a Steam después de 10 intentos 🤯",
                     "LicenceError": "No se puede obtener la lista de licencias.",
                     "RateLimitExceeded": "Lo has intentado demasiadas veces, espera un poco y vuelve a intentarlo más tarde.",
-                    "TokenRejected": "No se puede descargar BeatSaber 😥 inténtalo más tarde 😕",
+                    "TokenRejected": "Tu token de inicio de sesión ha sido rechazado 😕 Por favor, inténtalo de nuevo.",
                     "AccessDenied": "El acceso a Steam ha sido denegado.",
                     "dotnet-required": "Se debe instalar el tiempo de ejecución de .NET 6 para descargar una versión de BeatSaber. Descárguelo haciendo clic en el botón de abajo."
                 },

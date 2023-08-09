@@ -248,7 +248,7 @@
                     "ConnectionError": "Unable to connect to Steam after 10 tries 🤯",
                     "LicenceError": "Unable to get the list of licenses.",
                     "RateLimitExceeded": "You've tried too many times, wait a while and try again later.",
-                    "TokenRejected": "Unable to download Beat Saber 😥 try again later 😕",
+                    "TokenRejected": "Your login token has been rejected 😕 Please try again.",
                     "AccessDenied": "Access to Steam has been denied.",
                     "dotnet-required": ".NET 6 Runtime must be installed in order to download a version of Beat Saber. Download it by clicking the button below."
                 },
