@@ -47,7 +47,9 @@ export class BSInstallerService {
 
     public async isDotNet6Installed(): Promise<boolean> {
         try {
-            const proc = spawnSync(`${process.platform === 'linux' ? 'dotnet ' : ''}${this.getDepotDownloaderExePath()}`);
+           const proc = process.platform === 'linux'
+                ? spawnSync('dotnet', [this.getDepotDownloaderExePath()])
+                : spawnSync(this.getDepotDownloaderExePath());
             if (proc.stderr?.toString()) {
                 log.error("no dotnet", proc.stderr.toString());
                 return false;
@@ -84,8 +86,8 @@ export class BSInstallerService {
         const args = DepotDownloader.buildArgs(depotDownloaderOptions);
 
         return new DepotDownloader({
-            command: isLinux ? 'dotnet' : this.getDepotDownloaderExePath(),
-            args: isLinux ? [exePath, ...args] : [exePath],
+            command: isLinux ? 'dotnet' : exePath,
+            args: isLinux ? [exePath, ...args] : args,
             options: { cwd: this.installLocationService.versionsDirectory },
             echoStartData: downloadVersion
         }, log);
@@ -110,7 +112,7 @@ export class BSInstallerService {
                     }
                     return event;
                 })).subscribe(sub);
-                
+
             }).catch(err => sub.error({
                 type: DepotDownloaderEventType.Error,
                 subType: DepotDownloaderErrorEvent.Unknown,
