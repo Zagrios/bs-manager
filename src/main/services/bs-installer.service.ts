@@ -42,14 +42,14 @@ export class BSInstallerService {
     }
 
     private getDepotDownloaderExePath(): string {
-        return path.join(this.utils.getAssetsScriptsPath(), "depot-downloader", "DepotDownloader.exe");
+        return path.join(this.utils.getAssetsScriptsPath(), "depot-downloader", `DepotDownloader.${process.platform === 'linux' ? 'dll' : 'exe'}`);
     }
 
     public async isDotNet6Installed(): Promise<boolean> {
         try {
-            const process = spawnSync(this.getDepotDownloaderExePath());
-            if (process.stderr.toString()) {
-                log.error("no dotnet", process.stderr.toString());
+            const proc = spawnSync(`${process.platform === 'linux' ? 'dotnet ' : ''}${this.getDepotDownloaderExePath()}`);
+            if (proc.stderr?.toString()) {
+                log.error("no dotnet", proc.stderr.toString());
                 return false;
             }
             return true;
@@ -79,9 +79,13 @@ export class BSInstallerService {
 
         await ensureDir(this.installLocationService.versionsDirectory);
 
+        const isLinux = process.platform === 'linux';
+        const exePath = this.getDepotDownloaderExePath();
+        const args = DepotDownloader.buildArgs(depotDownloaderOptions);
+
         return new DepotDownloader({
-            command: this.getDepotDownloaderExePath(),
-            args: DepotDownloader.buildArgs(depotDownloaderOptions),
+            command: isLinux ? 'dotnet' : this.getDepotDownloaderExePath(),
+            args: isLinux ? [exePath, ...args] : [exePath],
             options: { cwd: this.installLocationService.versionsDirectory },
             echoStartData: downloadVersion
         }, log);
