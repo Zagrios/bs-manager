@@ -14,7 +14,6 @@ export class DepotDownloader {
         }, 
         logger?: Logger
     ){
-
         this.processOut$ = new Observable<string>(subscriber => {
 
             this.subscriber = subscriber;
@@ -24,7 +23,13 @@ export class DepotDownloader {
             subscriber.next(`[Info]|[Start]|${JSON.stringify(options.echoStartData) ?? ""}`);
             
             this.process.stdout.on("data", data => {
-                const lines: string[] = data.toString().split("\n");
+                const stringData: string = data.toString();
+                
+                if(!stringData.includes(DepotDownloaderInfoEvent.Progress) && !stringData.includes(DepotDownloaderInfoEvent.Validated)){
+                    logger?.info("DepotDownloader stdout:", stringData);
+                }
+
+                const lines: string[] = stringData.split("\n");
                 lines.forEach(line => subscriber.next(line));
             });
             
