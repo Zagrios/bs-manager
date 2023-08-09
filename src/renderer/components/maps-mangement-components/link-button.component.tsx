@@ -38,6 +38,7 @@ export const LinkButton = motion(
                     !props.disabled && props.onClick?.();
                 }}
                 style={{ pointerEvents: props.disabled ? "none" : "auto" }}
+                tabIndex={-1}
             >
                 <span className="absolute top-0 left-0 h-full w-full rounded-full brightness-50 opacity-75 dark:opacity-20 dark:filter-none" style={{ backgroundColor: linkedColor }} />
                 <BsmIcon className="p-1 absolute top-0 left-0 h-full w-full !bg-transparent -rotate-45 brightness-150" icon={props.linked ? "link" : "unlink"} style={{ color: linkedColor }} />

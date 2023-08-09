@@ -121,6 +121,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                                     e.stopPropagation();
                                     onClickAdd(index);
                                 }}
+                                tabIndex={-1}
                             >
                                 <span className="absolute top-0 left-0 h-full w-full brightness-50 opacity-75 dark:opacity-20 dark:filter-none" style={{ backgroundColor: "currentcolor" }} />
                                 <motion.div className="h-full p-0.5" variants={variants}>
