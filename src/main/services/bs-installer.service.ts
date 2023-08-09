@@ -42,14 +42,16 @@ export class BSInstallerService {
     }
 
     private getDepotDownloaderExePath(): string {
-        return path.join(this.utils.getAssetsScriptsPath(), "depot-downloader", "DepotDownloader.exe");
+        return path.join(this.utils.getAssetsScriptsPath(), "depot-downloader", `DepotDownloader.${process.platform === 'linux' ? 'dll' : 'exe'}`);
     }
 
     public async isDotNet6Installed(): Promise<boolean> {
         try {
-            const process = spawnSync(this.getDepotDownloaderExePath());
-            if (process.stderr.toString()) {
-                log.error("no dotnet", process.stderr.toString());
+           const proc = process.platform === 'linux'
+                ? spawnSync('dotnet', [this.getDepotDownloaderExePath()])
+                : spawnSync(this.getDepotDownloaderExePath());
+            if (proc.stderr?.toString()) {
+                log.error("no dotnet", proc.stderr.toString());
                 return false;
             }
             return true;
@@ -79,9 +81,13 @@ export class BSInstallerService {
 
         await ensureDir(this.installLocationService.versionsDirectory);
 
+        const isLinux = process.platform === 'linux';
+        const exePath = this.getDepotDownloaderExePath();
+        const args = DepotDownloader.buildArgs(depotDownloaderOptions);
+
         return new DepotDownloader({
-            command: this.getDepotDownloaderExePath(),
-            args: DepotDownloader.buildArgs(depotDownloaderOptions),
+            command: isLinux ? 'dotnet' : exePath,
+            args: isLinux ? [exePath, ...args] : args,
             options: { cwd: this.installLocationService.versionsDirectory },
             echoStartData: downloadVersion
         }, log);
@@ -106,7 +112,7 @@ export class BSInstallerService {
                     }
                     return event;
                 })).subscribe(sub);
-                
+
             }).catch(err => sub.error({
                 type: DepotDownloaderEventType.Error,
                 subType: DepotDownloaderErrorEvent.Unknown,
