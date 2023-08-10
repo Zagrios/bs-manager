@@ -58,7 +58,6 @@ export class AutoUpdaterService {
         return this.ipcService.sendV2<boolean>("have-been-updated");
     }
 
-    // récupère le changelog en fonction de la langue de l'utilisateur
   public async getChangelogs(): Promise<Changelog> {
     try {
       const path = `https://raw.githubusercontent.com/Zagrios/bs-manager/feature/add-changelog-modal/178/assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`;
