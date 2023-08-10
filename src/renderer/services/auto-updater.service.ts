@@ -79,18 +79,13 @@ export class AutoUpdaterService {
   }
 
   public async getChangelogByVersion(version: string): Promise<ChangelogVersion> {
-    try {
       const changelogs = await this.getChangelogs();
       if (!changelogs) {return;}
 
       const changelogVersion = changelogs[version];
 
       return changelogVersion;
-    } catch (error) {
-      this.ipcService.sendLazy("log-error", { args: error });
-    }
   }
-
 
   public async showChangelog(version?: string) : Promise<boolean> {
     const currentVersion = await this.getAppVersion();
