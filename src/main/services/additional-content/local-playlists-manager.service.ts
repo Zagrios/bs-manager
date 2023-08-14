@@ -210,6 +210,6 @@ export class LocalPlaylistsManagerService {
     }
 
     public isDeepLinksEnabled(): boolean {
-        return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.isDeepLinkRegistred(link));
+        return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.isDeepLinkRegistered(link));
     }
 }

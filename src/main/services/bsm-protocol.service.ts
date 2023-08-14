@@ -30,7 +30,7 @@ export class BsmProtocolService {
     }
 
     private registerBsmProtocol(): boolean{
-        if(this.deepLink.isDeepLinkRegistred(this.BSM_PROTOCOL)){ return true; }
+        if(this.deepLink.isDeepLinkRegistered(this.BSM_PROTOCOL)){ return true; }
         return this.deepLink.registerDeepLink(this.BSM_PROTOCOL);
     }
 
