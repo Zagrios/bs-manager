@@ -1,6 +1,6 @@
 import { DownloadInfo } from "main/services/bs-installer.service";
 import { BehaviorSubject, Observable, ReplaySubject, Subscription, lastValueFrom, throwError } from "rxjs";
-import { distinctUntilChanged, filter, map, share, take, tap, throttleTime } from "rxjs/operators";
+import { filter, map, share, take, tap, throttleTime } from "rxjs/operators";
 import { BSVersion } from "shared/bs-version.interface";
 import { AuthUserService } from "./auth-user.service";
 import { BSVersionManagerService } from "./bs-version-manager.service";
