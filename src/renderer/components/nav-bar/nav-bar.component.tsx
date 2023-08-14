@@ -11,13 +11,29 @@ import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import Tippy from "@tippyjs/react";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { useService } from "renderer/hooks/use-service.hook";
+import { BsDownloaderService } from "renderer/services/bs-downloader.service";
+import { distinctUntilChanged } from "rxjs";
+import equal from "fast-deep-equal";
 
 export function NavBar() {
-    const bsVersionServoce = useService(BSVersionManagerService);
+    const versionManager = useService(BSVersionManagerService);
+    const versionDownloader = useService(BsDownloaderService);
 
-    const installedVersions = useObservable(bsVersionServoce.installedVersions$);
+    const downloadingVersion = useObservable(versionDownloader.currentBsVersionDownload$.pipe(distinctUntilChanged(equal)));
+    const installedVersions = useObservable(versionManager.installedVersions$);
+
     const color = useThemeColor("first-color");
     const t = useTranslation();
+
+    function listVersions(){
+        const versions = Array.isArray(installedVersions) ? [...installedVersions] : [];
+
+        if (downloadingVersion){ versions.push(downloadingVersion); }
+
+        const sorted = versions.sort((a, b) => +b.ReleaseDate - +a.ReleaseDate);
+
+        return BSVersionManagerService.removeDuplicateVersions(sorted);
+    }
 
     return (
         <nav id="nav-bar" className="z-10 flex flex-col h-full max-h-full items-center p-1">
@@ -25,7 +41,7 @@ export function NavBar() {
             <ol id="versions" className="w-fit max-w-[120px] relative left-[2px] grow overflow-y-hidden scrollbar-track-transparent scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 hover:overflow-y-scroll">
                 <SharedNavBarItem />
                 <NavBarSpliter />
-                {installedVersions?.map(version => (
+                {listVersions().map(version => (
                     <BsVersionItem key={JSON.stringify(version)} version={version} />
                 ))}
             </ol>
