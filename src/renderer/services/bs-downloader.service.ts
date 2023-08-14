@@ -12,7 +12,6 @@ import { LoginModal } from "renderer/components/modal/modal-types/login-modal.co
 import { GuardModal } from "renderer/components/modal/modal-types/guard-modal.component";
 import { LinkOpenerService } from "./link-opener.service";
 import { DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderInfoEvent, DepotDownloaderWarningEvent } from "../../shared/models/depot-downloader.model";
-import equal from "fast-deep-equal";
 import { SteamMobileApproveModal } from "renderer/components/modal/modal-types/steam-mobile-approve-modal.component";
 
 export class BsDownloaderService {
@@ -45,15 +44,6 @@ export class BsDownloaderService {
         this.progressBarService = ProgressBarService.getInstance();
         this.notificationService = NotificationService.getInstance();
         this.linkOpener = LinkOpenerService.getInstance();
-
-        this.currentBsVersionDownload$.pipe(distinctUntilChanged(equal)).subscribe(version => {
-            if(version) {
-                this.bsVersionManager.setInstalledVersions([...this.bsVersionManager.installedVersions$.value, version ]);
-            }
-            else {
-                this.bsVersionManager.askInstalledVersions();
-            }
-        });
     }
 
     public isDotNet6Installed(): Promise<boolean> {
@@ -281,7 +271,7 @@ export class BsDownloaderService {
             this.currentBsVersionDownload$.next(null);
             this.progressBarService.hide(true);
             this.isVerification$.next(false);
-            this.bsVersionManager.askAvailableVersions();
+            this.bsVersionManager.askInstalledVersions();
         });
 
     }

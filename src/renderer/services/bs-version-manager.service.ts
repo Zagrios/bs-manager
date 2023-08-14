@@ -5,6 +5,7 @@ import { ModalExitCode, ModalService } from "./modale.service";
 import { NotificationService } from "./notification.service";
 import { ProgressBarService } from "./progress-bar.service";
 import { EditVersionModal } from "renderer/components/modal/modal-types/edit-version-modal.component";
+import { swapElements } from "shared/helpers/array.helpers";
 
 export class BSVersionManagerService {
     private static instance: BSVersionManagerService;
@@ -33,17 +34,19 @@ export class BSVersionManagerService {
     }
 
     public setInstalledVersions(versions: BSVersion[]) {
-        const sorted: BSVersion[] = [...versions].sort((a, b) => +b.ReleaseDate - +a.ReleaseDate);
+        const sorted: BSVersion[] = versions.sort((a, b) => +b.ReleaseDate - +a.ReleaseDate);
+
         const steamIndex = sorted.findIndex(v => v.steam);
         const oculusIndex = sorted.findIndex(v => v.oculus);
+
         if (steamIndex > 0) {
-            [sorted[0], sorted[steamIndex]] = [sorted[steamIndex], sorted[0]];
+            swapElements(steamIndex, 0, sorted);
         }
         if (oculusIndex > 0) {
-            [sorted[steamIndex > 0 ? 1 : 0], sorted[steamIndex]] = [sorted[steamIndex], sorted[steamIndex > 0 ? 1 : 0]];
+            swapElements(oculusIndex, steamIndex >= 0 ? 1 : 0, sorted);
         }
-        const cleanedSort = [...new Map(sorted.map(version => [`${version.BSVersion}-${version.name}-${version.steam}-${version.oculus}`, version])).values()];
-        this.installedVersions$.next(cleanedSort);
+
+        this.installedVersions$.next(BSVersionManagerService.removeDuplicateVersions(sorted));
     }
 
     public getInstalledVersions(): BSVersion[] {
@@ -118,5 +121,18 @@ export class BSVersionManagerService {
 
     public getVersionPath(version: BSVersion): Observable<string> {
         return this.ipcService.sendV2("get-version-full-path", { args: version });
+    }
+
+    public static removeDuplicateVersions(versions: BSVersion[]): BSVersion[] {
+        return Array.from(new Map(versions.map(version => ([
+            JSON.stringify([
+                version.BSVersion,
+                version.BSManifest,
+                version.name,
+                version.steam,
+                version.oculus
+            ]),
+            version
+        ]))).values());
     }
 }

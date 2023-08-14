@@ -5,3 +5,8 @@ export function splitIntoChunk<T = unknown>(arr: T[], chunkSize: number): T[][] 
     }
     return resArr;
 }
+
+export function swapElements<T = unknown>(from: number, to: number, arr: T[]): T[] {
+    [arr[from], arr[to]] = [arr[to], arr[from]];
+    return arr;
+}
