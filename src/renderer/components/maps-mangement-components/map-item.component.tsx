@@ -72,9 +72,8 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
     });
 
     const songPlaying = useObservable(audioPlayer.playing$.pipe(map(playing => playing && audioPlayer.src === songUrl)));
-
-    const zipUrl = getMapZipUrlFromHash(hash);
-    const previewUrl = mapId ? `https://skystudioapps.com/bs-viewer/?url=${zipUrl}` : null;
+    
+    const previewUrl = mapId ? `https://allpoland.github.io/ArcViewer/?id=${mapId}` : null;
     const mapUrl = mapId ? `https://beatsaver.com/maps/${mapId}` : null;
     const authorUrl = autorId ? `https://beatsaver.com/profile/${autorId}` : null;
     const createdDate = createdAt ? dateFormat(createdAt, "d mmm yyyy") : null;
