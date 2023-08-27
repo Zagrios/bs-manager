@@ -12,7 +12,6 @@ import { AudioPlayerService } from "renderer/services/audio-player.service";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { map } from "rxjs/operators";
 import equal from "fast-deep-equal/es6";
-import { getMapZipUrlFromHash } from "renderer/helpers/maps-utils";
 import { BsmBasicSpinner } from "../shared/bsm-basic-spinner/bsm-basic-spinner.component";
 import defaultImage from "../../../../assets/images/default-version-img.jpg";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
@@ -72,7 +71,7 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
     });
 
     const songPlaying = useObservable(audioPlayer.playing$.pipe(map(playing => playing && audioPlayer.src === songUrl)));
-    
+
     const previewUrl = mapId ? `https://allpoland.github.io/ArcViewer/?id=${mapId}` : null;
     const mapUrl = mapId ? `https://beatsaver.com/maps/${mapId}` : null;
     const authorUrl = autorId ? `https://beatsaver.com/profile/${autorId}` : null;
