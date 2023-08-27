@@ -18,7 +18,7 @@ export function BsmIframeView() {
                 <div className="top-0 absolute w-screen h-screen flex content-center items-center justify-center z-[150]">
                     <motion.span className="absolute w-full h-full bg-black top-0 right-0" initial={{ opacity: 0 }} animate={{ opacity: 0.6 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} />
                     <motion.div ref={ref} className="z-[1] w-[calc(100vw-250px)] h-[calc(100vh-250px)] shadow-black shadow-md rounded-md overflow-hidden bg-black" initial={{ y: "100vh" }} animate={{ y: 0 }} exit={{ y: "100vh" }}>
-                        <iframe className="w-full h-full" src={iframeUrl} />
+                        <iframe className="w-full h-full" src={iframeUrl} allowFullScreen/>
                     </motion.div>
                 </div>
             )}
