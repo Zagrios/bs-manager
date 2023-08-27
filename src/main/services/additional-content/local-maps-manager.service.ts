@@ -6,8 +6,8 @@ import { BSLocalVersionService } from "../bs-local-version.service";
 import { InstallationLocationService } from "../installation-location.service";
 import { UtilsService } from "../utils.service";
 import crypto from "crypto";
-import { lstatSync, unlinkSync } from "fs";
-import { copySync, createReadStream } from "fs-extra";
+import { lstatSync } from "fs";
+import { copy, createReadStream, ensureDir, unlink } from "fs-extra";
 import StreamZip from "node-stream-zip";
 import { RequestService } from "../request.service";
 import sanitize from "sanitize-filename";
@@ -252,20 +252,19 @@ export class LocalMapsManagerService {
 
         const { zip, zipPath } = await this.downloadMapZip(zipUrl);
 
-        const mapFolderName = sanitize(`${map.id}-${map.name}`);
-
-        const mapPath = path.join(mapsFolder, mapFolderName);
-
         if (!zip) {
             throw `Cannot download ${zipUrl}`;
         }
+
+        const mapFolderName = sanitize(`${map.id}-${map.name}`);
+
+        const mapPath = path.join(mapsFolder, mapFolderName);
 
         await ensureFolderExist(mapPath);
 
         await zip.extract(null, mapPath);
         await zip.close();
-
-        unlinkSync(zipPath);
+        await unlink(zipPath);
 
         const localMap = await this.loadMapInfoFromPath(mapPath);
         localMap.bsaverInfo = map;
@@ -288,20 +287,14 @@ export class LocalMapsManagerService {
     }
 
     public async oneClickDownloadMap(map: BsvMapDetail): Promise<void> {
-        const downloadedMap = await this.downloadMap(map);
 
         const versions = await this.localVersion.getInstalledVersions();
+        const downloadedMap = await this.downloadMap(map, versions.pop());
 
         for (const version of versions) {
-            if (await this.versionIsLinked(version)) {
-                continue;
-            }
-
             const versionMapsPath = await this.getMapsFolderPath(version);
-
-            await ensureFolderExist(versionMapsPath);
-
-            copySync(downloadedMap.path, path.join(versionMapsPath, path.basename(downloadedMap.path)), { overwrite: true });
+            await ensureDir(versionMapsPath);
+            await copy(downloadedMap.path, path.join(versionMapsPath, path.basename(downloadedMap.path)), { overwrite: true });
         }
     }
 
