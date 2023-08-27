@@ -119,23 +119,13 @@ export class LocalModelsManagerService {
     }
 
     public async oneClickDownloadModel(model: MSModel): Promise<void> {
-        if (!model) {
-            return;
-        }
+        if (!model) { return; }
 
         const versions = await this.localVersion.getInstalledVersions();
-
-        if (versions?.length === 0) {
-            return;
-        }
-
-        const fisrtVersion = versions.shift();
-
-        const downloaded = await lastValueFrom(this.downloadModel(model, fisrtVersion));
+        const downloaded = await lastValueFrom(this.downloadModel(model, versions.pop()));
 
         for (const version of versions) {
             const modelDest = path.join(await this.getModelFolderPath(model.type, version), path.basename(downloaded.data.path));
-
             copyFileSync(downloaded.data.path, modelDest);
         }
     }

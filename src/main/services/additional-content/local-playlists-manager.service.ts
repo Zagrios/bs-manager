@@ -178,19 +178,10 @@ export class LocalPlaylistsManagerService {
     public async oneClickInstallPlaylist(bpListUrl: string): Promise<void> {
         const versions = await this.versions.getInstalledVersions();
 
-        const firstVersion = versions.shift();
-        const fistVersionLinked = await this.maps.versionIsLinked(firstVersion);
-
-        const { bpListPath, mapsPath } = await this.downloadPlaylist(bpListUrl, firstVersion).toPromise();
+        const { bpListPath, mapsPath } = await lastValueFrom(this.downloadPlaylist(bpListUrl, versions.pop()));
 
         for (const version of versions) {
             await this.installBPListFile(bpListPath, version);
-
-            const versionIsLinked = await this.maps.versionIsLinked(version);
-
-            if (fistVersionLinked && versionIsLinked) {
-                continue;
-            }
 
             for (const mapPath of mapsPath) {
                 const versionMapsFolder = await this.maps.getMapsFolderPath(version);
