@@ -8,7 +8,7 @@ import { BSLocalVersionService } from "./bs-local-version.service";
 import { pathExist } from "../helpers/fs.helpers";
 import { rename } from "fs/promises";
 import log from "electron-log";
-import { Observable, lastValueFrom, of, timer } from "rxjs";
+import { Observable, of } from "rxjs";
 import { BsmProtocolService } from "./bsm-protocol.service";
 import { app, shell} from "electron";
 import { Resvg } from "@resvg/resvg-js";
