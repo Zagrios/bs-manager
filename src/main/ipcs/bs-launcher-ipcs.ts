@@ -15,3 +15,9 @@ ipc.on<LaunchOption>("create-launch-shortcut", (req, reply) => {
     const bsLauncher = BSLauncherService.getInstance();
     reply(from(bsLauncher.createLaunchShortcut(req.args)));
 });
+
+
+ipc.on<void>("bs-launch.restore-steamvr", (_, reply) => {
+    const bsLauncher = BSLauncherService.getInstance();
+    reply(from(bsLauncher.restoreSteamVR()));
+});

@@ -144,7 +144,6 @@ export class BSLauncherService {
                 await this.backupSteamVR().catch(() => {
                     return this.restoreSteamVR();
                 });
-                await lastValueFrom(timer(2_000));
             } else if(!launchOptions.version.oculus){
                 await this.restoreSteamVR();
             }
@@ -163,13 +162,14 @@ export class BSLauncherService {
                     bsProcess.removeAllListeners("error");
                     bsProcess.removeAllListeners("exit");
                     resolve(-1);
-                }, 4000);
+                }, 15_000);
 
             }).then(exitCode => {
                 log.info("BS process exit code", exitCode);
             }).catch(err => {
-                log.error(err);
                 obs.error({type: BSLaunchError.BS_EXIT_ERROR, data: err} as BSLaunchErrorData);
+            }).finally(() => {
+                this.restoreSteamVR().catch(log.error);
             });
 
         })().then(() => {
