@@ -2,7 +2,7 @@ import { LaunchOption, BSLaunchEvent, BSLaunchWarning, BSLaunchEventData, BSLaun
 import { BSVersion } from 'shared/bs-version.interface';
 import { IpcService } from "./ipc.service";
 import { NotificationService } from "./notification.service";
-import { BehaviorSubject, Observable, filter } from "rxjs";
+import { BehaviorSubject, Observable, filter, lastValueFrom } from "rxjs";
 import { ConfigurationService } from "./configuration.service";
 import { ThemeService } from "./theme.service";
 
@@ -37,7 +37,7 @@ export class BSLauncherService {
             additionalArgs: (this.config.get<string>("additionnal-args") || "").split(";").map(arg => arg.trim()).filter(arg => arg.length > 0)
         }
     }
-
+    
     public doLaunch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
         return this.ipcService.sendV2<BSLaunchEventData, LaunchOption>("bs-launch.launch", {args: launchOptions});
     }
@@ -73,6 +73,9 @@ export class BSLauncherService {
         return this.ipcService.sendV2<void, LaunchOption>("create-launch-shortcut", {args: options});
     }
 
+    public restoreSteamVR(): Promise<void>{
+        return lastValueFrom(this.ipcService.sendV2<void, void>("bs-launch.restore-steamvr"));
+    }
 }
 
 export enum LaunchMods {
