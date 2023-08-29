@@ -35,7 +35,7 @@ export class DeepLinkService {
         return app.removeAsDefaultProtocolClient(protocol);
     }
 
-    public isDeepLinkRegistred(protocol: string): boolean {
+    public isDeepLinkRegistered(protocol: string): boolean {
         if (process.defaultApp && process.argv.length >= 2) {
             return app.isDefaultProtocolClient(protocol, process.execPath, [path.resolve(process.argv[1])]);
         }

@@ -31,6 +31,11 @@ export function LaunchSlide({ version }: Props) {
         configService.set("additionnal-args", additionalArgsString);
     }, [additionalArgsString]);
 
+    useEffect(() => {
+        if(desktopMode){ return; }
+        bsLauncherService.restoreSteamVR();
+    }, [desktopMode]);
+
     const setMode = (mode: LaunchMods, value: boolean) => {
         if (mode === LaunchMods.DEBUG_MOD) {
             setDebugMode(value);

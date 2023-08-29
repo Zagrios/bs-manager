@@ -25,11 +25,9 @@ export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ data }) => 
 
     const t = useTranslation();
 
-    const [folders, setFolders] = useState<string[]>([]);
+    const [folders, setFolders] = useState<string[]>(Array.from(new Set([...config.get<string[]>(SHARED_FOLDERS_KEY)]).values()));
 
     useEffect(() => {
-        setFolders(prev => Array.from(new Set([...prev, ...config.get<string[]>(SHARED_FOLDERS_KEY)]).values()));
-
         linker
             .getLinkedFolders(data, { relative: true })
             .toPromise()

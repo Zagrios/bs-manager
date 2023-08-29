@@ -1,4 +1,5 @@
 [
+<<<<<<< HEAD
 	{
 		"username": "Shidorien"
 	},
@@ -45,3 +46,24 @@
 		"username": "grtroadrunner"
 	}
 ]
+=======
+    {"username": "Shidorien"},
+    {"username": "iPixelGalaxy"},
+    {"username": "Emyte", "type": "gold"},
+    {"username": "GoodOldNervy"},
+    {"username": "Naysy"},
+    {"username": "Falmil"},
+    {"username": "K1Lc4m"},
+    {"username": "Adam"},
+    {"username": "Cabalia"},
+    {"username": "Anonymously42", "type": "diamond", "link": "https://www.twitch.tv/anonymously42tv"},
+    {"username": "En4Yuz"},
+    {"username": "AndyIsHereBoi", "type": "gold"},
+    {"username": "grtroadrunner"},
+    {"username": "Ilnahro"},
+    {"username": "T3chLog"},
+    {"username": "Phil", "type": "gold"},
+    {"username": "Protocrush", "type": "gold"},
+    {"username": "ServerMensch", "type": "gold"}
+]
+>>>>>>> master

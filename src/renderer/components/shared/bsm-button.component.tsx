@@ -72,7 +72,7 @@ export function BsmButton({ className, style, imgClassName, iconClassName, icon,
     const handleClick = (e: MouseEvent<HTMLDivElement>) => !disabled && onClick?.(e);
 
     return (
-        <div ref={ref} onClick={handleClick} title={t(title)} className={`${className} overflow-hidden cursor-pointer group ${!withBar && !disabled && (!!typeColor || !!color) && "hover:brightness-[1.15]"} ${disabled && "brightness-75 cursor-not-allowed"} ${renderTypeColor}`} style={{ ...style, backgroundColor: primaryColor || color }}>
+        <div ref={ref} onClick={handleClick} title={t(title)} className={`${className} overflow-hidden group ${!withBar && !disabled && (!!typeColor || !!color) && "hover:brightness-[1.15]"} ${disabled ? "brightness-75 cursor-not-allowed" : "cursor-pointer"} ${renderTypeColor}`} style={{ ...style, backgroundColor: primaryColor || color }}>
             {image && <BsmImage image={image} className={imgClassName} />}
             {icon && <BsmIcon icon={icon} className={iconClassName ?? "h-full w-full text-gray-800 dark:text-white"} style={{ color: iconColor || textColor }} />}
             {text &&

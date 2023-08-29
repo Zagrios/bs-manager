@@ -1,8 +1,8 @@
 import { BSVersion } from "shared/bs-version.interface";
 import { Link, useLocation } from "react-router-dom";
 import { BsDownloaderService } from "renderer/services/bs-downloader.service";
-import { useEffect, useState } from "react";
-import { combineLatest, Subscription } from "rxjs";
+import { useState } from "react";
+import { distinctUntilChanged, map, of, Subscription, switchMap } from "rxjs";
 import { BSLauncherService, LaunchMods } from "renderer/services/bs-launcher.service";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { BSUninstallerService } from "renderer/services/bs-uninstaller.service";
@@ -13,6 +13,8 @@ import { NavBarItem } from "./nav-bar-item.component";
 import useFitText from "use-fit-text";
 import Tippy from "@tippyjs/react";
 import { useService } from "renderer/hooks/use-service.hook";
+import equal from "fast-deep-equal";
+import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 
 export function BsVersionItem(props: { version: BSVersion }) {
     const downloaderService = useService(BsDownloaderService);
@@ -24,9 +26,27 @@ export function BsVersionItem(props: { version: BSVersion }) {
     const { state } = useLocation() as { state: BSVersion };
     const { fontSize, ref } = useFitText();
 
-    const [downloading, setDownloading] = useState(false);
-    const [downloadPercent, setDownloadPercent] = useState(0);
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [downloadProgress, setDownloadProgress] = useState(0);
     const secondColor = useThemeColor("second-color");
+
+    useOnUpdate(() => {
+        const subs: Subscription[] = []
+        
+        subs.push(downloaderService.currentBsVersionDownload$.pipe(map(download => equal(download, props.version)), distinctUntilChanged()).subscribe(isDownloading => {
+            setIsDownloading(() => isDownloading);
+        }));
+
+        subs.push(downloaderService.currentBsVersionDownload$.pipe(
+            map(download => equal(download, props.version)),
+            distinctUntilChanged(),
+            switchMap(isDownloading => isDownloading ? downloaderService.downloadProgress$ : of(0)),
+        ).subscribe(progress => {
+            setDownloadProgress(() => progress);
+        }));
+
+        return () => subs.forEach(sub => sub.unsubscribe());
+    }, [props.version]);
 
     const isActive = (): boolean => {
         return props.version?.BSVersion === state?.BSVersion && props?.version.steam === state?.steam && props?.version.oculus === state?.oculus && props?.version.name === state?.name;
@@ -44,32 +64,11 @@ export function BsVersionItem(props: { version: BSVersion }) {
     const cancel = () => {
         const versionDownload = downloaderService.currentBsVersionDownload$.value;
         const wasVerification = downloaderService.isVerification;
-        downloaderService.cancelDownload().then(async res => {
-            if (!res.success) {
-                return;
-            }
-            if (!wasVerification) {
-                bsUninstallerService.uninstall(versionDownload).then(res => res && verionManagerService.askInstalledVersions());
-            }
+        downloaderService.stopDownload().then(() => {
+            if(wasVerification){ return; }
+            bsUninstallerService.uninstall(versionDownload).then(res => res && verionManagerService.askInstalledVersions());
         });
     };
-
-    useEffect(() => {
-        const subs: Subscription[] = [];
-        const downloadSub = combineLatest([downloaderService.currentBsVersionDownload$, downloaderService.downloadProgress$]).subscribe(vals => {
-            if (vals[0]?.BSVersion === props.version.BSVersion && vals[0]?.steam === props.version.steam && vals[0].oculus === props.version.oculus && vals[0]?.name === props.version.name) {
-                setDownloading(true);
-                setDownloadPercent(vals[1]);
-            } else {
-                setDownloading(false);
-                setDownloadPercent(0);
-            }
-        });
-        subs.push(downloadSub);
-        return () => {
-            subs.forEach(s => s.unsubscribe());
-        };
-    }, []);
 
     const renderIcon = () => {
         const classes = "w-[19px] h-[19px] mr-[5px] shrink-0";
@@ -100,7 +99,7 @@ export function BsVersionItem(props: { version: BSVersion }) {
     };
 
     return (
-        <NavBarItem onCancel={cancel} progress={downloading ? downloadPercent : 0} isActive={isActive() && !downloading} isDownloading={downloading}>
+        <NavBarItem onCancel={cancel} progress={downloadProgress} isActive={isActive() && !isDownloading} isDownloading={isDownloading}>
             {props.version.name ? (
                 <Tippy content={props.version.BSVersion} placement="right-end" arrow={false} className="font-bold !bg-neutral-900" duration={[100, 0]} animation="shift-away-subtle">
                     <Link onDoubleClick={handleDoubleClick} to={`/bs-version/${props.version.BSVersion}`} state={props.version} className="w-full flex items-center justify-start content-center max-w-full">
