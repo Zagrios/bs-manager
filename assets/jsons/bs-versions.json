@@ -565,5 +565,13 @@
 		"ReleaseImg": "https://clan.cloudflare.steamstatic.com/images/32055887/28993aecc56a75c52295fa07620f58cb0e4b09e8.png",
 		"ReleaseDate": "1688050646",
 		"year": "2023"
+	},
+	{
+		"BSVersion": "1.31.1",
+		"BSManifest": "5239818041644201119",
+		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/3664295677895178184",
+		"ReleaseImg": "https://clan.akamai.steamstatic.com/images/32055887/58621b3cb8bf42fcfbf3b97fe47aa91b290eea04.png",
+		"ReleaseDate": "1693824747",
+		"year": "2023"
 	}
 ]
