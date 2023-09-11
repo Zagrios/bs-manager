@@ -142,7 +142,7 @@ export class BSLocalVersionService {
         if(version.oculus){ return this.oculusService.getGameFolder(OCULUS_BS_DIR); }
 
         return path.join(
-            this.installLocationService.versionsDirectory,
+            await this.installLocationService.versionsDirectory(),
             this.getVersionFolder(version)
         );
     }
@@ -156,7 +156,7 @@ export class BSLocalVersionService {
         const versionPath = await this.getVersionPath(version);
         if(await pathExist(versionPath)){ return versionPath; }
 
-        const versionFolders = await getFoldersInFolder(this.installLocationService.versionsDirectory);
+        const versionFolders = await getFoldersInFolder(await this.installLocationService.versionsDirectory());
 
         for(const folder of versionFolders){
             const stats = await lstat(folder);
@@ -215,11 +215,11 @@ export class BSLocalVersionService {
             versions.push(oculusVersion);
         }
 
-        if (!(await pathExist(this.installLocationService.versionsDirectory))) {
+        if (!(await pathExist(await this.installLocationService.versionsDirectory()))) {
             return versions;
         }
 
-        const folderInInstallation = await getFoldersInFolder(this.installLocationService.versionsDirectory);
+        const folderInInstallation = await getFoldersInFolder(await this.installLocationService.versionsDirectory());
 
         for (const f of folderInInstallation) {
             log.info("try get version from folder", f);

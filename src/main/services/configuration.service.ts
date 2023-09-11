@@ -19,11 +19,11 @@ export class ConfigurationService {
         this.locations = InstallationLocationService.getInstance();
         this.initStore();
 
-        this.locations.onInstallLocationUpdate(() => this.initStore());
+        this.locations.onInstallLocationUpdate(() => { this.initStore() });
     }
 
-    private initStore() {
-        const contentPath = this.locations.installationDirectory;
+    private async initStore() {
+        const contentPath = await this.locations.installationDirectory();
         this.store = new ElectronStore({
             cwd: contentPath,
             name: "config",

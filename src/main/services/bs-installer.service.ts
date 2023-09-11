@@ -79,7 +79,7 @@ export class BSInstallerService {
             qr
         }
 
-        await ensureDir(this.installLocationService.versionsDirectory);
+        await ensureDir(await this.installLocationService.versionsDirectory());
 
         const isLinux = process.platform === 'linux';
         const exePath = this.getDepotDownloaderExePath();
@@ -88,7 +88,7 @@ export class BSInstallerService {
         return new DepotDownloader({
             command: isLinux ? 'dotnet' : exePath,
             args: isLinux ? [exePath, ...args] : args,
-            options: { cwd: this.installLocationService.versionsDirectory },
+            options: { cwd: await this.installLocationService.versionsDirectory() },
             echoStartData: downloadVersion
         }, log);
     }
