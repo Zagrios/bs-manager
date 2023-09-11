@@ -73,7 +73,7 @@ export class LocalModelsManagerService {
     }
 
     private async getModelFolderPath(type: MSModelType, version?: BSVersion): Promise<string> {
-        const rootPath = version ? await this.localVersion.getVersionPath(version) : this.installPaths.sharedContentPath;
+        const rootPath = await (version ? this.localVersion.getVersionPath(version) : this.installPaths.sharedContentPath());
         const modelFolderPath = path.join(rootPath, MODEL_TYPE_FOLDERS[type]);
 
         await ensureFolderExist(modelFolderPath);

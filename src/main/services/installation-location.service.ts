@@ -1,7 +1,7 @@
 import path from "path";
 import { app } from "electron";
 import ElectronStore from "electron-store";
-import { copyDirectoryWithJunctions, deleteFolder, ensureFolderExist } from "../helpers/fs.helpers";
+import { copyDirectoryWithJunctions, deleteFolder, ensureFolderExist, pathExist } from "../helpers/fs.helpers";
 
 export class InstallationLocationService {
     private static instance: InstallationLocationService;
@@ -27,15 +27,10 @@ export class InstallationLocationService {
 
     private constructor() {
         this.installPathConfig = new ElectronStore({ watch: true });
-        this.initInstallationLocation();
 
         this.installPathConfig.onDidChange(this.STORE_INSTALLATION_PATH_KEY, () => {
             this.triggerListeners();
         });
-    }
-
-    private initInstallationLocation(): void {
-        this._installationDirectory = (this.installPathConfig.get<string>(this.STORE_INSTALLATION_PATH_KEY) as string) || app.getPath("documents");
     }
 
     private triggerListeners(): void {
@@ -43,35 +38,50 @@ export class InstallationLocationService {
     }
 
     public async setInstallationDirectory(newDir: string): Promise<string> {
-        const oldDir = this.installationDirectory;
-        const newDest = path.join(newDir, this.INSTALLATION_FOLDER);
+        newDir = path.basename(newDir) === this.INSTALLATION_FOLDER ? newDir : path.join(newDir, this.INSTALLATION_FOLDER);
+        const oldDir = await this.installationDirectory();
 
         await ensureFolderExist(oldDir);
-
-        await copyDirectoryWithJunctions(oldDir, newDest, { overwrite: true });
+        await copyDirectoryWithJunctions(oldDir, newDir, { overwrite: true });
 
         this._installationDirectory = newDir;
         this.installPathConfig.set(this.STORE_INSTALLATION_PATH_KEY, newDir);
 
         deleteFolder(oldDir);
 
-        return this.installationDirectory;
+        return this.installationDirectory();
     }
 
     public onInstallLocationUpdate(fn: Listener) {
         this.updateListeners.add(fn);
     }
 
-    public get installationDirectory(): string {
-        return path.join(this._installationDirectory, this.INSTALLATION_FOLDER);
+    public async installationDirectory(): Promise<string> {
+        if(this._installationDirectory) {
+            return this._installationDirectory;
+        }
+        
+        if(this.installPathConfig.has(this.STORE_INSTALLATION_PATH_KEY)) {
+            this._installationDirectory = this.installPathConfig.get(this.STORE_INSTALLATION_PATH_KEY) as string;
+            return this._installationDirectory;
+        }
+
+        const oldPath = path.join(app.getPath("documents"), this.INSTALLATION_FOLDER);
+        if(await pathExist(oldPath)){
+            this._installationDirectory = oldPath;
+            return this._installationDirectory;
+        }
+
+        this._installationDirectory = path.join(app.getPath("home"), this.INSTALLATION_FOLDER);
+        return this._installationDirectory;
     }
 
-    public get versionsDirectory(): string {
-        return path.join(this.installationDirectory, this.VERSIONS_FOLDER);
+    public async versionsDirectory(): Promise<string> {
+        return path.join(await this.installationDirectory(), this.VERSIONS_FOLDER);
     }
 
-    public get sharedContentPath(): string {
-        return path.join(this.installationDirectory, this.SHARED_CONTENT_FOLDER);
+    public async sharedContentPath(): Promise<string> {
+        return path.join(await this.installationDirectory(), this.SHARED_CONTENT_FOLDER);
     }
 }
 

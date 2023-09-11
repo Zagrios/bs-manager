@@ -75,7 +75,7 @@ export class LocalMapsManagerService {
         if (version) {
             return path.join(await this.localVersion.getVersionPath(version), LocalMapsManagerService.LEVELS_ROOT_FOLDER, LocalMapsManagerService.CUSTOM_LEVELS_FOLDER);
         }
-        const sharedMapsPath = path.join(this.installLocation.sharedContentPath, LocalMapsManagerService.SHARED_MAPS_FOLDER, LocalMapsManagerService.CUSTOM_LEVELS_FOLDER);
+        const sharedMapsPath = path.join(await this.installLocation.sharedContentPath(), LocalMapsManagerService.SHARED_MAPS_FOLDER, LocalMapsManagerService.CUSTOM_LEVELS_FOLDER);
         if (!(await pathExist(sharedMapsPath))) {
             await ensureFolderExist(sharedMapsPath);
         }

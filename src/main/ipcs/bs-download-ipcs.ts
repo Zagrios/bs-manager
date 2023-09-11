@@ -12,7 +12,7 @@ ipc.on("is-dotnet-6-installed", (_, reply) => {
 
 ipc.on("bs-download.installation-folder", (_, reply) => {
     const installLocation = InstallationLocationService.getInstance();
-    reply(of(installLocation.installationDirectory));
+    reply(from(installLocation.installationDirectory()));
 });
 
 ipc.on<string>("bs-download.set-installation-folder", (req, reply) => {
