@@ -1,6 +1,5 @@
 import { Subject, Subscription, filter } from "rxjs";
 import { DeepLinkService } from "./deep-link.service";
-import { URL } from "url";
 import { buildUrl, isValidUrl } from "../../shared/helpers/url.helpers";
 
 export class BsmProtocolService {
