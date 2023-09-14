@@ -19,6 +19,8 @@ import { LocalModelsManagerService } from "./services/additional-content/local-m
 import { APP_NAME } from "./constants";
 import { BSLauncherService } from "./services/bs-launcher.service";
 import { IpcRequest } from "shared/models/ipc";
+import { LivService } from "./services/liv/liv.service";
+import { LivShortcut } from "./services/liv/liv-shortcut.service";
 
 const isDebug = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true";
 
@@ -63,7 +65,7 @@ const initServicesMustBeInitialized = () => {
     LocalMapsManagerService.getInstance();
     LocalPlaylistsManagerService.getInstance();
     LocalModelsManagerService.getInstance();
-
+    LivShortcut.getInstance();
     BSLauncherService.getInstance();
 }
 
