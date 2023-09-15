@@ -8,6 +8,7 @@ import { debounceTime, distinctUntilChanged, map } from "rxjs";
 import equal from "fast-deep-equal";
 import sanitize from "sanitize-filename";
 import { tryit } from "../../../shared/helpers/error.helpers";
+import log from "electron-log"
 
 export class LivShortcut {
 
@@ -20,7 +21,7 @@ export class LivShortcut {
         return LivShortcut.instance;
     }
 
-    private readonly LIB_ID_PREFIX = "BSManager";
+    private readonly LIV_ID_PREFIX = "BSManager";
 
     private readonly liv: LivService;
     private readonly launcher: BSLauncherService;
@@ -34,15 +35,18 @@ export class LivShortcut {
         this.liv.isLivInstalled().then(installed => {
             if(!installed){ return; }
 
-            this.versionManager.loadedVersions$.pipe(debounceTime(1000), distinctUntilChanged((prev, curr) => equal(prev, curr)), map(versions => versions.filter(v => !v.steam))).subscribe(async versions => {
-                const clearedLaunchOptions = (await this.clearLivShortcuts().catch(() => [] as LivEntry[])).map(entry => {
-                    return tryit(() => this.launcher.shortcutLinkToLaunchOptions(entry.arguments)).result;
-                });
-                versions.forEach(version => this.createLivShortcut({ 
-                    ...(clearedLaunchOptions.find(launchOpt => launchOpt.version.ino === version.ino) ?? {}),
-                    version,
-                    skipAlreadyRunning: true 
-                }));
+            this.versionManager.loadedVersions$.pipe(debounceTime(1000), distinctUntilChanged((prev, curr) => equal(prev, curr)), map(versions => versions.filter(v => !v.steam))).subscribe(versions => {
+                (async () => {
+                    const clearedLaunchOptions = (await this.clearLivShortcuts().catch(() => [] as LivEntry[]))?.map(entry => {
+                        return tryit(() => this.launcher.shortcutLinkToLaunchOptions(entry.arguments)).result;
+                    });
+                    
+                    versions.forEach(version => this.createLivShortcut({ 
+                        ...(clearedLaunchOptions?.find(launchOpt => launchOpt.version.ino === version.ino) ?? {}),
+                        version,
+                        skipAlreadyRunning: true 
+                    }));
+                })().catch(err => log.error("Error while creating LIV shortcuts", err));
             });
         });
     }
@@ -53,7 +57,7 @@ export class LivShortcut {
             if(version.oculus){ return "Oculus"; }
             return version.name;
         })();
-        return sanitize([this.LIB_ID_PREFIX, name, version.BSVersion].filter(Boolean).join("-").replaceAll(".", "-").replaceAll(" ", "-"));
+        return sanitize([this.LIV_ID_PREFIX, name, version.BSVersion].filter(Boolean).join("-").replaceAll(".", "-").replaceAll(" ", "-"));
     }
 
     private buildShortcutName(version: BSVersion): string {
@@ -79,13 +83,9 @@ export class LivShortcut {
         return this.buildLivEntry(launchOptions).then(entry => this.liv.createLivShortcut(entry)); 
     }
 
-    private async deleteLivShortcut(bsVersion: BSVersion): Promise<void>{
-        return this.liv.deleteLivShortcut(this.buildShortcutId(bsVersion));
-    }
-
     private async clearLivShortcuts(): Promise<LivEntry[]>{
         const bsmShortcuts = (await this.liv.getLivShortcuts()).reduce((acc, shortcut) => {
-            if(shortcut.id?.startsWith(this.LIB_ID_PREFIX)){
+            if(shortcut.id?.startsWith(this.LIV_ID_PREFIX)){
                 acc.push(shortcut);
             }
             return acc;

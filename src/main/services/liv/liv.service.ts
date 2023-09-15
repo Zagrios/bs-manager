@@ -58,15 +58,6 @@ export class LivService {
         });
     }
 
-    public async deleteLivShortcut(id: string): Promise<void> {
-        return execOnOs({
-            win32: async () => {
-                const livExternalAppRegeditKey = path.join(this.livExternalAppsRegeditKey, id);
-                return regedit.promisified.deleteKey([livExternalAppRegeditKey]);
-            }
-        });
-    }
-
     public async deleteLivShortcuts(ids: string[]): Promise<void> {
         return execOnOs({
             win32: async () => {
