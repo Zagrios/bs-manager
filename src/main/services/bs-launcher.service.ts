@@ -50,8 +50,7 @@ export class BSLauncherService {
 
         this.bsmProtocolService.on("launch", link => {
             log.info("Launch from bsm protocol", link.toString());
-            const shortcutParams = objectFromEntries(link.searchParams.entries()) as ShortcutParams;
-            this.openShortcutLaunchWindow(shortcutParams).catch(log.error);
+            this.openShortcutLaunchWindow(this.shortcutLinkToShortcutParams(link)).catch(log.error);
         });
     }
 
@@ -179,6 +178,18 @@ export class BSLauncherService {
         })});
     }
 
+    public shortcutLinkToShortcutParams(shortcutLink: string|URL): ShortcutParams{
+        if(typeof shortcutLink === "string"){
+            shortcutLink = new URL(shortcutLink);
+        }
+
+        return objectFromEntries(shortcutLink.searchParams.entries()) as ShortcutParams;
+    }
+
+    public shortcutLinkToLaunchOptions(shortcutLink: string|URL): LaunchOption{
+        return this.shortcutParamsToLaunchOption(this.shortcutLinkToShortcutParams(shortcutLink));
+    }
+
     private shortcutParamsToLaunchOption(params: ShortcutParams): LaunchOption{
         const res: LaunchOption = {
             version: {
@@ -263,9 +274,13 @@ export class BSLauncherService {
         return iconPath;
     }
 
-    public async createLaunchShortcut(launchOptions: LaunchOption): Promise<boolean>{
+    public createLaunchLink(launchOptions: LaunchOption): string{
         const shortcutParams = this.launchOptionToShortcutParams(launchOptions);
-        const shortcutUrl =  this.bsmProtocolService.buildLink("launch", shortcutParams).toString();
+        return this.bsmProtocolService.buildLink("launch", shortcutParams).toString();
+    }
+
+    public async createLaunchShortcut(launchOptions: LaunchOption): Promise<boolean>{
+        const shortcutUrl =  this.createLaunchLink(launchOptions);
 
         const shortcutName = ["Beat Saber", launchOptions.version.BSVersion, launchOptions.version.name].join(" ");
         const shortcutIconColor = new Color(launchOptions.version.color, "hex");

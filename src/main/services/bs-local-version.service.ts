@@ -15,6 +15,7 @@ import { copyDirectoryWithJunctions, deleteFolder, getFoldersInFolder, pathExist
 import { FolderLinkerService } from "./folder-linker.service";
 import { ReadStream, createReadStream } from "fs-extra";
 import readline from "readline";
+import { Observable, Subject } from "rxjs";
 
 export class BSLocalVersionService {
     private static instance: BSLocalVersionService;
@@ -27,6 +28,7 @@ export class BSLocalVersionService {
     private readonly remoteVersionService: BSVersionLibService;
     private readonly configService: ConfigurationService;
     private readonly linker: FolderLinkerService;
+    private readonly _loadedVersions$: Subject<BSVersion[]>;
 
     public static getInstance(): BSLocalVersionService {
         if (!BSLocalVersionService.instance) {
@@ -42,6 +44,8 @@ export class BSLocalVersionService {
         this.remoteVersionService = BSVersionLibService.getInstance();
         this.configService = ConfigurationService.getInstance();
         this.linker = FolderLinkerService.getInstance();
+
+        this._loadedVersions$ = new Subject<BSVersion[]>();
     }
 
     private async getVersionFromGlobalGameManagerFile(versionFilePath: string): Promise<BSVersion> {
@@ -233,6 +237,8 @@ export class BSLocalVersionService {
 
         this.setCustomVersions(versions.filter(v => !!v.color));
 
+        this._loadedVersions$.next(versions);
+
         return versions;
     }
 
@@ -309,5 +315,9 @@ export class BSLocalVersionService {
         );
 
         return (await linkedFolder).filter(folder => folder);
+    }
+
+    public get loadedVersions$(): Observable<BSVersion[]>{
+        return this._loadedVersions$.asObservable();
     }
 }
