@@ -24,7 +24,7 @@ export class LivService {
         return execOnOs({
             win32: async () => {
                 const regRes = await regedit.promisified.list([this.livRegeditKey]).then(res => res[this.livRegeditKey]);
-                return regRes !== undefined && regRes.exists;
+                return regRes?.exists;
             }
         });
     }

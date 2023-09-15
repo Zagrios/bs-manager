@@ -15,7 +15,7 @@ import { copyDirectoryWithJunctions, deleteFolder, getFoldersInFolder, pathExist
 import { FolderLinkerService } from "./folder-linker.service";
 import { ReadStream, createReadStream } from "fs-extra";
 import readline from "readline";
-import { BehaviorSubject, Observable, Subject } from "rxjs";
+import { Observable, Subject } from "rxjs";
 
 export class BSLocalVersionService {
     private static instance: BSLocalVersionService;
