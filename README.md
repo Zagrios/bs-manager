@@ -218,7 +218,7 @@ https://user-images.githubusercontent.com/40648115/213435051-7feb815d-f32b-4135-
 <div>
     <h1><b>Credits</b></h1>
     <ul>
-        <li><a href="https://github.com/Zagrios">Zagrios</a> - Founder & Lead Developer (Mathieu GRIES)</li>
+        <li><a href="https://github.com/Zagrios">Zagrios</a> - Founder & Lead Developer</li>
         <li><a href="https://github.com/Iluhadesu">Iluhadesu</a> - Project Team & Developpement help</li>
         <li><a href="https://github.com/GaetanGrd">GaetanGrd</a> - Project Team & Developpement help</li>
         <li><a href="https://github.com/cheddZy">cheddZy</a> - Icon creator</li>
