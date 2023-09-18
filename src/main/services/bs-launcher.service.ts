@@ -80,7 +80,7 @@ export class BSLauncherService {
     }
 
     private buildBsLaunchArgs(launchOptions: LaunchOption): string[]{
-        const launchArgs = [];
+        const launchArgs = ["--no-yeet"];
 
         if (launchOptions.oculus) {
             launchArgs.push("-vrmode");
