@@ -30,7 +30,7 @@ export function NavBar() {
 
         if (downloadingVersion){ versions.push(downloadingVersion); }
 
-        const sorted = versions.sort((a, b) => +b.ReleaseDate - +a.ReleaseDate);
+        const sorted = BSVersionManagerService.sortVersions(versions);
 
         return BSVersionManagerService.removeDuplicateVersions(sorted);
     }

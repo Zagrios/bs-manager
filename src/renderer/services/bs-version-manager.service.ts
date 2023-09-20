@@ -5,7 +5,7 @@ import { ModalExitCode, ModalService } from "./modale.service";
 import { NotificationService } from "./notification.service";
 import { ProgressBarService } from "./progress-bar.service";
 import { EditVersionModal } from "renderer/components/modal/modal-types/edit-version-modal.component";
-import { swapElements } from "shared/helpers/array.helpers";
+import { popElement } from "shared/helpers/array.helpers";
 
 export class BSVersionManagerService {
     private static instance: BSVersionManagerService;
@@ -34,18 +34,7 @@ export class BSVersionManagerService {
     }
 
     public setInstalledVersions(versions: BSVersion[]) {
-        const sorted: BSVersion[] = versions.sort((a, b) => +b.ReleaseDate - +a.ReleaseDate);
-
-        const steamIndex = sorted.findIndex(v => v.steam);
-        const oculusIndex = sorted.findIndex(v => v.oculus);
-
-        if (steamIndex > 0) {
-            swapElements(steamIndex, 0, sorted);
-        }
-        if (oculusIndex > 0) {
-            swapElements(oculusIndex, steamIndex >= 0 ? 1 : 0, sorted);
-        }
-
+        const sorted = BSVersionManagerService.sortVersions(versions);
         this.installedVersions$.next(BSVersionManagerService.removeDuplicateVersions(sorted));
     }
 
@@ -121,6 +110,19 @@ export class BSVersionManagerService {
 
     public getVersionPath(version: BSVersion): Observable<string> {
         return this.ipcService.sendV2("get-version-full-path", { args: version });
+    }
+
+    public static sortVersions(versions: BSVersion[]): BSVersion[] {
+        const steamVersion = popElement(v => v.steam, versions);
+        const oculusVersion = popElement(v => v.oculus, versions);
+
+        const compare = (a: BSVersion, b: BSVersion) => ( +b.ReleaseDate - +a.ReleaseDate )
+
+        const sorted: BSVersion[] = versions.sort(compare);
+
+        sorted.unshift(...[steamVersion, oculusVersion].filter(Boolean).sort(compare));
+
+        return sorted;
     }
 
     public static removeDuplicateVersions(versions: BSVersion[]): BSVersion[] {
