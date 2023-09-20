@@ -10,3 +10,11 @@ export function swapElements<T = unknown>(from: number, to: number, arr: T[]): T
     [arr[from], arr[to]] = [arr[to], arr[from]];
     return arr;
 }
+
+export function popElement<T = unknown>(func: (element: T) => boolean, arr: T[]): T {
+    const index = arr.findIndex(func);
+    if (index === -1) {
+        return null;
+    }
+    return arr.splice(index, 1)[0];
+}
