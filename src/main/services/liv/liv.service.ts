@@ -20,14 +20,13 @@ export class LivService {
 
     }
 
-    public isLivInstalled(): Promise<boolean> {
+    public async isLivInstalled(): Promise<boolean> {
         return execOnOs({
             win32: async () => {
                 const regRes = await regedit.promisified.list([this.livRegeditKey]).then(res => res[this.livRegeditKey]);
                 return regRes?.exists;
             },
-            linux: async() => false,
-        });
+        }, true);
     }
 
     public async createLivShortcut(entry: LivEntry): Promise<void> {
