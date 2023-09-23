@@ -38,11 +38,11 @@ export class InstallationLocationService {
     }
 
     public async setInstallationDirectory(newDir: string): Promise<string> {
-        newDir = path.basename(newDir) === this.INSTALLATION_FOLDER ? newDir : path.join(newDir, this.INSTALLATION_FOLDER);
+        newDir = path.basename(newDir) === this.INSTALLATION_FOLDER ? path.join(newDir, "..") : newDir;
         const oldDir = await this.installationDirectory();
 
         await ensureFolderExist(oldDir);
-        await copyDirectoryWithJunctions(oldDir, newDir, { overwrite: true });
+        await copyDirectoryWithJunctions(oldDir, path.join(newDir, this.INSTALLATION_FOLDER), { overwrite: true });
 
         this._installationDirectory = newDir;
         this.installPathConfig.set(this.STORE_INSTALLATION_PATH_KEY, newDir);
@@ -57,23 +57,27 @@ export class InstallationLocationService {
     }
 
     public async installationDirectory(): Promise<string> {
-        if(this._installationDirectory) {
-            return this._installationDirectory;
-        }
-        
-        if(this.installPathConfig.has(this.STORE_INSTALLATION_PATH_KEY)) {
-            this._installationDirectory = this.installPathConfig.get(this.STORE_INSTALLATION_PATH_KEY) as string;
-            return this._installationDirectory;
-        }
 
-        const oldPath = path.join(app.getPath("documents"), this.INSTALLATION_FOLDER);
-        if(await pathExist(oldPath)){
-            this._installationDirectory = oldPath;
-            return this._installationDirectory;
-        }
+        const installParentPath = async () => {
+            if(this._installationDirectory) {
+                return this._installationDirectory;
+            }
 
-        this._installationDirectory = path.join(app.getPath("home"), this.INSTALLATION_FOLDER);
-        return this._installationDirectory;
+            if(this.installPathConfig.has(this.STORE_INSTALLATION_PATH_KEY)) {
+                return this.installPathConfig.get(this.STORE_INSTALLATION_PATH_KEY) as string;
+            }
+
+            const oldPath = path.join(app.getPath("documents"), this.INSTALLATION_FOLDER);
+            if(await pathExist(oldPath)){
+                return app.getPath("documents");
+            }
+
+            return app.getPath("home");
+        };
+
+        this._installationDirectory = await installParentPath();
+
+        return path.join(this._installationDirectory, this.INSTALLATION_FOLDER);
     }
 
     public async versionsDirectory(): Promise<string> {
