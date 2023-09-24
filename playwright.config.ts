@@ -14,5 +14,5 @@ export default defineConfig({
     testMatch: "**/*.test.ts",
     timeout: 200000,
     fullyParallel: true,
-    retries: 3,
+    retries: 2,
 });
