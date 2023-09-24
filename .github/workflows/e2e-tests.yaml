@@ -37,7 +37,8 @@ jobs:
               run: npm run e2e-test-ci
             
             - name: Upload test results
-              uses: actions/upload-artifact@v2
+              if: always()
+              uses: actions/checkout@v3
               with:
                   name: playwright-output
                   path: test-results
