@@ -30,7 +30,7 @@ export const AvailableVersionItem = memo(function AvailableVersionItem({version,
     const formatedDate = (() => dateFormat(+version.ReleaseDate * 1000, "ddd. d mmm yyyy"))();
 
     return (
-        <motion.li className="group relative w-72 h-60 transition-transform active:scale-[.98]" onClick={onClick} onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)}>
+        <motion.li id={`version-item-${version.BSManifest}`} className="group relative w-72 h-60 transition-transform active:scale-[.98]" onClick={onClick} onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)}>
             <GlowEffect visible={hovered || selected} className="absolute" />
             <div className={`relative flex flex-col overflow-hidden rounded-md w-72 h-60 cursor-pointer group-hover:shadow-none duration-300 bg-light-main-color-2 dark:bg-main-color-2 ${!selected && "shadow-lg shadow-gray-900"}`}>
                 <BsmImage image={version.ReleaseImg ? version.ReleaseImg : defaultImage} errorImage={defaultImage} placeholder={defaultImage} className="absolute top-0 right-0 w-full h-full opacity-40 blur-xl object-cover" loading="lazy" />

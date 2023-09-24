@@ -9,6 +9,7 @@ import { getCorrectTextColor } from "renderer/helpers/correct-text-color";
 type BsmButtonType = "primary" | "secondary" | "success" | "cancel" | "error";
 
 type Props = {
+    id?: string;
     className?: string;
     style?: CSSProperties;
     imgClassName?: string;
@@ -29,7 +30,7 @@ type Props = {
     textClassName?: string;
 };
 
-export function BsmButton({ className, style, imgClassName, iconClassName, icon, image, text, type, active, withBar = true, disabled, onClickOutside, onClick, typeColor, color, title, iconColor, textClassName }: Props) {
+export function BsmButton({ id, className, style, imgClassName, iconClassName, icon, image, text, type, active, withBar = true, disabled, onClickOutside, onClick, typeColor, color, title, iconColor, textClassName }: Props) {
     const t = useTranslation();
     const { firstColor, secondColor } = useThemeColor();
     const ref = useRef(null);
@@ -72,7 +73,7 @@ export function BsmButton({ className, style, imgClassName, iconClassName, icon,
     const handleClick = (e: MouseEvent<HTMLDivElement>) => !disabled && onClick?.(e);
 
     return (
-        <div ref={ref} onClick={handleClick} title={t(title)} className={`${className} overflow-hidden group ${!withBar && !disabled && (!!typeColor || !!color) && "hover:brightness-[1.15]"} ${disabled ? "brightness-75 cursor-not-allowed" : "cursor-pointer"} ${renderTypeColor}`} style={{ ...style, backgroundColor: primaryColor || color }}>
+        <div id={id} ref={ref} onClick={handleClick} title={t(title)} className={`${className} overflow-hidden group ${!withBar && !disabled && (!!typeColor || !!color) && "hover:brightness-[1.15]"} ${disabled ? "brightness-75 cursor-not-allowed" : "cursor-pointer"} ${renderTypeColor}`} style={{ ...style, backgroundColor: primaryColor || color }}>
             {image && <BsmImage image={image} className={imgClassName} />}
             {icon && <BsmIcon icon={icon} className={iconClassName ?? "h-full w-full text-gray-800 dark:text-white"} style={{ color: iconColor || textColor }} />}
             {text &&

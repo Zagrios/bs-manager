@@ -48,12 +48,12 @@ export function NavBar() {
             <NavBarSpliter />
             <div className="w-full pb-2 flex flex-col items-center content-center justify-start gap-1">
                 <Tippy placement="right" content={t("nav-bar.add-version")} className="!bg-neutral-900" arrow={false}>
-                    <Link className="rounded-md w-9 h-9 flex justify-center items-center hover:bg-light-main-color-3 dark:hover:bg-main-color-3" to="blah">
+                    <Link id="add-version-btn" className="rounded-md w-9 h-9 flex justify-center items-center hover:bg-light-main-color-3 dark:hover:bg-main-color-3" to="blah">
                         <BsmIcon icon="add" className="text-blue-500 h-[34px]" style={{ color }} />
                     </Link>
                 </Tippy>
                 <Tippy placement="right" content={t("nav-bar.settings")} className="!bg-neutral-900" arrow={false}>
-                    <Link className="rounded-md w-9 h-9 flex justify-center items-center hover:bg-light-main-color-3 dark:hover:bg-main-color-3" to="settings">
+                    <Link id="settings-btn" className="rounded-md w-9 h-9 flex justify-center items-center hover:bg-light-main-color-3 dark:hover:bg-main-color-3" to="settings">
                         <BsmIcon icon="settings" className="text-blue-500 h-7" style={{ color }} />
                     </Link>
                 </Tippy>

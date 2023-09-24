@@ -1,0 +1,41 @@
+name : e2e-tests
+
+on:
+    push:
+        branches: ["master"]
+    pull_request:
+        branches: ["master"]
+    workflow_dispatch:
+
+jobs:
+    e2e-tests-windows:
+        runs-on: windows-latest
+
+        steps:
+            - name: Cleanup files
+              run: cmd /r dir
+            
+            - name: Checkout
+              uses: actions/checkout@v3
+
+            - name: Use Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 18.x
+                  cache: "npm"
+              run: npm ci
+            
+            - name: Build
+              run: npm run build
+
+            - name: Package
+              run: npm exec -c 'electron-builder build --publish "never" --win --x64'
+            
+            - name: Run e2e tests
+              run: npm run e2e-test-ci
+            
+            - name: Upload test results
+              uses: actions/upload-artifact@v2
+              with:
+                  name: playwright-output
+                  path: test-results

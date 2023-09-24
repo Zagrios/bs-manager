@@ -16,7 +16,7 @@ export function SharedNavBarItem() {
     const color = useThemeColor("first-color");
 
     return (
-        <NavBarItem isActive={route === "/shared"}>
+        <NavBarItem id="shared-contents-btn" isActive={route === "/shared"}>
             <Tippy content={t("nav-bar.shared.tooltip")} className="font-bold !bg-neutral-900" placement="right-end" arrow={false} duration={[100, 0]} animation="shift-away-subtle">
                 <Link to="shared" className="w-full flex items-center justify-start content-center max-w-full h-[30px]">
                     <BsmIcon className="w-[19px] h-[19px] mr-[5px] shrink-0 brightness-125" icon="link" style={{ color }} />
