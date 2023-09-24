@@ -53,7 +53,7 @@ const installExtensions = async () => {
         .catch(log.error);
 };
 
-const createWindow = async (window: AppWindow = "index.html") => {
+const createWindow = async (window: AppWindow = "launcher.html") => {
     if (isDebug) {
         await installExtensions();
     }
