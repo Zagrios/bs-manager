@@ -11,7 +11,6 @@ import log from "electron-log";
 import { Observable, of } from "rxjs";
 import { BsmProtocolService } from "./bsm-protocol.service";
 import { app, shell} from "electron";
-import { Resvg } from "@resvg/resvg-js";
 import Color from "color";
 import { ensureDir, writeFile } from "fs-extra";
 import toIco from "to-ico";
@@ -20,6 +19,7 @@ import { WindowManagerService } from "./window-manager.service";
 import { IpcService } from "./ipc.service";
 import { BSVersionLibService } from "./bs-version-lib.service";
 import { execOnOs } from "../helpers/env.helpers";
+import sharp from "sharp";
 
 export class BSLauncherService {
     private static instance: BSLauncherService;
@@ -224,19 +224,16 @@ export class BSLauncherService {
         return res;
     }
 
-    private createShortcutPngBuffer(color: Color): Buffer{
+    private createShortcutPngBuffer(color: Color): Promise<Buffer>{
         
-        const svgIcon = `
+        const svgBuffer = Buffer.from(`
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 406.4 406.4" height="406.4" width="406.4">
                 <rect rx="69.453" height="406.4" width="406.4" fill="${color.hex()}"/>
                 <path d="M65.467 60.6H336.4v33.867L200.933 162.2 65.467 94.467z" fill="#fff"/>
             </svg>
-        `;
+        `);
 
-        return new Resvg(svgIcon, {
-            fitTo: { mode: "width", value: 256 }
-        }).render().asPng();
-
+        return sharp(svgBuffer).resize(256).png().toBuffer();
     }
 
     /**
@@ -262,7 +259,7 @@ export class BSLauncherService {
      * @returns {Promise<string>} Path of the icon
      */
     private async createShortcutIco(color: Color): Promise<string>{
-        const pngBuffer = this.createShortcutPngBuffer(color);
+        const pngBuffer = await this.createShortcutPngBuffer(color);
         const icoBuffer = await toIco([pngBuffer]);
 
         await ensureDir(IMAGE_CACHE_PATH);
