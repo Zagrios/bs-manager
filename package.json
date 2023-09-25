@@ -1,318 +1,320 @@
 {
-  "name": "bs-manager",
-  "description": "Manage maps, mods and more for Beat Saber",
-  "scripts": {
-    "clean": "ts-node ./.erb/scripts/clean.js dist",
-    "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
-    "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.prod.ts",
-    "build:renderer": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.prod.ts",
-    "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
-    "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx",
-    "package": "npm run clean dist && npm run build && electron-builder build --publish never",
-    "postinstall": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts && opencollective-postinstall",
-    "start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run start:renderer",
-    "start:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only ./src/main/main.ts",
-    "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
-    "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
-    "test": "jest",
-    "publish": "npm run clean dist && npm run build && electron-builder -c.win.certificateSha1=842a817a51e2a1d360fcd62f54bf5f9193e919e1 --publish always --win --x64",
-    "e2e-test": "npm run package && xvfb-maybe npx playwright test --workers=1",
-    "e2e-test-ci": "xvfb-maybe npx playwright test --workers=1"
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "cross-env NODE_ENV=development eslint --cache"
-    ],
-    "*.json,.{eslintrc,prettierrc}": [
-      "prettier --ignore-path .eslintignore --parser json --write"
-    ],
-    "*.{css,scss}": [
-      "prettier --ignore-path .eslintignore --single-quote --write"
-    ],
-    "*.{html,md,yml}": [
-      "prettier --ignore-path .eslintignore --single-quote --write"
-    ]
-  },
-  "build": {
-    "extraResources": [
-      "./assets/**"
-    ],
-    "productName": "BSManager",
-    "appId": "org.erb.BSManager",
-    "asarUnpack": "**\\*.{node,dll}",
-    "files": [
-      "dist/**/*",
-      "node_modules",
-      "package.json"
-    ],
-    "afterSign": ".erb/scripts/notarize.js",
-    "mac": {
-      "target": {
-        "target": "default",
-        "arch": [
-          "arm64",
-          "x64"
+    "name": "bs-manager",
+    "description": "Manage maps, mods and more for Beat Saber",
+    "scripts": {
+      "clean": "ts-node ./.erb/scripts/clean.js dist",
+      "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
+      "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.prod.ts",
+      "build:renderer": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.prod.ts",
+      "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
+      "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx",
+      "package": "npm run clean dist && npm run build && electron-builder build --publish never",
+      "postinstall": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts && opencollective-postinstall",
+      "start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run start:renderer",
+      "start:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only ./src/main/main.ts",
+      "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
+      "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
+      "test": "jest",
+      "publish": "npm run clean dist && npm run build && electron-builder -c.win.certificateSha1=842a817a51e2a1d360fcd62f54bf5f9193e919e1 --publish always --win --x64",
+      "e2e-test": "npm run package && xvfb-maybe npx playwright test --workers=1",
+      "e2e-test-ci": "xvfb-maybe npx playwright test --workers=1"
+    },
+    "lint-staged": {
+      "*.{js,jsx,ts,tsx}": [
+        "cross-env NODE_ENV=development eslint --cache"
+      ],
+      "*.json,.{eslintrc,prettierrc}": [
+        "prettier --ignore-path .eslintignore --parser json --write"
+      ],
+      "*.{css,scss}": [
+        "prettier --ignore-path .eslintignore --single-quote --write"
+      ],
+      "*.{html,md,yml}": [
+        "prettier --ignore-path .eslintignore --single-quote --write"
+      ]
+    },
+    "build": {
+      "extraResources": [
+        "./assets/**"
+      ],
+      "productName": "BSManager",
+      "appId": "org.erb.BSManager",
+      "asarUnpack": "**\\*.{node,dll}",
+      "files": [
+        "dist/**/*",
+        "node_modules",
+        "package.json"
+      ],
+      "afterSign": ".erb/scripts/notarize.js",
+      "mac": {
+        "target": {
+          "target": "default",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        },
+        "type": "distribution",
+        "hardenedRuntime": true,
+        "entitlements": "assets/entitlements.mac.plist",
+        "entitlementsInherit": "assets/entitlements.mac.plist",
+        "gatekeeperAssess": false
+      },
+      "dmg": {
+        "contents": [
+          {
+            "x": 130,
+            "y": 220
+          },
+          {
+            "x": 410,
+            "y": 220,
+            "type": "link",
+            "path": "/Applications"
+          }
         ]
       },
-      "type": "distribution",
-      "hardenedRuntime": true,
-      "entitlements": "assets/entitlements.mac.plist",
-      "entitlementsInherit": "assets/entitlements.mac.plist",
-      "gatekeeperAssess": false
+      "win": {
+        "target": [
+          "nsis",
+          "nsis-web"
+        ],
+        "icon": "assets/favicon.ico"
+      },
+      "linux": {
+        "target": [
+          "AppImage"
+        ],
+        "category": "Development"
+      },
+      "directories": {
+        "app": "release/app",
+        "buildResources": "assets",
+        "output": "release/build"
+      },
+      "publish": {
+        "provider": "github",
+        "owner": "Zagrios"
+      }
     },
-    "dmg": {
-      "contents": [
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/Zagrios/bs-manager.git"
+    },
+    "author": {
+      "name": "Zagrios",
+      "email": "peroz.mathieu@gmail.com",
+      "url": "https://github.com/Zagrios"
+    },
+    "contributors": [],
+    "license": "MIT",
+    "bugs": {
+      "url": "https://github.com/Zagrios/bs-manager/issues"
+    },
+    "keywords": [
+      "downgrade",
+      "launcher-application",
+      "beatsaber",
+      "beat-saber"
+    ],
+    "homepage": "https://github.com/Zagrios/bs-manager#readme",
+    "jest": {
+      "testURL": "http://localhost/",
+      "testEnvironment": "jsdom",
+      "transform": {
+        "\\.(ts|tsx|js|jsx)$": "ts-jest"
+      },
+      "moduleNameMapper": {
+        "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/.erb/mocks/fileMock.js",
+        "\\.(css|less|sass|scss)$": "identity-obj-proxy"
+      },
+      "moduleFileExtensions": [
+        "js",
+        "jsx",
+        "ts",
+        "tsx",
+        "json"
+      ],
+      "moduleDirectories": [
+        "node_modules",
+        "src"
+      ],
+      "testPathIgnorePatterns": [
+        "release/app/dist"
+      ],
+      "setupFiles": [
+        "./.erb/scripts/check-build-exists.ts"
+      ]
+    },
+    "devDependencies": {
+      "@electron/rebuild": "^3.2.13",
+      "@playwright/test": "^1.38.1",
+      "@pmmmwh/react-refresh-webpack-plugin": "0.5.5",
+      "@teamsupercell/typings-for-css-modules-loader": "^2.5.1",
+      "@testing-library/jest-dom": "^5.16.5",
+      "@testing-library/react": "^13.3.0",
+      "@types/archiver": "^5.3.1",
+      "@types/color": "^3.0.3",
+      "@types/dateformat": "^5.0.0",
+      "@types/jest": "^27.5.2",
+      "@types/node": "17.0.23",
+      "@types/node-fetch": "^2.6.3",
+      "@types/react": "^18.0.33",
+      "@types/react-dom": "^18.0.11",
+      "@types/react-outside-click-handler": "^1.3.1",
+      "@types/react-test-renderer": "^17.0.2",
+      "@types/react-virtualized-auto-sizer": "^1.0.1",
+      "@types/react-window": "^1.8.5",
+      "@types/recursive-readdir": "^2.2.1",
+      "@types/terser-webpack-plugin": "^5.0.4",
+      "@types/to-ico": "^1.1.1",
+      "@types/use-double-click": "^1.0.1",
+      "@types/webpack-bundle-analyzer": "^4.4.2",
+      "@types/webpack-env": "^1.18.0",
+      "@typescript-eslint/eslint-plugin": "^5.34.0",
+      "@typescript-eslint/parser": "^5.34.0",
+      "asar": "^3.2.0",
+      "autoprefixer": "^10.4.8",
+      "browserslist-config-erb": "^0.0.3",
+      "chalk": "^4.1.2",
+      "concurrently": "^7.2.2",
+      "core-js": "^3.24.1",
+      "cross-env": "^7.0.3",
+      "css-loader": "^6.7.1",
+      "css-minimizer-webpack-plugin": "^4.1.0",
+      "detect-port": "^1.3.0",
+      "electron": "^26.2.1",
+      "electron-builder": "^24.6.3",
+      "electron-devtools-installer": "^3.2.0",
+      "electron-notarize": "^1.2.1",
+      "electronmon": "^2.0.2",
+      "eslint": "^8.22.0",
+      "eslint-config-airbnb-base": "^15.0.0",
+      "eslint-config-erb": "^4.0.3",
+      "eslint-import-resolver-typescript": "^2.7.1",
+      "eslint-import-resolver-webpack": "^0.13.2",
+      "eslint-plugin-compat": "^4.0.2",
+      "eslint-plugin-import": "^2.25.4",
+      "eslint-plugin-jest": "^26.8.7",
+      "eslint-plugin-jsx-a11y": "^6.6.1",
+      "eslint-plugin-promise": "^6.0.0",
+      "eslint-plugin-react": "^7.30.0",
+      "eslint-plugin-react-hooks": "^4.6.0",
+      "file-loader": "^6.2.0",
+      "html-webpack-plugin": "^5.5.0",
+      "identity-obj-proxy": "^3.0.0",
+      "jest": "^27.5.1",
+      "lint-staged": "^12.5.0",
+      "mini-css-extract-plugin": "^2.6.1",
+      "opencollective-postinstall": "^2.0.3",
+      "playwright": "^1.38.1",
+      "playwright-core": "^1.38.1",
+      "postcss": "^8.4.16",
+      "postcss-loader": "^6.2.1",
+      "prettier": "^2.7.1",
+      "ps-scrollbar-tailwind": "0.0.1",
+      "react-refresh": "^0.12.0",
+      "react-refresh-typescript": "^2.0.7",
+      "react-test-renderer": "^18.2.0",
+      "rimraf": "^3.0.2",
+      "sass": "^1.54.5",
+      "sass-loader": "^12.6.0",
+      "style-loader": "^3.3.1",
+      "tailwind-scrollbar": "^2.0.1",
+      "tailwindcss": "^3.3.1",
+      "terser-webpack-plugin": "^5.3.5",
+      "ts-jest": "^27.1.5",
+      "ts-loader": "^9.3.0",
+      "ts-node": "^10.8.2",
+      "typescript": "^4.7.4",
+      "url-loader": "^4.1.1",
+      "webpack": "^5.74.0",
+      "webpack-bundle-analyzer": "^4.6.1",
+      "webpack-cli": "^4.10.0",
+      "webpack-dev-server": "^4.10.0",
+      "webpack-merge": "^5.8.0",
+      "xvfb-maybe": "^0.2.1"
+    },
+    "dependencies": {
+      "@node-steam/vdf": "^2.2.0",
+      "@tippyjs/react": "^4.2.6",
+      "archiver": "^6.0.1",
+      "color": "^4.2.3",
+      "dateformat": "^5.0.3",
+      "dot-prop": "^8.0.2",
+      "electron-debug": "^3.2.0",
+      "electron-log": "^4.4.8",
+      "electron-store": "^8.1.0",
+      "electron-updater": "^6.1.4",
+      "fast-deep-equal": "^3.1.3",
+      "framer-motion": "^10.16.4",
+      "fs-extra": "^11.1.1",
+      "history": "^5.3.0",
+      "jszip": "^3.10.1",
+      "md5-file": "^5.0.0",
+      "node-abi": "^3.47.0",
+      "node-fetch": "^2.6.7",
+      "node-stream-zip": "^1.15.0",
+      "ps-list": "^7.2.0",
+      "qrcode.react": "^3.1.0",
+      "react": "^18.2.0",
+      "react-colorful": "^5.6.1",
+      "react-dom": "^18.2.0",
+      "react-range": "^1.8.14",
+      "react-router-dom": "^6.3.0",
+      "react-virtualized-auto-sizer": "^1.0.12",
+      "react-window": "^1.8.8",
+      "recursive-readdir": "^2.2.3",
+      "regedit": "^5.1.2",
+      "rfdc": "^1.3.0",
+      "rxjs": "^7.8.0",
+      "sanitize-filename": "^1.6.3",
+      "semver": "^7.5.4",
+      "striptags": "^4.0.0-alpha.4",
+      "tailwind-scrollbar-hide": "^1.1.7",
+      "tailwindcss-scoped-groups": "^2.0.0",
+      "tippy.js": "^6.3.7",
+      "to-ico": "^1.1.5",
+      "use-double-click": "^1.0.5",
+      "use-fit-text": "^2.4.0"
+    },
+    "devEngines": {
+      "node": ">=14.x",
+      "npm": ">=7.x"
+    },
+    "collective": {
+      "url": "https://www.patreon.com/bsmanager"
+    },
+    "browserslist": [],
+    "prettier": {
+      "printWidth": 1000,
+      "bracketSameLine": false,
+      "arrowParens": "avoid",
+      "semi": true,
+      "singleQuote": false,
+      "jsxSingleQuote": false,
+      "trailingComma": "es5",
+      "bracketSpacing": true,
+      "tabWidth": 4,
+      "overrides": [
         {
-          "x": 130,
-          "y": 220
-        },
-        {
-          "x": 410,
-          "y": 220,
-          "type": "link",
-          "path": "/Applications"
+          "files": [
+            ".prettierrc",
+            ".eslintrc"
+          ],
+          "options": {
+            "parser": "json"
+          }
         }
       ]
     },
-    "win": {
-      "target": [
-        "nsis",
-        "nsis-web"
+    "electronmon": {
+      "patterns": [
+        "!src/__tests__/**",
+        "!release/**",
+        "!assets/**"
       ],
-      "icon": "assets/favicon.ico"
-    },
-    "linux": {
-      "target": [
-        "AppImage"
-      ],
-      "category": "Development"
-    },
-    "directories": {
-      "app": "release/app",
-      "buildResources": "assets",
-      "output": "release/build"
-    },
-    "publish": {
-      "provider": "github",
-      "owner": "Zagrios"
+      "logLevel": "quiet"
     }
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Zagrios/bs-manager.git"
-  },
-  "author": {
-    "name": "Zagrios",
-    "email": "peroz.mathieu@gmail.com",
-    "url": "https://github.com/Zagrios"
-  },
-  "contributors": [],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Zagrios/bs-manager/issues"
-  },
-  "keywords": [
-    "downgrade",
-    "launcher-application",
-    "beatsaber",
-    "beat-saber"
-  ],
-  "homepage": "https://github.com/Zagrios/bs-manager#readme",
-  "jest": {
-    "testURL": "http://localhost/",
-    "testEnvironment": "jsdom",
-    "transform": {
-      "\\.(ts|tsx|js|jsx)$": "ts-jest"
-    },
-    "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/.erb/mocks/fileMock.js",
-      "\\.(css|less|sass|scss)$": "identity-obj-proxy"
-    },
-    "moduleFileExtensions": [
-      "js",
-      "jsx",
-      "ts",
-      "tsx",
-      "json"
-    ],
-    "moduleDirectories": [
-      "node_modules",
-      "src"
-    ],
-    "testPathIgnorePatterns": [
-      "release/app/dist"
-    ],
-    "setupFiles": [
-      "./.erb/scripts/check-build-exists.ts"
-    ]
-  },
-  "devDependencies": {
-    "@electron/rebuild": "^3.2.13",
-    "@playwright/test": "^1.38.1",
-    "@pmmmwh/react-refresh-webpack-plugin": "0.5.5",
-    "@teamsupercell/typings-for-css-modules-loader": "^2.5.1",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.3.0",
-    "@types/archiver": "^5.3.1",
-    "@types/color": "^3.0.3",
-    "@types/dateformat": "^5.0.0",
-    "@types/jest": "^27.5.2",
-    "@types/node": "17.0.23",
-    "@types/node-fetch": "^2.6.3",
-    "@types/react": "^18.0.33",
-    "@types/react-dom": "^18.0.11",
-    "@types/react-outside-click-handler": "^1.3.1",
-    "@types/react-test-renderer": "^17.0.2",
-    "@types/react-virtualized-auto-sizer": "^1.0.1",
-    "@types/react-window": "^1.8.5",
-    "@types/recursive-readdir": "^2.2.1",
-    "@types/terser-webpack-plugin": "^5.0.4",
-    "@types/to-ico": "^1.1.1",
-    "@types/use-double-click": "^1.0.1",
-    "@types/webpack-bundle-analyzer": "^4.4.2",
-    "@types/webpack-env": "^1.18.0",
-    "@typescript-eslint/eslint-plugin": "^5.34.0",
-    "@typescript-eslint/parser": "^5.34.0",
-    "asar": "^3.2.0",
-    "autoprefixer": "^10.4.8",
-    "browserslist-config-erb": "^0.0.3",
-    "chalk": "^4.1.2",
-    "concurrently": "^7.2.2",
-    "core-js": "^3.24.1",
-    "cross-env": "^7.0.3",
-    "css-loader": "^6.7.1",
-    "css-minimizer-webpack-plugin": "^4.1.0",
-    "detect-port": "^1.3.0",
-    "electron": "^26.2.1",
-    "electron-builder": "^24.6.3",
-    "electron-devtools-installer": "^3.2.0",
-    "electron-notarize": "^1.2.1",
-    "electronmon": "^2.0.2",
-    "eslint": "^8.22.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-erb": "^4.0.3",
-    "eslint-import-resolver-typescript": "^2.7.1",
-    "eslint-import-resolver-webpack": "^0.13.2",
-    "eslint-plugin-compat": "^4.0.2",
-    "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-jest": "^26.8.7",
-    "eslint-plugin-jsx-a11y": "^6.6.1",
-    "eslint-plugin-promise": "^6.0.0",
-    "eslint-plugin-react": "^7.30.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "file-loader": "^6.2.0",
-    "html-webpack-plugin": "^5.5.0",
-    "identity-obj-proxy": "^3.0.0",
-    "jest": "^27.5.1",
-    "lint-staged": "^12.5.0",
-    "mini-css-extract-plugin": "^2.6.1",
-    "opencollective-postinstall": "^2.0.3",
-    "playwright": "^1.38.1",
-    "playwright-core": "^1.38.1",
-    "postcss": "^8.4.16",
-    "postcss-loader": "^6.2.1",
-    "prettier": "^2.7.1",
-    "ps-scrollbar-tailwind": "0.0.1",
-    "react-refresh": "^0.12.0",
-    "react-refresh-typescript": "^2.0.7",
-    "react-test-renderer": "^18.2.0",
-    "rimraf": "^3.0.2",
-    "sass": "^1.54.5",
-    "sass-loader": "^12.6.0",
-    "style-loader": "^3.3.1",
-    "tailwind-scrollbar": "^2.0.1",
-    "tailwindcss": "^3.3.1",
-    "terser-webpack-plugin": "^5.3.5",
-    "ts-jest": "^27.1.5",
-    "ts-loader": "^9.3.0",
-    "ts-node": "^10.8.2",
-    "typescript": "^4.7.4",
-    "url-loader": "^4.1.1",
-    "webpack": "^5.74.0",
-    "webpack-bundle-analyzer": "^4.6.1",
-    "webpack-cli": "^4.10.0",
-    "webpack-dev-server": "^4.10.0",
-    "webpack-merge": "^5.8.0",
-    "xvfb-maybe": "^0.2.1"
-  },
-  "dependencies": {
-    "@node-steam/vdf": "^2.2.0",
-    "@tippyjs/react": "^4.2.6",
-    "archiver": "^6.0.1",
-    "color": "^4.2.3",
-    "dateformat": "^5.0.3",
-    "dot-prop": "^8.0.2",
-    "electron-debug": "^3.2.0",
-    "electron-log": "^4.4.8",
-    "electron-store": "^8.1.0",
-    "electron-updater": "^6.1.4",
-    "fast-deep-equal": "^3.1.3",
-    "framer-motion": "^10.16.4",
-    "fs-extra": "^11.1.1",
-    "history": "^5.3.0",
-    "jszip": "^3.10.1",
-    "md5-file": "^5.0.0",
-    "node-fetch": "^2.6.7",
-    "node-stream-zip": "^1.15.0",
-    "ps-list": "^7.2.0",
-    "qrcode.react": "^3.1.0",
-    "react": "^18.2.0",
-    "react-colorful": "^5.6.1",
-    "react-dom": "^18.2.0",
-    "react-range": "^1.8.14",
-    "react-router-dom": "^6.3.0",
-    "react-virtualized-auto-sizer": "^1.0.12",
-    "react-window": "^1.8.8",
-    "recursive-readdir": "^2.2.3",
-    "regedit": "^5.1.2",
-    "rfdc": "^1.3.0",
-    "rxjs": "^7.8.0",
-    "sanitize-filename": "^1.6.3",
-    "semver": "^7.5.4",
-    "striptags": "^4.0.0-alpha.4",
-    "tailwind-scrollbar-hide": "^1.1.7",
-    "tailwindcss-scoped-groups": "^2.0.0",
-    "tippy.js": "^6.3.7",
-    "to-ico": "^1.1.5",
-    "use-double-click": "^1.0.5",
-    "use-fit-text": "^2.4.0"
-  },
-  "devEngines": {
-    "node": ">=14.x",
-    "npm": ">=7.x"
-  },
-  "collective": {
-    "url": "https://www.patreon.com/bsmanager"
-  },
-  "browserslist": [],
-  "prettier": {
-    "printWidth": 1000,
-    "bracketSameLine": false,
-    "arrowParens": "avoid",
-    "semi": true,
-    "singleQuote": false,
-    "jsxSingleQuote": false,
-    "trailingComma": "es5",
-    "bracketSpacing": true,
-    "tabWidth": 4,
-    "overrides": [
-      {
-        "files": [
-          ".prettierrc",
-          ".eslintrc"
-        ],
-        "options": {
-          "parser": "json"
-        }
-      }
-    ]
-  },
-  "electronmon": {
-    "patterns": [
-      "!src/__tests__/**",
-      "!release/**",
-      "!assets/**"
-    ],
-    "logLevel": "quiet"
   }
-}
+  
