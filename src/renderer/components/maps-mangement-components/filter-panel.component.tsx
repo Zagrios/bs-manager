@@ -4,7 +4,7 @@ import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { MAP_TYPES } from "renderer/partials/maps/map-tags/map-types";
 import { MAP_STYLES } from "renderer/partials/maps/map-tags/map-styles";
 import { BsmCheckbox } from "../shared/bsm-checkbox.component";
-import { minToS } from "renderer/helpers/time-utils";
+import { minToS } from "shared/helpers/time.helpers";
 import dateFormat from "dateformat";
 import { BsmRange } from "../shared/bsm-range.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";

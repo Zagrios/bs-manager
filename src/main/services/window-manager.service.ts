@@ -1,4 +1,4 @@
-import { app, BrowserWindow, BrowserWindowConstructorOptions, shell } from "electron";
+import { app, BrowserWindow, BrowserWindowConstructorOptions, shell, WebContents } from "electron";
 import { resolveHtmlPath } from "../util";
 import { UtilsService } from "./utils.service";
 import { AppWindow } from "shared/models/window-manager/app-window.model";
@@ -10,6 +10,7 @@ export class WindowManagerService {
     private static instance: WindowManagerService;
 
     private readonly PRELOAD_PATH = app.isPackaged ? path.join(__dirname, "preload.js") : path.join(__dirname, "../../../.erb/dll/preload.js");
+    private readonly IS_DEBUG = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true"
 
     private readonly utilsService: UtilsService = UtilsService.getInstance();
 
@@ -28,10 +29,10 @@ export class WindowManagerService {
         show: false,
         frame: false,
         titleBarOverlay: false,
-        webPreferences: { preload: this.PRELOAD_PATH, webSecurity: false },
+        webPreferences: { preload: this.PRELOAD_PATH, webSecurity: !this.IS_DEBUG },
     };
 
-    private readonly windows: Map<AppWindow, BrowserWindow> = new Map<AppWindow, BrowserWindow>();
+    private readonly windows = new Map<string, BrowserWindow>();
 
     public static getInstance(): WindowManagerService {
         if (!WindowManagerService.instance) {
@@ -42,8 +43,7 @@ export class WindowManagerService {
 
     private constructor() {}
 
-    public openWindow(windowType: AppWindow, options?: BrowserWindowConstructorOptions): Promise<BrowserWindow> {
-        const window = new BrowserWindow({ ...this.appWindowsOptions[windowType], ...this.baseWindowOption, ...options });
+    private handleNewWindow(url: AppWindow, window: BrowserWindow){
 
         window.webContents.setWindowOpenHandler(({ url }) => {
             if(isValidUrl(url)){
@@ -51,11 +51,12 @@ export class WindowManagerService {
             }
             
             return { action: "deny"}
-        })
+        });
 
-        const promise = window.loadURL(resolveHtmlPath(windowType));
         window.removeMenu();
         window.setMenu(null);
+
+        const promise = window.loadURL(isValidUrl(url) ? url : resolveHtmlPath(url));
 
         window.once("ready-to-show", () => {
             if (!window) {
@@ -65,16 +66,22 @@ export class WindowManagerService {
         });
 
         window.once("closed", () => {
-            this.windows.delete(windowType);
+            this.windows.delete(url);
             if (!this.windows.size) {
                 app.quit();
             }
         });
 
-        this.windows.set(windowType, window);
-        this.utilsService.setMainWindows(this.windows);
+        this.windows.set(url, window);
+        this.utilsService.setMainWindows(this.windows as Map<AppWindow, BrowserWindow>); // TODO : remove
+
 
         return promise.then(() => window);
+    }
+
+    public openWindow(windowType: AppWindow, options?: BrowserWindowConstructorOptions): Promise<BrowserWindow> {
+        const window = new BrowserWindow({ ...(this.appWindowsOptions[windowType] ?? {}), ...this.baseWindowOption, ...options });
+        return this.handleNewWindow(windowType, window);
     }
 
     public closeAllWindows(except?: AppWindow) {
@@ -96,7 +103,7 @@ export class WindowManagerService {
         return this.windows.get(window);
     }
 
-    public getAppWindowFromWebContents(sender: Electron.WebContents): AppWindow {
+    public getAppWindowFromWebContents(sender: WebContents): AppWindow {
         return Array.from(this.windows.entries()).find(([, value]) => value.webContents.id === sender.id)[0];
     }
 

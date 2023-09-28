@@ -5,6 +5,10 @@ export function minToS(minutes: number): number {
     return minutes * SECONDS_IN_MINUTE;
 }
 
+export function minToMs(minutes: number): number {
+    return minToS(minutes) * 1000;
+}
+
 export function hourToMin(hours: number): number {
     return hours * MINUTES_IN_HOUR;
 }
