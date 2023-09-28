@@ -43,6 +43,7 @@
             "package.json"
         ],
         "afterSign": ".erb/scripts/notarize.js",
+        "afterPack": ".erb/scripts/after-pack.js",
         "mac": {
             "target": {
                 "target": "default",
@@ -228,6 +229,7 @@
         "webpack-merge": "^5.8.0"
     },
     "dependencies": {
+        "@electron/fuses": "^1.6.2",
         "@node-steam/vdf": "^2.2.0",
         "@tippyjs/react": "^4.2.6",
         "archiver": "^6.0.1",
