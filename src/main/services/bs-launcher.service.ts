@@ -161,7 +161,7 @@ export class BSLauncherService {
                     bsProcess.removeAllListeners("error");
                     bsProcess.removeAllListeners("exit");
                     resolve(-1);
-                }, 15_000);
+                }, 30_000);
 
             }).then(exitCode => {
                 log.info("BS process exit code", exitCode);
