@@ -1,9 +1,10 @@
-import { CopyOptions, copy, ensureDir, move, symlink } from "fs-extra";
+import { CopyOptions, copy, createReadStream, ensureDir, move, symlink } from "fs-extra";
 import { access, mkdir, rm, readdir, unlink, lstat, readlink } from "fs/promises";
 import path from "path";
 import { Observable } from "rxjs";
 import log from "electron-log";
 import { BsmException } from "shared/models/bsm-exception.model";
+import crypto from "crypto";
 
 export async function pathExist(path: string): Promise<boolean> {
     try {
@@ -151,6 +152,16 @@ export async function copyDirectoryWithJunctions(src: string, dest: string, opti
             await symlink(newTarget, destinationPath, "junction");
         }
     }
+}
+
+export function hashFile(filePath: string, algorithm = "sha256"): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const shasum = crypto.createHash(algorithm);
+        const stream = createReadStream(filePath);
+        stream.on("data", data => shasum.update(data));
+        stream.on("error", reject);
+        stream.on("close", () => resolve(shasum.digest("hex")));
+    });
 }
 
 export interface Progression<T = unknown> {

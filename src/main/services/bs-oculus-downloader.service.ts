@@ -2,6 +2,8 @@ import { BSVersion } from "../../shared/bs-version.interface";
 import { WindowManagerService } from "./window-manager.service";
 import { minToMs } from "../../shared/helpers/time.helpers";
 import log from "electron-log";
+import { CustomError } from "../../shared/models/exceptions/custom-error.class";
+import { OculusDownloader } from "../models/oculus-downloader.class";
 
 export class BsOculusDownloaderService {
 
@@ -17,8 +19,12 @@ export class BsOculusDownloaderService {
 
     private readonly windows: WindowManagerService;
 
+    private readonly oculusDownloader: OculusDownloader;
+
     private constructor() {
         this.windows = WindowManagerService.getInstance();
+
+        this.oculusDownloader = new OculusDownloader();
     }
 
     private isUserTokenValid(token: string): boolean{
@@ -61,7 +67,7 @@ export class BsOculusDownloaderService {
 
         const promise = new Promise<string>((resolve, reject) => {
             timout = setTimeout(() => {
-                reject(new Error("Trying to get Oculus user token timed out"));
+                reject(new CustomError("Trying to get Oculus user token timed out", "OCULUS_LOGIN_TIMED_OUT"));
                 window.close();
             }, minToMs(5));
 
@@ -78,7 +84,7 @@ export class BsOculusDownloaderService {
             });
 
             window.on("closed", () => {
-                reject(new Error("Oculus login window closed by user"));
+                reject(new CustomError("Oculus login window closed by user", "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER"));
             });
         }).finally(() => {
             if(!window.isDestroyed() && window.isClosable()){
@@ -90,8 +96,14 @@ export class BsOculusDownloaderService {
         return promise;
     }
 
-    public downloadVersion(version: BSVersion){
-        return this.getUserToken();
+    public async downloadVersion(version: BSVersion){
+        const token = await this.getUserToken();
+        console.log(token);
+        const s = this.oculusDownloader.downloadApp({ accessToken: token, binaryId: "5074476459318759", destination: "" }).subscribe({
+            next: a => console.log(a),
+            error: a => console.error(a),
+            complete: () => console.log("complete")
+        });
     }
 
 }
