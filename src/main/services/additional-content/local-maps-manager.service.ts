@@ -7,7 +7,7 @@ import { InstallationLocationService } from "../installation-location.service";
 import { UtilsService } from "../utils.service";
 import crypto from "crypto";
 import { lstatSync } from "fs";
-import { copy, createReadStream, ensureDir, unlink } from "fs-extra";
+import { copy, createReadStream, ensureDir, realpath, unlink } from "fs-extra";
 import StreamZip from "node-stream-zip";
 import { RequestService } from "../request.service";
 import sanitize from "sanitize-filename";
@@ -290,10 +290,16 @@ export class LocalMapsManagerService {
 
         const versions = await this.localVersion.getInstalledVersions();
         const downloadedMap = await this.downloadMap(map, versions.pop());
+        const downloadedMapRealFolder = await realpath(path.dirname(downloadedMap.path));
 
         for (const version of versions) {
             const versionMapsPath = await this.getMapsFolderPath(version);
             await ensureDir(versionMapsPath);
+
+            if((await realpath(versionMapsPath)) === downloadedMapRealFolder){
+                continue;
+            }
+
             await copy(downloadedMap.path, path.join(versionMapsPath, path.basename(downloadedMap.path)), { overwrite: true });
         }
     }
