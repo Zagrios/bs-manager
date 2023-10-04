@@ -1,8 +1,8 @@
-import fetch from "node-fetch";
-import { ApiResult } from "renderer/models/api/api.model";
 import { MSGetQuery, MSGetQueryFilter, MSGetResponse } from "../../../../shared/models/models/model-saber.model";
+import { RequestService } from "../../request.service";
 
 export class ModelSaberApiService {
+
     private static instance: ModelSaberApiService;
 
     public static getInstance(): ModelSaberApiService {
@@ -15,7 +15,11 @@ export class ModelSaberApiService {
     private readonly API_URL = "https://modelsaber.com/api/v2/";
     private readonly ENDPOINTS = { get: "get.php", types: "types.php" };
 
-    private constructor() {}
+    private readonly request: RequestService;
+
+    private constructor() {
+        this.request = RequestService.getInstance();
+    }
 
     private parseFilters(filters: MSGetQueryFilter[]): string {
         if (!filters) {
@@ -50,19 +54,10 @@ export class ModelSaberApiService {
         return new URLSearchParams(searchParams);
     }
 
-    public async searchModel(query: MSGetQuery): Promise<ApiResult<MSGetResponse>> {
+    public async searchModel(query: MSGetQuery): Promise<MSGetResponse> {
         const url = new URL(this.ENDPOINTS.get, this.API_URL);
-
         url.search = this.buildUrlQuery(query).toString();
 
-        const res = await fetch(url.toString());
-
-        if (!res.ok) {
-            return { data: null, status: res.status };
-        }
-
-        const data = (await res.json()) as MSGetResponse;
-
-        return { data, status: res.status };
+        return this.request.getJSON<MSGetResponse>(url.toString());
     }
 }

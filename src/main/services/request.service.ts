@@ -1,4 +1,4 @@
-import { get } from "https";
+import { Agent, get } from "https";
 import { createWriteStream, unlink } from "fs";
 import { Progression } from "main/helpers/fs.helpers";
 import { Observable, shareReplay, tap } from "rxjs";
@@ -17,9 +17,14 @@ export class RequestService {
 
     private constructor() {}
 
+    private get ipv4Agent(){
+        return new Agent({ family: 4 });
+    }
+
     public async getJSON<T = unknown>(url: RequestInfo, options?: RequestInit): Promise<T> {
+
         try {
-            const response = await fetch(url, options);
+            const response = await fetch(url, {...{ agent: this.ipv4Agent }, ...options});
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status} ${response}`);
@@ -45,7 +50,7 @@ export class RequestService {
             });
             file.on("error", err => unlink(dest, () => subscriber.error(err)));
 
-            const req = get(url, res => {
+            const req = get({href: url, agent: this.ipv4Agent}, res => {
                 progress.total = parseInt(res.headers?.["content-length"] || "0", 10);
 
                 res.on("data", chunk => {
@@ -72,7 +77,7 @@ export class RequestService {
 
             const allChunks: Buffer[] = [];
 
-            const req = get(url, res => {
+            const req = get({href: url, agent: this.ipv4Agent}, res => {
                 progress.total = parseInt(res.headers?.["content-length"] || "0", 10);
 
                 res.on("data", chunk => {
