@@ -52,7 +52,7 @@ export class IpcService {
         const sub = observable.subscribe({
             next: data => this.send(channel, window, data),
             error: error => {
-                log.error(error);
+                log.error(channel, error);
                 this.send(this.getErrorChannel(channel), window, error);
             },
             complete: () => this.send(this.getCompleteChannel(channel), window)

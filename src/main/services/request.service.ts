@@ -24,10 +24,10 @@ export class RequestService {
     public async getJSON<T = unknown>(url: RequestInfo, options?: RequestInit): Promise<T> {
 
         try {
-            const response = await fetch(url, {...{ agent: this.ipv4Agent }, ...options});
+            const response = await fetch(url, {...options, agent: this.ipv4Agent});
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status} ${response}`);
+                throw new Error(`HTTP error! status: ${response.status} ${url}`);
             }
 
             return await response.json();
@@ -50,7 +50,7 @@ export class RequestService {
             });
             file.on("error", err => unlink(dest, () => subscriber.error(err)));
 
-            const req = get({href: url, agent: this.ipv4Agent}, res => {
+            const req = get(url, { agent: this.ipv4Agent }, res => {
                 progress.total = parseInt(res.headers?.["content-length"] || "0", 10);
 
                 res.on("data", chunk => {
@@ -77,7 +77,7 @@ export class RequestService {
 
             const allChunks: Buffer[] = [];
 
-            const req = get({href: url, agent: this.ipv4Agent}, res => {
+            const req = get(url, { agent: this.ipv4Agent }, res => {
                 progress.total = parseInt(res.headers?.["content-length"] || "0", 10);
 
                 res.on("data", chunk => {
