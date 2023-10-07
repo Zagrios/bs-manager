@@ -183,7 +183,13 @@ export class BSLauncherService {
             shortcutLink = new URL(shortcutLink);
         }
 
-        return objectFromEntries(shortcutLink.searchParams.entries()) as ShortcutParams;
+        const params = objectFromEntries(shortcutLink.searchParams.entries()) as ShortcutParams;
+
+        if(typeof params.additionalArgs === "string"){
+            params.additionalArgs = [params.additionalArgs];
+        }
+
+        return params;
     }
 
     public shortcutLinkToLaunchOptions(shortcutLink: string|URL): LaunchOption{
