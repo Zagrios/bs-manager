@@ -37,7 +37,7 @@ test('should be able to select then unselect a bs version', async () => {
     expect(await addVersionPanel.downloadVersionButton.isVisible()).toBeTruthy();
 
     await addVersionPanel.clickVersion(versionManifest);  // deselect version 0.12.2
-    await pause(2000);
+    await pause(3000);
 
     expect(await addVersionPanel.downloadVersionButton.isVisible()).toBeFalsy();
 

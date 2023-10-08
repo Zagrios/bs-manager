@@ -22,6 +22,7 @@ import { IpcRequest } from "shared/models/ipc";
 import { LivShortcut } from "./services/liv/liv-shortcut.service";
 
 const isDebug = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true";
+const isE2E = process.env.E2E_BUILD === "true";
 
 log.transports.file.level = "info";
 log.transports.file.resolvePath = () => {
@@ -53,7 +54,7 @@ const installExtensions = async () => {
         .catch(log.error);
 };
 
-const createWindow = async (window: AppWindow = "index.html") => {
+const createWindow = async (window: AppWindow) => {
     if (isDebug) {
         await installExtensions();
     }
@@ -92,7 +93,7 @@ if (!gotTheLock) {
         const deepLink = process.argv.find(arg => DeepLinkService.getInstance().isDeepLink(arg));
 
         if (!deepLink) {
-            createWindow();
+            createWindow(!isE2E ? "launcher.html" : "index.html");
         } else {
             DeepLinkService.getInstance().dispatchLinkOpened(deepLink);
         }

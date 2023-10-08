@@ -18,30 +18,27 @@ export async function startApp(): Promise<StartAppResponse> {
     const appInfo = parseElectronApp(latestBuild);
     const electronApp = await electron.launch({
         args: [appInfo.main],
+        env: {
+            ...process.env,
+            E2E_BUILD: "true",
+        },
         executablePath: appInfo.executable,
         recordVideo: {
             dir: getRecordingPath(appInfo.platform),
             size: {
-                width: 1920,
-                height: 1080,
+                width: 1200,
+                height: 800,
             },
         },
     });
   
-    await electronApp.firstWindow();
-
-    // wait for auto-updater to pass
-    let appWindow: Page;
-    while (!appWindow) {    
-        appWindow = getMainWindow(electronApp.windows());
-        await pause(500);
-    }
+    const appWindow = await electronApp.firstWindow();
 
     if (!appWindow) {
         throw new Error('Unable to get main window');
     }
 
-    await pause(4000);
+    await pause(3000);
 
     appWindow.on('console', log.info);
     appWindow.screenshot({path: path.join(TEST_OUTPUT_DIR, "initial-screen.png")});
