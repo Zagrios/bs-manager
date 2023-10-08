@@ -14,7 +14,7 @@ import { IpcRequest } from "shared/models/ipc";
 import { BPList, DownloadPlaylistProgression } from "shared/models/playlists/playlist.interface";
 import { copyFileSync, readFileSync } from "fs";
 import { BeatSaverService } from "../thrid-party/beat-saver/beat-saver.service";
-import { copySync } from "fs-extra";
+import { copy, realpath } from "fs-extra";
 import { ensureFolderExist, pathExist } from "../../helpers/fs.helpers";
 
 export class LocalPlaylistsManagerService {
@@ -180,14 +180,27 @@ export class LocalPlaylistsManagerService {
 
         const { bpListPath, mapsPath } = await lastValueFrom(this.downloadPlaylist(bpListUrl, versions.pop()));
 
+        if(mapsPath?.length === 0 || !bpListPath) {
+            return;
+        }
+
+        const realSourceMapsFolder = await realpath(path.dirname(mapsPath[0]));
+
         for (const version of versions) {
             await this.installBPListFile(bpListPath, version);
 
+            const versionMapsFolder = await this.maps.getMapsFolderPath(version);
+            const realDestMapsFolder = await realpath(versionMapsFolder);
+
+            if(realSourceMapsFolder === realDestMapsFolder) {
+                continue;
+            }
+
             for (const mapPath of mapsPath) {
-                const versionMapsFolder = await this.maps.getMapsFolderPath(version);
+
                 const mapDest = path.join(versionMapsFolder, path.basename(mapPath));
 
-                copySync(mapPath, mapDest, { overwrite: true });
+                await copy(mapPath, mapDest, { overwrite: true });
             }
         }
     }
