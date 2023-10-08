@@ -27,8 +27,9 @@ test.afterEach(async () => {
 });
 
 test('should be able to select then unselect a bs version', async () => {
-    const versionManifest = "5325635033564462932";
-    await addVersionPanel.selectYear("2018");
+    const versionManifest = "8948172000430595334";
+    await addVersionPanel.selectYear("2021");
+    await pause(1000);
 
     await addVersionPanel.clickVersion(versionManifest); // select version 0.12.2
     await pause(1000);
@@ -36,7 +37,7 @@ test('should be able to select then unselect a bs version', async () => {
     expect(await addVersionPanel.downloadVersionButton.isVisible()).toBeTruthy();
 
     await addVersionPanel.clickVersion(versionManifest);  // deselect version 0.12.2
-    await pause(1000);
+    await pause(2000);
 
     expect(await addVersionPanel.downloadVersionButton.isVisible()).toBeFalsy();
 

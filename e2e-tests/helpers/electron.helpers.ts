@@ -22,8 +22,8 @@ export async function startApp(): Promise<StartAppResponse> {
         recordVideo: {
             dir: getRecordingPath(appInfo.platform),
             size: {
-                width: 1200,
-                height: 800,
+                width: 1920,
+                height: 1080,
             },
         },
     });
@@ -41,7 +41,7 @@ export async function startApp(): Promise<StartAppResponse> {
         throw new Error('Unable to get main window');
     }
 
-    await pause(3000);
+    await pause(4000);
 
     appWindow.on('console', log.info);
     appWindow.screenshot({path: path.join(TEST_OUTPUT_DIR, "initial-screen.png")});
