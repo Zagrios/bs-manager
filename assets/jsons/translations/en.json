@@ -44,7 +44,7 @@
             "maps": {
                 "title": "Shared maps",
                 "search-bar": {
-                    "search-placeholder": "Search installed maps",
+                    "search-placeholder": "Search a map",
                     "filters-btn": "Filters",
                     "dropdown": {
                         "export-maps": "Export maps",
@@ -738,7 +738,7 @@
         },
         "panel": {
             "actions": {
-                "search": "Search installed models",
+                "search": "Search a model",
                 "drop-down": {
                     "delete": "Delete models",
                     "export": "Export models"
