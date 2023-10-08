@@ -2,6 +2,7 @@ import { ipcMain } from "electron";
 import { IpcRequest } from "shared/models/ipc";
 import { LocalPlaylistsManagerService } from "../services/additional-content/local-playlists-manager.service";
 import { UtilsService } from "../services/utils.service";
+import log from "electron-log";
 
 ipcMain.on("one-click-install-playlist", async (event, request: IpcRequest<string>) => {
     const utils = UtilsService.getInstance();
@@ -13,6 +14,7 @@ ipcMain.on("one-click-install-playlist", async (event, request: IpcRequest<strin
             utils.ipcSend(request.responceChannel, { success: true });
         })
         .catch(e => {
+            log.error(e);
             utils.ipcSend(request.responceChannel, { success: false, error: e });
         });
 });
