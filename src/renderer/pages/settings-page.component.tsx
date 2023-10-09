@@ -56,6 +56,7 @@ export function SettingsPage() {
     const updaterService = useService(AutoUpdaterService);
     const authService = useService(AuthUserService);
     const { firstColor, secondColor } = useThemeColor();
+    const appVersion = useObservable(updaterService.getAppVersion());
 
     const themeItem: RadioItem[] = [
         { id: 0, text: "pages.settings.appearance.themes.dark", value: "dark" as ThemeConfig },
@@ -80,7 +81,7 @@ export function SettingsPage() {
     const [mapDeepLinksEnabled, setMapDeepLinksEnabled] = useState(false);
     const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
     const [modelsDeepLinkEnabled, setModelsDeepLinkEnabled] = useState(false);
-    const appVersion = useObservable(ipcService.sendV2<string>("current-version"));
+    
     const steamSessionExist = useObservable(authService.sessionExist$);
 
     useEffect(() => {
@@ -88,6 +89,7 @@ export function SettingsPage() {
         mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
+
 
     }, []);
 
@@ -174,7 +176,7 @@ export function SettingsPage() {
 
     const openLogs = () => ipcService.sendLazy("open-logs");
 
-    const openChangelog = () =>  updaterService.showChangelog().then(res => setModalChangelogResponse(res));
+    const openChangelog = () =>  updaterService.showChangelog();
 
     const showDeepLinkError = (isDeactivation: boolean) => {
         const desc = isDeactivation ? "notifications.settings.additional-content.deep-link.deactivation.error.description" : "notifications.settings.additional-content.deep-link.activation.error.description";
@@ -415,7 +417,7 @@ export function SettingsPage() {
                     </SettingContainer>
                 </SettingContainer>
 
-                <Tippy content={modalChangelogResponse ? t("pages.settings.release-note.open-release-note"):t("pages.settings.release-note.no-release-note")} placement="left" className="font-bold bg-main-color-3" duration={[200, 0]} hideOnClick={false}>
+                <Tippy content={true ? t("pages.settings.release-note.open-release-note"):t("pages.settings.release-note.no-release-note")} placement="left" className="font-bold bg-main-color-3" duration={[200, 0]} hideOnClick={false}>
                 <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5 hover:brightness-125 cursor-pointer" onClick={openChangelog}>v{appVersion}</span>
               </Tippy>
             </div>
