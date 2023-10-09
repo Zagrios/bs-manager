@@ -122,7 +122,7 @@
 </div>
 <br>
 <div align="center">
- https://www.youtube.com/watch?v=m9-WRRSSt3A
+ [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/m9-WRRSSt3A/0.jpg)](https://www.youtube.com/watch?v=m9-WRRSSt3A)
 </div>
 <br>
 
