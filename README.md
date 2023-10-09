@@ -122,7 +122,7 @@
 </div>
 <br>
 <div align="center">
-    [![Watch the video](https://www.youtube.com/watch?v=m9-WRRSSt3A)](https://www.youtube.com/watch?v=m9-WRRSSt3A)
+ https://www.youtube.com/watch?v=m9-WRRSSt3A
 </div>
 <br>
 
