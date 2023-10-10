@@ -122,7 +122,9 @@
 </div>
 <br>
 <div align="center">
-[![Miniature de la vidéo]](https://www.youtube.com/watch?v=m9-WRRSSt3A)
+  
+`Upload Video Here`
+  
 <br>
 
 <!--BUILT WITH-->
