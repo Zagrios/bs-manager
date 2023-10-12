@@ -67,6 +67,18 @@
 
 <!--
 ----------------------------------------
+    ROADMAP
+----------------------------------------
+-->
+<div align="center">
+  <hr>
+  <h1><b>Roadmap</b></h1>
+    <code>Upload ROADMAP Here</code>
+</div>
+
+
+<!--
+----------------------------------------
     TABLE OF CONTENTS
 ----------------------------------------
 -->
@@ -141,18 +153,6 @@
   <div align="right">
     [<a href="#readme-bot">Go to bottom</a>]
   </div>
-</div>
-
-
-<!--
-----------------------------------------
-    ROADMAP
-----------------------------------------
--->
-<div align="center">
-  <hr>
-  <h1><b>Roadmap</b></h1>
-    <code>Upload ROADMAP Here</code>
 </div>
 
 
