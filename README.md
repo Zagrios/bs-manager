@@ -61,7 +61,6 @@
       src="https://img.shields.io/badge/-🥰%20Support%20BSM-EC4546?style=for-the-badge" alt="Donation" /></a>
   <a href="https://twitter.com/BSManager_"><img
       src="https://img.shields.io/badge/-Twitter-F5F8FA?style=for-the-badge&logo=Twitter" alt="Twitter" /></a>
-  <hr>
 </div>
 
 
