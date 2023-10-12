@@ -82,6 +82,7 @@
 ----------------------------------------
 -->
 <div>
+  <hr>
   <details open>
     <summary><b>Table of Contents</b></summary>
     <ul>
