@@ -249,7 +249,9 @@
   <h1><b>Version management</b></h1>
 </div>
 <div>
-  <p>With <a href="https://github.com/Zagrios/bs-manager">BSManager</a>, manage your <a href="https://beatsaber.com/">Beat Saber</a> versions with ease, allowing the download of new versions and preserving
+  <p>With <a href="https://github.com/Zagrios/bs-manager">BSManager</a>, manage your <a
+      href="https://beatsaber.com/">Beat Saber</a> versions with ease, allowing the download of new versions and
+    preserving
     existing ones, provided that you own the game on a Steam or Oculus (PC) account.</p>
 </div>
 
@@ -260,7 +262,8 @@
 -->
 <div>
   <h2>Downloading Multiple Versions</h2>
-  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> provides two authentication methods to access your Steam account, ensuring safe and flexible access to
+  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> provides two authentication methods to access your
+    Steam account, ensuring safe and flexible access to
     different game versions:</p>
 </div>
 
@@ -270,8 +273,10 @@
 
 <div>
   <ul>
-    <li><strong>via Steam</strong>: Use either your credentials, which will not be stored by BSManager or
-      DepotDownloader, or opt for a quick and secure authentication via QR with the Steam Guard app.</li>
+    <li><strong>via Steam</strong>: Use either your credentials, which will not be stored by <a
+        href="https://github.com/Zagrios/bs-manager">BSManager</a> or
+      <a href="https://github.com/SteamRE/DepotDownloader">DepotDownloader</a>, or opt for a quick and secure
+      authentication via QR with the Steam Guard app.</li>
   </ul>
 </div>
 
@@ -281,7 +286,8 @@
 
 <div>
   <ul>
-    <li><strong>via Oculus</strong>: For Oculus users, <a href="https://github.com/Zagrios/bs-manager">BSManager</a> uses authentication directly via the META website
+    <li><strong>via Oculus</strong>: For Oculus users, <a href="https://github.com/Zagrios/bs-manager">BSManager</a>
+      uses authentication directly via the <a href="https://about.meta.com/fr/">META</a> website
       to retrieve the connection token, ensuring reliable and secure access to your account data.</li>
   </ul>
 </div>
@@ -297,9 +303,11 @@
 -->
 <div>
   <h2>Multi-Version Sharing</h2>
-  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> facilitates the sharing of your maps, models, and custom files between different versions of Beat
-    Saber. Thanks to an intuitive user interface, you can easily share your files from one version to another,
-    ensuring a consistent and continuous gaming experience across all your installations.</p>
+  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> facilitates the sharing of your maps, models, and
+    custom files between different versions of <a
+      href="https://beatsaber.com/">Beat Saber</a>. Thanks to an intuitive user interface, you can easily share
+    your files from one version to another, ensuring a consistent and continuous gaming experience across all your
+    installations.</p>
 </div>
 
 <div align="center">
@@ -313,8 +321,10 @@
 -->
 <div>
   <h2>Importing an Existing Version of Beat Saber</h2>
-  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> allows easy importing and organizing of your existing versions of <a href="https://beatsaber.com/">Beat Saber</a>, enabling you to retain
-    all your previously downloaded or created data while taking advantage of <a href="https://github.com/Zagrios/bs-manager">BSManager</a>'s management features.</p>
+  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> allows easy importing and organizing of your existing
+    versions of <a href="https://beatsaber.com/">Beat Saber</a>, enabling you to retain
+    all your previously downloaded or created data while taking advantage of <a
+      href="https://github.com/Zagrios/bs-manager">BSManager</a>'s management features.</p>
 </div>
 
 <div align="center">
@@ -328,7 +338,8 @@
 -->
 <div>
   <h2>Launch Arguments</h2>
-  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> provides efficient management of <a href="https://beatsaber.com/">Beat Saber</a> launch arguments, including three predefined ones to
+  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> provides efficient management of <a
+      href="https://beatsaber.com/">Beat Saber</a> launch arguments, including three predefined ones to
     enhance your gaming experience:</p>
   <ul>
     <li><strong>Oculus Mode</strong>: Launches the game directly in Oculus mode, avoiding the use of STEAM VR.</li>
@@ -351,9 +362,11 @@
 -->
 <div>
   <h2>Shortcut Creation</h2>
-  <p>Create shortcuts to easily access your different versions of <a href="https://beatsaber.com/">Beat Saber</a> with <a href="https://github.com/Zagrios/bs-manager">BSManager</a>. After selecting your
+  <p>Create shortcuts to easily access your different versions of <a href="https://beatsaber.com/">Beat Saber</a> with
+    <a href="https://github.com/Zagrios/bs-manager">BSManager</a>. After selecting your
     version, go to the version settings, click on "Create a Shortcut", and then select your launch options. Thus,
-    you can quickly and easily launch your preferred version of <a href="https://beatsaber.com/">Beat Saber</a> with the desired settings.</p>
+    you can quickly and easily launch your preferred version of <a href="https://beatsaber.com/">Beat Saber</a> with the
+    desired settings.</p>
 </div>
 
 <div align="center">
@@ -371,7 +384,9 @@
   <h1><b>Download and Installation</b></h1>
 </div>
 <div>
-  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> provides centralized and organized management of beatmaps, mods, and models, integrating download features and sharing between <a href="https://beatsaber.com/">Beat Saber</a> versions.</p>
+  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> provides centralized and organized management of
+    beatmaps, mods, and models, integrating download features and sharing between <a href="https://beatsaber.com/">Beat
+      Saber</a> versions.</p>
 </div>
 
 <!--
@@ -380,7 +395,12 @@
 -->
 <div>
   <h2>Maps</h2>
-  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> integrates the <a href="https://beatsaver.com">Beat Saver</a> API to provide you with a comprehensive list of maps downloadable directly from its interface. Moreover, the OneClick feature allows you to download maps with one click from various sources such as <a href="https://beatsaver.com">Beat Saver</a>, <a href="https://bsaber.com">BeastSaber</a>, <a href="https://scoresaber.com">ScoreSaber</a>, and <a href="https://www.beatleader.xyz">Beat Leader</a>. To add maps, simply select the desired version or the "shared" tab, then click "ADD".</p>
+  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> integrates the <a href="https://beatsaver.com">Beat
+      Saver</a> API to provide you with a comprehensive list of maps downloadable directly from its interface. Moreover,
+    the OneClick feature allows you to download maps with one click from various sources such as <a
+      href="https://beatsaver.com">Beat Saver</a>, <a href="https://bsaber.com">BeastSaber</a>, <a
+      href="https://scoresaber.com">ScoreSaber</a>, and <a href="https://www.beatleader.xyz">Beat Leader</a>. To add
+    maps, simply select the desired version or the "shared" tab, then click "ADD".</p>
 </div>
 
 <div align="center">
@@ -393,7 +413,9 @@
 -->
 <div>
   <h2>Playlists</h2>
-  <p>Although the playlist management interface is not yet developed, <a href="https://github.com/Zagrios/bs-manager">BSManager</a> offers a OneClick feature for playlists from <a href="https://beatsaver.com">Beat Saver</a>.</p>
+  <p>Although the playlist management interface is not yet developed, <a
+      href="https://github.com/Zagrios/bs-manager">BSManager</a> offers a OneClick feature for playlists from <a
+      href="https://beatsaver.com">Beat Saver</a>.</p>
 </div>
 
 <div align="center">
@@ -406,7 +428,10 @@
 -->
 <div>
   <h2>Mods</h2>
-  <p>Manage your mods easily with <a href="https://github.com/Zagrios/bs-manager">BSManager</a>. After downloading a version, navigate to the "Mods" tab of the selected version to manage and install mods. <a href="https://github.com/Zagrios/bs-manager">BSManager</a> operates similarly to Mod Assistant and offers the same mods as this tool.</p>
+  <p>Manage your mods easily with <a href="https://github.com/Zagrios/bs-manager">BSManager</a>. After downloading a
+    version, navigate to the "Mods" tab of the selected version to manage and install mods. <a
+      href="https://github.com/Zagrios/bs-manager">BSManager</a> operates similarly to Mod Assistant and offers the same
+    mods as this tool.</p>
 </div>
 
 <div align="center">
@@ -419,7 +444,9 @@
 -->
 <div>
   <h2>Models</h2>
-  <p>Add and manage models simply via the corresponding tab on the desired version or by going to the "shared" tab. The <a href="https://modelsaber.com">Model Saber</a> API is integrated to provide easy and direct access to models available for <a href="https://beatsaber.com/">Beat Saber</a>.</p>
+  <p>Add and manage models simply via the corresponding tab on the desired version or by going to the "shared" tab. The
+    <a href="https://modelsaber.com">Model Saber</a> API is integrated to provide easy and direct access to models
+    available for <a href="https://beatsaber.com/">Beat Saber</a>.</p>
 </div>
 
 <div align="center">
@@ -437,7 +464,9 @@
   <h1><b>Customization</b></h1>
 </div>
 <div>
-  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> offers various options to customize both the tool itself and your <a href="https://beatsaber.com/">Beat Saber</a> instances, allowing you to create a user experience that is uniquely yours.</p>
+  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> offers various options to customize both the tool
+    itself and your <a href="https://beatsaber.com/">Beat Saber</a> instances, allowing you to create a user experience
+    that is uniquely yours.</p>
 </div>
 
 <!--
@@ -446,10 +475,13 @@
 -->
 <div>
   <h2>Tool</h2>
-  <p>Adjust the appearance of <a href="https://github.com/Zagrios/bs-manager">BSManager</a> to your preferences with a variety of customization options available in the tool's settings:</p>
+  <p>Adjust the appearance of <a href="https://github.com/Zagrios/bs-manager">BSManager</a> to your preferences with a
+    variety of customization options available in the tool's settings:</p>
   <ul>
-    <li><strong>Theme</strong>: Choose between light, dark themes or follow system settings for seamless integration into your work environment.</li>
-    <li><strong>Color</strong>: Select your preferred primary and secondary colors using hexadecimal codes, allowing you to customize the visual appearance of the tool to your liking.</li>
+    <li><strong>Theme</strong>: Choose between light, dark themes or follow system settings for seamless integration
+      into your work environment.</li>
+    <li><strong>Color</strong>: Select your preferred primary and secondary colors using hexadecimal codes, allowing you
+      to customize the visual appearance of the tool to your liking.</li>
   </ul>
 </div>
 
@@ -463,10 +495,14 @@
 -->
 <div>
   <h2>Beat Saber Instance</h2>
-  <p>For each <a href="https://beatsaber.com/">Beat Saber</a> instance, <a href="https://github.com/Zagrios/bs-manager">BSManager</a> offers customization options accessible via the version settings and by clicking on "Edit":</p>
+  <p>For each <a href="https://beatsaber.com/">Beat Saber</a> instance, <a
+      href="https://github.com/Zagrios/bs-manager">BSManager</a> offers customization options accessible via the version
+    settings and by clicking on "Edit":</p>
   <ul>
-    <li><strong>Color</strong>: Customize the appearance of your instances by choosing a specific color for each of them.</li>
-    <li><strong>Name</strong>: Name your instances in a way that distinguishes and identifies them easily when switching from one to another.</li>
+    <li><strong>Color</strong>: Customize the appearance of your instances by choosing a specific color for each of
+      them.</li>
+    <li><strong>Name</strong>: Name your instances in a way that distinguishes and identifies them easily when switching
+      from one to another.</li>
   </ul>
 </div>
 
@@ -485,7 +521,8 @@
   <h1><b>More Information</b></h1>
 </div>
 <div>
-  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> has an active community and a support team ready to assist you with any questions or issues you may encounter.</p>
+  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> has an active community and a support team ready to
+    assist you with any questions or issues you may encounter.</p>
 </div>
 
 <!--
@@ -494,7 +531,9 @@
 -->
 <div>
   <h2>Support</h2>
-  <p>For quick and interactive support, it is recommended to join our <a href="link_to_discord_server">Discord server</a>. For bugs or more complex issues, you can also submit an <a href="link_to_github_repo">issue on GitHub</a>.</p>
+  <p>For quick and interactive support, it is recommended to join our <a href="link_to_discord_server">Discord
+      server</a>. For bugs or more complex issues, you can also submit an <a href="link_to_github_repo">issue on
+      GitHub</a>.</p>
 </div>
 
 
@@ -518,8 +557,10 @@
 -->
 <div>
   <h2>Contributing</h2>
-  <p>If you'd like to contribute, check out the <a href="https://github.com/Zagrios/bs-manager/blob/master/CONTRIBUTING.md">contributing guide</a>.</p>
-  <p>Thank you to all the people who already contributed to <a href="https://github.com/Zagrios/bs-manager">BSManager</a>!</p>
+  <p>If you'd like to contribute, check out the <a
+      href="https://github.com/Zagrios/bs-manager/blob/master/CONTRIBUTING.md">contributing guide</a>.</p>
+  <p>Thank you to all the people who already contributed to <a
+      href="https://github.com/Zagrios/bs-manager">BSManager</a>!</p>
   <div align="center">
     <a href="https://github.com/Zagrios/bs-manager/graphs/contributors">
       <img src="https://contrib.rocks/image?repo=Zagrios/bs-manager" />
