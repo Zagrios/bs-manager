@@ -138,7 +138,7 @@
       </li>
     </ul>
   </details>
-  <div align="center">
+  <div align="right">
     [<a href="#readme-bot">Go to bottom</a>]
   </div>
 </div>
@@ -361,58 +361,181 @@
 </div>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- Credits -->
+<!--
+----------------------------------------
+    DOWNLOAD AND INSTALLATION
+----------------------------------------
+-->
+<div align="center">
+  <hr>
+  <h1><b>Download and Installation</b></h1>
+</div>
 <div>
-  <h1><b>Credits</b></h1>
+  <p>BSManager provides centralized and organized management of beatmaps, mods, and models, integrating download features and sharing between Beat Saber versions.</p>
+</div>
+
+<!--
+    MAPS
+----------------------------------------
+-->
+<div>
+  <h2>Maps</h2>
+  <p>BSManager integrates the Beat Saver API to provide you with a comprehensive list of maps downloadable directly from its interface. Moreover, the OneClick feature allows you to download maps with one click from various sources such as Beat Saver, BeastSaber, ScoreSaber, and Beat Leader. To add maps, simply select the desired version or the "shared" tab, then click "ADD".</p>
+</div>
+
+<div align="center">
+  <code>Insert VIDEO INSTALL MAP</code>
+</div>
+
+<!--
+    PLAYLISTS
+----------------------------------------
+-->
+<div>
+  <h2>Playlists</h2>
+  <p>Although the playlist management interface is not yet developed, BSManager offers a OneClick feature for playlists from Beat Saver.</p>
+</div>
+
+<div align="center">
+  <code>Insert VIDEO INSTALL playlist</code>
+</div>
+
+<!--
+    MODS
+----------------------------------------
+-->
+<div>
+  <h2>Mods</h2>
+  <p>Manage your mods easily with BSManager. After downloading a version, navigate to the "Mods" tab of the selected version to manage and install mods. BSManager operates similarly to Mod Assistant and offers the same mods as this tool.</p>
+</div>
+
+<div align="center">
+  <code>Insert VIDEO INSTALL MOD</code>
+</div>
+
+<!--
+    MODELS
+----------------------------------------
+-->
+<div>
+  <h2>Models</h2>
+  <p>Add and manage models simply via the corresponding tab on the desired version or by going to the "shared" tab. The Model Saber API is integrated to provide easy and direct access to models available for Beat Saber.</p>
+</div>
+
+<div align="center">
+  <code>Insert VIDEO INSTALL MODEL</code>
+</div>
+
+
+<!--
+----------------------------------------
+    CUSTOMIZATION
+----------------------------------------
+-->
+<div align="center">
+  <hr>
+  <h1><b>Customization</b></h1>
+</div>
+<div>
+  <p>BSManager offers various options to customize both the tool itself and your Beat Saber instances, allowing you to create a user experience that is uniquely yours.</p>
+</div>
+
+<!--
+    TOOL
+----------------------------------------
+-->
+<div>
+  <h2>Tool</h2>
+  <p>Adjust the appearance of BSManager to your preferences with a variety of customization options available in the tool's settings:</p>
+  <ul>
+    <li><strong>Theme</strong>: Choose between light, dark themes or follow system settings for seamless integration into your work environment.</li>
+    <li><strong>Color</strong>: Select your preferred primary and secondary colors using hexadecimal codes, allowing you to customize the visual appearance of the tool to your liking.</li>
+  </ul>
+</div>
+
+<div align="center">
+  <code>Insert screen or video if interesting</code>
+</div>
+
+<!--
+    BEAT SABER INSTANCE
+----------------------------------------
+-->
+<div>
+  <h2>Beat Saber Instance</h2>
+  <p>For each Beat Saber instance, BSManager offers customization options accessible via the version settings and by clicking on "Edit":</p>
+  <ul>
+    <li><strong>Color</strong>: Customize the appearance of your instances by choosing a specific color for each of them.</li>
+    <li><strong>Name</strong>: Name your instances in a way that distinguishes and identifies them easily when switching from one to another.</li>
+  </ul>
+</div>
+
+<div align="center">
+  <code>Insert screen or video if interesting</code>
+</div>
+
+
+<!--
+----------------------------------------
+    MORE INFORMATION
+----------------------------------------
+-->
+<div align="center">
+  <hr>
+  <h1><b>More Information</b></h1>
+</div>
+<div>
+  <p>BSManager has an active community and a support team ready to assist you with any questions or issues you may encounter.</p>
+</div>
+
+<!--
+    SUPPORT
+----------------------------------------
+-->
+<div>
+  <h2>Support</h2>
+  <p>For quick and interactive support, it is recommended to join our <a href="link_to_discord_server">Discord server</a>. For bugs or more complex issues, you can also submit an <a href="link_to_github_repo">issue on GitHub</a>.</p>
+</div>
+
+
+<!--
+    CREDITS
+----------------------------------------
+-->
+<div>
+  <h2>Credits</h2>
   <ul>
     <li><a href="https://github.com/Zagrios">Zagrios</a> - Founder & Lead Developer</li>
-    <li><a href="https://github.com/Iluhadesu">Iluhadesu</a> - Project Team & Developpement help</li>
-    <li><a href="https://github.com/GaetanGrd">GaetanGrd</a> - Project Team & Developpement help</li>
+    <li><a href="https://github.com/Iluhadesu">Iluhadesu</a> - Project Team & Development help</li>
+    <li><a href="https://github.com/GaetanGrd">GaetanGrd</a> - Project Team & Development help</li>
     <li><a href="https://github.com/cheddZy">cheddZy</a> - Icon creator</li>
   </ul>
 </div>
 
-<!-- Contributing -->
-<br>
-<!--CONTRIBUTING-->
+<!--
+    CONTRIBUTING
+----------------------------------------
+-->
 <div>
-  <h1><b>Contributing</b></h1>
-  <p>
-    If you'd like to contribute, check out the <a
-      href="https://github.com/Zagrios/bs-manager/blob/master/CONTRIBUTING.md">contributing guide</a>
-  </p>
+  <h2>Contributing</h2>
+  <p>If you'd like to contribute, check out the <a href="https://github.com/Zagrios/bs-manager/blob/master/CONTRIBUTING.md">contributing guide</a>.</p>
   <p>Thank you to all the people who already contributed to BSManager!</p>
-  <div>
+  <div align="center">
     <a href="https://github.com/Zagrios/bs-manager/graphs/contributors">
       <img src="https://contrib.rocks/image?repo=Zagrios/bs-manager" />
     </a>
   </div>
 </div>
-<br>
 
+
+<!-- 
+----------------------------------------
+    Others
+----------------------------------------
+-->
 <div align="right">
   [<a href="#readme-top">Return to top</a>]
+  <hr>
 </div>
 
-<h1> </h1>
 <a name="readme-bot"></a>
