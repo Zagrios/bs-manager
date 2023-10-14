@@ -1,4 +1,4 @@
-import { ipcMain, shell, dialog, app } from "electron";
+import { ipcMain, shell, dialog, app, BrowserWindow } from "electron";
 import { UtilsService } from "../services/utils.service";
 import { IpcRequest } from "shared/models/ipc";
 import { SystemNotificationOptions } from "shared/models/notification/system-notification.model";
@@ -11,21 +11,6 @@ import { from, of } from "rxjs";
 
 const ipc = IpcService.getInstance();
 
-ipcMain.on("window.maximize", async () => {
-    const utils = UtilsService.getInstance();
-    utils.getMainWindows("index.html")?.maximize();
-});
-
-ipcMain.on("window.minimize", async () => {
-    const utils = UtilsService.getInstance();
-    utils.getMainWindows("index.html")?.minimize();
-});
-
-ipcMain.on("window.reset", async () => {
-    const utils = UtilsService.getInstance();
-    utils.getMainWindows("index.html")?.restore();
-});
-
 ipcMain.on("new-window", async (event, request: IpcRequest<string>) => {
     shell.openExternal(request.args);
 });
@@ -35,8 +20,7 @@ ipc.on<string>("choose-folder", async (req, reply) => {
 });
 
 ipcMain.on("window.progression", async (event, request: IpcRequest<number>) => {
-    const utils = UtilsService.getInstance();
-    utils.getMainWindows("index.html")?.setProgressBar(request.args / 100);
+    BrowserWindow.fromWebContents(event.sender)?.setProgressBar(request.args / 100);
 });
 
 ipcMain.on("save-file", async (event, request: IpcRequest<{ filename?: string; filters?: Electron.FileFilter[] }>) => {
