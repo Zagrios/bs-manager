@@ -1,5 +1,5 @@
 import path from "path";
-import { BehaviorSubject, Observable, lastValueFrom } from "rxjs";
+import { BehaviorSubject, Observable, lastValueFrom, of } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import { DeepLinkService } from "../deep-link.service";
@@ -8,14 +8,13 @@ import { UtilsService } from "../utils.service";
 import { LocalMapsManagerService } from "./local-maps-manager.service";
 import log from "electron-log";
 import { isValidUrl } from "../../../shared/helpers/url.helpers";
-import { ipcMain } from "electron";
 import { WindowManagerService } from "../window-manager.service";
-import { IpcRequest } from "shared/models/ipc";
 import { BPList, DownloadPlaylistProgression } from "shared/models/playlists/playlist.interface";
 import { copyFileSync, readFileSync } from "fs";
 import { BeatSaverService } from "../thrid-party/beat-saver/beat-saver.service";
 import { copy, realpath } from "fs-extra";
 import { ensureFolderExist, pathExist } from "../../helpers/fs.helpers";
+import { IpcService } from "../ipc.service";
 
 export class LocalPlaylistsManagerService {
     private static instance: LocalPlaylistsManagerService;
@@ -39,6 +38,7 @@ export class LocalPlaylistsManagerService {
     private readonly deepLink: DeepLinkService;
     private readonly windows: WindowManagerService;
     private readonly bsaver: BeatSaverService;
+    private readonly ipc: IpcService;
 
     private constructor() {
         this.maps = LocalMapsManagerService.getInstance();
@@ -48,6 +48,7 @@ export class LocalPlaylistsManagerService {
         this.deepLink = DeepLinkService.getInstance();
         this.windows = WindowManagerService.getInstance();
         this.bsaver = BeatSaverService.getInstance();
+        this.ipc = IpcService.getInstance();
 
         this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.BeatSaver, link => {
             log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.BeatSaver, link);
@@ -112,11 +113,13 @@ export class LocalPlaylistsManagerService {
     }
 
     private openOneClickDownloadPlaylistWindow(downloadUrl: string): void {
-        ipcMain.once("one-click-playlist-info", async (event, req: IpcRequest<void>) => {
-            this.utils.ipcSend(req.responceChannel, { success: true, data: { bpListUrl: downloadUrl, id: this.getPlaylistIdFromDownloadUrl(downloadUrl) } });
-        });
+        this.windows.openWindow("oneclick-download-playlist.html").then(window => {
 
-        this.windows.openWindow("oneclick-download-playlist.html");
+            this.ipc.once("one-click-playlist-info", (_, reply) => {
+                reply(of({ bpListUrl: downloadUrl, id: this.getPlaylistIdFromDownloadUrl(downloadUrl) }))
+            }, window.webContents.ipc);
+
+        });
     }
 
     public downloadPlaylist(bpListUrl: string, version: BSVersion): Observable<DownloadPlaylistProgression> {

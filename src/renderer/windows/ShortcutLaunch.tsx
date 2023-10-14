@@ -59,7 +59,7 @@ export default function ShortcutLaunch() {
         });
 
         sub.add(() => {
-            windows.close("shortcut-launch.html");
+            window.electron.window.close();
         });
 
         return () => sub.unsubscribe();

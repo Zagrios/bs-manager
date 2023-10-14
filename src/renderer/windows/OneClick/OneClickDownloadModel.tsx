@@ -7,11 +7,11 @@ import { IpcService } from "renderer/services/ipc.service";
 import { NotificationService } from "renderer/services/notification.service";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { ModelSaberService } from "renderer/services/thrird-partys/model-saber.service";
-import { WindowManagerService } from "renderer/services/window-manager.service";
 import { MSModel } from "shared/models/models/model-saber.model";
 import defaultImage from "../../../../assets/images/default-version-img.jpg";
 import { ModelsDownloaderService } from "renderer/services/models-management/models-downloader.service";
 import { useService } from "renderer/hooks/use-service.hook";
+import { lastValueFrom } from "rxjs";
 
 export default function OneClickDownloadModel() {
 
@@ -19,7 +19,6 @@ export default function OneClickDownloadModel() {
     const modelSaber = useService(ModelSaberService);
     const progress = useService(ProgressBarService);
     const modelDownloader = useService(ModelsDownloaderService);
-    const windows = useService(WindowManagerService);
     const notification = useService(NotificationService);
 
     const [model, setModel] = useState<MSModel>(null);
@@ -31,13 +30,9 @@ export default function OneClickDownloadModel() {
     useEffect(() => {
 
         const promise = (async () => {
-            const infos = await ipc.send<{ id: string; type: string }>("one-click-model-info");
+            const infos = await lastValueFrom(ipc.sendV2<{ id: string; type: string }>("one-click-model-info"));
 
-            if (!infos.success) {
-                throw infos.error;
-            }
-
-            const model = await modelSaber.getModelById(infos.data.id);
+            const model = await modelSaber.getModelById(infos.id);
 
             if (!model) {
                 throw new Error("Failed to get model from ModelSaber");
@@ -63,7 +58,7 @@ export default function OneClickDownloadModel() {
         });
 
         promise.finally(() => {
-            windows.close("oneclick-download-model.html")
+            window.electron.window.close();
         });
 
     }, []);

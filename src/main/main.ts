@@ -83,6 +83,11 @@ if (!gotTheLock) {
         DeepLinkService.getInstance().dispatchLinkOpened(deepLink);
     });
 
+    app.on("window-all-closed", () => {
+        if (process.platform === "darwin") { return; }
+        app.quit();
+    })
+
     app.whenReady().then(() => {
         
         app.setAppUserModelId(APP_NAME);
