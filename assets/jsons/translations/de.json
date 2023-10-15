@@ -133,7 +133,7 @@
             },
             "additional-content": {
                 "title": "Zusätzlicher Inhalt",
-                "description": "Mit zusätzlichen Inhalten kannst du BeatSaber anpassen!",
+                "description": "Mit zusätzlichen Inhalten kannst du Beat Saber anpassen!",
                 "deep-links": {
                     "sub-title": "OneClick-Installationen"
                 }
@@ -228,21 +228,21 @@
                     "dotnet-required": ".NET 6 Benötigt"
                 },
                 "msg": {
-                    "401": "Steam scheint uns BeatSaber nicht herunterladen zu lassen 😢",
+                    "401": "Steam scheint uns Beat Saber nicht herunterladen zu lassen 😢",
                     "404": "Steam-Server können nicht kontaktiert werden.",
                     "Password": "Passwort ist ungültig.",
                     "InvalidCredentials": "Ungültige Anmeldedaten, nicht genehmigte Verbindung oder zu viele Anmeldeversuche.",
                     "NoManifest": "Es wurde keine Manifest gefunden",
                     "DirectoryCreate": "Die erforderlichen Ordner können nicht installiert werden.",
                     "NotAvailableApp": "Versuchst du, Beat Saber herunterzuladen, wenn Du es nicht hast? 🤣",
-                    "DepotNotFound": "BeatSaber kann nicht heruntergeladen werden 😥 versuche es später noch einmal 😕",
+                    "DepotNotFound": "Beat Saber kann nicht heruntergeladen werden 😥 versuche es später noch einmal 😕",
                     "NotCompleted": "Der Download konnte nicht beendet werden ¯\\_(ツ)_/¯",
-                    "InvalidManifest": "BeatSaber kann nicht heruntergeladen werden 😥 versuche es später noch einmal 😕",
-                    "NoValidKey": "BeatSaber kann nicht heruntergeladen werden 😥 versuche es später noch einmal 😕",
-                    "NoManifestCode": "BeatSaber kann nicht heruntergeladen werden 😥 versuche es später noch einmal 😕",
+                    "InvalidManifest": "Beat Saber kann nicht heruntergeladen werden 😥 versuche es später noch einmal 😕",
+                    "NoValidKey": "Beat Saber kann nicht heruntergeladen werden 😥 versuche es später noch einmal 😕",
+                    "NoManifestCode": "Beat Saber kann nicht heruntergeladen werden 😥 versuche es später noch einmal 😕",
                     "Unknown": "Ein Unbekannter Fehler ist aufgetreten ¯\\_(ツ)_/¯",
                     "NoServer": "Steam-Server können nicht kontaktiert werden.",
-                    "NotAllowed": "Anscheinend darfst Du BeatSaber nicht herunterladen 🥱",
+                    "NotAllowed": "Anscheinend darfst Du Beat Saber nicht herunterladen 🥱",
                     "ConnectionTimeout": "Kann keine Verbindung zu Steam herstellen 😕",
                     "SteamLib": "Wenn dieser Fehler auftritt, melde den Fehler auf Github mit Protokollen, bitte.",
                     "ConnectionError": "Kann nach 10 Versuchen keine Verbindung zu Steam herstellen 🤯",
@@ -250,7 +250,7 @@
                     "RateLimitExceeded": "Du hast es zu oft versucht, warte eine Weile und versuche es später erneut.",
                     "TokenRejected": "Ihr Anmeldetoken wurde abgelehnt 😕 Bitte versuchen Sie es erneut.",
                     "AccessDenied": "Der Zugang zu Steam wurde verweigert.",
-                    "dotnet-required": ".NET 6 Runtime muss installiert sein, um eine Version von BeatSaber herunterzuladen. Lade es herunter, indem Du auf die Schaltfläche unten klickst."
+                    "dotnet-required": ".NET 6 Runtime muss installiert sein, um eine Version von Beat Saber herunterzuladen. Lade es herunter, indem Du auf die Schaltfläche unten klickst."
                 },
                 "actions": {
                     "download-dotnet": ".NET 6 Herunterladen"
@@ -269,7 +269,7 @@
             },
             "errors": {
                 "import-error": {
-                    "desc": "Überprüfe, ob der ausgewählte Ordner eine BeatSaber-Installation ist."
+                    "desc": "Überprüfe, ob der ausgewählte Ordner eine Beat Saber-Installation ist."
                 }
             }
         },
@@ -349,17 +349,17 @@
                     "UNKNOWN_ERROR": "Start nicht möglich",
                     "STEAM_NOT_RUNNING": "Steam läuft nicht",
                     "OCULUS_NOT_RUNNING": "Oculus läuft nicht",
-                    "BS_ALREADY_RUNNING": "BeatSaber läuft bereits",
+                    "BS_ALREADY_RUNNING": "Beat Saber läuft bereits",
                     "EXE_NOT_FINDED": "Dateien Fehlen",
                     "EXIT": "Abrupter Stop"
                 },
                 "msg": {
                     "UNKNOWN_ERROR": "Ein unbekannter Fehler ist aufgetreten.",
-                    "STEAM_NOT_RUNNING": "Steam muss laufen, um BeatSaber zu starten.",
-                    "OCULUS_NOT_RUNNING": "Oculus muss ausgeführt werden, um BeatSaber zu starten.",
-                    "BS_ALREADY_RUNNING": "Schließe BeatSaber, bevor Du es erneut startest.",
+                    "STEAM_NOT_RUNNING": "Steam muss laufen, um Beat Saber zu starten.",
+                    "OCULUS_NOT_RUNNING": "Oculus muss ausgeführt werden, um Beat Saber zu starten.",
+                    "BS_ALREADY_RUNNING": "Schließe Beat Saber, bevor Du es erneut startest.",
                     "EXE_NOT_FINDED": "Einige Dateien scheinen zu fehlen, versuche die Dateien zu überprüfen.",
-                    "EXIT": "BeatSaber stoppte abrupt, versuche die Dateien zu überprüfen."
+                    "EXIT": "Beat Saber stoppte abrupt, versuche die Dateien zu überprüfen."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Starte Steam"
@@ -520,14 +520,14 @@
         },
         "bs-import-version": {
             "title": "Importiere eine Version",
-            "description": "Importiert eine Version von BeatSaber zur Verwendung mit BSManager. Der Import kopiert den ausgewählten BeatSaber-Installationsordner in den BSManager-Versionsordner.",
+            "description": "Importiert eine Version von Beat Saber zur Verwendung mit BSManager. Der Import kopiert den ausgewählten Beat Saber-Installationsordner in den BSManager-Versionsordner.",
             "buttons": {
                 "submit": "Importiere eine Version"
             }
         },
         "bs-uninstall": {
             "title": "Deinstallieren",
-            "description": "Möchtest du BeatSaber {version} wirklich deinstallieren? Du musst es erneut herunterladen, um es zu spielen.",
+            "description": "Möchtest du Beat Saber {version} wirklich deinstallieren? Du musst es erneut herunterladen, um es zu spielen.",
             "buttons": {
                 "submit": "Deinstallieren"
             }
@@ -547,7 +547,7 @@
         },
         "clone-version": {
             "title": "Version Klonen",
-            "description": "Durch das Klonen der Version kannst Du zusätzlichen BeatSaber-Inhalt zwischen zwei Versionen trennen.",
+            "description": "Durch das Klonen der Version kannst Du zusätzlichen Beat Saber-Inhalt zwischen zwei Versionen trennen.",
             "inputs": {
                 "name": {
                     "label": "Name",
@@ -627,7 +627,7 @@
         },
         "shared-folders": {
             "title": "Geteilte Ordner",
-            "description": "Verknüpfe BeatSaber-Ordner, um ihre Inhalte mit freigegebenen Ordnern in anderen Versionen zu synchronisieren. Beachte, dass auch das Löschen von Inhalten geteilt wird.",
+            "description": "Verknüpfe Beat Saber-Ordner, um ihre Inhalte mit freigegebenen Ordnern in anderen Versionen zu synchronisieren. Beachte, dass auch das Löschen von Inhalten geteilt wird.",
             "buttons": {
                 "add-folder": "Ordner Hinzufügen",
                 "link-folder": "Ordner Verknüpfen",
@@ -866,13 +866,13 @@
         "notifications": {
             "prevent-for-mods": {
                 "title": "Erforderliche Mods",
-                "desc": "Stellen Sie sicher, dass Sie die notwendigen Mods installiert haben, um Modelle in BeatSaber zu verwenden",
+                "desc": "Stellen Sie sicher, dass Sie die notwendigen Mods installiert haben, um Modelle in Beat Saber zu verwenden",
                 "go-to-mods": "Gehe zu Mods",
                 "not-remind": "Erinnere mich nicht"
             },
             "prevent-for-models-breaks": {
                 "title": "Gebrochene Modelle",
-                "desc": "Seit dem Update des BeatSaber-Motors sind Modelle für diese Version nicht mehr funktional."
+                "desc": "Seit dem Update des Beat Saber-Motors sind Modelle für diese Version nicht mehr funktional."
             },
             "export-success": {
                 "title": "Export abgeschlossen 🎉"
