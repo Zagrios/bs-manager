@@ -76,10 +76,6 @@ export class WindowManagerService {
         return BrowserWindow.getAllWindows().filter(w => w.webContents.getURL().includes(window));
     }
 
-    public getBrowserWindowsFromWebContents(sender: Electron.WebContents): BrowserWindow {
-        return BrowserWindow.fromWebContents(sender);
-    }
-
     public openWindowOrFocus(window: AppWindow): Promise<void> {
 
         const win = this.getWindows(window);
