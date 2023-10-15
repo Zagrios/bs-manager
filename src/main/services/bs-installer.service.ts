@@ -6,12 +6,12 @@ import { spawnSync } from "child_process";
 import log from "electron-log";
 import { InstallationLocationService } from "./installation-location.service";
 import { BSLocalVersionService } from "./bs-local-version.service";
-import { WindowManagerService } from "./window-manager.service";
 import { copy, ensureDir } from "fs-extra";
 import { pathExist } from "../helpers/fs.helpers";
 import { Observable, map } from "rxjs";
 import { DepotDownloaderArgsOptions, DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderInfoEvent } from "../../shared/models/depot-downloader.model";
 import { DepotDownloader } from "../models/depot-downloader.class";
+import { app } from "electron";
 
 export class BSInstallerService {
     private static instance: BSInstallerService;
@@ -19,7 +19,6 @@ export class BSInstallerService {
     private readonly utils: UtilsService;
     private readonly installLocationService: InstallationLocationService;
     private readonly localVersionService: BSLocalVersionService;
-    private readonly windows: WindowManagerService;
 
     private depotDownloader: DepotDownloader;
 
@@ -27,9 +26,8 @@ export class BSInstallerService {
         this.utils = UtilsService.getInstance();
         this.installLocationService = InstallationLocationService.getInstance();
         this.localVersionService = BSLocalVersionService.getInstance();
-        this.windows = WindowManagerService.getInstance();
 
-        this.windows.getWindow("index.html")?.on("close", () => {
+        app.on("before-quit", () => {
             this.depotDownloader?.stop();
         });
     }

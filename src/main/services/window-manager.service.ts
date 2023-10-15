@@ -32,8 +32,6 @@ export class WindowManagerService {
         webPreferences: { preload: this.PRELOAD_PATH, webSecurity: !this.IS_DEBUG },
     };
 
-    private readonly windows = new Map<string, BrowserWindow>();
-
     public static getInstance(): WindowManagerService {
         if (!WindowManagerService.instance) {
             WindowManagerService.instance = new WindowManagerService();
@@ -65,17 +63,6 @@ export class WindowManagerService {
             window.show();
         });
 
-        window.once("closed", () => {
-            this.windows.delete(url);
-            if (!this.windows.size) {
-                app.quit();
-            }
-        });
-
-        this.windows.set(url, window);
-        this.utilsService.setMainWindows(this.windows as Map<AppWindow, BrowserWindow>); // TODO : remove
-
-
         return promise.then(() => window);
     }
 
@@ -85,33 +72,26 @@ export class WindowManagerService {
     }
 
     public closeAllWindows(except?: AppWindow) {
-        this.windows.forEach((window, key) => {
-            if (key === except) {
-                return;
-            }
+        BrowserWindow.getAllWindows().forEach(window => {
+            if (except && window.webContents.getURL().includes(except)) { return; }
             window.close();
         });
     }
 
-    public close(...win: AppWindow[]) {
-        win.forEach(window => {
-            this.windows.get(window)?.close();
-        });
+    public getWindows(window: AppWindow): BrowserWindow[] {
+        return BrowserWindow.getAllWindows().filter(w => w.webContents.getURL().includes(window));
     }
 
-    public getWindow(window: AppWindow): BrowserWindow {
-        return this.windows.get(window);
-    }
-
-    public getAppWindowFromWebContents(sender: WebContents): AppWindow {
-        return Array.from(this.windows.entries()).find(([, value]) => value.webContents.id === sender.id)[0];
+    public getBrowserWindowsFromWebContents(sender: Electron.WebContents): BrowserWindow {
+        return BrowserWindow.fromWebContents(sender);
     }
 
     public openWindowOrFocus(window: AppWindow): Promise<void> {
-        const win = this.getWindow(window);
-        
-        if (win) {
-            win.focus();
+
+        const win = this.getWindows(window);
+
+        if (win.length) {
+            win[0].focus();
             return Promise.resolve();
         }
 

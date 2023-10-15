@@ -161,7 +161,7 @@ export class BSLauncherService {
                     bsProcess.removeAllListeners("error");
                     bsProcess.removeAllListeners("exit");
                     resolve(-1);
-                }, 15_000);
+                }, 30_000);
 
             }).then(exitCode => {
                 log.info("BS process exit code", exitCode);
@@ -183,7 +183,13 @@ export class BSLauncherService {
             shortcutLink = new URL(shortcutLink);
         }
 
-        return objectFromEntries(shortcutLink.searchParams.entries()) as ShortcutParams;
+        const params = objectFromEntries(shortcutLink.searchParams.entries()) as ShortcutParams;
+
+        if(typeof params.additionalArgs === "string"){
+            params.additionalArgs = [params.additionalArgs];
+        }
+
+        return params;
     }
 
     public shortcutLinkToLaunchOptions(shortcutLink: string|URL): LaunchOption{
