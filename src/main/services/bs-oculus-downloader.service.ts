@@ -1,9 +1,12 @@
 import { BSVersion } from "../../shared/bs-version.interface";
 import { WindowManagerService } from "./window-manager.service";
-import { minToMs } from "../../shared/helpers/time.helpers";
+import { minToMs, msToS } from "../../shared/helpers/time.helpers";
 import log from "electron-log";
 import { CustomError } from "../../shared/models/exceptions/custom-error.class";
 import { OculusDownloader } from "../models/oculus-downloader.class";
+import { Cookie, session } from "electron";
+import { pathExist } from "../helpers/fs.helpers";
+import { BSLocalVersionService } from "./bs-local-version.service";
 
 export class BsOculusDownloaderService {
 
@@ -17,12 +20,14 @@ export class BsOculusDownloaderService {
         return BsOculusDownloaderService.instance;
     }
 
-    private readonly windows: WindowManagerService;
-
     private readonly oculusDownloader: OculusDownloader;
+    
+    private readonly windows: WindowManagerService;
+    private readonly versions: BSLocalVersionService;
 
     private constructor() {
         this.windows = WindowManagerService.getInstance();
+        this.versions = BSLocalVersionService.getInstance();
 
         this.oculusDownloader = new OculusDownloader();
     }
@@ -58,7 +63,27 @@ export class BsOculusDownloaderService {
 
     }
 
-    public async getUserToken(): Promise<string>{
+    private isCookieValid(cookie: Cookie): boolean {
+
+        if(!cookie){
+            return false;
+        }
+
+        return cookie.expirationDate > msToS(Date.now());
+    }
+
+    private async getTokenFromCookie(): Promise<string | undefined> {
+        const cookie = await session.defaultSession.cookies.get({ name: "oc_www_at" }).then(a => a.at(0));
+
+        if(this.isCookieValid(cookie) && this.isUserTokenValid(cookie.value)){
+            return cookie.value;
+        }
+
+        return undefined;
+    }
+
+    public async getUserFromMetaAuth(saveToken: boolean): Promise<string>{
+
         const redirectUrl = "https://developer.oculus.com/manage/";
         const loginUrl = `https://auth.oculus.com/login/?redirect_uri=${encodeURIComponent(redirectUrl)}`;
         const window = await this.windows.openWindow(loginUrl, { frame: true });
@@ -70,7 +95,7 @@ export class BsOculusDownloaderService {
                 reject(new CustomError("Trying to get Oculus user token timed out", "OCULUS_LOGIN_TIMED_OUT"));
                 window.close();
             }, minToMs(5));
-
+            
             window.webContents.on("did-navigate", async (_, url) => {
                 if(!url.startsWith(redirectUrl)){ return; }
 
@@ -87,23 +112,70 @@ export class BsOculusDownloaderService {
                 reject(new CustomError("Oculus login window closed by user", "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER"));
             });
         }).finally(() => {
+
+            if(!saveToken){
+                window.webContents.session.clearStorageData();
+            }
+
             if(!window.isDestroyed() && window.isClosable()){
                 window.close();
             }
+
             clearTimeout(timout);
         });
 
         return promise;
     }
 
+    /**
+     * DUPLICATION FROM BS-INSTALLER.SERVICE (TODO : need to be refactored)
+     * @param path 
+     * @returns 
+     */
+    private async getPathNotAleardyExist(path: string): Promise<string> {
+        let destPath = path;
+        let folderExist = await pathExist(destPath);
+        let i = 0;
+
+        while (folderExist) {
+            i++;
+            destPath = `${path} (${i})`;
+            folderExist = await pathExist(destPath);
+        }
+
+        return destPath;
+    }
+
     public async downloadVersion(version: BSVersion){
-        const token = await this.getUserToken();
-        console.log(token);
-        const s = this.oculusDownloader.downloadApp({ accessToken: token, binaryId: "5074476459318759", destination: "" }).subscribe({
+        // await this.clearTokenCookie();
+        const token = await this.getUserFromMetaAuth(true);
+        const dest = await this.getPathNotAleardyExist(await this.versions.getVersionPath(version));
+
+        const s = this.oculusDownloader.downloadApp({ accessToken: token, binaryId: "1387243574708751", destination: dest }).subscribe({
             next: a => console.log(a),
             error: a => console.error(a),
             complete: () => console.log("complete")
         });
+    }
+
+    public async autoDownloadVersion(version: BSVersion){
+        const token = await this.getTokenFromCookie();
+
+        if(!token){
+            throw new CustomError("No token has been found while try to auto download Beat Saber from Oculus", "TOKEN_NEEDED");
+        }
+
+        const dest = await this.getPathNotAleardyExist(await this.versions.getVersionPath(version));
+
+        const s = this.oculusDownloader.downloadApp({ accessToken: token, binaryId: "1387243574708751", destination: dest }).subscribe({
+            next: a => console.log(a),
+            error: a => console.error(a),
+            complete: () => console.log("complete")
+        });
+    }
+
+    public clearTokenCookie(): Promise<void>{
+        return session.defaultSession.clearStorageData({ storages: ["cookies"], origin: ".oculus.com" })
     }
 
 }

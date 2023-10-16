@@ -8,7 +8,7 @@ import { BSUninstallerService } from "../services/bs-uninstaller.service";
 import { BSVersionManagerService } from "../services/bs-version-manager.service";
 import { ModalExitCode, ModalService } from "../services/modale.service";
 import DefautVersionImage from "../../../assets/images/default-version-img.jpg";
-import { BsDownloaderService } from "renderer/services/bs-downloader.service";
+import { SteamDownloaderService } from "renderer/services/bs-downgrade/steam-downloader.service";
 import { IpcService } from "renderer/services/ipc.service";
 import { LaunchSlide } from "renderer/components/version-viewer/slides/launch/launch-slide.component";
 import { ModsSlide } from "renderer/components/version-viewer/slides/mods/mods-slide.component";
@@ -27,7 +27,7 @@ export function VersionViewer() {
     const bsUninstallerService = useService(BSUninstallerService);
     const bsVersionManagerService = useService(BSVersionManagerService);
     const modalService = useService(ModalService);
-    const bsDownloaderService = useService(BsDownloaderService);
+    const bsDownloaderService = useService(SteamDownloaderService);
     const ipcService = useService(IpcService);
     const bsLauncher = useService(BSLauncherService);
     const notification = useService(NotificationService);

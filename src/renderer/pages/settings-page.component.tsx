@@ -6,7 +6,7 @@ import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmIconType } from "renderer/components/svgs/bsm-icon.component";
 import { DefaultConfigKey, ThemeConfig } from "renderer/config/default-configuration.config";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
-import { BsDownloaderService } from "renderer/services/bs-downloader.service";
+import { SteamDownloaderService } from "renderer/services/bs-downgrade/steam-downloader.service";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { I18nService } from "renderer/services/i18n.service";
 import { IpcService } from "renderer/services/ipc.service";
@@ -43,7 +43,7 @@ export function SettingsPage() {
     const themeService = useService(ThemeService);
     const ipcService = useService(IpcService);
     const modalService = useService(ModalService);
-    const downloaderService = useService(BsDownloaderService);
+    const downloaderService = useService(SteamDownloaderService);
     const progressBarService = useService(ProgressBarService);
     const notificationService = useService(NotificationService);
     const i18nService = useService(I18nService);

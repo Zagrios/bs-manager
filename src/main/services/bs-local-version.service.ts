@@ -13,9 +13,10 @@ import { DownloadLinkType } from "shared/models/mods";
 import sanitize from "sanitize-filename";
 import { copyDirectoryWithJunctions, deleteFolder, getFoldersInFolder, pathExist } from "../helpers/fs.helpers";
 import { FolderLinkerService } from "./folder-linker.service";
-import { ReadStream, createReadStream } from "fs-extra";
+import { ReadStream, createReadStream, readFile } from "fs-extra";
 import readline from "readline";
 import { Observable, Subject } from "rxjs";
+import { BsStore } from "../../shared/models/bs-store.enum";
 
 export class BSLocalVersionService {
     private static instance: BSLocalVersionService;
@@ -107,6 +108,13 @@ export class BSLocalVersionService {
         const folderStats = await lstat(bsPath);
         if(folderStats.ino){
             folderVersion.ino = folderStats.ino;
+        }
+
+        const type: string = await readFile(path.join(bsPath, "type.info"), "utf-8").catch(() => null);
+        if(type === BsStore.OCULUS){
+            folderVersion.downloadedFrom = BsStore.OCULUS;
+        } else {
+            folderVersion.downloadedFrom = BsStore.STEAM;
         }
 
         const customVersion = this.getCustomVersions().find(customVersion => {

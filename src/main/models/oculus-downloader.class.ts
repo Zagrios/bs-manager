@@ -1,10 +1,10 @@
 import JSZip from "jszip";
 import fetch from "node-fetch";
 import { CustomError } from "../../shared/models/exceptions/custom-error.class";
-import { mkdirs, createWriteStream, pathExists } from "fs-extra";
+import { mkdirs, createWriteStream, pathExists, writeFile } from "fs-extra";
 import path from "path";
 import { inflate } from "pako"
-import { Observable, lastValueFrom } from "rxjs";
+import { Observable, lastValueFrom, tap } from "rxjs";
 import { Progression, hashFile } from "../helpers/fs.helpers";
 
 export class OculusDownloader {
@@ -59,33 +59,32 @@ export class OculusDownloader {
             return file;
     }
 
-    private verifyIntegrity(manifest: OculusManifest, folder: string): Observable<Progression<OculusManifestFile[]>> {
-        return new Observable<Progression<OculusManifestFile[]>>(sub => {
+    private isFileIntegrityValid(file: OculusFileWithName, folder: string): Promise<boolean> {
+        const [fileName, fileData] = file;
+        const destination = path.join(folder, fileName);
+
+        return pathExists(destination).then(exists => {
+            if(!exists){ return false; }
+            return hashFile(destination, "sha256").then(hash => hash === fileData.sha256);
+        });
+    }
+
+    private verifyIntegrity(manifest: OculusManifest, folder: string): Observable<Progression<OculusFileWithName[]>> {
+        return new Observable<Progression<OculusFileWithName[]>>(sub => {
 
             const files = Object.entries(manifest.files);
-            const progress: Progression<OculusManifestFile[]> = { current: 0, total: files.length, data: [] };
-            const wrongFiles: OculusManifestFile[] = [];
+            const progress: Progression<OculusFileWithName[]> = { current: 0, total: files.length, data: [] };
+            const wrongFiles: OculusFileWithName[] = [];
             let canceled = false;
 
             (async () => {
 
-                for(const [fileName, file] of files){
+                for(const oculusFile of files){
 
                     if(canceled){ return; }
 
-                    const destination = path.join(folder, fileName);
-
-                    if(!pathExists(destination)){
-                        wrongFiles.push(file);
-                        progress.current++;
-                        sub.next(progress);
-                        continue;
-                    }
-
-                    const fileSha256 = await hashFile(destination, "sha256");
-
-                    if(fileSha256 !== file.sha256){
-                        wrongFiles.push(file);
+                    if(!(await this.isFileIntegrityValid(oculusFile, folder))){
+                        wrongFiles.push(oculusFile);
                     }
 
                     progress.current++;
@@ -115,6 +114,7 @@ export class OculusDownloader {
             this.isDownloading = true;
 
             const progress: Progression = { current: 0, total: 0 };
+            const intallPath =  path.join("C:", "test", "test");
 
             (async () => {
 
@@ -124,17 +124,22 @@ export class OculusDownloader {
                 progress.total = files.reduce((acc, file) => { return acc + file[1].size }, 0)
                 subscriber.next(progress);
 
-                for(const file of files){
+                for(const [filename, file] of files){
 
                     if(this.isDownloading === false){ return; }
 
-                    const destination = path.join("C:", "test", "test", file[0]);
-                    await this.downloadManifestFile(file[1], destination).catch(err => CustomError.throw(err, "DOWNLOAD_FILE_FAILED"));
-                    progress.current += file[1].size;
+                    if(!(await this.isFileIntegrityValid([filename, file], intallPath))){
+                        const target = path.join(intallPath, filename);
+                        await this.downloadManifestFile(file, target).catch(err => CustomError.throw(err, "DOWNLOAD_FILE_FAILED"));
+                    }
+
+                    progress.current += file.size;
                     subscriber.next(progress);
                 }
 
-                const integrity = await lastValueFrom(this.verifyIntegrity(manifest, path.join("C:", "test", "test"))).catch(err => CustomError.throw(err, "VERIFY_INTEGRITY_FAILED"));
+                await writeFile(path.join(intallPath, "type.info"), "oculus");
+
+                const integrity = await lastValueFrom(this.verifyIntegrity(manifest, intallPath)).catch(err => CustomError.throw(err, "VERIFY_INTEGRITY_FAILED"));
                 
                 if(integrity.data.length > 0){
                     throw new CustomError("Some files failed to download", "SOME_FILES_FAILED_TO_DOWNLOAD", integrity.data);
@@ -146,10 +151,6 @@ export class OculusDownloader {
                 this.isDownloading = false;
             }
         });
-    }
-
-    public async verifyApp(options: OculusDownloaderOptions){
-        throw new CustomError("Not implemented", "NOT_IMPLEMENTED");
     }
 
     public stopDownload(){
@@ -191,6 +192,8 @@ interface OculusManifestFile {
 }
 
 type OculusManifestFileSegment = [number, string, number];
+
+type OculusFileWithName = [string, OculusManifestFile];
 
 interface Logger {
     info: (...args: unknown[]) => void;

@@ -16,3 +16,7 @@ export function hourToMin(hours: number): number {
 export function hourToS(hours: number): number {
     return hours * minToS(MINUTES_IN_HOUR);
 }
+
+export function msToS(milliseconds: number): number {
+    return milliseconds / 1000;
+}

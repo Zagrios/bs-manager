@@ -11,13 +11,13 @@ import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import Tippy from "@tippyjs/react";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { useService } from "renderer/hooks/use-service.hook";
-import { BsDownloaderService } from "renderer/services/bs-downloader.service";
+import { SteamDownloaderService } from "renderer/services/bs-downgrade/steam-downloader.service";
 import { distinctUntilChanged } from "rxjs";
 import equal from "fast-deep-equal";
 
 export function NavBar() {
     const versionManager = useService(BSVersionManagerService);
-    const versionDownloader = useService(BsDownloaderService);
+    const versionDownloader = useService(SteamDownloaderService);
 
     const downloadingVersion = useObservable(versionDownloader.currentBsVersionDownload$.pipe(distinctUntilChanged(equal)));
     const installedVersions = useObservable(versionManager.installedVersions$);

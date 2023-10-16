@@ -1,6 +1,6 @@
 import { BSVersion } from "shared/bs-version.interface";
 import { Link, useLocation } from "react-router-dom";
-import { BsDownloaderService } from "renderer/services/bs-downloader.service";
+import { SteamDownloaderService } from "renderer/services/bs-downgrade/steam-downloader.service";
 import { useState } from "react";
 import { distinctUntilChanged, map, of, Subscription, switchMap } from "rxjs";
 import { BSLauncherService, LaunchMods } from "renderer/services/bs-launcher.service";
@@ -17,7 +17,7 @@ import equal from "fast-deep-equal";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 
 export function BsVersionItem(props: { version: BSVersion }) {
-    const downloaderService = useService(BsDownloaderService);
+    const downloaderService = useService(SteamDownloaderService);
     const verionManagerService = useService(BSVersionManagerService);
     const launcherService = useService(BSLauncherService);
     const configService = useService(ConfigurationService);

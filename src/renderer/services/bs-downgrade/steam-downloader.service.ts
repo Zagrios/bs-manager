@@ -2,20 +2,20 @@ import { DownloadInfo } from "main/services/bs-installer.service";
 import { BehaviorSubject, Observable, ReplaySubject, Subscription, lastValueFrom, throwError } from "rxjs";
 import { filter, map, share, take, tap, throttleTime } from "rxjs/operators";
 import { BSVersion } from "shared/bs-version.interface";
-import { AuthUserService } from "./auth-user.service";
-import { BSVersionManagerService } from "./bs-version-manager.service";
-import { IpcService } from "./ipc.service";
-import { ModalExitCode, ModalService } from "./modale.service";
-import { NotificationService } from "./notification.service";
-import { ProgressBarService } from "./progress-bar.service";
+import { AuthUserService } from "../auth-user.service";
+import { BSVersionManagerService } from "../bs-version-manager.service";
+import { IpcService } from "../ipc.service";
+import { ModalExitCode, ModalService } from "../modale.service";
+import { NotificationService } from "../notification.service";
+import { ProgressBarService } from "../progress-bar.service";
 import { LoginModal } from "renderer/components/modal/modal-types/login-modal.component";
 import { GuardModal } from "renderer/components/modal/modal-types/guard-modal.component";
-import { LinkOpenerService } from "./link-opener.service";
-import { DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderInfoEvent, DepotDownloaderWarningEvent } from "../../shared/models/depot-downloader.model";
+import { LinkOpenerService } from "../link-opener.service";
+import { DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderInfoEvent, DepotDownloaderWarningEvent } from "../../../shared/models/depot-downloader.model";
 import { SteamMobileApproveModal } from "renderer/components/modal/modal-types/steam-mobile-approve-modal.component";
 
-export class BsDownloaderService {
-    private static instance: BsDownloaderService;
+export class SteamDownloaderService {
+    private static instance: SteamDownloaderService;
 
     private readonly modalService: ModalService;
     private readonly ipcService: IpcService;
@@ -29,11 +29,11 @@ export class BsDownloaderService {
     public readonly currentBsVersionDownload$ = new BehaviorSubject<BSVersion>(null);
     public readonly downloadProgress$ = new BehaviorSubject(0);
 
-    public static getInstance(): BsDownloaderService {
-        if (!BsDownloaderService.instance) {
-            BsDownloaderService.instance = new BsDownloaderService();
+    public static getInstance(): SteamDownloaderService {
+        if (!SteamDownloaderService.instance) {
+            SteamDownloaderService.instance = new SteamDownloaderService();
         }
-        return BsDownloaderService.instance;
+        return SteamDownloaderService.instance;
     }
 
     private constructor() {

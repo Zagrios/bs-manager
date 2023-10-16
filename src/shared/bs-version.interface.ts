@@ -1,3 +1,5 @@
+import { BsStore } from "./models/bs-store.enum";
+
 export interface PartialBSVersion {
     BSVersion: string,
     name?: string
@@ -13,4 +15,7 @@ export interface BSVersion extends PartialBSVersion {
     steam?: boolean;
     oculus?: boolean;
     color?: string;
+    downloadedFrom?: BsStore;
 }
+
+
