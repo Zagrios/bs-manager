@@ -1,4 +1,3 @@
-import "./bs-download-ipcs";
 import "./os-controls-ipcs";
 import "./bs-launcher-ipcs";
 import "./bs-version-ipcs";
@@ -12,3 +11,5 @@ import "./beat-saver-ipcs";
 import "./bs-playlist-ipcs";
 import "./model-saber.ipcs";
 import "./bs-model-ipcs";
+import "./bs-downgrade/bs-oculus-download-ipcs";
+import "./bs-downgrade/bs-download-ipcs";

@@ -38,30 +38,13 @@ export function AvailableVersionsList() {
     const downloading = useObservable(steamDownloader.currentBsVersionDownload$.pipe(map(v => !!v)));
     const t = useTranslation();
 
-    const downloadFromSteam = (version: BSVersion) => {
-        return steamDownloader.downloadBsVersion(version)
-            .catch(() => {})
+    const startDownload = async () => {
+
+        const store = bsDownloader.getLastStoreDownloadedFrom() ?? await bsDownloader.chooseStoreToDownloadFrom();
+
+        return bsDownloader.downloadVersion(selectedVersion, store)
+            .catch(console.log)
             .finally(() => setSelectedVersion(null));
-    }
-
-    const downloadFromOculus = (version: BSVersion) => {
-        return undefined; // TODO
-    }
-
-    const startDownload = () => {
-
-        return bsDownloader.downloadVersion(selectedVersion);
-
-        if(config.get("last-downloaded-from") === "steam"){
-            return downloadFromSteam(selectedVersion);
-        }
-
-        if(config.get("last-downloaded-from") === "oculus"){
-            return downloadFromOculus(selectedVersion);
-        }
-
-
-        
     };
 
     const importVersion = async () => {

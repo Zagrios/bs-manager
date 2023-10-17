@@ -30,6 +30,8 @@ export class BsDownloaderService {
     private constructor(){
         this.config = ConfigurationService.getInstance();
         this.modals = ModalService.getInstance();
+        this.steamDownloader = SteamDownloaderService.getInstance();
+        this.oculusDownloader = OculusDownloaderService.getInstance();
     }
 
     public getLastStoreDownloadedFrom(): BsStore | undefined {
@@ -42,7 +44,7 @@ export class BsDownloaderService {
         return lastStore as BsStore;
     }
 
-    private async chooseStoreToDownloadFrom(): Promise<BsStore | undefined> {
+    public async chooseStoreToDownloadFrom(): Promise<BsStore | undefined> {
         const res = await this.modals.openModal(ChooseStore);
 
         if(res.exitCode !== ModalExitCode.COMPLETED){
@@ -52,18 +54,15 @@ export class BsDownloaderService {
         return res.data;
     }
 
-    public async downloadVersion(version: BSVersion): Promise<BSVersion | undefined> {
-        const store = this.getLastStoreDownloadedFrom() ?? await this.chooseStoreToDownloadFrom();
+    public async downloadVersion(version: BSVersion, from: BsStore): Promise<BSVersion | void> {
         
-        if(store === BsStore.STEAM){
+        if(from === BsStore.STEAM){
             return this.steamDownloader.downloadBsVersion(version);
         }
 
-        if(store === BsStore.OCULUS){
+        if(from === BsStore.OCULUS){
             return this.oculusDownloader.downloadBsVersion(version);
         }
-
-        return undefined
     }
 
     public importVersion(): void {

@@ -1,6 +1,6 @@
-import { BSInstallerService, DownloadInfo } from "../services/bs-installer.service";
-import { InstallationLocationService } from "../services/installation-location.service";
-import { IpcService } from "../services/ipc.service";
+import { BSInstallerService, DownloadInfo } from "../../services/bs-installer.service";
+import { InstallationLocationService } from "../../services/installation-location.service";
+import { IpcService } from "../../services/ipc.service";
 import { from, of } from "rxjs";
 
 const ipc = IpcService.getInstance();

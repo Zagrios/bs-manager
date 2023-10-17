@@ -60,6 +60,8 @@ const createWindow = async (window: AppWindow = "launcher.html") => {
         await installExtensions();
     }
     WindowManagerService.getInstance().openWindow(window);
+
+    BsOculusDownloaderService.getInstance().clearTokenCookie();
 };
 
 const initServicesMustBeInitialized = () => {

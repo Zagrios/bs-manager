@@ -4,7 +4,7 @@ import { CustomError } from "../../shared/models/exceptions/custom-error.class";
 import { mkdirs, createWriteStream, pathExists, writeFile } from "fs-extra";
 import path from "path";
 import { inflate } from "pako"
-import { Observable, lastValueFrom, tap } from "rxjs";
+import { Observable, ReplaySubject, lastValueFrom, share, tap } from "rxjs";
 import { Progression, hashFile } from "../helpers/fs.helpers";
 
 export class OculusDownloader {
@@ -99,7 +99,7 @@ export class OculusDownloader {
             return () => {
                 canceled = true;
             }
-        });
+        }).pipe(share({connector: () => new ReplaySubject(1)}));
     }
 
     public downloadApp(options: OculusDownloaderOptions): Observable<Progression>{
@@ -148,9 +148,10 @@ export class OculusDownloader {
             })().then(() => subscriber.complete()).catch(err => subscriber.error(err));
 
             return () => {
+                console.log("C FINI MAIN")
                 this.isDownloading = false;
             }
-        });
+        }).pipe(share({connector: () => new ReplaySubject(1)}));
     }
 
     public stopDownload(){

@@ -8,11 +8,11 @@ import { IpcService } from "../ipc.service";
 import { ModalExitCode, ModalService } from "../modale.service";
 import { NotificationService } from "../notification.service";
 import { ProgressBarService } from "../progress-bar.service";
-import { LoginModal } from "renderer/components/modal/modal-types/login-modal.component";
-import { GuardModal } from "renderer/components/modal/modal-types/guard-modal.component";
+import { LoginToSteamModal } from "renderer/components/modal/modal-types/bs-downgrade/login-to-steam-modal.component";
+import { SteamGuardModal } from "renderer/components/modal/modal-types/bs-downgrade/steam-guard-modal.component";
 import { LinkOpenerService } from "../link-opener.service";
 import { DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderInfoEvent, DepotDownloaderWarningEvent } from "../../../shared/models/depot-downloader.model";
-import { SteamMobileApproveModal } from "renderer/components/modal/modal-types/steam-mobile-approve-modal.component";
+import { SteamMobileApproveModal } from "renderer/components/modal/modal-types/bs-downgrade/steam-mobile-approve-modal.component";
 
 export class SteamDownloaderService {
     private static instance: SteamDownloaderService;
@@ -124,7 +124,7 @@ export class SteamDownloaderService {
             take(1),
             map(event => event.subType),
         ).subscribe(async () => {
-            const res = await this.modalService.openModal(GuardModal);
+            const res = await this.modalService.openModal(SteamGuardModal);
             if(res.exitCode !== ModalExitCode.COMPLETED){
                 return this.stopDownload();
             }
@@ -248,7 +248,7 @@ export class SteamDownloaderService {
             const qrCode$ = qrCodeDownload$.pipe(filter(event => event.type === DepotDownloaderEventType.Info && event.subType === DepotDownloaderInfoEvent.QRCode), map(event => event.data as string));
             const logged$ = qrCodeDownload$.pipe(filter(event => event.type === DepotDownloaderEventType.Info && event.subType === DepotDownloaderInfoEvent.SteamID), map(event => event.data as string), take(1));
 
-            const loginRes = await this.modalService.openModal(LoginModal, { qrCode$, logged$ });
+            const loginRes = await this.modalService.openModal(LoginToSteamModal, { qrCode$, logged$ });
 
             if(loginRes.exitCode !== ModalExitCode.COMPLETED){
                 return Promise.resolve();

@@ -2,6 +2,8 @@ import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { ConfigurationService } from "./configuration.service";
 
+// TODO : No need for a separated service, just use steam-downloader.service.ts
+
 export class AuthUserService {
     private static instance: AuthUserService;
 
