@@ -355,11 +355,11 @@
                 },
                 "msg": {
                     "UNKNOWN_ERROR": "Возникла неизвестная ошибка.",
-                    "STEAM_NOT_RUNNING": "Steam должен быть запущен, чтобы запустить BeatSaber.",
-                    "OCULUS_NOT_RUNNING": "Oculus должен быть запущен, чтобы запустить BeatSaber.",
-                    "BS_ALREADY_RUNNING": "Закройте BeatSaber, чтобы запустить его.",
+                    "STEAM_NOT_RUNNING": "Steam должен быть запущен, чтобы запустить Beat Saber.",
+                    "OCULUS_NOT_RUNNING": "Oculus должен быть запущен, чтобы запустить Beat Saber.",
+                    "BS_ALREADY_RUNNING": "Закройте Beat Saber, чтобы запустить его.",
                     "EXE_NOT_FINDED": "Некоторые файлы отсутствуют, пробуем их проверить.",
-                    "EXIT": "BeatSaber вылетел, пытаемся проверить файлы."
+                    "EXIT": "Beat Saber вылетел, пытаемся проверить файлы."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Запустить Steam"
