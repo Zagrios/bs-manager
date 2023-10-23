@@ -35,7 +35,7 @@ export class BsOculusDownloaderService {
 
     private isUserTokenValid(token: string): boolean{
 
-        // Code take from "https://github.com/ComputerElite/QuestAppVersionSwitcher" (TokenTools.cs)
+        // Code taken from "https://github.com/ComputerElite/QuestAppVersionSwitcher" (TokenTools.cs)
 
         log.info("Checking if Oculus user token is valid");
 
@@ -116,13 +116,11 @@ export class BsOculusDownloaderService {
 
             clearTimeout(timout);
 
-            if(window.isDestroyed()){ return; } 
-
             if(!saveToken){
-                window.webContents.session.clearStorageData();
+                this.clearTokenCookie();
             }
 
-            if(window.isClosable()){
+            if(window.isClosable() && !window.isDestroyed()){
                 window.close();
             }
         });
@@ -189,7 +187,6 @@ export class BsOculusDownloaderService {
             })().catch(err => obs.error(err));
 
             return () => {
-                console.log("C FINI MAIN 2");
                 sub?.unsubscribe();
                 this.oculusDownloader.stopDownload();
             }

@@ -16,6 +16,7 @@ export interface BSVersion extends PartialBSVersion {
     oculus?: boolean;
     color?: string;
     downloadedFrom?: BsStore;
+    OculusBinaryId?: string;
 }
 
 
