@@ -167,5 +167,6 @@ export function hashFile(filePath: string, algorithm = "sha256"): Promise<string
 export interface Progression<T = unknown> {
     total: number;
     current: number;
+    diff?: number;
     data?: T;
 }

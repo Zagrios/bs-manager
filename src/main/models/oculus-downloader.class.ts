@@ -1,10 +1,10 @@
 import JSZip from "jszip";
 import fetch from "node-fetch";
 import { CustomError } from "../../shared/models/exceptions/custom-error.class";
-import { mkdirs, createWriteStream, pathExists, writeFile } from "fs-extra";
+import { mkdirs, createWriteStream, pathExists, writeFile, WriteStream } from "fs-extra";
 import path from "path";
 import { inflate } from "pako"
-import { Observable, ReplaySubject, lastValueFrom, share, tap } from "rxjs";
+import { EMPTY, Observable, ReplaySubject, catchError, filter, from, lastValueFrom, map, mergeMap, scan, share, tap } from "rxjs";
 import { Progression, hashFile } from "../helpers/fs.helpers";
 
 export class OculusDownloader {
@@ -38,25 +38,49 @@ export class OculusDownloader {
         return manifestFile.async("text").then(JSON.parse).catch(err => CustomError.throw(err, "PARSE_MANIFEST_FILE_FAILED"));
     }
 
-    private async downloadManifestFile(file: OculusManifestFile, destination: string): Promise<OculusManifestFile> {
+    private downloadManifestFile(file: OculusManifestFile, destination: string): Observable<Progression<OculusManifestFile>> {
             
             const downloadSegment = async (segment: OculusManifestFileSegment): Promise<ArrayBuffer> => {
                 const segmentUrl = this.getDownloadSegmentUrl(this.options.accessToken, this.options.binaryId, segment[1]);
                 const response = await fetch(segmentUrl);
                 return response.arrayBuffer();
             }
-    
-            await mkdirs(path.dirname(destination));
-            const writeStream = createWriteStream(destination);
-    
-            for (const segment of file.segments) {
-                const arrBuffer = await downloadSegment(segment);
-                await writeStream.write(inflate(arrBuffer));
-            }
-            
-            writeStream.close();
 
-            return file;
+            const totalSegmentSize = file.segments.reduce((acc, segment) => acc + segment[2], 0);
+            const progress: Progression<OculusManifestFile> = { current: 0, total: totalSegmentSize, diff: 0, data: file };
+
+            return new Observable<Progression<OculusManifestFile>>(sub => {
+
+                let canceled = false;
+                let writeStream: WriteStream;
+
+                (async () => {
+                    await mkdirs(path.dirname(destination));
+                    writeStream = createWriteStream(destination);
+
+                    for (const segment of file.segments) {
+                        if(canceled || !writeStream.writable){ return; }
+
+                        const arrBuffer = await downloadSegment(segment);
+                        const inflated = inflate(arrBuffer);
+                        await writeStream.write(inflated);
+
+                        progress.current += inflated.byteLength;
+                        progress.diff = inflated.byteLength;
+                        
+                        sub.next(progress);
+                    }
+
+                })().catch(err => sub.error(err)).finally(() => {
+                    sub.complete();
+                    writeStream?.end();
+                });
+
+                return () => {
+                    canceled = true;
+                    writeStream?.end();
+                }
+            });
     }
 
     private isFileIntegrityValid(file: OculusFileWithName, folder: string): Promise<boolean> {
@@ -114,7 +138,6 @@ export class OculusDownloader {
             this.isDownloading = true;
 
             const progress: Progression = { current: 0, total: 0 };
-            const intallPath =  path.join("C:", "test", "test");
 
             (async () => {
 
@@ -124,22 +147,34 @@ export class OculusDownloader {
                 progress.total = files.reduce((acc, file) => { return acc + file[1].size }, 0)
                 subscriber.next(progress);
 
-                for(const [filename, file] of files){
+                const filesDownloadObservable = from(files).pipe(
+                    filter(() => this.isDownloading),
+                    mergeMap(([filename, file]) => (
+                        from(this.isFileIntegrityValid([filename, file], options.destination)).pipe( map(isValid => ({ filename, file, isValid })))
+                    )),
+                    filter(({ isValid }) => !isValid),
+                    mergeMap(({ filename, file }) => {
+                        const target = path.join(options.destination, filename);
+                        return this.downloadManifestFile(file, target).pipe(
+                            catchError(err => {
+                                this.options.logger?.error(err);
+                                return EMPTY;
+                            })
+                        );
+                    }, 10),
+                    scan((acc, curr) => acc + curr.diff, 0),
+                );
 
-                    if(this.isDownloading === false){ return; }
+                await lastValueFrom(filesDownloadObservable.pipe(tap({
+                    next: download => {
+                        progress.current = download;
+                        subscriber.next(progress);
+                    },
+                })));
 
-                    if(!(await this.isFileIntegrityValid([filename, file], intallPath))){
-                        const target = path.join(intallPath, filename);
-                        await this.downloadManifestFile(file, target).catch(err => CustomError.throw(err, "DOWNLOAD_FILE_FAILED"));
-                    }
+                await writeFile(path.join(options.destination, "type.info"), "oculus");
 
-                    progress.current += file.size;
-                    subscriber.next(progress);
-                }
-
-                await writeFile(path.join(intallPath, "type.info"), "oculus");
-
-                const integrity = await lastValueFrom(this.verifyIntegrity(manifest, intallPath)).catch(err => CustomError.throw(err, "VERIFY_INTEGRITY_FAILED"));
+                const integrity = await lastValueFrom(this.verifyIntegrity(manifest, options.destination)).catch(err => CustomError.throw(err, "VERIFY_INTEGRITY_FAILED"));
                 
                 if(integrity.data.length > 0){
                     throw new CustomError("Some files failed to download", "SOME_FILES_FAILED_TO_DOWNLOAD", integrity.data);
@@ -148,7 +183,7 @@ export class OculusDownloader {
             })().then(() => subscriber.complete()).catch(err => subscriber.error(err));
 
             return () => {
-                console.log("C FINI MAIN")
+                console.log("C FINI");
                 this.isDownloading = false;
             }
         }).pipe(share({connector: () => new ReplaySubject(1)}));

@@ -83,7 +83,7 @@ export class BsOculusDownloaderService {
         return undefined;
     }
 
-    private async getUserTokenFromMetaAuth(saveToken: boolean): Promise<string>{
+    private async getUserTokenFromMetaAuth(keepToken: boolean): Promise<string>{
 
         const redirectUrl = "https://developer.oculus.com/manage/";
         const loginUrl = `https://auth.oculus.com/login/?redirect_uri=${encodeURIComponent(redirectUrl)}`;
@@ -115,8 +115,8 @@ export class BsOculusDownloaderService {
         }).finally(() => {
 
             clearTimeout(timout);
-
-            if(!saveToken){
+            
+            if(!keepToken){
                 this.clearTokenCookie();
             }
 
@@ -157,7 +157,7 @@ export class BsOculusDownloaderService {
                 const token = await this.getUserTokenFromMetaAuth(downloadInfo.stay);
                 const dest = await this.getPathNotAleardyExist(await this.versions.getVersionPath(downloadInfo.version));
 
-                sub = this.oculusDownloader.downloadApp({ accessToken: token, binaryId: "1387243574708751", destination: dest }).subscribe(obs);
+                sub = this.oculusDownloader.downloadApp({ accessToken: token, binaryId: downloadInfo.version.OculusBinaryId, destination: dest }).subscribe(obs);
             })().catch(err => obs.error(err));
 
             return () => {
@@ -183,7 +183,7 @@ export class BsOculusDownloaderService {
 
                 const dest = await this.getPathNotAleardyExist(await this.versions.getVersionPath(version));
 
-                sub = this.oculusDownloader.downloadApp({ accessToken: token, binaryId: "1387243574708751", destination: dest }).subscribe(obs);
+                sub = this.oculusDownloader.downloadApp({ accessToken: token, binaryId: version.OculusBinaryId, destination: dest }).subscribe(obs);
             })().catch(err => obs.error(err));
 
             return () => {

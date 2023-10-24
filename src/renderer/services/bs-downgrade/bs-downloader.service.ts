@@ -56,7 +56,7 @@ export class BsDownloaderService {
 
     public async downloadVersion(version: BSVersion, from: BsStore): Promise<BSVersion | void> {
         
-        if(from === BsStore.STEAM){
+        if(from === BsStore.STEAM || !version.OculusBinaryId){
             return this.steamDownloader.downloadBsVersion(version);
         }
 

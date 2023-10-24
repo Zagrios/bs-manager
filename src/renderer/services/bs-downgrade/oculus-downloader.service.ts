@@ -66,17 +66,15 @@ export class OculusDownloaderService {
         return (async () => {
 
             const autoDownload = await lastValueFrom(this.tryAutoDownload(version)).then(() => true).catch(() => false);
-
-            console.log("LAAAA");
             
             if(autoDownload){
                 return autoDownload;
             }
 
-            const [confirm, stay] = await this.modals.openModal(LoginToMetaModal).then(res => [res.exitCode === ModalExitCode.COMPLETED, res.data]);
+            const [completed, stay] = await this.modals.openModal(LoginToMetaModal).then(res => [res.exitCode === ModalExitCode.COMPLETED, res.data]);
 
-            if(!confirm){
-                return confirm;
+            if(!completed){
+                return completed;
             }
 
             return lastValueFrom(this.doDownloadBsVersion({ version, stay })).then(() => true);
