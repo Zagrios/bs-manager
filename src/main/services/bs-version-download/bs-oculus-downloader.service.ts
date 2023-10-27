@@ -123,7 +123,7 @@ export class BsOculusDownloaderService {
                 this.clearAuthToken();
             }
 
-            if(window.isClosable() && !window.isDestroyed()){
+            if(!window.isDestroyed() && window.isClosable()){
                 window.close();
             }
         });
@@ -146,12 +146,6 @@ export class BsOculusDownloaderService {
     public downloadVersion(downloadInfo: DownloadInfo): Observable<Progression<BSVersion>>{
 
         return from(this.getUserTokenFromMetaAuth(downloadInfo.stay)).pipe(
-            map(token => {
-                if(!token){
-                    throw new CustomError("No token has been found while try to auto download Beat Saber from Oculus", "OCULUS_TOKEN_NEEDED");
-                }
-                return token;
-            }), 
             switchMap(token => {
                 if(!downloadInfo.isVerification){
                     return this.createDownloadVersion(downloadInfo.bsVersion).then(({version, dest}) => ({token, version, dest}))
@@ -175,7 +169,7 @@ export class BsOculusDownloaderService {
         return from(this.getAuthToken()).pipe(
             map(token => {
                 if(!token){
-                    throw new CustomError("No token has been found while try to auto download Beat Saber from Oculus", "OCULUS_TOKEN_NEEDED");
+                    throw new CustomError("No Meta auth token was found in cookies for auto download", "NO_META_AUTH_TOKEN");
                 }
                 return token;
             }), 

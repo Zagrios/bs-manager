@@ -9,7 +9,7 @@ import { ProgressBarService } from "../progress-bar.service";
 import { LoginToSteamModal } from "renderer/components/modal/modal-types/bs-downgrade/login-to-steam-modal.component";
 import { SteamGuardModal } from "renderer/components/modal/modal-types/bs-downgrade/steam-guard-modal.component";
 import { LinkOpenerService } from "../link-opener.service";
-import { DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderInfoEvent, DepotDownloaderWarningEvent } from "../../../shared/models/depot-downloader.model";
+import { DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderInfoEvent, DepotDownloaderWarningEvent } from "../../../shared/models/bs-version-download/depot-downloader.model";
 import { SteamMobileApproveModal } from "renderer/components/modal/modal-types/bs-downgrade/steam-mobile-approve-modal.component";
 import { DownloaderServiceInterface } from "./bs-store-downloader.interface";
 import { AbstractBsDownloaderService } from "./abstract-bs-downloader.service";

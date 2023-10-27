@@ -10,6 +10,7 @@ import { LoginToMetaModal } from "renderer/components/modal/modal-types/bs-downg
 import { DownloaderServiceInterface } from "./bs-store-downloader.interface";
 import { AbstractBsDownloaderService } from "./abstract-bs-downloader.service";
 import { DownloadInfo } from "main/services/bs-version-download/bs-steam-downloader.service";
+import { MetaAuthErrorCodes } from "shared/models/bs-version-download/oculus-download.model";
 
 export class OculusDownloaderService extends AbstractBsDownloaderService implements DownloaderServiceInterface{
 
@@ -44,33 +45,40 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
         this.notifications.notifyError({title: err.code});
     }
 
-    private handleDownload(download: Observable<Progression<BSVersion>>): Observable<Progression<BSVersion>> {
+    private handleDownload(download: Observable<Progression<BSVersion>>, ingoreErrorCodes?: string[]): Observable<Progression<BSVersion>> {
         const progress$ = download.pipe(map(progress => (progress.current / progress.total) * 100), catchError(() => of(0)));
         this.progressBar.show(progress$, true);
 
         const subs: Subscription[] = [];
 
         subs.push(
-            download.pipe(take(1), catchError(() => of(null))).subscribe(data => data && this._downloadingVersion$.next(data.data))
+            download.pipe(take(1)).subscribe({ next: data => data && this._downloadingVersion$.next(data.data), error: () => {} })
         )
 
         return download.pipe(
             tap({
-                error: err => this.handleDownloadErrors(err),
+                error: (err: CustomError) => {
+                    if(ingoreErrorCodes?.includes(err.code)){ return; }
+                    this.handleDownloadErrors(err);
+                },
             }),
             finalize(() => subs.forEach(sub => sub.unsubscribe()))
         );
     }
 
     private tryAutoDownload(downloadInfo: DownloadInfo): Observable<Progression<BSVersion>>{
+        const ignoreCode = [MetaAuthErrorCodes.NO_META_AUTH_TOKEN];
         return this.handleDownload(
-            this.ipc.sendV2<Progression<BSVersion>>("bs-oculus-auto-download", { args: downloadInfo })
+            this.ipc.sendV2<Progression<BSVersion>>("bs-oculus-auto-download", { args: downloadInfo }),
+            ignoreCode
         );
     }
 
     private startDownloadBsVersion(downloadInfo: DownloadInfo): Observable<Progression<BSVersion>>{
+        const ignoreCode = [MetaAuthErrorCodes.OCULUS_LOGIN_WINDOW_CLOSED_BY_USER];
         return this.handleDownload(
-            this.ipc.sendV2<Progression<BSVersion>>("bs-oculus-download", { args: downloadInfo })
+            this.ipc.sendV2<Progression<BSVersion>>("bs-oculus-download", { args: downloadInfo }),
+            ignoreCode
         );
     }
 

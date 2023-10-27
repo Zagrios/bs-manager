@@ -9,7 +9,7 @@ import { BSLocalVersionService } from "../bs-local-version.service";
 import { ensureDir } from "fs-extra";
 import { ensurePathNotAlreadyExist } from "../../helpers/fs.helpers";
 import { Observable, catchError, finalize, map, throwError } from "rxjs";
-import { DepotDownloaderArgsOptions, DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderInfoEvent } from "../../../shared/models/depot-downloader.model";
+import { DepotDownloaderArgsOptions, DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderInfoEvent } from "../../../shared/models/bs-version-download/depot-downloader.model";
 import { DepotDownloader } from "../../models/depot-downloader.class";
 import { app } from "electron";
 import { BsStore } from "../../../shared/models/bs-store.enum";

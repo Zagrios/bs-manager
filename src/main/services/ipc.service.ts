@@ -3,6 +3,7 @@ import { BrowserWindow, ipcMain } from "electron";
 import { Observable } from "rxjs";
 import { IpcCompleteChannel, IpcErrorChannel, IpcTearDownChannel } from "shared/models/ipc/ipc-response.interface";
 import { IpcReplier } from "shared/models/ipc/ipc-request.interface";
+import { serializeError } from 'serialize-error';
 import log from "electron-log";
 
 export class IpcService {
@@ -47,7 +48,7 @@ export class IpcService {
             next: data => this.send(channel, window, data),
             error: error => {
                 log.error(error);
-                this.send(this.getErrorChannel(channel), window, error);
+                this.send(this.getErrorChannel(channel), window, serializeError(error));
             },
             complete: () => this.send(this.getCompleteChannel(channel), window)
         })

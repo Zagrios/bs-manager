@@ -11,6 +11,7 @@ import { useService } from "renderer/hooks/use-service.hook";
 import { BSVersion } from "shared/bs-version.interface";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
+import { BsStore } from "shared/models/bs-store.enum";
 
 export const AvailableVersionsContext = createContext<{ selectedVersion: BSVersion; setSelectedVersion: (version: BSVersion) => void }>(null);
 
@@ -27,7 +28,10 @@ export function AvailableVersionsList() {
 
     const startDownload = async () => {
 
-        const store = bsDownloader.getLastStoreDownloadedFrom() ?? await bsDownloader.chooseStoreToDownloadFrom().catch(() => null);
+        const store = await (async () => {
+            if(!selectedVersion.OculusBinaryId) { return BsStore.STEAM; }
+            return bsDownloader.getLastStoreDownloadedFrom() ?? await bsDownloader.chooseStoreToDownloadFrom().catch(() => null);
+        })();
 
         if(!store){ return; }
 
