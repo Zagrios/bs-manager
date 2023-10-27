@@ -110,9 +110,9 @@
             }
         },
         "settings": {
-            "steam": {
-                "title": "Steam",
-                "description": "If you log out of Steam, you will have to log back in to download new versions of Beat Saber.",
+            "steam-and-oculus": {
+                "title": "Steam & Oculus",
+                "description": "Logging out will allow you to switch accounts on the next Beat Saber download.",
                 "logout": "Log out"
             },
             "appearance": {

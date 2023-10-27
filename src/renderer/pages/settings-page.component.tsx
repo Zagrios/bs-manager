@@ -6,7 +6,7 @@ import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmIconType } from "renderer/components/svgs/bsm-icon.component";
 import { DefaultConfigKey, ThemeConfig } from "renderer/config/default-configuration.config";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
-import { SteamDownloaderService } from "renderer/services/bs-downgrade/steam-downloader.service";
+import { SteamDownloaderService } from "renderer/services/bs-version-download/steam-downloader.service";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { I18nService } from "renderer/services/i18n.service";
 import { IpcService } from "renderer/services/ipc.service";
@@ -35,7 +35,7 @@ import { useService } from "renderer/hooks/use-service.hook";
 import { lastValueFrom } from "rxjs";
 import { BsmException } from "shared/models/bsm-exception.model";
 import { useObservable } from "renderer/hooks/use-observable.hook";
-import { AuthUserService } from "renderer/services/auth-user.service";
+import { OculusDownloaderService } from "renderer/services/bs-version-download/oculus-downloader.service";
 
 export function SettingsPage() {
     
@@ -43,7 +43,8 @@ export function SettingsPage() {
     const themeService = useService(ThemeService);
     const ipcService = useService(IpcService);
     const modalService = useService(ModalService);
-    const downloaderService = useService(SteamDownloaderService);
+    const steamDownloader = useService(SteamDownloaderService);
+    const oculusDownloader = useService(OculusDownloaderService);
     const progressBarService = useService(ProgressBarService);
     const notificationService = useService(NotificationService);
     const i18nService = useService(I18nService);
@@ -52,7 +53,6 @@ export function SettingsPage() {
     const playlistsManager = useService(PlaylistsManagerService);
     const modelsManager = useService(ModelsManagerService);
     const versionLinker = useService(VersionFolderLinkerService);
-    const authService = useService(AuthUserService);
 
     const { firstColor, secondColor } = useThemeColor();
 
@@ -79,11 +79,12 @@ export function SettingsPage() {
     const [mapDeepLinksEnabled, setMapDeepLinksEnabled] = useState(false);
     const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
     const [modelsDeepLinkEnabled, setModelsDeepLinkEnabled] = useState(false);
+    const [hasDownloaderSession, setHasDownloaderSession] = useState(false);
     const appVersion = useObservable(ipcService.sendV2<string>("current-version"));
-    const steamSessionExist = useObservable(authService.sessionExist$);
 
     useEffect(() => {
         loadInstallationFolder();
+        loadDownloadersSession();
         mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
@@ -97,8 +98,22 @@ export function SettingsPage() {
     };
 
     const loadInstallationFolder = () => {
-        downloaderService.getInstallationFolder().then(res => setInstallationFolder(res));
+        steamDownloader.getInstallationFolder().then(res => setInstallationFolder(res));
     };
+
+    const loadDownloadersSession = () => {
+        if(steamDownloader.sessionExist()){ return setHasDownloaderSession(true); }
+
+        oculusDownloader.hasAuthToken().then(hasToken => {
+            setHasDownloaderSession(hasToken);
+        });
+    }
+
+    const clearDownloadersSession = () => {
+        steamDownloader.deleteSteamSession();
+        oculusDownloader.clearAuthToken();
+        loadDownloadersSession();
+    }
 
     const setFirstColorSetting = (hex: string) => configService.set("first-color", hex);
     const setSecondColorSetting = (hex: string) => configService.set("second-color", hex);
@@ -131,7 +146,7 @@ export function SettingsPage() {
 
                 notificationService.notifySuccess({ title: "notifications.settings.move-folder.success.titles.transfer-started", desc: "notifications.settings.move-folder.success.descs.transfer-started" });
 
-                lastValueFrom(downloaderService.setInstallationFolder(fileChooserRes.filePaths[0])).then(res => {
+                lastValueFrom(steamDownloader.setInstallationFolder(fileChooserRes.filePaths[0])).then(res => {
 
                     progressBarService.complete();
                     progressBarService.hide(true);
@@ -207,8 +222,8 @@ export function SettingsPage() {
                     <BsmButton className="inline-block grow-0 bg-transparent sticky h-full w-full top-20 right-20 !m-0 rounded-full p-1" onClick={() => nav(-1)} icon="close" withBar={false} />
                 </div>
 
-                <SettingContainer title="pages.settings.steam.title" description="pages.settings.steam.description">
-                    <BsmButton onClick={() => authService.deleteSteamSession()} className="w-fit px-3 py-[2px] text-white rounded-md" withBar={false} text="pages.settings.steam.logout" typeColor="error" disabled={!steamSessionExist}/>
+                <SettingContainer title="pages.settings.steam-and-oculus.title" description="pages.settings.steam-and-oculus.description">
+                    <BsmButton onClick={clearDownloadersSession} className="w-fit px-3 py-[2px] text-white rounded-md" withBar={false} text="pages.settings.steam-and-oculus.logout" typeColor="error" disabled={!hasDownloaderSession}/>
                 </SettingContainer> 
 
                 <SettingContainer title="pages.settings.appearance.title" description="pages.settings.appearance.description">

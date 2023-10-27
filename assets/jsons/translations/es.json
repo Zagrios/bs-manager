@@ -109,9 +109,9 @@
             }
         },
         "settings": {
-            "steam": {
-                "title": "Steam",
-                "description": "Si desconectas tu cuenta de Steam, tendrás que volver a conectarla para descargar una nueva versión de Beat Saber.",
+            "steam-and-oculus": {
+                "title": "Steam & Oculus",
+                "description": "Desconectarte te permitirá cambiar de cuenta en la próxima descarga de Beat Saber.",
                 "logout": "Cerrar sesión"
             },
             "appearance": {

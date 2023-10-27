@@ -8,7 +8,6 @@ import { BSUninstallerService } from "../services/bs-uninstaller.service";
 import { BSVersionManagerService } from "../services/bs-version-manager.service";
 import { ModalExitCode, ModalService } from "../services/modale.service";
 import DefautVersionImage from "../../../assets/images/default-version-img.jpg";
-import { SteamDownloaderService } from "renderer/services/bs-downgrade/steam-downloader.service";
 import { IpcService } from "renderer/services/ipc.service";
 import { LaunchSlide } from "renderer/components/version-viewer/slides/launch/launch-slide.component";
 import { ModsSlide } from "renderer/components/version-viewer/slides/mods/mods-slide.component";
@@ -21,13 +20,14 @@ import { BSLauncherService } from "renderer/services/bs-launcher.service";
 import { CreateLaunchShortcutModal } from "renderer/components/modal/modal-types/create-launch-shortcut-modal.component";
 import { lastValueFrom } from "rxjs";
 import { NotificationService } from "renderer/services/notification.service";
+import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
 
 export function VersionViewer() {
 
     const bsUninstallerService = useService(BSUninstallerService);
     const bsVersionManagerService = useService(BSVersionManagerService);
     const modalService = useService(ModalService);
-    const bsDownloaderService = useService(SteamDownloaderService);
+    const bsDownloader = useService(BsDownloaderService);
     const ipcService = useService(IpcService);
     const bsLauncher = useService(BSLauncherService);
     const notification = useService(NotificationService);
@@ -43,7 +43,7 @@ export function VersionViewer() {
         navigate(`/bs-version/${version.BSVersion}`, { state: version });
     };
     const openFolder = () => ipcService.sendLazy("bs-version.open-folder", { args: state });
-    const verifyFiles = () => bsDownloaderService.verifyBsVersionFiles(state);
+    const verifyFiles = () => bsDownloader.verifyBsVersion(state);
 
     const uninstall = async () => {
         const modalCompleted = await modalService.openModal(UninstallModal, state);

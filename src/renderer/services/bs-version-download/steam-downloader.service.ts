@@ -1,9 +1,7 @@
-import { DownloadInfo } from "main/services/bs-installer.service";
+import { DownloadSteamInfo } from "main/services/bs-version-download/bs-steam-downloader.service";
 import { BehaviorSubject, Observable, ReplaySubject, Subscription, lastValueFrom, throwError } from "rxjs";
 import { filter, map, share, take, tap, throttleTime } from "rxjs/operators";
 import { BSVersion } from "shared/bs-version.interface";
-import { AuthUserService } from "../auth-user.service";
-import { BSVersionManagerService } from "../bs-version-manager.service";
 import { IpcService } from "../ipc.service";
 import { ModalExitCode, ModalService } from "../modale.service";
 import { NotificationService } from "../notification.service";
@@ -13,21 +11,12 @@ import { SteamGuardModal } from "renderer/components/modal/modal-types/bs-downgr
 import { LinkOpenerService } from "../link-opener.service";
 import { DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderInfoEvent, DepotDownloaderWarningEvent } from "../../../shared/models/depot-downloader.model";
 import { SteamMobileApproveModal } from "renderer/components/modal/modal-types/bs-downgrade/steam-mobile-approve-modal.component";
+import { DownloaderServiceInterface } from "./bs-store-downloader.interface";
+import { AbstractBsDownloaderService } from "./abstract-bs-downloader.service";
 
-export class SteamDownloaderService {
+export class SteamDownloaderService extends AbstractBsDownloaderService implements DownloaderServiceInterface{
+    
     private static instance: SteamDownloaderService;
-
-    private readonly modalService: ModalService;
-    private readonly ipcService: IpcService;
-    private readonly bsVersionManager: BSVersionManagerService;
-    private readonly authService: AuthUserService;
-    private readonly progressBarService: ProgressBarService;
-    private readonly notificationService: NotificationService;
-    private readonly linkOpener: LinkOpenerService;
-
-    private readonly isVerification$ = new BehaviorSubject(false);
-    public readonly currentBsVersionDownload$ = new BehaviorSubject<BSVersion>(null);
-    public readonly downloadProgress$ = new BehaviorSubject(0);
 
     public static getInstance(): SteamDownloaderService {
         if (!SteamDownloaderService.instance) {
@@ -36,11 +25,20 @@ export class SteamDownloaderService {
         return SteamDownloaderService.instance;
     }
 
+    private readonly modalService: ModalService;
+    private readonly ipcService: IpcService;
+    private readonly progressBarService: ProgressBarService;
+    private readonly notificationService: NotificationService;
+    private readonly linkOpener: LinkOpenerService;
+
+    private readonly STEAM_SESSION_USERNAME_KEY = "STEAM-USERNAME";
+
+    public readonly downloadProgress$ = new BehaviorSubject(0);
+
     private constructor() {
+        super();
         this.ipcService = IpcService.getInstance();
         this.modalService = ModalService.getInstance();
-        this.bsVersionManager = BSVersionManagerService.getInstance();
-        this.authService = AuthUserService.getInstance();
         this.progressBarService = ProgressBarService.getInstance();
         this.notificationService = NotificationService.getInstance();
         this.linkOpener = LinkOpenerService.getInstance();
@@ -49,6 +47,11 @@ export class SteamDownloaderService {
     public isDotNet6Installed(): Promise<boolean> {
         return lastValueFrom(this.ipcService.sendV2<boolean>("is-dotnet-6-installed"));
     }
+
+    private setSteamSession(username: string): void { localStorage.setItem(this.STEAM_SESSION_USERNAME_KEY, username); }
+    private getSteamUsername(): string { return localStorage.getItem(this.STEAM_SESSION_USERNAME_KEY); }
+    public deleteSteamSession(): void { localStorage.removeItem(this.STEAM_SESSION_USERNAME_KEY); }
+    public sessionExist(): boolean { return !!localStorage.getItem(this.STEAM_SESSION_USERNAME_KEY); }
 
     private async showDotNetNotInstalledError(): Promise<void> {
         const choice = await this.notificationService.notifyError({
@@ -63,26 +66,12 @@ export class SteamDownloaderService {
         }
     }
 
-    public get isDownloading(): boolean {
-        return !!this.currentBsVersionDownload$.value;
-    }
-
     public async getInstallationFolder(): Promise<string> {
         return lastValueFrom(this.ipcService.sendV2<string>("bs-download.installation-folder"));
     }
 
-    public get isVerification(): boolean {
-        return this.isVerification$.value;
-    }
-
     public setInstallationFolder(path: string): Observable<string> {
         return this.ipcService.sendV2<string>("bs-download.set-installation-folder", { args: path });
-    }
-
-    public async importVersion(pathToImport: string): Promise<boolean> {
-        return lastValueFrom(this.ipcService.sendV2<void>("bs-download.import-version", { args: pathToImport }))
-            .then(() => true)
-            .catch(() => false);
     }
 
     // ### Downloading
@@ -97,7 +86,7 @@ export class SteamDownloaderService {
         ).subscribe(startData => {
             const downloadVersion = JSON.parse(startData) as BSVersion;
             if(typeof downloadVersion === "object" && downloadVersion?.BSVersion){
-                this.currentBsVersionDownload$.next(downloadVersion);
+                this._downloadingVersion$.next(downloadVersion);
             }
         }));
 
@@ -135,7 +124,7 @@ export class SteamDownloaderService {
             filter(event => event.subType === DepotDownloaderInfoEvent.Finished),
             take(1),
         ).subscribe(() => {
-            if(this.isVerification){
+            if(this.isVerifying){
                 return this.notificationService.notifySuccess({title: "notifications.bs-download.success.titles.verification-finished"});
             }
             return this.notificationService.notifySuccess({title: "notifications.bs-download.success.titles.download-success"});
@@ -187,7 +176,7 @@ export class SteamDownloaderService {
         }).pipe(
             tap({
                 error: (e) => {
-                    this.authService.deleteSteamSession();
+                    this.deleteSteamSession();
                     !silent && this.hanndleErrorEvent(e)
                 }
             }),
@@ -196,26 +185,26 @@ export class SteamDownloaderService {
         
     }
 
-    private tryAutoDownloadBsVersion(downloadInfo: DownloadInfo){
+    private tryAutoDownloadBsVersion(downloadInfo: DownloadSteamInfo){
 
-        if(!this.authService.sessionExist()){
+        if(!this.sessionExist()){
             return throwError(() => new Error("No session"));
         }
 
-        const infos: DownloadInfo = {...downloadInfo, username: this.authService.getSteamUsername()}
+        const infos: DownloadSteamInfo = {...downloadInfo, username: this.getSteamUsername()}
         return this.wrapDownload(
             this.ipcService.sendV2<DepotDownloaderEvent>("auto-download-bs-version", { args: infos }),
             true
         );
     }
 
-    private startDownload(downloadInfo: DownloadInfo){
+    private startDownload(downloadInfo: DownloadSteamInfo){
         return this.wrapDownload(
             this.ipcService.sendV2<DepotDownloaderEvent>("download-bs-version", { args: downloadInfo })
         );
     }
 
-    private startQrCodeDownload(downloadInfo: DownloadInfo){
+    private startQrCodeDownload(downloadInfo: DownloadSteamInfo){
         return this.wrapDownload(
             this.ipcService.sendV2<DepotDownloaderEvent>("download-bs-version-qr", { args: downloadInfo })
         );
@@ -228,7 +217,6 @@ export class SteamDownloaderService {
         }
 
         this.progressBarService.show(this.downloadProgress$, true);
-        this.isVerification$.next(isVerification);
         
         const downloadPromise = (async () => {
 
@@ -238,7 +226,7 @@ export class SteamDownloaderService {
                 return Promise.reject(new Error("DotNet not installed"));
             }
 
-            const downloadInfo: DownloadInfo = {bsVersion, isVerification}
+            const downloadInfo: DownloadSteamInfo = {bsVersion, isVerification}
         
             const autoDownload = await lastValueFrom(this.tryAutoDownloadBsVersion(downloadInfo)).then(() => true).catch(() => false);
             
@@ -255,7 +243,7 @@ export class SteamDownloaderService {
             }
 
             if(loginRes.data.stay){
-                this.authService.setSteamSession(loginRes.data.username);
+                this.setSteamSession(loginRes.data.username);
             }
 
             const download$ = loginRes.data.method === "qr" ? qrCodeDownload$ : this.startDownload({...downloadInfo, username: loginRes.data.username, password: loginRes.data.password, stay: loginRes.data.stay});
@@ -268,10 +256,7 @@ export class SteamDownloaderService {
 
         return downloadPromise.then(() => {}).finally(() => {
             this.downloadProgress$.next(0);
-            this.currentBsVersionDownload$.next(null);
             this.progressBarService.hide(true);
-            this.isVerification$.next(false);
-            this.bsVersionManager.askInstalledVersions();
         });
 
     }
@@ -282,10 +267,6 @@ export class SteamDownloaderService {
 
     public downloadBsVersion(version: BSVersion): Promise<BSVersion> {
         return this.doDownloadBsVersion(version).then(() => version);
-    }
-
-    public verifyBsVersionFiles(version: BSVersion): Promise<BSVersion> {
-        return this.doDownloadBsVersion(version, true).then(() => version);
     }
 
     public verifyBsVersion(version: BSVersion): Promise<BSVersion> {

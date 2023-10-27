@@ -1,16 +1,18 @@
 import JSZip from "jszip";
 import fetch from "node-fetch";
 import { CustomError } from "../../shared/models/exceptions/custom-error.class";
-import { mkdirs, createWriteStream, pathExists, writeFile, WriteStream } from "fs-extra";
+import { mkdirs, createWriteStream, pathExists, WriteStream } from "fs-extra";
 import path from "path";
 import { inflate } from "pako"
-import { EMPTY, Observable, ReplaySubject, catchError, filter, from, lastValueFrom, map, mergeMap, scan, share, tap } from "rxjs";
+import { EMPTY, Observable, ReplaySubject, Subscriber, catchError, filter, from, lastValueFrom, mergeMap, scan, share, tap } from "rxjs";
 import { Progression, hashFile } from "../helpers/fs.helpers";
 
 export class OculusDownloader {
 
     private options: OculusDownloaderOptions;
     private isDownloading: boolean;
+
+    private downloadSubscriber: Subscriber<Progression>;
 
     private getDownloadManifestUrl(token: string, binaryId: string): string {
         return `https://securecdn.oculus.com/binaries/download/?id=${binaryId}&access_token=${token}&get_manifest=1`;
@@ -59,7 +61,7 @@ export class OculusDownloader {
                     writeStream = createWriteStream(destination);
 
                     for (const segment of file.segments) {
-                        if(canceled || !writeStream.writable){ return; }
+                        if(canceled || !writeStream.writable || !this.isDownloading){ return; }
 
                         const arrBuffer = await downloadSegment(segment);
                         const inflated = inflate(arrBuffer);
@@ -130,6 +132,8 @@ export class OculusDownloader {
 
         return new Observable<Progression>(subscriber => {
 
+            this.downloadSubscriber = subscriber;
+
             if(this.isDownloading){
                 throw new CustomError("Already downloading", "ALREADY_DOWNLOADING");
             }
@@ -150,10 +154,14 @@ export class OculusDownloader {
                 const filesDownloadObservable = from(files).pipe(
                     filter(() => this.isDownloading),
                     mergeMap(([filename, file]) => (
-                        from(this.isFileIntegrityValid([filename, file], options.destination)).pipe( map(isValid => ({ filename, file, isValid })))
+                        this.isFileIntegrityValid([filename, file], options.destination)).then(isValid => ({ filename, file, isValid })
                     )),
-                    filter(({ isValid }) => !isValid),
-                    mergeMap(({ filename, file }) => {
+                    mergeMap(({ filename, file, isValid }) => {
+                        if(isValid){
+                            const res: Progression<OculusManifestFile> = { current: file.size, total: file.size, diff: file.size, data: file };
+                            return from([res])
+                        }
+
                         const target = path.join(options.destination, filename);
                         return this.downloadManifestFile(file, target).pipe(
                             catchError(err => {
@@ -161,7 +169,7 @@ export class OculusDownloader {
                                 return EMPTY;
                             })
                         );
-                    }, 10),
+                    }, 5),
                     scan((acc, curr) => acc + curr.diff, 0),
                 );
 
@@ -172,8 +180,6 @@ export class OculusDownloader {
                     },
                 })));
 
-                await writeFile(path.join(options.destination, "type.info"), "oculus");
-
                 const integrity = await lastValueFrom(this.verifyIntegrity(manifest, options.destination)).catch(err => CustomError.throw(err, "VERIFY_INTEGRITY_FAILED"));
                 
                 if(integrity.data.length > 0){
@@ -183,7 +189,6 @@ export class OculusDownloader {
             })().then(() => subscriber.complete()).catch(err => subscriber.error(err));
 
             return () => {
-                console.log("C FINI");
                 this.isDownloading = false;
             }
         }).pipe(share({connector: () => new ReplaySubject(1)}));
@@ -191,6 +196,7 @@ export class OculusDownloader {
 
     public stopDownload(){
         this.isDownloading = false;
+        this.downloadSubscriber?.complete();
     }
 
 }

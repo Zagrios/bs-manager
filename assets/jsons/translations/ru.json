@@ -110,9 +110,9 @@
             }
         },
         "settings": {
-            "steam": {
-                "title": "Steam",
-                "description": "Если вы выйдете из Steam, вам придётся снова войти, если вы хотите скачать другие версии Beat Saber.",
+            "steam-and-oculus": {
+                "title": "Steam & Oculus",
+                "description": "Выход позволит вам сменить учетную запись при следующей загрузке Beat Saber.",
                 "logout": "Выйти"
             },
             "appearance": {

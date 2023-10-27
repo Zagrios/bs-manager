@@ -11,17 +11,19 @@ import log from "electron-log";
 import { OculusService } from "./oculus.service";
 import { DownloadLinkType } from "shared/models/mods";
 import sanitize from "sanitize-filename";
-import { copyDirectoryWithJunctions, deleteFolder, getFoldersInFolder, pathExist } from "../helpers/fs.helpers";
+import { Progression, copyDirectoryWithJunctions, deleteFolder, ensurePathNotAlreadyExist, getFoldersInFolder, pathExist, rxCopy } from "../helpers/fs.helpers";
 import { FolderLinkerService } from "./folder-linker.service";
-import { ReadStream, createReadStream, readFile } from "fs-extra";
+import { ReadStream, createReadStream, readFile, writeFile } from "fs-extra";
 import readline from "readline";
-import { Observable, Subject } from "rxjs";
+import { Observable, Subject, catchError, finalize, from, map, switchMap, throwError } from "rxjs";
 import { BsStore } from "../../shared/models/bs-store.enum";
+import { CustomError } from "../../shared/models/exceptions/custom-error.class";
 
 export class BSLocalVersionService {
     private static instance: BSLocalVersionService;
 
     private readonly CUSTOM_VERSIONS_KEY = "custom-versions";
+    private readonly METADATA_FILE = "metadata.config";
 
     private readonly installLocationService: InstallationLocationService;
     private readonly steamService: SteamService;
@@ -110,12 +112,8 @@ export class BSLocalVersionService {
             folderVersion.ino = folderStats.ino;
         }
 
-        const type: string = await readFile(path.join(bsPath, "type.info"), "utf-8").catch(() => null);
-        if(type === BsStore.OCULUS){
-            folderVersion.downloadedFrom = BsStore.OCULUS;
-        } else {
-            folderVersion.downloadedFrom = BsStore.STEAM;
-        }
+        const versionStore: BsStore = await this.getVersionMetadata(folderVersion, "store");
+        folderVersion.store = versionStore ?? BsStore.STEAM;
 
         const customVersion = this.getCustomVersions().find(customVersion => {
             return customVersion.BSVersion === folderVersion.BSVersion && customVersion.name === folderVersion.name;
@@ -124,24 +122,57 @@ export class BSLocalVersionService {
         folderVersion.color = customVersion?.color;
 
         return folderVersion;
-   }
+    }
 
-   private setCustomVersions(versions: BSVersion[]): void{
-      this.configService.set(this.CUSTOM_VERSIONS_KEY, versions);
-   }
+    public getAllVersionMetadata(version: BSVersion): Promise<Record<string, unknown>|null>{
+        return (async () => {
+            const versionPath = await this.getVersionPath(version);
+            const contents = await readFile(path.join(versionPath, this.METADATA_FILE), "utf-8");
+            return JSON.parse(contents);
+        })().catch(e => {
+            log.warn(e);
+            return null;
+        });
+    }
 
-   private addCustomVersion(version: BSVersion): void{
-      this.setCustomVersions([...this.getCustomVersions() ?? [], version]);
-   }
+    public getVersionMetadata<T = unknown>(version: BSVersion, key: string): Promise<T|null>{
+        return (async () => {
+            const metadata = await this.getAllVersionMetadata(version);
+            return metadata?.[key] as T;
+        })().catch(e => {
+            log.warn(e);
+            return null;
+        });
+    }
 
-   private getCustomVersions(): BSVersion[]{
-      return this.configService.get<BSVersion[]>(this.CUSTOM_VERSIONS_KEY) || [];
-   }
+    public setVersionMetadata(version: BSVersion, key: string, value: unknown): Promise<void>{
+        return (async () => {
+            const versionPath = await this.getVersionPath(version);
+            const metadataPath = path.join(versionPath, this.METADATA_FILE);
+            const metadata = await this.getAllVersionMetadata(version) || {};
+            metadata[key] = value;
+            await writeFile(metadataPath, JSON.stringify(metadata));
+        })().catch(e => {
+            log.error(e);
+        });
+    }
 
-   private deleteCustomVersion(version: BSVersion): void{
-      const customVersions = this.getCustomVersions() || [];
-      this.setCustomVersions(customVersions.filter(v => (v.name !== version.name || v.BSVersion !== version.BSVersion || v.color !== version.color)));
-   }
+    private setCustomVersions(versions: BSVersion[]): void{
+        this.configService.set(this.CUSTOM_VERSIONS_KEY, versions);
+    }
+
+    private addCustomVersion(version: BSVersion): void{
+        this.setCustomVersions([...this.getCustomVersions() ?? [], version]);
+    }
+
+    private getCustomVersions(): BSVersion[]{
+        return this.configService.get<BSVersion[]>(this.CUSTOM_VERSIONS_KEY) || [];
+    }
+
+    private deleteCustomVersion(version: BSVersion): void{
+        const customVersions = this.getCustomVersions() || [];
+        this.setCustomVersions(customVersions.filter(v => (v.name !== version.name || v.BSVersion !== version.BSVersion || v.color !== version.color)));
+    }
 
 
     /**
@@ -309,6 +340,34 @@ export class BSLocalVersionService {
       })
    }
 
+    public importVersion(opt: ImportVersionOptions): Observable<Progression<BSVersion>>{
+        const { fromPath, store } = opt;
+
+        let failed = false;
+        let versionDest:  {version: BSVersion, dest: string} = null;
+
+        return from(this.getVersionOfBSFolder(fromPath)).pipe(
+            map(version => version || CustomError.throw(new Error("Unable to get BS version of path"), "NOT_BS_FOLDER")),
+            switchMap(version => this.getVersionPath(version).then(dest => ({version, dest}))),
+            switchMap(({version, dest}) => ensurePathNotAlreadyExist(dest).then(uniquePath => {
+                const res = dest === uniquePath ? {version, dest} : {version: {...version, name: path.basename(uniquePath)}, dest: uniquePath} as {version: BSVersion, dest: string};
+                versionDest = res;
+                return res;
+            })),
+            switchMap(({version, dest}) => rxCopy(fromPath, dest, { dereference: true }).pipe(
+                map(progress => ({...progress, data: version}))
+            )),
+            catchError(err => {
+                failed = true;
+                return throwError(() => err);
+            }),
+            finalize(async () => {
+                if(failed){ return; }
+                await this.setVersionMetadata(versionDest.version, "store", store);
+            })
+        );
+    }
+
     public async getLinkedFolders(version: BSVersion): Promise<string[]>{
         const versionPath = await this.getVersionPath(version);
         const [rootFolders, beatSaberDataFolders] = await Promise.all([getFoldersInFolder(versionPath), getFoldersInFolder(path.join(versionPath, "Beat Saber_Data"))]);
@@ -328,4 +387,9 @@ export class BSLocalVersionService {
     public get loadedVersions$(): Observable<BSVersion[]>{
         return this._loadedVersions$.asObservable();
     }
+}
+
+export interface ImportVersionOptions {
+    fromPath: string;
+    store: BsStore
 }

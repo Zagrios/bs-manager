@@ -10,6 +10,7 @@ import { LaunchModToogle } from "./launch-mod-toogle.component";
 import BSLogo from "../../../../../../assets/images/apngs/bs-logo.png";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { useService } from "renderer/hooks/use-service.hook";
+import { BsStore } from "shared/models/bs-store.enum";
 
 type Props = { version: BSVersion };
 
@@ -73,7 +74,7 @@ export function LaunchSlide({ version }: Props) {
                 <h1 className="relative text-4xl font-bold italic -top-3">{version.name ? `${version.BSVersion} - ${version.name}` : version.BSVersion}</h1>
             </div>
             <div className="grid grid-flow-col gap-6">
-                {!version.oculus && <LaunchModToogle infoText="pages.version-viewer.launch-mods.oculus-description" icon="oculus" onClick={() => setMode(LaunchMods.OCULUS_MOD, !oculusMode)} active={oculusMode} text="pages.version-viewer.launch-mods.oculus" />}
+                {!(version.oculus || version.store === BsStore.OCULUS) && <LaunchModToogle infoText="pages.version-viewer.launch-mods.oculus-description" icon="oculus" onClick={() => setMode(LaunchMods.OCULUS_MOD, !oculusMode)} active={oculusMode} text="pages.version-viewer.launch-mods.oculus" />}
                 <LaunchModToogle infoText="pages.version-viewer.launch-mods.desktop-description" icon="desktop" onClick={() => setMode(LaunchMods.DESKTOP_MOD, !desktopMode)} active={desktopMode} text="pages.version-viewer.launch-mods.desktop" />
                 <LaunchModToogle infoText="pages.version-viewer.launch-mods.debug-description" icon="terminal" onClick={() => setMode(LaunchMods.DEBUG_MOD, !debugMode)} active={debugMode} text="pages.version-viewer.launch-mods.debug" />
             </div>

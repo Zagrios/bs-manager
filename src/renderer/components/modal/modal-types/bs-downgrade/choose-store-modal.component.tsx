@@ -34,6 +34,8 @@ export const ChooseStore: ModalComponent<BsStore> = ({ resolver }) => {
         }
     })();
 
+    // TODO : Translate
+
     return (
         <form className="flex flex-col gap-3">
             <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t("which platform ?")}</h1>
@@ -41,7 +43,7 @@ export const ChooseStore: ModalComponent<BsStore> = ({ resolver }) => {
             <div className="flex flex-row w-full flex-grow gap-4">
                 <div className="flex flex-col flex-grow basis-0 gap-2 text-center px-5 pt-3 pb-1 rounded-md border-main-color-3 border-2 cursor-pointer" onMouseEnter={() => setOculusHover(true)} onMouseLeave={() => setOculusHover(false)} onClick={() => chooseStore(BsStore.OCULUS)} style={{backgroundColor: oculusHover ? bg.dim : bg.bright}}>
                     <OculusIcon className="flex-grow aspect-square text-black bg-white rounded-full p-5"/>
-                    <h2 className="font-bold">Oculus PC</h2>
+                    <h2 className="font-bold">Oculus Store (PC)</h2>
                 </div>
                 <div className="flex flex-col flex-grow basis-0 gap-2 text-center px-5 pt-3 pb-1 rounded-md border-main-color-3 border-2 cursor-pointer" onMouseEnter={() => setSteamHover(true)} onMouseLeave={() => setSteamHover(false)} onClick={() => chooseStore(BsStore.STEAM)} style={{backgroundColor: steamHover ? bg.dim : bg.bright}}>
                     <SteamIcon className="flex-grow"/>

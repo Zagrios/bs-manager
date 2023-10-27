@@ -20,8 +20,6 @@ import { APP_NAME } from "./constants";
 import { BSLauncherService } from "./services/bs-launcher.service";
 import { IpcRequest } from "shared/models/ipc";
 import { LivShortcut } from "./services/liv/liv-shortcut.service";
-import { BsOculusDownloaderService } from "./services/bs-oculus-downloader.service";
-import { BSVersion } from "shared/bs-version.interface";
 
 const isDebug = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true";
 
@@ -60,8 +58,6 @@ const createWindow = async (window: AppWindow = "launcher.html") => {
         await installExtensions();
     }
     WindowManagerService.getInstance().openWindow(window);
-
-    BsOculusDownloaderService.getInstance().clearTokenCookie();
 };
 
 const initServicesMustBeInitialized = () => {

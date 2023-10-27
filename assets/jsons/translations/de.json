@@ -110,9 +110,9 @@
             }
         },
         "settings": {
-            "steam": {
-                "title": "Steam",
-                "description": "Wenn Du dich von Steam abmeldest, musst Du dich erneut anmelden, um eine neue Version von Beat Saber herunterzuladen.",
+            "steam-and-oculus": {
+                "title": "Steam & Oculus",
+                "description": "Abmelden ermöglicht es dir, beim nächsten Beat Saber Download den Account zu wechseln.",
                 "logout": "Abmelden"
             },
             "appearance": {

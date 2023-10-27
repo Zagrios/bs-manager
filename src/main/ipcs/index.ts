@@ -11,5 +11,4 @@ import "./beat-saver-ipcs";
 import "./bs-playlist-ipcs";
 import "./model-saber.ipcs";
 import "./bs-model-ipcs";
-import "./bs-downgrade/bs-oculus-download-ipcs";
-import "./bs-downgrade/bs-download-ipcs";
+import "./bs-version-download/bs-download-ipcs";

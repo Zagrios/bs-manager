@@ -1,13 +1,16 @@
-import { BSVersion } from "../../shared/bs-version.interface";
-import { WindowManagerService } from "./window-manager.service";
-import { minToMs, msToS } from "../../shared/helpers/time.helpers";
+import { BSVersion } from "../../../shared/bs-version.interface";
+import { WindowManagerService } from "../window-manager.service";
+import { minToMs, msToS } from "../../../shared/helpers/time.helpers";
 import log from "electron-log";
-import { CustomError } from "../../shared/models/exceptions/custom-error.class";
-import { OculusDownloader } from "../models/oculus-downloader.class";
+import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
+import { OculusDownloader } from "../../models/oculus-downloader.class";
 import { Cookie, session } from "electron";
-import { Progression, pathExist } from "../helpers/fs.helpers";
-import { BSLocalVersionService } from "./bs-local-version.service";
-import { Observable, Subscription } from "rxjs";
+import { Progression, ensurePathNotAlreadyExist } from "../../helpers/fs.helpers";
+import { BSLocalVersionService } from "../bs-local-version.service";
+import { Observable, catchError, finalize, from, map, switchMap, throwError } from "rxjs";
+import path from "path";
+import { DownloadInfo } from "./bs-steam-downloader.service";
+import { BsStore } from "../../../shared/models/bs-store.enum";
 
 export class BsOculusDownloaderService {
 
@@ -73,8 +76,8 @@ export class BsOculusDownloaderService {
         return cookie.expirationDate > msToS(Date.now());
     }
 
-    public async getTokenFromCookie(): Promise<string | undefined> {
-        const cookie = await session.defaultSession.cookies.get({ name: "oc_www_at" }).then(a => a.at(0));
+    public async getAuthToken(): Promise<string | undefined> {
+        const cookie = await session.defaultSession.cookies.get({ name: "oc_www_at" }).then(a => a?.at(0));
 
         if(this.isCookieValid(cookie) && this.isUserTokenValid(cookie.value)){
             return cookie.value;
@@ -117,7 +120,7 @@ export class BsOculusDownloaderService {
             clearTimeout(timout);
             
             if(!keepToken){
-                this.clearTokenCookie();
+                this.clearAuthToken();
             }
 
             if(window.isClosable() && !window.isDestroyed()){
@@ -128,72 +131,76 @@ export class BsOculusDownloaderService {
         return promise;
     }
 
-    /**
-     * DUPLICATION FROM BS-INSTALLER.SERVICE (TODO : need to be refactored)
-     * @param path 
-     * @returns 
-     */
-    private async getPathNotAleardyExist(path: string): Promise<string> {
-        let destPath = path;
-        let folderExist = await pathExist(destPath);
-        let i = 0;
-
-        while (folderExist) {
-            i++;
-            destPath = `${path} (${i})`;
-            folderExist = await pathExist(destPath);
-        }
-
-        return destPath;
+    private async createDownloadVersion(version: BSVersion): Promise<{version: BSVersion, dest: string}>{
+        const dest = await ensurePathNotAlreadyExist(await this.versions.getVersionPath(version));
+        return {
+            version: {...version, ...(path.basename(dest) !== version.BSVersion && { name: path.basename(dest) })},
+            dest
+        };
     }
 
-    public downloadVersion(downloadInfo: OculusDownloadInfo){
-
-        return new Observable<Progression>(obs => {
-
-            let sub: Subscription;
-
-            (async () => {
-                const token = await this.getUserTokenFromMetaAuth(downloadInfo.stay);
-                const dest = await this.getPathNotAleardyExist(await this.versions.getVersionPath(downloadInfo.version));
-
-                sub = this.oculusDownloader.downloadApp({ accessToken: token, binaryId: downloadInfo.version.OculusBinaryId, destination: dest }).subscribe(obs);
-            })().catch(err => obs.error(err));
-
-            return () => {
-                sub?.unsubscribe();
-                this.oculusDownloader.stopDownload();
-            }
-        })
-        
+    public stopDownload(){
+        this.oculusDownloader.stopDownload();
     }
 
-    public autoDownloadVersion(version: BSVersion): Observable<Progression>{
+    public downloadVersion(downloadInfo: DownloadInfo): Observable<Progression<BSVersion>>{
 
-        return new Observable<Progression>(obs => {
-
-            let sub: Subscription;
-
-            (async () => {
-                const token = await this.getTokenFromCookie();
-
+        return from(this.getUserTokenFromMetaAuth(downloadInfo.stay)).pipe(
+            map(token => {
                 if(!token){
                     throw new CustomError("No token has been found while try to auto download Beat Saber from Oculus", "OCULUS_TOKEN_NEEDED");
                 }
-
-                const dest = await this.getPathNotAleardyExist(await this.versions.getVersionPath(version));
-
-                sub = this.oculusDownloader.downloadApp({ accessToken: token, binaryId: version.OculusBinaryId, destination: dest }).subscribe(obs);
-            })().catch(err => obs.error(err));
-
-            return () => {
-                sub?.unsubscribe();
-                this.oculusDownloader.stopDownload();
-            }
-        });
+                return token;
+            }), 
+            switchMap(token => {
+                if(!downloadInfo.isVerification){
+                    return this.createDownloadVersion(downloadInfo.bsVersion).then(({version, dest}) => ({token, version, dest}))
+                }
+                return this.versions.getVersionPath(downloadInfo.bsVersion).then(path => ({token, version: downloadInfo.bsVersion, dest: path}));
+            }),
+            switchMap(({token, version, dest}) => {
+                return this.oculusDownloader.downloadApp({ accessToken: token, binaryId: version.OculusBinaryId, destination: dest }).pipe(map(
+                    progress => ({...progress, data: version})                
+                ));
+            }),
+            finalize(() => this.oculusDownloader.stopDownload())
+        );
     }
 
-    public clearTokenCookie(): Promise<void>{
+    public autoDownloadVersion(downloadInfo: DownloadInfo): Observable<Progression<BSVersion>>{
+
+        let failed = false;
+        let downloadVersion: BSVersion
+
+        return from(this.getAuthToken()).pipe(
+            map(token => {
+                if(!token){
+                    throw new CustomError("No token has been found while try to auto download Beat Saber from Oculus", "OCULUS_TOKEN_NEEDED");
+                }
+                return token;
+            }), 
+            switchMap(token => {
+                if(!downloadInfo.isVerification){
+                    return this.createDownloadVersion(downloadInfo.bsVersion).then(({version, dest}) => ({token, version, dest}));
+                }
+                return this.versions.getVersionPath(downloadInfo.bsVersion).then(path => ({token, version: downloadInfo.bsVersion, dest: path}));
+            }),
+            switchMap(({token, version, dest}) => {
+                downloadVersion = version;
+                return this.oculusDownloader.downloadApp({ accessToken: token, binaryId: version.OculusBinaryId, destination: dest }).pipe(
+                    map(progress => ({...progress, data: version})),
+                );
+            }),
+            catchError(err => {
+                failed = true;
+                return throwError(() => err);
+            }),
+            finalize(() => from(!failed && this.versions.setVersionMetadata(downloadVersion, "store", BsStore.OCULUS))),
+            finalize(() => this.oculusDownloader.stopDownload()),
+        );
+    }
+
+    public clearAuthToken(): Promise<void>{
         return session.defaultSession.clearStorageData({ storages: ["cookies"], origin: ".oculus.com" })
     }
 
