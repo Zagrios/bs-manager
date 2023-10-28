@@ -30,7 +30,7 @@ export class OculusDownloader {
 
     private async getManifest(): Promise<OculusManifest> {
         const downloadUrl = this.getDownloadManifestUrl(this.options.accessToken, this.options.binaryId);
-        const manifestZip = await this.downloadManifestZip(downloadUrl).catch(err => CustomError.throw(err, "DOWNLOAD_MANIFEST_ZIP_FAILED"));
+        const manifestZip = await this.downloadManifestZip(downloadUrl).catch(err => CustomError.throw(err, "DOWNLOAD_MANIFEST_FAILED"));
         const manifestFile = manifestZip.file("manifest.json");
 
         if(!manifestFile){

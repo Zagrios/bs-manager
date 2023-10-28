@@ -1,5 +1,5 @@
 import { BSVersionLibService } from "./bs-version-lib.service";
-import { BSVersion } from "shared/bs-version.interface";
+import { BSVersion, BSVersionMetadata } from "shared/bs-version.interface";
 import { InstallationLocationService } from "./installation-location.service";
 import { SteamService } from "./steam.service";
 import { BS_APP_ID, OCULUS_BS_DIR } from "../constants";
@@ -112,8 +112,7 @@ export class BSLocalVersionService {
             folderVersion.ino = folderStats.ino;
         }
 
-        const versionStore: BsStore = await this.getVersionMetadata(folderVersion, "store");
-        folderVersion.store = versionStore ?? BsStore.STEAM;
+        folderVersion.metadata = await this.getAllVersionMetadata(folderVersion, { store: BsStore.STEAM });
 
         const customVersion = this.getCustomVersions().find(customVersion => {
             return customVersion.BSVersion === folderVersion.BSVersion && customVersion.name === folderVersion.name;
@@ -124,32 +123,32 @@ export class BSLocalVersionService {
         return folderVersion;
     }
 
-    public getAllVersionMetadata(version: BSVersion): Promise<Record<string, unknown>|null>{
+    public getAllVersionMetadata(version: BSVersion, defaultMetadata?: BSVersionMetadata): Promise<BSVersionMetadata>{
         return (async () => {
             const versionPath = await this.getVersionPath(version);
             const contents = await readFile(path.join(versionPath, this.METADATA_FILE), "utf-8");
             return JSON.parse(contents);
         })().catch(e => {
             log.warn(e);
-            return null;
-        });
+            return {};
+        }).then(metadata => ({...defaultMetadata, ...metadata}));
     }
 
-    public getVersionMetadata<T = unknown>(version: BSVersion, key: string): Promise<T|null>{
+    public getVersionMetadata<K extends keyof BSVersionMetadata, T extends BSVersionMetadata[K]>(version: BSVersion, key: K, defaultValue?: T): Promise<T|undefined>{
         return (async () => {
             const metadata = await this.getAllVersionMetadata(version);
-            return metadata?.[key] as T;
+            return metadata?.[key];
         })().catch(e => {
             log.warn(e);
             return null;
-        });
+        }).then(value => (value ?? defaultValue) as T);
     }
 
-    public setVersionMetadata(version: BSVersion, key: string, value: unknown): Promise<void>{
+    public setVersionMetadata<K extends keyof BSVersionMetadata, T extends BSVersionMetadata[K]>(version: BSVersion, key: K, value: T): Promise<void>{
         return (async () => {
             const versionPath = await this.getVersionPath(version);
             const metadataPath = path.join(versionPath, this.METADATA_FILE);
-            const metadata = await this.getAllVersionMetadata(version) || {};
+            const metadata = await this.getAllVersionMetadata(version) ?? ({} as BSVersionMetadata);
             metadata[key] = value;
             await writeFile(metadataPath, JSON.stringify(metadata));
         })().catch(e => {

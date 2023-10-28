@@ -14,9 +14,13 @@ export interface BSVersion extends PartialBSVersion {
     year?: string;
     steam?: boolean;
     oculus?: boolean;
-    color?: string;
-    store?: BsStore;
+    color?: string; // TODO : Should be in metadata
     OculusBinaryId?: string;
+    metadata?: BSVersionMetadata;
+}
+
+export interface BSVersionMetadata {
+    store: BsStore;
 }
 
 

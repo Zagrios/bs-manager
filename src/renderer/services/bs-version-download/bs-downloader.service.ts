@@ -53,13 +53,7 @@ export class BsDownloaderService extends AbstractBsDownloaderService {
     }
 
     public getLastStoreDownloadedFrom(): BsStore | undefined {
-        const lastStore = this.config.get("lastStoreDownloadedFrom");
-
-        if(!lastStore){
-            return undefined;
-        }
-
-        return lastStore as BsStore;
+        return this.config.get<BsStore>("lastStoreDownloadedFrom");
     }
 
     public async chooseStoreToDownloadFrom(): Promise<BsStore | undefined> {
@@ -81,7 +75,7 @@ export class BsDownloaderService extends AbstractBsDownloaderService {
 
     public verifyBsVersion(version: BSVersion){
         this._isVerifying$.next(true);
-        return this.getStoreDownloader(version.store).verifyBsVersion(version).finally(() => {
+        return this.getStoreDownloader(version.metadata.store).verifyBsVersion(version).finally(() => {
             this.resetDownloadState();
             this.versionManager.askInstalledVersions();
         });

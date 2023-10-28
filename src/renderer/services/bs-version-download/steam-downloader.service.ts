@@ -56,9 +56,9 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
     private async showDotNetNotInstalledError(): Promise<void> {
         const choice = await this.notificationService.notifyError({
             duration: 11_000,
-            title: "notifications.bs-download.errors.titles.dotnet-required",
-            desc: "notifications.bs-download.errors.msg.dotnet-required",
-            actions: [{ id: "0", title: "notifications.bs-download.errors.actions.download-dotnet" }],
+            title: "notifications.bs-download.steam-download.errors.titles.dotnet-required",
+            desc: "notifications.bs-download.steam-download.errors.msg.dotnet-required",
+            actions: [{ id: "0", title: "notifications.bs-download..errors.actions.download-dotnet" }],
         });
 
         if (choice === "0") {
@@ -141,7 +141,7 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
         subs.push(events$.pipe(
             filter(event => handledWarnings.includes(event.subType as DepotDownloaderWarningEvent)),
         ).subscribe(event => {
-            this.notificationService.notifyWarning({title: "notifications.types.warning", desc: `notifications.bs-download.warnings.msg.${event.subType}`});
+            this.notificationService.notifyWarning({title: "notifications.types.warning", desc: `notifications.bs-download.steam-download.warnings.msg.${event.subType}`});
         }));
 
         return subs;
@@ -151,10 +151,10 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
         const handledErrors = Object.values(DepotDownloaderErrorEvent);
 
         if(handledErrors.includes(errorEvent?.subType as DepotDownloaderErrorEvent)){
-            return this.notificationService.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.errors.msg.${errorEvent.subType}`, duration: 10_000});
+            return this.notificationService.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.steam-download.errors.msg.${errorEvent.subType}`, duration: 10_000});
         }
 
-        return this.notificationService.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.errors.msg.${DepotDownloaderErrorEvent.Unknown}`, duration: 10_000});
+        return this.notificationService.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.steam-download.errors.msg.${DepotDownloaderErrorEvent.Unknown}`, duration: 10_000});
     }
 
     private wrapDownload(download$: Observable<DepotDownloaderEvent>, silent?: boolean): Observable<DepotDownloaderEvent> {

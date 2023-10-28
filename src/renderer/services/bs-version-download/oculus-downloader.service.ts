@@ -1,4 +1,4 @@
-import { Observable, Subscription, catchError, finalize, lastValueFrom, map, of, take, tap } from "rxjs";
+import { Observable, Subscription, catchError, finalize, lastValueFrom, map, noop, of, take, tap } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { IpcService } from "../ipc.service";
 import { Progression } from "main/helpers/fs.helpers";
@@ -10,7 +10,7 @@ import { LoginToMetaModal } from "renderer/components/modal/modal-types/bs-downg
 import { DownloaderServiceInterface } from "./bs-store-downloader.interface";
 import { AbstractBsDownloaderService } from "./abstract-bs-downloader.service";
 import { DownloadInfo } from "main/services/bs-version-download/bs-steam-downloader.service";
-import { MetaAuthErrorCodes } from "shared/models/bs-version-download/oculus-download.model";
+import { MetaAuthErrorCodes, OculusDownloaderErrorCodes } from "shared/models/bs-version-download/oculus-download.model";
 
 export class OculusDownloaderService extends AbstractBsDownloaderService implements DownloaderServiceInterface{
 
@@ -29,6 +29,8 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
     private readonly notifications: NotificationService;
     private readonly modals: ModalService;
 
+    private readonly DISPLAYABLE_ERROR_CODES: string[] = [...Object.values(MetaAuthErrorCodes), ...Object.values(OculusDownloaderErrorCodes)];
+
     private constructor(){
         super();
         this.ipc = IpcService.getInstance();
@@ -37,12 +39,12 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
         this.modals = ModalService.getInstance();
     }
 
-    private handleDownloadErrors(err: CustomError): void{
-        if(!err?.code){
-            // handle unknown error
+    private handleDownloadErrors(err: CustomError): Promise<void>{
+        if(!err?.code || !this.DISPLAYABLE_ERROR_CODES.includes(err.code)){
+            return this.notifications.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.oculus-download.errors.msg.UNKNOWN_ERROR`}).then(noop);
         }
 
-        this.notifications.notifyError({title: err.code});
+        return this.notifications.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.oculus-download.errors.msg.${err.code}`}).then(noop);
     }
 
     private handleDownload(download: Observable<Progression<BSVersion>>, ingoreErrorCodes?: string[]): Observable<Progression<BSVersion>> {
@@ -75,7 +77,7 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
     }
 
     private startDownloadBsVersion(downloadInfo: DownloadInfo): Observable<Progression<BSVersion>>{
-        const ignoreCode = [MetaAuthErrorCodes.OCULUS_LOGIN_WINDOW_CLOSED_BY_USER];
+        const ignoreCode = [MetaAuthErrorCodes.META_LOGIN_WINDOW_CLOSED_BY_USER];
         return this.handleDownload(
             this.ipc.sendV2<Progression<BSVersion>>("bs-oculus-download", { args: downloadInfo }),
             ignoreCode

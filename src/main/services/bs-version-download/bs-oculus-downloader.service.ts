@@ -96,7 +96,7 @@ export class BsOculusDownloaderService {
 
         const promise = new Promise<string>((resolve, reject) => {
             timout = setTimeout(() => {
-                reject(new CustomError("Trying to get Oculus user token timed out", "OCULUS_LOGIN_TIMED_OUT"));
+                reject(new CustomError("Trying to get Oculus user token timed out", "META_LOGIN_TIMED_OUT"));
                 window.close();
             }, minToMs(5));
             
@@ -113,7 +113,7 @@ export class BsOculusDownloaderService {
             });
 
             window.on("closed", () => {
-                reject(new CustomError("Oculus login window closed by user", "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER"));
+                reject(new CustomError("Oculus login window closed by user", "META_LOGIN_WINDOW_CLOSED_BY_USER"));
             });
         }).finally(() => {
 

@@ -213,46 +213,65 @@
                     "verification-finished": "Verificación completada"
                 }
             },
-            "warnings": {
-                "msg": {
-                    "ManifestChecksum": "El manifiesto descargado anteriormente no coincide con el nuevo 🤔",
-                    "ConnectionTimeout": "Tu conexión a Internet parece inestable 🥶",
-                    "ConnectionLost": "Se ha perdido la conexión, inténtalo de nuevo...",
-                    "ConnectionError": "No se puede conectar a Steam, reintentando...",
-                    "Unknown": "Algo extraño ha ocurrido 🤔 Tu conexión es probablemente inestable."
+            "steam-download": {
+                "warnings": {
+                    "msg": {
+                        "ManifestChecksum": "El manifiesto descargado anteriormente no coincide con el nuevo 🤔",
+                        "ConnectionTimeout": "Tu conexión a Internet parece inestable 🥶",
+                        "ConnectionLost": "Se ha perdido la conexión, inténtalo de nuevo...",
+                        "ConnectionError": "No se puede conectar a Steam, reintentando...",
+                        "Unknown": "Algo extraño ha ocurrido 🤔 Tu conexión es probablemente inestable."
+                    }
+                },
+                "errors": {
+                    "titles": {
+                        "dotnet-required": ".NET 6 Requerido"
+                    },
+                    "msg": {
+                        "401": "Parece que Steam no quiere dejarnos descargar Beat Saber 😢",
+                        "404": "No se puede contactar con los servidores de Steam",
+                        "Password": "La contraseña es inválida.",
+                        "InvalidCredentials": "Credenciales de inicio de sesión inválidas, conexión no aprobada o demasiados intentos de inicio de sesión.",
+                        "NoManifest": "No se ha encontrado el manifiesto",
+                        "DirectoryCreate": "No se pueden instalar las carpetas necesarias.",
+                        "NotAvailableApp": "¿Intentas descargar Beat Saber cuando no lo tienes? 🤣",
+                        "DepotNotFound": "No se puede descargar Beat Saber 😥 inténtalo más tarde 😕",
+                        "NotCompleted": "La descarga no pudo completarse ¯\\_(ツ)_/¯",
+                        "InvalidManifest": "No se puede descargar Beat Saber 😥 inténtalo más tarde 😕",
+                        "NoValidKey": "No se puede descargar Beat Saber 😥 inténtalo más tarde 😕",
+                        "NoManifestCode": "No se puede descargar Beat Saber 😥 inténtalo más tarde 😕",
+                        "Unknown": "Se ha producido un error desconocido ¯\\_(ツ)_/¯",
+                        "NoServer": "No se puede contactar con los servidores de Steam.",
+                        "NotAllowed": "Aparentemente no tienes permiso para descargar Beat Saber 🥱",
+                        "ConnectionTimeout": "No se puede conectar a Steam 😕",
+                        "SteamLib": "Si tienes este error, reporta el bug en GitHub con los logs, por favor.",
+                        "ConnectionError": "No se puede conectar a Steam después de 10 intentos 🤯",
+                        "LicenceError": "No se puede obtener la lista de licencias.",
+                        "RateLimitExceeded": "Lo has intentado demasiadas veces, espera un poco y vuelve a intentarlo más tarde.",
+                        "TokenRejected": "Tu token de inicio de sesión ha sido rechazada 😕 Por favor, inténtalo de nuevo.",
+                        "AccessDenied": "El acceso a Steam ha sido denegado.",
+                        "dotnet-required": "Se debe instalar el tiempo de ejecución de .NET 6 para descargar una versión de Beat Saber. Descárgalo haciendo clic en el botón de abajo."
+                    },
+                    "actions": {
+                        "download-dotnet": "Descargar .NET 6"
+                    }
                 }
             },
-            "errors": {
-                "titles": {
-                    "dotnet-required": ".NET 6 Requerido"
-                },
-                "msg": {
-                    "401": "Parece que Steam no quiere dejarnos descargar Beat Saber 😢",
-                    "404": "No se puede contactar con los servidores de Steam",
-                    "Password": "La contraseña es inválida.",
-                    "InvalidCredentials": "Credenciales de inicio de sesión inválidas, conexión no aprobada o demasiados intentos de inicio de sesión.",
-                    "NoManifest": "No se ha encontrado el manifiesto",
-                    "DirectoryCreate": "No se pueden instalar las carpetas necesarias.",
-                    "NotAvailableApp": "¿Intentas descargar Beat Saber cuando no lo tienes? 🤣",
-                    "DepotNotFound": "No se puede descargar Beat Saber 😥 inténtalo más tarde 😕",
-                    "NotCompleted": "La descarga no pudo completarse ¯\\_(ツ)_/¯",
-                    "InvalidManifest": "No se puede descargar Beat Saber 😥 inténtalo más tarde 😕",
-                    "NoValidKey": "No se puede descargar Beat Saber 😥 inténtalo más tarde 😕",
-                    "NoManifestCode": "No se puede descargar Beat Saber 😥 inténtalo más tarde 😕",
-                    "Unknown": "Se ha producido un error desconocido ¯\\_(ツ)_/¯",
-                    "NoServer": "No se puede contactar con los servidores de Steam.",
-                    "NotAllowed": "Aparentemente no tienes permiso para descargar Beat Saber 🥱",
-                    "ConnectionTimeout": "No se puede conectar a Steam 😕",
-                    "SteamLib": "Si tienes este error, reporta el bug en GitHub con los logs, por favor.",
-                    "ConnectionError": "No se puede conectar a Steam después de 10 intentos 🤯",
-                    "LicenceError": "No se puede obtener la lista de licencias.",
-                    "RateLimitExceeded": "Lo has intentado demasiadas veces, espera un poco y vuelve a intentarlo más tarde.",
-                    "TokenRejected": "Tu token de inicio de sesión ha sido rechazada 😕 Por favor, inténtalo de nuevo.",
-                    "AccessDenied": "El acceso a Steam ha sido denegado.",
-                    "dotnet-required": "Se debe instalar el tiempo de ejecución de .NET 6 para descargar una versión de Beat Saber. Descárgalo haciendo clic en el botón de abajo."
-                },
-                "actions": {
-                    "download-dotnet": "Descargar .NET 6"
+            "oculus-download": {
+                "errors": {
+                    "msg": {
+                        "DOWNLOAD_MANIFEST_FAILED": "Imposible descargar el manifiesto de esta versión.",
+                        "MANIFEST_FILE_NOT_FOUND": "Imposible encontrar el manifiesto de esta versión.",
+                        "PARSE_MANIFEST_FILE_FAILED": "Se produjo un error al leer el manifiesto.",
+                        "ALREADY_DOWNLOADING": "Ya se está descargando una versión.",
+                        "UNABLE_TO_GET_MANIFEST": "Imposible obtener el manifiesto necesario para la descarga.",
+                        "VERIFY_INTEGRITY_FAILED": "Se produjo un error durante la verificación de archivos.",
+                        "SOME_FILES_FAILED_TO_DOWNLOAD": "Algunos archivos no pudieron ser descargados.",
+                        "OCULUS_LOGIN_TIMED_OUT": "El token de inicio de sesión tardó demasiado en recuperarse.",
+                        "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER": "La ventana de inicio de sesión de Meta fue cerrada.",
+                        "NO_META_AUTH_TOKEN": "Imposible recuperar el token de inicio de sesión de Meta necesario para la descarga.",
+                        "UNKNOWN_ERROR": "Se produjo un error desconocido."
+                    }
                 }
             }
         },

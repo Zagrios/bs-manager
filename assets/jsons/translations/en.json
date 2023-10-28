@@ -214,46 +214,65 @@
                     "verification-finished": "Verification complete"
                 }
             },
-            "warnings": {
-                "msg": {
-                    "ManifestChecksum": "The previously downloaded manifest does not match the new 🤔",
-                    "ConnectionTimeout": "Your internet connection seems unstable 🥶",
-                    "ConnectionLost": "The connection has been lost, try again...",
-                    "ConnectionError": "Unable to connect to Steam, try again...",
-                    "Unknown": "Something strange has happened 🤔 Your connection is probably unstable."
+            "steam-download": {
+                "warnings": {
+                    "msg": {
+                        "ManifestChecksum": "The previously downloaded manifest does not match the new 🤔",
+                        "ConnectionTimeout": "Your internet connection seems unstable 🥶",
+                        "ConnectionLost": "The connection has been lost, try again...",
+                        "ConnectionError": "Unable to connect to Steam, try again...",
+                        "Unknown": "Something strange has happened 🤔 Your connection is probably unstable."
+                    }
+                },
+                "errors": {
+                    "titles": {
+                        "dotnet-required": ".NET 6 Required"
+                    },
+                    "msg": {
+                        "401": "Steam doesn't seem to want to let us download Beat Saber 😢",
+                        "404": "Unable to contact Steam servers.",
+                        "Password": "Password is invalid.",
+                        "InvalidCredentials": "Invalid login credentials, unapproved connection, or too many login attempts.",
+                        "NoManifest": "No manifest was found",
+                        "DirectoryCreate": "Unable to install the necessary folders.",
+                        "NotAvailableApp": "Are you trying to download Beat Saber when you don't have it? 🤣",
+                        "DepotNotFound": "Unable to download Beat Saber 😥 try again later 😕",
+                        "NotCompleted": "The download could not complete ¯\\_(ツ)_/¯",
+                        "InvalidManifest": "Unable to download Beat Saber 😥 try again later 😕",
+                        "NoValidKey": "Unable to download Beat Saber 😥 try again later 😕",
+                        "NoManifestCode": "Unable to download Beat Saber 😥 try again later 😕",
+                        "Unknown": "An unknown error occurred ¯\\_(ツ)_/¯",
+                        "NoServer": "Unable to contact Steam servers.",
+                        "NotAllowed": "Apparently you are not allowed to download Beat Saber 🥱",
+                        "ConnectionTimeout": "Cannot connect to Steam 😕",
+                        "SteamLib": "If you have this error, report the bug on GitHub with the logs pls.",
+                        "ConnectionError": "Unable to connect to Steam after 10 tries 🤯",
+                        "LicenceError": "Unable to get the list of licenses.",
+                        "RateLimitExceeded": "You've tried too many times, wait a while and try again later.",
+                        "TokenRejected": "Your login token has been rejected 😕 Please try again.",
+                        "AccessDenied": "Access to Steam has been denied.",
+                        "dotnet-required": ".NET 6 Runtime must be installed in order to download a version of Beat Saber. Download it by clicking the button below."
+                    },
+                    "actions": {
+                        "download-dotnet": "Download .NET 6"
+                    }
                 }
             },
-            "errors": {
-                "titles": {
-                    "dotnet-required": ".NET 6 Required"
-                },
-                "msg": {
-                    "401": "Steam doesn't seem to want to let us download Beat Saber 😢",
-                    "404": "Unable to contact Steam servers.",
-                    "Password": "Password is invalid.",
-                    "InvalidCredentials": "Invalid login credentials, unapproved connection, or too many login attempts.",
-                    "NoManifest": "No manifest was found",
-                    "DirectoryCreate": "Unable to install the necessary folders.",
-                    "NotAvailableApp": "Are you trying to download Beat Saber when you don't have it? 🤣",
-                    "DepotNotFound": "Unable to download Beat Saber 😥 try again later 😕",
-                    "NotCompleted": "The download could not complete ¯\\_(ツ)_/¯",
-                    "InvalidManifest": "Unable to download Beat Saber 😥 try again later 😕",
-                    "NoValidKey": "Unable to download Beat Saber 😥 try again later 😕",
-                    "NoManifestCode": "Unable to download Beat Saber 😥 try again later 😕",
-                    "Unknown": "An unknown error occurred ¯\\_(ツ)_/¯",
-                    "NoServer": "Unable to contact Steam servers.",
-                    "NotAllowed": "Apparently you are not allowed to download Beat Saber 🥱",
-                    "ConnectionTimeout": "Cannot connect to Steam 😕",
-                    "SteamLib": "If you have this error, report the bug on GitHub with the logs pls.",
-                    "ConnectionError": "Unable to connect to Steam after 10 tries 🤯",
-                    "LicenceError": "Unable to get the list of licenses.",
-                    "RateLimitExceeded": "You've tried too many times, wait a while and try again later.",
-                    "TokenRejected": "Your login token has been rejected 😕 Please try again.",
-                    "AccessDenied": "Access to Steam has been denied.",
-                    "dotnet-required": ".NET 6 Runtime must be installed in order to download a version of Beat Saber. Download it by clicking the button below."
-                },
-                "actions": {
-                    "download-dotnet": "Download .NET 6"
+            "oculus-download": {
+                "errors": {
+                    "msg": {
+                        "DOWNLOAD_MANIFEST_FAILED": "Unable to download the manifest for this version.",
+                        "MANIFEST_FILE_NOT_FOUND": "Unable to find the manifest for this version.",
+                        "PARSE_MANIFEST_FILE_FAILED": "An error occurred while reading the manifest.",
+                        "ALREADY_DOWNLOADING": "A version is already being downloaded.",
+                        "UNABLE_TO_GET_MANIFEST": "Unable to obtain the manifest required for download.",
+                        "VERIFY_INTEGRITY_FAILED": "An error occurred during file verification.",
+                        "SOME_FILES_FAILED_TO_DOWNLOAD": "Some files failed to download.",
+                        "OCULUS_LOGIN_TIMED_OUT": "The login token took too long to retrieve.",
+                        "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER": "The Meta login window was closed.",
+                        "NO_META_AUTH_TOKEN": "Unable to retrieve the Meta login token required for download.",
+                        "UNKNOWN_ERROR": "An unknown error occurred."
+                    }
                 }
             }
         },
