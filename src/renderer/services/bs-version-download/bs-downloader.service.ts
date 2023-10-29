@@ -8,6 +8,7 @@ import { OculusDownloaderService } from "./oculus-downloader.service";
 import { DownloaderServiceInterface } from "./bs-store-downloader.interface";
 import { AbstractBsDownloaderService } from "./abstract-bs-downloader.service";
 import { BSVersionManagerService } from "../bs-version-manager.service";
+import { Observable } from "rxjs";
 
 export class BsDownloaderService extends AbstractBsDownloaderService {
 
@@ -26,6 +27,8 @@ export class BsDownloaderService extends AbstractBsDownloaderService {
     private readonly steamDownloader: SteamDownloaderService;
     private readonly oculusDownloader: OculusDownloaderService;
     private readonly versionManager: BSVersionManagerService;
+
+    private readonly SELECTED_STORE_TO_DOWNLOAD_KET = "selectedStoreToDownload";
 
     private constructor(){
         super();
@@ -52,8 +55,11 @@ export class BsDownloaderService extends AbstractBsDownloaderService {
         this._isVerifying$.next(false);
     }
 
-    public getLastStoreDownloadedFrom(): BsStore | undefined {
-        return this.config.get<BsStore>("lastStoreDownloadedFrom");
+    public get defaultStore(): BsStore | undefined { return this.config.get<BsStore>(this.SELECTED_STORE_TO_DOWNLOAD_KET); }
+    public get defaultStore$(): Observable<BsStore | undefined> { return this.config.watch(this.SELECTED_STORE_TO_DOWNLOAD_KET); } 
+
+    public setDefaultStore(store: BsStore|undefined): void {
+        this.config.set(this.SELECTED_STORE_TO_DOWNLOAD_KET, store);
     }
 
     public async chooseStoreToDownloadFrom(): Promise<BsStore | undefined> {
@@ -66,8 +72,15 @@ export class BsDownloaderService extends AbstractBsDownloaderService {
         return res.data;
     }
 
-    public downloadVersion(version: BSVersion, from: BsStore): Promise<BSVersion> {
-        return this.getStoreDownloader(from).downloadBsVersion(version).finally(() => {
+    public async downloadVersion(version: BSVersion, from?: BsStore): Promise<BSVersion> {
+
+        if(!from){
+            from = this.defaultStore ?? await this.chooseStoreToDownloadFrom();
+        }
+
+        return this.getStoreDownloader(from).downloadBsVersion(version).then(() => {
+            return this.downloadingVersion;
+        }).finally(() => {
             this.resetDownloadState();
             this.versionManager.askInstalledVersions();
         });

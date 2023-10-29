@@ -28,14 +28,7 @@ export function AvailableVersionsList() {
 
     const startDownload = async () => {
 
-        const store = await (async () => {
-            if(!selectedVersion.OculusBinaryId) { return BsStore.STEAM; }
-            return bsDownloader.getLastStoreDownloadedFrom() ?? await bsDownloader.chooseStoreToDownloadFrom().catch(() => null);
-        })();
-
-        if(!store){ return; }
-
-        return bsDownloader.downloadVersion(selectedVersion, store)
+        return bsDownloader.downloadVersion(selectedVersion)
             .catch(console.log)
             .finally(() => setSelectedVersion(null));
     };

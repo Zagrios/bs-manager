@@ -6,16 +6,24 @@ import { BsStore } from "shared/models/bs-store.enum";
 import { useState } from "react";
 import tailwindConfig from "../../../../../../tailwind.config";
 import Color from "color";
+import { useNavigate } from "react-router-dom";
 
 export const ChooseStore: ModalComponent<BsStore> = ({ resolver }) => {
 
     const t = useTranslation();
+
+    const navigate = useNavigate();
 
     const [oculusHover, setOculusHover] = useState(false);
     const [steamHover, setSteamHover] = useState(false);
 
     const chooseStore = (store: BsStore) => {
         resolver({ exitCode: ModalExitCode.COMPLETED, data: store });
+    }
+
+    const goToSettings = () => {
+        resolver({ exitCode: ModalExitCode.CANCELED });
+        navigate("/settings#choose-default-store");
     }
 
     const isDarkMode = document.documentElement.classList.contains("dark");
@@ -37,10 +45,10 @@ export const ChooseStore: ModalComponent<BsStore> = ({ resolver }) => {
     // TODO : Translate
 
     return (
-        <form className="flex flex-col gap-3">
+        <form className="flex flex-col gap-3 max-w-sm">
             <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t("which platform ?")}</h1>
-            <p className="max-w-sm text-gray-800 dark:text-gray-200 text-center">Select the platfrom where you own Beat Saber or from which you want to download it.</p>
-            <div className="flex flex-row w-full flex-grow gap-4">
+            <p className="w-auto text-gray-800 dark:text-gray-200 text-center">Select the platfrom where you own Beat Saber or from which you want to download it.</p>
+            <div className="flex flex-row w-full flex-grow gap-3">
                 <div className="flex flex-col flex-grow basis-0 gap-2 text-center px-5 pt-3 pb-1 rounded-md border-main-color-3 border-2 cursor-pointer" onMouseEnter={() => setOculusHover(true)} onMouseLeave={() => setOculusHover(false)} onClick={() => chooseStore(BsStore.OCULUS)} style={{backgroundColor: oculusHover ? bg.dim : bg.bright}}>
                     <OculusIcon className="flex-grow aspect-square text-black bg-white rounded-full p-5"/>
                     <h2 className="font-bold">Oculus Store (PC)</h2>
@@ -50,6 +58,7 @@ export const ChooseStore: ModalComponent<BsStore> = ({ resolver }) => {
                     <h2 className="font-bold">Steam</h2>
                 </div>
             </div>
+            <p onClick={goToSettings} className="text-sm italic underline cursor-pointer">Définir la platforme par défaut dans les paramètres</p>
         </form>
     );
 };
