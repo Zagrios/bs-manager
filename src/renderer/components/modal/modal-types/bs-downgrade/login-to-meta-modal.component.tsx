@@ -29,8 +29,8 @@ export const LoginToMetaModal: ModalComponent<boolean> = ({ resolver }) => {
             </p>
 
             <p>
-                En vous connectant à Meta, une fenètre de connexion s'ouvrira et vous pourrais alors débuter le processus de connexion à Meta.
-                Veuillez bien à accepter les cookie sinon quoi, il se pourrait que l'on arrive pas à récupérer votre token de connexion.
+                En vous connectant à Meta, une fenètre de connexion s'ouvrira et vous pourrez alors débuter le processus de connexion.
+                Veuillez à bien accepter les cookies sinon quoi, il se pourrait que l'on arrive pas à récupérer votre token de connexion pour démarrer le téléchargement.
             </p>
 
             <div className="w-full flex flex-row justify-start items-center gap-1.5">

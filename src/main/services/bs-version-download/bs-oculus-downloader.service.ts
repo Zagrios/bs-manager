@@ -7,7 +7,7 @@ import { OculusDownloader } from "../../models/oculus-downloader.class";
 import { Cookie, session } from "electron";
 import { Progression, ensurePathNotAlreadyExist } from "../../helpers/fs.helpers";
 import { BSLocalVersionService } from "../bs-local-version.service";
-import { Observable, catchError, finalize, from, map, switchMap, throwError } from "rxjs";
+import { Observable, finalize, from, map, switchMap } from "rxjs";
 import path from "path";
 import { DownloadInfo } from "./bs-steam-downloader.service";
 import { BsStore } from "../../../shared/models/bs-store.enum";
@@ -163,7 +163,6 @@ export class BsOculusDownloaderService {
 
     public autoDownloadVersion(downloadInfo: DownloadInfo): Observable<Progression<BSVersion>>{
 
-        let failed = false;
         let downloadVersion: BSVersion
 
         return from(this.getAuthToken()).pipe(
@@ -185,11 +184,7 @@ export class BsOculusDownloaderService {
                     map(progress => ({...progress, data: version})),
                 );
             }),
-            catchError(err => {
-                failed = true;
-                return throwError(() => err);
-            }),
-            finalize(() => from(!failed && this.versions.setVersionMetadata(downloadVersion, "store", BsStore.OCULUS))),
+            finalize(() => downloadVersion && this.versions.setVersionMetadata(downloadVersion, "store", BsStore.OCULUS)),
             finalize(() => this.oculusDownloader.stopDownload()),
         );
     }

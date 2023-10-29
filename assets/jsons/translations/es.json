@@ -260,7 +260,7 @@
             "oculus-download": {
                 "errors": {
                     "msg": {
-                        "DOWNLOAD_MANIFEST_FAILED": "Imposible descargar el manifiesto de esta versión.",
+                        "DOWNLOAD_MANIFEST_FAILED": "No se puede descargar el manifiesto de esta versión; su token de inicio de sesión podría ser inválido.",
                         "MANIFEST_FILE_NOT_FOUND": "Imposible encontrar el manifiesto de esta versión.",
                         "PARSE_MANIFEST_FILE_FAILED": "Se produjo un error al leer el manifiesto.",
                         "ALREADY_DOWNLOADING": "Ya se está descargando una versión.",

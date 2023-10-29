@@ -8,7 +8,7 @@ import { InstallationLocationService } from "../installation-location.service";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import { ensureDir } from "fs-extra";
 import { ensurePathNotAlreadyExist } from "../../helpers/fs.helpers";
-import { Observable, catchError, finalize, map, throwError } from "rxjs";
+import { Observable, finalize, map } from "rxjs";
 import { DepotDownloaderArgsOptions, DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderInfoEvent } from "../../../shared/models/bs-version-download/depot-downloader.model";
 import { DepotDownloader } from "../../models/depot-downloader.class";
 import { app } from "electron";
@@ -107,8 +107,6 @@ export class BsSteamDownloaderService {
 
                 this.depotDownloader = depotDownloader;
 
-                let failed = false;
-
                 depotDownloader.$events().pipe(
                     map(event => {
                         if(event.type === DepotDownloaderEventType.Error){
@@ -116,13 +114,7 @@ export class BsSteamDownloaderService {
                         }
                         return event;
                     }),
-                    catchError(err => {
-                        failed = true;
-                        return throwError(() => err);
-                    }),
-                    finalize(() => {
-                        !failed && this.localVersionService.setVersionMetadata(version, "store", BsStore.STEAM);
-                    })
+                    finalize(() => this.localVersionService.setVersionMetadata(version, "store", BsStore.STEAM))
                 ).subscribe(sub);
 
             }).catch(err => sub.error({

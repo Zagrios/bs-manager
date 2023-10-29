@@ -261,7 +261,7 @@
             "oculus-download": {
                 "errors": {
                     "msg": {
-                        "DOWNLOAD_MANIFEST_FAILED": "Unable to download the manifest for this version.",
+                        "DOWNLOAD_MANIFEST_FAILED": "Unable to download the manifest for this version; your login token may be invalid.",
                         "MANIFEST_FILE_NOT_FOUND": "Unable to find the manifest for this version.",
                         "PARSE_MANIFEST_FILE_FAILED": "An error occurred while reading the manifest.",
                         "ALREADY_DOWNLOADING": "A version is already being downloaded.",

@@ -261,7 +261,7 @@
             "oculus-download": {
                 "errors": {
                     "msg": {
-                        "DOWNLOAD_MANIFEST_FAILED": "Невозможно загрузить манифест этой версии.",
+                        "DOWNLOAD_MANIFEST_FAILED": "Невозможно загрузить манифест этой версии; ваш токен входа, возможно, недействителен.",
                         "MANIFEST_FILE_NOT_FOUND": "Невозможно найти манифест этой версии.",
                         "PARSE_MANIFEST_FILE_FAILED": "При чтении манифеста произошла ошибка.",
                         "ALREADY_DOWNLOADING": "Версия уже загружается.",

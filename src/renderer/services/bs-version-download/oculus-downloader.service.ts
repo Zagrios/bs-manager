@@ -85,13 +85,23 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
     }
 
     private async doDownloadBsVersion(bsVersion: BSVersion, isVerification: boolean): Promise<BSVersion> {
+
+        let autoDownloadFailed = false;
+
         return (async () => {
 
-            const autoDownload = await lastValueFrom(this.tryAutoDownload({ bsVersion, isVerification })).then(() => true).catch(() => false);
+            const autoDownload = await lastValueFrom(this.tryAutoDownload({ bsVersion, isVerification })).then(() => true).catch((err: CustomError) => {
+                const doNotRestartCodes: string[] = [OculusDownloaderErrorCodes.ALREADY_DOWNLOADING, OculusDownloaderErrorCodes.SOME_FILES_FAILED_TO_DOWNLOAD, OculusDownloaderErrorCodes.VERIFY_INTEGRITY_FAILED];
+                autoDownloadFailed = true;
+
+                if(doNotRestartCodes.includes(err?.code)){
+                    return true;
+                }
+
+                return false;
+            });
             
-            if(autoDownload){
-                return autoDownload;
-            }
+            if(autoDownload){ return autoDownload; }
 
             const [completed, stay] = await this.modals.openModal(LoginToMetaModal).then(res => [res.exitCode === ModalExitCode.COMPLETED, res.data]);
 
@@ -101,8 +111,19 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
 
             return lastValueFrom(this.startDownloadBsVersion({ bsVersion, isVerification, stay })).then(() => true);
 
-        })().then(() => bsVersion)
-            .finally(() => this.progressBar.hide(true));
+        })().then(() => {
+            if(autoDownloadFailed){
+                return bsVersion;
+            }
+
+            if(isVerification){
+                this.notifications.notifySuccess({title: "notifications.bs-download.success.titles.verification-finished"});
+            } else {
+                this.notifications.notifySuccess({title: "notifications.bs-download.success.titles.download-success"});
+            }
+
+            return bsVersion;
+        }).finally(() => this.progressBar.hide(true));
     }
 
     public downloadBsVersion(version: BSVersion): Promise<BSVersion> {

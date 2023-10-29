@@ -261,7 +261,7 @@
             "oculus-download": {
                 "errors": {
                     "msg": {
-                        "DOWNLOAD_MANIFEST_FAILED": "Unmöglich, das Manifest für diese Version herunterzuladen.",
+                        "DOWNLOAD_MANIFEST_FAILED": "Es ist nicht möglich, das Manifest für diese Version herunterzuladen; Ihr Anmelde-Token ist möglicherweise ungültig.",
                         "MANIFEST_FILE_NOT_FOUND": "Unmöglich, das Manifest für diese Version zu finden.",
                         "PARSE_MANIFEST_FILE_FAILED": "Beim Lesen des Manifests ist ein Fehler aufgetreten.",
                         "ALREADY_DOWNLOADING": "Eine Version wird bereits heruntergeladen.",
