@@ -145,6 +145,8 @@ export class BsOculusDownloaderService {
 
     public downloadVersion(downloadInfo: DownloadInfo): Observable<Progression<BSVersion>>{
 
+        let downloadVersion: BSVersion
+
         return from(this.getUserTokenFromMetaAuth(downloadInfo.stay)).pipe(
             switchMap(token => {
                 if(!downloadInfo.isVerification){
@@ -153,10 +155,12 @@ export class BsOculusDownloaderService {
                 return this.versions.getVersionPath(downloadInfo.bsVersion).then(path => ({token, version: downloadInfo.bsVersion, dest: path}));
             }),
             switchMap(({token, version, dest}) => {
+                downloadVersion = version;
                 return this.oculusDownloader.downloadApp({ accessToken: token, binaryId: version.OculusBinaryId, destination: dest }).pipe(map(
                     progress => ({...progress, data: version})                
                 ));
             }),
+            finalize(() => downloadVersion && this.versions.setVersionMetadata(downloadInfo.bsVersion, "store", BsStore.OCULUS)),
             finalize(() => this.oculusDownloader.stopDownload())
         );
     }
