@@ -2,7 +2,6 @@ import path from "path";
 import { app, BrowserWindow } from "electron";
 import { IpcResponse } from "shared/models/ipc";
 import log from "electron-log";
-import psList from "ps-list";
 
 // TODO : REFACTOR
 
@@ -35,17 +34,6 @@ export class UtilsService {
     }
     public getTempPath(): string {
         return path.join(app.getPath("temp"), app.getName());
-    }
-
-    public async taskRunning(task: string): Promise<boolean> {
-        try {
-            const processes = await psList();
-            return processes.some(process => process.name?.includes(task) || process.cmd?.includes(task));
-        }
-        catch(error){
-            log.error(error);
-            return null;
-        }
     }
 
     public ipcSend<T = unknown>(channel: string, response: IpcResponse<T>): void {

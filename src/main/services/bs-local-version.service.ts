@@ -2,7 +2,7 @@ import { BSVersionLibService } from "./bs-version-lib.service";
 import { BSVersion, BSVersionMetadata } from "shared/bs-version.interface";
 import { InstallationLocationService } from "./installation-location.service";
 import { SteamService } from "./steam.service";
-import { BS_APP_ID, OCULUS_BS_DIR } from "../constants";
+import { BS_APP_ID, OCULUS_BS_BACKUP_DIR, OCULUS_BS_DIR } from "../constants";
 import path from "path";
 import { ConfigurationService } from "./configuration.service";
 import { lstat, rename } from "fs/promises";
@@ -235,7 +235,7 @@ export class BSLocalVersionService {
     }
 
     private async getOculusVersion(): Promise<BSVersion> {
-        const oculusBsFolder = await this.oculusService.getGameFolder(OCULUS_BS_DIR);
+        const oculusBsFolder = await this.oculusService.tryGetGameFolder([OCULUS_BS_DIR, OCULUS_BS_BACKUP_DIR]);
 
         if (!oculusBsFolder) {
             return null;

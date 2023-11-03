@@ -17,9 +17,11 @@ import { LocalMapsManagerService } from "./services/additional-content/local-map
 import { LocalPlaylistsManagerService } from "./services/additional-content/local-playlists-manager.service";
 import { LocalModelsManagerService } from "./services/additional-content/local-models-manager.service";
 import { APP_NAME } from "./constants";
-import { BSLauncherService } from "./services/bs-launcher.service";
+import { BSLauncherService } from "./services/bs-launcher/bs-launcher.service";
 import { IpcRequest } from "shared/models/ipc";
 import { LivShortcut } from "./services/liv/liv-shortcut.service";
+import { SteamLauncherService } from "./services/bs-launcher/steam-launcher.service";
+import { OculusLauncherService } from "./services/bs-launcher/oculus-launcher.service";
 
 const isDebug = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true";
 
@@ -102,7 +104,8 @@ if (!gotTheLock) {
             DeepLinkService.getInstance().dispatchLinkOpened(deepLink);
         }
         
-        BSLauncherService.getInstance().restoreSteamVR();
+        SteamLauncherService.getInstance().restoreSteamVR();
+        OculusLauncherService.getInstance().deleteBsSymlinks().catch(log.error)
         
         // Log renderer errors
         ipcMain.on("log-error", (_, args: IpcRequest<unknown>) => {

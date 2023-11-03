@@ -1,4 +1,3 @@
-import { UtilsService } from "./utils.service";
 import regedit from "regedit";
 import path from "path";
 import { pathExist } from "../helpers/fs.helpers";
@@ -7,9 +6,7 @@ import log from "electron-log";
 export class OculusService {
     private static instance: OculusService;
 
-    private readonly utils: UtilsService;
-
-    private oculusPaths: string[];
+    private oculusLibraries: OculusLibrary[];
 
     public static getInstance(): OculusService {
         if (!OculusService.instance) {
@@ -18,22 +15,16 @@ export class OculusService {
         return OculusService.instance;
     }
 
-    private constructor() {
-        this.utils = UtilsService.getInstance();
-    }
+    private constructor() {}
 
-    public async oculusRunning(): Promise<boolean> {
-        return this.utils.taskRunning("OculusClient.exe");
-    }
-
-    public async getOculusLibsPath(): Promise<string[]> {
+    public async getOculusLibs(): Promise<OculusLibrary[]> {
         if (process.platform !== "win32") {
             log.info("Oculus library auto-detection not supported on non-windows platforms");
             return null;
         }
 
-        if (this.oculusPaths) {
-            return this.oculusPaths;
+        if (this.oculusLibraries) {
+            return this.oculusLibraries;
         }
 
         const oculusLibsRegKey = "HKCU\\SOFTWARE\\Oculus VR, LLC\\Oculus\\Libraries";
@@ -44,7 +35,9 @@ export class OculusService {
             return null;
         }
 
-        const libsPath = (
+        const defaultLibraryId = libsRegData.values.DefaultLibrary.value as string;
+
+        const libsPath: OculusLibrary[] = (
             await Promise.all(
                 libsRegData.keys.map(async key => {
                     const originalPath = (await regedit.promisified.list([`${oculusLibsRegKey}\\${key}`]))[`${oculusLibsRegKey}\\${key}`];
@@ -52,18 +45,18 @@ export class OculusService {
                         return null;
                     }
 
-                    return originalPath.values.OriginalPath.value as string;
+                    return { id: key, path: originalPath.values.OriginalPath.value, isDefault: defaultLibraryId === key } as OculusLibrary
                 }, [])
             )
-        ).filter(path => !!path);
+        ).filter(Boolean);
 
-        this.oculusPaths = libsPath;
+        this.oculusLibraries = libsPath;
 
         return libsPath;
     }
 
     public async getGameFolder(gameFolder: string): Promise<string> {
-        const libsFolders = await this.getOculusLibsPath();
+        const libsFolders = await this.getOculusLibs();
 
         if (!libsFolders) {
             return null;
@@ -71,8 +64,8 @@ export class OculusService {
 
         const rootLibDir = "Software";
 
-        for (const lib of libsFolders) {
-            const gameFullPath = path.join(lib, rootLibDir, gameFolder);
+        for (const { path: libPath } of libsFolders) {
+            const gameFullPath = path.join(libPath, rootLibDir, gameFolder);
             if (await pathExist(gameFullPath)) {
                 return gameFullPath;
             }
@@ -80,4 +73,23 @@ export class OculusService {
 
         return null;
     }
+
+    /**
+     * Return the first game folder found in the list
+     * @param {string[]} gameFolders 
+     */
+    public async tryGetGameFolder(gameFolders: string[]): Promise<string> {
+        for(const gameFolder of gameFolders){
+            const fullPath = await this.getGameFolder(gameFolder);
+            if(fullPath){ return fullPath; }
+        }
+
+        return null;
+    }
+}
+
+export interface OculusLibrary {
+    id: string;
+    path: string;
+    isDefault?: boolean;
 }

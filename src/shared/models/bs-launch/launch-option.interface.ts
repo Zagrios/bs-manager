@@ -5,6 +5,5 @@ export interface LaunchOption {
     oculus?: boolean,
     desktop?: boolean,
     debug?: boolean,
-    additionalArgs?: string[],
-    skipAlreadyRunning?: boolean
+    additionalArgs?: string[]
 }

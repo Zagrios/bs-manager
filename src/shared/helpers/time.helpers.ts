@@ -20,3 +20,7 @@ export function hourToS(hours: number): number {
 export function msToS(milliseconds: number): number {
     return milliseconds / 1000;
 }
+
+export function sToMs(seconds: number): number {
+    return seconds * 1000;
+}
