@@ -27,7 +27,7 @@ export const LoginToMetaModal: ModalComponent<boolean> = ({ resolver }) => {
             <p>
                 <b>Votre token de connexion à Meta est nécéssaire pour télécharger Beat Saber.</b>
             </p>
-
+        {/* TODO : Translate */}
             <p>
                 En vous connectant à Meta, une fenètre de connexion s'ouvrira et vous pourrez alors débuter le processus de connexion.
                 Veuillez à bien accepter les cookies sinon quoi, il se pourrait que l'on arrive pas à récupérer votre token de connexion pour démarrer le téléchargement.

@@ -88,7 +88,13 @@ export class BsDownloaderService extends AbstractBsDownloaderService {
 
     public verifyBsVersion(version: BSVersion){
         this._isVerifying$.next(true);
-        return this.getStoreDownloader(version.metadata.store).verifyBsVersion(version).finally(() => {
+
+        const store = (() => {
+            if(version.metadata?.store){ return version.metadata.store; }
+            return version.steam ? BsStore.STEAM : BsStore.OCULUS;
+        })();
+
+        return this.getStoreDownloader(store).verifyBsVersion(version).finally(() => {
             this.resetDownloadState();
             this.versionManager.askInstalledVersions();
         });
