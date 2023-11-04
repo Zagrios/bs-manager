@@ -1,14 +1,15 @@
 import { Observable, ReplaySubject, catchError, lastValueFrom, of, take, timeout } from "rxjs";
 import { StoreLauncherInterface } from "./store-launcher.interface";
-import { BSLaunchError, BSLaunchErrorData, BSLaunchEventData, LaunchOption } from "../../../shared/models/bs-launch";
+import { BSLaunchError, BSLaunchErrorData, BSLaunchEvent, BSLaunchEventData, LaunchOption } from "../../../shared/models/bs-launch";
 import { OculusService } from "../oculus.service";
 import { BS_EXECUTABLE, OCULUS_BS_BACKUP_DIR, OCULUS_BS_DIR } from "../../constants";
 import path from "path";
 import log from "electron-log";
 import { sToMs } from "../../../shared/helpers/time.helpers";
-import { pathExists, readdir, rename, stat, symlink, unlink } from "fs-extra";
+import { lstat, pathExists, readdir, rename, stat, symlink, unlink } from "fs-extra";
 import { AbstractLauncherService } from "./abstract-launcher.service";
 import { taskRunning } from "../../helpers/os.helpers";
+import { isJunction } from "../../helpers/fs.helpers";
 
 export class OculusLauncherService extends AbstractLauncherService implements StoreLauncherInterface {
 
@@ -48,16 +49,11 @@ export class OculusLauncherService extends AbstractLauncherService implements St
         }
 
         const libContents = await readdir(oculusLibPath, { withFileTypes: true});
-        const symlinks = libContents.filter(dirent => dirent.isSymbolicLink());
-
-        const dirSymlinks = (await Promise.all(symlinks.map(async symlink => {
-            const symlinkPath = path.join(oculusLibPath, symlink.name);
-            const symlinkStats = await stat(symlinkPath);
-            if(!symlinkStats.isDirectory()){ return null; }
-            return symlink;
+        const junctions = (await Promise.all(libContents.map(async dirent => {
+            return (await isJunction(path.join(oculusLibPath, dirent.name))) ? dirent : null;
         }))).filter(Boolean);
 
-        const bsSymlinks = dirSymlinks.filter(dirent => dirent.name.startsWith(OCULUS_BS_DIR));
+        const bsSymlinks = junctions.filter(dirent => dirent.name.startsWith(OCULUS_BS_DIR));
         
         // get only symlinks created by BSM (with metadata.config)
         const bsmSymlinks = (await Promise.all(bsSymlinks.map(async symlink => {
@@ -90,6 +86,31 @@ export class OculusLauncherService extends AbstractLauncherService implements St
 
     // TODO : Convert all errors to CustomError
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData> {
+
+        const prepareOriginalVersion: () => Promise<string> = async () => {
+            await this.restoreOriginalBeatSaber();
+            return this.oculus.getGameFolder(OCULUS_BS_DIR);
+        }
+
+        const prepareDowngradedVersion: () => Promise<string> = async () => {
+
+            const oculusLib = await lastValueFrom(this.oculusLib$.pipe(take(1), timeout(sToMs(30)), catchError(() => of(null))));
+
+            if(!oculusLib){
+                throw new Error("No Oculus library found");
+            }
+
+            // Backup original Beat Saber folder
+            await this.backupOriginalBeatSaber();
+
+            // Create symlink in the oculus library from the BSM BS version
+            const symlinkTarget = await this.localVersions.getInstalledVersionPath(launchOptions.version);
+            const symlinkPath = path.join(oculusLib, OCULUS_BS_DIR);
+            await symlink(symlinkTarget, symlinkPath, "junction");
+
+            return symlinkPath;
+        }
+
         return new Observable<BSLaunchEventData>(obs => {
             (async () => {
 
@@ -98,26 +119,19 @@ export class OculusLauncherService extends AbstractLauncherService implements St
                 if(bsRunning){
                     throw ({type: BSLaunchError.BS_ALREADY_RUNNING, data: bsRunning}) as BSLaunchErrorData;
                 }
-
-                const oculusLib = await lastValueFrom(this.oculusLib$.pipe(take(1), timeout(sToMs(30)), catchError(() => of(null))));
-
-                if(!oculusLib){
-                    throw new Error("No Oculus library found");
-                }
-
+                
                 // Remove previously symlinks created by BSM
                 await this.deleteBsSymlinks().catch(log.error);
 
-                // Backup original Beat Saber folder
-                await this.backupOriginalBeatSaber();
+                const bsPath = await (launchOptions.version.oculus ? prepareOriginalVersion() : prepareDowngradedVersion());
 
-                // Create symlink in the oculus library from the BSM BS version
-                const symlinkTarget = await this.localVersions.getInstalledVersionPath(launchOptions.version);
-                const symlinkPath = path.join(oculusLib, OCULUS_BS_DIR);
-                await symlink(symlinkTarget, symlinkPath, "junction");
+                if(!bsPath){
+                    throw ({type: BSLaunchError.BS_NOT_FOUND}) as BSLaunchErrorData;
+                }
 
                 // Launch Beat Saber
-                const exePath = path.join(symlinkPath, "Beat Saber.exe");
+                const exePath = path.join(bsPath, "Beat Saber.exe");
+                obs.next({type: BSLaunchEvent.BS_LAUNCHING});
                 return this.launchBs(exePath, this.buildBsLaunchArgs(launchOptions)).catch(err => {
                     throw ({type: BSLaunchError.BS_EXIT_ERROR, data: err}) as BSLaunchErrorData;
                 });

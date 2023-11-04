@@ -1,6 +1,6 @@
 import regedit from "regedit";
 import path from "path";
-import { pathExist } from "../helpers/fs.helpers";
+import { isJunction, pathExist } from "../helpers/fs.helpers";
 import log from "electron-log";
 
 export class OculusService {
@@ -67,7 +67,7 @@ export class OculusService {
         for (const { path: libPath } of libsFolders) {
             const gameFullPath = path.join(libPath, rootLibDir, gameFolder);
             if (await pathExist(gameFullPath)) {
-                return gameFullPath;
+                return (await isJunction(gameFullPath)) ? null : gameFullPath;
             }
         }
 

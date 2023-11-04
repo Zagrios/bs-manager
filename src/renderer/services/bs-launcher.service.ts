@@ -2,9 +2,12 @@ import { LaunchOption, BSLaunchEvent, BSLaunchWarning, BSLaunchEventData, BSLaun
 import { BSVersion } from 'shared/bs-version.interface';
 import { IpcService } from "./ipc.service";
 import { NotificationService } from "./notification.service";
-import { BehaviorSubject, Observable, filter, lastValueFrom } from "rxjs";
+import { BehaviorSubject, Observable, lastValueFrom, tap } from "rxjs";
 import { ConfigurationService } from "./configuration.service";
 import { ThemeService } from "./theme.service";
+import { BsStore } from "shared/models/bs-store.enum";
+import { ModalExitCode, ModalService } from "./modale.service";
+import { OriginalOculusVersionBackupModal } from "renderer/components/modal/modal-types/original-oculus-version-backup.modal";
 
 export class BSLauncherService {
     private static instance: BSLauncherService;
@@ -13,6 +16,7 @@ export class BSLauncherService {
     private readonly notificationService: NotificationService;
     private readonly config: ConfigurationService;
     private readonly theme: ThemeService;
+    private readonly modals: ModalService;
 
     public readonly versionRunning$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
    
@@ -26,6 +30,15 @@ export class BSLauncherService {
         this.notificationService = NotificationService.getInstance();
         this.config = ConfigurationService.getInstance();
         this.theme = ThemeService.getInstance();
+        this.modals = ModalService.getInstance();
+    }
+
+    private notRewindBackupOculus(): boolean{
+        return this.config.get<boolean>("not-rewind-backup-oculus");
+    }
+
+    private setNotRewindBackupOculus(value: boolean): void{
+        this.config.set("not-rewind-backup-oculus", value);
     }
 
     public getLaunchOptions(version: BSVersion): LaunchOption{
@@ -37,35 +50,51 @@ export class BSLauncherService {
             additionalArgs: (this.config.get<string>("additionnal-args") || "").split(";").map(arg => arg.trim()).filter(arg => arg.length > 0)
         }
     }
-    
-    public doLaunch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
-        return this.ipcService.sendV2<BSLaunchEventData, LaunchOption>("bs-launch.launch", {args: launchOptions});
-    }
 
-    public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData> {
-        const launchState$ = this.doLaunch(launchOptions);
+    private handleLaunchEvents(events$: Observable<BSLaunchEventData>): Observable<BSLaunchEventData>{
+        const eventToFilter = [...Object.values(BSLaunchWarning), BSLaunchEvent.STEAM_LAUNCHED]
 
-        this.versionRunning$.next(launchOptions.version);
-
-        launchState$.pipe(filter(event => {
-            const eventToFilter = [...Object.values(BSLaunchWarning), BSLaunchEvent.STEAM_LAUNCHED]
-            return !eventToFilter.includes(event.type);
-        })).subscribe({
+        return events$.pipe(tap({
             next: event => {
+                if(eventToFilter.includes(event.type)){ return; }
                 this.notificationService.notifySuccess({title: `notifications.bs-launch.success.titles.${event.type}`, desc: `notifications.bs-launch.success.msg.${event.type}`});
             },
-            error: (err: BSLaunchErrorData) => {
+            error: (err: BSLaunchErrorData) => { // TODO : Convert all errors to CustomError
                 if(!Object.values(BSLaunchError).includes(err.type)){
                     this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.UNKNOWN_ERROR", desc: "notifications.bs-launch.errors.msg.UNKNOWN_ERROR"});
                 } else {
                     this.notificationService.notifyError({title: `notifications.bs-launch.errors.titles.${err.type}`, desc: `notifications.bs-launch.errors.msg.${err.type}`})
                 }
             }
-        }).add(() => {
-            this.versionRunning$.next(null);
+        }))
+    }
+    
+    public doLaunch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
+        return this.ipcService.sendV2<BSLaunchEventData, LaunchOption>("bs-launch.launch", {args: launchOptions});
+    }
+
+    public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData> {
+
+        return new Observable<BSLaunchEventData>(obs => {
+            (async () => {
+                
+                if(launchOptions.version.metadata?.store === BsStore.OCULUS && !this.notRewindBackupOculus()){
+                    const { exitCode, data: notRewind } = await this.modals.openModal(OriginalOculusVersionBackupModal);
+                    if(exitCode !== ModalExitCode.COMPLETED){ return; }
+                    this.setNotRewindBackupOculus(notRewind);
+                }
+                
+                const launch$ = this.handleLaunchEvents(this.doLaunch(launchOptions));
+
+                await lastValueFrom(launch$);
+                
+            })().then(() => {
+                obs.complete();
+            }).catch(err => {
+                obs.error(err);
+            })
         });
 
-        return launchState$;
     }
 
     public createLaunchShortcut(launchOptions: LaunchOption): Observable<void>{

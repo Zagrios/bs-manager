@@ -11,6 +11,7 @@ import BSLogo from "../../../../../../assets/images/apngs/bs-logo.png";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { useService } from "renderer/hooks/use-service.hook";
 import { BsStore } from "shared/models/bs-store.enum";
+import { lastValueFrom } from "rxjs";
 
 type Props = { version: BSVersion };
 
@@ -58,13 +59,15 @@ export function LaunchSlide({ version }: Props) {
                   .filter(arg => arg.length > 0)
             : undefined;
             
-        bsLauncherService.launch({
+        const launch$ = bsLauncherService.launch({
             version,
             oculus: version.oculus ? false : oculusMode,
             desktop: desktopMode,
             debug: debugMode,
             additionalArgs
         });
+        
+        return lastValueFrom(launch$).catch(() => {});
     };
 
     return (

@@ -1,7 +1,7 @@
 import { BSVersion } from "shared/bs-version.interface";
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { distinctUntilChanged, map, of, Subscription, switchMap } from "rxjs";
+import { distinctUntilChanged, lastValueFrom, map, of, Subscription, switchMap } from "rxjs";
 import { BSLauncherService, LaunchMods } from "renderer/services/bs-launcher.service";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { BSUninstallerService } from "renderer/services/bs-uninstaller.service";
@@ -56,12 +56,13 @@ export function BsVersionItem(props: { version: BSVersion }) {
     };
 
     const handleDoubleClick = () => {
-        launcherService.launch({
+        const launch$ = launcherService.launch({
             version: state,
             oculus: !!configService.get<boolean>(LaunchMods.OCULUS_MOD),
             desktop: !!configService.get<boolean>(LaunchMods.DESKTOP_MOD),
             debug: !!configService.get<boolean>(LaunchMods.DEBUG_MOD),
         });
+        return lastValueFrom(launch$).catch(() => {});
     };
 
     const cancel = () => {

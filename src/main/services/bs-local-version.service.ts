@@ -181,7 +181,7 @@ export class BSLocalVersionService {
      */
     public async getVersionPath(version: BSVersion): Promise<string>{
         if(version.steam){ return this.steamService.getGameFolder(BS_APP_ID, "Beat Saber") }
-        if(version.oculus){ return this.oculusService.getGameFolder(OCULUS_BS_DIR); }
+        if(version.oculus){ return this.oculusService.tryGetGameFolder([OCULUS_BS_DIR, OCULUS_BS_BACKUP_DIR]); }
 
         return path.join(
             await this.installLocationService.versionsDirectory(),

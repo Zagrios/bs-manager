@@ -217,6 +217,11 @@ export async function ensurePathNotAlreadyExist(path: string): Promise<string> {
     return destPath;
 }
 
+export async function isJunction(path: string): Promise<boolean>{
+    const [stats, lstats] = await Promise.all([stat(path), lstat(path)]);
+    return lstats.isSymbolicLink() && stats.isDirectory();
+}
+
 export interface Progression<T = unknown> {
     total: number;
     current: number;
