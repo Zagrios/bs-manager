@@ -160,7 +160,7 @@ export class BsOculusDownloaderService {
                     progress => ({...progress, data: version})                
                 ));
             }),
-            finalize(() => downloadVersion && this.versions.setVersionMetadata(downloadInfo.bsVersion, "store", BsStore.OCULUS)),
+            finalize(() => downloadVersion && this.versions.setVersionMetadata(downloadVersion, "store", BsStore.OCULUS)),
             finalize(() => this.oculusDownloader.stopDownload())
         );
     }
