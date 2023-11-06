@@ -169,7 +169,7 @@ export class OculusDownloader {
                                 return EMPTY;
                             })
                         );
-                    }, 20),
+                    }, 15),
                     scan((acc, curr) => acc + curr.diff, 0),
                 );
 
