@@ -1,4 +1,4 @@
-import { LaunchOption, BSLaunchEvent, BSLaunchWarning, BSLaunchEventData, BSLaunchErrorData, BSLaunchError } from "shared/models/bs-launch";
+import { LaunchOption, BSLaunchEvent, BSLaunchWarning, BSLaunchEventData, BSLaunchError } from "shared/models/bs-launch";
 import { BSVersion } from 'shared/bs-version.interface';
 import { IpcService } from "./ipc.service";
 import { NotificationService } from "./notification.service";
@@ -8,6 +8,8 @@ import { ThemeService } from "./theme.service";
 import { BsStore } from "shared/models/bs-store.enum";
 import { ModalExitCode, ModalService } from "./modale.service";
 import { OriginalOculusVersionBackupModal } from "renderer/components/modal/modal-types/original-oculus-version-backup.modal";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
+import { sToMs } from "shared/helpers/time.helpers";
 
 export class BSLauncherService {
     private static instance: BSLauncherService;
@@ -59,11 +61,11 @@ export class BSLauncherService {
                 if(eventToFilter.includes(event.type)){ return; }
                 this.notificationService.notifySuccess({title: `notifications.bs-launch.success.titles.${event.type}`, desc: `notifications.bs-launch.success.msg.${event.type}`});
             },
-            error: (err: BSLaunchErrorData) => { // TODO : Convert all errors to CustomError
-                if(!Object.values(BSLaunchError).includes(err.type)){
+            error: (err: CustomError) => {
+                if(!err?.code || !Object.values(BSLaunchError).includes(err.code as BSLaunchError)){
                     this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.UNKNOWN_ERROR", desc: "notifications.bs-launch.errors.msg.UNKNOWN_ERROR"});
                 } else {
-                    this.notificationService.notifyError({title: `notifications.bs-launch.errors.titles.${err.type}`, desc: `notifications.bs-launch.errors.msg.${err.type}`})
+                    this.notificationService.notifyError({title: `notifications.bs-launch.errors.titles.${err.code}`, desc: `notifications.bs-launch.errors.msg.${err.code}`, duration: sToMs(9)})
                 }
             }
         }))

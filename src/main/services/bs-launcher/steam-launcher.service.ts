@@ -1,5 +1,5 @@
 import { Observable } from "rxjs";
-import { BSLaunchError, BSLaunchErrorData, BSLaunchEvent, BSLaunchEventData, BSLaunchWarning, LaunchOption } from "../../../shared/models/bs-launch";
+import { BSLaunchError, BSLaunchEvent, BSLaunchEventData, BSLaunchWarning, LaunchOption } from "../../../shared/models/bs-launch";
 import { StoreLauncherInterface } from "./store-launcher.interface";
 import { pathExists, rename } from "fs-extra";
 import { SteamService } from "../steam.service";
@@ -7,6 +7,7 @@ import path from "path";
 import { BS_APP_ID, BS_EXECUTABLE, STEAMVR_APP_ID } from "../../constants";
 import log from "electron-log";
 import { AbstractLauncherService } from "./abstract-launcher.service";
+import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
 
 export class SteamLauncherService extends AbstractLauncherService implements StoreLauncherInterface{
 
@@ -52,8 +53,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
             log.error("Error while restoring SteamVR", err);
         });
     }
-
-    // TODO : Convert all errors to CustomError
+    
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
 
         return new Observable<BSLaunchEventData>(obs => {(async () => {
@@ -62,11 +62,11 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
             const exePath = path.join(bsFolderPath, BS_EXECUTABLE);
 
             if(!(await pathExists(exePath))){
-                return obs.error({type: BSLaunchError.BS_NOT_FOUND} as BSLaunchErrorData);
+                throw CustomError.fromError(new Error(`Path not exist : ${exePath}`), BSLaunchError.BS_NOT_FOUND);
             }
 
             // Open Steam if not running
-            if(!launchOptions.version.oculus && !(await this.steam.steamRunning())){
+            if(!(await this.steam.steamRunning())){
                 obs.next({type: BSLaunchEvent.STEAM_LAUNCHING});
 
                 await this.steam.openSteam().then(() => {
@@ -78,22 +78,22 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
             }
 
             // Backup SteamVR when desktop mode is enabled
-            if(!launchOptions.version.oculus && launchOptions.desktop){
+            if(launchOptions.desktop){
                 await this.backupSteamVR().catch(() => {
                     return this.restoreSteamVR();
                 });
-            } else if(!launchOptions.version.oculus){
-                await this.restoreSteamVR();
+            } else {
+                await this.restoreSteamVR().catch(log.error);
             }
 
             const launchArgs = this.buildBsLaunchArgs(launchOptions);
 
             obs.next({type: BSLaunchEvent.BS_LAUNCHING});
 
-            this.launchBs(exePath, launchArgs, { env: {...process.env, "SteamAppId": BS_APP_ID} }).then(exitCode => {
+            await this.launchBs(exePath, launchArgs, { env: {...process.env, "SteamAppId": BS_APP_ID} }).then(exitCode => {
                 log.info("BS process exit code", exitCode);
             }).catch(err => {
-                obs.error({type: BSLaunchError.BS_EXIT_ERROR, data: err} as BSLaunchErrorData);
+                throw CustomError.fromError(err, BSLaunchError.BS_EXIT_ERROR);
             }).finally(() => {
                 this.restoreSteamVR().catch(log.error);
             });
@@ -101,7 +101,11 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         })().then(() => {
             obs.complete();
         }).catch(err => {
-            obs.error({type: BSLaunchError.UNKNOWN_ERROR, data: err} as BSLaunchErrorData);
+            if(err instanceof CustomError){
+                obs.error(err);
+            } else {
+                obs.error(CustomError.fromError(err, BSLaunchError.UNKNOWN_ERROR));
+            }
         })});
     }
 

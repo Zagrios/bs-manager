@@ -1,15 +1,16 @@
 import { Observable, ReplaySubject, catchError, lastValueFrom, of, take, timeout } from "rxjs";
 import { StoreLauncherInterface } from "./store-launcher.interface";
-import { BSLaunchError, BSLaunchErrorData, BSLaunchEvent, BSLaunchEventData, LaunchOption } from "../../../shared/models/bs-launch";
+import { BSLaunchError, BSLaunchEvent, BSLaunchEventData, LaunchOption } from "../../../shared/models/bs-launch";
 import { OculusService } from "../oculus.service";
 import { BS_EXECUTABLE, OCULUS_BS_BACKUP_DIR, OCULUS_BS_DIR } from "../../constants";
 import path from "path";
 import log from "electron-log";
 import { sToMs } from "../../../shared/helpers/time.helpers";
-import { lstat, pathExists, readdir, rename, stat, symlink, unlink } from "fs-extra";
+import { pathExists, readdir, rename, symlink, unlink } from "fs-extra";
 import { AbstractLauncherService } from "./abstract-launcher.service";
 import { taskRunning } from "../../helpers/os.helpers";
 import { isJunction } from "../../helpers/fs.helpers";
+import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
 
 export class OculusLauncherService extends AbstractLauncherService implements StoreLauncherInterface {
 
@@ -84,12 +85,15 @@ export class OculusLauncherService extends AbstractLauncherService implements St
         return rename(bsFolderBackupPath, originalPath);
     }
 
-    // TODO : Convert all errors to CustomError
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData> {
 
         const prepareOriginalVersion: () => Promise<string> = async () => {
             await this.restoreOriginalBeatSaber();
-            return this.oculus.getGameFolder(OCULUS_BS_DIR);
+            const bsPath = this.oculus.getGameFolder(OCULUS_BS_DIR);
+            if(!bsPath){
+                throw new Error("Oculus Beat Saber path not found");
+            }
+            return bsPath;
         }
 
         const prepareDowngradedVersion: () => Promise<string> = async () => {
@@ -115,29 +119,37 @@ export class OculusLauncherService extends AbstractLauncherService implements St
             (async () => {
 
                 // Cannot start multiple instances of Beat Saber with Oculus
-                const bsRunning = await taskRunning(BS_EXECUTABLE);
+                const bsRunning = await taskRunning(BS_EXECUTABLE).catch(() => false);
                 if(bsRunning){
-                    throw ({type: BSLaunchError.BS_ALREADY_RUNNING, data: bsRunning}) as BSLaunchErrorData;
+                    throw CustomError.fromError(new Error("Cannot start two instance of Beat Saber for Oculus"), BSLaunchError.BS_ALREADY_RUNNING);
                 }
                 
                 // Remove previously symlinks created by BSM
-                await this.deleteBsSymlinks().catch(log.error);
+                await this.deleteBsSymlinks().catch(err => log.error("Error while deleting BSM symlinks", err));
 
-                const bsPath = await (launchOptions.version.oculus ? prepareOriginalVersion() : prepareDowngradedVersion());
-
-                if(!bsPath){
-                    throw ({type: BSLaunchError.BS_NOT_FOUND}) as BSLaunchErrorData;
-                }
+                const bsPath = await (launchOptions.version.oculus ? prepareOriginalVersion() : prepareDowngradedVersion())
+                    .catch(err => CustomError.throw(err, BSLaunchError.OCULUS_LIB_NOT_FOUND));
 
                 // Launch Beat Saber
-                const exePath = path.join(bsPath, "Beat Saber.exe");
+                const exePath = path.join(bsPath, BS_EXECUTABLE);
+
+                if(!(await pathExists(exePath))){
+                    throw CustomError.fromError(new Error(`BS Path not exist ${bsPath}`), BSLaunchError.BS_NOT_FOUND);
+                }
+
                 obs.next({type: BSLaunchEvent.BS_LAUNCHING});
                 return this.launchBs(exePath, this.buildBsLaunchArgs(launchOptions)).catch(err => {
-                    throw ({type: BSLaunchError.BS_EXIT_ERROR, data: err}) as BSLaunchErrorData;
+                    throw CustomError.fromError(err, BSLaunchError.BS_EXIT_ERROR);
                 });
 
-            })().catch(err => {
-                obs.error(err);
+            })().then(exitCode => {
+                log.info("BS process exit code", exitCode);
+            }).catch(err => {
+                if(err instanceof CustomError){
+                    obs.error(err);
+                } else {
+                    obs.error(CustomError.fromError(err, BSLaunchError.UNKNOWN_ERROR));
+                }
             }).finally(() => {
                 obs.complete();
             })
