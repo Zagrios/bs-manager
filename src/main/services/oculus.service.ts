@@ -1,7 +1,8 @@
 import regedit from "regedit";
 import path from "path";
-import { isJunction, pathExist } from "../helpers/fs.helpers";
+import { pathExist } from "../helpers/fs.helpers";
 import log from "electron-log";
+import { lstat } from "fs-extra";
 
 export class OculusService {
     private static instance: OculusService;
@@ -67,7 +68,7 @@ export class OculusService {
         for (const { path: libPath } of libsFolders) {
             const gameFullPath = path.join(libPath, rootLibDir, gameFolder);
             if (await pathExist(gameFullPath)) {
-                return (await isJunction(gameFullPath)) ? null : gameFullPath;
+                return (await lstat(gameFullPath)).isSymbolicLink() ? null : gameFullPath;
             }
         }
 
