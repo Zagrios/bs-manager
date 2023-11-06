@@ -37,17 +37,15 @@ export const ChooseStore: ModalComponent<BsStore> = ({ resolver }) => {
         }
 
         return {
-            bright: new Color(tailwindConfig.theme.colors["main-color"][1], "hex").hex(),
-            dim: new Color(tailwindConfig.theme.colors["main-color"][1], "hex").darken(.2).hex()
+            bright: new Color(tailwindConfig.theme.colors["light-main-color"][1], "hex").hex(),
+            dim: new Color(tailwindConfig.theme.colors["light-main-color"][1], "hex").darken(.2).hex()
         }
     })();
 
-    // TODO : Translate
-
     return (
         <form className="flex flex-col gap-3 max-w-sm">
-            <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t("which platform ?")}</h1>
-            <p className="w-auto text-gray-800 dark:text-gray-200 text-center">Select the platfrom where you own Beat Saber or from which you want to download it.</p>
+            <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t("modals.choose-store.title")}</h1>
+            <p className="w-auto text-gray-800 dark:text-gray-200 text-center">{t("modals.choose-store.body")}</p>
             <div className="flex flex-row w-full flex-grow gap-3">
                 <div className="flex flex-col flex-grow basis-0 gap-2 text-center px-5 pt-3 pb-1 rounded-md border-main-color-3 border-2 cursor-pointer" onMouseEnter={() => setOculusHover(true)} onMouseLeave={() => setOculusHover(false)} onClick={() => chooseStore(BsStore.OCULUS)} style={{backgroundColor: oculusHover ? bg.dim : bg.bright}}>
                     <OculusIcon className="flex-grow aspect-square text-black bg-white rounded-full p-5"/>
@@ -58,7 +56,7 @@ export const ChooseStore: ModalComponent<BsStore> = ({ resolver }) => {
                     <h2 className="font-bold">Steam</h2>
                 </div>
             </div>
-            <p onClick={goToSettings} className="text-sm italic underline cursor-pointer">Définir la platforme par défaut dans les paramètres</p>
+            <p onClick={goToSettings} className="text-sm italic underline cursor-pointer">{t("modals.choose-store.set-in-settings")}</p>
         </form>
     );
 };

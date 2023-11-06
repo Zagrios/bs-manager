@@ -98,7 +98,8 @@
                 "edit": "Bearbeiten",
                 "uninstall": "Entfernen",
                 "create-shortcut": "Verknüpfung erstellen",
-                "shared-folders": "Geteilte Ordner"
+                "shared-folders": "Geteilte Ordner",
+                "restore-oculus-folder": "Ordner wiederherstellen"
             }
         },
         "available-versions": {
@@ -113,7 +114,12 @@
             "steam-and-oculus": {
                 "title": "Steam & Oculus",
                 "description": "Abmelden ermöglicht es dir, beim nächsten Beat Saber Download den Account zu wechseln.",
-                "logout": "Abmelden"
+                "logout": "Abmelden",
+                "download-platform": {
+                    "title": "Standardplattform",
+                    "desc": "Wähle die Standardplattform, die für das Herunterladen von Beat Saber-Versionen verwendet wird.",
+                    "always-ask": "Immer fragen"
+                }
             },
             "appearance": {
                 "title": "Aussehen",
@@ -370,7 +376,8 @@
                     "OCULUS_NOT_RUNNING": "Oculus läuft nicht",
                     "BS_ALREADY_RUNNING": "Beat Saber läuft bereits",
                     "EXE_NOT_FINDED": "Dateien Fehlen",
-                    "EXIT": "Abrupter Stop"
+                    "EXIT": "Abrupter Stop",
+                    "OCULUS_LIB_NOT_FOUND": "Oculus-Bibliothek nicht gefunden"
                 },
                 "msg": {
                     "UNKNOWN_ERROR": "Ein unbekannter Fehler ist aufgetreten.",
@@ -378,7 +385,8 @@
                     "OCULUS_NOT_RUNNING": "Oculus muss ausgeführt werden, um Beat Saber zu starten.",
                     "BS_ALREADY_RUNNING": "Schließe Beat Saber, bevor Du es erneut startest.",
                     "EXE_NOT_FINDED": "Einige Dateien scheinen zu fehlen, versuche die Dateien zu überprüfen.",
-                    "EXIT": "Beat Saber stoppte abrupt, versuche die Dateien zu überprüfen."
+                    "EXIT": "Beat Saber stoppte abrupt, versuche die Dateien zu überprüfen.",
+                    "OCULUS_LIB_NOT_FOUND": "Überprüfe, ob die Oculus-Anwendung korrekt installiert ist und dass die Bibliotheken in Oculus richtig definiert sind."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Starte Steam"
@@ -486,6 +494,11 @@
         "misc": {
             "remember-my-choice": "Merke meine Wahl"
         },
+        "choose-store": {
+            "title": "Welche Plattform?",
+            "body": "Wählen Sie die Plattform, von der Sie Beat Saber herunterladen möchten.",
+            "set-in-settings": "Die Standardplattform in den Einstellungen festlegen"
+        },
         "guard": {
             "title": "Steam Guard",
             "inputs": {
@@ -540,6 +553,8 @@
         "bs-import-version": {
             "title": "Importiere eine Version",
             "description": "Importiert eine Version von Beat Saber zur Verwendung mit BSManager. Der Import kopiert den ausgewählten Beat Saber-Installationsordner in den BSManager-Versionsordner.",
+            "oculus-version": "Oculus-Version",
+            "oculus-version-tooltip": "Ankreuzen, wenn es eine Oculus-Version ist",
             "buttons": {
                 "submit": "Importiere eine Version"
             }
@@ -660,6 +675,25 @@
             "launch-options": "Startoptionen",
             "advanced-launch": "Erweiterte Start",
             "valid-btn": "Verknüpfung erstellen"
+        },
+        "connect-to-meta":{
+            "title": "Mit Meta verbinden",
+            "body":{
+                "token-needed": "Dein Meta-Verbindungstoken wird benötigt, um Beat Saber herunterzuladen.",
+                "need-cookie-enabled": "Beim Einloggen in Meta wird ein Anmeldefenster geöffnet und du kannst dann den Anmeldevorgang beginnen. Bitte stelle sicher, dass Cookies akzeptiert werden, sonst könnten wir deinen Token zum Starten des Downloads nicht abrufen."
+            },
+            "stay":"Angemeldet bleiben",
+            "connect-to-meta": "Mit Meta verbinden"
+        },
+        "original-version-backup-oculus": {
+            "title": "Achtung",
+            "body": {
+                "need-backup": "Um diese Version zu starten, wird der Installationsordner von Beat Saber in Ihrer Oculus-Bibliothek umbenannt.",
+                "can-restore-later": "Bei Bedarf können Sie ihn vom BSManager aus wiederherstellen, indem Sie zu den Optionen der originalen Oculus-Version gehen und auf 'Ordner wiederherstellen' klicken",
+                "tips-launch-oculus": "Tipp: Sie können diese Version direkt über Oculus starten, solange die Originalversion nicht wiederhergestellt ist."
+            },
+            "not-remind-me": "Nicht mehr erinnern",
+            "understood": "Verstanden"
         }
     },
     "maps": {

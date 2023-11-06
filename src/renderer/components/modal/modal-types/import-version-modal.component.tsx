@@ -22,10 +22,10 @@ export const ImportVersionModal: ModalComponent<BsStore> = ({ resolver }) => {
             <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t("modals.bs-import-version.title")}</h1>
             <BsmImage className="mx-auto h-20" image={BeatImpatient} />
             <p className="max-w-sm text-gray-800 dark:text-gray-200">{t("modals.bs-import-version.description")}</p>
-            <Tippy content="Cocher si c'est une version Oculus" placement="right" arrow={false} className="!bg-neutral-900 font-bold">
+            <Tippy content={t("modals.bs-import-version.oculus-version-tooltip")} placement="right" arrow={false} className="!bg-neutral-900 font-bold">
                 <div className="relative flex flex-row items-center gap-1.5 mb-4 mt-3 cursor-help w-fit">
                     <BsmCheckbox className="relative h-5 w-5 z-[1]" checked={isOculus} onChange={checked => setIsOculus(checked)}/>
-                    <span className="font-bold italic">Version Oculus</span> {/* TODO Translate */}
+                    <span className="font-bold italic">{t("modals.bs-import-version.oculus-version")}</span>
                 </div>
             </Tippy>
             <div className="grid grid-flow-col grid-cols-2 gap-4">

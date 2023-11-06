@@ -131,7 +131,7 @@ export function VersionViewer() {
             </div>
             <BsmDropdownButton className="absolute top-3 right-4 h-9 w-9 bg-light-main-color-2 dark:bg-main-color-2 rounded-md" items={[
                 { text: "pages.version-viewer.dropdown.open-folder", icon: "folder", onClick: openFolder },
-                state.oculus && { text: "Restaurer le dossier", icon: "backup-restore", onClick: restoreOriginalOculusFolder}, // TODO : translate
+                state.oculus && { text: "pages.version-viewer.dropdown.restore-oculus-folder", icon: "backup-restore", onClick: restoreOriginalOculusFolder},
                 { text: "pages.version-viewer.dropdown.verify-files", icon: "task", onClick: verifyFiles },
                 !state.steam && !state.oculus && { text: "pages.version-viewer.dropdown.edit", icon: "edit", onClick: edit },
                 !state.oculus && { text: "pages.version-viewer.dropdown.clone", icon: "copy", onClick: clone },

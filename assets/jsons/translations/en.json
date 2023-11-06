@@ -98,7 +98,8 @@
                 "edit": "Edit",
                 "uninstall": "Uninstall",
                 "create-shortcut": "Create a shortcut",
-                "shared-folders": "Shared Folders"
+                "shared-folders": "Shared Folders",
+                "restore-oculus-folder": "Restore the folder"
             }
         },
         "available-versions": {
@@ -113,7 +114,12 @@
             "steam-and-oculus": {
                 "title": "Steam & Oculus",
                 "description": "Logging out will allow you to switch accounts on the next Beat Saber download.",
-                "logout": "Log out"
+                "logout": "Log out",
+                "download-platform": {
+                    "title": "Default Platform",
+                    "desc": "Choose the default platform that will be used to download versions of Beat Saber.",
+                    "always-ask": "Always ask"
+                }
             },
             "appearance": {
                 "title": "Appearance",
@@ -370,7 +376,8 @@
                     "OCULUS_NOT_RUNNING": "Oculus is not running",
                     "BS_ALREADY_RUNNING": "Beat Saber already running",
                     "EXE_NOT_FINDED": "Missing files",
-                    "EXIT": "Abrupt stop"
+                    "EXIT": "Abrupt stop",
+                    "OCULUS_LIB_NOT_FOUND": "Oculus library not found"
                 },
                 "msg": {
                     "UNKNOWN_ERROR": "An unknown error has occurred.",
@@ -378,7 +385,8 @@
                     "OCULUS_NOT_RUNNING": "Oculus must be running to launch BeatSaber.",
                     "BS_ALREADY_RUNNING": "Close BeatSaber before launching it again.",
                     "EXE_NOT_FINDED": "Some files seem to be missing, try to verify the files.",
-                    "EXIT": "BeatSaber stopped abruptly, tries to check the files."
+                    "EXIT": "BeatSaber stopped abruptly, tries to check the files.",
+                    "OCULUS_LIB_NOT_FOUND": "Check that the Oculus application is properly installed, and that the libraries are correctly defined in Oculus."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Launch Steam"
@@ -486,6 +494,11 @@
         "misc": {
             "remember-my-choice": "Remember my choice"
         },
+        "choose-store": {
+            "title": "Which platform?",
+            "body": "Select the platform from which you wish to download Beat Saber.",
+            "set-in-settings": "Set the default platform in settings"
+        },
         "guard": {
             "title": "Steam Guard",
             "inputs": {
@@ -540,6 +553,8 @@
         "bs-import-version": {
             "title": "Import a version",
             "description": "Imports a version of Beat Saber to use with BSManager. This will copy the selected Beat Saber installation folder to the BSManager versions folder.",
+            "oculus-version": "Oculus Version",
+            "oculus-version-tooltip": "Check if it's an Oculus version",
             "buttons": {
                 "submit": "Import a version"
             }
@@ -660,6 +675,25 @@
             "launch-options": "Launch options",
             "advanced-launch": "Advanced launch",
             "valid-btn": "Create the shortcut"
+        },
+        "connect-to-meta":{
+            "title": "Connect to Meta",
+            "body":{
+                "token-needed": "Your Meta connection token is required to download Beat Saber.",
+                "need-cookie-enabled": "By logging into Meta, a login window will open and you can then start the login process. Please ensure to accept cookies, otherwise, we might not be able to retrieve your token to start the download."
+            },
+            "stay":"Remember me",
+            "connect-to-meta": "Connect to Meta"
+        },
+        "original-version-backup-oculus": {
+            "title": "Warning",
+            "body": {
+                "need-backup": "To launch this version, the Beat Saber installation folder located in your Oculus library will be renamed.",
+                "can-restore-later": "If needed, you can restore it from BSManager by going to the options of the original Oculus version and clicking on 'Restore the folder'",
+                "tips-launch-oculus": "Tip: You can launch this version directly from Oculus, as long as the original version is not restored."
+            },
+            "not-remind-me": "Do not remind me",
+            "understood": "Understood"
         }
     },
     "maps": {
