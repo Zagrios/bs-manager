@@ -59,7 +59,7 @@ export class BSLauncherService {
         if(version.oculus){ return this.oculusLauncher; }
         if(version.metadata?.store === BsStore.STEAM){ return this.steamLauncher; }
         if(version.metadata?.store === BsStore.OCULUS){ return this.oculusLauncher; }
-        return null;
+        return this.steamLauncher;
     }
 
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
