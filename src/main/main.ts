@@ -105,7 +105,6 @@ if (!gotTheLock) {
         }
         
         SteamLauncherService.getInstance().restoreSteamVR();
-        OculusLauncherService.getInstance().deleteBsSymlinks().catch(log.error)
         
         // Log renderer errors
         ipcMain.on("log-error", (_, args: IpcRequest<unknown>) => {
