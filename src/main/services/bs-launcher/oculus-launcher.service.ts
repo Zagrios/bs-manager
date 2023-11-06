@@ -77,7 +77,7 @@ export class OculusLauncherService extends AbstractLauncherService implements St
         return rename(bsFolder, backupPath);
     }
 
-    private async restoreOriginalBeatSaber(): Promise<void>{
+    public async restoreOriginalBeatSaber(): Promise<void>{
         const bsFolderBackupPath = await this.oculus.getGameFolder(OCULUS_BS_BACKUP_DIR);
         if(!(await pathExists(bsFolderBackupPath))){ return; }
         const originalPath = path.join(bsFolderBackupPath, "..", OCULUS_BS_DIR);
