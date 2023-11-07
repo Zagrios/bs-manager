@@ -1,8 +1,8 @@
 import { BSVersionLibService } from "./bs-version-lib.service";
-import { BSVersion } from "shared/bs-version.interface";
+import { BSVersion, BSVersionMetadata } from "shared/bs-version.interface";
 import { InstallationLocationService } from "./installation-location.service";
 import { SteamService } from "./steam.service";
-import { BS_APP_ID, OCULUS_BS_DIR } from "../constants";
+import { BS_APP_ID, OCULUS_BS_BACKUP_DIR, OCULUS_BS_DIR } from "../constants";
 import path from "path";
 import { ConfigurationService } from "./configuration.service";
 import { lstat, rename } from "fs/promises";
@@ -11,16 +11,19 @@ import log from "electron-log";
 import { OculusService } from "./oculus.service";
 import { DownloadLinkType } from "shared/models/mods";
 import sanitize from "sanitize-filename";
-import { copyDirectoryWithJunctions, deleteFolder, getFoldersInFolder, pathExist } from "../helpers/fs.helpers";
+import { Progression, copyDirectoryWithJunctions, deleteFolder, ensurePathNotAlreadyExist, getFoldersInFolder, pathExist, rxCopy } from "../helpers/fs.helpers";
 import { FolderLinkerService } from "./folder-linker.service";
-import { ReadStream, createReadStream } from "fs-extra";
+import { ReadStream, createReadStream, readFile, writeFile } from "fs-extra";
 import readline from "readline";
-import { Observable, Subject } from "rxjs";
+import { Observable, Subject, catchError, finalize, from, map, switchMap, throwError } from "rxjs";
+import { BsStore } from "../../shared/models/bs-store.enum";
+import { CustomError } from "../../shared/models/exceptions/custom-error.class";
 
 export class BSLocalVersionService {
     private static instance: BSLocalVersionService;
 
     private readonly CUSTOM_VERSIONS_KEY = "custom-versions";
+    private readonly METADATA_FILE = "metadata.config";
 
     private readonly installLocationService: InstallationLocationService;
     private readonly steamService: SteamService;
@@ -109,6 +112,8 @@ export class BSLocalVersionService {
             folderVersion.ino = folderStats.ino;
         }
 
+        folderVersion.metadata = await this.getAllVersionMetadata(folderVersion, { store: BsStore.STEAM });
+
         const customVersion = this.getCustomVersions().find(customVersion => {
             return customVersion.BSVersion === folderVersion.BSVersion && customVersion.name === folderVersion.name;
         });
@@ -116,24 +121,57 @@ export class BSLocalVersionService {
         folderVersion.color = customVersion?.color;
 
         return folderVersion;
-   }
+    }
 
-   private setCustomVersions(versions: BSVersion[]): void{
-      this.configService.set(this.CUSTOM_VERSIONS_KEY, versions);
-   }
+    public getAllVersionMetadata(version: BSVersion, defaultMetadata?: BSVersionMetadata): Promise<BSVersionMetadata>{
+        return (async () => {
+            const versionPath = await this.getVersionPath(version);
+            const contents = await readFile(path.join(versionPath, this.METADATA_FILE), "utf-8");
+            return JSON.parse(contents);
+        })().catch(e => {
+            log.warn(e);
+            return {};
+        }).then(metadata => ({...defaultMetadata, ...metadata}));
+    }
 
-   private addCustomVersion(version: BSVersion): void{
-      this.setCustomVersions([...this.getCustomVersions() ?? [], version]);
-   }
+    public getVersionMetadata<K extends keyof BSVersionMetadata, T extends BSVersionMetadata[K]>(version: BSVersion, key: K, defaultValue?: T): Promise<T|undefined>{
+        return (async () => {
+            const metadata = await this.getAllVersionMetadata(version);
+            return metadata?.[key];
+        })().catch(e => {
+            log.warn(e);
+            return null;
+        }).then(value => (value ?? defaultValue) as T);
+    }
 
-   private getCustomVersions(): BSVersion[]{
-      return this.configService.get<BSVersion[]>(this.CUSTOM_VERSIONS_KEY) || [];
-   }
+    public setVersionMetadata<K extends keyof BSVersionMetadata, T extends BSVersionMetadata[K]>(version: BSVersion, key: K, value: T): Promise<void>{
+        return (async () => {
+            const versionPath = await this.getVersionPath(version);
+            const metadataPath = path.join(versionPath, this.METADATA_FILE);
+            const metadata = await this.getAllVersionMetadata(version) ?? ({} as BSVersionMetadata);
+            metadata[key] = value;
+            await writeFile(metadataPath, JSON.stringify(metadata));
+        })().catch(e => {
+            log.error(e);
+        });
+    }
 
-   private deleteCustomVersion(version: BSVersion): void{
-      const customVersions = this.getCustomVersions() || [];
-      this.setCustomVersions(customVersions.filter(v => (v.name !== version.name || v.BSVersion !== version.BSVersion || v.color !== version.color)));
-   }
+    private setCustomVersions(versions: BSVersion[]): void{
+        this.configService.set(this.CUSTOM_VERSIONS_KEY, versions);
+    }
+
+    private addCustomVersion(version: BSVersion): void{
+        this.setCustomVersions([...this.getCustomVersions() ?? [], version]);
+    }
+
+    private getCustomVersions(): BSVersion[]{
+        return this.configService.get<BSVersion[]>(this.CUSTOM_VERSIONS_KEY) || [];
+    }
+
+    private deleteCustomVersion(version: BSVersion): void{
+        const customVersions = this.getCustomVersions() || [];
+        this.setCustomVersions(customVersions.filter(v => (v.name !== version.name || v.BSVersion !== version.BSVersion || v.color !== version.color)));
+    }
 
 
     /**
@@ -143,7 +181,7 @@ export class BSLocalVersionService {
      */
     public async getVersionPath(version: BSVersion): Promise<string>{
         if(version.steam){ return this.steamService.getGameFolder(BS_APP_ID, "Beat Saber") }
-        if(version.oculus){ return this.oculusService.getGameFolder(OCULUS_BS_DIR); }
+        if(version.oculus){ return this.oculusService.tryGetGameFolder([OCULUS_BS_DIR, OCULUS_BS_BACKUP_DIR]); }
 
         return path.join(
             await this.installLocationService.versionsDirectory(),
@@ -197,7 +235,7 @@ export class BSLocalVersionService {
     }
 
     private async getOculusVersion(): Promise<BSVersion> {
-        const oculusBsFolder = await this.oculusService.getGameFolder(OCULUS_BS_DIR);
+        const oculusBsFolder = await this.oculusService.tryGetGameFolder([OCULUS_BS_DIR, OCULUS_BS_BACKUP_DIR]);
 
         if (!oculusBsFolder) {
             return null;
@@ -301,6 +339,34 @@ export class BSLocalVersionService {
       })
    }
 
+    public importVersion(opt: ImportVersionOptions): Observable<Progression<BSVersion>>{
+        const { fromPath, store } = opt;
+
+        let failed = false;
+        let versionDest:  {version: BSVersion, dest: string} = null;
+
+        return from(this.getVersionOfBSFolder(fromPath)).pipe(
+            map(version => version || CustomError.throw(new Error("Unable to get BS version of path"), "NOT_BS_FOLDER")),
+            switchMap(version => this.getVersionPath(version).then(dest => ({version, dest}))),
+            switchMap(({version, dest}) => ensurePathNotAlreadyExist(dest).then(uniquePath => {
+                const res = dest === uniquePath ? {version, dest} : {version: {...version, name: path.basename(uniquePath)}, dest: uniquePath} as {version: BSVersion, dest: string};
+                versionDest = res;
+                return res;
+            })),
+            switchMap(({version, dest}) => rxCopy(fromPath, dest, { dereference: true }).pipe(
+                map(progress => ({...progress, data: version}))
+            )),
+            catchError(err => {
+                failed = true;
+                return throwError(() => err);
+            }),
+            finalize(async () => {
+                if(failed){ return; }
+                await this.setVersionMetadata(versionDest.version, "store", store);
+            })
+        );
+    }
+
     public async getLinkedFolders(version: BSVersion): Promise<string[]>{
         const versionPath = await this.getVersionPath(version);
         const [rootFolders, beatSaberDataFolders] = await Promise.all([getFoldersInFolder(versionPath), getFoldersInFolder(path.join(versionPath, "Beat Saber_Data"))]);
@@ -320,4 +386,9 @@ export class BSLocalVersionService {
     public get loadedVersions$(): Observable<BSVersion[]>{
         return this._loadedVersions$.asObservable();
     }
+}
+
+export interface ImportVersionOptions {
+    fromPath: string;
+    store: BsStore
 }

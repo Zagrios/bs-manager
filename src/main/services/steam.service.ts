@@ -6,6 +6,7 @@ import { readFile } from "fs/promises";
 import { pathExist } from "../helpers/fs.helpers";
 import log from "electron-log";
 import { app, shell } from "electron";
+import { taskRunning } from "../helpers/os.helpers";
 
 export class SteamService {
 
@@ -33,7 +34,7 @@ export class SteamService {
     }
 
     public async steamRunning(): Promise<boolean>{
-        const steamProcessRunning = await this.utils.taskRunning("steam");
+        const steamProcessRunning = await taskRunning("steam");
         if(process.platform === "linux") { return steamProcessRunning; }
 
         return steamProcessRunning && !!(await this.getActiveUser());

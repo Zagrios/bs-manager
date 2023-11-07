@@ -3,10 +3,10 @@ import SettingColorChooser from "renderer/components/settings/setting-color-choo
 import { SettingContainer } from "renderer/components/settings/setting-container.component";
 import { RadioItem, SettingRadioArray } from "renderer/components/settings/setting-radio-array.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
-import { BsmIconType } from "renderer/components/svgs/bsm-icon.component";
+import { BsmIcon, BsmIconType } from "renderer/components/svgs/bsm-icon.component";
 import { DefaultConfigKey, ThemeConfig } from "renderer/config/default-configuration.config";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
-import { BsDownloaderService } from "renderer/services/bs-downloader.service";
+import { SteamDownloaderService } from "renderer/services/bs-version-download/steam-downloader.service";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { I18nService } from "renderer/services/i18n.service";
 import { IpcService } from "renderer/services/ipc.service";
@@ -35,7 +35,11 @@ import { useService } from "renderer/hooks/use-service.hook";
 import { lastValueFrom } from "rxjs";
 import { BsmException } from "shared/models/bsm-exception.model";
 import { useObservable } from "renderer/hooks/use-observable.hook";
-import { AuthUserService } from "renderer/services/auth-user.service";
+import { OculusDownloaderService } from "renderer/services/bs-version-download/oculus-downloader.service";
+import { BsStore } from "shared/models/bs-store.enum";
+import { SteamIcon } from "renderer/components/svgs/icons/steam-icon.component";
+import { OculusIcon } from "renderer/components/svgs/icons/oculus-icon.component";
+import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
 
 export function SettingsPage() {
     
@@ -43,7 +47,9 @@ export function SettingsPage() {
     const themeService = useService(ThemeService);
     const ipcService = useService(IpcService);
     const modalService = useService(ModalService);
-    const downloaderService = useService(BsDownloaderService);
+    const bsDownloader = useService(BsDownloaderService);
+    const steamDownloader = useService(SteamDownloaderService);
+    const oculusDownloader = useService(OculusDownloaderService);
     const progressBarService = useService(ProgressBarService);
     const notificationService = useService(NotificationService);
     const i18nService = useService(I18nService);
@@ -52,38 +58,39 @@ export function SettingsPage() {
     const playlistsManager = useService(PlaylistsManagerService);
     const modelsManager = useService(ModelsManagerService);
     const versionLinker = useService(VersionFolderLinkerService);
-    const authService = useService(AuthUserService);
 
     const { firstColor, secondColor } = useThemeColor();
 
-    const themeItem: RadioItem[] = [
+    const themeItem: RadioItem<ThemeConfig>[] = [
         { id: 0, text: "pages.settings.appearance.themes.dark", value: "dark" as ThemeConfig },
         { id: 1, text: "pages.settings.appearance.themes.light", value: "light" as ThemeConfig },
         { id: 3, text: "pages.settings.appearance.themes.os", value: "os" as ThemeConfig },
     ];
 
-    const languagesItems: RadioItem[] = i18nService
+    const languagesItems: RadioItem<string>[] = i18nService
         .getSupportedLanguages()
         .map((l, index) => {
-            return { id: index, text: `pages.settings.language.languages.${l}`, value: l, textIcon: `pages.settings.language.languages.translated.${l}`, icon: `${l}-flag` as BsmIconType };
+            return { id: index, text: `pages.settings.language.languages.${l}`, value: l, textIcon: `pages.settings.language.languages.translated.${l}`, icon: <BsmIcon icon={`${l}-flag` as BsmIconType} className="max-h-5 w-fit ml-2"/> };
         })
         .sort((a, b) => a.text.localeCompare(b.text));
 
     const nav = useNavigate();
     const t = useTranslation();
 
-    const [themeIdSelected, setThemeIdSelected] = useState(themeItem.find(e => e.value === themeService.getTheme()).id);
-    const [languageSelected, setLanguageSelected] = useState(languagesItems.find(e => e.value === i18nService.currentLanguage).id);
+    const themeSelected = useObservable(themeService.theme$, "os");
+    const languageSelected = useObservable(i18nService.currentLanguage$, i18nService.getFallbackLanguage());
+    const downloadStore = useObservable(bsDownloader.defaultStore$);
     const [installationFolder, setInstallationFolder] = useState(null);
     const [showSupporters, setShowSupporters] = useState(false);
     const [mapDeepLinksEnabled, setMapDeepLinksEnabled] = useState(false);
     const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
     const [modelsDeepLinkEnabled, setModelsDeepLinkEnabled] = useState(false);
+    const [hasDownloaderSession, setHasDownloaderSession] = useState(false);
     const appVersion = useObservable(ipcService.sendV2<string>("current-version"));
-    const steamSessionExist = useObservable(authService.sessionExist$);
 
     useEffect(() => {
         loadInstallationFolder();
+        loadDownloadersSession();
         mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
@@ -97,21 +104,36 @@ export function SettingsPage() {
     };
 
     const loadInstallationFolder = () => {
-        downloaderService.getInstallationFolder().then(res => setInstallationFolder(res));
+        steamDownloader.getInstallationFolder().then(res => setInstallationFolder(res));
     };
+
+    const loadDownloadersSession = () => {
+        if(steamDownloader.sessionExist()){ return setHasDownloaderSession(true); }
+
+        oculusDownloader.hasAuthToken().then(hasToken => {
+            setHasDownloaderSession(hasToken);
+        });
+    }
+
+    const clearDownloadersSession = () => {
+        steamDownloader.deleteSteamSession();
+        oculusDownloader.clearAuthToken();
+        loadDownloadersSession();
+    }
 
     const setFirstColorSetting = (hex: string) => configService.set("first-color", hex);
     const setSecondColorSetting = (hex: string) => configService.set("second-color", hex);
 
-    const handleChangeTheme = (id: number) => {
-        setThemeIdSelected(id);
-        themeService.setTheme(themeItem.find(e => e.id === id).value);
+    const handleChangeBsStore = (item: RadioItem<BsStore|undefined>) => {
+        bsDownloader.setDefaultStore(item.value);
+    }
+
+    const handleChangeTheme = (item: RadioItem<ThemeConfig>) => {
+        themeService.setTheme(item.value);
     };
 
-    const handleChangeLanguage = (id: number) => {
-        const selectedLanguage = languagesItems.find(l => l.id === id).value;
-        i18nService.setLanguage(selectedLanguage);
-        setLanguageSelected(languagesItems.find(l => l.value === i18nService.currentLanguage).id);
+    const handleChangeLanguage = (item: RadioItem<string>) => {
+        i18nService.setLanguage(item.value);
     };
 
     const setDefaultInstallationFolder = () => {
@@ -131,7 +153,7 @@ export function SettingsPage() {
 
                 notificationService.notifySuccess({ title: "notifications.settings.move-folder.success.titles.transfer-started", desc: "notifications.settings.move-folder.success.descs.transfer-started" });
 
-                lastValueFrom(downloaderService.setInstallationFolder(fileChooserRes.filePaths[0])).then(res => {
+                lastValueFrom(steamDownloader.setInstallationFolder(fileChooserRes.filePaths[0])).then(res => {
 
                     progressBarService.complete();
                     progressBarService.hide(true);
@@ -207,9 +229,16 @@ export function SettingsPage() {
                     <BsmButton className="inline-block grow-0 bg-transparent sticky h-full w-full top-20 right-20 !m-0 rounded-full p-1" onClick={() => nav(-1)} icon="close" withBar={false} />
                 </div>
 
-                <SettingContainer title="pages.settings.steam.title" description="pages.settings.steam.description">
-                    <BsmButton onClick={() => authService.deleteSteamSession()} className="w-fit px-3 py-[2px] text-white rounded-md" withBar={false} text="pages.settings.steam.logout" typeColor="error" disabled={!steamSessionExist}/>
-                </SettingContainer> 
+                <SettingContainer title="pages.settings.steam-and-oculus.title" description="pages.settings.steam-and-oculus.description">
+                    <BsmButton onClick={clearDownloadersSession} className="w-fit px-3 py-[2px] text-white rounded-md" withBar={false} text="pages.settings.steam-and-oculus.logout" typeColor="error" disabled={!hasDownloaderSession}/>
+                    <SettingContainer id="choose-default-store" minorTitle="pages.settings.steam-and-oculus.download-platform.title" description="pages.settings.steam-and-oculus.download-platform.desc" className="mt-3">
+                        <SettingRadioArray items={[
+                            { id: 1, text: "Steam", value: BsStore.STEAM, icon: <SteamIcon className="h-6 w-6 float-left"/> },
+                            { id: 2, text: "Oculus Store PC", value: BsStore.OCULUS, icon: <OculusIcon className="h-6 w-6 float-left bg-white text-black rounded-full p-0.5"/>},
+                            { id: 0, text: t("pages.settings.steam-and-oculus.download-platform.always-ask"), value: undefined },
+                        ]} selectedItemValue={downloadStore} onItemSelected={handleChangeBsStore} direction="row"/>
+                    </SettingContainer>
+                </SettingContainer>
 
                 <SettingContainer title="pages.settings.appearance.title" description="pages.settings.appearance.description">
                     <div className="relative w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 flex justify-center rounded-md py-1">
@@ -220,7 +249,7 @@ export function SettingsPage() {
                         </div>
                     </div>
                     <SettingContainer minorTitle="pages.settings.appearance.sub-title" className="mt-3">
-                        <SettingRadioArray items={themeItem} selectedItem={themeIdSelected} onItemSelected={handleChangeTheme} />
+                        <SettingRadioArray items={themeItem} selectedItemValue={themeSelected} onItemSelected={handleChangeTheme} />
                     </SettingContainer>
                 </SettingContainer>
 
@@ -383,7 +412,7 @@ export function SettingsPage() {
                 </SettingContainer>
 
                 <SettingContainer title="pages.settings.language.title" description="pages.settings.language.description">
-                    <SettingRadioArray items={languagesItems} selectedItem={languageSelected} onItemSelected={handleChangeLanguage} />
+                    <SettingRadioArray items={languagesItems} selectedItemValue={languageSelected} onItemSelected={handleChangeLanguage} />
                 </SettingContainer>
 
                 <SettingContainer title="pages.settings.patreon.title" description="pages.settings.patreon.description">

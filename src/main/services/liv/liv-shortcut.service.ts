@@ -1,4 +1,4 @@
-import { BSLauncherService } from "../bs-launcher.service";
+import { BSLauncherService } from "../bs-launcher/bs-launcher.service";
 import { LivEntry, LivService } from "./liv.service";
 import { LaunchOption } from "shared/models/bs-launch";
 import { app } from "electron";
@@ -43,8 +43,7 @@ export class LivShortcut {
                     
                     versions.forEach(version => this.createLivShortcut({ 
                         ...(clearedLaunchOptions?.find(launchOpt => launchOpt.version.ino === version.ino) ?? {}),
-                        version,
-                        skipAlreadyRunning: true 
+                        version
                     }));
                 })().catch(err => log.error("Error while creating LIV shortcuts", err));
             });

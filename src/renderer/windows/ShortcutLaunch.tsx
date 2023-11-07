@@ -43,8 +43,6 @@ export default function ShortcutLaunch() {
     useOnUpdate(() => {
         if(!launchOptions) { return; }
 
-        launchOptions.skipAlreadyRunning = true;
-
         const sub = bsLauncher.doLaunch(launchOptions).subscribe({
             next: event => {
                 setStatus(event.type);

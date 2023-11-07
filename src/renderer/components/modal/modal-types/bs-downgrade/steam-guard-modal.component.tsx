@@ -1,11 +1,11 @@
-import { ModalComponent, ModalExitCode } from "../../../services/modale.service";
+import { ModalComponent, ModalExitCode } from "../../../../services/modale.service";
 import { useState } from "react";
-import BeatConflict from "../../../../../assets/images/apngs/beat-conflict.png";
+import BeatConflict from "../../../../../../assets/images/apngs/beat-conflict.png";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 
-export const GuardModal: ModalComponent<string> = ({ resolver }) => {
+export const SteamGuardModal: ModalComponent<string> = ({ resolver }) => {
     const [guardCode, setGuardCode] = useState("");
     const t = useTranslation();
 

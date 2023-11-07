@@ -1,20 +1,21 @@
-import { BS_APP_ID, BS_DEPOT } from "../constants";
+import { BS_APP_ID, BS_DEPOT } from "../../constants";
 import path from "path";
 import { BSVersion } from "shared/bs-version.interface";
-import { UtilsService } from "./utils.service";
+import { UtilsService } from "../utils.service";
 import { spawnSync } from "child_process";
 import log from "electron-log";
-import { InstallationLocationService } from "./installation-location.service";
-import { BSLocalVersionService } from "./bs-local-version.service";
-import { copy, ensureDir } from "fs-extra";
-import { pathExist } from "../helpers/fs.helpers";
-import { Observable, map } from "rxjs";
-import { DepotDownloaderArgsOptions, DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderInfoEvent } from "../../shared/models/depot-downloader.model";
-import { DepotDownloader } from "../models/depot-downloader.class";
+import { InstallationLocationService } from "../installation-location.service";
+import { BSLocalVersionService } from "../bs-local-version.service";
+import { ensureDir } from "fs-extra";
+import { ensurePathNotAlreadyExist } from "../../helpers/fs.helpers";
+import { Observable, finalize, map } from "rxjs";
+import { DepotDownloaderArgsOptions, DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderInfoEvent } from "../../../shared/models/bs-version-download/depot-downloader.model";
+import { DepotDownloader } from "../../models/depot-downloader.class";
 import { app } from "electron";
+import { BsStore } from "../../../shared/models/bs-store.enum";
 
-export class BSInstallerService {
-    private static instance: BSInstallerService;
+export class BsSteamDownloaderService {
+    private static instance: BsSteamDownloaderService;
 
     private readonly utils: UtilsService;
     private readonly installLocationService: InstallationLocationService;
@@ -33,10 +34,10 @@ export class BSInstallerService {
     }
 
     public static getInstance() {
-        if (!BSInstallerService.instance) {
-            BSInstallerService.instance = new BSInstallerService();
+        if (!BsSteamDownloaderService.instance) {
+            BsSteamDownloaderService.instance = new BsSteamDownloaderService();
         }
-        return BSInstallerService.instance;
+        return BsSteamDownloaderService.instance;
     }
 
     private getDepotDownloaderExePath(): string {
@@ -59,10 +60,10 @@ export class BSInstallerService {
         }
     }
 
-    private async buildDepotDownloaderInstance(downloadInfos: DownloadInfo, qr?: boolean): Promise<DepotDownloader> {
+    private async buildDepotDownloaderInstance(downloadInfos: DownloadSteamInfo, qr?: boolean): Promise<{depotDownloader: DepotDownloader, depotDownloaderOptions: DepotDownloaderArgsOptions, version: BSVersion}> {
 
         const versionPath = await this.localVersionService.getVersionPath(downloadInfos.bsVersion);
-        const dest = downloadInfos.isVerification ? versionPath : await this.getPathNotAleardyExist(versionPath);
+        const dest = downloadInfos.isVerification ? versionPath : await ensurePathNotAlreadyExist(versionPath);
         const downloadVersion: BSVersion = { ...downloadInfos.bsVersion, ...(path.basename(dest) !== downloadInfos.bsVersion.BSVersion && { name: path.basename(dest) }) };
 
         const depotDownloaderOptions: DepotDownloaderArgsOptions = {
@@ -83,20 +84,22 @@ export class BSInstallerService {
         const exePath = this.getDepotDownloaderExePath();
         const args = DepotDownloader.buildArgs(depotDownloaderOptions);
 
-        return new DepotDownloader({
+        const depotDownloader = new DepotDownloader({
             command: isLinux ? 'dotnet' : exePath,
             args: isLinux ? [exePath, ...args] : args,
             options: { cwd: await this.installLocationService.versionsDirectory() },
             echoStartData: downloadVersion
         }, log);
+
+        return { depotDownloader, depotDownloaderOptions, version: downloadVersion }
     }
 
-    private buildDepotDownloaderObservable(downloadInfos: DownloadInfo, qr?: boolean): Observable<DepotDownloaderEvent> {
+    private buildDepotDownloaderObservable(downloadInfos: DownloadSteamInfo, qr?: boolean): Observable<DepotDownloaderEvent> {
         return new Observable(sub => {
 
             const depotDownloaderBuildPromise = this.buildDepotDownloaderInstance(downloadInfos, qr);
 
-            depotDownloaderBuildPromise.then(depotDownloader => {
+            depotDownloaderBuildPromise.then(({ depotDownloader, version }) => {
 
                 if(this.depotDownloader?.running){
                     this.depotDownloader.stop();
@@ -104,12 +107,15 @@ export class BSInstallerService {
 
                 this.depotDownloader = depotDownloader;
 
-                depotDownloader.$events().pipe(map(event => {
-                    if(event.type === DepotDownloaderEventType.Error){
-                        throw event;
-                    }
-                    return event;
-                })).subscribe(sub);
+                depotDownloader.$events().pipe(
+                    map(event => {
+                        if(event.type === DepotDownloaderEventType.Error){
+                            throw event;
+                        }
+                        return event;
+                    }),
+                    finalize(() => this.localVersionService.setVersionMetadata(version, "store", BsStore.STEAM))
+                ).subscribe(sub);
 
             }).catch(err => sub.error({
                 type: DepotDownloaderEventType.Error,
@@ -118,16 +124,16 @@ export class BSInstallerService {
             } as DepotDownloaderEvent));
 
             return () => {
-                depotDownloaderBuildPromise.then(depotDownloader => depotDownloader.stop());
+                depotDownloaderBuildPromise.then(({ depotDownloader }) => depotDownloader.stop());
             }
         });
     }
 
-    public downloadBsVersion(downloadInfos: DownloadInfo): Observable<DepotDownloaderEvent> {
+    public downloadBsVersion(downloadInfos: DownloadSteamInfo): Observable<DepotDownloaderEvent> {
         return this.buildDepotDownloaderObservable(downloadInfos);
     }
 
-    public autoDownloadBsVersion(downloadInfos: DownloadInfo): Observable<DepotDownloaderEvent> {
+    public autoDownloadBsVersion(downloadInfos: DownloadSteamInfo): Observable<DepotDownloaderEvent> {
         return this.buildDepotDownloaderObservable({...downloadInfos, password: null, stay: true}).pipe(map(event => {
             if(event.type === DepotDownloaderEventType.Info &&  event.subType === DepotDownloaderInfoEvent.Password){
                 throw new Error("Ask for password while auto download");
@@ -136,7 +142,7 @@ export class BSInstallerService {
         }));
     }
 
-    public downloadBsVersionWithQRCode(downloadInfos: DownloadInfo): Observable<DepotDownloaderEvent> {
+    public downloadBsVersionWithQRCode(downloadInfos: DownloadSteamInfo): Observable<DepotDownloaderEvent> {
         return this.buildDepotDownloaderObservable(downloadInfos, true);
     }
 
@@ -147,42 +153,17 @@ export class BSInstallerService {
     public stopDownload(): void {
         this.depotDownloader?.stop();
     }
-
-    private async getPathNotAleardyExist(path: string): Promise<string> {
-        let destPath = path;
-        let folderExist = await pathExist(destPath);
-        let i = 0;
-
-        while (folderExist) {
-            i++;
-            destPath = `${path} (${i})`;
-            folderExist = await pathExist(destPath);
-        }
-
-        return destPath;
-    }
-
-    public async importVersion(path: string): Promise<BSVersion> {
-        const version = await this.localVersionService.getVersionOfBSFolder(path);
-
-        if (!version) {
-            throw new Error("NOT_BS_FOLDER");
-        }
-
-        const destPath = await this.getPathNotAleardyExist(await this.localVersionService.getVersionPath(version));
-
-        await copy(path, destPath, { dereference: true });
-
-        return version;
-    }
 }
 
 export interface DownloadInfo {
     bsVersion: BSVersion;
+    isVerification?: boolean;
+    stay?: boolean;
+}
+
+export interface DownloadSteamInfo extends DownloadInfo {
     username?: string;
     password?: string;
-    stay?: boolean;
-    isVerification?: boolean;
 }
 
 export interface DownloadEvent {
