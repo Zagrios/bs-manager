@@ -48,7 +48,7 @@ export class OculusLauncherService extends AbstractLauncherService implements St
         const oculusLibPath = await lastValueFrom(this.oculusLib$.pipe(take(1), timeout(sToMs(30)), catchError(() => of(null))));
 
         if(!oculusLibPath || !(await pathExists(oculusLibPath))){
-            throw new Error("Oculus library not found, deleteBsSymlinks"); 
+            throw new Error("Oculus library not found, deleteBsSymlinks");
         }
 
         const libContents = await readdir(oculusLibPath, { withFileTypes: true});
@@ -71,6 +71,7 @@ export class OculusLauncherService extends AbstractLauncherService implements St
         }))).filter(Boolean);
 
         await Promise.all(bsmSymlinks.map(symlink => {
+            log.info("Deleting symlink", symlink.name);
             return unlink(path.join(oculusLibPath, symlink.name));
         }));
     }
@@ -79,6 +80,7 @@ export class OculusLauncherService extends AbstractLauncherService implements St
         const bsFolder = await this.oculus.getGameFolder(OCULUS_BS_DIR);
         if(!bsFolder){ return; }
         const backupPath = path.join(bsFolder, "..", OCULUS_BS_BACKUP_DIR);
+        log.info("Backing up original Beat Saber", bsFolder, backupPath);
         return rename(bsFolder, backupPath);
     }
 
@@ -86,6 +88,7 @@ export class OculusLauncherService extends AbstractLauncherService implements St
         const bsFolderBackupPath = await this.oculus.getGameFolder(OCULUS_BS_BACKUP_DIR);
         if(!(await pathExists(bsFolderBackupPath))){ return; }
         const originalPath = path.join(bsFolderBackupPath, "..", OCULUS_BS_DIR);
+        log.info("Restoring original Beat Saber", bsFolderBackupPath, originalPath);
         return rename(bsFolderBackupPath, originalPath);
     }
 
@@ -114,6 +117,7 @@ export class OculusLauncherService extends AbstractLauncherService implements St
             // Create symlink in the oculus library from the BSM BS version
             const symlinkTarget = await this.localVersions.getInstalledVersionPath(launchOptions.version);
             const symlinkPath = path.join(oculusLib, OCULUS_BS_DIR);
+            log.info("Creating symlink", symlinkTarget, symlinkPath);
             await symlink(symlinkTarget, symlinkPath, "junction");
 
             return symlinkPath;
