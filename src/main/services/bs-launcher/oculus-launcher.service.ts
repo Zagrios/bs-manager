@@ -96,7 +96,7 @@ export class OculusLauncherService extends AbstractLauncherService implements St
 
         const prepareOriginalVersion: () => Promise<string> = async () => {
             await this.restoreOriginalBeatSaber();
-            const bsPath = this.oculus.getGameFolder(OCULUS_BS_DIR);
+            const bsPath = await this.oculus.getGameFolder(OCULUS_BS_DIR);
             if(!bsPath){
                 throw new Error("Oculus Beat Saber path not found");
             }
