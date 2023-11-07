@@ -1,4 +1,4 @@
-import { forwardRef, HTMLProps } from "react";
+import { HTMLProps } from "react";
 
 export function OculusIcon(props: HTMLProps<SVGSVGElement>) {
     return (

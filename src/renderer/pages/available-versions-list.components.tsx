@@ -11,7 +11,6 @@ import { useService } from "renderer/hooks/use-service.hook";
 import { BSVersion } from "shared/bs-version.interface";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
-import { BsStore } from "shared/models/bs-store.enum";
 
 export const AvailableVersionsContext = createContext<{ selectedVersion: BSVersion; setSelectedVersion: (version: BSVersion) => void }>(null);
 

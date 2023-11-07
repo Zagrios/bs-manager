@@ -58,7 +58,7 @@ export class BsOculusDownloaderService {
             log.info("Token contains | which usually indicates an application token which is not valid for user tokens");
             return false;
         }
-        if(token.match(/OC[0-9]{15}/)){
+        if(token.match(/OC\d{15}/)){
             log.info("Token matches /OC[0-9}{15}/ which usually indicates a changed oculus store token");
             return false;
         }

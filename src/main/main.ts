@@ -21,7 +21,6 @@ import { BSLauncherService } from "./services/bs-launcher/bs-launcher.service";
 import { IpcRequest } from "shared/models/ipc";
 import { LivShortcut } from "./services/liv/liv-shortcut.service";
 import { SteamLauncherService } from "./services/bs-launcher/steam-launcher.service";
-import { OculusLauncherService } from "./services/bs-launcher/oculus-launcher.service";
 
 const isDebug = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true";
 

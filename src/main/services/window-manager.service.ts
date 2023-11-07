@@ -1,4 +1,4 @@
-import { app, BrowserWindow, BrowserWindowConstructorOptions, shell, WebContents } from "electron";
+import { app, BrowserWindow, BrowserWindowConstructorOptions, shell } from "electron";
 import { resolveHtmlPath } from "../util";
 import { UtilsService } from "./utils.service";
 import { AppWindow } from "shared/models/window-manager/app-window.model";
