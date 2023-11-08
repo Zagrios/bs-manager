@@ -32,7 +32,9 @@
     },
     "build": {
         "extraResources": [
-            "./assets/**"
+            "./assets/jsons/bs-versions.json",
+            "./assets/jsons/patreons.json",
+            "./assets/scripts/**"
         ],
         "productName": "BSManager",
         "appId": "org.erb.BSManager",
