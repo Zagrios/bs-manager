@@ -67,7 +67,7 @@ export class WindowManagerService {
     }
 
     public openWindow(url: AppWindow, options?: BrowserWindowConstructorOptions): Promise<BrowserWindow> {
-        const windowType = url.split("?")[0] as AppWindow;
+        const windowType = url.split("?")[0];
         const window = new BrowserWindow({ ...(this.appWindowsOptions[windowType] ?? {}), ...this.baseWindowOption, ...options });
         return this.handleNewWindow(url, window);
     }
