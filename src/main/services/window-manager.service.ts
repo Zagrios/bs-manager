@@ -66,9 +66,10 @@ export class WindowManagerService {
         return promise.then(() => window);
     }
 
-    public openWindow(windowType: AppWindow, options?: BrowserWindowConstructorOptions): Promise<BrowserWindow> {
+    public openWindow(url: AppWindow, options?: BrowserWindowConstructorOptions): Promise<BrowserWindow> {
+        const windowType = url.split("?")[0] as AppWindow;
         const window = new BrowserWindow({ ...(this.appWindowsOptions[windowType] ?? {}), ...this.baseWindowOption, ...options });
-        return this.handleNewWindow(windowType, window);
+        return this.handleNewWindow(url, window);
     }
 
     public closeAllWindows(except?: AppWindow) {
