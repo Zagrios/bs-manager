@@ -676,7 +676,7 @@
             "title": "Connexion à Meta",
             "body":{
                 "token-needed": "Votre token de connexion à Meta est nécessaire pour télécharger Beat Saber.",
-                "need-cookie-enabled": "En vous connectant à Meta, une fenêtre de connexion s'ouvrira et vous pourrez alors débuter le processus de connexion. Veuillez à bien accepter les cookies sinon quoi, il se pourrait que l'on n'arrive pas à récupérer votre token pour démarrer le téléchargement."
+                "need-cookie-enabled": "En vous connectant à Meta, une fenêtre de connexion s'ouvrira et vous pourrez alors débuter le processus de connexion. Veillez à bien accepter les cookies sinon quoi, il se pourrait que l'on n'arrive pas à récupérer votre token pour démarrer le téléchargement."
             },
             "stay":"Se souvenir de moi",
             "connect-to-meta": "Se connecter à Meta"

@@ -231,13 +231,15 @@ export function SettingsPage() {
 
                 <SettingContainer title="pages.settings.steam-and-oculus.title" description="pages.settings.steam-and-oculus.description">
                     <BsmButton onClick={clearDownloadersSession} className="w-fit px-3 py-[2px] text-white rounded-md" withBar={false} text="pages.settings.steam-and-oculus.logout" typeColor="error" disabled={!hasDownloaderSession}/>
+                    
                     <SettingContainer id="choose-default-store" minorTitle="pages.settings.steam-and-oculus.download-platform.title" description="pages.settings.steam-and-oculus.download-platform.desc" className="mt-3">
                         <SettingRadioArray items={[
                             { id: 1, text: "Steam", value: BsStore.STEAM, icon: <SteamIcon className="h-6 w-6 float-left"/> },
-                            { id: 2, text: "Oculus Store PC", value: BsStore.OCULUS, icon: <OculusIcon className="h-6 w-6 float-left bg-white text-black rounded-full p-0.5"/>},
-                            { id: 0, text: t("pages.settings.steam-and-oculus.download-platform.always-ask"), value: undefined },
-                        ]} selectedItemValue={downloadStore} onItemSelected={handleChangeBsStore} direction="row"/>
+                            { id: 2, text: "Oculus Store (PC)", value: BsStore.OCULUS, icon: <OculusIcon className="h-6 w-6 float-left bg-white text-black rounded-full p-0.5"/>},
+                            { id: 0, text: t("pages.settings.steam-and-oculus.download-platform.always-ask"), value: undefined, },
+                        ]} selectedItemValue={downloadStore} onItemSelected={handleChangeBsStore}/>
                     </SettingContainer>
+                    
                 </SettingContainer>
 
                 <SettingContainer title="pages.settings.appearance.title" description="pages.settings.appearance.description">

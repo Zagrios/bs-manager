@@ -56,7 +56,7 @@ export const ChooseStore: ModalComponent<BsStore> = ({ resolver }) => {
                     <h2 className="font-bold">Steam</h2>
                 </div>
             </div>
-            <p onClick={goToSettings} className="text-sm italic underline cursor-pointer">{t("modals.choose-store.set-in-settings")}</p>
+            <p onClick={goToSettings} className="text-sm italic underline cursor-pointer text-center leading-3">{t("modals.choose-store.set-in-settings")}</p>
         </form>
     );
 };
