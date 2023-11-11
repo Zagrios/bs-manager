@@ -36,6 +36,13 @@ export function AvailableVersionsList() {
         return lastValueFrom(versionManager.importVersion()).catch(() => {});
     };
 
+    const refreshVersions = () => {
+        return Promise.all([
+            versionManager.askAvailableVersions(),
+            versionManager.askInstalledVersions()
+        ]).catch(console.log);
+    }
+
     return (
         <div className="relative h-full w-full flex items-center flex-col pt-2">
             
@@ -58,7 +65,7 @@ export function AvailableVersionsList() {
                 className="absolute top-5 right-5 h-9 w-9 bg-light-main-color-2 dark:bg-main-color-2 rounded-md"
                 icon="settings"
                 items={[
-                    { icon: "sync", text: "pages.available-versions.dropdown.refresh", onClick: () => versionManager.askAvailableVersions() },
+                    { icon: "sync", text: "pages.available-versions.dropdown.refresh", onClick: refreshVersions },
                     { icon: "download", text: "pages.available-versions.dropdown.import-version", onClick: importVersion },
                 ]}
             />
