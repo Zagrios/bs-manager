@@ -106,7 +106,7 @@
             "title": "Wähle eine Version",
             "steam-release": "Versions Seite",
             "dropdown": {
-                "refresh": "Liste aktualisieren",
+                "refresh": "Aktualisieren Sie die Versionen",
                 "import-version": "Importiere eine Version"
             }
         },

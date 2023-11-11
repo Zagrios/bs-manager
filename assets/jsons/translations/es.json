@@ -105,7 +105,7 @@
             "title": "Selecciona una versión",
             "steam-release": "Anuncio en Steam",
             "dropdown": {
-                "refresh": "Actualizar la lista",
+                "refresh": "Actualizar las versiones",
                 "import-version": "Importar una versión"
             }
         },

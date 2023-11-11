@@ -106,7 +106,7 @@
             "title": "Select a version",
             "steam-release": "Release page",
             "dropdown": {
-                "refresh": "Refresh list",
+                "refresh": "Refresh versions",
                 "import-version": "Import a version"
             }
         },
