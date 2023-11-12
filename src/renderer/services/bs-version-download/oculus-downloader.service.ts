@@ -6,11 +6,12 @@ import { ProgressBarService } from "../progress-bar.service";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { NotificationService } from "../notification.service";
 import { ModalExitCode, ModalService } from "../modale.service";
-import { LoginToMetaModal } from "renderer/components/modal/modal-types/bs-downgrade/login-to-meta-modal.component";
+import { LoginToMetaModal, MetaAuthMethod } from "renderer/components/modal/modal-types/bs-downgrade/login-to-meta-modal.component";
 import { DownloaderServiceInterface } from "./bs-store-downloader.interface";
 import { AbstractBsDownloaderService } from "./abstract-bs-downloader.service";
 import { DownloadInfo } from "main/services/bs-version-download/bs-steam-downloader.service";
 import { MetaAuthErrorCodes, OculusDownloaderErrorCodes } from "shared/models/bs-version-download/oculus-download.model";
+import { EnterMetaTokenModal } from "renderer/components/modal/modal-types/bs-downgrade/enter-meta-token-modal.component";
 
 export class OculusDownloaderService extends AbstractBsDownloaderService implements DownloaderServiceInterface{
 
@@ -103,16 +104,26 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
             
             if(autoDownload){ return autoDownload; }
 
-            const [completed, stay] = await this.modals.openModal(LoginToMetaModal).then(res => [res.exitCode === ModalExitCode.COMPLETED, res.data]);
+            const {exitCode, data} = await this.modals.openModal(LoginToMetaModal)
 
-            if(!completed){
-                return completed;
+            if(exitCode !== ModalExitCode.COMPLETED){
+                return false
             }
 
-            return lastValueFrom(this.startDownloadBsVersion({ bsVersion, isVerification, stay })).then(() => true);
+            if(data.method === MetaAuthMethod.META){
+                return lastValueFrom(this.startDownloadBsVersion({ bsVersion, isVerification, stay: data.stay })).then(() => true);
+            }
 
-        })().then(() => {
-            if(autoDownloadFailed){
+            const tokenRes = await this.modals.openModal(EnterMetaTokenModal);
+
+            if(tokenRes.exitCode !== ModalExitCode.COMPLETED){
+                return false;
+            }
+
+            return lastValueFrom(this.startDownloadBsVersion({ bsVersion, isVerification, token: tokenRes.data })).then(() => true);
+
+        })().then(res => {
+            if(autoDownloadFailed || !res){
                 return bsVersion;
             }
 
