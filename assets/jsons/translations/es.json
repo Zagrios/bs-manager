@@ -689,6 +689,7 @@
         "original-version-backup-oculus": {
             "title": "Atención",
             "body": {
+                "must-be-installed-once": "Debes haber instalado Beat Saber al menos una vez desde la Oculus Store, de lo contrario, Beat Saber podría cerrarse automáticamente después de iniciar.",
                 "need-backup": "Para iniciar esta versión, la carpeta de instalación de Beat Saber que se encuentra en tu biblioteca de Oculus será renombrada.",
                 "can-restore-later": "Si es necesario, podrás restaurarla desde el BSManager accediendo a las opciones de la versión original de Oculus y haciendo clic en 'Restaurar la carpeta'",
                 "tips-launch-oculus": "Consejo: Podrás iniciar esta versión directamente desde Oculus, siempre que la versión original no haya sido restaurada."

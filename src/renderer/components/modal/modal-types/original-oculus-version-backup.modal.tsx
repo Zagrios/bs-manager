@@ -20,6 +20,7 @@ export const OriginalOculusVersionBackupModal: ModalComponent<boolean, void> = (
             <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t("modals.original-version-backup-oculus.title")}</h1>
             <BsmImage className="mx-auto h-20" image={BeatConflict} />
             
+            <p className="text-sm italic mb-4 font-bold">{t("modals.original-version-backup-oculus.body.must-be-installed-once")}</p>
             <p className="mb-4">{t("modals.original-version-backup-oculus.body.need-backup")}</p>
             <p className="mb-4">{t("modals.original-version-backup-oculus.body.can-restore-later")}</p>
             <p className="text-sm italic mb-4">{t("modals.original-version-backup-oculus.body.tips-launch-oculus")}</p>
