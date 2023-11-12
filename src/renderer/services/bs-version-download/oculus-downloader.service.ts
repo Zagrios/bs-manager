@@ -70,7 +70,7 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
     }
 
     private tryAutoDownload(downloadInfo: DownloadInfo): Observable<Progression<BSVersion>>{
-        const ignoreCode = [MetaAuthErrorCodes.NO_META_AUTH_TOKEN];
+        const ignoreCode = [MetaAuthErrorCodes.NO_META_AUTH_TOKEN, OculusDownloaderErrorCodes.DOWNLOAD_CANCELLED];
         return this.handleDownload(
             this.ipc.sendV2<Progression<BSVersion>>("bs-oculus-auto-download", { args: downloadInfo }),
             ignoreCode
@@ -78,7 +78,7 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
     }
 
     private startDownloadBsVersion(downloadInfo: DownloadInfo): Observable<Progression<BSVersion>>{
-        const ignoreCode = [MetaAuthErrorCodes.META_LOGIN_WINDOW_CLOSED_BY_USER];
+        const ignoreCode = [MetaAuthErrorCodes.META_LOGIN_WINDOW_CLOSED_BY_USER, OculusDownloaderErrorCodes.DOWNLOAD_CANCELLED];
         return this.handleDownload(
             this.ipc.sendV2<Progression<BSVersion>>("bs-oculus-download", { args: downloadInfo }),
             ignoreCode
@@ -92,7 +92,12 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
         return (async () => {
 
             const autoDownload = await lastValueFrom(this.tryAutoDownload({ bsVersion, isVerification })).then(() => true).catch((err: CustomError) => {
-                const doNotRestartCodes: string[] = [OculusDownloaderErrorCodes.ALREADY_DOWNLOADING, OculusDownloaderErrorCodes.SOME_FILES_FAILED_TO_DOWNLOAD, OculusDownloaderErrorCodes.VERIFY_INTEGRITY_FAILED];
+                const doNotRestartCodes: string[] = [
+                    OculusDownloaderErrorCodes.ALREADY_DOWNLOADING,
+                    OculusDownloaderErrorCodes.SOME_FILES_FAILED_TO_DOWNLOAD,
+                    OculusDownloaderErrorCodes.VERIFY_INTEGRITY_FAILED,
+                    OculusDownloaderErrorCodes.DOWNLOAD_CANCELLED
+                ];
                 autoDownloadFailed = true;
 
                 if(doNotRestartCodes.includes(err?.code)){
@@ -123,6 +128,9 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
             return lastValueFrom(this.startDownloadBsVersion({ bsVersion, isVerification, token: tokenRes.data })).then(() => true);
 
         })().then(res => {
+
+            console.log("aaa", res);
+
             if(autoDownloadFailed || !res){
                 return bsVersion;
             }

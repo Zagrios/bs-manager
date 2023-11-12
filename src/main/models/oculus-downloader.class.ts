@@ -6,6 +6,7 @@ import path from "path";
 import { inflate } from "pako"
 import { EMPTY, Observable, ReplaySubject, Subscriber, catchError, filter, from, lastValueFrom, mergeMap, scan, share, tap } from "rxjs";
 import { Progression, hashFile } from "../helpers/fs.helpers";
+import { OculusDownloaderErrorCodes } from "../../shared/models/bs-version-download/oculus-download.model";
 
 export class OculusDownloader {
 
@@ -196,7 +197,7 @@ export class OculusDownloader {
 
     public stopDownload(){
         this.isDownloading = false;
-        this.downloadSubscriber?.complete();
+        this.downloadSubscriber?.error(CustomError.fromError(new Error("Download canceled"), OculusDownloaderErrorCodes.DOWNLOAD_CANCELLED));
     }
 
 }
