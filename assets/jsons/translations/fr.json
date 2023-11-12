@@ -676,7 +676,9 @@
             "title": "Connexion à Meta",
             "body":{
                 "token-needed": "Votre token de connexion à Meta est nécessaire pour télécharger Beat Saber.",
-                "need-cookie-enabled": "En vous connectant à Meta, une fenêtre de connexion s'ouvrira et vous pourrez alors débuter le processus de connexion. Veillez à bien accepter les cookies sinon quoi, il se pourrait que l'on n'arrive pas à récupérer votre token pour démarrer le téléchargement."
+                "need-cookie-enabled": "En vous connectant à Meta, une fenêtre de connexion s'ouvrira et vous pourrez alors débuter le processus de connexion. Veillez à bien accepter les cookies sinon quoi, il se pourrait que l'on n'arrive pas à récupérer votre token pour démarrer le téléchargement.",
+                "enter-token-manually": "Entrer mon token de connexion manuellement",
+                "enter-token-manually-tooltip": "Cela vous permettra d'entrer votre token de connexion sans passer par la connexion Meta."
             },
             "stay":"Se souvenir de moi",
             "connect-to-meta": "Se connecter à Meta"
@@ -690,6 +692,16 @@
             },
             "not-remind-me": "Ne plus me rappeler",
             "understood": "J'ai compris"
+        },
+        "enter-meta-token": {
+            "title": "Token Meta",
+            "body": {
+                "need-token": "Pour télécharger Beat Saber, votre token de connexion à Meta est nécessaire.",
+                "how-obtain-token": "Comment obtenir mon Token Meta ?",
+                "input-label": "Token Meta",
+                "token-is-invalid": "Le Token est invalide."
+            },
+            "valid-btn": "Valider"
         }
     },
     "maps": {

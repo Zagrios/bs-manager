@@ -7,10 +7,11 @@ import { OculusDownloader } from "../../models/oculus-downloader.class";
 import { Cookie, session } from "electron";
 import { Progression, ensurePathNotAlreadyExist } from "../../helpers/fs.helpers";
 import { BSLocalVersionService } from "../bs-local-version.service";
-import { Observable, finalize, from, map, switchMap } from "rxjs";
+import { Observable, finalize, from, map, of, switchMap } from "rxjs";
 import path from "path";
 import { DownloadInfo } from "./bs-steam-downloader.service";
 import { BsStore } from "../../../shared/models/bs-store.enum";
+import { isOculusTokenValid } from "../../../shared/helpers/oculus.helpers";
 
 export class BsOculusDownloaderService {
 
@@ -37,34 +38,7 @@ export class BsOculusDownloaderService {
     }
 
     private isUserTokenValid(token: string): boolean{
-
-        // Code taken from "https://github.com/ComputerElite/QuestAppVersionSwitcher" (TokenTools.cs)
-
-        log.info("Checking if Oculus user token is valid");
-
-        if(!token){
-            log.info("Oculus user token is empty");
-            return false;
-        }
-        if(token.includes("%")){
-            log.info("Token contains %. Token most likely comes from an uri and won't work");
-            return false;
-        }
-        if(!token.startsWith("OC")){
-            log.info("Token does not start with OC.");
-            return false;
-        }
-        if(token.includes("|")){
-            log.info("Token contains | which usually indicates an application token which is not valid for user tokens");
-            return false;
-        }
-        if(token.match(/OC\d{15}/)){
-            log.info("Token matches /OC[0-9}{15}/ which usually indicates a changed oculus store token");
-            return false;
-        }
-
-        return true;
-
+        return isOculusTokenValid(token, log.info);
     }
 
     private isCookieValid(cookie: Cookie): boolean {
@@ -147,7 +121,9 @@ export class BsOculusDownloaderService {
 
         let downloadVersion: BSVersion
 
-        return from(this.getUserTokenFromMetaAuth(downloadInfo.stay)).pipe(
+        const tokenObs$ = downloadInfo.token ? of(downloadInfo.token) : from(this.getUserTokenFromMetaAuth(downloadInfo.stay));
+
+        return tokenObs$.pipe(
             switchMap(token => {
                 if(!downloadInfo.isVerification){
                     return this.createDownloadVersion(downloadInfo.bsVersion).then(({version, dest}) => ({token, version, dest}))
@@ -169,7 +145,9 @@ export class BsOculusDownloaderService {
 
         let downloadVersion: BSVersion
 
-        return from(this.getAuthToken()).pipe(
+        const tokenObs$ = downloadInfo.token ? of(downloadInfo.token) : from(this.getAuthToken());
+
+        return tokenObs$.pipe(
             map(token => {
                 if(!token){
                     throw new CustomError("No Meta auth token was found in cookies for auto download", "NO_META_AUTH_TOKEN");
