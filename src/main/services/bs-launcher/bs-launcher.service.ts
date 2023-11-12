@@ -64,6 +64,8 @@ export class BSLauncherService {
 
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
 
+        log.info("Launch version", launchOptions);
+
         const launcher = this.getStoreLauncherFromVersion(launchOptions.version);
 
         if(!launcher){
