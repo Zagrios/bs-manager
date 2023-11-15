@@ -1,7 +1,6 @@
-import { ApiResult } from "renderer/models/api/api.model";
 import { BsvMapDetail } from "shared/models/maps";
 import { BsvPlaylist, BsvPlaylistPage, MapFilter, SearchParams, SearchResponse } from "shared/models/maps/beat-saver.model";
-import fetch from "node-fetch";
+import { RequestService } from "../../request.service";
 
 export class BeatSaverApiService {
     private static instance: BeatSaverApiService;
@@ -13,9 +12,13 @@ export class BeatSaverApiService {
         return BeatSaverApiService.instance;
     }
 
+    private readonly request: RequestService;
+
     private readonly bsaverApiUrl = "https://beatsaver.com/api";
 
-    private constructor() {}
+    private constructor() {
+        this.request = RequestService.getInstance();
+    }
 
     private mapFilterToUrlParams(filter: MapFilter): URLSearchParams {
         if (!filter) {
@@ -68,15 +71,13 @@ export class BeatSaverApiService {
         });
     }
 
-    public async getMapsDetailsByHashs<T extends string>(hashs: T[]): Promise<ApiResult<Record<Lowercase<T>, BsvMapDetail>>> {
+    public async getMapsDetailsByHashs<T extends string>(hashs: T[]): Promise<Record<Lowercase<T>, BsvMapDetail>> {
         if (hashs.length > 50) {
             throw "too musch map hashs";
         }
 
         const paramsHashs = hashs.join(",");
-        const resp = await fetch(`${this.bsaverApiUrl}/maps/hash/${paramsHashs}`);
-
-        const data = (await resp.json()) as Record<Lowercase<T>, BsvMapDetail> | BsvMapDetail;
+        const data = await this.request.getJSON<Record<Lowercase<T>, BsvMapDetail> | BsvMapDetail>(`${this.bsaverApiUrl}/maps/hash/${paramsHashs}`);
 
         if ((data as BsvMapDetail).id) {
             const key = (data as BsvMapDetail).versions.at(0).hash.toLowerCase();
@@ -84,41 +85,24 @@ export class BeatSaverApiService {
                 [key]: data as BsvMapDetail,
             } as Record<Lowercase<T>, BsvMapDetail>;
 
-            return { status: resp.status, data: parsedData };
+            return parsedData
         }
 
-        return { status: resp.status, data: data as Record<Lowercase<T>, BsvMapDetail> };
+        return data as Record<Lowercase<T>, BsvMapDetail>;
     }
 
-    public async getMapDetailsById(id: string): Promise<ApiResult<BsvMapDetail>> {
-        const res = await fetch(`${this.bsaverApiUrl}/maps/id/${id}`);
-
-        const data = (await res.json()) as BsvMapDetail;
-
-        return { status: res.status, data };
+    public async getMapDetailsById(id: string): Promise<BsvMapDetail> {
+        return this.request.getJSON<BsvMapDetail>(`${this.bsaverApiUrl}/maps/id/${id}`);
     }
 
-    public async searchMaps(search: SearchParams): Promise<ApiResult<SearchResponse>> {
+    public async searchMaps(search: SearchParams): Promise<SearchResponse> {
         const url = new URL(`${this.bsaverApiUrl}/search/text/${search?.page ?? 0}`);
-
         url.search = this.searchParamsToUrlParams(search).toString();
-
-        const res = await fetch(url.toString());
-
-        if (!res.ok) {
-            return { status: res.status, data: null };
-        }
-
-        const data = await res.json();
-
-        return { status: res.status, data };
+        return this.request.getJSON<SearchResponse>(url.toString());
     }
 
-    public async getPlaylistDetails(id: string): Promise<ApiResult<BsvPlaylist>> {
-        const res = await fetch(`${this.bsaverApiUrl}/playlists/id/${id}/0`);
-
-        const data = (await res.json()) as BsvPlaylistPage;
-
-        return { status: res.status, data: data.playlist };
+    public async getPlaylistDetails(id: string): Promise<BsvPlaylist> {
+        const res = await this.request.getJSON<BsvPlaylistPage>(`${this.bsaverApiUrl}/playlists/id/${id}/0`);
+        return res.playlist;
     }
 }

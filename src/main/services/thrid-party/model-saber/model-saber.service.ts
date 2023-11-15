@@ -33,15 +33,11 @@ export class ModelSaberService {
         try {
             const res = await this.modelSaberApi.searchModel(query);
 
-            if (res.status !== 200) {
+            if (Object.keys(res).length === 0) {
                 return null;
             }
 
-            if (Object.keys(res.data).length === 0) {
-                return null;
-            }
-
-            return res.data[`${id}`];
+            return res[`${id}`];
         } catch (e) {
             log.error(e);
             return null;
@@ -63,15 +59,11 @@ export class ModelSaberService {
         try {
             const res = await this.modelSaberApi.searchModel(query);
 
-            if (res.status !== 200) {
+            if (Object.keys(res).length === 0) {
                 return null;
             }
 
-            if (Object.keys(res.data).length === 0) {
-                return null;
-            }
-
-            const model = Array.from(Object.values(res.data)).at(0);
+            const model = Array.from(Object.values(res)).at(0);
 
             model.name = striptags(model.name ?? "");
             model.author = striptags(model.author ?? "");
@@ -89,11 +81,9 @@ export class ModelSaberService {
         return new Observable<MSModel[]>(observer => {
             (async () => {
                 const res = await this.modelSaberApi.searchModel(query);
-                if (res.status !== 200) {
-                    observer.error(res.status);
-                }
+
                 observer.next(
-                    Object.values(res.data).map(model => {
+                    Object.values(res).map(model => {
                         if (!model?.name) {
                             return null;
                         }
