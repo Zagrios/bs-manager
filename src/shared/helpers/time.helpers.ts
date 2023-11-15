@@ -5,10 +5,22 @@ export function minToS(minutes: number): number {
     return minutes * SECONDS_IN_MINUTE;
 }
 
+export function minToMs(minutes: number): number {
+    return minToS(minutes) * 1000;
+}
+
 export function hourToMin(hours: number): number {
     return hours * MINUTES_IN_HOUR;
 }
 
 export function hourToS(hours: number): number {
     return hours * minToS(MINUTES_IN_HOUR);
+}
+
+export function msToS(milliseconds: number): number {
+    return milliseconds / 1000;
+}
+
+export function sToMs(seconds: number): number {
+    return seconds * 1000;
 }

@@ -20,8 +20,8 @@
         "add-version": "Ajouter une version",
         "settings": "Paramètres",
         "shared": {
-            "text": "Partagés",
-            "tooltip": "Contenus partagés"
+            "text": "Partagé",
+            "tooltip": "Contenu partagé"
         }
     },
     "pages": {
@@ -31,7 +31,7 @@
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Mode Oculus",
-                "oculus-description": "Si vous utilisez Beat Saber via Steam, cela vous permet d'utiliser le compositeur VR d'Oculus sans passer par SteamVR, pour gagner en performances. Ceci n'est pas nécessaire pour utiliser les casques Oculus.",
+                "oculus-description": "Si vous utilisez Beat Saber via Steam, cela vous permet d'utiliser le compositeur VR d'Oculus (sans passer par SteamVR pour gagner en performances). Ceci n'est pas nécessaire pour utiliser les casques Oculus.",
                 "desktop": "Mode FPFC",
                 "desktop-description": "Cela vous permet d'utiliser WASD et la souris pour naviguer dans le menu en jeu. Cela rend les tests beaucoup plus faciles, car vous n'avez pas à mettre votre casque!",
                 "debug": "Mode Debug",
@@ -72,7 +72,7 @@
             },
             "mods": {
                 "loading-mods": "Chargement des mods...",
-                "no-internet": "Pas d'internet",
+                "no-internet": "Pas d'accès Internet",
                 "mods-not-available": "Aucun mod n'est encore disponible pour cette version de Beat Saber",
                 "buttons": {
                     "more-infos": "Plus d'infos",
@@ -94,25 +94,31 @@
                 "open-folder": "Ouvrir le dossier",
                 "verify-files": "Vérifier les fichiers",
                 "clone": "Cloner",
-                "edit": "Editer",
+                "edit": "Modifier",
                 "uninstall": "Désinstaller",
                 "create-shortcut": "Créer un raccourci",
-                "shared-folders": "Dossiers Partagés"
+                "shared-folders": "Dossiers partagés",
+                "restore-oculus-folder": "Restaurer le dossier"
             }
         },
         "available-versions": {
             "title": "Choisis une version",
             "steam-release": "Notes de version",
             "dropdown": {
-                "refresh": "Rafraichir la liste",
+                "refresh": "Actualiser les versions",
                 "import-version": "Importer une version"
             }
         },
         "settings": {
-            "steam": {
-                "title": "Steam",
-                "description": "Si tu te déconnectes de Steam, tu devras te reconnecter pour télécharger une nouvelle version de Beat Saber.",
-                "logout": "Déconnexion"
+            "steam-and-oculus": {
+                "title": "Steam & Oculus",
+                "description": "Te déconnecter te permettra de changer de compte au prochain téléchargement de Beat Saber.",
+                "logout": "Déconnexion",
+                "download-platform": {
+                    "title": "Plateforme par défaut",
+                    "desc": "Choisi la plateforme par défaut qui sera utilisée pour télécharger les versions de Beat Saber.",
+                    "always-ask": "Toujours demander"
+                }
             },
             "appearance": {
                 "title": "Apparence",
@@ -198,11 +204,11 @@
             "errors": {
                 "titles": {
                     "operation-running": "Opération en cours",
-                    "no-internet": "Pas d'internet"
+                    "no-internet": "Pas d'accès Internet"
                 },
                 "msg": {
                     "operation-running": "Attends la fin de l'opération en cours puis recommence.",
-                    "no-internet": "Verifie ta connexion internet et recommence."
+                    "no-internet": "Vérifie ta connexion internet et ressaye."
                 }
             }
         },
@@ -213,43 +219,62 @@
                     "verification-finished": "Vérification terminée"
                 }
             },
-            "warnings": {
-                "msg": {
-                    "ConnectionTimeout": "Ta connexion internet semble instable 🥶",
-                    "Unknown": "Quelque chose d'étrange s'est produit 🤔 Votre connexion est surement instable."
+            "steam-download": {
+                "warnings": {
+                    "msg": {
+                        "ConnectionTimeout": "Ta connexion internet semble instable 🥶",
+                        "Unknown": "Quelque chose d'étrange s'est produit 🤔 Votre connexion est surement instable."
+                    }
+                },
+                "errors": {
+                    "titles": {
+                        "dotnet-required": ".NET 6 Requis"
+                    },
+                    "msg": {
+                        "401": "Steam ne semble pas vouloir nous laisser télécharger Beat Saber 😢",
+                        "404": "Impossible de contacter les serveurs de Steam.",
+                        "Password": "Le mot de passe est invalide.",
+                        "InvalidCredentials": "Identifiants de connexion invalides, connexion non approuvée, ou trop de tentatives de connexion.",
+                        "NoManifest": "Aucun manifest n'a été trouvé.",
+                        "DirectoryCreate": "Impossible d'installer les dossiers nécessaires.",
+                        "NotAvailableApp": "Tu essayes de télécharger Beat Saber alors que tu ne l'as pas ? 🤣",
+                        "DepotNotFound": "Impossible de télécharger Beat Saber 😥 réessaye plus tard 😕",
+                        "NotCompleted": "Le téléchargement n'a pas pu se terminer ¯\\_(ツ)_/¯",
+                        "InvalidManifest": "Impossible de télécharger Beat Saber 😥 réessaye plus tard 😕",
+                        "NoValidKey": "Impossible de télécharger Beat Saber 😥 réessaye plus tard 😕",
+                        "NoManifestCode": "Impossible de télécharger Beat Saber 😥 réessaye plus tard 😕",
+                        "Unknown": "Une erreur inconnue s'est produite ¯\\_(ツ)_/¯",
+                        "NoServer": "Impossible de contacter les serveurs de Steam.",
+                        "NotAllowed": "Apparemment tu n'es pas autorisé à télécharger Beat Saber 🥱",
+                        "ConnectionTimeout": "Impossible de se connecter à Steam 😕",
+                        "SteamLib": "Si tu as cette erreur, signale le bug sur GitHub avec les logs stp.",
+                        "ConnectionError": "Impossible de se connecter à Steam après 10 essais 🤯",
+                        "LicenceError": "Impossible d'obtenir la liste des licences.",
+                        "RateLimitExceeded": "Tu as essayé trop de fois attends un peu et recommence plus tard.",
+                        "TokenRejected": "Votre token de connexion a été rejeté 😕 Veuillez réessayer.",
+                        "AccessDenied": "L'accès à Steam a été refusé.",
+                        "dotnet-required": ".NET 6 Runtime doit être installé pour pouvoir télécharger une version de Beat Saber. Télécharge-le en cliquant sur le bouton ci-dessous."
+                    },
+                    "actions": {
+                        "download-dotnet": "Télécharger .NET 6"
+                    }
                 }
             },
-            "errors": {
-                "titles": {
-                    "dotnet-required": ".NET 6 Requis"
-                },
-                "msg": {
-                    "401": "Steam ne semble pas vouloir nous laisser télécharger Beat Saber 😢",
-                    "404": "Impossible de contacter les serveurs de Steam.",
-                    "Password": "Le mot de passe est invalide.",
-                    "InvalidCredentials": "Identifiants de connexion invalides, connexion non approuvée, ou trop de tentatives de connexion.",
-                    "NoManifest": "Aucun manifest n'a été trouvé.",
-                    "DirectoryCreate": "Impossible d'installer les dossiers nécessaires.",
-                    "NotAvailableApp": "Tu essayes de télécharger Beat Saber alors que tu ne l'as pas ? 🤣",
-                    "DepotNotFound": "Impossible de télécharger Beat Saber 😥 réessaye plus tard 😕",
-                    "NotCompleted": "Le téléchargement n'a pas pu se terminer ¯\\_(ツ)_/¯",
-                    "InvalidManifest": "Impossible de télécharger Beat Saber 😥 réessaye plus tard 😕",
-                    "NoValidKey": "Impossible de télécharger Beat Saber 😥 réessaye plus tard 😕",
-                    "NoManifestCode": "Impossible de télécharger Beat Saber 😥 réessaye plus tard 😕",
-                    "Unknown": "Une erreur inconnue s'est produite ¯\\_(ツ)_/¯",
-                    "NoServer": "Impossible de contacter les serveurs de Steam.",
-                    "NotAllowed": "Apparemment tu n'es pas autorisé à télécharger Beat Saber 🥱",
-                    "ConnectionTimeout": "Impossible de se connecter à Steam 😕",
-                    "SteamLib": "Si tu as cette erreur, signale le bug sur GitHub avec les logs stp.",
-                    "ConnectionError": "Impossible de se connecter à Steam après 10 essais 🤯",
-                    "LicenceError": "Impossible d'obtenir la liste des licences.",
-                    "RateLimitExceeded": "Tu as essayé trop de fois attends un peu et recommence plus tard.",
-                    "TokenRejected": "Votre token de connexion a été rejeté 😕 Veuillez réessayer.",
-                    "AccessDenied": "L'accès à Steam a été refusé.",
-                    "dotnet-required": ".NET 6 Runtime doit être installé pour pouvoir télécharger une version de Beat Saber. Télécharge-le en cliquant sur le bouton ci-dessous."
-                },
-                "actions": {
-                    "download-dotnet": "Télécharger .NET 6"
+            "oculus-download": {
+                "errors": {
+                    "msg": {
+                        "DOWNLOAD_MANIFEST_FAILED": "Impossible de télécharger le manifest de cette version; vote token de connexion est peut-être invalide.",
+                        "MANIFEST_FILE_NOT_FOUND": "Impossible de trouver le manifest de cette version.",
+                        "PARSE_MANIFEST_FILE_FAILED": "Une erreur c'est produite lors de la lecture du manifest.",
+                        "ALREADY_DOWNLOADING": "Une version est déjà en cours de téléchargement.",
+                        "UNABLE_TO_GET_MANIFEST": "Impossible d'obtenir le manifest nécessaire au téléchargement.",
+                        "VERIFY_INTEGRITY_FAILED": "Une erreur c'est produite lors de la vérification des fichiers.",
+                        "SOME_FILES_FAILED_TO_DOWNLOAD": "Certains fichiers n'ont pas pu être téléchargés.",
+                        "OCULUS_LOGIN_TIMED_OUT": "Le Token de connexion à mis trop de temps à être récupéré.",
+                        "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER": "La fenêtre de connexion à Meta a été fermée.",
+                        "NO_META_AUTH_TOKEN": "Impossible de récupérer le token de connexion à Meta nécessaire au téléchargement.",
+                        "UNKNOWN_ERROR": "Une erreur inconnue s'est produite."
+                    }
                 }
             }
         },
@@ -347,7 +372,8 @@
                     "OCULUS_NOT_RUNNING": "Oculus n'est pas lancé",
                     "BS_ALREADY_RUNNING": "Beat Saber est déjà lancé",
                     "EXE_NOT_FINDED": "Fichiers manquants",
-                    "EXIT": "Arrêt brutal"
+                    "EXIT": "Arrêt brutal",
+                    "OCULUS_LIB_NOT_FOUND": "Librairie Oculus introuvable"
                 },
                 "msg": {
                     "UNKNOWN_ERROR": "Une erreur inconnue s'est produite.",
@@ -355,7 +381,8 @@
                     "OCULUS_NOT_RUNNING": "Oculus doit être en cours d'exécution pour lancer Beat Saber.",
                     "BS_ALREADY_RUNNING": "Ferme Beat Saber avant de le lancer à nouveau.",
                     "EXE_NOT_FINDED": "Quelques fichiers semblent manquants. Essaye de vérifier les fichiers.",
-                    "EXIT": "BeatSaber s'est arrêté brusquement, essaye de vérifier les fichiers."
+                    "EXIT": "Beat Saber s'est arrêté brusquement, essaye de vérifier les fichiers.",
+                    "OCULUS_LIB_NOT_FOUND": "Vérifie que l'application Oculus est correctement installée, et que les librairies sont bien définies dans Oculus."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Lancer Steam"
@@ -371,13 +398,13 @@
         "custom-version": {
             "errors": {
                 "titles": {
-                    "CantEditSteam": "Edition impossible",
+                    "CantEditSteam": "Modification impossible",
                     "CantRename": "Renommage impossible",
                     "VersionAlreadExist": "Cette version existe déjà",
                     "CantClone": "Clonage impossible"
                 },
                 "msg": {
-                    "CantEditSteam": "Tu ne peux pas éditer la version Steam. Tu peux la cloner par contre."
+                    "CantEditSteam": "Tu ne peux pas modifier la version Steam, cependant tu peux la cloner."
                 }
             },
             "success": {
@@ -416,7 +443,7 @@
                     "success": "Mods désintallés 🎉"
                 },
                 "msg": {
-                    "success": "Tous les mods ont été désintallés.",
+                    "success": "Tous les mods ont été désinstallés.",
                     "errors": {
                         "no-mods": "Aucun mod n'est installé dans dans cette version 😑"
                     }
@@ -463,12 +490,17 @@
         "misc": {
             "remember-my-choice": "Se souvenir de mon choix"
         },
+        "choose-store": {
+            "title": "Quelle plateforme ?",
+            "body": "Sélectionnez la plateforme depuis laquelle vous souhaitez télécharger Beat Saber.",
+            "set-in-settings": "Définir la platforme par défaut dans les paramètres"
+        },
         "guard": {
             "title": "Steam Guard",
             "inputs": {
                 "guard-code": {
-                    "label": "Code Guard",
-                    "placeholder": "Entre ton code Guard"
+                    "label": "Code Steam Guard",
+                    "placeholder": "Entre ton code Steam Guard"
                 }
             },
             "buttons": {
@@ -516,7 +548,9 @@
         },
         "bs-import-version": {
             "title": "Importer une version",
-            "description": "Importe une version de BeatSaber pour profiter des fonctionnalités de BSManager. L'importation copiera le dossier d'installation de BeatSaber sélectionné dans le dossier de versions de BSManager.",
+            "description": "Importe une version de Beat Saber pour profiter des fonctionnalités de BSManager. L'importation copiera le dossier d'installation de Beat Saber sélectionné dans le dossier de versions de BSManager.",
+            "oculus-version": "Version Oculus",
+            "oculus-version-tooltip": "Cocher si c'est une version Oculus",
             "buttons": {
                 "submit": "Importer une version"
             }
@@ -536,14 +570,14 @@
             }
         },
         "edit-version": {
-            "title": "Editer la version",
+            "title": "Modifier la version",
             "buttons": {
-                "submit": "Editer"
+                "submit": "Modifier"
             }
         },
         "clone-version": {
             "title": "Cloner la version",
-            "description": "Cloner la version te permet de séparer les contenus additionnels de BeatSaber entre deux mêmes versions.",
+            "description": "Cloner la version te permet de séparer les contenus additionnels de Beat Saber entre deux mêmes versions.",
             "inputs": {
                 "name": {
                     "label": "Nom",
@@ -574,7 +608,7 @@
                 },
                 "desc": {
                     "single": "Es-tu sur de vouloir supprimer la map {name} ?",
-                    "multiple": "Es-tu sur de vouloir supprimer les {nb} maps ?"
+                    "multiple": "Es-tu sur de vouloir supprimer {nb} maps ?"
                 },
                 "info": {
                     "desc": {
@@ -623,7 +657,7 @@
         },
         "shared-folders": {
             "title": "Dossiers Partagés",
-            "description": "Liez les dossiers de BeatSaber pour synchroniser leurs contenus avec les dossiers partagés des autres versions. Notez que la suppression de contenu sera également partagée.",
+            "description": "Liez les dossiers de Beat Saber pour synchroniser leurs contenus avec les dossiers partagés des autres versions. Notez que la suppression de contenu sera également partagée.",
             "buttons": {
                 "add-folder": "Ajouter un dossier",
                 "link-folder": "Lier le dossier",
@@ -637,6 +671,38 @@
             "launch-options": "Options de lancement",
             "advanced-launch": "Lancement avancé",
             "valid-btn": "Créer le raccourci"
+        },
+        "connect-to-meta":{
+            "title": "Connexion à Meta",
+            "body":{
+                "token-needed": "Votre token de connexion à Meta est nécessaire pour télécharger Beat Saber.",
+                "need-cookie-enabled": "En vous connectant à Meta, une fenêtre de connexion s'ouvrira et vous pourrez alors débuter le processus de connexion. Veillez à bien accepter les cookies sinon quoi, il se pourrait que l'on n'arrive pas à récupérer votre token pour démarrer le téléchargement.",
+                "enter-token-manually": "Entrer mon token de connexion manuellement",
+                "enter-token-manually-tooltip": "Cela vous permettra d'entrer votre token de connexion sans passer par la connexion Meta."
+            },
+            "stay":"Se souvenir de moi",
+            "connect-to-meta": "Se connecter à Meta"
+        },
+        "original-version-backup-oculus": {
+            "title": "Attention",
+            "body": {
+                "must-be-installed-once": "Vous devez avoir installé au moins une fois Beat Saber depuis l'Oculus Store, sinon Beat Saber pourrait se fermer automatiquement après son lancement.",
+                "need-backup": "Pour lancer cette version, le dossier d'installation de Beat Saber se trouvant dans votre librairie Oculus va être renommé.",
+                "can-restore-later": "Au besoin, vous pourrez le restaurer depuis BSManager en vous rendant dans les options de la version originale Oculus et en cliquant sur \"Restaurer le dossier\"",
+                "tips-launch-oculus": "Astuce : Vous pourrez lancer cette version directement depuis Oculus, tant que la version originale n'est pas restaurée."
+            },
+            "not-remind-me": "Ne plus me rappeler",
+            "understood": "J'ai compris"
+        },
+        "enter-meta-token": {
+            "title": "Token Meta",
+            "body": {
+                "need-token": "Pour télécharger Beat Saber, votre token de connexion à Meta est nécessaire.",
+                "how-obtain-token": "Comment obtenir mon Token Meta ?",
+                "input-label": "Token Meta",
+                "token-is-invalid": "Le Token est invalide."
+            },
+            "valid-btn": "Valider"
         }
     },
     "maps": {
@@ -690,8 +756,8 @@
             "jpop": "j-pop",
             "rock": "rock",
             "pop": "pop",
-            "electronic": "éléctronique",
-            "classical-orchestral": "Classique & Orchestral"
+            "electronic": "électronique",
+            "classical-orchestral": "classique & orchestrale"
         },
         "map-specificities": {
             "automapper": "IA",
@@ -751,12 +817,12 @@
         "modals": {
             "delete-model": {
                 "title": "Supprimer le modèle",
-                "desc": "Est-tu sûr de vouloir supprimer le modèle {modelName} ?",
+                "desc": "Es-tu sûr de vouloir supprimer le modèle {modelName} ?",
                 "linked-annotation": "Ce modèle sera supprimé de toutes les versions liées."
             },
             "delete-models": {
                 "title": "Supprimer les modèles",
-                "desc": "Est-tu sûr de vouloir supprimer les {nb} modèles ?",
+                "desc": "Es-tu sûr de vouloir supprimer {nb} modèles ?",
                 "linked-annotation": "Ces modèles seront supprimés de toutes les versions liées."
             },
             "download-models": {
@@ -781,8 +847,8 @@
             "link-models": {
                 "avatar": {
                     "title": "Lier les avatars",
-                    "desc": "La liaison des avatars permet de partager les avatars entre toute les version. Une fois liée, cette version profitera des avatars partagés",
-                    "info": "L'ajout et la suppression d'avatars sera également partagé",
+                    "desc": "La liaison des avatars permet de partager les avatars entre toutes les version. Une fois liée, cette version profitera des avatars partagés",
+                    "info": "L'ajout et la suppression d'avatars seront également partagés",
                     "keep-models": {
                         "label": "Conserver les avatars",
                         "title": "Conserver les avatars déplacera les avatars de la version actuelle dans le dossier des avatars partagés. Dans le cas contraire ils seront perdus"
@@ -791,8 +857,8 @@
                 },
                 "saber": {
                     "title": "Lier les sabres",
-                    "desc": "La liaison des sabres permet de partager les sabres entre toute les version. Une fois liée, cette version profitera des sabres partagés",
-                    "info": "L'ajout et la suppression de sabres sera également partagé",
+                    "desc": "La liaison des sabres permet de partager les sabres entre toutes les version. Une fois liée, cette version profitera des sabres partagés",
+                    "info": "L'ajout et la suppression de sabres seront également partagés",
                     "keep-models": {
                         "label": "Conserver les sabres",
                         "title": "Conserver les sabres déplacera les sabres de la version actuelle dans le dossier des sabres partagés. Dans le cas contraire ils seront perdus"
@@ -801,8 +867,8 @@
                 },
                 "platform": {
                     "title": "Lier les plateformes",
-                    "desc": "La liaison des plateformes permet de partager les plateformes entre toute les version. Une fois liée, cette version profitera des plateformes partagées",
-                    "info": "L'ajout et la suppression de plateformes sera également partagé",
+                    "desc": "La liaison des plateformes permet de partager les plateformes entre toutes les version. Une fois liée, cette version profitera des plateformes partagées",
+                    "info": "L'ajout et la suppression de plateformes seront également partagés",
                     "keep-models": {
                         "label": "Conserver les plateformes",
                         "title": "Conserver les plateformes déplacera les plateformes de la version actuelle dans le dossier des plateformes partagées. Dans le cas contraire ils seront perdus"
@@ -811,8 +877,8 @@
                 },
                 "bloq": {
                     "title": "Lier les bloqs",
-                    "desc": "La liaison des bloqs permet de partager les bloqs entre toute les version. Une fois liée, cette version profitera des bloqs partagés",
-                    "info": "L'ajout et la suppression de bloqs sera également partagé",
+                    "desc": "La liaison des bloqs permet de partager les bloqs entre toutes les version. Une fois liée, cette version profitera des bloqs partagés",
+                    "info": "L'ajout et la suppression de bloqs seront également partagés",
                     "keep-models": {
                         "label": "Conserver les bloqs",
                         "title": "Conserver les bloqs déplacera les bloqs de la version actuelle dans le dossier des bloqs partagés. Dans le cas contraire ils seront perdus"
@@ -862,13 +928,13 @@
         "notifications": {
             "prevent-for-mods": {
                 "title": "Mods nécessaires",
-                "desc": "Assurez-toi d'avoir installé les mods nécessaires pour utiliser des modèles dans BeatSaber",
+                "desc": "Assure-toi d'avoir installé les mods nécessaires pour utiliser des modèles dans Beat Saber",
                 "go-to-mods": "Aller aux mods",
                 "not-remind": "Ne plus me rappeler"
             },
             "prevent-for-models-breaks": {
                 "title": "Modèles cassés",
-                "desc": "Depuis la mise à jour du moteur de BeatSaber, les modèles ne sont plus fonctionnels pour cette version."
+                "desc": "Depuis la mise à jour du moteur de Beat Saber, les modèles ne sont plus fonctionnels pour cette version."
             },
             "export-success": {
                 "title": "Export terminé 🎉"

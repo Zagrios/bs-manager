@@ -4,12 +4,10 @@ import defaultImage from "../../../../assets/images/default-version-img.jpg";
 import dateFormat from "dateformat";
 import { BsmImage } from "../shared/bsm-image.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import { BsmIcon } from "../svgs/bsm-icon.component";
-import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { motion } from "framer-motion";
 import { GlowEffect } from "../shared/glow-effect.component";
-import { useService } from "renderer/hooks/use-service.hook";
 import equal from "fast-deep-equal";
+import { SteamIcon } from "../svgs/icons/steam-icon.component";
 
 type Props = {
     version: BSVersion;
@@ -18,14 +16,9 @@ type Props = {
 }
 
 export const AvailableVersionItem = memo(function AvailableVersionItem({version, selected, onClick}: Props) {
-    const linkOpener = useService(LinkOpenerService)
 
     const [hovered, setHovered] = useState(false);
     const t = useTranslation();
-
-    const openReleasePage = () => {
-        linkOpener.open(version.ReleaseURL);
-    };
 
     const formatedDate = (() => dateFormat(+version.ReleaseDate * 1000, "ddd. d mmm yyyy"))();
 
@@ -41,15 +34,12 @@ export const AvailableVersionItem = memo(function AvailableVersionItem({version,
                         <span className="text-sm text-gray-700 dark:text-gray-400">{formatedDate}</span>
                     </div>
                     {version.ReleaseURL && (
-                        // eslint-disable-next-line jsx-a11y/anchor-is-valid -- link will be reworked
                         <a
-                            onClickCapture={e => {
-                                e.stopPropagation();
-                                openReleasePage();
-                            }}
+                            href={version.ReleaseURL}
+                            target="_blank"
                             className="flex flex-row justify-between items-center rounded-full bg-black bg-opacity-30 text-white pb-px hover:bg-opacity-50"
                         >
-                            <BsmIcon icon="steam" className="w-[25px] h-[25px] transition-transform group-hover:rotate-[-360deg] duration-300" />
+                            <SteamIcon className="w-[25px] h-[25px] transition-transform group-hover:rotate-[-360deg] duration-300" />
                             <span className="relative -left-px text-sm w-fit max-w-0 text-center overflow-hidden h-full whitespace-nowrap pb-[3px] transition-all group-hover:max-w-[200px] group-hover:px-1 duration-300">{t("pages.available-versions.steam-release")}</span>
                         </a>
                     )}

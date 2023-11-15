@@ -1,6 +1,7 @@
 import { defaultIfEmpty, share } from "rxjs/operators";
 import { Observable, ReplaySubject, identity } from "rxjs";
 import { IpcRequest, IpcResponse } from "shared/models/ipc";
+import { deserializeError } from 'serialize-error';
 import { IpcCompleteChannel, IpcErrorChannel, IpcTearDownChannel } from "shared/models/ipc/ipc-response.interface";
 
 export class IpcService {
@@ -77,7 +78,7 @@ export class IpcService {
 
         const obs = new Observable<T>(observer => {
             window.electron.ipcRenderer.on(request.responceChannel, (res: T) => observer.next(res));
-            window.electron.ipcRenderer.on(errorChannel, (err: Error) => observer.error(err));
+            window.electron.ipcRenderer.on(errorChannel, (err) => observer.error(deserializeError(err)));
             window.electron.ipcRenderer.on(completeChannel, () => observer.complete());
 
             window.electron.ipcRenderer.sendMessage(channel, request);

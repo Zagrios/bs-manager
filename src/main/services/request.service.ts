@@ -64,7 +64,7 @@ export class RequestService {
             req.on("error", err => {
                 subscriber.error(err);
             });
-        }).pipe(tap({ error: e => log.error(e) }), shareReplay(1));
+        }).pipe(tap({ error: e => log.error(e, url, dest) }), shareReplay(1));
     }
 
     public downloadBuffer(url: string): Observable<Progression<Buffer>> {

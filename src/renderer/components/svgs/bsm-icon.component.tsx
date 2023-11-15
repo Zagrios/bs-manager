@@ -61,8 +61,9 @@ import { ModelTypeBloqIcon } from "./icons/model-type-bloq-icon.component";
 import { ChevronTopIcon } from "./icons/chevron-top-icon.component";
 import { EyeCrossIcon } from "./icons/eye-cross-icon.component";
 import { ShortcutIcon } from "./icons/shortcut-icon.component";
+import { BackupRestoreIcon } from "./icons/backup-restore-icon.component";
 
-export type BsmIconType = BsvMapCharacteristic | MSModelType | ("settings" | "trash" | "favorite" | "folder" | "bsNote" | "check" | "three-dots" | "twitch" | "eye" | "play" | "checkCircleIcon" | "discord" | "info" | "eye-cross" | "terminal" | "desktop" | "oculus" | "add" | "cross" | "task" | "github" | "close" | "thumbUpFill" | "timerFill" | "pause" | "twitter" | "sync" | "chevron-top" | "copy" | "steam" | "edit" | "export" | "patreon" | "search" | "bsMapDifficulty" | "link" | "unlink" | "download" | "filter" | "mee6" | "volume-up" | "volume-off" | "volume-down" | "shortcut" | "fr-FR-flag" | "es-ES-flag" | "en-US-flag" | "en-EN-flag" | "de-DE-flag" | "ru-RU-flag");
+export type BsmIconType = BsvMapCharacteristic | MSModelType | ("settings" | "trash" | "favorite" | "folder" | "bsNote" | "check" | "three-dots" | "twitch" | "eye" | "play" | "checkCircleIcon" | "discord" | "info" | "eye-cross" | "terminal" | "desktop" | "oculus" | "add" | "cross" | "task" | "github" | "close" | "thumbUpFill" | "timerFill" | "pause" | "twitter" | "sync" | "chevron-top" | "copy" | "steam" | "edit" | "export" | "patreon" | "search" | "bsMapDifficulty" | "link" | "unlink" | "download" | "filter" | "mee6" | "volume-up" | "volume-off" | "volume-down" | "shortcut" | "backup-restore" | "fr-FR-flag" | "es-ES-flag" | "en-US-flag" | "en-EN-flag" | "de-DE-flag" | "ru-RU-flag");
 
 export const BsmIcon = memo(({ className, icon, style }: { className?: string; icon: BsmIconType; style?: CSSProperties }) => {
     // TODO : Very ugly very messy, need to find a better way to do this
@@ -236,6 +237,10 @@ export const BsmIcon = memo(({ className, icon, style }: { className?: string; i
 
         if (icon === "shortcut") {
             return <ShortcutIcon className={className} style={style} />;
+        }
+
+        if (icon === "backup-restore") {
+            return <BackupRestoreIcon className={className} style={style} />;
         }
 
         if (icon === MSModelType.Avatar) {

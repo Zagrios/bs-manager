@@ -15,7 +15,7 @@ const ipc = IpcService.getInstance();
 const themeService = ThemeService.getInstance();
 
 window.onerror = (...data) => {
-    ipc.sendLazy("log-error", { args: data });
+    logRenderError(data);
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -56,6 +56,10 @@ if (launcherContainer) {
             </HashRouter>
         );
     });
+}
+
+export function logRenderError(...params: unknown[]){
+    ipc.sendLazy("log-error", { args: params });
 }
 
 
