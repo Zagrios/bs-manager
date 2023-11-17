@@ -64,7 +64,11 @@ export class BsSteamDownloaderService {
 
         const versionPath = await this.localVersionService.getVersionPath(downloadInfos.bsVersion);
         const dest = downloadInfos.isVerification ? versionPath : await ensurePathNotAlreadyExist(versionPath);
-        const downloadVersion: BSVersion = { ...downloadInfos.bsVersion, ...(path.basename(dest) !== downloadInfos.bsVersion.BSVersion && { name: path.basename(dest) }) };
+        const downloadVersion: BSVersion = {
+            ...downloadInfos.bsVersion,
+            ...(path.basename(dest) !== downloadInfos.bsVersion.BSVersion && { name: path.basename(dest) }),
+            metadata: { store: BsStore.STEAM }
+        };
 
         const depotDownloaderOptions: DepotDownloaderArgsOptions = {
             app: BS_APP_ID,

@@ -2,6 +2,7 @@ import { LaunchOption } from "shared/models/bs-launch";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio, spawn } from "child_process";
 import path from "path";
+import log from "electron-log";
 
 export abstract class AbstractLauncherService {
     
@@ -38,6 +39,8 @@ export abstract class AbstractLauncherService {
         if(args.includes("--verbose")){
             spawnOptions.windowsVerbatimArguments = true;
         }
+
+        log.info(`Launch BS exe at ${bsExePath} with args ${args?.join(" ")}`);
 
         return spawn(bsExePath, args, spawnOptions);
 

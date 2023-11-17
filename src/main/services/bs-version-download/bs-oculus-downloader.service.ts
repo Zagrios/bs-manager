@@ -108,7 +108,11 @@ export class BsOculusDownloaderService {
     private async createDownloadVersion(version: BSVersion): Promise<{version: BSVersion, dest: string}>{
         const dest = await ensurePathNotAlreadyExist(await this.versions.getVersionPath(version));
         return {
-            version: {...version, ...(path.basename(dest) !== version.BSVersion && { name: path.basename(dest) })},
+            version: {
+                ...version, 
+                ...(path.basename(dest) !== version.BSVersion && { name: path.basename(dest) }),
+                metadata: { store: BsStore.OCULUS }
+            },
             dest
         };
     }
