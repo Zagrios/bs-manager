@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { GlowEffect } from "../shared/glow-effect.component";
 import equal from "fast-deep-equal";
 import { SteamIcon } from "../svgs/icons/steam-icon.component";
+import { useConstant } from "renderer/hooks/use-constant.hook";
 
 type Props = {
     version: BSVersion;
@@ -17,15 +18,17 @@ type Props = {
 
 export const AvailableVersionItem = memo(function AvailableVersionItem({version, selected, onClick}: Props) {
 
-    const [hovered, setHovered] = useState(false);
     const t = useTranslation();
-
-    const formatedDate = (() => dateFormat(+version.ReleaseDate * 1000, "ddd. d mmm yyyy"))();
+    const [hovered, setHovered] = useState(false);
+    const formatedDate = useConstant(() => dateFormat(+version.ReleaseDate * 1000, "ddd. d mmm yyyy"));
 
     return (
-        <motion.li className="group relative w-72 h-60 transition-transform active:scale-[.98]" onClick={onClick} onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)}>
+        <motion.li className="group relative w-72 h-60 active:scale-[.98]" onClick={onClick} onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)}>
             <GlowEffect visible={hovered || selected} className="absolute" />
             <div className={`relative flex flex-col overflow-hidden rounded-md w-72 h-60 cursor-pointer group-hover:shadow-none duration-300 bg-light-main-color-2 dark:bg-main-color-2 ${!selected && "shadow-lg shadow-gray-900"}`}>
+                {version.recommended && (
+                    <span className="uppercase absolute -rotate-45 top-9 -left-[6.2rem] font-bold text-white bg-red-600 w-full text-center text-xs z-[1] shadow-sm shadow-black" title={t("pages.available-versions.recommended-tooltip")}>{t("pages.available-versions.recommended")}</span>
+                )}
                 <BsmImage image={version.ReleaseImg ? version.ReleaseImg : defaultImage} errorImage={defaultImage} placeholder={defaultImage} className="absolute top-0 right-0 w-full h-full opacity-40 blur-xl object-cover" loading="lazy" />
                 <BsmImage image={version.ReleaseImg ? version.ReleaseImg : defaultImage} errorImage={defaultImage} placeholder={defaultImage} className="bg-black w-full h-3/4 object-cover" loading="lazy" />
                 <div className="z-[1] p-2 w-full flex items-center justify-between grow">
@@ -34,11 +37,7 @@ export const AvailableVersionItem = memo(function AvailableVersionItem({version,
                         <span className="text-sm text-gray-700 dark:text-gray-400">{formatedDate}</span>
                     </div>
                     {version.ReleaseURL && (
-                        <a
-                            href={version.ReleaseURL}
-                            target="_blank"
-                            className="flex flex-row justify-between items-center rounded-full bg-black bg-opacity-30 text-white pb-px hover:bg-opacity-50"
-                        >
+                        <a href={version.ReleaseURL} target="_blank" className="flex flex-row justify-between items-center rounded-full bg-black bg-opacity-30 text-white pb-px overflow-hidden hover:bg-opacity-50">
                             <SteamIcon className="w-[25px] h-[25px] transition-transform group-hover:rotate-[-360deg] duration-300" />
                             <span className="relative -left-px text-sm w-fit max-w-0 text-center overflow-hidden h-full whitespace-nowrap pb-[3px] transition-all group-hover:max-w-[200px] group-hover:px-1 duration-300">{t("pages.available-versions.steam-release")}</span>
                         </a>

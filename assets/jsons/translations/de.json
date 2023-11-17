@@ -108,7 +108,9 @@
             "dropdown": {
                 "refresh": "Aktualisieren Sie die Versionen",
                 "import-version": "Importiere eine Version"
-            }
+            },
+            "recommended": "empfohlen",
+            "recommended-tooltip": "Am modbarsten Version"
         },
         "settings": {
             "steam-and-oculus": {
