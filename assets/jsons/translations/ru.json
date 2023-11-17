@@ -108,7 +108,9 @@
             "dropdown": {
                 "refresh": "Обновить версии",
                 "import-version": "Импорт версии"
-            }
+            },
+            "recommended": "рекомендуемая",
+            "recommended-tooltip": "самая модифицируемая версия"
         },
         "settings": {
             "steam-and-oculus": {
