@@ -27,7 +27,7 @@ export const AvailableVersionItem = memo(function AvailableVersionItem({version,
             <GlowEffect visible={hovered || selected} className="absolute" />
             <div className={`relative flex flex-col overflow-hidden rounded-md w-72 h-60 cursor-pointer group-hover:shadow-none duration-300 bg-light-main-color-2 dark:bg-main-color-2 ${!selected && "shadow-lg shadow-gray-900"}`}>
                 {version.recommended && (
-                    <span className="uppercase absolute -rotate-45 top-9 -left-[6.2rem] font-bold text-white bg-red-600 w-full text-center text-xs z-[1] shadow-sm shadow-black" title={t("pages.available-versions.recommended-tooltip")}>{t("pages.available-versions.recommended")}</span>
+                    <span className="uppercase absolute -rotate-45 top-9 -left-[6.2rem] font-bold text-white bg-red-600 w-full text-center text-xs z-[1] shadow-sm shadow-black py-0.5" title={t("pages.available-versions.recommended-tooltip")}>{t("pages.available-versions.recommended")}</span>
                 )}
                 <BsmImage image={version.ReleaseImg ? version.ReleaseImg : defaultImage} errorImage={defaultImage} placeholder={defaultImage} className="absolute top-0 right-0 w-full h-full opacity-40 blur-xl object-cover" loading="lazy" />
                 <BsmImage image={version.ReleaseImg ? version.ReleaseImg : defaultImage} errorImage={defaultImage} placeholder={defaultImage} className="bg-black w-full h-3/4 object-cover" loading="lazy" />
