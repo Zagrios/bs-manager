@@ -51,28 +51,33 @@ export class OculusLauncherService extends AbstractLauncherService implements St
             throw new Error("Oculus library not found, deleteBsSymlinks");
         }
 
-        const libContents = await readdir(oculusLibPath, { withFileTypes: true});
-        const symlinks = (await Promise.all(libContents.map(async dirent => {
-            return (await lstat(path.join(oculusLibPath, dirent.name))).isSymbolicLink() ? dirent : null;
+        const libContents = await readdir(oculusLibPath);
+        const symlinks = (await Promise.all(libContents.map(async dir => {
+            return (await lstat(path.join(oculusLibPath, dir))).isSymbolicLink() ? dir : null;
         }))).filter(Boolean);
 
-        const bsSymlinks = symlinks.filter(dirent => dirent.name.startsWith(OCULUS_BS_DIR));
-        const versionsFolderPath = await this.pathsService.versionsDirectory();
+        log.info("Symlinks found in Oculus library", symlinks);
+
+        const bsSymlinks = symlinks.filter(dirent => dirent.startsWith(OCULUS_BS_DIR));
         
-        // get only symlinks created by BSM (with metadata.config)
         const bsmSymlinks = (await Promise.all(bsSymlinks.map(async symlink => {
-            const symlinkPath = path.join(oculusLibPath, symlink.name);
-            const targetPath = await readlink(symlinkPath).catch(err => { log.error(err); return undefined; });
+            const symlinkPath = path.join(oculusLibPath, symlink);
+            const targetPath = await readlink(symlinkPath).catch(err => log.error(err));
+
+            log.info("Oculus Symlink", symlink, "target", targetPath);
             
             if(!targetPath){ return null; }
-            if(!targetPath.startsWith(versionsFolderPath)){ return null; }
+
+            const bsmVersionsDir = path.join(this.pathsService.INSTALLATION_FOLDER, this.pathsService.VERSIONS_FOLDER);
+
+            if(!targetPath.includes(bsmVersionsDir)){ return null; }
 
             return symlink;
         }))).filter(Boolean);
 
         await Promise.all(bsmSymlinks.map(symlink => {
-            log.info("Deleting symlink", symlink.name);
-            return unlink(path.join(oculusLibPath, symlink.name));
+            log.info("Delete symlink", symlink);
+            return unlink(path.join(oculusLibPath, symlink));
         }));
     }
 
