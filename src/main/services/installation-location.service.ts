@@ -13,8 +13,8 @@ export class InstallationLocationService {
         return InstallationLocationService.instance;
     }
 
-    private readonly INSTALLATION_FOLDER = "BSManager";
-    private readonly VERSIONS_FOLDER = "BSInstances";
+    public readonly INSTALLATION_FOLDER = "BSManager";
+    public readonly VERSIONS_FOLDER = "BSInstances";
 
     private readonly SHARED_CONTENT_FOLDER = "SharedContent";
 
