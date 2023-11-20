@@ -184,7 +184,7 @@
 
 <div align="center">
   <br>
-  [Watch the video](resources/readme/MOV/BSManager _ All in one tool for BeatSaber)
+  https://github.com/Zagrios/bs-manager/assets/40648115/7ac0e4f1-dc0d-47f3-a09f-394bcf736c76
 </div>
 
 
