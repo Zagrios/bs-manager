@@ -16,7 +16,7 @@
 -->
 <div align="center">
   <a href="https://github.com/Zagrios/bs-manager">
-    <img src="resources/readme/icon.svg" alt="Logo" width="250" height="250">
+    <img src="resources/readme/SVG/icon.svg" alt="Logo" width="250" height="250">
   </a>
   <h1><b>BSManager</b></h1>
   <p>
@@ -62,19 +62,6 @@
   <a href="https://twitter.com/BSManager_"><img
       src="https://img.shields.io/badge/-Twitter-F5F8FA?style=for-the-badge&logo=Twitter" alt="Twitter" /></a>
 </div>
-
-
-<!--
-----------------------------------------
-    ROADMAP
-----------------------------------------
--->
-<div align="center">
-  <hr>
-  <h1><b>Roadmap</b></h1>
-    <code>Upload ROADMAP Here</code>
-</div>
-
 
 <!--
 ----------------------------------------
@@ -197,7 +184,7 @@
 
 <div align="center">
   <br>
-  <code>Upload Video Here</code>
+  [Watch the video](resources/readme/MOV/BSManager _ All in one tool for BeatSaber)
 </div>
 
 
