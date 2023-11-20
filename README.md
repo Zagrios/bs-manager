@@ -184,7 +184,7 @@
 
 <div align="center">
   <br>
-  https://github.com/Zagrios/bs-manager/assets/40648115/7ac0e4f1-dc0d-47f3-a09f-394bcf736c76
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/012b0196-74ef-4ee5-86a4-49e835612f96"/>
 </div>
 
 
@@ -234,7 +234,7 @@
 </div>
 
 <div align="center">
-  <code>Upload Video Here</code>
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/4215384e-eb68-40da-884c-f21df491ef75" />
 </div>
 
 
