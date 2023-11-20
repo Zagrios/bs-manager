@@ -267,7 +267,7 @@
 </div>
 
 <div align="center">
-  <code>Insert Screen connexion choice here</code>
+  <img src="https://github.com/Zagrios/bs-manager/assets/40648115/09d579de-8b8e-45d3-8829-21a25cc7daf8"/>
 </div>
 
 <div>
@@ -280,7 +280,8 @@
 </div>
 
 <div align="center">
-  <code>Insert steam connexion interface</code>
+  <img src="https://github.com/Zagrios/bs-manager/assets/40648115/26da3a19-a936-4e6b-b79b-a139d7bd55de" />
+
 </div>
 
 <div>
@@ -292,7 +293,8 @@
 </div>
 
 <div align="center">
-  <code>Insert oculus connexion interface</code>
+  <img src="https://github.com/Zagrios/bs-manager/assets/40648115/1e4a2f98-af16-45aa-821d-0c4e90e1e54b" />
+
 </div>
 
 
