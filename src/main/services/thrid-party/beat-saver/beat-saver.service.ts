@@ -2,6 +2,7 @@ import { splitIntoChunk } from "../../../../shared/helpers/array.helpers";
 import { BsvMapDetail } from "shared/models/maps";
 import { BsvPlaylist, SearchParams } from "shared/models/maps/beat-saver.model";
 import { BeatSaverApiService } from "./beat-saver-api.service";
+import log from "electron-log";
 
 export class BeatSaverService {
     private static instance: BeatSaverService;
@@ -36,12 +37,10 @@ export class BeatSaverService {
             chunkHash.map(async hashs => {
                 const res = await this.bsaverApi.getMapsDetailsByHashs(hashs);
 
-                if (res.status === 200) {
-                    mapDetails.push(...Object.values<BsvMapDetail>(res.data).filter(detail => !!detail));
-                    mapDetails.forEach(detail => {
-                        this.cachedMapsDetails.set(detail.versions.at(0).hash.toLowerCase(), detail);
-                    });
-                }
+                mapDetails.push(...Object.values<BsvMapDetail>(res).filter(detail => !!detail));
+                mapDetails.forEach(detail => {
+                    this.cachedMapsDetails.set(detail.versions.at(0).hash.toLowerCase(), detail);
+                });
             })
         );
 
@@ -49,23 +48,22 @@ export class BeatSaverService {
     }
 
     public async getMapDetailsById(id: string): Promise<BsvMapDetail> {
-        const res = await this.bsaverApi.getMapDetailsById(id);
-        return res.data;
+        return this.bsaverApi.getMapDetailsById(id);
     }
 
     public searchMaps(search: SearchParams): Promise<BsvMapDetail[]> {
         return this.bsaverApi
             .searchMaps(search)
             .then(res => {
-                return res.status === 200 ? res.data.docs : [];
+                return res.docs;
             })
-            .catch(() => {
+            .catch(e => {
+                log.error(e);
                 return [];
             });
     }
 
     public async getPlaylistPage(id: string): Promise<BsvPlaylist> {
-        const res = await this.bsaverApi.getPlaylistDetails(id);
-        return res.data;
+        return this.bsaverApi.getPlaylistDetails(id);
     }
 }

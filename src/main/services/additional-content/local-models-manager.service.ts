@@ -1,8 +1,5 @@
 import { DeepLinkService } from "../deep-link.service";
 import log from "electron-log";
-import { ipcMain } from "electron";
-import { IpcRequest } from "shared/models/ipc";
-import { UtilsService } from "../utils.service";
 import { WindowManagerService } from "../window-manager.service";
 import { MSModel, MSModelType } from "../../../shared/models/models/model-saber.model";
 import { BSVersion } from "shared/bs-version.interface";
@@ -14,13 +11,14 @@ import sanitize from "sanitize-filename";
 import { Progression, ensureFolderExist, unlinkPath } from "../../helpers/fs.helpers";
 import { MODEL_FILE_EXTENSIONS, MODEL_TYPES, MODEL_TYPE_FOLDERS } from "../../../shared/models/models/constants";
 import { InstallationLocationService } from "../installation-location.service";
-import { Observable, Subscription, lastValueFrom } from "rxjs";
+import { Observable, Subscription, lastValueFrom, of } from "rxjs";
 import { readdir } from "fs/promises";
 import md5File from "md5-file";
 import { allSettled } from "../../../shared/helpers/promise.helpers";
 import { ModelSaberService } from "../thrid-party/model-saber/model-saber.service";
 import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 import { Archive } from "../../models/archive.class";
+import { IpcService } from "../ipc.service";
 
 export class LocalModelsManagerService {
     private static instance: LocalModelsManagerService;
@@ -37,21 +35,21 @@ export class LocalModelsManagerService {
     };
 
     private readonly deepLink: DeepLinkService;
-    private readonly utils: UtilsService;
     private readonly windows: WindowManagerService;
     private readonly localVersion: BSLocalVersionService;
     private readonly installPaths: InstallationLocationService;
     private readonly request: RequestService;
     private readonly modelSaber: ModelSaberService;
+    private readonly ipc: IpcService;
 
     private constructor() {
         this.deepLink = DeepLinkService.getInstance();
-        this.utils = UtilsService.getInstance();
         this.windows = WindowManagerService.getInstance();
         this.localVersion = BSLocalVersionService.getInstance();
         this.request = RequestService.getInstance();
         this.installPaths = InstallationLocationService.getInstance();
         this.modelSaber = ModelSaberService.getInstance();
+        this.ipc = IpcService.getInstance();
 
         this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.ModelSaber, link => {
             log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.ModelSaber, link);
@@ -65,11 +63,13 @@ export class LocalModelsManagerService {
     }
 
     private openOneClickDownloadModelWindow(id: string, type: string) {
-        ipcMain.once("one-click-model-info", async (_event, req: IpcRequest<void>) => {
-            this.utils.ipcSend(req.responceChannel, { success: true, data: { id, type } });
-        });
+        this.windows.openWindow("oneclick-download-model.html").then(window => {
 
-        this.windows.openWindow("oneclick-download-model.html");
+            this.ipc.once("one-click-model-info", (_, reply) => {
+                reply(of({ id, type }));
+            }, window.webContents.ipc);
+
+        });
     }
 
     private async getModelFolderPath(type: MSModelType, version?: BSVersion): Promise<string> {

@@ -1,8 +1,7 @@
 import { BSVersion } from "shared/bs-version.interface";
 import { Link, useLocation } from "react-router-dom";
-import { BsDownloaderService } from "renderer/services/bs-downloader.service";
 import { useState } from "react";
-import { distinctUntilChanged, map, of, Subscription, switchMap } from "rxjs";
+import { distinctUntilChanged, lastValueFrom, map, of, Subscription, switchMap, take } from "rxjs";
 import { BSLauncherService, LaunchMods } from "renderer/services/bs-launcher.service";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { BSUninstallerService } from "renderer/services/bs-uninstaller.service";
@@ -15,13 +14,17 @@ import Tippy from "@tippyjs/react";
 import { useService } from "renderer/hooks/use-service.hook";
 import equal from "fast-deep-equal";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
+import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
+import { ProgressBarService } from "renderer/services/progress-bar.service";
 
 export function BsVersionItem(props: { version: BSVersion }) {
-    const downloaderService = useService(BsDownloaderService);
+
+    const bsDownloader = useService(BsDownloaderService);
     const verionManagerService = useService(BSVersionManagerService);
     const launcherService = useService(BSLauncherService);
     const configService = useService(ConfigurationService);
     const bsUninstallerService = useService(BSUninstallerService);
+    const progressBar = useService(ProgressBarService);
 
     const { state } = useLocation() as { state: BSVersion };
     const { fontSize, ref } = useFitText();
@@ -33,14 +36,14 @@ export function BsVersionItem(props: { version: BSVersion }) {
     useOnUpdate(() => {
         const subs: Subscription[] = []
         
-        subs.push(downloaderService.currentBsVersionDownload$.pipe(map(download => equal(download, props.version)), distinctUntilChanged()).subscribe(isDownloading => {
+        subs.push(bsDownloader.downloadingVersion$.pipe(map(download => equal(download, props.version)), distinctUntilChanged()).subscribe(isDownloading => {
             setIsDownloading(() => isDownloading);
         }));
 
-        subs.push(downloaderService.currentBsVersionDownload$.pipe(
+        subs.push(bsDownloader.downloadingVersion$.pipe(
             map(download => equal(download, props.version)),
             distinctUntilChanged(),
-            switchMap(isDownloading => isDownloading ? downloaderService.downloadProgress$ : of(0)),
+            switchMap(isDownloading => isDownloading ? progressBar.progress$ : of(0)),
         ).subscribe(progress => {
             setDownloadProgress(() => progress);
         }));
@@ -52,19 +55,22 @@ export function BsVersionItem(props: { version: BSVersion }) {
         return props.version?.BSVersion === state?.BSVersion && props?.version.steam === state?.steam && props?.version.oculus === state?.oculus && props?.version.name === state?.name;
     };
 
-    const handleDoubleClick = () => {
-        launcherService.launch({
+    const handleDoubleClick = async () => {
+        const downloadingVersion = await lastValueFrom(bsDownloader.downloadingVersion$.pipe(take(1)));
+        if(equal(downloadingVersion, props.version)){ return; }
+        const launch$ = launcherService.launch({
             version: state,
             oculus: !!configService.get<boolean>(LaunchMods.OCULUS_MOD),
             desktop: !!configService.get<boolean>(LaunchMods.DESKTOP_MOD),
             debug: !!configService.get<boolean>(LaunchMods.DEBUG_MOD),
         });
+        return lastValueFrom(launch$).catch(() => {});
     };
 
     const cancel = () => {
-        const versionDownload = downloaderService.currentBsVersionDownload$.value;
-        const wasVerification = downloaderService.isVerification;
-        downloaderService.stopDownload().then(() => {
+        const versionDownload = bsDownloader.downloadingVersion;
+        const wasVerification = bsDownloader.isVerifying;
+        bsDownloader.stopDownload().then(() => {
             if(wasVerification){ return; }
             bsUninstallerService.uninstall(versionDownload).then(res => res && verionManagerService.askInstalledVersions());
         });

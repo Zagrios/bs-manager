@@ -1,36 +1,36 @@
 import path from "path";
-import { LaunchOption, BSLaunchEvent, BSLaunchEventData, BSLaunchWarning, BSLaunchErrorData, BSLaunchError } from "../../shared/models/bs-launch";
-import { UtilsService } from "./utils.service";
-import { BS_EXECUTABLE, BS_APP_ID, STEAMVR_APP_ID, IMAGE_CACHE_PATH } from "../constants";
-import { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio, spawn } from "child_process";
-import { SteamService } from "./steam.service";
-import { BSLocalVersionService } from "./bs-local-version.service";
-import { pathExist } from "../helpers/fs.helpers";
-import { rename } from "fs/promises";
+import { LaunchOption, BSLaunchEventData } from "../../../shared/models/bs-launch";
+import { IMAGE_CACHE_PATH } from "../../constants";
+import { BSLocalVersionService } from "../bs-local-version.service";
 import log from "electron-log";
-import { Observable, of } from "rxjs";
-import { BsmProtocolService } from "./bsm-protocol.service";
+import { Observable, of, throwError } from "rxjs";
+import { BsmProtocolService } from "../bsm-protocol.service";
 import { app, shell} from "electron";
 import Color from "color";
 import { ensureDir, writeFile } from "fs-extra";
 import toIco from "to-ico";
-import { objectFromEntries } from "../../shared/helpers/object.helpers";
-import { WindowManagerService } from "./window-manager.service";
-import { IpcService } from "./ipc.service";
-import { BSVersionLibService } from "./bs-version-lib.service";
-import { execOnOs } from "../helpers/env.helpers";
+import { objectFromEntries } from "../../../shared/helpers/object.helpers";
+import { WindowManagerService } from "../window-manager.service";
+import { IpcService } from "../ipc.service";
+import { BSVersionLibService } from "../bs-version-lib.service";
+import { execOnOs } from "../../helpers/env.helpers";
 import sharp from "sharp";
+import { StoreLauncherInterface } from "./store-launcher.interface";
+import { SteamLauncherService } from "./steam-launcher.service";
+import { OculusLauncherService } from "./oculus-launcher.service";
+import { BSVersion } from "shared/bs-version.interface";
+import { BsStore } from "../../../shared/models/bs-store.enum";
 
 export class BSLauncherService {
     private static instance: BSLauncherService;
 
-    private readonly utilsService: UtilsService;
-    private readonly steamService: SteamService;
     private readonly localVersionService: BSLocalVersionService;
     private readonly bsmProtocolService: BsmProtocolService;
     private readonly windows: WindowManagerService;
     private readonly ipc: IpcService;
     private readonly remoteVersion: BSVersionLibService;
+    private readonly steamLauncher: SteamLauncherService;
+    private readonly oculusLauncher: OculusLauncherService;
 
     public static getInstance(): BSLauncherService {
         if (!BSLauncherService.instance) {
@@ -40,13 +40,13 @@ export class BSLauncherService {
     }
 
     private constructor() {
-        this.utilsService = UtilsService.getInstance();
-        this.steamService = SteamService.getInstance();
         this.localVersionService = BSLocalVersionService.getInstance();
         this.bsmProtocolService = BsmProtocolService.getInstance();
         this.windows = WindowManagerService.getInstance();
         this.ipc = IpcService.getInstance();
         this.remoteVersion = BSVersionLibService.getInstance();
+        this.steamLauncher = SteamLauncherService.getInstance();
+        this.oculusLauncher = OculusLauncherService.getInstance();
 
         this.bsmProtocolService.on("launch", link => {
             log.info("Launch from bsm protocol", link.toString());
@@ -54,128 +54,25 @@ export class BSLauncherService {
         });
     }
 
-    private getSteamVRPath(): Promise<string> {
-        return this.steamService.getGameFolder(STEAMVR_APP_ID, "SteamVR");
-    }
-
-    private async backupSteamVR(): Promise<void> {
-        const steamVrFolder = await this.getSteamVRPath();
-        if (!(await pathExist(steamVrFolder))) {
-            return;
-        }
-        return rename(steamVrFolder, `${steamVrFolder}.bak`).catch(log.error);
-    }
-
-    public async restoreSteamVR(): Promise<void> {
-        const steamVrFolder = await this.getSteamVRPath();
-        const steamVrBackup = `${steamVrFolder}.bak`;
-        if (!(await pathExist(steamVrBackup))) {
-            return;
-        }
-        return rename(steamVrBackup, steamVrFolder).catch(log.error);
-    }
-
-    public async isBsRunning(): Promise<boolean> {
-        return this.utilsService.taskRunning(BS_EXECUTABLE);
-    }
-
-    private buildBsLaunchArgs(launchOptions: LaunchOption): string[]{
-        const launchArgs = ["--no-yeet"];
-
-        if (launchOptions.oculus) {
-            launchArgs.push("-vrmode");
-            launchArgs.push("oculus");
-        }
-        if (launchOptions.desktop) {
-            launchArgs.push("fpfc");
-        }
-        if (launchOptions.debug) {
-            launchArgs.push("--verbose");
-        }
-        if (launchOptions.additionalArgs) {
-            launchArgs.push(...launchOptions.additionalArgs);
-        }
-
-        return Array.from(new Set(launchArgs).values());
-    }
-
-    private launchBSProcess(bsExePath: string, args: string[], debug = false): ChildProcessWithoutNullStreams{
-
-        const spawnOptions: SpawnOptionsWithoutStdio = { detached: true, cwd: path.dirname(bsExePath), env: {...process.env, "SteamAppId": BS_APP_ID} };
-
-        if(debug){
-            spawnOptions.windowsVerbatimArguments = true;
-        }
-
-        return spawn(bsExePath, args, spawnOptions);
-
+    private getStoreLauncherFromVersion(version: BSVersion): StoreLauncherInterface {
+        if(version.steam){ return this.steamLauncher; }
+        if(version.oculus){ return this.oculusLauncher; }
+        if(version.metadata?.store === BsStore.STEAM){ return this.steamLauncher; }
+        if(version.metadata?.store === BsStore.OCULUS){ return this.oculusLauncher; }
+        return this.steamLauncher;
     }
 
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
 
-        return new Observable<BSLaunchEventData>(obs => {(async () => {
+        log.info("Launch version", launchOptions);
 
-            if(launchOptions.skipAlreadyRunning !== true && await this.isBsRunning()){
-                return obs.error({type: BSLaunchError.BS_ALREADY_RUNNING} as BSLaunchErrorData);
-            }
+        const launcher = this.getStoreLauncherFromVersion(launchOptions.version);
 
-            const bsFolderPath = await this.localVersionService.getInstalledVersionPath(launchOptions.version);
-            const exePath = path.join(bsFolderPath, BS_EXECUTABLE);
+        if(!launcher){
+            return throwError(() => new Error("Unable to get launcher for the provided version"));
+        }
 
-            if(!(await pathExist(exePath))){
-                return obs.error({type: BSLaunchError.BS_NOT_FOUND} as BSLaunchErrorData);
-            }
-
-            // Open Steam if not running
-            if(!launchOptions.version.oculus && !(await this.steamService.steamRunning())){
-                obs.next({type: BSLaunchEvent.STEAM_LAUNCHING});
-
-                await this.steamService.openSteam().then(() => {
-                    obs.next({type: BSLaunchEvent.STEAM_LAUNCHED});
-                }).catch(e => {
-                    log.error(e);
-                    obs.next({type: BSLaunchWarning.UNABLE_TO_LAUNCH_STEAM});
-                });
-            }
-
-            // Backup SteamVR when desktop mode is enabled
-            if(!launchOptions.version.oculus && launchOptions.desktop){
-                await this.backupSteamVR().catch(() => {
-                    return this.restoreSteamVR();
-                });
-            } else if(!launchOptions.version.oculus){
-                await this.restoreSteamVR();
-            }
-
-            const launchArgs = this.buildBsLaunchArgs(launchOptions);
-
-            obs.next({type: BSLaunchEvent.BS_LAUNCHING});
-
-            await new Promise<number>((resolve, reject) => {
-                const bsProcess = this.launchBSProcess(exePath, launchArgs, launchOptions.debug);
-
-                bsProcess.on("error", reject);
-                bsProcess.on("exit", resolve);
-
-                setTimeout(() => {
-                    bsProcess.removeAllListeners("error");
-                    bsProcess.removeAllListeners("exit");
-                    resolve(-1);
-                }, 30_000);
-
-            }).then(exitCode => {
-                log.info("BS process exit code", exitCode);
-            }).catch(err => {
-                obs.error({type: BSLaunchError.BS_EXIT_ERROR, data: err} as BSLaunchErrorData);
-            }).finally(() => {
-                this.restoreSteamVR().catch(log.error);
-            });
-
-        })().then(() => {
-            obs.complete();
-        }).catch(err => {
-            obs.error({type: BSLaunchError.UNKNOWN_ERROR, data: err} as BSLaunchErrorData);
-        })});
+        return launcher.launch(launchOptions);
     }
 
     public shortcutLinkToShortcutParams(shortcutLink: string|URL): ShortcutParams{

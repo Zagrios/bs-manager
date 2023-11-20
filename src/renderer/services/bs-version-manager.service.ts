@@ -1,19 +1,23 @@
 import { BSVersion } from "shared/bs-version.interface";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, Subscription, lastValueFrom, map, shareReplay, throwError } from "rxjs";
 import { IpcService } from "./ipc.service";
 import { ModalExitCode, ModalService } from "./modale.service";
 import { NotificationService } from "./notification.service";
 import { ProgressBarService } from "./progress-bar.service";
 import { EditVersionModal } from "renderer/components/modal/modal-types/edit-version-modal.component";
 import { popElement } from "shared/helpers/array.helpers";
+import { ImportVersionModal } from "renderer/components/modal/modal-types/import-version-modal.component";
+import { Progression } from "main/helpers/fs.helpers";
+import { ImportVersionOptions } from "main/services/bs-local-version.service";
 
 export class BSVersionManagerService {
     private static instance: BSVersionManagerService;
 
     private readonly ipcService: IpcService;
     private readonly modalService: ModalService;
-    private readonly notificationService: NotificationService;
-    private readonly progressBarService: ProgressBarService;
+    private readonly notification: NotificationService;
+    private readonly progressBar: ProgressBarService;
+    private readonly modals: ModalService;
 
     public readonly installedVersions$: BehaviorSubject<BSVersion[]> = new BehaviorSubject([]);
     public readonly availableVersions$: BehaviorSubject<BSVersion[]> = new BehaviorSubject([]);
@@ -21,8 +25,9 @@ export class BSVersionManagerService {
     private constructor() {
         this.ipcService = IpcService.getInstance();
         this.modalService = ModalService.getInstance();
-        this.notificationService = NotificationService.getInstance();
-        this.progressBarService = ProgressBarService.getInstance();
+        this.notification = NotificationService.getInstance();
+        this.progressBar = ProgressBarService.getInstance();
+        this.modals = ModalService.getInstance();
         this.askAvailableVersions().then(() => this.askInstalledVersions());
     }
 
@@ -70,7 +75,7 @@ export class BSVersionManagerService {
         }
         return this.ipcService.send<BSVersion>("bs-version.edit", { args: { version, name: modalRes.data.name, color: modalRes.data.color } }).then(res => {
             if (!res.success) {
-                this.notificationService.notifyError({
+                this.notification.notifyError({
                     title: `notifications.custom-version.errors.titles.${res.error.title}`,
                     ...(res.error.message && { desc: `notifications.custom-version.errors.msg.${res.error.message}` }),
                 });
@@ -82,7 +87,7 @@ export class BSVersionManagerService {
     }
 
     public async cloneVersion(version: BSVersion): Promise<BSVersion> {
-        if (!this.progressBarService.require()) {
+        if (!this.progressBar.require()) {
             return null;
         }
         const modalRes = await this.modalService.openModal(EditVersionModal, { version, clone: true });
@@ -92,20 +97,73 @@ export class BSVersionManagerService {
         if (modalRes.data.name?.length < 2) {
             return null;
         }
-        this.progressBarService.showFake(0.01);
+        this.progressBar.showFake(0.01);
         return this.ipcService.send<BSVersion>("bs-version.clone", { args: { version, name: modalRes.data.name, color: modalRes.data.color } }).then(res => {
-            this.progressBarService.hide(true);
+            this.progressBar.hide(true);
             if (!res.success) {
-                this.notificationService.notifyError({
+                this.notification.notifyError({
                     title: `notifications.custom-version.errors.titles.${res.error.title}`,
                     ...(res.error.message && { desc: `notifications.custom-version.errors.msg.${res.error.message}` }),
                 });
                 return null;
             }
-            this.notificationService.notifySuccess({ title: "notifications.custom-version.success.titles.CloningFinished" });
+            this.notification.notifySuccess({ title: "notifications.custom-version.success.titles.CloningFinished" });
             this.askInstalledVersions();
             return res.data;
         });
+    }
+
+    public importVersion(): Observable<Progression<BSVersion>> {
+        if(!this.progressBar.require()){
+            return throwError(() => new Error("Action already in progress"));
+        }
+
+        const obs$ = new Observable<Progression<BSVersion>>(obs => {
+
+            const subs: Subscription[] = [];
+
+            (async () => {
+
+                const resModal = await this.modals.openModal(ImportVersionModal);
+                if(resModal.exitCode !== ModalExitCode.COMPLETED){
+                    return;
+                }
+                
+                const store = resModal.data;
+
+                const folderRes = await lastValueFrom(this.ipcService.sendV2<{ canceled: boolean; filePaths: string[] }>("choose-folder"));
+                if(!folderRes || folderRes.canceled || !folderRes.filePaths?.length){
+                    return;
+                }
+
+                const import$ = this.ipcService.sendV2<Progression<BSVersion>, ImportVersionOptions>("import-version", { args: {fromPath: folderRes.filePaths.at(0), store} });
+
+                subs.push(import$.subscribe(obs));
+
+                await lastValueFrom(import$);
+
+                this.notification.notifySuccess({ title: "notifications.bs-import-version.success.imported.title", duration: 3_000 });
+
+            })().then(() => {
+                obs.complete()
+            }).catch(err => {
+                this.notification.notifyError({ title: "notifications.types.error", desc: "notifications.bs-import-version.errors.import-error.desc" });
+                obs.error(err)
+            }).finally(() => {
+                this.askInstalledVersions();
+                this.progressBar.hide(true);
+            });
+
+            return () => {
+                subs.forEach(sub => sub.unsubscribe());
+            }
+        }).pipe(
+            shareReplay({ bufferSize: 1, refCount: true })
+        );
+
+        this.progressBar.show(obs$.pipe(map(progress => (progress.current / progress.total) * 100)), true);
+
+        return obs$;
     }
 
     public getVersionPath(version: BSVersion): Observable<string> {

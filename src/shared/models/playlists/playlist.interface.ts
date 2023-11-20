@@ -1,4 +1,5 @@
 import { BsvMapDetail } from "../maps";
+import { BsmLocalMap } from "../maps/bsm-local-map.interface";
 
 export interface BPList {
     playlistTitle: string;
@@ -16,10 +17,9 @@ export interface PlaylistSong {
     uploader?: string;
 }
 
-export interface DownloadPlaylistProgression {
-    mapsPath: string[];
-    downloadedMaps: BsvMapDetail[];
-    bpListPath: string;
-    current: BsvMapDetail;
-    progression: number;
+export interface DownloadPlaylistProgressionData {
+    downloadedMaps: BsmLocalMap[];
+    currentDownload: BsvMapDetail;
+    playlistInfos: BPList;
+    playlistPath: string;
 }

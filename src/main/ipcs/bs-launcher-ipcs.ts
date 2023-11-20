@@ -1,8 +1,10 @@
 
 import { LaunchOption } from "shared/models/bs-launch";
-import { BSLauncherService } from "../services/bs-launcher.service"
+import { BSLauncherService } from "../services/bs-launcher/bs-launcher.service"
 import { IpcService } from '../services/ipc.service';
 import { from } from "rxjs";
+import { SteamLauncherService } from "../services/bs-launcher/steam-launcher.service";
+import { OculusLauncherService } from "../services/bs-launcher/oculus-launcher.service";
 
 const ipc = IpcService.getInstance();
 
@@ -18,6 +20,13 @@ ipc.on<LaunchOption>("create-launch-shortcut", (req, reply) => {
 
 
 ipc.on<void>("bs-launch.restore-steamvr", (_, reply) => {
-    const bsLauncher = BSLauncherService.getInstance();
-    reply(from(bsLauncher.restoreSteamVR()));
+    const steamLauncher = SteamLauncherService.getInstance();
+    reply(from(steamLauncher.restoreSteamVR()));
 });
+
+ipc.on<void>("restore-original-oculus-folder", (_, reply) => {
+    const oculusLauncher = OculusLauncherService.getInstance();
+    reply(from(
+        oculusLauncher.deleteBsSymlinks().then(() => oculusLauncher.restoreOriginalBeatSaber())
+    ));
+})
