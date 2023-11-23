@@ -86,8 +86,6 @@ export class AutoUpdaterService {
         return this.ipcService.sendV2<boolean>("have-been-updated");
     }
 
-
-
     public async showChangelog(version?: string): Promise<void>{
         const currentVersion = await lastValueFrom(this.getAppVersion());
         const changelog = await this.getChangelogVersion(version ?? currentVersion);
