@@ -26,7 +26,7 @@ export class AutoUpdaterService {
         if (!AutoUpdaterService.instance) {
             AutoUpdaterService.instance = new AutoUpdaterService();
         }
-        return AutoUpdaterService.instance;
+            return AutoUpdaterService.instance;
     }
 
     private constructor() {
@@ -37,6 +37,31 @@ export class AutoUpdaterService {
         this.getChangelogs().then(changelog => {this.changelog.next(changelog);});
 
         this.downloadProgress$ = this.ipcService.watch<number>("update-download-progress").pipe(map(res => (res.success ? res.data : 0)));
+    }
+
+    private async getChangelogs(): Promise<Changelog> {
+        const path = `https://raw.githubusercontent.com/Zagrios/bs-manager/feature/add-changelog-modal/178/assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`;
+
+        const response = await fetch(path);
+        if (!response.ok) {
+            return undefined;
+        }
+
+        const data = await response.json();
+        if (!data) {
+            return undefined;
+        }
+        return data;
+    }
+
+    private async getChangelogVersion(version: string): Promise<ChangelogVersion> {
+        const changelogs = await lastValueFrom(this.changelog.pipe(switchMap(changelog => changelog ? of(changelog) : this.getChangelogs())));
+        if (!changelogs) {
+            return undefined;
+        }
+
+        const changelogVersion = changelogs[version];
+        return changelogVersion;
     }
 
     public isUpdateAvailable(): Promise<boolean> {
@@ -61,45 +86,24 @@ export class AutoUpdaterService {
         return this.ipcService.sendV2<boolean>("have-been-updated");
     }
 
-    private async getChangelogs(): Promise<Changelog> {
-      const path = `https://raw.githubusercontent.com/Zagrios/bs-manager/feature/add-changelog-modal/178/assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`;
 
-      const response = await fetch(path);
-      if (!response.ok) {
-        return undefined;
-      }
 
-      const data = await response.json();
-      if (!data) {
-        return undefined;
-      }
-      return data;
-  }
+    public async showChangelog(version?: string): Promise<void>{
+        const currentVersion = await lastValueFrom(this.getAppVersion());
+        const changelog = await this.getChangelogVersion(version ?? currentVersion);
 
-  private async getChangelogVersion(version: string): Promise<ChangelogVersion> {
-      const changelogs = await lastValueFrom(this.changelog.pipe(switchMap(changelog => changelog ? of(changelog) : this.getChangelogs())));
-      if (!changelogs) {return undefined;}
+        if (!changelog) {
+            throw new Error("Changelog not found");
+        }
 
-      const changelogVersion = changelogs[version];
-      return changelogVersion;
-  }
-
-  public async showChangelog(version?: string): Promise<void>{
-    const currentVersion = await lastValueFrom(this.getAppVersion());
-    const changelog = await this.getChangelogVersion(version ?? currentVersion);
-
-    if (!changelog) {
-      throw new Error("Changelog not found");
+        this.modalService.openModal(ChangelogModal, changelog);
     }
-    this.modalService.openModal(ChangelogModal, changelog);
-  }
 
-  public getAppVersion() : Observable<string> {
-    return this.ipcService.sendV2<string>("current-version");
-  }
+    public getAppVersion() : Observable<string> {
+        return this.ipcService.sendV2<string>("current-version");
+    }
 
-  public haveChangelog(): Observable<boolean> {
-    return this.changelog.pipe(map(changelog => changelog !== null));
-  }
-
+    public haveChangelog(): Observable<boolean> {
+        return this.changelog.pipe(map(changelog => changelog !== null));
+    }
 }
