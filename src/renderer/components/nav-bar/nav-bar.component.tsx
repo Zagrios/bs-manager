@@ -11,15 +11,15 @@ import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import Tippy from "@tippyjs/react";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { useService } from "renderer/hooks/use-service.hook";
-import { BsDownloaderService } from "renderer/services/bs-downloader.service";
 import { distinctUntilChanged } from "rxjs";
 import equal from "fast-deep-equal";
+import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
 
 export function NavBar() {
     const versionManager = useService(BSVersionManagerService);
     const versionDownloader = useService(BsDownloaderService);
 
-    const downloadingVersion = useObservable(versionDownloader.currentBsVersionDownload$.pipe(distinctUntilChanged(equal)));
+    const downloadingVersion = useObservable(versionDownloader.downloadingVersion$.pipe(distinctUntilChanged(equal)));
     const installedVersions = useObservable(versionManager.installedVersions$);
 
     const color = useThemeColor("first-color");
@@ -30,7 +30,7 @@ export function NavBar() {
 
         if (downloadingVersion){ versions.push(downloadingVersion); }
 
-        const sorted = versions.sort((a, b) => +b.ReleaseDate - +a.ReleaseDate);
+        const sorted = BSVersionManagerService.sortVersions(versions);
 
         return BSVersionManagerService.removeDuplicateVersions(sorted);
     }

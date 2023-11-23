@@ -1,6 +1,6 @@
 import { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio, spawn } from "child_process";
 import { Observable, ReplaySubject, Subscriber, filter, map, share } from "rxjs";
-import { DepotDownloaderArgsOptions, DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderEventTypes, DepotDownloaderInfoEvent, DepotDownloaderWarningEvent } from "../../shared/models/depot-downloader.model";
+import { DepotDownloaderArgsOptions, DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderEventTypes, DepotDownloaderInfoEvent, DepotDownloaderWarningEvent } from "../../shared/models/bs-version-download/depot-downloader.model";
 
 export class DepotDownloader {
 

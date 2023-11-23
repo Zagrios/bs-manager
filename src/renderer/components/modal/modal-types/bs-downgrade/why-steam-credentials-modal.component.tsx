@@ -3,7 +3,7 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { ModalComponent } from "renderer/services/modale.service";
 
-export const WhyCredentialsModal: ModalComponent<void> = () => {
+export const WhySteamCredentialsModal: ModalComponent<void> = () => {
     const t = useTranslation();
     const linkOpener = useService(LinkOpenerService);
 

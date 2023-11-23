@@ -21,12 +21,12 @@ export class FolderLinkerService {
         this.installLocationService = InstallationLocationService.getInstance();
     }
 
-    private get sharedFolder(): string {
-        return this.installLocationService.sharedContentPath;
+    private async sharedFolder(): Promise<string> {
+        return this.installLocationService.sharedContentPath();
     }
 
-    private getSharedFolder(folderPath: string, intermediateFolder?: string): string {
-        return path.join(this.sharedFolder, intermediateFolder ?? "", path.basename(folderPath));
+    private async getSharedFolder(folderPath: string, intermediateFolder?: string): Promise<string> {
+        return path.join(await this.sharedFolder(), intermediateFolder ?? "", path.basename(folderPath));
     }
 
     private getBackupFolder(folderPath: string): string {
@@ -50,7 +50,7 @@ export class FolderLinkerService {
     }
 
     public async linkFolder(folderPath: string, options?: LinkOptions): Promise<void> {
-        const sharedPath = this.getSharedFolder(folderPath, options?.intermediateFolder);
+        const sharedPath = await this.getSharedFolder(folderPath, options?.intermediateFolder);
 
         if (await this.isFolderSymlink(folderPath)) {
             const isTargetedToSharedPath = await readlink(folderPath)
@@ -86,7 +86,7 @@ export class FolderLinkerService {
         }
         await unlinkPath(folderPath);
 
-        const sharedPath = this.getSharedFolder(folderPath, options?.intermediateFolder);
+        const sharedPath = await this.getSharedFolder(folderPath, options?.intermediateFolder);
 
         await ensureFolderExist(folderPath);
 

@@ -43,8 +43,6 @@ export default function ShortcutLaunch() {
     useOnUpdate(() => {
         if(!launchOptions) { return; }
 
-        launchOptions.skipAlreadyRunning = true;
-
         const sub = bsLauncher.doLaunch(launchOptions).subscribe({
             next: event => {
                 setStatus(event.type);
@@ -59,7 +57,7 @@ export default function ShortcutLaunch() {
         });
 
         sub.add(() => {
-            windows.close("shortcut-launch.html");
+            window.electron.window.close();
         });
 
         return () => sub.unsubscribe();

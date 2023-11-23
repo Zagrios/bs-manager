@@ -22,14 +22,6 @@ export class WindowManagerService {
         return lastValueFrom(this.ipcService.sendV2<void>("open-window-then-close-all", { args: window }));
     }
 
-    public closeAll(except?: AppWindow): Promise<void> {
-        return lastValueFrom(this.ipcService.sendV2<void>("close-all-windows", { args: except }));
-    }
-
-    public close(...win: AppWindow[]): Promise<void> {
-        return lastValueFrom(this.ipcService.sendV2<void>("close-windows", { args: win }));
-    }
-
     public openWindowOrFocus(window: AppWindow): Promise<void> {
         return lastValueFrom(this.ipcService.sendV2<void, AppWindow>("open-window-or-focus", { args: window }));
     }

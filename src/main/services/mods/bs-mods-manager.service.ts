@@ -9,11 +9,13 @@ import { RequestService } from "../request.service";
 import { spawn } from "child_process";
 import { BS_EXECUTABLE } from "../../constants";
 import log from "electron-log";
-import { deleteFolder, pathExist, unlinkPath, ensureFolderExist } from "../../helpers/fs.helpers";
+import { deleteFolder, pathExist, unlinkPath } from "../../helpers/fs.helpers";
 import { lastValueFrom } from "rxjs";
 import JSZip from "jszip";
 import { extractZip } from "../../helpers/zip.helpers";
 import recursiveReadDir from "recursive-readdir";
+import { minToMs } from "../../../shared/helpers/time.helpers";
+import { ensureDir } from "fs-extra";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -121,6 +123,8 @@ export class BsModsManagerService {
     private async downloadZip(zipUrl: string): Promise<JSZip> {
         zipUrl = path.join(this.beatModsApi.BEAT_MODS_URL, zipUrl);
 
+        log.info("Download mod zip", zipUrl);
+
         const buffer = await lastValueFrom(this.requestService.downloadBuffer(zipUrl))
             .then(progress => progress.data)
             .catch(e => {
@@ -139,24 +143,33 @@ export class BsModsManagerService {
     }
 
     private async executeBSIPA(version: BSVersion, args: string[]): Promise<boolean> {
+
+        log.info("executeBSIPA", version?.BSVersion, args);
+
         const versionPath = await this.bsLocalService.getVersionPath(version);
         const ipaPath = path.join(versionPath, "IPA.exe");
         const bsExePath = path.join(versionPath, BS_EXECUTABLE);
         if (!(await pathExist(ipaPath)) || !(await pathExist(bsExePath))) {
+            log.error("IPA.exe or Beat Saber.exe not found");
             return false;
         }
 
         return new Promise<boolean>(resolve => {
+            log.info("START IPA PROCESS", `start /wait /min "" "${ipaPath}" ${args.join(" ")}`);
             const processIPA = spawn(`start /wait /min "" "${ipaPath}" ${args.join(" ")}`, { cwd: versionPath, detached: true, shell: true });
             processIPA.once("exit", code => {
                 if (code === 0) {
+                    log.info("Ipa process exist with code 0");
                     return resolve(true);
                 }
-                log.error("IPA PROCESS", "exit code", code);
+                log.error("Ipa process exist with non 0 code", code);
                 resolve(false);
             });
 
-            setTimeout(() => resolve(false), 1 * 60 * 1000); // timeout 1min
+            setTimeout(() => {
+                log.info("Ipa process timeout");
+                resolve(false)
+            }, minToMs(1));
         });
     }
 
@@ -168,6 +181,7 @@ export class BsModsManagerService {
     }
 
     private async installMod(mod: Mod, version: BSVersion): Promise<boolean> {
+        log.info("INSTALL MOD", mod.name, "for version", `${version.BSVersion} - ${version.name}`);
         this.utilsService.ipcSend<ModInstallProgression>("mod-installed", { success: true, data: { name: mod.name, progression: ((this.nbInstalledMods + 1) / this.nbModsToInstall) * 100 } });
 
         const download = this.getModDownload(mod, version);
@@ -176,7 +190,9 @@ export class BsModsManagerService {
             return false;
         }
 
+        log.info("Start download mod zip", mod.name, download.url);
         const zip = await this.downloadZip(download.url);
+        log.info("Mod zip download end", mod.name, download.url, !!zip);
 
         if (!zip) {
             return false;
@@ -192,7 +208,10 @@ export class BsModsManagerService {
                     const entryMd5 = crypto.createHash("md5").update(data).digest("hex");
                     return download.hashMd5.some(md5 => md5.hash === entryMd5) ? entry : undefined;
                 })
-            )
+            ).catch(e => {
+                log.error("Error while checking mod zip entries", mod.name, e);
+                throw e;
+            })
         ).filter(entry => !!entry);
 
         if (checkedEntries.length !== download.hashMd5.length) {
@@ -203,13 +222,16 @@ export class BsModsManagerService {
         const isBSIPA = mod.name.toLowerCase() === "bsipa";
         const destDir = isBSIPA ? verionPath : path.join(verionPath, ModsInstallFolder.PENDING);
 
-        await ensureFolderExist(destDir);
+        await ensureDir(destDir);
+        log.info("Start extracting mod zip", mod.name, "to", destDir);
         const extracted = await extractZip(zip, destDir)
             .then(() => true)
             .catch(e => {
-                log.error("EXTRACT MOD ZIP", e);
+                log.error("Error while extracting mod zip", e);
                 return false;
             });
+        
+        log.info("Mod zip extraction end", mod.name, "to", destDir, "success:", extracted);
 
         const res = isBSIPA
             ? extracted &&

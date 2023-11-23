@@ -1,6 +1,6 @@
-import { ModalComponent, ModalExitCode } from "../../../services/modale.service";
-import BeatWaiting from "../../../../../assets/images/apngs/beat-waiting.png";
-import LoginMobileAuthImage from "../../../../../assets/images/steam/login_mobile_auth.png";
+import { ModalComponent, ModalExitCode } from "../../../../services/modale.service";
+import BeatWaiting from "../../../../../../assets/images/apngs/beat-waiting.png";
+import LoginMobileAuthImage from "../../../../../../assets/images/steam/login_mobile_auth.png";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { Observable } from "rxjs";

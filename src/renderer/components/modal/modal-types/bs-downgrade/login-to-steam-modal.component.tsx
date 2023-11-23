@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { ModalComponent, ModalExitCode, ModalService } from "renderer/services/modale.service";
-import { WhyCredentialsModal } from "./why-credentials-modal.component";
+import { WhySteamCredentialsModal } from "./why-steam-credentials-modal.component";
 import { useService } from "renderer/hooks/use-service.hook";
 import { Observable } from "rxjs";
 import { useObservable } from "renderer/hooks/use-observable.hook";
@@ -10,7 +10,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { BsmCheckbox } from "renderer/components/shared/bsm-checkbox.component";
 import { BsmBasicSpinner } from "renderer/components/shared/bsm-basic-spinner/bsm-basic-spinner.component";
 
-export const LoginModal: ModalComponent<
+export const LoginToSteamModal: ModalComponent<
     { username: string; password: string; stay: boolean, method: "form"|"qr" },
     { qrCode$: Observable<string>, logged$: Observable<string> }
 > = ({ resolver, data }) => {
@@ -47,7 +47,7 @@ export const LoginModal: ModalComponent<
     };
 
     const whyCredentials = () => {
-        modal.openModal(WhyCredentialsModal);
+        modal.openModal(WhySteamCredentialsModal);
     };
 
     return (
