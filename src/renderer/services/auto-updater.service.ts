@@ -6,8 +6,6 @@ import { I18nService } from "./i18n.service";
 import { Changelog, ChangelogVersion } from "../../shared/models/bs-launch/launch-changelog.interface"
 import { ModalService } from "./modale.service";
 import { ChangelogModal } from "../components/modal/modal-types/changelog/changelog-modal.component";
-import { useObservable } from "renderer/hooks/use-observable.hook";
-import { get } from "http";
 
 export class AutoUpdaterService {
     private static instance: AutoUpdaterService;
@@ -64,58 +62,44 @@ export class AutoUpdaterService {
     }
 
     private async getChangelogs(): Promise<Changelog> {
-    try {
       const path = `https://raw.githubusercontent.com/Zagrios/bs-manager/feature/add-changelog-modal/178/assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`;
 
       const response = await fetch(path);
       if (!response.ok) {
-        return;
+        return undefined;
       }
 
       const data = await response.json();
       if (!data) {
-        return;
+        return undefined;
       }
       return data;
-
-    } catch (error) {
-      this.ipcService.sendLazy("log-error", { args: error });
-    }
   }
 
-  private async getChangelogByVersion(version: string): Promise<ChangelogVersion> {
-      const changelogs = await this.getChangelogs();
-      if (!changelogs) {return;}
-      console.log(changelogs);
-      const changelogVersion = changelogs[version];
+  private async getChangelogVersion(version: string): Promise<ChangelogVersion> {
+      const changelogs = await lastValueFrom(this.changelog.pipe(switchMap(changelog => changelog ? of(changelog) : this.getChangelogs())));
+      if (!changelogs) {return undefined;}
 
+      const changelogVersion = changelogs[version];
       return changelogVersion;
   }
 
-  public async showChangelog(version?: string) : Promise<boolean> {
-    const currentVersion = useObservable(this.getAppVersion());
-    const changelog = await this.getChangelogByVersion(version ?? currentVersion);
+  public async showChangelog(version?: string): Promise<void>{
+    const currentVersion = await lastValueFrom(this.getAppVersion());
+    const changelog = await this.getChangelogVersion(version ?? currentVersion);
 
-    if (!changelog) {return false;}
-
-    return this.modalService.openModal(ChangelogModal, changelog).then(()=> true ).catch(()=> false );
+    if (!changelog) {
+      throw new Error("Changelog not found");
+    }
+    this.modalService.openModal(ChangelogModal, changelog);
   }
 
   public getAppVersion() : Observable<string> {
     return this.ipcService.sendV2<string>("current-version");
   }
 
-  // si this.changelog est null, on essaye de faire un getChangelogs, si ça marche pas, on renvoie false sinon on renvoie true mais si this.changelog est pas null on renvoie directement true
-  public isChangelogAvailable() : Observable<boolean> {
+  public haveChangelog(): Observable<boolean> {
+    return this.changelog.pipe(map(changelog => changelog !== null));
+  }
 
-    const c$ = of(this.getChangelogs());
-    const d$ = of(this.changelog);
-    return this.changelog.pipe(switchMap(changelog => {
-      if (!changelog) {
-        return c$.pipe(map(changelog => changelog ? true : false));
-      }
-      return d$.pipe(map(changelog => changelog ? true : false));
-  }
-  ));
-  }
 }
