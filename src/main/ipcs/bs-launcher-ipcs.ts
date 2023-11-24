@@ -2,9 +2,10 @@
 import { LaunchOption } from "shared/models/bs-launch";
 import { BSLauncherService } from "../services/bs-launcher/bs-launcher.service"
 import { IpcService } from '../services/ipc.service';
-import { from } from "rxjs";
+import { from, of } from "rxjs";
 import { SteamLauncherService } from "../services/bs-launcher/steam-launcher.service";
 import { OculusLauncherService } from "../services/bs-launcher/oculus-launcher.service";
+import { AutoUpdaterService } from "../services/auto-updater.service";
 
 const ipc = IpcService.getInstance();
 
@@ -29,4 +30,11 @@ ipc.on<void>("restore-original-oculus-folder", (_, reply) => {
     reply(from(
         oculusLauncher.deleteBsSymlinks().then(() => oculusLauncher.restoreOriginalBeatSaber())
     ));
-})
+});
+
+ipc.on<boolean>("have-been-updated", (_, reply) => {
+    const updaterService = AutoUpdaterService.getInstance();
+    reply(of(updaterService.getHaveBeenUpdated()));
+});
+
+
