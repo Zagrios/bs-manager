@@ -35,11 +35,14 @@ export class AutoUpdaterService {
         });
 
         this.progressService.show(this.downloadProgress$, true);
-        
         return promise;
     }
 
     public quitAndInstall() {
         this.ipcService.sendLazy("install-update");
+    }
+
+    public getHaveBeenUpdated(): Observable<boolean>{
+        return this.ipcService.sendV2<boolean>("have-been-updated");
     }
 }
