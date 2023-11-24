@@ -13,7 +13,10 @@ ipcMain.on("download-update", async (event, request: IpcRequest<void>) => {
 
     updaterService
         .downloadUpdate()
-        .then(res => utilsService.ipcSend(request.responceChannel, { success: res }))
+        .then(res => {
+          utilsService.ipcSend(request.responceChannel, { success: res });
+          updaterService.setHaveBeenUpdated(true);
+        })
         .catch(() => utilsService.ipcSend(request.responceChannel, { success: false }));
 });
 
