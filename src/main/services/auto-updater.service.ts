@@ -39,6 +39,7 @@ export class AutoUpdaterService {
                         if (!info?.updateInfo) {
                             return false;
                         }
+                        this.setHaveBeenUpdated(true);
                         return gt(info.updateInfo.version, autoUpdater.currentVersion.version);
                     })();
                     resolve(needUpdate);
