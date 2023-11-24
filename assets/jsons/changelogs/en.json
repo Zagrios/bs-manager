@@ -1,4 +1,9 @@
 {
+  "27.0.0" : {
+    "title" : "Second Release",
+    "htmlBody" : "<p>Second release of the app.</p>",
+    "timestampPublished" : "1700788913"
+  },
   "1.0.0" : {
     "title" : "First Release",
     "htmlBody" : "<p>First release of the app.</p>",
