@@ -221,7 +221,7 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
         const downloadPromise = (async () => {
 
             const haveDotNet = await this.isDotNet6Installed().catch(() => false);
-            if(true){
+            if(!haveDotNet){
                 this.showDotNetNotInstalledError();
                 return Promise.reject(new Error("DotNet not installed"));
             }
