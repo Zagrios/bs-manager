@@ -58,7 +58,7 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
             duration: 11_000,
             title: "notifications.bs-download.steam-download.errors.titles.dotnet-required",
             desc: "notifications.bs-download.steam-download.errors.msg.dotnet-required",
-            actions: [{ id: "0", title: "notifications.bs-download..errors.actions.download-dotnet" }],
+            actions: [{ id: "0", title: "notifications.bs-download.steam-download.errors.actions.download-dotnet" }],
         });
 
         if (choice === "0") {
@@ -221,7 +221,7 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
         const downloadPromise = (async () => {
 
             const haveDotNet = await this.isDotNet6Installed().catch(() => false);
-            if(!haveDotNet){
+            if(true){
                 this.showDotNetNotInstalledError();
                 return Promise.reject(new Error("DotNet not installed"));
             }
