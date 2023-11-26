@@ -155,13 +155,15 @@
                     "es-ES": "Español",
                     "de-DE": "Deutsch",
                     "ru-RU": "Русский",
+                    "zh-CN": "简体中文",
                     "translated": {
                         "en-EN": "Inglés, Reino Unido",
                         "en-US": "Inglés, Estados Unidos",
                         "fr-FR": "Francés",
                         "es-ES": "Español",
                         "de-DE": "Alemán",
-                        "ru-RU": "Ruso"
+                        "ru-RU": "Ruso",
+                        "zh-CN": "Chino simplificado"
                     }
                 }
             },
