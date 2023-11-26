@@ -81,8 +81,8 @@
                 },
                 "mods-grid": {
                     "header-bar": {
-                        "name": "Name",
-                        "installed": "Installed",
+                        "name": "名称",
+                        "installed": "已安装",
                         "latest": "最新",
                         "description": "描述",
                         "dropdown": {
