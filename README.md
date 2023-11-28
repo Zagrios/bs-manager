@@ -485,8 +485,8 @@
   </ul>
 </div>
 
-<div align="center">
-  <code>Insert screen or video if interesting</code>
+<div align="center"> 
+  <video src = "https://github.com/Zagrios/bs-manager/assets/40648115/d2c1b0ec-a2f5-41b5-99d5-c4c2cd34cbd4" />
 </div>
 
 <!--
