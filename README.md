@@ -352,7 +352,7 @@
 </div>
 
 <div align="center">
-  <img src="https://github.com/Zagrios/bs-manager/assets/40648115/222e771c-bb24-451f-bcd1-23c752387be3" />
+  <img src="https://github.com/Zagrios/bs-manager/assets/40648115/1244d49f-20e1-400c-9818-528f05cfadf5" />
 </div>
 
 
@@ -507,7 +507,7 @@
 </div>
 
 <div align="center">
-  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/d427b4cb-4e69-424b-b09e-248f17464134" />
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/f66a2c99-770e-42ca-9a71-b1806946ad0c" />
 </div>
 
 
