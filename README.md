@@ -328,7 +328,7 @@
 </div>
 
 <div align="center">
-  <code>Upload Video / screen Here</code>
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/cdedb951-d97a-474d-a217-2422be3919f7"/>
 </div>
 
 
@@ -370,7 +370,7 @@
 </div>
 
 <div align="center">
-  <code>Upload Video Here</code>
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/bfa1e97d-6392-4dec-a1fc-bb05048cf6d2" />
 </div>
 
 
@@ -404,7 +404,8 @@
 </div>
 
 <div align="center">
-  <code>Insert VIDEO INSTALL MAP</code>
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/3f9f9968-ac55-465e-bc28-17aebfc787ea"/>
+
 </div>
 
 <!--
@@ -435,7 +436,8 @@
 </div>
 
 <div align="center">
-  <code>Insert VIDEO INSTALL MOD</code>
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/ca8f0727-b2dd-41f3-bbea-9bcaf61a89f1"/>
+
 </div>
 
 <!--
@@ -450,7 +452,7 @@
 </div>
 
 <div align="center">
-  <code>Insert VIDEO INSTALL MODEL</code>
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/d983b34b-9f4c-4274-aee4-4c1c03dd90d0"/>
 </div>
 
 
