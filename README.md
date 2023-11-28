@@ -294,7 +294,6 @@
 
 <div align="center">
   <img src="https://github.com/Zagrios/bs-manager/assets/40648115/1e4a2f98-af16-45aa-821d-0c4e90e1e54b" />
-
 </div>
 
 
@@ -353,7 +352,7 @@
 </div>
 
 <div align="center">
-  <code>Insert launch arguments interface here</code>
+  <img src="https://github.com/Zagrios/bs-manager/assets/40648115/222e771c-bb24-451f-bcd1-23c752387be3" />
 </div>
 
 
@@ -500,15 +499,15 @@
       href="https://github.com/Zagrios/bs-manager">BSManager</a> offers customization options accessible via the version
     settings and by clicking on "Edit":</p>
   <ul>
-    <li><strong>Color</strong>: Customize the appearance of your instances by choosing a specific color for each of
-      them.</li>
     <li><strong>Name</strong>: Name your instances in a way that distinguishes and identifies them easily when switching
       from one to another.</li>
+    <li><strong>Color</strong>: Customize the appearance of your instances by choosing a specific color for each of
+      them.</li>
   </ul>
 </div>
 
 <div align="center">
-  <code>Insert screen or video if interesting</code>
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/d427b4cb-4e69-424b-b09e-248f17464134" />
 </div>
 
 
