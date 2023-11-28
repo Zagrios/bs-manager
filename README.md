@@ -293,7 +293,8 @@
 </div>
 
 <div align="center">
-  <img src="https://github.com/Zagrios/bs-manager/assets/40648115/1e4a2f98-af16-45aa-821d-0c4e90e1e54b" />
+  <img height=450 src="https://github.com/Zagrios/bs-manager/assets/40648115/1e4a2f98-af16-45aa-821d-0c4e90e1e54b" />
+  <img height=450 src="https://github.com/Zagrios/bs-manager/assets/40648115/3674e629-542d-4de3-b8db-b248f25126d7" />
 </div>
 
 
