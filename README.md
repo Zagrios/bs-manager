@@ -312,7 +312,7 @@
 </div>
 
 <div align="center">
-  <code>Upload Video Here</code>
+  <video src = "https://github.com/Zagrios/bs-manager/assets/40648115/5e0d1503-7a58-4134-878b-a2b31a8936df" />
 </div>
 
 
@@ -421,7 +421,7 @@
 </div>
 
 <div align="center">
-  <code>Insert VIDEO INSTALL playlist</code>
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/c2765468-e203-4989-85f8-2c3e54d8aba4" />
 </div>
 
 <!--
