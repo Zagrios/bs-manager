@@ -93,7 +93,7 @@
                 <summary><a href="#downloading-multiple-versions">Downloading multiple versions</a></summary>
                 <ul>
                   <li>via Steam account</li>
-                  <li>via Oculus (pc) account</li>
+                  <li>via Oculus (PCVR) account</li>
                 </ul>
               </details>
             </li>
