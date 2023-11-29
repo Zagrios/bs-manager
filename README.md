@@ -228,7 +228,7 @@
     <li>Download the <a href="https://github.com/Zagrios/bs-manager/releases/latest">latest release</a> from <a
         href="https://github.com/Zagrios/bs-manager/releases">Releases</a>.</li>
     <li>Execute the installer and <a href="https://github.com/Zagrios/bs-manager">BSManager</a> will start itself.</li>
-    <li>Once its done if you want to download a version, select a version and download it! </li>
+    <li>Once it's done, if you want to download a version, select a version and download it! </li>
     <li>From the version page you can choose options, launch the version, and more!</li>
   </ul>
 </div>
@@ -481,8 +481,7 @@
   <p>Adjust the appearance of <a href="https://github.com/Zagrios/bs-manager">BSManager</a> to your preferences with a
     variety of customization options available in the tool's settings:</p>
   <ul>
-    <li><strong>Theme</strong>: Choose between light, dark themes or follow system settings for seamless integration
-      into your work environment.</li>
+    <li><strong>Theme</strong>: Choose between a light or dark theme, or follow the system settings for seamless integration into your work environment.</li>
     <li><strong>Color</strong>: Select your preferred primary and secondary colors using hexadecimal codes, allowing you
       to customize the visual appearance of the tool to your liking.</li>
   </ul>
@@ -534,8 +533,8 @@
 -->
 <div>
   <h2>Support</h2>
-  <p>For quick and interactive support, it is recommended to join our <a href="link_to_discord_server">Discord
-      server</a>. For bugs or more complex issues, you can also submit an <a href="link_to_github_repo">issue on
+  <p>For quick and interactive support, it is recommended to join our <a href="https://discord.gg/uSqbHVpKdV">Discord
+      server</a>. For bugs or more complex issues, you can also submit an <a href="https://github.com/Zagrios/bs-manager/issues">issue on
       GitHub</a>.</p>
 </div>
 
