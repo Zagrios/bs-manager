@@ -92,8 +92,8 @@
               <details>
                 <summary><a href="#downloading-multiple-versions">Downloading multiple versions</a></summary>
                 <ul>
-                  <li><a href="#via-steam">via Steam account</a></li>
-                  <li><a href="#via-oculus-coming-soon">via Oculus (pc) account</a></li>
+                  <li>via Steam account</li>
+                  <li>via Oculus (pc) account</li>
                 </ul>
               </details>
             </li>
