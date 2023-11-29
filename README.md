@@ -131,7 +131,7 @@
           <ul>
             <li><a href="#support">Support</a></li>
             <li><a href="#credits">Credits</a></li>
-            <li><a href="#contributors">Contributors</a></li>
+            <li><a href="#Contributing">Contributing</a></li>
           </ul>
         </details>
       </li>
@@ -547,10 +547,10 @@
 <div>
   <h2>Credits</h2>
   <ul>
-    <li><a href="https://github.com/Zagrios">Zagrios</a> - Founder & Lead Developer</li>
-    <li><a href="https://github.com/Iluhadesu">Iluhadesu</a> - Project Team & Development help</li>
-    <li><a href="https://github.com/GaetanGrd">GaetanGrd</a> - Project Team & Development help</li>
-    <li><a href="https://github.com/cheddZy">cheddZy</a> - Icon creator</li>
+    <li><a href="https://github.com/Zagrios">Zagrios</a> - Lead Developer & Founder.</li>
+    <li><a href="https://github.com/Iluhadesu">Iluhadesu</a> - Co-Developer & Co-Founder, Discord Bot Developer.</li>
+    <li><a href="https://github.com/GaetanGrd">GaetanGrd</a> - Co-Developer & Co-Founder, Documentation Lead.</li>
+    <li><a href="https://github.com/cheddZy">cheddZy</a> - Icon Creator.</li>
   </ul>
 </div>
 
