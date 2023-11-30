@@ -45,7 +45,7 @@
                 "title": "共有マップ",
                 "search-bar": {
                     "search-placeholder": "マップを検索",
-                    "filters-btn": "絞り込み　　　",
+                    "filters-btn": "絞り込み",
                     "dropdown": {
                         "export-maps": "マップをエクスポート",
                         "delete-maps": "マップを削除"
