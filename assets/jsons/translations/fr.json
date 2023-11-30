@@ -155,6 +155,7 @@
                     "es-ES": "Español",
                     "de-DE": "Deutsch",
                     "ru-RU": "Русский",
+                    "zh-CN": "简体中文",
                     "ja-JP": "日本語",
                     "translated": {
                         "en-EN": "Anglais, Royaume-Uni",
@@ -163,6 +164,7 @@
                         "es-ES": "Espagnol",
                         "de-DE": "Allemand",
                         "ru-RU": "Russe",
+                        "zh-CN": "Chinois simplifié",
                         "ja-JP": "Japonais"
                     }
                 }
@@ -523,10 +525,10 @@
                     "placeholder": "Entre ton mot de passe",
                     "max-length-warning": "Le mot de passe dépasse 64 caractères ! Si le mot de passe est invalide, tente d'entrer seulement ses 64 premiers caractères."
                 },
-                "qr":{
+                "qr": {
                     "label": "Ou avec un QR code",
-                    "note":{
-                        "use-the":"Utilisez l'",
+                    "note": {
+                        "use-the": "Utilisez l'",
                         "steam-mobile-app": "application mobile Steam",
                         "to-connect-with-qr": "pour vous connecter avec un QR code."
                     }
@@ -539,7 +541,7 @@
                 "submit": "Se connecter"
             }
         },
-        "steam-auth-approve":{
+        "steam-auth-approve": {
             "title": "Attente de confirmation",
             "protected-by-mobile-auth": "Compte protégé par l'authentificateur mobile.",
             "use-steam-app-to-approve": "Utilisez l'application mobile Steam pour confirmer la connexion...",
@@ -676,15 +678,15 @@
             "advanced-launch": "Lancement avancé",
             "valid-btn": "Créer le raccourci"
         },
-        "connect-to-meta":{
+        "connect-to-meta": {
             "title": "Connexion à Meta",
-            "body":{
+            "body": {
                 "token-needed": "Votre token de connexion à Meta est nécessaire pour télécharger Beat Saber.",
                 "need-cookie-enabled": "En vous connectant à Meta, une fenêtre de connexion s'ouvrira et vous pourrez alors débuter le processus de connexion. Veillez à bien accepter les cookies sinon quoi, il se pourrait que l'on n'arrive pas à récupérer votre token pour démarrer le téléchargement.",
                 "enter-token-manually": "Entrer mon token de connexion manuellement",
                 "enter-token-manually-tooltip": "Cela vous permettra d'entrer votre token de connexion sans passer par la connexion Meta."
             },
-            "stay":"Se souvenir de moi",
+            "stay": "Se souvenir de moi",
             "connect-to-meta": "Se connecter à Meta"
         },
         "original-version-backup-oculus": {

@@ -1,4 +1,4 @@
-import { CopyOptions, copy, createReadStream, ensureDir, move, stat, symlink } from "fs-extra";
+import { CopyOptions, copy, createReadStream, ensureDir, move, realpath, stat, symlink } from "fs-extra";
 import { access, mkdir, rm, readdir, unlink, lstat, readlink } from "fs/promises";
 import path from "path";
 import { Observable, concatMap, from } from "rxjs";
@@ -165,16 +165,20 @@ export function hashFile(filePath: string, algorithm = "sha256"): Promise<string
 }
 
 export async function dirSize(dirPath: string): Promise<number>{
-    const files = await readdir(dirPath, { withFileTypes: true });
 
-    const paths = files.map(async file => {
-        const fullPath = path.join(dirPath, file.name);
+    const entries = await readdir(dirPath);
 
-        if (file.isDirectory()) return dirSize(fullPath);
+    const paths = entries.map(async entry => {
+        const fullPath = path.join(dirPath, entry);
+        const realPath = await realpath(fullPath);
+        const stat = await lstat(realPath);
 
-        if (file.isFile()) {
-            const { size } = await stat( fullPath );
-            return size;
+        if (stat.isDirectory()) { 
+            return dirSize(fullPath);
+        }
+
+        if (stat.isFile()) {
+            return stat.size;
         }
 
         return 0;
@@ -185,9 +189,15 @@ export async function dirSize(dirPath: string): Promise<number>{
 
 export function rxCopy(src: string, dest: string, option?: CopyOptions): Observable<Progression> {
 
-    return from(dirSize(src)).pipe(
+    const dirSizePromise = dirSize(src).catch(err => {
+        log.error("dirSizePromise", err);
+        return 0;
+    });
+
+    return from(dirSizePromise).pipe(
         concatMap(totalSize => {
             const progress: Progression = { current: 0, total: totalSize };
+
             return new Observable<Progression>(sub => {
                 sub.next(progress);
                 copy(src, dest, {...option, filter: (src) => {

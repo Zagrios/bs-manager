@@ -84,7 +84,7 @@ export function FilterPanel({ className, ref, playlist = false, filter, onChange
     };
 
     const renderLabel = (text: string | number, isMax: boolean): JSX.Element => {
-        return <span className={`bg-inherit absolute top-[calc(100%+4px)] h-5 font-bold rounded-md shadow-center shadow-black px-1 flex items-center ${isMax ? "text-lg" : "text-sm"}`}>{text}</span>;
+        return <span className={`bg-inherit absolute top-[calc(100%+4px)] whitespace-nowrap h-5 font-bold rounded-md shadow-center shadow-black px-1 flex items-center ${isMax ? "text-lg" : "text-sm"}`}>{text}</span>;
     };
 
     const onNpssChange = ([min, max]: number[]) => {

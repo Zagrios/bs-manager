@@ -155,6 +155,7 @@
                     "es-ES": "Español",
                     "de-DE": "Deutsch",
                     "ru-RU": "Русский",
+                    "zh-CN": "简体中文",
                     "ja-JP": "日本語",
                     "translated": {
                         "en-EN": "Inglés, Reino Unido",
@@ -163,6 +164,7 @@
                         "es-ES": "Español",
                         "de-DE": "Alemán",
                         "ru-RU": "Ruso",
+                        "zh-CN": "Chino simplificado",
                         "ja-JP": "Japonés"
                     }
                 }
@@ -526,10 +528,10 @@
                     "placeholder": "Introduce tu contraseña",
                     "max-length-warning": "¡La contraseña supera los 64 caracteres! Si la contraseña es inválida, intenta ingresar solo sus primeros 64 caracteres."
                 },
-                "qr":{
+                "qr": {
                     "label": "O con un código QR",
-                    "note":{
-                        "use-the":"Usa la ",
+                    "note": {
+                        "use-the": "Usa la ",
                         "steam-mobile-app": "aplicación Steam Mobile",
                         "to-connect-with-qr": "para conectarte con un código QR."
                     }
@@ -542,7 +544,7 @@
                 "submit": "Iniciar sesión"
             }
         },
-        "steam-auth-approve":{
+        "steam-auth-approve": {
             "title": "Esperando confirmación",
             "protected-by-mobile-auth": "Cuenta protegida por el autenticador móvil.",
             "use-steam-app-to-approve": "Use la aplicación móvil de Steam para confirmar la conexión...",
@@ -679,15 +681,15 @@
             "advanced-launch": "Lanzamiento avanzado",
             "valid-btn": "Crear el atajo"
         },
-        "connect-to-meta":{
+        "connect-to-meta": {
             "title": "Conexión a Meta",
-            "body":{
+            "body": {
                 "token-needed": "Tu token de conexión a Meta es necesario para descargar Beat Saber.",
                 "need-cookie-enabled": "Al conectarte a Meta, se abrirá una ventana de inicio de sesión y entonces podrás empezar el proceso de conexión. Asegúrate de aceptar las cookies, de lo contrario, podríamos no poder recuperar tu token para iniciar la descarga.",
                 "enter-token-manually": "Ingresar mi token de inicio de sesión manualmente",
                 "enter-token-manually-tooltip": "Esto te permitirá ingresar tu token de inicio de sesión sin pasar por el inicio de sesión de Meta."
             },
-            "stay":"Recuérdame",
+            "stay": "Recuérdame",
             "connect-to-meta": "Conectarse a Meta"
         },
         "original-version-backup-oculus": {
