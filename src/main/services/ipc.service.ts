@@ -39,6 +39,7 @@ export class IpcService {
     }
 
     public send<T>(channel: string, window: BrowserWindow, response?: T | Error): void {
+        if(window.webContents?.isDestroyed()){ return; }
         window.webContents?.send(channel, response);
     }
 
@@ -53,6 +54,7 @@ export class IpcService {
             complete: () => this.send(this.getCompleteChannel(channel), window)
         })
 
+        window.webContents.once("destroyed", () => sub.unsubscribe());
         window.webContents.ipc.once(this.getTearDownChannel(channel), () => sub.unsubscribe());
 
         sub.add(() => {
