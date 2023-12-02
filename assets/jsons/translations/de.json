@@ -157,6 +157,7 @@
                     "de-DE": "Deutsch",
                     "ru-RU": "Русский",
                     "zh-CN": "简体中文",
+                    "ja-JP": "日本語",
                     "translated": {
                         "en-EN": "Englisch, Vereinigtes Königreich",
                         "en-US": "Englisch, USA",
@@ -164,7 +165,8 @@
                         "es-ES": "Spanisch",
                         "de-DE": "Deutsch",
                         "ru-RU": "Russisch",
-                        "zh-CN": "Vereinfachtes Chinesisch"
+                        "zh-CN": "Vereinfachtes Chinesisch",
+                        "ja-JP": "Japanisch"
                     }
                 }
             },
@@ -527,10 +529,10 @@
                     "placeholder": "Geben Sie Ihr Passwort ein",
                     "max-length-warning": "Das Passwort überschreitet 64 Zeichen! Wenn das Passwort ungültig ist, versuchen Sie nur seine ersten 64 Zeichen einzugeben."
                 },
-                "qr":{
+                "qr": {
                     "label": "Oder mit einem QR-Code",
-                    "note":{
-                        "use-the":"Anmelden Sie sich über die ",
+                    "note": {
+                        "use-the": "Anmelden Sie sich über die ",
                         "steam-mobile-app": "Steam-Mobile-App",
                         "to-connect-with-qr": " per QR-Code an."
                     }
@@ -543,7 +545,7 @@
                 "submit": "Anmelden"
             }
         },
-        "steam-auth-approve":{
+        "steam-auth-approve": {
             "title": "Warten auf Bestätigung",
             "protected-by-mobile-auth": "Konto durch mobile Authentifizierung geschützt.",
             "use-steam-app-to-approve": "Verwenden Sie die Steam Mobile-App, um die Verbindung zu bestätigen...",
@@ -680,15 +682,15 @@
             "advanced-launch": "Erweiterte Start",
             "valid-btn": "Verknüpfung erstellen"
         },
-        "connect-to-meta":{
+        "connect-to-meta": {
             "title": "Mit Meta verbinden",
-            "body":{
+            "body": {
                 "token-needed": "Dein Meta-Verbindungstoken wird benötigt, um Beat Saber herunterzuladen.",
                 "need-cookie-enabled": "Beim Einloggen in Meta wird ein Anmeldefenster geöffnet und du kannst dann den Anmeldevorgang beginnen. Bitte stelle sicher, dass Cookies akzeptiert werden, sonst könnten wir deinen Token zum Starten des Downloads nicht abrufen.",
                 "enter-token-manually": "Mein Anmelde-Token manuell eingeben",
                 "enter-token-manually-tooltip": "Dies ermöglicht es Ihnen, Ihren Anmelde-Token einzugeben, ohne sich über Meta anzumelden."
             },
-            "stay":"Angemeldet bleiben",
+            "stay": "Angemeldet bleiben",
             "connect-to-meta": "Mit Meta verbinden"
         },
         "original-version-backup-oculus": {
