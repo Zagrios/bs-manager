@@ -159,7 +159,10 @@ export class LocalPlaylistsManagerService {
                     await this.installBPListFile(playlistPath, version);
 
                     const versionMapsFolder = await this.maps.getMapsFolderPath(version);
-                    const realDestMapsFolder = await realpath(versionMapsFolder);
+                    const realDestMapsFolder = await realpath(versionMapsFolder).catch(e => {
+                        log.error(e);
+                        return versionMapsFolder;
+                    });
 
                     if(realSourceMapsFolder === realDestMapsFolder) { continue; }
 
