@@ -1,0 +1,988 @@
+{
+    "misc": {
+        "download": "下載",
+        "add": "新增",
+        "verify": "驗證",
+        "launch": "啟動",
+        "mods": "Mod",
+        "maps": "譜面",
+        "playlists": "歌單",
+        "models": "模型",
+        "cancel": "取消",
+        "delete": "刪除",
+        "accept": "接受",
+        "refuse": "拒絕",
+        "apply": "應用",
+        "copy": "複製",
+        "copied": "已複製!"
+    },
+    "nav-bar": {
+        "add-version": "新增版本",
+        "settings": "設定",
+        "shared": {
+            "text": "共享",
+            "tooltip": "共享內容"
+        }
+    },
+    "pages": {
+        "shared-maps": {
+            "title": "共享譜面 "
+        },
+        "version-viewer": {
+            "launch-mods": {
+                "oculus": "Oculus 模式",
+                "oculus-description": "若使用 Steam 版 BeatSaber，這允許你在繞過 SteamVR 的同時使用 Oculus 的 VR comsposer，可能會有性能提升。（不只是 Oculus 頭顯）",
+                "desktop": "FPFC 模式",
+                "desktop-description": "第一人稱飛控模式允許你使用鍵盤 WASD 和滑鼠在遊戲中進行導航。你無需帶上頭顯即可進行測試!",
+                "debug": "Debug 模式",
+                "debug-description": "為 IPA 啟用輸出日誌窗口。 會顯示所用 Mod 的 debug 輸出",
+                "advanced-launch": {
+                    "button": "高級啟動",
+                    "placeholder": "額外啟動參數，例如: --revert; --nowait"
+                }
+            },
+            "maps": {
+                "title": "Shared maps",
+                "search-bar": {
+                    "search-placeholder": "譜面搜尋",
+                    "filters-btn": "篩選",
+                    "dropdown": {
+                        "export-maps": "導出譜面",
+                        "delete-maps": "刪除譜面"
+                    }
+                },
+                "tabs": {
+                    "maps": {
+                        "actions": {
+                            "add-maps": {
+                                "text": "新增"
+                            },
+                            "link-maps": {
+                                "tooltips": {
+                                    "link": "Link maps",
+                                    "unlink": "Unlink maps"
+                                }
+                            }
+                        },
+                        "empty-maps": {
+                            "text": "無譜面",
+                            "button": "下載譜面"
+                        }
+                    }
+                }
+            },
+            "mods": {
+                "loading-mods": "Mod 載入中...",
+                "no-internet": "無網路",
+                "mods-not-available": "該版本 BeatSaber 暫無可用 Mod",
+                "buttons": {
+                    "more-infos": "更多資訊",
+                    "install-or-update": "安裝或更新"
+                },
+                "mods-grid": {
+                    "header-bar": {
+                        "name": "名稱",
+                        "installed": "已安裝",
+                        "latest": "最新",
+                        "description": "描述",
+                        "dropdown": {
+                            "uninstall-all": "全部移除"
+                        }
+                    }
+                }
+            },
+            "dropdown": {
+                "open-folder": "打開文件夾",
+                "verify-files": "驗證文件",
+                "clone": "Clone",
+                "edit": "編輯",
+                "uninstall": "移除",
+                "create-shortcut": "創建捷徑",
+                "shared-folders": "Shared Folders",
+                "restore-oculus-folder": "Restore the folder"
+            }
+        },
+        "available-versions": {
+            "title": "選擇版本",
+            "steam-release": "發布頁面",
+            "dropdown": {
+                "refresh": "刷新版本",
+                "import-version": "導入版本"
+            },
+            "recommended": "推薦",
+            "recommended-tooltip": "多 Mod 版本"
+        },
+        "settings": {
+            "steam-and-oculus": {
+                "title": "Steam & Oculus",
+                "description": "登出後，您可以在下一次下載 Beat Saber 時切換帳戶。",
+                "logout": "登出",
+                "download-platform": {
+                    "title": "，預設平台",
+                    "desc": "選擇要下載 BeatSaber 的預設平台。",
+                    "always-ask": "總是詢問"
+                }
+            },
+            "appearance": {
+                "title": "外觀",
+                "description": "選擇 BSManager 的兩種主題色",
+                "reset": "重設",
+                "sub-title": "主題",
+                "themes": {
+                    "dark": "Dark",
+                    "light": "Light",
+                    "os": "與系統保持同步"
+                }
+            },
+            "installation-folder": {
+                "title": "安裝文件夾",
+                "description": "為 BeatSaber 不同版本及未來其他特性修改預設文件夾",
+                "choose-folder": "選擇文件夾"
+            },
+            "additional-content": {
+                "title": "附加內容",
+                "description": "允許你自訂 BeatSaber 的附加內容！",
+                "deep-links": {
+                    "sub-title": "一鍵安裝"
+                }
+            },
+            "language": {
+                "title": "語言",
+                "description": "選擇語言",
+                "languages": {
+                    "en-EN": "English, UK",
+                    "en-US": "English, US",
+                    "fr-FR": "Français",
+                    "es-ES": "Español",
+                    "de-DE": "Deutsch",
+                    "ru-RU": "Русский",
+                    "zh-CN": "簡體中文",
+                    "zh-TW": "正體中文",
+                    "ja-JP": "日本語",
+                    "translated": {
+                        "en-EN": "英式英語",
+                        "en-US": "美式英語",
+                        "fr-FR": "法語",
+                        "es-ES": "西班牙語",
+                        "de-DE": "德語",
+                        "ru-RU": "俄語",
+                        "zh-CN": "簡體中文",
+                        "zh-TW": "正體中文",
+                        "ja-JP": "日語"
+                    }
+                }
+            },
+            "patreon": {
+                "title": "支持 BSManager 💖",
+                "description": "支持該項目並幫助我們持續改進 BSManager。",
+                "buttons": {
+                    "support": "支持 BSManager 🥰",
+                    "supporters": "支持者 👀"
+                },
+                "view": {
+                    "no-supporters": "暫無支持者",
+                    "sponsors": "贊助者",
+                    "supporters": "支持者"
+                }
+            },
+            "discord": {
+                "description": "在社交媒體上關注我們，加入 BSManager 社區！"
+            },
+            "contribution": {
+                "description": "建議新功能或報告錯誤以幫助改進 BSManager！",
+                "buttons": {
+                    "request-features": "請求新功能",
+                    "report-bug": "報告 bug",
+                    "open-logs": "打開日誌"
+                }
+            }
+        }
+    },
+    "notifications": {
+        "types": {
+            "error": "🚨 錯誤",
+            "warning": "⚠️ 警告",
+            "success": "🎉 成功"
+        },
+        "common": {
+            "msg": {
+                "error-occurred": "發生了一個錯誤"
+            }
+        },
+        "shared": {
+            "errors": {
+                "titles": {
+                    "operation-running": "操作進行中",
+                    "no-internet": "無網路"
+                },
+                "msg": {
+                    "operation-running": "等待當前操作完成，然後重試。",
+                    "no-internet": "檢查你的連接並重試。"
+                }
+            }
+        },
+        "bs-download": {
+            "success": {
+                "titles": {
+                    "download-success": "下載完成",
+                    "verification-finished": "驗證完成"
+                }
+            },
+            "steam-download": {
+                "warnings": {
+                    "msg": {
+                        "ManifestChecksum": "之前下載的清單與新的清單不匹配 🤔",
+                        "ConnectionTimeout": "你的網路連接似乎不穩定 🥶",
+                        "ConnectionLost": "連接已遺失，請重試...",
+                        "ConnectionError": "無法連接到 Steam，請重試...",
+                        "Unknown": "發生了奇怪的事情 🤔 你的連接可能不穩定。"
+                    }
+                },
+                "errors": {
+                    "titles": {
+                        "dotnet-required": "需要 .NET 6"
+                    },
+                    "msg": {
+                        "401": "Steam 似乎不想讓我們下載 Beat Saber😢",
+                        "404": "無法聯繫 Steam 伺服器。",
+                        "Password": "密碼無效",
+                        "InvalidCredentials": "登錄憑據無效、連接未經批准或登錄嘗試次數過多。",
+                        "NoManifest": "未找到清單",
+                        "DirectoryCreate": "無法安裝必要的文件夾。",
+                        "NotAvailableApp": "您是否在沒有安裝 BeatSaber 的情況下嘗試下載？🤣",
+                        "DepotNotFound": "無法下載 Beat Saber 😥 稍後重試 😕",
+                        "NotCompleted": "下載無法完成 ¯\\_(ツ)_/¯",
+                        "InvalidManifest": "無法下載 Beat Saber 😥 稍後重試 😕",
+                        "NoValidKey": "無法下載 Beat Saber 😥 稍後重試 😕",
+                        "NoManifestCode": "無法下載 Beat Saber 😥 稍後重試 😕",
+                        "Unknown": "發生了一個錯誤 ¯\\_(ツ)_/¯",
+                        "NoServer": "U無法聯繫 Steam 伺服器。",
+                        "NotAllowed": "顯然你沒有下載 Beat Saber 的許可 🥱",
+                        "ConnectionTimeout": "無法連接到 Steam 😕",
+                        "SteamLib": "如果你遇到此錯誤，請在 GitHub 上報告該錯誤並附上日誌。",
+                        "ConnectionError": "嘗試 10 次後仍無法連接到 Steam🤯",
+                        "LicenceError": "無法獲取許可證列表。",
+                        "RateLimitExceeded": "你已經嘗試了太多次，請稍等片刻，稍後再試。",
+                        "TokenRejected": "你的登錄令牌已被拒絕 😕 請重試。",
+                        "AccessDenied": "訪問 Steam 被拒絕。",
+                        "dotnet-required": "必須安裝 .NET 6 Runtime 才能下載 Beat Saber 版本。單擊下面的按鈕下載它。"
+                    },
+                    "actions": {
+                        "download-dotnet": "下載 .NET 6"
+                    }
+                }
+            },
+            "oculus-download": {
+                "errors": {
+                    "msg": {
+                        "DOWNLOAD_MANIFEST_FAILED": "無法下載此版本的清單；你的登錄令牌可能無效。",
+                        "MANIFEST_FILE_NOT_FOUND": "找不到此版本的清單。",
+                        "PARSE_MANIFEST_FILE_FAILED": "讀取清單時發生錯誤。",
+                        "ALREADY_DOWNLOADING": "已經有一個版本在下載中。",
+                        "UNABLE_TO_GET_MANIFEST": "無法獲取下載所需的清單。",
+                        "VERIFY_INTEGRITY_FAILED": "文件驗證過程中發生錯誤。",
+                        "SOME_FILES_FAILED_TO_DOWNLOAD": "一些文件下載失敗。",
+                        "OCULUS_LOGIN_TIMED_OUT": "獲取登錄令牌用時過長。",
+                        "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER": "Meta 登錄窗口被關閉。",
+                        "NO_META_AUTH_TOKEN": "無法獲取下載所需的 Meta 登錄令牌。",
+                        "UNKNOWN_ERROR": "發生未知錯誤。"
+                    }
+                }
+            }
+        },
+        "bs-import-version": {
+            "success": {
+                "start-import": {
+                    "title": "正在導入 👌",
+                    "desc": "導入可能需要幾分鐘時間（依賴於你如何配置）。"
+                },
+                "imported": {
+                    "title": "已導入版本 🎉"
+                }
+            },
+            "errors": {
+                "import-error": {
+                    "desc": "檢查所選文件夾是否為 Beat Saber 的安裝內容。"
+                }
+            }
+        },
+        "settings": {
+            "move-folder": {
+                "success": {
+                    "titles": {
+                        "transfer-started": "正在傳輸",
+                        "transfer-finished": "傳輸完成"
+                    },
+                    "descs": {
+                        "transfer-started": "傳輸已開始，可能需要幾分鐘時間（依賴於你如何配置）。"
+                    }
+                },
+                "errors": {
+                    "titles": {
+                        "transfer-failed": "傳輸失敗 😕"
+                    },
+                    "descs": {
+                        "COPY_TO_SUBPATH": "目標文件夾不能是源文件夾的子文件夾。",
+                        "restore-linked-folders": "恢復共享文件夾時發生錯誤。你仍然可以通過版本頁面上的'共享文件夾'菜單手動恢復它們。"
+                    }
+                }
+            },
+            "steam": {
+                "success": {
+                    "titles": {
+                        "logout": "斷開與 Steam 的連接"
+                    }
+                }
+            },
+            "additional-content": {
+                "deep-link": {
+                    "select-all": "全選",
+                    "activation": {
+                        "success": {
+                            "title": "一鍵安裝啟用成功！",
+                            "description": "一鍵安裝已被啟用。"
+                        },
+                        "error": {
+                            "description": "無法啟用一鍵安裝。"
+                        }
+                    },
+                    "deactivation": {
+                        "success": {
+                            "title": "一鍵安裝已停用！",
+                            "description": "一鍵安裝安裝已被停用。"
+                        },
+                        "error": {
+                            "description": "發生未知錯誤。"
+                        }
+                    },
+                    "check-all-enabled": {
+                        "title": "一鍵安裝已禁用",
+                        "description": "一個或多個一鍵安裝被禁用。前往設定以啟用它們。",
+                        "actions": {
+                            "settings": "設定",
+                            "not-remind": "不再提醒"
+                        }
+                    }
+                }
+            }
+        },
+        "bs-launch": {
+            "success": {
+                "titles": {
+                    "BS_LAUNCHING": "啟動中...🚀",
+                    "STEAM_LAUNCHING": "Steam 正在啟動！"
+                },
+                "msg": {
+                    "BS_LAUNCHING": "別忘了熱身哦 😉",
+                    "STEAM_LAUNCHING": "Beat Saber 會在 Steam 啟動後自動啟動。"
+                }
+            },
+            "errors": {
+                "titles": {
+                    "UNKNOWN_ERROR": "無法啟動",
+                    "STEAM_NOT_RUNNING": "Steam 未運行",
+                    "OCULUS_NOT_RUNNING": "Oculus 未運行",
+                    "BS_ALREADY_RUNNING": "Beat Saber 已在運行",
+                    "EXE_NOT_FINDED": "缺少文件",
+                    "EXIT": "突然停止",
+                    "OCULUS_LIB_NOT_FOUND": "未找到 Oculus 庫"
+                },
+                "msg": {
+                    "UNKNOWN_ERROR": "發生未知錯誤。",
+                    "STEAM_NOT_RUNNING": "啟動 BeatSaber 前必須運行 Steam。",
+                    "OCULUS_NOT_RUNNING": "啟動 BeatSaber 前必須運行 Oculus。",
+                    "BS_ALREADY_RUNNING": "再次啟動前請關閉 BeatSaber。",
+                    "EXE_NOT_FINDED": "某些文件似乎遺失了，嘗試驗證文件。",
+                    "EXIT": "BeatSaber 突然停止，請檢查文件。",
+                    "OCULUS_LIB_NOT_FOUND": "檢查 Oculus 應用是否正確安裝，以及庫是否在 Oculus 中正確定義。"
+                },
+                "actions": {
+                    "STEAM_NOT_RUNNING": "啟動 Steam"
+                }
+            }
+        },
+        "steam": {
+            "steam-launching": {
+                "title": "Steam 正在啟動！",
+                "description": "Beat Saber 會在 Steam 啟動後自動啟動。"
+            }
+        },
+        "custom-version": {
+            "errors": {
+                "titles": {
+                    "CantEditSteam": "無法編輯",
+                    "CantRename": "無法重命名",
+                    "VersionAlreadExist": "該版本已存在",
+                    "CantClone": "無法複製"
+                },
+                "msg": {
+                    "CantEditSteam": "你不能編輯 Steam 版本。不過你可以複製它。"
+                }
+            },
+            "success": {
+                "titles": {
+                    "CloningFinished": "複製完成 🎉"
+                }
+            }
+        },
+        "mods": {
+            "install-mods": {
+                "titles": {
+                    "success": "Mod 已安裝 🎉",
+                    "warning": "Mod 已安裝 🤔"
+                },
+                "msg": {
+                    "success": "所有 Mod 已被安裝。",
+                    "warning": "一個或多個 Mod 無法安裝。",
+                    "errors": {
+                        "no-mods": "沒有 Mod 可安裝。",
+                        "cannot-install-bsipa": "BSIPA安裝失敗 😨"
+                    }
+                }
+            },
+            "uninstall-mod": {
+                "titles": {
+                    "success": "Mod 已移除 🎉"
+                },
+                "msg": {
+                    "errors": {
+                        "no-mods": "該 Mod 未安裝 😑"
+                    }
+                }
+            },
+            "uninstall-all-mods": {
+                "titles": {
+                    "success": "所有 Mod 已移除 🎉"
+                },
+                "msg": {
+                    "success": "所有 Mod 已被移除。",
+                    "errors": {
+                        "no-mods": "該版本中沒有安裝 Mod 😑"
+                    }
+                }
+            }
+        },
+        "maps": {
+            "one-click-install": {
+                "success": "譜面安裝完成",
+                "error": "安裝譜面時發生錯誤"
+            }
+        },
+        "playlists": {
+            "one-click-install": {
+                "success": "歌單安裝完成",
+                "error": "歌單安裝時發生錯誤"
+            }
+        },
+        "models": {
+            "one-click-install": {
+                "success": "模型安裝完成",
+                "error": "模型安裝時發生錯誤"
+            }
+        },
+        "shared-folder": {
+            "info": {
+                "userdata-backup-created": {
+                    "title": "備份已創建",
+                    "msg": "共享 “UserData” 文件夾可能會產生錯誤，如果出現問題，請取消關聯該文件夾以恢復備份"
+                }
+            }
+        },
+        "create-launch-shortcut": {
+            "success": {
+                "title": "捷徑已創建",
+                "msg": "捷徑已在桌面上創建"
+            },
+            "error": {
+                "msg": "創建捷徑時發生錯誤"
+            }
+        }
+    },
+    "modals": {
+        "misc": {
+            "remember-my-choice": "記住我的選擇"
+        },
+        "choose-store": {
+            "title": "選擇哪個平台？",
+            "body": "選擇你希望為其下載 BeatSaber 的平台。",
+            "set-in-settings": "在設定中設定預設平台"
+        },
+        "guard": {
+            "title": "Steam Guard",
+            "inputs": {
+                "guard-code": {
+                    "label": "Guard Code",
+                    "placeholder": "輸入你的 Guard Code"
+                }
+            },
+            "buttons": {
+                "submit": "登錄"
+            }
+        },
+        "steam-login": {
+            "title": "Steam 登錄",
+            "inputs": {
+                "username": {
+                    "label": "使用帳戶名登入",
+                    "placeholder": "輸入你的帳戶名"
+                },
+                "password": {
+                    "label": "密碼",
+                    "placeholder": "輸入你的密碼",
+                    "max-length-warning": "密碼超過64個字元！如果密碼無效，請嘗試只輸入前64個字元。"
+                },
+                "qr": {
+                    "label": "或使用二維碼",
+                    "note": {
+                        "use-the": "使用",
+                        "steam-mobile-app": "Steam 行動應用",
+                        "to-connect-with-qr": "通過二維碼登錄。"
+                    }
+                },
+                "stay": "記住我"
+            },
+            "why-credentials": "為什麼需要我的憑證？",
+            "need-help-to-connect": "我需要幫助以訪問我的帳戶！",
+            "buttons": {
+                "submit": "登錄"
+            }
+        },
+        "steam-auth-approve": {
+            "title": "等待確認",
+            "protected-by-mobile-auth": "帳戶受移動認證器保護。",
+            "use-steam-app-to-approve": "使用 Steam 行動應用程式確認連接...",
+            "not-access-to-steam-app": "我無法訪問 Steam 行動應用程式"
+        },
+        "steam-credentials": {
+            "title": "Steam 憑證",
+            "p-1": "憑證僅用於下載遊戲，因為 Steam 需要驗證你是否已經購買了遊戲，以便允許你下載它。它們不會被保存，而是直接傳遞給 DepotDownloader。如果你不想輸入你的憑證，你可以按照此教學操作：",
+            "p-2": "然後點擊右上角的齒輪圖示，選擇“導入版本”，選擇 Beat Saber 已下載的文件夾（如果你按照上面的教學，你應該會得到正確的位置）"
+        },
+        "bs-import-version": {
+            "title": "導入版本",
+            "description": "導入 Beat Saber 版本以與 BSManager 一起使用。這將把所選的 Beat Saber 安裝文件夾複製到 BSManager 版本文件夾。",
+            "oculus-version": "Oculus 版本",
+            "oculus-version-tooltip": "檢查是否為 Oculus 版本",
+            "buttons": {
+                "submit": "導入版本"
+            }
+        },
+        "bs-uninstall": {
+            "title": "移除",
+            "description": "你確定要移除 Beat Saber {version} 嗎？你將不得不重新下載它才能遊玩。",
+            "buttons": {
+                "submit": "移除"
+            }
+        },
+        "install-folder": {
+            "title": "安裝文件夾",
+            "description": "更改預設安裝文件夾將導致所有已安裝數據移動到新文件夾。",
+            "buttons": {
+                "submit": "選擇文件夾"
+            }
+        },
+        "edit-version": {
+            "title": "編輯版本",
+            "buttons": {
+                "submit": "編輯"
+            }
+        },
+        "clone-version": {
+            "title": "複製版本",
+            "description": "複製版本可以讓你在兩個版本之間分離附加的 BeatSaber 內容。",
+            "inputs": {
+                "name": {
+                    "label": "名稱",
+                    "placeholder": "版本名稱"
+                },
+                "color": {
+                    "label": "顏色"
+                }
+            },
+            "buttons": {
+                "submit": "複製"
+            }
+        },
+        "uninstall-mod": {
+            "title": "移除",
+            "description": "你確定要移除 {mod} 嗎？這可能會導致其他已安裝的 Mod 失效。",
+            "description-bsipa": "你確定要移除 BSIPA 嗎？之後所有已安裝的 Mod 將不再起作用。"
+        },
+        "uninstall-all-mods": {
+            "title": "Mod 移除中",
+            "description": "你確定要移除 {version} 版本的所有 Mod 移除嗎？該操作無法回退。"
+        },
+        "maps-actions": {
+            "delete-maps": {
+                "title": {
+                    "single": "刪除該譜面？",
+                    "multiple": "刪除譜面？"
+                },
+                "desc": {
+                    "single": "你確定要刪除譜面 {name} 嗎？",
+                    "multiple": "你確定要刪除全部 {nb} 個譜面嗎？"
+                },
+                "info": {
+                    "desc": {
+                        "single": "該譜面是共享譜面的一部分",
+                        "multiple": "這些譜面是共享譜面的一部分"
+                    },
+                    "title": {
+                        "single": "該譜面也將從使用共享譜面的版本中移除",
+                        "multiple": "這些譜面也將從使用共享譜面的版本中移除"
+                    }
+                }
+            },
+            "link-maps": {
+                "title": "關聯譜面",
+                "desc": "關聯譜面可以在所有啟用此功能的版本之間共享譜面。一旦關聯，該版本將受益於共享譜面。",
+                "info": "新增和刪除的譜面也將被共享",
+                "keep-maps": {
+                    "label": "保留譜面",
+                    "title": "保留譜面將會把當前版本的所有譜面複製到共享譜面文件夾。否則，該版本的譜面將不會被保留，它們將遺失。"
+                },
+                "valid-btn": "關聯譜面"
+            },
+            "unlink-maps": {
+                "title": "取消關聯譜面",
+                "desc": "請注意，取消關聯譜面後該版本將無法使用共享譜面，直到重新啟用。",
+                "keep-maps": {
+                    "label": "保留譜面",
+                    "title": "保留譜面將會在取消關聯後把共享文件夾的所有譜面複製到當前版本。如果此項被禁用，譜面也不會遺失。"
+                },
+                "valid-btn": "取消關聯譜面"
+            }
+        },
+
+        "download-maps": {
+            "search-btn": "搜尋",
+            "loading-maps": "譜面載入中...",
+            "no-maps-found": "未找到譜面",
+            "no-internet": "無網路"
+        },
+        "mods-disclaimer": {
+            "title": "免責聲明",
+            "p-1": "選擇使用 Mod，你需要理解：",
+            "li-1": "你可能會遇到原版遊戲中不存在的問題。99.9% 的 bug、崩潰和延遲都是由 Mod 引起的。",
+            "li-2": "模組可能會因更新而失效，這是正常的——當這種情況發生時，請保持耐心和尊重，因為模組製作者都是有真實生活的志願者。",
+            "li-3": "Beat Games並不是故意想要破壞 Mod。他們希望能夠修改代碼庫，有時這會破壞 Mod，但他們並不是想要消滅 Mod。",
+            "p-2": "不要因為與 Mod 相關的問題攻擊遊戲開發者，反之亦然——Mod 製作者和遊戲開發者是兩個不同的群體。總之，不要做個 SB。"
+        },
+        "shared-folders": {
+            "title": "共享文件夾",
+            "description": "關聯 Beat Saber 文件夾，以便與其他版本中的共享文件夾同步其內容。請注意，刪除操作也會被共享。",
+            "buttons": {
+                "add-folder": "新增文件夾",
+                "link-folder": "關聯文件夾",
+                "unlink-folder": "取消關聯文件夾",
+                "link-all": "關聯所有"
+            }
+        },
+        "create-launch-shortcut": {
+            "title": "創建捷徑",
+            "desc": "創建捷徑使得你可以在不通過 BSManager 的情況下以特定選項啟動 BeatSaber",
+            "launch-options": "啟動選項",
+            "advanced-launch": "高級啟動",
+            "valid-btn": "創建捷徑"
+        },
+        "connect-to-meta": {
+            "title": "連接到 Meta",
+            "body": {
+                "token-needed": "需要 Meta 登錄令牌用於下載 Beat Saber。",
+                "need-cookie-enabled": "通過登錄 Meta，將打開一個登錄窗口，然後你可以開始登錄過程。請確保接受 cookie，否則我們可能無法檢索你的令牌以開始下載。",
+                "enter-token-manually": "手動輸入我的登錄令牌",
+                "enter-token-manually-tooltip": "這將允許你在不通過 Meta 登錄的情況下輸入你的登錄令牌。"
+            },
+            "stay": "記住我",
+            "connect-to-meta": "連接到 Meta"
+        },
+        "original-version-backup-oculus": {
+            "title": "警告",
+            "body": {
+                "must-be-installed-once": "你必須至少從 Oculus 商店安裝過一次 BeatSaber，否則 BeatSaber 可能會在啟動後自動關閉。",
+                "need-backup": "要啟動該版本，位於你的 Oculus 庫中的 BeatSaber 安裝文件夾將被重命名。",
+                "can-restore-later": "如果需要，你可以通過前往 BSManager 的原始 Oculus 版本選項並點擊'恢復文件夾'來恢復它。",
+                "tips-launch-oculus": "提示：只要原始版本沒有被恢復，你就可以直接從 Oculus 啟動該版本。"
+            },
+            "not-remind-me": "不再提醒我",
+            "understood": "明白了"
+        },
+        "enter-meta-token": {
+            "title": "Meta 令牌",
+            "body": {
+                "need-token": "要下載 BeatSaber，需要你的 Meta 登錄令牌。",
+                "how-obtain-token": "如何獲取我的 Meta 令牌？",
+                "input-label": "Meta 令牌",
+                "token-is-invalid": "令牌無效。"
+            },
+            "valid-btn": "驗證"
+        }
+    },
+    "maps": {
+        "map-filter-panel": {
+            "duration": "時長",
+            "tags": "標籤",
+            "specificities": "general",
+            "requirements": "要求"
+        },
+        "map-types": {
+            "accuracy": "精確度",
+            "balanced": "平衡",
+            "challenge": "挑戰",
+            "dancestyle": "舞蹈",
+            "fitness": "健身",
+            "speed": "速度",
+            "tech": "技術"
+        },
+        "map-styles": {
+            "dance": "Dance",
+            "swing": "Swing",
+            "nightcore": "Nightcore",
+            "folk": "Folk",
+            "family": "Family",
+            "ambient": "Ambient",
+            "funk": "Funk",
+            "jazz": "Jazz",
+            "soul": "Soul",
+            "speedcore": "Speedcore",
+            "punk": "Punk",
+            "rb": "R&B",
+            "holiday": "Holiday",
+            "vocaloid": "Vocaloid",
+            "jrock": "J-rock",
+            "trance": "Trance",
+            "drumbass": "Drum & Bass",
+            "comedy": "Comedy",
+            "instrumental": "Instrumental",
+            "hardcore": "Hardcore",
+            "kpop": "K-pop",
+            "indie": "Indie",
+            "techno": "Techno",
+            "house": "House",
+            "game": "Video game",
+            "film": "Film",
+            "alt": "Alternative",
+            "dubstep": "Dubstep",
+            "metal": "Metal",
+            "anime": "Anime",
+            "hiphop": "Hiphop",
+            "jpop": "J-pop",
+            "rock": "Rock",
+            "pop": "Pop",
+            "electronic": "Electronic",
+            "classical-orchestral": "Classical & Orchestral"
+        },
+        "map-specificities": {
+            "automapper": "AI",
+            "ranked": "Ranked",
+            "curated": "Curated",
+            "verified": "Verified",
+            "fullSpread": "Full spread"
+        },
+        "difficulties": {
+            "Easy": "Easy",
+            "Normal": "Normal",
+            "Hard": "Hard",
+            "Expert": "Expert",
+            "ExpertPlus": "Expert+"
+        },
+        "map-item": {
+            "by": "By {songAutor}",
+            "mapped-by": "mapped by"
+        }
+    },
+    "models": {
+        "types": {
+            "singular": {
+                "avatar": "avatar",
+                "saber": "光劍",
+                "platform": "平台",
+                "bloq": "方塊"
+            },
+            "plural": {
+                "avatar": "avatars",
+                "saber": "光劍",
+                "platform": "平台",
+                "bloq": "方塊"
+            }
+        },
+        "sorts": {
+            "name": "名稱",
+            "date": "日期",
+            "author": "作者"
+        },
+        "panel": {
+            "actions": {
+                "search": "搜尋模型",
+                "drop-down": {
+                    "delete": "刪除模型",
+                    "export": "導出模型"
+                },
+                "link-models": "關聯模型",
+                "unlink-models": "取消關聯模型"
+            },
+            "grid": {
+                "loading": "模型載入中...",
+                "no-models": "無模型",
+                "download-models": "下載模型"
+            }
+        },
+        "modals": {
+            "delete-model": {
+                "title": "刪除該模型",
+                "desc": "確定要刪除模型 {modelName} 嗎？",
+                "linked-annotation": "該模型將從所有關聯版本中移除。"
+            },
+            "delete-models": {
+                "title": "刪除模型",
+                "desc": "確定要刪除 {nb} 個模型嗎？",
+                "linked-annotation": "這些模型將從所有關聯版本中移除。"
+            },
+            "download-models": {
+                "search-btn": "搜尋",
+                "search-placeholder": "搜尋模型",
+                "search-tips": {
+                    "header": {
+                        "tag": "Tag",
+                        "desc": "描述"
+                    },
+                    "author-desc": "僅顯示指定作者的模型。",
+                    "hash-desc": "僅顯示具有指定哈希值的模型。",
+                    "tag-desc": "僅顯示具有指定 tag 的模型。",
+                    "name-desc": "僅顯示具有指定名稱的模型。",
+                    "discordid-desc": "僅顯示來自指定 Discord 用戶的模型。",
+                    "status-desc": "僅顯示具有指定狀態的模型。（僅限個人資料，且僅限作者）"
+                },
+                "no-models": "未找到模型",
+                "no-internet": "無網路連接",
+                "error-occured": "發生了一個錯誤，稍後重試。"
+            },
+            "link-models": {
+                "avatar": {
+                    "title": "關聯 Avatar",
+                    "desc": "關聯 Avatar 允許在所有啟用此功能的版本之間共享 Avatar。一旦關聯，該版本將受益於共享 Avatar。",
+                    "info": "對 Avatar 的新增和刪除也將被共享",
+                    "keep-models": {
+                        "label": "保留 Avatar",
+                        "title": "保留 Avatar 將會把當前版本的所有 Avatar 複製到共享 Avatar文件夾。否則，該版本的 Avatar將不會被保留，它們將遺失。"
+                    },
+                    "valid-btn": "關聯 Avatar "
+                },
+                "saber": {
+                    "title": "關聯光劍",
+                    "desc": "關聯光劍允許在所有啟用此功能的版本之間共享光劍。一旦關聯，該版本將受益於共享光劍。",
+                    "info": "對光劍的新增和刪除也將被共享",
+                    "keep-models": {
+                        "label": "保留光劍",
+                        "title": "保留光劍將會把當前版本的所有光劍複製到共享光劍文件夾。否則，該版本的光劍將不會被保留，它們將遺失。"
+                    },
+                    "valid-btn": "關聯光劍"
+                },
+                "platform": {
+                    "title": "關聯平台",
+                    "desc": "關聯平台允許在所有啟用此功能的版本之間共享平台。一旦關聯，該版本將受益於共享平台。",
+                    "info": "對平台的新增和刪除也將被共享",
+                    "keep-models": {
+                        "label": "保留平台",
+                        "title": "保留平台將會把當前版本的所有平台複製到共享平台文件夾。否則，該版本的平台將不會被保留，它們將遺失。"
+                    },
+                    "valid-btn": "關聯平台"
+                },
+                "bloq": {
+                    "title": "關聯方塊",
+                    "desc": "關聯方塊允許在所有啟用此功能的版本之間共享方塊。一旦關聯，該版本將受益於共享方塊。",
+                    "info": "對方塊的新增和刪除也將被共享",
+                    "keep-models": {
+                        "label": "保留方塊",
+                        "title": "保留方塊將會把當前版本的所有方塊複製到共享方塊文件夾。否則，該版本的方塊將不會被保留，它們將遺失。"
+                    },
+                    "valid-btn": "關聯方塊"
+                }
+            },
+            "unlink-models": {
+                "avatar": {
+                    "title": "取消關聯 Avatar",
+                    "desc": "請注意，取消關聯 Avatar 將禁用該版本的共享 Avatar 使用，直到重新啟用。",
+                    "keep-models": {
+                        "label": "保留 Avatar",
+                        "title": "保留 Avatar 將會在取消關聯後把共享文件夾的所有 Avatar 複製到當前版本。如果此項被禁用，Avatar 將不會遺失。"
+                    },
+                    "valid-btn": "取消關聯 Avatar"
+                },
+                "saber": {
+                    "title": "取消關聯光劍",
+                    "desc": "請注意，取消關聯光劍將禁用該版本的共享光劍使用，直到重新啟用。",
+                    "keep-models": {
+                        "label": "保留光劍",
+                        "title": "保留光劍將會在取消關聯後把共享文件夾的所有光劍複製到當前版本。如果此項被禁用，光劍將不會遺失。"
+                    },
+                    "valid-btn": "取消關聯光劍"
+                },
+                "platform": {
+                    "title": "取消關聯平台",
+                    "desc": "請注意，取消關聯平台將禁用該版本的共享平台使用，直到重新啟用。",
+                    "keep-models": {
+                        "label": "保留平台",
+                        "title": "保留平台將會在取消關聯後把共享文件夾的所有平台複製到當前版本。如果此項被禁用，平台將不會遺失。"
+                    },
+                    "valid-btn": "取消關聯平台"
+                },
+                "bloq": {
+                    "title": "取消關聯方塊",
+                    "desc": "請注意，取消關聯方塊將禁用該版本的共享方塊使用，直到重新啟用。",
+                    "keep-models": {
+                        "label": "保留方塊",
+                        "title": "保留方塊將會在取消關聯後把共享文件夾的所有方塊複製到當前版本。如果此項被禁用，方塊將不會遺失。"
+                    },
+                    "valid-btn": "取消關聯方塊"
+                }
+            }
+        },
+        "notifications": {
+            "prevent-for-mods": {
+                "title": "需要的 Mod",
+                "desc": "確保你已經安裝了在 BeatSaber 中使用模型所需的 Mod",
+                "go-to-mods": "前往 Mod 頁",
+                "not-remind": "不再提醒我"
+            },
+            "prevent-for-models-breaks": {
+                "title": "已損壞的模型",
+                "desc": "因 BeatSaber 引擎更新，這些模型在該版本中不再可用。"
+            },
+            "export-success": {
+                "title": "導出成功 🎉"
+            }
+        }
+    },
+    "beat-saver": {
+        "maps-sorts": {
+            "Latest": "最新",
+            "Relevance": "相關",
+            "Rating": "評分",
+            "Curated": "Curated"
+        }
+    },
+    "auto-update": {
+        "checking": "檢查更新中",
+        "downloading": "下載更新中"
+    },
+    "bs-shortcut-launch": {
+        "beat-saber-launching": "啟動 Beat Saber",
+        "launching": "啟動中",
+        "open-bsmanager": "打開 BSManager",
+        "status-text": {
+            "init": "正在初始化...",
+            "success": {
+                "BS_LAUNCHING": "Beat Saber 啟動中...",
+                "STEAM_LAUNCHING": "Steam 啟動中...",
+                "STEAM_LAUNCHED": "Steam 成功啟動！",
+                "UNABLE_TO_LAUNCH_STEAM": "無法啟動 Steam, 強制啟動 Beat Saber ..."
+            }
+        }
+    },
+    "dateformat": {
+        "dayNames": ["週日", "週一", "週二", "週三", "週四", "週五", "週六", "星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"],
+        "monthNames": ["1 月", "2 月", "3 月", "4 月", "5 月", "6 月", "7 月", "8 月", "9 月", "10 月", "11 月", "12 月", "一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+        "timeNames": ["上午", "下午", "上午", "下午", "上午", "下午", "上午", "下午"]
+    }
+}
