@@ -312,7 +312,7 @@
 </div>
 
 <div align="center">
-  <video src = "https://github.com/Zagrios/bs-manager/assets/40648115/5e0d1503-7a58-4134-878b-a2b31a8936df" />
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/ba39aceb-f55f-4e58-8386-51fcfaad4957"/> 
 </div>
 
 
@@ -421,7 +421,7 @@
 </div>
 
 <div align="center">
-  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/c2765468-e203-4989-85f8-2c3e54d8aba4" />
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/733fe6bb-c157-4c47-8a79-f8062380bcc8" />
 </div>
 
 <!--
