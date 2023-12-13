@@ -313,6 +313,7 @@
 
 <div align="center">
   <video src = "https://github.com/Zagrios/bs-manager/assets/40648115/5e0d1503-7a58-4134-878b-a2b31a8936df" />
+  <video src = "https://github.com/Zagrios/bs-manager/assets/40648115/52d8d26c-02e7-4326-a715-e9b482db27fe" />
 </div>
 
 
