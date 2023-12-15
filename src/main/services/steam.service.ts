@@ -22,9 +22,9 @@ export class SteamService {
     public async getActiveUser(): Promise<number>{
         const res = await list("HKCU\\Software\\Valve\\Steam\\ActiveProcess");
         const key = res["HKCU\\Software\\Valve\\Steam\\ActiveProcess"];
-        if(!key.exists){ throw "Key \"HKCU\\Software\\Valve\\Steam\\ActiveProcess\" not exist"; }
+        if(!key.exists){ throw new Error("Key \"HKCU\\Software\\Valve\\Steam\\ActiveProcess\" not exist"); }
         const registryValue = key.values.ActiveUser as RegDwordValue;
-        if(!registryValue){ throw "Value \"ActiveUser\" not exist"; }
+        if(!registryValue){ throw new Error("Value \"ActiveUser\" not exist"); }
         return registryValue.value;
     }
 
