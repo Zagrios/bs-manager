@@ -3,6 +3,7 @@ import { AvailableVersionItem } from "./available-version-item.component";
 import { BSVersion } from "shared/bs-version.interface";
 import { AvailableVersionsContext } from "renderer/pages/available-versions-list.components";
 import equal from "fast-deep-equal";
+import { swapElements } from "shared/helpers/array.helpers";
 
 type Props = {
     versions: BSVersion[]
@@ -19,9 +20,16 @@ export function AvailableVersionsSlide({ versions }: Props) {
         context.setSelectedVersion(version);
     }
 
+    const getVersions = () => {
+        if(!versions?.length) { return []; }
+        const recommendedIndex = versions.findIndex(v => v.recommended);
+        if(recommendedIndex === -1) { return versions; }
+        return swapElements(recommendedIndex, 0, [...versions]);
+    }
+
     return (
         <ol className="w-full flex items-start justify-center gap-6 shrink-0 content-start flex-wrap p-4 overflow-x-hidden overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900">
-            {versions.map(version => (
+            {getVersions().map(version => (
                 <AvailableVersionItem key={version.BSManifest} version={version} selected={equal(version, context.selectedVersion)} onClick={() => setSelectedVersion(version)}/>
             ))}
         </ol>
