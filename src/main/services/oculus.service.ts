@@ -1,4 +1,4 @@
-import regedit from "regedit";
+import { list } from "regedit-rs";
 import path from "path";
 import { pathExist } from "../helpers/fs.helpers";
 import log from "electron-log";
@@ -29,26 +29,25 @@ export class OculusService {
         }
 
         const oculusLibsRegKey = "HKCU\\SOFTWARE\\Oculus VR, LLC\\Oculus\\Libraries";
+        const libsRegData = await list(oculusLibsRegKey).then(data => data[oculusLibsRegKey]);
 
-        const libsRegData = (await regedit.promisified.list([oculusLibsRegKey]))["HKCU\\SOFTWARE\\Oculus VR, LLC\\Oculus\\Libraries"];
-
-        if (!libsRegData.exists || !libsRegData.keys) {
+        if (!libsRegData.keys?.length) {
+            log.info("Registry key \"HKCU\\SOFTWARE\\Oculus VR, LLC\\Oculus\\Libraries\" not found");
             return null;
         }
 
         const defaultLibraryId = libsRegData.values.DefaultLibrary.value as string;
 
         const libsPath: OculusLibrary[] = (
-            await Promise.all(
-                libsRegData.keys.map(async key => {
-                    const originalPath = (await regedit.promisified.list([`${oculusLibsRegKey}\\${key}`]))[`${oculusLibsRegKey}\\${key}`];
-                    if (!originalPath.exists || !libsRegData.values || !originalPath.values.OriginalPath) {
-                        return null;
-                    }
+            await Promise.all(libsRegData.keys.map(async key => {
+                const originalPath = await list([`${oculusLibsRegKey}\\${key}`]).then(res => res[`${oculusLibsRegKey}\\${key}`]);
+                
+                if (!originalPath.values?.OriginalPath) {
+                    return null;
+                }
 
-                    return { id: key, path: originalPath.values.OriginalPath.value, isDefault: defaultLibraryId === key } as OculusLibrary
-                }, [])
-            )
+                return { id: key, path: originalPath.values.OriginalPath.value, isDefault: defaultLibraryId === key } as OculusLibrary
+            }, []))
         ).filter(Boolean);
 
         this.oculusLibraries = libsPath;

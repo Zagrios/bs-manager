@@ -1,6 +1,6 @@
 import { execOnOs } from "../../helpers/env.helpers";
+import { list, createKey, putValue, deleteKey, RegSzValue } from "regedit-rs";
 import path from "path";
-import regedit from "regedit";
 
 export class LivService {
 
@@ -23,8 +23,8 @@ export class LivService {
     public async isLivInstalled(): Promise<boolean> {
         return execOnOs({
             win32: async () => {
-                const regRes = await regedit.promisified.list([this.livRegeditKey]).then(res => res[this.livRegeditKey]);
-                return regRes?.exists;
+                const regRes = await list(this.livRegeditKey).then(res => res[this.livRegeditKey]);
+                return regRes.exists;
             },
         }, true);
     }
@@ -33,25 +33,13 @@ export class LivService {
         return execOnOs({
             win32: async () => {
                 const livExternalAppRegeditKey = path.join(this.livExternalAppsRegeditKey, entry.id);
-                await regedit.promisified.createKey([livExternalAppRegeditKey]);
-                await regedit.promisified.putValue({
+                await createKey(livExternalAppRegeditKey);
+                await putValue({
                     [livExternalAppRegeditKey]: {
-                        "InstallPath": {
-                            value: entry.installPath,
-                            type: "REG_SZ"
-                        },
-                        "Executable": {
-                            value: entry.executable,
-                            type: "REG_SZ"
-                        },
-                        "Arguments": {
-                            value: entry.arguments,
-                            type: "REG_SZ"
-                        },
-                        "Name": {
-                            value: entry.name,
-                            type: "REG_SZ"
-                        }
+                        InstallPath: new RegSzValue(entry.installPath),
+                        Executable: new RegSzValue(entry.executable),
+                        Arguments: new RegSzValue(entry.arguments),
+                        Name: new RegSzValue(entry.name)
                     }
                 });
             }
@@ -62,7 +50,7 @@ export class LivService {
         return execOnOs({
             win32: async () => {
                 const shotcutsKeys = ids.map(id => path.join(this.livExternalAppsRegeditKey, id));
-                return regedit.promisified.deleteKey(shotcutsKeys);
+                return deleteKey(shotcutsKeys);
             }
         })
     }
@@ -70,7 +58,7 @@ export class LivService {
     public getLivShortcuts(): Promise<LivEntry[]> {
         return execOnOs({
             win32: async () => {
-                const regRes = await regedit.promisified.list([this.livExternalAppsRegeditKey]).then(res => res[this.livExternalAppsRegeditKey]);
+                const regRes = await list(this.livExternalAppsRegeditKey).then(res => res[this.livExternalAppsRegeditKey]);
                 
                 if(!regRes.exists){
                     return [];
@@ -78,7 +66,7 @@ export class LivService {
 
                 const promises = regRes.keys.map(async key => {
                     const shortcutKey = path.join(this.livExternalAppsRegeditKey, key);
-                    const entries = await regedit.promisified.list([shortcutKey]).then(res => res[shortcutKey]);
+                    const entries = await list(shortcutKey).then(res => res[shortcutKey]);
 
                     if(!entries.exists){
                         return undefined;
