@@ -33,14 +33,28 @@ export class I18nService {
                 filter(l => !!l),
                 distinctUntilChanged()
             )
-            .subscribe(lang => {
+            .subscribe(async lang => {
                 this.cache.clear();
-                this.dictionary = require(`../../../assets/jsons/translations/${lang.split("-")[0]}.json`);
+                this.dictionary = this.importLang([lang, lang.split("-")[0]], "en");
 
                 i18n.dayNames = getProperty(this.dictionary, "dateformat.dayNames");
                 i18n.monthNames = getProperty(this.dictionary, "dateformat.monthNames");
                 i18n.timeNames = getProperty(this.dictionary, "dateformat.timeNames");
             });
+    }
+
+    private importLang(lang: string[], fallback: string): Record<string, string> {
+
+        for (const l of lang) {
+            try {
+                return require(`../../../assets/jsons/translations/${l.toLowerCase()}.json`);
+            }
+            catch (e) {
+                continue;
+            }
+        }
+
+        return require(`../../../assets/jsons/translations/${fallback.toLowerCase()}.json`);
     }
 
     public getSupportedLanguages(): string[] {
