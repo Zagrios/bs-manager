@@ -505,7 +505,8 @@
         "choose-store": {
             "title": "选择哪个平台？",
             "body": "选择你希望为其下载 BeatSaber 的平台。",
-            "set-in-settings": "在设置中设定默认平台"
+            "set-in-settings": "在设置中设定默认平台",
+            "unavailable": "由于Oculus最近的更改，目前不再提供降级Oculus版本的服务。我们正在调查此问题，并将在BSManager Discord服务器上保持更新。"
         },
         "guard": {
             "title": "Steam Guard",
