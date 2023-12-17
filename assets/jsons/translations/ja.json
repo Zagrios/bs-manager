@@ -947,7 +947,7 @@
             },
             "prevent-for-models-breaks": {
                 "title": "モデルが壊れています!",
-                "desc": "Beat Saberエンジンのアップデートしたため、このバージョンではモデルが機能しなくなりました。"
+                "desc": "Beat Saberのエンジンアップデート以来、すべてのカスタムモデルのMODが壊れており、更新が必要です。まだ更新されていません。"
             },
             "export-success": {
                 "title": "エクスポート完了🎉"
