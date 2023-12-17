@@ -947,7 +947,7 @@
             },
             "prevent-for-models-breaks": {
                 "title": "Gebrochene Modelle",
-                "desc": "Seit dem Update des Beat Saber-Motors sind Modelle für diese Version nicht mehr funktional."
+                "desc": "Seit dem Update der Beat Saber Engine sind alle benutzerdefinierten Modellmods defekt und müssen aktualisiert werden. Sie wurden noch nicht aktualisiert."
             },
             "export-success": {
                 "title": "Export abgeschlossen 🎉"

@@ -947,7 +947,7 @@
             },
             "prevent-for-models-breaks": {
                 "title": "Broken models",
-                "desc": "Since the Beat Saber engine update, models are no longer functional for this version."
+                "desc": "Since the Beat Saber engine update, all custom model mods have broken and need to be updated. They have not been updated yet."
             },
             "export-success": {
                 "title": "Export completed 🎉"

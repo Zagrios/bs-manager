@@ -943,7 +943,7 @@
             },
             "prevent-for-models-breaks": {
                 "title": "Modèles cassés",
-                "desc": "Depuis la mise à jour du moteur de Beat Saber, les modèles ne sont plus fonctionnels pour cette version."
+                "desc": "Depuis la mise à jour du moteur Beat Saber, tous les mods de modèles personnalisés ne sont plus fonctionnels et doivent être mis à jour. Ils n'ont pas encore été mis à jour."
             },
             "export-success": {
                 "title": "Export terminé 🎉"

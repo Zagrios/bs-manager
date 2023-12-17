@@ -948,7 +948,7 @@
             },
             "prevent-for-models-breaks": {
                 "title": "已损坏的模型",
-                "desc": "因 BeatSaber 引擎更新，这些模型在该版本中不再可用。"
+                "desc": "自从Beat Saber引擎更新以来，所有自定义模型的MOD都已损坏，需要更新。它们还没有被更新。"
             },
             "export-success": {
                 "title": "导出成功 🎉"
