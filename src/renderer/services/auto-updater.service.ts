@@ -4,7 +4,7 @@ import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
 import { I18nService } from "./i18n.service";
 import { ModalService } from "renderer/services/modale.service";
-import { ChangelogModal } from "renderer/components/modal/modal-types/changelog-modal.component";
+import { ChangelogModal } from "renderer/components/modal/modal-types/chabgelog-modal/changelog-modal.component";
 import { error } from "console";
 
 
@@ -86,12 +86,12 @@ export class AutoUpdaterService {
     private async getChangelogVersion(version:string): Promise<ChangelogVersion> {
         const changelogs = await this.getChangelog();
         if (!changelogs) {
-            throw new Error("No changelog found");
+            throw new Error(`No changelogs found`);
         }
 
         const changelogVersion = changelogs[version];
         if (!changelogVersion) {
-            throw new Error("No changelog found for this version");
+            throw new Error(`No changelog found for this version (${version})`);
         }
 
 
