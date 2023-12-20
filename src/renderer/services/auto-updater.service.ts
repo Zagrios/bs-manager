@@ -5,8 +5,6 @@ import { ProgressBarService } from "./progress-bar.service";
 import { I18nService } from "./i18n.service";
 import { ModalService } from "renderer/services/modale.service";
 import { ChangelogModal } from "renderer/components/modal/modal-types/chabgelog-modal/changelog-modal.component";
-import { error } from "console";
-
 
 export interface Changelog {
   [version: string]: ChangelogVersion;
@@ -44,7 +42,7 @@ export class AutoUpdaterService {
         this.i18nService = I18nService.getInstance();
         this.modal = ModalService.getInstance();
 
-        //this.getChangelog().then(changelog => {this.changelog.next(changelog);});
+
         this.downloadProgress$ = this.ipcService.watch<number>("update-download-progress").pipe(map(res => (res.success ? res.data : 0)));
     }
 
