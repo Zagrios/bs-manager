@@ -252,16 +252,23 @@ export class LocalMapsManagerService {
         }
 
         const zipUrl = map.versions.at(0).downloadURL;
-
+        const mapFolderName = sanitize(`${map.id}-${map.name}`);
         const mapsFolder = await this.getMapsFolderPath(version);
+
+        const installedMap = await this.loadMapInfoFromPath(path.join(mapsFolder, mapFolderName)).catch(e => {
+            log.error("loadMapInfoFromPath", e);
+            return null;
+        });
+        
+        if(map.versions.every(version => version.hash === installedMap?.hash)) {
+            return installedMap;
+        }
 
         const { zip, zipPath } = await this.downloadMapZip(zipUrl);
 
         if (!zip) {
             throw `Cannot download ${zipUrl}`;
         }
-
-        const mapFolderName = sanitize(`${map.id}-${map.name}`);
 
         const mapPath = path.join(mapsFolder, mapFolderName);
 

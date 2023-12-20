@@ -1,0 +1,988 @@
+{
+    "misc": {
+        "download": "ダウンロード",
+        "add": "追加　",
+        "verify": "認証済み",
+        "launch": "起動",
+        "mods": "Mod",
+        "maps": "マップ",
+        "playlists": "プレイリスト",
+        "models": "モデル",
+        "cancel": "キャンセル",
+        "delete": "削除",
+        "accept": "同意する",
+        "refuse": "拒否する",
+        "apply": "適用",
+        "copy": "コピー",
+        "copied": "コピー済み!"
+    },
+    "nav-bar": {
+        "add-version": "バージョンを追加",
+        "settings": "設定",
+        "shared": {
+            "text": "共有",
+            "tooltip": "共有コンテンツ"
+        }
+    },
+    "pages": {
+        "shared-maps": {
+            "title": "共有マップ"
+        },
+        "version-viewer": {
+            "launch-mods": {
+                "oculus": "Oculusモード",
+                "oculus-description": "Steam経由でBeat Saberを使用している場合、SteamVRをバイパスしてOculusのVRコンポーザーを使用できるため、パフォーマンスが向上する可能性があります。これはOculusヘッドセットを使用するために必要なものではありません。",
+                "desktop": "FPFCモード",
+                "desktop-description": "ファーストパーソン・フライング・コントローラー・モードでは、WASDとマウスを使ってゲーム内のメニューを操作できます。ヘッドセットを装着する必要がないので、テストがより簡単になります!",
+                "debug": "デバックモード",
+                "debug-description": "IPAの出力ログウィンドウを有効にします。これはMODのデバッグコンソールを表示します。",
+                "advanced-launch": {
+                    "button": "高度な起動",
+                    "placeholder": "追加引数 例：--revert; --nowait"
+                }
+            },
+            "maps": {
+                "title": "共有マップ",
+                "search-bar": {
+                    "search-placeholder": "マップを検索",
+                    "filters-btn": "絞り込み",
+                    "dropdown": {
+                        "export-maps": "マップをエクスポート",
+                        "delete-maps": "マップを削除"
+                    }
+                },
+                "tabs": {
+                    "maps": {
+                        "actions": {
+                            "add-maps": {
+                                "text": "追加"
+                            },
+                            "link-maps": {
+                                "tooltips": {
+                                    "link": "マップリンク",
+                                    "unlink": "マップリンク解除"
+                                }
+                            }
+                        },
+                        "empty-maps": {
+                            "text": "マップがありません",
+                            "button": "マップをダウンロードする"
+                        }
+                    }
+                }
+            },
+            "mods": {
+                "loading-mods": "Modを読み込み中...",
+                "no-internet": "インターネット接続がありません!",
+                "mods-not-available": "このバージョンで使用できるMODはまだありません。",
+                "buttons": {
+                    "more-infos": "詳細情報",
+                    "install-or-update": "インストールとアップデート"
+                },
+                "mods-grid": {
+                    "header-bar": {
+                        "name": "名前",
+                        "installed": "インストール済み",
+                        "latest": "最新",
+                        "description": "說明",
+                        "dropdown": {
+                            "uninstall-all": "全てアンインストールする"
+                        }
+                    }
+                }
+            },
+            "dropdown": {
+                "open-folder": "フォルダーを開く",
+                "verify-files": "ファイルの検証",
+                "clone": "クローン",
+                "edit": "編集",
+                "uninstall": "アンインストール",
+                "create-shortcut": "ショートカットを作成",
+                "shared-folders": "共有フォルダー",
+                "restore-oculus-folder": "フォルダーの復元"
+            }
+        },
+        "available-versions": {
+            "title": "バージョンを選択",
+            "steam-release": "リリースページ",
+            "dropdown": {
+                "refresh": "バージョンの更新",
+                "import-version": "バージョンをインポート"
+            },
+            "recommended": "おすすめ",
+            "recommended-tooltip": "最もModがあるバージョン"
+        },
+        "settings": {
+            "steam-and-oculus": {
+                "title": "Steam & Oculus",
+                "description": "ログアウトすると、次のBeat Saberダウンロード時にアカウントを切り替えることができます。",
+                "logout": "ログアウト",
+                "download-platform": {
+                    "title": "デフォルトプラットフォーム",
+                    "desc": "Beat Saberのダウンロードに使用するデフォルトのプラットフォームを選択します。",
+                    "always-ask": "常に尋ねる"
+                }
+            },
+            "appearance": {
+                "title": "外観",
+                "description": "BSManagerの2つのメインカラーを選択",
+                "reset": "リセット",
+                "sub-title": "テーマ",
+                "themes": {
+                    "dark": "ダーク",
+                    "light": "ライト",
+                    "os": "コンピューターと同期する"
+                }
+            },
+            "installation-folder": {
+                "title": "インストールフォルダー",
+                "description": "BeatSaberのバージョンとその他の今後の機能を入れるフォルダを変更します。",
+                "choose-folder": "フォルダーを選択"
+            },
+            "additional-content": {
+                "title": "追加コンテンツ",
+                "description": "Beat Saberをカスタマイズできる追加コンテンツ!",
+                "deep-links": {
+                    "sub-title": "OneClickインストール"
+                }
+            },
+            "language": {
+                "title": "言語",
+                "description": "言語を選択",
+                "languages": {
+                    "en-EN": "English, UK",
+                    "en-US": "English, US",
+                    "fr-FR": "Français",
+                    "es-ES": "Español",
+                    "de-DE": "Deutsch",
+                    "ru-RU": "Русский",
+                    "zh-CN": "简体中文",
+                    "zh-TW": "正體中文",
+                    "ja-JP": "日本語",
+                    "translated": {
+                        "en-EN": "イギリス英語",
+                        "en-US": "アメリカ英語",
+                        "fr-FR": "フランス語",
+                        "es-ES": "スペイン語",
+                        "de-DE": "ドイツ語",
+                        "ru-RU": "ロシア語",
+                        "zh-CN": "簡体字中国",
+                        "zh-TW": "繁体字中国",
+                        "ja-JP": "日本語"
+                    }
+                }
+            },
+            "patreon": {
+                "title": "BSManagerをサポートする 💖",
+                "description": "プロジェクトをサポートし、BSManagerの継続的な応援にご協力ください!",
+                "buttons": {
+                    "support": "BSManagerをサポート 🥰",
+                    "supporters": "サポーターの皆様 👀"
+                },
+                "view": {
+                    "no-supporters": "サポーターはまだいません...",
+                    "sponsors": "スポンサー",
+                    "supporters": "サポーターの皆様"
+                }
+            },
+            "discord": {
+                "description": "BSManagerコミュニティーのソーシャルメディアに参加してください"
+            },
+            "contribution": {
+                "description": "BSManagerを改善するために、新機能を提案したり、バグを報告してください!",
+                "buttons": {
+                    "request-features": "新機能を提案",
+                    "report-bug": "バグを報告",
+                    "open-logs": "ログを表示"
+                }
+            }
+        }
+    },
+    "notifications": {
+        "types": {
+            "error": "🚨 エラー",
+            "warning": "⚠️ 警告",
+            "success": "🎉 成功"
+        },
+        "common": {
+            "msg": {
+                "error-occurred": "エラーが発生しました"
+            }
+        },
+        "shared": {
+            "errors": {
+                "titles": {
+                    "operation-running": "稼働中",
+                    "no-internet": "インターネット接続がありません"
+                },
+                "msg": {
+                    "operation-running": "現在の処理が終了するのを待ってから、もう一度試してください。",
+                    "no-internet": "インターネット接続を確認し、もう一度お試しください。"
+                }
+            }
+        },
+        "bs-download": {
+            "success": {
+                "titles": {
+                    "download-success": "ダウンロード完了",
+                    "verification-finished": "検証完了"
+                }
+            },
+            "steam-download": {
+                "warnings": {
+                    "msg": {
+                        "ManifestChecksum": "以前にダウンロードしたマニフェストと新しいマニフェストが一致しないようです 🤔",
+                        "ConnectionTimeout": "インターネット接続が不安定なようです 🥶",
+                        "ConnectionLost": "接続が切られました。もう一度お試しください...",
+                        "ConnectionError": "Steamに接続できません。もう一度お試しください...",
+                        "Unknown": "何か変なことが起きたようだ。🤔 おそらく接続が不安定でしょう。"
+                    }
+                },
+                "errors": {
+                    "titles": {
+                        "dotnet-required": ".NET 6が必要です!"
+                    },
+                    "msg": {
+                        "401": "SteamがBeat Saberのダウンロードを許可してくれないようだ。😢",
+                        "404": "Steamサーバーに接続できません。",
+                        "Password": "パスワードが不正です。",
+                        "InvalidCredentials": "無効なログイン認証情報、許可されていない接続、またはログイン試行回数が多すぎます。",
+                        "NoManifest": "マニフェストは見つかりませんでした",
+                        "DirectoryCreate": "必要なフォルダをインストールできません。",
+                        "NotAvailableApp": "お持ちでないのにBeat Saberをダウンロードしようとしていませんか 🤣",
+                        "DepotNotFound": "Beat Saberがダウンロードできませんでした 😥 もう一度お試しください 😕",
+                        "NotCompleted": "ダウンロードができませんでした。(´・ω・`)",
+                        "InvalidManifest": "Beat Saberがダウンロードできませんでした 😥 もう一度お試しください 😕",
+                        "NoValidKey": "Beat Saberがダウンロードできませんでした 😥 もう一度お試しください 😕",
+                        "NoManifestCode": "Beat Saberがダウンロードできませんでした 😥 もう一度お試しください 😕",
+                        "Unknown": "不明なエラーが発生しました (´・ω・`)",
+                        "NoServer": "Steamサーバーに接続できません。",
+                        "NotAllowed": "どうやらBeat Saberのダウンロードは許可されていないようだ。🥱",
+                        "ConnectionTimeout": "Steamに接続できません 😕",
+                        "SteamLib": "このエラーが発生した場合は、ログを添えてGitHubにバグを報告してください。",
+                        "ConnectionError": "10回試してもSteamに接続できませんでした 🤯",
+                        "LicenceError": "ライセンスリストを取得できません。",
+                        "RateLimitExceeded": "何度も試しているのでしばらくたって、もう一度お試しください。",
+                        "TokenRejected": "ログイントークンが拒否されました 😕 もう一度お試しください。",
+                        "AccessDenied": "Steamへのアクセスが拒否されました。",
+                        "dotnet-required": "Beat Saberをダウンロードするには、.NET 6 Runtimeがインストールされている必要があります。下のボタンをクリックしてダウンロードしてください。"
+                    },
+                    "actions": {
+                        "download-dotnet": ".NET 6をダウンロード"
+                    }
+                }
+            },
+            "oculus-download": {
+                "errors": {
+                    "msg": {
+                        "DOWNLOAD_MANIFEST_FAILED": "このバージョンのマニフェストをダウンロードできません。ログイントークンが無効な可能性があります。",
+                        "MANIFEST_FILE_NOT_FOUND": "このバージョンのマニフェストが見つかりません。",
+                        "PARSE_MANIFEST_FILE_FAILED": "マニフェストの読み取り中にエラーが発生しました。",
+                        "ALREADY_DOWNLOADING": "バージョンはすでにダウンロードされています。",
+                        "UNABLE_TO_GET_MANIFEST": "ダウンロードに必要なマニフェストを取得できません。",
+                        "VERIFY_INTEGRITY_FAILED": "ファイルの検証中にエラーが発生しました。",
+                        "SOME_FILES_FAILED_TO_DOWNLOAD": "一部のファイルのダウンロードに失敗しました。",
+                        "OCULUS_LOGIN_TIMED_OUT": "ログイントークンの取得に時間がかかりすぎました。",
+                        "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER": "メタ・ログイン・ウィンドウが閉じられた。",
+                        "NO_META_AUTH_TOKEN": "ダウンロードに必要な Meta ログイン トークンを取得できません。",
+                        "UNKNOWN_ERROR": "不明なエラーが発生しました。"
+                    }
+                }
+            }
+        },
+        "bs-import-version": {
+            "success": {
+                "start-import": {
+                    "title": "インポート中 👌",
+                    "desc": "設定によっては、インポートに数分かかる場合があります。"
+                },
+                "imported": {
+                    "title": "インポート完了 🎉"
+                }
+            },
+            "errors": {
+                "import-error": {
+                    "desc": "選択したフォルダがBeat Saberのインストールフォルダであることを確認してください。"
+                }
+            }
+        },
+        "settings": {
+            "move-folder": {
+                "success": {
+                    "titles": {
+                        "transfer-started": "転送中",
+                        "transfer-finished": "転送完了"
+                    },
+                    "descs": {
+                        "transfer-started": "転送を開始しました。設定によっては数分かかる場合があります。"
+                    }
+                },
+                "errors": {
+                    "titles": {
+                        "transfer-failed": "転送失敗 😕"
+                    },
+                    "descs": {
+                        "COPY_TO_SUBPATH": "コピー先フォルダーは、コピー元フォルダーの下のフォルダーにはできません。",
+                        "restore-linked-folders": "共有フォルダのリストア中にエラーが発生しました。バージョンページの「共有フォルダ」メニューから手動で復元できます。"
+                    }
+                }
+            },
+            "steam": {
+                "success": {
+                    "titles": {
+                        "logout": "Steamから切断されました。"
+                    }
+                }
+            },
+            "additional-content": {
+                "deep-link": {
+                    "select-all": "すべて選択",
+                    "activation": {
+                        "success": {
+                            "title": "OneClickが有効になりました!",
+                            "description": "OneClickでのインストールが有効になりました。"
+                        },
+                        "error": {
+                            "description": "OneClickのインストールを有効にできません。"
+                        }
+                    },
+                    "deactivation": {
+                        "success": {
+                            "title": "OneClickが無効になりました!",
+                            "description": "OneClickでのインストールは無効になります。"
+                        },
+                        "error": {
+                            "description": "不明なエラーが発生しました。"
+                        }
+                    },
+                    "check-all-enabled": {
+                        "title": "OneClickが無効",
+                        "description": "1つ以上のOneClickインストールが無効になっています。設定から有効にしてください。",
+                        "actions": {
+                            "settings": "設定に移動",
+                            "not-remind": "二度と表示しないで"
+                        }
+                    }
+                }
+            }
+        },
+        "bs-launch": {
+            "success": {
+                "titles": {
+                    "BS_LAUNCHING": "起動中...🚀",
+                    "STEAM_LAUNCHING": "Steamの起動を確認しました!"
+                },
+                "msg": {
+                    "BS_LAUNCHING": "ウォームアップを忘れずに 😉",
+                    "STEAM_LAUNCHING": "Beat SaberはSteamの起動後に自動的に起動します。"
+                }
+            },
+            "errors": {
+                "titles": {
+                    "UNKNOWN_ERROR": "起動不可",
+                    "STEAM_NOT_RUNNING": "Steamが起動していません",
+                    "OCULUS_NOT_RUNNING": "Oculusが起動していません",
+                    "BS_ALREADY_RUNNING": "Beat Saberはすでに起動しています",
+                    "EXE_NOT_FINDED": "ファイルが見つかりません",
+                    "EXIT": "緊急停止",
+                    "OCULUS_LIB_NOT_FOUND": "Oculusライブラリが見つかりません"
+                },
+                "msg": {
+                    "UNKNOWN_ERROR": "不明なエラーが発生しました。",
+                    "STEAM_NOT_RUNNING": "BeatSaberを起動するには、Steamが起動している必要があります。",
+                    "OCULUS_NOT_RUNNING": "BeatSaberを起動するには、Oculusが起動している必要があります。",
+                    "BS_ALREADY_RUNNING": "再度起動する前にBeatSaberを閉じてください。",
+                    "EXE_NOT_FINDED": "いくつかのファイルが見つからないようです。",
+                    "EXIT": "BeatSaberが緊急停止したため、ファイルをチェックします。",
+                    "OCULUS_LIB_NOT_FOUND": "Oculusアプリケーションが正しくインストールしていることと、Oculusライブラリが正しく定義されていることを確認してください。"
+                },
+                "actions": {
+                    "STEAM_NOT_RUNNING": "Steamを起動"
+                }
+            }
+        },
+        "steam": {
+            "steam-launching": {
+                "title": "Steamを起動!",
+                "description": "Beat SaberはSteamの起動後に自動的に起動します。"
+            }
+        },
+        "custom-version": {
+            "errors": {
+                "titles": {
+                    "CantEditSteam": "編集不可",
+                    "CantRename": "改名不可能",
+                    "VersionAlreadExist": "このバージョンは既に存在しています!",
+                    "CantClone": "クローン作成不可"
+                },
+                "msg": {
+                    "CantEditSteam": "Steam版は編集できませんがクローンを作ることは可能です。"
+                }
+            },
+            "success": {
+                "titles": {
+                    "CloningFinished": "クローンが完了しました 🎉"
+                }
+            }
+        },
+        "mods": {
+            "install-mods": {
+                "titles": {
+                    "success": "Modをインストールしました 🎉",
+                    "warning": "Modをインストールしました 🤔"
+                },
+                "msg": {
+                    "success": "すべてのMODがインストールした。",
+                    "warning": "1つ以上のMODがインストールできませんでした。",
+                    "errors": {
+                        "no-mods": "インストールするMODがありません。",
+                        "cannot-install-bsipa": "BSIPAをインストールすることが出来ませんでした 😨"
+                    }
+                }
+            },
+            "uninstall-mod": {
+                "titles": {
+                    "success": "Modのアンインストール完了 🎉"
+                },
+                "msg": {
+                    "errors": {
+                        "no-mods": "Modはインストールされていません 😑"
+                    }
+                }
+            },
+            "uninstall-all-mods": {
+                "titles": {
+                    "success": "Modのアンインストール完了 🎉"
+                },
+                "msg": {
+                    "success": "すべてのModをアンインストールしました。",
+                    "errors": {
+                        "no-mods": "このバージョンのModはインストールされていません 😑"
+                    }
+                }
+            }
+        },
+        "maps": {
+            "one-click-install": {
+                "success": "マップのインストール完了",
+                "error": "マップのインストール中にエラーが発生しました"
+            }
+        },
+        "playlists": {
+            "one-click-install": {
+                "success": "プレイリストのインストール完了",
+                "error": "プレイリストのインストール中にエラーが発生しました。"
+            }
+        },
+        "models": {
+            "one-click-install": {
+                "success": "モデルのインストール完了",
+                "error": "モデルのインストール中にエラーが発生しました。"
+            }
+        },
+        "shared-folder": {
+            "info": {
+                "userdata-backup-created": {
+                    "title": "バックアップを作成しました",
+                    "msg": "'UserData'フォルダを共有するとエラーが発生する可能性があります。問題が発生した場合は、フォルダをリンク解除してバックアップを復元してください。"
+                }
+            }
+        },
+        "create-launch-shortcut": {
+            "success": {
+                "title": "ショートカットを作成しました",
+                "msg": "デスクトップにショートカットを作成されました。"
+            },
+            "error": {
+                "msg": "ショートカットの作成中にエラーが発生しました。"
+            }
+        }
+    },
+    "modals": {
+        "misc": {
+            "remember-my-choice": "この選択を記憶する"
+        },
+        "choose-store": {
+            "title": "どのプラットフォーム？",
+            "body": "Beat Saberをダウンロードするプラットフォームを選択してください。",
+            "set-in-settings": "設定からデフォルトのプラットフォームを設定する",
+            "unavailable": "Oculusによる最近の変更により、現在Oculusのバージョンダウングレードは利用できなくなりました。私たちは問題を調査しており、BSManagerのDiscordサーバーで最新情報をお知らせします。"
+        },
+        "guard": {
+            "title": "Steamガード",
+            "inputs": {
+                "guard-code": {
+                    "label": "ガードコード",
+                    "placeholder": "ガードコードを入力"
+                }
+            },
+            "buttons": {
+                "submit": "ログイン"
+            }
+        },
+        "steam-login": {
+            "title": "Steamにログイン",
+            "inputs": {
+                "username": {
+                    "label": "アカウント名でサインイン",
+                    "placeholder": "アカウント名を入力"
+                },
+                "password": {
+                    "label": "パスワード",
+                    "placeholder": "パスワードを入力",
+                    "max-length-warning": "パスワードが64文字を超えています!最初の64文字だけを入力してみてください。"
+                },
+                "qr": {
+                    "label": "もしくはQRコード",
+                    "note": {
+                        "use-the": "",
+                        "steam-mobile-app": "Steam Mobile App",
+                        "to-connect-with-qr": "でQRコードからサインインする。"
+                    }
+                },
+                "stay": "記憶する"
+            },
+            "why-credentials": "なぜアカウントが必要なのですか？",
+            "need-help-to-connect": "自分のアカウントにアクセスする方法を教えてほしい！",
+            "buttons": {
+                "submit": "サインイン"
+            }
+        },
+        "steam-auth-approve": {
+            "title": "確認待ち",
+            "protected-by-mobile-auth": "モバイル認証で保護されたアカウント。",
+            "use-steam-app-to-approve": "Steamモバイルアプリを使用して、接続を確認してください...",
+            "not-access-to-steam-app": "Steamモバイルアプリにアクセスできません。"
+        },
+        "steam-credentials": {
+            "title": "Steamアカウント情報",
+            "p-1": "なぜなら、Steamはダウンロードを許可するために、あなたがゲームを支払ったことを確認する必要があるからです。アカウント情報は保存されず、直接DepotDownloaderに渡されます。アカウント情報を入力したくない場合は、このチュートリアルに従うことができます:",
+            "p-2": "右上の歯車アイコンをクリックし、\"バージョンをインポート\"を選択し、beat saberがダウンロードされたフォルダを選択します。"
+        },
+        "bs-import-version": {
+            "title": "バージョンをインポート",
+            "description": "BSManagerで使用するBeat Saberのバージョンをインポートします。選択したBeat SaberのインストールフォルダをBSManager versionsフォルダにコピーします。",
+            "oculus-version": "Oculusバージョン",
+            "oculus-version-tooltip": "Oculusバージョンかどうかを確認する",
+            "buttons": {
+                "submit": "バージョンをインポートする"
+            }
+        },
+        "bs-uninstall": {
+            "title": "アンインストール",
+            "description": "本当にバージョン{version}のBeat Saberをアンインストールしますか？プレイするには再度ダウンロードする必要があります。",
+            "buttons": {
+                "submit": "アンインストール"
+            }
+        },
+        "install-folder": {
+            "title": "インストールフォルダー",
+            "description": "デフォルトのインストールフォルダを変更すると、インストールされているすべてのデータが新しいフォルダに移動します。",
+            "buttons": {
+                "submit": "フォルダーを選択"
+            }
+        },
+        "edit-version": {
+            "title": "名前を変更",
+            "buttons": {
+                "submit": "保存"
+            }
+        },
+        "clone-version": {
+            "title": "バージョンをクローン",
+            "description": "バージョンのクローンを作成することで、ビートセイバーの追加コンテンツを2つのバージョンに分けることができます。",
+            "inputs": {
+                "name": {
+                    "label": "名前",
+                    "placeholder": "バージョンの名前"
+                },
+                "color": {
+                    "label": "カラー"
+                }
+            },
+            "buttons": {
+                "submit": "クローン"
+            }
+        },
+        "uninstall-mod": {
+            "title": "アンインストール",
+            "description": "本当にこの{mod}をアンインストールしますか? インストールされている他のMODの誤作動を引き起こす可能性があります。",
+            "description-bsipa": "本当にBSIPAをアンインストールしますか？その後、すべてのインストールされたMODは動作しなくなります。"
+        },
+        "uninstall-all-mods": {
+            "title": "Modのアンインストール",
+            "description": "バージョン{version}のMODをすべてアンインストールしてもよろしいですか？この操作は元に戻せません。"
+        },
+        "maps-actions": {
+            "delete-maps": {
+                "title": {
+                    "single": "このマップを削除しますか?",
+                    "multiple": "いくつかのマップを削除しますか?"
+                },
+                "desc": {
+                    "single": "本当にマップ{name}を削除しますか？",
+                    "multiple": "本当に{nb}個のマップを削除しますか？"
+                },
+                "info": {
+                    "desc": {
+                        "single": "このマップは共有マップの一部です。",
+                        "multiple": "これらのマップは共有マップの一部です。"
+                    },
+                    "title": {
+                        "single": "このマップは、共有マップを使用しているバージョンからも削除されます。",
+                        "multiple": "これらのマップは、共有マップを使用しているバージョンからも削除されます。"
+                    }
+                }
+            },
+            "link-maps": {
+                "title": "マップをリンク",
+                "desc": "マップをリンクすると、この機能が有効になっているすべてのバージョン間でマップを共有できます。リンクされると、このバージョンは共有マップの恩恵を受けることができます。",
+                "info": "マップの追加と削除も共有されます。",
+                "keep-maps": {
+                    "label": "マップを保持",
+                    "title": "マップを保持すると現在のバージョンのすべてのマップを共有マップフォルダーにコピーします。有効していない場合はこのバージョンのマップは保持されず、失われます。"
+                },
+                "valid-btn": "マップをリンク"
+            },
+            "unlink-maps": {
+                "title": "マップのリンクを解除",
+                "desc": "マップのリンクを解除すると、このバージョンでは共有マップを使用できなくなります。",
+                "keep-maps": {
+                    "label": "マップを保持",
+                    "title": "マップを保持は、リンクを解除した後、共有フォルダから現在のバージョンにすべてのマップをコピーします。これを無効をしても共有マップは失われません。"
+                },
+                "valid-btn": "マップのリンクを解除"
+            }
+        },
+        "download-maps": {
+            "search-btn": "検索　",
+            "loading-maps": "マップを読込中...",
+            "no-maps-found": "マップが見つかりませんでした",
+            "no-internet": "インターネット接続無し"
+        },
+        "mods-disclaimer": {
+            "title": "免責事項",
+            "p-1": "Modの使用を選択することで、あなたは以下のことを同意することになります:",
+            "li-1": "バニラゲームには存在しない問題が発生するかもしれません。バグ、クラッシュ、ラグの99.9%はModによるものです。",
+            "li-2": "MODはアップデートによって壊されることがありますが、それは普通のことです。MOD製作者は実生活を持つボランティアなので、そのようなことが起きても忍耐強く、敬意を払ってください。",
+            "li-3": "Beat Gamesは意図的にMODを壊そうとしているわけではありません。彼らはコードベースに取り組みたいと願っており、そのためにMODが壊れることはありますが、MODを殺そうとしているわけではありません。",
+            "p-2": "MODに関する問題でゲーム開発者を攻撃したり、その逆をしたりしないでください。MOD開発者とゲーム開発者は別のグループです。"
+        },
+        "shared-folders": {
+            "title": "共有フォルダー",
+            "description": "Beat Saberのフォルダをリンクして、他のバージョンの共有フォルダとコンテンツを同期します。なお、コンテンツを削除したら共有済みのバージョンも同様に削除されます。",
+            "buttons": {
+                "add-folder": "フォルダーを追加",
+                "link-folder": "フォルダーをリンク",
+                "unlink-folder": "フォルダーのリンクを解除",
+                "link-all": "すべてリンク"
+            }
+        },
+        "create-launch-shortcut": {
+            "title": "ショートカットを作成",
+            "desc": "ショートカットを作成すると、BSManagerを起動せずに、直接Beat Saberを起動できます。",
+            "launch-options": "起動オプション",
+            "advanced-launch": "高度な起動",
+            "valid-btn": "ショートカットを作成"
+        },
+        "connect-to-meta": {
+            "title": "Metaに接続する",
+            "body": {
+                "token-needed": "Beat SaberのダウンロードにはMetaのログイントークンが必要です。",
+                "need-cookie-enabled": "Metaにログインするとログインウィンドウが開き、ログインプロセスを開始することができます。Cookieを受け入れるようにしてください。そうしないとダウンロードを開始するためのトークンを取得できない場合があります。",
+                "enter-token-manually": "ログイントークンを手動で入力する",
+                "enter-token-manually-tooltip": "これにより、Metaログインを経由せずにログイントークンを入力できるようになります。"
+            },
+            "stay": "記憶する",
+            "connect-to-meta": "Metaに接続する"
+        },
+        "original-version-backup-oculus": {
+            "title": "注意",
+            "body": {
+                "must-be-installed-once": "少なくとも一度はOculus StoreからBeat Saberをインストールしている必要があります。そうしないとBeat Saberは起動後に自動的に終了する可能性があります。",
+                "need-backup": "このバージョンを起動するには、OculusライブラリにあるBeat Saberインストールフォルダの名前を変更します。",
+                "can-restore-later": "必要であれば、BSManagerから元のOculusバージョンのオプションに行き、'フォルダを復元'をクリックして復元することができます。",
+                "tips-launch-oculus": "ヒント: 元のバージョンが復元されない限り、Oculusから直接このバージョンを起動することができます。"
+            },
+            "not-remind-me": "二度と表示しないでください",
+            "understood": "分かった"
+        },
+        "enter-meta-token": {
+            "title": "Metaトークン",
+            "body": {
+                "need-token": "Beat Saberをダウンロードするには、Metaのログイントークンが必要です。",
+                "how-obtain-token": "Metaトークンはどうやって入手すればいいですか？",
+                "input-label": "Metaトークン",
+                "token-is-invalid": "トークンが無効です。"
+            },
+            "valid-btn": "検証"
+        }
+    },
+    "maps": {
+        "map-filter-panel": {
+            "duration": "尺",
+            "tags": "タグ",
+            "specificities": "一般",
+            "requirements": "要Mod"
+        },
+        "map-types": {
+            "accuracy": "正確",
+            "balanced": "バランス",
+            "challenge": "挑戦",
+            "dancestyle": "ダンス",
+            "fitness": "フットネス",
+            "speed": "スピード",
+            "tech": "技術的"
+        },
+        "map-styles": {
+            "dance": "ダンス",
+            "swing": "スウィング",
+            "nightcore": "ナイトコア",
+            "folk": "フォーク",
+            "family": "ファミリー",
+            "ambient": "アンビエント",
+            "funk": "ファンク",
+            "jazz": "ジャズ",
+            "soul": "ソウル",
+            "speedcore": "スピードコア ",
+            "punk": "パンク",
+            "rb": "r&b",
+            "holiday": "休日",
+            "vocaloid": "ボーカロイド",
+            "jrock": "j-rock",
+            "trance": "トランス",
+            "drumbass": "ドラムンベース",
+            "comedy": "コメディ",
+            "instrumental": "器楽",
+            "hardcore": "ハードコア",
+            "kpop": "k-pop",
+            "indie": "インディー",
+            "techno": "テクノ",
+            "house": "家",
+            "game": "ビデオゲーム",
+            "film": "映画音楽",
+            "alt": "オルタナティヴ",
+            "dubstep": "ダブステップ",
+            "metal": "メタル",
+            "anime": "アニメ",
+            "hiphop": "ヒップポップ",
+            "jpop": "j-pop",
+            "rock": "ロック",
+            "pop": "ポップ",
+            "electronic": "エレクトロニック",
+            "classical-orchestral": "Classical & Orchestral"
+        },
+        "map-specificities": {
+            "automapper": "AI",
+            "ranked": "ランク入賞",
+            "curated": "厳選済み",
+            "verified": "認証済み",
+            "fullSpread": "フルスプレッド"
+        },
+        "difficulties": {
+            "Easy": "easy",
+            "Normal": "normal",
+            "Hard": "hard",
+            "Expert": "expert",
+            "ExpertPlus": "expert+"
+        },
+        "map-item": {
+            "by": "By {songAutor}",
+            "mapped-by": "作成者 "
+        }
+    },
+    "models": {
+        "types": {
+            "singular": {
+                "avatar": "アバター",
+                "saber": "セイバー",
+                "platform": "プラットフォーム",
+                "bloq": "ノーツ"
+            },
+            "plural": {
+                "avatar": "アバター",
+                "saber": "セイバー",
+                "platform": "プラットフォーム",
+                "bloq": "ノーツ"
+            }
+        },
+        "sorts": {
+            "name": "名前",
+            "date": "最近",
+            "author": "作成者"
+        },
+        "panel": {
+            "actions": {
+                "search": "モデルを検索",
+                "drop-down": {
+                    "delete": "モデルを削除",
+                    "export": "モデルをエクスポート"
+                },
+                "link-models": "モデルをリンク",
+                "unlink-models": "モデルのリンクを解除"
+            },
+            "grid": {
+                "loading": "モデルの読み込み中...",
+                "no-models": "モデルがありません",
+                "download-models": "モデルをダウンロードする"
+            }
+        },
+        "modals": {
+            "delete-model": {
+                "title": "モデルを削除",
+                "desc": "本当にモデル {modelName} を削除しますか？",
+                "linked-annotation": "このモデルはすべてのリンク済みのバージョンから削除されます。"
+            },
+            "delete-models": {
+                "title": "モデルを削除",
+                "desc": "本当に{nb}個のモデルを削除しますか？",
+                "linked-annotation": "このモデルはすべてのリンク済みのバージョンから削除されます。"
+            },
+            "download-models": {
+                "search-btn": "検索　",
+                "search-placeholder": "モデルを検索する",
+                "search-tips": {
+                    "header": {
+                        "tag": "タグ",
+                        "desc": "說明"
+                    },
+                    "author-desc": "指定した作者のモデルのみを表示",
+                    "hash-desc": "指定したハッシュを持つモデルのみを表示",
+                    "tag-desc": "指定したタグを持つモデルのみを表示",
+                    "name-desc": "指定した名前のモデルのみを表示",
+                    "discordid-desc": "指定したDiscordユーザーからのモデルのみを表示",
+                    "status-desc": "指定されたステータスのモデルのみを表示 (プロフィールのみ、作者のみ)"
+                },
+                "no-models": "モデルは見つかりませんでした。",
+                "no-internet": "インターネットに接続できませんでした。",
+                "error-occured": "エラーが発生しました。もう一度お試しください."
+            },
+            "link-models": {
+                "avatar": {
+                    "title": "アバターをリンク",
+                    "desc": "アバターをリンクすると、この機能が有効になっているすべてのバージョン間でアバターを共有できます。また、リンクすることでこのバージョンは共有アバターの恩恵を受けることができます。",
+                    "info": "アバターの追加と削除も共有されます",
+                    "keep-models": {
+                        "label": "アバターを保持",
+                        "title": "アバターを保持すると、現在のバージョンからすべてのアバターが共有アバターフォルダーにコピーされます。有効していない場合はこのバージョンのアバターは保持されず、それらは失われます。"
+                    },
+                    "valid-btn": "アバターをリンク"
+                },
+                "saber": {
+                    "title": "セーバーをリンク",
+                    "desc": "セーバーをリンクすると、この機能が有効になっているすべてのバージョン間でセーバーを共有できます。また、リンクすることでこのバージョンは共有セーバーの恩恵を受けることができます。",
+                    "info": "セーバーの追加と削除も共有されます",
+                    "keep-models": {
+                        "label": "セーバーを保持",
+                        "title": "セーバーを保持すると、現在のバージョンからすべてのセーバーが共有vフォルダーにコピーされます。有効していない場合はこのバージョンのセーバーは保持されず、それらは失われます。"
+                    },
+                    "valid-btn": "セーバーをリンク"
+                },
+                "platform": {
+                    "title": "プラットフォームをリンク",
+                    "desc": "プラットフォームをリンクすると、この機能が有効になっているすべてのバージョン間でプラットフォームを共有できます。また、リンクすることでこのバージョンは共有プラットフォームの恩恵を受けることができます。",
+                    "info": "プラットフォームの追加と削除も共有されます",
+                    "keep-models": {
+                        "label": "プラットフォームを保持",
+                        "title": "プラットフォームを保持すると、現在のバージョンからすべてのプラットフォームが共有プラットフォームフォルダーにコピーされます。有効していない場合はこのバージョンのプラットフォームは保持されず、それらは失われます。"
+                    },
+                    "valid-btn": "プラットフォームをリンク"
+                },
+                "bloq": {
+                    "title": "ノーツをリンク",
+                    "desc": "ノーツをリンクすると、この機能が有効になっているすべてのバージョン間でノーツを共有できます。また、リンクすることでこのバージョンは共有ノーツの恩恵を受けることができます。",
+                    "info": "ノーツの追加と削除も共有されます",
+                    "keep-models": {
+                        "label": "ノーツを保持",
+                        "title": "ノーツを保持すると、現在のバージョンからすべてのノーツが共有ノーツフォルダーにコピーされます。有効していない場合はこのバージョンのノーツは保持されず、それらは失われます。"
+                    },
+                    "valid-btn": "ノーツをリンク"
+                }
+            },
+            "unlink-models": {
+                "avatar": {
+                    "title": "アバターのリンクを解除",
+                    "desc": "アバターのリンクを解除すると、このバージョンでは共有アバターが使用できなくなります。",
+                    "keep-models": {
+                        "label": "アバターを保持する",
+                        "title": "アバターを保持すると、リンクを解除した後、共有フォルダにあるすべてのアバターが現在のバージョンにコピーされます。これが無効にしても共有アバターは失われません。"
+                    },
+                    "valid-btn": "アバターのリンクを解除"
+                },
+                "saber": {
+                    "title": "セーバーのリンクを解除",
+                    "desc": "セーバーのリンクを解除すると、このバージョンでは共有セーバーが使用できなくなります。",
+                    "keep-models": {
+                        "label": "セーバーを保持する",
+                        "title": "セーバーを保持すると、リンクを解除した後、共有フォルダにあるすべてのセーバーが現在のバージョンにコピーされます。これが無効にしても共有セーバーは失われません。"
+                    },
+                    "valid-btn": "セーバーのリンクを解除"
+                },
+                "platform": {
+                    "title": "プラットフォームのリンクを解除",
+                    "desc": "プラットフォームのリンクを解除すると、このバージョンでは共有プラットフォームが使用できなくなります。",
+                    "keep-models": {
+                        "label": "プラットフォームを保持する",
+                        "title": "プラットフォームを保持すると、リンクを解除した後、共有フォルダにあるすべてのプラットフォームが現在のバージョンにコピーされます。これが無効にしても共有プラットフォームは失われません。"
+                    },
+                    "valid-btn": "プラットフォームのリンクを解除"
+                },
+                "bloq": {
+                    "title": "ノーツのリンクを解除",
+                    "desc": "ノーツのリンクを解除すると、このバージョンでは共有ノーツが使用できなくなります。",
+                    "keep-models": {
+                        "label": "ノーツを保持する",
+                        "title": "ノーツを保持すると、リンクを解除した後、共有フォルダにあるすべてのノーツが現在のバージョンにコピーされます。これが無効にしても共有ノーツは失われません。"
+                    },
+                    "valid-btn": "ノーツのリンクを解除"
+                }
+            }
+        },
+        "notifications": {
+            "prevent-for-mods": {
+                "title": "Modが必要です!",
+                "desc": "Beat Saberでモデルを使用するためには必要なMODをインストールし、確認してください",
+                "go-to-mods": "Modインストーラーに移動",
+                "not-remind": "二度と表示しないで"
+            },
+            "prevent-for-models-breaks": {
+                "title": "モデルが壊れています!",
+                "desc": "Beat Saberのエンジンアップデート以来、すべてのカスタムモデルのMODが壊れており、更新が必要です。まだ更新されていません。"
+            },
+            "export-success": {
+                "title": "エクスポート完了🎉"
+            }
+        }
+    },
+    "beat-saver": {
+        "maps-sorts": {
+            "Latest": "最新",
+            "Relevance": "関連性",
+            "Rating": "レーティング",
+            "Curated": "厳選"
+        }
+    },
+    "auto-update": {
+        "checking": "アップデートを確認中",
+        "downloading": "アップデート中"
+    },
+    "bs-shortcut-launch": {
+        "beat-saber-launching": "",
+        "launching": "起動中",
+        "open-bsmanager": "BSManagerを開く",
+        "status-text": {
+            "init": "初期化中...",
+            "success": {
+                "BS_LAUNCHING": "Beat Saberを起動中...",
+                "STEAM_LAUNCHING": "Steamを起動中...",
+                "STEAM_LAUNCHED": "Steamの起動が完了しました!",
+                "UNABLE_TO_LAUNCH_STEAM": "Steamを起動できませんでした、Beat Saberを強制的に起動します..."
+            }
+        }
+    },
+    "dateformat": {
+        "dayNames": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        "monthNames": ["Jan", "Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+        "timeNames": ["a", "p", "am", "pm", "A", "P", "AM", "PM"]
+    }
+}

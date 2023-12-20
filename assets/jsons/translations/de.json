@@ -156,13 +156,19 @@
                     "es-ES": "Español",
                     "de-DE": "Deutsch",
                     "ru-RU": "Русский",
+                    "zh-CN": "简体中文",
+                    "zh-TW": "正體中文",
+                    "ja-JP": "日本語",
                     "translated": {
                         "en-EN": "Englisch, Vereinigtes Königreich",
                         "en-US": "Englisch, USA",
                         "fr-FR": "Französisch",
                         "es-ES": "Spanisch",
                         "de-DE": "Deutsch",
-                        "ru-RU": "Russisch"
+                        "ru-RU": "Russisch",
+                        "zh-CN": "Vereinfachtes Chinesisch",
+                        "zh-TW": "Traditionelles Chinesisch",
+                        "ja-JP": "Japanisch"
                     }
                 }
             },
@@ -499,7 +505,8 @@
         "choose-store": {
             "title": "Welche Plattform?",
             "body": "Wählen Sie die Plattform, von der Sie Beat Saber herunterladen möchten.",
-            "set-in-settings": "Die Standardplattform in den Einstellungen festlegen"
+            "set-in-settings": "Die Standardplattform in den Einstellungen festlegen",
+            "unavailable": "Aufgrund kürzlicher Änderungen von Oculus ist das Downgrade von Oculus-Versionen derzeit nicht mehr verfügbar. Wir untersuchen das Problem und werden Sie auf dem BSManager-Discord-Server auf dem Laufenden halten."
         },
         "guard": {
             "title": "Steam Guard",
@@ -525,10 +532,10 @@
                     "placeholder": "Geben Sie Ihr Passwort ein",
                     "max-length-warning": "Das Passwort überschreitet 64 Zeichen! Wenn das Passwort ungültig ist, versuchen Sie nur seine ersten 64 Zeichen einzugeben."
                 },
-                "qr":{
+                "qr": {
                     "label": "Oder mit einem QR-Code",
-                    "note":{
-                        "use-the":"Anmelden Sie sich über die ",
+                    "note": {
+                        "use-the": "Anmelden Sie sich über die ",
                         "steam-mobile-app": "Steam-Mobile-App",
                         "to-connect-with-qr": " per QR-Code an."
                     }
@@ -541,7 +548,7 @@
                 "submit": "Anmelden"
             }
         },
-        "steam-auth-approve":{
+        "steam-auth-approve": {
             "title": "Warten auf Bestätigung",
             "protected-by-mobile-auth": "Konto durch mobile Authentifizierung geschützt.",
             "use-steam-app-to-approve": "Verwenden Sie die Steam Mobile-App, um die Verbindung zu bestätigen...",
@@ -678,15 +685,15 @@
             "advanced-launch": "Erweiterte Start",
             "valid-btn": "Verknüpfung erstellen"
         },
-        "connect-to-meta":{
+        "connect-to-meta": {
             "title": "Mit Meta verbinden",
-            "body":{
+            "body": {
                 "token-needed": "Dein Meta-Verbindungstoken wird benötigt, um Beat Saber herunterzuladen.",
                 "need-cookie-enabled": "Beim Einloggen in Meta wird ein Anmeldefenster geöffnet und du kannst dann den Anmeldevorgang beginnen. Bitte stelle sicher, dass Cookies akzeptiert werden, sonst könnten wir deinen Token zum Starten des Downloads nicht abrufen.",
                 "enter-token-manually": "Mein Anmelde-Token manuell eingeben",
                 "enter-token-manually-tooltip": "Dies ermöglicht es Ihnen, Ihren Anmelde-Token einzugeben, ohne sich über Meta anzumelden."
             },
-            "stay":"Angemeldet bleiben",
+            "stay": "Angemeldet bleiben",
             "connect-to-meta": "Mit Meta verbinden"
         },
         "original-version-backup-oculus": {
@@ -940,7 +947,7 @@
             },
             "prevent-for-models-breaks": {
                 "title": "Gebrochene Modelle",
-                "desc": "Seit dem Update des Beat Saber-Motors sind Modelle für diese Version nicht mehr funktional."
+                "desc": "Seit dem Update der Beat Saber Engine sind alle benutzerdefinierten Modellmods defekt und müssen aktualisiert werden. Sie wurden noch nicht aktualisiert."
             },
             "export-success": {
                 "title": "Export abgeschlossen 🎉"

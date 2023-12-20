@@ -156,13 +156,19 @@
                     "es-ES": "Español",
                     "de-DE": "Deutsch",
                     "ru-RU": "Русский",
+                    "zh-CN": "简体中文",
+                    "zh-TW": "正體中文",
+                    "ja-JP": "日本語",
                     "translated": {
                         "en-EN": "English, United Kingdom",
                         "en-US": "English, USA",
                         "fr-FR": "French",
                         "es-ES": "Spanish",
                         "de-DE": "German",
-                        "ru-RU": "Russian"
+                        "ru-RU": "Russian",
+                        "zh-CN": "Chinese (Simplified)",
+                        "zh-TW": "Chinese (Traditional)",
+                        "ja-JP": "Japanese"
                     }
                 }
             },
@@ -499,7 +505,8 @@
         "choose-store": {
             "title": "Which platform?",
             "body": "Select the platform from which you wish to download Beat Saber.",
-            "set-in-settings": "Set the default platform in settings"
+            "set-in-settings": "Set the default platform in settings",
+            "unavailable": "Due to recent changes by Oculus, downgrading Oculus versions is currently no longer available. We're investigating the issue and will keep you posted on the BSManager Discord server."
         },
         "guard": {
             "title": "Steam Guard",
@@ -525,10 +532,10 @@
                     "placeholder": "Enter your password",
                     "max-length-warning": "The password exceeds 64 characters! If the password is invalid, try to enter only its first 64 characters."
                 },
-                "qr":{
+                "qr": {
                     "label": "Or with a QR code",
-                    "note":{
-                        "use-the":"Use the ",
+                    "note": {
+                        "use-the": "Use the ",
                         "steam-mobile-app": "Steam Mobile App",
                         "to-connect-with-qr": "to sign in via QR code."
                     }
@@ -541,7 +548,7 @@
                 "submit": "Sign in"
             }
         },
-        "steam-auth-approve":{
+        "steam-auth-approve": {
             "title": "Waiting for confirmation",
             "protected-by-mobile-auth": "Account protected by mobile authenticator.",
             "use-steam-app-to-approve": "Use the Steam mobile app to confirm the connection...",
@@ -678,15 +685,15 @@
             "advanced-launch": "Advanced launch",
             "valid-btn": "Create the shortcut"
         },
-        "connect-to-meta":{
+        "connect-to-meta": {
             "title": "Connect to Meta",
-            "body":{
+            "body": {
                 "token-needed": "Your Meta connection token is required to download Beat Saber.",
                 "need-cookie-enabled": "By logging into Meta, a login window will open and you can then start the login process. Please ensure to accept cookies, otherwise, we might not be able to retrieve your token to start the download.",
                 "enter-token-manually": "Enter my login token manually",
                 "enter-token-manually-tooltip": "This will allow you to enter your login token without going through Meta login."
             },
-            "stay":"Remember me",
+            "stay": "Remember me",
             "connect-to-meta": "Connect to Meta"
         },
         "original-version-backup-oculus": {
@@ -940,7 +947,7 @@
             },
             "prevent-for-models-breaks": {
                 "title": "Broken models",
-                "desc": "Since the Beat Saber engine update, models are no longer functional for this version."
+                "desc": "Since the Beat Saber engine update, all custom model mods have broken and need to be updated. They have not been updated yet."
             },
             "export-success": {
                 "title": "Export completed 🎉"

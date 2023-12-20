@@ -9,242 +9,576 @@
 *** https://www.markdownguide.org/basic-syntax/#reference-style-links
 -->
 
-<!-- TITLE -->
+<!--
+----------------------------------------
+    BSManager
+----------------------------------------
+-->
 <div align="center">
-    <a href="https://github.com/Zagrios/bs-manager">
-        <img src="resources/readme/icon.svg" alt="Logo" width="250" height="250">
-    </a>
-    <br><br>
-    <h2><b>BSManager</b></h2>
-    <i>(Beat Saber Manager)</i>
-    <br><br>
-    <span>
-        Download, manage and customize your versions of Beat Saber with a simple click!
-    </span>
-    <br>
-    <span>
-        <a href="https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&template=-bug--bug-report.md&title=%5BBUG%5D+%3A+">Report Bug</a> 
-        ·
-        <a href="https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=enhancement&template=-feat---feature-request.md&title=%5BFEAT.%5D+%3A+">Request Feature</a>
-        ·
-        <a href="https://github.com/Zagrios/bs-manager/security/policy">Report a security vulnerability</a>
-    </span>
+  <a href="https://github.com/Zagrios/bs-manager">
+    <img src="resources/readme/SVG/icon.svg" alt="Logo" width="250" height="250">
+  </a>
+  <h1><b>BSManager</b></h1>
+  <p>
+    Download, manage and customize your versions of <a href="https://beatsaber.com/">Beat Saber</a> with a simple click!
+  </p>
+  <p>
+    <a
+      href="https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&template=-bug--bug-report.md&title=%5BBUG%5D+%3A+">Report
+      Bug</a>
+    ·
+    <a
+      href="https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=enhancement&template=-feat---feature-request.md&title=%5BFEAT.%5D+%3A+">Request
+      Feature</a>
+    ·
+    <a href="https://github.com/Zagrios/bs-manager/security/policy">Report a security vulnerability</a>
+  </p>
+  <hr>
 </div>
 
-## <!-- BADGES -->
 
-<br>
-<div align="center" >
-    <a href="https://github.com/Zagrios/bs-manager/stargazers"><img src ="https://img.shields.io/github/stars/Zagrios/bs-manager?style=for-the-badge" alt="Stargazers"/></a>
-    <a href="https://github.com/Zagrios/bs-manager/network/members"><img src ="https://img.shields.io/github/forks/Zagrios/bs-manager?style=for-the-badge" alt="Forks"/></a>
-    <a href="https://github.com/Zagrios/bs-manager/blob/master/LICENSE"><img src ="https://img.shields.io/github/license/Zagrios/bs-manager?style=for-the-badge" alt="License"/></a>
-    <a href="https://github.com/Zagrios/bs-manager/graphs/contributors"><img src ="https://img.shields.io/github/contributors/Zagrios/bs-manager?style=for-the-badge" alt="Contributors"/></a>
-    <a href="https://github.com/Zagrios/bs-manager/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/Zagrios/bs-manager?style=for-the-badge"></a>
-    <br>
-    <a href="https://discord.gg/uSqbHVpKdV"><img src ="https://img.shields.io/badge/-DISCORD-5865f2?style=for-the-badge&logo=discord&logoColor=ffffff" alt="discord"/></a>
-    <a href="https://www.patreon.com/bsmanager"><img src ="https://img.shields.io/badge/-🥰%20Support%20BSM-EC4546?style=for-the-badge" alt="Donation"/></a>
-    <a href="https://twitter.com/BSManager_"><img src ="https://img.shields.io/badge/-Twitter-F5F8FA?style=for-the-badge&logo=Twitter" alt="Twitter"/></a>
-    <br>
+<!--
+----------------------------------------
+    BADGES
+----------------------------------------
+-->
+<div align="center">
+  <a href="https://github.com/Zagrios/bs-manager/stargazers"><img
+      src="https://img.shields.io/github/stars/Zagrios/bs-manager?style=for-the-badge" alt="Stargazers" /></a>
+  <a href="https://github.com/Zagrios/bs-manager/network/members"><img
+      src="https://img.shields.io/github/forks/Zagrios/bs-manager?style=for-the-badge" alt="Forks" /></a>
+  <a href="https://github.com/Zagrios/bs-manager/blob/master/LICENSE"><img
+      src="https://img.shields.io/github/license/Zagrios/bs-manager?style=for-the-badge" alt="License" /></a>
+  <a href="https://github.com/Zagrios/bs-manager/graphs/contributors"><img
+      src="https://img.shields.io/github/contributors/Zagrios/bs-manager?style=for-the-badge" alt="Contributors" /></a>
+  <a href="https://github.com/Zagrios/bs-manager/issues"><img alt="GitHub issues"
+      src="https://img.shields.io/github/issues/Zagrios/bs-manager?style=for-the-badge"></a>
+  <br>
+  <a href="https://discord.gg/uSqbHVpKdV"><img
+      src="https://img.shields.io/badge/-DISCORD-5865f2?style=for-the-badge&logo=discord&logoColor=ffffff"
+      alt="discord" /></a>
+  <a href="https://www.patreon.com/bsmanager"><img
+      src="https://img.shields.io/badge/-🥰%20Support%20BSM-EC4546?style=for-the-badge" alt="Donation" /></a>
+  <a href="https://twitter.com/BSManager_"><img
+      src="https://img.shields.io/badge/-Twitter-F5F8FA?style=for-the-badge&logo=Twitter" alt="Twitter" /></a>
+</div>
+
+<!--
+----------------------------------------
+    TABLE OF CONTENTS
+----------------------------------------
+-->
+<div>
+  <hr>
+  <details open>
+    <summary><b>Table of Contents</b></summary>
+    <ul>
+      <li>
+        <details>
+          <summary><a href="#bsmanager-your-beat-saber-assistant">BSManager: Your Beat Saber Assistant</a></summary>
+          <ul>
+            <li><a href="#what-is-it">What is it?</a></li>
+            <li><a href="#why-use-it">Why use it?</a></li>
+            <li><a href="#built-with">Built with</a></li>
+            <li><a href="#how-to-install">How to install</a></li>
+          </ul>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary><a href="#version-management">Version Management</a></summary>
+          <ul>
+            <li>
+              <details>
+                <summary><a href="#downloading-multiple-versions">Downloading multiple versions</a></summary>
+                <ul>
+                  <li>via Steam account</li>
+                  <li>via Oculus (PCVR) account</li>
+                </ul>
+              </details>
+            </li>
+            <li><a href="#multi-version-sharing">Multi-version Sharing</a></li>
+            <li><a href="#importing-an-existing-version-of-beat-saber">Importing an existing version of Beat Saber</a>
+            </li>
+            <li><a href="#launch-arguments">Launch arguments</a></li>
+            <li><a href="#shortcut-creation">Shortcut creation</a></li>
+          </ul>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary><a href="#download-and-installation">Download and Installation</a></summary>
+          <ul>
+            <li><a href="#maps">Maps</a></li>
+            <li><a href="#playlists">Playlists</a></li>
+            <li><a href="#mods">Mods</a></li>
+            <li><a href="#models">Models</a></li>
+          </ul>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary><a href="#customization">Customization</a></summary>
+          <ul>
+            <li><a href="#tool">Tool</a></li>
+            <li><a href="#beat-saber-instance">Beat Saber Instance</a></li>
+          </ul>
+        </details>
+      </li>
+      <li>
+        <details>
+          <summary><a href="#more-information">More Information</a></summary>
+          <ul>
+            <li><a href="#support">Support</a></li>
+            <li><a href="#credits">Credits</a></li>
+            <li><a href="#Contributing">Contributing</a></li>
+          </ul>
+        </details>
+      </li>
+    </ul>
+  </details>
+  <div align="right">
     [<a href="#readme-bot">Go to bottom</a>]
+  </div>
 </div>
 
----
 
-<!-- TABLE OF CONTENTS -->
+<!--
+----------------------------------------
+    BSMANAGER: YOUR BEAT SABER ASSISTANT
+----------------------------------------
+-->
+<div align="center">
+  <hr>
+  <h1><b>BSManager: Your Beat Saber Assistant</b></h1>
+</div>
 
-<b>Table of Contents</b>
 
-<ul>
+<!--
+    WHAT IS IT?
+----------------------------------------
+-->
+<div>
+  <h2>What is it?</h2>
+  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> simplifies your <a href="https://beatsaber.com/">Beat
+      Saber</a> experience by centralizing the management of mods, maps, and game versions in one place.</p>
+</div>
+
+
+<!--
+    WHY USE IT?
+----------------------------------------
+-->
+<div>
+  <h2>Why use it?</h2>
+  <ul>
+    <li><strong>Easy</strong>: Manage and switch between different instances of <a href="https://beatsaber.com/">Beat
+        Saber</a> simply.</li>
+    <li><strong>Accessibility</strong>: Access a multitude of content with just a few clicks.</li>
+    <li><strong>Customization</strong>: Adapt <a href="https://github.com/Zagrios/bs-manager">BSManager</a> to your
+      tastes without technical hassles.</li>
+  </ul>
+  <b>Start your enhanced experience with <a href="https://beatsaber.com/">Beat Saber</a> and explore all the features
+    offered by <a href="https://github.com/Zagrios/bs-manager">BSManager</a>!</b>
+</div>
+
+<div align="center">
+  <br>
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/012b0196-74ef-4ee5-86a4-49e835612f96"/>
+</div>
+
+
+<!--
+    BUILT WITH
+----------------------------------------
+-->
+<div>
+  <h2><b>Built With</b></h2>
+  <ul>
     <li>
-        <a href="#about-the-project">About The Project</a>
-        <ul>
-            <li><a href="#built-with">Built With</a></li>
-        </ul>
+      <a href="https://electron-react-boilerplate.js.org/"><img
+          src="https://img.shields.io/badge/-Electron%20React%20Boilerplate-black?style=for-the-badge&logo=Electron"
+          alt="Electron React Boilerplate"></a>
     </li>
-    <li><a href="#usage">Usage</a></li>
-    <ul>
-        <li><a href="#how-to-install">How to install?</a></li>
-        <li><a href="#manage-versions">Manage Versions</a></li>
-        <li><a href="#customize-your-versions">Customize your versions</a></li>
-        <li><a href="#install-mods">Install Mods</a></li>
-        <li><a href="#install-maps">Install Maps</a></li>
-        <li><a href="#one-click">One Click</a></li>
-        <li><a href="#having-problems">Having problems?</a></li>
-    </ul>
-    <li><a href="#credits">Credits</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-</ul>
+    <li>
+      <a href="https://github.com/SteamRE/DepotDownloader"><img
+          src="https://img.shields.io/badge/-Depot%20Downloader-2a475e?style=for-the-badge&logo=steam"
+          alt="Depot Downloader"></a>
+    </li>
+    <li>
+      <a href="https://rxjs.dev/"><img
+          src="https://img.shields.io/badge/-RxJs-purple?style=for-the-badge&logo=ReactiveX" alt="RxJs"></a>
+    </li>
+    <li>
+      <a href="https://tailwindcss.com/"><img
+          src="https://img.shields.io/badge/-Tailwind%20CSS-white?style=for-the-badge&logo=Tailwind%20CSS"
+          alt="TailWind CSS"></a>
+    </li>
+  </ul>
+</div>
 
-<!-- ABOUT THE PROJECT -->
+
+<!--
+    HOW TO INSTALL
+----------------------------------------
+-->
+<div>
+  <h2><b>How to install?</b></h2>
+  <ul>
+    <li>Download the <a href="https://github.com/Zagrios/bs-manager/releases/latest">latest release</a> from <a
+        href="https://github.com/Zagrios/bs-manager/releases">Releases</a>.</li>
+    <li>Execute the installer and <a href="https://github.com/Zagrios/bs-manager">BSManager</a> will start itself.</li>
+    <li>Once it's done, if you want to download a version, select a version and download it! </li>
+    <li>From the version page you can choose options, launch the version, and more!</li>
+  </ul>
+</div>
+
 <div align="center">
-    <h1> </h1>
-    <h1><b>About The Project</b></h1>
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/4215384e-eb68-40da-884c-f21df491ef75" />
 </div>
-<div>
-    <a href="https://github.com/Zagrios/bs-manager">BSManager</a> was created to unify and improve the two most used Apps in the community (<a href="https://github.com/RiskiVR/BSLegacyLauncher">BS legacy launcher</a> and <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>).
-    <br><br>
-    <h4><a href="https://github.com/Zagrios/bs-manager">BSManager</a> will allow you to:</h4>
-    <ul>
-        <li><b>Manage multiple BeatSaber versions</b>, designed for people who need to play on different versions or have multiple profiles for the same version.</li>
-        <li><b>Download your maps in the same way</b>, in addition to that, depending on your choice, maps are not version dependent. so you will be able to find your maps whatever version you are using without having to transfer them.</li>
-        <li><b>Install your mods in one click</b>, just like <a href="https://github.com/Assistant/ModAssistant">Mod Assistant</a>, <a href="https://github.com/Zagrios/bs-manager">BSManager</a> will allow you to install your mods quickly and securely depending on the version you choose.</li>
-        <li><b>Customize your interface</b>, we know that some of you like to customize your interfaces to the maximum. That's why <a href="https://github.com/Zagrios/bs-manager">BSManager</a> brings you peace of mind on this point, you can change the name of the versions, their color, and you can even change the color of the logo! Of course, a dark theme has been added to protect your eyes at night.</li>
-    </ul>
-</div>
-<br>
+
+
+<!--
+----------------------------------------
+    VERSION MANAGEMENT
+----------------------------------------
+-->
 <div align="center">
-    <img src="resources/readme/preview.png" alt="preview">
+  <hr>
+  <h1><b>Version management</b></h1>
 </div>
-<br>
-
-<!--BUILT WITH-->
 <div>
-    <h2><b>Built With</b></h2>
-    <ul>
-        <li>
-            <a href="https://electron-react-boilerplate.js.org/"><img src="https://img.shields.io/badge/-Electron%20React%20Boilerplate-black?style=for-the-badge&logo=Electron" alt="Electron React Boilerplate"></a>
-        </li>
-        <li>
-            <a href="https://github.com/SteamRE/DepotDownloader"><img src="https://img.shields.io/badge/-Depot%20Downloader-2a475e?style=for-the-badge&logo=steam" alt="Depot Downloader"></a>
-        </li>
-        <li>
-            <a href="https://rxjs.dev/"><img src="https://img.shields.io/badge/-RxJs-purple?style=for-the-badge&logo=ReactiveX" alt="RxJs"></a>
-        </li>
-        <li>
-            <a href="https://tailwindcss.com/"><img src="https://img.shields.io/badge/-Tailwind%20CSS-white?style=for-the-badge&logo=Tailwind%20CSS" alt="TailWind CSS"></a>
-        </li>
-    </ul>
+  <p>With <a href="https://github.com/Zagrios/bs-manager">BSManager</a>, manage your <a
+      href="https://beatsaber.com/">Beat Saber</a> versions with ease, allowing the download of new versions and
+    preserving
+    existing ones, provided that you own the game on a Steam or Oculus (PC) account.</p>
 </div>
-<br>
 
-<!--USAGE-->
+
+<!--
+    DOWNLOADING MULTIPLE VERSIONS
+----------------------------------------
+-->
+<div>
+  <h2>Downloading Multiple Versions</h2>
+  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> provides two authentication methods to access your
+    Steam account, ensuring safe and flexible access to
+    different game versions:</p>
+</div>
+
 <div align="center">
-    <h1> </h1>
-    <h1><b>Usage</b></h1>
+  <img src="https://github.com/Zagrios/bs-manager/assets/40648115/09d579de-8b8e-45d3-8829-21a25cc7daf8"/>
 </div>
 
-<!--HOW TO INSTALL?-->
 <div>
-    <h2><b>How to install?</b></h2>
-    <ul>
-        <li>Download the <a href="https://github.com/Zagrios/bs-manager/releases/latest">latest release</a> from <a href="https://github.com/Zagrios/bs-manager/releases">Releases</a>.</li>
-        <li>Execute the installer and <a href="../..">BSManager</a> will start itself.</li>
-        <li>Once its done if you want to download a version, select a version and download it! </li>
-        <li>From the version page you can choose options, launch the version, and more!</li>
+  <ul>
+    <li><strong>via Steam</strong>: Use either your credentials, which will not be stored by <a
+        href="https://github.com/Zagrios/bs-manager">BSManager</a> or
+      <a href="https://github.com/SteamRE/DepotDownloader">DepotDownloader</a>, or opt for a quick and secure
+      authentication via QR with the Steam Guard app.</li>
+  </ul>
 </div>
-<br>
 
-<!--MANAGE VERSIONS-->
-<div>
-    <h2><b>Manage Versions</b></h2>
-    <span>
-        <a href="https://github.com/Zagrios/bs-manager">BSManager</a> allows you to manage your versions of Beat Saber. It gives you the ability to download any version of Beat Saber as long as you have a Steam account that already owns the game. Using <a href="https://github.com/Zagrios/bs-manager">BSManager</a>, you can easily manage and update your collection of Beat Saber versions.
-    </span>
-</div>
-<br>
 <div align="center">
-
-https://user-images.githubusercontent.com/40648115/213008824-25cfdda3-6350-42dc-aa53-2132b4b8e838.mov
+  <img src="https://github.com/Zagrios/bs-manager/assets/40648115/26da3a19-a936-4e6b-b79b-a139d7bd55de" />
 
 </div>
 
-<!--CUSTOM UR VERSIONS-->
 <div>
-    <h2><b>Customize your versions</b></h2>
-    <span>
-        <a href="https://github.com/Zagrios/bs-manager">BSManager</a> will allow you to completely customize each of your downloaded  versions, you can change the color of the icon, choose a name for the version and finally install your mods,maps and other contents according to the Beat Saber version! 
-    </span>
+  <ul>
+    <li><strong>via Oculus</strong>: For Oculus users, <a href="https://github.com/Zagrios/bs-manager">BSManager</a>
+      uses authentication directly via the <a href="https://about.meta.com/fr/">META</a> website
+      to retrieve the connection token, ensuring reliable and secure access to your account data.</li>
+  </ul>
 </div>
-<br>
+
 <div align="center">
-
-https://user-images.githubusercontent.com/40648115/213296794-74a1e20b-12dc-44ec-a67f-e25d7010bd3d.mov
-
+  <img height=450 src="https://github.com/Zagrios/bs-manager/assets/40648115/1e4a2f98-af16-45aa-821d-0c4e90e1e54b" />
+  <img height=450 src="https://github.com/Zagrios/bs-manager/assets/40648115/3674e629-542d-4de3-b8db-b248f25126d7" />
 </div>
 
-<!--INSTALL MODS-->
+
+<!--
+    MULTI-VERSION SHARING
+----------------------------------------
+-->
 <div>
-    <h2><b>Install Mods</b></h2>
-    <span>
-        <a href="https://github.com/Zagrios/bs-manager">BSManager</a> allows you to manage Beat Saber mods in a quick and easy way. It uses the <a href="https://beatmods.com/#/">BeatMod API</a> to allow you to install, update or uninstall mods for each version of your collection. So the app can help you manage them efficiently.
-    </span>
+  <h2>Multi-Version Sharing</h2>
+  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> facilitates the sharing of your maps, models, and
+    custom files between different versions of <a
+      href="https://beatsaber.com/">Beat Saber</a>. Thanks to an intuitive user interface, you can easily share
+    your files from one version to another, ensuring a consistent and continuous gaming experience across all your
+    installations.</p>
 </div>
-<br>
+
 <div align="center">
-
-https://user-images.githubusercontent.com/40648115/213296816-bdaafc90-da76-4835-8d83-9ac6a4e1c549.mov
-
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/ba39aceb-f55f-4e58-8386-51fcfaad4957"/> 
 </div>
 
-<!--INSTALL MAPS-->
+
+<!--
+    IMPORTING AN EXISTING VERSION OF BEAT SABER
+----------------------------------------
+-->
 <div>
-    <h2><b>Install Maps</b></h2>
-    <span>
-        In addition to managing mods, <a href="https://github.com/Zagrios/bs-manager">BSManager</a> allows you to manage and organize custom beatmaps existing on <a href="https://beatsaver.com">Beat Saver</a>, a popular site for sharing custom beatmaps for beat Saber. Moreover the app allow you to share your maps across all your versions. 
-    </span>
+  <h2>Importing an Existing Version of Beat Saber</h2>
+  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> allows easy importing and organizing of your existing
+    versions of <a href="https://beatsaber.com/">Beat Saber</a>, enabling you to retain
+    all your previously downloaded or created data while taking advantage of <a
+      href="https://github.com/Zagrios/bs-manager">BSManager</a>'s management features.</p>
 </div>
-<br>
+
 <div align="center">
-
-https://user-images.githubusercontent.com/40648115/213296838-f775fe83-866d-4764-a7d0-648dbb8ec983.mov
-
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/cdedb951-d97a-474d-a217-2422be3919f7"/>
 </div>
 
-<!--ONE CLICK-->
+
+<!--
+    LAUNCH ARGUMENTS
+----------------------------------------
+-->
 <div>
-    <h2><b>One Click</b></h2>
-    <span>
-        The "One-Click" feature of <a href="https://github.com/Zagrios/bs-manager">BSManager</a> is an incredibly convenient feature for Beat Saber users. It allows easy and quick installation of models, maps and playlists for all versions of Beat Saber you own.
-    </span>
+  <h2>Launch Arguments</h2>
+  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> provides efficient management of <a
+      href="https://beatsaber.com/">Beat Saber</a> launch arguments, including three predefined ones to
+    enhance your gaming experience:</p>
+  <ul>
+    <li><strong>Oculus Mode</strong>: Launches the game directly in Oculus mode, avoiding the use of STEAM VR.</li>
+    <li><strong>FPFC Mode</strong>: Enables "FPFC" mode, allowing you to control the game without using a VR
+      headset.</li>
+    <li><strong>Debug Mode</strong>: Activates debugging mode, generating Windows log outputs for IPA.</li>
+  </ul>
+  <p>You also have the freedom to add your own custom launch arguments by inserting them into "Advanced Launch" and
+    separating them with a semicolon (;).</p>
 </div>
-<br>
+
 <div align="center">
-
-https://user-images.githubusercontent.com/40648115/213435051-7feb815d-f32b-4135-b095-ef49726a836c.mov
-
+  <img src="https://github.com/Zagrios/bs-manager/assets/40648115/1244d49f-20e1-400c-9818-528f05cfadf5" />
 </div>
 
-<!--HAVING PROBLEMS?-->
+
+<!--
+    SHORTCUT CREATION
+----------------------------------------
+-->
 <div>
-    <h2><b>Having problems?</b></h2>
-    <span>
-        See the <a href="https://github.com/Zagrios/bs-manager/issues">open issues</a> to show the list of known issues, from there you can create a new issue for your problem!  
-    </span>
+  <h2>Shortcut Creation</h2>
+  <p>Create shortcuts to easily access your different versions of <a href="https://beatsaber.com/">Beat Saber</a> with
+    <a href="https://github.com/Zagrios/bs-manager">BSManager</a>. After selecting your
+    version, go to the version settings, click on "Create a Shortcut", and then select your launch options. Thus,
+    you can quickly and easily launch your preferred version of <a href="https://beatsaber.com/">Beat Saber</a> with the
+    desired settings.</p>
 </div>
 
-<br><br><br>
+<div align="center">
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/bfa1e97d-6392-4dec-a1fc-bb05048cf6d2" />
+</div>
 
-<!-- Credits -->
+
+<!--
+----------------------------------------
+    DOWNLOAD AND INSTALLATION
+----------------------------------------
+-->
+<div align="center">
+  <hr>
+  <h1><b>Download and Installation</b></h1>
+</div>
 <div>
-    <h1><b>Credits</b></h1>
-    <ul>
-        <li><a href="https://github.com/Zagrios">Zagrios</a> - Founder & Lead Developer</li>
-        <li><a href="https://github.com/Iluhadesu">Iluhadesu</a> - Project Team & Developpement help</li>
-        <li><a href="https://github.com/GaetanGrd">GaetanGrd</a> - Project Team & Developpement help</li>
-        <li><a href="https://github.com/cheddZy">cheddZy</a> - Icon creator</li>
-    </ul>
+  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> provides centralized and organized management of
+    beatmaps, mods, and models, integrating download features and sharing between <a href="https://beatsaber.com/">Beat
+      Saber</a> versions.</p>
 </div>
 
-<!-- Contributing -->
-<br>
-<!--CONTRIBUTING-->
+<!--
+    MAPS
+----------------------------------------
+-->
 <div>
-    <h1><b>Contributing</b></h1>
-    <p>
-        If you'd like to contribute, check out the <a href="https://github.com/Zagrios/bs-manager/blob/master/CONTRIBUTING.md">contributing guide</a>
-    </p>
-    <p>Thank you to all the people who already contributed to BSManager!</p>
-    <div>
-        <a href="https://github.com/Zagrios/bs-manager/graphs/contributors">
-            <img src="https://contrib.rocks/image?repo=Zagrios/bs-manager" />
-        </a>
-    </div>
+  <h2>Maps</h2>
+  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> integrates the <a href="https://beatsaver.com">Beat
+      Saver</a> API to provide you with a comprehensive list of maps downloadable directly from its interface. Moreover,
+    the OneClick feature allows you to download maps with one click from various sources such as <a
+      href="https://beatsaver.com">Beat Saver</a>, <a href="https://bsaber.com">BeastSaber</a>, <a
+      href="https://scoresaber.com">ScoreSaber</a>, and <a href="https://www.beatleader.xyz">Beat Leader</a>. To add
+    maps, simply select the desired version or the "shared" tab, then click "ADD".</p>
 </div>
-<br>
 
+<div align="center">
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/3f9f9968-ac55-465e-bc28-17aebfc787ea"/>
+
+</div>
+
+<!--
+    PLAYLISTS
+----------------------------------------
+-->
+<div>
+  <h2>Playlists</h2>
+  <p>Although the playlist management interface is not yet developed, <a
+      href="https://github.com/Zagrios/bs-manager">BSManager</a> offers a OneClick feature for playlists from <a
+      href="https://beatsaver.com">Beat Saver</a>.</p>
+</div>
+
+<div align="center">
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/733fe6bb-c157-4c47-8a79-f8062380bcc8" />
+</div>
+
+<!--
+    MODS
+----------------------------------------
+-->
+<div>
+  <h2>Mods</h2>
+  <p>Manage your mods easily with <a href="https://github.com/Zagrios/bs-manager">BSManager</a>. After downloading a
+    version, navigate to the "Mods" tab of the selected version to manage and install mods. <a
+      href="https://github.com/Zagrios/bs-manager">BSManager</a> operates similarly to Mod Assistant and offers the same
+    mods as this tool.</p>
+</div>
+
+<div align="center">
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/ca8f0727-b2dd-41f3-bbea-9bcaf61a89f1"/>
+
+</div>
+
+<!--
+    MODELS
+----------------------------------------
+-->
+<div>
+  <h2>Models</h2>
+  <p>Add and manage models simply via the corresponding tab on the desired version or by going to the "shared" tab. The
+    <a href="https://modelsaber.com">Model Saber</a> API is integrated to provide easy and direct access to models
+    available for <a href="https://beatsaber.com/">Beat Saber</a>.</p>
+</div>
+
+<div align="center">
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/d983b34b-9f4c-4274-aee4-4c1c03dd90d0"/>
+</div>
+
+
+<!--
+----------------------------------------
+    CUSTOMIZATION
+----------------------------------------
+-->
+<div align="center">
+  <hr>
+  <h1><b>Customization</b></h1>
+</div>
+<div>
+  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> offers various options to customize both the tool
+    itself and your <a href="https://beatsaber.com/">Beat Saber</a> instances, allowing you to create a user experience
+    that is uniquely yours.</p>
+</div>
+
+<!--
+    TOOL
+----------------------------------------
+-->
+<div>
+  <h2>Tool</h2>
+  <p>Adjust the appearance of <a href="https://github.com/Zagrios/bs-manager">BSManager</a> to your preferences with a
+    variety of customization options available in the tool's settings:</p>
+  <ul>
+    <li><strong>Theme</strong>: Choose between a light or dark theme, or follow the system settings for seamless integration into your work environment.</li>
+    <li><strong>Color</strong>: Select your preferred primary and secondary colors using hexadecimal codes, allowing you
+      to customize the visual appearance of the tool to your liking.</li>
+  </ul>
+</div>
+
+<div align="center"> 
+  <video src = "https://github.com/Zagrios/bs-manager/assets/40648115/d2c1b0ec-a2f5-41b5-99d5-c4c2cd34cbd4" />
+</div>
+
+<!--
+    BEAT SABER INSTANCE
+----------------------------------------
+-->
+<div>
+  <h2>Beat Saber Instance</h2>
+  <p>For each <a href="https://beatsaber.com/">Beat Saber</a> instance, <a
+      href="https://github.com/Zagrios/bs-manager">BSManager</a> offers customization options accessible via the version
+    settings and by clicking on "Edit":</p>
+  <ul>
+    <li><strong>Name</strong>: Name your instances in a way that distinguishes and identifies them easily when switching
+      from one to another.</li>
+    <li><strong>Color</strong>: Customize the appearance of your instances by choosing a specific color for each of
+      them.</li>
+  </ul>
+</div>
+
+<div align="center">
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/f66a2c99-770e-42ca-9a71-b1806946ad0c" />
+</div>
+
+
+<!--
+----------------------------------------
+    MORE INFORMATION
+----------------------------------------
+-->
+<div align="center">
+  <hr>
+  <h1><b>More Information</b></h1>
+</div>
+<div>
+  <p><a href="https://github.com/Zagrios/bs-manager">BSManager</a> has an active community and a support team ready to
+    assist you with any questions or issues you may encounter.</p>
+</div>
+
+<!--
+    SUPPORT
+----------------------------------------
+-->
+<div>
+  <h2>Support</h2>
+  <p>For quick and interactive support, it is recommended to join our <a href="https://discord.gg/uSqbHVpKdV">Discord
+      server</a>. For bugs or more complex issues, you can also submit an <a href="https://github.com/Zagrios/bs-manager/issues">issue on
+      GitHub</a>.</p>
+</div>
+
+
+<!--
+    CREDITS
+----------------------------------------
+-->
+<div>
+  <h2>Credits</h2>
+  <ul>
+    <li><a href="https://github.com/Zagrios">Zagrios</a> - Lead Developer & Founder.</li>
+    <li><a href="https://github.com/Iluhadesu">Iluhadesu</a> - Co-Developer & Co-Founder, Discord Bot Developer.</li>
+    <li><a href="https://github.com/GaetanGrd">GaetanGrd</a> - Co-Developer & Co-Founder, Documentation Lead.</li>
+    <li><a href="https://github.com/cheddZy">cheddZy</a> - Icon Creator.</li>
+  </ul>
+</div>
+
+<!--
+    CONTRIBUTING
+----------------------------------------
+-->
+<div>
+  <h2>Contributing</h2>
+  <p>If you'd like to contribute, check out the <a
+      href="https://github.com/Zagrios/bs-manager/blob/master/CONTRIBUTING.md">contributing guide</a>.</p>
+  <p>Thank you to all the people who already contributed to <a
+      href="https://github.com/Zagrios/bs-manager">BSManager</a>!</p>
+  <div align="center">
+    <a href="https://github.com/Zagrios/bs-manager/graphs/contributors">
+      <img src="https://contrib.rocks/image?repo=Zagrios/bs-manager" />
+    </a>
+  </div>
+</div>
+
+
+<!-- 
+----------------------------------------
+    Others
+----------------------------------------
+-->
 <div align="right">
-    [<a href="#readme-top">Return to top</a>]
+  [<a href="#readme-top">Return to top</a>]
+  <hr>
 </div>
 
-<h1> </h1>
 <a name="readme-bot"></a>

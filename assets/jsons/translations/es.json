@@ -155,13 +155,19 @@
                     "es-ES": "Español",
                     "de-DE": "Deutsch",
                     "ru-RU": "Русский",
+                    "zh-CN": "简体中文",
+                    "zh-TW": "正體中文",
+                    "ja-JP": "日本語",
                     "translated": {
                         "en-EN": "Inglés, Reino Unido",
                         "en-US": "Inglés, Estados Unidos",
                         "fr-FR": "Francés",
                         "es-ES": "Español",
                         "de-DE": "Alemán",
-                        "ru-RU": "Ruso"
+                        "ru-RU": "Ruso",
+                        "zh-CN": "Chino simplificado",
+                        "zh-TW": "Chino tradicional",
+                        "ja-JP": "Japonés"
                     }
                 }
             },
@@ -498,7 +504,8 @@
         "choose-store": {
             "title": "¿Qué plataforma?",
             "body": "Selecciona la plataforma desde la que deseas descargar Beat Saber.",
-            "set-in-settings": "Establecer la plataforma predeterminada en los ajustes"
+            "set-in-settings": "Establecer la plataforma predeterminada en los ajustes",
+            "unavailable": "Debido a cambios recientes de Oculus, la degradación de versiones de Oculus ya no está disponible. Estamos investigando el problema y te mantendremos informado en el servidor de Discord de BSManager."
         },
         "guard": {
             "title": "Steam Guard",
@@ -524,10 +531,10 @@
                     "placeholder": "Introduce tu contraseña",
                     "max-length-warning": "¡La contraseña supera los 64 caracteres! Si la contraseña es inválida, intenta ingresar solo sus primeros 64 caracteres."
                 },
-                "qr":{
+                "qr": {
                     "label": "O con un código QR",
-                    "note":{
-                        "use-the":"Usa la ",
+                    "note": {
+                        "use-the": "Usa la ",
                         "steam-mobile-app": "aplicación Steam Mobile",
                         "to-connect-with-qr": "para conectarte con un código QR."
                     }
@@ -540,7 +547,7 @@
                 "submit": "Iniciar sesión"
             }
         },
-        "steam-auth-approve":{
+        "steam-auth-approve": {
             "title": "Esperando confirmación",
             "protected-by-mobile-auth": "Cuenta protegida por el autenticador móvil.",
             "use-steam-app-to-approve": "Use la aplicación móvil de Steam para confirmar la conexión...",
@@ -677,15 +684,15 @@
             "advanced-launch": "Lanzamiento avanzado",
             "valid-btn": "Crear el atajo"
         },
-        "connect-to-meta":{
+        "connect-to-meta": {
             "title": "Conexión a Meta",
-            "body":{
+            "body": {
                 "token-needed": "Tu token de conexión a Meta es necesario para descargar Beat Saber.",
                 "need-cookie-enabled": "Al conectarte a Meta, se abrirá una ventana de inicio de sesión y entonces podrás empezar el proceso de conexión. Asegúrate de aceptar las cookies, de lo contrario, podríamos no poder recuperar tu token para iniciar la descarga.",
                 "enter-token-manually": "Ingresar mi token de inicio de sesión manualmente",
                 "enter-token-manually-tooltip": "Esto te permitirá ingresar tu token de inicio de sesión sin pasar por el inicio de sesión de Meta."
             },
-            "stay":"Recuérdame",
+            "stay": "Recuérdame",
             "connect-to-meta": "Conectarse a Meta"
         },
         "original-version-backup-oculus": {
@@ -939,7 +946,7 @@
             },
             "prevent-for-models-breaks": {
                 "title": "Modelos rotos",
-                "desc": "Desde la actualización del motor de Beat Saber, los modelos ya no son funcionales para esta versión."
+                "desc": "Desde la actualización del motor de Beat Saber, todos los mods de modelos personalizados se han roto y necesitan ser actualizados. Todavía no han sido actualizados."
             },
             "export-success": {
                 "title": "Exportación completada 🎉"
