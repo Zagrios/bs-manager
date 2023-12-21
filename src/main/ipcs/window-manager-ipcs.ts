@@ -10,9 +10,6 @@ const autoUpdaterService = AutoUpdaterService.getInstance();
 
 // Native windows control, do not pass through IPC service
 ipcMain.on("close-window", async (event) => {
-    if (event.sender.getURL().includes("index.html")) {
-        autoUpdaterService.setHaveBeenUpdated(false);
-    }
     BrowserWindow.fromWebContents(event.sender)?.close();
 });
 
