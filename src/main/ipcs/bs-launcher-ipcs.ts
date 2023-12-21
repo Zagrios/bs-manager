@@ -2,10 +2,9 @@
 import { LaunchOption } from "shared/models/bs-launch";
 import { BSLauncherService } from "../services/bs-launcher/bs-launcher.service"
 import { IpcService } from '../services/ipc.service';
-import { from, of } from "rxjs";
+import { from} from "rxjs";
 import { SteamLauncherService } from "../services/bs-launcher/steam-launcher.service";
 import { OculusLauncherService } from "../services/bs-launcher/oculus-launcher.service";
-import { AutoUpdaterService } from "../services/auto-updater.service";
 
 const ipc = IpcService.getInstance();
 

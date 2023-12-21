@@ -2,17 +2,11 @@ import { autoUpdater } from "electron-updater";
 import log from "electron-log";
 import { UtilsService } from "./utils.service";
 import { gt } from "semver";
-import { Observable } from "rxjs";
-import { ConfigurationService } from "./configuration.service";
 
 export class AutoUpdaterService {
     private static instance: AutoUpdaterService;
 
     private readonly utilsService: UtilsService;
-
-    private readonly ConfigurationService: ConfigurationService
-
-    private readonly HAVE_BEEN_UPDATED_KEY : string;
 
     public static getInstance(): AutoUpdaterService {
         if (!AutoUpdaterService.instance) {
@@ -26,8 +20,6 @@ export class AutoUpdaterService {
         autoUpdater.autoDownload = false;
 
         this.utilsService = UtilsService.getInstance();
-        this.ConfigurationService = ConfigurationService.getInstance();
-        this.HAVE_BEEN_UPDATED_KEY = "haveBeenUpdated";
     }
 
     public isUpdateAvailable(): Promise<boolean> {
