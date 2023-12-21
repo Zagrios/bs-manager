@@ -21,13 +21,12 @@ export default function Launcher() {
     useEffect(() => {
         updaterService.isUpdateAvailable().then(available => {
             if (!available) {
-                updaterService.setHaveBeenUpdated(false);
+
                 return windowService.openThenCloseAll("index.html");
             }
             setText("auto-update.downloading");
             updaterService.downloadUpdate().then(installed => {
                 if (!installed) {
-                    updaterService.setHaveBeenUpdated(true);
                     return windowService.openThenCloseAll("index.html");
                 }
                 updaterService.quitAndInstall();
