@@ -59,19 +59,4 @@ export class AutoUpdaterService {
     public quitAndInstall() {
         autoUpdater.quitAndInstall();
     }
-
-
-    public getHaveBeenUpdated(): Observable<boolean> {
-        const haveBeenUpdated = this.ConfigurationService.get(this.HAVE_BEEN_UPDATED_KEY);
-        return new Observable<boolean>((observer) => {
-            observer.next(haveBeenUpdated as boolean);
-            observer.complete();
-        });
-    }
-
-    public setHaveBeenUpdated(value: boolean): void {
-        this.ConfigurationService.set(this.HAVE_BEEN_UPDATED_KEY, value);
-    }
-
-
 }

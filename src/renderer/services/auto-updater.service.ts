@@ -5,6 +5,7 @@ import { ProgressBarService } from "./progress-bar.service";
 import { I18nService } from "./i18n.service";
 import { ModalService } from "renderer/services/modale.service";
 import { ChangelogModal } from "renderer/components/modal/modal-types/chabgelog-modal/changelog-modal.component";
+import { ConfigurationService } from "./configuration.service";
 
 export interface Changelog {
   [version: string]: ChangelogVersion;
@@ -27,7 +28,7 @@ export class AutoUpdaterService {
 
     private modal: ModalService;
 
-    private readonly changelog: BehaviorSubject<Changelog>;
+    private configurationService: ConfigurationService;
 
     public static getInstance(): AutoUpdaterService {
         if (!AutoUpdaterService.instance) {
@@ -41,6 +42,7 @@ export class AutoUpdaterService {
         this.ipcService = IpcService.getInstance();
         this.i18nService = I18nService.getInstance();
         this.modal = ModalService.getInstance();
+        this.configurationService = ConfigurationService.getInstance();
 
 
         this.downloadProgress$ = this.ipcService.watch<number>("update-download-progress").pipe(map(res => (res.success ? res.data : 0)));
@@ -63,9 +65,14 @@ export class AutoUpdaterService {
         this.ipcService.sendLazy("install-update");
     }
 
-    public getHaveBeenUpdated(): Observable<boolean>{
-        return this.ipcService.sendV2<boolean>("have-been-updated");
+    public getHaveBeenUpdated(): boolean {
+        return this.configurationService.get("have-been-updated");
     }
+
+    public setHaveBeenUpdated(value: boolean){
+        this.configurationService.set("have-been-updated", value);
+    }
+
 
     private async getChangelog(): Promise<Changelog> {
         const path = `https://raw.githubusercontent.com/Zagrios/bs-manager/feature/add-changelog-modal/178/assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`
@@ -102,10 +109,12 @@ export class AutoUpdaterService {
 
     public async showChangelog(): Promise<void>{
         try{
-        const currentVersion = await lastValueFrom(this.getAppVersion());
-        const changelog = await this.getChangelogVersion(currentVersion);
+          if(this.getHaveBeenUpdated()){
+            const currentVersion = await lastValueFrom(this.getAppVersion());
+            const changelog = await this.getChangelogVersion(currentVersion);
 
-        this.modal.openModal(ChangelogModal, changelog);
+            this.modal.openModal(ChangelogModal, changelog);
+          }
         }
         catch(error){
             this.ipcService.sendLazy("log-error", {args: error});

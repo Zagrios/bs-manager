@@ -32,9 +32,4 @@ ipc.on<void>("restore-original-oculus-folder", (_, reply) => {
     ));
 });
 
-ipc.on<boolean>("have-been-updated", (_, reply) => {
-    const updaterService = AutoUpdaterService.getInstance();
-    reply(from(updaterService.getHaveBeenUpdated()));
-});
-
 
