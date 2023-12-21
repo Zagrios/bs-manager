@@ -9,7 +9,6 @@ import { WindowManagerService } from "../services/window-manager.service";
 import { useService } from "renderer/hooks/use-service.hook";
 
 export default function Launcher() {
-    
     const updaterService = useService(AutoUpdaterService);
     const windowService = useService(WindowManagerService);
 
@@ -22,11 +21,13 @@ export default function Launcher() {
     useEffect(() => {
         updaterService.isUpdateAvailable().then(available => {
             if (!available) {
+                updaterService.setHaveBeenUpdated(false);
                 return windowService.openThenCloseAll("index.html");
             }
             setText("auto-update.downloading");
             updaterService.downloadUpdate().then(installed => {
                 if (!installed) {
+                    updaterService.setHaveBeenUpdated(true);
                     return windowService.openThenCloseAll("index.html");
                 }
                 updaterService.quitAndInstall();
