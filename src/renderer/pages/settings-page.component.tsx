@@ -40,9 +40,11 @@ import { BsStore } from "shared/models/bs-store.enum";
 import { SteamIcon } from "renderer/components/svgs/icons/steam-icon.component";
 import { OculusIcon } from "renderer/components/svgs/icons/oculus-icon.component";
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
+import { AutoUpdaterService } from "renderer/services/auto-updater.service";
+
 
 export function SettingsPage() {
-    
+
     const configService = useService(ConfigurationService);
     const themeService = useService(ThemeService);
     const ipcService = useService(IpcService);
@@ -58,6 +60,7 @@ export function SettingsPage() {
     const playlistsManager = useService(PlaylistsManagerService);
     const modelsManager = useService(ModelsManagerService);
     const versionLinker = useService(VersionFolderLinkerService);
+    const autoUpdater = useService(AutoUpdaterService);
 
     const { firstColor, secondColor } = useThemeColor();
 
@@ -88,13 +91,20 @@ export function SettingsPage() {
     const [hasDownloaderSession, setHasDownloaderSession] = useState(false);
     const appVersion = useObservable(ipcService.sendV2<string>("current-version"));
 
+    const [isChangelogAvailable, setIsChangelogAvailable] = useState(undefined);
+    const checkChangelogAvailability = async () => {
+      const changelogAvailable = await autoUpdater.isChangelogAvailable(appVersion);
+      setIsChangelogAvailable(changelogAvailable);
+  };
+
     useEffect(() => {
         loadInstallationFolder();
         loadDownloadersSession();
         mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
-    }, []);
+        if (isChangelogAvailable) {autoUpdater.showChangelog(appVersion)};
+    }, [isChangelogAvailable, appVersion]);
 
     const allDeepLinkEnabled = mapDeepLinksEnabled && playlistsDeepLinkEnabled && modelsDeepLinkEnabled;
 
@@ -134,6 +144,10 @@ export function SettingsPage() {
 
     const handleChangeLanguage = (item: RadioItem<string>) => {
         i18nService.setLanguage(item.value);
+    };
+
+    const handleVersionClick = async () => {
+      await checkChangelogAvailability();
     };
 
     const setDefaultInstallationFolder = () => {
@@ -231,7 +245,7 @@ export function SettingsPage() {
 
                 <SettingContainer title="pages.settings.steam-and-oculus.title" description="pages.settings.steam-and-oculus.description">
                     <BsmButton onClick={clearDownloadersSession} className="w-fit px-3 py-[2px] text-white rounded-md" withBar={false} text="pages.settings.steam-and-oculus.logout" typeColor="error" disabled={!hasDownloaderSession}/>
-                    
+
                     <SettingContainer id="choose-default-store" minorTitle="pages.settings.steam-and-oculus.download-platform.title" description="pages.settings.steam-and-oculus.download-platform.desc" className="mt-3">
                         <SettingRadioArray items={[
                             { id: 1, text: "Steam", value: BsStore.STEAM, icon: <SteamIcon className="h-6 w-6 float-left"/> },
@@ -239,7 +253,7 @@ export function SettingsPage() {
                             { id: 0, text: t("pages.settings.steam-and-oculus.download-platform.always-ask"), value: undefined, },
                         ]} selectedItemValue={downloadStore} onItemSelected={handleChangeBsStore}/>
                     </SettingContainer>
-                    
+
                 </SettingContainer>
 
                 <SettingContainer title="pages.settings.appearance.title" description="pages.settings.appearance.description">
@@ -441,9 +455,10 @@ export function SettingsPage() {
                         </div>
                     </SettingContainer>
                 </SettingContainer>
-
-                <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5">v{appVersion}</span>
-            </div>
+                <Tippy content={isChangelogAvailable !== false ? "Cliquez pour voir les changements" : "Aucun changelog disponible"} placement="left" className="font-bold bg-main-color-3">
+                <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5" onClick={handleVersionClick}>v{appVersion}</span>
+                </Tippy>
+              </div>
 
             <SupportersView isVisible={showSupporters} setVisible={setShowSupporters} />
         </div>
