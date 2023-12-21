@@ -73,7 +73,6 @@ export class AutoUpdaterService {
         this.configurationService.set("have-been-updated", value);
     }
 
-
     private async getChangelog(): Promise<Changelog> {
         const path = `https://raw.githubusercontent.com/Zagrios/bs-manager/feature/add-changelog-modal/178/assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`
         const response = await fetch(path);
@@ -98,7 +97,6 @@ export class AutoUpdaterService {
         if (!changelogVersion) {
             throw new Error(`No changelog found for this version (${version})`);
         }
-
 
         return changelogVersion;
     }
