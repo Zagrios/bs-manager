@@ -1,4 +1,3 @@
-import { BehaviorSubject, Observable, lastValueFrom } from "rxjs";
 import { map } from "rxjs/operators";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
@@ -6,6 +5,7 @@ import { I18nService } from "./i18n.service";
 import { ModalService } from "renderer/services/modale.service";
 import { ChangelogModal } from "renderer/components/modal/modal-types/chabgelog-modal/changelog-modal.component";
 import { ConfigurationService } from "./configuration.service";
+import { Observable, lastValueFrom } from "rxjs";
 
 export interface Changelog {
   [version: string]: ChangelogVersion;
@@ -44,7 +44,6 @@ export class AutoUpdaterService {
         this.modal = ModalService.getInstance();
         this.configurationService = ConfigurationService.getInstance();
 
-
         this.downloadProgress$ = this.ipcService.watch<number>("update-download-progress").pipe(map(res => (res.success ? res.data : 0)));
     }
 
@@ -74,6 +73,7 @@ export class AutoUpdaterService {
     }
 
     private async getChangelog(): Promise<Changelog> {
+      try {
         const path = `https://raw.githubusercontent.com/Zagrios/bs-manager/feature/add-changelog-modal/178/assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`
         const response = await fetch(path);
         if (!response.ok) {
@@ -85,6 +85,11 @@ export class AutoUpdaterService {
             return undefined;
         }
         return data;
+      }
+      catch(error){
+        this.ipcService.sendLazy("log-error", {args: error});
+        return undefined;
+      }
     }
 
     private async getChangelogVersion(version:string): Promise<ChangelogVersion> {
@@ -105,11 +110,15 @@ export class AutoUpdaterService {
         return this.ipcService.sendV2<string>("current-version");
     }
 
-    public async showChangelog(): Promise<void>{
+    public async showChangelog(version:string  = undefined): Promise<void>{
         try{
+
+          if (!version) {
+            version = await lastValueFrom(this.getAppVersion())
+          }
+
           if(this.getHaveBeenUpdated()){
-            const currentVersion = await lastValueFrom(this.getAppVersion());
-            const changelog = await this.getChangelogVersion(currentVersion);
+            const changelog = await this.getChangelogVersion(version);
 
             this.modal.openModal(ChangelogModal, changelog);
           }
@@ -117,5 +126,21 @@ export class AutoUpdaterService {
         catch(error){
             this.ipcService.sendLazy("log-error", {args: error});
         }
+    }
+
+    public async isChangelogAvailable(version:string = undefined): Promise<boolean>{
+      try {
+        if (!version) {
+          version = await lastValueFrom(this.getAppVersion())
+        }
+
+        const changelog = await this.getChangelogVersion(version);
+
+        return !!changelog;
+      }
+      catch(error){
+        this.ipcService.sendLazy("log-error", {args: error});
+        return false;
+      }
     }
 }
