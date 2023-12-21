@@ -64,12 +64,12 @@ export class AutoUpdaterService {
         this.ipcService.sendLazy("install-update");
     }
 
-    public getHaveBeenUpdated(): boolean {
-        return this.configurationService.get("have-been-updated");
+    public getLastVersion(): string {
+        return this.configurationService.get("LAST_VERSION");
     }
 
-    public setHaveBeenUpdated(value: boolean){
-        this.configurationService.set("have-been-updated", value);
+    public setLastVersion(){
+        lastValueFrom(this.getAppVersion()).then(v => this.configurationService.set("LAST_VERSION", v));
     }
 
     private async getChangelog(): Promise<Changelog> {
@@ -116,12 +116,9 @@ export class AutoUpdaterService {
           if (!version) {
             version = await lastValueFrom(this.getAppVersion())
           }
-
-          if(this.getHaveBeenUpdated()){
             const changelog = await this.getChangelogVersion(version);
 
             this.modal.openModal(ChangelogModal, changelog);
-          }
         }
         catch(error){
             this.ipcService.sendLazy("log-error", {args: error});
