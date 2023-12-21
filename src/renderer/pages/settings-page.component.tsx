@@ -148,7 +148,10 @@ export function SettingsPage() {
 
     const handleVersionClick = async () => {
       await checkChangelogAvailability();
-    };
+      if (isChangelogAvailable) {
+          autoUpdater.showChangelog(appVersion);
+      }
+  };
 
     const setDefaultInstallationFolder = () => {
         if (!progressBarService.require()) {
