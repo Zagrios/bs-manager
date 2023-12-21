@@ -34,13 +34,14 @@ export default function App() {
     const config = useService(ConfigurationService);
     const autoUpdater = useService(AutoUpdaterService);
 
-
     const location = useLocation();
     const navigate = useNavigate();
 
     useEffect(() => {
 
-        autoUpdater.showChangelog();
+        lastValueFrom(autoUpdater.getAppVersion()).then(version => {
+          if(autoUpdater.isChangelogAvailable && autoUpdater.getLastVersion() === version) {autoUpdater.showChangelog()}
+        });
         checkOneClicks();
     }, []);
 
