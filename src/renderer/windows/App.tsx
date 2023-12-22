@@ -39,9 +39,12 @@ export default function App() {
 
     useEffect(() => {
 
-        lastValueFrom(autoUpdater.getAppVersion()).then(version => {
-          if(autoUpdater.isChangelogAvailable && autoUpdater.getLastVersion() === version) {autoUpdater.showChangelog()}
+        lastValueFrom(autoUpdater.getAppVersion()).then(appVersion => {
+          if(appVersion === autoUpdater.getLastAppVersion()){ return; }
+          autoUpdater.showChangelog(appVersion);
         });
+
+        autoUpdater.setLastAppVersion();
         checkOneClicks();
     }, []);
 
