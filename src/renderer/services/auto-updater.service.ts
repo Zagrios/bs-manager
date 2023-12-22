@@ -1,7 +1,6 @@
 import { map } from "rxjs/operators";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
-import { I18nService } from "./i18n.service";
 import { ModalService } from "renderer/services/modale.service";
 import { ChangelogModal } from "renderer/components/modal/modal-types/chabgelog-modal/changelog-modal.component";
 import { ConfigurationService } from "./configuration.service";
@@ -24,8 +23,6 @@ export class AutoUpdaterService {
 
     private downloadProgress$: Observable<number>;
 
-    private i18nService: I18nService;
-
     private modal: ModalService;
 
     private configurationService: ConfigurationService;
@@ -42,7 +39,6 @@ export class AutoUpdaterService {
     private constructor() {
         this.progressService = ProgressBarService.getInstance();
         this.ipcService = IpcService.getInstance();
-        this.i18nService = I18nService.getInstance();
         this.modal = ModalService.getInstance();
         this.configurationService = ConfigurationService.getInstance();
 
@@ -80,7 +76,7 @@ export class AutoUpdaterService {
           return this.cacheChangelog;
         }
 
-        const path = `https://raw.githubusercontent.com/Zagrios/bs-manager/feature/add-changelog-modal/178/assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`
+        const path = `https://raw.githubusercontent.com/Zagrios/bs-manager/feature/add-changelog-modal/178/assets/jsons/changelogs.json`
         const response = await fetch(path);
         if (!response.ok) {
             return undefined;
