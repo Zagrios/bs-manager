@@ -21,7 +21,6 @@ export default function Launcher() {
     useEffect(() => {
         updaterService.isUpdateAvailable().then(available => {
             if (!available) {
-
                 return windowService.openThenCloseAll("index.html");
             }
             setText("auto-update.downloading");

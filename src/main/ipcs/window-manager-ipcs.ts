@@ -3,10 +3,8 @@ import { AppWindow } from "shared/models/window-manager/app-window.model";
 import { IpcService } from "../services/ipc.service";
 import { from } from "rxjs";
 import { BrowserWindow, ipcMain } from "electron";
-import { AutoUpdaterService } from "../services/auto-updater.service";
 
 const ipc = IpcService.getInstance();
-const autoUpdaterService = AutoUpdaterService.getInstance();
 
 // Native windows control, do not pass through IPC service
 ipcMain.on("close-window", async (event) => {
