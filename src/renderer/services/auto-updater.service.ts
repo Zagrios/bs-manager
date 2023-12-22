@@ -30,6 +30,8 @@ export class AutoUpdaterService {
 
     private configurationService: ConfigurationService;
 
+    private cacheChangelog: Changelog;
+
     public static getInstance(): AutoUpdaterService {
         if (!AutoUpdaterService.instance) {
             AutoUpdaterService.instance = new AutoUpdaterService();
@@ -64,16 +66,20 @@ export class AutoUpdaterService {
         this.ipcService.sendLazy("install-update");
     }
 
-    public getLastVersion(): string {
+    public getLastAppVersion(): string {
         return this.configurationService.get("LAST_VERSION");
     }
 
-    public setLastVersion(){
+    public setLastAppVersion(){
         lastValueFrom(this.getAppVersion()).then(v => this.configurationService.set("LAST_VERSION", v));
     }
 
     private async getChangelog(): Promise<Changelog> {
       try {
+        if (this.cacheChangelog) {
+          return this.cacheChangelog;
+        }
+
         const path = `https://raw.githubusercontent.com/Zagrios/bs-manager/feature/add-changelog-modal/178/assets/jsons/changelogs/${this.i18nService.currentLanguage.split("-")[0]}.json`
         const response = await fetch(path);
         if (!response.ok) {
@@ -84,6 +90,8 @@ export class AutoUpdaterService {
         if (!data) {
             return undefined;
         }
+
+        this.cacheChangelog = data;
         return data;
       }
       catch(error){
@@ -110,34 +118,9 @@ export class AutoUpdaterService {
         return this.ipcService.sendV2<string>("current-version");
     }
 
-    public async showChangelog(version:string  = undefined): Promise<void>{
-        try{
-
-          if (!version) {
-            version = await lastValueFrom(this.getAppVersion())
-          }
+    public async showChangelog(version:string): Promise<void>{
             const changelog = await this.getChangelogVersion(version);
 
             this.modal.openModal(ChangelogModal, changelog);
-        }
-        catch(error){
-            this.ipcService.sendLazy("log-error", {args: error});
-        }
-    }
-
-    public async isChangelogAvailable(version:string = undefined): Promise<boolean>{
-      try {
-        if (!version) {
-          version = await lastValueFrom(this.getAppVersion())
-        }
-
-        const changelog = await this.getChangelogVersion(version);
-
-        return !!changelog;
-      }
-      catch(error){
-        this.ipcService.sendLazy("log-error", {args: error});
-        return false;
-      }
     }
 }
