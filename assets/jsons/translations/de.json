@@ -195,6 +195,10 @@
                     "report-bug": "Fehler melden",
                     "open-logs": "Protokolle öffnen"
                 }
+            },
+            "changelogs": {
+                "open" : "🚀 Neues im Changelog entdecken!",
+                "not-found": "😕 Hoppla, kein Changelog zu sehen!"
             }
         }
     },
