@@ -41,6 +41,7 @@ import { SteamIcon } from "renderer/components/svgs/icons/steam-icon.component";
 import { OculusIcon } from "renderer/components/svgs/icons/oculus-icon.component";
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
+import BeatWaitingImg from "../../../assets/images/apngs/beat-waiting.png";
 
 
 export function SettingsPage() {
@@ -91,11 +92,8 @@ export function SettingsPage() {
     const [hasDownloaderSession, setHasDownloaderSession] = useState(false);
     const appVersion = useObservable(ipcService.sendV2<string>("current-version"));
 
-    const [isChangelogAvailable, setIsChangelogAvailable] = useState(undefined);
-    const checkChangelogAvailability = async () => {
-      const changelogAvailable = await autoUpdater.isChangelogAvailable(appVersion);
-      setIsChangelogAvailable(changelogAvailable);
-  };
+    const [isChangelogAvailable, setIsChangelogAvailable] = useState(true);
+    const [changlogsLoading, setChanglogsLoading] = useState(false);
 
     useEffect(() => {
         loadInstallationFolder();
@@ -103,8 +101,7 @@ export function SettingsPage() {
         mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
-        if (isChangelogAvailable) {autoUpdater.showChangelog(appVersion)};
-    }, [isChangelogAvailable, appVersion]);
+    }, []);
 
     const allDeepLinkEnabled = mapDeepLinksEnabled && playlistsDeepLinkEnabled && modelsDeepLinkEnabled;
 
@@ -147,11 +144,12 @@ export function SettingsPage() {
     };
 
     const handleVersionClick = async () => {
-      await checkChangelogAvailability();
-      if (isChangelogAvailable) {
-          autoUpdater.showChangelog(appVersion);
-      }
-  };
+      setChanglogsLoading(() => true);
+      await autoUpdater.showChangelog(await lastValueFrom(autoUpdater.getAppVersion()))
+        .then(() => setIsChangelogAvailable(() => true))
+        .catch(() => setIsChangelogAvailable(() => false));
+      setChanglogsLoading(() => false);
+    }
 
     const setDefaultInstallationFolder = () => {
         if (!progressBarService.require()) {
@@ -458,9 +456,12 @@ export function SettingsPage() {
                         </div>
                     </SettingContainer>
                 </SettingContainer>
-                <Tippy content={isChangelogAvailable !== false ? "Cliquez pour voir les changements" : "Aucun changelog disponible"} placement="left" className="font-bold bg-main-color-3">
-                <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5" onClick={handleVersionClick}>v{appVersion}</span>
+                <Tippy content={isChangelogAvailable !== false ? t("pages.settings.changelogs.open") : t("pages.settings.changelogs.not-founds")} placement="left" className="font-bold bg-main-color-3">
+                    <div className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5 hover:brightness-125 h-auto w-auto">
+                        <BsmButton onClick={handleVersionClick} text={`v${appVersion}`} withBar={false} typeColor="none"/>
+                    </div>
                 </Tippy>
+                <BsmImage className={`h-7 my-auto spin-loading float-right ${changlogsLoading ? "" : "hidden"}`} image={BeatWaitingImg} loading="eager" />
               </div>
 
             <SupportersView isVisible={showSupporters} setVisible={setShowSupporters} />
