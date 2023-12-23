@@ -144,12 +144,25 @@ export function SettingsPage() {
     };
 
     const handleVersionClick = async () => {
-      setChanglogsLoading(() => true);
-      await autoUpdater.showChangelog(await lastValueFrom(autoUpdater.getAppVersion()))
-        .then(() => setIsChangelogAvailable(() => true))
-        .catch(() => setIsChangelogAvailable(() => false));
-      setChanglogsLoading(() => false);
-    }
+        let isChangelogResolved = false;
+
+        const changelogPromise = autoUpdater.showChangelog(await lastValueFrom(autoUpdater.getAppVersion()))
+            .then(() => {
+                isChangelogResolved = true;
+                setIsChangelogAvailable(() => true);
+            })
+            .catch(() => {
+                isChangelogResolved = true;
+                setIsChangelogAvailable(() => false);
+            });
+
+        setTimeout(() => {
+            setChanglogsLoading(() => !isChangelogResolved);
+        }, 100);
+
+        await changelogPromise;
+        setChanglogsLoading(() => false);
+    };
 
     const setDefaultInstallationFolder = () => {
         if (!progressBarService.require()) {
@@ -440,7 +453,7 @@ export function SettingsPage() {
                     <SettingContainer className="mt-3" description="pages.settings.discord.description">
                         <div className="flex gap-2">
                             <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="Discord" icon="discord" iconClassName="p-0.5 mr-1" color="#5865f2" onClick={openDiscord} />
-                            <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="Twitter" icon="twitter" iconClassName="p-0.5 mr-1" color="#1A8CD8" onClick={openTwitter} />
+                            <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="Twitter" icon="twitter" iconClassName="p-0.5 mr-1" color="#000" onClick={openTwitter} />
                         </div>
                     </SettingContainer>
                     <SettingContainer className="pt-3" description="pages.settings.contribution.description">
@@ -462,7 +475,7 @@ export function SettingsPage() {
                     </div>
                 </Tippy>
                 <BsmImage className={`h-7 my-auto spin-loading float-right ${changlogsLoading ? "" : "hidden"}`} image={BeatWaitingImg} loading="eager" />
-              </div>
+            </div>
 
             <SupportersView isVisible={showSupporters} setVisible={setShowSupporters} />
         </div>
