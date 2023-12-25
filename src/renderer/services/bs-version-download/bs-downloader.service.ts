@@ -75,7 +75,7 @@ export class BsDownloaderService extends AbstractBsDownloaderService {
     public async downloadVersion(version: BSVersion, from?: BsStore): Promise<BSVersion> {
 
         if(!from){
-            from = this.defaultStore === BsStore.STEAM ? BsStore.STEAM : await this.chooseStoreToDownloadFrom();
+            from = this.defaultStore ?? await this.chooseStoreToDownloadFrom();
         }
 
         return this.getStoreDownloader(from).downloadBsVersion(version).then(() => {
