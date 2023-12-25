@@ -501,8 +501,7 @@
         "choose-store": {
             "title": "Quelle plateforme ?",
             "body": "Sélectionnez la plateforme depuis laquelle vous souhaitez télécharger Beat Saber.",
-            "set-in-settings": "Définir la platforme par défaut dans les paramètres",
-            "unavailable": "En raison de récents changements apportés par Oculus, la rétrogradation des versions d'Oculus n'est actuellement plus disponible. Nous étudions le problème et vous tiendrons au courant sur le serveur Discord de BSManager."
+            "set-in-settings": "Définir la platforme par défaut dans les paramètres"
         },
         "guard": {
             "title": "Steam Guard",

@@ -505,8 +505,7 @@
         "choose-store": {
             "title": "どのプラットフォーム？",
             "body": "Beat Saberをダウンロードするプラットフォームを選択してください。",
-            "set-in-settings": "設定からデフォルトのプラットフォームを設定する",
-            "unavailable": "Oculusによる最近の変更により、現在Oculusのバージョンダウングレードは利用できなくなりました。私たちは問題を調査しており、BSManagerのDiscordサーバーで最新情報をお知らせします。"
+            "set-in-settings": "設定からデフォルトのプラットフォームを設定する"
         },
         "guard": {
             "title": "Steamガード",

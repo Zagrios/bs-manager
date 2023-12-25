@@ -504,8 +504,7 @@
         "choose-store": {
             "title": "¿Qué plataforma?",
             "body": "Selecciona la plataforma desde la que deseas descargar Beat Saber.",
-            "set-in-settings": "Establecer la plataforma predeterminada en los ajustes",
-            "unavailable": "Debido a cambios recientes de Oculus, la degradación de versiones de Oculus ya no está disponible. Estamos investigando el problema y te mantendremos informado en el servidor de Discord de BSManager."
+            "set-in-settings": "Establecer la plataforma predeterminada en los ajustes"
         },
         "guard": {
             "title": "Steam Guard",
