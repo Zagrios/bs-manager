@@ -44,10 +44,6 @@ export const EnterMetaTokenModal: ModalComponent<string> = ({resolver}) => {
     );
 }
 
-const isPasswordValid = (password: string) => {
-    return password.length >= 8;
-}
-
 const EnterPasswordView = ({onValid, onCancel, dontHaveToken}: {onValid: (token: string) => void, onCancel: () => void, dontHaveToken: () => void}) => {
 
     const t = useTranslation();
@@ -55,7 +51,6 @@ const EnterPasswordView = ({onValid, onCancel, dontHaveToken}: {onValid: (token:
     const config = useService(ConfigurationService);
 
     const [password, setPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
 
     const getTokenFromStorage = () => {
         const cryptedToken = config.get<string>(OCULUS_TOKEN_STORAGE_KEY);
@@ -63,7 +58,7 @@ const EnterPasswordView = ({onValid, onCancel, dontHaveToken}: {onValid: (token:
         const { result: token, error } = tryit(() => crypto.AES.decrypt(cryptedToken, password).toString(crypto.enc.Utf8));
 
         if(error){
-            logRenderError(error, "Often indicate that the password is not the same as the one used to save the token.");
+            logRenderError(error, "Often indicate that the password is not the same as the one used to save the token. This error can occur when the use is writing the password.");
         }
 
         return token;
@@ -85,16 +80,7 @@ const EnterPasswordView = ({onValid, onCancel, dontHaveToken}: {onValid: (token:
 
             <div className="flex flex-col gap-2">
                 <div>
-                    <div className="flex flex-row items-center justify-between">
-                        <label className="font-bold cursor-pointer tracking-wide inline-block" htmlFor="password">{t("modals.enter-meta-token.body.password")}</label>
-                        {!isPasswordValid(password) && password.length > 0 && (
-                            <span className="text-orange-700 dark:text-orange-400 text-xs whitespace-normal min-w-0">{t("modals.enter-meta-token.body.password-too-short")}</span>
-                        )}
-                    </div>
-                    <div className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md flex box-border h-9">
-                        <input className="grow px-1 py-[2px] outline-none bg-transparent" onChange={e => setPassword(e.target.value)} value={password} type={showPassword ? "text" : "password"} name="password" id="password" placeholder={t("modals.enter-meta-token.body.password")} />
-                        <BsmButton className="shrink-0 m-1 rounded-md p-0.5 !bg-light-main-color-3 dark:!bg-main-color-3" icon={showPassword ? "eye-cross" : "eye"} withBar={false} onClick={() => setShowPassword(prev => !prev)} />
-                    </div>
+                    <PasswordInput onChange={v => setPassword(v.password)} value={password}/>
                 </div>
 
                 <div>
@@ -126,7 +112,7 @@ const EnterOculusTokenView = ({onValid, onCancel, alreadyHaveToken}: {onValid: (
     const [showToken, setShowToken] = useState(false);
     const [stay, setStay] = useState(false);
     const [password, setPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
+    const [passwordValid, setPasswordValid] = useState(false);
 
     const storeToken = (token: string, password: string) => {
         const cryptedToken = crypto.AES.encrypt(token, password).toString();
@@ -170,22 +156,13 @@ const EnterOculusTokenView = ({onValid, onCancel, alreadyHaveToken}: {onValid: (
                 <Tippy className="!bg-neutral-900" arrow={false} content={t("modals.enter-meta-token.body.save-token-info")}>
                     <div className="flex flex-row items-center gap-1 w-fit">
                         <BsmCheckbox className="h-6 w-6 relative z-[1]" onChange={setStay} checked={stay}/>
-                            <span className="font-bold cursor-help">{t("modals.enter-meta-token.body.save-my-token")}</span>
+                        <span className="font-bold cursor-help">{t("modals.enter-meta-token.body.save-my-token")}</span>
                     </div>
                 </Tippy>
 
                 <div className="grid grid-rows-[0fr] transition-[grid-template-rows]" style={{gridTemplateRows: stay && "1fr"}}>
                     <div className="overflow-hidden">
-                        <div className="flex flex-row items-center justify-between">
-                            <label className="font-bold cursor-pointer tracking-wide inline-block" htmlFor="password">{t("modals.enter-meta-token.body.password")}</label>
-                            {!isPasswordValid(password) && password.length > 0 && (
-                                <span className="text-orange-700 dark:text-orange-400 text-xs whitespace-normal min-w-0">{t("modals.enter-meta-token.body.password-too-short")}</span>
-                            )}
-                        </div>
-                        <div className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md flex box-border h-9">
-                            <input className="grow px-1 py-[2px] outline-none bg-transparent" onChange={e => setPassword(e.target.value)} value={password} type={showPassword ? "text" : "password"} name="password" id="password" placeholder={t("modals.enter-meta-token.body.password")} />
-                            <BsmButton className="shrink-0 m-1 rounded-md p-0.5 !bg-light-main-color-3 dark:!bg-main-color-3" icon={showPassword ? "eye-cross" : "eye"} withBar={false} onClick={() => setShowPassword(prev => !prev)} />
-                        </div>
+                        <PasswordInput onChange={v => {setPassword(v.password); setPasswordValid(v.valid)}} value={password}/>
                     </div>
                 </div>
 
@@ -198,10 +175,37 @@ const EnterOculusTokenView = ({onValid, onCancel, alreadyHaveToken}: {onValid: (
 
             <div className="flex flex-row gap-2">
                 <BsmButton className="rounded-md flex justify-center items-center transition-all h-9 w-full" typeColor="cancel" text="misc.cancel" withBar={false} onClick={onCancel}/>
-                <BsmButton className="rounded-md flex justify-center items-center transition-all h-9 w-full" typeColor="primary" text="modals.enter-meta-token.valid-btn" withBar={false} onClick={valid} disabled={!isOculusTokenValid(token) || (stay && !isPasswordValid(password))}/>
+                <BsmButton className="rounded-md flex justify-center items-center transition-all h-9 w-full" typeColor="primary" text="modals.enter-meta-token.valid-btn" withBar={false} onClick={valid} disabled={!isOculusTokenValid(token) || (stay && !passwordValid)}/>
             </div>
         </>
 
     );
+
+}
+
+const PasswordInput = ({onChange, value}: {onChange: (value : {password: string, valid: boolean}) => void, value: string}) => {
+
+    const t = useTranslation();
+
+    const [showPassword, setShowPassword] = useState(false);
+
+    const isPasswordValid = (password: string) => {
+        return password.length >= 8;
+    }
+
+    return (
+        <>
+            <div className="flex flex-row items-center justify-between">
+                <label className="font-bold cursor-pointer tracking-wide inline-block" htmlFor="password">{t("modals.enter-meta-token.body.password")}</label>
+                {!isPasswordValid(value) && value.length > 0 && (
+                    <span className="text-orange-700 dark:text-orange-400 text-xs whitespace-normal min-w-0">{t("modals.enter-meta-token.body.password-too-short")}</span>
+                )}
+            </div>
+            <div className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md flex box-border h-9">
+                <input className="grow px-1 py-[2px] outline-none bg-transparent" onChange={e => onChange({password: e.target.value, valid: isPasswordValid(e.target.value)})} value={value} type={showPassword ? "text" : "password"} name="password" id="password" placeholder={t("modals.enter-meta-token.body.password")} />
+                <BsmButton className="shrink-0 m-1 rounded-md p-0.5 !bg-light-main-color-3 dark:!bg-main-color-3" icon={showPassword ? "eye-cross" : "eye"} withBar={false} onClick={() => setShowPassword(prev => !prev)} />
+            </div>
+        </> 
+    )
 
 }
