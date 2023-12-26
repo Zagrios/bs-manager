@@ -1,6 +1,6 @@
 export function isOculusTokenValid(token: string, logger?: (...args: unknown[]) => void): boolean{
 
-    // Code taken from "https://github.com/ComputerElite/QuestAppVersionSwitcher" (TokenTools.cs)
+    // Part of code taken from "https://github.com/ComputerElite/QuestAppVersionSwitcher" (TokenTools.cs)
 
     logger?.("Checking if Oculus user token is valid");
 
@@ -12,12 +12,16 @@ export function isOculusTokenValid(token: string, logger?: (...args: unknown[]) 
         logger?.("Token contains %. Token most likely comes from an uri and won't work");
         return false;
     }
-    if(!token.startsWith("OC")){
-        logger?.("Token does not start with OC.");
+    if(!token.startsWith("FRL")){
+        logger?.("Tokens must start with 'FRL'.");
         return false;
     }
     if(token.includes("|")){
-        logger?.("Token contains | which usually indicates an application token which is not valid for user tokens");
+        logger?.("Token contains '|' which usually indicates an application token which is not valid for user tokens");
+        return false;
+    }
+    if(token.includes(":")){
+        logger?.("Token contains ':' wich can indicate that the user have copied the 'access_token' field with the token");
         return false;
     }
     if(token.match(/OC\d{15}/)){
@@ -25,7 +29,7 @@ export function isOculusTokenValid(token: string, logger?: (...args: unknown[]) 
         return false;
     }
 
-    logger?.("Oculus user token is valid");
+    logger?.("Oculus user token is valid.", `token lenght : ${token.length}`);
 
     return true;
 

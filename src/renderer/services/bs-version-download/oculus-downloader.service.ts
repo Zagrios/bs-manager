@@ -87,37 +87,39 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
 
     private async doDownloadBsVersion(bsVersion: BSVersion, isVerification: boolean): Promise<BSVersion> {
 
-        let autoDownloadFailed = false;
+        const autoDownloadFailed = false;
 
         return (async () => {
 
-            const autoDownload = await lastValueFrom(this.tryAutoDownload({ bsVersion, isVerification })).then(() => true).catch((err: CustomError) => {
-                const doNotRestartCodes: string[] = [
-                    OculusDownloaderErrorCodes.ALREADY_DOWNLOADING,
-                    OculusDownloaderErrorCodes.SOME_FILES_FAILED_TO_DOWNLOAD,
-                    OculusDownloaderErrorCodes.VERIFY_INTEGRITY_FAILED,
-                    OculusDownloaderErrorCodes.DOWNLOAD_CANCELLED
-                ];
-                autoDownloadFailed = true;
+            // DISABLE FOR NOW, WILL MAYBE BE RE-ENABLED WHEN META AUTH IS FIXED
 
-                if(doNotRestartCodes.includes(err?.code)){
-                    return true;
-                }
+            // const autoDownload = await lastValueFrom(this.tryAutoDownload({ bsVersion, isVerification })).then(() => true).catch((err: CustomError) => {
+            //     const doNotRestartCodes: string[] = [
+            //         OculusDownloaderErrorCodes.ALREADY_DOWNLOADING,
+            //         OculusDownloaderErrorCodes.SOME_FILES_FAILED_TO_DOWNLOAD,
+            //         OculusDownloaderErrorCodes.VERIFY_INTEGRITY_FAILED,
+            //         OculusDownloaderErrorCodes.DOWNLOAD_CANCELLED
+            //     ];
+            //     autoDownloadFailed = true;
 
-                return false;
-            });
+            //     if(doNotRestartCodes.includes(err?.code)){
+            //         return true;
+            //     }
+
+            //     return false;
+            // });
             
-            if(autoDownload){ return autoDownload; }
+            // if(autoDownload){ return autoDownload; }
 
-            const {exitCode, data} = await this.modals.openModal(LoginToMetaModal)
+            // const {exitCode, data} = await this.modals.openModal(LoginToMetaModal)
 
-            if(exitCode !== ModalExitCode.COMPLETED){
-                return false
-            }
+            // if(exitCode !== ModalExitCode.COMPLETED){
+            //     return false
+            // }
 
-            if(data.method === MetaAuthMethod.META){
-                return lastValueFrom(this.startDownloadBsVersion({ bsVersion, isVerification, stay: data.stay })).then(() => true);
-            }
+            // if(data.method === MetaAuthMethod.META){
+            //     return lastValueFrom(this.startDownloadBsVersion({ bsVersion, isVerification, stay: data.stay })).then(() => true);
+            // }
 
             const tokenRes = await this.modals.openModal(EnterMetaTokenModal);
 
@@ -128,8 +130,6 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
             return lastValueFrom(this.startDownloadBsVersion({ bsVersion, isVerification, token: tokenRes.data })).then(() => true);
 
         })().then(res => {
-
-            console.log("aaa", res);
 
             if(autoDownloadFailed || !res){
                 return bsVersion;

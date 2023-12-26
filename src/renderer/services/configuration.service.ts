@@ -30,10 +30,14 @@ export class ConfigurationService {
     public get<Type>(key: string | DefaultConfigKey): Type {
         const rawValue = (window.sessionStorage.getItem(key) ?? window.localStorage.getItem(key));
         const tryParse = tryit<Type>(() => JSON.parse(rawValue));
-        if (!tryParse.result) {
-            return defaultConfiguration[key as DefaultConfigKey];
+        
+        const res = (tryParse.error ? rawValue : tryParse.result) as Type;
+
+        if(!res && Object.keys(defaultConfiguration).includes(key)){
+            return defaultConfiguration[key as DefaultConfigKey] as Type;
         }
-        return (tryParse.result ?? rawValue) as Type;
+
+        return res;
     }
 
     public set(key: string, value: unknown, persistant = true) {
