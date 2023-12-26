@@ -708,12 +708,20 @@
             "understood": "明白了"
         },
         "enter-meta-token": {
-            "title": "Meta 令牌",
+            "title": "Oculus令牌",
             "body": {
-                "need-token": "要下载 BeatSaber，需要你的 Meta 登录令牌。",
-                "how-obtain-token": "如何获取我的 Meta 令牌？",
-                "input-label": "Meta 令牌",
-                "token-is-invalid": "令牌无效。"
+                "info-enter-token": "下载Beat Saber需要您的Oculus登录令牌。",
+                "how-obtain-token": "我如何获得我的Oculus令牌？",
+                "oculus-token": "Oculus令牌",
+                "token-is-invalid": "令牌无效。",
+                "save-my-token": "保存我的令牌",
+                "have-token-saved": "我已经保存了一个令牌",
+                "save-token-info": "这将保存您的令牌以便更容易地重新使用。您需要创建一个密码来加密您的令牌以进行存储。如果您忘记了密码，只需再次提供您的令牌即可。",
+                "password": "密码",
+                "password-too-short": "密码太短",
+                "info-enter-password": "下载Beat Saber需要您的Oculus登录令牌。请输入用于保存您的Oculus令牌的密码。",
+                "info-disabled-btn-password": "使用提供的密码解密的令牌无效。确保密码与保存令牌时使用的密码相同。",
+                "enter-oculus-token": "输入Oculus令牌"
             },
             "valid-btn": "验证"
         }

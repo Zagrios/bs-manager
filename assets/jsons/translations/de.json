@@ -707,12 +707,20 @@
             "understood": "Verstanden"
         },
         "enter-meta-token": {
-            "title": "Meta-Token",
+            "title": "Oculus Token",
             "body": {
-                "need-token": "Um Beat Saber herunterzuladen, ist Ihr Meta-Anmelde-Token erforderlich.",
-                "how-obtain-token": "Wie erhalte ich mein Meta-Token?",
-                "input-label": "Meta-Token",
-                "token-is-invalid": "Das Token ist ungültig."
+                "info-enter-token": "Um Beat Saber herunterzuladen, ist Ihr Oculus-Anmeldetoken erforderlich.",
+                "how-obtain-token": "Wie erhalte ich mein Oculus Token?",
+                "oculus-token": "Oculus Token",
+                "token-is-invalid": "Das Token ist ungültig.",
+                "save-my-token": "Mein Token speichern",
+                "have-token-saved": "Ich habe bereits ein Token gespeichert",
+                "save-token-info": "Dies wird Ihr Token zur einfacheren Wiederverwendung speichern. Sie müssen ein Passwort erstellen, um Ihr Token zu verschlüsseln und zu speichern. Wenn Sie Ihr Passwort vergessen, müssen Sie nur Ihr Token erneut angeben.",
+                "password": "Passwort",
+                "password-too-short": "Passwort zu kurz",
+                "info-enter-password": "Um Beat Saber herunterzuladen, ist Ihr Oculus-Anmeldetoken erforderlich. Geben Sie das Passwort ein, mit dem Ihr Oculus-Token gespeichert wurde.",
+                "info-disabled-btn-password": "Der mit dem angegebenen Passwort entschlüsselte Token ist ungültig. Stellen Sie sicher, dass das Passwort dasselbe ist wie das zum Speichern des Tokens verwendete.",
+                "enter-oculus-token": "Ein Oculus-Token eingeben"
             },
             "valid-btn": "Validieren"
         }

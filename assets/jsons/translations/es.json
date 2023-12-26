@@ -706,12 +706,20 @@
             "understood": "Entendido"
         },
         "enter-meta-token": {
-            "title": "Token de Meta",
+            "title": "Token de Oculus",
             "body": {
-                "need-token": "Para descargar Beat Saber, se requiere su token de inicio de sesión de Meta.",
-                "how-obtain-token": "¿Cómo obtengo mi Token de Meta?",
-                "input-label": "Token de Meta",
-                "token-is-invalid": "El Token es inválido."
+                "info-enter-token": "Para descargar Beat Saber, se requiere tu token de inicio de sesión de Oculus.",
+                "how-obtain-token": "¿Cómo obtengo mi Token de Oculus?",
+                "oculus-token": "Token de Oculus",
+                "token-is-invalid": "El token es inválido.",
+                "save-my-token": "Guardar mi token",
+                "have-token-saved": "Ya tengo un token guardado",
+                "save-token-info": "Esto guardará tu token para reutilizarlo más fácilmente. Necesitarás crear una contraseña para encriptar tu token para su almacenamiento. Si alguna vez olvidas tu contraseña, solo necesitas proporcionar tu token nuevamente.",
+                "password": "Contraseña",
+                "password-too-short": "Contraseña demasiado corta",
+                "info-enter-password": "Para descargar Beat Saber, se requiere tu token de inicio de sesión de Oculus. Introduce la contraseña utilizada para guardar tu token de Oculus.",
+                "info-disabled-btn-password": "El token descifrado con la contraseña proporcionada es inválido. Asegúrate de que la contraseña sea la misma que la utilizada para guardar el token.",
+                "enter-oculus-token": "Introducir un token de Oculus"
             },
             "valid-btn": "Validar"
         }

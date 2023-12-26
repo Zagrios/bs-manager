@@ -28,7 +28,7 @@ export class BsDownloaderService extends AbstractBsDownloaderService {
     private readonly oculusDownloader: OculusDownloaderService;
     private readonly versionManager: BSVersionManagerService;
 
-    private readonly SELECTED_STORE_TO_DOWNLOAD_KET = "selectedStoreToDownload";
+    private readonly SELECTED_STORE_TO_DOWNLOAD_KEY = "selectedStoreToDownload";
 
     private constructor(){
         super();
@@ -55,11 +55,11 @@ export class BsDownloaderService extends AbstractBsDownloaderService {
         this._isVerifying$.next(false);
     }
 
-    public get defaultStore(): BsStore | undefined { return this.config.get<BsStore>(this.SELECTED_STORE_TO_DOWNLOAD_KET); }
-    public get defaultStore$(): Observable<BsStore | undefined> { return this.config.watch(this.SELECTED_STORE_TO_DOWNLOAD_KET); } 
+    public get defaultStore(): BsStore | undefined { return this.config.get<BsStore>(this.SELECTED_STORE_TO_DOWNLOAD_KEY); }
+    public get defaultStore$(): Observable<BsStore | undefined> { return this.config.watch(this.SELECTED_STORE_TO_DOWNLOAD_KEY); } 
 
     public setDefaultStore(store: BsStore|undefined): void {
-        this.config.set(this.SELECTED_STORE_TO_DOWNLOAD_KET, store);
+        this.config.set(this.SELECTED_STORE_TO_DOWNLOAD_KEY, store);
     }
 
     public async chooseStoreToDownloadFrom(): Promise<BsStore | undefined> {
