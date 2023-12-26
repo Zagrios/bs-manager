@@ -67,7 +67,7 @@ export class BsSteamDownloaderService {
         const downloadVersion: BSVersion = {
             ...downloadInfos.bsVersion,
             ...(path.basename(dest) !== downloadInfos.bsVersion.BSVersion && { name: path.basename(dest) }),
-            metadata: { store: BsStore.STEAM }
+            metadata: { store: BsStore.STEAM, id: "" }
         };
 
         const depotDownloaderOptions: DepotDownloaderArgsOptions = {
@@ -118,7 +118,7 @@ export class BsSteamDownloaderService {
                         }
                         return event;
                     }),
-                    finalize(() => this.localVersionService.setVersionMetadata(version, "store", BsStore.STEAM))
+                    finalize(() => this.localVersionService.initVersionMetadata(version, { store: BsStore.STEAM }))
                 ).subscribe(sub);
 
             }).catch(err => sub.error({
