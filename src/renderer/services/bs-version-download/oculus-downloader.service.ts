@@ -6,7 +6,6 @@ import { ProgressBarService } from "../progress-bar.service";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { NotificationService } from "../notification.service";
 import { ModalExitCode, ModalService } from "../modale.service";
-import { LoginToMetaModal, MetaAuthMethod } from "renderer/components/modal/modal-types/bs-downgrade/login-to-meta-modal.component";
 import { DownloaderServiceInterface } from "./bs-store-downloader.interface";
 import { AbstractBsDownloaderService } from "./abstract-bs-downloader.service";
 import { DownloadInfo } from "main/services/bs-version-download/bs-steam-downloader.service";
@@ -69,14 +68,6 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
         );
     }
 
-    private tryAutoDownload(downloadInfo: DownloadInfo): Observable<Progression<BSVersion>>{
-        const ignoreCode = [MetaAuthErrorCodes.NO_META_AUTH_TOKEN, OculusDownloaderErrorCodes.DOWNLOAD_CANCELLED];
-        return this.handleDownload(
-            this.ipc.sendV2<Progression<BSVersion>>("bs-oculus-auto-download", { args: downloadInfo }),
-            ignoreCode
-        );
-    }
-
     private startDownloadBsVersion(downloadInfo: DownloadInfo): Observable<Progression<BSVersion>>{
         const ignoreCode = [MetaAuthErrorCodes.META_LOGIN_WINDOW_CLOSED_BY_USER, OculusDownloaderErrorCodes.DOWNLOAD_CANCELLED];
         return this.handleDownload(
@@ -90,36 +81,6 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
         const autoDownloadFailed = false;
 
         return (async () => {
-
-            // DISABLE FOR NOW, WILL MAYBE BE RE-ENABLED WHEN META AUTH IS FIXED
-
-            // const autoDownload = await lastValueFrom(this.tryAutoDownload({ bsVersion, isVerification })).then(() => true).catch((err: CustomError) => {
-            //     const doNotRestartCodes: string[] = [
-            //         OculusDownloaderErrorCodes.ALREADY_DOWNLOADING,
-            //         OculusDownloaderErrorCodes.SOME_FILES_FAILED_TO_DOWNLOAD,
-            //         OculusDownloaderErrorCodes.VERIFY_INTEGRITY_FAILED,
-            //         OculusDownloaderErrorCodes.DOWNLOAD_CANCELLED
-            //     ];
-            //     autoDownloadFailed = true;
-
-            //     if(doNotRestartCodes.includes(err?.code)){
-            //         return true;
-            //     }
-
-            //     return false;
-            // });
-            
-            // if(autoDownload){ return autoDownload; }
-
-            // const {exitCode, data} = await this.modals.openModal(LoginToMetaModal)
-
-            // if(exitCode !== ModalExitCode.COMPLETED){
-            //     return false
-            // }
-
-            // if(data.method === MetaAuthMethod.META){
-            //     return lastValueFrom(this.startDownloadBsVersion({ bsVersion, isVerification, stay: data.stay })).then(() => true);
-            // }
 
             const tokenRes = await this.modals.openModal(EnterMetaTokenModal);
 
