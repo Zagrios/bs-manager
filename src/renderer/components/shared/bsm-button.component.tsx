@@ -50,7 +50,7 @@ export function BsmButton({ className, style, imgClassName, iconClassName, icon,
         if (primaryColor) {
             return getCorrectTextColor(primaryColor);
         }
-        return typeColor ? "white" : undefined;
+        return typeColor && typeColor !== "none" ? "white" : undefined;
     })();
 
     const renderTypeColor = (() => {
