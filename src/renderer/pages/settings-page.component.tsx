@@ -84,6 +84,7 @@ export function SettingsPage() {
     const themeSelected = useObservable(themeService.theme$, "os");
     const languageSelected = useObservable(i18nService.currentLanguage$, i18nService.getFallbackLanguage());
     const downloadStore = useObservable(bsDownloader.defaultStore$);
+
     const [installationFolder, setInstallationFolder] = useState(null);
     const [showSupporters, setShowSupporters] = useState(false);
     const [mapDeepLinksEnabled, setMapDeepLinksEnabled] = useState(false);
@@ -263,8 +264,8 @@ export function SettingsPage() {
                     <SettingContainer id="choose-default-store" minorTitle="pages.settings.steam-and-oculus.download-platform.title" description="pages.settings.steam-and-oculus.download-platform.desc" className="mt-3">
                         <SettingRadioArray items={[
                             { id: 1, text: "Steam", value: BsStore.STEAM, icon: <SteamIcon className="h-6 w-6 float-left"/> },
-                            { id: 2, text: "Oculus Store (PC)", value: BsStore.OCULUS, icon: <OculusIcon className="h-6 w-6 float-left bg-white text-black rounded-full p-0.5"/>, disabled: true},
-                            { id: 0, text: t("pages.settings.steam-and-oculus.download-platform.always-ask"), value: undefined, },
+                            { id: 2, text: "Oculus Store (PC)", value: BsStore.OCULUS, icon: <OculusIcon className="h-6 w-6 float-left bg-white text-black rounded-full p-0.5"/>},
+                            { id: 0, text: t("pages.settings.steam-and-oculus.download-platform.always-ask"), value: null, },
                         ]} selectedItemValue={downloadStore} onItemSelected={handleChangeBsStore}/>
                     </SettingContainer>
 

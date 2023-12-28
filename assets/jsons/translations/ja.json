@@ -509,8 +509,7 @@
         "choose-store": {
             "title": "どのプラットフォーム？",
             "body": "Beat Saberをダウンロードするプラットフォームを選択してください。",
-            "set-in-settings": "設定からデフォルトのプラットフォームを設定する",
-            "unavailable": "Oculusによる最近の変更により、現在Oculusのバージョンダウングレードは利用できなくなりました。私たちは問題を調査しており、BSManagerのDiscordサーバーで最新情報をお知らせします。"
+            "set-in-settings": "設定からデフォルトのプラットフォームを設定する"
         },
         "guard": {
             "title": "Steamガード",
@@ -712,14 +711,22 @@
             "understood": "分かった"
         },
         "enter-meta-token": {
-            "title": "Metaトークン",
+            "title": "Oculusトークン",
             "body": {
-                "need-token": "Beat Saberをダウンロードするには、Metaのログイントークンが必要です。",
-                "how-obtain-token": "Metaトークンはどうやって入手すればいいですか？",
-                "input-label": "Metaトークン",
-                "token-is-invalid": "トークンが無効です。"
+                "info-enter-token": "Beat Saberをダウンロードするには、あなたのオキュラスログイントークンが必要です。",
+                "how-obtain-token": "オキュラストークンはどうやって取得するの？",
+                "oculus-token": "オキュラストークン",
+                "token-is-invalid": "トークンが無効です。",
+                "save-my-token": "私のトークンを保存する",
+                "have-token-saved": "すでにトークンを保存しています",
+                "save-token-info": "これにより、トークンを簡単に再利用するために保存します。保管のためにトークンを暗号化するパスワードを作成する必要があります。パスワードを忘れた場合は、トークンを再度提供するだけです。",
+                "password": "パスワード",
+                "password-too-short": "パスワードが短すぎます",
+                "info-enter-password": "Beat Saberをダウンロードするには、あなたのオキュラスログイントークンが必要です。オキュラストークンを保存するために使用したパスワードを入力してください。",
+                "info-disabled-btn-password": "提供されたパスワードで復号化されたトークンは無効です。トークンを保存するために使用されたパスワードと同じであることを確認してください。",
+                "enter-oculus-token": "オキュラストークンを入力する"
             },
-            "valid-btn": "検証"
+            "valid-btn": "確認"
         }
     },
     "maps": {

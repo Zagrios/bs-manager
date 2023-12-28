@@ -21,6 +21,7 @@ export interface BSVersion extends PartialBSVersion {
 }
 
 export interface BSVersionMetadata {
+    id: string;
     store: BsStore;
 }
 

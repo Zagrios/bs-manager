@@ -509,8 +509,7 @@
         "choose-store": {
             "title": "Which platform?",
             "body": "Select the platform from which you wish to download Beat Saber.",
-            "set-in-settings": "Set the default platform in settings",
-            "unavailable": "Due to recent changes by Oculus, downgrading Oculus versions is currently no longer available. We're investigating the issue and will keep you posted on the BSManager Discord server."
+            "set-in-settings": "Set the default platform in settings"
         },
         "guard": {
             "title": "Steam Guard",
@@ -712,12 +711,20 @@
             "understood": "Understood"
         },
         "enter-meta-token": {
-            "title": "Meta Token",
+            "title": "Oculus Token",
             "body": {
-                "need-token": "To download Beat Saber, your Meta login token is required.",
-                "how-obtain-token": "How do I obtain my Meta Token?",
-                "input-label": "Meta Token",
-                "token-is-invalid": "The Token is invalid."
+                "info-enter-token": "To download Beat Saber, your Oculus login token is required.",
+                "how-obtain-token": "How do I obtain my Oculus Token?",
+                "oculus-token": "Oculus Token",
+                "token-is-invalid": "The Token is invalid.",
+                "save-my-token": "Save my token",
+                "have-token-saved": "I already have a token saved",
+                "save-token-info": "This will save your token for easier reuse. You will need to create a password to encrypt your token for storage purposes. If you ever forget your password, you just need to provide your token again.",
+                "password": "Password",
+                "password-too-short": "Password too short",
+                "info-enter-password": "To download Beat Saber, your Oculus login token is required. Enter the password used to save your Oculus token.",
+                "info-disabled-btn-password": "The token decrypted with the provided password is invalid. Make sure the password is the same as the one used to save the token.",
+                "enter-oculus-token": "Enter an Oculus token"
             },
             "valid-btn": "Validate"
         }

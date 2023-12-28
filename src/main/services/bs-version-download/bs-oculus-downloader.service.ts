@@ -111,7 +111,7 @@ export class BsOculusDownloaderService {
             version: {
                 ...version, 
                 ...(path.basename(dest) !== version.BSVersion && { name: path.basename(dest) }),
-                metadata: { store: BsStore.OCULUS }
+                metadata: { store: BsStore.OCULUS, id: "" }
             },
             dest
         };
@@ -129,6 +129,7 @@ export class BsOculusDownloaderService {
 
         return tokenObs$.pipe(
             switchMap(token => {
+                isOculusTokenValid(token, log.info); // Log token validity
                 if(!downloadInfo.isVerification){
                     return this.createDownloadVersion(downloadInfo.bsVersion).then(({version, dest}) => ({token, version, dest}))
                 }
@@ -140,7 +141,7 @@ export class BsOculusDownloaderService {
                     progress => ({...progress, data: version})                
                 ));
             }),
-            finalize(() => downloadVersion && this.versions.setVersionMetadata(downloadVersion, "store", BsStore.OCULUS)),
+            finalize(() => downloadVersion && this.versions.initVersionMetadata(downloadVersion, { store: BsStore.OCULUS })),
             finalize(() => this.oculusDownloader.stopDownload())
         );
     }
@@ -170,7 +171,7 @@ export class BsOculusDownloaderService {
                     map(progress => ({...progress, data: version})),
                 );
             }),
-            finalize(() => downloadVersion && this.versions.setVersionMetadata(downloadVersion, "store", BsStore.OCULUS)),
+            finalize(() => downloadVersion && this.versions.initVersionMetadata(downloadVersion, { store: BsStore.OCULUS })),
             finalize(() => this.oculusDownloader.stopDownload()),
         );
     }

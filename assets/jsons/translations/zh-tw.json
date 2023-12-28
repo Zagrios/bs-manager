@@ -509,8 +509,7 @@
         "choose-store": {
             "title": "選擇哪個平台？",
             "body": "選擇你希望為其下載 BeatSaber 的平台。",
-            "set-in-settings": "在設定中設定預設平台",
-            "unavailable": "由於Oculus最近的更改，目前不再提供降級Oculus版本的服務。我們正在調查此問題，並將在BSManager Discord伺服器上保持更新。"
+            "set-in-settings": "在設定中設定預設平台"
         },
         "guard": {
             "title": "Steam Guard",
@@ -713,12 +712,20 @@
             "understood": "明白了"
         },
         "enter-meta-token": {
-            "title": "Meta 令牌",
+            "title": "Oculus令牌",
             "body": {
-                "need-token": "要下載 BeatSaber，需要你的 Meta 登錄令牌。",
-                "how-obtain-token": "如何獲取我的 Meta 令牌？",
-                "input-label": "Meta 令牌",
-                "token-is-invalid": "令牌無效。"
+                "info-enter-token": "下載Beat Saber需要您的Oculus登錄令牌。",
+                "how-obtain-token": "我如何獲得我的Oculus令牌？",
+                "oculus-token": "Oculus令牌",
+                "token-is-invalid": "令牌無效。",
+                "save-my-token": "保存我的令牌",
+                "have-token-saved": "我已經保存了一個令牌",
+                "save-token-info": "這將保存您的令牌以便更容易地重新使用。您需要創建一個密碼來加密您的令牌以進行存儲。如果您忘記了密碼，只需再次提供您的令牌即可。",
+                "password": "密碼",
+                "password-too-short": "密碼太短",
+                "info-enter-password": "下載Beat Saber需要您的Oculus登錄令牌。請輸入用於保存您的Oculus令牌的密碼。",
+                "info-disabled-btn-password": "使用提供的密碼解密的令牌無效。確保密碼與保存令牌時使用的密碼相同。",
+                "enter-oculus-token": "輸入Oculus令牌"
             },
             "valid-btn": "驗證"
         }

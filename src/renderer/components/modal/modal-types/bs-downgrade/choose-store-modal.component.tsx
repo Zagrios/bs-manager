@@ -7,8 +7,6 @@ import { useState } from "react";
 import tailwindConfig from "../../../../../../tailwind.config";
 import Color from "color";
 import { useNavigate } from "react-router-dom";
-import Tippy from "@tippyjs/react";
-import { followCursor } from "tippy.js";
 
 export const ChooseStore: ModalComponent<BsStore> = ({ resolver }) => {
 
@@ -49,12 +47,10 @@ export const ChooseStore: ModalComponent<BsStore> = ({ resolver }) => {
             <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t("modals.choose-store.title")}</h1>
             <p className="w-auto text-gray-800 dark:text-gray-200 text-center">{t("modals.choose-store.body")}</p>
             <div className="flex flex-row w-full flex-grow gap-3">
-                <Tippy className="!bg-neutral-900" content={t("modals.choose-store.unavailable")} allowHTML hideOnClick={false} followCursor plugins={[followCursor]} duration={200} arrow={false} maxWidth={300}>
-                    <div className="flex-grow basis-0 flex flex-col gap-2 text-center px-5 pt-3 pb-1 rounded-md border-main-color-3 border-2 cursor-not-allowed" style={{backgroundColor: oculusHover ? bg.dim : bg.bright}}>
-                        <OculusIcon className="flex-grow aspect-square text-black bg-white rounded-full p-5"/>
-                        <h2 className="font-bold">Oculus Store (PC)</h2>
-                    </div>
-                </Tippy>
+                <div className="flex flex-col flex-grow basis-0 gap-2 text-center px-5 pt-3 pb-1 rounded-md border-main-color-3 border-2 cursor-pointer" onMouseEnter={() => setOculusHover(true)} onMouseLeave={() => setOculusHover(false)} onClick={() => chooseStore(BsStore.OCULUS)} style={{backgroundColor: oculusHover ? bg.dim : bg.bright}}>
+                    <OculusIcon className="flex-grow aspect-square text-black bg-white rounded-full p-5"/>
+                    <h2 className="font-bold">Oculus Store (PC)</h2>
+                </div>
                 <div className="flex flex-col flex-grow basis-0 gap-2 text-center px-5 pt-3 pb-1 rounded-md border-main-color-3 border-2 cursor-pointer" onMouseEnter={() => setSteamHover(true)} onMouseLeave={() => setSteamHover(false)} onClick={() => chooseStore(BsStore.STEAM)} style={{backgroundColor: steamHover ? bg.dim : bg.bright}}>
                     <SteamIcon className="flex-grow"/>
                     <h2 className="font-bold">Steam</h2>

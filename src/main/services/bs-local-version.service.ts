@@ -18,6 +18,8 @@ import readline from "readline";
 import { Observable, Subject, catchError, finalize, from, map, switchMap, throwError } from "rxjs";
 import { BsStore } from "../../shared/models/bs-store.enum";
 import { CustomError } from "../../shared/models/exceptions/custom-error.class";
+import crypto from "crypto";
+
 
 export class BSLocalVersionService {
     private static instance: BSLocalVersionService;
@@ -119,7 +121,14 @@ export class BSLocalVersionService {
             folderVersion.ino = folderStats.ino;
         }
 
-        folderVersion.metadata = await this.getAllVersionMetadata(folderVersion, { store: BsStore.STEAM });
+
+        let metadata = await this.getAllVersionMetadata(folderVersion);
+
+        // Will be removed in future version. It just to prepare future features
+        if(!metadata?.id){
+            metadata = await this.initVersionMetadata(folderVersion, metadata ?? { store: BsStore.STEAM });    
+        }
+        folderVersion.metadata = metadata;
 
         const customVersion = this.getCustomVersions().find(customVersion => {
             return customVersion.BSVersion === folderVersion.BSVersion && customVersion.name === folderVersion.name;
@@ -130,36 +139,27 @@ export class BSLocalVersionService {
         return folderVersion;
     }
 
-    public getAllVersionMetadata(version: BSVersion, defaultMetadata?: BSVersionMetadata): Promise<BSVersionMetadata>{
+    private async writeVersionMetadata(version: BSVersion, metadata: BSVersionMetadata): Promise<void>{
+        const versionPath = await this.getVersionPath(version);
+        const metadataPath = path.join(versionPath, this.METADATA_FILE);
+        return writeFile(metadataPath, JSON.stringify(metadata));
+    }
+
+    public initVersionMetadata(version: BSVersion, metadata: Omit<BSVersionMetadata, "id">): Promise<BSVersionMetadata>{
+        const firstMetadata = { id: crypto.randomUUID(), ...metadata };
+        return this.writeVersionMetadata(version, firstMetadata).then(() => firstMetadata).catch(err => {
+            log.error("initVersionMetadata error", err);
+            return firstMetadata;
+        });
+    }
+
+    public getAllVersionMetadata(version: BSVersion): Promise<BSVersionMetadata>{
         return (async () => {
             const versionPath = await this.getVersionPath(version);
             const contents = await readFile(path.join(versionPath, this.METADATA_FILE), "utf-8");
             return JSON.parse(contents);
         })().catch(e => {
-            log.warn("Not a critical error", e);
-            return {};
-        }).then(metadata => ({...defaultMetadata, ...metadata}));
-    }
-
-    public getVersionMetadata<K extends keyof BSVersionMetadata, T extends BSVersionMetadata[K]>(version: BSVersion, key: K, defaultValue?: T): Promise<T|undefined>{
-        return (async () => {
-            const metadata = await this.getAllVersionMetadata(version);
-            return metadata?.[key];
-        })().catch(e => {
-            log.warn("Not a critical error", e);
-            return null;
-        }).then(value => (value ?? defaultValue) as T);
-    }
-
-    public setVersionMetadata<K extends keyof BSVersionMetadata, T extends BSVersionMetadata[K]>(version: BSVersion, key: K, value: T): Promise<void>{
-        return (async () => {
-            const versionPath = await this.getVersionPath(version);
-            const metadataPath = path.join(versionPath, this.METADATA_FILE);
-            const metadata = await this.getAllVersionMetadata(version) ?? ({} as BSVersionMetadata);
-            metadata[key] = value;
-            await writeFile(metadataPath, JSON.stringify(metadata));
-        })().catch(e => {
-            log.error(e);
+            log.warn("Error getAllVersionMetadata", e);
         });
     }
 
@@ -378,7 +378,7 @@ export class BSLocalVersionService {
             }),
             finalize(async () => {
                 if(failed){ return; }
-                await this.setVersionMetadata(versionDest.version, "store", store);
+                await this.initVersionMetadata(versionDest.version, { store });
             })
         );
     }
