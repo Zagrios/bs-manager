@@ -63,17 +63,17 @@ export class AutoUpdaterService {
     }
 
     public getLastAppVersion(): string {
-        return this.configurationService.get("LAST_VERSION");
+        return this.configurationService.get("last-app-version");
     }
 
     public setLastAppVersion(){
-        lastValueFrom(this.getAppVersion()).then(v => this.configurationService.set("LAST_VERSION", v));
+        lastValueFrom(this.getAppVersion()).then(v => this.configurationService.set("last-app-version", v));
     }
 
     private async getChangelog(): Promise<Changelog> {
-      try {
+        try {
         if (this.cacheChangelog) {
-          return this.cacheChangelog;
+            return this.cacheChangelog;
         }
 
         const path = `https://raw.githubusercontent.com/Zagrios/bs-manager/feature/add-changelog-modal/178/assets/jsons/changelogs.json`
@@ -89,11 +89,11 @@ export class AutoUpdaterService {
 
         this.cacheChangelog = data;
         return data;
-      }
-      catch(error){
+    }
+    catch(error){
         this.ipcService.sendLazy("log-error", {args: error});
         return undefined;
-      }
+    }
     }
 
     private async getChangelogVersion(version:string): Promise<ChangelogVersion> {
