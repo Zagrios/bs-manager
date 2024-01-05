@@ -76,7 +76,7 @@ export class AutoUpdaterService {
             return this.cacheChangelog;
         }
 
-        const path = `https://raw.githubusercontent.com/Zagrios/bs-manager/feature/add-changelog-modal/178/assets/jsons/changelogs.json`
+        const path = `https://raw.githubusercontent.com/Zagrios/bs-manager/master/assets/jsons/changelogs.json`
         const response = await fetch(path);
         if (!response.ok) {
             throw new Error(`Failed to fetch changelogs (${response.status})`);
