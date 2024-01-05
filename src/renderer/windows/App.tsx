@@ -46,7 +46,7 @@ export default function App() {
     const checkIsUpdated = async () => {
         const appVersion = await lastValueFrom(autoUpdater.getAppVersion());
         const lastAppVersion = autoUpdater.getLastAppVersion();
-        
+
         if (!lastAppVersion || lte(appVersion, lastAppVersion)) {
             return;
         }

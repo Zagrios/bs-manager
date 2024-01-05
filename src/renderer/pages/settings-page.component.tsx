@@ -156,12 +156,13 @@ export function SettingsPage() {
             })
             .finally(() => { isChangelogResolved = true; });
 
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
             setChanglogsLoading(() => !isChangelogResolved);
         }, 100);
 
         await changelogPromise;
         setChanglogsLoading(() => false);
+        clearTimeout(timeoutId);
     };
 
     const setDefaultInstallationFolder = () => {
