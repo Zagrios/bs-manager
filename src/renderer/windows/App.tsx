@@ -48,10 +48,10 @@ export default function App() {
         const lastAppVersion = autoUpdater.getLastAppVersion();
 
         autoUpdater.setLastAppVersion();
+        
         if (lastAppVersion && gt(appVersion, lastAppVersion)) {
             autoUpdater.showChangelog(appVersion);
         }
-
     };
 
     const checkOneClicks = async () => {
