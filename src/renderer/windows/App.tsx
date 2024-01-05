@@ -38,8 +38,7 @@ export default function App() {
     const navigate = useNavigate();
 
     useEffect(() => {
-
-
+        autoUpdater.checkIsUpdated();
         checkOneClicks();
     }, []);
 
