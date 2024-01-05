@@ -23,7 +23,7 @@ import { ConfigurationService } from "renderer/services/configuration.service";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { useService } from "renderer/hooks/use-service.hook";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
-import { lte } from "semver"
+import { gt } from "semver"
 
 export default function App() {
     useService(OsDiagnosticService);
@@ -47,12 +47,11 @@ export default function App() {
         const appVersion = await lastValueFrom(autoUpdater.getAppVersion());
         const lastAppVersion = autoUpdater.getLastAppVersion();
 
-        if (!lastAppVersion || lte(appVersion, lastAppVersion)) {
-            return;
+        autoUpdater.setLastAppVersion();
+        if (lastAppVersion && gt(appVersion, lastAppVersion)) {
+            autoUpdater.showChangelog(appVersion);
         }
 
-        autoUpdater.setLastAppVersion();
-        autoUpdater.showChangelog(appVersion);
     };
 
     const checkOneClicks = async () => {
