@@ -23,6 +23,7 @@ import { ConfigurationService } from "renderer/services/configuration.service";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { useService } from "renderer/hooks/use-service.hook";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
+import { lte } from "semver";
 
 export default function App() {
     useService(OsDiagnosticService);
@@ -40,8 +41,10 @@ export default function App() {
     useEffect(() => {
 
         lastValueFrom(autoUpdater.getAppVersion()).then(appVersion => {
-          if(appVersion === autoUpdater.getLastAppVersion()){ return; }
-          autoUpdater.showChangelog(appVersion);
+            const lastAppVersion = autoUpdater.getLastAppVersion();
+            if (!lastAppVersion) { return;}
+            if(lte(appVersion,lastAppVersion)){ return; }
+            autoUpdater.showChangelog(appVersion);
         });
 
         autoUpdater.setLastAppVersion();
