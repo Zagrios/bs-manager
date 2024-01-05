@@ -57,7 +57,7 @@ export class BeatModsApiService {
             if (Array.from(aliases.keys()).some(k => k === version.BSVersion)) {
                 return version;
             }
-            const alias = Array.from(aliases.entries()).find(([key, value]) => value.find(v => v.BSVersion === version.BSVersion))[0];
+            const alias = Array.from(aliases.entries()).find(([key, value]) => value.find(v => v.BSVersion === version.BSVersion))?.[0];
             return { BSVersion: alias } as BSVersion;
         });
     }
