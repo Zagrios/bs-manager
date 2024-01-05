@@ -66,10 +66,6 @@ export function BsmButton({ className, style, imgClassName, iconClassName, icon,
         if (typeColor === "success") {
             return "bg-green-500";
         }
-        if (typeColor === "none")
-        {
-            return "";
-        }
         return "";
     })();
 

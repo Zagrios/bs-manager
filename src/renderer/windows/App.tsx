@@ -40,10 +40,7 @@ export default function App() {
 
     useEffect(() => {
 
-        lastValueFrom(autoUpdater.getAppVersion()).then(appVersion => {
-            const lastAppVersion = autoUpdater.getLastAppVersion();
-            if (!lastAppVersion) { return;}
-            if(lte(appVersion,lastAppVersion)){ return; }
+
             autoUpdater.showChangelog(appVersion);
         });
 

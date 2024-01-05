@@ -149,13 +149,12 @@ export function SettingsPage() {
 
         const changelogPromise = autoUpdater.showChangelog(await lastValueFrom(autoUpdater.getAppVersion()))
             .then(() => {
-                isChangelogResolved = true;
                 setIsChangelogAvailable(() => true);
             })
             .catch(() => {
-                isChangelogResolved = true;
                 setIsChangelogAvailable(() => false);
-            });
+            })
+            .finally(() => { isChangelogResolved = true; });
 
         setTimeout(() => {
             setChanglogsLoading(() => !isChangelogResolved);
@@ -471,13 +470,12 @@ export function SettingsPage() {
                     </SettingContainer>
                 </SettingContainer>
                 <Tippy content={isChangelogAvailable !== false ? t("pages.settings.changelogs.open") : t("pages.settings.changelogs.not-founds")} placement="left" className="font-bold bg-main-color-3">
-                    <div className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5 hover:brightness-125 h-auto w-auto">
+                    <div className="!bg-light-main-color-1 dark:!bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5 hover:brightness-125 h-auto w-auto">
                         <BsmButton onClick={handleVersionClick} text={`v${appVersion}`} withBar={false} typeColor="none"/>
                     </div>
                 </Tippy>
                 <BsmImage className={`h-7 my-auto spin-loading float-right ${changlogsLoading ? "" : "hidden"}`} image={BeatWaitingImg} loading="eager" />
             </div>
-
             <SupportersView isVisible={showSupporters} setVisible={setShowSupporters} />
         </div>
     );

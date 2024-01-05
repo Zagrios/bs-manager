@@ -71,7 +71,6 @@ export class AutoUpdaterService {
     }
 
     private async getChangelog(): Promise<Changelog> {
-        try {
         if (this.cacheChangelog) {
             return this.cacheChangelog;
         }
@@ -79,28 +78,20 @@ export class AutoUpdaterService {
         const path = `https://raw.githubusercontent.com/Zagrios/bs-manager/feature/add-changelog-modal/178/assets/jsons/changelogs.json`
         const response = await fetch(path);
         if (!response.ok) {
-            return undefined;
+            throw new Error(`Failed to fetch changelogs (${response.status})`);
         }
 
         const data = await response.json();
         if (!data) {
-            return undefined;
+            throw new Error(`Failed to parse changelogs`);
         }
 
         this.cacheChangelog = data;
         return data;
     }
-    catch(error){
-        this.ipcService.sendLazy("log-error", {args: error});
-        return undefined;
-    }
-    }
 
     private async getChangelogVersion(version:string): Promise<ChangelogVersion> {
         const changelogs = await this.getChangelog();
-        if (!changelogs) {
-            throw new Error(`No changelogs found`);
-        }
 
         const changelogVersion = changelogs[version];
         if (!changelogVersion) {
@@ -119,4 +110,9 @@ export class AutoUpdaterService {
 
             this.modal.openModal(ChangelogModal, changelog);
     }
+
+    lastValueFrom(autoUpdater.getAppVersion()).then(appVersion => {
+        const lastAppVersion = autoUpdater.getLastAppVersion();
+        if (!lastAppVersion) { return;}
+        if(lte(appVersion,lastAppVersion)){ return; }
 }
