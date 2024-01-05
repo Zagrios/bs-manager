@@ -5,6 +5,7 @@ import { ModalService } from "renderer/services/modale.service";
 import { ChangelogModal } from "renderer/components/modal/modal-types/chabgelog-modal/changelog-modal.component";
 import { ConfigurationService } from "./configuration.service";
 import { Observable, lastValueFrom } from "rxjs";
+import { lte } from "semver";
 
 export interface Changelog {
   [version: string]: ChangelogVersion;
@@ -111,8 +112,14 @@ export class AutoUpdaterService {
             this.modal.openModal(ChangelogModal, changelog);
     }
 
-    lastValueFrom(autoUpdater.getAppVersion()).then(appVersion => {
-        const lastAppVersion = autoUpdater.getLastAppVersion();
-        if (!lastAppVersion) { return;}
-        if(lte(appVersion,lastAppVersion)){ return; }
+    public checkIsUpdated(): void {
+        lastValueFrom(this.getAppVersion()).then(appVersion => {
+            const lastAppVersion = this.getLastAppVersion();
+            if (!lastAppVersion) { return;}
+            if(lte(appVersion,lastAppVersion)){ return; }
+
+            this.setLastAppVersion();
+            this.showChangelog(appVersion);
+        });
+    }
 }
