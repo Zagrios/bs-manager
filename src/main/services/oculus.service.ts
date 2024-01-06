@@ -1,8 +1,9 @@
 import { list } from "regedit-rs";
 import path from "path";
-import { pathExist } from "../helpers/fs.helpers";
+import { pathExist, resolveGUIDPath } from "../helpers/fs.helpers";
 import log from "electron-log";
 import { lstat } from "fs-extra";
+import { tryit } from "../../shared/helpers/error.helpers";
 
 export class OculusService {
     private static instance: OculusService;
@@ -31,6 +32,11 @@ export class OculusService {
         const oculusLibsRegKey = "HKCU\\SOFTWARE\\Oculus VR, LLC\\Oculus\\Libraries";
         const libsRegData = await list(oculusLibsRegKey).then(data => data[oculusLibsRegKey]);
 
+        log.info("Oculus libraries registry data", "exists:", libsRegData.exists, "keys:", "values:", libsRegData.keys, (() => {
+            const values = Object.entries(libsRegData.values ?? []);
+            return values.map(([name, value]) => [name, value.value]);
+        })());
+
         if (!libsRegData.keys?.length) {
             log.info("Registry key \"HKCU\\SOFTWARE\\Oculus VR, LLC\\Oculus\\Libraries\" not found");
             return null;
@@ -41,12 +47,22 @@ export class OculusService {
         const libsPath: OculusLibrary[] = (
             await Promise.all(libsRegData.keys.map(async key => {
                 const originalPath = await list([`${oculusLibsRegKey}\\${key}`]).then(res => res[`${oculusLibsRegKey}\\${key}`]);
+
+                log.info("Value in key", key, "is", (() => {
+                    const values = Object.entries(originalPath.values ?? []);
+                    return values.map(([name, value]) => [name, value.value]);
+                })());
                 
-                if (!originalPath.values?.OriginalPath) {
-                    return null;
+                if (originalPath.values?.OriginalPath) {
+                    return { id: key, path: originalPath.values.OriginalPath.value, isDefault: defaultLibraryId === key } as OculusLibrary;
+                } 
+                
+                if(originalPath.values?.Path) {
+                    const { result } = tryit(() => resolveGUIDPath(originalPath.values.Path.value as string));
+                    return result ? { id: key, path: result, isDefault: defaultLibraryId === key } as OculusLibrary : null;
                 }
 
-                return { id: key, path: originalPath.values.OriginalPath.value, isDefault: defaultLibraryId === key } as OculusLibrary
+                return null;
             }, []))
         ).filter(Boolean);
 
@@ -81,6 +97,7 @@ export class OculusService {
     public async tryGetGameFolder(gameFolders: string[]): Promise<string> {
         for(const gameFolder of gameFolders){
             const fullPath = await this.getGameFolder(gameFolder);
+            log.info("Oculus game folder", gameFolder, "fullPath", fullPath);
             if(fullPath){ return fullPath; }
         }
 

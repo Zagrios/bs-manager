@@ -34,7 +34,10 @@ export class OculusLauncherService extends AbstractLauncherService implements St
         this.pathsService = InstallationLocationService.getInstance();
 
         this.oculus.tryGetGameFolder([OCULUS_BS_DIR, OCULUS_BS_BACKUP_DIR]).then(async dirPath => {
-            if(dirPath){ return this.oculusLib$.next( path.join(dirPath, "..") ); }
+            if(dirPath){
+                log.info("Oculus game found", dirPath);
+                return this.oculusLib$.next( path.join(dirPath, "..") );
+            }
             const defaultLib = ((await this.oculus.getOculusLibs()) || []).find(lib => lib.isDefault);
             if(defaultLib?.path){ return this.oculusLib$.next(path.join(defaultLib.path, "Software")); }
             this.oculusLib$.next(null);
@@ -48,6 +51,7 @@ export class OculusLauncherService extends AbstractLauncherService implements St
         const oculusLibPath = await lastValueFrom(this.oculusLib$.pipe(take(1), timeout(sToMs(30)), catchError(() => of(null))));
 
         if(!oculusLibPath || !(await pathExists(oculusLibPath))){
+            log.error("oculusLibPath value", oculusLibPath, "Path exists", await pathExists(oculusLibPath));
             throw new Error("Oculus library not found, deleteBsSymlinks");
         }
 
