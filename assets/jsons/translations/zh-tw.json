@@ -729,6 +729,7 @@
     "maps": {
         "map-filter-panel": {
             "duration": "時長",
+            "nps" : "每秒音符數",
             "tags": "標籤",
             "specificities": "general",
             "requirements": "要求"
@@ -796,7 +797,13 @@
         },
         "map-item": {
             "by": "By {songAutor}",
-            "mapped-by": "mapped by"
+            "mapped-by": "mapped by",
+            "delete": "刪除",
+            "preview" : "預覽地圖",
+            "bsr-code" : "BSR代碼",
+            "download" : "下載地圖",
+            "downloading" :"正在下載地圖",
+            "cancel-download" : "取消下載"
         }
     },
     "models": {

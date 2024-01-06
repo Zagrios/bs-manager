@@ -724,6 +724,7 @@
     "maps": {
         "map-filter-panel": {
             "duration": "Durée",
+            "nps" : "Notes par Seconde",
             "tags": "tags",
             "specificities": "général",
             "requirements": "requis"
@@ -791,7 +792,13 @@
         },
         "map-item": {
             "by": "Par {songAutor}",
-            "mapped-by": "mappée par"
+            "mapped-by": "mappée par",
+            "delete": "Supprimer",
+            "preview" : "Aperçu de la carte",
+            "bsr-code" : "Code BSR",
+            "download" : "Télécharger la carte",
+            "downloading" :"Téléchargement de la carte",
+            "cancel-download" : "Annuler le téléchargement"
         }
     },
     "models": {

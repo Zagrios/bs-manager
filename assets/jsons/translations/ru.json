@@ -728,6 +728,7 @@
     "maps": {
         "map-filter-panel": {
             "duration": "Длительность",
+            "nps" : "Нот в Секунду",
             "tags": "тэги",
             "specificities": "основное",
             "requirements": "требуемые моды"
@@ -795,7 +796,13 @@
         },
         "map-item": {
             "by": "От {songAutor}",
-            "mapped-by": "автор карты "
+            "mapped-by": "автор карты ",
+            "delete": "Удалить",
+            "preview" : "Предпросмотр карты",
+            "bsr-code" : "Код BSR",
+            "download" : "Скачать карту",
+            "downloading" :"Загрузка карты",
+            "cancel-download" : "Отменить загрузку"
         }
     },
     "models": {
