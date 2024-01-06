@@ -795,15 +795,6 @@
             "Expert": "expert",
             "ExpertPlus": "expert+"
         },
-        "map-Characteristics": {
-            "Standard": "standard",
-            "OneSaber": "one saber",
-            "NoArrows": "no arrows",
-            "90Degree": "90°",
-            "360Degree": "360°",
-            "Lightshow": "lightshow",
-            "Lawless": "lawless"
-        },
         "map-item": {
             "by": "By {songAutor}",
             "mapped-by": "mapped by",
