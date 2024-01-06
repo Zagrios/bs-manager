@@ -796,7 +796,7 @@
         "map-item": {
             "by": "Por {songAutor}",
             "mapped-by": "mapeado por",
-            "delete": "Eliminar",
+            "delete": "Borrar",
             "preview" : "Vista previa del mapa",
             "bsr-code" : "Código BSR",
             "download" : "Descargar mapa",
