@@ -1,9 +1,9 @@
 import Tippy from "@tippyjs/react";
-import { Variants } from "framer-motion";
 import { useEffect, useState } from "react";
 import { LinkButton } from "renderer/components/maps-mangement-components/link-button.component";
 import { BsmBasicSpinner } from "renderer/components/shared/bsm-basic-spinner/bsm-basic-spinner.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
+import { useConstant } from "renderer/hooks/use-constant.hook";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useService } from "renderer/hooks/use-service.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
@@ -12,7 +12,7 @@ import { BSVersionManagerService } from "renderer/services/bs-version-manager.se
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { IpcService } from "renderer/services/ipc.service";
 import { ModalComponent } from "renderer/services/modale.service";
-import { VersionFolderLinkerService, VersionLinkerActionType } from "renderer/services/version-folder-linker.service";
+import { FolderLinkState, VersionFolderLinkerService, VersionLinkerActionType } from "renderer/services/version-folder-linker.service";
 import { BSVersion } from "shared/bs-version.interface";
 
 export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ data }) => {
@@ -107,33 +107,13 @@ const FolderItem = ({ version, relativeFolder, onDelete }: FolderProps) => {
 
     const t = useTranslation();
 
-    const name = relativeFolder.split(window.electron.path.sep).at(-1);
     const color = useThemeColor("first-color");
-
-    const variants: Variants = {
-        hover: { rotate: 22.5 },
-        tap: { rotate: 45 },
-    };
-
-    const pending = useObservable(linker.isPending(version, relativeFolder));
-    const processing = useObservable(linker.isProcessing(version, relativeFolder));
-    const linkDisabled = pending || processing;
-
-    const [linked, setLinked] = useState(false);
-
-    useEffect(() => {
-        if (pending) {
-            return;
-        }
-        loadFolderIsLinked();
-    }, [version, relativeFolder, pending]);
-
-    const loadFolderIsLinked = () => {
-        linker.isVersionFolderLinked(version, relativeFolder).toPromise().then(setLinked);
-    };
+    const state$ = useConstant(() => linker.$folderLinkedState(version, relativeFolder));
+    const state = useObservable(state$);
+    const name = relativeFolder.split(window.electron.path.sep).at(-1);
 
     const onClickLink = () => {
-        if (linked) {
+        if (state === FolderLinkState.Linked) {
             return linker.unlinkVersionFolder({
                 version,
                 relativeFolder,
@@ -150,7 +130,6 @@ const FolderItem = ({ version, relativeFolder, onDelete }: FolderProps) => {
 
     const cancelLink = () => {
         linker.cancelAction(version, relativeFolder);
-        loadFolderIsLinked();
     };
 
     return (
@@ -159,14 +138,18 @@ const FolderItem = ({ version, relativeFolder, onDelete }: FolderProps) => {
                 {name}
             </span>
             <div className="flex flex-row gap-1.5">
-                <Tippy placement="left" content={t(`modals.shared-folders.buttons.${linked ? "unlink-folder" : "link-folder"}`)} arrow={false}>
-                    <LinkButton variants={variants} linked={linked} disabled={linkDisabled} whileHover="hover" whileTap="tap" className="p-0.5 h-7 shrink-0 aspect-square blur-0 cursor-pointer hover:brightness-75" onClick={onClickLink} />
+                <Tippy placement="left" content={t(`modals.shared-folders.buttons.${state === FolderLinkState.Linked ? "unlink-folder" : "link-folder"}`)} arrow={false}>
+                    <LinkButton 
+                        className="p-0.5 h-7 shrink-0 aspect-square blur-0 cursor-pointer hover:brightness-75"
+                        state$={state$}
+                        onClick={onClickLink}
+                    />
                 </Tippy>
                 {(() => {
-                    if (processing) {
+                    if (state === FolderLinkState.Processing) {
                         return <BsmBasicSpinner className="aspect-square h-7 rounded-md p-1 dark:bg-main-color-2" thikness="3.5px" style={{ color }} />;
                     }
-                    if (pending) {
+                    if (state === FolderLinkState.Pending) {
                         return (
                             <BsmButton
                                 className="aspect-square h-7 rounded-md p-1"

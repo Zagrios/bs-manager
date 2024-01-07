@@ -1,6 +1,6 @@
 import { MSModelType } from "shared/models/models/model-saber.model";
 import { IpcService } from "../ipc.service";
-import { VersionFolderLinkerService, VersionLinkerActionListener, VersionLinkerActionType } from "../version-folder-linker.service";
+import { FolderLinkState, VersionFolderLinkerService, VersionLinkerActionListener, VersionLinkerActionType } from "../version-folder-linker.service";
 import { MODEL_TYPE_FOLDERS } from "shared/models/models/constants";
 import { Observable, lastValueFrom, map } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
@@ -49,7 +49,11 @@ export class ModelsManagerService {
     }
 
     public $modelsLinkingPending(version: BSVersion, type: MSModelType): Observable<boolean> {
-        return this.versionFolderLinked.$isVersionFolderPending(version, MODEL_TYPE_FOLDERS[type]);
+        return this.versionFolderLinked.$isPending(version, MODEL_TYPE_FOLDERS[type]);
+    }
+
+    public $modelsLinkingState(version: BSVersion, type: MSModelType): Observable<FolderLinkState> {
+        return this.versionFolderLinked.$folderLinkedState(version, MODEL_TYPE_FOLDERS[type]);
     }
 
     public onModelsFolderLinked(callback: VersionLinkerActionListener): void {

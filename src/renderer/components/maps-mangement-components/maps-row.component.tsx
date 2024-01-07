@@ -52,7 +52,7 @@ export const MapsRow = memo(({ maps, style, selectedMaps$, onMapSelect, onMapDel
     };
 
     return (
-        <ul className="h-fit w-full flex flex-nowrap basis-0 gap-x-[8px] py-1 px-3" style={style}>
+        <ul className="h-fit w-full flex flex-nowrap basis-0 gap-x-2 p-2" style={style}>
             {maps?.map(renderMapItem)}
         </ul>
     );

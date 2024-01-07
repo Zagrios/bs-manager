@@ -1,10 +1,9 @@
 import { LinkOptions, UnlinkOptions } from "main/services/folder-linker.service";
 import { map, distinctUntilChanged, filter, mergeMap, shareReplay } from "rxjs/operators";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, of } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
-import equal from "fast-deep-equal";
 
 export class VersionFolderLinkerService {
     private static instance: VersionFolderLinkerService;
@@ -60,6 +59,13 @@ export class VersionFolderLinkerService {
 
     private doAction(action: VersionLinkerAction): Observable<boolean> {
         return this.ipcService.sendV2<boolean, VersionLinkerAction>("link-version-folder-action", { args: action });
+    }
+
+    private get currentAction$(): Observable<VersionLinkerAction> {
+        return this._queue$.pipe(
+            map(actions => actions.at(0)),
+            distinctUntilChanged()
+        );
     }
 
     public linkVersionFolder(action: VersionLinkFolderAction): Promise<boolean> {
@@ -122,12 +128,33 @@ export class VersionFolderLinkerService {
         return this.ipcService.sendV2("is-version-folder-linked", { args: { version, relativeFolder } });
     }
 
-    public isPending(version: BSVersion, relativeFolder: string): Observable<boolean> {
-        return this.queue$.pipe(map(queue => queue.length > 0 && queue.some(action => action.version === version && action.relativeFolder === relativeFolder), distinctUntilChanged()));
+    public $folderLinkedState(version: BSVersion, relativeFolder: string): Observable<FolderLinkState> {
+        return this._queue$.pipe(
+            mergeMap(queue => {
+                const currentAction = queue.at(0);
+                if(currentAction && currentAction.version === version && currentAction.relativeFolder === relativeFolder) {
+                    return of(FolderLinkState.Processing)
+                }
+                
+                if(queue.some(action => action.version === version && action.relativeFolder === relativeFolder)) {
+                    return of(FolderLinkState.Pending);
+                }
+
+                return this.isVersionFolderLinked(version, relativeFolder).pipe(
+                    map(linked => linked ? FolderLinkState.Linked : FolderLinkState.Unlinked)
+                );
+            }),
+            distinctUntilChanged(),
+            shareReplay(1)    
+        );
     }
 
-    public isProcessing(version: BSVersion, relativeFolder: string): Observable<boolean> {
-        return this.currentAction$.pipe(map(action => action && action.version === version && action.relativeFolder === relativeFolder));
+    public $isPending(version: BSVersion, relativeFolder: string): Observable<boolean> {
+        return this.$folderLinkedState(version, relativeFolder).pipe(map(state => state === FolderLinkState.Pending));
+    }
+
+    public $isProcessing(version: BSVersion, relativeFolder: string): Observable<boolean> {
+        return this.$folderLinkedState(version, relativeFolder).pipe(map(state => state === FolderLinkState.Processing));
     }
 
     public getLinkedFolders(version: BSVersion, options?: { relative?: boolean }): Observable<string[]> {
@@ -136,27 +163,6 @@ export class VersionFolderLinkerService {
 
     public relinkAllVersionsFolders(): Observable<void> {
         return this.ipcService.sendV2("relink-all-versions-folders");
-    }
-
-    public $isVersionFolderPending(version: BSVersion, relativeFolder: string): Observable<boolean> {
-        return this.queue$.pipe(
-            mergeMap(async queue => {
-                return queue.some(q => q.relativeFolder.includes(relativeFolder) && equal(q.version, version));
-            }),
-            distinctUntilChanged(),
-            shareReplay(1)
-        );
-    }
-
-    public get currentAction$(): Observable<VersionLinkerAction> {
-        return this._queue$.pipe(
-            map(actions => actions.at(0)),
-            distinctUntilChanged()
-        );
-    }
-
-    public get queue$(): Observable<VersionLinkerAction[]> {
-        return this._queue$.asObservable();
     }
 }
 
@@ -182,3 +188,10 @@ export interface VersionUnlinkFolderAction extends VersionLinkerAction {
 }
 
 export type VersionLinkerActionListener = (action: VersionLinkerAction, linked: boolean) => void;
+
+export enum FolderLinkState {
+    Linked,
+    Unlinked,
+    Pending,
+    Processing
+}
