@@ -14,7 +14,9 @@
         "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
         "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
         "test": "jest",
-        "publish": "npm run build && electron-builder -c.win.certificateSha1=842a817a51e2a1d360fcd62f54bf5f9193e919e1 --publish always --win --x64"
+        "publish": "npm run build && electron-builder -c.win.certificateSha1=842a817a51e2a1d360fcd62f54bf5f9193e919e1 --publish always --win --x64",
+        "e2e-test": "npm run package && xvfb-maybe npx playwright test --workers=1",
+        "e2e-test-ci": "xvfb-maybe npx playwright test --workers=1"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx}": [
@@ -235,7 +237,8 @@
         "playwright": "^1.38.1",
         "playwright-core": "^1.38.1",
         "@playwright/test": "^1.38.1",
-        "xvfb-maybe": "^0.2.1"
+        "xvfb-maybe": "^0.2.1",
+        "asar": "^3.2.0"
     },
     "dependencies": {
         "@electron/fuses": "^1.6.2",
