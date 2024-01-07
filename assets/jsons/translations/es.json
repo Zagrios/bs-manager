@@ -727,7 +727,7 @@
     "maps": {
         "map-filter-panel": {
             "duration": "Duración",
-            "nps" : "Notas por Segundo",
+            "nps" : "Notas Por Segundo",
             "tags": "tags",
             "specificities": "general",
             "requirements": "requisitos"
