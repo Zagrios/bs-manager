@@ -33,6 +33,7 @@ export class OculusService {
         const libsRegData = await list(oculusLibsRegKey).then(data => data[oculusLibsRegKey]);
 
         if (!libsRegData.keys?.length) {
+            log.info("Registry key \"HKCU\\SOFTWARE\\Oculus VR, LLC\\Oculus\\Libraries\" not found");
             return null;
         }
 
