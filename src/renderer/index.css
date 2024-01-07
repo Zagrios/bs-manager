@@ -19,7 +19,6 @@
 }
 
 * {
-
     user-select: none;
 }
 
@@ -78,8 +77,6 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.25);
 }
-
-
 
 .tippy-box[data-theme~='default'] {
     @apply !bg-neutral-900;

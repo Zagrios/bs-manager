@@ -52,7 +52,6 @@ export type MapItemProps<T = unknown> = {
 };
 
 export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, ranked, bpm, duration, likes, createdAt, selected, downloading, showOwned, callBackParam, onDelete, onDownload, onSelected, onCancelDownload, onDoubleClick }: MapItemProps) => {
-
     const linkOpener = useService(LinkOpenerService);
     const audioPlayer = useService(AudioPlayerService);
 
