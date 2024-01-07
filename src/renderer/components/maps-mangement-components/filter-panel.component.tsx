@@ -56,7 +56,7 @@ export function FilterPanel({ className, ref, playlist = false, filter, onChange
     const renderDurationLabel = (sec: number): JSX.Element => {
         const textValue = (() => {
             if (sec === MIN_DURATION) {
-                return "0";
+                return MIN_DURATION;
             }
             if (sec === MAX_DURATION) {
                 return "∞";
@@ -72,7 +72,7 @@ export function FilterPanel({ className, ref, playlist = false, filter, onChange
     const renderNpsLabel = (nps: number): JSX.Element => {
         const textValue = (() => {
             if (nps === MIN_NPS) {
-                return "0"
+                return MIN_NPS;
             }
             if (nps === MAX_NPS) {
                 return "∞";
@@ -170,8 +170,8 @@ export function FilterPanel({ className, ref, playlist = false, filter, onChange
             <div className="w-full h-6 grid grid-cols-2 gap-x-12 px-4 mb-6 pt-1">
               <BsmRange min={MIN_NPS} max={MAX_NPS} values={npss} onChange={onNpssChange} renderLabel={renderNpsLabel} step={0.1} />
               <BsmRange min={MIN_DURATION} max={MAX_DURATION} values={durations} onChange={onDurationsChange} renderLabel={renderDurationLabel} step={5} />
-              <span className=" text-sm font-bold text-center mt-[10px]">{t("maps.map-filter-panel.nps")}</span>
-              <span className=" text-sm font-bold text-center mt-[10px]">{t("maps.map-filter-panel.duration")}</span>
+              <span className=" text-sm font-bold text-center mt-2.5">{t("maps.map-filter-panel.nps")}</span>
+              <span className=" text-sm font-bold text-center mt-2.5">{t("maps.map-filter-panel.duration")}</span>
             </div>
             <div className="w-full h-full flex gap-x-2">
                 <section className="shrink-0">

@@ -80,7 +80,7 @@
 
 .tippy-box[data-theme~='default'] {
     @apply !bg-neutral-900;
-    color: #fff;
+    @apply !text-white;
 }
 
 .tippy-box[data-theme~='default'][data-placement^='top'] > .tippy-arrow::before {

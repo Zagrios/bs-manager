@@ -246,7 +246,7 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
 
                     <div className="flex flex-col justify-center items-center gap-1 w-full h-full overflow-hidden opacity-0 group-hover:opacity-100">
                         {onDelete && !downloading && (
-                        <Tippy content={t("maps.map-item.delete")} placement="left" className="!bg-main-color-1" theme="default">
+                        <Tippy content={t("maps.map-item.delete")} placement="left" theme="default">
                             <div>
                                 <BsmButton
                                     className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2"
@@ -263,7 +263,7 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
                         </Tippy>
                         )}
                         {onDownload && !downloading && (
-                        <Tippy content={t("maps.map-item.download")} placement="left" className="!bg-main-color-1" theme="default">
+                        <Tippy content={t("maps.map-item.download")} placement="left" theme="default">
                             <div>
                                 <BsmButton
                                     className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2"
@@ -321,7 +321,7 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
                         </Tippy>
                         )}
                         {mapId && (
-                        <Tippy content={t("maps.map-item.bsr-code")} placement="left" className="!bg-main-color-1" theme="default">
+                        <Tippy content={t("maps.map-item.bsr-code")} placement="left" theme="default">
                             <div>
                             <BsmButton
                                 className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2"
