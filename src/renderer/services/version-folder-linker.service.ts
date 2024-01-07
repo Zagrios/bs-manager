@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, of } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
+import equal from "fast-deep-equal";
 
 export class VersionFolderLinkerService {
     private static instance: VersionFolderLinkerService;
@@ -132,11 +133,11 @@ export class VersionFolderLinkerService {
         return this._queue$.pipe(
             mergeMap(queue => {
                 const currentAction = queue.at(0);
-                if(currentAction && currentAction.version === version && currentAction.relativeFolder === relativeFolder) {
+                if(currentAction && equal(currentAction.version, version) && currentAction.relativeFolder === relativeFolder) {
                     return of(FolderLinkState.Processing)
                 }
                 
-                if(queue.some(action => action.version === version && action.relativeFolder === relativeFolder)) {
+                if(queue.some(action => equal(action.version, version) && action.relativeFolder === relativeFolder)) {
                     return of(FolderLinkState.Pending);
                 }
 

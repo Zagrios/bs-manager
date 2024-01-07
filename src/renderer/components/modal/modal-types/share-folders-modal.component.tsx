@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { LinkButton } from "renderer/components/maps-mangement-components/link-button.component";
 import { BsmBasicSpinner } from "renderer/components/shared/bsm-basic-spinner/bsm-basic-spinner.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
-import { useConstant } from "renderer/hooks/use-constant.hook";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useService } from "renderer/hooks/use-service.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
@@ -108,8 +107,7 @@ const FolderItem = ({ version, relativeFolder, onDelete }: FolderProps) => {
     const t = useTranslation();
 
     const color = useThemeColor("first-color");
-    const state$ = useConstant(() => linker.$folderLinkedState(version, relativeFolder));
-    const state = useObservable(state$);
+    const state = useObservable(() => linker.$folderLinkedState(version, relativeFolder), FolderLinkState.Unlinked, [version, relativeFolder]);
     const name = relativeFolder.split(window.electron.path.sep).at(-1);
 
     const onClickLink = () => {
@@ -141,7 +139,7 @@ const FolderItem = ({ version, relativeFolder, onDelete }: FolderProps) => {
                 <Tippy placement="left" content={t(`modals.shared-folders.buttons.${state === FolderLinkState.Linked ? "unlink-folder" : "link-folder"}`)} arrow={false}>
                     <LinkButton 
                         className="p-0.5 h-7 shrink-0 aspect-square blur-0 cursor-pointer hover:brightness-75"
-                        state$={state$}
+                        state={state}
                         onClick={onClickLink}
                     />
                 </Tippy>

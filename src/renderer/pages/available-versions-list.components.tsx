@@ -22,7 +22,7 @@ export function AvailableVersionsList() {
     const [selectedVersion, setSelectedVersion] = useState<BSVersion>(null);
     const contextValue = useMemo(() => ({ selectedVersion, setSelectedVersion }), [selectedVersion]);
 
-    const downloading = useObservable(bsDownloader.downloadingVersion$.pipe(map(v => !!v)));
+    const downloading = useObservable(() => bsDownloader.downloadingVersion$.pipe(map(v => !!v)));
     const t = useTranslation();
 
     const startDownload = async () => {

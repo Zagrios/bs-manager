@@ -16,7 +16,7 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
     const ipcService = useService(IpcService);
     const audio = useService(AudioPlayerService);
 
-    const volume = useObservable(audio.volume$, audio.volume);
+    const volume = useObservable(() => audio.volume$, audio.volume);
     const color = useThemeColor("first-color");
 
     const [previewVersion, setPreviewVersion] = useState(null);

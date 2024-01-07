@@ -16,13 +16,10 @@ type Props = {
 };
 
 export const MapsRow = memo(({ maps, style, selectedMaps$, onMapSelect, onMapDelete }: Props) => {
-    const selectedMaps = useObservable<BsmLocalMap[]>(
-        selectedMaps$.pipe(
+    const selectedMaps = useObservable<BsmLocalMap[]>(() => selectedMaps$.pipe(
             map(selectedMaps => selectedMaps.filter(selected => maps.some(map => map.hash === selected.hash))),
-            distinctUntilChanged(equal)
-        ),
-        []
-    );
+            distinctUntilChanged(equal),
+        ), []);
 
     const extractMapDiffs = (map: BsmLocalMap): Map<BsvMapCharacteristic, ParsedMapDiff[]> => {
         const res = new Map<BsvMapCharacteristic, ParsedMapDiff[]>();
@@ -48,7 +45,26 @@ export const MapsRow = memo(({ maps, style, selectedMaps$, onMapSelect, onMapDel
     };
 
     const renderMapItem = (map: BsmLocalMap) => {
-        return <MapItem key={map.hash} hash={map.hash} title={map.rawInfo._songName} coverUrl={map.coverUrl} songUrl={map.songUrl} autor={map.rawInfo._levelAuthorName} songAutor={map.rawInfo._songAuthorName} bpm={map.rawInfo._beatsPerMinute} duration={map.bsaverInfo?.metadata?.duration} selected={selectedMaps.some(selected => selected.hash === map.hash)} diffs={extractMapDiffs(map)} mapId={map.bsaverInfo?.id} ranked={map.bsaverInfo?.ranked} autorId={map.bsaverInfo?.uploader?.id} likes={map.bsaverInfo?.stats?.upvotes} createdAt={map.bsaverInfo?.createdAt} onDelete={onMapDelete} onSelected={onMapSelect} callBackParam={map} />;
+        return <MapItem 
+            key={map.hash} 
+            hash={map.hash} 
+            title={map.rawInfo._songName} 
+            coverUrl={map.coverUrl} 
+            songUrl={map.songUrl} 
+            autor={map.rawInfo._levelAuthorName} 
+            songAutor={map.rawInfo._songAuthorName} 
+            bpm={map.rawInfo._beatsPerMinute} 
+            duration={map.bsaverInfo?.metadata?.duration} 
+            selected={selectedMaps.some(selected => selected.hash === map.hash)} 
+            diffs={extractMapDiffs(map)} mapId={map.bsaverInfo?.id} 
+            ranked={map.bsaverInfo?.ranked} 
+            autorId={map.bsaverInfo?.uploader?.id} 
+            likes={map.bsaverInfo?.stats?.upvotes} 
+            createdAt={map.bsaverInfo?.createdAt} 
+            onDelete={onMapDelete} 
+            onSelected={onMapSelect} 
+            callBackParam={map}
+        />;
     };
 
     return (

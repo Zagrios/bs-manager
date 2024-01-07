@@ -1,23 +1,19 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { BsmIcon } from "../svgs/bsm-icon.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { FolderLinkState } from "renderer/services/version-folder-linker.service";
-import { Observable } from "rxjs";
-import { useObservable } from "renderer/hooks/use-observable.hook";
 
 export type LinkBtnProps = {
     className?: string;
     title?: string;
-    state$: Observable<FolderLinkState>;
+    state: FolderLinkState;
     onClick?: () => void;
 };
 
-export const LinkButton = ({className, title, state$, onClick}: LinkBtnProps) => {
+export const LinkButton = ({className, title, state, onClick}: LinkBtnProps) => {
     const t = useTranslation();
     
-    const state = useObservable(state$);
     const color = useThemeColor("first-color");
     const disabled = state === FolderLinkState.Processing || state === FolderLinkState.Pending;
 

@@ -70,7 +70,7 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
         onDoubleClick: () => onDoubleClick?.(callBackParam),
     });
 
-    const songPlaying = useObservable(audioPlayer.playing$.pipe(map(playing => playing && audioPlayer.src === songUrl)));
+    const songPlaying = useObservable(() => audioPlayer.playing$.pipe(map(playing => playing && audioPlayer.src === songUrl)));
 
     const previewUrl = mapId ? `https://allpoland.github.io/ArcViewer/?id=${mapId}` : null;
     const mapUrl = mapId ? `https://beatsaver.com/maps/${mapId}` : null;

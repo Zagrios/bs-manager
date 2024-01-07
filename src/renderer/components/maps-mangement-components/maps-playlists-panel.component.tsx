@@ -9,12 +9,14 @@ import { MapsDownloaderService } from "renderer/services/maps-downloader.service
 import { BsmImage } from "../shared/bsm-image.component";
 import wipGif from "../../../../assets/images/gifs/wip.gif";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import { VersionFolderLinkerService, VersionLinkerActionListener } from "renderer/services/version-folder-linker.service";
+import { FolderLinkState, VersionFolderLinkerService, VersionLinkerActionListener } from "renderer/services/version-folder-linker.service";
 import { useService } from "renderer/hooks/use-service.hook";
 import { BsContentTabPanel } from "../shared/bs-content-tab-panel/bs-content-tab-panel.component";
 import { BsmButton } from "../shared/bsm-button.component";
 import { MapIcon } from "../svgs/icons/map-icon.component";
 import { PlaylistIcon } from "../svgs/icons/playlist-icon.component";
+import { useObservable } from "renderer/hooks/use-observable.hook";
+import { of } from "rxjs";
 
 type Props = {
     version?: BSVersion;
@@ -32,6 +34,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
     const [mapSearch, setMapSearch] = useState("");
     const [playlistSearch, setPlaylistSearch] = useState("");
     const [mapsLinked, setMapsLinked] = useState(false);
+    const mapsLinkedState = useObservable(() => version ? mapsService.$mapsFolderLinkState(version) : of(null), FolderLinkState.Unlinked, [version]);
     const t = useTranslation();
     const mapsRef = useRef<any>();
 
@@ -119,9 +122,9 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                         icon: MapIcon,
                         onClick: () => setTabIndex(0),
                         linkProps: version ? {
-                            state$: mapsService.$mapsFolderLinkState(version),
+                            state: mapsLinkedState,
                             onClick: handleMapsLinkClick,
-                        } : undefined,
+                        } : null,
                     },
                     {
                         text: "misc.playlists",

@@ -9,9 +9,9 @@ import { useService } from "renderer/hooks/use-service.hook";
 export function BsmProgressBar() {
     const progressBarService = useService(ProgressBarService);
 
-    const progressData = useObservable(progressBarService.progressData$);
-    const visible = useObservable(progressBarService.visible$);
-    const style = useObservable(progressBarService.style$);
+    const progressData = useObservable(() => progressBarService.progressData$);
+    const visible = useObservable(() => progressBarService.visible$);
+    const style = useObservable(() => progressBarService.style$);
 
     const progressLabel = (() => {
         if (!progressData) {

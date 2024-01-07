@@ -32,7 +32,7 @@ export const BsContentTabItem: BsContentTabItemComponent = ({ text, icon: Icon, 
             {linkProps && (
                 <div className="flex items-center absolute top-1.5 left-1.5">
                     <LinkButton
-                        state$={linkProps.state$} 
+                        state={linkProps.state} 
                         className={linkProps.className ?? "block w-6 h-6 aspect-square blur-0 cursor-pointer hover:brightness-75"} 
                         title={linkProps.title} 
                         onClick={linkProps.onClick} 
