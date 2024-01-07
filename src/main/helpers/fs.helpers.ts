@@ -6,6 +6,7 @@ import log from "electron-log";
 import { BsmException } from "shared/models/bsm-exception.model";
 import crypto from "crypto";
 import { execSync } from "child_process";
+import { tryit } from "../../shared/helpers/error.helpers";
 
 export async function pathExist(path: string): Promise<boolean> {
     try {
@@ -234,18 +235,12 @@ export async function isJunction(path: string): Promise<boolean>{
 }
 
 export function resolveGUIDPath(guidPath: string): string {
-    log.info("resolveGUIDPath", guidPath);
     const guidVolume = path.parse(guidPath).root;
-    log.info("guidVolume", guidVolume);
     const command = `powershell -command "(Get-WmiObject -Class Win32_Volume | Where-Object { $_.DeviceID -like '${guidVolume}' }).DriveLetter"`;
-    log.info("command", command);
-    const driveLetter = execSync(command).toString().trim();
-    log.info("driveLetter", driveLetter);
-    if (!driveLetter) {
-        log.error("Unable to resolve GUID path");
-        throw new Error("Unable to resolve GUID path");
+    const {result: driveLetter, error} = tryit(() => execSync(command).toString().trim());
+    if (!driveLetter || error) {
+        throw new Error("Unable to resolve GUID path", error);
     }
-    log.info("result guid", path.join(driveLetter, path.relative(guidVolume, guidPath)));
     return path.join(driveLetter, path.relative(guidVolume, guidPath));
 }
 
