@@ -25,9 +25,6 @@
         }
     },
     "pages": {
-        "shared-maps": {
-            "title": "Общие карты"
-        },
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Режим Oculus",
@@ -42,7 +39,6 @@
                 }
             },
             "maps": {
-                "title": "Общие карты",
                 "search-bar": {
                     "search-placeholder": "Поиск среди карт",
                     "filters-btn": "Фильтр",

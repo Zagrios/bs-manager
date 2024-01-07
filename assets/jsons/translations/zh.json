@@ -25,9 +25,6 @@
         }
     },
     "pages": {
-        "shared-maps": {
-            "title": "共享谱面"
-        },
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Oculus 模式",
@@ -42,7 +39,6 @@
                 }
             },
             "maps": {
-                "title": "Shared maps",
                 "search-bar": {
                     "search-placeholder": "谱面搜索",
                     "filters-btn": "筛选",

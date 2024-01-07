@@ -25,9 +25,6 @@
         }
     },
     "pages": {
-        "shared-maps": {
-            "title": "共有マップ"
-        },
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Oculusモード",
@@ -42,7 +39,6 @@
                 }
             },
             "maps": {
-                "title": "共有マップ",
                 "search-bar": {
                     "search-placeholder": "マップを検索",
                     "filters-btn": "絞り込み",

@@ -25,9 +25,6 @@
         }
     },
     "pages": {
-        "shared-maps": {
-            "title": "Geteilte Maps"
-        },
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Oculus Modus",
@@ -42,7 +39,6 @@
                 }
             },
             "maps": {
-                "title": "Geteilte Maps",
                 "search-bar": {
                     "search-placeholder": "Suche eine Map",
                     "filters-btn": "Filter",

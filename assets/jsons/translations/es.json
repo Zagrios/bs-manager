@@ -25,9 +25,7 @@
         }
     },
     "pages": {
-        "shared-maps": {
-            "title": "Mapas comunes"
-        },
+
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Modo Oculus",
