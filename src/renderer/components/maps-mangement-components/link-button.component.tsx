@@ -8,7 +8,7 @@ export type LinkBtnProps = {
     className?: string;
     title?: string;
     state: FolderLinkState;
-    onClick?: () => void;
+    onClick?: () => unknown;
 };
 
 export const LinkButton = ({className, title, state, onClick}: LinkBtnProps) => {
