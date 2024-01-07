@@ -227,8 +227,11 @@
             "steam-download": {
                 "warnings": {
                     "msg": {
+                        "ManifestChecksum": "Le manifeste précédemment téléchargé ne correspond pas au nouveau 🤔",
                         "ConnectionTimeout": "Ta connexion internet semble instable 🥶",
-                        "Unknown": "Quelque chose d'étrange s'est produit 🤔 Votre connexion est surement instable."
+                        "ConnectionLost": "La connexion a été perdue, essayez à nouveau...",
+                        "ConnectionError": "Impossible de se connecter à Steam, essayez à nouveau...",
+                        "Unknown": "Quelque chose d'étrange s'est produit 🤔 Votre connexion est probablement instable."
                     }
                 },
                 "errors": {
