@@ -1,24 +1,18 @@
-import { UtilsService } from "./utils.service";
-import regedit from "regedit";
+import { list, RegDwordValue } from "regedit-rs"
 import path from "path";
 import { parse } from "@node-steam/vdf";
 import { readFile } from "fs/promises";
 import { pathExist } from "../helpers/fs.helpers";
 import log from "electron-log";
 import { app, shell } from "electron";
+import { taskRunning } from "../helpers/os.helpers";
 
 export class SteamService {
 
     private static instance: SteamService;
-
-    private readonly utils: UtilsService = UtilsService.getInstance();
-
     private steamPath: string = '';
 
-    private constructor(){
-        const vbsDirectory = path.join(this.utils.getAssetsScriptsPath(), "node-regedit", "vbs");
-        regedit.setExternalVBSLocation(vbsDirectory);
-    }
+    private constructor(){}
 
     public static getInstance(){
         if(!SteamService.instance){ SteamService.instance = new SteamService(); }
@@ -26,17 +20,19 @@ export class SteamService {
     }
 
     public async getActiveUser(): Promise<number>{
-        const res = await regedit.promisified.list(["HKCU\\Software\\Valve\\Steam\\ActiveProcess"]);
-        const keys = res?.["HKCU\\Software\\Valve\\Steam\\ActiveProcess"];
-        if(!keys?.exists){ throw "Key \"HKCU\\Software\\Valve\\Steam\\ActiveProcess\" not exist"; }
-        return (keys.values?.ActiveUser.value || undefined) as number;
+        const res = await list("HKCU\\Software\\Valve\\Steam\\ActiveProcess");
+        const key = res["HKCU\\Software\\Valve\\Steam\\ActiveProcess"];
+        if(!key.exists){ throw new Error("Key \"HKCU\\Software\\Valve\\Steam\\ActiveProcess\" not exist"); }
+        const registryValue = key.values.ActiveUser as RegDwordValue;
+        if(!registryValue){ throw new Error("Value \"ActiveUser\" not exist"); }
+        return registryValue.value;
     }
 
     public async steamRunning(): Promise<boolean>{
-        const steamProcessRunning = await this.utils.taskRunning("steam");
+        const steamProcessRunning = await taskRunning("steam");
         if(process.platform === "linux") { return steamProcessRunning; }
-
-        return steamProcessRunning && !!(await this.getActiveUser());
+        const activeUser = await this.getActiveUser().catch(err => log.error(err));
+        return steamProcessRunning && !!activeUser;
     }
 
     public async getSteamPath(): Promise<string>{
@@ -47,24 +43,19 @@ export class SteamService {
             case "linux":
                 this.steamPath = path.join(app.getPath('home'), '.steam', "steam");
                 return this.steamPath;
-            case "win32":
-                // eslint-disable-next-line no-case-declarations
-                const [win32Res, win64Res] = await Promise.all([
-                    regedit.promisified.list(['HKLM\\SOFTWARE\\Valve\\Steam']),
-                    regedit.promisified.list(['HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam'])
-                ]);
+            case "win32": {
+                const res = await list(['HKLM\\SOFTWARE\\Valve\\Steam', 'HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam']);
+                const win64 = res['HKLM\\SOFTWARE\\Valve\\Steam'];
+                const win32 = res['HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam'];
 
-                // eslint-disable-next-line no-case-declarations
-                const [win32, win64] = [win32Res["HKLM\\SOFTWARE\\Valve\\Steam"], win64Res["HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam"]];
-
-                if(win64.exists && win64?.values?.InstallPath?.value){ 
+                if (win64.exists && win64?.values?.InstallPath?.value) {
                     this.steamPath = win64.values.InstallPath.value as string;
-                }
-                else if (win32.exists && win32?.values?.InstallPath?.value){
-                    this.steamPath = win32.values.InstallPath.value as string; 
+                } else if (win32.exists && win32?.values?.InstallPath?.value) {
+                    this.steamPath = win32.values.InstallPath.value as string;
                 }
 
                 return this.steamPath;
+            }
             default:
                 return null;
         }

@@ -7,22 +7,21 @@ import { InstallationLocationService } from "../installation-location.service";
 import { UtilsService } from "../utils.service";
 import crypto from "crypto";
 import { lstatSync } from "fs";
-import { copy, createReadStream, ensureDir, unlink } from "fs-extra";
+import { copy, createReadStream, ensureDir, pathExists, realpath, unlink } from "fs-extra";
 import StreamZip from "node-stream-zip";
 import { RequestService } from "../request.service";
 import sanitize from "sanitize-filename";
 import { DeepLinkService } from "../deep-link.service";
 import log from "electron-log";
 import { WindowManagerService } from "../window-manager.service";
-import { ipcMain } from "electron";
-import { IpcRequest } from "shared/models/ipc";
-import { Observable, lastValueFrom } from "rxjs";
+import { Observable, lastValueFrom, of } from "rxjs";
 import { Archive } from "../../models/archive.class";
 import { deleteFolder, ensureFolderExist, getFilesInFolder, getFoldersInFolder, pathExist } from "../../helpers/fs.helpers";
 import { readFile } from "fs/promises";
 import { FolderLinkerService } from "../folder-linker.service";
 import { allSettled } from "../../../shared/helpers/promise.helpers";
 import { splitIntoChunk } from "../../../shared/helpers/array.helpers";
+import { IpcService } from "../ipc.service";
 
 export class LocalMapsManagerService {
     private static instance: LocalMapsManagerService;
@@ -49,6 +48,7 @@ export class LocalMapsManagerService {
     private readonly reqService: RequestService;
     private readonly deepLink: DeepLinkService;
     private readonly windows: WindowManagerService;
+    private readonly ipc: IpcService;
     private readonly linker = FolderLinkerService.getInstance();
 
     private constructor() {
@@ -59,6 +59,7 @@ export class LocalMapsManagerService {
         this.deepLink = DeepLinkService.getInstance();
         this.windows = WindowManagerService.getInstance();
         this.linker = FolderLinkerService.getInstance();
+        this.ipc = IpcService.getInstance();
 
         this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.BeatSaver, link => {
             log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.BeatSaver, link);
@@ -126,7 +127,7 @@ export class LocalMapsManagerService {
     }
 
     private async downloadMapZip(zipUrl: string): Promise<{ zip: StreamZip.StreamZipAsync; zipPath: string }> {
-        const fileName = path.basename(zipUrl);
+        const fileName = `${path.basename(zipUrl, ".zip")}-${crypto.randomUUID()}.zip`;
         const tempPath = this.utils.getTempPath();
         await ensureFolderExist(this.utils.getTempPath());
         const dest = path.join(tempPath, fileName);
@@ -138,11 +139,15 @@ export class LocalMapsManagerService {
     }
 
     private openOneClickDownloadMapWindow(mapId: string, isHash = false): void {
-        ipcMain.once("one-click-map-info", async (event, req: IpcRequest<void>) => {
-            this.utils.ipcSend(req.responceChannel, { success: true, data: { id: mapId, isHash } });
+        this.windows.openWindow("oneclick-download-map.html").then(window => {
+
+            this.ipc.once("one-click-map-info", async (_, reply) => {
+                reply(of({ id: mapId, isHash }));
+            }, window.webContents.ipc);
+
         });
 
-        this.windows.openWindow("oneclick-download-map.html");
+        
     }
 
     public getMaps(version?: BSVersion): Observable<BsmLocalMapsProgress> {
@@ -247,18 +252,25 @@ export class LocalMapsManagerService {
         }
 
         const zipUrl = map.versions.at(0).downloadURL;
-
+        const mapFolderName = sanitize(`${map.id}-${map.name}`);
         const mapsFolder = await this.getMapsFolderPath(version);
+
+        const mapPath = path.join(mapsFolder, mapFolderName);
+
+        const installedMap = await pathExists(mapPath).then(exists => {
+            if(!exists){ return null; }
+            return this.loadMapInfoFromPath(mapPath);
+        }).catch(() => null);
+        
+        if(map.versions.every(version => version.hash === installedMap?.hash)) {
+            return installedMap;
+        }
 
         const { zip, zipPath } = await this.downloadMapZip(zipUrl);
 
         if (!zip) {
             throw `Cannot download ${zipUrl}`;
         }
-
-        const mapFolderName = sanitize(`${map.id}-${map.name}`);
-
-        const mapPath = path.join(mapsFolder, mapFolderName);
 
         await ensureFolderExist(mapPath);
 
@@ -290,10 +302,16 @@ export class LocalMapsManagerService {
 
         const versions = await this.localVersion.getInstalledVersions();
         const downloadedMap = await this.downloadMap(map, versions.pop());
+        const downloadedMapRealFolder = await realpath(path.dirname(downloadedMap.path));
 
         for (const version of versions) {
             const versionMapsPath = await this.getMapsFolderPath(version);
             await ensureDir(versionMapsPath);
+
+            if((await realpath(versionMapsPath)) === downloadedMapRealFolder){
+                continue;
+            }
+
             await copy(downloadedMap.path, path.join(versionMapsPath, path.basename(downloadedMap.path)), { overwrite: true });
         }
     }

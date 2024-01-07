@@ -13,7 +13,7 @@ import { ConfigurationService } from "./configuration.service";
 import { ArchiveProgress } from "shared/models/archive.interface";
 import { map, last, catchError } from "rxjs/operators";
 import { ProgressionInterface } from "shared/models/progress-bar";
-import { VersionFolderLinkerService, VersionLinkerActionType } from "./version-folder-linker.service";
+import { FolderLinkState, VersionFolderLinkerService, VersionLinkerActionType } from "./version-folder-linker.service";
 
 export class MapsManagerService {
     private static instance: MapsManagerService;
@@ -176,6 +176,10 @@ export class MapsManagerService {
     }
 
     public $mapsLinkingPending(version: BSVersion): Observable<boolean> {
-        return this.linker.$isVersionFolderPending(version, MapsManagerService.RELATIVE_MAPS_FOLDER);
+        return this.linker.$isPending(version, MapsManagerService.RELATIVE_MAPS_FOLDER);
+    }
+
+    public $mapsFolderLinkState(version: BSVersion): Observable<FolderLinkState> {
+        return this.linker.$folderLinkedState(version, MapsManagerService.RELATIVE_MAPS_FOLDER);
     }
 }

@@ -1,9 +1,12 @@
-import { CopyOptions, copy, ensureDir, move, symlink } from "fs-extra";
+import { CopyOptions, copy, createReadStream, ensureDir, move, realpath, stat, symlink } from "fs-extra";
 import { access, mkdir, rm, readdir, unlink, lstat, readlink } from "fs/promises";
 import path from "path";
-import { Observable } from "rxjs";
+import { Observable, concatMap, from } from "rxjs";
 import log from "electron-log";
 import { BsmException } from "shared/models/bsm-exception.model";
+import crypto from "crypto";
+import { execSync } from "child_process";
+import { tryit } from "../../shared/helpers/error.helpers";
 
 export async function pathExist(path: string): Promise<boolean> {
     try {
@@ -153,8 +156,97 @@ export async function copyDirectoryWithJunctions(src: string, dest: string, opti
     }
 }
 
+export function hashFile(filePath: string, algorithm = "sha256"): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const shasum = crypto.createHash(algorithm);
+        const stream = createReadStream(filePath);
+        stream.on("data", data => shasum.update(data));
+        stream.on("error", reject);
+        stream.on("close", () => resolve(shasum.digest("hex")));
+    });
+}
+
+export async function dirSize(dirPath: string): Promise<number>{
+
+    const entries = await readdir(dirPath);
+
+    const paths = entries.map(async entry => {
+        const fullPath = path.join(dirPath, entry);
+        const realPath = await realpath(fullPath);
+        const stat = await lstat(realPath);
+
+        if (stat.isDirectory()) { 
+            return dirSize(fullPath);
+        }
+
+        if (stat.isFile()) {
+            return stat.size;
+        }
+
+        return 0;
+    });
+
+    return (await Promise.all(paths)).flat(Infinity).reduce((acc, size ) => acc + size, 0);
+}
+
+export function rxCopy(src: string, dest: string, option?: CopyOptions): Observable<Progression> {
+
+    const dirSizePromise = dirSize(src).catch(err => {
+        log.error("dirSizePromise", err);
+        return 0;
+    });
+
+    return from(dirSizePromise).pipe(
+        concatMap(totalSize => {
+            const progress: Progression = { current: 0, total: totalSize };
+
+            return new Observable<Progression>(sub => {
+                sub.next(progress);
+                copy(src, dest, {...option, filter: (src) => {
+                    stat(src).then(stats => {
+                        progress.current += stats.size;
+                        sub.next(progress);
+                    });
+                    return true;
+                }})
+                .then(() => sub.complete()).catch(err => sub.error(err))
+            })
+        })
+    );
+}
+
+export async function ensurePathNotAlreadyExist(path: string): Promise<string> {
+    let destPath = path;
+    let folderExist = await pathExist(destPath);
+    let i = 0;
+
+    while (folderExist) {
+        i++;
+        destPath = `${path} (${i})`;
+        folderExist = await pathExist(destPath);
+    }
+
+    return destPath;
+}
+
+export async function isJunction(path: string): Promise<boolean>{
+    const [stats, lstats] = await Promise.all([stat(path), lstat(path)]);
+    return lstats.isSymbolicLink() && stats.isDirectory();
+}
+
+export function resolveGUIDPath(guidPath: string): string {
+    const guidVolume = path.parse(guidPath).root;
+    const command = `powershell -command "(Get-WmiObject -Class Win32_Volume | Where-Object { $_.DeviceID -like '${guidVolume}' }).DriveLetter"`;
+    const {result: driveLetter, error} = tryit(() => execSync(command).toString().trim());
+    if (!driveLetter || error) {
+        throw new Error("Unable to resolve GUID path", error);
+    }
+    return path.join(driveLetter, path.relative(guidVolume, guidPath));
+}
+
 export interface Progression<T = unknown> {
     total: number;
     current: number;
+    diff?: number;
     data?: T;
 }

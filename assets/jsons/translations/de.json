@@ -25,9 +25,6 @@
         }
     },
     "pages": {
-        "shared-maps": {
-            "title": "Geteilte Maps"
-        },
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Oculus Modus",
@@ -42,7 +39,6 @@
                 }
             },
             "maps": {
-                "title": "Geteilte Maps",
                 "search-bar": {
                     "search-placeholder": "Suche eine Map",
                     "filters-btn": "Filter",
@@ -98,22 +94,30 @@
                 "edit": "Bearbeiten",
                 "uninstall": "Entfernen",
                 "create-shortcut": "Verknüpfung erstellen",
-                "shared-folders": "Geteilte Ordner"
+                "shared-folders": "Geteilte Ordner",
+                "restore-oculus-folder": "Ordner wiederherstellen"
             }
         },
         "available-versions": {
             "title": "Wähle eine Version",
             "steam-release": "Versions Seite",
             "dropdown": {
-                "refresh": "Liste aktualisieren",
+                "refresh": "Aktualisieren Sie die Versionen",
                 "import-version": "Importiere eine Version"
-            }
+            },
+            "recommended": "empfohlen",
+            "recommended-tooltip": "Am modbarsten Version"
         },
         "settings": {
-            "steam": {
-                "title": "Steam",
-                "description": "Wenn Du dich von Steam abmeldest, musst Du dich erneut anmelden, um eine neue Version von Beat Saber herunterzuladen.",
-                "logout": "Abmelden"
+            "steam-and-oculus": {
+                "title": "Steam & Oculus",
+                "description": "Abmelden ermöglicht es dir, beim nächsten Beat Saber Download den Account zu wechseln.",
+                "logout": "Abmelden",
+                "download-platform": {
+                    "title": "Standardplattform",
+                    "desc": "Wähle die Standardplattform, die für das Herunterladen von Beat Saber-Versionen verwendet wird.",
+                    "always-ask": "Immer fragen"
+                }
             },
             "appearance": {
                 "title": "Aussehen",
@@ -133,7 +137,7 @@
             },
             "additional-content": {
                 "title": "Zusätzlicher Inhalt",
-                "description": "Mit zusätzlichen Inhalten kannst du BeatSaber anpassen!",
+                "description": "Mit zusätzlichen Inhalten kannst du Beat Saber anpassen!",
                 "deep-links": {
                     "sub-title": "OneClick-Installationen"
                 }
@@ -148,13 +152,19 @@
                     "es-ES": "Español",
                     "de-DE": "Deutsch",
                     "ru-RU": "Русский",
+                    "zh-CN": "简体中文",
+                    "zh-TW": "正體中文",
+                    "ja-JP": "日本語",
                     "translated": {
                         "en-EN": "Englisch, Vereinigtes Königreich",
                         "en-US": "Englisch, USA",
                         "fr-FR": "Französisch",
                         "es-ES": "Spanisch",
                         "de-DE": "Deutsch",
-                        "ru-RU": "Russisch"
+                        "ru-RU": "Russisch",
+                        "zh-CN": "Vereinfachtes Chinesisch",
+                        "zh-TW": "Traditionelles Chinesisch",
+                        "ja-JP": "Japanisch"
                     }
                 }
             },
@@ -214,46 +224,65 @@
                     "verification-finished": "Verifikation Erfolgreich"
                 }
             },
-            "warnings": {
-                "msg": {
-                    "ManifestChecksum": "Die zuvor heruntergeladene Manifest stimmt nicht mit dem neuen überein 🤔",
-                    "ConnectionTimeout": "Deine Internetverbindung scheint instabil zu sein 🥶",
-                    "ConnectionLost": "Die Verbindung wurde unterbrochen, versuche es erneut...",
-                    "ConnectionError": "Kann keine Verbindung zu Steam herstellen, versuche es erneut...",
-                    "Unknown": "Etwas Seltsames ist passiert 🤔 Deine Verbindung ist wahrscheinlich instabil."
+            "steam-download": {
+                "warnings": {
+                    "msg": {
+                        "ManifestChecksum": "Die zuvor heruntergeladene Manifest stimmt nicht mit dem neuen überein 🤔",
+                        "ConnectionTimeout": "Deine Internetverbindung scheint instabil zu sein 🥶",
+                        "ConnectionLost": "Die Verbindung wurde unterbrochen, versuche es erneut...",
+                        "ConnectionError": "Kann keine Verbindung zu Steam herstellen, versuche es erneut...",
+                        "Unknown": "Etwas Seltsames ist passiert 🤔 Deine Verbindung ist wahrscheinlich instabil."
+                    }
+                },
+                "errors": {
+                    "titles": {
+                        "dotnet-required": ".NET 6 Benötigt"
+                    },
+                    "msg": {
+                        "401": "Steam scheint uns BeatSaber nicht herunterladen zu lassen 😢",
+                        "404": "Steam-Server können nicht kontaktiert werden.",
+                        "Password": "Passwort ist ungültig.",
+                        "InvalidCredentials": "Ungültige Anmeldedaten, nicht genehmigte Verbindung oder zu viele Anmeldeversuche.",
+                        "NoManifest": "Es wurde keine Manifest gefunden",
+                        "DirectoryCreate": "Die erforderlichen Ordner können nicht installiert werden.",
+                        "NotAvailableApp": "Versuchst du, Beat Saber herunterzuladen, wenn Du es nicht hast? 🤣",
+                        "DepotNotFound": "BeatSaber kann nicht heruntergeladen werden 😥 versuche es später noch einmal 😕",
+                        "NotCompleted": "Der Download konnte nicht beendet werden ¯\\_(ツ)_/¯",
+                        "InvalidManifest": "BeatSaber kann nicht heruntergeladen werden 😥 versuche es später noch einmal 😕",
+                        "NoValidKey": "BeatSaber kann nicht heruntergeladen werden 😥 versuche es später noch einmal 😕",
+                        "NoManifestCode": "BeatSaber kann nicht heruntergeladen werden 😥 versuche es später noch einmal 😕",
+                        "Unknown": "Ein Unbekannter Fehler ist aufgetreten ¯\\_(ツ)_/¯",
+                        "NoServer": "Steam-Server können nicht kontaktiert werden.",
+                        "NotAllowed": "Anscheinend darfst Du BeatSaber nicht herunterladen 🥱",
+                        "ConnectionTimeout": "Kann keine Verbindung zu Steam herstellen 😕",
+                        "SteamLib": "Wenn dieser Fehler auftritt, melde den Fehler auf Github mit Protokollen, bitte.",
+                        "ConnectionError": "Kann nach 10 Versuchen keine Verbindung zu Steam herstellen 🤯",
+                        "LicenceError": "Die Liste der Lizenzen kann nicht abgerufen werden.",
+                        "RateLimitExceeded": "Du hast es zu oft versucht, warte eine Weile und versuche es später erneut.",
+                        "TokenRejected": "Ihr Anmeldetoken wurde abgelehnt 😕 Bitte versuchen Sie es erneut.",
+                        "AccessDenied": "Der Zugang zu Steam wurde verweigert.",
+                        "dotnet-required": ".NET 6 Runtime muss installiert sein, um eine Version von BeatSaber herunterzuladen. Lade es herunter, indem Du auf die Schaltfläche unten klickst."
+                    },
+                    "actions": {
+                        "download-dotnet": ".NET 6 Herunterladen"
+                    }
                 }
             },
-            "errors": {
-                "titles": {
-                    "dotnet-required": ".NET 6 Benötigt"
-                },
-                "msg": {
-                    "401": "Steam scheint uns BeatSaber nicht herunterladen zu lassen 😢",
-                    "404": "Steam-Server können nicht kontaktiert werden.",
-                    "Password": "Passwort ist ungültig.",
-                    "InvalidCredentials": "Ungültige Anmeldedaten, nicht genehmigte Verbindung oder zu viele Anmeldeversuche.",
-                    "NoManifest": "Es wurde keine Manifest gefunden",
-                    "DirectoryCreate": "Die erforderlichen Ordner können nicht installiert werden.",
-                    "NotAvailableApp": "Versuchst du, Beat Saber herunterzuladen, wenn Du es nicht hast? 🤣",
-                    "DepotNotFound": "BeatSaber kann nicht heruntergeladen werden 😥 versuche es später noch einmal 😕",
-                    "NotCompleted": "Der Download konnte nicht beendet werden ¯\\_(ツ)_/¯",
-                    "InvalidManifest": "BeatSaber kann nicht heruntergeladen werden 😥 versuche es später noch einmal 😕",
-                    "NoValidKey": "BeatSaber kann nicht heruntergeladen werden 😥 versuche es später noch einmal 😕",
-                    "NoManifestCode": "BeatSaber kann nicht heruntergeladen werden 😥 versuche es später noch einmal 😕",
-                    "Unknown": "Ein Unbekannter Fehler ist aufgetreten ¯\\_(ツ)_/¯",
-                    "NoServer": "Steam-Server können nicht kontaktiert werden.",
-                    "NotAllowed": "Anscheinend darfst Du BeatSaber nicht herunterladen 🥱",
-                    "ConnectionTimeout": "Kann keine Verbindung zu Steam herstellen 😕",
-                    "SteamLib": "Wenn dieser Fehler auftritt, melde den Fehler auf Github mit Protokollen, bitte.",
-                    "ConnectionError": "Kann nach 10 Versuchen keine Verbindung zu Steam herstellen 🤯",
-                    "LicenceError": "Die Liste der Lizenzen kann nicht abgerufen werden.",
-                    "RateLimitExceeded": "Du hast es zu oft versucht, warte eine Weile und versuche es später erneut.",
-                    "TokenRejected": "Ihr Anmeldetoken wurde abgelehnt 😕 Bitte versuchen Sie es erneut.",
-                    "AccessDenied": "Der Zugang zu Steam wurde verweigert.",
-                    "dotnet-required": ".NET 6 Runtime muss installiert sein, um eine Version von BeatSaber herunterzuladen. Lade es herunter, indem Du auf die Schaltfläche unten klickst."
-                },
-                "actions": {
-                    "download-dotnet": ".NET 6 Herunterladen"
+            "oculus-download": {
+                "errors": {
+                    "msg": {
+                        "DOWNLOAD_MANIFEST_FAILED": "Es ist nicht möglich, das Manifest für diese Version herunterzuladen; Ihr Anmelde-Token ist möglicherweise ungültig.",
+                        "MANIFEST_FILE_NOT_FOUND": "Unmöglich, das Manifest für diese Version zu finden.",
+                        "PARSE_MANIFEST_FILE_FAILED": "Beim Lesen des Manifests ist ein Fehler aufgetreten.",
+                        "ALREADY_DOWNLOADING": "Eine Version wird bereits heruntergeladen.",
+                        "UNABLE_TO_GET_MANIFEST": "Unmöglich, das für den Download erforderliche Manifest zu erhalten.",
+                        "VERIFY_INTEGRITY_FAILED": "Beim Überprüfen der Dateien ist ein Fehler aufgetreten.",
+                        "SOME_FILES_FAILED_TO_DOWNLOAD": "Einige Dateien konnten nicht heruntergeladen werden.",
+                        "OCULUS_LOGIN_TIMED_OUT": "Das Anmelde-Token hat zu lange gedauert, um abgerufen zu werden.",
+                        "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER": "Das Meta Anmeldefenster wurde geschlossen.",
+                        "NO_META_AUTH_TOKEN": "Unmöglich, das für den Download erforderliche Meta-Anmelde-Token zu erhalten.",
+                        "UNKNOWN_ERROR": "Ein unbekannter Fehler ist aufgetreten."
+                    }
                 }
             }
         },
@@ -269,7 +298,7 @@
             },
             "errors": {
                 "import-error": {
-                    "desc": "Überprüfe, ob der ausgewählte Ordner eine BeatSaber-Installation ist."
+                    "desc": "Überprüfe, ob der ausgewählte Ordner eine Beat Saber-Installation ist."
                 }
             }
         },
@@ -349,17 +378,19 @@
                     "UNKNOWN_ERROR": "Start nicht möglich",
                     "STEAM_NOT_RUNNING": "Steam läuft nicht",
                     "OCULUS_NOT_RUNNING": "Oculus läuft nicht",
-                    "BS_ALREADY_RUNNING": "BeatSaber läuft bereits",
+                    "BS_ALREADY_RUNNING": "Beat Saber läuft bereits",
                     "EXE_NOT_FINDED": "Dateien Fehlen",
-                    "EXIT": "Abrupter Stop"
+                    "EXIT": "Abrupter Stop",
+                    "OCULUS_LIB_NOT_FOUND": "Oculus-Bibliothek nicht gefunden"
                 },
                 "msg": {
                     "UNKNOWN_ERROR": "Ein unbekannter Fehler ist aufgetreten.",
-                    "STEAM_NOT_RUNNING": "Steam muss laufen, um BeatSaber zu starten.",
-                    "OCULUS_NOT_RUNNING": "Oculus muss ausgeführt werden, um BeatSaber zu starten.",
-                    "BS_ALREADY_RUNNING": "Schließe BeatSaber, bevor Du es erneut startest.",
+                    "STEAM_NOT_RUNNING": "Steam muss laufen, um Beat Saber zu starten.",
+                    "OCULUS_NOT_RUNNING": "Oculus muss ausgeführt werden, um Beat Saber zu starten.",
+                    "BS_ALREADY_RUNNING": "Schließe Beat Saber, bevor Du es erneut startest.",
                     "EXE_NOT_FINDED": "Einige Dateien scheinen zu fehlen, versuche die Dateien zu überprüfen.",
-                    "EXIT": "BeatSaber stoppte abrupt, versuche die Dateien zu überprüfen."
+                    "EXIT": "Beat Saber stoppte abrupt, versuche die Dateien zu überprüfen.",
+                    "OCULUS_LIB_NOT_FOUND": "Überprüfe, ob die Oculus-Anwendung korrekt installiert ist und dass die Bibliotheken in Oculus richtig definiert sind."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Starte Steam"
@@ -467,6 +498,11 @@
         "misc": {
             "remember-my-choice": "Merke meine Wahl"
         },
+        "choose-store": {
+            "title": "Welche Plattform?",
+            "body": "Wählen Sie die Plattform, von der Sie Beat Saber herunterladen möchten.",
+            "set-in-settings": "Die Standardplattform in den Einstellungen festlegen"
+        },
         "guard": {
             "title": "Steam Guard",
             "inputs": {
@@ -491,10 +527,10 @@
                     "placeholder": "Geben Sie Ihr Passwort ein",
                     "max-length-warning": "Das Passwort überschreitet 64 Zeichen! Wenn das Passwort ungültig ist, versuchen Sie nur seine ersten 64 Zeichen einzugeben."
                 },
-                "qr":{
+                "qr": {
                     "label": "Oder mit einem QR-Code",
-                    "note":{
-                        "use-the":"Anmelden Sie sich über die ",
+                    "note": {
+                        "use-the": "Anmelden Sie sich über die ",
                         "steam-mobile-app": "Steam-Mobile-App",
                         "to-connect-with-qr": " per QR-Code an."
                     }
@@ -507,7 +543,7 @@
                 "submit": "Anmelden"
             }
         },
-        "steam-auth-approve":{
+        "steam-auth-approve": {
             "title": "Warten auf Bestätigung",
             "protected-by-mobile-auth": "Konto durch mobile Authentifizierung geschützt.",
             "use-steam-app-to-approve": "Verwenden Sie die Steam Mobile-App, um die Verbindung zu bestätigen...",
@@ -520,14 +556,16 @@
         },
         "bs-import-version": {
             "title": "Importiere eine Version",
-            "description": "Importiert eine Version von BeatSaber zur Verwendung mit BSManager. Der Import kopiert den ausgewählten BeatSaber-Installationsordner in den BSManager-Versionsordner.",
+            "description": "Importiert eine Version von Beat Saber zur Verwendung mit BSManager. Der Import kopiert den ausgewählten Beat Saber-Installationsordner in den BSManager-Versionsordner.",
+            "oculus-version": "Oculus-Version",
+            "oculus-version-tooltip": "Ankreuzen, wenn es eine Oculus-Version ist",
             "buttons": {
                 "submit": "Importiere eine Version"
             }
         },
         "bs-uninstall": {
             "title": "Deinstallieren",
-            "description": "Möchtest du BeatSaber {version} wirklich deinstallieren? Du musst es erneut herunterladen, um es zu spielen.",
+            "description": "Möchtest du Beat Saber {version} wirklich deinstallieren? Du musst es erneut herunterladen, um es zu spielen.",
             "buttons": {
                 "submit": "Deinstallieren"
             }
@@ -547,7 +585,7 @@
         },
         "clone-version": {
             "title": "Version Klonen",
-            "description": "Durch das Klonen der Version kannst Du zusätzlichen BeatSaber-Inhalt zwischen zwei Versionen trennen.",
+            "description": "Durch das Klonen der Version kannst Du zusätzlichen Beat Saber-Inhalt zwischen zwei Versionen trennen.",
             "inputs": {
                 "name": {
                     "label": "Name",
@@ -627,7 +665,7 @@
         },
         "shared-folders": {
             "title": "Geteilte Ordner",
-            "description": "Verknüpfe BeatSaber-Ordner, um ihre Inhalte mit freigegebenen Ordnern in anderen Versionen zu synchronisieren. Beachte, dass auch das Löschen von Inhalten geteilt wird.",
+            "description": "Verknüpfe Beat Saber-Ordner, um ihre Inhalte mit freigegebenen Ordnern in anderen Versionen zu synchronisieren. Beachte, dass auch das Löschen von Inhalten geteilt wird.",
             "buttons": {
                 "add-folder": "Ordner Hinzufügen",
                 "link-folder": "Ordner Verknüpfen",
@@ -641,11 +679,52 @@
             "launch-options": "Startoptionen",
             "advanced-launch": "Erweiterte Start",
             "valid-btn": "Verknüpfung erstellen"
+        },
+        "connect-to-meta": {
+            "title": "Mit Meta verbinden",
+            "body": {
+                "token-needed": "Dein Meta-Verbindungstoken wird benötigt, um Beat Saber herunterzuladen.",
+                "need-cookie-enabled": "Beim Einloggen in Meta wird ein Anmeldefenster geöffnet und du kannst dann den Anmeldevorgang beginnen. Bitte stelle sicher, dass Cookies akzeptiert werden, sonst könnten wir deinen Token zum Starten des Downloads nicht abrufen.",
+                "enter-token-manually": "Mein Anmelde-Token manuell eingeben",
+                "enter-token-manually-tooltip": "Dies ermöglicht es Ihnen, Ihren Anmelde-Token einzugeben, ohne sich über Meta anzumelden."
+            },
+            "stay": "Angemeldet bleiben",
+            "connect-to-meta": "Mit Meta verbinden"
+        },
+        "original-version-backup-oculus": {
+            "title": "Achtung",
+            "body": {
+                "must-be-installed-once": "Sie müssen Beat Saber mindestens einmal aus dem Oculus Store installiert haben, sonst könnte sich Beat Saber nach dem Start automatisch schließen.",
+                "need-backup": "Um diese Version zu starten, wird der Installationsordner von Beat Saber in Ihrer Oculus-Bibliothek umbenannt.",
+                "can-restore-later": "Bei Bedarf können Sie ihn vom BSManager aus wiederherstellen, indem Sie zu den Optionen der originalen Oculus-Version gehen und auf 'Ordner wiederherstellen' klicken",
+                "tips-launch-oculus": "Tipp: Sie können diese Version direkt über Oculus starten, solange die Originalversion nicht wiederhergestellt ist."
+            },
+            "not-remind-me": "Nicht mehr erinnern",
+            "understood": "Verstanden"
+        },
+        "enter-meta-token": {
+            "title": "Oculus Token",
+            "body": {
+                "info-enter-token": "Um Beat Saber herunterzuladen, ist Ihr Oculus-Anmeldetoken erforderlich.",
+                "how-obtain-token": "Wie erhalte ich mein Oculus Token?",
+                "oculus-token": "Oculus Token",
+                "token-is-invalid": "Das Token ist ungültig.",
+                "save-my-token": "Mein Token speichern",
+                "have-token-saved": "Ich habe bereits ein Token gespeichert",
+                "save-token-info": "Dies wird Ihr Token zur einfacheren Wiederverwendung speichern. Sie müssen ein Passwort erstellen, um Ihr Token zu verschlüsseln und zu speichern. Wenn Sie Ihr Passwort vergessen, müssen Sie nur Ihr Token erneut angeben.",
+                "password": "Passwort",
+                "password-too-short": "Passwort zu kurz",
+                "info-enter-password": "Um Beat Saber herunterzuladen, ist Ihr Oculus-Anmeldetoken erforderlich. Geben Sie das Passwort ein, mit dem Ihr Oculus-Token gespeichert wurde.",
+                "info-disabled-btn-password": "Der mit dem angegebenen Passwort entschlüsselte Token ist ungültig. Stellen Sie sicher, dass das Passwort dasselbe ist wie das zum Speichern des Tokens verwendete.",
+                "enter-oculus-token": "Ein Oculus-Token eingeben"
+            },
+            "valid-btn": "Validieren"
         }
     },
     "maps": {
         "map-filter-panel": {
             "duration": "Länge",
+            "nps" : "Noten Pro Sekunde",
             "tags": "Stichworte",
             "specificities": "Allgemein",
             "requirements": "Anforderungen"
@@ -713,7 +792,13 @@
         },
         "map-item": {
             "by": "Von {songAutor}",
-            "mapped-by": "Gemapped von"
+            "mapped-by": "Gemapped von",
+            "delete": "Löschen",
+            "preview" : "Kartenvorschau",
+            "bsr-code" : "BSR Code",
+            "download" : "Karte herunterladen",
+            "downloading" :"Karte wird heruntergeladen",
+            "cancel-download" : "Download abbrechen"
         }
     },
     "models": {
@@ -866,13 +951,13 @@
         "notifications": {
             "prevent-for-mods": {
                 "title": "Erforderliche Mods",
-                "desc": "Stellen Sie sicher, dass Sie die notwendigen Mods installiert haben, um Modelle in BeatSaber zu verwenden",
+                "desc": "Stellen Sie sicher, dass Sie die notwendigen Mods installiert haben, um Modelle in Beat Saber zu verwenden",
                 "go-to-mods": "Gehe zu Mods",
                 "not-remind": "Erinnere mich nicht"
             },
             "prevent-for-models-breaks": {
                 "title": "Gebrochene Modelle",
-                "desc": "Seit dem Update des BeatSaber-Motors sind Modelle für diese Version nicht mehr funktional."
+                "desc": "Seit dem Update der Beat Saber Engine sind alle benutzerdefinierten Modellmods defekt und müssen aktualisiert werden. Sie wurden noch nicht aktualisiert."
             },
             "export-success": {
                 "title": "Export abgeschlossen 🎉"

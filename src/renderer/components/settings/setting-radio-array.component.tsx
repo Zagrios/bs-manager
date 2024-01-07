@@ -1,24 +1,37 @@
 import { motion } from "framer-motion";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import { BsmIcon, BsmIconType } from "../svgs/bsm-icon.component";
+import { CSSProperties } from "react"
 
-export function SettingRadioArray({ items, selectedItem = items[0].id, onItemSelected }: { items: RadioItem[]; selectedItem?: number; onItemSelected?: (id: number) => void }) {
+type Props<T> = {
+    id?: HTMLDivElement["id"];
+    items: RadioItem<T>[];
+    selectedItemId?: number;
+    selectedItemValue?: T;
+    direction?: CSSProperties["flexDirection"],
+    onItemSelected?: (item: RadioItem<T>) => void
+};
+
+export function SettingRadioArray<T>({ id, items, selectedItemId, selectedItemValue, onItemSelected, direction = "column" }: Props<T>) {
     const t = useTranslation();
 
+    const isSelected = (item: RadioItem<T>) => {
+        return item.id === selectedItemId || item.value === selectedItemValue;
+    }
+
     return (
-        <div className="w-full">
+        <div id={id} className="w-full flex gap-1.5" style={{flexDirection: direction}}>
             {items.map(i => (
-                <div onClick={() => onItemSelected(i.id)} key={i.id} className={`py-3 my-[6px] w-full flex cursor-pointer justify-between items-center rounded-md px-2 transition-colors duration-200 ${i.id === selectedItem ? "bg-light-main-color-3 dark:bg-main-color-3" : "bg-light-main-color-1 dark:bg-main-color-1"}`}>
+                <div onClick={() => onItemSelected(i)} key={i.id} className={`py-3 w-full flex cursor-pointer justify-between items-center rounded-md px-2 transition-colors duration-300 ${isSelected(i) ? "bg-light-main-color-3 dark:bg-main-color-3" : "bg-light-main-color-1 dark:bg-main-color-1"} ${i.className}`}>
                     <div className="flex items-center">
                         <div className="h-5 rounded-full aspect-square border-2 border-gray-800 dark:border-white p-[3px] mr-2">
-                            <motion.span initial={{ scale: 0 }} animate={{ scale: i.id === selectedItem ? 1 : 0 }} className="h-full w-full block bg-gray-800 dark:bg-white rounded-full" />
+                            <motion.span initial={{ scale: 0 }} animate={{ scale: isSelected(i) ? 1 : 0 }} className="h-full w-full block bg-gray-800 dark:bg-white rounded-full" />
                         </div>
                         <h2 className="font-extrabold">{t(i.text)}</h2>
                     </div>
                     {i.icon && (
                         <div className="flex items-center">
                             {i.textIcon && <span className="text-sm">{t(i.textIcon)}</span>}
-                            <BsmIcon icon={i.icon} className="max-h-5 w-fit ml-2" />
+                            {i.icon}
                         </div>
                     )}
                 </div>
@@ -27,10 +40,11 @@ export function SettingRadioArray({ items, selectedItem = items[0].id, onItemSel
     );
 }
 
-export interface RadioItem {
+export interface RadioItem<T> {
     id: number;
     text: string;
-    icon?: BsmIconType;
+    icon?: JSX.Element;
     textIcon?: string;
-    value?: any;
+    className?: string;
+    value?: T;
 }

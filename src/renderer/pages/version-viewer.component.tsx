@@ -8,7 +8,6 @@ import { BSUninstallerService } from "../services/bs-uninstaller.service";
 import { BSVersionManagerService } from "../services/bs-version-manager.service";
 import { ModalExitCode, ModalService } from "../services/modale.service";
 import DefautVersionImage from "../../../assets/images/default-version-img.jpg";
-import { BsDownloaderService } from "renderer/services/bs-downloader.service";
 import { IpcService } from "renderer/services/ipc.service";
 import { LaunchSlide } from "renderer/components/version-viewer/slides/launch/launch-slide.component";
 import { ModsSlide } from "renderer/components/version-viewer/slides/mods/mods-slide.component";
@@ -21,13 +20,14 @@ import { BSLauncherService } from "renderer/services/bs-launcher.service";
 import { CreateLaunchShortcutModal } from "renderer/components/modal/modal-types/create-launch-shortcut-modal.component";
 import { lastValueFrom } from "rxjs";
 import { NotificationService } from "renderer/services/notification.service";
+import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
 
 export function VersionViewer() {
 
     const bsUninstallerService = useService(BSUninstallerService);
     const bsVersionManagerService = useService(BSVersionManagerService);
     const modalService = useService(ModalService);
-    const bsDownloaderService = useService(BsDownloaderService);
+    const bsDownloader = useService(BsDownloaderService);
     const ipcService = useService(IpcService);
     const bsLauncher = useService(BSLauncherService);
     const notification = useService(NotificationService);
@@ -43,7 +43,7 @@ export function VersionViewer() {
         navigate(`/bs-version/${version.BSVersion}`, { state: version });
     };
     const openFolder = () => ipcService.sendLazy("bs-version.open-folder", { args: state });
-    const verifyFiles = () => bsDownloaderService.verifyBsVersionFiles(state);
+    const verifyFiles = () => bsDownloader.verifyBsVersion(state);
 
     const uninstall = async () => {
         const modalCompleted = await modalService.openModal(UninstallModal, state);
@@ -99,6 +99,20 @@ export function VersionViewer() {
         });
     }
 
+    const restoreOriginalOculusFolder = () => {
+        lastValueFrom(ipcService.sendV2("restore-original-oculus-folder")).then(() => {
+            notification.notifySuccess({
+                title: "Restauration réussie",
+                desc: "Le dossier a été restauré avec succès"
+            });
+        }).catch(() => {
+            notification.notifyError({
+                title: "Erreur lors de la restauration",
+                desc: "Le dossier n'a pas pu être restauré"
+            });
+        });
+    }
+
     return (
         <>
             <BsmImage className="absolute w-full h-full top-0 left-0 object-cover" image={state.ReleaseImg || DefautVersionImage} errorImage={DefautVersionImage} />
@@ -117,7 +131,8 @@ export function VersionViewer() {
             </div>
             <BsmDropdownButton className="absolute top-3 right-4 h-9 w-9 bg-light-main-color-2 dark:bg-main-color-2 rounded-md" items={[
                 { text: "pages.version-viewer.dropdown.open-folder", icon: "folder", onClick: openFolder },
-                !state.steam && !state.oculus && { text: "pages.version-viewer.dropdown.verify-files", icon: "task", onClick: verifyFiles },
+                state.oculus && { text: "pages.version-viewer.dropdown.restore-oculus-folder", icon: "backup-restore", onClick: restoreOriginalOculusFolder},
+                { text: "pages.version-viewer.dropdown.verify-files", icon: "task", onClick: verifyFiles },
                 !state.steam && !state.oculus && { text: "pages.version-viewer.dropdown.edit", icon: "edit", onClick: edit },
                 !state.oculus && { text: "pages.version-viewer.dropdown.clone", icon: "copy", onClick: clone },
                 { text: "pages.version-viewer.dropdown.shared-folders", icon: "link", onClick: openShareFolderModal },

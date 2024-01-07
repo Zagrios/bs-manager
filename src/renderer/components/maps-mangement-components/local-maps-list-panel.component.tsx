@@ -429,7 +429,7 @@ export const LocalMapsListPanel = forwardRef(({ version, className, filter, sear
 
     return (
         <div ref={ref} className={className}>
-            <VariableSizeList className="p-0 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900" width="100%" height={listHeight} itemSize={() => 108} itemCount={preppedMaps.length} itemData={preppedMaps} layout="vertical" style={{ scrollbarGutter: "stable both-edges" }} itemKey={(i, data) => data[i].map(map => map.hash).join()}>
+            <VariableSizeList className="scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900" width="100%" height={listHeight} itemSize={() => 108} itemCount={preppedMaps.length} itemData={preppedMaps} layout="vertical" style={{ scrollbarGutter: "stable both-edges" }} itemKey={(i, data) => data[i].map(map => map.hash).join()}>
                 {props => <MapsRow maps={props.data[props.index]} style={props.style} selectedMaps$={selectedMaps$} onMapSelect={onMapSelected} onMapDelete={handleDelete} />}
             </VariableSizeList>
         </div>

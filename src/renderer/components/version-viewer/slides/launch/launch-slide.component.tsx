@@ -10,6 +10,10 @@ import { LaunchModToogle } from "./launch-mod-toogle.component";
 import BSLogo from "../../../../../../assets/images/apngs/bs-logo.png";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { useService } from "renderer/hooks/use-service.hook";
+import { BsStore } from "shared/models/bs-store.enum";
+import { lastValueFrom } from "rxjs";
+import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
+import equal from "fast-deep-equal";
 
 type Props = { version: BSVersion };
 
@@ -18,14 +22,16 @@ export function LaunchSlide({ version }: Props) {
 
     const configService = useService(ConfigurationService);
     const bsLauncherService = useService(BSLauncherService);
+    const bsDownloader = useService(BsDownloaderService);
 
     const [oculusMode, setOculusMode] = useState(!!configService.get<boolean>(LaunchMods.OCULUS_MOD));
     const [desktopMode, setDesktopMode] = useState(!!configService.get<boolean>(LaunchMods.DESKTOP_MOD));
     const [debugMode, setDebugMode] = useState(!!configService.get<boolean>(LaunchMods.DEBUG_MOD));
     const [advancedLaunch, setAdvancedLaunch] = useState(false);
     const [additionalArgsString, setAdditionalArgsString] = useState<string>(configService.get<string>("additionnal-args") || "");
+    const versionDownloading = useObservable(() => bsDownloader.downloadingVersion$);
 
-    const versionRunning = useObservable(bsLauncherService.versionRunning$);
+    const versionRunning = useObservable(() => bsLauncherService.versionRunning$);
 
     useEffect(() => {
         configService.set("additionnal-args", additionalArgsString);
@@ -57,13 +63,15 @@ export function LaunchSlide({ version }: Props) {
                   .filter(arg => arg.length > 0)
             : undefined;
             
-        bsLauncherService.launch({
+        const launch$ = bsLauncherService.launch({
             version,
             oculus: version.oculus ? false : oculusMode,
             desktop: desktopMode,
             debug: debugMode,
             additionalArgs
-        })
+        });
+        
+        return lastValueFrom(launch$).catch(() => {});
     };
 
     return (
@@ -73,7 +81,7 @@ export function LaunchSlide({ version }: Props) {
                 <h1 className="relative text-4xl font-bold italic -top-3">{version.name ? `${version.BSVersion} - ${version.name}` : version.BSVersion}</h1>
             </div>
             <div className="grid grid-flow-col gap-6">
-                {!version.oculus && <LaunchModToogle infoText="pages.version-viewer.launch-mods.oculus-description" icon="oculus" onClick={() => setMode(LaunchMods.OCULUS_MOD, !oculusMode)} active={oculusMode} text="pages.version-viewer.launch-mods.oculus" />}
+                {!(version.oculus || version.metadata?.store === BsStore.OCULUS) && <LaunchModToogle infoText="pages.version-viewer.launch-mods.oculus-description" icon="oculus" onClick={() => setMode(LaunchMods.OCULUS_MOD, !oculusMode)} active={oculusMode} text="pages.version-viewer.launch-mods.oculus" />}
                 <LaunchModToogle infoText="pages.version-viewer.launch-mods.desktop-description" icon="desktop" onClick={() => setMode(LaunchMods.DESKTOP_MOD, !desktopMode)} active={desktopMode} text="pages.version-viewer.launch-mods.desktop" />
                 <LaunchModToogle infoText="pages.version-viewer.launch-mods.debug-description" icon="terminal" onClick={() => setMode(LaunchMods.DEBUG_MOD, !debugMode)} active={debugMode} text="pages.version-viewer.launch-mods.debug" />
             </div>
@@ -92,7 +100,13 @@ export function LaunchSlide({ version }: Props) {
                 </motion.div>
             </div>
             <div className='grow flex justify-center items-center'>
-              <BsmButton onClick={launch} active={JSON.stringify(version) === JSON.stringify(versionRunning)} className='relative -translate-y-1/2 text-5xl text-gray-800 dark:text-gray-200 font-bold tracking-wide pt-1 pb-3 px-7 rounded-lg shadow-md italic shadow-black active:scale-90 transition-transform' text="misc.launch"/>
+                <BsmButton 
+                    onClick={launch} 
+                    active={JSON.stringify(version) === JSON.stringify(versionRunning)}
+                    className='relative -translate-y-1/2 text-5xl text-gray-800 dark:text-gray-200 font-bold tracking-wide pt-1 pb-3 px-7 rounded-lg shadow-md italic shadow-black active:scale-90 transition-transform' 
+                    text="misc.launch"
+                    disabled={equal(version, versionDownloading)}
+                />
             </div>
         </div>
     );

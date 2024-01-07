@@ -3,7 +3,6 @@ import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { AudioPlayerService } from "renderer/services/audio-player.service";
 import { IpcService } from "renderer/services/ipc.service";
-import { WindowManagerService } from "renderer/services/window-manager.service";
 import { AppWindow } from "shared/models/window-manager/app-window.model";
 import { BsmButton } from "../shared/bsm-button.component";
 import { BsmRange } from "../shared/bsm-range.component";
@@ -15,10 +14,9 @@ import { lastValueFrom } from "rxjs";
 export default function TitleBar({ template = "index.html" }: { template: AppWindow }) {
     
     const ipcService = useService(IpcService);
-    const windows = useService(WindowManagerService);
     const audio = useService(AudioPlayerService);
 
-    const volume = useObservable(audio.volume$, audio.volume);
+    const volume = useObservable(() => audio.volume$, audio.volume);
     const color = useThemeColor("first-color");
 
     const [previewVersion, setPreviewVersion] = useState(null);
@@ -37,19 +35,19 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
     const [maximized, setMaximized] = useState(false);
 
     const closeWindow = () => {
-        return windows.close(template);
+        return window.electron.window.close();
     };
 
     const maximizeWindow = () => {
-        ipcService.sendLazy("window.maximize");
+        window.electron.window.maximise();
     };
 
     const minimizeWindow = () => {
-        ipcService.sendLazy("window.minimize");
+        window.electron.window.minimise();
     };
 
     const resetWindow = () => {
-        ipcService.sendLazy("window.reset");
+        window.electron.window.unmaximise();
     };
 
     const toogleMaximize = () => {
@@ -119,22 +117,21 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
             </header>
         );
     }
-    if (template === "oneclick-download-map.html" || template === "oneclick-download-playlist.html" || template === "oneclick-download-model.html" || "shortcut-launch.html") {
-        return (
-            <header id="titlebar" className="min-h-[22px] bg-transparent w-screen h-[22px] flex content-center items-center justify-start z-10">
-                <div id="drag-region" className="grow h-full">
-                    <div id="window-title" className="pl-1">
-                        <span className="text-gray-100 font-bold text-xs italic">BSManager</span>
-                    </div>
+    
+    return (
+        <header id="titlebar" className="min-h-[22px] bg-transparent w-screen h-[22px] flex content-center items-center justify-start z-10">
+            <div id="drag-region" className="grow h-full">
+                <div id="window-title" className="pl-1">
+                    <span className="text-gray-100 font-bold text-xs italic">BSManager</span>
                 </div>
-                <div id="window-controls" className="h-full flex shrink-0">
-                    <div onClick={closeWindow} className="text-gray-200 cursor-pointer w-7 h-full shrink-0 flex justify-center items-center rounded-bl-md" id="close-button" draggable="false">
-                        <svg aria-hidden="false" width="12" height="12" viewBox="0 0 12 12">
-                            <polygon fill="currentColor" fillRule="evenodd" points="11 1.576 6.583 6 11 10.424 10.424 11 6 6.583 1.576 11 1 10.424 5.417 6 1 1.576 1.576 1 6 5.417 10.424 1"/>
-                        </svg>
-                    </div>
+            </div>
+            <div id="window-controls" className="h-full flex shrink-0">
+                <div onClick={closeWindow} className="text-gray-200 cursor-pointer w-7 h-full shrink-0 flex justify-center items-center rounded-bl-md" id="close-button" draggable="false">
+                    <svg aria-hidden="false" width="12" height="12" viewBox="0 0 12 12">
+                        <polygon fill="currentColor" fillRule="evenodd" points="11 1.576 6.583 6 11 10.424 10.424 11 6 6.583 1.576 11 1 10.424 5.417 6 1 1.576 1.576 1 6 5.417 10.424 1"/>
+                    </svg>
                 </div>
-            </header>
-        );
-    }
+            </div>
+        </header>
+    );
 }

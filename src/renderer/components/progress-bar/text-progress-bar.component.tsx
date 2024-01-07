@@ -9,7 +9,7 @@ type Props = {
 };
 
 export default function TextProgressBar({ value$, className, style }: Props) {
-    const value = useObservable(value$);
+    const value = useObservable(() => value$);
 
     const prefix = typeof value === "number" ? "%" : "";
 

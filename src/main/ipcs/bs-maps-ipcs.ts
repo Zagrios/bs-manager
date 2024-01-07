@@ -6,6 +6,7 @@ import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { BsvMapDetail } from "shared/models/maps";
 import { IpcService } from "../services/ipc.service";
 import { from } from "rxjs";
+import log from "electron-log"
 
 const ipc = IpcService.getInstance();
 
@@ -71,6 +72,7 @@ ipc.on("one-click-install-map", async (request: IpcRequest<BsvMapDetail>) => {
             utils.ipcSend(request.responceChannel, { success: true });
         })
         .catch(err => {
+            log.error(err);
             utils.ipcSend(request.responceChannel, { success: false, error: err });
         });
 });

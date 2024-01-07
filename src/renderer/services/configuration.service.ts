@@ -1,5 +1,6 @@
 import { BehaviorSubject, Observable } from "rxjs";
 import { DefaultConfigKey, defaultConfiguration } from "renderer/config/default-configuration.config";
+import { tryit } from "shared/helpers/error.helpers";
 
 export class ConfigurationService {
     private static instance: ConfigurationService;
@@ -27,15 +28,26 @@ export class ConfigurationService {
     }
 
     public get<Type>(key: string | DefaultConfigKey): Type {
-        const t = JSON.parse(window.sessionStorage.getItem(key) || window.localStorage.getItem(key));
-        if (!t) {
-            return defaultConfiguration[key as DefaultConfigKey];
+        const rawValue = (window.sessionStorage.getItem(key) ?? window.localStorage.getItem(key));
+        const tryParse = tryit<Type>(() => JSON.parse(rawValue));
+        
+        const res = (tryParse.error ? rawValue : tryParse.result) as Type;
+
+        if(!res && Object.keys(defaultConfiguration).includes(key)){
+            return defaultConfiguration[key as DefaultConfigKey] as Type;
         }
-        return t;
+
+        return res;
     }
 
     public set(key: string, value: unknown, persistant = true) {
-        this.getPropperStorage(persistant).setItem(key, JSON.stringify(value));
+
+        if(value != null){
+            this.getPropperStorage(persistant).setItem(key, JSON.stringify(value));
+        } else {
+            this.getPropperStorage(persistant).removeItem(key);
+        }
+
         this.emitChange(key);
     }
 

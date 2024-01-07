@@ -8,7 +8,7 @@ import { useObservable } from "renderer/hooks/use-observable.hook";
 export function AvailableVersionsSlider() {
     const versionManagerService = useService(BSVersionManagerService);
 
-    const availableVersions = useObservable(versionManagerService.availableVersions$);
+    const availableVersions = useObservable(() => versionManagerService.availableVersions$);
     const [yearIndex, setYearIndex] = useState(0);
 
     const availableYears = (() => {

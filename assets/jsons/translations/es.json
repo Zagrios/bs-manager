@@ -25,9 +25,6 @@
         }
     },
     "pages": {
-        "shared-maps": {
-            "title": "Mapas comunes"
-        },
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Modo Oculus",
@@ -97,22 +94,30 @@
                 "edit": "Editar",
                 "uninstall": "Desinstalar",
                 "create-shortcut": "Crear un atajo",
-                "shared-folders": "Carpetas Compartidas"
+                "shared-folders": "Carpetas Compartidas",
+                "restore-oculus-folder": "Restaurar la carpeta"
             }
         },
         "available-versions": {
             "title": "Selecciona una versión",
             "steam-release": "Anuncio en Steam",
             "dropdown": {
-                "refresh": "Actualizar la lista",
+                "refresh": "Actualizar las versiones",
                 "import-version": "Importar una versión"
-            }
+            },
+            "recommended": "recomendada",
+            "recommended-tooltip": "Versión más modable"
         },
         "settings": {
-            "steam": {
-                "title": "Steam",
-                "description": "Si desconectas tu cuenta de Steam, tendrás que volver a conectarla para descargar una nueva versión de Beat Saber.",
-                "logout": "Cerrar sesión"
+            "steam-and-oculus": {
+                "title": "Steam & Oculus",
+                "description": "Desconectarte te permitirá cambiar de cuenta en la próxima descarga de Beat Saber.",
+                "logout": "Cerrar sesión",
+                "download-platform": {
+                    "title": "Plataforma predeterminada",
+                    "desc": "Elige la plataforma predeterminada que se utilizará para descargar las versiones de Beat Saber.",
+                    "always-ask": "Siempre preguntar"
+                }
             },
             "appearance": {
                 "title": "Apariencia",
@@ -147,13 +152,19 @@
                     "es-ES": "Español",
                     "de-DE": "Deutsch",
                     "ru-RU": "Русский",
+                    "zh-CN": "简体中文",
+                    "zh-TW": "正體中文",
+                    "ja-JP": "日本語",
                     "translated": {
                         "en-EN": "Inglés, Reino Unido",
                         "en-US": "Inglés, Estados Unidos",
                         "fr-FR": "Francés",
                         "es-ES": "Español",
                         "de-DE": "Alemán",
-                        "ru-RU": "Ruso"
+                        "ru-RU": "Ruso",
+                        "zh-CN": "Chino simplificado",
+                        "zh-TW": "Chino tradicional",
+                        "ja-JP": "Japonés"
                     }
                 }
             },
@@ -213,46 +224,65 @@
                     "verification-finished": "Verificación completada"
                 }
             },
-            "warnings": {
-                "msg": {
-                    "ManifestChecksum": "El manifiesto descargado anteriormente no coincide con el nuevo 🤔",
-                    "ConnectionTimeout": "Tu conexión a Internet parece inestable 🥶",
-                    "ConnectionLost": "Se ha perdido la conexión, inténtalo de nuevo...",
-                    "ConnectionError": "No se puede conectar a Steam, reintentando...",
-                    "Unknown": "Algo extraño ha ocurrido 🤔 Tu conexión es probablemente inestable."
+            "steam-download": {
+                "warnings": {
+                    "msg": {
+                        "ManifestChecksum": "El manifiesto descargado anteriormente no coincide con el nuevo 🤔",
+                        "ConnectionTimeout": "Tu conexión a Internet parece inestable 🥶",
+                        "ConnectionLost": "Se ha perdido la conexión, inténtalo de nuevo...",
+                        "ConnectionError": "No se puede conectar a Steam, reintentando...",
+                        "Unknown": "Algo extraño ha ocurrido 🤔 Tu conexión es probablemente inestable."
+                    }
+                },
+                "errors": {
+                    "titles": {
+                        "dotnet-required": ".NET 6 Requerido"
+                    },
+                    "msg": {
+                        "401": "Parece que Steam no quiere dejarnos descargar Beat Saber 😢",
+                        "404": "No se puede contactar con los servidores de Steam",
+                        "Password": "La contraseña es inválida.",
+                        "InvalidCredentials": "Credenciales de inicio de sesión inválidas, conexión no aprobada o demasiados intentos de inicio de sesión.",
+                        "NoManifest": "No se ha encontrado el manifiesto",
+                        "DirectoryCreate": "No se pueden instalar las carpetas necesarias.",
+                        "NotAvailableApp": "¿Intentas descargar Beat Saber cuando no lo tienes? 🤣",
+                        "DepotNotFound": "No se puede descargar Beat Saber 😥 inténtalo más tarde 😕",
+                        "NotCompleted": "La descarga no pudo completarse ¯\\_(ツ)_/¯",
+                        "InvalidManifest": "No se puede descargar Beat Saber 😥 inténtalo más tarde 😕",
+                        "NoValidKey": "No se puede descargar Beat Saber 😥 inténtalo más tarde 😕",
+                        "NoManifestCode": "No se puede descargar Beat Saber 😥 inténtalo más tarde 😕",
+                        "Unknown": "Se ha producido un error desconocido ¯\\_(ツ)_/¯",
+                        "NoServer": "No se puede contactar con los servidores de Steam.",
+                        "NotAllowed": "Aparentemente no tienes permiso para descargar Beat Saber 🥱",
+                        "ConnectionTimeout": "No se puede conectar a Steam 😕",
+                        "SteamLib": "Si tienes este error, reporta el bug en GitHub con los logs, por favor.",
+                        "ConnectionError": "No se puede conectar a Steam después de 10 intentos 🤯",
+                        "LicenceError": "No se puede obtener la lista de licencias.",
+                        "RateLimitExceeded": "Lo has intentado demasiadas veces, espera un poco y vuelve a intentarlo más tarde.",
+                        "TokenRejected": "Tu token de inicio de sesión ha sido rechazada 😕 Por favor, inténtalo de nuevo.",
+                        "AccessDenied": "El acceso a Steam ha sido denegado.",
+                        "dotnet-required": "Se debe instalar el tiempo de ejecución de .NET 6 para descargar una versión de Beat Saber. Descárgalo haciendo clic en el botón de abajo."
+                    },
+                    "actions": {
+                        "download-dotnet": "Descargar .NET 6"
+                    }
                 }
             },
-            "errors": {
-                "titles": {
-                    "dotnet-required": ".NET 6 Requerido"
-                },
-                "msg": {
-                    "401": "Parece que Steam no quiere dejarnos descargar Beat Saber 😢",
-                    "404": "No se puede contactar con los servidores de Steam",
-                    "Password": "La contraseña es inválida.",
-                    "InvalidCredentials": "Credenciales de inicio de sesión inválidas, conexión no aprobada o demasiados intentos de inicio de sesión.",
-                    "NoManifest": "No se ha encontrado el manifiesto",
-                    "DirectoryCreate": "No se pueden instalar las carpetas necesarias.",
-                    "NotAvailableApp": "¿Intentas descargar Beat Saber cuando no lo tienes? 🤣",
-                    "DepotNotFound": "No se puede descargar Beat Saber 😥 inténtalo más tarde 😕",
-                    "NotCompleted": "La descarga no pudo completarse ¯\\_(ツ)_/¯",
-                    "InvalidManifest": "No se puede descargar Beat Saber 😥 inténtalo más tarde 😕",
-                    "NoValidKey": "No se puede descargar Beat Saber 😥 inténtalo más tarde 😕",
-                    "NoManifestCode": "No se puede descargar Beat Saber 😥 inténtalo más tarde 😕",
-                    "Unknown": "Se ha producido un error desconocido ¯\\_(ツ)_/¯",
-                    "NoServer": "No se puede contactar con los servidores de Steam.",
-                    "NotAllowed": "Aparentemente no tienes permiso para descargar Beat Saber 🥱",
-                    "ConnectionTimeout": "No se puede conectar a Steam 😕",
-                    "SteamLib": "Si tienes este error, reporta el bug en GitHub con los logs, por favor.",
-                    "ConnectionError": "No se puede conectar a Steam después de 10 intentos 🤯",
-                    "LicenceError": "No se puede obtener la lista de licencias.",
-                    "RateLimitExceeded": "Lo has intentado demasiadas veces, espera un poco y vuelve a intentarlo más tarde.",
-                    "TokenRejected": "Tu token de inicio de sesión ha sido rechazada 😕 Por favor, inténtalo de nuevo.",
-                    "AccessDenied": "El acceso a Steam ha sido denegado.",
-                    "dotnet-required": "Se debe instalar el tiempo de ejecución de .NET 6 para descargar una versión de Beat Saber. Descárgalo haciendo clic en el botón de abajo."
-                },
-                "actions": {
-                    "download-dotnet": "Descargar .NET 6"
+            "oculus-download": {
+                "errors": {
+                    "msg": {
+                        "DOWNLOAD_MANIFEST_FAILED": "No se puede descargar el manifiesto de esta versión; su token de inicio de sesión podría ser inválido.",
+                        "MANIFEST_FILE_NOT_FOUND": "Imposible encontrar el manifiesto de esta versión.",
+                        "PARSE_MANIFEST_FILE_FAILED": "Se produjo un error al leer el manifiesto.",
+                        "ALREADY_DOWNLOADING": "Ya se está descargando una versión.",
+                        "UNABLE_TO_GET_MANIFEST": "Imposible obtener el manifiesto necesario para la descarga.",
+                        "VERIFY_INTEGRITY_FAILED": "Se produjo un error durante la verificación de archivos.",
+                        "SOME_FILES_FAILED_TO_DOWNLOAD": "Algunos archivos no pudieron ser descargados.",
+                        "OCULUS_LOGIN_TIMED_OUT": "El token de inicio de sesión tardó demasiado en recuperarse.",
+                        "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER": "La ventana de inicio de sesión de Meta fue cerrada.",
+                        "NO_META_AUTH_TOKEN": "Imposible recuperar el token de inicio de sesión de Meta necesario para la descarga.",
+                        "UNKNOWN_ERROR": "Se produjo un error desconocido."
+                    }
                 }
             }
         },
@@ -350,7 +380,8 @@
                     "OCULUS_NOT_RUNNING": "Oculus no funciona",
                     "BS_ALREADY_RUNNING": "Beat Saber ya está en marcha",
                     "EXE_NOT_FINDED": "Archivos no encontrados",
-                    "EXIT": "Parada abrupta"
+                    "EXIT": "Parada abrupta",
+                    "OCULUS_LIB_NOT_FOUND": "Librería Oculus no encontrada"
                 },
                 "msg": {
                     "UNKNOWN_ERROR": "Se ha producido un error desconocido.",
@@ -358,7 +389,8 @@
                     "OCULUS_NOT_RUNNING": "Oculus debe estar funcionando para iniciar Beat Saber.",
                     "BS_ALREADY_RUNNING": "Cierra Beat Saber antes de volver a iniciarlo.",
                     "EXE_NOT_FINDED": "Parece que faltan algunos archivos, intenta verificar los archivos.",
-                    "EXIT": "Beat Saber se detuvo abruptamente, trata de verificar los archivos."
+                    "EXIT": "Beat Saber se detuvo abruptamente, trata de verificar los archivos.",
+                    "OCULUS_LIB_NOT_FOUND": "Verifica que la aplicación Oculus esté correctamente instalada y que las librerías estén bien definidas en Oculus."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Iniciar Steam"
@@ -466,6 +498,11 @@
         "misc": {
             "remember-my-choice": "Recordar mi elección"
         },
+        "choose-store": {
+            "title": "¿Qué plataforma?",
+            "body": "Selecciona la plataforma desde la que deseas descargar Beat Saber.",
+            "set-in-settings": "Establecer la plataforma predeterminada en los ajustes"
+        },
         "guard": {
             "title": "Steam Guard",
             "inputs": {
@@ -490,10 +527,10 @@
                     "placeholder": "Introduce tu contraseña",
                     "max-length-warning": "¡La contraseña supera los 64 caracteres! Si la contraseña es inválida, intenta ingresar solo sus primeros 64 caracteres."
                 },
-                "qr":{
+                "qr": {
                     "label": "O con un código QR",
-                    "note":{
-                        "use-the":"Usa la ",
+                    "note": {
+                        "use-the": "Usa la ",
                         "steam-mobile-app": "aplicación Steam Mobile",
                         "to-connect-with-qr": "para conectarte con un código QR."
                     }
@@ -506,7 +543,7 @@
                 "submit": "Iniciar sesión"
             }
         },
-        "steam-auth-approve":{
+        "steam-auth-approve": {
             "title": "Esperando confirmación",
             "protected-by-mobile-auth": "Cuenta protegida por el autenticador móvil.",
             "use-steam-app-to-approve": "Use la aplicación móvil de Steam para confirmar la conexión...",
@@ -520,6 +557,8 @@
         "bs-import-version": {
             "title": "Importar una versión",
             "description": "Importa una versión de Beat Saber para usar con BSManager. La importación copiará la carpeta de instalación seleccionada de Beat Saber en la carpeta de versiones de BSManager.",
+            "oculus-version": "Versión de Oculus",
+            "oculus-version-tooltip": "Marcar si es una versión de Oculus",
             "buttons": {
                 "submit": "Importar una versión"
             }
@@ -640,11 +679,52 @@
             "launch-options": "Opciones de lanzamiento",
             "advanced-launch": "Lanzamiento avanzado",
             "valid-btn": "Crear el atajo"
+        },
+        "connect-to-meta": {
+            "title": "Conexión a Meta",
+            "body": {
+                "token-needed": "Tu token de conexión a Meta es necesario para descargar Beat Saber.",
+                "need-cookie-enabled": "Al conectarte a Meta, se abrirá una ventana de inicio de sesión y entonces podrás empezar el proceso de conexión. Asegúrate de aceptar las cookies, de lo contrario, podríamos no poder recuperar tu token para iniciar la descarga.",
+                "enter-token-manually": "Ingresar mi token de inicio de sesión manualmente",
+                "enter-token-manually-tooltip": "Esto te permitirá ingresar tu token de inicio de sesión sin pasar por el inicio de sesión de Meta."
+            },
+            "stay": "Recuérdame",
+            "connect-to-meta": "Conectarse a Meta"
+        },
+        "original-version-backup-oculus": {
+            "title": "Atención",
+            "body": {
+                "must-be-installed-once": "Debes haber instalado Beat Saber al menos una vez desde la Oculus Store, de lo contrario, Beat Saber podría cerrarse automáticamente después de iniciar.",
+                "need-backup": "Para iniciar esta versión, la carpeta de instalación de Beat Saber que se encuentra en tu biblioteca de Oculus será renombrada.",
+                "can-restore-later": "Si es necesario, podrás restaurarla desde el BSManager accediendo a las opciones de la versión original de Oculus y haciendo clic en 'Restaurar la carpeta'",
+                "tips-launch-oculus": "Consejo: Podrás iniciar esta versión directamente desde Oculus, siempre que la versión original no haya sido restaurada."
+            },
+            "not-remind-me": "No volver a recordármelo",
+            "understood": "Entendido"
+        },
+        "enter-meta-token": {
+            "title": "Token de Oculus",
+            "body": {
+                "info-enter-token": "Para descargar Beat Saber, se requiere tu token de inicio de sesión de Oculus.",
+                "how-obtain-token": "¿Cómo obtengo mi Token de Oculus?",
+                "oculus-token": "Token de Oculus",
+                "token-is-invalid": "El token es inválido.",
+                "save-my-token": "Guardar mi token",
+                "have-token-saved": "Ya tengo un token guardado",
+                "save-token-info": "Esto guardará tu token para reutilizarlo más fácilmente. Necesitarás crear una contraseña para encriptar tu token para su almacenamiento. Si alguna vez olvidas tu contraseña, solo necesitas proporcionar tu token nuevamente.",
+                "password": "Contraseña",
+                "password-too-short": "Contraseña demasiado corta",
+                "info-enter-password": "Para descargar Beat Saber, se requiere tu token de inicio de sesión de Oculus. Introduce la contraseña utilizada para guardar tu token de Oculus.",
+                "info-disabled-btn-password": "El token descifrado con la contraseña proporcionada es inválido. Asegúrate de que la contraseña sea la misma que la utilizada para guardar el token.",
+                "enter-oculus-token": "Introducir un token de Oculus"
+            },
+            "valid-btn": "Validar"
         }
     },
     "maps": {
         "map-filter-panel": {
             "duration": "Duración",
+            "nps" : "Notas Por Segundo",
             "tags": "tags",
             "specificities": "general",
             "requirements": "requisitos"
@@ -712,7 +792,13 @@
         },
         "map-item": {
             "by": "Por {songAutor}",
-            "mapped-by": "mapeado por"
+            "mapped-by": "mapeado por",
+            "delete": "Borrar",
+            "preview" : "Vista previa del mapa",
+            "bsr-code" : "Código BSR",
+            "download" : "Descargar mapa",
+            "downloading" :"Descargando mapa",
+            "cancel-download" : "Cancelar descarga"
         }
     },
     "models": {
@@ -871,7 +957,7 @@
             },
             "prevent-for-models-breaks": {
                 "title": "Modelos rotos",
-                "desc": "Desde la actualización del motor de Beat Saber, los modelos ya no son funcionales para esta versión."
+                "desc": "Desde la actualización del motor de Beat Saber, todos los mods de modelos personalizados se han roto y necesitan ser actualizados. Todavía no han sido actualizados."
             },
             "export-success": {
                 "title": "Exportación completada 🎉"

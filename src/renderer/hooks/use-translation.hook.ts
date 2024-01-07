@@ -6,7 +6,7 @@ export function useTranslation(): (translationKey: string, args?: Record<string,
     
     const i18nService = useService(I18nService);
 
-    useObservable(i18nService.currentLanguage$);
+    useObservable(() => i18nService.currentLanguage$);
 
     return (key: string, args?: Record<string, string>) => {
         if (!key) {

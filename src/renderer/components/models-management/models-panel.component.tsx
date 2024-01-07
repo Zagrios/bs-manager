@@ -1,6 +1,5 @@
 import { BSVersion } from "shared/bs-version.interface";
 import { useRef, useState } from "react";
-import { ModelsTabsNavbar } from "./models-tabs-navbar.component";
 import { ModelsGrid } from "./models-grid.component";
 import { MSModelType } from "shared/models/models/model-saber.model";
 import { BsmDropdownButton, DropDownItem } from "../shared/bsm-dropdown-button.component";
@@ -14,6 +13,16 @@ import { NotificationService } from "renderer/services/notification.service";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { lt } from "semver";
+import { lastValueFrom, of, take } from "rxjs";
+import { FolderLinkState } from "renderer/services/version-folder-linker.service";
+import { BsContentTabItemProps } from "../shared/bs-content-tab-panel/bs-content-tab-item.component";
+import { BsContentTabPanel } from "../shared/bs-content-tab-panel/bs-content-tab-panel.component";
+import { ModelTypeAvatarIcon } from "../svgs/icons/model-type-avatar-icon.component";
+import { SvgIcon } from "../svgs/svg-icon.type";
+import { ModelTypeSaberIcon } from "../svgs/icons/model-type-saber-icon.component";
+import { ModelTypePlatformIcon } from "../svgs/icons/model-type-platform-icon.component";
+import { ModelTypeBloqIcon } from "../svgs/icons/model-type-bloq-icon.component";
+import { useObservable } from "renderer/hooks/use-observable.hook";
 
 export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersion; isActive: boolean; goToMods?: () => void }) {
     const modelsManager = useService(ModelsManagerService);
@@ -29,8 +38,14 @@ export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersi
 
     const [modelTypeTab, setModelTypeTab] = useState<MSModelType>(MSModelType.Avatar);
     const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
-
     const [search, setSearch] = useState<string>("");
+
+    const modelsLinkStats = {
+        [MSModelType.Avatar]: useObservable(() => version ? modelsManager.$modelsLinkingState(version, MSModelType.Avatar) : of(null), FolderLinkState.Unlinked, [version]),
+        [MSModelType.Saber]: useObservable(() => version ? modelsManager.$modelsLinkingState(version, MSModelType.Saber) : of(null), FolderLinkState.Unlinked, [version]),
+        [MSModelType.Platfrom]: useObservable(() => version ? modelsManager.$modelsLinkingState(version, MSModelType.Platfrom) : of(null), FolderLinkState.Unlinked, [version]),
+        [MSModelType.Bloq]: useObservable(() => version ? modelsManager.$modelsLinkingState(version, MSModelType.Bloq) : of(null), FolderLinkState.Unlinked, [version]),
+    }
 
     useOnUpdate(() => {
         if (!isActive || !goToMods) {
@@ -66,7 +81,7 @@ export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersi
         if (config.get("not-remind-models-breaks")) {
             return;
         }
-        notification.notifyWarning({ title: "models.notifications.prevent-for-models-breaks.title", desc: "models.notifications.prevent-for-models-breaks.desc", actions: [{ id: "0", title: "models.notifications.prevent-for-mods.not-remind", cancel: true }], duration: 12_000 }).then(res => {
+        notification.notifyInfo({ title: "models.notifications.prevent-for-models-breaks.title", desc: "models.notifications.prevent-for-models-breaks.desc", actions: [{ id: "0", title: "models.notifications.prevent-for-mods.not-remind", cancel: true }], duration: 12_000 }).then(res => {
             if (res === "0") {
                 config.set("not-remind-models-breaks", true);
             }
@@ -93,6 +108,44 @@ export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersi
         { text: "models.panel.actions.drop-down.delete", onClick: deleteModels, icon: "trash" },
     ];
 
+    const getModelTabProps = (model: MSModelType): BsContentTabItemProps => {
+
+        const onClick = async () => {
+            const state = await lastValueFrom(modelsManager.$modelsLinkingState(version, model).pipe(take(1)));
+            if (state === FolderLinkState.Pending || state === FolderLinkState.Processing) { return; }
+            if (state === FolderLinkState.Linked) {
+                modelsManager.unlinkModels(model, version);
+            } else {
+                modelsManager.linkModels(model, version);
+            }
+        }
+
+        const getModelIcon = (model: MSModelType): SvgIcon => {
+            switch (model) {
+                case MSModelType.Avatar:
+                    return ModelTypeAvatarIcon;
+                case MSModelType.Saber:
+                    return ModelTypeSaberIcon;
+                case MSModelType.Platfrom:
+                    return ModelTypePlatformIcon;
+                case MSModelType.Bloq:
+                    return ModelTypeBloqIcon;
+                default:
+                    return ModelTypeAvatarIcon;
+            }
+        }
+
+        return {
+            text: `models.types.plural.${model}`,
+            icon: getModelIcon(model),
+            onClick: () => setModelTypeTab(model),
+            linkProps: version ? {
+                onClick,
+                state: modelsLinkStats[model],
+            } : null
+        }
+    };
+
     return (
         <div ref={ref} className="w-full h-full flex flex-col items-center justify-center gap-4">
             <div className="w-full shrink-0 flex h-9 justify-center px-40 gap-2 text-main-color-1 dark:text-white">
@@ -112,24 +165,23 @@ export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersi
                 </div>
                 <BsmDropdownButton items={threeDotsItems} className="h-full flex aspect-square relative rounded-full z-[1] bg-light-main-color-1 dark:bg-main-color-3" buttonClassName="rounded-full h-full w-full p-[6px]" icon="three-dots" withBar={false} menuTranslationY="6px" align="center" />
             </div>
-            <div className="w-full h-full flex flex-row bg-light-main-color-3 dark:bg-main-color-2 rounded-md shadow-black shadow-md overflow-hidden">
-                <ModelsTabsNavbar
-                    className="flex-shrink-0"
-                    version={version}
-                    tabIndex={currentTabIndex}
-                    onTabChange={(index, tab) => {
-                        setModelTypeTab(() => tab.extra);
-                        setCurrentTabIndex(() => index);
-                    }}
-                />
-
-                <div className="flex-grow h-full flex flex-col transition-all duration-300" style={{ translate: `0 ${0 - currentTabIndex * 100}%` }}>
+            <BsContentTabPanel
+                tabIndex={currentTabIndex}
+                onTabChange={(index) => setCurrentTabIndex(index)}
+                tabs={[
+                    getModelTabProps(MSModelType.Avatar),
+                    getModelTabProps(MSModelType.Saber),
+                    getModelTabProps(MSModelType.Platfrom),
+                    getModelTabProps(MSModelType.Bloq),
+                ]}
+            >
+                <>
                     <ModelsGrid ref={modelsGridRefs[0]} version={version} type={MSModelType.Avatar} active={isActive && modelTypeTab === MSModelType.Avatar} search={search} downloadModels={openDownloadModal} />
                     <ModelsGrid ref={modelsGridRefs[1]} version={version} type={MSModelType.Saber} active={isActive && modelTypeTab === MSModelType.Saber} search={search} downloadModels={openDownloadModal} />
                     <ModelsGrid ref={modelsGridRefs[2]} version={version} type={MSModelType.Platfrom} active={isActive && modelTypeTab === MSModelType.Platfrom} search={search} downloadModels={openDownloadModal} />
                     <ModelsGrid ref={modelsGridRefs[3]} version={version} type={MSModelType.Bloq} active={isActive && modelTypeTab === MSModelType.Bloq} search={search} downloadModels={openDownloadModal} />
-                </div>
-            </div>
+                </>
+            </BsContentTabPanel>
         </div>
     );
 }

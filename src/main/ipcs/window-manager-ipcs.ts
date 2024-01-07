@@ -1,11 +1,28 @@
 import { WindowManagerService } from "../services/window-manager.service";
 import { AppWindow } from "shared/models/window-manager/app-window.model";
-import { BSLauncherService } from "../services/bs-launcher.service";
 import { IpcService } from "../services/ipc.service";
-import { from, of } from "rxjs";
+import { from } from "rxjs";
+import { BrowserWindow, ipcMain } from "electron";
 
-const launcher = BSLauncherService.getInstance();
 const ipc = IpcService.getInstance();
+
+// Native windows control, do not pass through IPC service
+ipcMain.on("close-window", async (event) => {
+    BrowserWindow.fromWebContents(event.sender)?.close();
+});
+
+ipcMain.on("maximise-window", async (event) => {
+    BrowserWindow.fromWebContents(event.sender)?.maximize();
+});
+
+ipcMain.on("minimise-window", async (event) => {
+    BrowserWindow.fromWebContents(event.sender)?.minimize();
+});
+
+ipcMain.on("unmaximise-window", async (event) => {
+    BrowserWindow.fromWebContents(event.sender)?.unmaximize();
+});
+
 
 ipc.on<AppWindow>("open-window-then-close-all", (req, reply) => {
     const windowManager = WindowManagerService.getInstance();
@@ -15,18 +32,6 @@ ipc.on<AppWindow>("open-window-then-close-all", (req, reply) => {
     });
 
     reply(from(res));
-});
-
-ipc.on<AppWindow>("close-all-windows", async (req, reply) => {
-    await launcher.restoreSteamVR();
-    const windowManager = WindowManagerService.getInstance();
-    reply(of(windowManager.closeAllWindows(req.args)));
-});
-
-ipc.on<AppWindow[]>("close-windows", async (req, reply) => {
-    await launcher.restoreSteamVR();
-    const windowManager = WindowManagerService.getInstance();
-    reply(of(windowManager.close(...req.args)));
 });
 
 ipc.on<AppWindow>("open-window-or-focus", (req, reply) => {
