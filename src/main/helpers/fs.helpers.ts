@@ -5,6 +5,8 @@ import { Observable, concatMap, from } from "rxjs";
 import log from "electron-log";
 import { BsmException } from "shared/models/bsm-exception.model";
 import crypto from "crypto";
+import { execSync } from "child_process";
+import { tryit } from "../../shared/helpers/error.helpers";
 
 export async function pathExist(path: string): Promise<boolean> {
     try {
@@ -230,6 +232,16 @@ export async function ensurePathNotAlreadyExist(path: string): Promise<string> {
 export async function isJunction(path: string): Promise<boolean>{
     const [stats, lstats] = await Promise.all([stat(path), lstat(path)]);
     return lstats.isSymbolicLink() && stats.isDirectory();
+}
+
+export function resolveGUIDPath(guidPath: string): string {
+    const guidVolume = path.parse(guidPath).root;
+    const command = `powershell -command "(Get-WmiObject -Class Win32_Volume | Where-Object { $_.DeviceID -like '${guidVolume}' }).DriveLetter"`;
+    const {result: driveLetter, error} = tryit(() => execSync(command).toString().trim());
+    if (!driveLetter || error) {
+        throw new Error("Unable to resolve GUID path", error);
+    }
+    return path.join(driveLetter, path.relative(guidVolume, guidPath));
 }
 
 export interface Progression<T = unknown> {
