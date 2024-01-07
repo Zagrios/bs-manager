@@ -35,8 +35,8 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
     const [modsInstalled, setModsInstalled] = useState(null as Map<string, Mod[]>);
     const [modsSelected, setModsSelected] = useState([] as Mod[]);
     const [moreInfoMod, setMoreInfoMod] = useState(null as Mod);
-    const isOnline = useObservable(os.isOnline$);
-    const installing = useObservable(modsManager.isInstalling$);
+    const isOnline = useObservable(() => os.isOnline$);
+    const installing = useObservable(() => modsManager.isInstalling$);
 
     const downloadRef = useRef(null);
     const [downloadWith, setDownloadWidth] = useState(0);

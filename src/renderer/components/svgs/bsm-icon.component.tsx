@@ -56,20 +56,16 @@ import { RussianIcon } from "./flags/russian-icon.component";
 import { ChineseIcon } from "./flags/chinese-icon.component";
 import { ChineseTraditionalIcon } from "./flags/chineseTraditional-icon.component";
 import { JapanIcon } from "./flags/japan-icon.component";
-import { MSModelType } from "shared/models/models/model-saber.model";
-import { ModelTypeAvatarIcon } from "./icons/model-type-avatar-icon.component";
-import { ModelTypeSaberIcon } from "./icons/model-type-saber-icon.component";
-import { ModelTypePlatformIcon } from "./icons/model-type-platform-icon.component";
-import { ModelTypeBloqIcon } from "./icons/model-type-bloq-icon.component";
 import { ChevronTopIcon } from "./icons/chevron-top-icon.component";
 import { EyeCrossIcon } from "./icons/eye-cross-icon.component";
 import { ShortcutIcon } from "./icons/shortcut-icon.component";
 import { BackupRestoreIcon } from "./icons/backup-restore-icon.component";
 
-export type BsmIconType = BsvMapCharacteristic | MSModelType | ("settings" | "trash" | "favorite" | "folder" | "bsNote" | "check" | "three-dots" | "twitch" | "eye" | "play" | "checkCircleIcon" | "discord" | "info" | "eye-cross" | "terminal" | "desktop" | "oculus" | "add" | "cross" | "task" | "github" | "close" | "thumbUpFill" | "timerFill" | "pause" | "twitter" | "sync" | "chevron-top" | "copy" | "steam" | "edit" | "export" | "patreon" | "search" | "bsMapDifficulty" | "link" | "unlink" | "download" | "filter" | "mee6" | "volume-up" | "volume-off" | "volume-down" | "shortcut" | "backup-restore" | "fr-FR-flag" | "es-ES-flag" | "en-US-flag" | "en-EN-flag" | "de-DE-flag" | "ru-RU-flag" | "zh-CN-flag" | "zh-TW-flag" | "ja-JP-flag");
+export type BsmIconType = BsvMapCharacteristic | ("settings" | "trash" | "favorite" | "folder" | "bsNote" | "check" | "three-dots" | "twitch" | "eye" | "play" | "checkCircleIcon" | "discord" | "info" | "eye-cross" | "terminal" | "desktop" | "oculus" | "add" | "cross" | "task" | "github" | "close" | "thumbUpFill" | "timerFill" | "pause" | "twitter" | "sync" | "chevron-top" | "copy" | "steam" | "edit" | "export" | "patreon" | "search" | "bsMapDifficulty" | "link" | "unlink" | "download" | "filter" | "mee6" | "volume-up" | "volume-off" | "volume-down" | "shortcut" | "backup-restore" | "fr-FR-flag" | "es-ES-flag" | "en-US-flag" | "en-EN-flag" | "de-DE-flag" | "ru-RU-flag" | "zh-CN-flag" | "zh-TW-flag" | "ja-JP-flag");
 
 export const BsmIcon = memo(({ className, icon, style }: { className?: string; icon: BsmIconType; style?: CSSProperties }) => {
     // TODO : Very ugly very messy, need to find a better way to do this
+    // the rework have started, see `svg-icon.type.ts`
 
     const renderIcon = () => {
         if (icon === "settings") {
@@ -253,19 +249,6 @@ export const BsmIcon = memo(({ className, icon, style }: { className?: string; i
 
         if (icon === "backup-restore") {
             return <BackupRestoreIcon className={className} style={style} />;
-        }
-
-        if (icon === MSModelType.Avatar) {
-            return <ModelTypeAvatarIcon className={className} style={style} />;
-        }
-        if (icon === MSModelType.Saber) {
-            return <ModelTypeSaberIcon className={className} style={style} />;
-        }
-        if (icon === MSModelType.Platfrom) {
-            return <ModelTypePlatformIcon className={className} style={style} />;
-        }
-        if (icon === MSModelType.Bloq) {
-            return <ModelTypeBloqIcon className={className} style={style} />;
         }
         return <TrashIcon className={className} style={style} />;
     };

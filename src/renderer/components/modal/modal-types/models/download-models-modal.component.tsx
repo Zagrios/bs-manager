@@ -44,10 +44,10 @@ export const DownloadModelsModal: ModalComponent<void, { version: BSVersion; typ
         }))
     );
 
-    const currentDownload = useObservable(modelsDownloader.currentDownload$(), null);
-    const downloadQueue = useObservable(modelsDownloader.getQueue$(), []);
+    const currentDownload = useObservable(() => modelsDownloader.currentDownload$(), null);
+    const downloadQueue = useObservable(() => modelsDownloader.getQueue$(), []);
     const [msModels, msModels$] = useBehaviorSubject<MSModel[]>([]);
-    const isOnline = useObservable(os.isOnline$, true);
+    const isOnline = useObservable(() => os.isOnline$, true);
     const [error, error$] = useBehaviorSubject(false);
     const [isLoading, isLoading$] = useBehaviorSubject(false);
     const [ownedModels, setOwnedModels] = useState<BsmLocalModel[]>(owned ?? []);

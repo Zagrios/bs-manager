@@ -17,7 +17,7 @@ export function ModItem({ className, mod, installedVersion, isDependency, isSele
     const pageState = useService(PageStateService);
 
     const themeColor = useThemeColor("second-color");
-    const uninstalling = useObservable(modsManager.isUninstalling$);
+    const uninstalling = useObservable(() => modsManager.isUninstalling$);
     const clickRef = useRef();
 
     useDoubleClick({

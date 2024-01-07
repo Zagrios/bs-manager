@@ -19,8 +19,8 @@ export function NavBar() {
     const versionManager = useService(BSVersionManagerService);
     const versionDownloader = useService(BsDownloaderService);
 
-    const downloadingVersion = useObservable(versionDownloader.downloadingVersion$.pipe(distinctUntilChanged(equal)));
-    const installedVersions = useObservable(versionManager.installedVersions$);
+    const downloadingVersion = useObservable(() => versionDownloader.downloadingVersion$.pipe(distinctUntilChanged(equal)));
+    const installedVersions = useObservable(() => versionManager.installedVersions$);
 
     const color = useThemeColor("first-color");
     const t = useTranslation();

@@ -8,7 +8,7 @@ import { LinkOpenerService } from "renderer/services/link-opener.service";
 export function BsmIframeView() {
     const linkService = useService(LinkOpenerService);
 
-    const iframeUrl = useObservable(linkService.iframeLink$);
+    const iframeUrl = useObservable(() => linkService.iframeLink$);
     const ref = useRef(null);
     useClickOutside(ref, () => linkService.closeIframe());
 
