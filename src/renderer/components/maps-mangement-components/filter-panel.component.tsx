@@ -167,9 +167,7 @@ export function FilterPanel({ className, ref, playlist = false, filter, onChange
 
     return !playlist ? (
         <motion.div ref={ref} className={`${className} bg-light-main-color-2 dark:bg-main-color-3`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-
-            <div className="w-full h-8 grid grid-cols-2 gap-x-12 px-4 mb-6 pt-1">
-
+            <div className="w-full h-6 grid grid-cols-2 gap-x-12 px-4 mb-6 pt-1">
               <BsmRange min={MIN_NPS} max={MAX_NPS} values={npss} onChange={onNpssChange} renderLabel={renderNpsLabel} step={0.1} />
               <BsmRange min={MIN_DURATION} max={MAX_DURATION} values={durations} onChange={onDurationsChange} renderLabel={renderDurationLabel} step={5} />
               <span className=" text-sm font-bold text-center mt-[10px]">{t("maps.map-filter-panel.nps")}</span>
@@ -184,7 +182,6 @@ export function FilterPanel({ className, ref, playlist = false, filter, onChange
                             <span className="grow capitalize">{translateMapSpecificity(specificity)}</span>
                         </div>
                     ))}
-
                     <h2 className="my-1 uppercase text-sm">{t("maps.map-filter-panel.requirements")}</h2>
                     {MAP_REQUIREMENTS.map(requirement => (
                         <div key={requirement} className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={() => handleCheckbox(requirement)}>
