@@ -1,12 +1,12 @@
 import { CSSProperties } from "react";
 
-type Props = {
+type Props = Readonly<{
     mode: "horizontal" | "vertical";
     color: string;
     className?: string;
     nbSteps: number;
     step: number;
-}
+}>
 
 export function LaserSlider({mode, color, className, nbSteps, step}: Props) {
 

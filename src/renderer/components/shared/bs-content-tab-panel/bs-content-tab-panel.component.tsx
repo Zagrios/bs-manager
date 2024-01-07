@@ -2,13 +2,13 @@ import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { LaserSlider } from "../laser-slider.component";
 import { BsContentTabItem, BsContentTabItemProps } from "./bs-content-tab-item.component";
 
-type Props<T = unknown> = {
+type Props<T = unknown> = Readonly<{
     className?: string;
     tabs: BsContentTabItemProps<T>[];
     tabIndex: number;
     onTabChange: (index: number, tab: BsContentTabItemProps<T>) => void;
     children: JSX.Element;
-}
+}>;
 
 export function BsContentTabPanel({className, tabIndex, tabs, onTabChange, children}: Props) {
 
