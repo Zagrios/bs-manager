@@ -1,10 +1,10 @@
 import { LinkBtnProps, LinkButton } from "renderer/components/maps-mangement-components/link-button.component";
-import { BsmIcon, BsmIconType } from "renderer/components/svgs/bsm-icon.component";
+import { SvgIcon } from "renderer/components/svgs/svg-icon.type";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 
 export type BsContentTabItemProps<T = unknown> = {
     text: string;
-    icon: BsmIconType;
+    icon: SvgIcon;
     active?: boolean;
     value?: T;
     linkProps?: LinkBtnProps;
@@ -13,7 +13,7 @@ export type BsContentTabItemProps<T = unknown> = {
 
 type BsContentTabItemComponent<T = unknown> = ({text, icon, active, value, linkProps, onClick}: BsContentTabItemProps<T>) => JSX.Element;
 
-export const BsContentTabItem: BsContentTabItemComponent = ({ text, icon, active, value, linkProps, onClick }) => {
+export const BsContentTabItem: BsContentTabItemComponent = ({ text, icon: Icon, active, value, linkProps, onClick }) => {
 
     const t = useTranslation();
 
@@ -26,7 +26,7 @@ export const BsContentTabItem: BsContentTabItemComponent = ({ text, icon, active
     return (
         <li className={`relative w-full cursor-pointer flex-1 text-center text-lg font-bold flex justify-center items-center content-center px-7 bg-light-main-color-2 dark:bg-main-color-2 hover:bg-light-main-color-1 dark:hover:bg-main-color-1 ${active && "!bg-light-main-color-1 dark:!bg-main-color-1"}`} onClick={handleClick}>
             <div className="flex flex-col gap-0.5 justify-start items-center text-main-color-1 dark:text-gray-200">
-                <BsmIcon icon={icon} className="w-7 h-7" />
+                <Icon className="w-7 h-7"/>
                 <span className=" font-thin italic text-xs">{t(text)}</span>
             </div>
             {linkProps && (

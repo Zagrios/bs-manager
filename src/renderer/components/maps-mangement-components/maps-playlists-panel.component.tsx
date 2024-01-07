@@ -13,6 +13,8 @@ import { VersionFolderLinkerService, VersionLinkerActionListener } from "rendere
 import { useService } from "renderer/hooks/use-service.hook";
 import { BsContentTabPanel } from "../shared/bs-content-tab-panel/bs-content-tab-panel.component";
 import { BsmButton } from "../shared/bsm-button.component";
+import { MapIcon } from "../svgs/icons/map-icon.component";
+import { PlaylistIcon } from "../svgs/icons/playlist-icon.component";
 
 type Props = {
     version?: BSVersion;
@@ -114,7 +116,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                 tabs={[
                     {
                         text: "misc.maps",
-                        icon: "trash",
+                        icon: MapIcon,
                         onClick: () => setTabIndex(0),
                         linkProps: version ? {
                             state$: mapsService.$mapsFolderLinkState(version),
@@ -123,7 +125,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                     },
                     {
                         text: "misc.playlists",
-                        icon: "trash",
+                        icon: PlaylistIcon,
                         onClick: () => setTabIndex(1),
                     },
                 ]}

@@ -18,6 +18,11 @@ import { FolderLinkState } from "renderer/services/version-folder-linker.service
 import { BsContentTabItemProps } from "../shared/bs-content-tab-panel/bs-content-tab-item.component";
 import { BsContentTabPanel } from "../shared/bs-content-tab-panel/bs-content-tab-panel.component";
 import { LinkBtnProps } from "../maps-mangement-components/link-button.component";
+import { ModelTypeAvatarIcon } from "../svgs/icons/model-type-avatar-icon.component";
+import { SvgIcon } from "../svgs/svg-icon.type";
+import { ModelTypeSaberIcon } from "../svgs/icons/model-type-saber-icon.component";
+import { ModelTypePlatformIcon } from "../svgs/icons/model-type-platform-icon.component";
+import { ModelTypeBloqIcon } from "../svgs/icons/model-type-bloq-icon.component";
 
 export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersion; isActive: boolean; goToMods?: () => void }) {
     const modelsManager = useService(ModelsManagerService);
@@ -114,9 +119,24 @@ export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersi
             onClick,
         } : undefined;
 
+        const getModelIcon = (model: MSModelType): SvgIcon => {
+            switch (model) {
+                case MSModelType.Avatar:
+                    return ModelTypeAvatarIcon;
+                case MSModelType.Saber:
+                    return ModelTypeSaberIcon;
+                case MSModelType.Platfrom:
+                    return ModelTypePlatformIcon;
+                case MSModelType.Bloq:
+                    return ModelTypeBloqIcon;
+                default:
+                    return ModelTypeAvatarIcon;
+            }
+        }
+
         return {
             text: `models.types.plural.${model}`,
-            icon: model,
+            icon: getModelIcon(model),
             onClick: () => setModelTypeTab(model),
             linkProps
         }
