@@ -25,9 +25,6 @@
         }
     },
     "pages": {
-        "shared-maps": {
-            "title": "共享譜面 "
-        },
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Oculus 模式",
@@ -42,7 +39,6 @@
                 }
             },
             "maps": {
-                "title": "Shared maps",
                 "search-bar": {
                     "search-placeholder": "譜面搜尋",
                     "filters-btn": "篩選",
@@ -653,7 +649,6 @@
                 "valid-btn": "取消關聯譜面"
             }
         },
-
         "download-maps": {
             "search-btn": "搜尋",
             "loading-maps": "譜面載入中...",
@@ -729,6 +724,7 @@
     "maps": {
         "map-filter-panel": {
             "duration": "時長",
+            "nps" : "每秒音符數",
             "tags": "標籤",
             "specificities": "general",
             "requirements": "要求"
@@ -796,7 +792,13 @@
         },
         "map-item": {
             "by": "By {songAutor}",
-            "mapped-by": "mapped by"
+            "mapped-by": "mapped by",
+            "delete": "刪除",
+            "preview" : "預覽地圖",
+            "bsr-code" : "BSR代碼",
+            "download" : "下載地圖",
+            "downloading" :"正在下載地圖",
+            "cancel-download" : "取消下載"
         }
     },
     "models": {

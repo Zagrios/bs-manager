@@ -25,9 +25,6 @@
         }
     },
     "pages": {
-        "shared-maps": {
-            "title": "共有マップ"
-        },
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Oculusモード",
@@ -42,7 +39,6 @@
                 }
             },
             "maps": {
-                "title": "共有マップ",
                 "search-bar": {
                     "search-placeholder": "マップを検索",
                     "filters-btn": "絞り込み",
@@ -728,6 +724,7 @@
     "maps": {
         "map-filter-panel": {
             "duration": "尺",
+            "nps" : "秒間ノート数",
             "tags": "タグ",
             "specificities": "一般",
             "requirements": "要Mod"
@@ -795,7 +792,13 @@
         },
         "map-item": {
             "by": "By {songAutor}",
-            "mapped-by": "作成者 "
+            "mapped-by": "作成者 ",
+            "delete": "削除",
+            "preview" : "マッププレビュー",
+            "bsr-code" : "BSRコード",
+            "download" : "マップをダウンロード",
+            "downloading" :"マップをダウンロード中",
+            "cancel-download" : "ダウンロードをキャンセル"
         }
     },
     "models": {

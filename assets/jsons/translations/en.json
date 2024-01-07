@@ -25,9 +25,6 @@
         }
     },
     "pages": {
-        "shared-maps": {
-            "title": "Shared maps"
-        },
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Oculus Mode",
@@ -42,7 +39,6 @@
                 }
             },
             "maps": {
-                "title": "Shared maps",
                 "search-bar": {
                     "search-placeholder": "Search a map",
                     "filters-btn": "Filters",
@@ -728,6 +724,7 @@
     "maps": {
         "map-filter-panel": {
             "duration": "Duration",
+            "nps" : "Notes Per Second",
             "tags": "tags",
             "specificities": "general",
             "requirements": "requirements"
@@ -795,7 +792,13 @@
         },
         "map-item": {
             "by": "By {songAutor}",
-            "mapped-by": "mapped by"
+            "mapped-by": "mapped by",
+            "delete": "Delete",
+            "preview" : "Preview map",
+            "bsr-code" : "BSR code",
+            "download" : "Download map",
+            "downloading" :"Downloading map",
+            "cancel-download" : "Cancel download"
         }
     },
     "models": {
