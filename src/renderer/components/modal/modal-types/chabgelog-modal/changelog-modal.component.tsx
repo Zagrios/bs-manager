@@ -14,7 +14,7 @@ export const ChangelogModal: ModalComponent<void, ChangelogVersion> = ({ resolve
     const openTwitter = () => linkOpener.open("https://twitter.com/BSManager_");
     const openSupportPage = () => linkOpener.open("https://www.patreon.com/bsmanager");
     const openDiscord = () => linkOpener.open("https://discord.gg/uSqbHVpKdV");
-    const formattedTimestamp = changelog?.timestampPublished ? new Date(changelog.timestampPublished * 1000).toLocaleDateString() : '';
+    const date = changelog?.timestampPublished ? new Date(changelog.timestampPublished * 1000).toLocaleDateString() : '';
 
     return (
         <form className="w-[350px] text-gray-800 dark:text-gray-200 h-[70vh] flex flex-col justify-between">
@@ -23,7 +23,7 @@ export const ChangelogModal: ModalComponent<void, ChangelogVersion> = ({ resolve
             <span className="block w-[100%] mx-auto mt-0 mb-4 h-1 rounded-full bg-main-color-1" />
             <div className="flex flex-row justify-between">
                 <div className="my-auto flex flex-col text-sm">
-                    <span>{formattedTimestamp}</span>
+                    <span>{date}</span>
                     <span>v{changelog?.version}</span>
                 </div>
                 <div className="flex flex-row gap-2 my-auto">
