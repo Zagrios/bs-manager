@@ -1,6 +1,7 @@
 import { DetailedHTMLProps, Fragment } from "react";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { LaserSlider } from "./laser-slider.component";
 
 type Props = {
     tabIndex: number;
@@ -22,10 +23,7 @@ export function TabNavBar(props: Props) {
 
     return (
         <nav className={`relative h-8 shrink-0 cursor-pointer rounded-md overflow-hidden shadow-md shadow-black bg-light-main-color-2 dark:bg-main-color-2 ${props.className}`}>
-            <div className="absolute w-full h-1 bottom-0" style={{ color: secondColor }}>
-                <span className="absolute h-full w-full bg-current brightness-50" />
-                <span className="absolute h-full block bg-current transition-transform duration-300 shadow-center shadow-current" style={{ transform: `translate(${currentIndex * 100}%, 0)`, width: `calc(100% / ${props.tabsText.length})` }} />
-            </div>
+            <LaserSlider className="absolute w-full h-1 bottom-0" mode="horizontal" color={secondColor} nbSteps={props.tabsText.length} step={currentIndex} />
             <ul className="grid" style={{ gridTemplateColumns: `repeat(${props.tabsText.length}, minmax(0, 1fr))` }}>
                 {props.tabsText.map((text, index) =>
                     props.renderTab ? (

@@ -25,9 +25,6 @@
         }
     },
     "pages": {
-        "shared-maps": {
-            "title": "Maps partagées"
-        },
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Mode Oculus",
@@ -234,8 +231,11 @@
             "steam-download": {
                 "warnings": {
                     "msg": {
+                        "ManifestChecksum": "Le manifeste précédemment téléchargé ne correspond pas au nouveau 🤔",
                         "ConnectionTimeout": "Ta connexion internet semble instable 🥶",
-                        "Unknown": "Quelque chose d'étrange s'est produit 🤔 Votre connexion est surement instable."
+                        "ConnectionLost": "La connexion a été perdue, essayez à nouveau...",
+                        "ConnectionError": "Impossible de se connecter à Steam, essayez à nouveau...",
+                        "Unknown": "Quelque chose d'étrange s'est produit 🤔 Votre connexion est probablement instable."
                     }
                 },
                 "errors": {
@@ -728,6 +728,7 @@
     "maps": {
         "map-filter-panel": {
             "duration": "Durée",
+            "nps" : "Notes Par Seconde",
             "tags": "tags",
             "specificities": "général",
             "requirements": "requis"
@@ -795,7 +796,13 @@
         },
         "map-item": {
             "by": "Par {songAutor}",
-            "mapped-by": "mappée par"
+            "mapped-by": "mappée par",
+            "delete": "Supprimer",
+            "preview" : "Aperçu de la carte",
+            "bsr-code" : "Code BSR",
+            "download" : "Télécharger la carte",
+            "downloading" :"Téléchargement de la carte",
+            "cancel-download" : "Annuler le téléchargement"
         }
     },
     "models": {

@@ -21,7 +21,7 @@ export const LoginToSteamModal: ModalComponent<
     const [password, setPassword] = useState("");
     const [stay, setStay] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const qrCodeUrl = useObservable(data.qrCode$);
+    const qrCodeUrl = useObservable(() => data.qrCode$);
     const t = useTranslation();
 
     useEffect(() => {

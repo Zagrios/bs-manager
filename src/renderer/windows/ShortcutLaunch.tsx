@@ -26,7 +26,7 @@ export default function ShortcutLaunch() {
 
     const t = useTranslation();
     const color = useThemeColor("second-color");
-    const launchOptions = useObservable(ipc.sendV2<LaunchOption>("shortcut-launch-options").pipe(take(1)), null)
+    const launchOptions = useObservable(() => ipc.sendV2<LaunchOption>("shortcut-launch-options").pipe(take(1)), null)
     const [rotation, setRotation] = useState(0);
     const [status, setStatus] = useState<BSLaunchEventType>();
 

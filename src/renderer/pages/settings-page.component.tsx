@@ -81,9 +81,9 @@ export function SettingsPage() {
     const nav = useNavigate();
     const t = useTranslation();
 
-    const themeSelected = useObservable(themeService.theme$, "os");
-    const languageSelected = useObservable(i18nService.currentLanguage$, i18nService.getFallbackLanguage());
-    const downloadStore = useObservable(bsDownloader.defaultStore$);
+    const themeSelected = useObservable(() => themeService.theme$, "os");
+    const languageSelected = useObservable(() => i18nService.currentLanguage$, i18nService.getFallbackLanguage());
+    const downloadStore = useObservable(() => bsDownloader.defaultStore$);
 
     const [installationFolder, setInstallationFolder] = useState(null);
     const [showSupporters, setShowSupporters] = useState(false);
@@ -91,7 +91,7 @@ export function SettingsPage() {
     const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
     const [modelsDeepLinkEnabled, setModelsDeepLinkEnabled] = useState(false);
     const [hasDownloaderSession, setHasDownloaderSession] = useState(false);
-    const appVersion = useObservable(ipcService.sendV2<string>("current-version"));
+    const appVersion = useObservable(() => ipcService.sendV2<string>("current-version"));
 
     const [isChangelogAvailable, setIsChangelogAvailable] = useState(true);
     const [changlogsLoading, setChanglogsLoading] = useState(false);
@@ -280,7 +280,7 @@ export function SettingsPage() {
                         </div>
                     </div>
                     <SettingContainer minorTitle="pages.settings.appearance.sub-title" className="mt-3">
-                        <SettingRadioArray items={themeItem} selectedItemValue={themeSelected} onItemSelected={handleChangeTheme} />
+                        <SettingRadioArray items={themeItem} selectedItemValue={themeSelected as ThemeConfig} onItemSelected={handleChangeTheme} />
                     </SettingContainer>
                 </SettingContainer>
 

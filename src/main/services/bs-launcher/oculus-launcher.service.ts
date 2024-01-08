@@ -34,7 +34,9 @@ export class OculusLauncherService extends AbstractLauncherService implements St
         this.pathsService = InstallationLocationService.getInstance();
 
         this.oculus.tryGetGameFolder([OCULUS_BS_DIR, OCULUS_BS_BACKUP_DIR]).then(async dirPath => {
-            if(dirPath){ return this.oculusLib$.next( path.join(dirPath, "..") ); }
+            if(dirPath){
+                return this.oculusLib$.next( path.join(dirPath, "..") );
+            }
             const defaultLib = ((await this.oculus.getOculusLibs()) || []).find(lib => lib.isDefault);
             if(defaultLib?.path){ return this.oculusLib$.next(path.join(defaultLib.path, "Software")); }
             this.oculusLib$.next(null);

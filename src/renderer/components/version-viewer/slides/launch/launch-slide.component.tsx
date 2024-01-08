@@ -29,9 +29,9 @@ export function LaunchSlide({ version }: Props) {
     const [debugMode, setDebugMode] = useState(!!configService.get<boolean>(LaunchMods.DEBUG_MOD));
     const [advancedLaunch, setAdvancedLaunch] = useState(false);
     const [additionalArgsString, setAdditionalArgsString] = useState<string>(configService.get<string>("additionnal-args") || "");
-    const versionDownloading = useObservable(bsDownloader.downloadingVersion$);
+    const versionDownloading = useObservable(() => bsDownloader.downloadingVersion$);
 
-    const versionRunning = useObservable(bsLauncherService.versionRunning$);
+    const versionRunning = useObservable(() => bsLauncherService.versionRunning$);
 
     useEffect(() => {
         configService.set("additionnal-args", additionalArgsString);

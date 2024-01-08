@@ -21,6 +21,7 @@ import useDoubleClick from "use-double-click";
 import { GlowEffect } from "../shared/glow-effect.component";
 import { useDelayedState } from "renderer/hooks/use-delayed-state.hook";
 import { useService } from "renderer/hooks/use-service.hook";
+import Tippy from "@tippyjs/react";
 
 export type ParsedMapDiff = { type: BsvMapDifficultyType; name: string; stars: number };
 
@@ -51,7 +52,6 @@ export type MapItemProps<T = unknown> = {
 };
 
 export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, ranked, bpm, duration, likes, createdAt, selected, downloading, showOwned, callBackParam, onDelete, onDownload, onSelected, onCancelDownload, onDoubleClick }: MapItemProps) => {
-    
     const linkOpener = useService(LinkOpenerService);
     const audioPlayer = useService(AudioPlayerService);
 
@@ -70,7 +70,7 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
         onDoubleClick: () => onDoubleClick?.(callBackParam),
     });
 
-    const songPlaying = useObservable(audioPlayer.playing$.pipe(map(playing => playing && audioPlayer.src === songUrl)));
+    const songPlaying = useObservable(() => audioPlayer.playing$.pipe(map(playing => playing && audioPlayer.src === songUrl)));
 
     const previewUrl = mapId ? `https://allpoland.github.io/ArcViewer/?id=${mapId}` : null;
     const mapUrl = mapId ? `https://beatsaver.com/maps/${mapId}` : null;
@@ -156,25 +156,25 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
     return (
         <motion.li className="relative h-[100px] w-[400px] min-w-[370px] shrink-0 grow basis-0 text-white group cursor-pointer" onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)} style={{ zIndex: hovered && 5, transform: "translateZ(0) scale(1.0, 1.0)", backfaceVisibility: "hidden" }}>
             <GlowEffect visible={hovered || (selected && !!onSelected)} />
-            <AnimatePresence>
-                {(diffsPanelHovered || bottomBarHovered) && (
-                    <motion.ul key={hash} className="absolute top-[calc(100%-10px)] w-full h-fit max-h-[200%] pt-4 pb-2 px-2 overflow-y-scroll bg-light-main-color-3 dark:bg-main-color-3 text-main-color-1 dark:text-current brightness-125 rounded-md flex flex-col gap-3 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 shadow-sm shadow-black" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} onHoverStart={diffsPanelHoverStart} onHoverEnd={diffsPanelHoverEnd}>
-                        {Array.from(diffs.entries()).map(([charac, diffSet]) => (
-                            <ol key={crypto.randomUUID()} className="flex flex-col w-full gap-1">
-                                {diffSet.map(({ type, name, stars }) => (
-                                    <li key={`${type}${name}${stars}`} className="w-full h-4 flex items-center gap-1">
-                                        <BsmIcon className="h-full w-fit p-px" icon={charac} />
-                                        <span className="h-full px-2 flex items-center text-xs font-bold bg-current rounded-full" style={{ color: MAP_DIFFICULTIES_COLORS[type] }}>
-                                            {stars ? <span className="h-full block brightness-[.25]">★ {stars}</span> : <span className="h-full brightness-[.25] leading-4 pb-[2px] capitalize">{parseDiffLabel(type)}</span>}
-                                        </span>
-                                        <span className="text-sm leading-4 pb-[2px] capitalize">{parseDiffLabel(name)}</span>
-                                    </li>
-                                ))}
-                            </ol>
-                        ))}
-                    </motion.ul>
-                )}
-            </AnimatePresence>
+                <AnimatePresence>
+                    {(diffsPanelHovered || bottomBarHovered) && (
+                        <motion.ul key={hash} className="absolute top-[calc(100%-10px)] w-full h-fit max-h-[200%] pt-4 pb-2 px-2 overflow-y-scroll bg-light-main-color-3 dark:bg-main-color-3 text-main-color-1 dark:text-current brightness-125 rounded-md flex flex-col gap-3 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 shadow-sm shadow-black" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} onHoverStart={diffsPanelHoverStart} onHoverEnd={diffsPanelHoverEnd}>
+                            {Array.from(diffs.entries()).map(([charac, diffSet]) => (
+                                <ol key={crypto.randomUUID()} className="flex flex-col w-full gap-1">
+                                    {diffSet.map(({ type, name, stars }) => (
+                                        <li key={`${type}${name}${stars}`} className="w-full h-4 flex items-center gap-1">
+                                            <BsmIcon className="h-full w-fit p-px" icon={charac} />
+                                            <span className="h-full px-2 flex items-center text-xs font-bold bg-current rounded-full" style={{ color: MAP_DIFFICULTIES_COLORS[type] }}>
+                                                {stars ? <span className="h-full block brightness-[.25]">★ {stars}</span> : <span className="h-full brightness-[.25] leading-4 pb-[2px] capitalize">{parseDiffLabel(type)}</span>}
+                                            </span>
+                                            <span className="text-sm leading-4 pb-[2px] capitalize">{parseDiffLabel(name)}</span>
+                                        </li>
+                                    ))}
+                                </ol>
+                            ))}
+                        </motion.ul>
+                    )}
+                </AnimatePresence>
             <div className="h-full w-full relative pl-[100px] rounded-md overflow-hidden flex flex-row justify-end">
                 <div className={`absolute top-0 left-0 h-full aspect-square cursor-pointer ${showOwned && "border-l-[5px]"}`} style={{ borderColor: showOwned && color }}>
                     <BsmImage className="w-full h-full object-cover" image={coverUrl} placeholder={defaultImage} errorImage={defaultImage} loading="lazy" />
@@ -191,8 +191,8 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
                     </span>
                 </div>
                 <div className="relative h-full w-full z-[1] rounded-md overflow-hidden -translate-x-1" ref={ref}>
-                    <BsmImage className="absolute top-0 left-0 w-full h-full -z-[1] object-cover" image={coverUrl} placeholder={defaultImage} errorImage={defaultImage} loading="lazy" />
-                    <div className="pt-1 pl-2 pr-7 top-0 left-0 w-full h-full bg-gray-600 bg-opacity-80 flex flex-col justify-between group-hover:bg-main-color-1 group-hover:bg-opacity-80">
+                    <BsmImage className="absolute top-0 left-0 w-full h-full -z-[1] object-cover saturate-200" image={coverUrl} placeholder={defaultImage} errorImage={defaultImage} loading="lazy" />
+                    <div className="pt-1 pl-2 pr-7 top-0 left-0 w-full h-full bg-neutral-600 bg-opacity-80 flex flex-col justify-between group-hover:bg-main-color-1 group-hover:bg-opacity-80">
                         <h1 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full leading-5 tracking-wide text-lg" title={title}>
                             <BsmLink className="hover:underline" href={mapUrl}>
                                 {title}
@@ -240,52 +240,72 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
                         </motion.div>
                     </div>
                 </div>
-                <div className="absolute bg-light-main-color-1 dark:bg-main-color-3 top-0 h-full z-[1] w-[30px] -right-5 group-hover:right-0 transition-all">
+                <div className="absolute bg-light-main-color-3 dark:bg-main-color-3 top-0 h-full z-[1] w-[30px] -right-5 group-hover:right-0 transition-all">
                     <span className="absolute w-[10px] h-[10px] top-0 right-full bg-inherit" style={{ clipPath: 'path("M11 -1 L11 10 L10 10 A10 10 0 0 0 0 0 L0 -1 Z")' }} />
                     <span className="absolute w-[10px] h-[10px] bottom-0 right-full bg-inherit" style={{ clipPath: 'path("M11 11 L11 0 L10 0 A10 10 0 0 1 0 10 L 0 11 Z")' }} />
 
                     <div className="flex flex-col justify-center items-center gap-1 w-full h-full overflow-hidden opacity-0 group-hover:opacity-100">
                         {onDelete && !downloading && (
-                            <BsmButton
-                                className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2"
-                                iconClassName="w-full h-full brightness-75 dark:brightness-200"
-                                iconColor={color}
-                                icon="trash"
-                                withBar={false}
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    onDelete(callBackParam);
-                                }}
-                            />
+                        <Tippy content={t("maps.map-item.delete")} placement="left" theme="default">
+                            <div>
+                                <BsmButton
+                                    className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2"
+                                    iconClassName="w-full h-full brightness-75 dark:brightness-200"
+                                    iconColor={color}
+                                    icon="trash"
+                                    withBar={false}
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        onDelete(callBackParam);
+                                    }}
+                                />
+                            </div>
+                        </Tippy>
                         )}
                         {onDownload && !downloading && (
-                            <BsmButton
-                                className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2"
-                                iconClassName="w-full h-full brightness-75 dark:brightness-200"
-                                iconColor={color}
-                                icon="download"
-                                withBar={false}
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    onDownload(callBackParam);
-                                }}
-                            />
+                        <Tippy content={t("maps.map-item.download")} placement="left" theme="default">
+                            <div>
+                                <BsmButton
+                                    className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2"
+                                    iconClassName="w-full h-full brightness-75 dark:brightness-200"
+                                    iconColor={color}
+                                    icon="download"
+                                    withBar={false}
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        onDownload(callBackParam);
+                                    }}
+                                />
+                            </div>
+                        </Tippy>
                         )}
                         {onCancelDownload && !downloading && (
-                            <BsmButton
-                                className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2"
-                                iconClassName="w-full h-full brightness-75 dark:brightness-200"
-                                iconColor="red"
-                                icon="cross"
-                                withBar={false}
-                                onClick={e => {
-                                    e.stopPropagation();
-                                    onCancelDownload(callBackParam);
-                                }}
-                            />
+                        <Tippy content={t("maps.map-item.cancel-download")} placement="left" theme="default">
+                            <div>
+                                <BsmButton
+                                    className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2"
+                                    iconClassName="w-full h-full brightness-75 dark:brightness-200"
+                                    iconColor="red"
+                                    icon="cross"
+                                    withBar={false}
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        onCancelDownload(callBackParam);
+                                    }}
+                                />
+                            </div>
+                        </Tippy>
                         )}
-                        {downloading && <BsmBasicSpinner className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2 flex items-center justify-center" spinnerClassName="brightness-75 dark:brightness-200" style={{ color }} thikness="3px" />}
+                        {downloading &&
+                        <Tippy content={t("maps.map-item.downloading")} placement="left" theme="default">
+                        <div>
+                            <BsmBasicSpinner className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2 flex items-center justify-center" spinnerClassName="brightness-75 dark:brightness-200" style={{ color }} thikness="3px" />
+                        </div>
+                        </Tippy>
+                        }
                         {previewUrl && (
+                        <Tippy content={t("maps.map-item.preview")} placement="left" theme="default">
+                            <div>
                             <BsmButton
                                 className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2"
                                 iconClassName="w-full h-full brightness-75 dark:brightness-200"
@@ -297,8 +317,12 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
                                     openPreview();
                                 }}
                             />
+                            </div>
+                        </Tippy>
                         )}
                         {mapId && (
+                        <Tippy content={t("maps.map-item.bsr-code")} placement="left" theme="default">
+                            <div>
                             <BsmButton
                                 className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2"
                                 iconClassName="w-full h-full brightness-75 dark:brightness-200"
@@ -310,6 +334,8 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
                                     copyBsr();
                                 }}
                             />
+                            </div>
+                        </Tippy>
                         )}
                     </div>
                 </div>

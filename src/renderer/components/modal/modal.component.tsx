@@ -8,7 +8,7 @@ import { BsmIcon } from "../svgs/bsm-icon.component";
 export function Modal() {
     const modalSevice = ModalService.getInstance();
 
-    const ModalComponent = useObservable(modalSevice.getModalToShow());
+    const ModalComponent = useObservable(() => modalSevice.getModalToShow());
 
     const modalData = modalSevice.getModalData();
     const resolver = modalSevice.getResolver();

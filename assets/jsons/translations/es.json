@@ -25,9 +25,6 @@
         }
     },
     "pages": {
-        "shared-maps": {
-            "title": "Mapas comunes"
-        },
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Modo Oculus",
@@ -731,6 +728,7 @@
     "maps": {
         "map-filter-panel": {
             "duration": "Duración",
+            "nps" : "Notas Por Segundo",
             "tags": "tags",
             "specificities": "general",
             "requirements": "requisitos"
@@ -798,7 +796,13 @@
         },
         "map-item": {
             "by": "Por {songAutor}",
-            "mapped-by": "mapeado por"
+            "mapped-by": "mapeado por",
+            "delete": "Borrar",
+            "preview" : "Vista previa del mapa",
+            "bsr-code" : "Código BSR",
+            "download" : "Descargar mapa",
+            "downloading" :"Descargando mapa",
+            "cancel-download" : "Cancelar descarga"
         }
     },
     "models": {

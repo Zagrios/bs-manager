@@ -1,8 +1,9 @@
 import { list } from "regedit-rs";
 import path from "path";
-import { pathExist } from "../helpers/fs.helpers";
+import { pathExist, resolveGUIDPath } from "../helpers/fs.helpers";
 import log from "electron-log";
 import { lstat } from "fs-extra";
+import { tryit } from "../../shared/helpers/error.helpers";
 
 export class OculusService {
     private static instance: OculusService;
@@ -42,11 +43,16 @@ export class OculusService {
             await Promise.all(libsRegData.keys.map(async key => {
                 const originalPath = await list([`${oculusLibsRegKey}\\${key}`]).then(res => res[`${oculusLibsRegKey}\\${key}`]);
                 
-                if (!originalPath.values?.OriginalPath) {
-                    return null;
+                if (originalPath.values?.OriginalPath) {
+                    return { id: key, path: originalPath.values.OriginalPath.value, isDefault: defaultLibraryId === key } as OculusLibrary;
+                } 
+                
+                if(originalPath.values?.Path) {
+                    const { result } = tryit(() => resolveGUIDPath(originalPath.values.Path.value as string));
+                    return result ? { id: key, path: result, isDefault: defaultLibraryId === key } as OculusLibrary : null;
                 }
 
-                return { id: key, path: originalPath.values.OriginalPath.value, isDefault: defaultLibraryId === key } as OculusLibrary
+                return null;
             }, []))
         ).filter(Boolean);
 

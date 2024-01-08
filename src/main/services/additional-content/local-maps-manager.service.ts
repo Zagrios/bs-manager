@@ -7,7 +7,7 @@ import { InstallationLocationService } from "../installation-location.service";
 import { UtilsService } from "../utils.service";
 import crypto from "crypto";
 import { lstatSync } from "fs";
-import { copy, createReadStream, ensureDir, realpath, unlink } from "fs-extra";
+import { copy, createReadStream, ensureDir, pathExists, realpath, unlink } from "fs-extra";
 import StreamZip from "node-stream-zip";
 import { RequestService } from "../request.service";
 import sanitize from "sanitize-filename";
@@ -255,10 +255,12 @@ export class LocalMapsManagerService {
         const mapFolderName = sanitize(`${map.id}-${map.name}`);
         const mapsFolder = await this.getMapsFolderPath(version);
 
-        const installedMap = await this.loadMapInfoFromPath(path.join(mapsFolder, mapFolderName)).catch(e => {
-            log.error("loadMapInfoFromPath", e);
-            return null;
-        });
+        const mapPath = path.join(mapsFolder, mapFolderName);
+
+        const installedMap = await pathExists(mapPath).then(exists => {
+            if(!exists){ return null; }
+            return this.loadMapInfoFromPath(mapPath);
+        }).catch(() => null);
         
         if(map.versions.every(version => version.hash === installedMap?.hash)) {
             return installedMap;
@@ -269,8 +271,6 @@ export class LocalMapsManagerService {
         if (!zip) {
             throw `Cannot download ${zipUrl}`;
         }
-
-        const mapPath = path.join(mapsFolder, mapFolderName);
 
         await ensureFolderExist(mapPath);
 
