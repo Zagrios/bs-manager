@@ -13,7 +13,7 @@ export interface Changelog {
 export interface ChangelogVersion {
     htmlBody: string;
     title: string;
-    timestampPublished: number;
+    timestamp : number;
     version: string;
 }
 export class AutoUpdaterService {

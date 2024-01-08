@@ -14,7 +14,7 @@ export const ChangelogModal: ModalComponent<void, ChangelogVersion> = ({ resolve
     const openTwitter = () => linkOpener.open("https://twitter.com/BSManager_");
     const openSupportPage = () => linkOpener.open("https://www.patreon.com/bsmanager");
     const openDiscord = () => linkOpener.open("https://discord.gg/uSqbHVpKdV");
-    const date = changelog?.timestampPublished ? new Date(changelog.timestampPublished * 1000).toLocaleDateString() : '';
+    const date = changelog?.timestamp  ? new Date(changelog.timestamp  * 1000).toLocaleDateString() : '';
 
     return (
         <form className="w-[350px] text-gray-800 dark:text-gray-200 h-[70vh] flex flex-col justify-between">
