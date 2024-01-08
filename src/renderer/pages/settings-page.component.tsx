@@ -147,7 +147,6 @@ export function SettingsPage() {
     const handleVersionClick = async () => {
         let isChangelogResolved = false;
 
-
         await autoUpdater.showChangelog(await lastValueFrom(autoUpdater.getAppVersion()))
         .then(() => {
             setIsChangelogAvailable(() => true);
