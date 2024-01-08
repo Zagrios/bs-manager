@@ -147,20 +147,19 @@ export function SettingsPage() {
     const handleVersionClick = async () => {
         let isChangelogResolved = false;
 
-        const changelogPromise = autoUpdater.showChangelog(await lastValueFrom(autoUpdater.getAppVersion()))
-            .then(() => {
-                setIsChangelogAvailable(() => true);
-            })
-            .catch(() => {
-                setIsChangelogAvailable(() => false);
-            })
-            .finally(() => { isChangelogResolved = true; });
 
-        const timeoutId = setTimeout(() => {
-            setChanglogsLoading(() => !isChangelogResolved);
-        }, 100);
+        await autoUpdater.showChangelog(await lastValueFrom(autoUpdater.getAppVersion()))
+        .then(() => {
+            setIsChangelogAvailable(() => true);
+        })
+        .catch(() => {
+            setIsChangelogAvailable(() => false);
+        })
+        .finally(() => { isChangelogResolved = true; });
 
-        await changelogPromise;
+    const timeoutId = setTimeout(() => {
+        setChanglogsLoading(() => !isChangelogResolved);
+    }, 100);
         setChanglogsLoading(() => false);
         clearTimeout(timeoutId);
     };
