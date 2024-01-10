@@ -67,8 +67,8 @@ export class AutoUpdaterService {
         return this.configurationService.get("last-app-version");
     }
 
-    public setLastAppVersion(){
-        lastValueFrom(this.getAppVersion()).then(v => this.configurationService.set("last-app-version", v));
+    public setLastAppVersion(value : string){
+        this.configurationService.set("last-app-version", value);
     }
 
     private async getChangelog(): Promise<Changelog> {

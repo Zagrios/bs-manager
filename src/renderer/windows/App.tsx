@@ -47,8 +47,8 @@ export default function App() {
         const appVersion = await lastValueFrom(autoUpdater.getAppVersion());
         const lastAppVersion = autoUpdater.getLastAppVersion();
 
-        autoUpdater.setLastAppVersion();
-        
+        autoUpdater.setLastAppVersion(appVersion);
+
         if (lastAppVersion && gt(appVersion, lastAppVersion)) {
             autoUpdater.showChangelog(appVersion);
         }
