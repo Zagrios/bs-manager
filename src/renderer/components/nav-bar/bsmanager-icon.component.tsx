@@ -31,7 +31,7 @@ export const BsManagerIcon = memo(({ className }: { className?: string }) => {
     };
 
     return (
-        <motion.div className="cursor-pointer" whileTap={{ rotate: -10 }} variants={transitions} animate={playing && bpm > 0 ? "playing" : "idle"} onClick={clickAction}>
+        <motion.div id="bsm-logo" className="cursor-pointer" whileTap={{ rotate: -10 }} variants={transitions} animate={playing && bpm > 0 ? "playing" : "idle"} onClick={clickAction}>
             <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
                 <g fill={firstColor}>
                     <path d="M626.75,485.91l20.82,351.94a35.21,35.21,0,0,1-15.49,31.36L487.37,965.35l-.06,0A35.56,35.56,0,0,1,476,970.12a34.85,34.85,0,0,1-23.51-2.87L136.58,809.9a115.45,115.45,0,0,1-63.75-96.49L52,361.46a35.26,35.26,0,0,1,15.23-31.21l145.05-96.36a35.72,35.72,0,0,1,11.27-4.7,34.87,34.87,0,0,1,23.51,2.87L563,389.42a115.41,115.41,0,0,1,63.75,96.49Z" />

@@ -14,7 +14,9 @@
         "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
         "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
         "test": "jest",
-        "publish": "npm run build && electron-builder -c.win.certificateSha1=842a817a51e2a1d360fcd62f54bf5f9193e919e1 --publish always --win --x64"
+        "publish": "npm run build && electron-builder -c.win.certificateSha1=842a817a51e2a1d360fcd62f54bf5f9193e919e1 --publish always --win --x64",
+        "e2e-test": "npm run package && xvfb-maybe npx playwright test --workers=1",
+        "e2e-test-ci": "xvfb-maybe npx playwright test --workers=1"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx}": [
@@ -149,6 +151,7 @@
     },
     "devDependencies": {
         "@electron/rebuild": "^3.2.13",
+        "@playwright/test": "^1.38.1",
         "@pmmmwh/react-refresh-webpack-plugin": "0.5.5",
         "@teamsupercell/typings-for-css-modules-loader": "^2.5.1",
         "@testing-library/jest-dom": "^5.16.5",
@@ -175,6 +178,7 @@
         "@types/webpack-env": "^1.18.0",
         "@typescript-eslint/eslint-plugin": "^5.34.0",
         "@typescript-eslint/parser": "^5.34.0",
+        "asar": "^3.2.0",
         "autoprefixer": "^10.4.8",
         "browserslist-config-erb": "^0.0.3",
         "chalk": "^4.1.2",
@@ -208,6 +212,8 @@
         "lint-staged": "^12.5.0",
         "mini-css-extract-plugin": "^2.6.1",
         "opencollective-postinstall": "^2.0.3",
+        "playwright": "^1.38.1",
+        "playwright-core": "^1.38.1",
         "postcss": "^8.4.16",
         "postcss-loader": "^6.2.1",
         "prettier": "^2.7.1",
@@ -231,7 +237,8 @@
         "webpack-bundle-analyzer": "^4.6.1",
         "webpack-cli": "^4.10.0",
         "webpack-dev-server": "^4.10.0",
-        "webpack-merge": "^5.8.0"
+        "webpack-merge": "^5.8.0",
+        "xvfb-maybe": "^0.2.1"
     },
     "dependencies": {
         "@electron/fuses": "^1.6.2",

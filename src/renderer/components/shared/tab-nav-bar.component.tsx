@@ -4,6 +4,7 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { LaserSlider } from "./laser-slider.component";
 
 type Props = {
+    id?: string,
     tabIndex: number;
     tabsText: string[];
     onTabChange: (index: number) => void;
@@ -22,7 +23,7 @@ export function TabNavBar(props: Props) {
     };
 
     return (
-        <nav className={`relative h-8 shrink-0 cursor-pointer rounded-md overflow-hidden shadow-md shadow-black bg-light-main-color-2 dark:bg-main-color-2 ${props.className}`}>
+        <nav id={props.id} className={`relative h-8 shrink-0 cursor-pointer rounded-md overflow-hidden shadow-md shadow-black bg-light-main-color-2 dark:bg-main-color-2 ${props.className}`}>
             <LaserSlider className="absolute w-full h-1 bottom-0" mode="horizontal" color={secondColor} nbSteps={props.tabsText.length} step={currentIndex} />
             <ul className="grid" style={{ gridTemplateColumns: `repeat(${props.tabsText.length}, minmax(0, 1fr))` }}>
                 {props.tabsText.map((text, index) =>

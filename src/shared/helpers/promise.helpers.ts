@@ -19,3 +19,9 @@ export async function allSettled<T>(promises: Promise<T>[], options?: AllSettled
         return acc;
     }, []);
 }
+
+export async function pause(ms: number): Promise<void>{
+    return new Promise((resolve) => {
+        setTimeout(() => resolve(), ms);
+    });
+}
