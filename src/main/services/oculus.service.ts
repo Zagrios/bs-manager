@@ -114,7 +114,7 @@ export class OculusService {
 
             setTimeout(() => {
                 clearInterval(interval);
-                reject("Unable to open Oculus");
+                reject(new Error("Unable to open Oculus"));
             }, sToMs(30));
         });
     }
