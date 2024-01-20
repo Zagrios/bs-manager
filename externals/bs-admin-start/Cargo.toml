@@ -1,0 +1,18 @@
+[package]
+name = "start_beat_saber_admin"
+version = "0.1.0"
+edition = "2021"
+build = "build.rs"
+
+[build-dependencies]
+winres = "0.1.12"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "z"
+
+[package.metadata.winres]
+FileDescription = "Start Beat Saber as Admin"
+LegalCopyright = "Copyright © 2024 Zagrios"
+CompanyName = "Zagrios"
