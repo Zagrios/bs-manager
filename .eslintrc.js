@@ -47,6 +47,7 @@ module.exports = {
         "import/no-cycle": "off",
         "prefer-promise-reject-errors": "off",
         "react/jsx-no-target-blank": "off"
+        "@typescript-eslint/ban-types": "off"
     },
     parserOptions: {
         ecmaVersion: 2020,

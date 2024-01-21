@@ -1,6 +1,7 @@
 import { execOnOs } from "../../helpers/env.helpers";
 import { list, createKey, putValue, deleteKey, RegSzValue } from "regedit-rs";
 import path from "path";
+import { Log } from "../../decorators/log.decorator";
 
 export class LivService {
 
@@ -20,6 +21,7 @@ export class LivService {
 
     }
 
+    @Log()
     public async isLivInstalled(): Promise<boolean> {
         return execOnOs({
             win32: async () => {
@@ -29,6 +31,7 @@ export class LivService {
         }, true);
     }
 
+    @Log()
     public async createLivShortcut(entry: LivEntry): Promise<void> {
         return execOnOs({
             win32: async () => {
@@ -46,6 +49,7 @@ export class LivService {
         });
     }
 
+    @Log()
     public async deleteLivShortcuts(ids: string[]): Promise<void> {
         return execOnOs({
             win32: async () => {
@@ -55,11 +59,13 @@ export class LivService {
         })
     }
 
+    @Log()
     public getLivShortcuts(): Promise<LivEntry[]> {
+
         return execOnOs({
             win32: async () => {
                 const regRes = await list(this.livExternalAppsRegeditKey).then(res => res[this.livExternalAppsRegeditKey]);
-                
+
                 if(!regRes.exists){
                     return [];
                 }

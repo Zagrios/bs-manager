@@ -1,3 +1,5 @@
+import { isFunction } from "./function.helpers";
+
 export type AllSettledHelperOptions = {
     keepStructure?: boolean;
     removeFalsy?: boolean;
@@ -18,4 +20,11 @@ export async function allSettled<T>(promises: Promise<T>[], options?: AllSettled
         }
         return acc;
     }, []);
+}
+
+export function isPromise(value: any): value is Promise<unknown> {
+    if(!value) { return false; }
+    if(!value.then) { return false; }
+    if(!isFunction(value.then)) { return false; }
+    return true;
 }
