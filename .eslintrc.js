@@ -46,8 +46,12 @@ module.exports = {
         "react/prop-types": "off",
         "import/no-cycle": "off",
         "prefer-promise-reject-errors": "off",
-        "react/jsx-no-target-blank": "off"
-        "@typescript-eslint/ban-types": "off"
+        "react/jsx-no-target-blank": "off",
+        "@typescript-eslint/ban-types": ["error", {
+            types: {
+                Function: false,
+            }
+        }]
     },
     parserOptions: {
         ecmaVersion: 2020,
