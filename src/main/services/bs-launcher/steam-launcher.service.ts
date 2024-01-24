@@ -106,17 +106,15 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
 
             obs.next({type: BSLaunchEvent.BS_LAUNCHING});
 
-            const needToStartAsAdmin = await this.needStartBsAsAdmin().catch(err => {
-                log.error("Error while checking if need to start BS as Admin", err);
-                return false;
-            });
-
-            const launchPromise = !needToStartAsAdmin ? (
+            const launchPromise = !launchOptions.admin ? (
                 this.launchBs(exePath, launchArgs, { env: {...process.env, "SteamAppId": BS_APP_ID} })
             ) : (
                 new Promise<number>(resolve => {
                     const adminProcess = exec(`"${this.getStartBsAsAdminExePath()}" "${exePath}" ${launchArgs.join(" ")}`, { env: {...process.env, "SteamAppId": BS_APP_ID} });
-                    adminProcess.on("error", err => {log.error("Error while starting BS as Admin", err); resolve(-1)});
+                    adminProcess.on("error", err => {
+                        log.error("Error while starting BS as Admin", err);
+                        resolve(-1)
+                    });
 
                     setTimeout(() => {
                         adminProcess.removeAllListeners("error");

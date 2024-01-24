@@ -10,6 +10,7 @@ import { ModalExitCode, ModalService } from "./modale.service";
 import { OriginalOculusVersionBackupModal } from "renderer/components/modal/modal-types/original-oculus-version-backup.modal";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { sToMs } from "shared/helpers/time.helpers";
+import { NeedLaunchAdminModal } from "renderer/components/modal/modal-types/need-launch-admin-modal.component";
 
 export class BSLauncherService {
     private static instance: BSLauncherService;
@@ -21,7 +22,7 @@ export class BSLauncherService {
     private readonly modals: ModalService;
 
     public readonly versionRunning$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
-   
+
     public static getInstance(){
         if(!BSLauncherService.instance){ BSLauncherService.instance = new BSLauncherService(); }
         return BSLauncherService.instance;
@@ -70,7 +71,17 @@ export class BSLauncherService {
             }
         }))
     }
-    
+
+    private async doMustStartAsAdmin(): Promise<boolean> {
+        const needAdmin = await lastValueFrom(this.ipcService.sendV2<boolean, void>("bs-launch.need-start-as-admin"));
+        if(!needAdmin){ return false; }
+        if(this.config.get("dont-remind-admin")){ return true; }
+        const modalRes = await this.modals.openModal(NeedLaunchAdminModal);
+        if(modalRes.exitCode !== ModalExitCode.COMPLETED){ throw new Error("Admin launch canceled"); }
+        this.config.set("dont-remind-admin", modalRes.data);
+        return true;
+    }
+
     public doLaunch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
         return this.ipcService.sendV2<BSLaunchEventData, LaunchOption>("bs-launch.launch", {args: launchOptions});
     }
@@ -79,17 +90,21 @@ export class BSLauncherService {
 
         return new Observable<BSLaunchEventData>(obs => {
             (async () => {
-                
+
                 if(launchOptions.version.metadata?.store === BsStore.OCULUS && !this.notRewindBackupOculus()){
                     const { exitCode, data: notRewind } = await this.modals.openModal(OriginalOculusVersionBackupModal);
                     if(exitCode !== ModalExitCode.COMPLETED){ return; }
                     this.setNotRewindBackupOculus(notRewind);
                 }
-                
+
+                if(launchOptions.version.metadata?.store !== BsStore.OCULUS){
+                    launchOptions.admin = await this.doMustStartAsAdmin();
+                }
+
                 const launch$ = this.handleLaunchEvents(this.doLaunch(launchOptions));
 
                 await lastValueFrom(launch$);
-                
+
             })().then(() => {
                 obs.complete();
             }).catch(err => {

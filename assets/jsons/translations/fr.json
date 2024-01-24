@@ -719,6 +719,16 @@
                 "enter-oculus-token": "Entrer un token Oculus"
             },
             "valid-btn": "Valider"
+        },
+        "launch-as-admin": {
+            "title": "Permissions Administrateur",
+            "body": {
+                "info": "Steam a été détecté comme fonctionnant avec des permissions administrateur. Afin communiquer avec Steam, Beat Saber doit également être lancé en tant qu'administrateur. Dans le cas contraire, Beat Saber pourrait rencontrer des problèmes et se fermer après son lancement.",
+                "info-2": "Lancer Beat Saber en mode administrateur donnera également les droits administrateur aux mods installés. Il est donc plutôt recommandé de redémarrer Steam sans permissions administrateur.",
+                "info-3": "Notez qu'il est déconseillé de donner des droits d'administrateur à Steam, car cela affecte également les jeux et mods installés, présentant un risque pour la sécurité."
+            },
+            "launch-as-admin": "Lancer en administateur",
+            "not-remind-me": "Ne plus me rappeler"
         }
     },
     "maps": {
