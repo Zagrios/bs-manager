@@ -5,6 +5,8 @@ import { IpcService } from '../services/ipc.service';
 import { from } from "rxjs";
 import { SteamLauncherService } from "../services/bs-launcher/steam-launcher.service";
 import { OculusLauncherService } from "../services/bs-launcher/oculus-launcher.service";
+import { SteamService } from "../services/steam.service";
+import isElevated from "is-elevated";
 
 const ipc = IpcService.getInstance();
 
@@ -12,6 +14,14 @@ ipc.on<LaunchOption>('bs-launch.launch', (req, reply) => {
     const bsLauncher = BSLauncherService.getInstance();
     reply(bsLauncher.launch(req.args));
 });
+
+ipc.on<boolean>("bs-launch.need-start-as-admin", (_, reply) => {
+    const steam = SteamService.getInstance();
+    reply(from(isElevated().then(elevated => {
+        if(elevated){ return false; }
+        return steam.isElevated();
+    })));
+})
 
 ipc.on<LaunchOption>("create-launch-shortcut", (req, reply) => {
     const bsLauncher = BSLauncherService.getInstance();

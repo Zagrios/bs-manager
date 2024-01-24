@@ -719,6 +719,16 @@
                 "enter-oculus-token": "Introducir un token de Oculus"
             },
             "valid-btn": "Validar"
+        },
+        "launch-as-admin": {
+            "title": "Permisos Administrador",
+            "body": {
+                "info": "Se ha detectado que Steam está funcionando con permisos de administrador. Para comunicarse con Steam, Beat Saber también debe iniciarse como administrador. De lo contrario, Beat Saber podría experimentar problemas y cerrarse después de iniciar.",
+                "info-2": "Iniciar Beat Saber en modo administrador también otorgará derechos de administrador a los mods instalados. Por lo tanto, se recomienda reiniciar Steam sin permisos de administrador.",
+                "info-3": "Tenga en cuenta que se desaconseja otorgar derechos de administrador a Steam, ya que esto afecta a los juegos y mods instalados, presentando un riesgo de seguridad."
+            },
+            "launch-as-admin": "Iniciar como Administrador",
+            "not-remind-me": "No volver a recordármelo"
         }
     },
     "maps": {
