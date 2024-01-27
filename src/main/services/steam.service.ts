@@ -1,4 +1,4 @@
-import { list, RegDwordValue } from "regedit-rs"
+import { RegDwordValue } from "regedit-rs"
 import path from "path";
 import { parse } from "@node-steam/vdf";
 import { readFile } from "fs/promises";
@@ -7,6 +7,9 @@ import log from "electron-log";
 import { app, shell } from "electron";
 import { getProcessPid, taskRunning } from "../helpers/os.helpers";
 import { isElevated } from "query-process";
+import { execOnOs } from "../helpers/env.helpers";
+
+const { list } = (execOnOs({ win32: () => require("regedit-rs") }, true) ?? {}) as typeof import("regedit-rs");
 
 export class SteamService {
 

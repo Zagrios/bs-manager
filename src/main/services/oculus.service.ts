@@ -1,4 +1,3 @@
-import { list } from "regedit-rs";
 import path from "path";
 import { pathExist, resolveGUIDPath } from "../helpers/fs.helpers";
 import log from "electron-log";
@@ -7,6 +6,9 @@ import { tryit } from "../../shared/helpers/error.helpers";
 import { shell } from "electron";
 import { taskRunning } from "../helpers/os.helpers";
 import { sToMs } from "../../shared/helpers/time.helpers";
+import { execOnOs } from "../helpers/env.helpers";
+
+const { list } = (execOnOs({ win32: () => require("regedit-rs") }, true) ?? {}) as typeof import("regedit-rs");
 
 export class OculusService {
     private static instance: OculusService;
