@@ -1,7 +1,8 @@
 import { execOnOs } from "../../helpers/env.helpers";
-import { list, createKey, putValue, deleteKey, RegSzValue } from "regedit-rs";
 import path from "path";
 import { Log } from "../../decorators/log.decorator";
+
+const { list, createKey, putValue, deleteKey, RegSzValue } = (execOnOs({ win32: () => require("regedit-rs") }, true) ?? {}) as typeof import("regedit-rs");
 
 export class LivService {
 
