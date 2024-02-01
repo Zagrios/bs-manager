@@ -96,7 +96,10 @@
         "publish": {
             "provider": "github",
             "owner": "Zagrios"
-        }
+        },
+        "fileAssociations": [
+            { "ext": "bplist", "description": "Beat Saber Playlist", "icon": "./assets/favicon.ico", "role": "Viewer" }
+        ]
     },
     "repository": {
         "type": "git",
