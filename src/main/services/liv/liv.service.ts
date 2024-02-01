@@ -22,7 +22,6 @@ export class LivService {
 
     }
 
-    @Log()
     public async isLivInstalled(): Promise<boolean> {
         return execOnOs({
             win32: async () => {
@@ -32,7 +31,6 @@ export class LivService {
         }, true);
     }
 
-    @Log()
     public async createLivShortcut(entry: LivEntry): Promise<void> {
         return execOnOs({
             win32: async () => {
@@ -50,7 +48,6 @@ export class LivService {
         });
     }
 
-    @Log()
     public async deleteLivShortcuts(ids: string[]): Promise<void> {
         return execOnOs({
             win32: async () => {
@@ -60,7 +57,6 @@ export class LivService {
         })
     }
 
-    @Log()
     public getLivShortcuts(): Promise<LivEntry[]> {
 
         return execOnOs({
