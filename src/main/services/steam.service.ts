@@ -46,6 +46,11 @@ export class SteamService {
         return getProcessPid(SteamService.PROCESS_NAME);
     }
 
+    /**
+     * Check if the Steam process is running as administrator
+     * @throws Can throw an error if the Steam process is running as admin
+     * @returns true if the Steam process is running as administrator
+     */
     public async isElevated(): Promise<boolean>{
         if(process.platform === "linux"){ return true; }
         const steamPid = await this.getSteamPid();
