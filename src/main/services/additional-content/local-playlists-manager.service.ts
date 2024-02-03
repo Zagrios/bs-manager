@@ -12,7 +12,7 @@ import { readFileSync } from "fs";
 import { BeatSaverService } from "../thrid-party/beat-saver/beat-saver.service";
 import { copy, copyFile, pathExists, realpath } from "fs-extra";
 import { Progression, ensureFolderExist, pathExist } from "../../helpers/fs.helpers";
-import { IpcService } from "../ipc.service";
+import { FileAssociationService } from "../file-association.service";
 
 export class LocalPlaylistsManagerService {
     private static instance: LocalPlaylistsManagerService;
@@ -33,18 +33,18 @@ export class LocalPlaylistsManagerService {
     private readonly maps: LocalMapsManagerService;
     private readonly request: RequestService;
     private readonly deepLink: DeepLinkService;
+    private readonly fileAssociation: FileAssociationService;
     private readonly windows: WindowManagerService;
     private readonly bsaver: BeatSaverService;
-    private readonly ipc: IpcService;
 
     private constructor() {
         this.maps = LocalMapsManagerService.getInstance();
         this.versions = BSLocalVersionService.getInstance();
         this.request = RequestService.getInstance();
         this.deepLink = DeepLinkService.getInstance();
+        this.fileAssociation = FileAssociationService.getInstance();
         this.windows = WindowManagerService.getInstance();
         this.bsaver = BeatSaverService.getInstance();
-        this.ipc = IpcService.getInstance();
 
         this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.BeatSaver, link => {
             log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.BeatSaver, link);
@@ -52,11 +52,16 @@ export class LocalPlaylistsManagerService {
             const bplistUrl = url.host === "playlist" ? url.pathname.replace("/", "") : "";
             this.openOneClickDownloadPlaylistWindow(bplistUrl);
         });
+
+        this.fileAssociation.registerFileAssociation(".bplist", filePath => {
+            log.info("FILE ASSOCIATION RECEIVED", filePath);
+            this.openOneClickDownloadPlaylistWindow(filePath);
+        });
     }
 
     private async getPlaylistsFolder(version?: BSVersion) {
         if (!version) {
-            throw "Playlists are not available to be linked yet";
+            throw new Error("Playlists are not available to be linked yet");
         }
 
         const versionFolder = await this.versions.getVersionPath(version);
@@ -79,14 +84,14 @@ export class LocalPlaylistsManagerService {
         }
         return lastValueFrom(this.request.downloadFile(bslistSource, destFile)).then(res => res.data);
     }
-        
 
-    private async readPlaylistFile(path: string): Promise<BPList> {
-        if (!(await pathExist(path))) {
-            throw `bplist file not exist at ${path}`;
+
+    private async readPlaylistFile(filePath: string): Promise<BPList> {
+        if (!(await pathExist(filePath))) {
+            throw new Error(`bplist file not exist at ${filePath}`);
         }
 
-        const rawContent = readFileSync(path).toString();
+        const rawContent = readFileSync(filePath).toString();
 
         return JSON.parse(rawContent);
     }
@@ -102,8 +107,8 @@ export class LocalPlaylistsManagerService {
 
                 const bpListFilePath = await this.installBPListFile(bpListUrl, version);
                 const bpList = await this.readPlaylistFile(bpListFilePath);
-                
-                const progress: Progression<DownloadPlaylistProgressionData> = { 
+
+                const progress: Progression<DownloadPlaylistProgressionData> = {
                     total: bpList.songs.length,
                     current: 0,
                     data: {

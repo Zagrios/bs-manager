@@ -100,7 +100,7 @@
             "owner": "Zagrios"
         },
         "fileAssociations": [
-            { "ext": "bplist", "description": "Beat Saber Playlist", "icon": "./assets/favicon.ico", "role": "Viewer" }
+            { "ext": "bplist", "description": "Beat Saber Playlist (BSManager)", "icon": "./assets/bsm_file.ico", "role": "Viewer" }
         ]
     },
     "repository": {

@@ -21,6 +21,7 @@ import { BSLauncherService } from "./services/bs-launcher/bs-launcher.service";
 import { IpcRequest } from "shared/models/ipc";
 import { LivShortcut } from "./services/liv/liv-shortcut.service";
 import { SteamLauncherService } from "./services/bs-launcher/steam-launcher.service";
+import { FileAssociationService } from "./services/file-association.service";
 
 const isDebug = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true";
 
@@ -69,19 +70,29 @@ const initServicesMustBeInitialized = () => {
     BSLauncherService.getInstance();
 }
 
+const findDeepLinkInArgs = (args: string[]): string => {
+    return args.find(arg => DeepLinkService.getInstance().isDeepLink(arg));
+}
+
+const findAssociatedFileInArgs = (args: string[]): string => {
+    return args.find(arg => FileAssociationService.getInstance().isFileAssociated(arg));
+}
+
 const gotTheLock = app.requestSingleInstanceLock();
 
 if (!gotTheLock) {
     app.quit();
 } else {
     app.on("second-instance", (_, argv) => {
-        const deepLink = argv.find(arg => DeepLinkService.getInstance().isDeepLink(arg));
+        const deepLink = findDeepLinkInArgs(argv);
+        const associatedFile = findAssociatedFileInArgs(argv);
 
-        if (!deepLink) {
-            return;
+        if (deepLink) {
+            DeepLinkService.getInstance().dispatchLinkOpened(deepLink);
+        } else if (associatedFile) {
+            FileAssociationService.getInstance().handleFileAssociation(associatedFile);
         }
 
-        DeepLinkService.getInstance().dispatchLinkOpened(deepLink);
     });
 
     app.on("window-all-closed", () => {
@@ -90,25 +101,28 @@ if (!gotTheLock) {
     })
 
     app.whenReady().then(() => {
-        
+
         app.setAppUserModelId(APP_NAME);
 
         initServicesMustBeInitialized();
-        
-        const deepLink = process.argv.find(arg => DeepLinkService.getInstance().isDeepLink(arg));
 
-        if (!deepLink) {
-            createWindow();
-        } else {
+        const deepLink = findDeepLinkInArgs(process.argv);
+        const associatedFile = findAssociatedFileInArgs(process.argv);
+
+        if (deepLink) {
             DeepLinkService.getInstance().dispatchLinkOpened(deepLink);
+        } else if (associatedFile) {
+            FileAssociationService.getInstance().handleFileAssociation(associatedFile);
+        } else {
+            createWindow();
         }
-        
+
         SteamLauncherService.getInstance().restoreSteamVR();
-        
+
         // Log renderer errors
         ipcMain.on("log-error", (_, args: IpcRequest<unknown>) => {
             log.error(args?.args);
         });
-    
+
     }).catch(log.error);
 }
