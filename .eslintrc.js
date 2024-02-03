@@ -47,11 +47,13 @@ module.exports = {
         "import/no-cycle": "off",
         "prefer-promise-reject-errors": "off",
         "react/jsx-no-target-blank": "off",
-        "@typescript-eslint/ban-types": ["error", {
-            types: {
-                Function: false,
-            }
-        }]
+        "import/extensions": "off",
+        "lines-between-class-members": "off",
+        "no-throw-literal": "warn",
+        "no-use-before-define": "off",
+        "no-useless-constructor": "off",
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": "error"
     },
     parserOptions: {
         ecmaVersion: 2020,
@@ -73,4 +75,5 @@ module.exports = {
             "@typescript-eslint/parser": [".ts", ".tsx"],
         },
     },
+    "plugins": ["@typescript-eslint"]
 };
