@@ -1,6 +1,6 @@
 {
   "name": "bs-manager",
-  "version": "1.4.4-alpha.2",
+  "version": "1.4.4",
   "description": "BSManager",
   "main": "./dist/main/main.js",
   "author": {
@@ -9,15 +9,15 @@
     "url": "https://github.com/Zagrios/bs-manager"
   },
   "scripts": {
-    "electron-rebuild": "node -r ts-node/register ../../.erb/scripts/electron-rebuild.js",
-    "link-modules": "node -r ts-node/register ../../.erb/scripts/link-modules.ts",
+    "electron-rebuild": "node -r esbuild-register ../../.erb/scripts/electron-rebuild.js",
+    "link-modules": "node -r esbuild-register ../../.erb/scripts/link-modules.ts",
     "postinstall": "npm run electron-rebuild && npm run link-modules"
   },
   "dependencies": {
     "ps-list": "^7.2.0",
     "query-process": "^0.0.3",
     "regedit-rs": "^1.0.2",
-    "sharp": "^0.32.6"
+    "sharp": "^0.33.2"
   },
   "license": "MIT"
 }
