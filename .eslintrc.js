@@ -53,7 +53,8 @@ module.exports = {
         "no-use-before-define": "off",
         "no-useless-constructor": "off",
         "no-unused-vars": "off",
-        "@typescript-eslint/no-unused-vars": "error"
+        "@typescript-eslint/no-unused-vars": "error",
+        'react/jsx-filename-extension': [2, { 'extensions': ['.js', '.jsx', '.ts', '.tsx'] }],
     },
     parserOptions: {
         ecmaVersion: 2020,
