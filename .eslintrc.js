@@ -55,6 +55,7 @@ module.exports = {
         "no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": "error",
         'react/jsx-filename-extension': [2, { 'extensions': ['.js', '.jsx', '.ts', '.tsx'] }],
+        "no-shadow": "off",
     },
     parserOptions: {
         ecmaVersion: 2020,
