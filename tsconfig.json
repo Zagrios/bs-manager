@@ -20,7 +20,8 @@
         "resolveJsonModule": true,
         "allowJs": true,
         "outDir": "release/app/dist",
-        "strictNullChecks": false
+        "strictNullChecks": false,
+        "experimentalDecorators": true
     },
     "exclude": ["test", "release/build", "release/app/dist", ".erb/dll"]
 }

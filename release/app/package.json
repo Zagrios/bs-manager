@@ -1,6 +1,6 @@
 {
   "name": "bs-manager",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "BSManager",
   "main": "./dist/main/main.js",
   "author": {
@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "ps-list": "^7.2.0",
-    "regedit-rs": "^1.0.1",
+    "query-process": "^0.0.3",
+    "regedit-rs": "^1.0.2",
     "sharp": "^0.32.6"
   },
   "license": "MIT"

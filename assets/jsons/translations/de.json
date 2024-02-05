@@ -723,6 +723,16 @@
                 "enter-oculus-token": "Ein Oculus-Token eingeben"
             },
             "valid-btn": "Validieren"
+        },
+        "launch-as-admin": {
+            "title": "Administratorberechtigungen",
+            "body": {
+                "info": "Es wurde festgestellt, dass Steam mit Administratorrechten ausgeführt wird. Um mit Steam zu kommunizieren, muss auch Beat Saber als Administrator gestartet werden. Andernfalls könnte Beat Saber Probleme haben und nach dem Starten schließen.",
+                "info-2": "Das Starten von Beat Saber im Administratormodus gibt auch den installierten Mods Administratorrechte. Daher wird empfohlen, Steam ohne Administratorrechte neu zu starten.",
+                "info-3": "Beachten Sie, dass es nicht ratsam ist, Steam Administratorrechte zu geben, da dies auch die installierten Spiele und Mods betrifft und ein Sicherheitsrisiko darstellt."
+            },
+            "launch-as-admin": "Als Administrator starten",
+            "not-remind-me": "Nicht mehr erinnern"
         }
     },
     "maps": {

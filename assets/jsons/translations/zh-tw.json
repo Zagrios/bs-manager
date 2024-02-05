@@ -723,6 +723,16 @@
                 "enter-oculus-token": "輸入Oculus令牌"
             },
             "valid-btn": "驗證"
+        },
+        "launch-as-admin": {
+            "title": "管理員權限",
+            "body": {
+                "info": "檢測到Steam正在以管理員權限運行。為了與Steam通信，Beat Saber也必須以管理員身份啟動。否則，Beat Saber可能會遇到問題並在啟動後關閉。",
+                "info-2": "以管理員模式啟動Beat Saber還會將管理員權限賦予已安裝的模組。因此，建議重啟Steam，不使用管理員權限。",
+                "info-3": "請注意，不建議給Steam管理員權限，因為這也會影響已安裝的遊戲和模組，帶來安全風險。"
+            },
+            "launch-as-admin": "以管理員身份啟動",
+            "not-remind-me": "不再提醒我"
         }
     },
     "maps": {

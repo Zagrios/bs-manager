@@ -61,13 +61,13 @@ export class OculusLauncherService extends AbstractLauncherService implements St
         log.info("Symlinks found in Oculus library", symlinks);
 
         const bsSymlinks = symlinks.filter(dirent => dirent.startsWith(OCULUS_BS_DIR));
-        
+
         const bsmSymlinks = (await Promise.all(bsSymlinks.map(async symlink => {
             const symlinkPath = path.join(oculusLibPath, symlink);
             const targetPath = await readlink(symlinkPath).catch(err => log.error(err));
 
             log.info("Oculus Symlink", symlink, "target", targetPath);
-            
+
             if(!targetPath){ return null; }
 
             const bsmVersionsDir = path.join(this.pathsService.INSTALLATION_FOLDER, this.pathsService.VERSIONS_FOLDER);
@@ -138,20 +138,24 @@ export class OculusLauncherService extends AbstractLauncherService implements St
                 if(bsRunning){
                     throw CustomError.fromError(new Error("Cannot start two instance of Beat Saber for Oculus"), BSLaunchError.BS_ALREADY_RUNNING);
                 }
-                
+
                 // Remove previously symlinks created by BSM
                 await this.deleteBsSymlinks().catch(err => log.error("Error while deleting BSM symlinks", err));
 
                 const bsPath = await (launchOptions.version.oculus ? prepareOriginalVersion() : prepareDowngradedVersion());
 
-                // Launch Beat Saber
                 const exePath = path.join(bsPath, BS_EXECUTABLE);
 
                 if(!(await pathExists(exePath))){
                     throw CustomError.fromError(new Error(`BS Path not exist ${bsPath}`), BSLaunchError.BS_NOT_FOUND);
                 }
 
+                // Make sure Oculus is running
+                await this.oculus.startOculus().catch(err => log.error("Error while starting Oculus", err));
+
                 obs.next({type: BSLaunchEvent.BS_LAUNCHING});
+
+                // Launch Beat Saber
                 return this.launchBs(exePath, this.buildBsLaunchArgs(launchOptions)).catch(err => {
                     throw CustomError.fromError(err, BSLaunchError.BS_EXIT_ERROR);
                 });

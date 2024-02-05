@@ -8,6 +8,9 @@ import { BS_APP_ID, BS_EXECUTABLE, STEAMVR_APP_ID } from "../../constants";
 import log from "electron-log";
 import { AbstractLauncherService } from "./abstract-launcher.service";
 import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
+import isElevated from "is-elevated";
+import { UtilsService } from "../utils.service";
+import { exec } from "child_process";
 
 export class SteamLauncherService extends AbstractLauncherService implements StoreLauncherInterface{
 
@@ -21,10 +24,12 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
     }
 
     private readonly steam: SteamService;
+    private readonly util: UtilsService;
 
     private constructor(){
         super();
         this.steam = SteamService.getInstance();
+        this.util = UtilsService.getInstance();
     }
 
     private getSteamVRPath(): Promise<string> {
@@ -41,6 +46,17 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         });
     }
 
+    private needStartBsAsAdmin(): Promise<boolean> {
+        return isElevated().then(elevated => {
+            if(elevated){ return false; }
+            return this.steam.isElevated();
+        })
+    }
+
+    private getStartBsAsAdminExePath(): string {
+        return path.join(this.util.getAssetsScriptsPath(), "start_beat_saber_admin.exe");
+    }
+
     public async restoreSteamVR(): Promise<void> {
         const steamVrFolder = await this.getSteamVRPath();
         const steamVrBackup = `${steamVrFolder}.bak`;
@@ -53,7 +69,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
             log.error("Error while restoring SteamVR", err);
         });
     }
-    
+
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
 
         return new Observable<BSLaunchEventData>(obs => {(async () => {
@@ -90,7 +106,24 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
 
             obs.next({type: BSLaunchEvent.BS_LAUNCHING});
 
-            await this.launchBs(exePath, launchArgs, { env: {...process.env, "SteamAppId": BS_APP_ID} }).then(exitCode => {
+            const launchPromise = !launchOptions.admin ? (
+                this.launchBs(exePath, launchArgs, { env: {...process.env, "SteamAppId": BS_APP_ID} })
+            ) : (
+                new Promise<number>(resolve => {
+                    const adminProcess = exec(`"${this.getStartBsAsAdminExePath()}" "${exePath}" ${launchArgs.join(" ")}`, { env: {...process.env, "SteamAppId": BS_APP_ID} });
+                    adminProcess.on("error", err => {
+                        log.error("Error while starting BS as Admin", err);
+                        resolve(-1)
+                    });
+
+                    setTimeout(() => {
+                        adminProcess.removeAllListeners("error");
+                        resolve(-1);
+                    }, 35_000);
+                })
+            );
+
+            await launchPromise.then(exitCode => {
                 log.info("BS process exit code", exitCode);
             }).catch(err => {
                 throw CustomError.fromError(err, BSLaunchError.BS_EXIT_ERROR);
