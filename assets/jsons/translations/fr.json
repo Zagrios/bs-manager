@@ -194,7 +194,7 @@
             },
             "changelogs": {
                 "open" : "🚀 Jetez un œil au Changelog !",
-                "not-found": "😕 Oups, Changelog introuvable !"
+                "not_founds": "😕 Oups, Changelog introuvable !"
             }
         }
     },

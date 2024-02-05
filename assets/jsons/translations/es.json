@@ -194,7 +194,7 @@
             },
             "changelogs": {
                 "open" : "🚀 ¡Descubre lo nuevo en el Changelog!",
-                "not-found": "😕 Uy, ¡Changelog no encontrado!"
+                "not_founds": "😕 Uy, ¡Changelog no encontrado!"
             }
         }
     },

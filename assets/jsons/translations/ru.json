@@ -194,7 +194,7 @@
             },
             "changelogs": {
                 "open" : "🚀 Изучаем Changelog!",
-                "not-found": "😕 Ой, Changelog нигде не видно!"
+                "not_founds": "😕 Ой, Changelog нигде не видно!"
             }
         }
     },
