@@ -101,7 +101,9 @@ export class MapsManagerService {
 
         const progress$ = this.ipcService.sendV2<DeleteMapsProgress>("delete-maps", { args: maps }).pipe(map(progress => (progress.deleted / progress.total) * 100));
 
-        showProgressBar && this.progressBar.show(progress$, true);
+        if (showProgressBar) {
+            this.progressBar.show(progress$, true);
+        }
 
         progress$.toPromise().finally(() => this.progressBar.hide(true));
 
@@ -173,10 +175,6 @@ export class MapsManagerService {
 
     public get versionUnlinked$(): Observable<BSVersion> {
         return this.lastUnlinkedVersion$.asObservable();
-    }
-
-    public $mapsLinkingPending(version: BSVersion): Observable<boolean> {
-        return this.linker.$isPending(version, MapsManagerService.RELATIVE_MAPS_FOLDER);
     }
 
     public $mapsFolderLinkState(version: BSVersion): Observable<FolderLinkState> {

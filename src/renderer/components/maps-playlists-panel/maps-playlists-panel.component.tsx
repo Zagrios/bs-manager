@@ -1,15 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { BSVersion } from "shared/bs-version.interface";
-import { LocalMapsListPanel } from "./local-maps-list-panel.component";
+import { LocalMapsListPanel } from "./maps/local-maps-list-panel.component";
 import { BsmDropdownButton, DropDownItem } from "../shared/bsm-dropdown-button.component";
-import { FilterPanel } from "./filter-panel.component";
+import { FilterPanel } from "./maps/filter-panel.component";
 import { MapFilter } from "shared/models/maps/beat-saver.model";
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
-import { BsmImage } from "../shared/bsm-image.component";
-import wipGif from "../../../../assets/images/gifs/wip.gif";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import { FolderLinkState, VersionFolderLinkerService, VersionLinkerActionListener } from "renderer/services/version-folder-linker.service";
+import { FolderLinkState } from "renderer/services/version-folder-linker.service";
 import { useService } from "renderer/hooks/use-service.hook";
 import { BsContentTabPanel } from "../shared/bs-content-tab-panel/bs-content-tab-panel.component";
 import { BsmButton } from "../shared/bsm-button.component";
@@ -17,6 +15,8 @@ import { MapIcon } from "../svgs/icons/map-icon.component";
 import { PlaylistIcon } from "../svgs/icons/playlist-icon.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { of } from "rxjs";
+import { LocalPlaylistsListPanel } from "./playlists/local-playlists-list-panel.component";
+import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 
 type Props = {
     version?: BSVersion;
@@ -24,46 +24,28 @@ type Props = {
 };
 
 export function MapsPlaylistsPanel({ version, isActive }: Props) {
-    
+
     const mapsService = useService(MapsManagerService);
     const mapsDownloader = useService(MapsDownloaderService);
-    const linker = useService(VersionFolderLinkerService);
+    const playlistsService = useService(PlaylistsManagerService);
 
+    const t = useTranslation();
     const [tabIndex, setTabIndex] = useState(0);
+
+    const mapsRef = useRef<any>();
     const [mapFilter, setMapFilter] = useState<MapFilter>({});
     const [mapSearch, setMapSearch] = useState("");
+    const mapsLinkedState = useObservable(() => {
+        if(!version) return of(FolderLinkState.Unlinked);
+        return mapsService.$mapsFolderLinkState(version);
+    }, FolderLinkState.Unlinked, [version]);
+
     const [playlistSearch, setPlaylistSearch] = useState("");
-    const [mapsLinked, setMapsLinked] = useState(false);
-    const mapsLinkedState = useObservable(() => version ? mapsService.$mapsFolderLinkState(version) : of(null), FolderLinkState.Unlinked, [version]);
-    const t = useTranslation();
-    const mapsRef = useRef<any>();
+    const playlistLinkedState = useObservable(() => {
+        if(!version) return of(FolderLinkState.Unlinked);
+        return playlistsService.$playlistsFolderLinkState(version);
+    }, FolderLinkState.Unlinked, [version]);
 
-    useEffect(() => {
-        if (!version) {
-            return;
-        }
-
-        loadMapIsLinked();
-
-        const onMapsLinked: VersionLinkerActionListener = action => {
-            if (!action.relativeFolder.includes(MapsManagerService.RELATIVE_MAPS_FOLDER)) {
-                return;
-            }
-            loadMapIsLinked();
-        };
-
-        linker.onVersionFolderLinked(onMapsLinked);
-        linker.onVersionFolderUnlinked(onMapsLinked);
-
-        return () => {
-            linker.removeVersionFolderLinkedListener(onMapsLinked);
-            linker.removeVersionFolderUnlinkedListener(onMapsLinked);
-        };
-    }, [version, isActive]);
-
-    const loadMapIsLinked = () => {
-        mapsService.versionHaveMapsLinked(version).then(setMapsLinked);
-    };
 
     const handleSearch = (value: string) => {
         if (tabIndex === 0) {
@@ -77,9 +59,12 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
     };
 
     const handleMapsLinkClick = () => {
-        if (!mapsLinked) {
+        if(mapsLinkedState === FolderLinkState.Pending || mapsLinkedState === FolderLinkState.Processing){ return Promise.resolve(false); }
+
+        if (mapsLinkedState === FolderLinkState.Unlinked) {
             return mapsService.linkVersion(version);
         }
+
         return mapsService.unlinkVersion(version);
     };
 
@@ -130,15 +115,16 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                         text: "misc.playlists",
                         icon: PlaylistIcon,
                         onClick: () => setTabIndex(1),
+                        linkProps: version ? {
+                            state: playlistLinkedState,
+                            onClick: () => Promise.resolve(false),
+                        } : null,
                     },
                 ]}
             >
                 <>
-                    <LocalMapsListPanel isActive={isActive && tabIndex === 0} ref={mapsRef} className="w-full h-full shrink-0 flex flex-col" version={version} filter={mapFilter} search={mapSearch} linked={mapsLinked} />
-                    <div className="w-full h-full shrink-0 flex flex-col justify-center items-center content-center gap-2 overflow-hidden text-gray-800 dark:text-gray-200">
-                        <BsmImage className="rounded-md" image={wipGif} />
-                        <span>Coming soon</span>
-                    </div>
+                    <LocalMapsListPanel isActive={isActive && tabIndex === 0} ref={mapsRef} className="w-full h-full shrink-0" version={version} filter={mapFilter} search={mapSearch} linkedState={mapsLinkedState} />
+                    <LocalPlaylistsListPanel isActive={isActive && tabIndex === 1} version={version} linkedState={playlistLinkedState}/>
                 </>
             </BsContentTabPanel>
         </div>

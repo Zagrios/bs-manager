@@ -11,24 +11,26 @@ import { debounceTime, last, mergeMap, tap } from "rxjs/operators";
 import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import BeatWaitingImg from "../../../../assets/images/apngs/beat-waiting.png";
-import BeatConflict from "../../../../assets/images/apngs/beat-conflict.png";
-import { BsmImage } from "../shared/bsm-image.component";
-import { BsmButton } from "../shared/bsm-button.component";
-import TextProgressBar from "../progress-bar/text-progress-bar.component";
-import { useChangeOnce } from "renderer/hooks/use-change-once.hook";
+import BeatWaitingImg from "../../../../../assets/images/apngs/beat-waiting.png";
+import BeatConflict from "../../../../../assets/images/apngs/beat-conflict.png";
+import { BsmImage } from "../../shared/bsm-image.component";
+import { BsmButton } from "../../shared/bsm-button.component";
+import TextProgressBar from "../../progress-bar/text-progress-bar.component";
+import { useChangeUntilEqual } from "renderer/hooks/use-change-until-equal.hook";
 import { useService } from "renderer/hooks/use-service.hook";
+import { FolderLinkState } from "renderer/services/version-folder-linker.service";
+import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 
 type Props = {
     version: BSVersion;
     className?: string;
     filter?: MapFilter;
     search?: string;
-    linked?: boolean;
+    linkedState?: FolderLinkState;
     isActive?: boolean;
 };
 
-export const LocalMapsListPanel = forwardRef(({ version, className, filter, search, linked, isActive }: Props, forwardRef) => {
+export const LocalMapsListPanel = forwardRef(({ version, className, filter, search, linkedState, isActive }: Props, forwardRef) => {
     const mapsManager = useService(MapsManagerService);
     const mapsDownloader = useService(MapsDownloaderService);
     const bsaver = useService(BeatSaverService);
@@ -41,7 +43,8 @@ export const LocalMapsListPanel = forwardRef(({ version, className, filter, sear
     const [selectedMaps$] = useState(new BehaviorSubject<BsmLocalMap[]>([]));
     const [itemPerRow, setItemPerRow] = useState(2);
     const [listHeight, setListHeight] = useState(0);
-    const isActiveOnce = useChangeOnce(isActive, true);
+    const isActiveOnce = useChangeUntilEqual(isActive, { untilEqual: true, emitOnEqual: true });
+    const [linked, setLinked] = useState(false);
 
     const [loadPercent$] = useState(new BehaviorSubject(0));
 
@@ -67,6 +70,11 @@ export const LocalMapsListPanel = forwardRef(({ version, className, filter, sear
         }),
         [selectedMaps$.value, maps, version]
     );
+
+    useOnUpdate(() => {
+        if(linkedState === FolderLinkState.Pending || linkedState === FolderLinkState.Processing) return () => {};
+        setLinked(linkedState === FolderLinkState.Linked);
+    }, [linkedState]);
 
     useEffect(() => {
         if (isActiveOnce) {

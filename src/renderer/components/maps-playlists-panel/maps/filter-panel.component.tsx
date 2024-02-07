@@ -3,18 +3,18 @@ import { motion } from "framer-motion";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { MAP_TYPES } from "renderer/partials/maps/map-tags/map-types";
 import { MAP_STYLES } from "renderer/partials/maps/map-tags/map-styles";
-import { BsmCheckbox } from "../shared/bsm-checkbox.component";
-import { minToS } from "../../../shared/helpers/time.helpers";
+import { BsmCheckbox } from "../../shared/bsm-checkbox.component";
+import { minToS } from "../../../../shared/helpers/time.helpers";
 import dateFormat from "dateformat";
-import { BsmRange } from "../shared/bsm-range.component";
+import { BsmRange } from "../../shared/bsm-range.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { MAP_SPECIFICITIES } from "renderer/partials/maps/map-general/map-specificity";
 import { MAP_REQUIREMENTS } from "renderer/partials/maps/map-requirements/map-requirements";
 import { MAP_DIFFICULTIES_COLORS } from "renderer/partials/maps/map-difficulties/map-difficulties-colors";
-import { BsmButton } from "../shared/bsm-button.component";
+import { BsmButton } from "../../shared/bsm-button.component";
 import equal from "fast-deep-equal/es6";
 import clone from "rfdc";
-import { GlowEffect } from "../shared/glow-effect.component";
+import { GlowEffect } from "../../shared/glow-effect.component";
 
 export type Props = {
     className?: string;

@@ -12,7 +12,7 @@ import { IpcService } from "renderer/services/ipc.service";
 import { LaunchSlide } from "renderer/components/version-viewer/slides/launch/launch-slide.component";
 import { ModsSlide } from "renderer/components/version-viewer/slides/mods/mods-slide.component";
 import { UninstallModal } from "renderer/components/modal/modal-types/uninstall-modal.component";
-import { MapsPlaylistsPanel } from "renderer/components/maps-mangement-components/maps-playlists-panel.component";
+import { MapsPlaylistsPanel } from "renderer/components/maps-playlists-panel/maps-playlists-panel.component";
 import { ShareFoldersModal } from "renderer/components/modal/modal-types/share-folders-modal.component";
 import { ModelsPanel } from "renderer/components/models-management/models-panel.component";
 import { useService } from "renderer/hooks/use-service.hook";

@@ -1,4 +1,7 @@
+import { BSVersion } from "shared/bs-version.interface";
 import { IpcService } from "./ipc.service";
+import { Observable, lastValueFrom } from "rxjs";
+import { FolderLinkState, VersionFolderLinkerService } from "./version-folder-linker.service";
 
 export class PlaylistsManagerService {
     private static instance: PlaylistsManagerService;
@@ -10,23 +13,29 @@ export class PlaylistsManagerService {
         return PlaylistsManagerService.instance;
     }
 
+    public static readonly RELATIVE_PLAYLISTS_FOLDER = "Playlists";
+
     private readonly ipc: IpcService;
+    private readonly linker: VersionFolderLinkerService;
 
     private constructor() {
         this.ipc = IpcService.getInstance();
+        this.linker = VersionFolderLinkerService.getInstance();
     }
 
     public isDeepLinksEnabled(): Promise<boolean> {
-        return this.ipc.send<boolean>("is-playlists-deep-links-enabled").then(res => (res.success ? res.data : false));
+        return lastValueFrom(this.ipc.sendV2<boolean>("is-playlists-deep-links-enabled"));
     }
 
-    public async enableDeepLink(): Promise<boolean> {
-        const res = await this.ipc.send<boolean>("register-playlists-deep-link");
-        return res.success ? res.data : false;
+    public enableDeepLink(): Promise<boolean> {
+        return lastValueFrom(this.ipc.sendV2<boolean>("register-playlists-deep-link"));
     }
 
-    public async disableDeepLink(): Promise<boolean> {
-        const res = await this.ipc.send<boolean>("unregister-playlists-deep-link");
-        return res.success ? res.data : false;
+    public disableDeepLink(): Promise<boolean> {
+        return lastValueFrom(this.ipc.sendV2<boolean>("unregister-playlists-deep-link"));
+    }
+
+    public $playlistsFolderLinkState(version: BSVersion): Observable<FolderLinkState> {
+        return this.linker.$folderLinkedState(version, PlaylistsManagerService.RELATIVE_PLAYLISTS_FOLDER);
     }
 }

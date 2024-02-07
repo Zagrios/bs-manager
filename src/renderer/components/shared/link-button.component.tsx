@@ -3,6 +3,7 @@ import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { BsmIcon } from "../svgs/bsm-icon.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { FolderLinkState } from "renderer/services/version-folder-linker.service";
+import React from "react";
 
 export type LinkBtnProps = {
     className?: string;
@@ -11,9 +12,9 @@ export type LinkBtnProps = {
     onClick?: () => unknown;
 };
 
-export const LinkButton = ({className, title, state, onClick}: LinkBtnProps) => {
+export function LinkButton({className, title, state, onClick}: LinkBtnProps) {
     const t = useTranslation();
-    
+
     const color = useThemeColor("first-color");
     const disabled = state === FolderLinkState.Processing || state === FolderLinkState.Pending;
 
@@ -34,14 +35,15 @@ export const LinkButton = ({className, title, state, onClick}: LinkBtnProps) => 
     const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.preventDefault();
         e.stopPropagation();
-        !disabled && onClick?.();
+        if(disabled){ return; }
+        onClick?.();
     }
 
     return (
         <motion.div
             variants={{ hover: { rotate: 22.5 }, tap: { rotate: 45 } }}
-            whileHover="hover" 
-            whileTap="tap" 
+            whileHover="hover"
+            whileTap="tap"
             initial={{ rotate: 0 }}
             className={className}
             title={title ? t(title) : null}

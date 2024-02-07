@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { FilterPanel } from "renderer/components/maps-mangement-components/filter-panel.component";
-import { MapItem, ParsedMapDiff } from "renderer/components/maps-mangement-components/map-item.component";
+import { FilterPanel } from "renderer/components/maps-playlists-panel/maps/filter-panel.component";
+import { MapItem, ParsedMapDiff } from "renderer/components/maps-playlists-panel/maps/map-item.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-button.component";
 import { BsmSelect, BsmSelectOption } from "renderer/components/shared/bsm-select.component";

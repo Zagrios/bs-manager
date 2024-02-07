@@ -1,6 +1,6 @@
 import Tippy from "@tippyjs/react";
 import { useEffect, useState } from "react";
-import { LinkButton } from "renderer/components/maps-mangement-components/link-button.component";
+import { LinkButton } from "renderer/components/shared/link-button.component";
 import { BsmBasicSpinner } from "renderer/components/shared/bsm-basic-spinner/bsm-basic-spinner.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
@@ -137,7 +137,7 @@ const FolderItem = ({ version, relativeFolder, onDelete }: FolderProps) => {
             </span>
             <div className="flex flex-row gap-1.5">
                 <Tippy placement="left" content={t(`modals.shared-folders.buttons.${state === FolderLinkState.Linked ? "unlink-folder" : "link-folder"}`)} arrow={false}>
-                    <LinkButton 
+                    <LinkButton
                         className="p-0.5 h-7 shrink-0 aspect-square blur-0 cursor-pointer hover:brightness-75"
                         state={state}
                         onClick={onClickLink}
