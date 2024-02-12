@@ -40,9 +40,12 @@ import { BsStore } from "shared/models/bs-store.enum";
 import { SteamIcon } from "renderer/components/svgs/icons/steam-icon.component";
 import { OculusIcon } from "renderer/components/svgs/icons/oculus-icon.component";
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
+import { AutoUpdaterService } from "renderer/services/auto-updater.service";
+import BeatWaitingImg from "../../../assets/images/apngs/beat-waiting.png";
+
 
 export function SettingsPage() {
-    
+
     const configService = useService(ConfigurationService);
     const themeService = useService(ThemeService);
     const ipcService = useService(IpcService);
@@ -58,6 +61,7 @@ export function SettingsPage() {
     const playlistsManager = useService(PlaylistsManagerService);
     const modelsManager = useService(ModelsManagerService);
     const versionLinker = useService(VersionFolderLinkerService);
+    const autoUpdater = useService(AutoUpdaterService);
 
     const { firstColor, secondColor } = useThemeColor();
 
@@ -88,6 +92,9 @@ export function SettingsPage() {
     const [modelsDeepLinkEnabled, setModelsDeepLinkEnabled] = useState(false);
     const [hasDownloaderSession, setHasDownloaderSession] = useState(false);
     const appVersion = useObservable(() => ipcService.sendV2<string>("current-version"));
+
+    const [isChangelogAvailable, setIsChangelogAvailable] = useState(true);
+    const [changlogsLoading, setChanglogsLoading] = useState(false);
 
     useEffect(() => {
         loadInstallationFolder();
@@ -135,6 +142,23 @@ export function SettingsPage() {
 
     const handleChangeLanguage = (item: RadioItem<string>) => {
         i18nService.setLanguage(item.value);
+    };
+
+    const handleVersionClick = async () => {
+        let isChangelogResolved = false;
+        const timeoutId = setTimeout(() => setChanglogsLoading(() => !isChangelogResolved), 100);
+
+        await autoUpdater.showChangelog(await lastValueFrom(autoUpdater.getAppVersion()))
+            .then(() => {
+                setIsChangelogAvailable(() => true);
+            })
+            .catch(() => {
+                setIsChangelogAvailable(() => false);
+            })
+            .finally(() => { isChangelogResolved = true; });
+
+        setChanglogsLoading(() => false);
+        clearTimeout(timeoutId);
     };
 
     const setDefaultInstallationFolder = () => {
@@ -232,7 +256,7 @@ export function SettingsPage() {
 
                 <SettingContainer title="pages.settings.steam-and-oculus.title" description="pages.settings.steam-and-oculus.description">
                     <BsmButton onClick={clearDownloadersSession} className="w-fit px-3 py-[2px] text-white rounded-md" withBar={false} text="pages.settings.steam-and-oculus.logout" typeColor="error" disabled={!hasDownloaderSession}/>
-                    
+
                     <SettingContainer id="choose-default-store" minorTitle="pages.settings.steam-and-oculus.download-platform.title" description="pages.settings.steam-and-oculus.download-platform.desc" className="mt-3">
                         <SettingRadioArray items={[
                             { id: 1, text: "Steam", value: BsStore.STEAM, icon: <SteamIcon className="h-6 w-6 float-left"/> },
@@ -240,7 +264,7 @@ export function SettingsPage() {
                             { id: 0, text: t("pages.settings.steam-and-oculus.download-platform.always-ask"), value: null, },
                         ]} selectedItemValue={downloadStore} onItemSelected={handleChangeBsStore}/>
                     </SettingContainer>
-                    
+
                 </SettingContainer>
 
                 <SettingContainer title="pages.settings.appearance.title" description="pages.settings.appearance.description">
@@ -426,7 +450,7 @@ export function SettingsPage() {
                     <SettingContainer className="mt-3" description="pages.settings.discord.description">
                         <div className="flex gap-2">
                             <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="Discord" icon="discord" iconClassName="p-0.5 mr-1" color="#5865f2" onClick={openDiscord} />
-                            <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="Twitter" icon="twitter" iconClassName="p-0.5 mr-1" color="#1A8CD8" onClick={openTwitter} />
+                            <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="Twitter" icon="twitter" iconClassName="p-0.5 mr-1" color="#000" onClick={openTwitter} />
                         </div>
                     </SettingContainer>
                     <SettingContainer className="pt-3" description="pages.settings.contribution.description">
@@ -442,10 +466,13 @@ export function SettingsPage() {
                         </div>
                     </SettingContainer>
                 </SettingContainer>
-
-                <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5">v{appVersion}</span>
+                <Tippy content={isChangelogAvailable ? t("pages.settings.changelogs.open") : t("pages.settings.changelogs.not-founds")} placement="left" className="font-bold bg-main-color-3">
+                    <div className="!bg-light-main-color-1 dark:!bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5 hover:brightness-125 h-auto w-auto">
+                        <BsmButton onClick={handleVersionClick} text={`v${appVersion}`} withBar={false} typeColor="none"/>
+                    </div>
+                </Tippy>
+                <BsmImage className={`h-7 my-auto spin-loading float-right ${changlogsLoading ? "" : "hidden"}`} image={BeatWaitingImg} loading="eager" />
             </div>
-
             <SupportersView isVisible={showSupporters} setVisible={setShowSupporters} />
         </div>
     );

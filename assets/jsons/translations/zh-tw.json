@@ -191,6 +191,10 @@
                     "report-bug": "報告 bug",
                     "open-logs": "打開日誌"
                 }
+            },
+            "changelogs": {
+                "open" : "🚀 探索更新日誌！",
+                "not_founds": "😕 噢，找不到更新日誌！"
             }
         }
     },

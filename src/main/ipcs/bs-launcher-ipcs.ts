@@ -32,7 +32,6 @@ ipc.on<LaunchOption>("create-launch-shortcut", (req, reply) => {
     reply(from(bsLauncher.createLaunchShortcut(req.args)));
 });
 
-
 ipc.on<void>("bs-launch.restore-steamvr", (_, reply) => {
     const steamLauncher = SteamLauncherService.getInstance();
     reply(from(steamLauncher.restoreSteamVR()));
@@ -43,4 +42,4 @@ ipc.on<void>("restore-original-oculus-folder", (_, reply) => {
     reply(from(
         oculusLauncher.deleteBsSymlinks().then(() => oculusLauncher.restoreOriginalBeatSaber())
     ));
-})
+});

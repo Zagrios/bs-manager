@@ -191,6 +191,10 @@
                     "report-bug": "Informar de un error",
                     "open-logs": "Abrir los registros"
                 }
+            },
+            "changelogs": {
+                "open" : "🚀 ¡Descubre lo nuevo en el Changelog!",
+                "not_founds": "😕 Uy, ¡Changelog no encontrado!"
             }
         }
     },
