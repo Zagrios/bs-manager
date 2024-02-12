@@ -262,6 +262,7 @@
         "node-stream-zip": "^1.15.0",
         "pako": "^2.1.0",
         "qrcode.react": "^3.1.0",
+        "query-process": "^0.0.3",
         "react": "^18.2.0",
         "react-colorful": "^5.6.1",
         "react-dom": "^18.2.0",
