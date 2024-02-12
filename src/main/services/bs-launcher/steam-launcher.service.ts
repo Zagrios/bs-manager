@@ -123,13 +123,16 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 })
             );
 
-            await launchPromise.then(exitCode => {
+            try {
+                const exitCode = await launchPromise;
                 log.info("BS process exit code", exitCode);
-            }).catch(err => {
+            }
+            catch(err: any) {
                 throw CustomError.fromError(err, BSLaunchError.BS_EXIT_ERROR);
-            }).finally(() => {
-                this.restoreSteamVR().catch(log.error);
-            });
+            }
+            finally {
+                await this.restoreSteamVR().catch(log.error);
+            }
 
         })().then(() => {
             obs.complete();
