@@ -11,6 +11,7 @@ import { AbstractLauncherService } from "./abstract-launcher.service";
 import { taskRunning } from "../../helpers/os.helpers";
 import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
 import { InstallationLocationService } from "../installation-location.service";
+import { ensurePathNotAlreadyExist } from "../../helpers/fs.helpers";
 
 export class OculusLauncherService extends AbstractLauncherService implements StoreLauncherInterface {
 
@@ -86,7 +87,7 @@ export class OculusLauncherService extends AbstractLauncherService implements St
     private async backupOriginalBeatSaber(): Promise<void>{
         const bsFolder = await this.oculus.getGameFolder(OCULUS_BS_DIR);
         if(!bsFolder){ return; }
-        const backupPath = path.join(bsFolder, "..", OCULUS_BS_BACKUP_DIR);
+        const backupPath = await ensurePathNotAlreadyExist(path.join(bsFolder, "..", OCULUS_BS_BACKUP_DIR));
         log.info("Backing up original Beat Saber", bsFolder, backupPath);
         return rename(bsFolder, backupPath);
     }
