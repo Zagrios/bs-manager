@@ -146,7 +146,6 @@ export function SettingsPage() {
 
     const handleVersionClick = async () => {
         let isChangelogResolved = false;
-
         const timeoutId = setTimeout(() => setChanglogsLoading(() => !isChangelogResolved), 100);
 
         await autoUpdater.showChangelog(await lastValueFrom(autoUpdater.getAppVersion()))
