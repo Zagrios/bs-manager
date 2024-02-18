@@ -10,7 +10,7 @@ import { from } from "rxjs";
 import path from "path";
 import { pathExist } from "../helpers/fs.helpers";
 import { FolderLinkerService, LinkOptions } from "../services/folder-linker.service";
-import { LocalMapsManagerService } from "../services/additional-content/local-maps-manager.service";
+import { LocalMapsManagerService } from "../services/additional-content/maps/local-maps-manager.service";
 import { readJSON, writeJSON } from "fs-extra";
 import log from "electron-log";
 import { VersionLinkerAction } from "renderer/services/version-folder-linker.service";

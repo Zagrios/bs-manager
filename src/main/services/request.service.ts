@@ -4,6 +4,8 @@ import { Progression } from "main/helpers/fs.helpers";
 import { Observable, shareReplay, tap } from "rxjs";
 import log from "electron-log";
 import fetch, { RequestInfo, RequestInit } from "node-fetch";
+import got, { GotOptions } from "got";
+import { IncomingMessage } from "http";
 
 export class RequestService {
     private static instance: RequestService;
@@ -30,7 +32,7 @@ export class RequestService {
                 throw new Error(`HTTP error! status: ${response.status} ${url}`);
             }
 
-            return await response.json();
+            return await response.json() as T;
         } catch (err) {
             log.error(err);
             throw err;
@@ -67,7 +69,7 @@ export class RequestService {
         }).pipe(tap({ error: e => log.error(e, url, dest) }), shareReplay(1));
     }
 
-    public downloadBuffer(url: string): Observable<Progression<Buffer>> {
+    public downloadBuffer(url: string, options?: GotOptions<string>): Observable<Progression<Buffer, IncomingMessage>> {
         return new Observable<Progression<Buffer>>(subscriber => {
             const progress: Progression<Buffer> = {
                 current: 0,
@@ -75,27 +77,42 @@ export class RequestService {
                 data: null,
             };
 
-            const allChunks: Buffer[] = [];
+            const req = got.stream(url, options);
 
-            const req = get(url, { agent: this.ipv4Agent }, res => {
-                progress.total = parseInt(res.headers?.["content-length"] || "0", 10);
+            let data = Buffer.alloc(0);
+            let response: IncomingMessage;
 
-                res.on("data", chunk => {
-                    allChunks.push(chunk);
-                    progress.current += chunk.length;
-                    subscriber.next(progress);
-                });
-                res.on("end", () => {
-                    progress.data = Buffer.concat(allChunks);
-                    subscriber.next(progress);
-                    subscriber.complete();
-                });
-                res.on("error", err => subscriber.error(err));
+            req.once("response", res => {
+                response = res;
             });
 
-            req.on("error", err => {
+            req.on("data", (chunk: Buffer) => {
+                data = Buffer.concat([data, chunk]);
+            })
+
+            req.on("downloadProgress", ({ transferred, total }) => {
+                progress.current = transferred;
+                progress.total = total;
+                subscriber.next(progress);
+            });
+
+            req.once("error", err => {
                 subscriber.error(err);
             });
+
+            req.once("end", () => {
+                progress.data = data;
+                progress.extra = response;
+                subscriber.next(progress);
+                subscriber.complete();
+            });
+
+            req.resume();
+
+            return () => {
+                req.destroy();
+            }
+
         }).pipe(tap({ error: e => log.error(e) }), shareReplay(1));
     }
 }

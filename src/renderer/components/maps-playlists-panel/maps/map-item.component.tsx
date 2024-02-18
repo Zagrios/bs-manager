@@ -1,5 +1,5 @@
 import { BsmImage } from "../../shared/bsm-image.component";
-import { BsvMapCharacteristic, BsvMapDifficultyType } from "shared/models/maps/beat-saver.model";
+import { BsvMapDifficultyType } from "shared/models/maps/beat-saver.model";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { BsmLink } from "../../shared/bsm-link.component";
 import { BsmIcon } from "../../svgs/bsm-icon.component";
@@ -22,8 +22,9 @@ import { GlowEffect } from "../../shared/glow-effect.component";
 import { useDelayedState } from "renderer/hooks/use-delayed-state.hook";
 import { useService } from "renderer/hooks/use-service.hook";
 import Tippy from "@tippyjs/react";
+import { SongDetailDiffCharactertistic, SongDiffName } from "shared/models/maps";
 
-export type ParsedMapDiff = { type: BsvMapDifficultyType; name: string; stars: number };
+export type ParsedMapDiff = { type: SongDiffName; name: string; stars: number };
 
 export type MapItemProps<T = unknown> = {
     hash: string;
@@ -34,12 +35,12 @@ export type MapItemProps<T = unknown> = {
     songUrl: string;
     autorId: number;
     mapId: string;
-    diffs: Map<BsvMapCharacteristic, ParsedMapDiff[]>;
+    diffs: Map<SongDetailDiffCharactertistic, ParsedMapDiff[]>;
     ranked: boolean;
     bpm: number;
     duration: number;
     likes: number;
-    createdAt: string;
+    createdAt: number;
     selected?: boolean;
     downloading?: boolean;
     showOwned?: boolean;
@@ -165,7 +166,7 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
                                         <li key={`${type}${name}${stars}`} className="w-full h-4 flex items-center gap-1">
                                             <BsmIcon className="h-full w-fit p-px" icon={charac} />
                                             <span className="h-full px-2 flex items-center text-xs font-bold bg-current rounded-full" style={{ color: MAP_DIFFICULTIES_COLORS[type] }}>
-                                                {stars ? <span className="h-full block brightness-[.25]">★ {stars}</span> : <span className="h-full brightness-[.25] leading-4 pb-[2px] capitalize">{parseDiffLabel(type)}</span>}
+                                                {stars ? <span className="h-full block brightness-[.25]">★ {stars.toFixed(2)}</span> : <span className="h-full brightness-[.25] leading-4 pb-[2px] capitalize">{parseDiffLabel(type)}</span>}
                                             </span>
                                             <span className="text-sm leading-4 pb-[2px] capitalize">{parseDiffLabel(name)}</span>
                                         </li>

@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package song_details_cache_v1;
+
+message SongDetailsCache {
+  repeated SongDetails songs = 1;
+  int64 lastUpdated = 2;
+  uint32 total = 3;
+}
+
+message SongDetails {
+  string id = 1;
+  string hash = 2;
+  string name = 3;
+  MapDetailMetadata metadata = 4;
+  Uploader uploader = 5;
+  int32 uploadedAt = 6;
+  repeated string tags = 7;
+  float bpm = 8;
+  bool ranked = 9;
+  bool qualified = 10;
+  bool curated = 11;
+  bool rankedBL = 12;
+  bool nominatedBL = 13;
+  bool qualifiedBL = 14;
+  int32 upVotes = 15;
+  int32 downVotes = 16;
+  int32 downloads = 17;
+  int32 duration = 18;
+  bool automapper = 19;
+  repeated Difficulty difficulties = 20;
+}
+
+message Difficulty {
+  string difficulty = 1;
+  string characteristic = 2;
+  string label = 3;
+  float stars = 4;
+  float starsBL = 5;
+  float njs = 6;
+  float nps = 7;
+  float offset = 8;
+  bool chroma = 9;
+  bool cinema = 10;
+  bool me = 11;
+  bool ne = 12;
+  int32 bombs = 13;
+  int32 notes = 14;
+  int32 obstacles = 15;
+}
+
+message Uploader {
+  string name = 1;
+  int32 id = 2;
+  bool verified = 3;
+}
+
+message MapDetailMetadata {
+  float bpm = 1;
+  int32 duration = 2;
+  string levelAuthorName = 3;
+  string songAuthorName = 4;
+  string songName = 5;
+  string songSubName = 6;
+}

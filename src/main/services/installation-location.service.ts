@@ -1,7 +1,8 @@
 import path from "path";
 import { app } from "electron";
 import ElectronStore from "electron-store";
-import { copyDirectoryWithJunctions, deleteFolder, ensureFolderExist, pathExist } from "../helpers/fs.helpers";
+import { copyDirectoryWithJunctions, deleteFolder, ensureFolderExist } from "../helpers/fs.helpers";
+import { pathExistsSync } from "fs-extra";
 
 export class InstallationLocationService {
     private static instance: InstallationLocationService;
@@ -17,6 +18,7 @@ export class InstallationLocationService {
     public readonly VERSIONS_FOLDER = "BSInstances";
 
     private readonly SHARED_CONTENT_FOLDER = "SharedContent";
+    private readonly CACHE_FOLDER = "cache";
 
     private readonly STORE_INSTALLATION_PATH_KEY = "installation-folder";
 
@@ -39,7 +41,7 @@ export class InstallationLocationService {
 
     public async setInstallationDirectory(newDir: string): Promise<string> {
         newDir = path.basename(newDir) === this.INSTALLATION_FOLDER ? path.join(newDir, "..") : newDir;
-        const oldDir = await this.installationDirectory();
+        const oldDir = this.installationDirectory();
 
         await ensureFolderExist(oldDir);
         await copyDirectoryWithJunctions(oldDir, path.join(newDir, this.INSTALLATION_FOLDER), { overwrite: true });
@@ -56,9 +58,9 @@ export class InstallationLocationService {
         this.updateListeners.add(fn);
     }
 
-    public async installationDirectory(): Promise<string> {
+    public installationDirectory(): string {
 
-        const installParentPath = async () => {
+        const installParentPath = () => {
             if(this._installationDirectory) {
                 return this._installationDirectory;
             }
@@ -68,24 +70,28 @@ export class InstallationLocationService {
             }
 
             const oldPath = path.join(app.getPath("documents"), this.INSTALLATION_FOLDER);
-            if(await pathExist(oldPath)){
+            if(pathExistsSync(oldPath)){
                 return app.getPath("documents");
             }
 
             return app.getPath("home");
         };
 
-        this._installationDirectory = await installParentPath();
+        this._installationDirectory = installParentPath();
 
         return path.join(this._installationDirectory, this.INSTALLATION_FOLDER);
     }
 
-    public async versionsDirectory(): Promise<string> {
-        return path.join(await this.installationDirectory(), this.VERSIONS_FOLDER);
+    public versionsDirectory(): string {
+        return path.join(this.installationDirectory(), this.VERSIONS_FOLDER);
     }
 
-    public async sharedContentPath(): Promise<string> {
-        return path.join(await this.installationDirectory(), this.SHARED_CONTENT_FOLDER);
+    public sharedContentPath(): string {
+        return path.join(this.installationDirectory(), this.SHARED_CONTENT_FOLDER);
+    }
+
+    public cachePath(): string {
+        return path.join(this.installationDirectory(), this.CACHE_FOLDER);
     }
 }
 

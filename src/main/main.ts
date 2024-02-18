@@ -13,7 +13,7 @@ import "./ipcs";
 import { WindowManagerService } from "./services/window-manager.service";
 import { DeepLinkService } from "./services/deep-link.service";
 import { AppWindow } from "shared/models/window-manager/app-window.model";
-import { LocalMapsManagerService } from "./services/additional-content/local-maps-manager.service";
+import { LocalMapsManagerService } from "./services/additional-content/maps/local-maps-manager.service";
 import { LocalPlaylistsManagerService } from "./services/additional-content/local-playlists-manager.service";
 import { LocalModelsManagerService } from "./services/additional-content/local-models-manager.service";
 import { APP_NAME } from "./constants";
@@ -22,6 +22,7 @@ import { IpcRequest } from "shared/models/ipc";
 import { LivShortcut } from "./services/liv/liv-shortcut.service";
 import { SteamLauncherService } from "./services/bs-launcher/steam-launcher.service";
 import { FileAssociationService } from "./services/file-association.service";
+import { SongDetailsCacheService } from "./services/additional-content/maps/song-details-cache.service";
 
 const isDebug = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true";
 
@@ -68,6 +69,7 @@ const initServicesMustBeInitialized = () => {
     LocalModelsManagerService.getInstance();
     LivShortcut.getInstance();
     BSLauncherService.getInstance();
+    SongDetailsCacheService.getInstance();
 }
 
 const findDeepLinkInArgs = (args: string[]): string => {
@@ -101,6 +103,8 @@ if (!gotTheLock) {
     })
 
     app.whenReady().then(() => {
+
+        // C:\\Users\\Mathieu\\Desktop\\BSManager\\BSInstances\\My Version\\UserData\\SongDetailsCache.proto
 
         app.setAppUserModelId(APP_NAME);
 

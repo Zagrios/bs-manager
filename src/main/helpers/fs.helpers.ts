@@ -175,7 +175,7 @@ export async function dirSize(dirPath: string): Promise<number>{
         const realPath = await realpath(fullPath);
         const stat = await lstat(realPath);
 
-        if (stat.isDirectory()) { 
+        if (stat.isDirectory()) {
             return dirSize(fullPath);
         }
 
@@ -244,9 +244,10 @@ export function resolveGUIDPath(guidPath: string): string {
     return path.join(driveLetter, path.relative(guidVolume, guidPath));
 }
 
-export interface Progression<T = unknown> {
+export interface Progression<T = unknown, D = unknown> {
     total: number;
     current: number;
     diff?: number;
     data?: T;
+    extra?: D;
 }

@@ -1,4 +1,4 @@
-import { LocalMapsManagerService } from "../services/additional-content/local-maps-manager.service";
+import { LocalMapsManagerService } from "../services/additional-content/maps/local-maps-manager.service";
 import { UtilsService } from "../services/utils.service";
 import { BSVersion } from "shared/bs-version.interface";
 import { IpcRequest } from "shared/models/ipc";

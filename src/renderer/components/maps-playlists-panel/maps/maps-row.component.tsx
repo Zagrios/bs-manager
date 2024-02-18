@@ -2,10 +2,10 @@ import { CSSProperties, memo } from "react";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { distinctUntilChanged, map } from "rxjs/operators";
 import { BehaviorSubject } from "rxjs";
-import { BsvMapCharacteristic } from "shared/models/maps/beat-saver.model";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { ParsedMapDiff, MapItem } from "./map-item.component";
 import equal from "fast-deep-equal/es6";
+import { SongDetailDiffCharactertistic } from "shared/models/maps/song-details-cache.model";
 
 type Props = {
     maps: BsmLocalMap[];
@@ -21,10 +21,10 @@ export const MapsRow = memo(({ maps, style, selectedMaps$, onMapSelect, onMapDel
             distinctUntilChanged(equal),
         ), []);
 
-    const extractMapDiffs = (map: BsmLocalMap): Map<BsvMapCharacteristic, ParsedMapDiff[]> => {
-        const res = new Map<BsvMapCharacteristic, ParsedMapDiff[]>();
-        if (map.bsaverInfo?.versions[0]?.diffs) {
-            map.bsaverInfo.versions[0].diffs.forEach(diff => {
+    const extractMapDiffs = (map: BsmLocalMap): Map<SongDetailDiffCharactertistic, ParsedMapDiff[]> => {
+        const res = new Map<SongDetailDiffCharactertistic, ParsedMapDiff[]>();
+        if (map.songDetails?.difficulties) {
+            map.songDetails?.difficulties.forEach(diff => {
                 const arr = res.get(diff.characteristic) || [];
                 const diffName = map.rawInfo._difficultyBeatmapSets.find(set => set._beatmapCharacteristicName === diff.characteristic)._difficultyBeatmaps.find(rawDiff => rawDiff._difficulty === diff.difficulty)?._customData?._difficultyLabel || diff.difficulty;
                 arr.push({ name: diffName, type: diff.difficulty, stars: diff.stars });
@@ -45,24 +45,26 @@ export const MapsRow = memo(({ maps, style, selectedMaps$, onMapSelect, onMapDel
     };
 
     const renderMapItem = (map: BsmLocalMap) => {
-        return <MapItem 
-            key={map.hash} 
-            hash={map.hash} 
-            title={map.rawInfo._songName} 
-            coverUrl={map.coverUrl} 
-            songUrl={map.songUrl} 
-            autor={map.rawInfo._levelAuthorName} 
-            songAutor={map.rawInfo._songAuthorName} 
-            bpm={map.rawInfo._beatsPerMinute} 
-            duration={map.bsaverInfo?.metadata?.duration} 
-            selected={selectedMaps.some(selected => selected.hash === map.hash)} 
-            diffs={extractMapDiffs(map)} mapId={map.bsaverInfo?.id} 
-            ranked={map.bsaverInfo?.ranked} 
-            autorId={map.bsaverInfo?.uploader?.id} 
-            likes={map.bsaverInfo?.stats?.upvotes} 
-            createdAt={map.bsaverInfo?.createdAt} 
-            onDelete={onMapDelete} 
-            onSelected={onMapSelect} 
+
+        return <MapItem
+            key={map.hash}
+            hash={map.hash}
+            title={map.rawInfo._songName}
+            coverUrl={map.coverUrl}
+            songUrl={map.songUrl}
+            autor={map.rawInfo._levelAuthorName}
+            songAutor={map.rawInfo._songAuthorName}
+            bpm={map.rawInfo._beatsPerMinute}
+            duration={map.songDetails?.metadata.duration}
+            selected={selectedMaps.some(selected => selected.hash === map.hash)}
+            diffs={extractMapDiffs(map)}
+            mapId={map.songDetails?.id}
+            ranked={map.songDetails?.ranked}
+            autorId={map.songDetails?.uploader.id}
+            likes={map.songDetails?.upVotes}
+            createdAt={map.songDetails?.uploadedAt}
+            onDelete={onMapDelete}
+            onSelected={onMapSelect}
             callBackParam={map}
         />;
     };

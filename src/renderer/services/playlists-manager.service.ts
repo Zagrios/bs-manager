@@ -23,6 +23,10 @@ export class PlaylistsManagerService {
         this.linker = VersionFolderLinkerService.getInstance();
     }
 
+    public getVersionPlaylists(version: BSVersion): Promise {
+        return this.ipc.sendV2("get-version-playlists", version);
+    }
+
     public isDeepLinksEnabled(): Promise<boolean> {
         return lastValueFrom(this.ipc.sendV2<boolean>("is-playlists-deep-links-enabled"));
     }

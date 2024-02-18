@@ -82,7 +82,7 @@ export class BsSteamDownloaderService {
             qr
         }
 
-        await ensureDir(await this.installLocationService.versionsDirectory());
+        await ensureDir(this.installLocationService.versionsDirectory());
 
         const isLinux = process.platform === 'linux';
         const exePath = this.getDepotDownloaderExePath();
@@ -91,7 +91,7 @@ export class BsSteamDownloaderService {
         const depotDownloader = new DepotDownloader({
             command: isLinux ? 'dotnet' : exePath,
             args: isLinux ? [exePath, ...args] : args,
-            options: { cwd: await this.installLocationService.versionsDirectory() },
+            options: { cwd: this.installLocationService.versionsDirectory() },
             echoStartData: downloadVersion
         }, log);
 

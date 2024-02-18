@@ -1,5 +1,5 @@
 import { IpcRequest } from "shared/models/ipc";
-import { BrowserWindow, ipcMain } from "electron";
+import { BrowserWindow, IpcMainEvent, ipcMain } from "electron";
 import { Observable } from "rxjs";
 import { IpcCompleteChannel, IpcErrorChannel, IpcTearDownChannel } from "shared/models/ipc/ipc-response.interface";
 import { IpcReplier } from "shared/models/ipc/ipc-request.interface";
@@ -31,7 +31,7 @@ export class IpcService {
     }
 
     private buildProxyListener<T>(listener: IpcListener<T>) {
-        return (event: Electron.IpcMainEvent, req: IpcRequest<T>) => {
+        return (event: IpcMainEvent, req: IpcRequest<T>) => {
             const window = BrowserWindow.fromWebContents(event.sender);
             const replier = (data: Observable<unknown>) => this.connectStream(req.responceChannel, window, data);
             listener(req, replier);

@@ -4,13 +4,13 @@ import { BSVersion } from "shared/bs-version.interface";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import { DeepLinkService } from "../deep-link.service";
 import { RequestService } from "../request.service";
-import { LocalMapsManagerService } from "./local-maps-manager.service";
+import { LocalMapsManagerService } from "./maps/local-maps-manager.service";
 import log from "electron-log";
 import { WindowManagerService } from "../window-manager.service";
 import { BPList, DownloadPlaylistProgressionData } from "shared/models/playlists/playlist.interface";
 import { readFileSync } from "fs";
 import { BeatSaverService } from "../thrid-party/beat-saver/beat-saver.service";
-import { copy, copyFile, pathExists, realpath } from "fs-extra";
+import { copy, copyFile, pathExists, pathExistsSync, readdirSync, realpath } from "fs-extra";
 import { Progression, ensureFolderExist, pathExist } from "../../helpers/fs.helpers";
 import { FileAssociationService } from "../file-association.service";
 
@@ -98,6 +98,37 @@ export class LocalPlaylistsManagerService {
 
     private openOneClickDownloadPlaylistWindow(downloadUrl: string): void {
         this.windows.openWindow(`oneclick-download-playlist.html?playlistUrl=${downloadUrl}`);
+    }
+
+    private getReadBPListOfFolder(folerPath: string): Observable<Progression<BPList[]>> {
+        return new Observable<Progression<BPList[]>>(obs => {
+
+            const progress: Progression<BPList[]> = { current: 0, total: 0, data: [] };
+
+            (async () => {
+                if(!pathExistsSync(folerPath)) {
+                    throw new Error(`Playlists folder not found ${folerPath}`);
+                }
+
+                const playlists = readdirSync(folerPath).filter(file => path.extname(file) === ".bplist");
+                progress.total = playlists.length;
+
+                for (const playlist of playlists) {
+                    const playlistPath = path.join(folerPath, playlist);
+                    const playlistContent = await this.readPlaylistFile(playlistPath);
+                    progress.data.push(playlistContent);
+                    progress.current += 1;
+                    obs.next(progress);
+                }
+            })().catch(err => obs.error(err)).finally(() => obs.complete());
+        });
+    }
+
+    public getVersionPlaylists(version: BSVersion): Observable<Progression<BPList[]>> {
+        return new Observable<Progression<BPList[]>>(obs => {
+            this.getPlaylistsFolder(version)
+                .then(folder => this.getReadBPListOfFolder(folder).subscribe(obs))
+        });
     }
 
     public downloadPlaylist(bpListUrl: string, version: BSVersion): Observable<Progression<DownloadPlaylistProgressionData>> {

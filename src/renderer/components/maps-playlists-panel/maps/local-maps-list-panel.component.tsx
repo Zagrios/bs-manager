@@ -3,13 +3,11 @@ import { BSVersion } from "shared/bs-version.interface";
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { Subscription, BehaviorSubject } from "rxjs";
-import { MapFilter } from "shared/models/maps/beat-saver.model";
+import { MapFilter, MapTag } from "shared/models/maps/beat-saver.model";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
 import { VariableSizeList } from "react-window";
 import { MapsRow } from "./maps-row.component";
-import { debounceTime, last, mergeMap, tap } from "rxjs/operators";
-import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
-import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
+import { debounceTime, last, tap } from "rxjs/operators";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import BeatWaitingImg from "../../../../../assets/images/apngs/beat-waiting.png";
 import BeatConflict from "../../../../../assets/images/apngs/beat-conflict.png";
@@ -33,8 +31,6 @@ type Props = {
 export const LocalMapsListPanel = forwardRef(({ version, className, filter, search, linkedState, isActive }: Props, forwardRef) => {
     const mapsManager = useService(MapsManagerService);
     const mapsDownloader = useService(MapsDownloaderService);
-    const bsaver = useService(BeatSaverService);
-    const os = useService(OsDiagnosticService);
 
     const t = useTranslation();
     const ref = useRef(null);
@@ -43,7 +39,7 @@ export const LocalMapsListPanel = forwardRef(({ version, className, filter, sear
     const [selectedMaps$] = useState(new BehaviorSubject<BsmLocalMap[]>([]));
     const [itemPerRow, setItemPerRow] = useState(2);
     const [listHeight, setListHeight] = useState(0);
-    const isActiveOnce = useChangeUntilEqual(isActive, { untilEqual: true, emitOnEqual: true });
+    const isActiveOnce = useChangeUntilEqual(isActive, { untilEqual: true });
     const [linked, setLinked] = useState(false);
 
     const [loadPercent$] = useState(new BehaviorSubject(0));
@@ -135,21 +131,10 @@ export const LocalMapsListPanel = forwardRef(({ version, className, filter, sear
             loadMapsObs$
                 .pipe(
                     tap(progress => loadPercent$.next(Math.floor((progress.loaded / progress.total) * 100))),
-                    last(),
-                    mergeMap(async progress => {
-                        if (os.isOffline) {
-                            return progress.maps;
-                        }
-                        const { maps } = progress;
-                        const details = await bsaver.getMapDetailsFromHashs(maps.map(map => map.hash));
-                        return maps.map(map => {
-                            map.bsaverInfo = details.find(d => d.versions.at(0).hash === map.hash);
-                            return map;
-                        });
-                    })
+                    last()
                 )
                 .subscribe({
-                    next: maps => setMaps(() => maps),
+                    next: progress => setMaps(() => progress.maps),
                     complete: () => loadPercent$.next(0),
                 })
         );
@@ -194,13 +179,14 @@ export const LocalMapsListPanel = forwardRef(({ version, className, filter, sear
         // Can be more clean and optimized i think
 
         const fitEnabledTags = (() => {
+
             if (!filter?.enabledTags || filter.enabledTags.size === 0) {
                 return true;
             }
-            if (!map?.bsaverInfo?.tags) {
+            if (!map?.songDetails?.tags) {
                 return false;
             }
-            return Array.from(filter.enabledTags.values()).every(tag => map.bsaverInfo.tags.some(mapTag => mapTag === tag));
+            return Array.from(filter.enabledTags.values()).every(tag => map.songDetails.tags.some(mapTag => mapTag === tag));
         })();
 
         if (!fitEnabledTags) {
@@ -211,10 +197,10 @@ export const LocalMapsListPanel = forwardRef(({ version, className, filter, sear
             if (!filter?.excludedTags || filter.excludedTags.size === 0) {
                 return true;
             }
-            if (!map?.bsaverInfo?.tags) {
+            if (!map?.songDetails?.tags) {
                 return true;
             }
-            return !map.bsaverInfo.tags.some(tag => filter.excludedTags.has(tag));
+            return !map.songDetails?.tags.some(tag => filter.excludedTags.has(tag as MapTag));
         })();
 
         if (!fitExcluedTags) {
@@ -225,12 +211,8 @@ export const LocalMapsListPanel = forwardRef(({ version, className, filter, sear
             if (!filter?.minNps) {
                 return true;
             }
-            if (!map?.bsaverInfo?.versions?.at(0)) {
-                return false;
-            }
-            return !map.bsaverInfo.versions.some(version => {
-                return version.diffs.some(diff => diff.nps < filter.minNps);
-            });
+
+            return map.songDetails?.difficulties.some(diff => diff.nps > filter.minNps);
         })();
 
         if (!fitMinNps) {
@@ -241,12 +223,8 @@ export const LocalMapsListPanel = forwardRef(({ version, className, filter, sear
             if (!filter?.maxNps) {
                 return true;
             }
-            if (!map?.bsaverInfo?.versions?.at(0)) {
-                return false;
-            }
-            return !map.bsaverInfo.versions.some(version => {
-                return version.diffs.some(diff => diff.nps > filter.maxNps);
-            });
+
+            return  map.songDetails?.difficulties.some(diff => diff.nps < filter.maxNps);
         })();
 
         if (!fitMaxNps) {
@@ -258,10 +236,10 @@ export const LocalMapsListPanel = forwardRef(({ version, className, filter, sear
                 return true;
             }
 
-            if (!map?.bsaverInfo?.metadata?.duration) {
+            if (!map?.songDetails?.metadata?.duration) {
                 return false;
             }
-            return map.bsaverInfo.metadata.duration >= filter.minDuration;
+            return map.songDetails?.metadata.duration >= filter.minDuration;
         })();
 
         if (!fitMinDuration) {
@@ -272,10 +250,10 @@ export const LocalMapsListPanel = forwardRef(({ version, className, filter, sear
             if (!filter?.maxDuration) {
                 return true;
             }
-            if (!map?.bsaverInfo?.metadata?.duration) {
+            if (!map?.songDetails?.metadata?.duration) {
                 return false;
             }
-            return map.bsaverInfo.metadata.duration <= filter.maxDuration;
+            return map.songDetails?.metadata.duration <= filter.maxDuration;
         })();
 
         if (!fitMaxDuration) {
@@ -286,10 +264,7 @@ export const LocalMapsListPanel = forwardRef(({ version, className, filter, sear
             if (!filter?.noodle) {
                 return true;
             }
-            if (!map?.bsaverInfo?.versions?.at(0)) {
-                return false;
-            }
-            return map.bsaverInfo.versions.some(version => version.diffs.some(diff => !!diff.ne));
+            return map.songDetails?.difficulties.some(diff => !!diff.ne);
         })();
 
         if (!fitNoodle) {
@@ -300,10 +275,8 @@ export const LocalMapsListPanel = forwardRef(({ version, className, filter, sear
             if (!filter?.me) {
                 return true;
             }
-            if (!map?.bsaverInfo?.versions?.at(0)) {
-                return false;
-            }
-            return map.bsaverInfo.versions.some(version => version.diffs.some(diff => !!diff.me));
+
+            return map.songDetails?.difficulties.some(diff => !!diff.me);
         })();
 
         if (!fitMe) {
@@ -314,10 +287,8 @@ export const LocalMapsListPanel = forwardRef(({ version, className, filter, sear
             if (!filter?.cinema) {
                 return true;
             }
-            if (!map?.bsaverInfo?.versions?.at(0)) {
-                return false;
-            }
-            return map.bsaverInfo.versions.some(version => version.diffs.some(diff => !!diff.cinema));
+
+            return map.songDetails?.difficulties.some(diff => !!diff.cinema);
         })();
 
         if (!fitCinema) {
@@ -328,10 +299,8 @@ export const LocalMapsListPanel = forwardRef(({ version, className, filter, sear
             if (!filter?.chroma) {
                 return true;
             }
-            if (!map?.bsaverInfo?.versions?.at(0)) {
-                return false;
-            }
-            return map.bsaverInfo.versions.some(version => version.diffs.some(diff => !!diff.chroma));
+
+            return map.songDetails?.difficulties.some(diff => !!diff.chroma);
         })();
 
         if (!fitChroma) {
@@ -342,31 +311,29 @@ export const LocalMapsListPanel = forwardRef(({ version, className, filter, sear
             if (!filter?.fullSpread) {
                 return true;
             }
-            if (!map?.bsaverInfo?.versions?.at(0)) {
-                return false;
-            }
-            return map.bsaverInfo.versions.some(version => version?.diffs?.length >= 5);
+
+            return map.songDetails?.difficulties.length >= 5;
         })();
 
         if (!fitFullSpread) {
             return false;
         }
 
-        if (!(filter?.automapper ? map.bsaverInfo?.automapper === filter.automapper : true)) {
+        if (filter?.automapper && (map.songDetails && !map.songDetails?.automapper)) {
             return false;
         }
-        if (!(filter?.ranked ? map.bsaverInfo?.ranked === filter.ranked : true)) {
+        if (!(filter?.ranked ? map.songDetails?.ranked === filter.ranked : true)) {
             return false;
         }
-        if (!(filter?.curated ? !!map.bsaverInfo?.curatedAt : true)) {
+        if (!(filter?.curated ? !!map.songDetails?.curated === filter.curated : true)) {
             return false;
         }
-        if (!(filter?.verified ? !!map.bsaverInfo?.uploader?.verifiedMapper : true)) {
+        if (!(filter?.verified ? !!map.songDetails?.uploader?.verified : true)) {
             return false;
         }
 
         const searchCheck = (() => {
-            return ((map.rawInfo?._songName ?? map.bsaverInfo?.name) || "")?.toLowerCase().includes(search.toLowerCase()) || ((map.rawInfo?._songAuthorName ?? map.bsaverInfo?.metadata?.songAuthorName) || "")?.toLowerCase().includes(search.toLowerCase()) || ((map.rawInfo?._levelAuthorName ?? map.bsaverInfo?.metadata?.levelAuthorName) || "")?.toLowerCase().includes(search.toLowerCase());
+            return ((map.rawInfo?._songName ?? map.songDetails?.name) || "")?.toLowerCase().includes(search.toLowerCase()) || ((map.rawInfo?._songAuthorName ?? map.songDetails?.metadata?.songAuthorName) || "")?.toLowerCase().includes(search.toLowerCase()) || ((map.rawInfo?._levelAuthorName ?? map.songDetails?.metadata?.levelAuthorName) || "")?.toLowerCase().includes(search.toLowerCase());
         })();
 
         if (!searchCheck) {
