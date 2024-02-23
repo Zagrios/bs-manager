@@ -5,7 +5,7 @@ import { Subject, debounceTime } from "rxjs";
 
 export class JsonCache<T = unknown> {
 
-    private cache: Record<string, T> = {};
+    private _cache: Record<string, T> = {};
     private readonly setEvent: Subject<void> = new Subject<void>();
 
     public constructor(
@@ -22,40 +22,43 @@ export class JsonCache<T = unknown> {
 
     private load(): void {
         try {
-            this.cache = require(this.jsonPath);
+            this._cache = require(this.jsonPath);
         } catch (error) {
             log.warn("Failed to load cache or file cache not exist yet", this.jsonPath, error);
         } finally {
-            this.cache ??= {};
+            this._cache ??= {};
         }
     }
 
     public save(): void {
-        const res = tryit(() => writeFileSync(this.jsonPath, JSON.stringify(this.cache), { flush: true }));
+        const res = tryit(() => writeFileSync(this.jsonPath, JSON.stringify(this._cache), { flush: true }));
         if(res.error){
             log.error("Failed to save cache", this.jsonPath, res.error);
         }
     }
 
     public get(key: string): T {
-        return this.cache[key];
+        return this._cache[key];
     }
 
     public set(key: string, value: T): void {
-        this.cache[key] = value;
+        this._cache[key] = value;
         this.setEvent?.next();
     }
 
     public delete(key: string): void {
-        delete this.cache[key];
+        delete this._cache[key];
         this.setEvent?.next();
     }
 
     public clear(): void {
-        this.cache = {};
+        this._cache = {};
         this.setEvent?.next();
     }
 
+    public get cache(): Record<string, T> {
+        return this._cache;
+    }
 }
 
 export type JsonCacheOptions = {

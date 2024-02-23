@@ -1,3 +1,4 @@
+import { BSVersion } from "shared/bs-version.interface";
 import { LocalPlaylistsManagerService } from "../services/additional-content/local-playlists-manager.service";
 import { IpcService } from "../services/ipc.service";
 import { of, throwError } from "rxjs";
@@ -39,7 +40,7 @@ ipc.on("is-playlists-deep-links-enabled", (_, reply) => {
     }
 });
 
-ipc.on("get-version-playlists", (req, reply) => {
+ipc.on<BSVersion>("get-version-playlists", (req, reply) => {
     const playlists = LocalPlaylistsManagerService.getInstance();
     reply(playlists.getVersionPlaylists(req.args));
 });

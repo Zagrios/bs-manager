@@ -160,7 +160,7 @@ export class SongDetailsCacheService {
         }))));
     }
 
-    public getSongDetails(hash: string): any {
+    public getSongDetails(hash: string): SongDetails {
         return this.songDetailsCache[hash.toLocaleLowerCase()];
     }
 

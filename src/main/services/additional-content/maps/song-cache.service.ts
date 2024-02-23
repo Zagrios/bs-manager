@@ -26,6 +26,11 @@ export class SongCacheService {
         return this.rawInfosCache.get(dirname);
     }
 
+    public getMapInfoFromHash(hash: string): { path: string, info: CachedRawInfoWithHash } | undefined {
+        const res = Object.entries(this.rawInfosCache.cache).find(([, info]) => info.hash === hash);
+        return res ? { path: res[0], info: res[1] } : undefined;
+    }
+
     public setMapInfoFromDirname(dirname: string, info: CachedRawInfoWithHash): void {
         this.rawInfosCache.set(dirname, info);
     }

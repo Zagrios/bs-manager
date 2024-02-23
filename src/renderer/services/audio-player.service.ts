@@ -50,6 +50,15 @@ export class AudioPlayerService {
         return this.player.play();
     }
 
+    public playlist(songs: {src: string, bpm: number}[], index: number): void {
+        this.play(songs[index].src, songs[index].bpm);
+        this.player.onended = () => {
+            if (index < songs.length - 1) {
+                this.playlist(songs, index + 1);
+            }
+        };
+    }
+
     public pause(): void {
         this._playing$.next(false);
         this.player.pause();
@@ -83,7 +92,10 @@ export class AudioPlayerService {
     }
 
     public toggleMute(): void {
-        this.muted ? this.unmute() : this.mute();
+        if(this.muted){
+            return this.unmute();
+        }
+        this.mute();
     }
 
     public get src$(): Observable<string> {
@@ -113,6 +125,9 @@ export class AudioPlayerService {
     }
     public get muted(): boolean {
         return this.player.muted;
+    }
+    public get paused(): boolean {
+        return this.player.paused;
     }
 }
 

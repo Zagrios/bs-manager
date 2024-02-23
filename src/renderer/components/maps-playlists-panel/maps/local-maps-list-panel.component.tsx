@@ -9,15 +9,15 @@ import { VariableSizeList } from "react-window";
 import { MapsRow } from "./maps-row.component";
 import { debounceTime, last, tap } from "rxjs/operators";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import BeatWaitingImg from "../../../../../assets/images/apngs/beat-waiting.png";
 import BeatConflict from "../../../../../assets/images/apngs/beat-conflict.png";
 import { BsmImage } from "../../shared/bsm-image.component";
 import { BsmButton } from "../../shared/bsm-button.component";
-import TextProgressBar from "../../progress-bar/text-progress-bar.component";
 import { useChangeUntilEqual } from "renderer/hooks/use-change-until-equal.hook";
 import { useService } from "renderer/hooks/use-service.hook";
 import { FolderLinkState } from "renderer/services/version-folder-linker.service";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
+import { useConstant } from "renderer/hooks/use-constant.hook";
+import { BsContentLoader } from "renderer/components/shared/bs-content-loader.component";
 
 type Props = {
     version: BSVersion;
@@ -28,7 +28,7 @@ type Props = {
     isActive?: boolean;
 };
 
-export const LocalMapsListPanel = forwardRef(({ version, className, filter, search, linkedState, isActive }: Props, forwardRef) => {
+export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, className, filter, search, linkedState, isActive }, forwardRef) => {
     const mapsManager = useService(MapsManagerService);
     const mapsDownloader = useService(MapsDownloaderService);
 
@@ -42,7 +42,7 @@ export const LocalMapsListPanel = forwardRef(({ version, className, filter, sear
     const isActiveOnce = useChangeUntilEqual(isActive, { untilEqual: true });
     const [linked, setLinked] = useState(false);
 
-    const [loadPercent$] = useState(new BehaviorSubject(0));
+    const loadPercent$ = useConstant(() => new BehaviorSubject(0));
 
     useImperativeHandle(
         forwardRef,
@@ -372,11 +372,7 @@ export const LocalMapsListPanel = forwardRef(({ version, className, filter, sear
     if (!maps) {
         return (
             <div ref={ref} className={className}>
-                <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1 text-gray-800 dark:text-gray-200">
-                    <BsmImage className="w-32 h-32 spin-loading" image={BeatWaitingImg} />
-                    <span className="font-bold">{t("modals.download-maps.loading-maps")}</span>
-                    <TextProgressBar value$={loadPercent$} />
-                </div>
+                <BsContentLoader className="h-full flex flex-col items-center justify-center flex-wrap gap-1 text-gray-800 dark:text-gray-200" value$={loadPercent$} text="modals.download-maps.loading-maps" />
             </div>
         );
     }

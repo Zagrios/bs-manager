@@ -13,6 +13,11 @@ import { BeatSaverService } from "../thrid-party/beat-saver/beat-saver.service";
 import { copy, copyFile, pathExists, pathExistsSync, readdirSync, realpath } from "fs-extra";
 import { Progression, ensureFolderExist, pathExist } from "../../helpers/fs.helpers";
 import { FileAssociationService } from "../file-association.service";
+import { SongDetailsCacheService } from "./maps/song-details-cache.service";
+import { sToMs } from "shared/helpers/time.helpers";
+import { LocalBPList, LocalBpListSong } from "shared/models/playlists/local-playlist.models";
+import { SongCacheService } from "./maps/song-cache.service";
+import { pathToFileURL } from "url";
 
 export class LocalPlaylistsManagerService {
     private static instance: LocalPlaylistsManagerService;
@@ -36,6 +41,8 @@ export class LocalPlaylistsManagerService {
     private readonly fileAssociation: FileAssociationService;
     private readonly windows: WindowManagerService;
     private readonly bsaver: BeatSaverService;
+    private readonly songDetails: SongDetailsCacheService;
+    private readonly songCache: SongCacheService;
 
     private constructor() {
         this.maps = LocalMapsManagerService.getInstance();
@@ -45,6 +52,9 @@ export class LocalPlaylistsManagerService {
         this.fileAssociation = FileAssociationService.getInstance();
         this.windows = WindowManagerService.getInstance();
         this.bsaver = BeatSaverService.getInstance();
+        this.songDetails = SongDetailsCacheService.getInstance();
+        this.songCache = SongCacheService.getInstance();
+
 
         this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.BeatSaver, link => {
             log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.BeatSaver, link);
@@ -100,34 +110,61 @@ export class LocalPlaylistsManagerService {
         this.windows.openWindow(`oneclick-download-playlist.html?playlistUrl=${downloadUrl}`);
     }
 
-    private getReadBPListOfFolder(folerPath: string): Observable<Progression<BPList[]>> {
-        return new Observable<Progression<BPList[]>>(obs => {
+    private readLocalBPListsOfFolder(folerPath: string, version?: BSVersion): Observable<Progression<LocalBPList[]>> {
+        return new Observable<Progression<LocalBPList[]>>(obs => {
 
-            const progress: Progression<BPList[]> = { current: 0, total: 0, data: [] };
+            const progress: Progression<LocalBPList[]> = { current: 0, total: 0, data: [] };
+            const bpLists: LocalBPList[] = [];
 
             (async () => {
+
+                await this.songDetails.waitLoaded(sToMs(15));
+
                 if(!pathExistsSync(folerPath)) {
                     throw new Error(`Playlists folder not found ${folerPath}`);
                 }
 
+                const mapsFolder = version ? await this.maps.getMapsFolderPath(version) : null;
                 const playlists = readdirSync(folerPath).filter(file => path.extname(file) === ".bplist");
                 progress.total = playlists.length;
 
                 for (const playlist of playlists) {
                     const playlistPath = path.join(folerPath, playlist);
-                    const playlistContent = await this.readPlaylistFile(playlistPath);
-                    progress.data.push(playlistContent);
+                    const bpList = await this.readPlaylistFile(playlistPath);
+
+                    const localBpListSongs = bpList.songs.map(song => {
+                        const localInfos = mapsFolder ? this.songCache.getMapInfoFromHash(song.hash) : null;
+                        const coverPath = localInfos ? path.join(mapsFolder, localInfos.path, localInfos.info.rawInfo._coverImageFilename) : null;
+                        const songFilePath = localInfos ? path.join(mapsFolder, localInfos.path, localInfos.info.rawInfo._songFilename) : null;
+                        return ({
+                            song,
+                            songDetails: this.songDetails.getSongDetails(song.hash),
+                            coverUrl: (coverPath && pathExistsSync(coverPath)) ? pathToFileURL(coverPath).href : null,
+                            songUrl: (songFilePath && pathExistsSync(songFilePath)) ? pathToFileURL(songFilePath).href : null,
+                        } as LocalBpListSong)
+                    });
+                    const localBpList: LocalBPList = { ...bpList, path: playlistPath, songs: localBpListSongs };
+                    bpLists.push(localBpList);
                     progress.current += 1;
                     obs.next(progress);
                 }
+
+                progress.data = bpLists;
+                obs.next(progress);
             })().catch(err => obs.error(err)).finally(() => obs.complete());
         });
     }
 
-    public getVersionPlaylists(version: BSVersion): Observable<Progression<BPList[]>> {
-        return new Observable<Progression<BPList[]>>(obs => {
+    public getVersionPlaylists(version: BSVersion): Observable<Progression<LocalBPList[]>> {
+        return new Observable<Progression<LocalBPList[]>>(obs => {
             this.getPlaylistsFolder(version)
-                .then(folder => this.getReadBPListOfFolder(folder).subscribe(obs))
+                .then(folder => this.readLocalBPListsOfFolder(folder, version))
+                .then(progress$ => lastValueFrom(progress$.pipe(
+                    tap(progress => obs.next({...progress, data: []})),
+                )))
+                .then(res => obs.next(res))
+                .catch(err => obs.error(err))
+                .finally(() => obs.complete());
         });
     }
 

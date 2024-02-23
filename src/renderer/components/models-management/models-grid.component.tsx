@@ -1,5 +1,5 @@
 import { BSVersion } from "shared/bs-version.interface";
-import { useRef, forwardRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import { MSModelType } from "shared/models/models/model-saber.model";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useConstant } from "renderer/hooks/use-constant.hook";
@@ -9,9 +9,7 @@ import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 import { ModelItem } from "./model-item.component";
 import { useBehaviorSubject } from "renderer/hooks/use-behavior-subject.hook";
 import { BsmImage } from "../shared/bsm-image.component";
-import BeatWaitingImg from "../../../../assets/images/apngs/beat-waiting.png";
 import BeatConflict from "../../../../assets/images/apngs/beat-conflict.png";
-import TextProgressBar from "../progress-bar/text-progress-bar.component";
 import { BehaviorSubject, distinctUntilChanged, map, startWith } from "rxjs";
 import { BsmButton } from "../shared/bsm-button.component";
 import equal from "fast-deep-equal";
@@ -20,6 +18,7 @@ import { MODEL_TYPE_FOLDERS } from "shared/models/models/constants";
 import { useService } from "renderer/hooks/use-service.hook";
 import { ModelsDownloaderService } from "renderer/services/models-management/models-downloader.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { BsContentLoader } from "../shared/bs-content-loader.component";
 
 type Props = {
     className?: string;
@@ -30,13 +29,11 @@ type Props = {
     downloadModels?: () => void;
 };
 
-export const ModelsGrid = forwardRef(({ className, version, type, search, active, downloadModels }: Props, forwardRef) => {
+export const ModelsGrid = forwardRef<unknown, Props>(({ className, version, type, search, active, downloadModels }, forwardRef) => {
     const modelsManager = useService(ModelsManagerService);
     const modelsDownloader = useService(ModelsDownloaderService);
 
     const t = useTranslation();
-
-    const ref = useRef();
 
     const [models, setModelsLoadObservable, , setModels] = useSwitchableObservable<BsmLocalModel[]>();
     const progress$ = useConstant(() => new BehaviorSubject(0));
@@ -199,11 +196,7 @@ export const ModelsGrid = forwardRef(({ className, version, type, search, active
     const renderContent = () => {
         if (isLoading) {
             return (
-                <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1 text-gray-800 dark:text-gray-200">
-                    <BsmImage className="w-32 h-32 spin-loading" image={BeatWaitingImg} />
-                    <span className="font-bold">{t("models.panel.grid.loading")}</span>
-                    <TextProgressBar value$={progress$} />
-                </div>
+                <BsContentLoader className="h-full flex flex-col items-center justify-center flex-wrap gap-1 text-gray-800 dark:text-gray-200" value$={progress$} text="models.panel.grid.loading" />
             );
         }
 
@@ -236,7 +229,7 @@ export const ModelsGrid = forwardRef(({ className, version, type, search, active
     };
 
     return (
-        <div ref={ref} className={`w-full h-full flex-shrink-0 ${className ?? ""}`}>
+        <div className={`w-full h-full flex-shrink-0 ${className ?? ""}`}>
             {renderContent()}
         </div>
     );

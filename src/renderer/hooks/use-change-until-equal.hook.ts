@@ -19,10 +19,7 @@ export function useChangeUntilEqual<T = unknown>(variableValue: T, { untilEqual 
 
         const isEqual = equal(variableValue, untilEqualRef.current);
 
-        console.log("isEqual", isEqual, variableValue, untilEqualRef.current);
-
         if(!isEqual){
-            console.log("setValue", variableValue);
             return setValue(variableValue);
         }
 

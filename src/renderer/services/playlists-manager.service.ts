@@ -2,6 +2,8 @@ import { BSVersion } from "shared/bs-version.interface";
 import { IpcService } from "./ipc.service";
 import { Observable, lastValueFrom } from "rxjs";
 import { FolderLinkState, VersionFolderLinkerService } from "./version-folder-linker.service";
+import { Progression } from "main/helpers/fs.helpers";
+import { LocalBPList } from "shared/models/playlists/local-playlist.models";
 
 export class PlaylistsManagerService {
     private static instance: PlaylistsManagerService;
@@ -23,8 +25,8 @@ export class PlaylistsManagerService {
         this.linker = VersionFolderLinkerService.getInstance();
     }
 
-    public getVersionPlaylists(version: BSVersion): Promise {
-        return this.ipc.sendV2("get-version-playlists", version);
+    public getVersionPlaylists(version: BSVersion): Observable<Progression<LocalBPList[]>> {
+        return this.ipc.sendV2("get-version-playlists", { args: version });
     }
 
     public isDeepLinksEnabled(): Promise<boolean> {

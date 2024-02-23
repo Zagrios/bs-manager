@@ -25,6 +25,7 @@ import { IpcService } from "../../ipc.service";
 import { SongDetailsCacheService } from "./song-details-cache.service";
 import { sToMs } from "shared/helpers/time.helpers";
 import { SongCacheService } from "./song-cache.service";
+import { pathToFileURL } from "url";
 
 export class LocalMapsManagerService {
     private static instance: LocalMapsManagerService;
@@ -38,6 +39,7 @@ export class LocalMapsManagerService {
 
     public static readonly LEVELS_ROOT_FOLDER = "Beat Saber_Data";
     public static readonly CUSTOM_LEVELS_FOLDER = "CustomLevels";
+    public static readonly RELATIVE_MAPS_FOLDER = path.join(LocalMapsManagerService.LEVELS_ROOT_FOLDER, LocalMapsManagerService.CUSTOM_LEVELS_FOLDER);
     public static readonly SHARED_MAPS_FOLDER = "SharedMaps";
 
     private readonly DEEP_LINKS = {
@@ -81,7 +83,7 @@ export class LocalMapsManagerService {
 
     public async getMapsFolderPath(version?: BSVersion): Promise<string> {
         if (version) {
-            return path.join(await this.localVersion.getVersionPath(version), LocalMapsManagerService.LEVELS_ROOT_FOLDER, LocalMapsManagerService.CUSTOM_LEVELS_FOLDER);
+            return path.join(await this.localVersion.getVersionPath(version), LocalMapsManagerService.RELATIVE_MAPS_FOLDER);
         }
         const sharedMapsPath = path.join(await this.installLocation.sharedContentPath(), LocalMapsManagerService.SHARED_MAPS_FOLDER, LocalMapsManagerService.CUSTOM_LEVELS_FOLDER);
         if (!(await pathExist(sharedMapsPath))) {
@@ -117,8 +119,8 @@ export class LocalMapsManagerService {
     private async loadMapInfoFromPath(mapPath: string): Promise<BsmLocalMap> {
 
         const getUrlsAndReturn = (rawInfo: RawMapInfoData, hash: string, mapPath: string) => {
-            const coverUrl = new URL(`file:///${path.join(mapPath, rawInfo._coverImageFilename)}`).href;
-            const songUrl = new URL(`file:///${path.join(mapPath, rawInfo._songFilename)}`).href;
+            const coverUrl = pathToFileURL(path.join(mapPath, rawInfo._coverImageFilename)).href;
+            const songUrl = pathToFileURL(path.join(mapPath, rawInfo._songFilename)).href;
             return { rawInfo, coverUrl, songUrl, hash, path: mapPath, songDetails: this.songDetailsCache.getSongDetails(hash) } as BsmLocalMap;
         };
 

@@ -76,7 +76,7 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
     const previewUrl = mapId ? `https://allpoland.github.io/ArcViewer/?id=${mapId}` : null;
     const mapUrl = mapId ? `https://beatsaver.com/maps/${mapId}` : null;
     const authorUrl = autorId ? `https://beatsaver.com/profile/${autorId}` : null;
-    const createdDate = createdAt ? dateFormat(createdAt, "d mmm yyyy") : null;
+    const createdDate = createdAt ? dateFormat(createdAt * 1000, "d mmm yyyy") : null;
     const likesText = likes ? Intl.NumberFormat(undefined, { notation: "compact" }).format(likes).split(" ").join("") : null;
 
     const durationText = (() => {

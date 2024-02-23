@@ -123,8 +123,8 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                 ]}
             >
                 <>
-                    <LocalMapsListPanel isActive={isActive && tabIndex === 0} ref={mapsRef} className="w-full h-full shrink-0" version={version} filter={mapFilter} search={mapSearch} linkedState={mapsLinkedState} />
-                    <LocalPlaylistsListPanel isActive={isActive && tabIndex === 1} version={version} linkedState={playlistLinkedState}/>
+                    <LocalMapsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 0} ref={mapsRef} version={version} filter={mapFilter} search={mapSearch} linkedState={mapsLinkedState} />
+                    <LocalPlaylistsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 1} version={version} linkedState={playlistLinkedState}/>
                 </>
             </BsContentTabPanel>
         </div>
