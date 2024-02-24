@@ -11,6 +11,7 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { MAP_SPECIFICITIES } from "renderer/partials/maps/map-general/map-specificity";
 import { MAP_REQUIREMENTS } from "renderer/partials/maps/map-requirements/map-requirements";
 import { MAP_DIFFICULTIES_COLORS } from "renderer/partials/maps/map-difficulties/map-difficulties-colors";
+import { MapExclude, MAP_EXCLUDES } from "renderer/partials/maps/map-excludes/map-excludes";
 import { BsmButton } from "../shared/bsm-button.component";
 import equal from "fast-deep-equal/es6";
 import clone from "rfdc";
@@ -147,6 +148,10 @@ export function FilterPanel({ className, ref, playlist = false, filter, onChange
         return t(`maps.map-specificities.${specificity}`);
     };
 
+    const translateMapExclude = (exclude: MapExclude): string => {
+        return t(`maps.map-excludes.${exclude}`);
+    };
+
     type BooleanKeys<T> = { [k in keyof T]: T[k] extends boolean ? k : never }[keyof T];
 
     const handleCheckbox = (key: BooleanKeys<MapFilter>) => {
@@ -187,6 +192,13 @@ export function FilterPanel({ className, ref, playlist = false, filter, onChange
                         <div key={requirement} className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={() => handleCheckbox(requirement)}>
                             <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.[requirement]} onChange={() => handleCheckbox(requirement)} />
                             <span className="grow capitalize">{requirement}</span>
+                        </div>
+                    ))}
+                    <h2 className="my-1 uppercase text-sm">{t("maps.map-filter-panel.exclude")}</h2>
+                    {MAP_EXCLUDES.map(exclude => (
+                        <div key={exclude} className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={() => handleCheckbox(exclude)}>
+                            <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.[exclude]} onChange={() => handleCheckbox(exclude)} />
+                            <span className="grow capitalize">{translateMapExclude(exclude)}</span>
                         </div>
                     ))}
                 </section>
