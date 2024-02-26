@@ -76,12 +76,48 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
         };
     }, []);
 
-    const loadMaps = (params: SearchParams) => {
+    const applyInstalledFilter = (maps: BsvMapDetail[]): BsvMapDetail[] => {
+        return maps.filter(map => {
+            if (!filter.installed) {
+                return true;
+            }
+
+            return !map.versions.some(version => ownedMapHashs.includes(version.hash));
+        });
+    }
+
+    const loadMaps = (params: SearchParams, tryToLoad = 5) => {
         setLoading(() => true);
-        beatSaver
-            .searchMaps(params)
-            .then(maps => setMaps(prev => [...prev, ...maps]))
-            .finally(() => setLoading(() => false));
+
+        const searchResult = beatSaver.searchMaps(params);
+
+        if (!filter.installed) {
+            searchResult
+                .then(maps => setMaps(prev => [...prev, ...maps]))
+                .finally(() => setLoading(() => false));
+
+            return;
+        }
+
+        searchResult
+           .then(maps => {
+                if (!maps.length) {
+                    setLoading(() => false);
+
+                    return;
+                }
+
+                maps = applyInstalledFilter(maps);
+                setMaps(prev => [...prev, ...maps])
+
+                if (maps.length < tryToLoad) {
+                    handleLoadMore();
+
+                    return;
+                }
+
+                setLoading(() => false);
+            })
     };
 
     const extractMapDiffs = (map: BsvMapDetail): Map<BsvMapCharacteristic, ParsedMapDiff[]> => {

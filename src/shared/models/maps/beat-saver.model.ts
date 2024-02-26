@@ -162,6 +162,7 @@ export interface MapFilter {
     to?: number;
     fullSpread?: boolean;
     ranked?: boolean;
+    installed?: boolean;
     minDuration?: number;
     maxDuration?: number;
     minNps?: number;
