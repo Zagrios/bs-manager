@@ -6,7 +6,7 @@ import { useClickOutside } from "renderer/hooks/use-click-outside.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { getCorrectTextColor } from "renderer/helpers/correct-text-color";
 
-type BsmButtonType = "primary" | "secondary" | "success" | "cancel" | "error";
+type BsmButtonType = "primary" | "secondary" | "success" | "cancel" | "error" | "none";
 
 type Props = {
     className?: string;
@@ -50,7 +50,7 @@ export function BsmButton({ className, style, imgClassName, iconClassName, icon,
         if (primaryColor) {
             return getCorrectTextColor(primaryColor);
         }
-        return typeColor ? "white" : undefined;
+        return typeColor && typeColor !== "none" ? "white" : undefined;
     })();
 
     const renderTypeColor = (() => {

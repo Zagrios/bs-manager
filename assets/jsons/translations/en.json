@@ -191,6 +191,10 @@
                     "report-bug": "Report a bug",
                     "open-logs": "Open logs"
                 }
+            },
+            "changelogs": {
+                "open" : "🚀 Check Out the Changelog!",
+                "not-founds": "😕 Oops, No Changelog Here!"
             }
         }
     },

@@ -191,6 +191,10 @@
                     "report-bug": "Fehler melden",
                     "open-logs": "Protokolle öffnen"
                 }
+            },
+            "changelogs": {
+                "open" : "🚀 Neues im Changelog entdecken!",
+                "not_founds": "😕 Hoppla, kein Changelog zu sehen!"
             }
         }
     },

@@ -9,7 +9,6 @@ import { WindowManagerService } from "../services/window-manager.service";
 import { useService } from "renderer/hooks/use-service.hook";
 
 export default function Launcher() {
-    
     const updaterService = useService(AutoUpdaterService);
     const windowService = useService(WindowManagerService);
 
