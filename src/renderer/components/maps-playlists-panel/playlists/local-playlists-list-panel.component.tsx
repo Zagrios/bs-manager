@@ -11,6 +11,7 @@ import { BSVersion } from "shared/bs-version.interface";
 import { noop } from "shared/helpers/function.helpers";
 import { LocalBPList } from "shared/models/playlists/local-playlist.models";
 import { PlaylistItem } from "./playlist-item.component";
+import { useStateMap } from "renderer/hooks/use-state-map.hook";
 
 type Props = {
     version: BSVersion;
@@ -28,12 +29,12 @@ export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, cl
     const [playlistsLoading, setPlaylistsLoading] = useState(false);
     const [playlists, setPlaylists] = useState<LocalBPList[]>([]);
     const loadPercent$ = useConstant(() => new BehaviorSubject<number>(0));
+    const linked = useStateMap(linkedState, (newState, precMapped) => (newState === FolderLinkState.Pending || newState === FolderLinkState.Processing) ? precMapped : newState === FolderLinkState.Linked, false);
 
     const loadPlaylists = (): Promise<LocalBPList[]> => {
         setPlaylistsLoading(true);
         const obs = playlistService.getVersionPlaylists(version).pipe(
             tap({ next: load => loadPercent$.next((load.current / load.total) * 100)}),
-            tap({ next: console.log}),
             map(load => load.data),
             finalize(() => setPlaylistsLoading(false))
         );
@@ -73,10 +74,6 @@ export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, cl
         return max === -Infinity ? null : max;
     }
 
-    const getSongsOfPlaylist = (playlist: LocalBPList) => {
-        return playlist.songs.map(s => ({ url: s.songUrl ?? `https://cdn.beatsaver.com/${s.song.hash}.mp3`, bpm: s.songDetails?.bpm ?? 0}));
-    }
-
     useOnUpdate(() => {
 
         if(!isActiveOnce){ return noop(); }
@@ -89,7 +86,7 @@ export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, cl
             loadPercent$.next(0);
         });
 
-    }, [isActiveOnce, version]);
+    }, [isActiveOnce, version, linked]);
 
     const render = () => {
         if(playlistsLoading){
@@ -114,7 +111,6 @@ export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, cl
                                 duration={getDurationOfPlaylist(p)}
                                 maxNps={getMaxNpsOfPlaylist(p)}
                                 minNps={getMinNpsOfPlaylist(p)}
-                                songs={getSongsOfPlaylist(p)}
                             />
                         )}
                     </ul>

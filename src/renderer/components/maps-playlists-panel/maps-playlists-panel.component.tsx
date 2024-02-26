@@ -68,6 +68,16 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         return mapsService.unlinkVersion(version);
     };
 
+    const handlePlaylistLinkClick = () => {
+        if(playlistLinkedState === FolderLinkState.Pending || playlistLinkedState === FolderLinkState.Processing){ return Promise.resolve(false); }
+
+        if (playlistLinkedState === FolderLinkState.Unlinked) {
+            return playlistsService.linkVersion(version);
+        }
+
+        return playlistsService.unlinkVersion(version);
+    }
+
     const dropDownItems = ((): DropDownItem[] => {
         if (tabIndex === 1) {
             return [];
@@ -117,7 +127,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                         onClick: () => setTabIndex(1),
                         linkProps: version ? {
                             state: playlistLinkedState,
-                            onClick: () => Promise.resolve(false),
+                            onClick: handlePlaylistLinkClick,
                         } : null,
                     },
                 ]}

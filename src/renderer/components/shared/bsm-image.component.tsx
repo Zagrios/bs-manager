@@ -40,5 +40,5 @@ export const BsmImage = forwardRef<HTMLImageElement, Props>(({ className, image,
         setIsLoaded(() => true);
     };
 
-    return <img ref={ref} title={title} className={className} src={imageSrc} loading={loading} onLoad={handleLoaded} onError={handleError} style={styles} onClick={e => onClick?.(e)} alt=" " decoding="async" />;
+    return <img ref={ref} title={title} className={className} src={imageSrc} loading={loading ?? "lazy"} onLoad={handleLoaded} onError={handleError} style={styles} onClick={e => onClick?.(e)} alt=" " decoding="async" />;
 });

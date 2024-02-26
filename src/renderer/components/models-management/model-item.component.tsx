@@ -116,8 +116,8 @@ function ModelItemElement<T = unknown>(props: Props<T>) {
             <GlowEffect visible={props.selected || hovered} />
             <div className="absolute top-0 left-0 w-full h-full rounded-lg overflow-hidden blur-none bg-black shadow-sm shadow-black">
                 <div ref={ref} className="contents">
-                    <BsmImage className="absolute top-0 left-0 w-full h-full object-cover brightness-50 scale-[200%] blur-md" image={thumbnailUrl} placeholder={defaultImage} loading="lazy" />
-                    <BsmImage className="absolute top-0 left-1/2 -translate-x-1/2 max-w-[20rem] w-full h-full object-cover" image={thumbnailUrl} placeholder={defaultImage} loading="lazy" />
+                    <BsmImage className="absolute top-0 left-0 w-full h-full object-cover brightness-50 scale-[200%] blur-md" image={thumbnailUrl} placeholder={defaultImage} />
+                    <BsmImage className="absolute top-0 left-1/2 -translate-x-1/2 max-w-[20rem] w-full h-full object-cover" image={thumbnailUrl} placeholder={defaultImage} />
                     <div className="absolute top-0 right-0 h-full w-0 flex flex-col items-end gap-1 pt-1.5 pr-1.5">
                         {!props.isDownloading ? (
                             actionButtons().map((button, index) => (

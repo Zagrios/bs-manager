@@ -13,7 +13,7 @@ import { ConfigurationService } from "./configuration.service";
 import { ArchiveProgress } from "shared/models/archive.interface";
 import { map, last, catchError } from "rxjs/operators";
 import { ProgressionInterface } from "shared/models/progress-bar";
-import { FolderLinkState, VersionFolderLinkerService, VersionLinkerActionType } from "./version-folder-linker.service";
+import { FolderLinkState, VersionFolderLinkerService } from "./version-folder-linker.service";
 
 export class MapsManagerService {
     private static instance: MapsManagerService;
@@ -64,7 +64,6 @@ export class MapsManagerService {
 
         return this.linker.linkVersionFolder({
             version,
-            type: VersionLinkerActionType.Link,
             relativeFolder: MapsManagerService.RELATIVE_MAPS_FOLDER,
             options: { keepContents: !!modalRes.data },
         });
@@ -79,7 +78,6 @@ export class MapsManagerService {
 
         return this.linker.unlinkVersionFolder({
             version,
-            type: VersionLinkerActionType.Unlink,
             relativeFolder: MapsManagerService.RELATIVE_MAPS_FOLDER,
             options: { keepContents: !!modalRes.data },
         });

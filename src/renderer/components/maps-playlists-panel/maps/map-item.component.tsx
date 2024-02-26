@@ -178,7 +178,7 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
                 </AnimatePresence>
             <div className="h-full w-full relative pl-[100px] rounded-md overflow-hidden flex flex-row justify-end">
                 <div className={`absolute top-0 left-0 h-full aspect-square cursor-pointer ${showOwned && "border-l-[5px]"}`} style={{ borderColor: showOwned && color }}>
-                    <BsmImage className="w-full h-full object-cover" image={coverUrl} placeholder={defaultImage} errorImage={defaultImage} loading="lazy" />
+                    <BsmImage className="w-full h-full object-cover" image={coverUrl} placeholder={defaultImage} errorImage={defaultImage} />
                     <span
                         className="absolute flex justify-center items-center w-full h-full pr-1 bg-transparent top-0 left-0 group-hover:bg-black group-hover:bg-opacity-40"
                         style={{ color }}
@@ -192,7 +192,7 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
                     </span>
                 </div>
                 <div className="relative h-full w-full z-[1] rounded-md overflow-hidden -translate-x-1" ref={ref}>
-                    <BsmImage className="absolute top-0 left-0 w-full h-full -z-[1] object-cover saturate-200" image={coverUrl} placeholder={defaultImage} errorImage={defaultImage} loading="lazy" />
+                    <BsmImage className="absolute top-0 left-0 w-full h-full -z-[1] object-cover saturate-200" image={coverUrl} placeholder={defaultImage} errorImage={defaultImage} />
                     <div className="pt-1 pl-2 pr-7 top-0 left-0 w-full h-full bg-neutral-600 bg-opacity-80 flex flex-col justify-between group-hover:bg-main-color-1 group-hover:bg-opacity-80">
                         <h1 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full leading-5 tracking-wide text-lg" title={title}>
                             <BsmLink className="hover:underline" href={mapUrl}>

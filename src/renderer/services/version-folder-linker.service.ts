@@ -82,7 +82,7 @@ export class VersionFolderLinkerService {
             this.onVersionFolderLinked(callBack);
         });
 
-        this._queue$.next([...this._queue$.value, action]);
+        this._queue$.next([...this._queue$.value, {...action, type: VersionLinkerActionType.Link}]);
 
         return promise;
     }
@@ -100,7 +100,7 @@ export class VersionFolderLinkerService {
             this.onVersionFolderUnlinked(callBack);
         });
 
-        this._queue$.next([...this._queue$.value, action]);
+        this._queue$.next([...this._queue$.value, {...action, type: VersionLinkerActionType.Unlink}]);
 
         return promise;
     }
@@ -136,7 +136,7 @@ export class VersionFolderLinkerService {
                 if(currentAction && equal(currentAction.version, version) && currentAction.relativeFolder === relativeFolder) {
                     return of(FolderLinkState.Processing)
                 }
-                
+
                 if(queue.some(action => equal(action.version, version) && action.relativeFolder === relativeFolder)) {
                     return of(FolderLinkState.Pending);
                 }
@@ -146,7 +146,7 @@ export class VersionFolderLinkerService {
                 );
             }),
             distinctUntilChanged(),
-            shareReplay(1)    
+            shareReplay(1)
         );
     }
 
@@ -179,14 +179,8 @@ export interface VersionLinkerAction {
     options?: LinkOptions;
 }
 
-export interface VersionLinkFolderAction extends VersionLinkerAction {
-    type: VersionLinkerActionType.Link;
-}
-
-export interface VersionUnlinkFolderAction extends VersionLinkerAction {
-    type: VersionLinkerActionType.Unlink;
-    options?: UnlinkOptions;
-}
+export type VersionLinkFolderAction = Omit<VersionLinkerAction, "type">;
+export type VersionUnlinkFolderAction = Omit<VersionLinkerAction, "type">;
 
 export type VersionLinkerActionListener = (action: VersionLinkerAction, linked: boolean) => void;
 

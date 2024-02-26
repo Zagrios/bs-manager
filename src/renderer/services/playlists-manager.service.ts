@@ -4,6 +4,10 @@ import { Observable, lastValueFrom } from "rxjs";
 import { FolderLinkState, VersionFolderLinkerService } from "./version-folder-linker.service";
 import { Progression } from "main/helpers/fs.helpers";
 import { LocalBPList } from "shared/models/playlists/local-playlist.models";
+import { ModalExitCode, ModalService } from "./modale.service";
+import { LinkMapsModal } from "renderer/components/modal/modal-types/link-maps-modal.component";
+import { UnlinkPlaylistModal } from "renderer/components/modal/modal-types/unlink-playlist-modal.component";
+import { LinkPlaylistModal } from "renderer/components/modal/modal-types/link-playlist-modal.component";
 
 export class PlaylistsManagerService {
     private static instance: PlaylistsManagerService;
@@ -19,14 +23,44 @@ export class PlaylistsManagerService {
 
     private readonly ipc: IpcService;
     private readonly linker: VersionFolderLinkerService;
+    private readonly modal: ModalService;
 
     private constructor() {
         this.ipc = IpcService.getInstance();
         this.linker = VersionFolderLinkerService.getInstance();
+        this.modal = ModalService.getInstance();
     }
 
     public getVersionPlaylists(version: BSVersion): Observable<Progression<LocalBPList[]>> {
         return this.ipc.sendV2("get-version-playlists", { args: version });
+    }
+
+    public async linkVersion(version: BSVersion): Promise<boolean> {
+        const modalRes = await this.modal.openModal(LinkPlaylistModal);
+
+        if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
+            return Promise.resolve(false);
+        }
+
+        return this.linker.linkVersionFolder({
+            version,
+            relativeFolder: PlaylistsManagerService.RELATIVE_PLAYLISTS_FOLDER,
+            options: { keepContents: !!modalRes.data },
+        });
+    }
+
+    public async unlinkVersion(version: BSVersion): Promise<boolean> {
+        const modalRes = await this.modal.openModal(UnlinkPlaylistModal);
+
+        if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
+            return Promise.resolve(false);
+        }
+
+        return this.linker.unlinkVersionFolder({
+            version,
+            relativeFolder: PlaylistsManagerService.RELATIVE_PLAYLISTS_FOLDER,
+            options: { keepContents: !!modalRes.data },
+        });
     }
 
     public isDeepLinksEnabled(): Promise<boolean> {

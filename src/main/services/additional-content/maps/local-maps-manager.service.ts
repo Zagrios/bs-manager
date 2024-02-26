@@ -116,7 +116,7 @@ export class LocalMapsManagerService {
         return shasum.digest("hex");
     }
 
-    private async loadMapInfoFromPath(mapPath: string): Promise<BsmLocalMap> {
+    public async loadMapInfoFromPath(mapPath: string): Promise<BsmLocalMap> {
 
         const getUrlsAndReturn = (rawInfo: RawMapInfoData, hash: string, mapPath: string) => {
             const coverUrl = pathToFileURL(path.join(mapPath, rawInfo._coverImageFilename)).href;
