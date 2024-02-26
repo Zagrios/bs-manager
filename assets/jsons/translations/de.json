@@ -737,7 +737,8 @@
             "nps" : "Noten Pro Sekunde",
             "tags": "Stichworte",
             "specificities": "Allgemein",
-            "requirements": "Anforderungen"
+            "requirements": "Anforderungen",
+            "exclude": "ausschließen"
         },
         "map-types": {
             "accuracy": "Präzision",
@@ -792,6 +793,9 @@
             "curated": "curated",
             "verified": "verifiziert",
             "fullSpread": "full spread"
+        },
+        "map-excludes": {
+            "installed": "installiert"
         },
         "difficulties": {
             "Easy": "einfach",

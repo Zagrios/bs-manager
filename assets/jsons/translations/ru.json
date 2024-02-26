@@ -736,7 +736,8 @@
             "nps" : "Нот в Секунду",
             "tags": "тэги",
             "specificities": "основное",
-            "requirements": "требуемые моды"
+            "requirements": "требуемые моды",
+            "exclude": "исключить"
         },
         "map-types": {
             "accuracy": "точность",
@@ -791,6 +792,9 @@
             "curated": "оценённые куратором",
             "verified": "проверенные авторы",
             "fullSpread": "полный набор"
+        },
+        "map-excludes": {
+            "installed": "установленный"
         },
         "difficulties": {
             "Easy": "легко",

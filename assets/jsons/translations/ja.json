@@ -737,7 +737,8 @@
             "nps" : "秒間ノート数",
             "tags": "タグ",
             "specificities": "一般",
-            "requirements": "要Mod"
+            "requirements": "要Mod",
+            "exclude": "除外する"
         },
         "map-types": {
             "accuracy": "正確",
@@ -792,6 +793,9 @@
             "curated": "厳選済み",
             "verified": "認証済み",
             "fullSpread": "フルスプレッド"
+        },
+        "map-excludes": {
+            "installed": "インストール済み"
         },
         "difficulties": {
             "Easy": "easy",

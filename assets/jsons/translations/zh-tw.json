@@ -737,7 +737,8 @@
             "nps" : "每秒音符數",
             "tags": "標籤",
             "specificities": "general",
-            "requirements": "要求"
+            "requirements": "要求",
+            "exclude": "排除"
         },
         "map-types": {
             "accuracy": "精確度",
@@ -792,6 +793,9 @@
             "curated": "Curated",
             "verified": "Verified",
             "fullSpread": "Full spread"
+        },
+        "map-excludes": {
+            "installed": "已安裝"
         },
         "difficulties": {
             "Easy": "Easy",

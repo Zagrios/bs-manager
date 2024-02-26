@@ -22,12 +22,13 @@ export type Props = {
     ref?: MutableRefObject<undefined>;
     playlist?: boolean;
     filter: MapFilter;
+    localData?: boolean;
     onChange?: (filter: MapFilter) => void;
     onApply?: (filter: MapFilter) => void;
     onClose?: (filter: MapFilter) => void;
 };
 
-export function FilterPanel({ className, ref, playlist = false, filter, onChange, onApply, onClose }: Props) {
+export function FilterPanel({ className, ref, playlist = false, filter, localData = true, onChange, onApply, onClose }: Props) {
     const t = useTranslation();
 
     const [haveChanged, setHaveChanged] = useState(false);
@@ -194,13 +195,17 @@ export function FilterPanel({ className, ref, playlist = false, filter, onChange
                             <span className="grow capitalize">{requirement}</span>
                         </div>
                     ))}
-                    <h2 className="my-1 uppercase text-sm">{t("maps.map-filter-panel.exclude")}</h2>
-                    {MAP_EXCLUDES.map(exclude => (
-                        <div key={exclude} className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={() => handleCheckbox(exclude)}>
-                            <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.[exclude]} onChange={() => handleCheckbox(exclude)} />
-                            <span className="grow capitalize">{translateMapExclude(exclude)}</span>
-                        </div>
-                    ))}
+                    { !localData && (
+                        <>
+                            <h2 className="my-1 uppercase text-sm">{t("maps.map-filter-panel.exclude")}</h2>
+                            {MAP_EXCLUDES.map(exclude => (
+                                <div key={exclude} className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={() => handleCheckbox(exclude)}>
+                                    <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.[exclude]} onChange={() => handleCheckbox(exclude)} />
+                                    <span className="grow capitalize">{translateMapExclude(exclude)}</span>
+                                </div>
+                            ))}
+                        </>
+                    )}
                 </section>
                 <section className="grow capitalize">
                     <h2 className="uppercase text-sm mb-1">{t("maps.map-filter-panel.tags")}</h2>
