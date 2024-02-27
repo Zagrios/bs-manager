@@ -10,14 +10,15 @@ import { WindowManagerService } from "../window-manager.service";
 import { BPList, DownloadPlaylistProgressionData } from "shared/models/playlists/playlist.interface";
 import { readFileSync } from "fs";
 import { BeatSaverService } from "../thrid-party/beat-saver/beat-saver.service";
-import { copy, copyFile, pathExists, pathExistsSync, readdirSync, realpath } from "fs-extra";
-import { Progression, ensureFolderExist, pathExist } from "../../helpers/fs.helpers";
+import { copy, copyFile, ensureDir, pathExists, pathExistsSync, readdirSync, realpath } from "fs-extra";
+import { Progression, pathExist } from "../../helpers/fs.helpers";
 import { FileAssociationService } from "../file-association.service";
 import { SongDetailsCacheService } from "./maps/song-details-cache.service";
 import { sToMs } from "shared/helpers/time.helpers";
 import { LocalBPList, LocalBpListSong } from "shared/models/playlists/local-playlist.models";
 import { SongCacheService } from "./maps/song-cache.service";
 import { pathToFileURL } from "url";
+import { InstallationLocationService } from "../installation-location.service";
 
 export class LocalPlaylistsManagerService {
     private static instance: LocalPlaylistsManagerService;
@@ -43,6 +44,7 @@ export class LocalPlaylistsManagerService {
     private readonly bsaver: BeatSaverService;
     private readonly songDetails: SongDetailsCacheService;
     private readonly songCache: SongCacheService;
+    private readonly bsmFs: InstallationLocationService;
 
     private constructor() {
         this.maps = LocalMapsManagerService.getInstance();
@@ -54,6 +56,7 @@ export class LocalPlaylistsManagerService {
         this.bsaver = BeatSaverService.getInstance();
         this.songDetails = SongDetailsCacheService.getInstance();
         this.songCache = SongCacheService.getInstance();
+        this.bsmFs = InstallationLocationService.getInstance();
 
 
         this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.BeatSaver, link => {
@@ -70,17 +73,12 @@ export class LocalPlaylistsManagerService {
     }
 
     private async getPlaylistsFolder(version?: BSVersion) {
-        if (!version) {
-            throw new Error("Playlists are not available to be linked yet");
-        }
+        const rootPath = version ? await this.versions.getVersionPath(version) : await this.bsmFs.sharedContentPath();
+        const fullPath = path.join(rootPath, this.PLAYLISTS_FOLDER);
 
-        const versionFolder = await this.versions.getVersionPath(version);
+        await ensureDir(fullPath);
 
-        const folder = path.join(versionFolder, this.PLAYLISTS_FOLDER);
-
-        await ensureFolderExist(folder);
-
-        return folder;
+        return fullPath;
     }
 
     private async installBPListFile(bslistSource: string, version: BSVersion): Promise<string> {
@@ -156,6 +154,9 @@ export class LocalPlaylistsManagerService {
     }
 
     public getVersionPlaylists(version: BSVersion): Observable<Progression<LocalBPList[]>> {
+
+        console.log("getVersionPlaylists", version);
+
         return new Observable<Progression<LocalBPList[]>>(obs => {
             this.getPlaylistsFolder(version)
                 .then(folder => this.readLocalBPListsOfFolder(folder, version))
