@@ -40,7 +40,7 @@ ipc.on("is-playlists-deep-links-enabled", (_, reply) => {
     }
 });
 
-ipc.on<BSVersion>("get-version-playlists", (req, reply) => {
+ipc.on<BSVersion>("get-version-playlists-details", (req, reply) => {
     const playlists = LocalPlaylistsManagerService.getInstance();
-    reply(playlists.getVersionPlaylists(req.args));
+    reply(playlists.getVersionPlaylistsDetails(req.args));
 });

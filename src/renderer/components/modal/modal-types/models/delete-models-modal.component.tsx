@@ -12,7 +12,7 @@ import { ConfigurationService } from "renderer/services/configuration.service";
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
 import { useService } from "renderer/hooks/use-service.hook";
 
-export const DeleteModelsModal: ModalComponent<void, { models: BsmLocalModel[]; linked: boolean }> = ({ resolver, data }) => {
+export const DeleteModelsModal: ModalComponent<void, { models: BsmLocalModel[]; linked: boolean }> = ({ resolver, options: {data} }) => {
     const config = useService(ConfigurationService);
     const t = useTranslation();
     const [remember, setRemember] = useState(config.get<boolean>(ModelsManagerService.REMEMBER_CHOICE_DELETE_MODEL_KEY) || false);

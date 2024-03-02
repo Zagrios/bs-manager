@@ -1,6 +1,6 @@
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { BSVersion } from "shared/bs-version.interface";
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { Subscription, BehaviorSubject } from "rxjs";
 import { MapFilter, MapTag } from "shared/models/maps/beat-saver.model";
@@ -18,6 +18,8 @@ import { FolderLinkState } from "renderer/services/version-folder-linker.service
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import { BsContentLoader } from "renderer/components/shared/bs-content-loader.component";
+import { InstalledMapsContext } from "../maps-playlists-panel.component";
+import { useObservable } from "renderer/hooks/use-observable.hook";
 
 type Props = {
     version: BSVersion;
@@ -33,8 +35,11 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
     const mapsDownloader = useService(MapsDownloaderService);
 
     const t = useTranslation();
+
     const ref = useRef(null);
-    const [maps, setMaps] = useState<BsmLocalMap[]>(null);
+
+    const {maps$, setMaps} = useContext(InstalledMapsContext);
+    const maps = useObservable(() => maps$, undefined);
     const [subs] = useState<Subscription[]>([]);
     const [selectedMaps$] = useState(new BehaviorSubject<BsmLocalMap[]>([]));
     const [itemPerRow, setItemPerRow] = useState(2);
@@ -59,10 +64,7 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
             },
             exportMaps() {
                 mapsManager.exportMaps(version, selectedMaps$.value);
-            },
-            getMaps() {
-                return maps;
-            },
+            }
         }),
         [selectedMaps$.value, maps, version]
     );
@@ -79,12 +81,12 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
                 if (targerVersion !== version) {
                     return;
                 }
-                setMaps(maps => (maps ? [map, ...maps] : [map]));
+                setMaps((maps ? [map, ...maps] : [map]));
             });
         }
 
         return () => {
-            setMaps(() => null);
+            setMaps(null);
             loadPercent$.next(0);
             subs.forEach(s => s.unsubscribe());
             mapsDownloader.removeOnMapDownloadedListener(loadMaps);
@@ -122,7 +124,7 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
     }, [isActiveOnce, itemPerRow]);
 
     const loadMaps = () => {
-        setMaps(() => null);
+        setMaps(null);
         loadPercent$.next(0);
 
         const loadMapsObs$ = mapsManager.getMaps(version);
@@ -134,7 +136,7 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
                     last()
                 )
                 .subscribe({
-                    next: progress => setMaps(() => progress.maps),
+                    next: progress => setMaps(progress.maps),
                     complete: () => loadPercent$.next(0),
                 })
         );
@@ -142,7 +144,7 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
 
     const removeMapsFromList = (mapsToRemove: BsmLocalMap[]) => {
         const filtredMaps = maps.filter(map => !mapsToRemove.some(toDeleteMaps => map.hash === toDeleteMaps.hash));
-        setMaps(() => filtredMaps);
+        setMaps(filtredMaps);
 
         const filtredSelectedMaps = selectedMaps$.value.filter(map => !mapsToRemove.some(toDeleteMaps => map.hash === toDeleteMaps.hash));
         selectedMaps$.next(filtredSelectedMaps);

@@ -1,13 +1,16 @@
-import { SongDetails } from "../maps";
-import { BPList, PlaylistSong } from "./playlist.interface";
+import { BPList } from "./playlist.interface";
 
-export interface LocalBPList extends BPList<LocalBpListSong> {
+export interface LocalBPList extends BPList {
     path: string;
 }
 
-export interface LocalBpListSong {
-    song: PlaylistSong;
-    songDetails?: SongDetails;
-    songUrl?: string;
-    coverUrl?: string;
+export interface LocalBPListsDetails extends LocalBPList {
+    nbMaps: number;
+    id?: number;
+    nbMappers?: number;
+    duration?: number;
+    minNps?: number;
+    maxNps?: number;
 }
+
+

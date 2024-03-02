@@ -78,7 +78,7 @@ export class MapsDownloaderService {
     }
 
     public async openDownloadMapModal(version?: BSVersion, ownedMaps: BsmLocalMap[] = []): Promise<ModalResponse<void>> {
-        const res = await this.modals.openModal(DownloadMapsModal, { version, ownedMaps });
+        const res = await this.modals.openModal(DownloadMapsModal, {data: { version, ownedMaps }});
         this.progressBar.setStyle(null);
         return res;
     }

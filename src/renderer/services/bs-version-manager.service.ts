@@ -66,7 +66,7 @@ export class BSVersionManagerService {
     }
 
     public async editVersion(version: BSVersion): Promise<BSVersion> {
-        const modalRes = await this.modalService.openModal(EditVersionModal, { version, clone: false });
+        const modalRes = await this.modalService.openModal(EditVersionModal, {data: { version, clone: false }});
         if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
             return null;
         }
@@ -90,7 +90,7 @@ export class BSVersionManagerService {
         if (!this.progressBar.require()) {
             return null;
         }
-        const modalRes = await this.modalService.openModal(EditVersionModal, { version, clone: true });
+        const modalRes = await this.modalService.openModal(EditVersionModal, {data: { version, clone: true }});
         if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
             return null;
         }
@@ -128,7 +128,7 @@ export class BSVersionManagerService {
                 if(resModal.exitCode !== ModalExitCode.COMPLETED){
                     return;
                 }
-                
+
                 const store = resModal.data;
 
                 const folderRes = await lastValueFrom(this.ipcService.sendV2<{ canceled: boolean; filePaths: string[] }>("choose-folder"));

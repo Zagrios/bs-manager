@@ -15,7 +15,7 @@ import { Progression, pathExist } from "../../helpers/fs.helpers";
 import { FileAssociationService } from "../file-association.service";
 import { SongDetailsCacheService } from "./maps/song-details-cache.service";
 import { sToMs } from "shared/helpers/time.helpers";
-import { LocalBPList, LocalBpListSong } from "shared/models/playlists/local-playlist.models";
+import { LocalBPList, LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
 import { SongCacheService } from "./maps/song-cache.service";
 import { pathToFileURL } from "url";
 import { InstallationLocationService } from "../installation-location.service";
@@ -108,7 +108,7 @@ export class LocalPlaylistsManagerService {
         this.windows.openWindow(`oneclick-download-playlist.html?playlistUrl=${downloadUrl}`);
     }
 
-    private readLocalBPListsOfFolder(folerPath: string, version?: BSVersion): Observable<Progression<LocalBPList[]>> {
+    private getLocalBPListsOfFolder(folerPath: string): Observable<Progression<LocalBPList[]>> {
         return new Observable<Progression<LocalBPList[]>>(obs => {
 
             const progress: Progression<LocalBPList[]> = { current: 0, total: 0, data: [] };
@@ -116,13 +116,10 @@ export class LocalPlaylistsManagerService {
 
             (async () => {
 
-                await this.songDetails.waitLoaded(sToMs(15));
-
                 if(!pathExistsSync(folerPath)) {
                     throw new Error(`Playlists folder not found ${folerPath}`);
                 }
 
-                const mapsFolder = version ? await this.maps.getMapsFolderPath(version) : null;
                 const playlists = readdirSync(folerPath).filter(file => path.extname(file) === ".bplist");
                 progress.total = playlists.length;
 
@@ -130,18 +127,8 @@ export class LocalPlaylistsManagerService {
                     const playlistPath = path.join(folerPath, playlist);
                     const bpList = await this.readPlaylistFile(playlistPath);
 
-                    const localBpListSongs = bpList.songs.map(song => {
-                        const localInfos = mapsFolder ? this.songCache.getMapInfoFromHash(song.hash) : null;
-                        const coverPath = localInfos ? path.join(mapsFolder, localInfos.path, localInfos.info.rawInfo._coverImageFilename) : null;
-                        const songFilePath = localInfos ? path.join(mapsFolder, localInfos.path, localInfos.info.rawInfo._songFilename) : null;
-                        return ({
-                            song,
-                            songDetails: this.songDetails.getSongDetails(song.hash),
-                            coverUrl: (coverPath && pathExistsSync(coverPath)) ? pathToFileURL(coverPath).href : null,
-                            songUrl: (songFilePath && pathExistsSync(songFilePath)) ? pathToFileURL(songFilePath).href : null,
-                        } as LocalBpListSong)
-                    });
-                    const localBpList: LocalBPList = { ...bpList, path: playlistPath, songs: localBpListSongs };
+
+                    const localBpList: LocalBPList = { ...bpList, path: playlistPath };
                     bpLists.push(localBpList);
                     progress.current += 1;
                     obs.next(progress);
@@ -153,18 +140,48 @@ export class LocalPlaylistsManagerService {
         });
     }
 
-    public getVersionPlaylists(version: BSVersion): Observable<Progression<LocalBPList[]>> {
+    public getVersionPlaylistsDetails(version: BSVersion): Observable<Progression<LocalBPListsDetails[]>> {
 
-        console.log("getVersionPlaylists", version);
+        return new Observable<Progression<LocalBPListsDetails[]>>(obs => {
+            (async () => {
 
-        return new Observable<Progression<LocalBPList[]>>(obs => {
-            this.getPlaylistsFolder(version)
-                .then(folder => this.readLocalBPListsOfFolder(folder, version))
-                .then(progress$ => lastValueFrom(progress$.pipe(
-                    tap(progress => obs.next({...progress, data: []})),
-                )))
-                .then(res => obs.next(res))
-                .catch(err => obs.error(err))
+                const folder = await this.getPlaylistsFolder(version);
+                const progress$ = this.getLocalBPListsOfFolder(folder);
+
+                const localBPListsRes = (await lastValueFrom(progress$.pipe(tap({ next: progress => obs.next({...progress, data: []}) }))));
+
+                await this.songDetails.waitLoaded(sToMs(15));
+
+                const tryExtractPlaylistId = (url: string) => {
+                    const regex = /\/id\/(\d+)\/download/;
+                    const match = url.match(regex);
+                    return match ? Number(match[1]) : undefined;
+                }
+
+                const bpListsDetails: LocalBPListsDetails[] = [];
+                for(const bpList of localBPListsRes.data){
+
+                    const bpListDetails: LocalBPListsDetails = {
+                        ...bpList,
+                        nbMaps: bpList.songs?.length ?? 0,
+                        id: bpList.customData?.syncURL ? tryExtractPlaylistId(bpList.customData.syncURL) : undefined
+                    }
+
+                    const songsDetails = bpList.songs?.map(s => this.songDetails.getSongDetails(s.hash));
+
+                    if(songsDetails){
+                        bpListDetails.duration = songsDetails.reduce((acc, song) => acc + song.duration, 0);
+                        bpListDetails.nbMappers = new Set(songsDetails.map(s => s.uploader.id)).size;
+                        bpListDetails.minNps = Math.min(...songsDetails.map(s => Math.min(...s.difficulties.map(d => d.nps || 0))));
+                        bpListDetails.maxNps = Math.max(...songsDetails.map(s => Math.max(...s.difficulties.map(d => d.nps || 0))));
+                    }
+
+                    bpListsDetails.push(bpListDetails);
+                }
+
+                obs.next({...localBPListsRes, data: bpListsDetails});
+
+            })().catch(err => obs.error(err))
                 .finally(() => obs.complete());
         });
     }

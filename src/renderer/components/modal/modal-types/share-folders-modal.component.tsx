@@ -14,7 +14,7 @@ import { ModalComponent } from "renderer/services/modale.service";
 import { FolderLinkState, VersionFolderLinkerService, VersionLinkerActionType } from "renderer/services/version-folder-linker.service";
 import { BSVersion } from "shared/bs-version.interface";
 
-export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ data }) => {
+export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ options: {data} }) => {
     const SHARED_FOLDERS_KEY = "default-shared-folders";
 
     const config = useService(ConfigurationService);

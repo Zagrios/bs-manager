@@ -3,9 +3,8 @@ import { IpcService } from "./ipc.service";
 import { Observable, lastValueFrom } from "rxjs";
 import { FolderLinkState, VersionFolderLinkerService } from "./version-folder-linker.service";
 import { Progression } from "main/helpers/fs.helpers";
-import { LocalBPList } from "shared/models/playlists/local-playlist.models";
+import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
 import { ModalExitCode, ModalService } from "./modale.service";
-import { LinkMapsModal } from "renderer/components/modal/modal-types/link-maps-modal.component";
 import { UnlinkPlaylistModal } from "renderer/components/modal/modal-types/unlink-playlist-modal.component";
 import { LinkPlaylistModal } from "renderer/components/modal/modal-types/link-playlist-modal.component";
 
@@ -31,8 +30,8 @@ export class PlaylistsManagerService {
         this.modal = ModalService.getInstance();
     }
 
-    public getVersionPlaylists(version: BSVersion): Observable<Progression<LocalBPList[]>> {
-        return this.ipc.sendV2("get-version-playlists", { args: version });
+    public getVersionPlaylistsDetails(version: BSVersion): Observable<Progression<LocalBPListsDetails[]>> {
+        return this.ipc.sendV2("get-version-playlists-details", { args: version });
     }
 
     public async linkVersion(version: BSVersion): Promise<boolean> {

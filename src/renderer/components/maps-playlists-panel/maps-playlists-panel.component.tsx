@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { Dispatch, SetStateAction, createContext, useMemo, useRef, useState } from "react";
 import { BSVersion } from "shared/bs-version.interface";
 import { LocalMapsListPanel } from "./maps/local-maps-list-panel.component";
 import { BsmDropdownButton, DropDownItem } from "../shared/bsm-dropdown-button.component";
@@ -14,14 +14,18 @@ import { BsmButton } from "../shared/bsm-button.component";
 import { MapIcon } from "../svgs/icons/map-icon.component";
 import { PlaylistIcon } from "../svgs/icons/playlist-icon.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
-import { of } from "rxjs";
+import { BehaviorSubject, Observable, of } from "rxjs";
 import { LocalPlaylistsListPanel } from "./playlists/local-playlists-list-panel.component";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
+import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
+import { useConstant } from "renderer/hooks/use-constant.hook";
 
 type Props = {
     version?: BSVersion;
     isActive?: boolean;
 };
+
+export const InstalledMapsContext = createContext<{ maps$?: BehaviorSubject<BsmLocalMap[]>; setMaps: (maps: BsmLocalMap[]) => void }>(null);
 
 export function MapsPlaylistsPanel({ version, isActive }: Props) {
 
@@ -31,6 +35,9 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
 
     const t = useTranslation();
     const [tabIndex, setTabIndex] = useState(0);
+
+    const maps$ = useConstant(() => new BehaviorSubject<BsmLocalMap[]>(undefined));
+    const mapsContextValue = useConstant(() => ({ maps$: maps$, setMaps: maps$.next.bind(maps$) }));
 
     const mapsRef = useRef<any>();
     const [mapFilter, setMapFilter] = useState<MapFilter>({});
@@ -55,7 +62,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
     };
 
     const handleMapsAddClick = () => {
-        mapsDownloader.openDownloadMapModal(version, mapsRef.current.getMaps?.());
+        mapsDownloader.openDownloadMapModal(version, maps$.value);
     };
 
     const handleMapsLinkClick = () => {
@@ -132,10 +139,10 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                     },
                 ]}
             >
-                <>
+                <InstalledMapsContext.Provider value={mapsContextValue}>
                     <LocalMapsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 0} ref={mapsRef} version={version} filter={mapFilter} search={mapSearch} linkedState={mapsLinkedState} />
                     <LocalPlaylistsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 1} version={version} linkedState={playlistLinkedState}/>
-                </>
+                </InstalledMapsContext.Provider>
             </BsContentTabPanel>
         </div>
     );

@@ -1,3 +1,5 @@
+import { SongDetailDiffCharactertistic, SongDiffName } from "./song-details-cache.model";
+
 export interface BsvMapDetail {
     automapper: boolean;
     createdAt: string;
@@ -115,10 +117,10 @@ export interface BsvMapTestplay {
 
 export interface BsvMapDifficulty {
     bombs: number;
-    characteristic: BsvMapCharacteristic;
+    characteristic: SongDetailDiffCharactertistic;
     chroma: boolean;
     cinema: boolean;
-    difficulty: BsvMapDifficultyType;
+    difficulty: SongDiffName;
     events: number;
     length: number;
     maxScore: number;

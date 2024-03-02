@@ -6,7 +6,7 @@ export interface BPList<SongType = PlaylistSong> {
     playlistAuthor: string;
     playlistDescription?: string;
     image: string;
-    customData: unknown;
+    customData?: CustomDataBPList;
     songs: SongType[];
 }
 
@@ -23,4 +23,8 @@ export interface DownloadPlaylistProgressionData {
     currentDownload: BsvMapDetail;
     playlistInfos: BPList;
     playlistPath: string;
+}
+
+export interface CustomDataBPList {
+    syncURL?: string;
 }

@@ -9,7 +9,7 @@ import { ConfigurationService } from "renderer/services/configuration.service";
 import { ModalComponent, ModalExitCode } from "renderer/services/modale.service";
 import { BSVersion } from "shared/bs-version.interface";
 
-export const EditVersionModal: ModalComponent<{ name: string; color: string }, { version: BSVersion; clone?: boolean }> = ({ resolver, data }) => {
+export const EditVersionModal: ModalComponent<{ name: string; color: string }, { version: BSVersion; clone?: boolean }> = ({ resolver, options: {data} }) => {
     const { version, clone } = data;
 
     const configService = useService(ConfigurationService);

@@ -13,8 +13,8 @@ import { BsmBasicSpinner } from "renderer/components/shared/bsm-basic-spinner/bs
 export const LoginToSteamModal: ModalComponent<
     { username: string; password: string; stay: boolean, method: "form"|"qr" },
     { qrCode$: Observable<string>, logged$: Observable<string> }
-> = ({ resolver, data }) => {
-    
+> = ({ resolver, options: {data} }) => {
+
     const modal = useService(ModalService);
 
     const [username, setUsername] = useState("");
@@ -82,10 +82,10 @@ export const LoginToSteamModal: ModalComponent<
                     </div>
                 </div>
                 <div className="flex flex-col max-w-[13rem]">
-                    <span className="block font-bold cursor-pointer tracking-wide ">{t("modals.steam-login.inputs.qr.label")}</span>   
+                    <span className="block font-bold cursor-pointer tracking-wide ">{t("modals.steam-login.inputs.qr.label")}</span>
                     <div className="w-52 h-52 p-3 bg-light-main-color-1 dark:bg-white rounded-md max-w-xs mb-1 flex items-center justify-center">
-                        {(qrCodeUrl ? 
-                            <QRCodeSVG className="w-full h-full text-light-main-color-1 dark:text-white" value={qrCodeUrl} bgColor="currentColor" level="H"/> : 
+                        {(qrCodeUrl ?
+                            <QRCodeSVG className="w-full h-full text-light-main-color-1 dark:text-white" value={qrCodeUrl} bgColor="currentColor" level="H"/> :
                             <BsmBasicSpinner className="w-full h-full p-11 text-neutral-300" />
                         )}
                     </div>

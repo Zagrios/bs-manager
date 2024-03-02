@@ -1,4 +1,4 @@
-import { forwardRef, useState } from "react";
+import { forwardRef, useContext, useState } from "react";
 import { BsContentLoader } from "renderer/components/shared/bs-content-loader.component";
 import { useChangeUntilEqual } from "renderer/hooks/use-change-until-equal.hook";
 import { useConstant } from "renderer/hooks/use-constant.hook";
@@ -6,12 +6,15 @@ import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useService } from "renderer/hooks/use-service.hook";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { FolderLinkState } from "renderer/services/version-folder-linker.service";
-import { BehaviorSubject, finalize, lastValueFrom, map, tap } from "rxjs";
+import { BehaviorSubject, finalize, lastValueFrom, map, of, tap } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { noop } from "shared/helpers/function.helpers";
-import { LocalBPList } from "shared/models/playlists/local-playlist.models";
+import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
 import { PlaylistItem } from "./playlist-item.component";
 import { useStateMap } from "renderer/hooks/use-state-map.hook";
+import { ModalService } from "renderer/services/modale.service";
+import { LocalPlaylistDetailsModal } from "renderer/components/modal/modal-types/playlist/local-playlist-details-modal.component";
+import { InstalledMapsContext } from "../maps-playlists-panel.component";
 
 type Props = {
     version: BSVersion;
@@ -23,17 +26,19 @@ type Props = {
 export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, className, isActive, linkedState }, forwardedRef) => {
 
     const playlistService = useService(PlaylistsManagerService);
+    const modals = useService(ModalService);
 
     const isActiveOnce = useChangeUntilEqual(isActive, { untilEqual: true });
 
+    const { maps$ } = useContext(InstalledMapsContext);
     const [playlistsLoading, setPlaylistsLoading] = useState(false);
-    const [playlists, setPlaylists] = useState<LocalBPList[]>([]);
+    const [playlists, setPlaylists] = useState<LocalBPListsDetails[]>([]);
     const loadPercent$ = useConstant(() => new BehaviorSubject<number>(0));
     const linked = useStateMap(linkedState, (newState, precMapped) => (newState === FolderLinkState.Pending || newState === FolderLinkState.Processing) ? precMapped : newState === FolderLinkState.Linked, false);
 
-    const loadPlaylists = (): Promise<LocalBPList[]> => {
+    const loadLocalPlaylistsDetails = (): Promise<LocalBPListsDetails[]> => {
         setPlaylistsLoading(true);
-        const obs = playlistService.getVersionPlaylists(version).pipe(
+        const obs = playlistService.getVersionPlaylistsDetails(version).pipe(
             tap({ next: load => loadPercent$.next((load.current / load.total) * 100)}),
             map(load => load.data),
             finalize(() => setPlaylistsLoading(false))
@@ -42,51 +47,44 @@ export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, cl
         return lastValueFrom(obs);
     }
 
-    const getNbMappersOfPlaylist = (playlist: LocalBPList) => {
-        return new Set(playlist.songs.map(s => s.songDetails?.uploader?.id ?? s.song.hash)).size;
-    };
-
-    const getDurationOfPlaylist = (playlist: LocalBPList) => {
-        return playlist.songs.reduce((acc, s) => acc + (s.songDetails?.duration ?? 0), 0);
-    }
-
-    const getMinNpsOfPlaylist = (playlist: LocalBPList) => {
-        let min = Infinity;
-        playlist.songs.forEach(s => {
-            s.songDetails?.difficulties.forEach(d => {
-                if(d.nps < min){
-                    min = d.nps;
-                }
-            })
-        });
-        return min === Infinity ? null : min;
-    }
-
-    const getMaxNpsOfPlaylist = (playlist: LocalBPList) => {
-        let max = -Infinity;
-        playlist.songs.forEach(s => {
-            s.songDetails?.difficulties.forEach(d => {
-                if(d.nps > max){
-                    max = d.nps;
-                }
-            })
-        });
-        return max === -Infinity ? null : max;
-    }
-
     useOnUpdate(() => {
 
         if(!isActiveOnce){ return noop(); }
 
-        loadPlaylists().then(loadedPlaylists => {
+        loadLocalPlaylistsDetails().then(loadedPlaylists => {
             setPlaylists(() => loadedPlaylists);
         }).catch(() => {
-            setPlaylists([])
+            setPlaylists([]);
         }).finally(() => {
             loadPercent$.next(0);
         });
 
     }, [isActiveOnce, version, linked]);
+
+    console.log(maps$.value);
+
+    const openPlaylistDetails = (playlistKey: string) => {
+        const playlist = playlists.find(p => p.path === playlistKey);
+
+        console.log(playlist.songs);
+
+        modals.openModal(LocalPlaylistDetailsModal, {
+            data: {
+                version,
+                title: playlist.playlistTitle,
+                image: playlist.image,
+                author: playlist.playlistAuthor,
+                description: playlist.playlistDescription,
+                nbMaps: playlist.nbMaps,
+                duration: playlist.duration,
+                maxNps: playlist.maxNps,
+                minNps: playlist.minNps,
+                nbMappers: playlist.nbMappers,
+                installedMaps$: maps$.pipe(map(maps => maps.filter(m => playlist.songs.some(song => song.hash.toLocaleLowerCase() === m.hash.toLocaleLowerCase())))),
+            },
+            noStyle: true,
+        })
+    };
 
     const render = () => {
         if(playlistsLoading){
@@ -97,25 +95,22 @@ export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, cl
 
         if (playlists.length){
             return (
-                <>
-                    <ul className="size-full flex flex-row flex-wrap justify-start content-start p-3 gap-3 overflow-y-scroll">
-                        {playlists.map(p =>
-                            <PlaylistItem
-                                key={p.path}
-                                id={p.path}
-                                title={p.playlistTitle}
-                                author={p.playlistAuthor}
-                                coverBase64={p.image}
-                                nbMaps={p.songs.length}
-                                nbMappers={getNbMappersOfPlaylist(p)}
-                                duration={getDurationOfPlaylist(p)}
-                                maxNps={getMaxNpsOfPlaylist(p)}
-                                minNps={getMinNpsOfPlaylist(p)}
-                            />
-                        )}
-                    </ul>
-                    <br/>
-                </>
+                <ul className="relative size-full flex flex-row flex-wrap justify-start content-start p-3 gap-3">
+                    {playlists.map(p =>
+                        <PlaylistItem
+                            key={p.path}
+                            title={p.playlistTitle}
+                            author={p.playlistAuthor}
+                            coverBase64={p.image}
+                            nbMaps={p.nbMaps}
+                            nbMappers={p.nbMappers}
+                            duration={p.duration}
+                            maxNps={p.maxNps}
+                            minNps={p.minNps}
+                            onClickOpen={() => openPlaylistDetails(p.path)}
+                        />
+                    )}
+                </ul>
             )
         }
 

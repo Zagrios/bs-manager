@@ -90,7 +90,7 @@ export class BsModsManagerService {
             return;
         }
 
-        const modalRes = await this.modals.openModal(UninstallModModal, mod);
+        const modalRes = await this.modals.openModal(UninstallModModal, {data: mod});
 
         if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
             return;
@@ -117,7 +117,7 @@ export class BsModsManagerService {
             return;
         }
 
-        const modalRes = await this.modals.openModal(UninstallAllModsModal, version);
+        const modalRes = await this.modals.openModal(UninstallAllModsModal, {data: version});
 
         if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
             return;

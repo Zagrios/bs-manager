@@ -24,6 +24,8 @@ import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { useService } from "renderer/hooks/use-service.hook";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 import { gt } from "semver"
+import { ModalService } from "renderer/services/modale.service";
+import { ChooseStore } from "renderer/components/modal/modal-types/bs-downgrade/choose-store-modal.component";
 
 export default function App() {
     useService(OsDiagnosticService);
@@ -34,6 +36,7 @@ export default function App() {
     const notification = useService(NotificationService);
     const config = useService(ConfigurationService);
     const autoUpdater = useService(AutoUpdaterService);
+    const modals = useService(ModalService);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -55,6 +58,7 @@ export default function App() {
     };
 
     const checkOneClicks = async () => {
+
         if (config.get("not-remind-oneclick") === true) {
             return;
         }

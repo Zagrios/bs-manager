@@ -89,7 +89,7 @@ export class MapsManagerService {
         const askModal = maps.length > 1 || !this.config.get<boolean>(MapsManagerService.REMEMBER_CHOICE_DELETE_MAP_KEY);
 
         if (askModal) {
-            const modalRes = await this.modal.openModal(DeleteMapsModal, { linked: versionLinked, maps });
+            const modalRes = await this.modal.openModal(DeleteMapsModal, {data: { linked: versionLinked, maps }});
             if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
                 return false;
             }

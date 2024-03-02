@@ -109,6 +109,6 @@ export class AutoUpdaterService {
     public async showChangelog(version:string): Promise<void>{
             const changelog = await this.getChangelogVersion(version);
 
-            this.modal.openModal(ChangelogModal, changelog);
+            this.modal.openModal(ChangelogModal, {data: changelog});
     }
 }

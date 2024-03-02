@@ -20,8 +20,9 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { useService } from "renderer/hooks/use-service.hook";
+import { extractMapDiffs } from "renderer/components/maps-playlists-panel/maps/maps-row.component";
 
-export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; ownedMaps: BsmLocalMap[] }> = ({ data: { ownedMaps, version } }) => {
+export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; ownedMaps: BsmLocalMap[] }> = ({ options: {data : { ownedMaps, version }} }) => {
     const beatSaver = useService(BeatSaverService);
     const mapsDownloader = useService(MapsDownloaderService);
     const progressBar = useService(ProgressBarService);
@@ -84,24 +85,32 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
             .finally(() => setLoading(() => false));
     };
 
-    const extractMapDiffs = (map: BsvMapDetail): Map<BsvMapCharacteristic, ParsedMapDiff[]> => {
-        const res = new Map<BsvMapCharacteristic, ParsedMapDiff[]>();
-        if (map.versions.at(0).diffs) {
-            map.versions.at(0).diffs.forEach(diff => {
-                const arr = res.get(diff.characteristic) || [];
-                arr.push({ name: diff.difficulty, type: diff.difficulty, stars: diff.stars });
-                res.set(diff.characteristic, arr);
-            });
-        }
-        return res;
-    };
-
     const renderMap = (map: BsvMapDetail) => {
         const isMapOwned = map.versions.some(version => ownedMapHashs.includes(version.hash));
         const isDownloading = map.id === currentDownload?.map?.id;
         const inQueue = mapsInQueue.some(toDownload => equal(toDownload.version, version) && toDownload.map.id === map.id);
 
-        return <MapItem autor={map.metadata.levelAuthorName} autorId={map.uploader.id} bpm={map.metadata.bpm} coverUrl={map.versions.at(0).coverURL} createdAt={map.createdAt} duration={map.metadata.duration} hash={map.versions.at(0).hash} likes={map.stats.upvotes} mapId={map.id} ranked={map.ranked} title={map.name} songAutor={map.metadata.songAuthorName} diffs={extractMapDiffs(map)} songUrl={map.versions.at(0).previewURL} key={map.id} onDownload={!isMapOwned && !inQueue && handleDownloadMap} onDoubleClick={!isMapOwned && !inQueue && handleDownloadMap} onCancelDownload={inQueue && !isDownloading && handleCancelDownload} downloading={isDownloading} showOwned={isMapOwned} callBackParam={map} />;
+        return <MapItem
+            autor={map.metadata.levelAuthorName}
+            autorId={map.uploader.id}
+            bpm={map.metadata.bpm}
+            coverUrl={map.versions.at(0).coverURL}
+            createdAt={map.createdAt}
+            duration={map.metadata.duration}
+            hash={map.versions.at(0).hash}
+            likes={map.stats.upvotes}
+            mapId={map.id} ranked={map.ranked}
+            title={map.name}
+            songAutor={map.metadata.songAuthorName}
+            diffs={extractMapDiffs({ bsvMap: map })}
+            songUrl={map.versions.at(0).previewURL}
+            key={map.id}
+            onDownload={!isMapOwned && !inQueue && handleDownloadMap}
+            onDoubleClick={!isMapOwned && !inQueue && handleDownloadMap}
+            onCancelDownload={inQueue && !isDownloading && handleCancelDownload}
+            downloading={isDownloading}
+            showOwned={isMapOwned}
+            callBackParam={map} />;
     };
 
     const handleDownloadMap = useCallback((map: BsvMapDetail) => {
