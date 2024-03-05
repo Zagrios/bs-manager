@@ -5,9 +5,9 @@ import path from "path";
 import log from "electron-log";
 
 export abstract class AbstractLauncherService {
-    
+
     protected readonly localVersions = BSLocalVersionService.getInstance();
-    
+
     constructor(){
         this.localVersions = BSLocalVersionService.getInstance();
     }
@@ -46,18 +46,20 @@ export abstract class AbstractLauncherService {
 
     }
 
-    protected launchBs(bsExePath: string, args: string[], options?: SpawnOptionsWithoutStdio): Promise<number> {
-        return new Promise<number>((resolve, reject) => {
-            const bsProcess = this.launchBSProcess(bsExePath, args, options);
+    protected launchBs(bsExePath: string, args: string[], options?: SpawnOptionsWithoutStdio): {process: ChildProcessWithoutNullStreams, exit: Promise<number>} {
+        const process = this.launchBSProcess(bsExePath, args, options);
 
-            bsProcess.on("error", reject);
-            bsProcess.on("exit", resolve);
-
-            setTimeout(() => {
-                bsProcess.removeAllListeners("error");
-                bsProcess.removeAllListeners("exit");
-                resolve(-1);
-            }, 30_000);
+        const exit = new Promise<number>((resolve, reject) => {
+            process.on("error", (err) => {
+                log.error(`Error while launching BS`, err);
+                reject(err);
+            });
+            process.on("exit", (code) => {
+                log.info(`BS process exit with code ${code}`);
+                resolve(code);
+            });
         });
+
+        return { process, exit };
     }
 }
