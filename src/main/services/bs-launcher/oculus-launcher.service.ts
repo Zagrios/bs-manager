@@ -12,6 +12,9 @@ import { taskRunning } from "../../helpers/os.helpers";
 import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
 import { InstallationLocationService } from "../installation-location.service";
 import { ensurePathNotAlreadyExist } from "../../helpers/fs.helpers";
+import { UtilsService } from "../utils.service";
+import { spawn } from "child_process";
+import { tryit } from "../../../shared/helpers/error.helpers";
 
 export class OculusLauncherService extends AbstractLauncherService implements StoreLauncherInterface {
 
@@ -26,6 +29,7 @@ export class OculusLauncherService extends AbstractLauncherService implements St
 
     private readonly oculus: OculusService;
     private readonly pathsService: InstallationLocationService;
+    private readonly util: UtilsService;
 
     private readonly oculusLib$ = new ReplaySubject<string>();
 
@@ -33,6 +37,7 @@ export class OculusLauncherService extends AbstractLauncherService implements St
         super();
         this.oculus = OculusService.getInstance();
         this.pathsService = InstallationLocationService.getInstance();
+        this.util = UtilsService.getInstance();
 
         this.oculus.tryGetGameFolder([OCULUS_BS_DIR, OCULUS_BS_BACKUP_DIR]).then(async dirPath => {
             if(dirPath){
@@ -100,6 +105,15 @@ export class OculusLauncherService extends AbstractLauncherService implements St
         return rename(bsFolderBackupPath, originalPath);
     }
 
+    private launchSymlinkCleaner(pid: number, symlinkPath: string){
+
+        log.info("Launch Symlink Cleaner", pid, symlinkPath);
+
+        const exeName = "oculus_symlink_cleaner.exe";
+        const scriptPath = this.util.getAssetsScriptsPath();
+        spawn(path.join(scriptPath, exeName), [`${pid}`, symlinkPath], { detached: true, stdio: "ignore" });
+    }
+
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData> {
 
         const prepareOriginalVersion: () => Promise<string> = async () => {
@@ -157,7 +171,16 @@ export class OculusLauncherService extends AbstractLauncherService implements St
                 obs.next({type: BSLaunchEvent.BS_LAUNCHING});
 
                 // Launch Beat Saber
-                return this.launchBs(exePath, this.buildBsLaunchArgs(launchOptions)).catch(err => {
+                const process = this.launchBs(exePath, this.buildBsLaunchArgs(launchOptions));
+
+                if(launchOptions.version.oculus !== true && process?.process?.pid){
+                    const { error } = tryit(() => this.launchSymlinkCleaner(process.process.pid, bsPath));
+                    if(error){
+                        log.error("Error while launching symlink cleaner", error);
+                    }
+                }
+
+                return process.exit.catch(err => {
                     throw CustomError.fromError(err, BSLaunchError.BS_EXIT_ERROR);
                 });
 

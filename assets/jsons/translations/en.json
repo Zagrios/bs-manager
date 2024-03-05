@@ -696,8 +696,7 @@
             "body": {
                 "must-be-installed-once": "You must have installed Beat Saber at least once from the Oculus Store, otherwise Beat Saber might automatically close after launching.",
                 "need-backup": "To launch this version, the Beat Saber installation folder located in your Oculus library will be renamed.",
-                "can-restore-later": "If needed, you can restore it from BSManager by going to the options of the original Oculus version and clicking on 'Restore the folder'",
-                "tips-launch-oculus": "Tip: You can launch this version directly from Oculus, as long as the original version is not restored."
+                "can-restore-later": "If needed, you can restore it from BSManager by going to the options of the original Oculus version and clicking on 'Restore the folder'"
             },
             "not-remind-me": "Do not remind me",
             "understood": "Understood"

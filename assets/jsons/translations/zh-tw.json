@@ -696,8 +696,7 @@
             "body": {
                 "must-be-installed-once": "你必須至少從 Oculus 商店安裝過一次 BeatSaber，否則 BeatSaber 可能會在啟動後自動關閉。",
                 "need-backup": "要啟動該版本，位於你的 Oculus 庫中的 BeatSaber 安裝文件夾將被重命名。",
-                "can-restore-later": "如果需要，你可以通過前往 BSManager 的原始 Oculus 版本選項並點擊'恢復文件夾'來恢復它。",
-                "tips-launch-oculus": "提示：只要原始版本沒有被恢復，你就可以直接從 Oculus 啟動該版本。"
+                "can-restore-later": "如果需要，你可以通過前往 BSManager 的原始 Oculus 版本選項並點擊'恢復文件夾'來恢復它。"
             },
             "not-remind-me": "不再提醒我",
             "understood": "明白了"

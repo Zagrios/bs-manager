@@ -696,8 +696,7 @@
             "body": {
                 "must-be-installed-once": "少なくとも一度はOculus StoreからBeat Saberをインストールしている必要があります。そうしないとBeat Saberは起動後に自動的に終了する可能性があります。",
                 "need-backup": "このバージョンを起動するには、OculusライブラリにあるBeat Saberインストールフォルダの名前を変更します。",
-                "can-restore-later": "必要であれば、BSManagerから元のOculusバージョンのオプションに行き、'フォルダを復元'をクリックして復元することができます。",
-                "tips-launch-oculus": "ヒント: 元のバージョンが復元されない限り、Oculusから直接このバージョンを起動することができます。"
+                "can-restore-later": "必要であれば、BSManagerから元のOculusバージョンのオプションに行き、'フォルダを復元'をクリックして復元することができます。"
             },
             "not-remind-me": "二度と表示しないでください",
             "understood": "分かった"
