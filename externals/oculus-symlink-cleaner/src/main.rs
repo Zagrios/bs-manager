@@ -36,7 +36,12 @@ fn main() {
             None => {
                 println!("Process {} has stopped, deleting directory {:?}", pid, directory_path);
                 match delete_dir_if_is_symlink(directory_path) {
-                    Ok(_) => println!("Directory {:?} deleted successfully.", directory_path),
+                    Ok(_) => {
+                        println!("Directory {:?} deleted successfully.", directory_path);
+                        if let Err(e) = rename_specific_backup_directory(directory_path.parent().unwrap()) {
+                            eprintln!("Failed to rename backup directory: {}", e);
+                        }
+                    },
                     Err(e) => eprintln!("Failed to delete directory {:?}: {}", directory_path, e),
                 }
                 break;
@@ -55,6 +60,19 @@ fn delete_dir_if_is_symlink(path: &Path) -> Result<(), Box<dyn std::error::Error
             eprintln!("Path {:?} is not a symlink.", path);
             Err("Path is not a symlink.".into())
         }
+    }
+}
+
+fn rename_specific_backup_directory(parent_path: &Path) -> Result<(), Box<dyn std::error::Error>> {
+    let backup_dir_name = format!("{}.bsmbak", BEAT_SABER_OCULUS_FOLDER_NAME);
+    let backup_path = parent_path.join(&backup_dir_name);
+    if backup_path.exists() && backup_path.is_dir() {
+        let new_path = parent_path.join(BEAT_SABER_OCULUS_FOLDER_NAME);
+        fs::rename(&backup_path, &new_path)?;
+        println!("Renamed {:?} to {:?}", backup_path, new_path);
+        Ok(())
+    } else {
+        Err(format!("Backup directory {:?} does not exist or is not a directory.", backup_path).into())
     }
 }
 

@@ -94,8 +94,7 @@
                 "edit": "Editar",
                 "uninstall": "Desinstalar",
                 "create-shortcut": "Crear un atajo",
-                "shared-folders": "Carpetas Compartidas",
-                "restore-oculus-folder": "Restaurar la carpeta"
+                "shared-folders": "Carpetas Compartidas"
             }
         },
         "available-versions": {
@@ -695,8 +694,7 @@
             "title": "Atención",
             "body": {
                 "must-be-installed-once": "Debes haber instalado Beat Saber al menos una vez desde la Oculus Store, de lo contrario, Beat Saber podría cerrarse automáticamente después de iniciar.",
-                "need-backup": "Para iniciar esta versión, la carpeta de instalación de Beat Saber que se encuentra en tu biblioteca de Oculus será renombrada.",
-                "can-restore-later": "Si es necesario, podrás restaurarla desde el BSManager accediendo a las opciones de la versión original de Oculus y haciendo clic en 'Restaurar la carpeta'"
+                "will-backup": "Para lanzar esta versión, la carpeta de instalación original de Beat Saber ubicada en tu biblioteca de Oculus será renombrada y se restaurará automáticamente al cerrar Beat Saber."
             },
             "not-remind-me": "No volver a recordármelo",
             "understood": "Entendido"
