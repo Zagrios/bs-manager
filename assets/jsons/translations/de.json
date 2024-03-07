@@ -459,7 +459,7 @@
         },
         "maps": {
             "one-click-install": {
-                "success": "Map installation abegschlossen",
+                "success": "Map installation abgeschlossen",
                 "error": "Ein Fehler ist aufgetreten während der installation der Map"
             }
         },
