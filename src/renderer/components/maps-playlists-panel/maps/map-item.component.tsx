@@ -109,7 +109,7 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
         if (!audioPlayer.playing && audioPlayer.src === songUrl) {
             return audioPlayer.resume();
         }
-        audioPlayer.play(songUrl, bpm);
+        audioPlayer.play([{ src: songUrl, bpm }]);
     };
 
     const bottomBarHoverStart = () => {
