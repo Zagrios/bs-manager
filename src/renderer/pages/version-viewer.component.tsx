@@ -99,20 +99,6 @@ export function VersionViewer() {
         });
     }
 
-    const restoreOriginalOculusFolder = () => {
-        lastValueFrom(ipcService.sendV2("restore-original-oculus-folder")).then(() => {
-            notification.notifySuccess({
-                title: "Restauration réussie",
-                desc: "Le dossier a été restauré avec succès"
-            });
-        }).catch(() => {
-            notification.notifyError({
-                title: "Erreur lors de la restauration",
-                desc: "Le dossier n'a pas pu être restauré"
-            });
-        });
-    }
-
     return (
         <>
             <BsmImage className="absolute w-full h-full top-0 left-0 object-cover" image={state.ReleaseImg || DefautVersionImage} errorImage={DefautVersionImage} />
@@ -131,7 +117,6 @@ export function VersionViewer() {
             </div>
             <BsmDropdownButton className="absolute top-3 right-4 h-9 w-9 bg-light-main-color-2 dark:bg-main-color-2 rounded-md" items={[
                 { text: "pages.version-viewer.dropdown.open-folder", icon: "folder", onClick: openFolder },
-                state.oculus && { text: "pages.version-viewer.dropdown.restore-oculus-folder", icon: "backup-restore", onClick: restoreOriginalOculusFolder},
                 { text: "pages.version-viewer.dropdown.verify-files", icon: "task", onClick: verifyFiles },
                 !state.steam && !state.oculus && { text: "pages.version-viewer.dropdown.edit", icon: "edit", onClick: edit },
                 !state.oculus && { text: "pages.version-viewer.dropdown.clone", icon: "copy", onClick: clone },

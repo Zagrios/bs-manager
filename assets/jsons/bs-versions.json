@@ -682,7 +682,7 @@
 		"ReleaseDate": "1702309893",
 		"year": "2023"
 	},
-    {
+	{
 		"BSVersion": "1.34.5",
 		"BSManifest": "7413405154512822201",
 		"OculusBinaryId": "6639053626194360",
@@ -691,13 +691,22 @@
 		"ReleaseDate": "1707745958",
 		"year": "2024"
 	},
-    {
+	{
 		"BSVersion": "1.34.6",
 		"BSManifest": "4398761375819224126",
 		"OculusBinaryId": "6682206641879058",
 		"ReleaseURL": "https://store.steampowered.com/news/app/620980/view/7595953477644376720",
 		"ReleaseImg": "https://clan.cloudflare.steamstatic.com/images/32055887/e7c75bdfc76d00713adc3fbdf221c9ce8ab3620d.png",
 		"ReleaseDate": "1708091473",
+		"year": "2024"
+	},
+    {
+		"BSVersion": "1.35.0",
+		"BSManifest": "1490986193481243578",
+		"OculusBinaryId": "6720809361352119",
+		"ReleaseURL": "https://store.steampowered.com/news/app/620980/view/4142820264819707009",
+		"ReleaseImg": "https://clan.cloudflare.steamstatic.com/images//32055887/9a141be5c44ca6fc81551a2c7e7f28407df413ed.png",
+		"ReleaseDate": "1709831174",
 		"year": "2024"
 	}
 ]

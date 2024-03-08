@@ -94,8 +94,7 @@
                 "edit": "Bearbeiten",
                 "uninstall": "Entfernen",
                 "create-shortcut": "Verknüpfung erstellen",
-                "shared-folders": "Geteilte Ordner",
-                "restore-oculus-folder": "Ordner wiederherstellen"
+                "shared-folders": "Geteilte Ordner"
             }
         },
         "available-versions": {
@@ -464,7 +463,7 @@
         },
         "maps": {
             "one-click-install": {
-                "success": "Map installation abegschlossen",
+                "success": "Map installation abgeschlossen",
                 "error": "Ein Fehler ist aufgetreten während der installation der Map"
             }
         },
@@ -699,9 +698,7 @@
             "title": "Achtung",
             "body": {
                 "must-be-installed-once": "Sie müssen Beat Saber mindestens einmal aus dem Oculus Store installiert haben, sonst könnte sich Beat Saber nach dem Start automatisch schließen.",
-                "need-backup": "Um diese Version zu starten, wird der Installationsordner von Beat Saber in Ihrer Oculus-Bibliothek umbenannt.",
-                "can-restore-later": "Bei Bedarf können Sie ihn vom BSManager aus wiederherstellen, indem Sie zu den Optionen der originalen Oculus-Version gehen und auf 'Ordner wiederherstellen' klicken",
-                "tips-launch-oculus": "Tipp: Sie können diese Version direkt über Oculus starten, solange die Originalversion nicht wiederhergestellt ist."
+                "will-backup": "Um diese Version zu starten, wird der ursprüngliche Installationsordner von Beat Saber in Ihrer Oculus-Bibliothek umbenannt und beim Schließen von Beat Saber automatisch wiederhergestellt."
             },
             "not-remind-me": "Nicht mehr erinnern",
             "understood": "Verstanden"
@@ -741,7 +738,8 @@
             "nps" : "Noten Pro Sekunde",
             "tags": "Stichworte",
             "specificities": "Allgemein",
-            "requirements": "Anforderungen"
+            "requirements": "Anforderungen",
+            "exclude": "ausschließen"
         },
         "map-types": {
             "accuracy": "Präzision",
@@ -796,6 +794,9 @@
             "curated": "curated",
             "verified": "verifiziert",
             "fullSpread": "full spread"
+        },
+        "map-excludes": {
+            "installed": "installiert"
         },
         "difficulties": {
             "Easy": "einfach",

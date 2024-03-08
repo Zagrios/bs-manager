@@ -94,8 +94,7 @@
                 "edit": "编辑",
                 "uninstall": "卸载",
                 "create-shortcut": "创建快捷方式",
-                "shared-folders": "Shared Folders",
-                "restore-oculus-folder": "Restore the folder"
+                "shared-folders": "Shared Folders"
             }
         },
         "available-versions": {
@@ -699,9 +698,7 @@
             "title": "警告",
             "body": {
                 "must-be-installed-once": "你必须至少从 Oculus 商店安装过一次 BeatSaber，否则 BeatSaber 可能会在启动后自动关闭。",
-                "need-backup": "要启动该版本，位于你的 Oculus 库中的 BeatSaber 安装文件夹将被重命名。",
-                "can-restore-later": "如果需要，你可以通过前往 BSManager 的原始 Oculus 版本选项并点击'恢复文件夹'来恢复它。",
-                "tips-launch-oculus": "提示：只要原始版本没有被恢复，你就可以直接从 Oculus 启动该版本。"
+                "will-backup": "为了启动这个版本，位于您的Oculus库中的Beat Saber的原始安装文件夹将被重命名，并且在Beat Saber关闭时会自动恢复。"
             },
             "not-remind-me": "不再提醒我",
             "understood": "明白了"
@@ -741,7 +738,8 @@
             "nps" : "每秒音符数",
             "tags": "标签",
             "specificities": "general",
-            "requirements": "要求"
+            "requirements": "要求",
+            "exclude": "排除"
         },
         "map-types": {
             "accuracy": "精确度",
@@ -796,6 +794,9 @@
             "curated": "curated",
             "verified": "verified",
             "fullSpread": "full spread"
+        },
+        "map-excludes": {
+            "installed": "已安装"
         },
         "difficulties": {
             "Easy": "easy",
