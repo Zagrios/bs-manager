@@ -3,6 +3,7 @@
     "description": "Manage maps, mods and more for Beat Saber",
     "main": "./src/main/main.ts",
     "scripts": {
+        "build-rust-scripts": "node -r esbuild-register ./.erb/scripts/build-rust-scripts.js",
         "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
         "build:dll": "cross-env NODE_ENV=development webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts",
         "build:main": "cross-env NODE_ENV=production webpack --config ./.erb/configs/webpack.config.main.prod.ts",
