@@ -1,7 +1,8 @@
 import path from "path";
 import { app } from "electron";
 import ElectronStore from "electron-store";
-import { copyDirectoryWithJunctions, deleteFolder, ensureFolderExist } from "../helpers/fs.helpers";
+import { copyDirectoryWithJunctions, deleteFolder, ensureFolderExist, pathExist } from "../helpers/fs.helpers";
+import { tryit } from "../../shared/helpers/error.helpers";
 import { pathExistsSync } from "fs-extra";
 
 export class InstallationLocationService {
@@ -69,8 +70,8 @@ export class InstallationLocationService {
                 return this.installPathConfig.get(this.STORE_INSTALLATION_PATH_KEY) as string;
             }
 
-            const oldPath = path.join(app.getPath("documents"), this.INSTALLATION_FOLDER);
-            if(pathExistsSync(oldPath)){
+            const { result: oldPath } = tryit(() => path.join(app.getPath("documents"), this.INSTALLATION_FOLDER));
+            if(oldPath && pathExistsSync(oldPath)){
                 return app.getPath("documents");
             }
 

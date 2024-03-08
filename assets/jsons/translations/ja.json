@@ -94,8 +94,7 @@
                 "edit": "編集",
                 "uninstall": "アンインストール",
                 "create-shortcut": "ショートカットを作成",
-                "shared-folders": "共有フォルダー",
-                "restore-oculus-folder": "フォルダーの復元"
+                "shared-folders": "共有フォルダー"
             }
         },
         "available-versions": {
@@ -699,9 +698,7 @@
             "title": "注意",
             "body": {
                 "must-be-installed-once": "少なくとも一度はOculus StoreからBeat Saberをインストールしている必要があります。そうしないとBeat Saberは起動後に自動的に終了する可能性があります。",
-                "need-backup": "このバージョンを起動するには、OculusライブラリにあるBeat Saberインストールフォルダの名前を変更します。",
-                "can-restore-later": "必要であれば、BSManagerから元のOculusバージョンのオプションに行き、'フォルダを復元'をクリックして復元することができます。",
-                "tips-launch-oculus": "ヒント: 元のバージョンが復元されない限り、Oculusから直接このバージョンを起動することができます。"
+                "will-backup": "このバージョンを起動するために、OculusライブラリにあるBeat Saberの元のインストールフォルダは名前が変更され、Beat Saberの終了時に自動的に復元されます。"
             },
             "not-remind-me": "二度と表示しないでください",
             "understood": "分かった"
@@ -741,7 +738,8 @@
             "nps" : "秒間ノート数",
             "tags": "タグ",
             "specificities": "一般",
-            "requirements": "要Mod"
+            "requirements": "要Mod",
+            "exclude": "除外する"
         },
         "map-types": {
             "accuracy": "正確",
@@ -796,6 +794,9 @@
             "curated": "厳選済み",
             "verified": "認証済み",
             "fullSpread": "フルスプレッド"
+        },
+        "map-excludes": {
+            "installed": "インストール済み"
         },
         "difficulties": {
             "Easy": "easy",

@@ -19,11 +19,9 @@ export const OriginalOculusVersionBackupModal: ModalComponent<boolean, void> = (
         <form className="max-w-[450px] text-gray-800 dark:text-gray-200">
             <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t("modals.original-version-backup-oculus.title")}</h1>
             <BsmImage className="mx-auto h-20" image={BeatConflict} />
-            
+
             <p className="text-sm italic mb-4 font-bold">{t("modals.original-version-backup-oculus.body.must-be-installed-once")}</p>
-            <p className="mb-4">{t("modals.original-version-backup-oculus.body.need-backup")}</p>
-            <p className="mb-4">{t("modals.original-version-backup-oculus.body.can-restore-later")}</p>
-            <p className="text-sm italic mb-4">{t("modals.original-version-backup-oculus.body.tips-launch-oculus")}</p>
+            <p className="mb-4">{t("modals.original-version-backup-oculus.body.will-backup")}</p>
 
             <div className="flex flex-row justify-start items-center gap-1.5 my-4" >
                 <BsmCheckbox className="relative z-[1] w-6 aspect-square" checked={dontShowAgain} onChange={setDontShowAgain} />
