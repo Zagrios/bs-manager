@@ -54,10 +54,13 @@ export class IpcService {
             complete: () => this.send(this.getCompleteChannel(channel), window)
         })
 
-        window.webContents.once("destroyed", () => sub.unsubscribe());
+        const unsubscribeOnDestroy = () => sub.unsubscribe();
+
+        window.webContents.once("destroyed", unsubscribeOnDestroy);
         window.webContents.ipc.once(this.getTearDownChannel(channel), () => sub.unsubscribe());
 
         sub.add(() => {
+            window.webContents.removeListener("destroyed", unsubscribeOnDestroy);
             window.webContents.ipc.removeAllListeners(this.getTearDownChannel(channel));
         });
     }

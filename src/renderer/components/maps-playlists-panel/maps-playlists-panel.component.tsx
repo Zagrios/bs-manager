@@ -19,13 +19,19 @@ import { LocalPlaylistsListPanel } from "./playlists/local-playlists-list-panel.
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { useConstant } from "renderer/hooks/use-constant.hook";
+import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
 
 type Props = {
     version?: BSVersion;
     isActive?: boolean;
 };
 
-export const InstalledMapsContext = createContext<{ maps$?: BehaviorSubject<BsmLocalMap[]>; setMaps: (maps: BsmLocalMap[]) => void }>(null);
+export const InstalledMapsContext = createContext<{
+    maps$?: BehaviorSubject<BsmLocalMap[]>;
+    setMaps: (maps: BsmLocalMap[]) => void;
+    playlists$?: Observable<LocalBPListsDetails[]>;
+    setPlaylists: (playlist: LocalBPListsDetails[]) => void;
+}>(null);
 
 export function MapsPlaylistsPanel({ version, isActive }: Props) {
 
@@ -37,7 +43,8 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
     const [tabIndex, setTabIndex] = useState(0);
 
     const maps$ = useConstant(() => new BehaviorSubject<BsmLocalMap[]>(undefined));
-    const mapsContextValue = useConstant(() => ({ maps$: maps$, setMaps: maps$.next.bind(maps$) }));
+    const playlists$ = useConstant(() => new BehaviorSubject<LocalBPListsDetails[]>(undefined));
+    const mapsContextValue = useConstant(() => ({ maps$: maps$, setMaps: maps$.next.bind(maps$), playlists$: playlists$, setPlaylists: playlists$.next.bind(playlists$)}));
 
     const mapsRef = useRef<any>();
     const [mapFilter, setMapFilter] = useState<MapFilter>({});

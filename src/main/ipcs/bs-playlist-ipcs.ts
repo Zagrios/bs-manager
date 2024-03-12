@@ -44,3 +44,8 @@ ipc.on<BSVersion>("get-version-playlists-details", (req, reply) => {
     const playlists = LocalPlaylistsManagerService.getInstance();
     reply(playlists.getVersionPlaylistsDetails(req.args));
 });
+
+ipc.on<{path: string, deleteMaps?: boolean}>("delete-playlist", (req, reply) => {
+    const playlists = LocalPlaylistsManagerService.getInstance();
+    reply(playlists.deletePlaylist(req.args));
+});

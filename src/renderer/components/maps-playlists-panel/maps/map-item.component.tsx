@@ -159,7 +159,7 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
             <GlowEffect visible={hovered || (selected && !!onSelected)} />
                 <AnimatePresence>
                     {(diffsPanelHovered || bottomBarHovered) && (
-                        <motion.ul key={hash} className="absolute top-[calc(100%-10px)] w-full h-fit max-h-[200%] pt-4 pb-2 px-2 overflow-y-scroll bg-light-main-color-3 dark:bg-main-color-3 text-main-color-1 dark:text-current brightness-125 rounded-md flex flex-col gap-3 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 shadow-sm shadow-black" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} onHoverStart={diffsPanelHoverStart} onHoverEnd={diffsPanelHoverEnd}>
+                        <motion.ul key={hash} className="absolute top-[calc(100%-10px)] w-full h-fit max-h-[200%] pt-4 pb-2 px-2 overflow-y-scroll bg-light-main-color-3 dark:bg-main-color-3 text-main-color-1 dark:text-current brightness-125 rounded-md flex flex-col gap-3 scrollbar-default shadow-sm shadow-black" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} onHoverStart={diffsPanelHoverStart} onHoverEnd={diffsPanelHoverEnd}>
                             {Array.from(diffs.entries()).map(([charac, diffSet]) => (
                                 <ol key={crypto.randomUUID()} className="flex flex-col w-full gap-1">
                                     {diffSet.map(({ type, name, stars }) => (
@@ -178,9 +178,9 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
                 </AnimatePresence>
             <div className="h-full w-full relative pl-[100px] rounded-md overflow-hidden flex flex-row justify-end">
                 <div className={`absolute top-0 left-0 h-full aspect-square cursor-pointer ${showOwned && "border-l-[5px]"}`} style={{ borderColor: showOwned && color }}>
-                    <BsmImage className="w-full h-full object-cover" image={coverUrl} placeholder={defaultImage} errorImage={defaultImage} />
+                    <BsmImage className="size-full object-cover" image={coverUrl} placeholder={defaultImage} errorImage={defaultImage} />
                     <span
-                        className="absolute flex justify-center items-center w-full h-full pr-1 bg-transparent top-0 left-0 group-hover:bg-black group-hover:bg-opacity-40"
+                        className="absolute flex justify-center items-center size-full pr-1 bg-transparent top-0 left-0 group-hover:bg-black group-hover:bg-opacity-40"
                         style={{ color }}
                         onClick={e => {
                             e.stopPropagation();
@@ -188,12 +188,12 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
                             toogleMusic();
                         }}
                     >
-                        <BsmIcon className="w-full h-full p-7 opacity-0 group-hover:opacity-100 text-white hover:text-current" icon={songPlaying ? "pause" : "play"} />
+                        <BsmIcon className="size-full p-7 opacity-0 group-hover:opacity-100 text-white hover:text-current" icon={songPlaying ? "pause" : "play"} />
                     </span>
                 </div>
                 <div className="relative h-full w-full z-[1] rounded-md overflow-hidden -translate-x-1" ref={ref}>
-                    <BsmImage className="absolute top-0 left-0 w-full h-full -z-[1] object-cover saturate-200" image={coverUrl} placeholder={defaultImage} errorImage={defaultImage} />
-                    <div className="pt-1 pl-2 pr-7 top-0 left-0 w-full h-full bg-neutral-600 bg-opacity-80 flex flex-col justify-between group-hover:bg-main-color-1 group-hover:bg-opacity-80">
+                    <BsmImage className="absolute top-0 left-0 size-full -z-[1] object-cover saturate-200" image={coverUrl} placeholder={defaultImage} errorImage={defaultImage} />
+                    <div className="pt-1 pl-2 pr-7 top-0 left-0 size-full bg-neutral-600 bg-opacity-80 flex flex-col justify-between group-hover:bg-main-color-1 group-hover:bg-opacity-80">
                         <h1 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full leading-5 tracking-wide text-lg" title={title}>
                             <BsmLink className="hover:underline" href={mapUrl}>
                                 {title}
@@ -241,18 +241,16 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
                         </motion.div>
                     </div>
                 </div>
-                <div className="absolute bg-light-main-color-3 dark:bg-main-color-3 top-0 h-full z-[1] w-[30px] -right-5 group-hover:right-0 transition-all">
+                <div className="absolute bg-light-main-color-3 dark:bg-main-color-3 top-0 h-full z-[1] w-[30px] -right-5 group-hover:-translate-x-5 transition-transform">
                     <span className="absolute w-[10px] h-[10px] top-0 right-full bg-inherit" style={{ clipPath: 'path("M11 -1 L11 10 L10 10 A10 10 0 0 0 0 0 L0 -1 Z")' }} />
                     <span className="absolute w-[10px] h-[10px] bottom-0 right-full bg-inherit" style={{ clipPath: 'path("M11 11 L11 0 L10 0 A10 10 0 0 1 0 10 L 0 11 Z")' }} />
 
-                    <div className="flex flex-col justify-center items-center gap-1 w-full h-full overflow-hidden opacity-0 group-hover:opacity-100">
+                    <div className="flex flex-col justify-center items-center gap-1 size-full overflow-hidden opacity-0 group-hover:opacity-100">
                         {onDelete && !downloading && (
                         <Tippy content={t("maps.map-item.delete")} placement="left" theme="default">
-                            <div>
                                 <BsmButton
-                                    className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2"
-                                    iconClassName="w-full h-full brightness-75 dark:brightness-200"
-                                    iconColor={color}
+                                    className="w-6 h-6 p-0.5 rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2 text-red-500"
+                                    iconClassName="size-full"
                                     icon="trash"
                                     withBar={false}
                                     onClick={e => {
@@ -260,15 +258,13 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
                                         onDelete(callBackParam);
                                     }}
                                 />
-                            </div>
                         </Tippy>
                         )}
                         {onDownload && !downloading && (
                         <Tippy content={t("maps.map-item.download")} placement="left" theme="default">
-                            <div>
                                 <BsmButton
-                                    className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2"
-                                    iconClassName="w-full h-full brightness-75 dark:brightness-200"
+                                    className="w-6 h-6 p-0.5 rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2"
+                                    iconClassName="size-full brightness-75 dark:brightness-200"
                                     iconColor={color}
                                     icon="download"
                                     withBar={false}
@@ -277,15 +273,13 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
                                         onDownload(callBackParam);
                                     }}
                                 />
-                            </div>
                         </Tippy>
                         )}
                         {onCancelDownload && !downloading && (
                         <Tippy content={t("maps.map-item.cancel-download")} placement="left" theme="default">
-                            <div>
                                 <BsmButton
                                     className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2"
-                                    iconClassName="w-full h-full brightness-75 dark:brightness-200"
+                                    iconClassName="size-full brightness-75 dark:brightness-200"
                                     iconColor="red"
                                     icon="cross"
                                     withBar={false}
@@ -294,7 +288,6 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
                                         onCancelDownload(callBackParam);
                                     }}
                                 />
-                            </div>
                         </Tippy>
                         )}
                         {downloading &&
@@ -306,10 +299,9 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
                         }
                         {previewUrl && (
                         <Tippy content={t("maps.map-item.preview")} placement="left" theme="default">
-                            <div>
                             <BsmButton
-                                className="w-6 h-6 p-[2px] rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2"
-                                iconClassName="w-full h-full brightness-75 dark:brightness-200"
+                                className="w-6 h-6 p-0.5 rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2"
+                                iconClassName="size-full brightness-75 dark:brightness-200"
                                 iconColor={color}
                                 icon="eye"
                                 withBar={false}
@@ -318,15 +310,13 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
                                     openPreview();
                                 }}
                             />
-                            </div>
                         </Tippy>
                         )}
                         {mapId && (
                         <Tippy content={t("maps.map-item.bsr-code")} placement="left" theme="default">
-                            <div>
                             <BsmButton
                                 className="w-6 h-6 p-1 rounded-md !bg-inherit hover:!bg-light-main-color-2 hover:dark:!bg-main-color-2"
-                                iconClassName="w-full h-full brightness-75 dark:brightness-200"
+                                iconClassName="size-full brightness-75 dark:brightness-200"
                                 iconColor={color}
                                 icon="twitch"
                                 withBar={false}
@@ -335,7 +325,6 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
                                     copyBsr();
                                 }}
                             />
-                            </div>
                         </Tippy>
                         )}
                     </div>

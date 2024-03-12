@@ -11,12 +11,16 @@ import { from, of } from "rxjs";
 
 const ipc = IpcService.getInstance();
 
-ipcMain.on("new-window", async (event, request: IpcRequest<string>) => {
+ipcMain.on("new-window", (event, request: IpcRequest<string>) => {
     shell.openExternal(request.args);
 });
 
-ipc.on<string>("choose-folder", async (req, reply) => {
+ipc.on<string>("choose-folder", (req, reply) => {
     reply(from(dialog.showOpenDialog({ properties: ["openDirectory"], defaultPath: req.args ?? "" })));
+});
+
+ipc.on<string>("view-path-in-explorer", (req, reply) => {
+    reply(of(shell.showItemInFolder(req.args)));
 });
 
 ipcMain.on("window.progression", async (event, request: IpcRequest<number>) => {

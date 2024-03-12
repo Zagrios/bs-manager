@@ -7,7 +7,7 @@ import { InstallationLocationService } from "../../installation-location.service
 import { UtilsService } from "../../utils.service";
 import crypto from "crypto";
 import { lstatSync } from "fs";
-import { copy, createReadStream, ensureDir, pathExists, realpath, unlink } from "fs-extra";
+import { copy, createReadStream, ensureDir, pathExists, pathExistsSync, realpath, unlink } from "fs-extra";
 import StreamZip from "node-stream-zip";
 import { RequestService } from "../../request.service";
 import sanitize from "sanitize-filename";
@@ -240,31 +240,32 @@ export class LocalMapsManagerService {
         return this.linker.unlinkFolder(versionMapsPath, { keepContents: keepMaps, intermediateFolder: LocalMapsManagerService.SHARED_MAPS_FOLDER });
     }
 
-    public deleteMaps(maps: BsmLocalMap[]): Observable<DeleteMapsProgress> {
-        const mapsFolders = maps.map(map => map.path);
-        const mapsHashsToDelete = maps.map(map => map.hash);
-
+    public deleteMaps(maps: Partial<BsmLocalMap>[]): Observable<DeleteMapsProgress> {
         return new Observable<DeleteMapsProgress>(observer => {
+            const progress: DeleteMapsProgress = { total: maps.length, deleted: 0 };
+
             (async () => {
-                const progress: DeleteMapsProgress = { total: maps.length, deleted: 0 };
-                try {
-                    for (const folder of mapsFolders) {
-                        const detail = await this.loadMapInfoFromPath(folder);
-                        if (!mapsHashsToDelete.includes(detail?.hash)) {
-                            continue;
-                        }
-                        await deleteFolder(folder);
-                        this.songCache.deleteMapInfoFromDirname(path.basename(folder));
+                for (const map of maps) {
+                    let mapPath = map.path;
+
+                    if (!mapPath) {
+                        const mapInfo = map.hash ? this.songCache.getMapInfoFromHash(map.hash) : null;
+                        mapPath = mapInfo?.path;
+                    }
+
+                    if (mapPath && pathExistsSync(mapPath)) {
+                        await deleteFolder(mapPath);
+                        this.songCache.deleteMapInfoFromDirname(path.basename(mapPath));
                         progress.deleted++;
                         observer.next(progress);
                     }
-                } catch (e) {
-                    observer.error(e);
                 }
-                observer.complete();
-            })();
+            })()
+            .catch(e => observer.error(e))
+            .finally(() => observer.complete());
         });
     }
+
 
     public async downloadMap(map: BsvMapDetail, version?: BSVersion): Promise<BsmLocalMap> {
         if (!map.versions.at(0).hash) {

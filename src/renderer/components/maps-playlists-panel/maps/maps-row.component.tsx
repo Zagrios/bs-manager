@@ -25,7 +25,7 @@ export const MapsRow = memo(({ maps, style, selectedMaps$, onMapSelect, onMapDel
     const renderMapItem = (map: BsmLocalMap) => {
 
         return <MapItem
-            key={map.hash}
+            key={map.path}
             hash={map.hash}
             title={map.rawInfo._songName}
             coverUrl={map.coverUrl}

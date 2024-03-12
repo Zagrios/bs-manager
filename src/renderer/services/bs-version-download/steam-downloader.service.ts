@@ -252,8 +252,6 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
 
         })();
 
-        // *** TEST EXPIRATION MOBILE APP APROVAL ***
-
         return downloadPromise.then(() => {}).finally(() => {
             this.downloadProgress$.next(0);
             this.progressBarService.hide(true);

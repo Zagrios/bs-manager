@@ -11,13 +11,12 @@ import { BPList, DownloadPlaylistProgressionData } from "shared/models/playlists
 import { readFileSync } from "fs";
 import { BeatSaverService } from "../thrid-party/beat-saver/beat-saver.service";
 import { copy, copyFile, ensureDir, pathExists, pathExistsSync, readdirSync, realpath } from "fs-extra";
-import { Progression, pathExist } from "../../helpers/fs.helpers";
+import { Progression, pathExist, unlinkPath } from "../../helpers/fs.helpers";
 import { FileAssociationService } from "../file-association.service";
 import { SongDetailsCacheService } from "./maps/song-details-cache.service";
 import { sToMs } from "shared/helpers/time.helpers";
 import { LocalBPList, LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
 import { SongCacheService } from "./maps/song-cache.service";
-import { pathToFileURL } from "url";
 import { InstallationLocationService } from "../installation-location.service";
 
 export class LocalPlaylistsManagerService {
@@ -227,6 +226,40 @@ export class LocalPlaylistsManagerService {
             .finally(() => obs.complete());
         });
 
+    }
+
+    public deletePlaylist(opt: {path: string, deleteMaps?: boolean}): Observable<Progression>{
+
+        console.log("AAAAAA");
+
+        return new Observable<Progression>(obs => {
+            (async () => {
+
+                const bpList = await this.readPlaylistFile(opt.path);
+
+                const progress: Progression = { current: 0, total: opt.deleteMaps ? bpList.songs.length + 1 : 1};
+
+                if(opt.deleteMaps){
+                    const mapsHashs = bpList.songs.map(s => ({ hash: s.hash }));
+                    await lastValueFrom(this.maps.deleteMaps(mapsHashs).pipe(
+                        tap({
+                            next: () => {
+                                progress.current += 1
+                                obs.next(progress);
+                            },
+                            error: err => obs.error(err),
+                            complete: () => obs.next(progress),
+                        }),
+                    ));
+                }
+
+                await unlinkPath(opt.path);
+                progress.current += 1;
+                obs.next(progress);
+            })()
+            .catch(err => obs.error(err))
+            .finally(() => obs.complete());
+        });
     }
 
     public oneClickInstallPlaylist(bpListUrl: string): Observable<Progression<DownloadPlaylistProgressionData>> {

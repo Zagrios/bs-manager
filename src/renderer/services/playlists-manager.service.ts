@@ -34,6 +34,10 @@ export class PlaylistsManagerService {
         return this.ipc.sendV2("get-version-playlists-details", { args: version });
     }
 
+    public deletePlaylist(opt: {path: string, deleteMaps?: boolean}): Observable<Progression> {
+        return this.ipc.sendV2<Progression, {path: string, deleteMaps?: boolean}>("delete-playlist", { args: opt });
+    }
+
     public async linkVersion(version: BSVersion): Promise<boolean> {
         const modalRes = await this.modal.openModal(LinkPlaylistModal);
 

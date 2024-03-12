@@ -41,8 +41,8 @@ export function PlaylistDetailsTemplate({title, image, author, description, nbMa
     })();
 
     return (
-        <div className="flex flex-col w-screen max-w-2xl h-[calc(100vh-1.25rem)] translate-y-5 bg-main-color-1 rounded-t-lg overflow-hidden">
-            <header className="relative flex-shrink-0 h-36 overflow-hidden flex flex-row p-3">
+        <div className="flex flex-col w-screen max-w-2xl h-screen max-h-[calc(100vh-1.25rem)] translate-y-2.5 bg-main-color-1 rounded-t-lg overflow-hidden">
+            <header className="shrink-0 relative h-36 overflow-hidden flex flex-row p-3">
                 <BsmImage className="absolute top-0 left-0 size-full object-cover blur-xl scale-150 brightness-75 saturate-200" base64={image}/>
                 <BsmImage className="h-full aspect-square object-cover z-[1] rounded-md shadow-black shadow-center" base64={image}/>
                 <div className="h-full px-3 text-white z-[1]">

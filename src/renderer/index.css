@@ -78,6 +78,13 @@
     background: rgba(0, 0, 0, 0.25);
 }
 
+.scrollbar-default {
+    /* scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 */
+    @apply scrollbar-thin;
+    @apply scrollbar-thumb-rounded-full;
+    @apply scrollbar-thumb-neutral-900;
+}
+
 .tippy-box[data-theme~='default'] {
     @apply bg-neutral-900;
     @apply text-white;

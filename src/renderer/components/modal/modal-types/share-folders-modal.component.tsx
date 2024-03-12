@@ -73,7 +73,7 @@ export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ options: {d
         <form className="w-full max-w-md ">
             <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t("modals.shared-folders.title")}</h1>
             <p className="my-3">{t("modals.shared-folders.description")}</p>
-            <ul className="flex flex-col gap-1 mb-2 h-[300px] max-h-[300px] overflow-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 px-1">
+            <ul className="flex flex-col gap-1 mb-2 h-[300px] max-h-[300px] overflow-scroll scrollbar-default px-1">
                 {folders.map((folder, index) => (
                     <FolderItem
                         key={folder}

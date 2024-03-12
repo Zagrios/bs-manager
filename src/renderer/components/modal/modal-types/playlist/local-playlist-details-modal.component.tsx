@@ -8,9 +8,15 @@ import { MapItem } from "renderer/components/maps-playlists-panel/maps/map-item.
 import { extractMapDiffs } from "renderer/components/maps-playlists-panel/maps/maps-row.component";
 import { useService } from "renderer/hooks/use-service.hook";
 import { AudioPlayerService } from "renderer/services/audio-player.service";
+import { AnimatePresence, motion } from "framer-motion";
+import { BsmImage } from "renderer/components/shared/bsm-image.component";
+import { BsmButton } from "renderer/components/shared/bsm-button.component";
+import BeatConflict from "../../../../../../assets/images/apngs/beat-conflict.png";
+import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
 
-interface Props extends Omit<PlaylistDetailsTemplateProps, "children"> {
-    version: BSVersion
+interface Props {
+    version: BSVersion;
+    localPlaylist$: Observable<LocalBPListsDetails>;
     installedMaps$: Observable<BsmLocalMap[]>;
 }
 
@@ -18,7 +24,8 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
 
     const audioPlayer = useService(AudioPlayerService);
 
-    const installedMaps = useObservable(() => options.data.installedMaps$, undefined);
+    const localPlaylist = useObservable(() => options.data.localPlaylist$, null);
+    const installedMaps = useObservable(() => options.data.installedMaps$, null);
 
     const playPlaylist = () => {
         if (!installedMaps) {
@@ -29,37 +36,75 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
 
     const renderMaps = () => {
         if (!installedMaps) {
+            // loading maps
+            return null;
+        }
+
+        if(installedMaps.length === 0) {
+            // no maps
             return null;
         }
 
         return (
-            <ul className="space-y-2 overflow-y-scroll pr-2 pl-2.5 pt-2 pb-5 scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900">
-                {installedMaps.map(map => (
-                    <MapItem
-                        key={map.path}
-                        hash={map.hash}
-                        title={map.rawInfo._songName}
-                        coverUrl={map.coverUrl}
-                        songUrl={map.songUrl}
-                        autor={map.rawInfo._levelAuthorName}
-                        songAutor={map.rawInfo._songAuthorName}
-                        bpm={map.rawInfo._beatsPerMinute}
-                        duration={map.songDetails?.metadata.duration}
-                        diffs={extractMapDiffs({ rawMapInfo: map.rawInfo, songDetails: map.songDetails })}
-                        mapId={map.songDetails?.id}
-                        ranked={map.songDetails?.ranked}
-                        autorId={map.songDetails?.uploader.id}
-                        likes={map.songDetails?.upVotes}
-                        createdAt={map.songDetails?.uploadedAt}
-                        callBackParam={null}
-                    />
-                ))}
-            </ul>
+            <div className="grow min-h-0 overflow-hidden flex flex-col justify-start items-center">
+                <AnimatePresence>
+                    {/* If nb installed maps not correspond to nb maps of the playlist */}
+                    {installedMaps.length !== localPlaylist.nbMaps && (
+                        <motion.div
+                            initial={{ height: 0 }}
+                            animate={{ height: "7rem" }}
+                            exit={{ height: 0 }}
+                            transition={{delay: .2, duration: .25}}
+                            className="shrink-0 w-full text-center overflow-hidden flex justify-center items-center"
+                        >
+                            <div className="size-[calc(100%-1rem)] bg-main-color-2 rounded-md translate-y-1.5 flex flex-row justify-center items-center gap-3">
+                                <BsmImage image={BeatConflict} className="size-24"/>
+                                <div className="text-white font-bold w-fit space-y-1.5 flex flex-col justify-center items-center">
+                                    <p>Certaines maps de cette playlist sont manquantes</p>
+                                    <BsmButton withBar={false} className="rounded-md h-8 flex items-center justify-center px-4" typeColor="primary" text="Télécharger.les.maps.manquantes"/>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+                <ul className="min-h-0 w-full grow space-y-2 pl-2.5 pr-2 py-3 overflow-y-scroll overflow-x-hidden scrollbar-default">
+                    {installedMaps.map(map => (
+                        <MapItem
+                            key={map.path}
+                            hash={map.hash}
+                            title={map.rawInfo._songName}
+                            coverUrl={map.coverUrl}
+                            songUrl={map.songUrl}
+                            autor={map.rawInfo._levelAuthorName}
+                            songAutor={map.rawInfo._songAuthorName}
+                            bpm={map.rawInfo._beatsPerMinute}
+                            duration={map.songDetails?.metadata.duration}
+                            diffs={extractMapDiffs({ rawMapInfo: map.rawInfo, songDetails: map.songDetails })}
+                            mapId={map.songDetails?.id}
+                            ranked={map.songDetails?.ranked}
+                            autorId={map.songDetails?.uploader.id}
+                            likes={map.songDetails?.upVotes}
+                            createdAt={map.songDetails?.uploadedAt}
+                            callBackParam={null}
+                        />
+                    ))}
+                </ul>
+            </div>
         )
     }
 
     return (
-        <PlaylistDetailsTemplate {...options.data}>
+        <PlaylistDetailsTemplate
+            author={localPlaylist?.playlistAuthor}
+            description={localPlaylist?.playlistDescription}
+            image={localPlaylist?.image}
+            duration={localPlaylist?.duration}
+            maxNps={localPlaylist?.maxNps}
+            minNps={localPlaylist?.minNps}
+            nbMaps={localPlaylist?.nbMaps}
+            nbMappers={localPlaylist?.nbMappers}
+            title={localPlaylist?.playlistTitle}
+        >
             {renderMaps()}
         </PlaylistDetailsTemplate>
     )
