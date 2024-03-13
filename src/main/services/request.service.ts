@@ -1,9 +1,11 @@
-import { Agent, get } from "https";
+import { Agent, RequestOptions, get } from "https";
 import { createWriteStream, unlink } from "fs";
 import { Progression } from "main/helpers/fs.helpers";
 import { Observable, shareReplay, tap } from "rxjs";
 import log from "electron-log";
 import fetch, { RequestInfo, RequestInit } from "node-fetch";
+import { app } from "electron";
+import os from "os";
 
 export class RequestService {
     private static instance: RequestService;
@@ -15,16 +17,33 @@ export class RequestService {
         return RequestService.instance;
     }
 
-    private constructor() {}
+    private readonly defaultRequestInit: RequestInit;
 
-    private get ipv4Agent(){
-        return new Agent({ family: 4 });
+    private constructor() {
+
+        this.defaultRequestInit = {
+            headers: {
+                "User-Agent": `BSManager/${app.getVersion()} (${os.type()} ${os.release()})`
+            },
+            agent: new Agent({ family: 4 }),
+        };
+    }
+
+    private getInitWithOptions(options?: RequestInit): RequestInit {
+        return { ...this.defaultRequestInit, ...(options || {}) };
+    }
+
+    private requestOptionsFromDefaultInit(): RequestOptions {
+        return {
+            headers: this.defaultRequestInit.headers as Record<string, string>,
+            agent: this.defaultRequestInit.agent as Agent,
+        };
     }
 
     public async getJSON<T = unknown>(url: RequestInfo, options?: RequestInit): Promise<T> {
 
         try {
-            const response = await fetch(url, {...options, agent: this.ipv4Agent});
+            const response = await fetch(url, this.getInitWithOptions(options));
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status} ${url}`);
@@ -50,7 +69,7 @@ export class RequestService {
             });
             file.on("error", err => unlink(dest, () => subscriber.error(err)));
 
-            const req = get(url, { agent: this.ipv4Agent }, res => {
+            const req = get(url, this.requestOptionsFromDefaultInit(), res => {
                 progress.total = parseInt(res.headers?.["content-length"] || "0", 10);
 
                 res.on("data", chunk => {
@@ -77,7 +96,7 @@ export class RequestService {
 
             const allChunks: Buffer[] = [];
 
-            const req = get(url, { agent: this.ipv4Agent }, res => {
+            const req = get(url, this.requestOptionsFromDefaultInit(), res => {
                 progress.total = parseInt(res.headers?.["content-length"] || "0", 10);
 
                 res.on("data", chunk => {
