@@ -669,7 +669,8 @@
                 "add-folder": "Add Folder",
                 "link-folder": "Link Folder",
                 "unlink-folder": "Unlink Folder",
-                "link-all": "Link all"
+                "link-all": "Link all",
+                "unlink-all": "Unlink all"
             }
         },
         "create-launch-shortcut": {
