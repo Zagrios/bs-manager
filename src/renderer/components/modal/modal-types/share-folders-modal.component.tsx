@@ -69,6 +69,10 @@ export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ data }) => 
         folders.forEach(relativeFolder => linker.linkVersionFolder({ version: data, relativeFolder, type: VersionLinkerActionType.Link }));
     };
 
+    const unlinkAll = () => {
+        folders.forEach(relativeFolder => linker.unlinkVersionFolder({ version: data, relativeFolder, type: VersionLinkerActionType.Unlink }));
+    }
+
     return (
         <form className="w-full max-w-md ">
             <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t("modals.shared-folders.title")}</h1>
@@ -85,9 +89,10 @@ export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ data }) => 
                     />
                 ))}
             </ul>
-            <div className="grid grid-flow-col gap-3 grid-cols-2">
+            <div className="grid grid-flow-col gap-3 grid-cols-3">
                 <BsmButton icon="add" className="h-8 rounded-md flex justify-center items-center font-bold bg-light-main-color-1 dark:bg-main-color-1" iconClassName="h-6 aspect-square text-current" onClick={addFolder} withBar={false} text="modals.shared-folders.buttons.add-folder" />
                 <BsmButton icon="link" className="h-8 rounded-md flex justify-center items-center font-bold" typeColor="primary" iconClassName="h-6 aspect-square text-current -rotate-45" onClick={linkAll} withBar={false} text="modals.shared-folders.buttons.link-all" />
+                <BsmButton icon="unlink" className="h-8 rounded-md flex justify-center items-center font-bold" typeColor="secondary" iconClassName="h-6 aspect-square text-current -rotate-45" onClick={unlinkAll} withBar={false} text="modals.shared-folders.buttons.unlink-all" />
             </div>
         </form>
     );
@@ -137,7 +142,7 @@ const FolderItem = ({ version, relativeFolder, onDelete }: FolderProps) => {
             </span>
             <div className="flex flex-row gap-1.5">
                 <Tippy placement="left" content={t(`modals.shared-folders.buttons.${state === FolderLinkState.Linked ? "unlink-folder" : "link-folder"}`)} arrow={false}>
-                    <LinkButton 
+                    <LinkButton
                         className="p-0.5 h-7 shrink-0 aspect-square blur-0 cursor-pointer hover:brightness-75"
                         state={state}
                         onClick={onClickLink}
