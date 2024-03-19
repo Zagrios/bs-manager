@@ -13,6 +13,7 @@ import { skip, filter } from "rxjs/operators";
 import { Subscription, lastValueFrom } from "rxjs";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
+import { NotificationService } from "renderer/services/notification.service";
 import { useInView } from "framer-motion";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods-disclaimer-modal.component";
@@ -23,8 +24,11 @@ import { useService } from "renderer/hooks/use-service.hook";
 export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion; onDisclamerDecline: () => void }) {
     const ACCEPTED_DISCLAIMER_KEY = "accepted-mods-disclaimer";
 
+    const importExportWidth = 100;
+
     const modsManager = useService(BsModsManagerService);
     const configService = useService(ConfigurationService);
+    const notification = useService(NotificationService);
     const linkOpener = useService(LinkOpenerService);
     const modals = useService(ModalService);
     const os = useService(OsDiagnosticService);
@@ -76,6 +80,48 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         linkOpener.open(moreInfoMod.link);
     };
 
+    const handleExport = () => {
+        const modNames = modsSelected.map(mod => mod.name);
+        const exportedJson = JSON.stringify(modNames);
+
+        navigator.clipboard.writeText(exportedJson);
+
+        // TODO: Choose to save to file / copy to clipboard
+        notification.notifySuccess({ title: "mods.notifications.export.title", desc: "mods.notifications.export.success.desc" });
+    };
+
+    const handleImport = () => {
+        navigator.clipboard.readText()
+            .then(text => {
+                const modNames = JSON.parse(text);
+
+                if (modNames.length <= 0) {
+                    notification.notifyWarning({ title: "mods.notifications.import.title", desc: "mods.notifications.import.no-mods-found.desc" });
+
+                    return;
+                }
+
+                const modsToSelect = modNames.map((name: string) =>
+                    Array.from(modsAvailable.values())
+                        .flat()
+                        .find(mod => mod.name === name)
+                );
+
+                setModsSelected(modsToSelect);
+
+                notification.notifySuccess({ title: "mods.notifications.import.title", desc: "mods.notifications.import.success.desc" });
+            })
+            .catch(error => {
+                if (error instanceof SyntaxError) {
+                    notification.notifyError({ title: "mods.notifications.import.title", desc: "mods.notifications.import.invalid-json.desc" });
+                }
+
+                // TODO: Better error handling
+
+                // console.error(error);
+            });
+    };
+
     const installMods = () => {
         if (installing) {
             return;
@@ -120,7 +166,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         const subs: Subscription[] = [];
 
         if (isVisible && isOnline) {
-            
+
             (async () => {
                 if (configService.get<boolean>(ACCEPTED_DISCLAIMER_KEY)) {
                     return true;
@@ -138,7 +184,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
                 if (!canLoad) {
                     return onDisclamerDecline?.();
                 }
-                
+
                 loadMods();
 
                 subs.push(
@@ -184,6 +230,10 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
                     <ModsGrid modsMap={modsAvailable} installed={modsInstalled} modsSelected={modsSelected} onModChange={handleModChange} moreInfoMod={moreInfoMod} onWantInfos={handleMoreInfo} />
                 </div>
                 <div className="h-10 shrink-0 flex items-center justify-between px-3">
+                    <div className="flex gap-2">
+                        <BsmButton className="text-center rounded-md px-2 py-[2px]" text="pages.version-viewer.mods.buttons.export" typeColor="cancel" withBar={false} disabled={modsSelected.length <= 0} onClick={handleExport} style={{ width: importExportWidth }} />
+                        <BsmButton className="text-center rounded-md px-2 py-[2px]" text="pages.version-viewer.mods.buttons.import" typeColor="cancel" withBar={false} onClick={handleImport} style={{ width: importExportWidth }} />
+                    </div>
                     <BsmButton className="text-center rounded-md px-2 py-[2px]" text="pages.version-viewer.mods.buttons.more-infos" typeColor="cancel" withBar={false} disabled={!moreInfoMod} onClick={handleOpenMoreInfo} style={{ width: downloadWith }} />
                     <div ref={downloadRef}>
                         <BsmButton className="text-center rounded-md px-2 py-[2px]" text="pages.version-viewer.mods.buttons.install-or-update" withBar={false} disabled={installing} typeColor="primary" onClick={installMods} />

@@ -73,6 +73,8 @@
                 "mods-not-available": "No mods are available yet for this version of Beat Saber",
                 "buttons": {
                     "more-infos": "More info",
+                    "export": "Export",
+                    "import": "Import",
                     "install-or-update": "Install or update"
                 },
                 "mods-grid": {
@@ -727,6 +729,28 @@
             },
             "launch-as-admin": "Launch as Administrator",
             "not-remind-me": "Do not remind me"
+        }
+    },
+    "mods": {
+        "notifications": {
+            "export": {
+                "title": "Mods Export",
+                "success": {
+                    "desc": "Mods were successfully exported to your clipboard"
+                }
+            },
+            "import": {
+                "title": "Mods Import",
+                "invalid-json": {
+                    "desc": "Invalid format!"
+                },
+                "no-mods-found": {
+                    "desc": "No mods found in your clipboard"
+                },
+                "success": {
+                    "desc": "Mods were successfully imported from your clipboard"
+                }
+            }
         }
     },
     "maps": {
