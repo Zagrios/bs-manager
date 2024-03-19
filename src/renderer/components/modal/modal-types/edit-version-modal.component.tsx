@@ -29,6 +29,10 @@ export const EditVersionModal: ModalComponent<{ name: string; color: string }, {
         setColor(configService.get("second-color" as DefaultConfigKey));
     };
 
+    const resetName = () => {
+        setName(version.BSVersion);
+    };
+
     return (
         <form
             className="static"
@@ -44,7 +48,12 @@ export const EditVersionModal: ModalComponent<{ name: string; color: string }, {
                 <label className="block font-bold cursor-pointer tracking-wide text-gray-800 dark:text-gray-200" htmlFor="name">
                     {t("modals.clone-version.inputs.name.label")}
                 </label>
-                <input className="w-full bg-light-main-color-1 dark:bg-main-color-1 px-1 py-[2px] rounded-md outline-none" onChange={e => setName(e.target.value)} value={name} type="text" name="name" id="name" minLength={2} maxLength={15} placeholder={t("modals.clone-version.inputs.name.placeholder")} />
+                <div className="relative">
+                    <input className="w-full bg-light-main-color-1 dark:bg-main-color-1 px-1 py-[2px] rounded-md outline-none" onChange={e => setName(e.target.value)} value={name} type="text" name="name" id="name" minLength={2} maxLength={15} placeholder={t("modals.clone-version.inputs.name.placeholder")} />
+                    <div className="absolute right-2 top-0 h-full flex items-center">
+                        <BsmButton onClick={resetName} className="px-2 font-bold italic text-sm rounded-md" text="pages.settings.appearance.reset" withBar={false} />
+                    </div>
+                </div>
             </div>
             <div>
                 <span className="block font-bold tracking-wide text-gray-800 dark:text-gray-200">{t("modals.clone-version.inputs.color.label")}</span>
