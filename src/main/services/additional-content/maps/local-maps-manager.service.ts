@@ -302,6 +302,8 @@ export class LocalMapsManagerService {
         const localMap = await this.loadMapInfoFromPath(mapPath);
         localMap.songDetails = this.songDetailsCache.getSongDetails(localMap.hash);
 
+        this.ipc.send<{map: BsmLocalMap, version?: BSVersion}>("map-downloaded", this.windows.getWindows("index.html").at(0), { map: localMap, version });
+
         return localMap;
     }
 

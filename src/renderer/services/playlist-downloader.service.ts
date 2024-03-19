@@ -1,8 +1,10 @@
-import { Observable, map, tap, throwError } from "rxjs";
-import { DownloadPlaylistProgressionData } from "shared/models/playlists/playlist.interface";
+import { BehaviorSubject, Observable, filter, lastValueFrom, map, shareReplay, take, tap } from "rxjs";
+import { BPList, DownloadPlaylistProgressionData } from "shared/models/playlists/playlist.interface";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
 import { Progression } from "main/helpers/fs.helpers";
+import equal from "fast-deep-equal";
+import { BSVersion } from "shared/bs-version.interface";
 
 export class PlaylistDownloaderService {
     private static instance: PlaylistDownloaderService;
@@ -18,16 +20,35 @@ export class PlaylistDownloaderService {
     private readonly progress: ProgressBarService;
     private readonly ipc: IpcService;
 
+    private readonly playlistQueue$ = new BehaviorSubject<BPList[]>([]);
+
     private constructor() {
         this.progress = ProgressBarService.getInstance();
         this.ipc = IpcService.getInstance();
     }
 
-    public oneClickInstallPlaylist(bpListUrl: string): Observable<Progression<DownloadPlaylistProgressionData>> {
+    public installPlaylist(bpList: BPList, version?: BSVersion): Observable<Progression<DownloadPlaylistProgressionData>> {
+        this.playlistQueue$.next([...this.playlistQueue$.value, bpList]);
 
-        if(!this.progress.require()){
-            return throwError(() => new Error("Download already in progress"));
+        const clear = () => {
+            this.playlistQueue$.next(this.playlistQueue$.value.filter(p => p !== bpList));
         }
+
+        return new Observable<Progression<DownloadPlaylistProgressionData>>(subscriber => {
+            (async () => {
+                const playlist = await lastValueFrom(this.playlistQueue$.pipe(map(queue => queue.at(0)), filter(p => equal(bpList, p)), take(1)));
+                const download$ = this.ipc.sendV2<Progression<DownloadPlaylistProgressionData>, unknown>("install-playlist", { args: { version, playlist } });
+
+                await lastValueFrom(download$.pipe(tap(subscriber)));
+            })()
+            .then(() => subscriber.complete())
+            .catch(err => subscriber.error(err))
+            .finally(clear);
+
+        }).pipe(shareReplay(1))
+    }
+
+    public oneClickInstallPlaylist(bpListUrl: string): Observable<Progression<DownloadPlaylistProgressionData>> {
 
         const download$ = this.ipc.sendV2<Progression<DownloadPlaylistProgressionData>, string>("one-click-install-playlist", { args: bpListUrl });
         const progress$ = download$.pipe(map(data => (data.current / data.total) * 100));

@@ -1,6 +1,6 @@
 import { DownloadMapsModal } from "renderer/components/modal/modal-types/download-maps-modal.component";
 import { map, filter } from "rxjs/operators";
-import { BehaviorSubject, timer, Observable } from "rxjs";
+import { BehaviorSubject, timer, Observable, lastValueFrom } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { ModalResponse, ModalService } from "./modale.service";
 import { ProgressBarService } from "./progress-bar.service";
@@ -43,6 +43,11 @@ export class MapsDownloaderService {
         this.mapsQueue$.pipe(filter(queue => queue.length === 0)).subscribe(() => {
             this.queueMaxLenght = 0;
         });
+
+        this.ipc.watch<{map: BsmLocalMap, version?: BSVersion}>("map-downloaded").subscribe((data) => {
+            console.log(data);
+            this.downloadedListerners.forEach(func => func(data.map, data.version));
+        });
     }
 
     private async startDownloadMaps() {
@@ -53,11 +58,7 @@ export class MapsDownloaderService {
         while (this.mapsQueue$.value.at(0)) {
             const toDownload = this.mapsQueue$.value.at(0);
             this.currentDownload$.next(toDownload);
-            const downloaded = await this.downloadMap(toDownload.map, toDownload.version)?.toPromise();
-
-            if (downloaded) {
-                this.downloadedListerners.forEach(func => func(downloaded, toDownload.version));
-            }
+            await lastValueFrom(this.downloadMap(toDownload.map, toDownload.version));
 
             const newArr = [...this.mapsQueue$.value];
             newArr.shift();

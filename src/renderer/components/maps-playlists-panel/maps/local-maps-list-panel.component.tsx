@@ -20,6 +20,7 @@ import { useConstant } from "renderer/hooks/use-constant.hook";
 import { BsContentLoader } from "renderer/components/shared/bs-content-loader.component";
 import { InstalledMapsContext } from "../maps-playlists-panel.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
+import equal from "fast-deep-equal";
 
 type Props = {
     version: BSVersion;
@@ -77,12 +78,6 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
     useEffect(() => {
         if (isActiveOnce) {
             loadMaps();
-            mapsDownloader.addOnMapDownloadedListener((map, targerVersion) => {
-                if (targerVersion !== version) {
-                    return;
-                }
-                setMaps((maps ? [map, ...maps] : [map]));
-            });
         }
 
         return () => {
@@ -92,6 +87,22 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
             mapsDownloader.removeOnMapDownloadedListener(loadMaps);
         };
     }, [isActiveOnce, version, linked]);
+
+    useEffect(() => {
+        if(isActiveOnce){
+            mapsDownloader.addOnMapDownloadedListener((map, targetVersion) => {
+                if (!equal(targetVersion, version)) {
+                    return;
+                }
+                setMaps((maps ? [map, ...maps] : [map]));
+            });
+        }
+
+        return () => {
+            mapsDownloader.removeOnMapDownloadedListener(loadMaps);
+        }
+
+    }, [isActiveOnce, version, maps])
 
     useEffect(() => {
         if (!isActiveOnce) {

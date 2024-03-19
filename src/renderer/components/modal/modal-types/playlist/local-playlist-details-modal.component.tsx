@@ -1,6 +1,6 @@
 import { ModalComponent } from "renderer/services/modale.service"
 import { PlaylistDetailsTemplate, PlaylistDetailsTemplateProps } from "./playlist-details-template.component"
-import { Observable } from "rxjs"
+import { Observable, first, lastValueFrom, map, shareReplay, switchMap, take, tap } from "rxjs"
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface"
 import { BSVersion } from "shared/bs-version.interface";
 import { useObservable } from "renderer/hooks/use-observable.hook";
@@ -13,6 +13,8 @@ import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import BeatConflict from "../../../../../../assets/images/apngs/beat-conflict.png";
 import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
+import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service";
+import { ProgressBarService } from "renderer/services/progress-bar.service";
 
 interface Props {
     version: BSVersion;
@@ -23,6 +25,8 @@ interface Props {
 export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver, options}) => {
 
     const audioPlayer = useService(AudioPlayerService);
+    const playlistDownloader = useService(PlaylistDownloaderService);
+    const progressBar = useService(ProgressBarService);
 
     const localPlaylist = useObservable(() => options.data.localPlaylist$, null);
     const installedMaps = useObservable(() => options.data.installedMaps$, null);
@@ -33,6 +37,23 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
         }
         audioPlayer.play(installedMaps.map(map => ({ src: map.songUrl, bpm: map.rawInfo?._beatsPerMinute ?? 0})));
     };
+
+    const installPlaylist = () => {
+        const obs$ = playlistDownloader.installPlaylist(localPlaylist, options.data.version);
+
+        const progress$ = obs$.pipe(
+            map(progress => (progress.current / progress.total) * 100),
+        );
+
+        const obsWithProgress$ = obs$.pipe(
+            take(1),
+            tap(() => progressBar.show(progress$, true)),
+            switchMap(() => obs$),
+            tap({ complete: () => progressBar.hide(true) })
+        );
+
+        return lastValueFrom(obsWithProgress$);
+    }
 
     const renderMaps = () => {
         if (!installedMaps) {
@@ -54,14 +75,14 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
                             initial={{ height: 0 }}
                             animate={{ height: "7rem" }}
                             exit={{ height: 0 }}
-                            transition={{delay: .2, duration: .25}}
+                            transition={{delay: .25, duration: .25}}
                             className="shrink-0 w-full text-center overflow-hidden flex justify-center items-center"
                         >
                             <div className="size-[calc(100%-1rem)] bg-main-color-2 rounded-md translate-y-1.5 flex flex-row justify-center items-center gap-3">
                                 <BsmImage image={BeatConflict} className="size-24"/>
                                 <div className="text-white font-bold w-fit space-y-1.5 flex flex-col justify-center items-center">
                                     <p>Certaines maps de cette playlist sont manquantes</p>
-                                    <BsmButton withBar={false} className="rounded-md h-8 flex items-center justify-center px-4" typeColor="primary" text="Télécharger.les.maps.manquantes"/>
+                                    <BsmButton withBar={false} onClick={installPlaylist} className="rounded-md h-8 flex items-center justify-center px-4" typeColor="primary" text="Télécharger.les.maps.manquantes"/>
                                 </div>
                             </div>
                         </motion.div>

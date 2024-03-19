@@ -7,7 +7,7 @@ import { RequestService } from "../request.service";
 import { LocalMapsManagerService } from "./maps/local-maps-manager.service";
 import log from "electron-log";
 import { WindowManagerService } from "../window-manager.service";
-import { BPList, DownloadPlaylistProgressionData } from "shared/models/playlists/playlist.interface";
+import { BPList, DownloadPlaylistProgressionData, PlaylistSong } from "shared/models/playlists/playlist.interface";
 import { readFileSync } from "fs";
 import { BeatSaverService } from "../thrid-party/beat-saver/beat-saver.service";
 import { copy, copyFile, ensureDir, pathExists, pathExistsSync, readdirSync, realpath } from "fs-extra";
@@ -185,28 +185,23 @@ export class LocalPlaylistsManagerService {
         });
     }
 
-    public downloadPlaylist(bpListUrl: string, version: BSVersion): Observable<Progression<DownloadPlaylistProgressionData>> {
-
+    public downloadPlaylistSongs(bpList: PlaylistSong[], version: BSVersion): Observable<Progression<DownloadPlaylistProgressionData>> {
         return new Observable<Progression<DownloadPlaylistProgressionData>>(obs => {
             (async () => {
-
-                const bpListFilePath = await this.installBPListFile(bpListUrl, version);
-                const bpList = await this.readPlaylistFile(bpListFilePath);
-
                 const progress: Progression<DownloadPlaylistProgressionData> = {
-                    total: bpList.songs.length,
+                    total: bpList.length,
                     current: 0,
                     data: {
                         downloadedMaps: [],
                         currentDownload: null,
-                        playlistInfos: bpList,
-                        playlistPath: bpListFilePath,
+                        playlistInfos: null,
+                        playlistPath: null,
                     }
                 };
 
                 obs.next(progress);
 
-                for (const song of bpList.songs) {
+                for (const song of bpList) {
                     const [ mapDetail ] = await this.bsaver.getMapDetailsFromHashs([song.hash]);
 
                     if(!mapDetail) {
@@ -225,12 +220,28 @@ export class LocalPlaylistsManagerService {
             .catch(err => obs.error(err))
             .finally(() => obs.complete());
         });
+    }
+
+    public downloadPlaylist(bpListUrl: string, version: BSVersion): Observable<Progression<DownloadPlaylistProgressionData>> {
+
+        return new Observable<Progression<DownloadPlaylistProgressionData>>(obs => {
+            (async () => {
+
+                const bpListFilePath = await this.installBPListFile(bpListUrl, version);
+                const bpList = await this.readPlaylistFile(bpListFilePath);
+
+                await lastValueFrom(this.downloadPlaylistSongs(bpList.songs, version).pipe(
+                    tap({ next: p => obs.next(p) }),
+                ));
+
+            })()
+            .catch(err => obs.error(err))
+            .finally(() => obs.complete());
+        });
 
     }
 
     public deletePlaylist(opt: {path: string, deleteMaps?: boolean}): Observable<Progression>{
-
-        console.log("AAAAAA");
 
         return new Observable<Progression>(obs => {
             (async () => {
@@ -247,8 +258,6 @@ export class LocalPlaylistsManagerService {
                                 progress.current += 1
                                 obs.next(progress);
                             },
-                            error: err => obs.error(err),
-                            complete: () => obs.next(progress),
                         }),
                     ));
                 }
