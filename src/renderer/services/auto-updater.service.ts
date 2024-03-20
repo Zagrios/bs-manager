@@ -47,20 +47,17 @@ export class AutoUpdaterService {
     }
 
     public isUpdateAvailable(): Promise<boolean> {
-        return lastValueFrom(this.ipcService.sendV2<boolean>("check-update")).catch(() => false);
+        return lastValueFrom(this.ipcService.sendV2("check-update")).catch(() => false);
     }
 
     public downloadUpdate(): Promise<boolean> {
-        const promise = this.ipcService.send<boolean>("download-update").then(res => {
-            return res.success;
-        });
-
+        const promise = lastValueFrom(this.ipcService.sendV2("download-update")).then(() => true).catch(() => false);
         this.progressService.show(this.downloadProgress$, true);
         return promise;
     }
 
     public quitAndInstall() {
-        this.ipcService.sendLazy("install-update");
+        lastValueFrom(this.ipcService.sendV2("install-update"));
     }
 
     public getLastAppVersion(): string {
@@ -103,7 +100,7 @@ export class AutoUpdaterService {
     }
 
     public getAppVersion() : Observable<string> {
-        return this.ipcService.sendV2<string>("current-version");
+        return this.ipcService.sendV2("current-version");
     }
 
     public async showChangelog(version:string): Promise<void>{

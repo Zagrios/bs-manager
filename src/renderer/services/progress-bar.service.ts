@@ -1,5 +1,5 @@
 import { distinctUntilChanged, map } from "rxjs/operators";
-import { BehaviorSubject, Observable, Subscription, timer, of } from "rxjs";
+import { BehaviorSubject, Observable, Subscription, timer, of, lastValueFrom } from "rxjs";
 import { IpcService } from "./ipc.service";
 import { NotificationService } from "./notification.service";
 import { CSSProperties } from "react";
@@ -36,7 +36,7 @@ export class ProgressBarService {
     }
 
     private setSystemProgression(progression: number) {
-        this.ipcService.sendLazy("window.progression", { args: progression });
+        lastValueFrom(this.ipcService.sendV2("window.progression", progression));
     }
 
     public subscribreTo(obs: Observable<ProgressionInterface | number>) {

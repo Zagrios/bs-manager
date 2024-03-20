@@ -90,11 +90,11 @@ if (!gotTheLock) {
     })
 
     app.whenReady().then(() => {
-        
+
         app.setAppUserModelId(APP_NAME);
 
         initServicesMustBeInitialized();
-        
+
         const deepLink = process.argv.find(arg => DeepLinkService.getInstance().isDeepLink(arg));
 
         if (!deepLink) {
@@ -102,13 +102,13 @@ if (!gotTheLock) {
         } else {
             DeepLinkService.getInstance().dispatchLinkOpened(deepLink);
         }
-        
+
         SteamLauncherService.getInstance().restoreSteamVR();
-        
+
         // Log renderer errors
         ipcMain.on("log-error", (_, args: IpcRequest<unknown>) => {
             log.error(args?.args);
         });
-    
+
     }).catch(log.error);
 }

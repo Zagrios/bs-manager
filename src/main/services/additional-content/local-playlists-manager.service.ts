@@ -50,7 +50,7 @@ export class LocalPlaylistsManagerService {
             log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.BeatSaver, link);
             const url = new URL(link);
             const bplistUrl = url.host === "playlist" ? url.pathname.replace("/", "") : "";
-            this.openOneClickDownloadPlaylistWindow(bplistUrl);
+            this.windows.openWindow(`oneclick-download-playlist.html?playlistUrl=${bplistUrl}`);
         });
     }
 
@@ -79,7 +79,7 @@ export class LocalPlaylistsManagerService {
         }
         return lastValueFrom(this.request.downloadFile(bslistSource, destFile)).then(res => res.data);
     }
-        
+
 
     private async readPlaylistFile(path: string): Promise<BPList> {
         if (!(await pathExist(path))) {
@@ -91,10 +91,6 @@ export class LocalPlaylistsManagerService {
         return JSON.parse(rawContent);
     }
 
-    private openOneClickDownloadPlaylistWindow(downloadUrl: string): void {
-        this.windows.openWindow(`oneclick-download-playlist.html?playlistUrl=${downloadUrl}`);
-    }
-
     public downloadPlaylist(bpListUrl: string, version: BSVersion): Observable<Progression<DownloadPlaylistProgressionData>> {
 
         return new Observable<Progression<DownloadPlaylistProgressionData>>(obs => {
@@ -102,8 +98,8 @@ export class LocalPlaylistsManagerService {
 
                 const bpListFilePath = await this.installBPListFile(bpListUrl, version);
                 const bpList = await this.readPlaylistFile(bpListFilePath);
-                
-                const progress: Progression<DownloadPlaylistProgressionData> = { 
+
+                const progress: Progression<DownloadPlaylistProgressionData> = {
                     total: bpList.songs.length,
                     current: 0,
                     data: {

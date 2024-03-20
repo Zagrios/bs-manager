@@ -71,7 +71,7 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
     private startDownloadBsVersion(downloadInfo: DownloadInfo): Observable<Progression<BSVersion>>{
         const ignoreCode = [MetaAuthErrorCodes.META_LOGIN_WINDOW_CLOSED_BY_USER, OculusDownloaderErrorCodes.DOWNLOAD_CANCELLED];
         return this.handleDownload(
-            this.ipc.sendV2<Progression<BSVersion>>("bs-oculus-download", { args: downloadInfo }),
+            this.ipc.sendV2("bs-oculus-download", downloadInfo ),
             ignoreCode
         );
     }
@@ -115,15 +115,7 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
     }
 
     public stopDownload(): Promise<void>{
-        return lastValueFrom(this.ipc.sendV2<void>("bs-oculus-stop-download"));
-    }
-
-    public hasAuthToken(): Promise<boolean>{
-        return lastValueFrom(this.ipc.sendV2<boolean>("bs-oculus-has-auth-token"));
-    }
-
-    public clearAuthToken(): Promise<void>{
-        return lastValueFrom(this.ipc.sendV2<void>("bs-oculus-clear-auth-token"));
+        return lastValueFrom(this.ipc.sendV2("bs-oculus-stop-download"));
     }
 
 }

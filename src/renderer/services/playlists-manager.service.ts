@@ -1,3 +1,4 @@
+import { lastValueFrom } from "rxjs";
 import { IpcService } from "./ipc.service";
 
 export class PlaylistsManagerService {
@@ -17,16 +18,14 @@ export class PlaylistsManagerService {
     }
 
     public isDeepLinksEnabled(): Promise<boolean> {
-        return this.ipc.send<boolean>("is-playlists-deep-links-enabled").then(res => (res.success ? res.data : false));
+        return lastValueFrom(this.ipc.sendV2("is-playlists-deep-links-enabled"));
     }
 
     public async enableDeepLink(): Promise<boolean> {
-        const res = await this.ipc.send<boolean>("register-playlists-deep-link");
-        return res.success ? res.data : false;
+        return lastValueFrom(this.ipc.sendV2("register-playlists-deep-link"));
     }
 
     public async disableDeepLink(): Promise<boolean> {
-        const res = await this.ipc.send<boolean>("unregister-playlists-deep-link");
-        return res.success ? res.data : false;
+        return lastValueFrom(this.ipc.sendV2("unregister-playlists-deep-link"));
     }
 }

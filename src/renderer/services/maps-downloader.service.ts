@@ -1,6 +1,6 @@
 import { DownloadMapsModal } from "renderer/components/modal/modal-types/download-maps-modal.component";
 import { map, filter } from "rxjs/operators";
-import { BehaviorSubject, timer, Observable } from "rxjs";
+import { BehaviorSubject, timer, Observable, lastValueFrom } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { ModalResponse, ModalService } from "./modale.service";
 import { ProgressBarService } from "./progress-bar.service";
@@ -74,7 +74,7 @@ export class MapsDownloaderService {
         if (this.os.isOffline) {
             return null;
         }
-        return this.ipc.sendV2<BsmLocalMap, { map: BsvMapDetail; version: BSVersion }>("download-map", { args: { map, version } });
+        return this.ipc.sendV2("download-map", { map, version });
     }
 
     public async openDownloadMapModal(version?: BSVersion, ownedMaps: BsmLocalMap[] = []): Promise<ModalResponse<void>> {
@@ -131,12 +131,9 @@ export class MapsDownloaderService {
         this.downloadedListerners.splice(funcIndex, 1);
     }
 
-    public async oneClickInstallMap(map: BsvMapDetail): Promise<boolean> {
+    public async oneClickInstallMap(map: BsvMapDetail): Promise<void> {
         this.progressBar.showFake(0.04);
-
-        const res = await this.ipc.send<void, BsvMapDetail>("one-click-install-map", { args: map });
-
-        return res.success;
+        return lastValueFrom(this.ipc.sendV2("one-click-install-map", map));
     }
 
     public get isDownloading(): boolean {

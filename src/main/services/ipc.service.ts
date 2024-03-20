@@ -1,10 +1,11 @@
 import { IpcRequest } from "shared/models/ipc";
-import { BrowserWindow, ipcMain } from "electron";
+import { BrowserWindow, IpcMainEvent, WebContents, ipcMain } from "electron";
 import { Observable } from "rxjs";
 import { IpcCompleteChannel, IpcErrorChannel, IpcTearDownChannel } from "shared/models/ipc/ipc-response.interface";
 import { IpcReplier } from "shared/models/ipc/ipc-request.interface";
 import { serializeError } from 'serialize-error';
 import log from "electron-log";
+import { IpcChannels, IpcRequestType, IpcResponseType } from "shared/models/ipc/ipc-routes";
 
 export class IpcService {
     private static instance: IpcService;
@@ -30,11 +31,11 @@ export class IpcService {
         return `${channel}_teardown`;
     }
 
-    private buildProxyListener<T>(listener: IpcListener<T>) {
-        return (event: Electron.IpcMainEvent, req: IpcRequest<T>) => {
+    private buildProxyListener<C extends IpcChannels>(listener: IpcListenerFromChannel<C>) {
+        return (event: IpcMainEvent, req: IpcRequest<IpcRequestType<C>>) => {
             const window = BrowserWindow.fromWebContents(event.sender);
             const replier = (data: Observable<unknown>) => this.connectStream(req.responceChannel, window, data);
-            listener(req, replier);
+            listener(req.args, replier, event.sender);
         };
     }
 
@@ -54,21 +55,26 @@ export class IpcService {
             complete: () => this.send(this.getCompleteChannel(channel), window)
         })
 
-        window.webContents.once("destroyed", () => sub.unsubscribe());
-        window.webContents.ipc.once(this.getTearDownChannel(channel), () => sub.unsubscribe());
+        const unsubscribe = () => sub.unsubscribe();
+
+        window.webContents.once("destroyed", unsubscribe);
+        window.webContents.ipc.once(this.getTearDownChannel(channel), unsubscribe);
 
         sub.add(() => {
             window.webContents.ipc.removeAllListeners(this.getTearDownChannel(channel));
+            window.webContents.removeListener("destroyed", unsubscribe);
         });
     }
 
-    public on<T>(channel: string, listener: IpcListener<T>, ipc = ipcMain): void {
-        ipc.on(channel, this.buildProxyListener(listener));
+    public on<C extends IpcChannels>(channel: C, listener: IpcListenerFromChannel<C>, ipc = ipcMain): void {
+        ipc.on(channel as string, this.buildProxyListener(listener));
     }
 
-    public once<T>(channel: string, listener: IpcListener<T>, ipc = ipcMain): void {
-        ipc.once(channel, this.buildProxyListener(listener));
+    public once<C extends IpcChannels>(channel: C, listener: IpcListenerFromChannel<C>, ipc = ipcMain): void {
+        ipc.once(channel as string, this.buildProxyListener(listener));
     }
 }
 
-type IpcListener<T = unknown> = (req: IpcRequest<T>, replier: IpcReplier) => void | Promise<void>;
+
+type IpcListener<TRequest = unknown, TResponse = unknown> = (req: TRequest, replier: IpcReplier<TResponse>, webContents: WebContents) => void | Promise<void>;
+type IpcListenerFromChannel<C extends IpcChannels> = IpcListener<IpcRequestType<C>, IpcResponseType<C>>;

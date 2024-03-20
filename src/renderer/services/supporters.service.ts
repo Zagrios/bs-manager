@@ -1,5 +1,6 @@
 import { Supporter } from "shared/models/supporters";
 import { IpcService } from "./ipc.service";
+import { lastValueFrom } from "rxjs";
 
 export class SupportersService {
     private static instance: SupportersService;
@@ -18,11 +19,6 @@ export class SupportersService {
     }
 
     public getSupporters(): Promise<Supporter[]> {
-        return this.ipcService.send<Supporter[]>("get-supporters").then(res => {
-            if (!res.success) {
-                return null;
-            }
-            return res.data;
-        });
+        return lastValueFrom(this.ipcService.sendV2("get-supporters"));
     }
 }
