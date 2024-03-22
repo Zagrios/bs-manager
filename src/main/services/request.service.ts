@@ -1,11 +1,13 @@
-import { Agent, get } from "https";
+import { Agent, RequestOptions, get } from "https";
 import { createWriteStream, unlink } from "fs";
 import { Progression } from "main/helpers/fs.helpers";
 import { Observable, shareReplay, tap } from "rxjs";
 import log from "electron-log";
 import fetch, { RequestInfo, RequestInit } from "node-fetch";
-import got, { GotOptions } from "got";
+import got, { Options } from "got";
 import { IncomingMessage } from "http";
+import { app } from "electron";
+import os from "os";
 
 export class RequestService {
     private static instance: RequestService;
@@ -17,16 +19,33 @@ export class RequestService {
         return RequestService.instance;
     }
 
-    private constructor() {}
+    private readonly defaultRequestInit: RequestInit;
 
-    private get ipv4Agent(){
-        return new Agent({ family: 4 });
+    private constructor() {
+
+        this.defaultRequestInit = {
+            headers: {
+                "User-Agent": `BSManager/${app.getVersion()} (${os.type()} ${os.release()})`
+            },
+            agent: new Agent({ family: 4 }),
+        };
+    }
+
+    private getInitWithOptions(options?: RequestInit): RequestInit {
+        return { ...this.defaultRequestInit, ...(options || {}) };
+    }
+
+    private requestOptionsFromDefaultInit(): RequestOptions {
+        return {
+            headers: this.defaultRequestInit.headers as Record<string, string>,
+            agent: this.defaultRequestInit.agent as Agent,
+        };
     }
 
     public async getJSON<T = unknown>(url: RequestInfo, options?: RequestInit): Promise<T> {
 
         try {
-            const response = await fetch(url, {...options, agent: this.ipv4Agent});
+            const response = await fetch(url, this.getInitWithOptions(options));
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status} ${url}`);
@@ -52,7 +71,7 @@ export class RequestService {
             });
             file.on("error", err => unlink(dest, () => subscriber.error(err)));
 
-            const req = get(url, { agent: this.ipv4Agent }, res => {
+            const req = get(url, this.requestOptionsFromDefaultInit(), res => {
                 progress.total = parseInt(res.headers?.["content-length"] || "0", 10);
 
                 res.on("data", chunk => {
@@ -69,9 +88,9 @@ export class RequestService {
         }).pipe(tap({ error: e => log.error(e, url, dest) }), shareReplay(1));
     }
 
-    public downloadBuffer(url: string, options?: GotOptions<string>): Observable<Progression<Buffer, IncomingMessage>> {
-        return new Observable<Progression<Buffer>>(subscriber => {
-            const progress: Progression<Buffer> = {
+    public downloadBuffer(url: string, options?: Options & { isStream?: true }): Observable<Progression<Buffer, IncomingMessage>> {
+        return new Observable<Progression<Buffer, IncomingMessage>>(subscriber => {
+            const progress: Progression<Buffer, IncomingMessage> = {
                 current: 0,
                 total: 0,
                 data: null,
@@ -113,6 +132,6 @@ export class RequestService {
                 req.destroy();
             }
 
-        }).pipe(tap({ error: e => log.error(e) }), shareReplay(1));
+        }).pipe(tap({ error: log.error }), shareReplay(1))
     }
 }

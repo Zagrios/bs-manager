@@ -37,7 +37,7 @@ export class PlaylistDownloaderService {
         return new Observable<Progression<DownloadPlaylistProgressionData>>(subscriber => {
             (async () => {
                 const playlist = await lastValueFrom(this.playlistQueue$.pipe(map(queue => queue.at(0)), filter(p => equal(bpList, p)), take(1)));
-                const download$ = this.ipc.sendV2<Progression<DownloadPlaylistProgressionData>, unknown>("install-playlist", { args: { version, playlist } });
+                const download$ = this.ipc.sendV2("install-playlist", { version, playlist });
 
                 await lastValueFrom(download$.pipe(tap(subscriber)));
             })()
@@ -50,7 +50,7 @@ export class PlaylistDownloaderService {
 
     public oneClickInstallPlaylist(bpListUrl: string): Observable<Progression<DownloadPlaylistProgressionData>> {
 
-        const download$ = this.ipc.sendV2<Progression<DownloadPlaylistProgressionData>, string>("one-click-install-playlist", { args: bpListUrl });
+        const download$ = this.ipc.sendV2("one-click-install-playlist", bpListUrl);
         const progress$ = download$.pipe(map(data => (data.current / data.total) * 100));
 
         this.progress.show(progress$, true);

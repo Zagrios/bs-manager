@@ -31,11 +31,11 @@ export class PlaylistsManagerService {
     }
 
     public getVersionPlaylistsDetails(version: BSVersion): Observable<Progression<LocalBPListsDetails[]>> {
-        return this.ipc.sendV2("get-version-playlists-details", { args: version });
+        return this.ipc.sendV2("get-version-playlists-details", version);
     }
 
     public deletePlaylist(opt: {path: string, deleteMaps?: boolean}): Observable<Progression> {
-        return this.ipc.sendV2<Progression, {path: string, deleteMaps?: boolean}>("delete-playlist", { args: opt });
+        return this.ipc.sendV2("delete-playlist", opt);
     }
 
     public async linkVersion(version: BSVersion): Promise<boolean> {
@@ -67,15 +67,15 @@ export class PlaylistsManagerService {
     }
 
     public isDeepLinksEnabled(): Promise<boolean> {
-        return lastValueFrom(this.ipc.sendV2<boolean>("is-playlists-deep-links-enabled"));
+        return lastValueFrom(this.ipc.sendV2("is-playlists-deep-links-enabled"));
     }
 
     public enableDeepLink(): Promise<boolean> {
-        return lastValueFrom(this.ipc.sendV2<boolean>("register-playlists-deep-link"));
+        return lastValueFrom(this.ipc.sendV2("register-playlists-deep-link"));
     }
 
     public disableDeepLink(): Promise<boolean> {
-        return lastValueFrom(this.ipc.sendV2<boolean>("unregister-playlists-deep-link"));
+        return lastValueFrom(this.ipc.sendV2("unregister-playlists-deep-link"));
     }
 
     public $playlistsFolderLinkState(version: BSVersion): Observable<FolderLinkState> {

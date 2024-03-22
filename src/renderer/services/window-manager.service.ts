@@ -19,11 +19,11 @@ export class WindowManagerService {
     }
 
     public openThenCloseAll(window: AppWindow): Promise<void> {
-        return lastValueFrom(this.ipcService.sendV2<void>("open-window-then-close-all", { args: window }));
+        return lastValueFrom(this.ipcService.sendV2("open-window-then-close-all", window));
     }
 
     public openWindowOrFocus(window: AppWindow): Promise<void> {
-        return lastValueFrom(this.ipcService.sendV2<void, AppWindow>("open-window-or-focus", { args: window }));
+        return lastValueFrom(this.ipcService.sendV2("open-window-or-focus", window));
     }
-    
+
 }

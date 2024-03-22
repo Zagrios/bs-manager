@@ -73,7 +73,7 @@ export class BSLauncherService {
     }
 
     private async doMustStartAsAdmin(): Promise<boolean> {
-        const needAdmin = await lastValueFrom(this.ipcService.sendV2<boolean, void>("bs-launch.need-start-as-admin"));
+        const needAdmin = await lastValueFrom(this.ipcService.sendV2("bs-launch.need-start-as-admin"));
         if(!needAdmin){ return false; }
         if(this.config.get("dont-remind-admin")){ return true; }
         const modalRes = await this.modals.openModal(NeedLaunchAdminModal);
@@ -83,7 +83,7 @@ export class BSLauncherService {
     }
 
     public doLaunch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
-        return this.ipcService.sendV2<BSLaunchEventData, LaunchOption>("bs-launch.launch", {args: launchOptions});
+        return this.ipcService.sendV2("bs-launch.launch", launchOptions);
     }
 
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData> {
@@ -114,13 +114,13 @@ export class BSLauncherService {
 
     }
 
-    public createLaunchShortcut(launchOptions: LaunchOption): Observable<void>{
+    public createLaunchShortcut(launchOptions: LaunchOption): Observable<boolean>{
         const options: LaunchOption = {...launchOptions, version: {...launchOptions.version, color: launchOptions.version.color || this.theme.getBsmColors()[1]}};
-        return this.ipcService.sendV2<void, LaunchOption>("create-launch-shortcut", {args: options});
+        return this.ipcService.sendV2("create-launch-shortcut", options);
     }
 
     public restoreSteamVR(): Promise<void>{
-        return lastValueFrom(this.ipcService.sendV2<void, void>("bs-launch.restore-steamvr"));
+        return lastValueFrom(this.ipcService.sendV2("bs-launch.restore-steamvr"));
     }
 }
 

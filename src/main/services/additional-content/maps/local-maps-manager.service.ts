@@ -14,18 +14,18 @@ import sanitize from "sanitize-filename";
 import { DeepLinkService } from "../../deep-link.service";
 import log from "electron-log";
 import { WindowManagerService } from "../../window-manager.service";
-import { Observable, lastValueFrom, of } from "rxjs";
+import { Observable, lastValueFrom } from "rxjs";
 import { Archive } from "../../../models/archive.class";
-import { deleteFolder, ensureFolderExist, getFilesInFolder, getFoldersInFolder, pathExist } from "../../../helpers/fs.helpers";
+import { Progression, deleteFolder, ensureFolderExist, getFilesInFolder, getFoldersInFolder, pathExist } from "../../../helpers/fs.helpers";
 import { readFile } from "fs/promises";
 import { FolderLinkerService } from "../../folder-linker.service";
 import { allSettled } from "../../../../shared/helpers/promise.helpers";
 import { splitIntoChunk } from "../../../../shared/helpers/array.helpers";
-import { IpcService } from "../../ipc.service";
 import { SongDetailsCacheService } from "./song-details-cache.service";
-import { sToMs } from "shared/helpers/time.helpers";
 import { SongCacheService } from "./song-cache.service";
+import { IpcService } from "../../ipc.service";
 import { pathToFileURL } from "url";
+import { sToMs } from "../../../../shared/helpers/time.helpers";
 
 export class LocalMapsManagerService {
     private static instance: LocalMapsManagerService;
@@ -53,10 +53,10 @@ export class LocalMapsManagerService {
     private readonly reqService: RequestService;
     private readonly deepLink: DeepLinkService;
     private readonly windows: WindowManagerService;
-    private readonly ipc: IpcService;
     private readonly linker: FolderLinkerService;
     private readonly songDetailsCache: SongDetailsCacheService;
     private readonly songCache: SongCacheService;
+    private readonly ipc: IpcService;
 
     private constructor() {
         this.localVersion = BSLocalVersionService.getInstance();
@@ -66,18 +66,22 @@ export class LocalMapsManagerService {
         this.deepLink = DeepLinkService.getInstance();
         this.windows = WindowManagerService.getInstance();
         this.linker = FolderLinkerService.getInstance();
-        this.ipc = IpcService.getInstance();
         this.songDetailsCache = SongDetailsCacheService.getInstance();
         this.songCache = SongCacheService.getInstance();
+        this.ipc = IpcService.getInstance();
+
+        const handleOneClick = (mapId: string, isHash = false) => {
+            this.windows.openWindow(`oneclick-download-map.html?mapId=${mapId}&isHash=${isHash}`);
+        }
 
         this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.BeatSaver, link => {
             log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.BeatSaver, link);
-            this.openOneClickDownloadMapWindow(new URL(link).host);
+            handleOneClick(new URL(link).host);
         });
 
         this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.ScoreSaber, link => {
             log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.ScoreSaber, link);
-            this.openOneClickDownloadMapWindow(new URL(link).host, true);
+            handleOneClick(new URL(link).host, true);
         });
     }
 
@@ -155,14 +159,6 @@ export class LocalMapsManagerService {
         const zip = new StreamZip.async({ file: zipPath });
 
         return { zip, zipPath };
-    }
-
-    private openOneClickDownloadMapWindow(mapId: string, isHash = false): void {
-        this.windows.openWindow("oneclick-download-map.html").then(window => {
-            this.ipc.once("one-click-map-info", async (_, reply) => {
-                reply(of({ id: mapId, isHash }));
-            }, window.webContents.ipc);
-        });
     }
 
     public getMaps(version?: BSVersion): Observable<BsmLocalMapsProgress> {
@@ -307,7 +303,7 @@ export class LocalMapsManagerService {
         return localMap;
     }
 
-    public async exportMaps(version: BSVersion, maps: BsmLocalMap[], outPath: string) {
+    public async exportMaps(version: BSVersion, maps: BsmLocalMap[], outPath: string): Promise<Observable<Progression>> {
         const archive = new Archive(outPath);
 
         if (!maps || maps.length === 0) {

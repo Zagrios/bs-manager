@@ -1,63 +1,46 @@
-import { BSVersion } from "shared/bs-version.interface";
 import { LocalPlaylistsManagerService } from "../services/additional-content/local-playlists-manager.service";
 import { IpcService } from "../services/ipc.service";
-import { of, throwError } from "rxjs";
-import { BPList } from "shared/models/playlists/playlist.interface";
+import { of } from "rxjs";
 
 const ipc = IpcService.getInstance();
 
-ipc.on<string>("one-click-install-playlist", (req, reply) => {
-    const playlists = LocalPlaylistsManagerService.getInstance();
-    reply(playlists.oneClickInstallPlaylist(req.args));
+ipc.on("one-click-install-playlist", (args, reply) => {
+    const mapsManager = LocalPlaylistsManagerService.getInstance();
+    reply(mapsManager.oneClickInstallPlaylist(args));
 });
 
-ipc.on<{playlist: BPList, version: BSVersion}>("install-playlist", (req, reply) => {
+ipc.on("register-playlists-deep-link", (args, reply) => {
+    const maps = LocalPlaylistsManagerService.getInstance();
+    reply(of(maps.enableDeepLinks()));
+});
+
+ipc.on("unregister-playlists-deep-link", (args, reply) => {
+    const maps = LocalPlaylistsManagerService.getInstance();
+    reply(of(maps.disableDeepLinks()));
+});
+
+ipc.on("is-playlists-deep-links-enabled", (args, reply) => {
+    const maps = LocalPlaylistsManagerService.getInstance();
+    reply(of(maps.isDeepLinksEnabled()));
+});
+
+ipc.on("install-playlist", (args, reply) => {
     const playlists = LocalPlaylistsManagerService.getInstance();
 
-    if(req.args.playlist?.customData?.syncURL){
-        return reply(playlists.downloadPlaylist(req.args.playlist.customData.syncURL, req.args.version));
+    if(args.playlist?.customData?.syncURL){
+        return reply(playlists.downloadPlaylist(args.playlist.customData.syncURL, args.version));
     }
 
-    reply(playlists.downloadPlaylistSongs(req.args.playlist.songs, req.args.version));
+    reply(playlists.downloadPlaylistSongs(args.playlist.songs, args.version));
 
 });
 
-ipc.on("register-playlists-deep-link", (_, reply) => {
+ipc.on("get-version-playlists-details", (args, reply) => {
     const playlists = LocalPlaylistsManagerService.getInstance();
-
-    try {
-        reply(of(playlists.enableDeepLinks()));
-    } catch (e) {
-        reply(throwError(() => e));
-    }
+    reply(playlists.getVersionPlaylistsDetails(args));
 });
 
-ipc.on("unregister-playlists-deep-link", (_, reply) => {
+ipc.on("delete-playlist", (args, reply) => {
     const playlists = LocalPlaylistsManagerService.getInstance();
-
-    try {
-        reply(of(playlists.disableDeepLinks()));
-    } catch (e) {
-        reply(throwError(() => e));
-    }
-});
-
-ipc.on("is-playlists-deep-links-enabled", (_, reply) => {
-    const playlists = LocalPlaylistsManagerService.getInstance();
-
-    try {
-        reply(of(playlists.isDeepLinksEnabled()));
-    } catch (e) {
-        reply(throwError(() => e));
-    }
-});
-
-ipc.on<BSVersion>("get-version-playlists-details", (req, reply) => {
-    const playlists = LocalPlaylistsManagerService.getInstance();
-    reply(playlists.getVersionPlaylistsDetails(req.args));
-});
-
-ipc.on<{path: string, deleteMaps?: boolean}>("delete-playlist", (req, reply) => {
-    const playlists = LocalPlaylistsManagerService.getInstance();
-    reply(playlists.deletePlaylist(req.args));
+    reply(playlists.deletePlaylist(args));
 });

@@ -62,7 +62,7 @@ export class LocalPlaylistsManagerService {
             log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.BeatSaver, link);
             const url = new URL(link);
             const bplistUrl = url.host === "playlist" ? url.pathname.replace("/", "") : "";
-            this.openOneClickDownloadPlaylistWindow(bplistUrl);
+            this.windows.openWindow(`oneclick-download-playlist.html?playlistUrl=${bplistUrl}`);
         });
 
         this.fileAssociation.registerFileAssociation(".bplist", filePath => {

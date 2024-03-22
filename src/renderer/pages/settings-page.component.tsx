@@ -35,7 +35,6 @@ import { useService } from "renderer/hooks/use-service.hook";
 import { lastValueFrom } from "rxjs";
 import { BsmException } from "shared/models/bsm-exception.model";
 import { useObservable } from "renderer/hooks/use-observable.hook";
-import { OculusDownloaderService } from "renderer/services/bs-version-download/oculus-downloader.service";
 import { BsStore } from "shared/models/bs-store.enum";
 import { SteamIcon } from "renderer/components/svgs/icons/steam-icon.component";
 import { OculusIcon } from "renderer/components/svgs/icons/oculus-icon.component";
@@ -52,7 +51,6 @@ export function SettingsPage() {
     const modalService = useService(ModalService);
     const bsDownloader = useService(BsDownloaderService);
     const steamDownloader = useService(SteamDownloaderService);
-    const oculusDownloader = useService(OculusDownloaderService);
     const progressBarService = useService(ProgressBarService);
     const notificationService = useService(NotificationService);
     const i18nService = useService(I18nService);
@@ -91,7 +89,7 @@ export function SettingsPage() {
     const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
     const [modelsDeepLinkEnabled, setModelsDeepLinkEnabled] = useState(false);
     const [hasDownloaderSession, setHasDownloaderSession] = useState(false);
-    const appVersion = useObservable(() => ipcService.sendV2<string>("current-version"));
+    const appVersion = useObservable(() => ipcService.sendV2("current-version"));
 
     const [isChangelogAvailable, setIsChangelogAvailable] = useState(true);
     const [changlogsLoading, setChanglogsLoading] = useState(false);
@@ -116,16 +114,11 @@ export function SettingsPage() {
     };
 
     const loadDownloadersSession = () => {
-        if(steamDownloader.sessionExist()){ return setHasDownloaderSession(true); }
-
-        oculusDownloader.hasAuthToken().then(hasToken => {
-            setHasDownloaderSession(hasToken);
-        });
+        setHasDownloaderSession(steamDownloader.sessionExist());
     }
 
     const clearDownloadersSession = () => {
         steamDownloader.deleteSteamSession();
-        oculusDownloader.clearAuthToken();
         loadDownloadersSession();
     }
 
@@ -171,7 +164,7 @@ export function SettingsPage() {
                 return;
             }
 
-            const fileChooserRes = await ipcService.sendV2<{ canceled: boolean; filePaths: string[] }>("choose-folder").toPromise();
+            const fileChooserRes = await lastValueFrom(ipcService.sendV2("choose-folder"));
 
             if (!fileChooserRes.canceled && fileChooserRes.filePaths?.length) {
                 progressBarService.showFake(0.008);
@@ -217,7 +210,7 @@ export function SettingsPage() {
     const openDiscord = () => linkOpener.open("https://discord.gg/uSqbHVpKdV");
     const openTwitter = () => linkOpener.open("https://twitter.com/BSManager_");
 
-    const openLogs = () => ipcService.sendLazy("open-logs");
+    const openLogs = () => lastValueFrom(ipcService.sendV2("open-logs"));
 
     const showDeepLinkError = (isDeactivation: boolean) => {
         const desc = isDeactivation ? "notifications.settings.additional-content.deep-link.deactivation.error.description" : "notifications.settings.additional-content.deep-link.activation.error.description";
@@ -231,8 +224,10 @@ export function SettingsPage() {
     };
 
     const switchDeepLink = async (manager: MapsManagerService | PlaylistsManagerService | ModelsManagerService, enable: boolean, showNotification: boolean, setter: Dispatch<SetStateAction<boolean>>) => {
-        const res = await (enable ? manager.enableDeepLink() : manager.disableDeepLink());
-        showNotification && (res ? showDeepLinkSuccess(!enable) : showDeepLinkError(!enable));
+        const res = await (enable ? manager.enableDeepLink() : manager.disableDeepLink()).then(() => true).catch(() => false);
+        if(showNotification){
+            res ? showDeepLinkSuccess(enable) : showDeepLinkError(enable);
+        }
         const isEnable = await manager.isDeepLinksEnabled();
         setter(() => isEnable);
         return res;

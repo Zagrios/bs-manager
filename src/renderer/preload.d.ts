@@ -11,12 +11,6 @@ declare global {
                 sep: "/"|"\\";
                 join: (...args: string[]) => string;
             };
-            window: {
-                close: () => void;
-                minimise: () => void;
-                maximise: () => void;
-                unmaximise: () => void;
-            };
         };
     }
 }

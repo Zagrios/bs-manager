@@ -26,12 +26,5 @@ contextBridge.exposeInMainWorld("electron", {
         join: (...args: string[]): string => {
             return args.join(sep);
         }
-    },
-    window: {
-        close: () => { ipcRenderer.send("close-window"); },
-        minimise: () => { ipcRenderer.send("minimise-window"); },
-        maximise: () => { ipcRenderer.send("maximise-window"); },
-        unmaximise: () => { ipcRenderer.send("unmaximise-window"); },
     }
-
 });

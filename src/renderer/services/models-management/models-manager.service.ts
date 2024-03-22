@@ -10,7 +10,6 @@ import { UnlinkModelsModal } from "renderer/components/modal/modal-types/models/
 import { Progression } from "main/helpers/fs.helpers";
 import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 import { ProgressBarService } from "../progress-bar.service";
-import { OpenSaveDialogOption } from "shared/models/os/dialog.model";
 import { ProgressionInterface } from "shared/models/progress-bar";
 import { NotificationService } from "../notification.service";
 import { ConfigurationService } from "../configuration.service";
@@ -101,7 +100,7 @@ export class ModelsManagerService {
     }
 
     public $getModels(type: MSModelType, version?: BSVersion): Observable<Progression<BsmLocalModel[]>> {
-        return this.ipc.sendV2<Progression<BsmLocalModel[]>>("get-version-models", { args: { version, type } });
+        return this.ipc.sendV2("get-version-models", { version, type });
     }
 
     public async exportModels(models: BsmLocalModel[], version?: BSVersion) {
@@ -109,18 +108,16 @@ export class ModelsManagerService {
             return;
         }
 
-        const resFile = await this.ipc.send<string, OpenSaveDialogOption>("save-file", {
-            args: {
-                filename: version ? `${version.name ?? version.BSVersion} Models` : "Models",
-                filters: [{ name: "zip", extensions: ["zip"] }],
-            },
-        });
+        const resFile = await lastValueFrom(this.ipc.sendV2("save-file", {
+            filename: version ? `${version.name ?? version.BSVersion} Models` : "Models",
+            filters: [{ name: "zip", extensions: ["zip"] }]
+        })).catch(() => null as string);
 
-        if (!resFile.success) {
+        if (!resFile) {
             return;
         }
 
-        const exportProgress$: Observable<ProgressionInterface> = this.ipc.sendV2<Progression, { version: BSVersion; models: BsmLocalModel[]; outPath: string }>("export-models", { args: { version, models, outPath: resFile.data } }).pipe(
+        const exportProgress$ = this.ipc.sendV2("export-models", { version, models, outPath: resFile }).pipe(
             map(p => {
                 return { progression: (p.current / p.total) * 100, label: `${p.current} / ${p.total}` } as ProgressionInterface;
             })
@@ -171,7 +168,7 @@ export class ModelsManagerService {
 
         const showProgressBar = this.progressBar.require();
 
-        const obs$ = this.ipc.sendV2<Progression<BsmLocalModel[]>>("delete-models", { args: models });
+        const obs$ = this.ipc.sendV2("delete-models", models);
 
         const progress$ = obs$.pipe(map(progress => (progress.current / progress.total) * 100));
 
@@ -189,16 +186,14 @@ export class ModelsManagerService {
     }
 
     public isDeepLinksEnabled(): Promise<boolean> {
-        return this.ipc.send<boolean>("is-models-deep-links-enabled").then(res => (res.success ? res.data : false));
+        return lastValueFrom(this.ipc.sendV2("is-models-deep-links-enabled"));
     }
 
     public async enableDeepLink(): Promise<boolean> {
-        const res = await this.ipc.send<boolean>("register-models-deep-link");
-        return res.success ? res.data : false;
+        return lastValueFrom(this.ipc.sendV2("register-models-deep-link"));
     }
 
     public async disableDeepLink(): Promise<boolean> {
-        const res = await this.ipc.send<boolean>("unregister-models-deep-link");
-        return res.success ? res.data : false;
+        return lastValueFrom(this.ipc.sendV2("unregister-models-deep-link"));
     }
 }

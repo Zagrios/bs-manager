@@ -155,8 +155,13 @@ export class BsModsManagerService {
         }
 
         return new Promise<boolean>(resolve => {
-            log.info("START IPA PROCESS", `start /wait /min "" "${ipaPath}" ${args.join(" ")}`);
-            const processIPA = spawn(`start /wait /min "" "${ipaPath}" ${args.join(" ")}`, { cwd: versionPath, detached: true, shell: true });
+            const cmd = process.platform === 'linux'
+                ? `screen -dmS "BSIPA" dotnet ${ipaPath} ${args.join(" ")}` // Must run through screen, otherwise BSIPA tries to move console cursor and crashes.
+                : `start /wait /min "" "${ipaPath}" ${args.join(" ")}`;
+
+            log.info("START IPA PROCESS", cmd);
+            const processIPA = spawn(cmd, { cwd: versionPath, detached: true, shell: true });
+
             processIPA.once("exit", code => {
                 if (code === 0) {
                     log.info("Ipa process exist with code 0");
@@ -230,7 +235,7 @@ export class BsModsManagerService {
                 log.error("Error while extracting mod zip", e);
                 return false;
             });
-        
+
         log.info("Mod zip extraction end", mod.name, "to", destDir, "success:", extracted);
 
         const res = isBSIPA
@@ -241,7 +246,9 @@ export class BsModsManagerService {
               }))
             : extracted;
 
-        res && this.nbInstalledMods++;
+        if(res){
+            this.nbInstalledMods++;
+        }
 
         return res;
     }

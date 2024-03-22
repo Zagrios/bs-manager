@@ -12,6 +12,7 @@ import { ConfigurationService } from "renderer/services/configuration.service";
 import { IpcService } from "renderer/services/ipc.service";
 import { ModalComponent } from "renderer/services/modale.service";
 import { FolderLinkState, VersionFolderLinkerService, VersionLinkerActionType } from "renderer/services/version-folder-linker.service";
+import { lastValueFrom } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 
 export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ options: {data} }) => {
@@ -45,14 +46,14 @@ export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ options: {d
     }, [folders]);
 
     const addFolder = async () => {
-        const versionPath = await versionManager.getVersionPath(data).toPromise();
-        const folder = await ipc.sendV2<{ canceled: boolean; filePaths: string[] }, string>("choose-folder", { args: versionPath }).toPromise();
+        const versionPath = await lastValueFrom(versionManager.getVersionPath(data));
+        const folder = await lastValueFrom(ipc.sendV2("choose-folder", versionPath));
 
         if (!folder || folder.canceled || !folder.filePaths?.length) {
             return;
         }
 
-        const relativeFolder = await ipc.sendV2<string>("full-version-path-to-relative", { args: { version: data, fullPath: folder.filePaths[0] } }).toPromise();
+        const relativeFolder = await lastValueFrom(ipc.sendV2("full-version-path-to-relative", { version: data, fullPath: folder.filePaths[0] }));
 
         if (folders.includes(relativeFolder)) {
             return;
