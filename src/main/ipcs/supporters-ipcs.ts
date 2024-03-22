@@ -1,18 +1,10 @@
-import { ipcMain } from "electron";
 import { SupportersService } from "../services/supporters.service";
-import { IpcRequest } from "shared/models/ipc";
-import { UtilsService } from "../services/utils.service";
+import { IpcService } from "../services/ipc.service";
+import { from } from "rxjs";
 
-ipcMain.on("get-supporters", (event, request: IpcRequest<void>) => {
-    const utils = UtilsService.getInstance();
+const ipc = IpcService.getInstance();
+
+ipc.on("get-supporters", (_, reply) => {
     const supportersService = SupportersService.getInstance();
-
-    supportersService
-        .getSupporters()
-        .then(supporters => {
-            utils.ipcSend(request.responceChannel, { success: true, data: supporters });
-        })
-        .catch(() => {
-            utils.ipcSend(request.responceChannel, { success: false });
-        });
+    reply(from(supportersService.getSupporters()));
 });

@@ -29,7 +29,7 @@ export class PlaylistDownloaderService {
             return throwError(() => new Error("Download already in progress"));
         }
 
-        const download$ = this.ipc.sendV2<Progression<DownloadPlaylistProgressionData>, string>("one-click-install-playlist", { args: bpListUrl });
+        const download$ = this.ipc.sendV2("one-click-install-playlist", bpListUrl);
         const progress$ = download$.pipe(map(data => (data.current / data.total) * 100));
 
         this.progress.show(progress$, true);

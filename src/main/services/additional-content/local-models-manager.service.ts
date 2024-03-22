@@ -11,14 +11,13 @@ import sanitize from "sanitize-filename";
 import { Progression, ensureFolderExist, unlinkPath } from "../../helpers/fs.helpers";
 import { MODEL_FILE_EXTENSIONS, MODEL_TYPES, MODEL_TYPE_FOLDERS } from "../../../shared/models/models/constants";
 import { InstallationLocationService } from "../installation-location.service";
-import { Observable, Subscription, lastValueFrom, of } from "rxjs";
+import { Observable, Subscription, lastValueFrom } from "rxjs";
 import { readdir } from "fs/promises";
 import md5File from "md5-file";
 import { allSettled } from "../../../shared/helpers/promise.helpers";
 import { ModelSaberService } from "../thrid-party/model-saber/model-saber.service";
 import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 import { Archive } from "../../models/archive.class";
-import { IpcService } from "../ipc.service";
 
 export class LocalModelsManagerService {
     private static instance: LocalModelsManagerService;
@@ -40,7 +39,6 @@ export class LocalModelsManagerService {
     private readonly installPaths: InstallationLocationService;
     private readonly request: RequestService;
     private readonly modelSaber: ModelSaberService;
-    private readonly ipc: IpcService;
 
     private constructor() {
         this.deepLink = DeepLinkService.getInstance();
@@ -49,26 +47,14 @@ export class LocalModelsManagerService {
         this.request = RequestService.getInstance();
         this.installPaths = InstallationLocationService.getInstance();
         this.modelSaber = ModelSaberService.getInstance();
-        this.ipc = IpcService.getInstance();
 
         this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.ModelSaber, link => {
             log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.ModelSaber, link);
-            const url = new URL(link);
 
-            const type = url.host;
+            const url = new URL(link);
             const id = url.pathname.replace("/", "").split("/").at(0);
 
-            this.openOneClickDownloadModelWindow(id, type);
-        });
-    }
-
-    private openOneClickDownloadModelWindow(id: string, type: string) {
-        this.windows.openWindow("oneclick-download-model.html").then(window => {
-
-            this.ipc.once("one-click-model-info", (_, reply) => {
-                reply(of({ id, type }));
-            }, window.webContents.ipc);
-
+            this.windows.openWindow(`oneclick-download-model.html?modelId=${id}`);
         });
     }
 

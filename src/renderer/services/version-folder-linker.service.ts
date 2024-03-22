@@ -59,7 +59,7 @@ export class VersionFolderLinkerService {
     }
 
     private doAction(action: VersionLinkerAction): Observable<boolean> {
-        return this.ipcService.sendV2<boolean, VersionLinkerAction>("link-version-folder-action", { args: action });
+        return this.ipcService.sendV2("link-version-folder-action", action);
     }
 
     private get currentAction$(): Observable<VersionLinkerAction> {
@@ -126,7 +126,7 @@ export class VersionFolderLinkerService {
     }
 
     public isVersionFolderLinked(version: BSVersion, relativeFolder: string): Observable<boolean> {
-        return this.ipcService.sendV2("is-version-folder-linked", { args: { version, relativeFolder } });
+        return this.ipcService.sendV2("is-version-folder-linked", { version, relativeFolder });
     }
 
     public $folderLinkedState(version: BSVersion, relativeFolder: string): Observable<FolderLinkState> {
@@ -136,7 +136,7 @@ export class VersionFolderLinkerService {
                 if(currentAction && equal(currentAction.version, version) && currentAction.relativeFolder === relativeFolder) {
                     return of(FolderLinkState.Processing)
                 }
-                
+
                 if(queue.some(action => equal(action.version, version) && action.relativeFolder === relativeFolder)) {
                     return of(FolderLinkState.Pending);
                 }
@@ -146,7 +146,7 @@ export class VersionFolderLinkerService {
                 );
             }),
             distinctUntilChanged(),
-            shareReplay(1)    
+            shareReplay(1)
         );
     }
 
@@ -159,7 +159,7 @@ export class VersionFolderLinkerService {
     }
 
     public getLinkedFolders(version: BSVersion, options?: { relative?: boolean }): Observable<string[]> {
-        return this.ipcService.sendV2("get-linked-folders", { args: { version, options } });
+        return this.ipcService.sendV2("get-linked-folders", { version, options });
     }
 
     public relinkAllVersionsFolders(): Observable<void> {

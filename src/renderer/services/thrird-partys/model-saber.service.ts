@@ -1,6 +1,6 @@
 import { MSGetQuery, MSGetQueryFilter, MSGetQueryFilterType, MSModel } from "shared/models/models/model-saber.model";
 import { IpcService } from "../ipc.service";
-import { Observable } from "rxjs";
+import { Observable, lastValueFrom } from "rxjs";
 import { MS_QUERY_FILTER_TYPES } from "shared/models/models/constants";
 
 export class ModelSaberService {
@@ -19,16 +19,12 @@ export class ModelSaberService {
         this.ipc = IpcService.getInstance();
     }
 
-    public async getModelById(id: number | string): Promise<MSModel> {
-        const res = await this.ipc.send<MSModel>("ms-get-model-by-id", { args: id });
-        if (!res.success) {
-            return null;
-        }
-        return res.data;
+    public getModelById(id: number | string): Promise<MSModel> {
+        return lastValueFrom(this.ipc.sendV2("ms-get-model-by-id", id));
     }
 
     public searchModels(query: MSGetQuery): Observable<MSModel[]> {
-        return this.ipc.sendV2("search-models", { args: query });
+        return this.ipc.sendV2("search-models", query);
     }
 
     public parseFilter(stringFilters: string): MSGetQueryFilter[] {

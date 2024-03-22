@@ -3,7 +3,6 @@ import { BsmProgressBar } from "renderer/components/progress-bar/bsm-progress-ba
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import TitleBar from "renderer/components/title-bar/title-bar.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import { IpcService } from "renderer/services/ipc.service";
 import { NotificationService } from "renderer/services/notification.service";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { ModelSaberService } from "renderer/services/thrird-partys/model-saber.service";
@@ -11,16 +10,18 @@ import { MSModel } from "shared/models/models/model-saber.model";
 import defaultImage from "../../../../assets/images/default-version-img.jpg";
 import { ModelsDownloaderService } from "renderer/services/models-management/models-downloader.service";
 import { useService } from "renderer/hooks/use-service.hook";
-import { lastValueFrom } from "rxjs";
+import { useWindowArgs } from "renderer/hooks/use-window-args.hook";
+import { useWindowControls } from "renderer/hooks/use-window-controls.hook";
 
 export default function OneClickDownloadModel() {
 
-    const ipc = useService(IpcService);
     const modelSaber = useService(ModelSaberService);
     const progress = useService(ProgressBarService);
     const modelDownloader = useService(ModelsDownloaderService);
     const notification = useService(NotificationService);
 
+    const { close: closeWindow } = useWindowControls();
+    const { modelId } = useWindowArgs("modelId");
     const [model, setModel] = useState<MSModel>(null);
     const t = useTranslation();
 
@@ -30,9 +31,8 @@ export default function OneClickDownloadModel() {
     useEffect(() => {
 
         const promise = (async () => {
-            const infos = await lastValueFrom(ipc.sendV2<{ id: string; type: string }>("one-click-model-info"));
 
-            const model = await modelSaber.getModelById(infos.id);
+            const model = await modelSaber.getModelById(modelId);
 
             if (!model) {
                 throw new Error("Failed to get model from ModelSaber");
@@ -58,7 +58,7 @@ export default function OneClickDownloadModel() {
         });
 
         promise.finally(() => {
-            window.electron.window.close();
+            closeWindow();
         });
 
     }, []);

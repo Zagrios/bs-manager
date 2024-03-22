@@ -42,7 +42,7 @@ export function VersionViewer() {
         }
         navigate(`/bs-version/${version.BSVersion}`, { state: version });
     };
-    const openFolder = () => ipcService.sendLazy("bs-version.open-folder", { args: state });
+    const openFolder = () => lastValueFrom(ipcService.sendV2("bs-version.open-folder", state));
     const verifyFiles = () => bsDownloader.verifyBsVersion(state);
 
     const uninstall = async () => {

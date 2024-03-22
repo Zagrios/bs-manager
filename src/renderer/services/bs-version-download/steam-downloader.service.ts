@@ -15,7 +15,7 @@ import { DownloaderServiceInterface } from "./bs-store-downloader.interface";
 import { AbstractBsDownloaderService } from "./abstract-bs-downloader.service";
 
 export class SteamDownloaderService extends AbstractBsDownloaderService implements DownloaderServiceInterface{
-    
+
     private static instance: SteamDownloaderService;
 
     public static getInstance(): SteamDownloaderService {
@@ -45,7 +45,7 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
     }
 
     public isDotNet6Installed(): Promise<boolean> {
-        return lastValueFrom(this.ipcService.sendV2<boolean>("is-dotnet-6-installed"));
+        return lastValueFrom(this.ipcService.sendV2("is-dotnet-6-installed"));
     }
 
     private setSteamSession(username: string): void { localStorage.setItem(this.STEAM_SESSION_USERNAME_KEY, username); }
@@ -67,11 +67,11 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
     }
 
     public async getInstallationFolder(): Promise<string> {
-        return lastValueFrom(this.ipcService.sendV2<string>("bs-download.installation-folder"));
+        return lastValueFrom(this.ipcService.sendV2("bs-download.installation-folder"));
     }
 
     public setInstallationFolder(path: string): Observable<string> {
-        return this.ipcService.sendV2<string>("bs-download.set-installation-folder", { args: path });
+        return this.ipcService.sendV2("bs-download.set-installation-folder",  path);
     }
 
     // ### Downloading
@@ -128,7 +128,7 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
                 return this.notificationService.notifySuccess({title: "notifications.bs-download.success.titles.verification-finished"});
             }
             return this.notificationService.notifySuccess({title: "notifications.bs-download.success.titles.download-success"});
-        }));    
+        }));
 
         return subs;
     }
@@ -177,12 +177,12 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
             tap({
                 error: (e) => {
                     this.deleteSteamSession();
-                    !silent && this.hanndleErrorEvent(e)
+                    if(!silent){ this.hanndleErrorEvent(e) }
                 }
             }),
             share({connector: () => new ReplaySubject(1)})
         );
-        
+
     }
 
     private tryAutoDownloadBsVersion(downloadInfo: DownloadSteamInfo){
@@ -193,20 +193,20 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
 
         const infos: DownloadSteamInfo = {...downloadInfo, username: this.getSteamUsername()}
         return this.wrapDownload(
-            this.ipcService.sendV2<DepotDownloaderEvent>("auto-download-bs-version", { args: infos }),
+            this.ipcService.sendV2("auto-download-bs-version", infos),
             true
         );
     }
 
     private startDownload(downloadInfo: DownloadSteamInfo){
         return this.wrapDownload(
-            this.ipcService.sendV2<DepotDownloaderEvent>("download-bs-version", { args: downloadInfo })
+            this.ipcService.sendV2("download-bs-version", downloadInfo )
         );
     }
 
     private startQrCodeDownload(downloadInfo: DownloadSteamInfo){
         return this.wrapDownload(
-            this.ipcService.sendV2<DepotDownloaderEvent>("download-bs-version-qr", { args: downloadInfo })
+            this.ipcService.sendV2("download-bs-version-qr", downloadInfo)
         );
     }
 
@@ -217,7 +217,7 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
         }
 
         this.progressBarService.show(this.downloadProgress$, true);
-        
+
         const downloadPromise = (async () => {
 
             const haveDotNet = await this.isDotNet6Installed().catch(() => false);
@@ -227,9 +227,9 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
             }
 
             const downloadInfo: DownloadSteamInfo = {bsVersion, isVerification}
-        
+
             const autoDownload = await lastValueFrom(this.tryAutoDownloadBsVersion(downloadInfo)).then(() => true).catch(() => false);
-            
+
             if(autoDownload){ return Promise.resolve(); }
 
             const qrCodeDownload$ = this.startQrCodeDownload(downloadInfo);
@@ -262,7 +262,7 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
     }
 
     private sendInput(input: string){
-        return lastValueFrom(this.ipcService.sendV2<void>("send-input-bs-download", { args: input }));
+        return lastValueFrom(this.ipcService.sendV2("send-input-bs-download", input));
     }
 
     public downloadBsVersion(version: BSVersion): Promise<BSVersion> {
@@ -274,6 +274,6 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
     }
 
     public stopDownload(): Promise<void>{
-        return lastValueFrom(this.ipcService.sendV2<void>("stop-download-bs-version"));
+        return lastValueFrom(this.ipcService.sendV2("stop-download-bs-version"));
     }
 }

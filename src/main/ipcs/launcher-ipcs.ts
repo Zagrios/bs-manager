@@ -1,20 +1,12 @@
-import { ipcMain } from "electron";
 import { AutoUpdaterService } from "../services/auto-updater.service";
-import { IpcRequest } from "shared/models/ipc";
-import { UtilsService } from "../services/utils.service";
 import { IpcService } from "../services/ipc.service";
-import { from } from "rxjs";
+import { from, of } from "rxjs";
 
 const ipc = IpcService.getInstance();
 
-ipcMain.on("download-update", async (event, request: IpcRequest<void>) => {
+ipc.on("download-update", (_, reply) => {
     const updaterService = AutoUpdaterService.getInstance();
-    const utilsService = UtilsService.getInstance();
-
-    updaterService
-        .downloadUpdate()
-        .then(res => utilsService.ipcSend(request.responceChannel, { success: res }))
-        .catch(() => utilsService.ipcSend(request.responceChannel, { success: false }));
+    reply(from(updaterService.downloadUpdate()));
 });
 
 ipc.on("check-update", (_, reply) => {
@@ -22,7 +14,7 @@ ipc.on("check-update", (_, reply) => {
     reply(from(updaterService.isUpdateAvailable()));
 });
 
-ipcMain.on("install-update", async (event, request: IpcRequest<void>) => {
+ipc.on("install-update", (_, reply) => {
     const updaterService = AutoUpdaterService.getInstance();
-    updaterService.quitAndInstall();
+    reply(of(updaterService.quitAndInstall()));
 });

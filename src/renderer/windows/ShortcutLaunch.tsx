@@ -13,20 +13,22 @@ import { BsNoteFill } from "renderer/components/svgs/icons/bs-note-fill.componen
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { motion } from "framer-motion"
-import { BSLaunchError, BSLaunchEventType, LaunchOption } from "shared/models/bs-launch";
+import { BSLaunchError, BSLaunchEventType } from "shared/models/bs-launch";
 import { NotificationService } from "renderer/services/notification.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { useWindowControls } from "renderer/hooks/use-window-controls.hook";
 
 export default function ShortcutLaunch() {
-    
+
     const windows = useService(WindowManagerService);
     const ipc = useService(IpcService);
     const bsLauncher = useService(BSLauncherService);
     const notification = useService(NotificationService);
 
+    const { close: closeWindow } = useWindowControls();
     const t = useTranslation();
     const color = useThemeColor("second-color");
-    const launchOptions = useObservable(() => ipc.sendV2<LaunchOption>("shortcut-launch-options").pipe(take(1)), null)
+    const launchOptions = useObservable(() => ipc.sendV2("shortcut-launch-options").pipe(take(1)), null)
     const [rotation, setRotation] = useState(0);
     const [status, setStatus] = useState<BSLaunchEventType>();
 
@@ -57,7 +59,7 @@ export default function ShortcutLaunch() {
         });
 
         sub.add(() => {
-            window.electron.window.close();
+            closeWindow();
         });
 
         return () => sub.unsubscribe();
