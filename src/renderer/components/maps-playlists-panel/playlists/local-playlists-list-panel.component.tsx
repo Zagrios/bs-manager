@@ -6,10 +6,10 @@ import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useService } from "renderer/hooks/use-service.hook";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { FolderLinkState } from "renderer/services/version-folder-linker.service";
-import { BehaviorSubject, combineLatest, distinctUntilChanged, filter, finalize, lastValueFrom, map, merge, mergeAll, of, pipe, tap } from "rxjs";
+import { BehaviorSubject, combineLatest, distinctUntilChanged, filter, finalize, lastValueFrom, map, tap } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { noop } from "shared/helpers/function.helpers";
-import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
+import { LocalBPList, LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
 import { PlaylistItem } from "./playlist-item.component";
 import { useStateMap } from "renderer/hooks/use-state-map.hook";
 import { ModalService } from "renderer/services/modale.service";
@@ -18,6 +18,9 @@ import { InstalledMapsContext } from "../maps-playlists-panel.component";
 import { IpcService } from "renderer/services/ipc.service";
 import equal from "fast-deep-equal";
 import { useObservable } from "renderer/hooks/use-observable.hook";
+import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service";
+import { ProgressBarService } from "renderer/services/progress-bar.service";
+import { NotificationService } from "renderer/services/notification.service";
 
 type Props = {
     version: BSVersion;
@@ -29,8 +32,11 @@ type Props = {
 export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, className, isActive, linkedState }, forwardedRef) => {
 
     const playlistService = useService(PlaylistsManagerService);
+    const playlistDownloader = useService(PlaylistDownloaderService);
     const modals = useService(ModalService);
     const ipc = useService(IpcService);
+    const progress = useService(ProgressBarService);
+    const notification = useService(NotificationService);
 
     const isActiveOnce = useChangeUntilEqual(isActive, { untilEqual: true });
 
@@ -65,10 +71,44 @@ export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, cl
             loadPercent$.next(0);
         });
 
+        const onPlaylistDownloadedCB = (downloaded: LocalBPListsDetails) => {
+            const newPlaylist = (() => {
+                console.log(playlists);
+                const index = playlists$.value.findIndex(p => p.path === downloaded.path);
+                if(index === -1){
+                    return [...playlists$.value, downloaded];
+                }
+
+                const newPlaylists = [...playlists$.value];
+                newPlaylists[index] = downloaded;
+                return newPlaylists;
+            })();
+            setPlaylists(newPlaylist);
+        }
+
+        playlistDownloader.addOnPlaylistDownloadedListener(version, onPlaylistDownloadedCB);
+
+        return () => {
+            playlistDownloader.removeOnPlaylistDownloadedListener(version, onPlaylistDownloadedCB);
+        }
+
     }, [isActiveOnce, version, linked]);
 
+    const installPlaylist = (playlist: LocalBPList) => {
+
+        const ignoreSongsHashs = (maps$.value || []).map(m => m.hash.toLocaleLowerCase());
+
+        const obs$ = playlistDownloader.installPlaylist(playlist, version, ignoreSongsHashs);
+
+        return lastValueFrom(obs$).then(res => {
+            if(res.current === res.total){
+                notification.notifySuccess({ title: "Playlist synchronisée !", desc: "La playlist et ses maps on été téléchargées.", duration: 5000 })
+            }
+        });
+    }
+
     const viewPlaylistFile = (path: string) => {
-        return lastValueFrom(ipc.sendV2("view-path-in-explorer", { args: path }));
+        return lastValueFrom(ipc.sendV2("view-path-in-explorer", path));
     };
 
     const deletePlaylist = (path: string) => {
@@ -115,7 +155,7 @@ export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, cl
                             minNps={p.minNps}
                             onClickOpen={() => openPlaylistDetails(p.path)}
                             onClickDelete={() => deletePlaylist(p.path)}
-                            onClickSync={() => console.log("sync")}
+                            onClickSync={() => installPlaylist(p)}
                             onClickOpenFile={() => viewPlaylistFile(p.path)}
                         />
                     )}

@@ -162,7 +162,7 @@ export class BSVersionManagerService {
             shareReplay({ bufferSize: 1, refCount: true })
         );
 
-        this.progressBar.show(obs$.pipe(map(progress => (progress.current / progress.total) * 100)), true);
+        this.progressBar.show(obs$, true);
 
         return obs$;
     }

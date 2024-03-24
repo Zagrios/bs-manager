@@ -1,5 +1,6 @@
 import { BsvMapDetail, SongDetails } from "../maps";
 import { BsmLocalMap } from "../maps/bsm-local-map.interface";
+import { LocalBPListsDetails } from "./local-playlist.models";
 
 export interface BPList<SongType = PlaylistSong> {
     playlistTitle: string;
@@ -21,8 +22,7 @@ export interface PlaylistSong {
 export interface DownloadPlaylistProgressionData {
     downloadedMaps: BsmLocalMap[];
     currentDownload: BsvMapDetail;
-    playlistInfos: BPList;
-    playlistPath: string;
+    playlist: LocalBPListsDetails;
 }
 
 export interface CustomDataBPList {

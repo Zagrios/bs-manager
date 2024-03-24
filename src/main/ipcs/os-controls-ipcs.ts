@@ -41,3 +41,7 @@ ipc.on("notify-system", (args, reply) => {
     const systemNotification = NotificationService.getInstance();
     reply(of(systemNotification.notify(args)));
 });
+
+ipc.on("view-path-in-explorer", (args, reply) => {
+    reply(of(shell.showItemInFolder(args)));
+});

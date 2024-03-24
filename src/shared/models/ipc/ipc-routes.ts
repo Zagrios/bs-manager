@@ -80,7 +80,7 @@ export interface IpcChannelMapping extends Record<string, { request: unknown, re
     "register-playlists-deep-link": { request: void, response: boolean };
     "unregister-playlists-deep-link": { request: void, response: boolean };
     "is-playlists-deep-links-enabled": { request: void, response: boolean };
-    "install-playlist": {request: {playlist: BPList, version: BSVersion}, response: Progression<DownloadPlaylistProgressionData>};
+    "install-playlist": {request: {playlist: BPList, version?: BSVersion, ignoreSongsHashs?: string[]}, response: Progression<DownloadPlaylistProgressionData>};
     "get-version-playlists-details": {request: BSVersion, response: Progression<LocalBPListsDetails[]>};
     "delete-playlist": {request: {path: string, deleteMaps?: boolean}, response: Progression};
 
@@ -117,6 +117,7 @@ export interface IpcChannelMapping extends Record<string, { request: unknown, re
     "current-version": { request: void, response: string };
     "open-logs": { request: void, response: string };
     "notify-system": { request: SystemNotificationOptions, response: void };
+    "view-path-in-explorer": { request: string, response: void };
 
     /* ** supporters-ipcs ** */
     "get-supporters": { request: void, response: Supporter[] };

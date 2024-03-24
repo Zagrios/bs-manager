@@ -27,7 +27,7 @@ export default function OneClickDownloadPlaylist() {
     const mapsContainer = useRef<HTMLDivElement>(null);
     const { playlistUrl } = useWindowArgs("playlistUrl");
     const download$ = useConstant(() => playlistDownloader.oneClickInstallPlaylist(playlistUrl));
-    const playlistInfos = useObservable<BPList>(() => download$.pipe(filter(progress => !!progress.data?.playlistInfos), map(progress => progress.data.playlistInfos), take(1)));
+    const playlistInfos = useObservable(() => download$.pipe(filter(progress => !!progress.data?.playlist), map(progress => progress.data.playlist), take(1)));
     const downloadedMaps = useObservable(() => download$.pipe(filter(progress => !!progress.data?.downloadedMaps), map(progress => progress.data.downloadedMaps)));
 
     useEffect(() => {

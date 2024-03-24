@@ -29,7 +29,7 @@ type Props = {
 export const InstalledMapsContext = createContext<{
     maps$?: BehaviorSubject<BsmLocalMap[]>;
     setMaps: (maps: BsmLocalMap[]) => void;
-    playlists$?: Observable<LocalBPListsDetails[]>;
+    playlists$?: BehaviorSubject<LocalBPListsDetails[]>;
     setPlaylists: (playlist: LocalBPListsDetails[]) => void;
 }>(null);
 

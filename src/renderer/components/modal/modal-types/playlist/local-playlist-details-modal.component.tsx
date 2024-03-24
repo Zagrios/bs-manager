@@ -1,6 +1,6 @@
 import { ModalComponent } from "renderer/services/modale.service"
 import { PlaylistDetailsTemplate, PlaylistDetailsTemplateProps } from "./playlist-details-template.component"
-import { Observable, first, lastValueFrom, map, shareReplay, switchMap, take, tap } from "rxjs"
+import { Observable, combineLatest, first, lastValueFrom, map, mergeAll, mergeMap, shareReplay, switchMap, take, tap } from "rxjs"
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface"
 import { BSVersion } from "shared/bs-version.interface";
 import { useObservable } from "renderer/hooks/use-observable.hook";
@@ -14,7 +14,10 @@ import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import BeatConflict from "../../../../../../assets/images/apngs/beat-conflict.png";
 import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
 import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service";
-import { ProgressBarService } from "renderer/services/progress-bar.service";
+import { PlaylistHeaderState } from "./playlist-header-state.component";
+import { useConstant } from "renderer/hooks/use-constant.hook";
+
+// TODO : Translate
 
 interface Props {
     version: BSVersion;
@@ -26,10 +29,15 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
 
     const audioPlayer = useService(AudioPlayerService);
     const playlistDownloader = useService(PlaylistDownloaderService);
-    const progressBar = useService(ProgressBarService);
 
     const localPlaylist = useObservable(() => options.data.localPlaylist$, null);
     const installedMaps = useObservable(() => options.data.installedMaps$, null);
+
+    const isMissingMaps$ = useConstant(() => combineLatest([options.data.installedMaps$, options.data.localPlaylist$]).pipe(map(([maps, playlist]) => maps.length !== playlist.songs.length)));
+    const isPlaylistDownloading$ = useConstant(() => options.data.localPlaylist$.pipe(switchMap(playlist => playlistDownloader.$isPlaylistDownloading(playlist, options.data.version))));
+    const isPlaylistInQueue$ = useConstant(() => options.data.localPlaylist$.pipe(switchMap(playlist => playlistDownloader.$isPlaylistInQueue(playlist, options.data.version))));
+
+    const isInQueue = useObservable(() => isPlaylistInQueue$, false);
 
     const playPlaylist = () => {
         if (!installedMaps) {
@@ -39,55 +47,54 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
     };
 
     const installPlaylist = () => {
-        const obs$ = playlistDownloader.installPlaylist(localPlaylist, options.data.version);
 
-        const progress$ = obs$.pipe(
-            map(progress => (progress.current / progress.total) * 100),
-        );
+        const ignoreSongsHashs = installedMaps?.map(map => map.hash);
 
-        const obsWithProgress$ = obs$.pipe(
-            take(1),
-            tap(() => progressBar.show(progress$, true)),
-            switchMap(() => obs$),
-            tap({ complete: () => progressBar.hide(true) })
-        );
+        const obs$ = playlistDownloader.installPlaylist(localPlaylist, options.data.version, ignoreSongsHashs);
 
-        return lastValueFrom(obsWithProgress$);
+        return lastValueFrom(obs$);
     }
 
     const renderMaps = () => {
-        if (!installedMaps) {
-            // loading maps
-            return null;
+        if (!Array.isArray(installedMaps) && !isInQueue) {
+            return (
+                <div className="grow bg-red-400">
+
+                </div>
+            );
         }
 
-        if(installedMaps.length === 0) {
-            // no maps
-            return null;
+        if(installedMaps.length === 0 && !isInQueue) {
+            return (
+                <div className="grow flex justify-center items-center flex-col">
+                    <BsmImage image={BeatConflict} className="size-28"/>
+                    <div className="text-white font-bold w-fit space-y-1.5 flex flex-col justify-center items-center -translate-y-5">
+                        <p>Aucune maps installée pour cette playlist</p>
+                        <BsmButton withBar={false} onClick={installPlaylist} className="rounded-md h-8 flex items-center justify-center px-4" typeColor="primary" text="Télécharger.les.maps"/>
+                    </div>
+                </div>
+            );
+        }
+
+        if(installedMaps.length === 0 && isInQueue) {
+            return (
+                <div className="grow flex justify-center items-center flex-col">
+                    <BsmImage image={BeatConflict} className="size-28"/>
+                    <div className="text-white font-bold w-fit space-y-1.5 flex flex-col justify-center items-center -translate-y-5">
+                        <p>La Playlist est en attente de téléchargment</p>
+                    </div>
+                </div>
+            );
         }
 
         return (
             <div className="grow min-h-0 overflow-hidden flex flex-col justify-start items-center">
-                <AnimatePresence>
-                    {/* If nb installed maps not correspond to nb maps of the playlist */}
-                    {installedMaps.length !== localPlaylist.nbMaps && (
-                        <motion.div
-                            initial={{ height: 0 }}
-                            animate={{ height: "7rem" }}
-                            exit={{ height: 0 }}
-                            transition={{delay: .25, duration: .25}}
-                            className="shrink-0 w-full text-center overflow-hidden flex justify-center items-center"
-                        >
-                            <div className="size-[calc(100%-1rem)] bg-main-color-2 rounded-md translate-y-1.5 flex flex-row justify-center items-center gap-3">
-                                <BsmImage image={BeatConflict} className="size-24"/>
-                                <div className="text-white font-bold w-fit space-y-1.5 flex flex-col justify-center items-center">
-                                    <p>Certaines maps de cette playlist sont manquantes</p>
-                                    <BsmButton withBar={false} onClick={installPlaylist} className="rounded-md h-8 flex items-center justify-center px-4" typeColor="primary" text="Télécharger.les.maps.manquantes"/>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                <PlaylistHeaderState
+                    isMissingMaps$={isMissingMaps$}
+                    isPlaylistDownloading$={isPlaylistDownloading$}
+                    isPlaylistInQueue$={isPlaylistInQueue$}
+                    installPlaylist={installPlaylist}
+                />
                 <ul className="min-h-0 w-full grow space-y-2 pl-2.5 pr-2 py-3 overflow-y-scroll overflow-x-hidden scrollbar-default">
                     {installedMaps.map(map => (
                         <MapItem
