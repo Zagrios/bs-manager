@@ -18,7 +18,7 @@ import { FileFilter, OpenDialogReturnValue } from "electron";
 import { SystemNotificationOptions } from "../notification/system-notification.model";
 import { Supporter } from "../supporters";
 import { AppWindow } from "../window-manager/app-window.model";
-import { LocalBPListsDetails } from "../playlists/local-playlist.models";
+import { LocalBPList, LocalBPListsDetails } from "../playlists/local-playlist.models";
 
 export type IpcReplier<T> = (data: Observable<T>) => void;
 
@@ -82,7 +82,7 @@ export interface IpcChannelMapping extends Record<string, { request: unknown, re
     "is-playlists-deep-links-enabled": { request: void, response: boolean };
     "install-playlist": {request: {playlist: BPList, version?: BSVersion, ignoreSongsHashs?: string[]}, response: Progression<DownloadPlaylistProgressionData>};
     "get-version-playlists-details": {request: BSVersion, response: Progression<LocalBPListsDetails[]>};
-    "delete-playlist": {request: {path: string, deleteMaps?: boolean}, response: Progression};
+    "delete-playlist": {request: {version: BSVersion, bpList: LocalBPList, deleteMaps?: boolean}, response: Progression};
 
     /* ** bs-uninstall-ipcs ** */
     "bs.uninstall": { request: BSVersion, response: boolean };

@@ -20,6 +20,7 @@ import { SongCacheService } from "./maps/song-cache.service";
 import { InstallationLocationService } from "../installation-location.service";
 import sanitize from "sanitize-filename";
 import { isValidUrl } from "shared/helpers/url.helpers";
+import { allSettled } from "shared/helpers/promise.helpers";
 
 export class LocalPlaylistsManagerService {
     private static instance: LocalPlaylistsManagerService;
@@ -284,34 +285,8 @@ export class LocalPlaylistsManagerService {
 
     }
 
-    public deletePlaylist(opt: {path: string, deleteMaps?: boolean}): Observable<Progression>{
-
-        return new Observable<Progression>(obs => {
-            (async () => {
-
-                const bpList = await this.readPlaylistFromSource(opt.path);
-
-                const progress: Progression = { current: 0, total: opt.deleteMaps ? bpList.songs.length + 1 : 1};
-
-                if(opt.deleteMaps){
-                    const mapsHashs = bpList.songs.map(s => ({ hash: s.hash }));
-                    await lastValueFrom(this.maps.deleteMaps(mapsHashs).pipe(
-                        tap({
-                            next: () => {
-                                progress.current += 1
-                                obs.next(progress);
-                            },
-                        }),
-                    ));
-                }
-
-                await unlinkPath(opt.path);
-                progress.current += 1;
-                obs.next(progress);
-            })()
-            .catch(err => obs.error(err))
-            .finally(() => obs.complete());
-        });
+    public deletePlaylistFile(bpList: LocalBPList): Observable<void>{
+        return from(unlinkPath(bpList.path));
     }
 
     public oneClickInstallPlaylist(bpListUrl: string): Observable<Progression<DownloadPlaylistProgressionData>> {

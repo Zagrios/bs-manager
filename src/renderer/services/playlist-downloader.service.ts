@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable, Subscription, distinctUntilChanged, filter, lastValueFrom, map, shareReplay, take, takeUntil, takeWhile, tap } from "rxjs";
+import { BehaviorSubject, Observable, Subject, Subscription, distinctUntilChanged, filter, lastValueFrom, map, shareReplay, take, takeUntil, takeWhile, tap } from "rxjs";
 import { BPList, DownloadPlaylistProgressionData } from "shared/models/playlists/playlist.interface";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
@@ -6,6 +6,7 @@ import { Progression } from "main/helpers/fs.helpers";
 import equal from "fast-deep-equal";
 import { BSVersion } from "shared/bs-version.interface";
 import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
+import { removeIndex } from "shared/helpers/array.helpers";
 
 export class PlaylistDownloaderService {
     private static instance: PlaylistDownloaderService;
@@ -21,7 +22,7 @@ export class PlaylistDownloaderService {
     private readonly progress: ProgressBarService;
     private readonly ipc: IpcService;
 
-    private readonly canceled$ = new BehaviorSubject<boolean>(false);
+    private readonly cancel$ = new Subject<void>();
     private readonly playlistQueue$ = new BehaviorSubject<PlaylistQueueInfo[]>([]);
     private readonly onPlaylistDownloadedListeners = new Map<BSVersion, ((playlist: LocalBPListsDetails) => void)[]>();
 
@@ -34,40 +35,34 @@ export class PlaylistDownloaderService {
 
         this.playlistQueue$.next([...this.playlistQueue$.value, { version, source: bpList }]);
 
-        console.log("AAAAA");
-
         return new Observable<Progression<DownloadPlaylistProgressionData>>(subscriber => {
 
             let subs: Subscription[] = [];
+            let canShowProgress = false;
 
             (async () => {
                 const queueInfo = await lastValueFrom(this.playlistQueue$.pipe(map(queue => queue.at(0)), filter(p => equal(bpList, p.source)), take(1)));
-
-                console.log(queueInfo);
-
-                const download$ = this.ipc.sendV2("install-playlist", { version: queueInfo.version, playlist: queueInfo.source, ignoreSongsHashs }).pipe(takeWhile(() => !this.canceled$.value));
+                const download$ = this.ipc.sendV2("install-playlist", { version: queueInfo.version, playlist: queueInfo.source, ignoreSongsHashs }).pipe(takeUntil(this.cancel$));
 
                 subs.push(download$.pipe(map(progress => progress?.data?.playlist), filter(Boolean), take(1)).subscribe(playlist => {
                     queueInfo.downloaded = playlist;
                     this.onPlaylistDownloadedListeners.get(version)?.forEach(cb => cb(playlist));
                 }));
 
-                const canShowProgress = !this.progress.isVisible;
+                canShowProgress = !this.progress.isVisible;
                 if (canShowProgress) {
-                    this.progress.show(download$.pipe(map(data => (data.current / data.total) * 100)), true);
+                    this.progress.show(download$, true);
                 }
 
-                await lastValueFrom(download$.pipe(tap(subscriber))).finally(() => {
-                    if (canShowProgress) {
-                        this.progress.hide(true);
-                    }
-                })
+                await lastValueFrom(download$.pipe(tap(subscriber)));
             })()
             .then(() => subscriber.complete())
             .catch(err => subscriber.error(err))
             .finally(() => {
                 this.playlistQueue$.next(this.playlistQueue$.value.filter(p => !equal(p.version, version) || !equal(p.source, bpList)));
-                this.canceled$.next(false);
+                if (canShowProgress) {
+                    this.progress.hide(true);
+                }
             });
 
             return () => subs.forEach(s => s.unsubscribe());
@@ -75,8 +70,20 @@ export class PlaylistDownloaderService {
         }).pipe(shareReplay(1));
     }
 
-    public cancelCurrentDownload() {
-        this.canceled$.next(true);
+    public cancelDownload(bplist: BPList, version?: BSVersion) {
+        const currentDownload = this.playlistQueue$.value.at(0);
+        if(!currentDownload) { return; }
+
+        if((equal(currentDownload.source, bplist) || equal(currentDownload.downloaded, bplist)) && equal(currentDownload.version, version)){
+            return this.cancel$.next();
+        }
+
+        const indexToRemove = this.playlistQueue$.value.findIndex(p => (equal(p.source, bplist) || equal(p.downloaded, bplist)) && equal(p.version, version));
+        if(indexToRemove === -1){ return; }
+
+
+        const newArr = removeIndex(indexToRemove, [...this.playlistQueue$.value]);
+        this.playlistQueue$.next(newArr);
     }
 
     public get currentDownloading$(): Observable<PlaylistQueueInfo> {
@@ -88,7 +95,12 @@ export class PlaylistDownloaderService {
     }
 
     public $isPlaylistDownloading(bpList: BPList, version?: BSVersion): Observable<boolean> {
-        return this.currentDownloading$.pipe(map(p => p && (equal(p.source, bpList) || equal(p.downloaded, bpList)) && equal(p.version, version)), distinctUntilChanged());
+        return this.currentDownloading$.pipe(map(p => {
+            if(!p){ return false; }
+            if(!equal(p.source, bpList) && !equal(p.downloaded, bpList)){ return false; }
+            if(version && !equal(p.version, version)){ return false; }
+            return true;
+        }), distinctUntilChanged());
     }
 
     public addOnPlaylistDownloadedListener(version: BSVersion, cb: (playlist: LocalBPListsDetails) => void){

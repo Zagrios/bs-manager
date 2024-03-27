@@ -1,10 +1,11 @@
 import { LocalBPList } from "shared/models/playlists/local-playlist.models";
 import { LocalPlaylistsManagerService } from "../services/additional-content/local-playlists-manager.service";
 import { IpcService } from "../services/ipc.service";
-import { of } from "rxjs";
+import { mergeMap, of } from "rxjs";
 import { BPList } from "shared/models/playlists/playlist.interface";
 import path from "path";
-import { pathToFileURL } from "url";
+import { LocalMapsManagerService } from "../services/additional-content/maps/local-maps-manager.service";
+import { Progression } from "main/helpers/fs.helpers";
 
 const ipc = IpcService.getInstance();
 
@@ -61,5 +62,12 @@ ipc.on("get-version-playlists-details", (args, reply) => {
 
 ipc.on("delete-playlist", (args, reply) => {
     const playlists = LocalPlaylistsManagerService.getInstance();
-    reply(playlists.deletePlaylist(args));
+    const maps = LocalMapsManagerService.getInstance();
+    reply(playlists.deletePlaylistFile(args.bpList).pipe(mergeMap(() => {
+        if(args.deleteMaps){
+            console.log("ALALALZELALZELAZELA");
+            return maps.deleteMapsFromHashs(args.version, args.bpList.songs.map(s => s.hash));
+        }
+        return of({ current: 0, total: 0 } as Progression);
+    })));
 });

@@ -3,7 +3,7 @@ import { IpcService } from "./ipc.service";
 import { Observable, lastValueFrom } from "rxjs";
 import { FolderLinkState, VersionFolderLinkerService } from "./version-folder-linker.service";
 import { Progression } from "main/helpers/fs.helpers";
-import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
+import { LocalBPList, LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
 import { ModalExitCode, ModalService } from "./modale.service";
 import { UnlinkPlaylistModal } from "renderer/components/modal/modal-types/unlink-playlist-modal.component";
 import { LinkPlaylistModal } from "renderer/components/modal/modal-types/link-playlist-modal.component";
@@ -34,7 +34,7 @@ export class PlaylistsManagerService {
         return this.ipc.sendV2("get-version-playlists-details", version);
     }
 
-    public deletePlaylist(opt: {path: string, deleteMaps?: boolean}): Observable<Progression> {
+    public deletePlaylist(opt: {version: BSVersion, bpList: LocalBPList, deleteMaps?: boolean}): Observable<Progression> {
         return this.ipc.sendV2("delete-playlist", opt);
     }
 

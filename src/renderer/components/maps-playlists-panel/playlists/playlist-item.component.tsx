@@ -11,6 +11,9 @@ import { useState } from 'react';
 import { SearchIcon } from 'renderer/components/svgs/icons/search-icon.component';
 import { BsmButton } from 'renderer/components/shared/bsm-button.component';
 import Tippy from '@tippyjs/react';
+import { Observable, of } from 'rxjs';
+import { useObservable } from 'renderer/hooks/use-observable.hook';
+import { BsmBasicSpinner } from 'renderer/components/shared/bsm-basic-spinner/bsm-basic-spinner.component';
 
 type Props = {
     title?: string;
@@ -23,11 +26,13 @@ type Props = {
     minNps?: number;
     maxNps?: number;
     selected?: boolean;
-    path?: string;
+    isDownloading$?: Observable<boolean>;
+    isInQueue$?: Observable<boolean>;
     onClickOpen?: () => void;
     onClickOpenFile?: () => void;
     onClickDelete?: () => void;
     onClickSync?: () => void;
+    onClickCancelDownload?: () => void;
 }
 
 export function PlaylistItem({ title,
@@ -40,15 +45,20 @@ export function PlaylistItem({ title,
     minNps,
     maxNps,
     selected,
+    isDownloading$,
+    isInQueue$,
     onClickOpen,
     onClickOpenFile,
     onClickSync,
-    onClickDelete
+    onClickDelete,
+    onClickCancelDownload
 }: Props) {
 
     const color = useThemeColor("first-color");
 
     const [hovered, setHovered] = useState(false);
+    const isDownloading = useObservable(() => isDownloading$ ?? of(), false, [isDownloading$]);
+    const isInQueue = useObservable(() => isInQueue$ ?? of(), false, [isInQueue$]);
 
     const nbMapsText = nbMaps ? Intl.NumberFormat(undefined, { notation: "compact" }).format(nbMaps).trim() : null;
     const nbMappersText = nbMappers ? Intl.NumberFormat(undefined, { notation: "compact" }).format(nbMappers).trim() : null;
@@ -94,21 +104,39 @@ export function PlaylistItem({ title,
                     </div>
 
                 </div>
-                <div className="absolute bg-light-main-color-3 dark:bg-main-color-3 top-0 h-full w-max left-full -translate-x-2.5 group-hover:-translate-x-full transition-transform">
+                <motion.div className="absolute bg-light-main-color-3 dark:bg-main-color-3 top-0 h-full w-max left-full" animate={{x: (hovered || isDownloading ? "-100%" : "-0.625rem")}} transition={{duration: .1}}>
                     <span className="absolute size-2.5 top-0 right-full bg-inherit translate-x-px" style={{ clipPath: 'path("M11 -1 L11 10 L10 10 A10 10 0 0 0 0 0 L0 -1 Z")' }} />
                     <span className="absolute size-2.5 bottom-0 right-full bg-inherit translate-x-px" style={{ clipPath: 'path("M11 11 L11 0 L10 0 A10 10 0 0 1 0 10 L 0 11 Z")' }} />
 
-                    <div className="flex flex-col justify-center items-center flex-wrap gap-0.5 opacity-0 size-full px-1 group-hover:opacity-100 *:size-6 *:!bg-inherit *:p-0.5 *:rounded-md">
-                        {onClickSync && <Tippy content="Synchronizer la playlist" placement="left" theme="default">
-                            <BsmButton
-                                icon="sync"
-                                className="hover:!bg-main-color-1"
-                                iconClassName="size-full brightness-75 dark:brightness-200"
-                                style={{color}}
-                                onClick={onClickSync}
-                                withBar={false}
-                            />
-                        </Tippy>}
+                    <motion.div className="flex flex-col justify-center items-center flex-wrap gap-0.5 size-full px-1 *:size-6 *:!bg-inherit *:p-0.5 *:rounded-md" animate={{opacity: hovered || isDownloading ? 1 : 0}} transition={{duration: 0}}>
+                        {(isDownloading || isInQueue) && onClickCancelDownload && (
+                            <Tippy content={isDownloading ? "Arreter le téléchargement" : "Annuler le téléchargement"} placement="left" theme="default">
+                                <BsmButton
+                                    icon="close"
+                                    className="hover:!bg-main-color-1 text-red-500 !p-0"
+                                    iconClassName="size-full"
+                                    onClick={onClickCancelDownload}
+                                    withBar={false}
+                                />
+                            </Tippy>
+                        )}
+                        {onClickSync && (
+                            isDownloading ? (
+                                <BsmBasicSpinner className="hover:!bg-main-color-1" spinnerClassName="brightness-75 dark:brightness-200" style={{ color }} thikness="3px"/>
+                            ) : !isInQueue ? (
+                                <Tippy content="Synchronizer la playlist" placement="left" theme="default">
+                                    <BsmButton
+                                        icon="sync"
+                                        className="hover:!bg-main-color-1"
+                                        iconClassName="size-full brightness-75 dark:brightness-200"
+                                        style={{color}}
+                                        onClick={onClickSync}
+                                        withBar={false}
+                                    />
+                                </Tippy>
+                            ) : (<></>)
+
+                        )}
                         {onClickOpenFile && <Tippy content="Afficher le fichier" placement="left" theme="default">
                             <BsmButton
                                 icon="folder"
@@ -119,7 +147,7 @@ export function PlaylistItem({ title,
                                 withBar={false}
                             />
                         </Tippy>}
-                        {onClickDelete && <Tippy content="Supprimer" placement="left" theme="default">
+                        {(onClickDelete && !isDownloading && !isInQueue) && <Tippy content="Supprimer" placement="left" theme="default">
                             <BsmButton
                                 icon="trash"
                                 className="hover:!bg-main-color-1 text-red-500"
@@ -128,9 +156,8 @@ export function PlaylistItem({ title,
                                 withBar={false}
                             />
                         </Tippy>}
-
-                    </div>
-                </div>
+                    </motion.div>
+                </motion.div>
             </div>
         </motion.li>
 

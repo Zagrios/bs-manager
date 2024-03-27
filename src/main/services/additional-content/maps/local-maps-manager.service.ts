@@ -26,6 +26,7 @@ import { SongCacheService } from "./song-cache.service";
 import { IpcService } from "../../ipc.service";
 import { pathToFileURL } from "url";
 import { sToMs } from "../../../../shared/helpers/time.helpers";
+import { FieldRequired } from "shared/helpers/type.helpers";
 
 export class LocalMapsManagerService {
     private static instance: LocalMapsManagerService;
@@ -236,7 +237,7 @@ export class LocalMapsManagerService {
         return this.linker.unlinkFolder(versionMapsPath, { keepContents: keepMaps, intermediateFolder: LocalMapsManagerService.SHARED_MAPS_FOLDER });
     }
 
-    public deleteMaps(maps: Partial<BsmLocalMap>[]): Observable<DeleteMapsProgress> {
+    public deleteMaps(maps: FieldRequired<BsmLocalMap, "path">[]): Observable<DeleteMapsProgress> {
         return new Observable<DeleteMapsProgress>(observer => {
             const progress: DeleteMapsProgress = { total: maps.length, deleted: 0 };
 
@@ -244,22 +245,65 @@ export class LocalMapsManagerService {
                 for (const map of maps) {
                     let mapPath = map.path;
 
-                    if (!mapPath) {
-                        const mapInfo = map.hash ? this.songCache.getMapInfoFromHash(map.hash) : null;
-                        mapPath = mapInfo?.path;
-                    }
-
-                    if (mapPath && pathExistsSync(mapPath)) {
+                    if (pathExistsSync(mapPath)) {
                         await deleteFolder(mapPath);
                         this.songCache.deleteMapInfoFromDirname(path.basename(mapPath));
                         progress.deleted++;
-                        observer.next(progress);
                     }
+
+                    observer.next(progress);
                 }
             })()
             .catch(e => observer.error(e))
             .finally(() => observer.complete());
         });
+    }
+
+    public deleteMapsFromHashs(version: BSVersion, hashs: string[]): Observable<Progression> {
+        return new Observable<Progression>(observer => {
+            const progress: Progression = { total: hashs.length, current: 0 };
+
+            (async () => {
+                const versionMapsPath = await this.getMapsFolderPath(version);
+                const mapsPaths = await getFoldersInFolder(versionMapsPath);
+
+                for (const mapPath of mapsPaths) {
+                    const mapInfo = await this.loadMapInfoFromPath(mapPath);
+                    if (hashs.includes(mapInfo.hash)) {
+                        await deleteFolder(mapPath);
+                        this.songCache.deleteMapInfoFromDirname(path.basename(mapPath));
+                        progress.current++;
+                    }
+
+                    observer.next(progress);
+                }
+            })()
+            .catch(e => observer.error(e))
+            .finally(() => observer.complete());
+        });
+    }
+
+    public async getMapInfoFromHash(hash: string, version: BSVersion): Promise<BsmLocalMap> {
+        const versionMapsPath = await this.getMapsFolderPath(version);
+        const mapInfo = this.songCache.getMapInfoFromHash(hash);
+
+        const cachedMapPath = path.join(versionMapsPath, mapInfo.dirname);
+
+        if(pathExistsSync(cachedMapPath)){
+            return this.loadMapInfoFromPath(cachedMapPath);
+        }
+
+        // if not in cache, search in the folder
+        const mapsPaths = await getFoldersInFolder(versionMapsPath);
+
+        for (const mapPath of mapsPaths) {
+            const mapInfo = await this.loadMapInfoFromPath(mapPath);
+            if (mapInfo.hash === hash) {
+                return mapInfo;
+            }
+        }
+
+        return null;
     }
 
 

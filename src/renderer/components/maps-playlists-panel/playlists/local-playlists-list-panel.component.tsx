@@ -12,7 +12,7 @@ import { noop } from "shared/helpers/function.helpers";
 import { LocalBPList, LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
 import { PlaylistItem } from "./playlist-item.component";
 import { useStateMap } from "renderer/hooks/use-state-map.hook";
-import { ModalService } from "renderer/services/modale.service";
+import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { LocalPlaylistDetailsModal } from "renderer/components/modal/modal-types/playlist/local-playlist-details-modal.component";
 import { InstalledMapsContext } from "../maps-playlists-panel.component";
 import { IpcService } from "renderer/services/ipc.service";
@@ -21,6 +21,7 @@ import { useObservable } from "renderer/hooks/use-observable.hook";
 import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { NotificationService } from "renderer/services/notification.service";
+import { DeletePlaylistModal } from "renderer/components/modal/modal-types/playlist/delete-playlist-modal.component";
 
 type Props = {
     version: BSVersion;
@@ -28,6 +29,8 @@ type Props = {
     linkedState?: FolderLinkState;
     isActive?: boolean;
 };
+
+// TODO : Translate
 
 export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, className, isActive, linkedState }, forwardedRef) => {
 
@@ -111,10 +114,14 @@ export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, cl
         return lastValueFrom(ipc.sendV2("view-path-in-explorer", path));
     };
 
-    const deletePlaylist = (path: string) => {
+    const deletePlaylist = async (bpList: LocalBPList) => {
         // !! Need to call the modal to confirm the deletion and to ask if the maps should be deleted too
-        lastValueFrom(playlistService.deletePlaylist({ path, deleteMaps: false })).then(() => {
-            setPlaylists(playlists.filter(p => p.path !== path));
+        const { exitCode, data: deleteMaps } = await modals.openModal(DeletePlaylistModal, { data: bpList });
+
+        if(exitCode !== ModalExitCode.COMPLETED){ return; }
+
+        lastValueFrom(playlistService.deletePlaylist({ version, bpList, deleteMaps })).then(() => {
+            setPlaylists(playlists.filter(p => p.path !== bpList.path));
         })
     };
 
@@ -153,10 +160,13 @@ export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, cl
                             duration={p.duration}
                             maxNps={p.maxNps}
                             minNps={p.minNps}
+                            isDownloading$={playlistDownloader.$isPlaylistDownloading(p, version)}
+                            isInQueue$={playlistDownloader.$isPlaylistInQueue(p, version)}
                             onClickOpen={() => openPlaylistDetails(p.path)}
-                            onClickDelete={() => deletePlaylist(p.path)}
+                            onClickDelete={() => deletePlaylist(p)}
                             onClickSync={() => installPlaylist(p)}
                             onClickOpenFile={() => viewPlaylistFile(p.path)}
+                            onClickCancelDownload={() => playlistDownloader.cancelDownload(p, version)}
                         />
                     )}
                 </ul>

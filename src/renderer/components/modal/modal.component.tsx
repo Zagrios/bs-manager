@@ -50,7 +50,7 @@ export function Modal() {
                         modal.resolver({ exitCode: ModalExitCode.CLOSED });
                     }}
                 >
-                    <BsmIcon className="w-full h-full" icon="cross" />
+                    <BsmIcon className="size-full" icon="cross" />
                 </div>
                 <modal.modal resolver={modal.resolver} options={modal.options} />
             </div>
