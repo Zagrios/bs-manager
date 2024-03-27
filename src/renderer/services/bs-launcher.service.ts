@@ -93,6 +93,7 @@ export class BSLauncherService {
     }
 
     public doLaunch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
+        launchOptions.protonPath = this.getProtonPath();
         return this.ipcService.sendV2<BSLaunchEventData, LaunchOption>("bs-launch.launch", {args: launchOptions});
     }
 

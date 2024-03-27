@@ -75,7 +75,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         return new Observable<BSLaunchEventData>(obs => {(async () => {
 
             const bsFolderPath = await this.localVersions.getInstalledVersionPath(launchOptions.version);
-            const exePath = path.join(bsFolderPath, BS_EXECUTABLE);
+            let exePath = path.join(bsFolderPath, BS_EXECUTABLE);
 
             if(!(await pathExists(exePath))){
                 throw CustomError.fromError(new Error(`Path not exist : ${exePath}`), BSLaunchError.BS_NOT_FOUND);
@@ -104,13 +104,42 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
 
             const launchArgs = this.buildBsLaunchArgs(launchOptions);
 
+            if (process.platform === "linux") {
+                // proton waitforexitandrun Beat Saber.exe
+                launchArgs.unshift(exePath);
+                launchArgs.unshift("waitforexitandrun");
+                exePath = launchOptions.protonPath;
+                if (!exePath) {
+                    throw CustomError.fromError(new Error("Proton path not set"), BSLaunchError.PROTON_NOT_SET);
+                }
+            }
+
             obs.next({type: BSLaunchEvent.BS_LAUNCHING});
 
+            const steamPath = await this.steam.getSteamPath();
+
+            const linuxEnv = process.platform === "linux" ?{
+                "WINEDLLOVERRIDES": "winhttp=n,b", // Required for mods to work
+                "STEAM_COMPAT_DATA_PATH": `${steamPath}/steamapps/compatdata/${BS_APP_ID}`,
+                "STEAM_COMPAT_INSTALL_PATH": bsFolderPath,
+                "STEAM_COMPAT_CLIENT_INSTALL_PATH": steamPath,
+                "STEAM_COMPAT_APP_ID": BS_APP_ID,
+            } : {};
+            const env = {
+                ...process.env,
+                ...linuxEnv,
+                "SteamAppId": BS_APP_ID,
+                "SteamOverlayGameId": BS_APP_ID,
+                "SteamGameId": BS_APP_ID,
+            };
+
+            const spawnOpts = { env, cwd: bsFolderPath };
+
             const launchPromise = !launchOptions.admin ? (
-                this.launchBs(exePath, launchArgs, { env: {...process.env, "SteamAppId": BS_APP_ID} }).exit
+                this.launchBs(exePath, launchArgs, spawnOpts).exit
             ) : (
                 new Promise<number>(resolve => {
-                    const adminProcess = exec(`"${this.getStartBsAsAdminExePath()}" "${exePath}" ${launchArgs.join(" ")}`, { env: {...process.env, "SteamAppId": BS_APP_ID} });
+                    const adminProcess = exec(`"${this.getStartBsAsAdminExePath()}" "${exePath}" ${launchArgs.join(" ")}`, spawnOpts);
                     adminProcess.on("error", err => {
                         log.error("Error while starting BS as Admin", err);
                         resolve(-1)
