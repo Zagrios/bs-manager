@@ -19,6 +19,10 @@ ipc.on<string>("choose-folder", async (req, reply) => {
     reply(from(dialog.showOpenDialog({ properties: ["openDirectory"], defaultPath: req.args ?? "" })));
 });
 
+ipc.on<string>("choose-file", async (req, reply) => {
+    reply(from(dialog.showOpenDialog({ properties: ["openFile"], defaultPath: req.args ?? "" })));
+});
+
 ipcMain.on("window.progression", async (event, request: IpcRequest<number>) => {
     BrowserWindow.fromWebContents(event.sender)?.setProgressBar(request.args / 100);
 });

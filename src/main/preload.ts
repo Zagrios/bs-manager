@@ -4,6 +4,7 @@ import { ProviderPlatform } from "shared/models/provider-platform.enum";
 const sep = process.platform === ProviderPlatform.WINDOWS ? "\\" : "/";
 
 contextBridge.exposeInMainWorld("electron", {
+    platform: process.platform,
     ipcRenderer: {
         sendMessage(channel: string, args: unknown[]) {
             ipcRenderer.send(channel, args);
