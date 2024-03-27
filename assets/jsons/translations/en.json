@@ -134,6 +134,11 @@
                 "description": "Change the default folder for Beat Saber versions and other upcoming features.",
                 "choose-folder": "Choose folder"
             },
+            "proton-path": {
+                "title": "Proton path",
+                "description": "Change the path to the Proton binary",
+                "choose-file": "Choose file"
+            },
             "additional-content": {
                 "title": "Additional content",
                 "description": "Additional content that allows you to customize Beat Saber!",
