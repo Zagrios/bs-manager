@@ -53,6 +53,13 @@ export abstract class AbstractLauncherService {
         let timoutId: NodeJS.Timeout;
 
         const exit = new Promise<number>((resolve, reject) => {
+            // Don't remove, useful for debugging!
+            // process.stdout.on("data", (data) => {
+            //     log.info(`BS stdout: ${data}`);
+            // });
+            // process.stderr.on("data", (data) => {
+            //     log.error(`BS stderr: ${data}`);
+            // });
 
             process.on("error", (err) => {
                 log.error(`Error while launching BS`, err);
