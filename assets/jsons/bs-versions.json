@@ -709,4 +709,13 @@
 		"ReleaseDate": "1709831174",
 		"year": "2024"
 	}
+    {
+		"BSVersion": "1.36.0",
+		"BSManifest": "8533509040167838423",
+		"OculusBinaryId": "6863072637125790",
+		"ReleaseURL": "https://store.steampowered.com/news/app/620980/view/4205873192610459250",
+		"ReleaseImg": "https://clan.akamai.steamstatic.com/images//32055887/b8bd8a050e2bc3903cf18a277c5489ade01f7e75.png",
+		"ReleaseDate": "1712681263",
+		"year": "2024"
+	}
 ]
