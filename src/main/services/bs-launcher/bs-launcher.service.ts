@@ -14,7 +14,7 @@ import { WindowManagerService } from "../window-manager.service";
 import { IpcService } from "../ipc.service";
 import { BSVersionLibService } from "../bs-version-lib.service";
 import { execOnOs } from "../../helpers/env.helpers";
-import sharp from "sharp";
+import { Resvg } from "@resvg/resvg-js";
 import { StoreLauncherInterface } from "./store-launcher.interface";
 import { SteamLauncherService } from "./steam-launcher.service";
 import { OculusLauncherService } from "./oculus-launcher.service";
@@ -127,16 +127,18 @@ export class BSLauncherService {
         return res;
     }
 
-    private createShortcutPngBuffer(color: Color): Promise<Buffer>{
+    private createShortcutPngBuffer(color: Color): Buffer{
 
-        const svgBuffer = Buffer.from(`
+        const svg = `
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 406.4 406.4" height="406.4" width="406.4">
                 <rect rx="69.453" height="406.4" width="406.4" fill="${color.hex()}"/>
                 <path d="M65.467 60.6H336.4v33.867L200.933 162.2 65.467 94.467z" fill="#fff"/>
             </svg>
-        `);
+        `;
 
-        return sharp(svgBuffer).resize(256).png().toBuffer();
+        return new Resvg(svg, {
+            fitTo: { mode: "width", value: 256 }
+        }).render().asPng();
     }
 
     /**
@@ -223,7 +225,7 @@ export class BSLauncherService {
 
         launchOption.version = {...(await this.remoteVersion.getVersionDetails(launchOption.version.BSVersion)), ...launchOption.version};
 
-        this.ipc.once("shortcut-launch-options", (_, reply) => {
+        this.ipc.once("shortcut-launch-options", (_data, reply) => {
             reply(of(launchOption));
         });
 
