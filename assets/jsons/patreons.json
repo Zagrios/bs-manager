@@ -19,9 +19,6 @@
 		"username": "Falmil"
 	},
 	{
-		"username": "K1Lc4m"
-	},
-	{
 		"username": "Anonymously42",
 		"type": "diamond",
 		"link": "https://www.twitch.tv/anonymously42tv"
@@ -29,9 +26,6 @@
 	{
 		"username": "Burt",
 		"type": "gold"
-	},
-	{
-		"username": "Ilnahro"
 	},
 	{
 		"username": "Phil",
@@ -42,15 +36,7 @@
 		"type": "gold"
 	},
 	{
-		"username": "ServerMensch",
-		"type": "gold"
-	},
-	{
 		"username": "Karlito",
-		"type": "gold"
-	},
-	{
-		"username": "Cathery",
 		"type": "gold"
 	},
 	{
@@ -75,9 +61,6 @@
 		"username": "Minescence"
 	},
     {
-		"username": "Finlay"
-	},
-    {
 		"username": "mereknom"
 	},
     {
@@ -89,5 +72,12 @@
 	},
     {
 		"username": "rhythmshade"
+	},
+    {
+		"username": "liborsaf"
+	},
+    {
+		"username": "aatame3",
+		"type": "gold"
 	}
 ]
