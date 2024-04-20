@@ -112,7 +112,7 @@ export class BsModsManagerService {
 
     private async getBsipaInstalled(version: BSVersion): Promise<Mod> {
         const bsPath = await this.bsLocalService.getVersionPath(version);
-        const injectorPath = path.join(bsPath, "Beat Saber_Data", "Managed", "IPA.Injector.dll");
+        const injectorPath = path.join(bsPath, "IPA", "winhttp.dll");
         if (!(await pathExist(injectorPath))) {
             return undefined;
         }
