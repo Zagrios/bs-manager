@@ -1,8 +1,6 @@
 import { MapFilter, MapSpecificity, MapStyle, MapTag, MapType } from "shared/models/maps/beat-saver.model";
 import { motion } from "framer-motion";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
-import { MAP_TYPES } from "renderer/partials/maps/map-tags/map-types";
-import { MAP_STYLES } from "renderer/partials/maps/map-tags/map-styles";
 import { BsmCheckbox } from "../../shared/bsm-checkbox.component";
 import { minToS } from "../../../../shared/helpers/time.helpers";
 import dateFormat from "dateformat";
@@ -210,14 +208,14 @@ export function FilterPanel({ className, ref, playlist = false, filter, localDat
                 <section className="grow capitalize">
                     <h2 className="uppercase text-sm mb-1">{t("maps.map-filter-panel.tags")}</h2>
                     <div className="w-full flex flex-row flex-wrap items-start justify-start content-start gap-1 mb-2">
-                        {MAP_TYPES.map(tag => (
+                        {Object.values(MapType).map(tag => (
                             <span key={tag} onClick={() => handleTagClick(tag)} className={`text-[12.5px] text-black rounded-md px-1 font-bold cursor-pointer ${!isTagActivated(tag) && "opacity-40 hover:opacity-90"}`} style={{ backgroundColor: isTagExcluded(tag) ? MAP_DIFFICULTIES_COLORS.Expert : MAP_DIFFICULTIES_COLORS.Normal }}>
                                 {translateMapType(tag)}
                             </span>
                         ))}
                     </div>
                     <div className="w-full flex flex-row flex-wrap items-start justify-start content-start gap-1">
-                        {MAP_STYLES.map(tag => (
+                        {Object.values(MapStyle).map(tag => (
                             <span key={tag} onClick={() => handleTagClick(tag)} className={`text-[12.5px] text-black rounded-md px-1 font-bold cursor-pointer ${!isTagActivated(tag) && "opacity-40 hover:opacity-90"}`} style={{ backgroundColor: isTagExcluded(tag) ? MAP_DIFFICULTIES_COLORS.Expert : MAP_DIFFICULTIES_COLORS.Easy }}>
                                 {translateMapStyle(tag)}
                             </span>

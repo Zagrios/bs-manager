@@ -22,6 +22,7 @@ import { PlaylistDownloaderService } from "renderer/services/playlist-downloader
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { NotificationService } from "renderer/services/notification.service";
 import { DeletePlaylistModal } from "renderer/components/modal/modal-types/playlist/delete-playlist-modal.component";
+import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 
 type Props = {
     version: BSVersion;
@@ -39,8 +40,10 @@ export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, cl
     const modals = useService(ModalService);
     const ipc = useService(IpcService);
     const progress = useService(ProgressBarService);
+    const osDiagnostic = useService(OsDiagnosticService);
     const notification = useService(NotificationService);
 
+    const isOnline = useObservable(() => osDiagnostic.isOnline$, false);
     const isActiveOnce = useChangeUntilEqual(isActive, { untilEqual: true });
 
     const { maps$, playlists$, setPlaylists } = useContext(InstalledMapsContext);
@@ -164,7 +167,7 @@ export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, cl
                             isInQueue$={playlistDownloader.$isPlaylistInQueue(p, version)}
                             onClickOpen={() => openPlaylistDetails(p.path)}
                             onClickDelete={() => deletePlaylist(p)}
-                            onClickSync={() => installPlaylist(p)}
+                            onClickSync={isOnline && (() => installPlaylist(p))}
                             onClickOpenFile={() => viewPlaylistFile(p.path)}
                             onClickCancelDownload={() => playlistDownloader.cancelDownload(p, version)}
                         />

@@ -1,5 +1,4 @@
 import { BsmImage } from "../../shared/bsm-image.component";
-import { BsvMapDifficultyType } from "shared/models/maps/beat-saver.model";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { BsmLink } from "../../shared/bsm-link.component";
 import { BsmIcon } from "../../svgs/bsm-icon.component";
@@ -89,7 +88,7 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
     })();
 
     const parseDiffLabel = (diffLabel: string) => {
-        if (MAP_DIFFICULTIES.includes(diffLabel as BsvMapDifficultyType)) {
+        if (MAP_DIFFICULTIES.includes(diffLabel as SongDiffName)) {
             return t(`maps.difficulties.${diffLabel}`);
         }
         return diffLabel;
@@ -135,16 +134,16 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
                 <>
                     <BsmIcon className="h-4 w-4 mr-px" icon="bsMapDifficulty" />
                     <div className="flex py-[2px] gap-[1px] h-full">
-                        {diffSet.map(diff => (
-                            <span key={crypto.randomUUID()} className="h-full w-[6px] rounded-full" style={{ backgroundColor: MAP_DIFFICULTIES_COLORS[diff.type] }} />
+                        {diffSet.map((diff, index) => (
+                            <span key={index} className="h-full w-[6px] rounded-full" style={{ backgroundColor: MAP_DIFFICULTIES_COLORS[diff.type] }} />
                         ))}
                     </div>
                 </>
             );
         }
         if (diffSets.length > 1) {
-            return diffSets.map(([diffType, diffSet]) => (
-                <Fragment key={crypto.randomUUID()}>
+            return diffSets.map(([diffType, diffSet], index) => (
+                <Fragment key={index}>
                     <BsmIcon className="h-full w-fit mr-px" icon={diffType} />
                     <span className="mr-2 font-bold text-[15px] h-full flex items-center pb-px">{diffSet.length}</span>
                 </Fragment>
@@ -160,10 +159,10 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
                 <AnimatePresence>
                     {(diffsPanelHovered || bottomBarHovered) && (
                         <motion.ul key={hash} className="absolute top-[calc(100%-10px)] w-full h-fit max-h-[200%] pt-4 pb-2 px-2 overflow-y-scroll bg-light-main-color-3 dark:bg-main-color-3 text-main-color-1 dark:text-current brightness-125 rounded-md flex flex-col gap-3 scrollbar-default shadow-sm shadow-black" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} onHoverStart={diffsPanelHoverStart} onHoverEnd={diffsPanelHoverEnd}>
-                            {Array.from(diffs.entries()).map(([charac, diffSet]) => (
-                                <ol key={crypto.randomUUID()} className="flex flex-col w-full gap-1">
-                                    {diffSet.map(({ type, name, stars }) => (
-                                        <li key={`${type}${name}${stars}`} className="w-full h-4 flex items-center gap-1">
+                            {Array.from(diffs.entries()).map(([charac, diffSet], index) => (
+                                <ol key={index} className="flex flex-col w-full gap-1">
+                                    {diffSet.map(({ type, name, stars }, index) => (
+                                        <li key={`${type}${name}${stars}${index}`} className="w-full h-4 flex items-center gap-1">
                                             <BsmIcon className="h-full w-fit p-px" icon={charac} />
                                             <span className="h-full px-2 flex items-center text-xs font-bold bg-current rounded-full" style={{ color: MAP_DIFFICULTIES_COLORS[type] }}>
                                                 {stars ? <span className="h-full block brightness-[.25]">★ {stars.toFixed(2)}</span> : <span className="h-full brightness-[.25] leading-4 pb-[2px] capitalize">{parseDiffLabel(type)}</span>}

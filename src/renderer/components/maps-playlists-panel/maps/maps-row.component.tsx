@@ -5,7 +5,7 @@ import { BehaviorSubject } from "rxjs";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { ParsedMapDiff, MapItem } from "./map-item.component";
 import equal from "fast-deep-equal/es6";
-import { SongDetailDiffCharactertistic, SongDetails } from "shared/models/maps/song-details-cache.model";
+import { SongDetailDiffCharactertistic, SongDetails } from "shared/models/maps/song-details-cache/song-details-cache.model";
 import { BsvMapDetail, RawMapInfoData } from "shared/models/maps";
 
 type Props = {
@@ -33,7 +33,7 @@ export const MapsRow = memo(({ maps, style, selectedMaps$, onMapSelect, onMapDel
             autor={map.rawInfo._levelAuthorName}
             songAutor={map.rawInfo._songAuthorName}
             bpm={map.rawInfo._beatsPerMinute}
-            duration={map.songDetails?.metadata.duration}
+            duration={map.songDetails?.duration}
             selected={selectedMaps.some(selected => selected.hash === map.hash)}
             diffs={extractMapDiffs({ rawMapInfo: map.rawInfo, songDetails: map.songDetails })}
             mapId={map.songDetails?.id}

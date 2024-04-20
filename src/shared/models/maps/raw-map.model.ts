@@ -1,4 +1,4 @@
-import { SongDetailDiffCharactertistic, SongDiffName } from "./song-details-cache.model";
+import { SongDetailDiffCharactertistic, SongDiffName } from "./song-details-cache/song-details-cache.model";
 
 export interface RawMapInfoData<T = unknown> {
     _version: string;

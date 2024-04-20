@@ -1,5 +1,5 @@
 import { RawMapInfoData } from "./raw-map.model";
-import { SongDetails } from "./song-details-cache.model";
+import { SongDetails } from "./song-details-cache/song-details-cache.model";
 
 export interface BsmLocalMap {
     hash: string;

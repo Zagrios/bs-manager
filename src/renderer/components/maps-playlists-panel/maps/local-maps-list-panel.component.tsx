@@ -249,10 +249,10 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
                 return true;
             }
 
-            if (!map?.songDetails?.metadata?.duration) {
+            if (!map?.songDetails?.duration) {
                 return false;
             }
-            return map.songDetails?.metadata.duration >= filter.minDuration;
+            return map.songDetails?.duration >= filter.minDuration;
         })();
 
         if (!fitMinDuration) {
@@ -263,10 +263,10 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
             if (!filter?.maxDuration) {
                 return true;
             }
-            if (!map?.songDetails?.metadata?.duration) {
+            if (!map?.songDetails?.duration) {
                 return false;
             }
-            return map.songDetails?.metadata.duration <= filter.maxDuration;
+            return map.songDetails?.duration <= filter.maxDuration;
         })();
 
         if (!fitMaxDuration) {
@@ -346,7 +346,7 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
         }
 
         const searchCheck = (() => {
-            return ((map.rawInfo?._songName ?? map.songDetails?.name) || "")?.toLowerCase().includes(search.toLowerCase()) || ((map.rawInfo?._songAuthorName ?? map.songDetails?.metadata?.songAuthorName) || "")?.toLowerCase().includes(search.toLowerCase()) || ((map.rawInfo?._levelAuthorName ?? map.songDetails?.metadata?.levelAuthorName) || "")?.toLowerCase().includes(search.toLowerCase());
+            return (map.rawInfo?._songName || "")?.toLowerCase().includes(search.toLowerCase()) || (map.rawInfo?._songAuthorName || "")?.toLowerCase().includes(search.toLowerCase()) || (map.rawInfo?._levelAuthorName  || "")?.toLowerCase().includes(search.toLowerCase());
         })();
 
         if (!searchCheck) {

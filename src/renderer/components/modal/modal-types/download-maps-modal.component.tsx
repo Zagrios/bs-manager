@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FilterPanel } from "renderer/components/maps-playlists-panel/maps/filter-panel.component";
-import { MapItem, ParsedMapDiff } from "renderer/components/maps-playlists-panel/maps/map-item.component";
+import { MapItem } from "renderer/components/maps-playlists-panel/maps/map-item.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-button.component";
 import { BsmSelect, BsmSelectOption } from "renderer/components/shared/bsm-select.component";
@@ -11,7 +11,7 @@ import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.ser
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
 import { ModalComponent } from "renderer/services/modale.service";
 import { BSVersion } from "shared/bs-version.interface";
-import { BsvMapCharacteristic, BsvMapDetail, MapFilter, SearchOrder, SearchParams } from "shared/models/maps/beat-saver.model";
+import { BsvMapDetail, MapFilter, SearchOrder, SearchParams } from "shared/models/maps/beat-saver.model";
 import BeatWaitingImg from "../../../../../assets/images/apngs/beat-waiting.png";
 import BeatConflictImg from "../../../../../assets/images/apngs/beat-conflict.png";
 import equal from "fast-deep-equal/es6";

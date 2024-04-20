@@ -166,9 +166,9 @@ export class LocalPlaylistsManagerService {
             id: localBPList.customData?.syncURL ? tryExtractPlaylistId(localBPList.customData.syncURL) : undefined
         }
 
-        const songsDetails = localBPList.songs?.map(s => this.songDetails.getSongDetails(s.hash));
+        const songsDetails = localBPList.songs?.map(s => this.songDetails.getSongDetails(s.hash)).filter(Boolean);
 
-        if(songsDetails){
+        if(songsDetails && songsDetails.length){
             bpListDetails.duration = songsDetails.reduce((acc, song) => acc + song.duration, 0);
             bpListDetails.nbMappers = new Set(songsDetails.map(s => s.uploader.id)).size;
             bpListDetails.minNps = Math.min(...songsDetails.map(s => Math.min(...s.difficulties.map(d => d.nps || 0))));

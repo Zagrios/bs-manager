@@ -8,8 +8,10 @@ import { CACHE_PATH, HTTP_STATUS_CODES } from "main/constants";
 import log from "electron-log";
 import protobuf from "protobufjs";
 import { UtilsService } from "../../utils.service";
-import { SongDetails, SongDetailsCache } from "shared/models/maps/song-details-cache.model";
+import { SongDetails } from "shared/models/maps/song-details-cache/song-details-cache.model";
 import { inflate } from "pako";
+import { RawSongDetailsCache } from "shared/models/maps/song-details-cache/raw-song-details-cache.model";
+import { RawSongDetailsDeserializer } from "shared/models/maps/song-details-cache/raw-song-details-deserializer.class";
 
 export class SongDetailsCacheService {
 
@@ -65,18 +67,18 @@ export class SongDetailsCacheService {
     }
 
     private async readProtoMessageCacheFile(filePath: string): Promise<Record<string, SongDetails>> {
-        const protobufRoot = await protobuf.load(this.getProtoShemaPath());
+        const protobufRoot = protobuf.loadSync(this.getProtoShemaPath());
         const cacheMessage = protobufRoot.lookupType("SongDetailsCache");
 
         const buffer = await readFile(filePath);
 
         const messageBuffer = cacheMessage.decode(buffer);
-        const messageObj = cacheMessage.toObject(messageBuffer) as SongDetailsCache;
+        const messageObj = cacheMessage.toObject(messageBuffer) as RawSongDetailsCache;
 
         const res: Record<string, SongDetails> = {};
 
-        for(const song of messageObj.songs){
-            res[song.hash.toLocaleLowerCase()] = song;
+        for(const rawSong of messageObj.songs){
+            res[rawSong.hash.toLocaleLowerCase()] = RawSongDetailsDeserializer.deserialize(rawSong);
         }
 
         return res;
@@ -138,7 +140,7 @@ export class SongDetailsCacheService {
     }
 
     private getProtoShemaPath(): string {
-        return this.utils.getAssetsPath(path.join("protos", "song_details_cache_v1.proto"))
+        return this.utils.getAssetsPath(path.join("proto", "song_details_cache_v1.proto"))
     }
 
     public get loaded$(): Observable<boolean> {

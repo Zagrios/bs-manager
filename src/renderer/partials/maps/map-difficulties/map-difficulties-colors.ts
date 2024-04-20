@@ -1,6 +1,6 @@
-import { BsvMapDifficultyType } from "shared/models/maps/beat-saver.model";
+import { SongDiffName } from "shared/models/maps/song-details-cache/song-details-cache.model";
 
-export const MAP_DIFFICULTIES_COLORS: Record<BsvMapDifficultyType, string> = {
+export const MAP_DIFFICULTIES_COLORS: Record<SongDiffName, string> = {
     Easy: "#00FF9E",
     Normal: "#00FFFF",
     Hard: "#FFA700",
