@@ -9,8 +9,8 @@ import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import BeatWaitingImg from "../../../../../../assets/images/apngs/beat-waiting.png";
 import BeatConflictImg from "../../../../../../assets/images/apngs/beat-conflict.png";
 import { useObservable } from "renderer/hooks/use-observable.hook";
-import { skip, filter } from "rxjs/operators";
-import { Subscription, lastValueFrom } from "rxjs";
+import { skip, filter, map } from "rxjs/operators";
+import { Observable, Subscription, combineLatest, lastValueFrom, noop } from "rxjs";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { useInView } from "framer-motion";
@@ -96,32 +96,34 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         });
 
         modsManager.installMods(modsToInstall, version).then(() => {
-            loadMods();
+            lastValueFrom(loadMods());
         });
     };
 
-    const loadMods = () => {
+    const loadMods = (): Observable<void> => {
         if (os.isOffline) {
-            return;
+            return new Observable<void>(subscriber => subscriber.complete());
         }
 
-        Promise.all([
-            lastValueFrom(modsManager.getAvailableMods(version)),
-            lastValueFrom(modsManager.getInstalledMods(version))
-        ]).then(([available, installed]) => {
+        return combineLatest([
+            modsManager.getAvailableMods(version),
+            modsManager.getInstalledMods(version)
+        ]).pipe(map(([available, installed]) => {
             const defaultMods = configService.get<string[]>("default_mods" as DefaultConfigKey);
-            setModsAvailable(modsToCategoryMap(available));
-            setModsSelected(available.filter(m => m.required || defaultMods.some(d => m.name.toLowerCase() === d.toLowerCase()) || installed.some(i => m.name === i.name)));
-            setModsInstalled(modsToCategoryMap(installed));
-        });
+            setModsAvailable(() => modsToCategoryMap(available));
+            setModsSelected(() => available.filter(m => m.required || defaultMods.some(d => m.name.toLowerCase() === d.toLowerCase()) || installed.some(i => m.name === i.name)));
+            setModsInstalled(() => modsToCategoryMap(installed));
+        }));
     };
 
     useEffect(() => {
         const subs: Subscription[] = [];
 
-        if (isVisible && isOnline) {
-            
-            (async () => {
+        if(!isVisible || !isOnline){
+            return noop();
+        }
+
+        (async () => {
                 if (configService.get<boolean>(ACCEPTED_DISCLAIMER_KEY)) {
                     return true;
                 }
@@ -134,25 +136,22 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
                 }
 
                 return haveAccepted;
-            })().then(canLoad => {
-                if (!canLoad) {
-                    return onDisclamerDecline?.();
-                }
-                
-                loadMods();
+        })().then(canLoad => {
+            if (!canLoad) {
+                return onDisclamerDecline?.();
+            }
 
-                subs.push(
-                    modsManager.isUninstalling$
-                        .pipe(
-                            skip(1),
-                            filter(uninstalling => !uninstalling)
-                        )
-                        .subscribe(() => {
-                            loadMods();
-                        })
-                );
-            });
-        }
+            subs.push(loadMods().subscribe());
+
+            subs.push(
+                modsManager.isUninstalling$.pipe(
+                    skip(1),
+                    filter(uninstalling => !uninstalling)
+                ).subscribe(() => {
+                    subs.push(loadMods().subscribe());
+                })
+            );
+        });
 
         return () => {
             setMoreInfoMod(null);
