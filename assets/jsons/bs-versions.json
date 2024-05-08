@@ -717,5 +717,14 @@
 		"ReleaseImg": "https://clan.akamai.steamstatic.com/images//32055887/b8bd8a050e2bc3903cf18a277c5489ade01f7e75.png",
 		"ReleaseDate": "1712681263",
 		"year": "2024"
+	},
+    {
+		"BSVersion": "1.36.2",
+		"BSManifest": "4832237377879752064",
+		"OculusBinaryId": "6983660338400352",
+		"ReleaseURL": "https://store.steampowered.com/news/app/620980/view/4181105931135110118",
+		"ReleaseImg": "https://clan.cloudflare.steamstatic.com/images//32055887/74541417f14dee210bcfd89eefeabd7c0cc27c7d.png",
+		"ReleaseDate": "1715008020",
+		"year": "2024"
 	}
 ]
