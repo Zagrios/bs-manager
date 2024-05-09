@@ -550,8 +550,8 @@
         },
         "steam-credentials": {
             "title": "Steam Credentials",
-            "p-1": "The credentials are only used to download the game because steam need to verify that you paid the game in order to be allowed to download it. They aren't saved and directly passed to DepotDownloader. If you don't want to enter your credentials you can follow this tutorial :",
-            "p-2": "and then click on the gear icon in the top right corner and select \"Import a version\", select the folder where beat saber has been downloaded (If you follow the tutorial above you should have the correct location)"
+            "p-1": "Your Steam credentials are only required to download versions of Beat Saber, we use DepotDownloader to achieve this which requires your Steam credentials to verify that you own the game within your library before allowing you to retrieve the game files, your credentials are not stored or saved and are passed directly to DepotDownloader. However, if you don't want to do that, you can follow this tutorial instead: ",
+            "p-2": "Afterwards you can click on the gear icon in the top right corner and select \"Import a version\", then you can select the folder where Beat Saber was downloaded to. (If you followed the tutorial, you will have the right location)"
         },
         "bs-import-version": {
             "title": "Import a version",
