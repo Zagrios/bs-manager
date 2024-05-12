@@ -14,12 +14,13 @@ import { BsmButton } from "../shared/bsm-button.component";
 import { MapIcon } from "../svgs/icons/map-icon.component";
 import { PlaylistIcon } from "../svgs/icons/playlist-icon.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
-import { BehaviorSubject, Observable, of } from "rxjs";
+import { BehaviorSubject, of } from "rxjs";
 import { LocalPlaylistsListPanel } from "./playlists/local-playlists-list-panel.component";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
+import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service";
 
 type Props = {
     version?: BSVersion;
@@ -38,6 +39,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
     const mapsService = useService(MapsManagerService);
     const mapsDownloader = useService(MapsDownloaderService);
     const playlistsService = useService(PlaylistsManagerService);
+    const playlistsDownloader = useService(PlaylistDownloaderService);
 
     const t = useTranslation();
     const [tabIndex, setTabIndex] = useState(0);
@@ -68,9 +70,12 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         return setPlaylistSearch(() => value);
     };
 
-    const handleMapsAddClick = () => {
-        mapsDownloader.openDownloadMapModal(version, maps$.value);
-    };
+    const handleAddClick = () => {
+        switch (tabIndex) {
+            case 0: return mapsDownloader.openDownloadMapModal(version, maps$.value);
+            case 1: return playlistsDownloader.openDownloadPlaylistModal(version, playlists$, maps$);
+        }
+    }
 
     const handleMapsLinkClick = () => {
         if(mapsLinkedState === FolderLinkState.Pending || mapsLinkedState === FolderLinkState.Processing){ return Promise.resolve(false); }
@@ -111,8 +116,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                     text="misc.add"
                     typeColor="primary"
                     withBar={false}
-                    disabled={tabIndex === 1}
-                    onClick={handleMapsAddClick}
+                    onClick={handleAddClick}
                 />
                 <div className="h-full rounded-full bg-light-main-color-2 dark:bg-main-color-2 grow p-[6px]">
                     <input type="text" className="h-full w-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={tabIndex === 0 ? mapSearch : playlistSearch} onChange={e => handleSearch(e.target.value)} tabIndex={-1} />

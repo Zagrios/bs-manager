@@ -1,5 +1,5 @@
 import { BsvMapDetail } from "shared/models/maps";
-import { SearchParams } from "shared/models/maps/beat-saver.model";
+import { BsvPlaylist, PlaylistSearchParams, SearchParams } from "shared/models/maps/beat-saver.model";
 import { IpcService } from "../ipc.service";
 import { lastValueFrom } from "rxjs";
 
@@ -28,5 +28,9 @@ export class BeatSaverService {
 
     public async searchMaps(search: SearchParams): Promise<BsvMapDetail[]> {
         return lastValueFrom(this.ipc.sendV2("bsv-search-map", search));
+    }
+
+    public async searchPlaylists(search: PlaylistSearchParams): Promise<BsvPlaylist[]> {
+        return lastValueFrom(this.ipc.sendV2("bsv-search-playlist", search));
     }
 }

@@ -1,4 +1,4 @@
-import { SongDiffName } from "shared/models/maps/song-details-cache/song-details-cache.model";
+import { SongDiffName } from "./song-details-cache/song-details-cache.model";
 
 export const MAP_DIFFICULTIES_COLORS: Record<SongDiffName, string> = {
     Easy: "#00FF9E",

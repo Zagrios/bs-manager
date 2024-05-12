@@ -4,7 +4,7 @@ import { BSVersion } from "shared/bs-version.interface";
 import { BSLaunchEventData, LaunchOption } from "shared/models/bs-launch";
 import { BsvMapDetail } from "shared/models/maps";
 import { BsmLocalMap, BsmLocalMapsProgress, DeleteMapsProgress } from "shared/models/maps/bsm-local-map.interface";
-import { SearchParams } from "../maps/beat-saver.model";
+import { BsvPlaylist, PlaylistSearchParams, SearchParams } from "../maps/beat-saver.model";
 import { ImportVersionOptions } from "main/services/bs-local-version.service";
 import { DownloadInfo, DownloadSteamInfo } from "main/services/bs-version-download/bs-steam-downloader.service";
 import { DepotDownloaderEvent } from "../bs-version-download/depot-downloader.model";
@@ -22,7 +22,7 @@ import { LocalBPList, LocalBPListsDetails } from "../playlists/local-playlist.mo
 
 export type IpcReplier<T> = (data: Observable<T>) => void;
 
-export interface IpcChannelMapping extends Record<string, { request: unknown, response: unknown }> {
+export interface IpcChannelMapping {
 
     /* ** bs-download-ipcs ** */
     "import-version": { request: ImportVersionOptions, response: Progression<BSVersion>};
@@ -41,6 +41,7 @@ export interface IpcChannelMapping extends Record<string, { request: unknown, re
     "bsv-search-map": {request: SearchParams, response: BsvMapDetail[]};
     "bsv-get-map-details-from-hashs": {request: string[], response: BsvMapDetail[]};
     "bsv-get-map-details-by-id": {request: string, response: BsvMapDetail};
+    "bsv-search-playlist": {request: PlaylistSearchParams, response: BsvPlaylist[]};
 
     /* ** bs-launcher-ipcs ** */
     "create-launch-shortcut": { request: LaunchOption, response: boolean };
@@ -80,7 +81,7 @@ export interface IpcChannelMapping extends Record<string, { request: unknown, re
     "register-playlists-deep-link": { request: void, response: boolean };
     "unregister-playlists-deep-link": { request: void, response: boolean };
     "is-playlists-deep-links-enabled": { request: void, response: boolean };
-    "install-playlist": {request: {playlist: BPList, version?: BSVersion, ignoreSongsHashs?: string[]}, response: Progression<DownloadPlaylistProgressionData>};
+    "download-playlist": {request: {downloadSource: string, dest?: string, version?: BSVersion, ignoreSongsHashs?: string[]}, response: Progression<DownloadPlaylistProgressionData>};
     "get-version-playlists-details": {request: BSVersion, response: Progression<LocalBPListsDetails[]>};
     "delete-playlist": {request: {version: BSVersion, bpList: LocalBPList, deleteMaps?: boolean}, response: Progression};
 

@@ -23,6 +23,7 @@ import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { NotificationService } from "renderer/services/notification.service";
 import { DeletePlaylistModal } from "renderer/components/modal/modal-types/playlist/delete-playlist-modal.component";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
+import { PlaylistItemComponentPropsMapper } from "shared/mappers/playlist/playlist-item-component-props.mapper";
 
 type Props = {
     version: BSVersion;
@@ -78,6 +79,7 @@ export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, cl
         });
 
         const onPlaylistDownloadedCB = (downloaded: LocalBPListsDetails) => {
+            console.log("onPlaylistDownloadedCB", downloaded);
             const newPlaylist = (() => {
                 console.log(playlists);
                 const index = playlists$.value.findIndex(p => p.path === downloaded.path);
@@ -92,10 +94,10 @@ export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, cl
             setPlaylists(newPlaylist);
         }
 
-        playlistDownloader.addOnPlaylistDownloadedListener(version, onPlaylistDownloadedCB);
+        const sub = playlistDownloader.currentDownload$.pipe(filter(download => download?.downloaded && equal(download?.info.version, version))).subscribe(download => onPlaylistDownloadedCB(download.downloaded));
 
         return () => {
-            playlistDownloader.removeOnPlaylistDownloadedListener(version, onPlaylistDownloadedCB);
+            sub.unsubscribe();
         }
 
     }, [isActiveOnce, version, linked]);
@@ -104,7 +106,7 @@ export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, cl
 
         const ignoreSongsHashs = (maps$.value || []).map(m => m.hash.toLocaleLowerCase());
 
-        const obs$ = playlistDownloader.installPlaylist(playlist, version, ignoreSongsHashs);
+        const obs$ = playlistDownloader.downloadPlaylist({ downloadSource: playlist.customData?.syncURL ?? playlist.path, version, ignoreSongsHashs, dest: playlist.path });
 
         return lastValueFrom(obs$).then(res => {
             if(res.current === res.total){
@@ -142,46 +144,37 @@ export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, cl
         })
     };
 
-    const render = () => {
-        if(playlistsLoading){
-            return (
-                <BsContentLoader className="w-full h-full flex justify-center flex-col items-center" value$={loadPercent$} text="aaaa"/>
-            )
-        }
-
-        if (playlists?.length){
-            return (
-                <ul className="relative size-full flex flex-row flex-wrap justify-start content-start p-3 gap-3">
-                    {playlists.map(p =>
-                        <PlaylistItem
-                            key={p.path}
-                            title={p.playlistTitle}
-                            author={p.playlistAuthor}
-                            coverBase64={p.image}
-                            nbMaps={p.nbMaps}
-                            nbMappers={p.nbMappers}
-                            duration={p.duration}
-                            maxNps={p.maxNps}
-                            minNps={p.minNps}
-                            isDownloading$={playlistDownloader.$isPlaylistDownloading(p, version)}
-                            isInQueue$={playlistDownloader.$isPlaylistInQueue(p, version)}
-                            onClickOpen={() => openPlaylistDetails(p.path)}
-                            onClickDelete={() => deletePlaylist(p)}
-                            onClickSync={isOnline && (() => installPlaylist(p))}
-                            onClickOpenFile={() => viewPlaylistFile(p.path)}
-                            onClickCancelDownload={() => playlistDownloader.cancelDownload(p, version)}
-                        />
-                    )}
-                </ul>
-            )
-        }
-
-        return null;
-    }
-
     return (
         <div className={className}>
-            {render()}
+            {(() => {
+                if(playlistsLoading){
+                    return (
+                        <BsContentLoader className="w-full h-full flex justify-center flex-col items-center" value$={loadPercent$} text="aaaa"/>
+                    )
+                }
+
+                if (playlists?.length){
+                    return (
+                        <ul className="relative size-full flex flex-row flex-wrap justify-start content-start p-3 gap-3">
+                            {playlists.map(p =>
+                                <PlaylistItem
+                                    key={p.path}
+                                    {...PlaylistItemComponentPropsMapper.fromLocalBPListDetails(p)}
+                                    isDownloading$={playlistDownloader.$isPlaylistDownloading(p.customData?.syncURL ?? p.path, version)}
+                                    isInQueue$={playlistDownloader.$isPlaylistInQueue(p.customData?.syncURL ?? p.path, version)}
+                                    onClickOpen={() => openPlaylistDetails(p.path)}
+                                    onClickDelete={() => deletePlaylist(p)}
+                                    onClickSync={isOnline && (() => installPlaylist(p))}
+                                    onClickOpenFile={() => viewPlaylistFile(p.path)}
+                                    onClickCancelDownload={() => playlistDownloader.cancelDownload(p.customData?.syncURL ?? p.path, version)}
+                                />
+                            )}
+                        </ul>
+                    )
+                }
+
+                return <span>TODO</span>;
+            })()}
         </div>
     )
 });

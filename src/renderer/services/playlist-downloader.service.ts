@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable, Subject, Subscription, distinctUntilChanged, filter, lastValueFrom, map, shareReplay, take, takeUntil, takeWhile, tap } from "rxjs";
-import { BPList, DownloadPlaylistProgressionData } from "shared/models/playlists/playlist.interface";
+import { DownloadPlaylistProgressionData } from "shared/models/playlists/playlist.interface";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
 import { Progression } from "main/helpers/fs.helpers";
@@ -7,6 +7,10 @@ import equal from "fast-deep-equal";
 import { BSVersion } from "shared/bs-version.interface";
 import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
 import { removeIndex } from "shared/helpers/array.helpers";
+import { ModalResponse, ModalService } from "./modale.service";
+import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
+import { DownloadPlaylistModal } from "renderer/components/modal/modal-types/playlist/download-playlist-modal/download-playlist-modal.component";
+import { IpcRequestType } from "shared/models/ipc/ipc-routes";
 
 export class PlaylistDownloaderService {
     private static instance: PlaylistDownloaderService;
@@ -21,19 +25,21 @@ export class PlaylistDownloaderService {
 
     private readonly progress: ProgressBarService;
     private readonly ipc: IpcService;
+    private readonly modal: ModalService;
 
     private readonly cancel$ = new Subject<void>();
-    private readonly playlistQueue$ = new BehaviorSubject<PlaylistQueueInfo[]>([]);
-    private readonly onPlaylistDownloadedListeners = new Map<BSVersion, ((playlist: LocalBPListsDetails) => void)[]>();
+    private readonly downloadQueue$ = new BehaviorSubject<PlaylistQueueInfo[]>([]);
+    private readonly _currentDownload$ = new BehaviorSubject<PlaylistQueueInfo>(null);
 
     private constructor() {
         this.progress = ProgressBarService.getInstance();
         this.ipc = IpcService.getInstance();
+        this.modal = ModalService.getInstance();
     }
 
-    public installPlaylist(bpList: BPList, version?: BSVersion, ignoreSongsHashs?: string[]): Observable<Progression<DownloadPlaylistProgressionData>> {
+    public downloadPlaylist(info: IpcRequestType<"download-playlist">): Observable<Progression<DownloadPlaylistProgressionData>> {
 
-        this.playlistQueue$.next([...this.playlistQueue$.value, { version, source: bpList }]);
+        this.downloadQueue$.next([...this.downloadQueue$.value, { info }]);
 
         return new Observable<Progression<DownloadPlaylistProgressionData>>(subscriber => {
 
@@ -41,12 +47,12 @@ export class PlaylistDownloaderService {
             let canShowProgress = false;
 
             (async () => {
-                const queueInfo = await lastValueFrom(this.playlistQueue$.pipe(map(queue => queue.at(0)), filter(p => equal(bpList, p.source)), take(1)));
-                const download$ = this.ipc.sendV2("install-playlist", { version: queueInfo.version, playlist: queueInfo.source, ignoreSongsHashs }).pipe(takeUntil(this.cancel$));
+                const queueInfo = await lastValueFrom(this.downloadQueue$.pipe(map(queue => queue.at(0)), filter(qInfo => equal(info.downloadSource, qInfo.info.downloadSource) && equal(info.version, qInfo.info.version)), take(1)));
+
+                const download$ = this.ipc.sendV2("download-playlist", info).pipe(takeUntil(this.cancel$));
 
                 subs.push(download$.pipe(map(progress => progress?.data?.playlist), filter(Boolean), take(1)).subscribe(playlist => {
-                    queueInfo.downloaded = playlist;
-                    this.onPlaylistDownloadedListeners.get(version)?.forEach(cb => cb(playlist));
+                    this._currentDownload$.next({ ...queueInfo, downloaded: playlist });
                 }));
 
                 canShowProgress = !this.progress.isVisible;
@@ -59,7 +65,8 @@ export class PlaylistDownloaderService {
             .then(() => subscriber.complete())
             .catch(err => subscriber.error(err))
             .finally(() => {
-                this.playlistQueue$.next(this.playlistQueue$.value.filter(p => !equal(p.version, version) || !equal(p.source, bpList)));
+                this._currentDownload$.next(null);
+                this.downloadQueue$.next(this.downloadQueue$.value.filter(qInfo => !equal(qInfo.info.version, info.version) || !equal(qInfo.info.downloadSource, info.downloadSource)));
                 if (canShowProgress) {
                     this.progress.hide(true);
                 }
@@ -70,45 +77,37 @@ export class PlaylistDownloaderService {
         }).pipe(shareReplay(1));
     }
 
-    public cancelDownload(bplist: BPList, version?: BSVersion) {
-        const currentDownload = this.playlistQueue$.value.at(0);
+    public cancelDownload(downloadSource: string, version?: BSVersion) {
+        const currentDownload = this.downloadQueue$.value.at(0);
         if(!currentDownload) { return; }
 
-        if((equal(currentDownload.source, bplist) || equal(currentDownload.downloaded, bplist)) && equal(currentDownload.version, version)){
+        if(equal(currentDownload.info.downloadSource, downloadSource) && equal(currentDownload.info.version, version)){
             return this.cancel$.next();
         }
 
-        const indexToRemove = this.playlistQueue$.value.findIndex(p => (equal(p.source, bplist) || equal(p.downloaded, bplist)) && equal(p.version, version));
+        const indexToRemove = this.downloadQueue$.value.findIndex(qInfo => (equal(qInfo.info.downloadSource, downloadSource) && equal(qInfo.info.version, version)));
         if(indexToRemove === -1){ return; }
 
 
-        const newArr = removeIndex(indexToRemove, [...this.playlistQueue$.value]);
-        this.playlistQueue$.next(newArr);
+        const newArr = removeIndex(indexToRemove, [...this.downloadQueue$.value]);
+        this.downloadQueue$.next(newArr);
     }
 
-    public get currentDownloading$(): Observable<PlaylistQueueInfo> {
-        return this.playlistQueue$.pipe(map(queue => queue.at(0)), distinctUntilChanged(equal));
+    public get currentDownload$(): Observable<PlaylistQueueInfo> {
+        return this._currentDownload$.asObservable();
     }
 
-    public $isPlaylistInQueue(bpList: BPList, version?: BSVersion): Observable<boolean> {
-        return this.playlistQueue$.pipe(map(queue => queue.some(p => p && (equal(p.source, bpList) || equal(p.downloaded, bpList)) && equal(p.version, version))), distinctUntilChanged());
+    public $isPlaylistInQueue(downloadSource: string, version?: BSVersion): Observable<boolean> {
+        return this.downloadQueue$.pipe(map(queue => queue.some(qInfo => qInfo && (equal(qInfo.info.downloadSource, downloadSource) && equal(qInfo.info.version, version))), distinctUntilChanged()));
     }
 
-    public $isPlaylistDownloading(bpList: BPList, version?: BSVersion): Observable<boolean> {
-        return this.currentDownloading$.pipe(map(p => {
-            if(!p){ return false; }
-            if(!equal(p.source, bpList) && !equal(p.downloaded, bpList)){ return false; }
-            if(version && !equal(p.version, version)){ return false; }
+    public $isPlaylistDownloading(downloadSource: string, version?: BSVersion): Observable<boolean> {
+        return this.currentDownload$.pipe(map(qInfo => {
+            if(!qInfo){ return false; }
+            if(!equal(qInfo.info.downloadSource, downloadSource)){ return false; }
+            if(version && !equal(qInfo.info.version, version)){ return false; }
             return true;
         }), distinctUntilChanged());
-    }
-
-    public addOnPlaylistDownloadedListener(version: BSVersion, cb: (playlist: LocalBPListsDetails) => void){
-        this.onPlaylistDownloadedListeners.set(version, [...(this.onPlaylistDownloadedListeners.get(version) || []), cb]);
-    }
-
-    public removeOnPlaylistDownloadedListener(version: BSVersion, cb: (playlist: LocalBPListsDetails) => void){
-        this.onPlaylistDownloadedListeners.set(version, (this.onPlaylistDownloadedListeners.get(version) || []).filter(c => c !== cb));
     }
 
     public oneClickInstallPlaylist(bpListUrl: string): Observable<Progression<DownloadPlaylistProgressionData>> {
@@ -123,10 +122,13 @@ export class PlaylistDownloaderService {
             complete: () => this.progress.hide(true)
         }));
     }
+
+    public openDownloadPlaylistModal(version: BSVersion, ownedPlaylists$: Observable<LocalBPListsDetails[]>, ownedMaps$: Observable<BsmLocalMap[]>): Promise<ModalResponse<void>> {
+        return this.modal.openModal(DownloadPlaylistModal, { data: { version, ownedPlaylists$, ownedMaps$ } })
+    }
 }
 
 export type PlaylistQueueInfo = {
-    version?: BSVersion;
-    source: BPList;
+    info: Omit<IpcRequestType<"download-playlist">, "ignoreSongsHashs">;
     downloaded?: LocalBPListsDetails;
 }

@@ -1,4 +1,4 @@
-import { MapFilter, MapSpecificity, MapStyle, MapTag, MapType } from "shared/models/maps/beat-saver.model";
+import { MapFilter, MapRequirement, MapSpecificity, MapStyle, MapTag, MapType } from "shared/models/maps/beat-saver.model";
 import { motion } from "framer-motion";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { BsmCheckbox } from "../../shared/bsm-checkbox.component";
@@ -6,10 +6,7 @@ import { minToS } from "../../../../shared/helpers/time.helpers";
 import dateFormat from "dateformat";
 import { BsmRange } from "../../shared/bsm-range.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import { MAP_SPECIFICITIES } from "renderer/partials/maps/map-general/map-specificity";
-import { MAP_REQUIREMENTS } from "renderer/partials/maps/map-requirements/map-requirements";
-import { MAP_DIFFICULTIES_COLORS } from "renderer/partials/maps/map-difficulties/map-difficulties-colors";
-import { MapExclude, MAP_EXCLUDES } from "renderer/partials/maps/map-excludes/map-excludes";
+import { MAP_DIFFICULTIES_COLORS } from "shared/models/maps/difficulties-colors";
 import { BsmButton } from "../../shared/bsm-button.component";
 import equal from "fast-deep-equal/es6";
 import clone from "rfdc";
@@ -147,10 +144,6 @@ export function FilterPanel({ className, ref, playlist = false, filter, localDat
         return t(`maps.map-specificities.${specificity}`);
     };
 
-    const translateMapExclude = (exclude: MapExclude): string => {
-        return t(`maps.map-excludes.${exclude}`);
-    };
-
     type BooleanKeys<T> = { [k in keyof T]: T[k] extends boolean ? k : never }[keyof T];
 
     const handleCheckbox = (key: BooleanKeys<MapFilter>) => {
@@ -180,14 +173,14 @@ export function FilterPanel({ className, ref, playlist = false, filter, localDat
             <div className="w-full h-full flex gap-x-2">
                 <section className="shrink-0">
                     <h2 className="mb-1 uppercase text-sm">{t("maps.map-filter-panel.specificities")}</h2>
-                    {MAP_SPECIFICITIES.map(specificity => (
+                    {Object.values(MapSpecificity).map(specificity => (
                         <div key={specificity} className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={() => handleCheckbox(specificity)}>
                             <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.[specificity]} onChange={() => handleCheckbox(specificity)} />
                             <span className="grow capitalize">{translateMapSpecificity(specificity)}</span>
                         </div>
                     ))}
                     <h2 className="my-1 uppercase text-sm">{t("maps.map-filter-panel.requirements")}</h2>
-                    {MAP_REQUIREMENTS.map(requirement => (
+                    {Object.values(MapRequirement).map(requirement => (
                         <div key={requirement} className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={() => handleCheckbox(requirement)}>
                             <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.[requirement]} onChange={() => handleCheckbox(requirement)} />
                             <span className="grow capitalize">{requirement}</span>
@@ -196,12 +189,10 @@ export function FilterPanel({ className, ref, playlist = false, filter, localDat
                     { !localData && (
                         <>
                             <h2 className="my-1 uppercase text-sm">{t("maps.map-filter-panel.exclude")}</h2>
-                            {MAP_EXCLUDES.map(exclude => (
-                                <div key={exclude} className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={() => handleCheckbox(exclude)}>
-                                    <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.[exclude]} onChange={() => handleCheckbox(exclude)} />
-                                    <span className="grow capitalize">{translateMapExclude(exclude)}</span>
-                                </div>
-                            ))}
+                            <div className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={() => handleCheckbox("installed")}>
+                                <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.installed} onChange={() => handleCheckbox("installed")} />
+                                <span className="grow capitalize">{t("maps.map-excludes.installed")}</span>
+                            </div>
                         </>
                     )}
                 </section>

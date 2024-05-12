@@ -91,17 +91,24 @@
 }
 
 .tippy-box[data-theme~='default'][data-placement^='top'] > .tippy-arrow::before {
-    @apply border-t-neutral-900
+    @apply border-t-neutral-900;
 }
 .tippy-box[data-theme~='default'][data-placement^='bottom'] > .tippy-arrow::before {
-    @apply border-b-neutral-900
+    @apply border-b-neutral-900;
 }
 .tippy-box[data-theme~='default'][data-placement^='left'] > .tippy-arrow::before {
-    @apply border-l-neutral-900
+    @apply border-l-neutral-900;
 }
 .tippy-box[data-theme~='default'][data-placement^='right'] > .tippy-arrow::before {
-    @apply border-r-neutral-900
+    @apply border-r-neutral-900;
 }
+
+.theme-color-1 { @apply bg-light-main-color-1 dark:bg-main-color-1; }
+.theme-color-2 { @apply bg-light-main-color-2 dark:bg-main-color-2; }
+.theme-color-3 { @apply bg-light-main-color-3 dark:bg-main-color-3; }
+.\!theme-color-1 { @apply !bg-light-main-color-1 dark:!bg-main-color-1; }
+.\!theme-color-2 { @apply !bg-light-main-color-2 dark:!bg-main-color-2; }
+.\!theme-color-3 { @apply !bg-light-main-color-3 dark:!bg-main-color-3; }
 
 @keyframes glowing {
     0% {

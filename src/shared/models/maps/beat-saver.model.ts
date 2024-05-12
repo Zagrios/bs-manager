@@ -195,8 +195,22 @@ export enum MapType {
 export const MapTags = { ...MapStyle, ...MapType };
 export type MapTag = MapStyle | MapType;
 
-export type MapRequirement = "chroma" | "noodle" | "me" | "cinema";
-export type MapSpecificity = "automapper" | "ranked" | "curated" | "verified" | "fullSpread";
+export enum MapRequirement {
+    Chroma = "chroma",
+    Noodle = "noodle",
+    Me = "me",
+    Cinema = "cinema"
+
+}
+
+export enum MapSpecificity {
+    Automapper = "automapper",
+    Ranked = "ranked",
+    Curated = "curated",
+    Verified = "verified",
+    FullSpread = "fullSpread"
+
+}
 
 export interface MapFilter {
     automapper?: boolean;
@@ -224,15 +238,24 @@ export interface SearchResponse {
     redirect: string;
 }
 
+export interface PlaylistSearchResponse {
+    docs: BsvPlaylist[];
+}
+
 export interface SearchParams {
-    sortOrder: SearchOrder;
+    sortOrder: BsvSearchOrder;
     filter?: MapFilter;
     page?: number;
     q?: string;
     includeEmpty?: boolean;
 }
 
-export type SearchOrder = "Latest" | "Relevance" | "Rating" | "Curated";
+export enum BsvSearchOrder {
+    Latest = "Latest",
+    Relevance = "Relevance",
+    Rating = "Rating",
+    Curated = "Curated"
+}
 
 export interface BsvMapDetailWithOrder {
     map: BsvMapDetail;
@@ -251,10 +274,17 @@ export interface BsvPlaylist {
     playlistId: number;
     playlistImage: string;
     playlistImage512: string;
-    public: boolean;
     songsChangedAt: BsvInstant;
     stats: BsvPlaylistStats;
     updatedAt: BsvInstant;
+    type: BsvPlaylistType;
+}
+
+export enum BsvPlaylistType {
+    Private = "Private",
+    Public = "Public",
+    System = "System",
+    Search = "Search"
 }
 
 export interface BsvPlaylistStats {
@@ -274,4 +304,17 @@ export interface BsvPlaylistStats {
 export interface BsvPlaylistPage {
     maps: BsvMapDetailWithOrder[];
     playlist: BsvPlaylist;
+}
+
+export interface PlaylistSearchParams {
+    q?: string;
+    page?: number;
+    sortOrder: BsvSearchOrder;
+    from?: string;
+    to?: string;
+    minNps?: number;
+    maxNps?: number;
+    curated?: boolean;
+    verified?: boolean;
+    includeEmpty?: boolean;
 }

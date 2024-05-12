@@ -39,8 +39,8 @@ export class ModalService {
     }
 }
 
-export type ModalOptions<T = unknown> = { data?: T, noStyle?: boolean }
-export type ModalComponent<Return = unknown, Receive = unknown> = ({ resolver, options }: { resolver: (x: ModalResponse<Return>) => void; options?: ModalOptions<Receive> }) => JSX.Element;
+export type ModalOptions<T = unknown> = { readonly data?: T, readonly noStyle?: boolean }
+export type ModalComponent<Return = unknown, Receive = unknown> = ({ resolver, options }: { readonly resolver: (x: ModalResponse<Return>) => void; readonly options?: ModalOptions<Receive> }) => JSX.Element;
 export type ModalObject = {modal: ModalComponent, resolver: (value: ModalResponse | PromiseLike<ModalResponse>) => void, options: ModalOptions};
 
 export const enum ModalExitCode {

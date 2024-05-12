@@ -6,12 +6,11 @@ import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-button.component";
 import { BsmSelect, BsmSelectOption } from "renderer/components/shared/bsm-select.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
-import { BSV_SORT_ORDER } from "renderer/partials/beat-saver/sort-order";
 import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
 import { ModalComponent } from "renderer/services/modale.service";
 import { BSVersion } from "shared/bs-version.interface";
-import { BsvMapDetail, MapFilter, SearchOrder, SearchParams } from "shared/models/maps/beat-saver.model";
+import { BsvMapDetail, MapFilter, BsvSearchOrder, SearchParams } from "shared/models/maps/beat-saver.model";
 import BeatWaitingImg from "../../../../../assets/images/apngs/beat-waiting.png";
 import BeatConflictImg from "../../../../../assets/images/apngs/beat-conflict.png";
 import equal from "fast-deep-equal/es6";
@@ -21,6 +20,7 @@ import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { useService } from "renderer/hooks/use-service.hook";
 import { extractMapDiffs } from "renderer/components/maps-playlists-panel/maps/maps-row.component";
+import { useConstant } from "renderer/hooks/use-constant.hook";
 
 export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; ownedMaps: BsmLocalMap[] }> = ({ options: {data : { ownedMaps, version }} }) => {
     const beatSaver = useService(BeatSaverService);
@@ -35,7 +35,7 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
     const [filter, setFilter] = useState<MapFilter>({});
     const [query, setQuery] = useState("");
     const [maps, setMaps] = useState<BsvMapDetail[]>([]);
-    const [sortOrder, setSortOrder] = useState<SearchOrder>(BSV_SORT_ORDER.at(0));
+    const [sortOrder, setSortOrder] = useState<BsvSearchOrder>(BsvSearchOrder.Latest);
     const [ownedMapHashs, setOwnedMapHashs] = useState<string[]>(ownedMaps?.map(map => map.hash) ?? []);
     const [loading, setLoading] = useState(false);
     const isOnline = useObservable(() => os.isOnline$);
@@ -48,9 +48,9 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
 
     const loaderRef = useRef(null);
 
-    const sortOptions: BsmSelectOption<SearchOrder>[] = (() => {
-        return BSV_SORT_ORDER.map(sort => ({ text: `beat-saver.maps-sorts.${sort}`, value: sort }));
-    })();
+    const sortOptions: BsmSelectOption<BsvSearchOrder>[] = useConstant(() => {
+        return Object.values(BsvSearchOrder).map(sort => ({ text: `beat-saver.maps-sorts.${sort}`, value: sort }));
+    });
 
     useEffect(() => {
         loadMaps(searchParams);
@@ -157,7 +157,7 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
         mapsDownloader.removeMapToDownload({ map, version });
     }, []);
 
-    const handleSortChange = (newSort: SearchOrder) => {
+    const handleSortChange = (newSort: BsvSearchOrder) => {
         setSortOrder(() => newSort);
         setMaps(() => []);
         setSearchParams(() => ({ ...searchParams, sortOrder: newSort }));
@@ -193,7 +193,7 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
                 <BsmDropdownButton ref={filterContainerRef} className="shrink-0 h-full relative z-[1] flex justify-start" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1 !bg-light-main-color-1 dark:!bg-main-color-1" icon="filter" text="pages.version-viewer.maps.search-bar.filters-btn" withBar={false}>
                     <FilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[450px] h-fit p-2 rounded-md shadow-md shadow-black" localData={false} filter={filter} onChange={setFilter} onApply={handleSearch} onClose={() => filterContainerRef.current.close()} />
                 </BsmDropdownButton>
-                <input className="h-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2 grow pb-0.5" type="text" name="" id="" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={query} onChange={e => setQuery(e.target.value)} />
+                <input className="h-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2 grow pb-0.5" type="text" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={query} onChange={e => setQuery(e.target.value)} />
                 <BsmButton
                     className="shrink-0 rounded-full py-1 px-3 !bg-light-main-color-1 dark:!bg-main-color-1 flex justify-center items-center capitalize"
                     icon="search"

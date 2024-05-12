@@ -6,6 +6,9 @@ import { BPList } from "shared/models/playlists/playlist.interface";
 import path from "path";
 import { LocalMapsManagerService } from "../services/additional-content/maps/local-maps-manager.service";
 import { Progression } from "main/helpers/fs.helpers";
+import { lstatSync } from "fs-extra";
+import { isValidUrl } from "shared/helpers/url.helpers";
+import { pathToFileURL } from "url";
 
 const ipc = IpcService.getInstance();
 
@@ -29,28 +32,16 @@ ipc.on("is-playlists-deep-links-enabled", (args, reply) => {
     reply(of(maps.isDeepLinksEnabled()));
 });
 
-ipc.on("install-playlist", (args, reply) => {
+ipc.on("download-playlist", (args, reply) => {
     const playlists = LocalPlaylistsManagerService.getInstance();
 
-    const isLocalBPList = (bpList: BPList): bpList is LocalBPList => {
-        return (bpList as LocalBPList).path !== undefined && path.isAbsolute((bpList as LocalBPList).path);
-    }
-
-    const playListUrl = (() => {
-        if (args.playlist.customData?.syncURL) {
-            return args.playlist.customData.syncURL;
-        }
-        if (isLocalBPList(args.playlist)) {
-            return args.playlist.path;
-        }
-        return undefined;
-    })();
+    const downloadUrl = isValidUrl(args.downloadSource) ? args.downloadSource : pathToFileURL(args.downloadSource).href;
 
     return reply(playlists.downloadPlaylist({
-        bpListUrl: playListUrl,
+        bpListUrl: downloadUrl,
         version: args.version,
         ignoreSongsHashs: args.ignoreSongsHashs,
-        dest: (args.playlist as LocalBPList)?.path
+        dest: args.dest
     }));
 
 });

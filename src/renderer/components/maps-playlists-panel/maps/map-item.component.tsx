@@ -14,14 +14,14 @@ import equal from "fast-deep-equal/es6";
 import { BsmBasicSpinner } from "../../shared/bsm-basic-spinner/bsm-basic-spinner.component";
 import defaultImage from "../../../../../assets/images/default-version-img.jpg";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import { MAP_DIFFICULTIES } from "renderer/partials/maps/map-difficulties/map-difficulties";
-import { MAP_DIFFICULTIES_COLORS } from "renderer/partials/maps/map-difficulties/map-difficulties-colors";
+import { MAP_DIFFICULTIES_COLORS } from "shared/models/maps/difficulties-colors";
 import useDoubleClick from "use-double-click";
 import { GlowEffect } from "../../shared/glow-effect.component";
 import { useDelayedState } from "renderer/hooks/use-delayed-state.hook";
 import { useService } from "renderer/hooks/use-service.hook";
 import Tippy from "@tippyjs/react";
 import { SongDetailDiffCharactertistic, SongDiffName } from "shared/models/maps";
+import { useConstant } from "renderer/hooks/use-constant.hook";
 
 export type ParsedMapDiff = { type: SongDiffName; name: string; stars: number };
 
@@ -72,6 +72,7 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
 
     const songPlaying = useObservable(() => audioPlayer.playing$.pipe(map(playing => playing && audioPlayer.src === songUrl)));
 
+    const MAP_DIFFICULTIES = useConstant(() => Object.values(SongDiffName))
     const previewUrl = mapId ? `https://allpoland.github.io/ArcViewer/?id=${mapId}` : null;
     const mapUrl = mapId ? `https://beatsaver.com/maps/${mapId}` : null;
     const authorUrl = autorId ? `https://beatsaver.com/profile/${autorId}` : null;

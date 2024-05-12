@@ -15,7 +15,7 @@ import { Observable, of } from 'rxjs';
 import { useObservable } from 'renderer/hooks/use-observable.hook';
 import { BsmBasicSpinner } from 'renderer/components/shared/bsm-basic-spinner/bsm-basic-spinner.component';
 
-type Props = {
+export type PlaylistItemComponentProps = {
     title?: string;
     author?: string;
     coverBase64?: string;
@@ -52,7 +52,7 @@ export function PlaylistItem({ title,
     onClickSync,
     onClickDelete,
     onClickCancelDownload
-}: Props) {
+}: PlaylistItemComponentProps) {
 
     const color = useThemeColor("first-color");
 
@@ -80,8 +80,8 @@ export function PlaylistItem({ title,
     return (
         <motion.li className='relative flex-grow basis-0 min-w-80 h-28 cursor-pointer group' onHoverStart={() => setHovered(() => true)} onHoverEnd={() => setHovered(() => false)} >
             <GlowEffect visible={selected || hovered}/>
-            <div className="size-full relative flex flex-row justify-start items-center overflow-hidden rounded-md">
-                <div className="absolute inset-0 flex justify-center items-center -z-[1]">
+            <div className="size-full relative flex flex-row justify-start items-center overflow-hidden rounded-md *:z-[1]">
+                <div className="absolute inset-0 flex justify-center items-center z-0">
                     <BsmImage className="size-full object-cover saturate-150 blur-lg" image={coverUrl} base64={coverBase64} />
                     <div className="absolute inset-0 bg-black opacity-20"/>
                 </div>
