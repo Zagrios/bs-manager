@@ -287,13 +287,11 @@
 <div>
   <ul>
     <li><strong>via Oculus</strong>: For Oculus users, <a href="https://github.com/Zagrios/bs-manager">BSManager</a>
-      uses authentication directly via the <a href="https://about.meta.com/fr/">META</a> website
-      to retrieve the connection token, ensuring reliable and secure access to your account data.</li>
+      requires you to retrieve a connection token by following the instructions in this guide: <a href="https://github.com/Zagrios/bs-manager/wiki/How-to-obtain-your-Oculus-Token">How to obtain your Oculus Token</a>. Once obtained, please insert it into the form.</li>
   </ul>
 </div>
 
 <div align="center">
-  <img height=450 src="https://github.com/Zagrios/bs-manager/assets/40648115/1e4a2f98-af16-45aa-821d-0c4e90e1e54b" />
   <img height=450 src="https://github.com/Zagrios/bs-manager/assets/40648115/3674e629-542d-4de3-b8db-b248f25126d7" />
 </div>
 
