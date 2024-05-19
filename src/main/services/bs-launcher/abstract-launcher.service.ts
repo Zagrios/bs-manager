@@ -58,6 +58,12 @@ export abstract class AbstractLauncherService {
                 log.info(`BS process exit with code ${code}`);
                 resolve(code);
             });
+
+            setTimeout(() => {
+                process.removeAllListeners("error");
+                process.removeAllListeners("exit");
+                resolve(-1);
+            }, 30_000);
         });
 
         return { process, exit };
