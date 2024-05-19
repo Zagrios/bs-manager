@@ -15,6 +15,8 @@ import { PlaylistItemComponentPropsMapper } from "shared/mappers/playlist/playli
 import { motion } from "framer-motion"
 import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service"
 
+// TODO : Translate
+
 export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ownedPlaylists$: Observable<LocalBPListsDetails[]>, ownedMaps$: Observable<BsmLocalMap[]>}> = (
     { resolver, options: { data: { version, ownedPlaylists$, ownedMaps$ }} }
 ) => {
@@ -41,7 +43,8 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
     }, [searchParams])
 
     const handleNewSearch = (value: Omit<PlaylistSearchParams, "page">) => {
-        setSearchParams({ ...value, page: 0});
+        setPlaylists(() => []);
+        setSearchParams(() => ({ ...value, page: 0}));
     };
 
     const loadMorePlaylists = () => {
@@ -51,16 +54,26 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
     return (
         <div className="max-w-[95vw] w-[970px] h-[85vh] flex flex-col gap-3">
             <DownloadPlaylistModalHeader className="h-9 w-full" value={searchParams} onSubmit={handleNewSearch}/>
-            <ul className="p-2 size-full flex flex-row flex-wrap justify-start content-start gap-3 grow overflow-y-scroll overflow-x-hidden z-10">
-                {playlists.map(playlist => (
-                    <PlaylistItem
-                        key={playlist.playlistId}
-                        {...PlaylistItemComponentPropsMapper.fromBsvPlaylist(playlist)}
-                        onClickSync={() => lastValueFrom(playlistDownloader.downloadPlaylist({ downloadSource: playlist.downloadURL, ignoreSongsHashs: ownedMaps.map(map => map.hash), version }))}
-                    />
-                ))}
-                <motion.span className="w-full h-8" onViewportEnter={loadMorePlaylists}/>
-            </ul>
+            {(() => {
+                if(loading && playlists.length === 0){
+                    return <div className="flex justify-center items-center h-full w-full">Loading...</div>
+                }
+                else if(playlists.length === 0){
+                    return <div className="flex justify-center items-center h-full w-full">No playlists found</div>
+                }
+                return (
+                    <ul className="p-2 size-full flex flex-row flex-wrap justify-start content-start gap-3 grow overflow-y-scroll overflow-x-hidden z-10">
+                        {playlists.map(playlist => (
+                            <PlaylistItem
+                                key={playlist.playlistId}
+                                {...PlaylistItemComponentPropsMapper.fromBsvPlaylist(playlist)}
+                                onClickSync={() => lastValueFrom(playlistDownloader.downloadPlaylist({ downloadSource: playlist.downloadURL, ignoreSongsHashs: ownedMaps.map(map => map.hash), version }))}
+                            />
+                        ))}
+                        <motion.span className="block w-full h-8" onViewportEnter={loadMorePlaylists}/>
+                    </ul>
+                )
+            })()}
         </div>
     )
 }
