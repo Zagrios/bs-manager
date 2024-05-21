@@ -2,6 +2,7 @@
     "name": "bs-manager",
     "description": "Manage maps, mods and more for Beat Saber",
     "main": "./src/main/main.ts",
+    "version": "1.5.0",
     "scripts": {
         "build-rust-scripts": "node -r esbuild-register ./.erb/scripts/build-rust-scripts.js",
         "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",

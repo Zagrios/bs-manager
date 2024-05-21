@@ -23,9 +23,7 @@ import { ConfigurationService } from "renderer/services/configuration.service";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { useService } from "renderer/hooks/use-service.hook";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
-import { gt } from "semver"
-import { ModalService } from "renderer/services/modale.service";
-import { ChooseStore } from "renderer/components/modal/modal-types/bs-downgrade/choose-store-modal.component";
+import { gt, parse } from "semver"
 
 export default function App() {
     useService(OsDiagnosticService);
@@ -36,7 +34,6 @@ export default function App() {
     const notification = useService(NotificationService);
     const config = useService(ConfigurationService);
     const autoUpdater = useService(AutoUpdaterService);
-    const modals = useService(ModalService);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -52,7 +49,7 @@ export default function App() {
 
         autoUpdater.setLastAppVersion(appVersion);
 
-        if (lastAppVersion && gt(appVersion, lastAppVersion)) {
+        if (parse(lastAppVersion) && gt(appVersion, lastAppVersion)) {
             autoUpdater.showChangelog(appVersion);
         }
     };
