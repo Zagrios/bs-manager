@@ -21,7 +21,9 @@ export class BeatSaverApiService {
     }
 
     private objectToStringRecord(obj: Record<string, any>): Record<string, string> {
-        return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, String(value)] as [string, string]));
+        return Object.fromEntries(Object.entries(obj)
+            .filter(([_, value]) => value !== undefined && value !== null)
+            .map(([key, value]) => [key, String(value)] as [string, string]));
     }
 
     private mapFilterToUrlParams(filter: MapFilter): URLSearchParams {

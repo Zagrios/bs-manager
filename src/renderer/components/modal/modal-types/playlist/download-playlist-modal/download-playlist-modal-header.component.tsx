@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-button.component";
 import { BsmSelect, BsmSelectOption } from "renderer/components/shared/bsm-select.component";
 import { cn } from "renderer/helpers/css-class.helpers";
 import { useConstant } from "renderer/hooks/use-constant.hook";
-import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { PlaylistSearchParams, BsvSearchOrder } from "shared/models/maps/beat-saver.model";
+import { DownloadPlaylistFilterPanel, FilterPlaylistSearchParams } from "./download-playlist-filter-panel.component";
 
 type Props = {
     className?: string;
@@ -17,8 +17,13 @@ type Props = {
 
 export function DownloadPlaylistModalHeader({ className, value, onSubmit }: Props) {
 
+    const dropDownFilterRef = useRef(null);
+
     const [query, setQuery] = useState<string>(value?.q || "");
     const [order, setOrder] = useState<BsvSearchOrder>(value?.sortOrder || BsvSearchOrder.Latest);
+    const [filter, setFilter] = useState<FilterPlaylistSearchParams>({});
+
+    const searchParams: Omit<PlaylistSearchParams, "page"> = { q: query, sortOrder: order };
 
     const sortOptions: BsmSelectOption<BsvSearchOrder>[] = useConstant(() => {
         return Object.values(BsvSearchOrder).reduce((acc, value) => {
@@ -28,23 +33,26 @@ export function DownloadPlaylistModalHeader({ className, value, onSubmit }: Prop
         }, []);
     });
 
-    useOnUpdate(() => {
-        submit();
-    }, [order]);
-
     const handleOrderChange = (value: BsvSearchOrder) => {
         setOrder(() => value);
+        submit({...searchParams, sortOrder: value})
     };
 
-    const submit = () => {
+    const handleFilterSubmit = (value: FilterPlaylistSearchParams) => {
+        setFilter(() => value);
+        submit({...searchParams, ...value});
+        dropDownFilterRef.current?.close?.();
+    };
+
+    const submit = (value: Omit<PlaylistSearchParams, "page">) => {
         if(!onSubmit){ return; }
-        onSubmit({ q: query, sortOrder: order });
+        onSubmit(value);
     };
 
     return (
-        <form className={cn('flex flex-row gap-2', className)} onSubmit={e => {e.preventDefault(); submit();}}>
-            <BsmDropdownButton buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1 !bg-light-main-color-1 dark:!bg-main-color-1" icon="filter" text="pages.version-viewer.maps.search-bar.filters-btn" withBar={false}>
-                <span>Filter Panel</span>
+        <form className={cn('flex flex-row gap-2', className)} onSubmit={e => {e.preventDefault(); submit(searchParams);}}>
+            <BsmDropdownButton ref={dropDownFilterRef} buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1 !bg-light-main-color-1 dark:!bg-main-color-1" icon="filter" text="pages.version-viewer.maps.search-bar.filters-btn" withBar={false}>
+                <DownloadPlaylistFilterPanel className="z-10 translate-y-1" params={filter} onSubmit={handleFilterSubmit}/>
             </BsmDropdownButton>
             <input className="h-full theme-color-1 rounded-full px-2 grow pb-0.5" type="text" placeholder="Rechercher une playlist" value={query} onChange={e => setQuery(e.target.value)} />
             <BsmButton type="submit" className="shrink-0 rounded-full py-1 px-3 !theme-color-1 flex justify-center items-center capitalize" icon="search" text="modals.download-maps.search-btn" withBar={false} />

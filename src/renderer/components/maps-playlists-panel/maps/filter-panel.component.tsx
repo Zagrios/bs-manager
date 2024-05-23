@@ -68,12 +68,7 @@ export function FilterPanel({ className, ref, playlist = false, filter, localDat
 
     const renderNpsLabel = (nps: number): JSX.Element => {
         const textValue = (() => {
-            if (nps === MIN_NPS) {
-                return MIN_NPS;
-            }
-            if (nps === MAX_NPS) {
-                return "∞";
-            }
+            if (nps === MAX_NPS) { return "∞"; }
             return nps;
         })();
 

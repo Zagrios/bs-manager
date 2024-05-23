@@ -38,7 +38,8 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
     useOnUpdate(() => {
         setLoading(() => true);
         beatSaver.searchPlaylists(searchParams)
-            .then(playlists => setPlaylists(prev => [...prev, ...playlists]))
+            .then(playlists => setPlaylists(prev => [...prev, ...(playlists ?? [])]))
+            .catch(console.error)
             .finally(() => setLoading(() => false));
     }, [searchParams])
 
@@ -62,7 +63,7 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
                     return <div className="flex justify-center items-center h-full w-full">No playlists found</div>
                 }
                 return (
-                    <ul className="p-2 size-full flex flex-row flex-wrap justify-start content-start gap-3 grow overflow-y-scroll overflow-x-hidden z-10">
+                    <ul className="p-2 size-full flex flex-row flex-wrap justify-start content-start gap-3 grow overflow-y-scroll overflow-x-hidden z-[1]">
                         {playlists.map(playlist => (
                             <PlaylistItem
                                 key={playlist.playlistId}

@@ -249,6 +249,9 @@
         "webpack-merge": "^5.10.0"
     },
     "dependencies": {
+        "@internationalized/date": "^3.5.4",
+        "@nextui-org/date-picker": "^2.0.7",
+        "@nextui-org/react": "^2.3.6",
         "@node-steam/vdf": "^2.2.0",
         "@tippyjs/react": "^4.2.6",
         "archiver": "^6.0.1",

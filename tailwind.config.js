@@ -1,3 +1,4 @@
+const {nextui} = require("@nextui-org/react");
 const colors = require("tailwindcss/colors");
 
 // Suppress deprecation warnings during build
@@ -9,9 +10,9 @@ delete colors.blueGray;
 
 module.exports = {
     darkMode: "class",
-    content: ["./src/renderer/**/*.{js,jsx,ts,tsx,ejs}"],
+    content: ["./src/renderer/**/*.{js,jsx,ts,tsx,ejs}", "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"],
     mode: "jit",
-    plugins: [require("tailwind-scrollbar-hide"), require("tailwind-scrollbar")({ nocompatible: true }), require("tailwindcss-scoped-groups")({ groups: ["one"] }), require("ps-scrollbar-tailwind")],
+    plugins: [require("tailwind-scrollbar-hide"), require("tailwind-scrollbar")({ nocompatible: true }), require("tailwindcss-scoped-groups")({ groups: ["one"] }), require("ps-scrollbar-tailwind"), nextui()],
     theme: {
         colors: {
             ...colors,
