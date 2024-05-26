@@ -6,13 +6,20 @@ message SongDetailsCache {
   repeated SongDetails songs = 1;
   uint32 lastUpdated = 2;
   uint32 total = 3;
+  UploadersList uploaders = 4;
+  repeated string difficultyLabels = 5;
+}
+
+message UploadersList {
+  repeated string names = 1;
+  repeated uint32 ids = 2;
 }
 
 message SongDetails {
   uint32 idInt = 1;
   string hash = 2;
   uint32 duration = 3;
-  Uploader uploader = 4;
+  UploaderRef uploaderRef = 4;
   uint32 uploadedAt = 5;
   repeated MapTag tags = 6;
   bool ranked = 7;
@@ -31,7 +38,7 @@ message SongDetails {
 message Difficulty {
   DifficultyLabel difficulty = 1;
   DifficultyCharacteristic characteristic = 2;
-  string label = 3;
+  uint32 labelIndex = 3;
   uint32 starsT100 = 4;
   uint32 starsBlT100 = 5;
   uint32 njsT100 = 6;
@@ -46,10 +53,9 @@ message Difficulty {
   uint32 obstacles = 15;
 }
 
-message Uploader {
-  string name = 1;
-  uint32 id = 2;
-  bool verified = 3;
+message UploaderRef {
+  uint32 uploaderRefIndex = 1;
+  bool verified = 2;
 }
 
 enum DifficultyLabel {

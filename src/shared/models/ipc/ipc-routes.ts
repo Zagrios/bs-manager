@@ -4,7 +4,7 @@ import { BSVersion } from "shared/bs-version.interface";
 import { BSLaunchEventData, LaunchOption } from "shared/models/bs-launch";
 import { BsvMapDetail } from "shared/models/maps";
 import { BsmLocalMap, BsmLocalMapsProgress, DeleteMapsProgress } from "shared/models/maps/bsm-local-map.interface";
-import { BsvPlaylist, PlaylistSearchParams, SearchParams } from "../maps/beat-saver.model";
+import { BsvPlaylist, BsvPlaylistPage, PlaylistSearchParams, SearchParams } from "../maps/beat-saver.model";
 import { ImportVersionOptions } from "main/services/bs-local-version.service";
 import { DownloadInfo, DownloadSteamInfo } from "main/services/bs-version-download/bs-steam-downloader.service";
 import { DepotDownloaderEvent } from "../bs-version-download/depot-downloader.model";
@@ -42,6 +42,7 @@ export interface IpcChannelMapping {
     "bsv-get-map-details-from-hashs": {request: string[], response: BsvMapDetail[]};
     "bsv-get-map-details-by-id": {request: string, response: BsvMapDetail};
     "bsv-search-playlist": {request: PlaylistSearchParams, response: BsvPlaylist[]};
+    "bsv-get-playlist-details-by-id": {request: {id: string, page: number}, response: BsvPlaylistPage};
 
     /* ** bs-launcher-ipcs ** */
     "create-launch-shortcut": { request: LaunchOption, response: boolean };

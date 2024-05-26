@@ -32,6 +32,7 @@ export type PlaylistItemComponentProps = {
     onClickOpenFile?: () => void;
     onClickDelete?: () => void;
     onClickSync?: () => void;
+    onClickDownload?: () => void;
     onClickCancelDownload?: () => void;
 }
 
@@ -50,6 +51,7 @@ export function PlaylistItem({ title,
     onClickOpen,
     onClickOpenFile,
     onClickSync,
+    onClickDownload,
     onClickDelete,
     onClickCancelDownload
 }: PlaylistItemComponentProps) {
@@ -80,7 +82,7 @@ export function PlaylistItem({ title,
     return (
         <motion.li className='relative flex-grow basis-0 min-w-80 h-28 cursor-pointer group' onHoverStart={() => setHovered(() => true)} onHoverEnd={() => setHovered(() => false)} >
             <GlowEffect visible={selected || hovered}/>
-            <div className="size-full relative flex flex-row justify-start items-center overflow-hidden rounded-md *:z-[1]">
+            <div className="size-full relative flex flex-row justify-start items-center overflow-hidden bg-black rounded-md *:z-[1]">
                 <div className="absolute inset-0 flex justify-center items-center z-0">
                     <BsmImage className="size-full object-cover saturate-150 blur-lg" image={coverUrl} base64={coverBase64} />
                     <div className="absolute inset-0 bg-black opacity-20"/>
@@ -131,6 +133,23 @@ export function PlaylistItem({ title,
                                         iconClassName="size-full brightness-75 dark:brightness-200"
                                         style={{color}}
                                         onClick={onClickSync}
+                                        withBar={false}
+                                    />
+                                </Tippy>
+                            ) : (<></>)
+
+                        )}
+                        {onClickDownload && (
+                            isDownloading ? (
+                                <BsmBasicSpinner className="hover:!bg-main-color-1" spinnerClassName="brightness-75 dark:brightness-200" style={{ color }} thikness="3px"/>
+                            ) : !isInQueue ? (
+                                <Tippy content="Télécharger la playlist" placement="left" theme="default">
+                                    <BsmButton
+                                        icon="download"
+                                        className="hover:!bg-main-color-1"
+                                        iconClassName="size-full brightness-75 dark:brightness-200"
+                                        style={{color}}
+                                        onClick={onClickDownload}
                                         withBar={false}
                                     />
                                 </Tippy>

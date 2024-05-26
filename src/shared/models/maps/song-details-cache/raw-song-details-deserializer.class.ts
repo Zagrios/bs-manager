@@ -1,10 +1,21 @@
 import { MapStyle, MapTag, MapType } from "../beat-saver.model";
-import { RawDifficulty, RawDifficultyCharacteristic, RawDifficultyLabel, RawMapTag, RawSongDetails, RawUploader } from "./raw-song-details-cache.model";
+import { RawDifficulty, RawDifficultyCharacteristic, RawDifficultyLabel, RawMapTag, RawSongDetails, UploaderRef, UploadersList } from "./raw-song-details-cache.model";
 import { SongDetailDiffCharactertistic, SongDetails, SongDiffName, SongDifficulty, SongUploader } from "./song-details-cache.model";
 
 export abstract class RawSongDetailsDeserializer {
 
+    public static uploaderList: UploadersList = { names: [], ids: [] };
+    public static difficultyLabels: string[] = [];
+
     private constructor() {}
+
+    public static setUploadersList(uploadersList: UploadersList): void {
+        this.uploaderList = uploadersList;
+    }
+
+    public static setDifficultyLabels(difficultyLabels: string[]): void {
+        this.difficultyLabels = difficultyLabels;
+    }
 
     private static deserializeRawTag(rawTag: RawMapTag): MapTag {
         switch (rawTag) {
@@ -88,7 +99,7 @@ export abstract class RawSongDetailsDeserializer {
         return {
             difficulty: this.deserializeRawDifficultyLabel(rawDifficulty.difficulty),
             characteristic: this.deserializeRawDifficultyCharacteristic(rawDifficulty.characteristic),
-            label: rawDifficulty.label,
+            label: RawSongDetailsDeserializer.difficultyLabels[rawDifficulty.labelIndex],
             stars: Math.round(rawDifficulty.starsT100) / 100,
             starsBL: Math.round(rawDifficulty.starsBlT100) / 100,
             njs: Math.round(rawDifficulty.njsT100) / 100,
@@ -108,11 +119,12 @@ export abstract class RawSongDetailsDeserializer {
         return rawDifficulties.map(rawDifficulty => this.deserializeRawDifficulty(rawDifficulty));
     }
 
-    private static deserializeRawUploader(rawUploader: RawUploader): SongUploader {
+    private static deserializeRawUploader(uploaderRef: UploaderRef): SongUploader {
+
         return {
-            name: rawUploader.name,
-            id: rawUploader.id,
-            verified: rawUploader.verified
+            name: RawSongDetailsDeserializer.uploaderList.names[uploaderRef.uploaderRefIndex],
+            id: RawSongDetailsDeserializer.uploaderList.ids[uploaderRef.uploaderRefIndex],
+            verified: uploaderRef.verified
         };
     }
 
@@ -138,7 +150,7 @@ export abstract class RawSongDetailsDeserializer {
             id: this.deserializeMapId(rawSongDetails.idInt),
             hash: rawSongDetails.hash,
             duration: rawSongDetails.duration,
-            uploader: this.deserializeRawUploader(rawSongDetails.uploader),
+            uploader: this.deserializeRawUploader(rawSongDetails.uploaderRef),
             uploadedAt: rawSongDetails.uploadedAt,
             tags: this.deserializeRawTags(rawSongDetails.tags),
             ranked: rawSongDetails.ranked,

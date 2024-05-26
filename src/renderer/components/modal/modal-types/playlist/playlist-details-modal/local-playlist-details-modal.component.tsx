@@ -1,6 +1,6 @@
 import { ModalComponent } from "renderer/services/modale.service"
-import { PlaylistDetailsTemplate, PlaylistDetailsTemplateProps } from "./playlist-details-template.component"
-import { Observable, combineLatest, first, lastValueFrom, map, mergeAll, mergeMap, shareReplay, switchMap, take, tap } from "rxjs"
+import { PlaylistDetailsTemplate } from "./playlist-details-template.component"
+import { Observable, combineLatest, lastValueFrom, map, switchMap } from "rxjs"
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface"
 import { BSVersion } from "shared/bs-version.interface";
 import { useObservable } from "renderer/hooks/use-observable.hook";
@@ -8,10 +8,9 @@ import { MapItem } from "renderer/components/maps-playlists-panel/maps/map-item.
 import { extractMapDiffs } from "renderer/components/maps-playlists-panel/maps/maps-row.component";
 import { useService } from "renderer/hooks/use-service.hook";
 import { AudioPlayerService } from "renderer/services/audio-player.service";
-import { AnimatePresence, motion } from "framer-motion";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
-import BeatConflict from "../../../../../../assets/images/apngs/beat-conflict.png";
+import BeatConflict from "../../../../../../../assets/images/apngs/beat-conflict.png";
 import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
 import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service";
 import { PlaylistHeaderState } from "./playlist-header-state.component";
@@ -34,8 +33,8 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
     const installedMaps = useObservable(() => options.data.installedMaps$, null);
 
     const isMissingMaps$ = useConstant(() => combineLatest([options.data.installedMaps$, options.data.localPlaylist$]).pipe(map(([maps, playlist]) => maps.length !== playlist.songs.length)));
-    const isPlaylistDownloading$ = useConstant(() => options.data.localPlaylist$.pipe(switchMap(playlist => playlistDownloader.$isPlaylistDownloading(playlist, options.data.version))));
-    const isPlaylistInQueue$ = useConstant(() => options.data.localPlaylist$.pipe(switchMap(playlist => playlistDownloader.$isPlaylistInQueue(playlist, options.data.version))));
+    const isPlaylistDownloading$ = useConstant(() => options.data.localPlaylist$.pipe(switchMap(playlist => playlistDownloader.$isPlaylistDownloading(playlist.path, options.data.version))));
+    const isPlaylistInQueue$ = useConstant(() => options.data.localPlaylist$.pipe(switchMap(playlist => playlistDownloader.$isPlaylistInQueue(playlist.path, options.data.version))));
 
     const isInQueue = useObservable(() => isPlaylistInQueue$, false);
 
@@ -50,7 +49,12 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
 
         const ignoreSongsHashs = installedMaps?.map(map => map.hash);
 
-        const obs$ = playlistDownloader.installPlaylist(localPlaylist, options.data.version, ignoreSongsHashs);
+        const obs$ = playlistDownloader.downloadPlaylist({
+            downloadSource: localPlaylist.path,
+            dest: localPlaylist.path,
+            version: options.data.version,
+            ignoreSongsHashs,
+        });
 
         return lastValueFrom(obs$);
     }
@@ -125,7 +129,7 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
         <PlaylistDetailsTemplate
             author={localPlaylist?.playlistAuthor}
             description={localPlaylist?.playlistDescription}
-            image={localPlaylist?.image}
+            imagebase64={localPlaylist?.image}
             duration={localPlaylist?.duration}
             maxNps={localPlaylist?.maxNps}
             minNps={localPlaylist?.minNps}

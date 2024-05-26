@@ -95,4 +95,8 @@ export class BeatSaverApiService {
         url.search = new URLSearchParams(this.objectToStringRecord(search)).toString();
         return this.request.getJSON<PlaylistSearchResponse>(url.toString());
     }
+
+    public getPlaylistDetailsById(id: string, page = 0): Promise<BsvPlaylistPage> {
+        return this.request.getJSON<BsvPlaylistPage>(`${this.bsaverApiUrl}/playlists/id/${id}/${page}`);
+    }
 }

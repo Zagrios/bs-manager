@@ -3,7 +3,14 @@
 export interface RawSongDetailsCache {
     songs: RawSongDetails[];
     lastUpdated: number;
+    uploaders: UploadersList;
+    difficultyLabels: string[];
     total: number;
+}
+
+export interface UploadersList {
+    names: string[];
+    ids: number[];
 }
 
 // SongDetails Message
@@ -11,7 +18,7 @@ export interface RawSongDetails {
     idInt: number;
     hash: string;
     duration: number;
-    uploader: RawUploader;
+    uploaderRef: UploaderRef;
     uploadedAt: number;
     tags: RawMapTag[];
     ranked: boolean;
@@ -31,7 +38,7 @@ export interface RawSongDetails {
 export interface RawDifficulty {
     difficulty: RawDifficultyLabel;
     characteristic: RawDifficultyCharacteristic;
-    label: string;
+    labelIndex: number;
     starsT100: number;
     starsBlT100: number;
     njsT100: number;
@@ -47,9 +54,8 @@ export interface RawDifficulty {
 }
 
 // Uploader Message
-export interface RawUploader {
-    name: string;
-    id: number;
+export interface UploaderRef {
+    uploaderRefIndex: number;
     verified: boolean;
 }
 

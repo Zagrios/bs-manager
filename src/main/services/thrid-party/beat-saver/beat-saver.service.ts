@@ -1,6 +1,6 @@
 import { splitIntoChunk } from "../../../../shared/helpers/array.helpers";
 import { BsvMapDetail } from "shared/models/maps";
-import { BsvPlaylist, PlaylistSearchParams, SearchParams } from "shared/models/maps/beat-saver.model";
+import { BsvPlaylist, BsvPlaylistPage, PlaylistSearchParams, SearchParams } from "shared/models/maps/beat-saver.model";
 import { BeatSaverApiService } from "./beat-saver-api.service";
 import log from "electron-log";
 
@@ -69,7 +69,15 @@ export class BeatSaverService {
             .then(res => res.docs)
             .catch(e => {
                 log.error(e);
-                return e;
+                throw e;
+            });
+    }
+
+    public getPlaylistDetailsById(id: string, page = 0): Promise<BsvPlaylistPage> {
+        return this.bsaverApi.getPlaylistDetailsById(id, page)
+            .catch(e => {
+                log.error(e);
+                throw e;
             });
     }
 }

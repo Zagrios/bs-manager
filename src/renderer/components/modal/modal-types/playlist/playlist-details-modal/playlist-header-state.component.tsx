@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
-import BeatConflict from "../../../../../../assets/images/apngs/beat-conflict.png";
+import BeatConflict from "../../../../../../../assets/images/apngs/beat-conflict.png";
 import { Observable } from "rxjs";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 

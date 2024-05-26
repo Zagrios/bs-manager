@@ -22,6 +22,7 @@ import { useService } from "renderer/hooks/use-service.hook";
 import Tippy from "@tippyjs/react";
 import { SongDetailDiffCharactertistic, SongDiffName } from "shared/models/maps";
 import { useConstant } from "renderer/hooks/use-constant.hook";
+import { CalendarDateTime, getLocalTimeZone } from "@internationalized/date";
 
 export type ParsedMapDiff = { type: SongDiffName; name: string; stars: number };
 
@@ -39,7 +40,7 @@ export type MapItemProps<T = unknown> = {
     bpm: number;
     duration: number;
     likes: number;
-    createdAt: number;
+    createdAt: number | CalendarDateTime;
     selected?: boolean;
     downloading?: boolean;
     showOwned?: boolean;
@@ -72,12 +73,18 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
 
     const songPlaying = useObservable(() => audioPlayer.playing$.pipe(map(playing => playing && audioPlayer.src === songUrl)));
 
+    console.log("aaa", autorId);
+
     const MAP_DIFFICULTIES = useConstant(() => Object.values(SongDiffName))
     const previewUrl = mapId ? `https://allpoland.github.io/ArcViewer/?id=${mapId}` : null;
     const mapUrl = mapId ? `https://beatsaver.com/maps/${mapId}` : null;
     const authorUrl = autorId ? `https://beatsaver.com/profile/${autorId}` : null;
-    const createdDate = createdAt ? dateFormat(createdAt * 1000, "d mmm yyyy") : null;
     const likesText = likes ? Intl.NumberFormat(undefined, { notation: "compact" }).format(likes).split(" ").join("") : null;
+    const createdDate = useConstant(() => {
+        if(!createdAt){ return null; }
+        const date = typeof createdAt === "number" ? new Date(createdAt * 1000) : createdAt.toDate(getLocalTimeZone());
+        return dateFormat(date, "d mmm yyyy");
+    });
 
     const durationText = (() => {
         if (!duration) {

@@ -77,6 +77,9 @@ export class SongDetailsCacheService {
 
         const res: Record<string, SongDetails> = {};
 
+        RawSongDetailsDeserializer.setUploadersList(messageObj.uploaders);
+        RawSongDetailsDeserializer.setDifficultyLabels(messageObj.difficultyLabels);
+
         for(const rawSong of messageObj.songs){
             res[rawSong.hash.toLocaleLowerCase()] = RawSongDetailsDeserializer.deserialize(rawSong);
         }

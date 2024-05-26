@@ -5,8 +5,8 @@ import { cn } from "renderer/helpers/css-class.helpers";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { PlaylistSearchParams } from "shared/models/maps/beat-saver.model"
 import {DateRangePicker} from "@nextui-org/date-picker";
-import { DateValue, Radio, RadioGroup, RadioProps, RangeValue } from "@nextui-org/react";
-import { today, getLocalTimeZone, parseAbsoluteToLocal, now } from "@internationalized/date";
+import { Radio, RadioGroup, RadioProps, RangeValue } from "@nextui-org/react";
+import { today, getLocalTimeZone, parseAbsoluteToLocal, toCalendarDate, toZoned, CalendarDate } from "@internationalized/date";
 import { motion } from "framer-motion";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
@@ -26,27 +26,37 @@ type Props = {
 const MAX_NPS = 17;
 const MIN_NPS = 0;
 
+// TODO : Translate
+
 export function DownloadPlaylistFilterPanel({ className, params, onChange, onSubmit }: Props) {
 
     const t = useTranslation();
 
+    const timeZone = useConstant(() => getLocalTimeZone());
     const [curated, setCurated] = useState<boolean>(params?.curated);
     const [verified, setVerified] = useState<boolean>(params?.verified);
     const [includeEmpty, setIncludeEmpty] = useState<boolean>(params?.includeEmpty);
     const [minNps, setMinNps] = useState<number>(params?.minNps);
     const [maxNps, setMaxNps] = useState<number>(params?.maxNps);
-    const [dateRange, setDateRange] = useState<RangeValue<DateValue>>({
-        start: null,
-        end: null,
+    const [dateRange, setDateRange] = useState<RangeValue<CalendarDate>>({
+        start: params?.from ? toCalendarDate(parseAbsoluteToLocal(params.from)) : null,
+        end: params?.from ? toCalendarDate(parseAbsoluteToLocal(params.from)) : null,
     });
 
-    const filterValue: FilterPlaylistSearchParams = { curated, verified, includeEmpty, minNps, maxNps, from: dateRange.start?.toString(), to: dateRange.end?.toString() };
+    const filterValue: FilterPlaylistSearchParams = {
+        curated,
+        verified,
+        includeEmpty, minNps,
+        maxNps,
+        from: dateRange?.start ? toZoned(dateRange.start, timeZone).set({ hour: 0, minute: 0 }).toAbsoluteString() : undefined,
+        to: dateRange?.end ? toZoned(dateRange.end, timeZone).set({ hour: 23, minute: 59, second: 59 }).toAbsoluteString() : undefined,
+    };
     const firstFilterValue = useConstant(() => ({...filterValue}));
     const filterHasBeenChanged = !equal(firstFilterValue, filterValue);
 
     useOnUpdate(() => {
         onChange?.(filterValue);
-    }, [curated, verified, includeEmpty, minNps, maxNps, dateRange.end, dateRange.start]);
+    }, [curated, verified, includeEmpty, minNps, maxNps, dateRange]);
 
     const handleOnNpsChange = ([min, max]: number[]) => {
         setMinNps(() => min <= MIN_NPS ? undefined : min);
@@ -92,11 +102,11 @@ export function DownloadPlaylistFilterPanel({ className, params, onChange, onSub
             return setDateRange(() => ({ start: null, end: null }));
         };
 
-        const end = today(getLocalTimeZone());
+        const end = today(timeZone);
 
         setDateRange(() => ({
             start: end.subtract({ [type]: value }),
-            end: end.add({days: 1})
+            end,
         }))
     };
 

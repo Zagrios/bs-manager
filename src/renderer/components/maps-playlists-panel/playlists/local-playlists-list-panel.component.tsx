@@ -13,7 +13,7 @@ import { LocalBPList, LocalBPListsDetails } from "shared/models/playlists/local-
 import { PlaylistItem } from "./playlist-item.component";
 import { useStateMap } from "renderer/hooks/use-state-map.hook";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
-import { LocalPlaylistDetailsModal } from "renderer/components/modal/modal-types/playlist/local-playlist-details-modal.component";
+import { LocalPlaylistDetailsModal } from "renderer/components/modal/modal-types/playlist/playlist-details-modal/local-playlist-details-modal.component";
 import { InstalledMapsContext } from "../maps-playlists-panel.component";
 import { IpcService } from "renderer/services/ipc.service";
 import equal from "fast-deep-equal";

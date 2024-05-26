@@ -1,7 +1,6 @@
 import { ModalExitCode, ModalObject, ModalService } from "renderer/services/modale.service";
 import { AnimatePresence, motion } from "framer-motion";
 import { useObservable } from "renderer/hooks/use-observable.hook";
-import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { useEffect } from "react";
 import { BsmIcon } from "../svgs/bsm-icon.component";
 import { ThemeColorGradientSpliter } from "../shared/theme-color-gradient-spliter.component";
@@ -11,8 +10,6 @@ export function Modal() {
 
     const modals = useObservable(() => modalSevice.getModalToShow());
     const currentModal = modals?.at(-1);
-
-    const { firstColor, secondColor } = useThemeColor();
 
     useEffect(() => {
         const onEscape = (e: KeyboardEvent) => {
@@ -61,7 +58,7 @@ export function Modal() {
             <AnimatePresence>
                 {currentModal && <motion.span key="modal-overlay" onClick={() => currentModal.resolver({ exitCode: ModalExitCode.NO_CHOICE })} className="fixed size-full bg-black z-[90]" initial={{ opacity: 0 }} animate={{ opacity: currentModal && 0.6 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} />}
                 {modals?.map((modal, index) => (
-                    <motion.div className="fixed z-[90] left-1/2 top-1/2" key={index} initial={{ y: "100vh", x: "-50%" }} animate={{y: "-50%", scale: modal === currentModal ? 1 : 0, opacity: modal === currentModal ? 1 : 0}} exit={{ y: "100vh" }}>
+                    <motion.div key={index} className="fixed z-[90] top-1/2 left-1/2" initial={{ y: "100vh", x: "-50%" }} animate={{y: "-50%", scale: modal === currentModal ? 1 : 0, opacity: modal === currentModal ? 1 : 0, display: modal === currentModal ? "block" : ["block", "none"]}} exit={{ y: "100vh" }}>
                         {renderModal(modal)}
                     </motion.div>
                 ))}

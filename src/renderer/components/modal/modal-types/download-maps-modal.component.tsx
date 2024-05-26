@@ -21,6 +21,7 @@ import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { useService } from "renderer/hooks/use-service.hook";
 import { extractMapDiffs } from "renderer/components/maps-playlists-panel/maps/maps-row.component";
 import { useConstant } from "renderer/hooks/use-constant.hook";
+import { getLocalTimeZone, parseAbsolute, toCalendarDateTime } from "@internationalized/date";
 
 export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; ownedMaps: BsmLocalMap[] }> = ({ options: {data : { ownedMaps, version }} }) => {
     const beatSaver = useService(BeatSaverService);
@@ -131,7 +132,7 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
             autorId={map.uploader.id}
             bpm={map.metadata.bpm}
             coverUrl={map.versions.at(0).coverURL}
-            createdAt={map.createdAt}
+            createdAt={map.createdAt && toCalendarDateTime(parseAbsolute(map.createdAt, getLocalTimeZone()))}
             duration={map.metadata.duration}
             hash={map.versions.at(0).hash}
             likes={map.stats.upvotes}
