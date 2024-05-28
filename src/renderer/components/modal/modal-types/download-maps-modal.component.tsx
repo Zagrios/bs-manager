@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FilterPanel } from "renderer/components/maps-playlists-panel/maps/filter-panel.component";
-import { MapItem } from "renderer/components/maps-playlists-panel/maps/map-item.component";
+import { MapItem, extractMapDiffs } from "renderer/components/maps-playlists-panel/maps/map-item.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-button.component";
 import { BsmSelect, BsmSelectOption } from "renderer/components/shared/bsm-select.component";
@@ -19,7 +19,6 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { useService } from "renderer/hooks/use-service.hook";
-import { extractMapDiffs } from "renderer/components/maps-playlists-panel/maps/maps-row.component";
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import { getLocalTimeZone, parseAbsolute, toCalendarDateTime } from "@internationalized/date";
 

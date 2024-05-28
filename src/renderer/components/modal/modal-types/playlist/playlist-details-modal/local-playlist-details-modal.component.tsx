@@ -4,8 +4,7 @@ import { Observable, combineLatest, lastValueFrom, map, switchMap } from "rxjs"
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface"
 import { BSVersion } from "shared/bs-version.interface";
 import { useObservable } from "renderer/hooks/use-observable.hook";
-import { MapItem } from "renderer/components/maps-playlists-panel/maps/map-item.component";
-import { extractMapDiffs } from "renderer/components/maps-playlists-panel/maps/maps-row.component";
+import { MapItem, extractMapDiffs } from "renderer/components/maps-playlists-panel/maps/map-item.component";
 import { useService } from "renderer/hooks/use-service.hook";
 import { AudioPlayerService } from "renderer/services/audio-player.service";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";

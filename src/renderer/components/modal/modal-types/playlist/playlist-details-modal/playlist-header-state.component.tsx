@@ -18,8 +18,6 @@ export function PlaylistHeaderState({isPlaylistInQueue$, isPlaylistDownloading$,
     const isPlaylistDownloading = useObservable(() => isPlaylistDownloading$, false);
     const isMissingMaps = useObservable(() => isMissingMaps$, false);
 
-    console.log(isPlaylistInQueue, isPlaylistDownloading, isMissingMaps);
-
     const renderHeaderContent = () => {
 
         if(isPlaylistDownloading) {

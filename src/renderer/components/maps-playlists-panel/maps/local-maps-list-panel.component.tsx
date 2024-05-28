@@ -1,13 +1,11 @@
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { BSVersion } from "shared/bs-version.interface";
-import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useState } from "react";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { Subscription, BehaviorSubject } from "rxjs";
 import { MapFilter, MapTag } from "shared/models/maps/beat-saver.model";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
-import { VariableSizeList } from "react-window";
-import { MapsRow } from "./maps-row.component";
-import { debounceTime, last, tap } from "rxjs/operators";
+import { last, tap } from "rxjs/operators";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import BeatConflict from "../../../../../assets/images/apngs/beat-conflict.png";
 import { BsmImage } from "../../shared/bsm-image.component";
@@ -21,6 +19,8 @@ import { BsContentLoader } from "renderer/components/shared/bs-content-loader.co
 import { InstalledMapsContext } from "../maps-playlists-panel.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import equal from "fast-deep-equal";
+import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual-scroll.component";
+import { MapItem, extractMapDiffs } from "./map-item.component";
 
 type Props = {
     version: BSVersion;
@@ -37,14 +37,10 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
 
     const t = useTranslation();
 
-    const ref = useRef(null);
-
     const {maps$, setMaps} = useContext(InstalledMapsContext);
     const maps = useObservable(() => maps$, undefined);
     const [subs] = useState<Subscription[]>([]);
-    const [selectedMaps$] = useState(new BehaviorSubject<BsmLocalMap[]>([]));
-    const [itemPerRow, setItemPerRow] = useState(2);
-    const [listHeight, setListHeight] = useState(0);
+    const [selectedMaps, setSelectedMaps] = useState<BsmLocalMap[]>([]);
     const isActiveOnce = useChangeUntilEqual(isActive, { untilEqual: true });
     const [linked, setLinked] = useState(false);
 
@@ -54,20 +50,20 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
         forwardRef,
         () => ({
             deleteMaps() {
-                const mapsToDelete = selectedMaps$.value.length === 0 ? maps : selectedMaps$.value;
+                const mapsToDelete = selectedMaps.length === 0 ? maps : selectedMaps;
                 mapsManager.deleteMaps(mapsToDelete, version).then(res => {
                     if (!res) {
                         return;
                     }
                     removeMapsFromList(mapsToDelete);
-                    selectedMaps$.next([]);
+                    setSelectedMaps([]);
                 });
             },
             exportMaps() {
-                mapsManager.exportMaps(version, selectedMaps$.value);
+                mapsManager.exportMaps(version, selectedMaps);
             }
         }),
-        [selectedMaps$.value, maps, version]
+        [selectedMaps, maps, version]
     );
 
     useOnUpdate(() => {
@@ -104,36 +100,6 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
 
     }, [isActiveOnce, version, maps])
 
-    useEffect(() => {
-        if (!isActiveOnce) {
-            return;
-        }
-
-        const updateItemPerRow = (listWidth: number) => {
-            const newPerRow = Math.min(Math.floor(listWidth / 400), 3);
-            if (newPerRow === itemPerRow) {
-                return;
-            }
-            setItemPerRow(newPerRow);
-        };
-
-        const heightObserver$ = new BehaviorSubject(0);
-
-        const observer = new ResizeObserver(() => {
-            updateItemPerRow(ref.current?.clientWidth || 0);
-            heightObserver$.next(ref.current?.clientHeight || 0);
-        });
-
-        observer.observe(ref.current);
-
-        const sub = heightObserver$.pipe(debounceTime(100)).subscribe(setListHeight);
-
-        return () => {
-            observer.disconnect();
-            sub.unsubscribe();
-        };
-    }, [isActiveOnce, itemPerRow]);
-
     const loadMaps = () => {
         setMaps(null);
         loadPercent$.next(0);
@@ -157,8 +123,8 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
         const filtredMaps = maps.filter(map => !mapsToRemove.some(toDeleteMaps => map.hash === toDeleteMaps.hash));
         setMaps(filtredMaps);
 
-        const filtredSelectedMaps = selectedMaps$.value.filter(map => !mapsToRemove.some(toDeleteMaps => map.hash === toDeleteMaps.hash));
-        selectedMaps$.next(filtredSelectedMaps);
+        const filtredSelectedMaps = selectedMaps.filter(map => !mapsToRemove.some(toDeleteMaps => map.hash === toDeleteMaps.hash));
+        setSelectedMaps(filtredSelectedMaps);
     };
 
     const handleDelete = useCallback(
@@ -175,7 +141,7 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
 
     const onMapSelected = useCallback(
         (map: BsmLocalMap) => {
-            const mapsCopy = [...selectedMaps$.value];
+            const mapsCopy = [...selectedMaps];
             if (mapsCopy.some(selectedMap => selectedMap.hash === map.hash)) {
                 const i = mapsCopy.findIndex(selectedMap => selectedMap.hash === map.hash);
                 mapsCopy.splice(i, 1);
@@ -183,9 +149,9 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
                 mapsCopy.push(map);
             }
 
-            selectedMaps$.next(mapsCopy);
+            setSelectedMaps(mapsCopy)
         },
-        [selectedMaps$.value]
+        [selectedMaps]
     );
 
     const isMapFitFilter = (map: BsmLocalMap): boolean => {
@@ -356,35 +322,17 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
         return true;
     };
 
-    const preppedMaps: BsmLocalMap[][] = (() => {
+    const preppedMaps: BsmLocalMap[] = (() => {
         if (!maps) {
             return [];
         }
 
-        const res: BsmLocalMap[][] = [];
-        let mapsRow: BsmLocalMap[] = [];
-
-        for (const map of maps) {
-            if (!isMapFitFilter(map)) {
-                continue;
-            }
-            if (mapsRow.length === itemPerRow) {
-                res.push(mapsRow);
-                mapsRow = [];
-            }
-            mapsRow.push(map);
-        }
-
-        if (mapsRow.length) {
-            res.push(mapsRow);
-        }
-
-        return res;
+        return maps.filter(isMapFitFilter);
     })();
 
     if (!maps) {
         return (
-            <div ref={ref} className={className}>
+            <div className={className}>
                 <BsContentLoader className="h-full flex flex-col items-center justify-center flex-wrap gap-1 text-gray-800 dark:text-gray-200" value$={loadPercent$} text="modals.download-maps.loading-maps" />
             </div>
         );
@@ -392,7 +340,7 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
 
     if (!maps.length) {
         return (
-            <div ref={ref} className={className}>
+            <div className={className}>
                 <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1 text-gray-800 dark:text-gray-200">
                     <BsmImage className="h-32" image={BeatConflict} />
                     <span className="font-bold">{t("pages.version-viewer.maps.tabs.maps.empty-maps.text")}</span>
@@ -412,10 +360,34 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
     }
 
     return (
-        <div ref={ref} className={className}>
-            <VariableSizeList className="scrollbar-default" width="100%" height={listHeight} itemSize={() => 108} itemCount={preppedMaps.length} itemData={preppedMaps} layout="vertical" style={{ scrollbarGutter: "stable both-edges" }} itemKey={(i, data) => data[i].map(map => map.hash).join()}>
-                {props => <MapsRow maps={props.data[props.index]} style={props.style} selectedMaps$={selectedMaps$} onMapSelect={onMapSelected} onMapDelete={handleDelete} />}
-            </VariableSizeList>
-        </div>
+            <VirtualScroll
+                classNames={{ mainDiv: className, rows: "gap-x-2 px-2 py-2" }}
+                itemHeight={108}
+                maxColumns={3}
+                minItemWidth={400}
+                items={preppedMaps}
+                renderItem={map => (
+                    <MapItem
+                        key={map.path}
+                        hash={map.hash}
+                        title={map.rawInfo._songName}
+                        coverUrl={map.coverUrl}
+                        songUrl={map.songUrl}
+                        autor={map.rawInfo._levelAuthorName}
+                        songAutor={map.rawInfo._songAuthorName}
+                        bpm={map.rawInfo._beatsPerMinute}
+                        duration={map.songDetails?.duration}
+                        selected={selectedMaps.some(selectedMap => selectedMap.hash === map.hash)}
+                        diffs={extractMapDiffs({ rawMapInfo: map.rawInfo, songDetails: map.songDetails })}
+                        mapId={map.songDetails?.id}
+                        ranked={map.songDetails?.ranked}
+                        autorId={map.songDetails?.uploader.id}
+                        likes={map.songDetails?.upVotes}
+                        createdAt={map.songDetails?.uploadedAt}
+                        onDelete={handleDelete}
+                        onSelected={onMapSelected}
+                        callBackParam={map}
+                    />
+                )}/>
     );
 });

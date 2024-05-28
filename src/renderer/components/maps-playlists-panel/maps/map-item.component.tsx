@@ -20,7 +20,7 @@ import { GlowEffect } from "../../shared/glow-effect.component";
 import { useDelayedState } from "renderer/hooks/use-delayed-state.hook";
 import { useService } from "renderer/hooks/use-service.hook";
 import Tippy from "@tippyjs/react";
-import { SongDetailDiffCharactertistic, SongDiffName } from "shared/models/maps";
+import { BsvMapDetail, RawMapInfoData, SongDetailDiffCharactertistic, SongDetails, SongDiffName } from "shared/models/maps";
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import { CalendarDateTime, getLocalTimeZone } from "@internationalized/date";
 
@@ -72,8 +72,6 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
     });
 
     const songPlaying = useObservable(() => audioPlayer.playing$.pipe(map(playing => playing && audioPlayer.src === songUrl)));
-
-    console.log("aaa", autorId);
 
     const MAP_DIFFICULTIES = useConstant(() => Object.values(SongDiffName))
     const previewUrl = mapId ? `https://allpoland.github.io/ArcViewer/?id=${mapId}` : null;
@@ -340,3 +338,35 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
         </motion.li>
     );
 }, equal);
+
+export function extractMapDiffs({rawMapInfo, songDetails, bsvMap}: {rawMapInfo?: RawMapInfoData, songDetails?: SongDetails, bsvMap?: BsvMapDetail}): Map<SongDetailDiffCharactertistic, ParsedMapDiff[]> {
+    const res = new Map<SongDetailDiffCharactertistic, ParsedMapDiff[]>();
+    if (bsvMap && bsvMap.versions?.at(0)?.diffs) {
+        bsvMap.versions.at(0).diffs.forEach(diff => {
+            const arr = res.get(diff.characteristic) || [];
+            arr.push({ name: diff.difficulty, type: diff.difficulty, stars: diff.stars });
+            res.set(diff.characteristic, arr);
+        });
+        return res;
+    }
+
+    if (songDetails?.difficulties) {
+        songDetails?.difficulties.forEach(diff => {
+            const arr = res.get(diff.characteristic) || [];
+            const diffName = rawMapInfo._difficultyBeatmapSets.find(set => set._beatmapCharacteristicName === diff.characteristic)._difficultyBeatmaps.find(rawDiff => rawDiff._difficulty === diff.difficulty)?._customData?._difficultyLabel || diff.difficulty;
+            arr.push({ name: diffName, type: diff.difficulty, stars: diff.stars });
+            res.set(diff.characteristic, arr);
+        });
+        return res;
+    }
+
+    rawMapInfo._difficultyBeatmapSets.forEach(set => {
+        set._difficultyBeatmaps.forEach(diff => {
+            const arr = res.get(set._beatmapCharacteristicName) || [];
+            arr.push({ name: diff._customData?._difficultyLabel || diff._difficulty, type: diff._difficulty, stars: null });
+            res.set(set._beatmapCharacteristicName, arr);
+        });
+    });
+
+    return res;
+}
