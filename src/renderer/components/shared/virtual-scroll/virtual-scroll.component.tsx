@@ -1,5 +1,5 @@
-import { useLayoutEffect, useRef, useState } from "react";
-import { VariableSizeList } from "react-window";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { ListChildComponentProps, ListOnScrollProps, VariableSizeList } from "react-window";
 import { cn } from "renderer/helpers/css-class.helpers";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { VirtualRow } from "./virtual-row.component";
@@ -14,6 +14,11 @@ type ClassNames = {
     rows?: string;
 }
 
+type ScrollEndHandler = {
+    onScrollEnd: () => void;
+    margin?: number;
+}
+
 type Props<T = unknown> = {
     className?: string;
     classNames?: ClassNames;
@@ -23,13 +28,14 @@ type Props<T = unknown> = {
     itemHeight: number;
     items: T[];
     renderItem: (item: T) => JSX.Element;
+    itemKey: (item: T[]) => string;
+    scrollEnd?: ScrollEndHandler;
 }
 
-export function VirtualScroll<T = unknown>({ className, classNames, minItemWidth, maxColumns, minColumns, itemHeight, items, renderItem}: Props<T>) {
-
-    console.log("omg les classes", className);
+export function VirtualScroll<T = unknown>({ className, classNames, minItemWidth, maxColumns, minColumns, itemHeight, items, scrollEnd, renderItem, itemKey}: Props<T>) {
 
     const ref = useRef(null);
+    const listRef = useRef<HTMLDivElement>(null);
 
     const [itemPerRow, setItemPerRow] = useState(1);
     const [itemsToRender, setItemsToRender] = useState<T[][]>([]);
@@ -48,7 +54,6 @@ export function VirtualScroll<T = unknown>({ className, classNames, minItemWidth
         const observer = new ResizeObserver(() => {
             updateItemPerRow(ref.current?.clientWidth || 0);
             listHeight$.next(ref.current?.clientHeight || 0);
-            console.log("list height", ref.current?.clientHeight);
         });
 
         observer.observe(ref.current);
@@ -61,10 +66,41 @@ export function VirtualScroll<T = unknown>({ className, classNames, minItemWidth
         setItemsToRender(() => splitedItems);
     }, [itemPerRow, items])
 
+    const handleScroll = (e: ListOnScrollProps) => {
+        if(!scrollEnd?.onScrollEnd || !listRef.current){ return; }
+
+        const { scrollDirection, scrollOffset, scrollUpdateWasRequested } = e;
+        const { scrollHeight } = listRef.current;
+
+        if(!scrollHeight || !listHeight){ return; }
+
+        const margin = scrollEnd.margin ?? 0;
+
+        if (scrollDirection === "forward" && !scrollUpdateWasRequested && scrollOffset + listHeight + margin >= scrollHeight) {
+            scrollEnd.onScrollEnd();
+        }
+    };
+
+    const renderRow = useCallback((props: ListChildComponentProps<any>) => {
+        return <VirtualRow items={props.data[props.index]} renderItem={renderItem} className={classNames?.rows} style={props.style}/>;
+    }, [renderItem, classNames?.rows]);
+
     return (
         <div ref={ref} className={cn(className, classNames?.mainDiv)}>
-            <VariableSizeList className={cn("scrollbar-default", classNames?.variableList)} width="100%" height={listHeight} layout="vertical" itemCount={itemsToRender.length} itemKey={i => i} itemSize={() => itemHeight} itemData={itemsToRender} style={{ scrollbarGutter: "stable both-edges" }}>
-                {props => <VirtualRow key={props.index} items={props.data[props.index]} renderItem={renderItem} className={classNames?.rows} style={props.style}/>}
+            <VariableSizeList
+                innerRef={listRef}
+                className={cn("scrollbar-default", classNames?.variableList)}
+                width="100%" height={listHeight}
+                layout="vertical"
+                itemCount={itemsToRender.length}
+                itemKey={i => itemKey?.(itemsToRender[i]) ?? i}
+                itemSize={() => itemHeight}
+                itemData={itemsToRender}
+                style={{ scrollbarGutter: "stable both-edges" }}
+                onScroll={handleScroll}
+
+            >
+                {renderRow}
             </VariableSizeList>
         </div>
     )

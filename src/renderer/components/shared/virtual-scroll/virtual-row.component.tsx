@@ -1,4 +1,3 @@
-import equal from "fast-deep-equal";
 import { CSSProperties, memo } from "react";
 import { cn } from "renderer/helpers/css-class.helpers";
 
@@ -10,9 +9,10 @@ type Props<T> = {
 }
 
 function VirtualRowComponent<T>({ className, style, items, renderItem }: Props<T>) {
+
     return (
         <ul className={cn("h-fit w-full flex flex-nowrap", className)} style={style}>
-            {items.map((item) => (
+            {items?.map((item) => (
                 renderItem(item)
             ))}
         </ul>
@@ -21,4 +21,4 @@ function VirtualRowComponent<T>({ className, style, items, renderItem }: Props<T
 
 const typedMemo: <T, P>(c: T, propsAreEqual?: (prevProps: Readonly<P>, nextProps: Readonly<P>) => boolean) => T = memo;
 
-export const VirtualRow = typedMemo(VirtualRowComponent, equal);
+export const VirtualRow = typedMemo(VirtualRowComponent);
