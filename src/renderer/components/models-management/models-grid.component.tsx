@@ -1,5 +1,5 @@
 import { BSVersion } from "shared/bs-version.interface";
-import { forwardRef, useImperativeHandle } from "react";
+import { forwardRef, useCallback, useImperativeHandle, useState } from "react";
 import { MSModelType } from "shared/models/models/model-saber.model";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useConstant } from "renderer/hooks/use-constant.hook";
@@ -7,7 +7,6 @@ import { ModelsManagerService } from "renderer/services/models-management/models
 import { useSwitchableObservable } from "renderer/hooks/use-switchable-observable.hook";
 import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 import { ModelItem } from "./model-item.component";
-import { useBehaviorSubject } from "renderer/hooks/use-behavior-subject.hook";
 import { BsmImage } from "../shared/bsm-image.component";
 import BeatConflict from "../../../../assets/images/apngs/beat-conflict.png";
 import { BehaviorSubject, distinctUntilChanged, map, startWith } from "rxjs";
@@ -19,6 +18,7 @@ import { useService } from "renderer/hooks/use-service.hook";
 import { ModelsDownloaderService } from "renderer/services/models-management/models-downloader.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { BsContentLoader } from "../shared/bs-content-loader.component";
+import { VirtualScroll } from "../shared/virtual-scroll/virtual-scroll.component";
 
 type Props = {
     className?: string;
@@ -36,8 +36,9 @@ export const ModelsGrid = forwardRef<unknown, Props>(({ className, version, type
     const t = useTranslation();
 
     const [models, setModelsLoadObservable, , setModels] = useSwitchableObservable<BsmLocalModel[]>();
+    const [renderableModels, setRenderableModels] = useState<RenderableModel[]>([]);
     const progress$ = useConstant(() => new BehaviorSubject(0));
-    const [modelsSelected, modelsSelected$] = useBehaviorSubject<BsmLocalModel[]>([]);
+    const [modelsSelected, setModelsSelected] = useState<BsmLocalModel[]>([]);
 
     const isLoading = !models;
     const hasModels = !!models?.length;
@@ -61,12 +62,19 @@ export const ModelsGrid = forwardRef<unknown, Props>(({ className, version, type
                     }
                     const newModels = models.filter(m => !deletedModels.some(d => d.hash === m.hash));
                     setModels(() => newModels);
-                    modelsSelected$.next([]);
+                    setModelsSelected(() => []);
                 });
             },
         }),
         [modelsSelected, models]
     );
+
+    useOnUpdate(() => setRenderableModels(() => (
+        models?.map(model => ({
+            model,
+            selected: modelsSelected.some(m => m.hash === model.hash)
+        })) ?? [])
+    ), [modelsSelected, models]);
 
     useOnUpdate(() => {
         if (!active) {
@@ -134,27 +142,28 @@ export const ModelsGrid = forwardRef<unknown, Props>(({ className, version, type
     };
 
     const handleModelClick = (model: BsmLocalModel) => {
-        const prunedArray = Array.from(new Set(modelsSelected));
-        if (prunedArray.some(m => m.hash === model.hash)) {
-            prunedArray.splice(
-                prunedArray.findIndex(m => m.hash === model.hash),
-                1
-            );
-        } else {
-            prunedArray.push(model);
-        }
-        modelsSelected$.next(prunedArray);
+        setModelsSelected(prev => {
+            const newModels = [...prev];
+            const index = newModels.findIndex(m => m.hash === model.hash);
+            if (index === -1) {
+                newModels.push(model);
+            } else {
+                newModels.splice(index, 1);
+            }
+            return newModels;
+
+        });
     };
 
     const filtredModels = () => {
         if (!active) {
-            return models;
+            return renderableModels;
         }
 
         const lowerSearch = search?.toLowerCase();
 
-        return models?.filter(model => {
-            const findedInRawValues = Object.values(model).some(value => {
+        return renderableModels?.filter(model => {
+            const findedInRawValues = Object.values(model.model).some(value => {
                 if (typeof value !== "string" && typeof value !== "number") {
                     return false;
                 }
@@ -165,11 +174,11 @@ export const ModelsGrid = forwardRef<unknown, Props>(({ className, version, type
                 return true;
             }
 
-            if (!model.model) {
+            if (!model.model.model) {
                 return false;
             }
 
-            return Object.values(model.model).some(value => {
+            return Object.values(model.model.model).some(value => {
                 if (typeof value !== "string" && typeof value !== "number" && !Array.isArray(value)) {
                     return false;
                 }
@@ -189,9 +198,28 @@ export const ModelsGrid = forwardRef<unknown, Props>(({ className, version, type
                 return;
             }
             setModels(prev => prev.filter(m => m.hash !== model.hash));
-            modelsSelected$.next(modelsSelected.filter(m => m.hash !== model.hash));
+            setModelsSelected(modelsSelected => modelsSelected.filter(m => m.hash !== model.hash));
         });
     };
+
+    const renderModel = useCallback((renderableModel: RenderableModel) => {
+
+            const model = renderableModel.model;
+
+            return (
+                <ModelItem
+                    {...model?.model}
+                    key={model.path}
+                    hash={model.model?.hash ?? model.hash}
+                    path={model.path}
+                    type={model.type}
+                    name={model.model?.name ?? model.fileName}
+                    selected={renderableModel.selected}
+                    onClick={() => handleModelClick(model)}
+                    onDelete={() => handleDelete(model)}
+                />
+            )
+    }, [version]);
 
     const renderContent = () => {
         if (isLoading) {
@@ -220,17 +248,30 @@ export const ModelsGrid = forwardRef<unknown, Props>(({ className, version, type
         }
 
         return (
-            <ul className="flex flex-wrap shrink-0 justify-start content-start w-full h-full overflow-y-scroll overflow-x-hidden p-4 gap-4 scrollbar-default">
-                {filtredModels().map(localModel => (
-                    <ModelItem {...localModel?.model} key={localModel.path} hash={localModel.model?.hash ?? localModel.hash} path={localModel.path} type={localModel.type} name={localModel.model?.name ?? localModel.fileName} selected={modelsSelected.some(m => m.hash === localModel.hash)} onClick={() => handleModelClick(localModel)} onDelete={() => handleDelete(localModel)} />
-                ))}
-            </ul>
+            <VirtualScroll
+                classNames={{
+                    mainDiv: "size-full",
+                    rows: "gap-x-4 p-4"
+                }}
+                itemHeight={272}
+                minItemWidth={256}
+                maxColumns={Infinity}
+                items={filtredModels()}
+                rowKey={rowModels => rowModels.map(m => m.model.path).join("-")}
+                renderItem={renderModel}
+
+            />
         );
     };
 
     return (
-        <div className={`w-full h-full flex-shrink-0 ${className ?? ""}`}>
+        <div className={`size-full flex-shrink-0 ${className ?? ""}`}>
             {renderContent()}
         </div>
     );
 });
+
+type RenderableModel = {
+    model: BsmLocalModel;
+    selected: boolean;
+};

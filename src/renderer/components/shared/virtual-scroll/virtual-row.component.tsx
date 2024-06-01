@@ -1,5 +1,6 @@
-import { CSSProperties, memo } from "react";
+import { CSSProperties } from "react";
 import { cn } from "renderer/helpers/css-class.helpers";
+import { typedMemo } from "renderer/helpers/typed-memo";
 
 type Props<T> = {
     className?: string;
@@ -18,7 +19,5 @@ function VirtualRowComponent<T>({ className, style, items, renderItem }: Props<T
         </ul>
     );
 }
-
-const typedMemo: <T, P>(c: T, propsAreEqual?: (prevProps: Readonly<P>, nextProps: Readonly<P>) => boolean) => T = memo;
 
 export const VirtualRow = typedMemo(VirtualRowComponent);

@@ -45,7 +45,6 @@ export class MapsDownloaderService {
         });
 
         this.ipc.watch<{map: BsmLocalMap, version?: BSVersion}>("map-downloaded").subscribe((data) => {
-            console.log(data);
             this.downloadedListerners.forEach(func => func(data.map, data.version));
         });
     }

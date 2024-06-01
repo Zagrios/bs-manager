@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useRef, useState } from "react";
+import { Key, useCallback, useLayoutEffect, useRef, useState } from "react";
 import { ListChildComponentProps, ListOnScrollProps, VariableSizeList } from "react-window";
 import { cn } from "renderer/helpers/css-class.helpers";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
@@ -28,11 +28,11 @@ type Props<T = unknown> = {
     itemHeight: number;
     items: T[];
     renderItem: (item: T) => JSX.Element;
-    itemKey: (item: T[]) => string;
+    rowKey: (rowItems: T[]) => Key;
     scrollEnd?: ScrollEndHandler;
 }
 
-export function VirtualScroll<T = unknown>({ className, classNames, minItemWidth, maxColumns, minColumns, itemHeight, items, scrollEnd, renderItem, itemKey}: Props<T>) {
+export function VirtualScroll<T = unknown>({ className, classNames, minItemWidth, maxColumns, minColumns, itemHeight, items, scrollEnd, renderItem, rowKey}: Props<T>) {
 
     const ref = useRef(null);
     const listRef = useRef<HTMLDivElement>(null);
@@ -93,7 +93,7 @@ export function VirtualScroll<T = unknown>({ className, classNames, minItemWidth
                 width="100%" height={listHeight}
                 layout="vertical"
                 itemCount={itemsToRender.length}
-                itemKey={i => itemKey?.(itemsToRender[i]) ?? i}
+                itemKey={i => rowKey?.(itemsToRender[i]) ?? i}
                 itemSize={() => itemHeight}
                 itemData={itemsToRender}
                 style={{ scrollbarGutter: "stable both-edges" }}

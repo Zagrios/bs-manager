@@ -1,4 +1,4 @@
-import { forwardRef, useContext, useState } from "react";
+import { forwardRef, useCallback, useContext, useState } from "react";
 import { BsContentLoader } from "renderer/components/shared/bs-content-loader.component";
 import { useChangeUntilEqual } from "renderer/hooks/use-change-until-equal.hook";
 import { useConstant } from "renderer/hooks/use-constant.hook";
@@ -24,6 +24,7 @@ import { NotificationService } from "renderer/services/notification.service";
 import { DeletePlaylistModal } from "renderer/components/modal/modal-types/playlist/delete-playlist-modal.component";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { PlaylistItemComponentPropsMapper } from "shared/mappers/playlist/playlist-item-component-props.mapper";
+import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual-scroll.component";
 
 type Props = {
     version: BSVersion;
@@ -79,9 +80,7 @@ export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, cl
         });
 
         const onPlaylistDownloadedCB = (downloaded: LocalBPListsDetails) => {
-            console.log("onPlaylistDownloadedCB", downloaded);
             const newPlaylist = (() => {
-                console.log(playlists);
                 const index = playlists$.value.findIndex(p => p.path === downloaded.path);
                 if(index === -1){
                     return [...playlists$.value, downloaded];
@@ -120,18 +119,17 @@ export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, cl
     };
 
     const deletePlaylist = async (bpList: LocalBPList) => {
-        // !! Need to call the modal to confirm the deletion and to ask if the maps should be deleted too
         const { exitCode, data: deleteMaps } = await modals.openModal(DeletePlaylistModal, { data: bpList });
 
         if(exitCode !== ModalExitCode.COMPLETED){ return; }
 
         lastValueFrom(playlistService.deletePlaylist({ version, bpList, deleteMaps })).then(() => {
-            setPlaylists(playlists.filter(p => p.path !== bpList.path));
+            setPlaylists(playlists$.value.filter(p => p.path !== bpList.path));
         })
     };
 
-    const openPlaylistDetails = (playlistKey: string) => {
-        const localPlaylist$ = playlists$.pipe(map(playlists => playlists.find(p => p.path === playlistKey)));
+    const openPlaylistDetails = (playlistPath: string) => {
+        const localPlaylist$ = playlists$.pipe(map(playlists => playlists.find(p => p.path === playlistPath)));
         const installedMaps$ = combineLatest([maps$, localPlaylist$]).pipe(
             filter(([maps, playlist]) => !!maps && !!playlist),
             map(([maps, playlist]) => maps.filter(m => playlist.songs.some(song => song.hash.toLocaleLowerCase() === m.hash.toLocaleLowerCase()))),
@@ -144,6 +142,22 @@ export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, cl
         })
     };
 
+    const renderPlaylist = useCallback((playlist: LocalBPListsDetails) => {
+        return (
+            <PlaylistItem
+                key={playlist.path}
+                {...PlaylistItemComponentPropsMapper.fromLocalBPListDetails(playlist)}
+                isDownloading$={playlistDownloader.$isPlaylistDownloading(playlist.customData?.syncURL ?? playlist.path, version)}
+                isInQueue$={playlistDownloader.$isPlaylistInQueue(playlist.customData?.syncURL ?? playlist.path, version)}
+                onClickOpen={() => openPlaylistDetails(playlist.path)}
+                onClickDelete={() => deletePlaylist(playlist)}
+                onClickSync={isOnline && (() => installPlaylist(playlist))}
+                onClickOpenFile={() => viewPlaylistFile(playlist.path)}
+                onClickCancelDownload={() => playlistDownloader.cancelDownload(playlist.customData?.syncURL ?? playlist.path, version)}
+            />
+        );
+    }, [isOnline, version]);
+
     return (
         <div className={className}>
             {(() => {
@@ -155,21 +169,18 @@ export const LocalPlaylistsListPanel = forwardRef<unknown, Props>(({ version, cl
 
                 if (playlists?.length){
                     return (
-                        <ul className="relative size-full flex flex-row flex-wrap justify-start content-start p-3 gap-3">
-                            {playlists.map(p =>
-                                <PlaylistItem
-                                    key={p.path}
-                                    {...PlaylistItemComponentPropsMapper.fromLocalBPListDetails(p)}
-                                    isDownloading$={playlistDownloader.$isPlaylistDownloading(p.customData?.syncURL ?? p.path, version)}
-                                    isInQueue$={playlistDownloader.$isPlaylistInQueue(p.customData?.syncURL ?? p.path, version)}
-                                    onClickOpen={() => openPlaylistDetails(p.path)}
-                                    onClickDelete={() => deletePlaylist(p)}
-                                    onClickSync={isOnline && (() => installPlaylist(p))}
-                                    onClickOpenFile={() => viewPlaylistFile(p.path)}
-                                    onClickCancelDownload={() => playlistDownloader.cancelDownload(p.customData?.syncURL ?? p.path, version)}
-                                />
-                            )}
-                        </ul>
+                        <VirtualScroll
+                            classNames={{
+                                mainDiv: "size-full",
+                                rows: "gap-2 px-2 py-2"
+                            }}
+                            itemHeight={120}
+                            maxColumns={4}
+                            minItemWidth={390}
+                            items={playlists}
+                            renderItem={renderPlaylist}
+                            rowKey={rowPlaylists => rowPlaylists.map(p => p.path).join("-")}
+                        />
                     )
                 }
 

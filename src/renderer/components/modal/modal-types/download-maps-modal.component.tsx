@@ -21,6 +21,7 @@ import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { useService } from "renderer/hooks/use-service.hook";
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import { getLocalTimeZone, parseAbsolute, toCalendarDateTime } from "@internationalized/date";
+import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual-scroll.component";
 
 export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; ownedMaps: BsmLocalMap[] }> = ({ options: {data : { ownedMaps, version }} }) => {
     const beatSaver = useService(BeatSaverService);
@@ -35,6 +36,7 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
     const [filter, setFilter] = useState<MapFilter>({});
     const [query, setQuery] = useState("");
     const [maps, setMaps] = useState<BsvMapDetail[]>([]);
+    const [downloadbleMaps, setDownloadbleMaps] = useState<DownloadableMap[]>([]);
     const [sortOrder, setSortOrder] = useState<BsvSearchOrder>(BsvSearchOrder.Latest);
     const [ownedMapHashs, setOwnedMapHashs] = useState<string[]>(ownedMaps?.map(map => map.hash) ?? []);
     const [loading, setLoading] = useState(false);
@@ -46,19 +48,27 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
         q: query,
     });
 
-    const loaderRef = useRef(null);
-
     const sortOptions: BsmSelectOption<BsvSearchOrder>[] = useConstant(() => {
         return Object.values(BsvSearchOrder).map(sort => ({ text: `beat-saver.maps-sorts.${sort}`, value: sort }));
     });
+
+    useEffect(() => {
+        setDownloadbleMaps(() => maps.map(map => {
+            const isMapOwned = map.versions.some(version => ownedMapHashs.includes(version.hash));
+            const isDownloading = map.id === currentDownload?.map?.id;
+            const inQueue = mapsInQueue.some(toDownload => equal(toDownload.version, version) && toDownload.map.id === map.id);
+
+            return { map, isOwned: isMapOwned, idDownloading: isDownloading, isInQueue: inQueue };
+        }));
+    }, [maps, currentDownload, mapsInQueue, ownedMapHashs, currentDownload])
 
     useEffect(() => {
         loadMaps(searchParams);
     }, [searchParams]);
 
     useEffect(() => {
-        const onMapDownloaded = (map: BsmLocalMap, targerVersion: BSVersion) => {
-            if (!equal(targerVersion, version)) {
+        const onMapDownloaded = (map: BsmLocalMap, targetVersion: BSVersion) => {
+            if (!equal(targetVersion, version)) {
                 return;
             }
             const downloadedHash = map.hash;
@@ -121,10 +131,11 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
             })
     };
 
-    const renderMap = (map: BsvMapDetail) => {
-        const isMapOwned = map.versions.some(version => ownedMapHashs.includes(version.hash));
-        const isDownloading = map.id === currentDownload?.map?.id;
-        const inQueue = mapsInQueue.some(toDownload => equal(toDownload.version, version) && toDownload.map.id === map.id);
+    const renderMap = useCallback((downloadableMap: DownloadableMap) => {
+        const map = downloadableMap.map;
+
+        const downloadable = !downloadableMap.isOwned && !downloadableMap.isInQueue;
+        const cancelable = downloadableMap.isInQueue && !downloadableMap.idDownloading;
 
         return <MapItem
             autor={map.metadata.levelAuthorName}
@@ -141,13 +152,13 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
             diffs={extractMapDiffs({ bsvMap: map })}
             songUrl={map.versions.at(0).previewURL}
             key={map.id}
-            onDownload={!isMapOwned && !inQueue && handleDownloadMap}
-            onDoubleClick={!isMapOwned && !inQueue && handleDownloadMap}
-            onCancelDownload={inQueue && !isDownloading && handleCancelDownload}
-            downloading={isDownloading}
-            showOwned={isMapOwned}
+            onDownload={downloadable && handleDownloadMap}
+            onDoubleClick={downloadable && handleDownloadMap}
+            onCancelDownload={cancelable && handleCancelDownload}
+            downloading={downloadableMap.idDownloading}
+            showOwned={downloadableMap.isOwned}
             callBackParam={map} />;
-    };
+    }, [version]);
 
     const handleDownloadMap = useCallback((map: BsvMapDetail) => {
         mapsDownloader.addMapToDownload({ map, version });
@@ -176,6 +187,9 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
     };
 
     const handleLoadMore = () => {
+
+        if(loading){ return; }
+
         setSearchParams(prev => {
             return { ...prev, page: prev.page + 1 };
         });
@@ -206,7 +220,62 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
                 />
                 <BsmSelect className="bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-1 pb-0.5 text-center" options={sortOptions} onChange={sort => handleSortChange(sort)} />
             </div>
-            <ul className="w-full grow flex content-start flex-wrap gap-2 pt-1.5 px-2 overflow-y-scroll overflow-x-hidden scrollbar-default z-0">
+
+            {(() => {
+                if(downloadbleMaps?.length) {
+                    return (
+                        <VirtualScroll
+                            classNames={{
+                                mainDiv: "size-full",
+                                rows: "gap-x-2 px-2 py-2"
+                            }}
+                            minColumns={1}
+                            maxColumns={2}
+                            itemHeight={108}
+                            minItemWidth={400}
+                            items={downloadbleMaps}
+                            rowKey={mapsInRow => mapsInRow.map(map => map.map.id).join("-")}
+                            renderItem={renderMap}
+                            scrollEnd={{
+                                onScrollEnd: handleLoadMore,
+                                margin: 100
+                            }}
+
+                        />
+                    )
+                }
+
+                return (
+                    <div className="w-full h-full flex flex-col items-center justify-center">
+                        <img className={`w-32 h-32 ${loading && "spin-loading"}`} src={loading ? BeatWaitingImg : BeatConflictImg} alt=" " />
+                        <span className="text-lg">
+                            {(() => {
+                                if (loading) {
+                                    return t("modals.download-maps.loading-maps");
+                                }
+                                if (isOnline) {
+                                    return t("modals.download-maps.no-maps-found");
+                                }
+                                return t("modals.download-maps.no-internet");
+                            })()}
+                        </span>
+                    </div>
+                )
+
+            })()}
+
+        </form>
+    );
+};
+
+type DownloadableMap = {
+    map: BsvMapDetail;
+    isOwned: boolean;
+    idDownloading: boolean;
+    isInQueue: boolean;
+};
+
+{/* <ul className="w-full grow flex content-start flex-wrap gap-2 pt-1.5 px-2 overflow-y-scroll overflow-x-hidden scrollbar-default z-0">
                 {maps.length === 0 ? (
                     <div className="w-full h-full flex flex-col items-center justify-center">
                         <img className={`w-32 h-32 ${loading && "spin-loading"}`} src={loading ? BeatWaitingImg : BeatConflictImg} alt=" " />
@@ -228,7 +297,4 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
                         <motion.span onViewportEnter={handleLoadMore} ref={loaderRef} className="block w-full h-8" />
                     </>
                 )}
-            </ul>
-        </form>
-    );
-};
+            </ul> */}

@@ -39,6 +39,7 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
 
     const {maps$, setMaps} = useContext(InstalledMapsContext);
     const maps = useObservable(() => maps$, undefined);
+    const [renderableMaps, setRenderableMaps] = useState<RenderableMap[]>([]);
     const [subs] = useState<Subscription[]>([]);
     const [selectedMaps, setSelectedMaps] = useState<BsmLocalMap[]>([]);
     const isActiveOnce = useChangeUntilEqual(isActive, { untilEqual: true });
@@ -46,25 +47,25 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
 
     const loadPercent$ = useConstant(() => new BehaviorSubject(0));
 
-    useImperativeHandle(
-        forwardRef,
-        () => ({
-            deleteMaps() {
-                const mapsToDelete = selectedMaps.length === 0 ? maps : selectedMaps;
-                mapsManager.deleteMaps(mapsToDelete, version).then(res => {
-                    if (!res) {
-                        return;
-                    }
-                    removeMapsFromList(mapsToDelete);
-                    setSelectedMaps([]);
-                });
-            },
-            exportMaps() {
-                mapsManager.exportMaps(version, selectedMaps);
-            }
-        }),
-        [selectedMaps, maps, version]
-    );
+    useImperativeHandle(forwardRef, () => ({
+        deleteMaps() {
+            const mapsToDelete = selectedMaps.length === 0 ? maps : selectedMaps;
+            mapsManager.deleteMaps(mapsToDelete, version).then(res => {
+                if (!res) {
+                    return;
+                }
+                removeMapsFromList(mapsToDelete);
+                setSelectedMaps([]);
+            });
+        },
+        exportMaps() {
+            mapsManager.exportMaps(version, selectedMaps);
+        }
+    }),[selectedMaps, maps, version]);
+
+    useOnUpdate(() => {
+        setRenderableMaps(() => maps?.map(map => ({ map, selected: selectedMaps.some(selectedMap => selectedMap.hash === map.hash) }) ));
+    }, [maps, selectedMaps]);
 
     useOnUpdate(() => {
         if(linkedState === FolderLinkState.Pending || linkedState === FolderLinkState.Processing) return () => {};
@@ -120,27 +121,24 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
     };
 
     const removeMapsFromList = (mapsToRemove: BsmLocalMap[]) => {
-        const filtredMaps = maps.filter(map => !mapsToRemove.some(toDeleteMaps => map.hash === toDeleteMaps.hash));
+        const filtredMaps = maps$.value.filter(map => !mapsToRemove.some(toDeleteMaps => map.hash === toDeleteMaps.hash));
         setMaps(filtredMaps);
 
-        const filtredSelectedMaps = selectedMaps.filter(map => !mapsToRemove.some(toDeleteMaps => map.hash === toDeleteMaps.hash));
-        setSelectedMaps(filtredSelectedMaps);
+        setSelectedMaps(selectedMaps => selectedMaps.filter(map => !mapsToRemove.some(toDeleteMaps => map.hash === toDeleteMaps.hash)));
     };
 
-    const handleDelete = useCallback(
-        (map: BsmLocalMap) => {
-            mapsManager.deleteMaps([map], version).then(res => {
-                if (!res) {
-                    return;
-                }
-                removeMapsFromList([map]);
-            });
-        },
-        [version, maps]
-    );
+    const handleDelete = (map: BsmLocalMap) => {
+        mapsManager.deleteMaps([map], version).then(res => {
+            if (!res) {
+                return;
+            }
+            removeMapsFromList([map]);
+        });
+    }
 
-    const onMapSelected = useCallback(
-        (map: BsmLocalMap) => {
+    const onMapSelected = (map: BsmLocalMap) => {
+
+        setSelectedMaps(selectedMaps => {
             const mapsCopy = [...selectedMaps];
             if (mapsCopy.some(selectedMap => selectedMap.hash === map.hash)) {
                 const i = mapsCopy.findIndex(selectedMap => selectedMap.hash === map.hash);
@@ -148,11 +146,36 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
             } else {
                 mapsCopy.push(map);
             }
+            return mapsCopy;
+        });
+    }
 
-            setSelectedMaps(mapsCopy)
-        },
-        [selectedMaps]
-    );
+    const renderMap = useCallback((renderableMap: RenderableMap) => {
+        const map = renderableMap.map;
+        return (
+            <MapItem
+                key={map.path}
+                hash={map.hash}
+                title={map.rawInfo._songName}
+                coverUrl={map.coverUrl}
+                songUrl={map.songUrl}
+                autor={map.rawInfo._levelAuthorName}
+                songAutor={map.rawInfo._songAuthorName}
+                bpm={map.rawInfo._beatsPerMinute}
+                duration={map.songDetails?.duration}
+                selected={renderableMap.selected}
+                diffs={extractMapDiffs({ rawMapInfo: map.rawInfo, songDetails: map.songDetails })}
+                mapId={map.songDetails?.id}
+                ranked={map.songDetails?.ranked}
+                autorId={map.songDetails?.uploader.id}
+                likes={map.songDetails?.upVotes}
+                createdAt={map.songDetails?.uploadedAt}
+                onDelete={handleDelete}
+                onSelected={onMapSelected}
+                callBackParam={map}
+            />
+        );
+    }, [version])
 
     const isMapFitFilter = (map: BsmLocalMap): boolean => {
         // Can be more clean and optimized i think
@@ -322,12 +345,8 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
         return true;
     };
 
-    const preppedMaps: BsmLocalMap[] = (() => {
-        if (!maps) {
-            return [];
-        }
-
-        return maps.filter(isMapFitFilter);
+    const preppedMaps: RenderableMap[] = (() => {
+        return renderableMaps?.filter(renderableMap => isMapFitFilter(renderableMap.map)) ?? [];
     })();
 
     if (!maps) {
@@ -366,28 +385,12 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
                 maxColumns={3}
                 minItemWidth={400}
                 items={preppedMaps}
-                renderItem={map => (
-                    <MapItem
-                        key={map.path}
-                        hash={map.hash}
-                        title={map.rawInfo._songName}
-                        coverUrl={map.coverUrl}
-                        songUrl={map.songUrl}
-                        autor={map.rawInfo._levelAuthorName}
-                        songAutor={map.rawInfo._songAuthorName}
-                        bpm={map.rawInfo._beatsPerMinute}
-                        duration={map.songDetails?.duration}
-                        selected={selectedMaps.some(selectedMap => selectedMap.hash === map.hash)}
-                        diffs={extractMapDiffs({ rawMapInfo: map.rawInfo, songDetails: map.songDetails })}
-                        mapId={map.songDetails?.id}
-                        ranked={map.songDetails?.ranked}
-                        autorId={map.songDetails?.uploader.id}
-                        likes={map.songDetails?.upVotes}
-                        createdAt={map.songDetails?.uploadedAt}
-                        onDelete={handleDelete}
-                        onSelected={onMapSelected}
-                        callBackParam={map}
-                    />
-                )}/>
+                rowKey={rowMaps => rowMaps.map(map => map.map.hash).join("")}
+                renderItem={renderMap}/>
     );
 });
+
+type RenderableMap = {
+    map: BsmLocalMap;
+    selected: boolean;
+};

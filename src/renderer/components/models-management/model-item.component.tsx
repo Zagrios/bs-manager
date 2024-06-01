@@ -1,5 +1,5 @@
 import equal from "fast-deep-equal";
-import { memo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { MSModel } from "shared/models/models/model-saber.model";
 import { BsmImage } from "../shared/bsm-image.component";
 import { motion } from "framer-motion";
@@ -19,6 +19,7 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import useDoubleClick from "use-double-click";
 import { useDelayedState } from "renderer/hooks/use-delayed-state.hook";
 import { ChevronTopIcon } from "../svgs/icons/chevron-top-icon.component";
+import { typedMemo } from "renderer/helpers/typed-memo";
 
 type Props<T> = {
     selected?: boolean;
@@ -192,7 +193,5 @@ function ModelItemElement<T = unknown>(props: Props<T>) {
         </motion.li>
     );
 }
-
-const typedMemo: <T, P>(c: T, propsAreEqual?: (prevProps: Readonly<P>, nextProps: Readonly<P>) => boolean) => T = memo;
 
 export const ModelItem = typedMemo(ModelItemElement, equal);

@@ -23,6 +23,7 @@ import Tippy from "@tippyjs/react";
 import { BsvMapDetail, RawMapInfoData, SongDetailDiffCharactertistic, SongDetails, SongDiffName } from "shared/models/maps";
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import { CalendarDateTime, getLocalTimeZone } from "@internationalized/date";
+import { typedMemo } from "renderer/helpers/typed-memo";
 
 export type ParsedMapDiff = { type: SongDiffName; name: string; stars: number };
 
@@ -52,7 +53,7 @@ export type MapItemProps<T = unknown> = {
     onDoubleClick?: (param: T) => void;
 };
 
-export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, ranked, bpm, duration, likes, createdAt, selected, downloading, showOwned, callBackParam, onDelete, onDownload, onSelected, onCancelDownload, onDoubleClick }: MapItemProps) => {
+export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, ranked, bpm, duration, likes, createdAt, selected, downloading, showOwned, callBackParam, onDelete, onDownload, onSelected, onCancelDownload, onDoubleClick }: MapItemProps<T>) {
     const linkOpener = useService(LinkOpenerService);
     const audioPlayer = useService(AudioPlayerService);
 
@@ -337,7 +338,9 @@ export const MapItem = memo(({ hash, title, autor, songAutor, coverUrl, songUrl,
             </div>
         </motion.li>
     );
-}, equal);
+};
+
+export const MapItem = typedMemo(MapItemComponent, equal)
 
 export function extractMapDiffs({rawMapInfo, songDetails, bsvMap}: {rawMapInfo?: RawMapInfoData, songDetails?: SongDetails, bsvMap?: BsvMapDetail}): Map<SongDetailDiffCharactertistic, ParsedMapDiff[]> {
     const res = new Map<SongDetailDiffCharactertistic, ParsedMapDiff[]>();

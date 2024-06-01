@@ -31,7 +31,10 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
     const playlistDownloader = useService(PlaylistDownloaderService);
 
     const [playlists, setPlaylists] = useState<BsvPlaylist[]>(null);
+    const [downloadablePlaylists, setDownloadablePlaylists] = useState<DownloadablePlaylist[]>(null);
+
     const ownedPlaylists = useObservable(() => ownedPlaylists$, []);
+    const ownedMaps = useObservable(() => ownedMaps$, []);
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
@@ -40,6 +43,14 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
         sortOrder: BsvSearchOrder.Relevance,
         page: 0,
     });
+
+    useOnUpdate(() => {
+        setDownloadablePlaylists(() => playlists?.map(playlist => ({
+                playlist,
+                isOwned: ownedPlaylists.some(ownedPlaylist => ownedPlaylist.id === playlist.playlistId),
+                ownedMaps: ownedMaps
+        })));
+    }, [playlists, ownedPlaylists, ownedMaps])
 
     useOnUpdate(() => {
         setLoading(() => true);
@@ -63,19 +74,28 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
         setSearchParams(prev => ({ ...prev, page: prev.page + 1 }));
     };
 
-    const renderPlaylist = useCallback((playlist: BsvPlaylist) => {
+    const renderPlaylist = useCallback((downloadablePlaylists: DownloadablePlaylist) => {
 
-        const onClickDownload = async () => {
-            const ownedMaps = await lastValueFrom(ownedMaps$.pipe(take(1)));
-            await lastValueFrom(playlistDownloader.downloadPlaylist({ downloadSource: playlist.downloadURL, ignoreSongsHashs: ownedMaps.map(map => map.hash), version }));
+        const playlist = downloadablePlaylists.playlist;
+
+        const onClickDownload =  () => {
+            lastValueFrom(playlistDownloader.downloadPlaylist({
+                downloadSource: playlist.downloadURL,
+                ignoreSongsHashs: downloadablePlaylists.ownedMaps.map(map => map.hash),
+                version
+            }));
         }
 
         return (
             <PlaylistItem
                 key={playlist.playlistId}
                 {...PlaylistItemComponentPropsMapper.fromBsvPlaylist(playlist)}
+                isDownloading$={playlistDownloader.$isPlaylistDownloading(playlist.downloadURL, version)}
+                isInQueue$={playlistDownloader.$isPlaylistInQueue(playlist.downloadURL, version)}
                 onClickOpen={() => openPlaylist(playlist)}
-                onClickDownload={onClickDownload}
+                onClickDownload={downloadablePlaylists.isOwned ? null : onClickDownload}
+                onClickSync={downloadablePlaylists.isOwned ? onClickDownload : null}
+                onClickCancelDownload={() => playlistDownloader.cancelDownload(playlist.downloadURL, version)}
             />
         );
     }, [version]);
@@ -84,7 +104,7 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
         <div className="max-w-[95vw] w-[970px] h-[85vh] flex flex-col gap-3">
             <DownloadPlaylistModalHeader className="h-9 w-full" value={searchParams} onSubmit={handleNewSearch}/>
             {(() => {
-                if(!Array.isArray(playlists)){
+                if(!Array.isArray(downloadablePlaylists)){
                     return (
                         <div className="w-full flex flex-col justify-center items-center mt-44">
                             <BsmImage className={cn(["size-32", !error && "spin-loading"])} image={error ? BeatConflict : BeatWaiting} />
@@ -94,7 +114,7 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
                         </div>
                     )
                 }
-                else if(playlists.length === 0){
+                else if(downloadablePlaylists.length === 0){
                     return (
                         <div className="w-full flex flex-col justify-center items-center mt-44">
                             <BsmImage className="size-32" image={BeatConflict} />
@@ -107,11 +127,11 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
                 return (
                     <VirtualScroll
                         classNames={{
-                            mainDiv: "size-full overflow-hidden",
+                            mainDiv: "size-full",
                             rows: "gap-2 px-2 py-2"
                         }}
                         itemHeight={120}
-                        items={playlists}
+                        items={downloadablePlaylists}
                         maxColumns={2}
                         minItemWidth={80}
                         scrollEnd={{
@@ -119,10 +139,16 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
                             margin: 120
                         }}
                         renderItem={renderPlaylist}
-                        itemKey={items => items.map(item => item.playlistId).join("-")}
+                        rowKey={items => items.map(item => item.playlist.playlistId).join("-")}
                     />
                 )
             })()}
         </div>
     )
+}
+
+type DownloadablePlaylist = {
+    playlist: BsvPlaylist;
+    isOwned: boolean;
+    ownedMaps: BsmLocalMap[];
 }
