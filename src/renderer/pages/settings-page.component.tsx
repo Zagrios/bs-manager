@@ -41,6 +41,7 @@ import { OculusIcon } from "renderer/components/svgs/icons/oculus-icon.component
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 import BeatWaitingImg from "../../../assets/images/apngs/beat-waiting.png";
+import { logRenderError } from "renderer";
 
 
 export function SettingsPage() {
@@ -145,7 +146,8 @@ export function SettingsPage() {
             .then(() => {
                 setIsChangelogAvailable(() => true);
             })
-            .catch(() => {
+            .catch(Err => {
+                logRenderError(Err.message);
                 setIsChangelogAvailable(() => false);
             })
             .finally(() => { isChangelogResolved = true; });
