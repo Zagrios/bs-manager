@@ -41,7 +41,7 @@ export class BsSteamDownloaderService {
     }
 
     private getDepotDownloaderExePath(): string {
-        return path.join(this.utils.getAssetsScriptsPath(), "depot-downloader", `DepotDownloader.${process.platform === 'linux' ? 'dll' : 'exe'}`);
+        return path.join(this.utils.getAssetsScriptsPath(), "DepotDownloader.exe");
     }
 
     public async isDotNet6Installed(): Promise<boolean> {
