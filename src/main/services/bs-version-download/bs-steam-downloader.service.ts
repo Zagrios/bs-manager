@@ -41,14 +41,12 @@ export class BsSteamDownloaderService {
     }
 
     private getDepotDownloaderExePath(): string {
-        return path.join(this.utils.getAssetsScriptsPath(), "DepotDownloader.exe");
+        return path.join(this.utils.getAssetsScriptsPath(), process.platform === 'linux' ? "DepotDownloader" : "DepotDownloader.exe");
     }
 
     public async isDotNet6Installed(): Promise<boolean> {
         try {
-           const proc = process.platform === 'linux'
-                ? spawnSync('dotnet', [this.getDepotDownloaderExePath()])
-                : spawnSync(this.getDepotDownloaderExePath());
+           const proc = spawnSync(this.getDepotDownloaderExePath());
             if (proc.stderr?.toString()) {
                 log.error("no dotnet", proc.stderr.toString());
                 return false;
@@ -89,8 +87,8 @@ export class BsSteamDownloaderService {
         const args = DepotDownloader.buildArgs(depotDownloaderOptions);
 
         const depotDownloader = new DepotDownloader({
-            command: isLinux ? 'dotnet' : exePath,
-            args: isLinux ? [exePath, ...args] : args,
+            command: exePath,
+            args: args,
             options: { cwd: await this.installLocationService.versionsDirectory() },
             echoStartData: downloadVersion
         }, log);

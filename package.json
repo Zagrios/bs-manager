@@ -64,7 +64,10 @@
             "target": [
                 "AppImage"
             ],
-            "category": "Development"
+            "category": "Development",
+            "extraResources": [
+                "./assets/scripts/DepotDownloader"
+            ]
         },
         "directories": {
             "app": "release/app",
