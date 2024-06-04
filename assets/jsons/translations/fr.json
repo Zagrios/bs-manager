@@ -193,7 +193,7 @@
             },
             "changelogs": {
                 "open" : "🚀 Jetez un œil au Changelog !",
-                "not_founds": "😕 Oups, Changelog introuvable !"
+                "not-founds": "😕 Oups, Changelog introuvable !"
             }
         }
     },

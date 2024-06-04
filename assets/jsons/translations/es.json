@@ -193,7 +193,7 @@
             },
             "changelogs": {
                 "open" : "🚀 ¡Descubre lo nuevo en el Changelog!",
-                "not_founds": "😕 Uy, ¡Changelog no encontrado!"
+                "not-founds": "😕 Uy, ¡Changelog no encontrado!"
             }
         }
     },
