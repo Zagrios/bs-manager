@@ -41,23 +41,7 @@ export class BsSteamDownloaderService {
     }
 
     private getDepotDownloaderExePath(): string {
-        return path.join(this.utils.getAssetsScriptsPath(), "depot-downloader", `DepotDownloader.${process.platform === 'linux' ? 'dll' : 'exe'}`);
-    }
-
-    public async isDotNet6Installed(): Promise<boolean> {
-        try {
-           const proc = process.platform === 'linux'
-                ? spawnSync('dotnet', [this.getDepotDownloaderExePath()])
-                : spawnSync(this.getDepotDownloaderExePath());
-            if (proc.stderr?.toString()) {
-                log.error("no dotnet", proc.stderr.toString());
-                return false;
-            }
-            return true;
-        } catch (e) {
-            log.error("Error while checking .NET 6", e);
-            return false;
-        }
+        return path.join(this.utils.getAssetsScriptsPath(), process.platform === 'linux' ? "DepotDownloader" : "DepotDownloader.exe");
     }
 
     private async buildDepotDownloaderInstance(downloadInfos: DownloadSteamInfo, qr?: boolean): Promise<{depotDownloader: DepotDownloader, depotDownloaderOptions: DepotDownloaderArgsOptions, version: BSVersion}> {
@@ -84,13 +68,12 @@ export class BsSteamDownloaderService {
 
         await ensureDir(await this.installLocationService.versionsDirectory());
 
-        const isLinux = process.platform === 'linux';
         const exePath = this.getDepotDownloaderExePath();
         const args = DepotDownloader.buildArgs(depotDownloaderOptions);
 
         const depotDownloader = new DepotDownloader({
-            command: isLinux ? 'dotnet' : exePath,
-            args: isLinux ? [exePath, ...args] : args,
+            command: exePath,
+            args,
             options: { cwd: await this.installLocationService.versionsDirectory() },
             echoStartData: downloadVersion
         }, log);

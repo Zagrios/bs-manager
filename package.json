@@ -38,8 +38,7 @@
         "extraResources": [
             "./assets/favicon.ico",
             "./assets/jsons/bs-versions.json",
-            "./assets/jsons/patreons.json",
-            "./assets/scripts/**"
+            "./assets/jsons/patreons.json"
         ],
         "productName": "BSManager",
         "appId": "org.erb.BSManager",
@@ -51,46 +50,24 @@
         ],
         "afterSign": ".erb/scripts/notarize.js",
         "afterPack": ".erb/scripts/after-pack.js",
-        "mac": {
-            "target": {
-                "target": "default",
-                "arch": [
-                    "arm64",
-                    "x64"
-                ]
-            },
-            "type": "distribution",
-            "hardenedRuntime": true,
-            "entitlements": "assets/entitlements.mac.plist",
-            "entitlementsInherit": "assets/entitlements.mac.plist",
-            "gatekeeperAssess": false
-        },
-        "dmg": {
-            "contents": [
-                {
-                    "x": 130,
-                    "y": 220
-                },
-                {
-                    "x": 410,
-                    "y": 220,
-                    "type": "link",
-                    "path": "/Applications"
-                }
-            ]
-        },
         "win": {
             "target": [
                 "nsis",
                 "nsis-web"
             ],
-            "icon": "assets/favicon.ico"
+            "icon": "assets/favicon.ico",
+            "extraResources": [
+                "./assets/scripts/*.exe"
+            ]
         },
         "linux": {
             "target": [
                 "AppImage"
             ],
-            "category": "Development"
+            "category": "Development",
+            "extraResources": [
+                "./assets/scripts/DepotDownloader"
+            ]
         },
         "directories": {
             "app": "release/app",
