@@ -146,8 +146,8 @@ export function SettingsPage() {
             .then(() => {
                 setIsChangelogAvailable(() => true);
             })
-            .catch(Err => {
-                logRenderError(Err.message);
+            .catch(err => {
+                logRenderError(err);
                 setIsChangelogAvailable(() => false);
             })
             .finally(() => { isChangelogResolved = true; });

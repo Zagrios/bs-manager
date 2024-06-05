@@ -51,7 +51,7 @@ export default function App() {
         autoUpdater.setLastAppVersion(appVersion);
 
         if (parse(lastAppVersion) && gt(appVersion, lastAppVersion)) {
-            await autoUpdater.showChangelog(appVersion).catch(Err => logRenderError(Err.message));
+            await autoUpdater.showChangelog(appVersion).catch(logRenderError);
         }
     };
 
