@@ -57,6 +57,7 @@ module.exports = {
         'react/jsx-filename-extension': [2, { 'extensions': ['.js', '.jsx', '.ts', '.tsx'] }],
         "no-shadow": "off",
         "react/function-component-definition": "off",
+        "jsx-a11y/control-has-associated-label": "off",
     },
     parserOptions: {
         ecmaVersion: 2020,

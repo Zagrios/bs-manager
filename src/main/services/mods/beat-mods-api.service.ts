@@ -1,4 +1,4 @@
-import { BSVersion } from "shared/bs-version.interface";
+import { BSVersion, BSVersionString } from "shared/bs-version.interface";
 import { Mod } from "shared/models/mods/mod.interface";
 import { RequestService } from "../request.service";
 
@@ -13,8 +13,8 @@ export class BeatModsApiService {
     private readonly BEAT_MODS_API_URL = "https://beatmods.com/api/v1/";
     public readonly BEAT_MODS_URL = "https://beatmods.com";
 
-    private readonly aliasesCache = new Map<string, BSVersion[]>();
-    private readonly versionModsCache = new Map<string, Mod[]>();
+    private aliasesCache: Record<BSVersionString, BSVersionString[]> = {};
+    private readonly versionModsCache = new Map<BSVersionString, Mod[]>();
 
     private allModsCache: Mod[];
 
@@ -37,29 +37,21 @@ export class BeatModsApiService {
         return `${this.BEAT_MODS_API_URL}mod`;
     }
 
-    private async getVersionAlias(): Promise<Map<string, BSVersion[]>> {
-        if (this.aliasesCache.size) {
+    public async getVersionAliases(): Promise<Record<BSVersionString, BSVersionString[]>> {
+        if (Object.keys(this.aliasesCache).length > 0) {
             return this.aliasesCache;
         }
-        return this.requestService.getJSON<Record<string, string[]>>(this.BEAT_MODS_ALIAS).then(rawAliases => {
-            Object.entries(rawAliases).forEach(([key, value]) => {
-                this.aliasesCache.set(
-                    key,
-                    value.map(s => ({ BSVersion: s } as BSVersion))
-                );
-            });
+
+        return this.requestService.getJSON<Record<BSVersionString, BSVersionString[]>>(this.BEAT_MODS_ALIAS).then(rawAliases => {
+            this.aliasesCache = rawAliases;
             return this.aliasesCache;
         });
     }
 
-    private async getAliasOfVersion(version: BSVersion): Promise<BSVersion> {
-        return this.getVersionAlias().then(aliases => {
-            if (Array.from(aliases.keys()).some(k => k === version.BSVersion)) {
-                return version;
-            }
-            const alias = Array.from(aliases.entries()).find(([key, value]) => value.find(v => v.BSVersion === version.BSVersion))?.[0];
-            return { BSVersion: alias } as BSVersion;
-        });
+    private async getAliasOfVersion(version: BSVersionString): Promise<BSVersionString> {
+        return this.getVersionAliases().then(aliases => (
+            aliases[version] ? version : Object.keys(aliases).find(k => aliases[k as BSVersionString].some(v => v === version)) as BSVersionString
+        ));
     }
 
     private asignDependencies(mod: Mod, mods: Mod[]): Mod {
@@ -67,16 +59,16 @@ export class BeatModsApiService {
         return mod;
     }
 
-    public async getVersionMods(version: BSVersion): Promise<Mod[]> {
-        if (this.versionModsCache.has(version.BSVersion)) {
-            return this.versionModsCache.get(version.BSVersion);
+    public async getVersionMods(version: BSVersionString): Promise<Mod[]> {
+        if (this.versionModsCache.has(version)) {
+            return this.versionModsCache.get(version);
         }
 
         const alias = await this.getAliasOfVersion(version);
 
-        return this.requestService.getJSON<Mod[]>(this.getVersionModsUrl(alias)).then(mods => {
+        return this.requestService.getJSON<Mod[]>(this.getVersionModsUrl({ BSVersion: alias })).then(mods => {
             mods = mods.map(mod => this.asignDependencies(mod, mods));
-            this.versionModsCache.set(version.BSVersion, mods);
+            this.versionModsCache.set(version, mods);
             return mods;
         });
     }

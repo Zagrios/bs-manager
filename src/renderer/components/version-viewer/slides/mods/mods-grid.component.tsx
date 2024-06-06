@@ -9,10 +9,25 @@ import { Mod } from "shared/models/mods/mod.interface";
 import { ModItem } from "./mod-item.component";
 import { useService } from "renderer/hooks/use-service.hook";
 
-type Props = { modsMap: Map<string, Mod[]>; installed: Map<string, Mod[]>; modsSelected: Mod[]; onModChange: (selected: boolean, mod: Mod) => void; moreInfoMod?: Mod; onWantInfos: (mod: Mod) => void };
+type Props = {
+    modsMap: Map<string, Mod[]>;
+    installed?: Map<string, Mod[]>;
+    showInstalled?: boolean;
+    modsSelected?: Mod[];
+    onModChange?: (selected: boolean, mod: Mod) => void;
+    moreInfoMod?: Mod;
+    onWantInfos?: (mod: Mod) => void };
 
-export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreInfoMod, onWantInfos }: Props) {
-    
+export function ModsGrid({
+    modsMap,
+    installed,
+    modsSelected,
+    showInstalled,
+    onModChange,
+    moreInfoMod,
+    onWantInfos
+}: Props) {
+
     const pageState = useService(PageStateService);
     const modsManager = useService(BsModsManagerService);
 
@@ -32,7 +47,7 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
     };
 
     const isDependency = (mod: Mod): boolean => {
-        return modsSelected.some(m => {
+        return !!modsSelected?.some(m => {
             const deps = m.dependencies.map(dep =>
                 Array.from(modsMap.values())
                     .flat()
@@ -45,7 +60,7 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
         });
     };
 
-    const isSelected = (mod: Mod): boolean => modsSelected.some(m => m.name === mod.name);
+    const isSelected = (mod: Mod): boolean => !!modsSelected?.some(m => m.name === mod.name);
 
     const handleInput = (val: string) => setFilter(val.toLowerCase());
 
@@ -66,7 +81,7 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
                     <BsmButton className="rounded-full h-6 w-6 p-[2px]" withBar={false} icon="search" onClick={handleToogleFilter} />
                 </span>
                 <span className="z-10 sticky top-0 flex items-center bg-inherit border-main-color-1 border-b-2 h-8 px-1 whitespace-nowrap">{filterEnabled ? <motion.input autoFocus className="bg-main-color-1 rounded-md h-6 px-2" initial={{ width: 0 }} animate={{ width: "250px" }} transition={{ ease: "easeInOut", duration: 0.15 }} onChange={e => handleInput(e.target.value)} /> : <span className="w-full text-center">{t("pages.version-viewer.mods.mods-grid.header-bar.name")}</span>}</span>
-                <span className="z-10 sticky flex items-center justify-center top-0 bg-inherit border-b-2 border-main-color-1 h-8 px-2 whitespace-nowrap">{t("pages.version-viewer.mods.mods-grid.header-bar.installed")}</span>
+                {showInstalled !== false && <span className="z-10 sticky flex items-center justify-center top-0 bg-inherit border-b-2 border-main-color-1 h-8 px-2 whitespace-nowrap">{t("pages.version-viewer.mods.mods-grid.header-bar.installed")}</span>}
                 <span className="z-10 sticky flex items-center justify-center top-0 bg-inherit border-b-2 border-main-color-1 h-8 px-2 whitespace-nowrap">{t("pages.version-viewer.mods.mods-grid.header-bar.latest")}</span>
                 <span className="z-10 sticky flex items-center justify-center top-0 bg-inherit border-b-2 border-main-color-1 h-8 whitespace-nowrap">{t("pages.version-viewer.mods.mods-grid.header-bar.description")}</span>
                 <span className="z-10 sticky top-0 bg-inherit border-b-2 border-main-color-1 h-8 flex justify-start items-center py-1 pl-[3px] min-w-[50px]">
@@ -86,3 +101,12 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
         )
     );
 }
+
+export function modsArrayToCategoryMap(mods: Mod[]): Map<string, Mod[]> {
+    if (!mods) {
+        return new Map<string, Mod[]>();
+    }
+    const map = new Map<string, Mod[]>();
+    mods.forEach(mod => map.set(mod.category, [...(map.get(mod.category) ?? []), mod]));
+    return map;
+};

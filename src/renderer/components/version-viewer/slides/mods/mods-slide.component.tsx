@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BsModsManagerService } from "renderer/services/bs-mods-manager.service";
 import { BSVersion } from "shared/bs-version.interface";
 import { Mod } from "shared/models/mods/mod.interface";
-import { ModsGrid } from "./mods-grid.component";
+import { ModsGrid, modsArrayToCategoryMap } from "./mods-grid.component";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { DefaultConfigKey } from "renderer/config/default-configuration.config";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
@@ -40,15 +40,6 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
 
     const downloadRef = useRef(null);
     const [downloadWith, setDownloadWidth] = useState(0);
-
-    const modsToCategoryMap = (mods: Mod[]): Map<string, Mod[]> => {
-        if (!mods) {
-            return new Map<string, Mod[]>();
-        }
-        const map = new Map<string, Mod[]>();
-        mods.forEach(mod => map.set(mod.category, [...(map.get(mod.category) ?? []), mod]));
-        return map;
-    };
 
     const handleModChange = (selected: boolean, mod: Mod) => {
         if (selected) {
@@ -110,9 +101,9 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
             modsManager.getInstalledMods(version)
         ]).pipe(map(([available, installed]) => {
             const defaultMods = configService.get<string[]>("default_mods" as DefaultConfigKey);
-            setModsAvailable(() => modsToCategoryMap(available));
+            setModsAvailable(() => modsArrayToCategoryMap(available));
             setModsSelected(() => available.filter(m => m.required || defaultMods.some(d => m.name.toLowerCase() === d.toLowerCase()) || installed.some(i => m.name === i.name)));
-            setModsInstalled(() => modsToCategoryMap(installed));
+            setModsInstalled(() => modsArrayToCategoryMap(installed));
         }));
     };
 

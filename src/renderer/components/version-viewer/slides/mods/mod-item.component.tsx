@@ -10,9 +10,29 @@ import useDoubleClick from "use-double-click";
 import { gt } from "semver";
 import { useService } from "renderer/hooks/use-service.hook";
 
-type Props = { className?: string; mod: Mod; installedVersion: string; isDependency?: boolean; isSelected?: boolean; onChange?: (val: boolean) => void; wantInfo?: boolean; onWantInfo?: (mod: Mod) => void };
+type Props = {
+    className?: string;
+    mod: Mod;
+    installedVersion: string;
+    isDependency?: boolean;
+    isSelected?: boolean;
+    showInstalled?: boolean;
+    onChange?: (val: boolean) => void;
+    wantInfo?: boolean;
+    onWantInfo?: (mod: Mod) => void
+};
 
-export function ModItem({ className, mod, installedVersion, isDependency, isSelected, onChange, wantInfo, onWantInfo }: Props) {
+export function ModItem({
+    className,
+    mod,
+    installedVersion,
+    isDependency,
+    isSelected,
+    showInstalled,
+    onChange,
+    wantInfo,
+    onWantInfo
+}: Props) {
     const modsManager = useService(BsModsManagerService);
     const pageState = useService(PageStateService);
 
@@ -48,14 +68,14 @@ export function ModItem({ className, mod, installedVersion, isDependency, isSele
     return (
         <li ref={clickRef} className={`${className} group`}>
             <div className="h-full aspect-square flex items-center justify-center p-[7px] rounded-l-md bg-inherit ml-3 border-2 border-r-0 z-[1] group-hover:brightness-90" style={wantInfoStyle}>
-                <BsmCheckbox className="h-full aspect-square z-[1] relative bg-inherit" onChange={onChange} disabled={mod.required || isDependency} checked={isChecked} />
+                {onChange && <BsmCheckbox className="h-full aspect-square z-[1] relative bg-inherit" onChange={onChange} disabled={mod.required || isDependency} checked={isChecked} />}
             </div>
             <span className="bg-inherit py-2 pl-3 font-bold text-sm whitespace-nowrap border-t-2 border-b-2 blur-none group-hover:brightness-90" style={wantInfoStyle}>
                 {mod.name}
             </span>
-            <span className={`min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover:brightness-90 ${installedVersion && isOutDated && "text-red-400 line-through"} ${installedVersion && !isOutDated && "text-green-400"}`} style={wantInfoStyle}>
+            {showInstalled !== false && <span className={`min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover:brightness-90 ${installedVersion && isOutDated && "text-red-400 line-through"} ${installedVersion && !isOutDated && "text-green-400"}`} style={wantInfoStyle}>
                 {installedVersion || "-"}
-            </span>
+            </span>}
             <span className="min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover:brightness-90" style={wantInfoStyle}>
                 {mod.version}
             </span>

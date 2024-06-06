@@ -11,6 +11,7 @@ import { NotificationType } from "../../shared/models/notification/notification.
 import { OsDiagnosticService } from "./os-diagnostic.service";
 import { ProgressBarService } from "./progress-bar.service";
 import { NotificationService } from "./notification.service";
+import { BeatModsService } from "./thrird-partys/beat-mods.service";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -22,6 +23,7 @@ export class BsModsManagerService {
     private readonly modals: ModalService;
     private readonly notifications: NotificationService;
     private readonly os: OsDiagnosticService;
+    private readonly beatMods: BeatModsService;
 
     public readonly isInstalling$: BehaviorSubject<boolean> = new BehaviorSubject(false);
     public readonly isUninstalling$: BehaviorSubject<boolean> = new BehaviorSubject(false);
@@ -39,10 +41,11 @@ export class BsModsManagerService {
         this.modals = ModalService.getInstance();
         this.notifications = NotificationService.getInstance();
         this.os = OsDiagnosticService.getInstance();
+        this.beatMods = BeatModsService.getInstance();
     }
 
     public getAvailableMods(version: BSVersion): Observable<Mod[]> {
-        return this.ipcService.sendV2("get-available-mods", version);
+        return this.beatMods.getVersionMods(version.BSVersion);
     }
 
     public getInstalledMods(version: BSVersion): Observable<Mod[]> {
@@ -135,5 +138,9 @@ export class BsModsManagerService {
             this.isUninstalling$.next(false);
             this.progressBar.hide();
         })
+    }
+
+    public getVersionAliases(): Observable<Record<string, string[]>> {
+        return this.ipcService.sendV2("get-version-aliases");
     }
 }

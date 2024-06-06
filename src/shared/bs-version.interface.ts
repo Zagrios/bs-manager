@@ -1,7 +1,9 @@
 import { BsStore } from "./models/bs-store.enum";
 
+export type BSVersionString = `${number}.${number}.${string}`; // 1.1.0p1
+
 export interface PartialBSVersion {
-    BSVersion: string,
+    BSVersion: BSVersionString,
     name?: string
     ino?: number,
 }

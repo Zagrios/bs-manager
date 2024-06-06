@@ -264,7 +264,7 @@ export class BsModsManagerService {
     }
 
     private async resolveDependencies(mods: Mod[], version: BSVersion): Promise<Mod[]> {
-        const availableMods = await this.beatModsApi.getVersionMods(version);
+        const availableMods = await this.beatModsApi.getVersionMods(version.BSVersion);
         return Array.from(
             new Map<string, Mod>(
                 availableMods.reduce((res, mod) => {
@@ -314,10 +314,6 @@ export class BsModsManagerService {
         });
 
         await Promise.all(promises);
-    }
-
-    public getAvailableMods(version: BSVersion): Promise<Mod[]> {
-        return this.beatModsApi.getVersionMods(version);
     }
 
     public async getInstalledMods(version: BSVersion): Promise<Mod[]> {

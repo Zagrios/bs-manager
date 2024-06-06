@@ -1,6 +1,6 @@
 import { Progression } from "main/helpers/fs.helpers";
 import { Observable } from "rxjs";
-import { BSVersion } from "shared/bs-version.interface";
+import { BSVersion, BSVersionString } from "shared/bs-version.interface";
 import { BSLaunchEventData, LaunchOption } from "shared/models/bs-launch";
 import { BsvMapDetail } from "shared/models/maps";
 import { BsmLocalMap, BsmLocalMapsProgress, DeleteMapsProgress } from "shared/models/maps/bsm-local-map.interface";
@@ -21,7 +21,7 @@ import { AppWindow } from "../window-manager/app-window.model";
 
 export type IpcReplier<T> = (data: Observable<T>) => void;
 
-export interface IpcChannelMapping extends Record<string, { request: unknown, response: unknown }> {
+export interface IpcChannelMapping {
 
     /* ** bs-download-ipcs ** */
     "import-version": { request: ImportVersionOptions, response: Progression<BSVersion>};
@@ -67,8 +67,9 @@ export interface IpcChannelMapping extends Record<string, { request: unknown, re
     "delete-models": { request: BsmLocalModel[], response: Progression<BsmLocalModel[]> };
 
     /* ** bs-mods-ipcs ** */
-    "get-available-mods": { request: BSVersion, response: Mod[] };
+    "get-version-mods": { request: BSVersionString, response: Mod[] };
     "get-installed-mods": { request: BSVersion, response: Mod[] };
+    "get-version-aliases": { request: void, response: Record<BSVersionString, BSVersionString[]> }
     "install-mods": { request: { mods: Mod[]; version: BSVersion }, response: InstallModsResult };
     "uninstall-mods": { request: { mods: Mod[]; version: BSVersion }, response: UninstallModsResult };
     "uninstall-all-mods": { request: BSVersion, response: UninstallModsResult };
