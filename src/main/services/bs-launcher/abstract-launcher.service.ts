@@ -3,7 +3,7 @@ import { BSLocalVersionService } from "../bs-local-version.service";
 import { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio, spawn } from "child_process";
 import path from "path";
 import log from "electron-log";
-import { sToMs } from "shared/helpers/time.helpers";
+import { sToMs } from "../../../shared/helpers/time.helpers";
 
 export abstract class AbstractLauncherService {
 

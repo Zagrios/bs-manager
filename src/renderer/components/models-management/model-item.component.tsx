@@ -42,6 +42,20 @@ function ModelItemElement<T = unknown>(props: Props<T>) {
     const [idContentCopied, setIdContentCopied] = useState<string>(null);
     const ref = useRef();
 
+    const isNsfw = (() => {
+        const tags = props.tags?.map(tag => tag.toLowerCase()) ?? [];
+        const name = props.name.toLowerCase() ?? "";
+        return (
+            tags.includes("nsfw") ||
+            tags.includes("18+") ||
+            name.includes("nsfw") ||
+            name.includes("18+") ||
+            name.includes("nude") ||
+            name.includes("naked") ||
+            name.includes("lewd")
+        );
+    })();
+
     useDoubleClick({
         ref,
         latency: props.onDoubleClick ? 200 : 0,
@@ -117,7 +131,7 @@ function ModelItemElement<T = unknown>(props: Props<T>) {
             <div className="absolute top-0 left-0 w-full h-full rounded-lg overflow-hidden blur-none bg-black shadow-sm shadow-black">
                 <div ref={ref} className="contents">
                     <BsmImage className="absolute top-0 left-0 w-full h-full object-cover brightness-50 scale-[200%] blur-md" image={thumbnailUrl} placeholder={defaultImage} loading="lazy" />
-                    <BsmImage className="absolute top-0 left-1/2 -translate-x-1/2 max-w-[20rem] w-full h-full object-cover" image={thumbnailUrl} placeholder={defaultImage} loading="lazy" />
+                    <BsmImage className="absolute top-0 left-1/2 -translate-x-1/2 max-w-[20rem] w-full h-full object-cover" image={thumbnailUrl} placeholder={defaultImage} loading="lazy" style={isNsfw && {filter: "blur(10px)"}} />
                     <div className="absolute top-0 right-0 h-full w-0 flex flex-col items-end gap-1 pt-1.5 pr-1.5">
                         {!props.isDownloading ? (
                             actionButtons().map((button, index) => (
