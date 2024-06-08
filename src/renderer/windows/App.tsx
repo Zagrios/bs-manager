@@ -24,6 +24,7 @@ import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { useService } from "renderer/hooks/use-service.hook";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 import { gt, parse } from "semver"
+import { logRenderError } from "renderer";
 
 export default function App() {
     useService(OsDiagnosticService);
@@ -50,7 +51,7 @@ export default function App() {
         autoUpdater.setLastAppVersion(appVersion);
 
         if (parse(lastAppVersion) && gt(appVersion, lastAppVersion)) {
-            autoUpdater.showChangelog(appVersion);
+            await autoUpdater.showChangelog(appVersion).catch(logRenderError);
         }
     };
 

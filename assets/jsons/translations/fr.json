@@ -193,7 +193,7 @@
             },
             "changelogs": {
                 "open" : "🚀 Jetez un œil au Changelog !",
-                "not_founds": "😕 Oups, Changelog introuvable !"
+                "not-founds": "😕 Oups, Changelog introuvable !"
             }
         }
     },
@@ -238,9 +238,6 @@
                     }
                 },
                 "errors": {
-                    "titles": {
-                        "dotnet-required": ".NET 6 Requis"
-                    },
                     "msg": {
                         "401": "Steam ne semble pas vouloir nous laisser télécharger Beat Saber 😢",
                         "404": "Impossible de contacter les serveurs de Steam.",
@@ -263,11 +260,7 @@
                         "LicenceError": "Impossible d'obtenir la liste des licences.",
                         "RateLimitExceeded": "Tu as essayé trop de fois attends un peu et recommence plus tard.",
                         "TokenRejected": "Votre token de connexion a été rejeté 😕 Veuillez réessayer.",
-                        "AccessDenied": "L'accès à Steam a été refusé.",
-                        "dotnet-required": ".NET 6 Runtime doit être installé pour pouvoir télécharger une version de Beat Saber. Télécharge-le en cliquant sur le bouton ci-dessous."
-                    },
-                    "actions": {
-                        "download-dotnet": "Télécharger .NET 6"
+                        "AccessDenied": "L'accès à Steam a été refusé."
                     }
                 }
             },

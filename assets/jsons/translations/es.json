@@ -193,7 +193,7 @@
             },
             "changelogs": {
                 "open" : "🚀 ¡Descubre lo nuevo en el Changelog!",
-                "not_founds": "😕 Uy, ¡Changelog no encontrado!"
+                "not-founds": "😕 Uy, ¡Changelog no encontrado!"
             }
         }
     },
@@ -238,9 +238,6 @@
                     }
                 },
                 "errors": {
-                    "titles": {
-                        "dotnet-required": ".NET 6 Requerido"
-                    },
                     "msg": {
                         "401": "Parece que Steam no quiere dejarnos descargar Beat Saber 😢",
                         "404": "No se puede contactar con los servidores de Steam",
@@ -263,11 +260,7 @@
                         "LicenceError": "No se puede obtener la lista de licencias.",
                         "RateLimitExceeded": "Lo has intentado demasiadas veces, espera un poco y vuelve a intentarlo más tarde.",
                         "TokenRejected": "Tu token de inicio de sesión ha sido rechazada 😕 Por favor, inténtalo de nuevo.",
-                        "AccessDenied": "El acceso a Steam ha sido denegado.",
-                        "dotnet-required": "Se debe instalar el tiempo de ejecución de .NET 6 para descargar una versión de Beat Saber. Descárgalo haciendo clic en el botón de abajo."
-                    },
-                    "actions": {
-                        "download-dotnet": "Descargar .NET 6"
+                        "AccessDenied": "El acceso a Steam ha sido denegado."
                     }
                 }
             },

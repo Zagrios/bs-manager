@@ -26,7 +26,6 @@ export interface IpcChannelMapping {
 
     /* ** bs-download-ipcs ** */
     "import-version": { request: ImportVersionOptions, response: Progression<BSVersion>};
-    "is-dotnet-6-installed": { request: void, response: boolean};
     "bs-download.installation-folder": { request: void, response: string};
     "bs-download.set-installation-folder": { request: string, response: string};
     "auto-download-bs-version": { request: DownloadSteamInfo, response: DepotDownloaderEvent};

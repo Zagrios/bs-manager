@@ -44,27 +44,10 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
         this.linkOpener = LinkOpenerService.getInstance();
     }
 
-    public isDotNet6Installed(): Promise<boolean> {
-        return lastValueFrom(this.ipcService.sendV2("is-dotnet-6-installed"));
-    }
-
     private setSteamSession(username: string): void { localStorage.setItem(this.STEAM_SESSION_USERNAME_KEY, username); }
     private getSteamUsername(): string { return localStorage.getItem(this.STEAM_SESSION_USERNAME_KEY); }
     public deleteSteamSession(): void { localStorage.removeItem(this.STEAM_SESSION_USERNAME_KEY); }
     public sessionExist(): boolean { return !!localStorage.getItem(this.STEAM_SESSION_USERNAME_KEY); }
-
-    private async showDotNetNotInstalledError(): Promise<void> {
-        const choice = await this.notificationService.notifyError({
-            duration: 11_000,
-            title: "notifications.bs-download.steam-download.errors.titles.dotnet-required",
-            desc: "notifications.bs-download.steam-download.errors.msg.dotnet-required",
-            actions: [{ id: "0", title: "notifications.bs-download.steam-download.errors.actions.download-dotnet" }],
-        });
-
-        if (choice === "0") {
-            this.linkOpener.open("https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-6.0.12-windows-x64-installer");
-        }
-    }
 
     public async getInstallationFolder(): Promise<string> {
         return lastValueFrom(this.ipcService.sendV2("bs-download.installation-folder"));
@@ -219,12 +202,6 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
         this.progressBarService.show(this.downloadProgress$, true);
 
         const downloadPromise = (async () => {
-
-            const haveDotNet = await this.isDotNet6Installed().catch(() => false);
-            if(!haveDotNet){
-                this.showDotNetNotInstalledError();
-                return Promise.reject(new Error("DotNet not installed"));
-            }
 
             const downloadInfo: DownloadSteamInfo = {bsVersion, isVerification}
 

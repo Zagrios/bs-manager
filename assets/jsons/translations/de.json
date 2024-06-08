@@ -193,7 +193,7 @@
             },
             "changelogs": {
                 "open" : "🚀 Neues im Changelog entdecken!",
-                "not_founds": "😕 Hoppla, kein Changelog zu sehen!"
+                "not-founds": "😕 Hoppla, kein Changelog zu sehen!"
             }
         }
     },
@@ -238,9 +238,6 @@
                     }
                 },
                 "errors": {
-                    "titles": {
-                        "dotnet-required": ".NET 6 Benötigt"
-                    },
                     "msg": {
                         "401": "Steam scheint uns BeatSaber nicht herunterladen zu lassen 😢",
                         "404": "Steam-Server können nicht kontaktiert werden.",
@@ -263,11 +260,7 @@
                         "LicenceError": "Die Liste der Lizenzen kann nicht abgerufen werden.",
                         "RateLimitExceeded": "Du hast es zu oft versucht, warte eine Weile und versuche es später erneut.",
                         "TokenRejected": "Ihr Anmeldetoken wurde abgelehnt 😕 Bitte versuchen Sie es erneut.",
-                        "AccessDenied": "Der Zugang zu Steam wurde verweigert.",
-                        "dotnet-required": ".NET 6 Runtime muss installiert sein, um eine Version von BeatSaber herunterzuladen. Lade es herunter, indem Du auf die Schaltfläche unten klickst."
-                    },
-                    "actions": {
-                        "download-dotnet": ".NET 6 Herunterladen"
+                        "AccessDenied": "Der Zugang zu Steam wurde verweigert."
                     }
                 }
             },
