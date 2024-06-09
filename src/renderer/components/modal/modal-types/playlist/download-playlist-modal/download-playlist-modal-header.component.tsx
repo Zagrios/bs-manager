@@ -54,9 +54,9 @@ export function DownloadPlaylistModalHeader({ className, value, onSubmit }: Prop
             <BsmDropdownButton ref={dropDownFilterRef} buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1 !bg-light-main-color-1 dark:!bg-main-color-1" icon="filter" text="pages.version-viewer.maps.search-bar.filters-btn" withBar={false}>
                 <DownloadPlaylistFilterPanel className="z-10 translate-y-1" params={filter} onSubmit={handleFilterSubmit}/>
             </BsmDropdownButton>
-            <input className="h-full theme-color-1 rounded-full px-2 grow pb-0.5" type="text" placeholder="Rechercher une playlist" value={query} onChange={e => setQuery(e.target.value)} />
-            <BsmButton className="shrink-0 rounded-full py-1 px-3 !theme-color-1 flex justify-center items-center capitalize" icon="search" text="modals.download-maps.search-btn" withBar={false} onClick={() => submit(searchParams)} />
-            <BsmSelect className="theme-color-1 rounded-full px-1 pb-0.5 text-center cursor-pointer" options={sortOptions} selected={order} onChange={handleOrderChange}/>
+            <input className="h-full bg-theme-1 rounded-full px-2 grow pb-0.5" type="text" placeholder="Rechercher une playlist" value={query} onChange={e => setQuery(e.target.value)} />
+            <BsmButton className="shrink-0 rounded-full py-1 px-3 !bg-theme-1 flex justify-center items-center capitalize" icon="search" text="modals.download-maps.search-btn" withBar={false} onClick={() => submit(searchParams)} />
+            <BsmSelect className="bg-theme-1 rounded-full px-1 pb-0.5 text-center cursor-pointer" options={sortOptions} selected={order} onChange={handleOrderChange}/>
         </form>
     )
 }

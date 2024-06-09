@@ -283,7 +283,7 @@ export class LocalMapsManagerService {
         });
     }
 
-    public async getMapInfoFromHash(hash: string, version: BSVersion): Promise<BsmLocalMap> {
+    public async getMapInfoFromHash(hash: string, version?: BSVersion): Promise<BsmLocalMap> {
         const versionMapsPath = await this.getMapsFolderPath(version);
         const mapInfo = this.songCache.getMapInfoFromHash(hash);
 

@@ -103,12 +103,12 @@
     @apply border-r-neutral-900;
 }
 
-.theme-color-1 { @apply bg-light-main-color-1 dark:bg-main-color-1; }
-.theme-color-2 { @apply bg-light-main-color-2 dark:bg-main-color-2; }
-.theme-color-3 { @apply bg-light-main-color-3 dark:bg-main-color-3; }
-.\!theme-color-1 { @apply !bg-light-main-color-1 dark:!bg-main-color-1; }
-.\!theme-color-2 { @apply !bg-light-main-color-2 dark:!bg-main-color-2; }
-.\!theme-color-3 { @apply !bg-light-main-color-3 dark:!bg-main-color-3; }
+.bg-theme-1 { @apply bg-light-main-color-1 dark:bg-main-color-1; }
+.bg-theme-2 { @apply bg-light-main-color-2 dark:bg-main-color-2; }
+.bg-theme-3 { @apply bg-light-main-color-3 dark:bg-main-color-3; }
+.\!bg-theme-1 { @apply !bg-light-main-color-1 dark:!bg-main-color-1; }
+.\!bg-theme-2 { @apply !bg-light-main-color-2 dark:!bg-main-color-2; }
+.\!bg-theme-3 { @apply !bg-light-main-color-3 dark:!bg-main-color-3; }
 
 @keyframes glowing {
     0% {

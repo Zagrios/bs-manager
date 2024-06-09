@@ -1,6 +1,6 @@
 import { BSVersion } from "shared/bs-version.interface";
 import { IpcService } from "./ipc.service";
-import { Observable, lastValueFrom } from "rxjs";
+import { Observable, lastValueFrom, of, switchMap } from "rxjs";
 import { FolderLinkState, VersionFolderLinkerService } from "./version-folder-linker.service";
 import { Progression } from "main/helpers/fs.helpers";
 import { LocalBPList, LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
@@ -36,6 +36,15 @@ export class PlaylistsManagerService {
 
     public deletePlaylist(opt: {version: BSVersion, bpList: LocalBPList, deleteMaps?: boolean}): Observable<Progression> {
         return this.ipc.sendV2("delete-playlist", opt);
+    }
+
+    public exportPlaylists(opt: {version: BSVersion, bpLists: LocalBPList[], dest: string, exportMaps?: boolean}): Observable<Progression<string>> {
+        return this.ipc.sendV2("export-playlists", {
+            version: opt.version,
+            bpLists: opt.bpLists,
+            dest: opt.dest,
+            exportMaps: opt.exportMaps
+        });
     }
 
     public async linkVersion(version: BSVersion): Promise<boolean> {

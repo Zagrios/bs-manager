@@ -56,9 +56,13 @@ ipc.on("delete-playlist", (args, reply) => {
     const maps = LocalMapsManagerService.getInstance();
     reply(playlists.deletePlaylistFile(args.bpList).pipe(mergeMap(() => {
         if(args.deleteMaps){
-            console.log("ALALALZELALZELAZELA");
             return maps.deleteMapsFromHashs(args.version, args.bpList.songs.map(s => s.hash));
         }
         return of({ current: 0, total: 0 } as Progression);
     })));
+});
+
+ipc.on("export-playlists", (args, reply) => {
+    const playlists = LocalPlaylistsManagerService.getInstance();
+    reply(playlists.exportPlaylists(args));
 });

@@ -15,12 +15,13 @@ import { MapIcon } from "../svgs/icons/map-icon.component";
 import { PlaylistIcon } from "../svgs/icons/playlist-icon.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { BehaviorSubject, of } from "rxjs";
-import { LocalPlaylistsListPanel } from "./playlists/local-playlists-list-panel.component";
+import { LocalPlaylistsListPanel, LocalPlaylistsListRef } from "./playlists/local-playlists-list-panel.component";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
 import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service";
+import { LocalPlaylistFilter, LocalPlaylistFilterPanel } from "./playlists/local-playlist-filter-panel.component";
 
 type Props = {
     version?: BSVersion;
@@ -28,17 +29,17 @@ type Props = {
 };
 
 export const InstalledMapsContext = createContext<{
-    maps$?: BehaviorSubject<BsmLocalMap[]>;
+    maps$: BehaviorSubject<BsmLocalMap[]>;
     setMaps: (maps: BsmLocalMap[]) => void;
-    playlists$?: BehaviorSubject<LocalBPListsDetails[]>;
+    playlists$: BehaviorSubject<LocalBPListsDetails[]>;
     setPlaylists: (playlist: LocalBPListsDetails[]) => void;
 }>(null);
 
 export function MapsPlaylistsPanel({ version, isActive }: Props) {
 
-    const mapsService = useService(MapsManagerService);
+    const mapsManager = useService(MapsManagerService);
     const mapsDownloader = useService(MapsDownloaderService);
-    const playlistsService = useService(PlaylistsManagerService);
+    const playlistsManager = useService(PlaylistsManagerService);
     const playlistsDownloader = useService(PlaylistDownloaderService);
 
     const t = useTranslation();
@@ -46,29 +47,30 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
 
     const maps$ = useConstant(() => new BehaviorSubject<BsmLocalMap[]>(undefined));
     const playlists$ = useConstant(() => new BehaviorSubject<LocalBPListsDetails[]>(undefined));
-    const mapsContextValue = useConstant(() => ({ maps$: maps$, setMaps: maps$.next.bind(maps$), playlists$: playlists$, setPlaylists: playlists$.next.bind(playlists$)}));
+
+    const mapsContextValue = useConstant(() => ({
+        maps$,
+        setMaps: maps$.next.bind(maps$),
+        playlists$,
+        setPlaylists: playlists$.next.bind(playlists$),
+    }));
 
     const mapsRef = useRef<any>();
+    const playlistsRef = useRef<LocalPlaylistsListRef>();
+
     const [mapFilter, setMapFilter] = useState<MapFilter>({});
-    const [mapSearch, setMapSearch] = useState("");
+    const [playlistFilter, setPlaylistFilter] = useState<LocalPlaylistFilter>({});
+
+    const [search, setSearch] = useState("");
     const mapsLinkedState = useObservable(() => {
         if(!version) return of(FolderLinkState.Unlinked);
-        return mapsService.$mapsFolderLinkState(version);
+        return mapsManager.$mapsFolderLinkState(version);
     }, FolderLinkState.Unlinked, [version]);
 
-    const [playlistSearch, setPlaylistSearch] = useState("");
     const playlistLinkedState = useObservable(() => {
         if(!version) return of(FolderLinkState.Unlinked);
-        return playlistsService.$playlistsFolderLinkState(version);
+        return playlistsManager.$playlistsFolderLinkState(version);
     }, FolderLinkState.Unlinked, [version]);
-
-
-    const handleSearch = (value: string) => {
-        if (tabIndex === 0) {
-            return setMapSearch(() => value);
-        }
-        return setPlaylistSearch(() => value);
-    };
 
     const handleAddClick = () => {
         switch (tabIndex) {
@@ -81,29 +83,34 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         if(mapsLinkedState === FolderLinkState.Pending || mapsLinkedState === FolderLinkState.Processing){ return Promise.resolve(false); }
 
         if (mapsLinkedState === FolderLinkState.Unlinked) {
-            return mapsService.linkVersion(version);
+            return mapsManager.linkVersion(version);
         }
 
-        return mapsService.unlinkVersion(version);
+        return mapsManager.unlinkVersion(version);
     };
 
     const handlePlaylistLinkClick = () => {
         if(playlistLinkedState === FolderLinkState.Pending || playlistLinkedState === FolderLinkState.Processing){ return Promise.resolve(false); }
 
         if (playlistLinkedState === FolderLinkState.Unlinked) {
-            return playlistsService.linkVersion(version);
+            return playlistsManager.linkVersion(version);
         }
 
-        return playlistsService.unlinkVersion(version);
+        return playlistsManager.unlinkVersion(version);
     }
 
     const dropDownItems = ((): DropDownItem[] => {
-        if (tabIndex === 1) {
-            return [];
+        if (tabIndex === 0) {
+            return [
+                { icon: "export", text: "pages.version-viewer.maps.search-bar.dropdown.export-maps", onClick: () => mapsRef.current.exportMaps?.() },
+                { icon: "trash", text: "pages.version-viewer.maps.search-bar.dropdown.delete-maps", onClick: () => mapsRef.current.deleteMaps?.() },
+            ];
         }
+
         return [
-            { icon: "export", text: "pages.version-viewer.maps.search-bar.dropdown.export-maps", onClick: () => mapsRef.current.exportMaps?.() },
-            { icon: "trash", text: "pages.version-viewer.maps.search-bar.dropdown.delete-maps", onClick: () => mapsRef.current.deleteMaps?.() },
+            { icon: "sync", text: "Synchroniser les playlists", onClick: () => playlistsRef?.current?.syncPlaylists?.() },
+            { icon: "export", text: "Exporter les playlists", onClick: () => playlistsRef?.current?.exportPlaylists?.() },
+            { icon: "trash", text: "Supprimer les playlists", onClick: () => playlistsRef?.current?.deletePlaylists?.() },
         ];
     })();
 
@@ -119,10 +126,23 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                     onClick={handleAddClick}
                 />
                 <div className="h-full rounded-full bg-light-main-color-2 dark:bg-main-color-2 grow p-[6px]">
-                    <input type="text" className="h-full w-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={tabIndex === 0 ? mapSearch : playlistSearch} onChange={e => handleSearch(e.target.value)} tabIndex={-1} />
+                    <input
+                        type="text"
+                        className="h-full w-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2"
+                        placeholder={tabIndex === 0 ? t("pages.version-viewer.maps.search-bar.search-placeholder") : "Rechercher une playlist"}
+                        value={search}
+                        onChange={e => setSearch(() => e.target.value)}
+                        tabIndex={-1}
+                    />
                 </div>
                 <BsmDropdownButton className="h-full relative z-[1] flex justify-center" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1" icon="filter" text="pages.version-viewer.maps.search-bar.filters-btn" textClassName="whitespace-nowrap" withBar={false}>
-                    <FilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[500px] h-fit p-2 rounded-md shadow-md shadow-black" filter={mapFilter} onChange={setMapFilter} />
+                    {(
+                        tabIndex === 0 ? (
+                            <FilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[500px] h-fit p-2 rounded-md shadow-md shadow-black" filter={mapFilter} onChange={setMapFilter} />
+                        ) : (
+                            <LocalPlaylistFilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[300px] h-fit p-2 rounded-md shadow-md shadow-black" filter={playlistFilter} onChange={setPlaylistFilter} />
+                        )
+                    )}
                 </BsmDropdownButton>
                 <BsmDropdownButton className="h-full flex aspect-square relative rounded-full z-[1] bg-light-main-color-1 dark:bg-main-color-3" buttonClassName="rounded-full h-full w-full p-[6px]" icon="three-dots" withBar={false} items={dropDownItems} menuTranslationY="6px" align="center" />
             </nav>
@@ -151,8 +171,8 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                 ]}
             >
                 <InstalledMapsContext.Provider value={mapsContextValue}>
-                    <LocalMapsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 0} ref={mapsRef} version={version} filter={mapFilter} search={mapSearch} linkedState={mapsLinkedState} />
-                    <LocalPlaylistsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 1} version={version} linkedState={playlistLinkedState}/>
+                    <LocalMapsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 0} ref={mapsRef} version={version} filter={mapFilter} search={search} linkedState={mapsLinkedState} />
+                    <LocalPlaylistsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 1} ref={playlistsRef} version={version} linkedState={playlistLinkedState} filter={playlistFilter} search={search}/>
                 </InstalledMapsContext.Provider>
             </BsContentTabPanel>
         </div>

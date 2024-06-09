@@ -111,7 +111,7 @@ export function DownloadPlaylistFilterPanel({ className, params, onChange, onSub
     };
 
     return (
-        <motion.div className={cn("theme-color-3 flex flex-row gap-3 p-2 absolute origin-top shadow-md shadow-black rounded-md", className)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{duration: .1}}>
+        <motion.div className={cn("bg-theme-3 flex flex-row gap-3 p-2 absolute origin-top shadow-md shadow-black rounded-md", className)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{duration: .1}}>
             <div className="flex flex-col gap-1 shrink-0">
                 <h2 className="mb-0.5 uppercase text-sm">{t("maps.map-filter-panel.specificities")}</h2>
                 <div className="flex flex-row h-6 gap-1">

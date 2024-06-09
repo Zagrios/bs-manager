@@ -25,9 +25,10 @@ export type PlaylistItemComponentProps = {
     duration?: number;
     minNps?: number;
     maxNps?: number;
-    selected?: boolean;
+    selected$?: Observable<boolean>;
     isDownloading$?: Observable<boolean>;
     isInQueue$?: Observable<boolean>;
+    onClick?: () => void;
     onClickOpen?: () => void;
     onClickOpenFile?: () => void;
     onClickDelete?: () => void;
@@ -45,9 +46,10 @@ export function PlaylistItem({ title,
     nbMappers,
     minNps,
     maxNps,
-    selected,
+    selected$,
     isDownloading$,
     isInQueue$,
+    onClick,
     onClickOpen,
     onClickOpenFile,
     onClickSync,
@@ -59,6 +61,7 @@ export function PlaylistItem({ title,
     const color = useThemeColor("first-color");
 
     const [hovered, setHovered] = useState(false);
+    const selected = useObservable(() => selected$ ?? of(false), false, [selected$]);
     const isDownloading = useObservable(() => isDownloading$ ?? of(), false, [isDownloading$]);
     const isInQueue = useObservable(() => isInQueue$ ?? of(), false, [isInQueue$]);
 
@@ -80,9 +83,9 @@ export function PlaylistItem({ title,
     // TODO : Translate
 
     return (
-        <motion.li className='relative flex-grow basis-0 min-w-80 h-28 cursor-pointer group' onHoverStart={() => setHovered(() => true)} onHoverEnd={() => setHovered(() => false)} >
+        <motion.li className='relative flex-grow basis-0 min-w-80 h-28 cursor-pointer group' onHoverStart={() => setHovered(() => true)} onHoverEnd={() => setHovered(() => false)}>
             <GlowEffect visible={selected || hovered}/>
-            <div className="size-full relative flex flex-row justify-start items-center overflow-hidden bg-black rounded-md *:z-[1]">
+            <div className="size-full relative flex flex-row justify-start items-center overflow-hidden bg-black rounded-md *:z-[1]" onClick={e => {e.stopPropagation(); onClick?.()}}>
                 <div className="absolute inset-0 flex justify-center items-center z-0">
                     <BsmImage className="size-full object-cover saturate-150 blur-lg" image={coverUrl} base64={coverBase64} />
                     <div className="absolute inset-0 bg-black opacity-20"/>
@@ -91,7 +94,7 @@ export function PlaylistItem({ title,
                     <BsmImage className="size-full flex-shrink-0 object-cover rounded-md shadow-center shadow-black bg-main-color-1" image={coverUrl} base64={coverBase64} style={{filter: hovered && "brightness(75%)"}} />
                     <SearchIcon
                         className="absolute size-full top-0 left-0 p-7 opacity-0 text-white hover:text-current group-hover:opacity-100 transition-opacity"
-                        onClick={onClickOpen}
+                        onClick={e => {e.stopPropagation(); onClickOpen?.()}}
                     />
                 </div>
                 <div className="h-full py-2.5 text-white">
@@ -106,7 +109,7 @@ export function PlaylistItem({ title,
                     </div>
 
                 </div>
-                <motion.div className="absolute bg-light-main-color-3 dark:bg-main-color-3 top-0 h-full w-max left-full" animate={{x: (hovered || isDownloading ? "-100%" : "-0.625rem")}} transition={{duration: .1}}>
+                <motion.div className="absolute bg-theme-3 top-0 h-full w-max left-full" animate={{x: (hovered || isDownloading ? "-100%" : "-0.625rem")}} transition={{duration: .1}} onClick={e => e.stopPropagation()}>
                     <span className="absolute size-2.5 top-0 right-full bg-inherit translate-x-px" style={{ clipPath: 'path("M11 -1 L11 10 L10 10 A10 10 0 0 0 0 0 L0 -1 Z")' }} />
                     <span className="absolute size-2.5 bottom-0 right-full bg-inherit translate-x-px" style={{ clipPath: 'path("M11 11 L11 0 L10 0 A10 10 0 0 1 0 10 L 0 11 Z")' }} />
 

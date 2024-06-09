@@ -11,7 +11,7 @@ import { BPList, DownloadPlaylistProgressionData, PlaylistSong } from "shared/mo
 import { readFileSync } from "fs";
 import { BeatSaverService } from "../thrid-party/beat-saver/beat-saver.service";
 import { copy, copyFile, ensureDir, pathExists, pathExistsSync, readdirSync, realpath, writeFile, writeFileSync } from "fs-extra";
-import { Progression, pathExist, unlinkPath } from "../../helpers/fs.helpers";
+import { Progression, ensurePathNotAlreadyExist, ensurePathNotAlreadyExistSync, pathExist, unlinkPath } from "../../helpers/fs.helpers";
 import { FileAssociationService } from "../file-association.service";
 import { SongDetailsCacheService } from "./maps/song-details-cache.service";
 import { sToMs } from "shared/helpers/time.helpers";
@@ -21,6 +21,8 @@ import { InstallationLocationService } from "../installation-location.service";
 import sanitize from "sanitize-filename";
 import { isValidUrl } from "shared/helpers/url.helpers";
 import { allSettled } from "shared/helpers/promise.helpers";
+import { Archive } from "main/models/archive.class";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
 
 export class LocalPlaylistsManagerService {
     private static instance: LocalPlaylistsManagerService;
@@ -287,6 +289,76 @@ export class LocalPlaylistsManagerService {
 
     public deletePlaylistFile(bpList: LocalBPList): Observable<void>{
         return from(unlinkPath(bpList.path));
+    }
+
+    public exportPlaylists(opt: {version?: BSVersion, bpLists: LocalBPList[], dest: string, exportMaps?: boolean}): Observable<Progression<string>> {
+
+        if(!pathExistsSync(opt.dest)) {
+            throw new CustomError(`Destination folder not found ${opt.dest}`, "DEST_ENOENT");
+        }
+
+        if(opt.bpLists?.length === 0) {
+            throw new CustomError("No playlists to export", "NO_PLAYLISTS");
+        }
+
+        const versionName = opt.version ? opt.version.name ?? opt.version.BSVersion : "Shared";
+        const destName = opt.version ? `${versionName} Playlists` : "Playlists";
+        const zipDest = path.join(opt.dest, `${destName}.zip`);
+
+        const archive = new Archive(zipDest)
+
+        for(const bpList of opt.bpLists) {
+
+            if(!pathExistsSync(bpList.path)) {
+                throw new CustomError(`Playlist file not found ${bpList.path}`, "PLAYLIST_ENOENT");
+            }
+
+            archive.addFile(bpList.path, path.join(this.PLAYLISTS_FOLDER, path.basename(bpList.path)));
+        }
+
+        if(!opt.exportMaps) {
+            return archive.finalize();
+        }
+
+        const mapsHashsToExport = Array.from(
+            new Set<string>(opt.bpLists.reduce((acc, bpList) => acc.concat((bpList.songs ?? []).map(s => s.hash)), [])).values()
+        );
+
+        const zipMaps$ = new Observable<Progression<string>>(obs => {
+            (async () => {
+                const progress: Progression<string> = { total: mapsHashsToExport.length, current: 0, data: zipDest };
+
+                for(const hash of mapsHashsToExport) {
+                    const mapInfo = await this.maps.getMapInfoFromHash(hash, opt.version);
+
+                    if(!mapInfo || !pathExistsSync(mapInfo.path)) { continue; }
+
+                    archive.addDirectory(
+                        mapInfo.path,
+                        path.join("Maps", path.basename(mapInfo.path)) // Dont't know why, but "CustomLevels" not work
+                    );
+                    progress.current += 1;
+
+                    obs.next(progress);
+                }
+
+            })()
+            .catch(err => obs.error(err))
+            .finally(() => obs.complete());
+        });
+
+        return new Observable<Progression<string>>(obs => {
+            (async () => {
+                const maps$ = zipMaps$.pipe(tap({ next: p => obs.next(p) }));
+                const archive$ = archive.finalize().pipe(tap({ next: p => obs.next(p) }));
+
+                await lastValueFrom(maps$);
+                await lastValueFrom(archive$);
+            })()
+            .catch(err => obs.error(err))
+            .finally(() => obs.complete());
+        })
+
     }
 
     public oneClickInstallPlaylist(bpListUrl: string): Observable<Progression<DownloadPlaylistProgressionData>> {

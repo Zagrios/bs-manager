@@ -28,7 +28,7 @@ type Props<T = unknown> = {
     itemHeight: number;
     items: T[];
     renderItem: (item: T) => JSX.Element;
-    rowKey: (rowItems: T[]) => Key;
+    rowKey?: (rowItems: T[]) => Key;
     scrollEnd?: ScrollEndHandler;
 }
 

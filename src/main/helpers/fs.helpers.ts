@@ -1,4 +1,4 @@
-import { CopyOptions, copy, createReadStream, ensureDir, move, realpath, stat, symlink } from "fs-extra";
+import { CopyOptions, copy, createReadStream, ensureDir, move, pathExists, pathExistsSync, realpath, stat, symlink } from "fs-extra";
 import { access, mkdir, rm, readdir, unlink, lstat, readlink } from "fs/promises";
 import path from "path";
 import { Observable, concatMap, from } from "rxjs";
@@ -217,13 +217,27 @@ export function rxCopy(src: string, dest: string, option?: CopyOptions): Observa
 
 export async function ensurePathNotAlreadyExist(path: string): Promise<string> {
     let destPath = path;
-    let folderExist = await pathExist(destPath);
+    let folderExist = await pathExists(destPath);
     let i = 0;
 
     while (folderExist) {
         i++;
         destPath = `${path} (${i})`;
-        folderExist = await pathExist(destPath);
+        folderExist = await pathExists(destPath);
+    }
+
+    return destPath;
+}
+
+export function ensurePathNotAlreadyExistSync(path: string): string {
+    let destPath = path;
+    let folderExist = pathExistsSync(destPath);
+    let i = 0;
+
+    while (folderExist) {
+        i++;
+        destPath = `${path} (${i})`;
+        folderExist = pathExistsSync(destPath);
     }
 
     return destPath;
