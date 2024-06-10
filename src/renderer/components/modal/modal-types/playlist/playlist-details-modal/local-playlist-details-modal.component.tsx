@@ -1,4 +1,4 @@
-import { ModalComponent } from "renderer/services/modale.service"
+import { ModalComponent, ModalExitCode } from "renderer/services/modale.service"
 import { PlaylistDetailsTemplate } from "./playlist-details-template.component"
 import { Observable, combineLatest, lastValueFrom, map, switchMap } from "rxjs"
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface"
@@ -14,6 +14,8 @@ import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.mode
 import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service";
 import { PlaylistHeaderState } from "./playlist-header-state.component";
 import { useConstant } from "renderer/hooks/use-constant.hook";
+import { useCallback } from "react";
+import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual-scroll.component";
 
 // TODO : Translate
 
@@ -58,6 +60,29 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
         return lastValueFrom(obs$);
     }
 
+    const renderMapItem = useCallback((map: BsmLocalMap) => {
+        return (
+            <MapItem
+                key={map.path}
+                hash={map.hash}
+                title={map.rawInfo._songName}
+                coverUrl={map.coverUrl}
+                songUrl={map.songUrl}
+                autor={map.rawInfo._levelAuthorName}
+                songAutor={map.rawInfo._songAuthorName}
+                bpm={map.rawInfo._beatsPerMinute}
+                duration={map.songDetails?.duration}
+                diffs={extractMapDiffs({ rawMapInfo: map.rawInfo, songDetails: map.songDetails })}
+                mapId={map.songDetails?.id}
+                ranked={map.songDetails?.ranked}
+                autorId={map.songDetails?.uploader.id}
+                likes={map.songDetails?.upVotes}
+                createdAt={map.songDetails?.uploadedAt}
+                callBackParam={null}
+            />
+        );
+    }, []);
+
     const renderMaps = () => {
         if (!Array.isArray(installedMaps) && !isInQueue) {
             return (
@@ -98,28 +123,18 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
                     isPlaylistInQueue$={isPlaylistInQueue$}
                     installPlaylist={installPlaylist}
                 />
-                <ul className="min-h-0 w-full grow space-y-2 pl-2.5 pr-2 py-3 overflow-y-scroll overflow-x-hidden scrollbar-default">
-                    {installedMaps.map(map => (
-                        <MapItem
-                            key={map.path}
-                            hash={map.hash}
-                            title={map.rawInfo._songName}
-                            coverUrl={map.coverUrl}
-                            songUrl={map.songUrl}
-                            autor={map.rawInfo._levelAuthorName}
-                            songAutor={map.rawInfo._songAuthorName}
-                            bpm={map.rawInfo._beatsPerMinute}
-                            duration={map.songDetails?.duration}
-                            diffs={extractMapDiffs({ rawMapInfo: map.rawInfo, songDetails: map.songDetails })}
-                            mapId={map.songDetails?.id}
-                            ranked={map.songDetails?.ranked}
-                            autorId={map.songDetails?.uploader.id}
-                            likes={map.songDetails?.upVotes}
-                            createdAt={map.songDetails?.uploadedAt}
-                            callBackParam={null}
-                        />
-                    ))}
-                </ul>
+                <VirtualScroll
+                    maxColumns={1}
+                    minItemWidth={300}
+                    itemHeight={110}
+                    items={installedMaps}
+                    renderItem={renderMapItem}
+                    classNames={{
+                        mainDiv: "min-h-0 w-full grow",
+                        rows: "my-2.5 px-2.5"
+                    }}
+
+                />
             </div>
         )
     }
@@ -135,6 +150,7 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
             nbMaps={localPlaylist?.nbMaps}
             nbMappers={localPlaylist?.nbMappers}
             title={localPlaylist?.playlistTitle}
+            onClose={() => resolver({ exitCode: ModalExitCode.CLOSED })}
         >
             {renderMaps()}
         </PlaylistDetailsTemplate>

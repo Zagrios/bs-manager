@@ -287,9 +287,9 @@ export class LocalMapsManagerService {
         const versionMapsPath = await this.getMapsFolderPath(version);
         const mapInfo = this.songCache.getMapInfoFromHash(hash);
 
-        const cachedMapPath = path.join(versionMapsPath, mapInfo.dirname);
+        const cachedMapPath = (versionMapsPath && mapInfo?.dirname) && path.join(versionMapsPath, mapInfo.dirname);
 
-        if(pathExistsSync(cachedMapPath)){
+        if(cachedMapPath && pathExistsSync(cachedMapPath)){
             return this.loadMapInfoFromPath(cachedMapPath);
         }
 

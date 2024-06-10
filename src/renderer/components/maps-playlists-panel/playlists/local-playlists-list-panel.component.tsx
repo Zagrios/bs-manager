@@ -53,6 +53,8 @@ export type LocalPlaylistsListRef = {
     exportPlaylists: () => Promise<void>;
 }
 
+// TODO : Translate
+
 export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(({ version, className, filter: playlistFiler, search, isActive, linkedState }, forwardedRef) => {
 
     const t = useTranslation();
@@ -113,14 +115,17 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
 
             if(!toExport.length){ return; }
 
-            const modalRes = await modals.openModal(ExportPlaylistModal, { data: toExport });
-            if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return; }
+            const { exitCode, data: exportMaps } = await modals.openModal(ExportPlaylistModal, { data: toExport });
+            if(exitCode !== ModalExitCode.COMPLETED){ return; }
 
             const folderRes = await lastValueFrom(ipc.sendV2("choose-folder"));
             if(!folderRes || folderRes.canceled || !folderRes.filePaths?.length){ return; }
 
-            if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return; }
-            const obs$ = playlistService.exportPlaylists({ version, bpLists: toExport, dest: folderRes.filePaths.at(0), exportMaps: modalRes.data });
+            const mapsToExport = exportMaps ? (
+                maps$?.value?.filter(m => toExport.some(p => p.songs.some(s => s.hash.toLocaleLowerCase() === m.hash.toLocaleLowerCase()))) ?? []
+            ) : [];
+
+            const obs$ = playlistService.exportPlaylists({ version, bpLists: toExport, dest: folderRes.filePaths.at(0), playlistsMaps: mapsToExport });
 
             progess.show(obs$, true);
 

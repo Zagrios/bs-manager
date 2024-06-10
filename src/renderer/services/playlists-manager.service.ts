@@ -7,6 +7,7 @@ import { LocalBPList, LocalBPListsDetails } from "shared/models/playlists/local-
 import { ModalExitCode, ModalService } from "./modale.service";
 import { UnlinkPlaylistModal } from "renderer/components/modal/modal-types/unlink-playlist-modal.component";
 import { LinkPlaylistModal } from "renderer/components/modal/modal-types/link-playlist-modal.component";
+import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 
 export class PlaylistsManagerService {
     private static instance: PlaylistsManagerService;
@@ -38,12 +39,12 @@ export class PlaylistsManagerService {
         return this.ipc.sendV2("delete-playlist", opt);
     }
 
-    public exportPlaylists(opt: {version: BSVersion, bpLists: LocalBPList[], dest: string, exportMaps?: boolean}): Observable<Progression<string>> {
+    public exportPlaylists(opt: {version: BSVersion, bpLists: LocalBPList[], dest: string, playlistsMaps?: BsmLocalMap[]}): Observable<Progression<string>> {
         return this.ipc.sendV2("export-playlists", {
             version: opt.version,
             bpLists: opt.bpLists,
             dest: opt.dest,
-            exportMaps: opt.exportMaps
+            playlistsMaps: opt.playlistsMaps
         });
     }
 

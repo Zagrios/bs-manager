@@ -60,7 +60,7 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
 
             return { map, isOwned: isMapOwned, idDownloading: isDownloading, isInQueue: inQueue };
         }));
-    }, [maps, currentDownload, mapsInQueue, ownedMapHashs, currentDownload])
+    }, [maps, currentDownload, mapsInQueue, ownedMapHashs])
 
     useEffect(() => {
         loadMaps(searchParams);

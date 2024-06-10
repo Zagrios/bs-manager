@@ -1,5 +1,5 @@
 import path from "path";
-import { Observable, Subject, from, lastValueFrom, mergeMap, take, takeUntil, tap } from "rxjs";
+import { Observable, Subject, from, lastValueFrom, takeUntil, tap } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import { DeepLinkService } from "../deep-link.service";
@@ -7,11 +7,11 @@ import { RequestService } from "../request.service";
 import { LocalMapsManagerService } from "./maps/local-maps-manager.service";
 import log from "electron-log";
 import { WindowManagerService } from "../window-manager.service";
-import { BPList, DownloadPlaylistProgressionData, PlaylistSong } from "shared/models/playlists/playlist.interface";
+import { BPList, DownloadPlaylistProgressionData } from "shared/models/playlists/playlist.interface";
 import { readFileSync } from "fs";
 import { BeatSaverService } from "../thrid-party/beat-saver/beat-saver.service";
-import { copy, copyFile, ensureDir, pathExists, pathExistsSync, readdirSync, realpath, writeFile, writeFileSync } from "fs-extra";
-import { Progression, ensurePathNotAlreadyExist, ensurePathNotAlreadyExistSync, pathExist, unlinkPath } from "../../helpers/fs.helpers";
+import { copy, ensureDir, pathExists, pathExistsSync, readdirSync, realpath, writeFileSync } from "fs-extra";
+import { Progression, unlinkPath } from "../../helpers/fs.helpers";
 import { FileAssociationService } from "../file-association.service";
 import { SongDetailsCacheService } from "./maps/song-details-cache.service";
 import { sToMs } from "shared/helpers/time.helpers";
@@ -20,9 +20,9 @@ import { SongCacheService } from "./maps/song-cache.service";
 import { InstallationLocationService } from "../installation-location.service";
 import sanitize from "sanitize-filename";
 import { isValidUrl } from "shared/helpers/url.helpers";
-import { allSettled } from "shared/helpers/promise.helpers";
 import { Archive } from "main/models/archive.class";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
+import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 
 export class LocalPlaylistsManagerService {
     private static instance: LocalPlaylistsManagerService;
@@ -291,7 +291,7 @@ export class LocalPlaylistsManagerService {
         return from(unlinkPath(bpList.path));
     }
 
-    public exportPlaylists(opt: {version?: BSVersion, bpLists: LocalBPList[], dest: string, exportMaps?: boolean}): Observable<Progression<string>> {
+    public exportPlaylists(opt: {version?: BSVersion, bpLists: LocalBPList[], dest: string, playlistsMaps?: BsmLocalMap[]}): Observable<Progression<string>> {
 
         if(!pathExistsSync(opt.dest)) {
             throw new CustomError(`Destination folder not found ${opt.dest}`, "DEST_ENOENT");
@@ -310,55 +310,31 @@ export class LocalPlaylistsManagerService {
         for(const bpList of opt.bpLists) {
 
             if(!pathExistsSync(bpList.path)) {
-                throw new CustomError(`Playlist file not found ${bpList.path}`, "PLAYLIST_ENOENT");
+                log.warn(`Playlist file not found for export`, bpList.path);
+                continue;
             }
 
             archive.addFile(bpList.path, path.join(this.PLAYLISTS_FOLDER, path.basename(bpList.path)));
         }
 
-        if(!opt.exportMaps) {
+        if(!Array.isArray(opt.playlistsMaps) || opt.playlistsMaps.length === 0){
             return archive.finalize();
         }
 
-        const mapsHashsToExport = Array.from(
-            new Set<string>(opt.bpLists.reduce((acc, bpList) => acc.concat((bpList.songs ?? []).map(s => s.hash)), [])).values()
-        );
+        for(const map of opt.playlistsMaps) {
 
-        const zipMaps$ = new Observable<Progression<string>>(obs => {
-            (async () => {
-                const progress: Progression<string> = { total: mapsHashsToExport.length, current: 0, data: zipDest };
+            if(!map?.path || !pathExistsSync(map.path)) {
+                log.warn(`Map file not found for playlist export`, map?.path);
+                continue;
+            }
 
-                for(const hash of mapsHashsToExport) {
-                    const mapInfo = await this.maps.getMapInfoFromHash(hash, opt.version);
+            archive.addDirectory(
+                map.path,
+                path.join("Maps", path.basename(map.path)) // Dont't know why, but "CustomLevels" not work
+            );
+        }
 
-                    if(!mapInfo || !pathExistsSync(mapInfo.path)) { continue; }
-
-                    archive.addDirectory(
-                        mapInfo.path,
-                        path.join("Maps", path.basename(mapInfo.path)) // Dont't know why, but "CustomLevels" not work
-                    );
-                    progress.current += 1;
-
-                    obs.next(progress);
-                }
-
-            })()
-            .catch(err => obs.error(err))
-            .finally(() => obs.complete());
-        });
-
-        return new Observable<Progression<string>>(obs => {
-            (async () => {
-                const maps$ = zipMaps$.pipe(tap({ next: p => obs.next(p) }));
-                const archive$ = archive.finalize().pipe(tap({ next: p => obs.next(p) }));
-
-                await lastValueFrom(maps$);
-                await lastValueFrom(archive$);
-            })()
-            .catch(err => obs.error(err))
-            .finally(() => obs.complete());
-        })
-
+        return archive.finalize();
     }
 
     public oneClickInstallPlaylist(bpListUrl: string): Observable<Progression<DownloadPlaylistProgressionData>> {
