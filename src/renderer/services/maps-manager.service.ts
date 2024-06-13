@@ -12,6 +12,7 @@ import { ConfigurationService } from "./configuration.service";
 import { map, last, catchError } from "rxjs/operators";
 import { ProgressionInterface } from "shared/models/progress-bar";
 import { FolderLinkState, VersionFolderLinkerService } from "./version-folder-linker.service";
+import { SongDetails } from "shared/models/maps";
 
 export class MapsManagerService {
     private static instance: MapsManagerService;
@@ -143,6 +144,10 @@ export class MapsManagerService {
                 this.progressBar.complete();
                 this.progressBar.hide(true);
             });
+    }
+
+    public getMapsInfoFromHashs(hashs: string[]): Observable<SongDetails[]> {
+        return this.ipcService.sendV2("get-maps-info-from-cache", hashs);
     }
 
     public async isDeepLinksEnabled(): Promise<boolean> {

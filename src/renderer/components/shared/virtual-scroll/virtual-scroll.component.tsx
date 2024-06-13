@@ -5,10 +5,10 @@ import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { VirtualRow } from "./virtual-row.component";
 import { splitIntoChunk } from "shared/helpers/array.helpers";
 import { useConstant } from "renderer/hooks/use-constant.hook";
-import { BehaviorSubject, debounceTime } from "rxjs";
+import { BehaviorSubject, debounceTime, distinctUntilChanged } from "rxjs";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 
-type ClassNames = {
+export type VirtualScrollClassNames = {
     mainDiv?: string;
     variableList?: string;
     rows?: string;
@@ -21,8 +21,8 @@ type ScrollEndHandler = {
 
 type Props<T = unknown> = {
     className?: string;
-    classNames?: ClassNames;
-    minItemWidth: number;
+    classNames?: VirtualScrollClassNames;
+    minItemWidth?: number;
     maxColumns: number;
     minColumns?: number;
     itemHeight: number;
@@ -40,13 +40,15 @@ export function VirtualScroll<T = unknown>({ className, classNames, minItemWidth
     const [itemPerRow, setItemPerRow] = useState(1);
     const [itemsToRender, setItemsToRender] = useState<T[][]>([]);
     const listHeight$ = useConstant(() => new BehaviorSubject<number>(0));
-    const listHeight = useObservable(() => listHeight$.pipe(debounceTime(100)), 0);
+    const listHeight = useObservable(() => listHeight$.pipe(distinctUntilChanged(), debounceTime(100)), 0);
+
+    console.log(listHeight);
 
     useLayoutEffect(() => {
         const updateItemPerRow = (listWidth: number) => {
             if (!listWidth) return;
 
-            const calculatedColumns = Math.floor(listWidth / minItemWidth);
+            const calculatedColumns = Math.floor(listWidth / (minItemWidth ?? 1));
             const newColumns = Math.max((minColumns || 1), Math.min(maxColumns, calculatedColumns));
             setItemPerRow(() => newColumns);
         };
@@ -64,6 +66,7 @@ export function VirtualScroll<T = unknown>({ className, classNames, minItemWidth
     useOnUpdate(() => {
         const splitedItems = splitIntoChunk(items, itemPerRow);
         setItemsToRender(() => splitedItems);
+
     }, [itemPerRow, items])
 
     const handleScroll = (e: ListOnScrollProps) => {

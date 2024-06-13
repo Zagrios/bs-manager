@@ -139,7 +139,6 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
                             margin: 120
                         }}
                         renderItem={renderPlaylist}
-                        rowKey={items => items.map(item => item.playlist.playlistId).join("-")}
                     />
                 )
             })()}

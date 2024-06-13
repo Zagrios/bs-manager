@@ -1,7 +1,10 @@
+import { SongCacheService } from "main/services/additional-content/maps/song-cache.service";
 import { LocalMapsManagerService } from "../services/additional-content/maps/local-maps-manager.service";
 import { IpcService } from "../services/ipc.service";
 import { from, of, throwError } from "rxjs";
 import { tryit } from "shared/helpers/error.helpers";
+import { SongDetailsCacheService } from "main/services/additional-content/maps/song-details-cache.service";
+import { SongDetails } from "shared/models/maps";
 
 const ipc = IpcService.getInstance();
 
@@ -62,3 +65,20 @@ ipc.on("is-map-deep-links-enabled", (_, reply) => {
 
     reply(of(result));
 });
+
+ipc.on("get-maps-info-from-cache", (args, reply) => {
+    const songsCache = SongDetailsCacheService.getInstance();
+
+    const res = (args ?? []).reduce((acc, hash) => {
+        const songDetails = songsCache.getSongDetails(hash);
+
+        if(songDetails){
+            acc.push(songDetails);
+        }
+
+        return acc;
+    }, [] as SongDetails[]);
+
+    reply(of(res));
+
+})

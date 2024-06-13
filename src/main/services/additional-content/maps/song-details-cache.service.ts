@@ -81,7 +81,8 @@ export class SongDetailsCacheService {
         RawSongDetailsDeserializer.setDifficultyLabels(messageObj.difficultyLabels);
 
         for(const rawSong of messageObj.songs){
-            res[rawSong.hash.toLocaleLowerCase()] = RawSongDetailsDeserializer.deserialize(rawSong);
+            const deserialized = RawSongDetailsDeserializer.deserialize(rawSong);
+             res[deserialized.hash.toLocaleLowerCase()] = deserialized;
         }
 
         return res;

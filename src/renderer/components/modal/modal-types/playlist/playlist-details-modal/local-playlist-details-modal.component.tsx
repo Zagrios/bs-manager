@@ -84,15 +84,8 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
     }, []);
 
     const renderMaps = () => {
-        if (!Array.isArray(installedMaps) && !isInQueue) {
-            return (
-                <div className="grow bg-red-400">
 
-                </div>
-            );
-        }
-
-        if(installedMaps.length === 0 && !isInQueue) {
+        if(!installedMaps.length && !isInQueue) {
             return (
                 <div className="grow flex justify-center items-center flex-col">
                     <BsmImage image={BeatConflict} className="size-28"/>

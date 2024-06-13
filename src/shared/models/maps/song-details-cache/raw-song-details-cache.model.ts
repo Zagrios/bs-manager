@@ -16,7 +16,8 @@ export interface UploadersList {
 // SongDetails Message
 export interface RawSongDetails {
     idInt: number;
-    hash: string;
+    hashIndices: number[];
+    name: string;
     duration: number;
     uploaderRef: UploaderRef;
     uploadedAt: number;

@@ -2,7 +2,7 @@ import { Progression } from "main/helpers/fs.helpers";
 import { Observable } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { BSLaunchEventData, LaunchOption } from "shared/models/bs-launch";
-import { BsvMapDetail } from "shared/models/maps";
+import { BsvMapDetail, SongDetails } from "shared/models/maps";
 import { BsmLocalMap, BsmLocalMapsProgress, DeleteMapsProgress } from "shared/models/maps/bsm-local-map.interface";
 import { BsvPlaylist, BsvPlaylistPage, PlaylistSearchParams, SearchParams } from "../maps/beat-saver.model";
 import { ImportVersionOptions } from "main/services/bs-local-version.service";
@@ -58,6 +58,7 @@ export interface IpcChannelMapping {
     "register-maps-deep-link": { request: void, response: boolean };
     "unregister-maps-deep-link": { request: void, response: boolean };
     "is-map-deep-links-enabled": { request: void, response: boolean };
+    "get-maps-info-from-cache": { request: string[], response: SongDetails[] }
 
     /* ** bs-model-ipcs ** */
     "one-click-install-model": { request: MSModel, response: void };

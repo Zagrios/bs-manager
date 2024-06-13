@@ -37,6 +37,7 @@ import { ProgressionInterface } from "shared/models/progress-bar";
 import { enumerate } from "shared/helpers/array.helpers";
 import { SyncPlaylistModal } from "renderer/components/modal/modal-types/playlist/sync-playlist-modal.component";
 import { ExportPlaylistModal } from "renderer/components/modal/modal-types/playlist/export-playlist-modal.component";
+import { EditPlaylistModal } from "renderer/components/modal/modal-types/playlist/edit-playlist-modal.component";
 
 type Props = {
     version: BSVersion;
@@ -48,6 +49,7 @@ type Props = {
 };
 
 export type LocalPlaylistsListRef = {
+    createPlaylist: () => Promise<void>;
     syncPlaylists: () => Promise<void>;
     deletePlaylists: () => Promise<void>;
     exportPlaylists: () => Promise<void>;
@@ -87,6 +89,9 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
     }
 
     useImperativeHandle(forwardedRef, () => ({
+        createPlaylist: async () => {
+            const modalRes = await modals.openModal(EditPlaylistModal, { noStyle: true, data: { version, maps$ } });
+        },
         syncPlaylists: async () => {
             if(!isOnline){ return; }
             const toSync = selectedPlaylists$.value?.length ? selectedPlaylists$.value : playlists$.value;
@@ -270,7 +275,6 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
                 isInQueue$={playlistDownloader.$isPlaylistInQueue(playlist.customData?.syncURL ?? playlist.path, version)}
                 selected$={selectedPlaylists$.pipe(map(selected => selected.some(s => s.path === playlist.path)), distinctUntilChanged(equal))}
                 onClick={() => {
-                    console.log(selectedPlaylists$.value, playlist.path);
                     if(selectedPlaylists$.value.some(s => s.path === playlist.path)){
                         selectedPlaylists$.next(selectedPlaylists$.value.filter(s => s.path !== playlist.path));
                         return;

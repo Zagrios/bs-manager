@@ -108,6 +108,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         }
 
         return [
+            { icon: "add", text: "Créer une playlist", onClick: () => playlistsRef?.current?.createPlaylist?.() },
             { icon: "sync", text: "Synchroniser les playlists", onClick: () => playlistsRef?.current?.syncPlaylists?.() },
             { icon: "export", text: "Exporter les playlists", onClick: () => playlistsRef?.current?.exportPlaylists?.() },
             { icon: "trash", text: "Supprimer les playlists", onClick: () => playlistsRef?.current?.deletePlaylists?.() },

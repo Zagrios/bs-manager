@@ -18,8 +18,6 @@ const [MIN_NB_MAPPER, MAX_NB_MAPPER] = [0, 1000];
 const [MIN_DURATION, MAX_DURATION] = [0, hourToS(9)];
 const [MIN_NPS, MAX_NPS] = [0, 17];
 
-console.log(hourToS(9));
-
 export function LocalPlaylistFilterPanel({ className, filter, onChange }: Props) {
 
     const t = useTranslation();

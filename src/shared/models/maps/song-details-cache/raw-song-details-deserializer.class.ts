@@ -7,6 +7,8 @@ export abstract class RawSongDetailsDeserializer {
     public static uploaderList: UploadersList = { names: [], ids: [] };
     public static difficultyLabels: string[] = [];
 
+    private static readonly HASH_CHARS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"];
+
     private constructor() {}
 
     public static setUploadersList(uploadersList: UploadersList): void {
@@ -135,6 +137,10 @@ export abstract class RawSongDetailsDeserializer {
         return rawMapId.toString(16);
     }
 
+    private static deserializeHashIndices(hashIndices: number[]): string {
+        return hashIndices.map(index => this.HASH_CHARS[index]).join("");
+    }
+
     /**
      * Deserialize the raw song details to the song details model.
      * @param {RawSongDetails} rawSongDetails the raw song details to deserialize (normally get from the proto message)
@@ -148,7 +154,8 @@ export abstract class RawSongDetailsDeserializer {
 
         return {
             id: this.deserializeMapId(rawSongDetails.idInt),
-            hash: rawSongDetails.hash,
+            hash: this.deserializeHashIndices(rawSongDetails.hashIndices),
+            name: rawSongDetails.name,
             duration: rawSongDetails.duration,
             uploader: this.deserializeRawUploader(rawSongDetails.uploaderRef),
             uploadedAt: rawSongDetails.uploadedAt,

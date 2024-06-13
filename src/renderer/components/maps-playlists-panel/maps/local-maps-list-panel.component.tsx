@@ -21,6 +21,7 @@ import { useObservable } from "renderer/hooks/use-observable.hook";
 import equal from "fast-deep-equal";
 import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual-scroll.component";
 import { MapItem, extractMapDiffs } from "./map-item.component";
+import { isLocalMapFitMapFilter } from "./filter-panel.component";
 
 type Props = {
     version: BSVersion;
@@ -175,178 +176,10 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
                 callBackParam={map}
             />
         );
-    }, [version])
-
-    const isMapFitFilter = (map: BsmLocalMap): boolean => {
-        // Can be more clean and optimized i think
-
-        const fitEnabledTags = (() => {
-
-            if (!filter?.enabledTags || filter.enabledTags.size === 0) {
-                return true;
-            }
-            if (!map?.songDetails?.tags) {
-                return false;
-            }
-            return Array.from(filter.enabledTags.values()).every(tag => map.songDetails.tags.some(mapTag => mapTag === tag));
-        })();
-
-        if (!fitEnabledTags) {
-            return false;
-        }
-
-        const fitExcluedTags = (() => {
-            if (!filter?.excludedTags || filter.excludedTags.size === 0) {
-                return true;
-            }
-            if (!map?.songDetails?.tags) {
-                return true;
-            }
-            return !map.songDetails?.tags.some(tag => filter.excludedTags.has(tag as MapTag));
-        })();
-
-        if (!fitExcluedTags) {
-            return false;
-        }
-
-        const fitMinNps = (() => {
-            if (!filter?.minNps) {
-                return true;
-            }
-
-            return map.songDetails?.difficulties.some(diff => diff.nps > filter.minNps);
-        })();
-
-        if (!fitMinNps) {
-            return false;
-        }
-
-        const fitMaxNps = (() => {
-            if (!filter?.maxNps) {
-                return true;
-            }
-
-            return  map.songDetails?.difficulties.some(diff => diff.nps < filter.maxNps);
-        })();
-
-        if (!fitMaxNps) {
-            return false;
-        }
-
-        const fitMinDuration = (() => {
-            if (!filter?.minDuration) {
-                return true;
-            }
-
-            if (!map?.songDetails?.duration) {
-                return false;
-            }
-            return map.songDetails?.duration >= filter.minDuration;
-        })();
-
-        if (!fitMinDuration) {
-            return false;
-        }
-
-        const fitMaxDuration = (() => {
-            if (!filter?.maxDuration) {
-                return true;
-            }
-            if (!map?.songDetails?.duration) {
-                return false;
-            }
-            return map.songDetails?.duration <= filter.maxDuration;
-        })();
-
-        if (!fitMaxDuration) {
-            return false;
-        }
-
-        const fitNoodle = (() => {
-            if (!filter?.noodle) {
-                return true;
-            }
-            return map.songDetails?.difficulties.some(diff => !!diff.ne);
-        })();
-
-        if (!fitNoodle) {
-            return false;
-        }
-
-        const fitMe = (() => {
-            if (!filter?.me) {
-                return true;
-            }
-
-            return map.songDetails?.difficulties.some(diff => !!diff.me);
-        })();
-
-        if (!fitMe) {
-            return false;
-        }
-
-        const fitCinema = (() => {
-            if (!filter?.cinema) {
-                return true;
-            }
-
-            return map.songDetails?.difficulties.some(diff => !!diff.cinema);
-        })();
-
-        if (!fitCinema) {
-            return false;
-        }
-
-        const fitChroma = (() => {
-            if (!filter?.chroma) {
-                return true;
-            }
-
-            return map.songDetails?.difficulties.some(diff => !!diff.chroma);
-        })();
-
-        if (!fitChroma) {
-            return false;
-        }
-
-        const fitFullSpread = (() => {
-            if (!filter?.fullSpread) {
-                return true;
-            }
-
-            return map.songDetails?.difficulties.length >= 5;
-        })();
-
-        if (!fitFullSpread) {
-            return false;
-        }
-
-        if (filter?.automapper && (map.songDetails && !map.songDetails?.automapper)) {
-            return false;
-        }
-        if (!(filter?.ranked ? map.songDetails?.ranked === filter.ranked : true)) {
-            return false;
-        }
-        if (!(filter?.curated ? !!map.songDetails?.curated === filter.curated : true)) {
-            return false;
-        }
-        if (!(filter?.verified ? !!map.songDetails?.uploader?.verified : true)) {
-            return false;
-        }
-
-        const searchCheck = (() => {
-            return (map.rawInfo?._songName || "")?.toLowerCase().includes(search.toLowerCase()) || (map.rawInfo?._songAuthorName || "")?.toLowerCase().includes(search.toLowerCase()) || (map.rawInfo?._levelAuthorName  || "")?.toLowerCase().includes(search.toLowerCase());
-        })();
-
-        if (!searchCheck) {
-            return false;
-        }
-
-        return true;
-    };
+    }, [version]);
 
     const preppedMaps: RenderableMap[] = (() => {
-        return renderableMaps?.filter(renderableMap => isMapFitFilter(renderableMap.map)) ?? [];
+        return renderableMaps?.filter(renderableMap => isLocalMapFitMapFilter({ map: renderableMap.map, filter, search })) ?? [];
     })();
 
     if (!maps) {

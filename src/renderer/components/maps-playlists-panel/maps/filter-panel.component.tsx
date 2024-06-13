@@ -1,4 +1,4 @@
-import { MapFilter, MapRequirement, MapSpecificity, MapStyle, MapTag, MapType } from "shared/models/maps/beat-saver.model";
+import { BsvMapDetail, MapFilter, MapRequirement, MapSpecificity, MapStyle, MapTag, MapType } from "shared/models/maps/beat-saver.model";
 import { motion } from "framer-motion";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { BsmCheckbox } from "../../shared/bsm-checkbox.component";
@@ -11,6 +11,8 @@ import { BsmButton } from "../../shared/bsm-button.component";
 import equal from "fast-deep-equal/es6";
 import clone from "rfdc";
 import { GlowEffect } from "../../shared/glow-effect.component";
+import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
+import { SongDetails } from "shared/models/maps";
 
 export type Props = {
     className?: string;
@@ -158,7 +160,7 @@ export function FilterPanel({ className, ref, playlist = false, filter, localDat
     };
 
     return !playlist ? (
-        <motion.div ref={ref} className={`${className} bg-light-main-color-2 dark:bg-main-color-3`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+        <motion.div ref={ref} className={`${className} bg-light-main-color-2 dark:bg-main-color-3`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} draggable>
             <div className="w-full h-6 grid grid-cols-2 gap-x-12 px-4 mb-6 pt-1">
               <BsmRange min={MIN_NPS} max={MAX_NPS} values={npss} onChange={onNpssChange} renderLabel={renderNpsLabel} step={0.1} />
               <BsmRange min={MIN_DURATION} max={MAX_DURATION} values={durations} onChange={onDurationsChange} renderLabel={renderDurationLabel} step={5} />
@@ -220,3 +222,159 @@ export function FilterPanel({ className, ref, playlist = false, filter, localDat
         <></>
     );
 }
+
+// Filter functions
+
+function isFitEnabledTags(filter: MapFilter, tags: MapTag[]): boolean {
+    if(!Array.isArray(tags)) { return false; }
+    if (!filter?.enabledTags || filter.enabledTags.size === 0) {
+        return true;
+    }
+    return Array.from(filter.enabledTags.values()).every(tag => tags.some(mapTag => mapTag === tag));
+}
+
+function isFitExcludedTags(filter: MapFilter, tags: MapTag[]): boolean {
+    if(!Array.isArray(tags)) { return false; }
+    if (!filter?.excludedTags || filter.excludedTags.size === 0) {
+        return true;
+    }
+    return !tags.some(tag => filter.excludedTags.has(tag as MapTag));
+}
+
+function isFitMinNps(filter: MapFilter, nps: number): boolean {
+    if (!filter?.minNps) { return true; }
+    return nps > filter.minNps;
+}
+
+function isFitMaxNps(filter: MapFilter, nps: number): boolean {
+    if (!filter?.maxNps) { return true; }
+    return nps < filter.maxNps;
+}
+
+function isFitMinDuration(filter: MapFilter, duration: number): boolean {
+    if (!filter?.minDuration) { return true; }
+    return duration >= filter.minDuration;
+}
+
+function isFitMaxDuration(filter: MapFilter, duration: number): boolean {
+    if (!filter?.maxDuration) { return true; }
+    return duration <= filter.maxDuration;
+}
+
+function isFitNoodle(filter: MapFilter, noodle: boolean): boolean {
+    if (!filter?.noodle) { return true; }
+    return noodle;
+}
+
+function isFitMe(filter: MapFilter, me: boolean): boolean {
+    if (!filter?.me) { return true; }
+    return me;
+}
+
+function isFitCinema(filter: MapFilter, cinema: boolean): boolean {
+    if (!filter?.cinema) { return true; }
+    return cinema;
+}
+
+function isFitChroma(filter: MapFilter, chroma: boolean): boolean {
+    if (!filter?.chroma) { return true; }
+    return chroma;
+}
+
+function isFitFullSpread(filter: MapFilter, nbDiff: number): boolean {
+    if (!filter?.fullSpread) { return true; }
+    return nbDiff >= 5;
+}
+
+function isFitAutomapper(filter: MapFilter, automapper: boolean): boolean {
+    if (!filter?.automapper) { return true; }
+    return automapper;
+}
+
+
+function isFitRanked(filter: MapFilter, ranked: boolean): boolean {
+    if (!filter?.ranked) { return true; }
+    return ranked;
+}
+
+function isFitCurated(filter: MapFilter, curated: boolean): boolean {
+    if (!filter?.curated) { return true; }
+    return curated;
+}
+
+function isFitVerified(filter: MapFilter, verified: boolean): boolean {
+    if (!filter?.verified) { return true; }
+    return verified;
+}
+
+function isFitSearch(search: string, {songName, songAuthorName, levelAuthorName}: {songName: string, songAuthorName: string, levelAuthorName: string}): boolean {
+    if (!search) { return true; }
+    return songName?.toLowerCase().includes(search.toLowerCase()) || songAuthorName?.toLowerCase().includes(search.toLowerCase()) || levelAuthorName?.toLowerCase().includes(search.toLowerCase());
+}
+
+export const isLocalMapFitMapFilter = ({filter, map, search}: { filter: MapFilter, map: BsmLocalMap, search: string }): boolean => {
+    if (!isFitEnabledTags(filter, map.songDetails?.tags)) { return false; }
+    if (!isFitExcludedTags(filter, map.songDetails?.tags)) { return false; }
+    if (map?.songDetails?.difficulties?.length && !map.songDetails?.difficulties.some(diff => isFitMinNps(filter, diff.nps))) { return false; }
+    if (map?.songDetails?.difficulties?.length && !map.songDetails?.difficulties.some(diff => isFitMaxNps(filter, diff.nps))) { return false; }
+    if (!isFitMinDuration(filter, map.songDetails?.duration)) { return false; }
+    if (!isFitMaxDuration(filter, map.songDetails?.duration)) { return false; }
+    if (!isFitNoodle(filter, map.songDetails?.difficulties.some(diff => !!diff.ne))) { return false; }
+    if (!isFitMe(filter, map.songDetails?.difficulties.some(diff => !!diff.me))) { return false; }
+    if (!isFitCinema(filter, map.songDetails?.difficulties.some(diff => !!diff.cinema))) { return false; }
+    if (!isFitChroma(filter, map.songDetails?.difficulties.some(diff => !!diff.chroma))) { return false; }
+    if (!isFitFullSpread(filter, map.songDetails?.difficulties.length)) { return false; }
+    if (!isFitAutomapper(filter, map.songDetails?.automapper)){ return false; }
+    if (!isFitRanked(filter, map.songDetails?.ranked)) { return false; }
+    if (!isFitCurated(filter, map.songDetails?.curated)) { return false; }
+    if (!isFitVerified(filter, map.songDetails?.uploader.verified)) { return false; }
+    if (!isFitSearch(search, {songName: map.rawInfo?._songName, songAuthorName: map.rawInfo?._songAuthorName, levelAuthorName: map.rawInfo?._levelAuthorName})) { return false; }
+    return true;
+};
+
+export const isBsvMapFitMapFilter = ({filter, map, search}: { filter: MapFilter, map: BsvMapDetail, search: string }): boolean => {
+    if (!isFitEnabledTags(filter, map.tags)) { return false; }
+    if (!isFitExcludedTags(filter, map.tags)) { return false; }
+    if (map.versions?.at(0)?.diffs && !map.versions.at(0).diffs.some(diff => isFitMinNps(filter, diff.nps))) { return false; }
+    if (map.versions?.at(0)?.diffs && !map.versions.at(0).diffs.some(diff => isFitMaxNps(filter, diff.nps))) { return false; }
+    if (!isFitMinDuration(filter, map.metadata.duration)) { return false; }
+    if (!isFitMaxDuration(filter, map.metadata.duration)) { return false; }
+    if (!isFitNoodle(filter, map.versions?.at(0)?.diffs.some(diff => !!diff.ne))) { return false; }
+    if (!isFitMe(filter, map.versions?.at(0)?.diffs.some(diff => !!diff.me))) { return false; }
+    if (!isFitCinema(filter, map.versions?.at(0)?.diffs.some(diff => !!diff.cinema))) { return false; }
+    if (!isFitChroma(filter, map.versions?.at(0)?.diffs.some(diff => !!diff.chroma))) { return false; }
+    if (!isFitFullSpread(filter, map.versions?.at(0)?.diffs.length)) { return false; }
+    if (!isFitAutomapper(filter, map.automapper)){ return false; }
+    if (!isFitRanked(filter, map.ranked)) { return false; }
+    if (!isFitCurated(filter, !!map.curator)) { return false; }
+    if (!isFitVerified(filter, !!map.curatedAt)) { return false; }
+    if (!isFitSearch(search, {songName: map.name, songAuthorName: map.metadata.songAuthorName, levelAuthorName: map.metadata.levelAuthorName})) { return false; }
+    return true;
+};
+
+export const isSongDetailsFitMapFilter = ({filter, map, search}: { filter: MapFilter, map: SongDetails, search: string }): boolean => {
+    if (!isFitEnabledTags(filter, map.tags)) { return false; }
+    if (!isFitExcludedTags(filter, map.tags)) { return false; }
+    if (map.difficulties && !map.difficulties.some(diff => isFitMinNps(filter, diff.nps))) { return false; }
+    if (map.difficulties && !map.difficulties.some(diff => isFitMaxNps(filter, diff.nps))) { return false; }
+    if (!isFitMinDuration(filter, map.duration)) { return false; }
+    if (!isFitMaxDuration(filter, map.duration)) { return false; }
+    if (!isFitNoodle(filter, map.difficulties.some(diff => !!diff.ne))) { return false; }
+    if (!isFitMe(filter, map.difficulties.some(diff => !!diff.me))) { return false; }
+    if (!isFitCinema(filter, map.difficulties.some(diff => !!diff.cinema))) { return false; }
+    if (!isFitChroma(filter, map.difficulties.some(diff => !!diff.chroma))) { return false; }
+    if (!isFitFullSpread(filter, map.difficulties.length)) { return false; }
+    if (!isFitAutomapper(filter, map.automapper)){ return false; }
+    if (!isFitRanked(filter, map.ranked)) { return false; }
+    if (!isFitCurated(filter, map.curated)) { return false; }
+    if (!isFitVerified(filter, map.uploader.verified)) { return false; }
+    if (!isFitSearch(search, {songName: map.name, songAuthorName: map.uploader.name, levelAuthorName: map.uploader.name})) { return false; }
+    return true;
+}
+
+export const isMapFitFilter = ({filter, map, search}: { filter: MapFilter, map: BsmLocalMap | BsvMapDetail | SongDetails, search: string }): boolean => {
+    if ((map as BsmLocalMap)?.rawInfo) { return isLocalMapFitMapFilter({filter, map: (map as BsmLocalMap), search}); }
+    if ((map as BsvMapDetail)?.metadata) { return isBsvMapFitMapFilter({filter, map: (map as BsvMapDetail), search}); }
+    if ((map as SongDetails).hash) { return isSongDetailsFitMapFilter({filter, map: (map as SongDetails), search}); }
+    return false;
+};

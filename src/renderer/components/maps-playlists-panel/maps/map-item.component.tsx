@@ -27,18 +27,18 @@ import { typedMemo } from "renderer/helpers/typed-memo";
 
 export type ParsedMapDiff = { type: SongDiffName; name: string; stars: number };
 
-export type MapItemProps<T = unknown> = {
+export type MapItemComponentProps<T = unknown> = {
     hash: string;
     title: string;
     autor: string;
-    songAutor: string;
-    coverUrl: string;
-    songUrl: string;
+    songAutor?: string;
+    coverUrl?: string;
+    songUrl?: string;
     autorId: number;
     mapId: string;
     diffs: Map<SongDetailDiffCharactertistic, ParsedMapDiff[]>;
     ranked: boolean;
-    bpm: number;
+    bpm?: number;
     duration: number;
     likes: number;
     createdAt: number | CalendarDateTime;
@@ -53,7 +53,7 @@ export type MapItemProps<T = unknown> = {
     onDoubleClick?: (param: T) => void;
 };
 
-export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, ranked, bpm, duration, likes, createdAt, selected, downloading, showOwned, callBackParam, onDelete, onDownload, onSelected, onCancelDownload, onDoubleClick }: MapItemProps<T>) {
+export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, ranked, bpm, duration, likes, createdAt, selected, downloading, showOwned, callBackParam, onDelete, onDownload, onSelected, onCancelDownload, onDoubleClick }: MapItemComponentProps<T>) {
     const linkOpener = useService(LinkOpenerService);
     const audioPlayer = useService(AudioPlayerService);
 
@@ -115,7 +115,7 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
         if (!audioPlayer.playing && audioPlayer.src === songUrl) {
             return audioPlayer.resume();
         }
-        audioPlayer.play([{ src: songUrl, bpm }]);
+        audioPlayer.play([{ src: songUrl, bpm: bpm ?? 1 }]);
     };
 
     const bottomBarHoverStart = () => {

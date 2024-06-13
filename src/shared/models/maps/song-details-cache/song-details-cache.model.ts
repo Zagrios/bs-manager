@@ -3,6 +3,7 @@ import { MapTag } from "../beat-saver.model";
 export interface SongDetails {
     id: string;
     hash: string;
+    name: string;
     duration: number;
     uploader: SongUploader;
     uploadedAt: number;

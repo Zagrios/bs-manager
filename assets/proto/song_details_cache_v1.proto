@@ -17,22 +17,23 @@ message UploadersList {
 
 message SongDetails {
   uint32 idInt = 1;
-  string hash = 2;
-  uint32 duration = 3;
-  UploaderRef uploaderRef = 4;
-  uint32 uploadedAt = 5;
-  repeated MapTag tags = 6;
-  bool ranked = 7;
-  bool qualified = 8;
-  bool curated = 9;
-  bool rankedBL = 10;
-  bool nominatedBL = 11;
-  bool qualifiedBL = 12;
-  uint32 upVotes = 13;
-  uint32 downVotes = 14;
-  uint32 downloads = 15;
-  bool automapper = 16;
-  repeated Difficulty difficulties = 17;
+  repeated uint32 hashIndices = 2;
+  string name = 3;
+  uint32 duration = 4;
+  UploaderRef uploaderRef = 5;
+  uint32 uploadedAt = 6;
+  repeated MapTag tags = 7;
+  bool ranked = 8;
+  bool qualified = 9;
+  bool curated = 10;
+  bool rankedBL = 11;
+  bool nominatedBL = 12;
+  bool qualifiedBL = 13;
+  uint32 upVotes = 14;
+  uint32 downVotes = 15;
+  uint32 downloads = 16;
+  bool automapper = 17;
+  repeated Difficulty difficulties = 18;
 }
 
 message Difficulty {
@@ -54,7 +55,7 @@ message Difficulty {
 }
 
 message UploaderRef {
-  uint32 uploaderRefIndex = 1;
+  uint32 uploader_ref_index = 1;
   bool verified = 2;
 }
 
