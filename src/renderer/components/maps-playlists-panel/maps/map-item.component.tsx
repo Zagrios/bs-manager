@@ -24,6 +24,7 @@ import { BsvMapDetail, RawMapInfoData, SongDetailDiffCharactertistic, SongDetail
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import { CalendarDateTime, getLocalTimeZone } from "@internationalized/date";
 import { typedMemo } from "renderer/helpers/typed-memo";
+import { Observable, of } from "rxjs";
 
 export type ParsedMapDiff = { type: SongDiffName; name: string; stars: number };
 
@@ -37,14 +38,17 @@ export type MapItemComponentProps<T = unknown> = {
     autorId: number;
     mapId: string;
     diffs: Map<SongDetailDiffCharactertistic, ParsedMapDiff[]>;
-    ranked: boolean;
+    ranked?: boolean;
+    blRanked?: boolean;
     bpm?: number;
     duration: number;
     likes: number;
     createdAt: number | CalendarDateTime;
     selected?: boolean;
+    selected$?: Observable<boolean>;
     downloading?: boolean;
     showOwned?: boolean;
+    isOwned$?: Observable<boolean>;
     callBackParam: T;
     onDelete?: (param: T) => void;
     onDownload?: (param: T) => void;
@@ -53,7 +57,7 @@ export type MapItemComponentProps<T = unknown> = {
     onDoubleClick?: (param: T) => void;
 };
 
-export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, ranked, bpm, duration, likes, createdAt, selected, downloading, showOwned, callBackParam, onDelete, onDownload, onSelected, onCancelDownload, onDoubleClick }: MapItemComponentProps<T>) {
+export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, ranked, blRanked, bpm, duration, likes, createdAt, selected, selected$, downloading, showOwned, isOwned$, callBackParam, onDelete, onDownload, onSelected, onCancelDownload, onDoubleClick }: MapItemComponentProps<T>) {
     const linkOpener = useService(LinkOpenerService);
     const audioPlayer = useService(AudioPlayerService);
 
@@ -61,6 +65,8 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
     const t = useTranslation();
 
     const ref = useRef(null);
+    const isSelected = useObservable(() => selected$ ?? of(selected), false, [selected$, selected]);
+    const isOwned = useObservable(() => isOwned$ ?? of(showOwned ?? false), false, [isOwned$, showOwned]);
     const [hovered, setHovered] = useState(false);
     const [bottomBarHovered, setBottomBarHovered, cancelBottomBarHovered] = useDelayedState(false);
     const [diffsPanelHovered, setDiffsPanelHovered] = useState(false);
@@ -162,7 +168,7 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
 
     return (
         <motion.li className="relative h-[100px] min-w-[370px] shrink-0 grow basis-0 text-white group cursor-pointer" onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)} style={{ zIndex: hovered && 5, transform: "translateZ(0) scale(1.0, 1.0)", backfaceVisibility: "hidden" }}>
-            <GlowEffect visible={hovered || (selected && !!onSelected)} />
+            <GlowEffect visible={hovered || (isSelected && !!onSelected)} />
                 <AnimatePresence>
                     {(diffsPanelHovered || bottomBarHovered) && (
                         <motion.ul key={hash} className="absolute top-[calc(100%-10px)] w-full h-fit max-h-[200%] pt-4 pb-2 px-2 overflow-y-scroll bg-light-main-color-3 dark:bg-main-color-3 text-main-color-1 dark:text-current brightness-125 rounded-md flex flex-col gap-3 scrollbar-default shadow-sm shadow-black" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} onHoverStart={diffsPanelHoverStart} onHoverEnd={diffsPanelHoverEnd}>
@@ -183,7 +189,7 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
                     )}
                 </AnimatePresence>
             <div className="h-full w-full relative pl-[100px] rounded-md overflow-hidden flex flex-row justify-end">
-                <div className={`absolute top-0 left-0 h-full aspect-square cursor-pointer ${showOwned && "border-l-[5px]"}`} style={{ borderColor: showOwned && color }}>
+                <div className={`absolute top-0 left-0 h-full aspect-square cursor-pointer ${isOwned && "border-l-[5px]"}`} style={{ borderColor: isOwned && color }}>
                     <BsmImage className="size-full object-cover" image={coverUrl} placeholder={defaultImage} errorImage={defaultImage} />
                     <span
                         className="absolute flex justify-center items-center size-full pr-1 bg-transparent top-0 left-0 group-hover:bg-black group-hover:bg-opacity-40"
@@ -240,6 +246,11 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
                         <motion.div className="w-full h-5 pb-1 pr-7 flex items-center gap-1" onHoverStart={bottomBarHoverStart} onHoverEnd={bottomBarHoverEnd}>
                             {ranked && (
                                 <div className="text-yellow-300 bg-current rounded-full px-1 h-full flex items-center justify-center">
+                                    <span className="uppercase text-xs font-bold tracking-wide brightness-[.25]">{t("maps.map-specificities.ranked")}</span>
+                                </div>
+                            )}
+                            {blRanked && (
+                                <div className="bg-pink-400 bg-current rounded-full px-1 h-full flex items-center justify-center">
                                     <span className="uppercase text-xs font-bold tracking-wide brightness-[.25]">{t("maps.map-specificities.ranked")}</span>
                                 </div>
                             )}

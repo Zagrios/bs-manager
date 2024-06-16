@@ -50,6 +50,7 @@ export abstract class MapItemComponentPropsMapper {
             diffs: MapItemComponentPropsMapper.extractMapDiffs({ rawMapInfo: map.rawInfo, songDetails: map.songDetails }),
             mapId: map.songDetails?.id,
             ranked: map.songDetails?.ranked,
+            blRanked: map.songDetails?.rankedBL,
             autorId: map.songDetails?.uploader.id,
             likes: map.songDetails?.upVotes,
             createdAt: map.songDetails?.uploadedAt,
@@ -69,6 +70,7 @@ export abstract class MapItemComponentPropsMapper {
             likes: map.stats.upvotes,
             mapId: map.id,
             ranked: map.ranked,
+            blRanked: map.blRanked,
             title: map.name,
             songAutor: map.metadata.songAuthorName,
             diffs: MapItemComponentPropsMapper.extractMapDiffs({ bsvMap: map }),
@@ -87,6 +89,7 @@ export abstract class MapItemComponentPropsMapper {
             likes: song.upVotes,
             mapId: song.id,
             ranked: song.ranked,
+            blRanked: song.rankedBL,
             title: song.name,
             diffs: MapItemComponentPropsMapper.extractMapDiffs({ songDetails: song }),
             callBackParam: song

@@ -14,7 +14,7 @@ export type VirtualScrollClassNames = {
     rows?: string;
 }
 
-type ScrollEndHandler = {
+export type VirtualScrollEndHandler = {
     onScrollEnd: () => void;
     margin?: number;
 }
@@ -29,7 +29,7 @@ type Props<T = unknown> = {
     items: T[];
     renderItem: (item: T) => JSX.Element;
     rowKey?: (rowItems: T[]) => Key;
-    scrollEnd?: ScrollEndHandler;
+    scrollEnd?: VirtualScrollEndHandler;
 }
 
 export function VirtualScroll<T = unknown>({ className, classNames, minItemWidth, maxColumns, minColumns, itemHeight, items, scrollEnd, renderItem, rowKey}: Props<T>) {

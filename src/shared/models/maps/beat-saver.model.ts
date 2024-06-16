@@ -1,3 +1,4 @@
+import { ObjectValues } from "shared/helpers/type.helpers";
 import { SongDetailDiffCharactertistic, SongDiffName } from "./song-details-cache/song-details-cache.model";
 
 export interface BsvMapDetail {
@@ -13,6 +14,9 @@ export interface BsvMapDetail {
     name: string;
     qualified: boolean;
     ranked: boolean;
+    blQualified: boolean
+    blRanked: boolean
+    declaredAi: ObjectValues<typeof BsvDeclaredAi>;
     stats: BsvMapStats;
     tags: MapTag[];
     updatedAt: BsvInstant;
@@ -211,6 +215,14 @@ export enum MapSpecificity {
     FullSpread = "fullSpread"
 
 }
+
+//[ Admin, Uploader, SageScore, None ]
+export const BsvDeclaredAi = {
+    Admin: "Admin",
+    Uploader: "Uploader",
+    SageScore: "SageScore",
+    None: "None"
+} as const;
 
 export interface MapFilter {
     automapper?: boolean;
