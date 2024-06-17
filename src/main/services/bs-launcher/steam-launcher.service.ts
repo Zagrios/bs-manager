@@ -115,6 +115,11 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
 
             // Linux setup
             if (process.platform === "linux") {
+                if (launchOptions.admin == true) {
+                    log.warn("Launching as admin is not supported on Linux! Starting the game as a normal user.");
+                    launchOptions.admin = false;
+                }
+
                 // Create the compat data path if it doesn't exist.
                 // If the user never ran Beat Saber through steam before
                 // using bsmanager, it won't exist, and proton will fail
