@@ -24,7 +24,7 @@ export const DeleteModelsModal: ModalComponent<void, { models: BsmLocalModel[]; 
     const isMultiple = data.models.length > 1;
 
     const title = useConstant(() => (isMultiple ? t("models.modals.delete-models.title") : t("models.modals.delete-model.title")));
-    const desc = useConstant(() => (isMultiple ? t("models.modals.delete-models.desc", { nb: `${data.models.length}` }) : t("models.modals.delete-model.desc", { modelName: data.models[0].model?.name ?? data.models[0].fileName })));
+    const desc = useConstant(() => (isMultiple ? t("models.modals.delete-models.desc", { nb: `${data.models.length}` }) : t("models.modals.delete-model.desc", { modelName: data.models[0]?.model?.name ?? data.models[0]?.fileName })));
     const linkedAnnotation = useConstant(() =>
         (() => {
             if (!data.linked) return null;

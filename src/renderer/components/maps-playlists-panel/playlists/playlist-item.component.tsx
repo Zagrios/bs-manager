@@ -75,9 +75,7 @@ export function PlaylistItem({ title,
         if (!duration) {
             return null;
         }
-        const date = new Date(0);
-        date.setSeconds(duration);
-        return duration > 3600 ? dateFormat(date, "h:MM:ss") : dateFormat(date, "MM:ss");
+        return duration > 3600 ? dateFormat(duration * 1000, "h:MM:ss") : dateFormat(duration * 1000, "MM:ss");
     })();
 
     // TODO : Translate

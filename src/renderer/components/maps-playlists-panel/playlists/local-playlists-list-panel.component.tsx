@@ -6,7 +6,7 @@ import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useService } from "renderer/hooks/use-service.hook";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { FolderLinkState } from "renderer/services/version-folder-linker.service";
-import { BehaviorSubject, combineAll, combineLatest, distinctUntilChanged, filter, finalize, lastValueFrom, map, tap } from "rxjs";
+import { BehaviorSubject, combineLatest, distinctUntilChanged, filter, finalize, lastValueFrom, map, tap } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { noop } from "shared/helpers/function.helpers";
 import { LocalBPList, LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
@@ -37,7 +37,7 @@ import { ProgressionInterface } from "shared/models/progress-bar";
 import { enumerate } from "shared/helpers/array.helpers";
 import { SyncPlaylistModal } from "renderer/components/modal/modal-types/playlist/sync-playlist-modal.component";
 import { ExportPlaylistModal } from "renderer/components/modal/modal-types/playlist/export-playlist-modal.component";
-import { EditPlaylistModal } from "renderer/components/modal/modal-types/playlist/edit-playlist-modal.component";
+import { EditPlaylistModal } from "renderer/components/modal/modal-types/playlist/edit-playlist-modal/edit-playlist-modal.component";
 
 type Props = {
     version: BSVersion;
@@ -76,8 +76,6 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
     const selectedPlaylists$ = useConstant(() => new BehaviorSubject<LocalBPList[]>([]));
 
     const playlists = useObservable(() => playlists$, []);
-
-    console.log(playlists);
 
     const [playlistsLoading, setPlaylistsLoading] = useState(false);
     const loadPercent$ = useConstant(() => new BehaviorSubject<number>(0));

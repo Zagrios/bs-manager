@@ -59,14 +59,14 @@ export const LoginToSteamModal: ModalComponent<
                         <label className="block font-bold cursor-pointer tracking-wide" htmlFor="username">
                             {t("modals.steam-login.inputs.username.label")}
                         </label>
-                        <input className="w-full bg-light-main-color-1 dark:bg-main-color-1 px-1 py-[2px] rounded-md outline-none h-9" onChange={e => setUsername(e.target.value)} value={username} type="text" name="username" id="username" placeholder={t("modals.steam-login.inputs.username.placeholder")} />
+                        <input className="w-full bg-light-main-color-1 dark:bg-main-color-1 px-1 py-0.5 rounded-md outline-none h-9" onChange={e => setUsername(e.target.value)} value={username} type="text" name="username" id="username" placeholder={t("modals.steam-login.inputs.username.placeholder")} />
                     </div>
                     <div>
                         <label className="block font-bold cursor-pointer tracking-wide" htmlFor="password">
                             {t("modals.steam-login.inputs.password.label")}
                         </label>
                         <div className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md flex box-border h-9">
-                            <input className="grow px-1 py-[2px] outline-none bg-transparent" onChange={e => setPassword(e.target.value)} value={password} type={showPassword ? "text" : "password"} name="password" id="password" placeholder={t("modals.steam-login.inputs.password.placeholder")} />
+                            <input className="grow px-1 py-0.5 outline-none bg-transparent" onChange={e => setPassword(e.target.value)} value={password} type={showPassword ? "text" : "password"} name="password" id="password" placeholder={t("modals.steam-login.inputs.password.placeholder")} />
                             <BsmButton className="shrink-0 m-1 rounded-md p-0.5 !bg-light-main-color-3 dark:!bg-main-color-3" icon={showPassword ? "eye-cross" : "eye"} withBar={false} onClick={() => setShowPassword(prev => !prev)} />
                         </div>
                         {password?.length > 64 && <span className="text-orange-700 dark:text-orange-400 text-xs whitespace-normal min-w-0">{t("modals.steam-login.inputs.password.max-length-warning")}</span>}
