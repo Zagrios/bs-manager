@@ -258,6 +258,19 @@ export function resolveGUIDPath(guidPath: string): string {
     return path.join(driveLetter, path.relative(guidVolume, guidPath));
 }
 
+export function getUniqueFileNamePath(filePath: string): string {
+    const { dir, name, ext } = path.parse(filePath);
+    let i = 0;
+    let newFileName = `${name}${ext}`;
+
+    while (pathExistsSync(path.join(dir, newFileName))) {
+        i++;
+        newFileName = `${name} (${i})${ext}`;
+    }
+
+    return path.join(dir, newFileName);
+}
+
 export interface Progression<T = unknown, D = unknown> {
     total: number;
     current: number;

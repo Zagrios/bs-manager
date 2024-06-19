@@ -1,7 +1,7 @@
 import { LocalBPList } from "shared/models/playlists/local-playlist.models";
 import { LocalPlaylistsManagerService } from "../services/additional-content/local-playlists-manager.service";
 import { IpcService } from "../services/ipc.service";
-import { mergeMap, of } from "rxjs";
+import { from, lastValueFrom, mergeMap, of } from "rxjs";
 import { BPList } from "shared/models/playlists/playlist.interface";
 import path from "path";
 import { LocalMapsManagerService } from "../services/additional-content/maps/local-maps-manager.service";
@@ -66,3 +66,14 @@ ipc.on("export-playlists", (args, reply) => {
     const playlists = LocalPlaylistsManagerService.getInstance();
     reply(playlists.exportPlaylists(args));
 });
+
+ipc.on("install-playlist-file", (args, reply) => {
+    const playlists = LocalPlaylistsManagerService.getInstance();
+
+    const promise = async () => {
+        const playlist = await lastValueFrom(playlists.writeBPListFile({ bpList: args.bplist, version: args.version, dest: args.dest}));
+        return playlists.getLocalBPListDetails(playlist);
+    }
+
+    reply(from(promise()));
+})

@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable, Subject, Subscription, distinctUntilChanged, filter, lastValueFrom, map, shareReplay, take, takeUntil, takeWhile, tap } from "rxjs";
-import { DownloadPlaylistProgressionData } from "shared/models/playlists/playlist.interface";
+import { BPList, DownloadPlaylistProgressionData } from "shared/models/playlists/playlist.interface";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
 import { Progression } from "main/helpers/fs.helpers";
@@ -125,6 +125,10 @@ export class PlaylistDownloaderService {
 
     public openDownloadPlaylistModal(version: BSVersion, ownedPlaylists$: Observable<LocalBPListsDetails[]>, ownedMaps$: Observable<BsmLocalMap[]>): Promise<ModalResponse<void>> {
         return this.modal.openModal(DownloadPlaylistModal, { data: { version, ownedPlaylists$, ownedMaps$ } })
+    }
+
+    public installPlaylistFile(bplist: BPList, version?: BSVersion, dest?: string){
+        return this.ipc.sendV2("install-playlist-file", { bplist, version, dest });
     }
 }
 

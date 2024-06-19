@@ -11,7 +11,7 @@ import { BPList, DownloadPlaylistProgressionData } from "shared/models/playlists
 import { readFileSync } from "fs";
 import { BeatSaverService } from "../thrid-party/beat-saver/beat-saver.service";
 import { copy, ensureDir, pathExists, pathExistsSync, readdirSync, realpath, writeFileSync } from "fs-extra";
-import { Progression, unlinkPath } from "../../helpers/fs.helpers";
+import { Progression, getUniqueFileNamePath, unlinkPath } from "../../helpers/fs.helpers";
 import { FileAssociationService } from "../file-association.service";
 import { SongDetailsCacheService } from "./maps/song-details-cache.service";
 import { sToMs } from "shared/helpers/time.helpers";
@@ -83,6 +83,27 @@ export class LocalPlaylistsManagerService {
         await ensureDir(fullPath);
 
         return fullPath;
+    }
+
+    public writeBPListFile(opt: { bpList: BPList, version?: BSVersion, dest?: string }): Observable<LocalBPList> {
+        return new Observable<LocalBPList>(obs => {
+            (async () => {
+                const dest = await (async () => {
+                    if(opt.dest && path.isAbsolute(opt.dest) && path.extname(opt.dest) === ".bplist") { return opt.dest; }
+                    const playlistFolder = await this.getPlaylistsFolder(opt.version);
+                    const playlistPath = path.join(playlistFolder, `${sanitize(opt.bpList.playlistTitle)}.bplist`);
+                    return getUniqueFileNamePath(playlistPath);
+                })();
+
+                writeFileSync(dest, JSON.stringify(opt.bpList, null, 2));
+
+                const localBPList: LocalBPList = { ...opt.bpList, path: dest };
+
+                obs.next(localBPList);
+            })()
+            .catch(err => obs.error(err))
+            .finally(() => obs.complete());
+        });
     }
 
     private async installBPListFile(opt: {

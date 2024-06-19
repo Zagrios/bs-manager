@@ -8,18 +8,21 @@ import { IpcService } from "renderer/services/ipc.service";
 import { lastValueFrom } from "rxjs";
 import { logRenderError } from "renderer";
 
-type Props = {
+type OutProps = {
     playlistTitle: string;
     playlistDescription: string;
     playlistAuthor: string;
     base64Image: string;
 }
 
-export const EditPlaylistInfosModal: ModalComponent<Props, Props> = ({ resolver, options: { data: {
+type Props = OutProps & { isEdit: boolean };
+
+export const EditPlaylistInfosModal: ModalComponent<OutProps, Props> = ({ resolver, options: { data: {
     playlistTitle,
     playlistDescription,
     playlistAuthor,
-    base64Image
+    base64Image,
+    isEdit
 }}}) => {
 
     const steamDownloader = useService(SteamDownloaderService);
@@ -49,7 +52,9 @@ export const EditPlaylistInfosModal: ModalComponent<Props, Props> = ({ resolver,
 
     return (
         <div className="text-gray-800 dark:text-gray-200">
-            <h1 className="text-3xl uppercase tracking-wide w-full text-center mb-4 px-4">Créer une playlist</h1>
+            <h1 className="text-3xl uppercase tracking-wide w-full text-center mb-4 px-4">
+                {isEdit ? "Modifier la playlist" : "Créer une playlist"}
+            </h1>
             <div className="w-full flex flex-col justify-center items-center">
                 <button className="flex justify-center items-center relative size-36 border-2 border-gray-400 bg-theme-1 rounded-md overflow-hidden" onClick={handleClickImage}>
                     {base64 ? (

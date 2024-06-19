@@ -38,6 +38,7 @@ import { enumerate } from "shared/helpers/array.helpers";
 import { SyncPlaylistModal } from "renderer/components/modal/modal-types/playlist/sync-playlist-modal.component";
 import { ExportPlaylistModal } from "renderer/components/modal/modal-types/playlist/export-playlist-modal.component";
 import { EditPlaylistModal } from "renderer/components/modal/modal-types/playlist/edit-playlist-modal/edit-playlist-modal.component";
+import { NeedCloneEditPlaylistModal } from "renderer/components/modal/modal-types/playlist/need-clone-edit-playlist-modal.component";
 
 type Props = {
     version: BSVersion;
@@ -89,6 +90,27 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
     useImperativeHandle(forwardedRef, () => ({
         createPlaylist: async () => {
             const modalRes = await modals.openModal(EditPlaylistModal, { noStyle: true, data: { version, maps$ } });
+
+            if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return; }
+
+            const { error, result } = await tryit(() => lastValueFrom(playlistDownloader.installPlaylistFile(modalRes.data, version)));
+
+            if(error){
+                logRenderError("Error occured while creating playlist", error);
+                notification.notifyError({ title: "Erreur lors de la création de la playlist", desc: "Une erreur est survenue lors de la création de la playlist." });
+                return;
+            }
+
+            setPlaylists([result, ...playlists$.value]);
+
+            const notifRes = await notification.notifySuccess({ title: "Playlist créée !", desc: "La playlist a été créée avec succès. Tu peut maintenant synchroniser ses maps !", duration: 8000, actions: [
+                { id: "sync", title: "Synchroniser les maps" }
+            ]});
+
+            if(notifRes === "sync"){
+                await lastValueFrom(installPlaylist(result));
+            }
+
         },
         syncPlaylists: async () => {
             if(!isOnline){ return; }
@@ -249,6 +271,7 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
     };
 
     const openPlaylistDetails = (playlistPath: string) => {
+
         const localPlaylist$ = playlists$.pipe(map(playlists => playlists.find(p => p.path === playlistPath)));
         const installedMaps$ = combineLatest([maps$, localPlaylist$]).pipe(
             filter(([maps, playlist]) => !!maps && !!playlist),
@@ -261,6 +284,48 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
             noStyle: true,
         })
     };
+
+    const editPlaylist = async (playlist: LocalBPList) => {
+        const needClone = playlist?.customData?.syncURL;
+        const res = await (needClone ? modals.openModal(NeedCloneEditPlaylistModal) : Promise.resolve());
+
+        if(res && res.exitCode !== ModalExitCode.COMPLETED){
+            return;
+        }
+
+        const tmpPlaylist: LocalBPList = { ...playlist, playlistTitle: needClone ? `${playlist.playlistTitle} (${t("Clone")})` : playlist.playlistTitle };
+        const modalRes = await modals.openModal(EditPlaylistModal, { noStyle: true, data: { version, maps$, playlist: tmpPlaylist } });
+
+        if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return; }
+
+        const { error, result } = await tryit(() => lastValueFrom(playlistDownloader.installPlaylistFile(modalRes.data, version, needClone ? undefined : playlist.path)));
+
+        if(error){
+            logRenderError("Error occured while editing playlist", error);
+            notification.notifyError({ title: "Erreur lors de la modification de la playlist", desc: "Une erreur est survenue lors de la modification de la playlist." });
+            return;
+        }
+
+        const newPlaylists = [...playlists$.value];
+
+        if(needClone){
+            newPlaylists.unshift(result);
+        }
+        else {
+            const index = newPlaylists.findIndex(p => p.path === playlist.path);
+            newPlaylists[index] = result;
+        }
+
+        setPlaylists(newPlaylists);
+
+        const notifRes = await notification.notifySuccess({ title: "Playlist modifiée !", desc: "La playlist a été modifiée avec succès. Tu peut maintenant synchroniser ses maps !", duration: 8000, actions: [
+            { id: "sync", title: "Synchroniser les maps" }
+        ]});
+
+        if(notifRes === "sync"){
+            await lastValueFrom(installPlaylist(result));
+        }
+    }
 
     const renderPlaylist = useCallback((playlist: LocalBPListsDetails) => {
 
@@ -282,9 +347,10 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
                 }}
                 onClickOpen={() => openPlaylistDetails(playlist.path)}
                 onClickDelete={() => deletePlaylists([playlist])}
-                onClickSync={isOnline && (() => handleClickSync(playlist))}
+                onClickSync={(playlist?.songs?.length && isOnline) && (() => handleClickSync(playlist))}
                 onClickOpenFile={() => viewPlaylistFile(playlist.path)}
                 onClickCancelDownload={() => playlistDownloader.cancelDownload(playlist.customData?.syncURL ?? playlist.path, version)}
+                onClickEdit={() => editPlaylist(playlist)}
             />
         );
     }, [isOnline, version]);

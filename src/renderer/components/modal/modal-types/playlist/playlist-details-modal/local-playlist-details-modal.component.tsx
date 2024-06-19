@@ -85,7 +85,26 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
 
     const renderMaps = () => {
 
-        if(!installedMaps.length && !isInQueue) {
+        if (!Array.isArray(installedMaps) || !localPlaylist) {
+            return (
+                <div className="grow bg-red-400">
+
+                </div>
+            );
+        }
+
+        if(!localPlaylist.songs?.length){
+            return (
+                <div className="grow flex justify-center items-center flex-col">
+                    <BsmImage image={BeatConflict} className="size-28"/>
+                    <div className="text-white font-bold w-fit space-y-1.5 flex flex-col justify-center items-center -translate-y-5">
+                        <p>La Playlist ne contient aucune map</p>
+                    </div>
+                </div>
+            );
+        }
+
+        if(!installedMaps.length && localPlaylist.songs?.length && !isInQueue) {
             return (
                 <div className="grow flex justify-center items-center flex-col">
                     <BsmImage image={BeatConflict} className="size-28"/>
@@ -97,7 +116,7 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
             );
         }
 
-        if(installedMaps.length === 0 && isInQueue) {
+        if(!installedMaps.length && isInQueue) {
             return (
                 <div className="grow flex justify-center items-center flex-col">
                     <BsmImage image={BeatConflict} className="size-28"/>

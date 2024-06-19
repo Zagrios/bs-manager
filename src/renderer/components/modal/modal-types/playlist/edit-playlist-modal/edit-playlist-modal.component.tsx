@@ -12,7 +12,7 @@ import { ModalComponent, ModalExitCode, ModalService } from "renderer/services/m
 import { BehaviorSubject, Observable, lastValueFrom, map, take } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
-import { LocalBPList, LocalBPListsDetails } from "shared/models/playlists/local-playlist.models"
+import { LocalBPList } from "shared/models/playlists/local-playlist.models"
 import { BsvMapDetail, SongDetails } from "shared/models/maps";
 import { logRenderError } from "renderer";
 import { useService } from "renderer/hooks/use-service.hook";
@@ -30,9 +30,9 @@ import { ClockIcon } from "renderer/components/svgs/icons/clock-icon.component";
 import { NpsIcon } from "renderer/components/svgs/icons/nps-icon.component";
 import dateFormat from 'dateformat';
 import { getCorrectTextColor } from "renderer/helpers/correct-text-color";
-import { DeleteModelsModal } from "../../models/delete-models-modal.component";
 import { BPList } from "shared/models/playlists/playlist.interface";
 import { EditPlaylistInfosModal } from "./edit-playlist-infos-modal.component";
+import { CrossIcon } from "renderer/components/svgs/icons/cross-icon.component";
 
 type Props = {
     version?: BSVersion;
@@ -354,12 +354,34 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
             playlistDescription: playlist?.playlistDescription ?? "",
             base64Image: playlist?.image ?? "",
             playlistAuthor: playlist?.playlistAuthor ?? "",
+            isEdit: !!playlist
         }});
-        resolver({ exitCode: ModalExitCode.CANCELED });
+
+        if(res.exitCode !== ModalExitCode.COMPLETED){ return; }
+
+        const bpList: BPList = {
+            image: res.data.base64Image,
+            playlistAuthor: res.data.playlistAuthor,
+            playlistTitle: res.data.playlistTitle,
+            playlistDescription: res.data.playlistDescription,
+            songs: Object.values(playlistMaps$.value ?? []).map(map => {
+                const props = MapItemComponentPropsMapper.from(map);
+                return {
+                    key: props.mapId,
+                    hash: props.hash,
+                    songName: props.title
+                }
+            })
+        }
+
+        resolver({ exitCode: ModalExitCode.COMPLETED, data: bpList});
     };
 
     return (
-        <div className="w-screen h-screen max-h-[calc(100vh-2rem)] max-w-[55rem] lg:max-w-[66rem] xl:max-w-[77rem] bg-theme-3 p-4 rounded-md">
+        <div className="w-screen h-screen max-h-[calc(100vh-2rem)] max-w-[55rem] lg:max-w-[66rem] xl:max-w-[77rem] 2xl:max-w-[88rem] bg-theme-3 p-4 rounded-md relative">
+            <button className="absolute top-1.5 right-1.5 size-3" onClick={() => resolver({ exitCode: ModalExitCode.CANCELED })}>
+                <CrossIcon className="size-full"/>
+            </button>
             {(() => {
                 if(!playlistMaps || !localMaps){
                     return <div className="flex items-center justify-center w-full h-full">Loading...</div>

@@ -86,6 +86,7 @@ export interface IpcChannelMapping {
     "get-version-playlists-details": {request: BSVersion, response: Progression<LocalBPListsDetails[]>};
     "delete-playlist": {request: {version: BSVersion, bpList: LocalBPList, deleteMaps?: boolean}, response: Progression};
     "export-playlists": {request: {version?: BSVersion, bpLists: LocalBPList[], dest: string, playlistsMaps?: BsmLocalMap[]}, response: Progression<string>};
+    "install-playlist-file": {request: {bplist: BPList, version?: BSVersion, dest?: string}, response: LocalBPListsDetails};
 
     /* ** bs-uninstall-ipcs ** */
     "bs.uninstall": { request: BSVersion, response: boolean };
