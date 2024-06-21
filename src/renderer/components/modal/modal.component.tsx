@@ -15,8 +15,6 @@ export function Modal() {
     const modals = useObservable(() => modals$);
     const currentModal = useObservable<ModalObject>(() =>modals$.pipe(map(modals => modals?.at(-1))));
 
-    console.log(currentModal, modals, !!currentModal);
-
     useEffect(() => {
         const onEscape = (e: KeyboardEvent) => {
             if (e.key !== "Escape") {

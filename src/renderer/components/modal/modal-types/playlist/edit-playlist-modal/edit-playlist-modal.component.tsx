@@ -33,6 +33,7 @@ import { getCorrectTextColor } from "renderer/helpers/correct-text-color";
 import { BPList } from "shared/models/playlists/playlist.interface";
 import { EditPlaylistInfosModal } from "./edit-playlist-infos-modal.component";
 import { CrossIcon } from "renderer/components/svgs/icons/cross-icon.component";
+import { DraggableVirtualScroll } from "renderer/components/shared/virtual-scroll/draggable-virtual-scroll.component";
 
 type Props = {
     version?: BSVersion;
@@ -83,8 +84,6 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
     const [availableMapsSource, setAvailableMapsSource] = useState<number>(0);
 
     const displayablePlaylistMaps = useMemo(() => playlistMaps ? Object.values(playlistMaps).filter(Boolean) : [], [playlistMaps]);
-
-    const [base64Cover, setBase64Cover] = useState<string>(undefined);
 
     useOnUpdate(() => {
         const keyDown = (e: KeyboardEvent) => keyPressed$.next(e.key);
@@ -205,7 +204,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
             map: localMap,
             mapsSource$: localMaps$ as BehaviorSubject<(BsmLocalMap|BsvMapDetail|SongDetails)[]>,
             selectedHashs$: availabledHashsSelected$,
-            noKeyPressedFallBack: () => playlistMaps$.next(Object.assign({[mapHash]: localMap}, playlistMaps$.value))
+            noKeyPressedFallBack: () => playlistMaps$.next({...playlistMaps$.value, [mapHash]: localMap})
         }), isSelected$);
     }, []);
 
@@ -238,7 +237,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
                 <VirtualScroll
                     classNames={{
                         mainDiv: "bg-theme-1 rounded-md size-full min-w-0",
-                        rows: "my-2.5 px-2.5"
+                        rows: "py-2.5 px-2.5"
                     }}
                     items={maps}
                     itemHeight={110}
@@ -323,7 +322,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
         }).filter(duration => !isNaN(duration));
 
         const totalDuration = durations.reduce((acc, duration) => acc + duration, 0);
-        return totalDuration > 3600 ? dateFormat(totalDuration * 1000, "h:MM:ss") : dateFormat(totalDuration * 1000, "MM:ss");
+        return totalDuration > 3600 ? dateFormat(totalDuration * 1000, "H:MM:ss") : dateFormat(totalDuration * 1000, "MM:ss");
     }, [playlistMaps]);
 
     const [playlistMinNps, playlistMaxNps] = useMemo(() => {
@@ -376,6 +375,15 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
 
         resolver({ exitCode: ModalExitCode.COMPLETED, data: bpList});
     };
+
+    const handlePlaylistMapDragEnd = useCallback((fromIndex: number, toIndex: number) => {
+        const playlistMapsArray = Object.values(playlistMaps$.value ?? {});
+        const newPlaylistMaps = [...playlistMapsArray];
+        const [removed] = newPlaylistMaps.splice(fromIndex, 1);
+        newPlaylistMaps.splice(toIndex, 0, removed);
+
+        playlistMaps$.next(Object.fromEntries(newPlaylistMaps.map(map => [getHashOfMap(map), map])));
+    }, []);
 
     return (
         <div className="w-screen h-screen max-h-[calc(100vh-2rem)] max-w-[55rem] lg:max-w-[66rem] xl:max-w-[77rem] 2xl:max-w-[88rem] bg-theme-3 p-4 rounded-md relative">
@@ -436,9 +444,21 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
                                             <FilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[500px] h-fit p-2 rounded-md shadow-md shadow-black -translate-x-[40%]" filter={playlistMapsFilter} onChange={setPlaylistMapsFilter}/>
                                         </BsmDropdownButton>
                                     </div>
-                                    {renderList(displayablePlaylistMaps.filter(map => {
-                                        return isMapFitFilter({ map, filter: playlistMapsFilter, search: playlistMapsSearch });
-                                    }), renderPlaylistMapItem)}
+                                    <div className="overflow-hidden size-full">
+                                        <DraggableVirtualScroll
+                                            classNames={{
+                                                mainDiv: "bg-theme-1 rounded-md size-full min-w-0",
+                                                rows: "py-2.5 px-2.5"
+                                            }}
+                                            itemHeight={110}
+                                            items={displayablePlaylistMaps.filter(map => {
+                                                return isMapFitFilter({ map, filter: playlistMapsFilter, search: playlistMapsSearch });
+                                            })}
+                                            isDragDisabled={!!Object.keys(playlistMapsFilter).length || !!playlistMapsSearch}
+                                            renderItem={renderPlaylistMapItem}
+                                            onDragEnd={handlePlaylistMapDragEnd}
+                                        />
+                                    </div>
                                     <div className="w-full h-4 flex justify-end gap-3 mt-px">
                                         <div className="h-full flex justify-center items-center gap-0.5">
                                             <MapIcon className='h-full aspect-square mt-0.5'/>

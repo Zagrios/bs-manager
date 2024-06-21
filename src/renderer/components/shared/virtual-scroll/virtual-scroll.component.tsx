@@ -42,8 +42,6 @@ export function VirtualScroll<T = unknown>({ className, classNames, minItemWidth
     const listHeight$ = useConstant(() => new BehaviorSubject<number>(0));
     const listHeight = useObservable(() => listHeight$.pipe(distinctUntilChanged(), debounceTime(100)), 0);
 
-    console.log(listHeight);
-
     useLayoutEffect(() => {
         const updateItemPerRow = (listWidth: number) => {
             if (!listWidth) return;
@@ -101,7 +99,6 @@ export function VirtualScroll<T = unknown>({ className, classNames, minItemWidth
                 itemData={itemsToRender}
                 style={{ scrollbarGutter: "stable both-edges" }}
                 onScroll={handleScroll}
-
             >
                 {renderRow}
             </VariableSizeList>
