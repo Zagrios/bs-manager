@@ -6,7 +6,7 @@ import { Observable } from "rxjs";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { ModalComponent, ModalExitCode } from "renderer/services/modale.service";
 import { useCallback, useEffect, useState } from "react";
-import { MapItem, extractMapDiffs } from "renderer/components/maps-playlists-panel/maps/map-item.component";
+import { MapItem } from "renderer/components/maps-playlists-panel/maps/map-item.component";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useService } from "renderer/hooks/use-service.hook";
 import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
@@ -18,6 +18,7 @@ import BeatConflict from "../../../../../../../assets/images/apngs/beat-conflict
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { cn } from "renderer/helpers/css-class.helpers";
 import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual-scroll.component";
+import { MapItemComponentPropsMapper } from "shared/mappers/map/map-item-component-props.mapper";
 
 type Props = {
     version: BSVersion;
@@ -81,7 +82,7 @@ export const BsvPlaylistDetailsModal: ModalComponent<void, Props> = ({ resolver,
             mapId={map.id} ranked={map.ranked}
             title={map.name}
             songAutor={map.metadata.songAuthorName}
-            diffs={extractMapDiffs({ bsvMap: map })}
+            diffs={MapItemComponentPropsMapper.extractMapDiffs({ bsvMap: map })}
             songUrl={map.versions.at(0).previewURL}
             key={map.id}
             onDownload={downloadable && (() => mapsDownloader.addMapToDownload({version, map}))}
@@ -143,39 +144,6 @@ export const BsvPlaylistDetailsModal: ModalComponent<void, Props> = ({ resolver,
                             margin: 100
                         }}
                     />
-                    // <ul className="min-h-0 w-full grow space-y-2 pl-2.5 pr-2 py-3 overflow-y-scroll overflow-x-hidden scrollbar-default">
-                    //     {playlistMaps.map(map => {
-
-                    //         const downloadingMap = downloadingMaps.at(0);
-                    //         const isMapOwned = installedMaps?.some(installedMap => installedMap.hash === map.versions.at(0).hash);
-                    //         const isMapInQueue = downloadingMaps.some(downloadingMap => downloadingMap.map.versions.at(0).hash === map.versions.at(0).hash);
-                    //         const isMapDownloading = (isMapInQueue && downloadingMap) ? equal(downloadingMap.version, version) && downloadingMap.map.versions.at(0).hash === map.versions.at(0).hash : false;
-
-                    //         return (
-                    //             <MapItem
-                    //                 key={map.id}
-                    //                 title={map.name}
-                    //                 autor={map.uploader.name}
-                    //                 autorId={map.uploader.id}
-                    //                 bpm={map.metadata.bpm}
-                    //                 coverUrl={map.versions.at(0).coverURL}
-                    //                 createdAt={map.createdAt && toCalendarDateTime(parseAbsolute(map.createdAt, getLocalTimeZone()))}
-                    //                 duration={map.metadata.duration}
-                    //                 hash={map.versions.at(0).hash}
-                    //                 mapId={map.id}
-                    //                 likes={map.stats.upvotes}
-                    //                 ranked={map.ranked}
-                    //                 songAutor={map.metadata.songAuthorName}
-                    //                 songUrl={map.versions.at(0).previewURL}
-                    //                 diffs={extractMapDiffs({ bsvMap: map })}
-                    //                 downloading={isMapDownloading}
-                    //                 onDownload={!isMapOwned && !isMapInQueue && (() => mapsDownloader.addMapToDownload({version, map}))}
-                    //                 onCancelDownload={isMapInQueue && !isMapDownloading && (() => mapsDownloader.removeMapToDownload({version, map}))}
-                    //                 callBackParam={map}
-                    //             />);
-                    //     })}
-                    //     <motion.span className="w-full h-8" onViewportEnter={() => setPage(prev => prev + 1)} />
-                    // </ul>
                 )
             })()}
         </PlaylistDetailsTemplate>

@@ -1,12 +1,8 @@
-import { LocalBPList } from "shared/models/playlists/local-playlist.models";
 import { LocalPlaylistsManagerService } from "../services/additional-content/local-playlists-manager.service";
 import { IpcService } from "../services/ipc.service";
 import { from, lastValueFrom, mergeMap, of } from "rxjs";
-import { BPList } from "shared/models/playlists/playlist.interface";
-import path from "path";
 import { LocalMapsManagerService } from "../services/additional-content/maps/local-maps-manager.service";
 import { Progression } from "main/helpers/fs.helpers";
-import { lstatSync } from "fs-extra";
 import { isValidUrl } from "shared/helpers/url.helpers";
 import { pathToFileURL } from "url";
 

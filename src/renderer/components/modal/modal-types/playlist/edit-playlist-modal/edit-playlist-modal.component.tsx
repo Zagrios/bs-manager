@@ -30,16 +30,19 @@ import { ClockIcon } from "renderer/components/svgs/icons/clock-icon.component";
 import { NpsIcon } from "renderer/components/svgs/icons/nps-icon.component";
 import dateFormat from 'dateformat';
 import { getCorrectTextColor } from "renderer/helpers/correct-text-color";
-import { BPList } from "shared/models/playlists/playlist.interface";
+import { BPList, BPListDifficulty, PlaylistSong } from "shared/models/playlists/playlist.interface";
 import { EditPlaylistInfosModal } from "./edit-playlist-infos-modal.component";
 import { CrossIcon } from "renderer/components/svgs/icons/cross-icon.component";
 import { DraggableVirtualScroll } from "renderer/components/shared/virtual-scroll/draggable-virtual-scroll.component";
+import { swapElements } from "shared/helpers/array.helpers";
 
 type Props = {
     version?: BSVersion;
     maps$: Observable<BsmLocalMap[]>;
     playlist?: LocalBPList;
 }
+
+type PlaylistMap = { map: (BsmLocalMap|SongDetails|BsvMapDetail), difficulties?: BPListDifficulty[] };
 
 export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, options: { data: { version, maps$, playlist } } }) => {
 
@@ -74,7 +77,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
         return Object.values(BsvSearchOrder).map(sort => ({ text: `beat-saver.maps-sorts.${sort}`, value: sort }));
     });
 
-    const playlistMaps$ = useConstant(() => new BehaviorSubject<Record<string, (BsmLocalMap|SongDetails|BsvMapDetail)>>(undefined));
+    const playlistMaps$ = useConstant(() => new BehaviorSubject<Record<string, PlaylistMap>>(undefined));
     const playlistMaps = useObservable(() => playlistMaps$, undefined);
 
     const playlistHashsSelected$ = useConstant(() => new BehaviorSubject<string[]>([]));
@@ -83,7 +86,18 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
 
     const [availableMapsSource, setAvailableMapsSource] = useState<number>(0);
 
-    const displayablePlaylistMaps = useMemo(() => playlistMaps ? Object.values(playlistMaps).filter(Boolean) : [], [playlistMaps]);
+    const displayablePlaylistMaps = useMemo(() => {
+        if(!playlistMaps || !Object.keys(playlistMaps).length){ return []; }
+
+        return Object.values(playlistMaps).reduce((acc, playlistMap) => {
+            if(!playlistMap?.map){ return acc; }
+            if(!isMapFitFilter({ map: playlistMap.map, filter: playlistMapsFilter, search: playlistMapsSearch })){ return acc; }
+            acc.push(playlistMap);
+            return acc;
+        }, []);
+    }, [playlistMaps]);
+
+    console.log(displayablePlaylistMaps);
 
     useOnUpdate(() => {
         const keyDown = (e: KeyboardEvent) => keyPressed$.next(e.key);
@@ -103,23 +117,30 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
             const maps = await lastValueFrom(maps$.pipe(take(1)));
 
             const playlistMapsRes = (playlist?.songs ?? []).reduce((acc, song) => {
-                const map = maps.find(map => map.hash === song.hash);
+                const songHash = song.hash?.toLowerCase();
+                const map = maps.find(map => map.hash === songHash);
 
                 if(map){
-                    acc[map.hash] = map;
+                    acc[songHash] = { map, difficulties: song.difficulties };
                 }
                 else {
-                    acc[song.hash] = undefined;
+                    acc[songHash] = { map: undefined, difficulties: song.difficulties };
                 }
 
                 return acc;
-            }, {} as Record<string, (BsmLocalMap|BsvMapDetail|SongDetails)>);
+            }, {} as Record<string, PlaylistMap>);
 
-            const notInstalledHashs = Object.keys(playlistMapsRes).filter(hash => !playlistMapsRes[hash]);
+            const notInstalledHashs = Object.keys(playlistMapsRes).filter(hash => !playlistMapsRes[hash]?.map);
             const songsDetails = await lastValueFrom(mapsService.getMapsInfoFromHashs(notInstalledHashs));
 
             songsDetails.forEach(song => {
-                playlistMapsRes[song.hash] = song;
+                const songHash = song.hash?.toLowerCase();
+                if(playlistMapsRes[song.hash]){
+                    playlistMapsRes[songHash].map = song;
+                }
+                else{
+                    playlistMapsRes[songHash] = { map: song };
+                }
             });
 
             localMaps$.next([...(maps ?? []), ...(songsDetails ?? [])]);
@@ -184,15 +205,28 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
         selectedHashs$.next([]);
     }, []);
 
-    const renderMapItem = useCallback((map: (BsmLocalMap|BsvMapDetail|SongDetails), onClick: (map: (BsmLocalMap|BsvMapDetail|SongDetails)) => void, isSelected$: Observable<boolean>, isOwned$?: Observable<boolean>) => {
+    const renderMapItem = useCallback((
+        map: (BsmLocalMap|BsvMapDetail|SongDetails),
+        opt?: {
+            onClick?: (map: (BsmLocalMap|BsvMapDetail|SongDetails)) => void,
+            isSelected$?: Observable<boolean>,
+            isOwned$?: Observable<boolean>,
+            diffsSelected?: BPListDifficulty[],
+            onSelectedDiffsChange?: (diff: BPListDifficulty[]) => void
+        }
+    ) => {
+
+        console.log(opt.diffsSelected);
 
         return (
             <MapItem
                 key={(map as BsmLocalMap | SongDetails).hash ?? (map as BsvMapDetail).versions?.[0]?.hash}
                 { ...MapItemComponentPropsMapper.from(map) }
-                selected$={isSelected$}
-                onSelected={onClick}
-                isOwned$={isOwned$}
+                selected$={opt?.isSelected$}
+                isOwned$={opt?.isOwned$}
+                diffsSelected={opt?.diffsSelected}
+                onSelected={opt?.onClick}
+                onSelectedDiffsChange={opt?.onSelectedDiffsChange}
             />
         );
     }, []);
@@ -200,35 +234,51 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
     const renderAvailableMapItem = useCallback((localMap: BsmLocalMap | SongDetails | BsvMapDetail) => {
         const mapHash = getHashOfMap(localMap);
         const isSelected$ = availabledHashsSelected$.pipe(map(hashs => hashs.includes(mapHash)));
-        return renderMapItem(localMap, () => handleOnClickMap({
-            map: localMap,
-            mapsSource$: localMaps$ as BehaviorSubject<(BsmLocalMap|BsvMapDetail|SongDetails)[]>,
-            selectedHashs$: availabledHashsSelected$,
-            noKeyPressedFallBack: () => playlistMaps$.next({...playlistMaps$.value, [mapHash]: localMap})
-        }), isSelected$);
+        return renderMapItem(localMap, {
+            onClick: () => handleOnClickMap({
+                map: localMap,
+                mapsSource$: localMaps$ as BehaviorSubject<(BsmLocalMap|BsvMapDetail|SongDetails)[]>,
+                selectedHashs$: availabledHashsSelected$,
+                noKeyPressedFallBack: () => playlistMaps$.next({...playlistMaps$.value, [mapHash]: { map: localMap }})
+            }),
+            isSelected$
+        });
     }, []);
 
     const renderBsvMapItem = useCallback((bsvMap: BsvMapDetail) => {
         const mapHash = getHashOfMap(bsvMap);
         const isSelected$ = availabledHashsSelected$.pipe(map(hashs => hashs.includes(mapHash)));
         const isOwned$ = playlistMaps$.pipe(map(playlistMaps => !!playlistMaps[mapHash]));
-        return renderMapItem(bsvMap, () => handleOnClickMap({
-            map: bsvMap,
-            mapsSource$: bsvMaps$,
-            selectedHashs$: availabledHashsSelected$,
-            noKeyPressedFallBack: () => playlistMaps$.next(Object.assign({[mapHash]: bsvMap}, playlistMaps$.value))
-        }), isSelected$, isOwned$);
+        return renderMapItem(bsvMap, {
+            onClick: () => handleOnClickMap({
+                map: bsvMap,
+                mapsSource$: bsvMaps$,
+                selectedHashs$: availabledHashsSelected$,
+                noKeyPressedFallBack: () => playlistMaps$.next(Object.assign({[mapHash]: bsvMap}, playlistMaps$.value))
+            }),
+            isSelected$,
+            isOwned$
+        });
     }, []);
 
-    const renderPlaylistMapItem = useCallback((playlistMap: (BsmLocalMap|BsvMapDetail|SongDetails)) => {
-        const mapHash = getHashOfMap(playlistMap);
+    const renderPlaylistMapItem = useCallback((playlistMap: PlaylistMap) => {
+        const mapHash = getHashOfMap(playlistMap.map);
         const isSelected$ = playlistHashsSelected$.pipe(map(hashs => hashs.includes(mapHash)));
-        return renderMapItem(playlistMap, () => handleOnClickMap({
-            map: playlistMap,
-            mapsSource$: playlistMaps$.pipe(map(Object.values)),
-            selectedHashs$: playlistHashsSelected$,
-            noKeyPressedFallBack: () => playlistMaps$.next(Object.fromEntries(Object.entries(playlistMaps$.value).filter(([hash]) => hash !== mapHash)))
-        }), isSelected$);
+        return renderMapItem(playlistMap.map, {
+            onClick: () => handleOnClickMap({
+                map: playlistMap.map,
+                mapsSource$: playlistMaps$.pipe(map(Object.values)),
+                selectedHashs$: playlistHashsSelected$,
+                noKeyPressedFallBack: () => playlistMaps$.next(Object.fromEntries(Object.entries(playlistMaps$.value).filter(([hash]) => hash !== mapHash)))
+            }),
+            onSelectedDiffsChange: diffs => {
+                const newPlaylistMaps = {...playlistMaps$.value};
+                newPlaylistMaps[mapHash].difficulties = diffs;
+                playlistMaps$.next(newPlaylistMaps);
+            },
+            diffsSelected: playlistMap.difficulties,
+            isSelected$
+        });
     }, []);
 
     const renderList = <T, >(maps: T[], render: (item: T) => JSX.Element, scrollEndHandler?: VirtualScrollEndHandler) => {
@@ -256,7 +306,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
         ) : tmpLocalMaps;
 
         const newPlaylistMaps = {...playlistMaps$.value} ?? {};
-        mapsToAdd.forEach(map => newPlaylistMaps[getHashOfMap(map)] = map);
+        mapsToAdd.forEach(map => newPlaylistMaps[getHashOfMap(map)] = { map });
 
         playlistMaps$.next(newPlaylistMaps);
         availabledHashsSelected$.next([]);
@@ -292,8 +342,14 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
     }
 
     const playlistNbMappers = useMemo(() => {
+        if(!playlistMaps || Object.keys(playlistMaps).length === 0){ return "0"; }
         const mappersSet = new Set<string>();
-        Object.values(playlistMaps ?? {}).forEach(map => {
+        Object.values(playlistMaps ?? {}).forEach(playlistMap => {
+
+            if(!playlistMap?.map){ return; }
+
+            const map = playlistMap.map;
+
             if((map as BsmLocalMap).rawInfo?._levelAuthorName){
                 mappersSet.add((map as BsmLocalMap).rawInfo._levelAuthorName);
             }
@@ -308,7 +364,13 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
     }, [playlistMaps]);
 
     const playlistDuration = useMemo(() => {
-        const durations = Object.values(playlistMaps ?? {}).map(map => {
+        if(!playlistMaps || Object.keys(playlistMaps).length === 0){ return "0:00"; }
+        const durations = Object.values(playlistMaps ?? {}).map(playlistMap => {
+
+            if(!playlistMap?.map){ return 0; }
+
+            const map = playlistMap.map;
+
             if((map as BsmLocalMap)?.songDetails?.duration){
                 return (map as BsmLocalMap).songDetails.duration;
             }
@@ -326,7 +388,13 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
     }, [playlistMaps]);
 
     const [playlistMinNps, playlistMaxNps] = useMemo(() => {
-        const nps = Object.values(playlistMaps ?? {}).reduce((acc, map) => {
+        if(!playlistMaps || Object.keys(playlistMaps).length === 0){ return [0, 0]; }
+        const nps = Object.values(playlistMaps ?? {}).reduce((acc, playlistMap) => {
+
+            if(!playlistMap?.map){ return acc; }
+
+            const map = playlistMap.map;
+
             if(Array.isArray((map as BsmLocalMap)?.songDetails?.difficulties)){
                 acc.push(...(map as BsmLocalMap).songDetails.difficulties.map(diff => diff.nps));
             }
@@ -363,13 +431,15 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
             playlistAuthor: res.data.playlistAuthor,
             playlistTitle: res.data.playlistTitle,
             playlistDescription: res.data.playlistDescription,
-            songs: Object.values(playlistMaps$.value ?? []).map(map => {
-                const props = MapItemComponentPropsMapper.from(map);
-                return {
+            songs: Object.values(playlistMaps$.value ?? []).map(playlistMap => {
+                const props = MapItemComponentPropsMapper.from(playlistMap.map);
+                const playlistSong: PlaylistSong = {
                     key: props.mapId,
                     hash: props.hash,
-                    songName: props.title
+                    songName: props.title,
+                    difficulties: playlistMap.difficulties,
                 }
+                return playlistSong;
             })
         }
 
@@ -377,12 +447,8 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
     };
 
     const handlePlaylistMapDragEnd = useCallback((fromIndex: number, toIndex: number) => {
-        const playlistMapsArray = Object.values(playlistMaps$.value ?? {});
-        const newPlaylistMaps = [...playlistMapsArray];
-        const [removed] = newPlaylistMaps.splice(fromIndex, 1);
-        newPlaylistMaps.splice(toIndex, 0, removed);
-
-        playlistMaps$.next(Object.fromEntries(newPlaylistMaps.map(map => [getHashOfMap(map), map])));
+        const playlistMapsArray = swapElements(fromIndex, toIndex, Object.entries(playlistMaps$.value));
+        return playlistMaps$.next(Object.fromEntries(playlistMapsArray));
     }, []);
 
     return (
@@ -451,9 +517,9 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
                                                 rows: "py-2.5 px-2.5"
                                             }}
                                             itemHeight={110}
-                                            items={displayablePlaylistMaps.filter(map => {
-                                                return isMapFitFilter({ map, filter: playlistMapsFilter, search: playlistMapsSearch });
-                                            })}
+                                            items={displayablePlaylistMaps.filter(playlistMap => (
+                                                isMapFitFilter({ map: playlistMap.map, filter: playlistMapsFilter, search: playlistMapsSearch })
+                                            ))}
                                             isDragDisabled={!!Object.keys(playlistMapsFilter).length || !!playlistMapsSearch}
                                             renderItem={renderPlaylistMapItem}
                                             onDragEnd={handlePlaylistMapDragEnd}

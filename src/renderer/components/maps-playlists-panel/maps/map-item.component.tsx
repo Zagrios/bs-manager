@@ -4,7 +4,7 @@ import { BsmLink } from "../../shared/bsm-link.component";
 import { BsmIcon } from "../../svgs/bsm-icon.component";
 import { BsmButton } from "../../shared/bsm-button.component";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState, Fragment, memo, useRef } from "react";
+import { useState, Fragment, useRef } from "react";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import dateFormat from "dateformat";
 import { AudioPlayerService } from "renderer/services/audio-player.service";
@@ -20,13 +20,15 @@ import { GlowEffect } from "../../shared/glow-effect.component";
 import { useDelayedState } from "renderer/hooks/use-delayed-state.hook";
 import { useService } from "renderer/hooks/use-service.hook";
 import Tippy from "@tippyjs/react";
-import { BsvMapDetail, RawMapInfoData, SongDetailDiffCharactertistic, SongDetails, SongDiffName } from "shared/models/maps";
+import { SongDetailDiffCharactertistic, SongDiffName } from "shared/models/maps";
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import { CalendarDateTime, getLocalTimeZone } from "@internationalized/date";
 import { typedMemo } from "renderer/helpers/typed-memo";
 import { Observable, of } from "rxjs";
-
-export type ParsedMapDiff = { type: SongDiffName; name: string; stars: number };
+import { ParsedMapDiff } from "shared/mappers/map/map-item-component-props.mapper";
+import { BsmCheckbox } from "renderer/components/shared/bsm-checkbox.component";
+import { BPListDifficulty } from "shared/models/playlists/playlist.interface";
+import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 
 export type MapItemComponentProps<T = unknown> = {
     hash: string;
@@ -38,6 +40,7 @@ export type MapItemComponentProps<T = unknown> = {
     autorId: number;
     mapId: string;
     diffs: Map<SongDetailDiffCharactertistic, ParsedMapDiff[]>;
+    diffsSelected?: BPListDifficulty[];
     ranked?: boolean;
     blRanked?: boolean;
     bpm?: number;
@@ -55,9 +58,10 @@ export type MapItemComponentProps<T = unknown> = {
     onSelected?: (param: T) => void;
     onCancelDownload?: (param: T) => void;
     onDoubleClick?: (param: T) => void;
+    onSelectedDiffsChange?: (diffs: BPListDifficulty[]) => void;
 };
 
-export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, ranked, blRanked, bpm, duration, likes, createdAt, selected, selected$, downloading, showOwned, isOwned$, callBackParam, onDelete, onDownload, onSelected, onCancelDownload, onDoubleClick }: MapItemComponentProps<T>) {
+export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, diffsSelected, ranked, blRanked, bpm, duration, likes, createdAt, selected, selected$, downloading, showOwned, isOwned$, callBackParam, onDelete, onDownload, onSelected, onCancelDownload, onDoubleClick, onSelectedDiffsChange }: MapItemComponentProps<T>) {
     const linkOpener = useService(LinkOpenerService);
     const audioPlayer = useService(AudioPlayerService);
 
@@ -70,6 +74,7 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
     const [hovered, setHovered] = useState(false);
     const [bottomBarHovered, setBottomBarHovered, cancelBottomBarHovered] = useDelayedState(false);
     const [diffsPanelHovered, setDiffsPanelHovered] = useState(false);
+    const [_diffsSelected, setDiffsSelected] = useState<BPListDifficulty[]>(diffsSelected ?? []);
 
     useDoubleClick({
         ref,
@@ -78,6 +83,11 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
         onDoubleClick: () => onDoubleClick?.(callBackParam),
     });
 
+    useOnUpdate(() => {
+        if(!_diffsSelected?.length){ return; }
+        onSelectedDiffsChange?.(_diffsSelected);
+    }, [_diffsSelected])
+
     const songPlaying = useObservable(() => audioPlayer.playing$.pipe(map(playing => playing && audioPlayer.src === songUrl)));
 
     const MAP_DIFFICULTIES = useConstant(() => Object.values(SongDiffName))
@@ -85,6 +95,8 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
     const mapUrl = mapId ? `https://beatsaver.com/maps/${mapId}` : null;
     const authorUrl = autorId ? `https://beatsaver.com/profile/${autorId}` : null;
     const likesText = likes ? Intl.NumberFormat(undefined, { notation: "compact" }).format(likes).split(" ").join("") : null;
+    const mapCoverUrl = coverUrl ? coverUrl : `https://eu.cdn.beatsaver.com/${hash}.jpg`;
+
     const createdDate = useConstant(() => {
         if(!createdAt){ return null; }
         const date = typeof createdAt === "number" ? new Date(createdAt * 1000) : createdAt.toDate(getLocalTimeZone());
@@ -134,6 +146,11 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
         setBottomBarHovered(false, 100);
     };
 
+    const isDiffChecked = (diff: {name: string, characteristic: string}) => {
+        if(!_diffsSelected?.length){ return false; }
+        return _diffsSelected.some(d => d?.name?.toLowerCase() === diff?.name?.toLowerCase() && d?.characteristic?.toLowerCase() === diff?.characteristic?.toLowerCase());
+    }
+
     const diffsPanelHoverStart = () => setDiffsPanelHovered(true);
     const diffsPanelHoverEnd = () => setDiffsPanelHovered(false);
 
@@ -148,7 +165,7 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
                     <BsmIcon className="h-4 w-4 mr-px" icon="bsMapDifficulty" />
                     <div className="flex py-[2px] gap-[1px] h-full">
                         {diffSet.map((diff, index) => (
-                            <span key={index} className="h-full w-[6px] rounded-full" style={{ backgroundColor: MAP_DIFFICULTIES_COLORS[diff.type] }} />
+                            <span key={index} className="h-full w-[6px] rounded-full" style={{ backgroundColor: MAP_DIFFICULTIES_COLORS[diff.name] }} />
                         ))}
                     </div>
                 </>
@@ -166,6 +183,19 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
         return null;
     };
 
+    const handleDiffCheckChange = (diff: BPListDifficulty) => {
+        if(!_diffsSelected?.length){
+            setDiffsSelected([diff]);
+        }
+
+        const index = _diffsSelected?.findIndex(d => d?.name?.toLowerCase() === diff?.name?.toLowerCase() && d?.characteristic?.toLowerCase() === diff?.characteristic?.toLowerCase());
+        if(index === -1){
+            setDiffsSelected([..._diffsSelected, diff]);
+        } else {
+            setDiffsSelected(_diffsSelected.filter((_, i) => i !== index));
+        }
+    }
+
     return (
         <motion.li className="relative h-[100px] min-w-[370px] shrink-0 grow basis-0 text-white group cursor-pointer" onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)} style={{ zIndex: hovered && 5, transform: "translateZ(0) scale(1.0, 1.0)", backfaceVisibility: "hidden" }}>
             <GlowEffect visible={hovered || (isSelected && !!onSelected)} />
@@ -174,13 +204,16 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
                         <motion.ul key={hash} className="absolute top-[calc(100%-10px)] w-full h-fit max-h-[200%] pt-4 pb-2 px-2 overflow-y-scroll bg-light-main-color-3 dark:bg-main-color-3 text-main-color-1 dark:text-current brightness-125 rounded-md flex flex-col gap-3 scrollbar-default shadow-sm shadow-black" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} onHoverStart={diffsPanelHoverStart} onHoverEnd={diffsPanelHoverEnd}>
                             {Array.from(diffs.entries()).map(([charac, diffSet], index) => (
                                 <ol key={index} className="flex flex-col w-full gap-1">
-                                    {diffSet.map(({ type, name, stars }, index) => (
-                                        <li key={`${type}${name}${stars}${index}`} className="w-full h-4 flex items-center gap-1">
-                                            <BsmIcon className="h-full w-fit p-px" icon={charac} />
-                                            <span className="h-full px-2 flex items-center text-xs font-bold bg-current rounded-full" style={{ color: MAP_DIFFICULTIES_COLORS[type] }}>
-                                                {stars ? <span className="h-full block brightness-[.25]">★ {stars.toFixed(2)}</span> : <span className="h-full brightness-[.25] leading-4 pb-[2px] capitalize">{parseDiffLabel(type)}</span>}
+                                    {diffSet.map(({ name, libelle, stars }, index) => (
+                                        <li key={`${name}${libelle}${stars}${index}`} className="w-full h-4 flex items-center gap-1">
+                                            {onSelectedDiffsChange && (
+                                                <BsmCheckbox className="h-full aspect-square relative" checked={isDiffChecked({name, characteristic: charac})} onChange={() => handleDiffCheckChange({name, characteristic: charac})} />
+                                            )}
+                                            <BsmIcon className="h-full w-fit p-px shrink-0" icon={charac} />
+                                            <span className="h-full px-2 flex items-center text-xs font-bold bg-current rounded-full" style={{ color: MAP_DIFFICULTIES_COLORS[name] }}>
+                                                {stars ? <span className="h-full block brightness-[.25]">★ {stars.toFixed(2)}</span> : <span className="h-full brightness-[.25] leading-4 pb-[2px] capitalize">{parseDiffLabel(name)}</span>}
                                             </span>
-                                            <span className="text-sm leading-4 pb-[2px] capitalize">{parseDiffLabel(name)}</span>
+                                            <span className="text-sm leading-4 pb-[2px] line-clamp-1">{parseDiffLabel(libelle)}</span>
                                         </li>
                                     ))}
                                 </ol>
@@ -190,7 +223,7 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
                 </AnimatePresence>
             <div className="h-full w-full relative pl-[100px] rounded-md overflow-hidden flex flex-row justify-end">
                 <div className={`absolute top-0 left-0 h-full aspect-square cursor-pointer ${isOwned && "border-l-[5px]"}`} style={{ borderColor: isOwned && color }}>
-                    <BsmImage className="size-full object-cover" image={coverUrl} placeholder={defaultImage} errorImage={defaultImage} />
+                    <BsmImage className="size-full object-cover" image={mapCoverUrl} placeholder={defaultImage} errorImage={defaultImage} />
                     <span
                         className="absolute flex justify-center items-center size-full pr-1 bg-transparent top-0 left-0 group-hover:bg-black group-hover:bg-opacity-40"
                         style={{ color }}
@@ -204,7 +237,7 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
                     </span>
                 </div>
                 <div className="relative h-full w-full z-[1] rounded-md overflow-hidden -translate-x-1" ref={ref}>
-                    <BsmImage className="absolute top-0 left-0 size-full -z-[1] object-cover saturate-200" image={coverUrl} placeholder={defaultImage} errorImage={defaultImage} />
+                    <BsmImage className="absolute top-0 left-0 size-full -z-[1] object-cover saturate-200" image={mapCoverUrl} placeholder={defaultImage} errorImage={defaultImage} />
                     <div className="pt-1 pl-2 pr-7 top-0 left-0 size-full bg-neutral-600 bg-opacity-80 flex flex-col justify-between group-hover:bg-main-color-1 group-hover:bg-opacity-80">
                         <h1 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full leading-5 tracking-wide text-lg" title={title}>
                             <BsmLink className="hover:underline" href={mapUrl}>
@@ -351,36 +384,4 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
     );
 };
 
-export const MapItem = typedMemo(MapItemComponent, equal)
-
-export function extractMapDiffs({rawMapInfo, songDetails, bsvMap}: {rawMapInfo?: RawMapInfoData, songDetails?: SongDetails, bsvMap?: BsvMapDetail}): Map<SongDetailDiffCharactertistic, ParsedMapDiff[]> {
-    const res = new Map<SongDetailDiffCharactertistic, ParsedMapDiff[]>();
-    if (bsvMap && bsvMap.versions?.at(0)?.diffs) {
-        bsvMap.versions.at(0).diffs.forEach(diff => {
-            const arr = res.get(diff.characteristic) || [];
-            arr.push({ name: diff.difficulty, type: diff.difficulty, stars: diff.stars });
-            res.set(diff.characteristic, arr);
-        });
-        return res;
-    }
-
-    if (songDetails?.difficulties) {
-        songDetails?.difficulties.forEach(diff => {
-            const arr = res.get(diff.characteristic) || [];
-            const diffName = rawMapInfo._difficultyBeatmapSets.find(set => set._beatmapCharacteristicName === diff.characteristic)._difficultyBeatmaps.find(rawDiff => rawDiff._difficulty === diff.difficulty)?._customData?._difficultyLabel || diff.difficulty;
-            arr.push({ name: diffName, type: diff.difficulty, stars: diff.stars });
-            res.set(diff.characteristic, arr);
-        });
-        return res;
-    }
-
-    rawMapInfo._difficultyBeatmapSets.forEach(set => {
-        set._difficultyBeatmaps.forEach(diff => {
-            const arr = res.get(set._beatmapCharacteristicName) || [];
-            arr.push({ name: diff._customData?._difficultyLabel || diff._difficulty, type: diff._difficulty, stars: null });
-            res.set(set._beatmapCharacteristicName, arr);
-        });
-    });
-
-    return res;
-}
+export const MapItem = typedMemo(MapItemComponent, equal);

@@ -20,8 +20,9 @@ import { InstalledMapsContext } from "../maps-playlists-panel.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import equal from "fast-deep-equal";
 import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual-scroll.component";
-import { MapItem, extractMapDiffs } from "./map-item.component";
+import { MapItem } from "./map-item.component";
 import { isLocalMapFitMapFilter } from "./filter-panel.component";
+import { MapItemComponentPropsMapper } from "shared/mappers/map/map-item-component-props.mapper";
 
 type Props = {
     version: BSVersion;
@@ -165,7 +166,7 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
                 bpm={map.rawInfo._beatsPerMinute}
                 duration={map.songDetails?.duration}
                 selected={renderableMap.selected}
-                diffs={extractMapDiffs({ rawMapInfo: map.rawInfo, songDetails: map.songDetails })}
+                diffs={MapItemComponentPropsMapper.extractMapDiffs({ rawMapInfo: map.rawInfo, songDetails: map.songDetails })}
                 mapId={map.songDetails?.id}
                 ranked={map.songDetails?.ranked}
                 autorId={map.songDetails?.uploader.id}

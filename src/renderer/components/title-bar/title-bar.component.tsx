@@ -25,10 +25,10 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
 
     useEffect(() => {
         lastValueFrom(ipcService.sendV2("current-version")).then(version => {
-            if (version.toLocaleLowerCase().includes("alpha")) {
+            if (version.toLowerCase().includes("alpha")) {
                 return setPreviewVersion("ALPHA");
             }
-            if (version.toLocaleLowerCase().includes("beta")) {
+            if (version.toLowerCase().includes("beta")) {
                 return setPreviewVersion("BETA");
             }
         });

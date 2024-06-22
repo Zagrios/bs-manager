@@ -7,13 +7,15 @@ import { useThemeColor } from 'renderer/hooks/use-theme-color.hook';
 import dateFormat from 'dateformat';
 import { NpsIcon } from 'renderer/components/svgs/icons/nps-icon.component';
 import { GlowEffect } from 'renderer/components/shared/glow-effect.component';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { SearchIcon } from 'renderer/components/svgs/icons/search-icon.component';
 import { BsmButton } from 'renderer/components/shared/bsm-button.component';
 import Tippy from '@tippyjs/react';
 import { Observable, of } from 'rxjs';
 import { useObservable } from 'renderer/hooks/use-observable.hook';
 import { BsmBasicSpinner } from 'renderer/components/shared/bsm-basic-spinner/bsm-basic-spinner.component';
+import defaultImage from "../../../../../assets/images/default-version-img.jpg";
+import equal from 'fast-deep-equal';
 
 export type PlaylistItemComponentProps = {
     title?: string;
@@ -38,7 +40,7 @@ export type PlaylistItemComponentProps = {
     onClickEdit?: () => void;
 }
 
-export function PlaylistItem({ title,
+export const PlaylistItem = memo(({ title,
     author,
     coverUrl,
     coverBase64,
@@ -58,7 +60,7 @@ export function PlaylistItem({ title,
     onClickDelete,
     onClickCancelDownload,
     onClickEdit
-}: PlaylistItemComponentProps) {
+}: PlaylistItemComponentProps) => {
 
     const color = useThemeColor("first-color");
 
@@ -91,7 +93,7 @@ export function PlaylistItem({ title,
                     <div className="absolute inset-0 bg-black opacity-20"/>
                 </div>
                 <div className="relative h-full aspect-square p-2.5" style={{ color }}>
-                    <BsmImage className="size-full flex-shrink-0 object-cover rounded-md shadow-center shadow-black bg-main-color-1" image={coverUrl} base64={coverBase64} style={{filter: hovered && "brightness(75%)"}} />
+                    <BsmImage className="size-full flex-shrink-0 object-cover rounded-md shadow-center shadow-black bg-main-color-1" image={coverUrl} base64={coverBase64} placeholder={defaultImage} errorImage={defaultImage} style={{filter: hovered && "brightness(75%)"}} />
                     <SearchIcon
                         className="absolute size-full top-0 left-0 p-7 opacity-0 text-white hover:text-current group-hover:opacity-100 transition-opacity"
                         onClick={e => {e.stopPropagation(); onClickOpen?.()}}
@@ -196,4 +198,4 @@ export function PlaylistItem({ title,
         </motion.li>
 
     )
-}
+}, equal);

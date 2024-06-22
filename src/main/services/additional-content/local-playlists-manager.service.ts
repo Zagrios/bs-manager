@@ -134,7 +134,7 @@ export class LocalPlaylistsManagerService {
             throw new Error(`Invalid source ${source}`);
         }
 
-        const bpList = isLocalFile ? JSON.parse(readFileSync(source).toString()) : await this.request.getJSON<BPList>(source);
+        const bpList: BPList = isLocalFile ? JSON.parse(readFileSync(source).toString()) : await this.request.getJSON<BPList>(source);
 
         return bpList;
     }
@@ -189,7 +189,17 @@ export class LocalPlaylistsManagerService {
             id: localBPList.customData?.syncURL ? tryExtractPlaylistId(localBPList.customData.syncURL) : undefined
         }
 
-        const songsDetails = localBPList.songs?.map(s => this.songDetails.getSongDetails(s.hash)).filter(Boolean);
+        const songsDetails = localBPList.songs?.map(s => {
+            if(!s){
+                return undefined;
+            }
+            if(s.hash){
+                return this.songDetails.getSongDetails(s.hash);
+            }
+            if(s.key){
+                return this.songDetails.getSongDetailsById(s.key);
+            }
+        }).filter(Boolean);
 
         if(songsDetails && songsDetails.length){
             bpListDetails.duration = songsDetails.reduce((acc, song) => acc + song.duration, 0);

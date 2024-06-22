@@ -4,7 +4,7 @@ import { Observable, combineLatest, lastValueFrom, map, switchMap } from "rxjs"
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface"
 import { BSVersion } from "shared/bs-version.interface";
 import { useObservable } from "renderer/hooks/use-observable.hook";
-import { MapItem, extractMapDiffs } from "renderer/components/maps-playlists-panel/maps/map-item.component";
+import { MapItem } from "renderer/components/maps-playlists-panel/maps/map-item.component";
 import { useService } from "renderer/hooks/use-service.hook";
 import { AudioPlayerService } from "renderer/services/audio-player.service";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
@@ -16,6 +16,7 @@ import { PlaylistHeaderState } from "./playlist-header-state.component";
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import { useCallback } from "react";
 import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual-scroll.component";
+import { MapItemComponentPropsMapper } from "shared/mappers/map/map-item-component-props.mapper";
 
 // TODO : Translate
 
@@ -72,7 +73,7 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
                 songAutor={map.rawInfo._songAuthorName}
                 bpm={map.rawInfo._beatsPerMinute}
                 duration={map.songDetails?.duration}
-                diffs={extractMapDiffs({ rawMapInfo: map.rawInfo, songDetails: map.songDetails })}
+                diffs={MapItemComponentPropsMapper.extractMapDiffs({ rawMapInfo: map.rawInfo, songDetails: map.songDetails })}
                 mapId={map.songDetails?.id}
                 ranked={map.songDetails?.ranked}
                 autorId={map.songDetails?.uploader.id}

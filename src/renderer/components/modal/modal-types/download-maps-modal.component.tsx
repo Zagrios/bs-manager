@@ -1,7 +1,6 @@
-import { motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FilterPanel } from "renderer/components/maps-playlists-panel/maps/filter-panel.component";
-import { MapItem, extractMapDiffs } from "renderer/components/maps-playlists-panel/maps/map-item.component";
+import { MapItem } from "renderer/components/maps-playlists-panel/maps/map-item.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-button.component";
 import { BsmSelect, BsmSelectOption } from "renderer/components/shared/bsm-select.component";
@@ -22,6 +21,7 @@ import { useService } from "renderer/hooks/use-service.hook";
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import { getLocalTimeZone, parseAbsolute, toCalendarDateTime } from "@internationalized/date";
 import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual-scroll.component";
+import { MapItemComponentPropsMapper } from "shared/mappers/map/map-item-component-props.mapper";
 
 export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; ownedMaps: BsmLocalMap[] }> = ({ options: {data : { ownedMaps, version }} }) => {
     const beatSaver = useService(BeatSaverService);
@@ -149,7 +149,7 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
             mapId={map.id} ranked={map.ranked}
             title={map.name}
             songAutor={map.metadata.songAuthorName}
-            diffs={extractMapDiffs({ bsvMap: map })}
+            diffs={MapItemComponentPropsMapper.extractMapDiffs({ bsvMap: map })}
             songUrl={map.versions.at(0).previewURL}
             key={map.id}
             onDownload={downloadable && handleDownloadMap}

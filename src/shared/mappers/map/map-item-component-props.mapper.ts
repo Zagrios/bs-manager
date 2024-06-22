@@ -1,16 +1,19 @@
-import { getLocalTimeZone, parseAbsolute, parseDateTime, toCalendarDateTime } from "@internationalized/date";
-import { MapItemComponentProps, ParsedMapDiff } from "renderer/components/maps-playlists-panel/maps/map-item.component";
-import { BsvMapDetail, RawMapInfoData, SongDetailDiffCharactertistic, SongDetails } from "shared/models/maps";
+import { getLocalTimeZone, parseAbsolute, toCalendarDateTime } from "@internationalized/date";
+import { MapItemComponentProps } from "renderer/components/maps-playlists-panel/maps/map-item.component";
+import { BsvMapDetail, RawMapInfoData, SongDetailDiffCharactertistic, SongDetails, SongDiffName } from "shared/models/maps";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
+
+export type ParsedMapDiff = { name: SongDiffName; libelle: string; stars: number };
 
 export abstract class MapItemComponentPropsMapper {
 
     public static extractMapDiffs({rawMapInfo, songDetails, bsvMap}: {rawMapInfo?: RawMapInfoData, songDetails?: SongDetails, bsvMap?: BsvMapDetail}): Map<SongDetailDiffCharactertistic, ParsedMapDiff[]> {
         const res = new Map<SongDetailDiffCharactertistic, ParsedMapDiff[]>();
+
         if (bsvMap && bsvMap.versions?.at(0)?.diffs) {
             bsvMap.versions.at(0).diffs.forEach(diff => {
                 const arr = res.get(diff.characteristic) || [];
-                arr.push({ name: diff.difficulty, type: diff.difficulty, stars: diff.stars });
+                arr.push({ libelle: diff.difficulty, name: diff.difficulty, stars: diff.stars });
                 res.set(diff.characteristic, arr);
             });
             return res;
@@ -19,20 +22,22 @@ export abstract class MapItemComponentPropsMapper {
         if (songDetails?.difficulties) {
             songDetails?.difficulties.forEach(diff => {
                 const arr = res.get(diff.characteristic) || [];
-                const diffName = rawMapInfo._difficultyBeatmapSets.find(set => set._beatmapCharacteristicName === diff.characteristic)._difficultyBeatmaps.find(rawDiff => rawDiff._difficulty === diff.difficulty)?._customData?._difficultyLabel || diff.difficulty;
-                arr.push({ name: diffName, type: diff.difficulty, stars: diff.stars });
+                const diffName = rawMapInfo?._difficultyBeatmapSets?.find(set => set._beatmapCharacteristicName === diff.characteristic)._difficultyBeatmaps.find(rawDiff => rawDiff._difficulty === diff.difficulty)?._customData?._difficultyLabel || diff.difficulty;
+                arr.push({ libelle: diffName, name: diff.difficulty, stars: diff.stars });
                 res.set(diff.characteristic, arr);
             });
             return res;
         }
 
-        rawMapInfo._difficultyBeatmapSets.forEach(set => {
-            set._difficultyBeatmaps.forEach(diff => {
-                const arr = res.get(set._beatmapCharacteristicName) || [];
-                arr.push({ name: diff._customData?._difficultyLabel || diff._difficulty, type: diff._difficulty, stars: null });
-                res.set(set._beatmapCharacteristicName, arr);
+        if(rawMapInfo?._difficultyBeatmapSets){
+            rawMapInfo._difficultyBeatmapSets.forEach(set => {
+                set._difficultyBeatmaps.forEach(diff => {
+                    const arr = res.get(set._beatmapCharacteristicName) || [];
+                    arr.push({ libelle: diff._customData?._difficultyLabel || diff._difficulty, name: diff._difficulty, stars: null });
+                    res.set(set._beatmapCharacteristicName, arr);
+                });
             });
-        });
+        }
 
         return res;
     }

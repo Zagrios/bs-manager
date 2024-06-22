@@ -37,6 +37,7 @@ export class SongDetailsCacheService {
     private readonly utils: UtilsService;
 
     private songDetailsCache: Record<string, SongDetails> = {};
+    private songDetailsIdIndex: Record<string, SongDetails> = {};
     private readonly _loaded$ = new BehaviorSubject<boolean>(null);
 
     private constructor(){
@@ -52,6 +53,9 @@ export class SongDetailsCacheService {
 
         await this.downloadCacheFile(etag).then(etag => {
             this.config.set(this.etagKey, etag);
+            log.info("SongDetailsCache downloaded");
+            this.songDetailsIdIndex = this.createIdIndex(this.songDetailsCache);
+            log.info("SongDetailsIdIndex created");
         }).catch(err => {
             log.error("Unable to download cache file", err);
         });
@@ -64,6 +68,14 @@ export class SongDetailsCacheService {
         }).finally(() => {
             this._loaded$.next(true);
         })
+    }
+
+    private createIdIndex(songDetailsCache: Record<string, SongDetails>): Record<string, SongDetails> {
+        const res: Record<string, SongDetails> = {};
+        for(const hash in songDetailsCache){
+            res[songDetailsCache[hash].id] = songDetailsCache[hash];
+        }
+        return res;
     }
 
     private async readProtoMessageCacheFile(filePath: string): Promise<Record<string, SongDetails>> {
@@ -82,7 +94,7 @@ export class SongDetailsCacheService {
 
         for(const rawSong of messageObj.songs){
             const deserialized = RawSongDetailsDeserializer.deserialize(rawSong);
-             res[deserialized.hash.toLocaleLowerCase()] = deserialized;
+             res[deserialized.hash.toLowerCase()] = deserialized;
         }
 
         return res;
@@ -166,8 +178,12 @@ export class SongDetailsCacheService {
         }))));
     }
 
-    public getSongDetails(hash: string): SongDetails {
-        return this.songDetailsCache[hash.toLocaleLowerCase()];
+    public getSongDetails(hash: string): SongDetails | undefined {
+        return this.songDetailsCache[hash.toLowerCase()];
+    }
+
+    public getSongDetailsById(id: string): SongDetails | undefined {
+        return this.songDetailsIdIndex[id.toLowerCase()];
     }
 
 }

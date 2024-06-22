@@ -12,11 +12,13 @@ export interface BPList<SongType = PlaylistSong> {
 }
 
 export interface PlaylistSong {
-    key: string;
-    hash: string;
-    songName: string;
-    uploader?: string;
+    key?: string;
+    hash?: string;
+    songName?: string;
     songDetails?: SongDetails;
+    difficulties?: BPListDifficulty[];
+    levelAuthorName?: string;
+    levelid?: string;
 }
 
 export interface DownloadPlaylistProgressionData {
@@ -27,4 +29,9 @@ export interface DownloadPlaylistProgressionData {
 
 export interface CustomDataBPList {
     syncURL?: string;
+}
+
+export interface BPListDifficulty {
+    name: string,
+    characteristic: string,
 }

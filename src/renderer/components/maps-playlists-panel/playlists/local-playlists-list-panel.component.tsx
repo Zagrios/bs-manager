@@ -6,7 +6,7 @@ import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useService } from "renderer/hooks/use-service.hook";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { FolderLinkState } from "renderer/services/version-folder-linker.service";
-import { BehaviorSubject, combineLatest, distinctUntilChanged, filter, finalize, lastValueFrom, map, tap } from "rxjs";
+import { BehaviorSubject, Observable, combineLatest, distinctUntilChanged, filter, finalize, lastValueFrom, map, tap } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { noop } from "shared/helpers/function.helpers";
 import { LocalBPList, LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
@@ -39,6 +39,7 @@ import { SyncPlaylistModal } from "renderer/components/modal/modal-types/playlis
 import { ExportPlaylistModal } from "renderer/components/modal/modal-types/playlist/export-playlist-modal.component";
 import { EditPlaylistModal } from "renderer/components/modal/modal-types/playlist/edit-playlist-modal/edit-playlist-modal.component";
 import { NeedCloneEditPlaylistModal } from "renderer/components/modal/modal-types/playlist/need-clone-edit-playlist-modal.component";
+import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 
 type Props = {
     version: BSVersion;
@@ -83,7 +84,7 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
     const linked = useStateMap(linkedState, (newState, precMapped) => (newState === FolderLinkState.Pending || newState === FolderLinkState.Processing) ? precMapped : newState === FolderLinkState.Linked, false);
 
     const installPlaylist = (playlist: LocalBPList) => {
-        const ignoreSongsHashs = (maps$.value || []).map(m => m.hash.toLocaleLowerCase());
+        const ignoreSongsHashs = (maps$.value || []).map(m => m.hash.toLowerCase());
         return playlistDownloader.downloadPlaylist({ downloadSource: playlist.customData?.syncURL ?? playlist.path, version, ignoreSongsHashs, dest: playlist.path });
     }
 
@@ -147,7 +148,7 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
             if(!folderRes || folderRes.canceled || !folderRes.filePaths?.length){ return; }
 
             const mapsToExport = exportMaps ? (
-                maps$?.value?.filter(m => toExport.some(p => p.songs.some(s => s.hash.toLocaleLowerCase() === m.hash.toLocaleLowerCase()))) ?? []
+                maps$?.value?.filter(m => toExport.some(p => p.songs.some(s => s.hash.toLowerCase() === m.hash.toLowerCase()))) ?? []
             ) : [];
 
             const obs$ = playlistService.exportPlaylists({ version, bpLists: toExport, dest: folderRes.filePaths.at(0), playlistsMaps: mapsToExport });
@@ -263,7 +264,7 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
             setPlaylists(playlists$.value.filter(p => p.path !== bpList.path));
 
             if(deleteMaps){
-                setMaps(maps$.value.filter(m => !bpList.songs.some(s => s.hash.toLocaleLowerCase() === m.hash.toLocaleLowerCase())));
+                setMaps(maps$.value.filter(m => !bpList.songs.some(s => s.hash.toLowerCase() === m.hash.toLowerCase())));
             }
         }
 
@@ -273,9 +274,28 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
     const openPlaylistDetails = (playlistPath: string) => {
 
         const localPlaylist$ = playlists$.pipe(map(playlists => playlists.find(p => p.path === playlistPath)));
-        const installedMaps$ = combineLatest([maps$, localPlaylist$]).pipe(
+        const installedMaps$: Observable<BsmLocalMap[]> = combineLatest([maps$, localPlaylist$]).pipe(
             filter(([maps, playlist]) => !!maps && !!playlist),
-            map(([maps, playlist]) => maps.filter(m => playlist.songs.some(song => song.hash.toLocaleLowerCase() === m.hash.toLocaleLowerCase()))),
+            map(([maps, playlist]) => {
+                return playlist.songs.reduce((acc, playlistSong) => {
+                    if(!playlistSong){ return acc; }
+
+                    let map: BsmLocalMap;
+
+                    if(playlistSong.hash){
+                        map = maps.find(m => m.hash.toLowerCase() === playlistSong.hash.toLowerCase());
+                    }
+                    else if(playlistSong.key){
+                        map = maps.find(m => m?.songDetails?.id === playlistSong.key);
+                    }
+
+                    if(map){
+                        acc.push(map);
+                    }
+
+                    return acc;
+                }, []);
+            }),
             distinctUntilChanged(equal)
         );
 
@@ -359,8 +379,8 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
         if(!playlists){ return []; }
 
         return playlists.filter(p => {
-            if(!p.playlistTitle.toLocaleLowerCase().includes(search.toLocaleLowerCase())){ return false; }
-            if(!p.playlistAuthor.toLocaleLowerCase().includes(search.toLocaleLowerCase())){ return false; }
+            if(!p.playlistTitle.toLowerCase().includes(search.toLowerCase())){ return false; }
+            if(!p.playlistAuthor.toLowerCase().includes(search.toLowerCase())){ return false; }
 
             if(typeof p.nbMaps === "number" && (typeof playlistFiler?.minNbMaps === "number" || typeof playlistFiler?.maxNbMaps === "number")){
                 if(playlistFiler?.minNbMaps && p.nbMaps < playlistFiler.minNbMaps){ return false; }

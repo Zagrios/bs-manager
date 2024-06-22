@@ -16,9 +16,12 @@ export const BsmImage = forwardRef<HTMLImageElement, Props>(({ className, image,
     const [isLoaded, setIsLoaded] = useState(false);
 
     const getBase64Url = () => {
+        if(!base64){
+            return undefined;
+        }
 
-        if(base64?.startsWith("data:image")){ return base64; }
-        return base64 ? `data:image/png;base64,${base64}` : undefined;
+        const base64Data = base64.split("base64,").pop();
+        return base64Data ? `data:image/jpeg;base64,${base64Data}` : undefined;
     };
 
     const imageSrc = image || getBase64Url() || placeholder || errorImage;
