@@ -34,7 +34,9 @@ import { BPList, BPListDifficulty, PlaylistSong } from "shared/models/playlists/
 import { EditPlaylistInfosModal } from "./edit-playlist-infos-modal.component";
 import { CrossIcon } from "renderer/components/svgs/icons/cross-icon.component";
 import { DraggableVirtualScroll } from "renderer/components/shared/virtual-scroll/draggable-virtual-scroll.component";
-import { swapElements } from "shared/helpers/array.helpers";
+import { BsmImage } from "renderer/components/shared/bsm-image.component";
+import BeatWaiting from "../../../../../../../assets/images/apngs/beat-waiting.png";
+import BeatConflict from "../../../../../../../assets/images/apngs/beat-conflict.png";
 
 type Props = {
     version?: BSVersion;
@@ -95,9 +97,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
             acc.push(playlistMap);
             return acc;
         }, []);
-    }, [playlistMaps]);
-
-    console.log(displayablePlaylistMaps);
+    }, [playlistMaps, playlistMapsFilter, playlistMapsSearch]);
 
     useOnUpdate(() => {
         const keyDown = (e: KeyboardEvent) => keyPressed$.next(e.key);
@@ -153,7 +153,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
         availabledHashsSelected$.next([]);
         setAvailableMapsFilter({});
         setAvailableMapsSearch("");
-        bsvMaps$.next([]);
+        bsvMaps$.next(undefined);
         setBsvSearchParams({ sortOrder: bsvSearchOrder, filter: availableMapsFilter, page: 0, q: availableMapsSearch });
     }, [availableMapsSource])
 
@@ -254,7 +254,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
                 map: bsvMap,
                 mapsSource$: bsvMaps$,
                 selectedHashs$: availabledHashsSelected$,
-                noKeyPressedFallBack: () => playlistMaps$.next(Object.assign({[mapHash]: bsvMap}, playlistMaps$.value))
+                noKeyPressedFallBack: () => playlistMaps$.next({...playlistMaps$.value, [mapHash]: { map: bsvMap }})
             }),
             isSelected$,
             isOwned$
@@ -283,19 +283,17 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
 
     const renderList = <T, >(maps: T[], render: (item: T) => JSX.Element, scrollEndHandler?: VirtualScrollEndHandler) => {
         return (
-            <div className="overflow-hidden size-full">
-                <VirtualScroll
-                    classNames={{
-                        mainDiv: "bg-theme-1 rounded-md size-full min-w-0",
-                        rows: "py-2.5 px-2.5"
-                    }}
-                    items={maps}
-                    itemHeight={110}
-                    maxColumns={1}
-                    renderItem={render}
-                    scrollEnd={scrollEndHandler}
-                />
-            </div>
+            <VirtualScroll
+                classNames={{
+                    mainDiv: "size-full min-w-0",
+                    rows: "py-2.5 px-2.5"
+                }}
+                items={maps}
+                itemHeight={110}
+                maxColumns={1}
+                renderItem={render}
+                scrollEnd={scrollEndHandler}
+            />
         )
     }
 
@@ -326,7 +324,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
 
     const handleSortChange = (newSort: BsvSearchOrder) => {
         setBsvSortOrder(() => newSort);
-        bsvMaps$.next([]);
+        bsvMaps$.next(undefined);
         setBsvSearchParams(() => ({ ...bsvSearchParams, sortOrder: newSort }));
     };
 
@@ -337,7 +335,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
 
     const handleNewSearch = () => {
         if(availableMapsSource === 0){ return; }
-        bsvMaps$.next([]);
+        bsvMaps$.next(undefined);
         setBsvSearchParams(() => ({ page: 0, filter: availableMapsFilter, q: availableMapsSearch, sortOrder: bsvSearchOrder}));
     }
 
@@ -483,14 +481,38 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
                                         )}
                                     </form>
 
-                                    {availableMapsSource === 0 ? (
-                                        renderList(localMaps.filter(map => {
-                                            if(playlistMaps?.[map.hash]){ return false; }
-                                            return isMapFitFilter({ map, filter: availableMapsFilter, search: availableMapsSearch });
-                                        }), renderAvailableMapItem)
-                                    ) : (
-                                        renderList(bsvMaps, renderBsvMapItem, { onScrollEnd: loadMoreBsvMaps })
-                                    )}
+                                    <div className="overflow-hidden size-full bg-theme-1 rounded-md ">
+                                        {(() => {
+
+                                            if((availableMapsSource === 1 && !Array.isArray(bsvMaps)) || (availableMapsSource === 0 && !Array.isArray(localMaps))){
+                                                return (
+                                                    <div className="flex flex-col items-center justify-center size-full">
+                                                        <BsmImage className="size-24 spin-loading" image={BeatWaiting}/>
+                                                        <span className="text-sm italic leading-4">Loading...</span>
+                                                    </div>
+                                                );
+                                            }
+
+                                            if((availableMapsSource === 1 && bsvMaps.length === 0) || (availableMapsSource === 0 && localMaps.length === 0)){
+                                                return (
+                                                    <div className="flex flex-col items-center justify-center size-full">
+                                                        <BsmImage className="size-20" image={BeatConflict}/>
+                                                        <span className="text-sm italic leading-4 w-3/4 text-center">Aucune map trouvée</span>
+                                                    </div>
+                                                );
+                                            }
+
+                                            if(availableMapsSource === 0){
+                                                return renderList(localMaps.filter(map => {
+                                                    if(playlistMaps?.[map.hash]){ return false; }
+                                                    return isMapFitFilter({ map, filter: availableMapsFilter, search: availableMapsSearch });
+                                                }), renderAvailableMapItem);
+                                            }
+
+                                            return renderList(bsvMaps, renderBsvMapItem, { onScrollEnd: loadMoreBsvMaps });
+                                        })()}
+                                    </div>
+
                                     <div className="w-full h-4 flex justify-start">
                                         <span className="text-xs italic leading-4">Hold shift or ctrl to select multiples maps</span>
                                     </div>
@@ -514,20 +536,40 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
                                             <FilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[500px] h-fit p-2 rounded-md shadow-md shadow-black -translate-x-[40%]" filter={playlistMapsFilter} onChange={setPlaylistMapsFilter}/>
                                         </BsmDropdownButton>
                                     </div>
-                                    <div className="overflow-hidden size-full">
-                                        <DraggableVirtualScroll
-                                            classNames={{
-                                                mainDiv: "bg-theme-1 rounded-md size-full min-w-0",
-                                                rows: "py-2.5 px-2.5"
-                                            }}
-                                            itemHeight={110}
-                                            items={displayablePlaylistMaps.filter(playlistMap => (
-                                                isMapFitFilter({ map: playlistMap.map, filter: playlistMapsFilter, search: playlistMapsSearch })
-                                            ))}
-                                            isDragDisabled={!!Object.keys(playlistMapsFilter).length || !!playlistMapsSearch}
-                                            renderItem={renderPlaylistMapItem}
-                                            onDragEnd={handlePlaylistMapDragEnd}
-                                        />
+                                    <div className="overflow-hidden size-full bg-theme-1 rounded-md">
+                                        {(() => {
+                                            if(!playlistMaps){
+                                                return(
+                                                    <div className="flex flex-col items-center justify-center size-full">
+                                                        <BsmImage className="size-24 spin-loading" image={BeatWaiting}/>
+                                                        <span className="text-sm italic leading-4">Loading...</span>
+                                                    </div>
+                                                );
+                                            }
+                                            if(Object.keys(playlistMaps).length === 0){
+                                                return (
+                                                    <div className="flex flex-col items-center justify-center size-full">
+                                                        <BsmImage className="size-20" image={BeatConflict}/>
+                                                        <span className="text-sm italic leading-4 w-3/4 text-center">La playlist est vide</span>
+                                                    </div>
+                                                );
+                                            }
+
+                                            return (
+                                                <DraggableVirtualScroll
+                                                    classNames={{
+                                                        mainDiv: "size-full min-w-0",
+                                                        rows: "py-2.5 px-2.5"
+                                                    }}
+                                                    itemHeight={110}
+                                                    items={displayablePlaylistMaps}
+                                                    isDragDisabled={!!Object.keys(playlistMapsFilter).length || !!playlistMapsSearch}
+                                                    renderItem={renderPlaylistMapItem}
+                                                    onDragEnd={handlePlaylistMapDragEnd}
+                                                />
+                                            );
+
+                                        })()}
                                     </div>
                                     <div className="w-full h-4 flex justify-end gap-3 mt-px">
                                         <div className="h-full flex justify-center items-center gap-0.5">
