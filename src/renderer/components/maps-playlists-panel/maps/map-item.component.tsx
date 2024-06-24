@@ -29,6 +29,7 @@ import { ParsedMapDiff } from "shared/mappers/map/map-item-component-props.mappe
 import { BsmCheckbox } from "renderer/components/shared/bsm-checkbox.component";
 import { BPListDifficulty } from "shared/models/playlists/playlist.interface";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
+import { cn } from "renderer/helpers/css-class.helpers";
 
 export type MapItemComponentProps<T = unknown> = {
     hash: string;
@@ -40,7 +41,7 @@ export type MapItemComponentProps<T = unknown> = {
     autorId: number;
     mapId: string;
     diffs: Map<SongDetailDiffCharactertistic, ParsedMapDiff[]>;
-    diffsSelected?: BPListDifficulty[];
+    highlightedDiffs?: BPListDifficulty[];
     ranked?: boolean;
     blRanked?: boolean;
     bpm?: number;
@@ -52,16 +53,18 @@ export type MapItemComponentProps<T = unknown> = {
     downloading?: boolean;
     showOwned?: boolean;
     isOwned$?: Observable<boolean>;
+    canOpenMapDetails?: boolean;
+    canOpenAuthorDetails?: boolean;
     callBackParam: T;
     onDelete?: (param: T) => void;
     onDownload?: (param: T) => void;
     onSelected?: (param: T) => void;
     onCancelDownload?: (param: T) => void;
     onDoubleClick?: (param: T) => void;
-    onSelectedDiffsChange?: (diffs: BPListDifficulty[]) => void;
+    onHighlightedDiffsChange?: (diffs: BPListDifficulty[]) => void;
 };
 
-export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, diffsSelected, ranked, blRanked, bpm, duration, likes, createdAt, selected, selected$, downloading, showOwned, isOwned$, callBackParam, onDelete, onDownload, onSelected, onCancelDownload, onDoubleClick, onSelectedDiffsChange }: MapItemComponentProps<T>) {
+export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, highlightedDiffs, ranked, blRanked, bpm, duration, likes, createdAt, selected, selected$, downloading, showOwned, isOwned$, canOpenMapDetails, canOpenAuthorDetails, callBackParam, onDelete, onDownload, onSelected, onCancelDownload, onDoubleClick, onHighlightedDiffsChange }: MapItemComponentProps<T>) {
     const linkOpener = useService(LinkOpenerService);
     const audioPlayer = useService(AudioPlayerService);
 
@@ -74,7 +77,7 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
     const [hovered, setHovered] = useState(false);
     const [bottomBarHovered, setBottomBarHovered, cancelBottomBarHovered] = useDelayedState(false);
     const [diffsPanelHovered, setDiffsPanelHovered] = useState(false);
-    const [_diffsSelected, setDiffsSelected] = useState<BPListDifficulty[]>(diffsSelected ?? []);
+    const [_highlightedDiffs, setDiffsSelected] = useState<BPListDifficulty[]>(highlightedDiffs ?? []);
 
     useDoubleClick({
         ref,
@@ -84,9 +87,9 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
     });
 
     useOnUpdate(() => {
-        if(!_diffsSelected?.length){ return; }
-        onSelectedDiffsChange?.(_diffsSelected);
-    }, [_diffsSelected])
+        if(!_highlightedDiffs?.length){ return; }
+        onHighlightedDiffsChange?.(_highlightedDiffs);
+    }, [_highlightedDiffs])
 
     const songPlaying = useObservable(() => audioPlayer.playing$.pipe(map(playing => playing && audioPlayer.src === songUrl)));
 
@@ -146,9 +149,9 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
         setBottomBarHovered(false, 100);
     };
 
-    const isDiffChecked = (diff: {name: string, characteristic: string}) => {
-        if(!_diffsSelected?.length){ return false; }
-        return _diffsSelected.some(d => d?.name?.toLowerCase() === diff?.name?.toLowerCase() && d?.characteristic?.toLowerCase() === diff?.characteristic?.toLowerCase());
+    const isDiffHightlighted = (diff: {name: string, characteristic: string}) => {
+        if(!_highlightedDiffs?.length){ return false; }
+        return _highlightedDiffs.some(d => d?.name?.toLowerCase() === diff?.name?.toLowerCase() && d?.characteristic?.toLowerCase() === diff?.characteristic?.toLowerCase());
     }
 
     const diffsPanelHoverStart = () => setDiffsPanelHovered(true);
@@ -184,15 +187,15 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
     };
 
     const handleDiffCheckChange = (diff: BPListDifficulty) => {
-        if(!_diffsSelected?.length){
+        if(!_highlightedDiffs?.length){
             setDiffsSelected([diff]);
         }
 
-        const index = _diffsSelected?.findIndex(d => d?.name?.toLowerCase() === diff?.name?.toLowerCase() && d?.characteristic?.toLowerCase() === diff?.characteristic?.toLowerCase());
+        const index = _highlightedDiffs?.findIndex(d => d?.name?.toLowerCase() === diff?.name?.toLowerCase() && d?.characteristic?.toLowerCase() === diff?.characteristic?.toLowerCase());
         if(index === -1){
-            setDiffsSelected([..._diffsSelected, diff]);
+            setDiffsSelected([..._highlightedDiffs, diff]);
         } else {
-            setDiffsSelected(_diffsSelected.filter((_, i) => i !== index));
+            setDiffsSelected(_highlightedDiffs.filter((_, i) => i !== index));
         }
     }
 
@@ -206,14 +209,18 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
                                 <ol key={index} className="flex flex-col w-full gap-1">
                                     {diffSet.map(({ name, libelle, stars }, index) => (
                                         <li key={`${name}${libelle}${stars}${index}`} className="w-full h-4 flex items-center gap-1">
-                                            {onSelectedDiffsChange && (
-                                                <BsmCheckbox className="h-full aspect-square relative" checked={isDiffChecked({name, characteristic: charac})} onChange={() => handleDiffCheckChange({name, characteristic: charac})} />
+                                            {onHighlightedDiffsChange && (
+                                                <Tippy content="Surligner la difficulté" placement="top" theme="default">
+                                                    <div className="h-full aspect-square">
+                                                        <BsmCheckbox className="size-full relative" checked={isDiffHightlighted({name, characteristic: charac})} onChange={() => handleDiffCheckChange({name, characteristic: charac})} />
+                                                    </div>
+                                                </Tippy>
                                             )}
                                             <BsmIcon className="h-full w-fit p-px shrink-0" icon={charac} />
                                             <span className="h-full px-2 flex items-center text-xs font-bold bg-current rounded-full" style={{ color: MAP_DIFFICULTIES_COLORS[name] }}>
                                                 {stars ? <span className="h-full block brightness-[.25]">★ {stars.toFixed(2)}</span> : <span className="h-full brightness-[.25] leading-4 pb-[2px] capitalize">{parseDiffLabel(name)}</span>}
                                             </span>
-                                            <span className="text-sm leading-4 pb-[2px] line-clamp-1">{parseDiffLabel(libelle)}</span>
+                                            <span className={cn("text-sm leading-4 pb-[2px] line-clamp-1", isDiffHightlighted({name, characteristic: charac}) && "text-yellow-400")}>{parseDiffLabel(libelle)}</span>
                                         </li>
                                     ))}
                                 </ol>
@@ -240,19 +247,25 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
                     <BsmImage className="absolute top-0 left-0 size-full -z-[1] object-cover saturate-200" image={mapCoverUrl} placeholder={defaultImage} errorImage={defaultImage} />
                     <div className="pt-1 pl-2 pr-7 top-0 left-0 size-full bg-neutral-600 bg-opacity-80 flex flex-col justify-between group-hover:bg-main-color-1 group-hover:bg-opacity-80">
                         <h1 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full leading-5 tracking-wide text-lg" title={title}>
-                            <BsmLink className="hover:underline" href={mapUrl}>
-                                {title}
-                            </BsmLink>
+                            {canOpenMapDetails !== false ? (
+                                <BsmLink className="hover:underline" href={mapUrl}>
+                                    {title}
+                                </BsmLink> ) : (
+                                <h1>{title}</h1>
+                            )}
                         </h1>
                         <h2 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full text-sm mb-[3px]">{songAutor && t("maps.map-item.by", { songAutor })}</h2>
                         <h3 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full text-xs">
                             {autor && (
                                 <>
-                                    {" "}
-                                    {t("maps.map-item.mapped-by")}{" "}
-                                    <BsmLink href={authorUrl} className="brightness-200 hover:underline" style={{ color }}>
-                                        {autor}
-                                    </BsmLink>
+                                    {` ${t("maps.map-item.mapped-by")} `}
+                                    {canOpenAuthorDetails !== false ? (
+                                        <BsmLink href={authorUrl} className="brightness-200 hover:underline" style={{ color }}>
+                                            {autor}
+                                        </BsmLink>
+                                    ) : (
+                                        <span className="brightness-200" style={{ color }}>{autor}</span>
+                                    )}
                                 </>
                             )}
                         </h3>

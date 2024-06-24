@@ -211,12 +211,10 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
             onClick?: (map: (BsmLocalMap|BsvMapDetail|SongDetails)) => void,
             isSelected$?: Observable<boolean>,
             isOwned$?: Observable<boolean>,
-            diffsSelected?: BPListDifficulty[],
-            onSelectedDiffsChange?: (diff: BPListDifficulty[]) => void
+            highlightedDiffs?: BPListDifficulty[],
+            onHighlightedDiffsChange?: (diff: BPListDifficulty[]) => void
         }
     ) => {
-
-        console.log(opt.diffsSelected);
 
         return (
             <MapItem
@@ -224,9 +222,11 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
                 { ...MapItemComponentPropsMapper.from(map) }
                 selected$={opt?.isSelected$}
                 isOwned$={opt?.isOwned$}
-                diffsSelected={opt?.diffsSelected}
+                highlightedDiffs={opt?.highlightedDiffs}
                 onSelected={opt?.onClick}
-                onSelectedDiffsChange={opt?.onSelectedDiffsChange}
+                onHighlightedDiffsChange={opt?.onHighlightedDiffsChange}
+                canOpenMapDetails={false}
+                canOpenAuthorDetails={false}
             />
         );
     }, []);
@@ -271,12 +271,12 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
                 selectedHashs$: playlistHashsSelected$,
                 noKeyPressedFallBack: () => playlistMaps$.next(Object.fromEntries(Object.entries(playlistMaps$.value).filter(([hash]) => hash !== mapHash)))
             }),
-            onSelectedDiffsChange: diffs => {
+            onHighlightedDiffsChange: diffs => {
                 const newPlaylistMaps = {...playlistMaps$.value};
                 newPlaylistMaps[mapHash].difficulties = diffs;
                 playlistMaps$.next(newPlaylistMaps);
             },
-            diffsSelected: playlistMap.difficulties,
+            highlightedDiffs: playlistMap.difficulties,
             isSelected$
         });
     }, []);
@@ -447,8 +447,12 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
     };
 
     const handlePlaylistMapDragEnd = useCallback((fromIndex: number, toIndex: number) => {
-        const playlistMapsArray = swapElements(fromIndex, toIndex, Object.entries(playlistMaps$.value));
-        return playlistMaps$.next(Object.fromEntries(playlistMapsArray));
+        const playlistMapsArray = Object.entries(playlistMaps$.value ?? {});
+        const newPlaylistMaps = [...playlistMapsArray];
+        const [removed] = newPlaylistMaps.splice(fromIndex, 1);
+        newPlaylistMaps.splice(toIndex, 0, removed);
+
+        playlistMaps$.next(Object.fromEntries(newPlaylistMaps));
     }, []);
 
     return (
