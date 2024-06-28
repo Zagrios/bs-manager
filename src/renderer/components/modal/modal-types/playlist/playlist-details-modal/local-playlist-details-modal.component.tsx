@@ -6,7 +6,6 @@ import { BSVersion } from "shared/bs-version.interface";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { MapItem } from "renderer/components/maps-playlists-panel/maps/map-item.component";
 import { useService } from "renderer/hooks/use-service.hook";
-import { AudioPlayerService } from "renderer/services/audio-player.service";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import BeatConflict from "../../../../../../../assets/images/apngs/beat-conflict.png";
@@ -28,7 +27,6 @@ interface Props {
 
 export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver, options}) => {
 
-    const audioPlayer = useService(AudioPlayerService);
     const playlistDownloader = useService(PlaylistDownloaderService);
 
     const localPlaylist = useObservable(() => options.data.localPlaylist$, null);
@@ -39,13 +37,6 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
     const isPlaylistInQueue$ = useConstant(() => options.data.localPlaylist$.pipe(switchMap(playlist => playlistDownloader.$isPlaylistInQueue(playlist.path, options.data.version))));
 
     const isInQueue = useObservable(() => isPlaylistInQueue$, false);
-
-    const playPlaylist = () => {
-        if (!installedMaps) {
-            return;
-        }
-        audioPlayer.play(installedMaps.map(map => ({ src: map.songUrl, bpm: map.rawInfo?._beatsPerMinute ?? 0})));
-    };
 
     const installPlaylist = () => {
 

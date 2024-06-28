@@ -8,7 +8,6 @@ import { NpsIcon } from "renderer/components/svgs/icons/nps-icon.component";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { ThemeColorGradientSpliter } from "renderer/components/shared/theme-color-gradient-spliter.component";
 import { CrossIcon } from "renderer/components/svgs/icons/cross-icon.component";
-import { ModalComponent, ModalExitCode, ModalObject, ModalResponse } from "renderer/services/modale.service";
 
 export type PlaylistDetailsTemplateProps = {
     title: string;
