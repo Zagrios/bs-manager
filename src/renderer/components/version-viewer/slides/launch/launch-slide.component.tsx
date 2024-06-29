@@ -68,7 +68,8 @@ export function LaunchSlide({ version }: Props) {
             oculus: version.oculus ? false : oculusMode,
             desktop: desktopMode,
             debug: debugMode,
-            additionalArgs
+            additionalArgs,
+            protonPath: bsLauncherService.getProtonPath(),
         });
         
         return lastValueFrom(launch$).catch(() => {});
