@@ -19,6 +19,7 @@ import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { cn } from "renderer/helpers/css-class.helpers";
 import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual-scroll.component";
 import { MapItemComponentPropsMapper } from "shared/mappers/map/map-item-component-props.mapper";
+import { useTranslation } from "renderer/hooks/use-translation.hook";
 
 type Props = {
     version: BSVersion;
@@ -26,9 +27,9 @@ type Props = {
     installedMaps$: Observable<BsmLocalMap[]>;
 }
 
-// TODO : Translate
-
 export const BsvPlaylistDetailsModal: ModalComponent<void, Props> = ({ resolver, options: { data: { playlist, installedMaps$, version } } }) => {
+
+    const t = useTranslation();
 
     const beatsaver = useService(BeatSaverService);
     const mapsDownloader = useService(MapsDownloaderService);
@@ -111,7 +112,7 @@ export const BsvPlaylistDetailsModal: ModalComponent<void, Props> = ({ resolver,
                         <div className="w-full flex flex-col justify-center items-center mt-10">
                             <BsmImage className={cn(["size-32", !error && "spin-loading"])} image={error ? BeatConflict : BeatWaiting} />
                             <p className="text-lg font-bold px-10 text-center">
-                                {error ? "Une erreur est survenue lors du chargement de la playlist" : "Chargement des maps..."}
+                                {error ? t("playlist.error-occur-while-loading-playlist") : t("playlist.loading-maps")}
                             </p>
                         </div>
                     );
@@ -122,7 +123,7 @@ export const BsvPlaylistDetailsModal: ModalComponent<void, Props> = ({ resolver,
                         <div className="w-full flex flex-col justify-center items-center mt-10">
                             <BsmImage className="size-32" image={BeatConflict} />
                             <p className="text-lg font-bold px-10 text-center">
-                                Aucune map trouvée pour cette playlist
+                                {t("playlist.no-maps-found-for-playlist")}
                             </p>
                         </div>
                     );

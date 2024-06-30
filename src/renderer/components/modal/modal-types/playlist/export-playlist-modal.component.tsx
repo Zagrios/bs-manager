@@ -8,8 +8,6 @@ import BeatConflict from "../../../../../../assets/images/apngs/beat-conflict.pn
 import { BPList } from "shared/models/playlists/playlist.interface";
 import Tippy from "@tippyjs/react";
 
-// TODO : Translate
-
 export const ExportPlaylistModal: ModalComponent<boolean, BPList[]> = ({ resolver, options: { data }}) => {
 
     const t = useTranslation();
@@ -20,30 +18,30 @@ export const ExportPlaylistModal: ModalComponent<boolean, BPList[]> = ({ resolve
     return (
         <form className="max-w-sm text-gray-800 dark:text-gray-200">
             {!isMultiple ? (
-                <h1 className="text-3xl uppercase tracking-wide w-full text-center">Exporter la playlist ?</h1>
+                <h1 className="text-3xl uppercase tracking-wide w-full text-center">{t("playlist.export-playlist-ask")}</h1>
             ) : (
-                <h1 className="text-3xl uppercase tracking-wide w-full text-center">Exporter les playlists ?</h1>
+                <h1 className="text-3xl uppercase tracking-wide w-full text-center">{t("playlist.export-playlists-ask")}</h1>
             )}
             <BsmImage className="mx-auto h-24" image={BeatConflict} />
             {!isMultiple ? (
-                <p className="w-full">{`Est-tu sûr de vouloir exporter la playlist "${data.at(0)?.playlistTitle}" ?`}</p>
+                <p className="w-full">{t("playlist.export-playlist-desc", { playlistTitle: data.at(0)?.playlistTitle })}</p>
             ) : (
-                <p className="w-full">{`Est-tu sûr de vouloir exporter les ${data.length} playlists ?`}</p>
+                <p className="w-full">{t("playlist.export-playlists-desc", { nb: `${data.length ?? 0}` })}</p>
             )}
 
             <div className="flex items-center relative py-2 gap-1">
                 <BsmCheckbox className="h-5 relative z-[1]" checked={exportMaps} onChange={val => setExportMaps(() => val)} />
                 <Tippy
                     placement="top"
-                    content={isMultiple ? "Si activé, toutes les maps des playlists seront également exportées" : "Si activé, toutes les maps de la playlist seront également exportées"}
+                    content={isMultiple ? t("playlist.export-playlists-maps-tip") : t("playlist.export-playlist-maps-tip")}
                     theme="default"
                 >
-                    <span className="italic cursor-help">Exporter les maps</span>
+                    <span className="italic cursor-help">{t("playlist.export-maps")}</span>
                 </Tippy>
             </div>
             <div className="grid grid-flow-col grid-cols-2 gap-4 mt-2">
                 <BsmButton typeColor="cancel" className="rounded-md text-center transition-all" onClick={() => resolver({ exitCode: ModalExitCode.CANCELED })} withBar={false} text="misc.cancel" />
-                <BsmButton typeColor="primary" className="rounded-md text-center transition-all" onClick={() => resolver({ exitCode: ModalExitCode.COMPLETED, data: exportMaps })} withBar={false} text="Exporter" />
+                <BsmButton typeColor="primary" className="rounded-md text-center transition-all" onClick={() => resolver({ exitCode: ModalExitCode.COMPLETED, data: exportMaps })} withBar={false} text="playlist.export" />
             </div>
         </form>
     );

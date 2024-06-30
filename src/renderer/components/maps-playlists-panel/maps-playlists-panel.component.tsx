@@ -108,10 +108,10 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         }
 
         return [
-            { icon: "add", text: "Créer une playlist", onClick: () => playlistsRef?.current?.createPlaylist?.() },
-            { icon: "sync", text: "Synchroniser les playlists", onClick: () => playlistsRef?.current?.syncPlaylists?.() },
-            { icon: "export", text: "Exporter les playlists", onClick: () => playlistsRef?.current?.exportPlaylists?.() },
-            { icon: "trash", text: "Supprimer les playlists", onClick: () => playlistsRef?.current?.deletePlaylists?.() },
+            { icon: "add", text: t("playlist.create-a-playlist"), onClick: () => playlistsRef?.current?.createPlaylist?.() },
+            { icon: "sync", text: t("playlist.synchronize-playlists"), onClick: () => playlistsRef?.current?.syncPlaylists?.() },
+            { icon: "export", text: t("playlist.export-playlists"), onClick: () => playlistsRef?.current?.exportPlaylists?.() },
+            { icon: "trash", text: t("playlist.delete-playlists"), onClick: () => playlistsRef?.current?.deletePlaylists?.() },
         ];
     })();
 
@@ -119,7 +119,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         <div className="w-full h-full flex flex-col items-center justify-center gap-4">
             <nav className="w-full shrink-0 flex h-9 justify-center px-40 gap-2 text-main-color-1 dark:text-white">
                 <BsmButton
-                    className="flex items-center justify-center w-fit rounded-full px-2 py-1 font-bold"
+                    className="flex items-center justify-center w-fit rounded-full px-2 py-1 font-bold whitespace-nowrap"
                     icon="add"
                     text="misc.add"
                     typeColor="primary"
@@ -130,13 +130,13 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                     <input
                         type="text"
                         className="h-full w-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2"
-                        placeholder={tabIndex === 0 ? t("pages.version-viewer.maps.search-bar.search-placeholder") : "Rechercher une playlist"}
+                        placeholder={tabIndex === 0 ? t("pages.version-viewer.maps.search-bar.search-placeholder") : t("playlist.search-playlist")}
                         value={search}
                         onChange={e => setSearch(() => e.target.value)}
                         tabIndex={-1}
                     />
                 </div>
-                <BsmDropdownButton className="h-full relative z-[1] flex justify-center" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1" icon="filter" text="pages.version-viewer.maps.search-bar.filters-btn" textClassName="whitespace-nowrap" withBar={false}>
+                <BsmDropdownButton className="h-full relative z-[1] flex justify-center" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1 whitespace-nowrap" icon="filter" text="pages.version-viewer.maps.search-bar.filters-btn" textClassName="whitespace-nowrap" withBar={false}>
                     {(
                         tabIndex === 0 ? (
                             <FilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[500px] h-fit p-2 rounded-md shadow-md shadow-black" filter={mapFilter} onChange={setMapFilter} />

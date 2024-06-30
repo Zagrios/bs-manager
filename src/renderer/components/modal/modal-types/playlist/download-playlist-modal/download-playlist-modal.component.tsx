@@ -19,12 +19,13 @@ import BeatWaiting from "../../../../../../../assets/images/apngs/beat-waiting.p
 import BeatConflict from "../../../../../../../assets/images/apngs/beat-conflict.png"
 import { cn } from "renderer/helpers/css-class.helpers"
 import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual-scroll.component"
-
-// TODO : Translate
+import { useTranslation } from "renderer/hooks/use-translation.hook"
 
 export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ownedPlaylists$: Observable<LocalBPListsDetails[]>, ownedMaps$: Observable<BsmLocalMap[]>}> = (
-    { resolver, options: { data: { version, ownedPlaylists$, ownedMaps$ }} }
+    { options: { data: { version, ownedPlaylists$, ownedMaps$ }} }
 ) => {
+
+    const t = useTranslation();
 
     const modal = useService(ModalService);
     const beatSaver = useService(BeatSaverService);
@@ -109,7 +110,7 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
                         <div className="w-full flex flex-col justify-center items-center mt-44">
                             <BsmImage className={cn(["size-32", !error && "spin-loading"])} image={error ? BeatConflict : BeatWaiting} />
                             <p className="text-lg font-bold px-10 text-center">
-                                {error ? "Une erreur est survenue lors du chargement des playlists" : "Chargement des playlists..."}
+                                {error ? t("playlist.error-occur-while-loading-playlists") : t("playlist.playlists-loading")}
                             </p>
                         </div>
                     )
@@ -119,7 +120,7 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
                         <div className="w-full flex flex-col justify-center items-center mt-44">
                             <BsmImage className="size-32" image={BeatConflict} />
                             <p className="text-lg font-bold px-10 text-center">
-                                Aucune playlist trouvée
+                                {t("playlist.no-playlists-found")}
                             </p>
                         </div>
                     );

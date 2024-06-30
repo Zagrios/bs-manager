@@ -210,7 +210,7 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
                                     {diffSet.map(({ name, libelle, stars }, index) => (
                                         <li key={`${name}${libelle}${stars}${index}`} className="w-full h-4 flex items-center gap-1">
                                             {onHighlightedDiffsChange && (
-                                                <Tippy content="Surligner la difficulté" placement="top" theme="default">
+                                                <Tippy content={t("maps.map-item.hightlight-difficulty")} placement="top" theme="default">
                                                     <div className="h-full aspect-square">
                                                         <BsmCheckbox className="size-full relative" checked={isDiffHightlighted({name, characteristic: charac})} onChange={() => handleDiffCheckChange({name, characteristic: charac})} />
                                                     </div>
@@ -251,7 +251,7 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
                                 <BsmLink className="hover:underline" href={mapUrl}>
                                     {title}
                                 </BsmLink> ) : (
-                                <h1>{title}</h1>
+                                title
                             )}
                         </h1>
                         <h2 className="font-bold whitespace-nowrap text-ellipsis overflow-hidden w-full text-sm mb-[3px]">{songAutor && t("maps.map-item.by", { songAutor })}</h2>

@@ -57,8 +57,6 @@ export type LocalPlaylistsListRef = {
     exportPlaylists: () => Promise<void>;
 }
 
-// TODO : Translate
-
 export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(({ version, className, filter: playlistFiler, search, isActive, linkedState }, forwardedRef) => {
 
     const t = useTranslation();
@@ -90,7 +88,7 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
 
     useImperativeHandle(forwardedRef, () => ({
         createPlaylist: async () => {
-            const modalRes = await modals.openModal(EditPlaylistModal, { noStyle: true, data: { version, maps$ } });
+            const modalRes = await modals.openModal(EditPlaylistModal, { noStyle: true, data: { maps$ } });
 
             if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return; }
 
@@ -98,14 +96,14 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
 
             if(error){
                 logRenderError("Error occured while creating playlist", error);
-                notification.notifyError({ title: "Erreur lors de la création de la playlist", desc: "Une erreur est survenue lors de la création de la playlist." });
+                notification.notifyError({ title: "playlist.error-playlist-creation-title", desc: "playlist.error-playlist-creation-desc" });
                 return;
             }
 
             setPlaylists([result, ...playlists$.value]);
 
-            const notifRes = await notification.notifySuccess({ title: "Playlist créée !", desc: "La playlist a été créée avec succès. Tu peut maintenant synchroniser ses maps !", duration: 8000, actions: [
-                { id: "sync", title: "Synchroniser les maps" }
+            const notifRes = await notification.notifySuccess({ title: "playlist.playlist-created-title", desc: "playlist.playlist-created-desc", duration: 8000, actions: [
+                { id: "sync", title: "playlist.synchronize-maps" }
             ]});
 
             if(notifRes === "sync"){
@@ -127,12 +125,12 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
 
             if(error){
                 logRenderError("Error occured while synchronizing playlists", error);
-                notification.notifyError({ title: "Erreur lors de la synchronisation des playlists", desc: "Une erreur est survenue lors de la synchronisation des playlists." });
+                notification.notifyError({ title: "playlist.error-playlists-synchronization-title", desc: "playlist.error-playlists-synchronization-desc" });
                 return;
             }
 
             if(result.every(res => res.current === res.total)){
-                notification.notifySuccess({ title: "Playlists synchronisées !", desc: "Les playlists et leurs maps ont été téléchargées.", duration: 5000 });
+                notification.notifySuccess({ title: "playlist.playlists-synchronized-title", desc: "playlist.playlists-synchronized-desc", duration: 5000 });
             }
         },
         exportPlaylists: async () => {
@@ -159,11 +157,11 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
 
             if(error){
                 logRenderError("Error occured while exporting playlists", error);
-                notification.notifyError({ title: "Erreur lors de l'exportation des playlists", desc: "Une erreur est survenue lors de l'exportation des playlists." });
+                notification.notifyError({ title: "playlist.playlists-export-error-title", desc: "playlist.playlists-export-error-desc" });
                 return;
             }
 
-            notification.notifySuccess({ title: "Playlists exportées !", desc: "Les playlists et leurs maps ont été exportées.", duration: 5000 });
+            notification.notifySuccess({ title: "playlist.playlists-exported-title", desc: exportMaps ? "playlist.playlists-exported-desc" : "playlist.playlists-with-maps-exported-desc", duration: 5000 });
 
             progess.hide(true);
         },
@@ -229,7 +227,7 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
 
         return lastValueFrom(obs$).then(res => {
             if(res.current === res.total){
-                notification.notifySuccess({ title: "Playlist synchronisée !", desc: "La playlist et ses maps on été téléchargées.", duration: 5000 })
+                notification.notifySuccess({ title: "playlist.playlists-synchronized-title", desc: "playlist.playlists-synchronized-desc", duration: 5000 })
             }
         });
     }
@@ -255,7 +253,7 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
 
             if(error){
                 logRenderError("Error occured while deleting playlist", error);
-                notification.notifyError({ title: "Erreur lors de la suppression de la playlist", desc: "Une erreur est survenue lors de la suppression de la playlist." });
+                notification.notifyError({ title: "playlist.playlist-delete-error-title", desc: "playlist.playlist-delete-error-desc" });
                 progess.hide(true);
                 return;
             }
@@ -267,6 +265,8 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
                 setMaps(maps$.value.filter(m => !bpList.songs.some(s => s.hash.toLowerCase() === m.hash.toLowerCase())));
             }
         }
+
+        notification.notifySuccess({ title: "playlist.playlists-deleted-title", desc: "playlist.playlists-deleted-desc", duration: 5000 });
 
         progess.hide(true);
     };
@@ -314,7 +314,7 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
         }
 
         const tmpPlaylist: LocalBPList = { ...playlist, playlistTitle: needClone ? `${playlist.playlistTitle} (${t("Clone")})` : playlist.playlistTitle };
-        const modalRes = await modals.openModal(EditPlaylistModal, { noStyle: true, data: { version, maps$, playlist: tmpPlaylist } });
+        const modalRes = await modals.openModal(EditPlaylistModal, { noStyle: true, data: { maps$, playlist: tmpPlaylist } });
 
         if(modalRes.exitCode !== ModalExitCode.COMPLETED){ return; }
 
@@ -322,7 +322,7 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
 
         if(error){
             logRenderError("Error occured while editing playlist", error);
-            notification.notifyError({ title: "Erreur lors de la modification de la playlist", desc: "Une erreur est survenue lors de la modification de la playlist." });
+            notification.notifyError({ title: "playlist.playlist-edit-error-title", desc: "playlist.playlist-edit-error-desc" });
             return;
         }
 
@@ -338,8 +338,8 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
 
         setPlaylists(newPlaylists);
 
-        const notifRes = await notification.notifySuccess({ title: "Playlist modifiée !", desc: "La playlist a été modifiée avec succès. Tu peut maintenant synchroniser ses maps !", duration: 8000, actions: [
-            { id: "sync", title: "Synchroniser les maps" }
+        const notifRes = await notification.notifySuccess({ title: "playlist.playlist-edited-title", desc: "playlist.playlist-edited-desc", duration: 8000, actions: [
+            { id: "sync", title: "playlist.synchronize-maps" }
         ]});
 
         if(notifRes === "sync"){
@@ -409,7 +409,7 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
             {(() => {
                 if(playlistsLoading){
                     return (
-                        <BsContentLoader className="w-full h-full flex justify-center flex-col items-center" value$={loadPercent$} text="Chargement des playlists"/>
+                        <BsContentLoader className="w-full h-full flex justify-center flex-col items-center" value$={loadPercent$} text="playlist.playlists-loading"/>
                     )
                 }
 
@@ -432,10 +432,10 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
                 return (
                     <div className="h-full flex flex-col items-center justify-center flex-wrap gap-1 text-gray-800 dark:text-gray-200">
                         <BsmImage className="h-32" image={BeatConflict} />
-                        <span className="font-bold">Aucune playlist</span>
+                        <span className="font-bold">{t("playlist.no-playlists")}</span>
                         <BsmButton
                             className="font-bold rounded-md p-2"
-                            text="Télécharger des playlists"
+                            text="playlist.download-playlists"
                             typeColor="primary"
                             withBar={false}
                             onClick={e => {

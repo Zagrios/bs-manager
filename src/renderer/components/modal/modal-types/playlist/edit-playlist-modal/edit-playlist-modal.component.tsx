@@ -39,14 +39,13 @@ import BeatWaiting from "../../../../../../../assets/images/apngs/beat-waiting.p
 import BeatConflict from "../../../../../../../assets/images/apngs/beat-conflict.png";
 
 type Props = {
-    version?: BSVersion;
     maps$: Observable<BsmLocalMap[]>;
     playlist?: LocalBPList;
 }
 
 type PlaylistMap = { map: (BsmLocalMap|SongDetails|BsvMapDetail), difficulties?: BPListDifficulty[] };
 
-export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, options: { data: { version, maps$, playlist } } }) => {
+export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, options: { data: { maps$, playlist } } }) => {
 
     const t = useTranslation();
     const color = useThemeColor("first-color");
@@ -460,7 +459,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
             </button>
             {(() => {
                 if(!playlistMaps || !localMaps){
-                    return <div className="flex items-center justify-center w-full h-full">Loading...</div>
+                    return <div className="flex items-center justify-center w-full h-full">{t("playlist.loading")}</div>
                 }
                 else{
                     return (
@@ -468,7 +467,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
                             <div className="grow flex flex-row min-h-0 gap-2.5">
                                 <div className="flex flex-col grow basis-0 min-w-0">
                                     <form className="h-8 flex flex-row gap-2 w-full mb-1.5 min-w-0" onSubmit={e => {e.preventDefault(); handleNewSearch()}}>
-                                        <BsmSelect className="bg-theme-1 h-full rounded-full text-center pb-0.5" options={[{ text: "Installée(s)", value: 0 }, { text: "BeatSaver", value: 1 }]} onChange={setAvailableMapsSource}/>
+                                        <BsmSelect className="bg-theme-1 h-full rounded-full text-center pb-0.5" options={[{ text: t("playlist.installed"), value: 0 }, { text: "BeatSaver", value: 1 }]} onChange={setAvailableMapsSource}/>
                                         <input className="h-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2 grow pb-0.5 min-w-0" type="text" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={availableMapsSearch} onChange={e => setAvailableMapsSearch(() => e.target.value)} />
                                         {availableMapsSource === 1 && (
                                             <BsmButton className="h-full aspect-square z-[1] flex justify-center p-1 rounded-full min-w-0 shrink-0 !bg-light-main-color-1 dark:!bg-main-color-1" icon="search" onClick={handleNewSearch} withBar={false}/>
@@ -488,7 +487,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
                                                 return (
                                                     <div className="flex flex-col items-center justify-center size-full">
                                                         <BsmImage className="size-24 spin-loading" image={BeatWaiting}/>
-                                                        <span className="text-sm italic leading-4">Loading...</span>
+                                                        <span className="text-sm italic leading-4">{t("playlist.loading")}</span>
                                                     </div>
                                                 );
                                             }
@@ -497,7 +496,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
                                                 return (
                                                     <div className="flex flex-col items-center justify-center size-full">
                                                         <BsmImage className="size-20" image={BeatConflict}/>
-                                                        <span className="text-sm italic leading-4 w-3/4 text-center">Aucune map trouvée</span>
+                                                        <span className="text-sm italic leading-4 w-3/4 text-center">{t("playlist.no-map-found")}</span>
                                                     </div>
                                                 );
                                             }
@@ -514,16 +513,16 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
                                     </div>
 
                                     <div className="w-full h-4 flex justify-start">
-                                        <span className="text-xs italic leading-4">Hold shift or ctrl to select multiples maps</span>
+                                        <span className="text-xs italic leading-4">{t("playlist.edit-playlist-shortcuts")}</span>
                                     </div>
                                 </div>
                                 <div className="shrink-0 flex flex-col gap-2.5 pb-4 pt-10">
-                                    <Tippy content="Ajouter à la playlist" theme="default" placement="left">
+                                    <Tippy content={t("playlist.add-to-playlist")} theme="default" placement="left">
                                         <button className="grow w-9 rounded-md cursor-pointer transition-transform duration-150 hover:brightness-110 active:scale-95" style={{backgroundColor: color, color: getCorrectTextColor(color)}} type="button" onClick={addMapsToPlaylist}>
                                             <ChevronTopIcon className="origin-center rotate-90"/>
                                         </button>
                                     </Tippy>
-                                    <Tippy content="Enlever de la playlist" theme="default" placement="right">
+                                    <Tippy content={t("playlist.remove-from-playlist")} theme="default" placement="right">
                                         <button className="grow w-9 rounded-md cursor-pointer transition-transform duration-150 hover:brightness-110 active:scale-95" style={{backgroundColor: color, color: getCorrectTextColor(color)}} type="button" onClick={removeMapsFromPlaylist}>
                                             <ChevronTopIcon className="origin-center -rotate-90"/>
                                         </button>
@@ -542,7 +541,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
                                                 return(
                                                     <div className="flex flex-col items-center justify-center size-full">
                                                         <BsmImage className="size-24 spin-loading" image={BeatWaiting}/>
-                                                        <span className="text-sm italic leading-4">Loading...</span>
+                                                        <span className="text-sm italic leading-4">{t("playlist.loading")}</span>
                                                     </div>
                                                 );
                                             }
@@ -550,7 +549,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
                                                 return (
                                                     <div className="flex flex-col items-center justify-center size-full">
                                                         <BsmImage className="size-20" image={BeatConflict}/>
-                                                        <span className="text-sm italic leading-4 w-3/4 text-center">La playlist est vide</span>
+                                                        <span className="text-sm italic leading-4 w-3/4 text-center">{t("playlist.playlist-is-empty")}</span>
                                                     </div>
                                                 );
                                             }
@@ -592,8 +591,8 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
                                 </div>
                             </div>
                             <footer className="flex justify-center items-center gap-2 h-8 mt-2.5">
-                                <BsmButton className="rounded-md text-center h-full grow basis-0 flex justify-center items-center" typeColor="cancel" text="Annuler" withBar={false} onClick={() => resolver({ exitCode: ModalExitCode.CANCELED })}/>
-                                <BsmButton className="rounded-md text-center h-full grow basis-0 flex justify-center items-center" typeColor="primary" text="Continuer" withBar={false} onClick={handleContinue}/>
+                                <BsmButton className="rounded-md text-center h-full grow basis-0 flex justify-center items-center" typeColor="cancel" text="misc.cancel" withBar={false} onClick={() => resolver({ exitCode: ModalExitCode.CANCELED })}/>
+                                <BsmButton className="rounded-md text-center h-full grow basis-0 flex justify-center items-center" typeColor="primary" text="playlist.continue" withBar={false} onClick={handleContinue}/>
                             </footer>
                         </div>
                     )

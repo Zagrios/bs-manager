@@ -16,6 +16,7 @@ import { useObservable } from 'renderer/hooks/use-observable.hook';
 import { BsmBasicSpinner } from 'renderer/components/shared/bsm-basic-spinner/bsm-basic-spinner.component';
 import defaultImage from "../../../../../assets/images/default-version-img.jpg";
 import equal from 'fast-deep-equal';
+import { useTranslation } from 'renderer/hooks/use-translation.hook';
 
 export type PlaylistItemComponentProps = {
     title?: string;
@@ -62,6 +63,7 @@ export const PlaylistItem = memo(({ title,
     onClickEdit
 }: PlaylistItemComponentProps) => {
 
+    const t = useTranslation();
     const color = useThemeColor("first-color");
 
     const [hovered, setHovered] = useState(false);
@@ -82,8 +84,6 @@ export const PlaylistItem = memo(({ title,
         return duration > 3600 ? dateFormat(duration * 1000, "h:MM:ss") : dateFormat(duration * 1000, "MM:ss");
     })();
 
-    // TODO : Translate
-
     return (
         <motion.li className='relative flex-grow basis-0 min-w-80 h-28 cursor-pointer group' onHoverStart={() => setHovered(() => true)} onHoverEnd={() => setHovered(() => false)}>
             <GlowEffect visible={selected || hovered}/>
@@ -101,7 +101,7 @@ export const PlaylistItem = memo(({ title,
                 </div>
                 <div className="h-full py-2.5 text-white">
                     <h1 className="font-bold text-xl tracking-wide line-clamp-1 w-fit">{title}</h1>
-                    <p className="text-xs font-bold">Créé par <span className="brightness-200" style={{color}}>{author}</span></p>
+                    <p className="text-xs font-bold">{t("playlist.created-by")} <span className="brightness-200" style={{color}}>{author}</span></p>
 
                     <div className="flex flex-row flex-wrap w-full gap-2 mt-1">
                         { nbMapsText && <div className="flex items-center text-sm h-5 gap-0.5"> <MapIcon className='h-full aspect-square'/> <span className="mb-0.5">{nbMapsText}</span> </div> }
@@ -117,7 +117,7 @@ export const PlaylistItem = memo(({ title,
 
                     <motion.div className="flex flex-col justify-center items-center flex-wrap gap-0.5 size-full px-1 *:size-6 *:!bg-inherit *:p-0.5 *:rounded-md" animate={{opacity: hovered || isDownloading ? 1 : 0}} transition={{duration: 0}}>
                         {(isDownloading || isInQueue) && onClickCancelDownload ? (
-                            <Tippy content={isDownloading ? "Arreter le téléchargement" : "Annuler le téléchargement"} placement="left" theme="default">
+                            <Tippy content={isDownloading ? t("playlist.stop-download") : t("playlist.cancel-download")} placement="left" theme="default">
                                 <BsmButton
                                     icon="close"
                                     className="hover:!bg-main-color-1 text-red-500 !p-0"
@@ -131,7 +131,7 @@ export const PlaylistItem = memo(({ title,
                             isDownloading ? (
                                 <BsmBasicSpinner className="hover:!bg-main-color-1" spinnerClassName="brightness-75 dark:brightness-200" style={{ color }} thikness="3px"/>
                             ) : !isInQueue ? (
-                                <Tippy content="Synchronizer la playlist" placement="left" theme="default">
+                                <Tippy content={t("playlist.synchronize-playlist")} placement="left" theme="default">
                                     <BsmButton
                                         icon="sync"
                                         className="hover:!bg-main-color-1"
@@ -148,7 +148,7 @@ export const PlaylistItem = memo(({ title,
                             isDownloading ? (
                                 <BsmBasicSpinner className="hover:!bg-main-color-1" spinnerClassName="brightness-75 dark:brightness-200" style={{ color }} thikness="3px"/>
                             ) : !isInQueue ? (
-                                <Tippy content="Télécharger la playlist" placement="left" theme="default">
+                                <Tippy content={t("playlist.download-playlist")} placement="left" theme="default">
                                     <BsmButton
                                         icon="download"
                                         className="hover:!bg-main-color-1"
@@ -162,7 +162,7 @@ export const PlaylistItem = memo(({ title,
 
                         ) : (<></>)}
                         {onClickEdit ? (
-                            <Tippy content="Editer la playlist" placement="left" theme="default">
+                            <Tippy content={t("playlist.edit-playlist")} placement="left" theme="default">
                                 <BsmButton
                                     icon="edit"
                                     className="hover:!bg-main-color-1"
@@ -173,7 +173,7 @@ export const PlaylistItem = memo(({ title,
                                 />
                             </Tippy>
                         ) : (<></>)}
-                        {onClickOpenFile ? <Tippy content="Afficher le fichier" placement="left" theme="default">
+                        {onClickOpenFile ? <Tippy content={t("playlist.open-file")} placement="left" theme="default">
                             <BsmButton
                                 icon="folder"
                                 className="hover:!bg-main-color-1"
@@ -183,7 +183,7 @@ export const PlaylistItem = memo(({ title,
                                 withBar={false}
                             />
                         </Tippy> : (<></>)}
-                        {(onClickDelete && !isDownloading && !isInQueue) ? <Tippy content="Supprimer" placement="left" theme="default">
+                        {(onClickDelete && !isDownloading && !isInQueue) ? <Tippy content={t("misc.delete")} placement="left" theme="default">
                             <BsmButton
                                 icon="trash"
                                 className="hover:!bg-main-color-1 text-red-500"

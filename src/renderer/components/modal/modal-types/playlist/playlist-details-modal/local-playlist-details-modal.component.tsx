@@ -16,8 +16,7 @@ import { useConstant } from "renderer/hooks/use-constant.hook";
 import { useCallback } from "react";
 import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual-scroll.component";
 import { MapItemComponentPropsMapper } from "shared/mappers/map/map-item-component-props.mapper";
-
-// TODO : Translate
+import { useTranslation } from "renderer/hooks/use-translation.hook";
 
 interface Props {
     version: BSVersion;
@@ -26,6 +25,8 @@ interface Props {
 }
 
 export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver, options}) => {
+
+    const t = useTranslation();
 
     const playlistDownloader = useService(PlaylistDownloaderService);
 
@@ -90,7 +91,7 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
                 <div className="grow flex justify-center items-center flex-col">
                     <BsmImage image={BeatConflict} className="size-28"/>
                     <div className="text-white font-bold w-fit space-y-1.5 flex flex-col justify-center items-center -translate-y-5">
-                        <p>La Playlist ne contient aucune map</p>
+                        <p>{t("playlist.playlist-contain-no-maps")}</p>
                     </div>
                 </div>
             );
@@ -101,8 +102,8 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
                 <div className="grow flex justify-center items-center flex-col">
                     <BsmImage image={BeatConflict} className="size-28"/>
                     <div className="text-white font-bold w-fit space-y-1.5 flex flex-col justify-center items-center -translate-y-5">
-                        <p>Aucune maps installée pour cette playlist</p>
-                        <BsmButton withBar={false} onClick={installPlaylist} className="rounded-md h-8 flex items-center justify-center px-4" typeColor="primary" text="Télécharger.les.maps"/>
+                        <p>{t("playlist.no-map-installed-for-playlist")}</p>
+                        <BsmButton withBar={false} onClick={installPlaylist} className="rounded-md h-8 flex items-center justify-center px-4" typeColor="primary" text="playlist.download-maps"/>
                     </div>
                 </div>
             );
@@ -113,7 +114,7 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
                 <div className="grow flex justify-center items-center flex-col">
                     <BsmImage image={BeatConflict} className="size-28"/>
                     <div className="text-white font-bold w-fit space-y-1.5 flex flex-col justify-center items-center -translate-y-5">
-                        <p>La Playlist est en attente de téléchargment</p>
+                        <p>{t("playlist.playlist-is-waiting-to-download")}</p>
                     </div>
                 </div>
             );

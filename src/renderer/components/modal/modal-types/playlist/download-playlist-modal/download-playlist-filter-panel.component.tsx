@@ -26,8 +26,6 @@ type Props = {
 const MAX_NPS = 17;
 const MIN_NPS = 0;
 
-// TODO : Translate
-
 export function DownloadPlaylistFilterPanel({ className, params, onChange, onSubmit }: Props) {
 
     const t = useTranslation();
@@ -116,15 +114,15 @@ export function DownloadPlaylistFilterPanel({ className, params, onChange, onSub
                 <h2 className="mb-0.5 uppercase text-sm">{t("maps.map-filter-panel.specificities")}</h2>
                 <div className="flex flex-row h-6 gap-1">
                     <BsmCheckbox className="relative h-full aspect-square" checked={curated} onChange={setCurated}/>
-                    <span>Curated</span>
+                    <span>{t("playlist.curated")}</span>
                 </div>
                 <div className="flex flex-row h-6 gap-1">
                     <BsmCheckbox className="relative h-full aspect-square" checked={verified} onChange={setVerified}/>
-                    <span>Verified mapper</span>
+                    <span>{t("playlist.verified-mapper")}</span>
                 </div>
                 <div className="flex flex-row h-6 gap-1">
                     <BsmCheckbox className="relative h-full aspect-square" checked={includeEmpty} onChange={setIncludeEmpty}/>
-                    <span>Include empty playlists</span>
+                    <span>{t("playlist.empty-playlists")}</span>
                 </div>
             </div>
             <div className="flex flex-col items-end grow shrink-0 min-w-64 gap-2">
@@ -133,7 +131,7 @@ export function DownloadPlaylistFilterPanel({ className, params, onChange, onSub
                     <span className=" text-sm font-bold text-center mt-2.5">{t("maps.map-filter-panel.nps")}</span>
                 </div>
                 <div className="w-full">
-                    <DateRangePicker label="Start date — End date" value={dateRange} onChange={setDateRange} classNames={{
+                    <DateRangePicker label={t("playlist.date-picker.start-date-end-date")} value={dateRange} onChange={setDateRange} classNames={{
                         inputWrapper: "pointer-events-none bg-light-main-color-1 hover:bg-light-main-color-1 dark:bg-main-color-1 dark:hover:bg-main-color-1 hover:brightness-75",
                         input: "pointer-events-auto",
                         selectorButton: "pointer-events-auto",
@@ -142,11 +140,11 @@ export function DownloadPlaylistFilterPanel({ className, params, onChange, onSub
                             base: "w-[var(--calendar-width)] pb-2",
                             wrapper: "flex flex-row flex-wrap -my-2.5 py-2.5 px-3 gap-1 overflow-scroll max-w-[var(--calendar-width)] w-[var(--calendar-width)]"
                         }}>
-                            <CustomRadio value="days_0">All</CustomRadio>
-                            <CustomRadio value="days_1">Last 24h</CustomRadio>
-                            <CustomRadio value="weeks_1">Last week</CustomRadio>
-                            <CustomRadio value="months_1">Last month</CustomRadio>
-                            <CustomRadio value="months_3">Last 3 months</CustomRadio>
+                            <CustomRadio value="days_0">{t("playlist.date-picker.all")}</CustomRadio>
+                            <CustomRadio value="days_1">{t("playlist.date-picker.last-24h")}</CustomRadio>
+                            <CustomRadio value="weeks_1">{t("playlist.date-picker.last-week")}</CustomRadio>
+                            <CustomRadio value="months_1">{t("playlist.date-picker.last-month")}</CustomRadio>
+                            <CustomRadio value="months_3">{t("playlist.date-picker.3-last-month")}</CustomRadio>
                         </RadioGroup>
                     }/>
                 </div>

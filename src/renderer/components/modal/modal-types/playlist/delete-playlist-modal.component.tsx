@@ -8,8 +8,6 @@ import BeatConflict from "../../../../../../assets/images/apngs/beat-conflict.pn
 import { BPList } from "shared/models/playlists/playlist.interface";
 import Tippy from "@tippyjs/react";
 
-// TODO : Translate
-
 export const DeletePlaylistModal: ModalComponent<boolean, BPList[]> = ({ resolver, options: { data }}) => {
 
     const t = useTranslation();
@@ -20,21 +18,21 @@ export const DeletePlaylistModal: ModalComponent<boolean, BPList[]> = ({ resolve
     return (
         <form className="text-gray-800 dark:text-gray-200">
             {!isMultiple ? (
-                <h1 className="text-3xl uppercase tracking-wide w-full text-center">Supprimer la playlist ?</h1>
+                <h1 className="text-3xl uppercase tracking-wide w-full text-center">{t("playlist.delete-playlist-ask")}</h1>
             ) : (
-                <h1 className="text-3xl uppercase tracking-wide w-full text-center">Supprimer les playlists ?</h1>
+                <h1 className="text-3xl uppercase tracking-wide w-full text-center">{t("playlist.delete-playlists-ask")}</h1>
             )}
             <BsmImage className="mx-auto h-24" image={BeatConflict} />
             {!isMultiple ? (
-                <p className="max-w-sm w-full">{`Est-tu sûr de vouloir supprimer la playlist "${data.at(0)?.playlistTitle}" ?`}</p>
+                <p className="max-w-sm w-full">{t("playlist.delete-playlist-desc", { playlistTitle: data.at(0)?.playlistTitle })}</p>
             ) : (
-                <p className="max-w-sm w-full">{`Est-tu sûr de vouloir supprimer les ${data.length} playlists ?`}</p>
+                <p className="max-w-sm w-full">{t("playlist.delete-playlists-desc", { nb: `${data?.length ?? 0}` })}</p>
             )}
 
             <div className="flex items-center relative py-2 gap-1">
                 <BsmCheckbox className="h-5 relative z-[1]" checked={deleteMaps} onChange={val => setDeleteMaps(() => val)} />
-                <Tippy placement="top" content={isMultiple ? "Si activé, toutes les maps de des playlists seront supprimées" : "Si activé, toutes les maps de la playlist seront supprimées"} theme="default">
-                    <span className="italic cursor-help">Supprimer les maps</span>
+                <Tippy placement="top" content={isMultiple ? t("playlist.delete-playlists-maps-tip") : t("playlist.delete-playlist-maps-tip")} theme="default">
+                    <span className="italic cursor-help">{t("playlist.delete-maps")}</span>
                 </Tippy>
             </div>
             <div className="grid grid-flow-col grid-cols-2 gap-4 mt-2">

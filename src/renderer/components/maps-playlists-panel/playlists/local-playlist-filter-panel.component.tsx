@@ -91,19 +91,19 @@ export function LocalPlaylistFilterPanel({ className, filter, onChange }: Props)
         <motion.div className={cn("bg-theme-3 flex flex-col gap-1.5 p-2 absolute origin-top shadow-md shadow-black rounded-md", className)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{duration: .1}}>
             <div className="w-full flex flex-col justify-center p-2">
                 <BsmRange values={[minNbMaps ?? MIN_NB_MAPS, maxNbMaps ?? MAX_NB_MAPS]} min={MIN_NB_MAPS} max={MAX_NB_MAPS} step={1} onChange={handleOnNbMapsChange} renderLabel={v => renderSimpleMinMaxLabel(v, MAX_NB_MAPS)}/>
-                <span className=" text-sm font-bold text-center mt-2.5">Nombre de maps</span>
+                <span className=" text-sm font-bold text-center mt-2.5">{t("playlist.nb-maps")}</span>
             </div>
             <div className="w-full flex flex-col justify-center p-2">
                 <BsmRange values={[minNbMappers ?? MIN_NB_MAPPER, maxNbMappers ?? MAX_NB_MAPPER]} min={MIN_NB_MAPPER} max={MAX_NB_MAPPER} step={1} onChange={handleOnNbMapperChange} renderLabel={v => renderSimpleMinMaxLabel(v, MAX_NB_MAPPER)}/>
-                <span className=" text-sm font-bold text-center mt-2.5">Nombre de mappeurs</span>
+                <span className=" text-sm font-bold text-center mt-2.5">{t("playlist.nb-mappers")}</span>
             </div>
             <div className="w-full flex flex-col justify-center p-2">
                 <BsmRange values={[minDuration ?? MIN_DURATION, maxDuration ?? MAX_DURATION]} min={MIN_DURATION} max={MAX_DURATION} step={1} onChange={handleOnDurationChange} renderLabel={renderDurationLabel}/>
-                <span className=" text-sm font-bold text-center mt-2.5">Durée</span>
+                <span className=" text-sm font-bold text-center mt-2.5">{t("playlist.duration")}</span>
             </div>
             <div className="w-full flex flex-col justify-center p-2">
                 <BsmRange values={[minNps ?? MIN_NPS, maxNps ?? MAX_NPS]} min={MIN_NPS} max={MAX_NPS} step={0.1} onChange={handleOnNpsChange} renderLabel={v => renderSimpleMinMaxLabel(v, MAX_NPS)}/>
-                <span className=" text-sm font-bold text-center mt-2.5">Notes par secondes</span>
+                <span className=" text-sm font-bold text-center mt-2.5">{t("playlist.nps")}</span>
             </div>
         </motion.div>
     )

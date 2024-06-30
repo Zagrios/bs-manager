@@ -8,6 +8,7 @@ import { NpsIcon } from "renderer/components/svgs/icons/nps-icon.component";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { ThemeColorGradientSpliter } from "renderer/components/shared/theme-color-gradient-spliter.component";
 import { CrossIcon } from "renderer/components/svgs/icons/cross-icon.component";
+import { useTranslation } from "renderer/hooks/use-translation.hook";
 
 export type PlaylistDetailsTemplateProps = {
     title: string;
@@ -26,6 +27,7 @@ export type PlaylistDetailsTemplateProps = {
 
 export function PlaylistDetailsTemplate({title, imagebase64, imageUrl, author, description, nbMaps, duration, nbMappers, minNps, maxNps, children, onClose}: PlaylistDetailsTemplateProps) {
 
+    const t = useTranslation();
     const color = useThemeColor("first-color");
 
     const nbMapsText = nbMaps ? Intl.NumberFormat(undefined, { notation: "compact" }).format(nbMaps).trim() : null;
@@ -54,7 +56,7 @@ export function PlaylistDetailsTemplate({title, imagebase64, imageUrl, author, d
                 <div className="h-full px-3 text-white z-[1]">
                     <h1 className="font-bold text-xl tracking-wide line-clamp-1 w-fit">{title}</h1>
                     <p className="line-clamp-2" title={description}>{description}</p>
-                    <p className="text-xs font-bold">Créé par <span className="brightness-200" style={{color}}>{author}</span></p>
+                    <p className="text-xs font-bold">{t("playlist.created-by")} <span className="brightness-200" style={{color}}>{author}</span></p>
 
                     <div className="flex flex-row flex-wrap w-full gap-2 mt-1">
                         { nbMapsText && <div className="flex items-center text-sm h-5 gap-0.5"> <MapIcon className='h-full aspect-square'/> <span className="mb-0.5">{nbMapsText}</span> </div> }
