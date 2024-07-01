@@ -90,7 +90,7 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
             return (
                 <div className="grow flex justify-center items-center flex-col">
                     <BsmImage image={BeatConflict} className="size-28"/>
-                    <div className="text-white font-bold w-fit space-y-1.5 flex flex-col justify-center items-center -translate-y-5">
+                    <div className="dark:text-white font-bold w-fit space-y-1.5 flex flex-col justify-center items-center -translate-y-5">
                         <p>{t("playlist.playlist-contain-no-maps")}</p>
                     </div>
                 </div>
@@ -101,7 +101,7 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
             return (
                 <div className="grow flex justify-center items-center flex-col">
                     <BsmImage image={BeatConflict} className="size-28"/>
-                    <div className="text-white font-bold w-fit space-y-1.5 flex flex-col justify-center items-center -translate-y-5">
+                    <div className="dark:text-white font-bold w-fit space-y-1.5 flex flex-col justify-center items-center -translate-y-5">
                         <p>{t("playlist.no-map-installed-for-playlist")}</p>
                         <BsmButton withBar={false} onClick={installPlaylist} className="rounded-md h-8 flex items-center justify-center px-4" typeColor="primary" text="playlist.download-maps"/>
                     </div>
@@ -113,7 +113,7 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
             return (
                 <div className="grow flex justify-center items-center flex-col">
                     <BsmImage image={BeatConflict} className="size-28"/>
-                    <div className="text-white font-bold w-fit space-y-1.5 flex flex-col justify-center items-center -translate-y-5">
+                    <div className="dark:text-white font-bold w-fit space-y-1.5 flex flex-col justify-center items-center -translate-y-5">
                         <p>{t("playlist.playlist-is-waiting-to-download")}</p>
                     </div>
                 </div>

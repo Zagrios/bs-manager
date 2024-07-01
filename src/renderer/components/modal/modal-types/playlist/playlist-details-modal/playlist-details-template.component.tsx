@@ -46,7 +46,7 @@ export function PlaylistDetailsTemplate({title, imagebase64, imageUrl, author, d
     })();
 
     return (
-        <div className="flex flex-col w-screen max-w-2xl h-screen max-h-[calc(100vh-1.25rem)] translate-y-2.5 bg-main-color-1 rounded-t-lg overflow-hidden">
+        <div className="flex flex-col w-screen max-w-2xl h-screen max-h-[calc(100vh-1.25rem)] translate-y-2.5 bg-theme-1 rounded-t-lg overflow-hidden">
             <header className="shrink-0 relative h-36 overflow-hidden flex flex-row p-3">
                 <button className="absolute top-2 right-2 z-[1]" onClickCapture={onClose}>
                     <CrossIcon className="size-3.5 text-gray-200"/>
