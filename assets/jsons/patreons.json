@@ -96,5 +96,8 @@
     {
 		"username": "Riley",
 		"type": "gold"
-	}
+	},
+    {
+        "username": "Austin"
+    }
 ]
