@@ -11,9 +11,8 @@ export interface SongDetails {
     ranked: boolean;
     qualified: boolean;
     curated: boolean;
-    rankedBL: boolean;
-    nominatedBL: boolean;
-    qualifiedBL: boolean;
+    blRanked: boolean;
+    blQualified: boolean;
     upVotes: number;
     downVotes: number;
     downloads: number;

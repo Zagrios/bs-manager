@@ -321,7 +321,7 @@ export const isLocalMapFitMapFilter = ({filter, map, search}: { filter: MapFilte
     if (!isFitChroma(filter, map.songDetails?.difficulties.some(diff => !!diff.chroma))) { return false; }
     if (!isFitFullSpread(filter, map.songDetails?.difficulties.length)) { return false; }
     if (!isFitAutomapper(filter, map.songDetails?.automapper)){ return false; }
-    if (!isFitRanked(filter, map.songDetails?.ranked || map.songDetails?.rankedBL)) { return false; }
+    if (!isFitRanked(filter, map.songDetails?.ranked || map.songDetails?.blRanked)) { return false; }
     if (!isFitCurated(filter, map.songDetails?.curated)) { return false; }
     if (!isFitVerified(filter, map.songDetails?.uploader.verified)) { return false; }
     if (!isFitSearch(search, {songName: map.rawInfo?._songName, songAuthorName: map.rawInfo?._songAuthorName, levelAuthorName: map.rawInfo?._levelAuthorName})) { return false; }
@@ -364,7 +364,7 @@ export const isSongDetailsFitMapFilter = ({filter, map, search}: { filter: MapFi
     if (!isFitChroma(filter, map.difficulties.some(diff => !!diff.chroma))) { return false; }
     if (!isFitFullSpread(filter, map.difficulties.length)) { return false; }
     if (!isFitAutomapper(filter, map.automapper)){ return false; }
-    if (!isFitRanked(filter, map.ranked || map.rankedBL)) { return false; }
+    if (!isFitRanked(filter, map.ranked || map.blRanked)) { return false; }
     if (!isFitCurated(filter, map.curated)) { return false; }
     if (!isFitVerified(filter, map.uploader.verified)) { return false; }
     if (!isFitSearch(search, {songName: map.name, songAuthorName: map.uploader.name, levelAuthorName: map.uploader.name})) { return false; }

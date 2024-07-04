@@ -55,7 +55,7 @@ export abstract class MapItemComponentPropsMapper {
             diffs: MapItemComponentPropsMapper.extractMapDiffs({ rawMapInfo: map.rawInfo, songDetails: map.songDetails }),
             mapId: map.songDetails?.id,
             ranked: map.songDetails?.ranked,
-            blRanked: map.songDetails?.rankedBL,
+            blRanked: map.songDetails?.blRanked,
             autorId: map.songDetails?.uploader.id,
             likes: map.songDetails?.upVotes,
             createdAt: map.songDetails?.uploadedAt,
@@ -94,7 +94,7 @@ export abstract class MapItemComponentPropsMapper {
             likes: song.upVotes,
             mapId: song.id,
             ranked: song.ranked,
-            blRanked: song.rankedBL,
+            blRanked: song.blRanked,
             title: song.name,
             diffs: MapItemComponentPropsMapper.extractMapDiffs({ songDetails: song }),
             callBackParam: song

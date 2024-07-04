@@ -1,4 +1,3 @@
-import { SongCacheService } from "main/services/additional-content/maps/song-cache.service";
 import { LocalMapsManagerService } from "../services/additional-content/maps/local-maps-manager.service";
 import { IpcService } from "../services/ipc.service";
 import { from, of, throwError } from "rxjs";

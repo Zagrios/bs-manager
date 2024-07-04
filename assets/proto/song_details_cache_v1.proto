@@ -26,14 +26,13 @@ message SongDetails {
   bool ranked = 8;
   bool qualified = 9;
   bool curated = 10;
-  bool rankedBL = 11;
-  bool nominatedBL = 12;
-  bool qualifiedBL = 13;
-  uint32 upVotes = 14;
-  uint32 downVotes = 15;
-  uint32 downloads = 16;
-  bool automapper = 17;
-  repeated Difficulty difficulties = 18;
+  bool blRanked = 11;
+  bool blQualified = 12;
+  uint32 upVotes = 13;
+  uint32 downVotes = 14;
+  uint32 downloads = 15;
+  bool automapper = 16;
+  repeated Difficulty difficulties = 17;
 }
 
 message Difficulty {
