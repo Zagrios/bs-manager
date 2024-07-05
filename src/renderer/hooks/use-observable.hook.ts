@@ -5,7 +5,7 @@ export function useObservable<T>(factory: () => Observable<T>, initValue?: T, de
     const [obsValue, setObsValue] = useState<T>(initValue);
 
     useEffect(() => {
-        const sub = factory().subscribe(val => setObsValue(() => val));
+        const sub = factory().subscribe(val => setObsValue(val));
         return () => sub.unsubscribe();
     }, deps ?? []);
 

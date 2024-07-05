@@ -10,10 +10,13 @@ type Props = {
 };
 
 export function BsmLink({ className, href, children, style, internal }: Props) {
-    
+
     const linkOpener = useService(LinkOpenerService);
 
     const openLink = () => {
+
+        console.log("Opening link", href, internal);
+
         if (!href) {
             return;
         }

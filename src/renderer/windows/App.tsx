@@ -56,6 +56,7 @@ export default function App() {
     };
 
     const checkOneClicks = async () => {
+
         if (config.get("not-remind-oneclick") === true) {
             return;
         }

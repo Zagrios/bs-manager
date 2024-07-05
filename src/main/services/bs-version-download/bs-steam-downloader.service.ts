@@ -2,7 +2,6 @@ import { BS_APP_ID, BS_DEPOT } from "../../constants";
 import path from "path";
 import { BSVersion } from "shared/bs-version.interface";
 import { UtilsService } from "../utils.service";
-import { spawnSync } from "child_process";
 import log from "electron-log";
 import { InstallationLocationService } from "../installation-location.service";
 import { BSLocalVersionService } from "../bs-local-version.service";
@@ -66,7 +65,7 @@ export class BsSteamDownloaderService {
             qr
         }
 
-        await ensureDir(await this.installLocationService.versionsDirectory());
+        await ensureDir(this.installLocationService.versionsDirectory());
 
         const exePath = this.getDepotDownloaderExePath();
         const args = DepotDownloader.buildArgs(depotDownloaderOptions);
@@ -74,7 +73,7 @@ export class BsSteamDownloaderService {
         const depotDownloader = new DepotDownloader({
             command: exePath,
             args,
-            options: { cwd: await this.installLocationService.versionsDirectory() },
+            options: { cwd: this.installLocationService.versionsDirectory() },
             echoStartData: downloadVersion
         }, log);
 

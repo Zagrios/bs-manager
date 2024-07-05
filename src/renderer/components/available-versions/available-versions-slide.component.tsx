@@ -29,7 +29,7 @@ export function AvailableVersionsSlide({ versions }: Props) {
     }
 
     return (
-        <ol className="w-full flex items-start justify-center gap-6 shrink-0 content-start flex-wrap px-3.5 py-4 overflow-x-hidden overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900">
+        <ol className="w-full flex items-start justify-center gap-6 shrink-0 content-start flex-wrap px-3.5 py-4 overflow-x-hidden overflow-y-scroll scrollbar-default">
             {getVersions().map(version => (
                 <AvailableVersionItem key={version.BSManifest} version={version} selected={equal(version, context.selectedVersion)} onClick={() => setSelectedVersion(version)}/>
             ))}

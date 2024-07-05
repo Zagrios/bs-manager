@@ -2,9 +2,9 @@ import { Progression } from "main/helpers/fs.helpers";
 import { Observable } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { BSLaunchEventData, LaunchOption } from "shared/models/bs-launch";
-import { BsvMapDetail } from "shared/models/maps";
+import { BsvMapDetail, SongDetails } from "shared/models/maps";
 import { BsmLocalMap, BsmLocalMapsProgress, DeleteMapsProgress } from "shared/models/maps/bsm-local-map.interface";
-import { SearchParams } from "../maps/beat-saver.model";
+import { BsvPlaylist, BsvPlaylistPage, PlaylistSearchParams, SearchParams } from "../maps/beat-saver.model";
 import { ImportVersionOptions } from "main/services/bs-local-version.service";
 import { DownloadInfo, DownloadSteamInfo } from "main/services/bs-version-download/bs-steam-downloader.service";
 import { DepotDownloaderEvent } from "../bs-version-download/depot-downloader.model";
@@ -12,16 +12,17 @@ import { MSGetQuery, MSModel, MSModelType } from "../models/model-saber.model";
 import { ModelDownload } from "renderer/services/models-management/models-downloader.service";
 import { BsmLocalModel } from "../models/bsm-local-model.interface";
 import { InstallModsResult, Mod, UninstallModsResult } from "../mods";
-import { DownloadPlaylistProgressionData } from "../playlists/playlist.interface";
+import { BPList, DownloadPlaylistProgressionData } from "../playlists/playlist.interface";
 import { VersionLinkerAction } from "renderer/services/version-folder-linker.service";
 import { FileFilter, OpenDialogReturnValue } from "electron";
 import { SystemNotificationOptions } from "../notification/system-notification.model";
 import { Supporter } from "../supporters";
 import { AppWindow } from "../window-manager/app-window.model";
+import { LocalBPList, LocalBPListsDetails } from "../playlists/local-playlist.models";
 
 export type IpcReplier<T> = (data: Observable<T>) => void;
 
-export interface IpcChannelMapping extends Record<string, { request: unknown, response: unknown }> {
+export interface IpcChannelMapping {
 
     /* ** bs-download-ipcs ** */
     "import-version": { request: ImportVersionOptions, response: Progression<BSVersion>};
@@ -39,6 +40,8 @@ export interface IpcChannelMapping extends Record<string, { request: unknown, re
     "bsv-search-map": {request: SearchParams, response: BsvMapDetail[]};
     "bsv-get-map-details-from-hashs": {request: string[], response: BsvMapDetail[]};
     "bsv-get-map-details-by-id": {request: string, response: BsvMapDetail};
+    "bsv-search-playlist": {request: PlaylistSearchParams, response: BsvPlaylist[]};
+    "bsv-get-playlist-details-by-id": {request: {id: string, page: number}, response: BsvPlaylistPage};
 
     /* ** bs-launcher-ipcs ** */
     "create-launch-shortcut": { request: LaunchOption, response: boolean };
@@ -55,6 +58,7 @@ export interface IpcChannelMapping extends Record<string, { request: unknown, re
     "register-maps-deep-link": { request: void, response: boolean };
     "unregister-maps-deep-link": { request: void, response: boolean };
     "is-map-deep-links-enabled": { request: void, response: boolean };
+    "get-maps-info-from-cache": { request: string[], response: SongDetails[] }
 
     /* ** bs-model-ipcs ** */
     "one-click-install-model": { request: MSModel, response: void };
@@ -78,6 +82,11 @@ export interface IpcChannelMapping extends Record<string, { request: unknown, re
     "register-playlists-deep-link": { request: void, response: boolean };
     "unregister-playlists-deep-link": { request: void, response: boolean };
     "is-playlists-deep-links-enabled": { request: void, response: boolean };
+    "download-playlist": {request: {downloadSource: string, dest?: string, version?: BSVersion, ignoreSongsHashs?: string[]}, response: Progression<DownloadPlaylistProgressionData>};
+    "get-version-playlists-details": {request: BSVersion, response: Progression<LocalBPListsDetails[]>};
+    "delete-playlist": {request: {version: BSVersion, bpList: LocalBPList, deleteMaps?: boolean}, response: Progression};
+    "export-playlists": {request: {version?: BSVersion, bpLists: LocalBPList[], dest: string, playlistsMaps?: BsmLocalMap[]}, response: Progression<string>};
+    "install-playlist-file": {request: {bplist: BPList, version?: BSVersion, dest?: string}, response: LocalBPListsDetails};
 
     /* ** bs-uninstall-ipcs ** */
     "bs.uninstall": { request: BSVersion, response: boolean };
@@ -107,11 +116,13 @@ export interface IpcChannelMapping extends Record<string, { request: unknown, re
     /* ** os-controls-ipcs ** */
     "new-window": { request: string, response: void };
     "choose-folder": { request: string, response: OpenDialogReturnValue };
+    "choose-image": { request: { multiple?: boolean, base64?: boolean }, response: string[] }
     "window.progression": { request: number, response: void };
     "save-file": { request: { filename?: string; filters?: FileFilter[] }, response: string };
     "current-version": { request: void, response: string };
     "open-logs": { request: void, response: string };
     "notify-system": { request: SystemNotificationOptions, response: void };
+    "view-path-in-explorer": { request: string, response: void };
 
     /* ** supporters-ipcs ** */
     "get-supporters": { request: void, response: Supporter[] };

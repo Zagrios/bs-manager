@@ -47,7 +47,7 @@ export class WindowManagerService {
             if(isValidUrl(url)){
                 shell.openExternal(url);
             }
-            
+
             return { action: "deny"}
         });
 

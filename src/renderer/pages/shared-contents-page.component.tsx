@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapsPlaylistsPanel } from "renderer/components/maps-mangement-components/maps-playlists-panel.component";
+import { MapsPlaylistsPanel } from "renderer/components/maps-playlists-panel/maps-playlists-panel.component";
 import { ModelsPanel } from "renderer/components/models-management/models-panel.component";
 import { TabNavBar } from "renderer/components/shared/tab-nav-bar.component";
 import { Slideshow } from "renderer/components/slideshow/slideshow.component";

@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+package song_details_cache_v1;
+
+message SongDetailsCache {
+  repeated SongDetails songs = 1;
+  uint32 lastUpdated = 2;
+  uint32 total = 3;
+  UploadersList uploaders = 4;
+  repeated string difficultyLabels = 5;
+}
+
+message UploadersList {
+  repeated string names = 1;
+  repeated uint32 ids = 2;
+}
+
+message SongDetails {
+  uint32 idInt = 1;
+  repeated uint32 hashIndices = 2;
+  string name = 3;
+  uint32 duration = 4;
+  UploaderRef uploaderRef = 5;
+  uint32 uploadedAt = 6;
+  repeated MapTag tags = 7;
+  bool ranked = 8;
+  bool qualified = 9;
+  bool curated = 10;
+  bool blRanked = 11;
+  bool blQualified = 12;
+  uint32 upVotes = 13;
+  uint32 downVotes = 14;
+  uint32 downloads = 15;
+  bool automapper = 16;
+  repeated Difficulty difficulties = 17;
+}
+
+message Difficulty {
+  DifficultyLabel difficulty = 1;
+  DifficultyCharacteristic characteristic = 2;
+  uint32 labelIndex = 3;
+  uint32 starsT100 = 4;
+  uint32 starsBlT100 = 5;
+  uint32 njsT100 = 6;
+  uint32 npsT100 = 7;
+  int32 offsetT100 = 8;
+  bool chroma = 9;
+  bool cinema = 10;
+  bool me = 11;
+  bool ne = 12;
+  uint32 bombs = 13;
+  uint32 notes = 14;
+  uint32 obstacles = 15;
+}
+
+message UploaderRef {
+  uint32 uploader_ref_index = 1;
+  bool verified = 2;
+}
+
+enum DifficultyLabel {
+  UNKNOWN_LABEL = 0; // Default value for undefined/unknown labels
+  EASY = 1;
+  NORMAL = 2;
+  HARD = 3;
+  EXPERT = 4;
+  EXPERT_PLUS = 5;
+}
+
+enum DifficultyCharacteristic {
+  UNKNOWN_CHARACTERISTIC = 0; // Default value for undefined/unknown characteristics
+  STANDARD = 1;
+  ONE_SABER = 2;
+  NO_ARROWS = 3;
+  LAWLESS = 4;
+  LIGHTSHOW = 5;
+  LEGACY = 6;
+  NINETY_DEGREE = 7;
+  THREESIXTY_DEGREE = 8;
+}
+
+enum MapTag {
+  UNKNOWN_TAG = 0; // Default value for undefined/unknown tags
+  DANCE = 1;
+  SWING = 2;
+  NIGHTCORE = 3;
+  FOLK = 4;
+  FAMILY = 5;
+  AMBIENT = 6;
+  FUNK = 7;
+  JAZZ = 8;
+  SOUL = 9;
+  SPEEDCORE = 10;
+  PUNK = 11;
+  RB = 12;
+  HOLIDAY = 13;
+  VOCALOID = 14;
+  J_ROCK = 15;
+  TRANCE = 16;
+  DRUMBASS = 17;
+  COMEDY = 18;
+  INSTRUMENTAL = 19;
+  HARDCORE = 20;
+  K_POP = 21;
+  INDIE = 22;
+  TECHNO = 23;
+  HOUSE = 24;
+  GAME = 25;
+  FILM = 26;
+  ALT = 27;
+  DUBSTEP = 28;
+  METAL = 29;
+  ANIME = 30;
+  HIPHOP = 31;
+  J_POP = 32;
+  ROCK = 33;
+  POP = 34;
+  ELECTRONIC = 35;
+  CLASSICAL_ORCHESTRAL = 36;
+  ACCURACY = 37;
+  BALANCED = 38;
+  CHALLENGE = 39;
+  DANCESTYLE = 40;
+  FITNESS = 41;
+  SPEED = 42;
+  TECH = 43;
+}

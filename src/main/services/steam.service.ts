@@ -52,6 +52,7 @@ export class SteamService {
      * @returns true if the Steam process is running as administrator
      */
     public async isElevated(): Promise<boolean>{
+        if(process.platform === "linux"){ return true; }
         const steamPid = await this.getSteamPid();
 
         if(!steamPid){ return false; }

@@ -65,8 +65,7 @@ export class BSVersionManagerService {
     }
 
     public async editVersion(version: BSVersion): Promise<BSVersion> {
-        const modalRes = await this.modalService.openModal(EditVersionModal, { version, clone: false });
-
+        const modalRes = await this.modalService.openModal(EditVersionModal, {data: { version, clone: false }});
         if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
             return null;
         }
@@ -90,7 +89,7 @@ export class BSVersionManagerService {
         if (!this.progressBar.require()) {
             return null;
         }
-        const modalRes = await this.modalService.openModal(EditVersionModal, { version, clone: true });
+        const modalRes = await this.modalService.openModal(EditVersionModal, {data: { version, clone: true }});
         if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
             return null;
         }
@@ -163,7 +162,7 @@ export class BSVersionManagerService {
             shareReplay({ bufferSize: 1, refCount: true })
         );
 
-        this.progressBar.show(obs$.pipe(map(progress => (progress.current / progress.total) * 100)), true);
+        this.progressBar.show(obs$, true);
 
         return obs$;
     }

@@ -245,7 +245,7 @@ export function SettingsPage() {
     };
 
     return (
-        <div className="w-full h-full flex justify-center overflow-y-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 text-gray-800 dark:text-gray-200">
+        <div className="w-full h-full flex justify-center overflow-y-scroll scrollbar-default text-gray-800 dark:text-gray-200">
             <div className="max-w-2xl w-full h-fit">
                 <div className="inline-block sticky top-8 left-[calc(100%)] translate-x-12 grow-0 w-9 h-9">
                     <BsmButton className="inline-block grow-0 bg-transparent sticky h-full w-full top-20 right-20 !m-0 rounded-full p-1" onClick={() => nav(-1)} icon="close" withBar={false} />

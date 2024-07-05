@@ -12,7 +12,7 @@ import { IpcService } from "renderer/services/ipc.service";
 import { LaunchSlide } from "renderer/components/version-viewer/slides/launch/launch-slide.component";
 import { ModsSlide } from "renderer/components/version-viewer/slides/mods/mods-slide.component";
 import { UninstallModal } from "renderer/components/modal/modal-types/uninstall-modal.component";
-import { MapsPlaylistsPanel } from "renderer/components/maps-mangement-components/maps-playlists-panel.component";
+import { MapsPlaylistsPanel } from "renderer/components/maps-playlists-panel/maps-playlists-panel.component";
 import { ShareFoldersModal } from "renderer/components/modal/modal-types/share-folders-modal.component";
 import { ModelsPanel } from "renderer/components/models-management/models-panel.component";
 import { useService } from "renderer/hooks/use-service.hook";
@@ -46,7 +46,7 @@ export function VersionViewer() {
     const verifyFiles = () => bsDownloader.verifyBsVersion(state);
 
     const uninstall = async () => {
-        const modalCompleted = await modalService.openModal(UninstallModal, state);
+        const modalCompleted = await modalService.openModal(UninstallModal, { data: state });
         if (modalCompleted.exitCode === ModalExitCode.COMPLETED) {
             bsUninstallerService.uninstall(state).then(() => {
                 bsVersionManagerService.askInstalledVersions().then(versions => {
@@ -79,11 +79,11 @@ export function VersionViewer() {
     };
 
     const openShareFolderModal = () => {
-        modalService.openModal(ShareFoldersModal, state);
+        modalService.openModal(ShareFoldersModal, {data: state});
     };
 
     const createLaunchShortcut = async () => {
-        const { exitCode, data } = await modalService.openModal(CreateLaunchShortcutModal, state);
+        const { exitCode, data } = await modalService.openModal(CreateLaunchShortcutModal, {data: state});
         if(exitCode !== ModalExitCode.COMPLETED){ return; }
 
         lastValueFrom(bsLauncher.createLaunchShortcut(data)).then(() => {

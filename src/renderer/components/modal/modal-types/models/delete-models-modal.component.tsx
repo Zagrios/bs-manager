@@ -12,7 +12,7 @@ import { ConfigurationService } from "renderer/services/configuration.service";
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
 import { useService } from "renderer/hooks/use-service.hook";
 
-export const DeleteModelsModal: ModalComponent<void, { models: BsmLocalModel[]; linked: boolean }> = ({ resolver, data }) => {
+export const DeleteModelsModal: ModalComponent<void, { models: BsmLocalModel[]; linked: boolean }> = ({ resolver, options: {data} }) => {
     const config = useService(ConfigurationService);
     const t = useTranslation();
     const [remember, setRemember] = useState(config.get<boolean>(ModelsManagerService.REMEMBER_CHOICE_DELETE_MODEL_KEY) || false);
@@ -24,7 +24,7 @@ export const DeleteModelsModal: ModalComponent<void, { models: BsmLocalModel[]; 
     const isMultiple = data.models.length > 1;
 
     const title = useConstant(() => (isMultiple ? t("models.modals.delete-models.title") : t("models.modals.delete-model.title")));
-    const desc = useConstant(() => (isMultiple ? t("models.modals.delete-models.desc", { nb: `${data.models.length}` }) : t("models.modals.delete-model.desc", { modelName: data.models[0].model?.name ?? data.models[0].fileName })));
+    const desc = useConstant(() => (isMultiple ? t("models.modals.delete-models.desc", { nb: `${data.models.length}` }) : t("models.modals.delete-model.desc", { modelName: data.models[0]?.model?.name ?? data.models[0]?.fileName })));
     const linkedAnnotation = useConstant(() =>
         (() => {
             if (!data.linked) return null;

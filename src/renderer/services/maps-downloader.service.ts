@@ -43,6 +43,10 @@ export class MapsDownloaderService {
         this.mapsQueue$.pipe(filter(queue => queue.length === 0)).subscribe(() => {
             this.queueMaxLenght = 0;
         });
+
+        this.ipc.watch<{map: BsmLocalMap, version?: BSVersion}>("map-downloaded").subscribe((data) => {
+            this.downloadedListerners.forEach(func => func(data.map, data.version));
+        });
     }
 
     private async startDownloadMaps() {
@@ -53,11 +57,7 @@ export class MapsDownloaderService {
         while (this.mapsQueue$.value.at(0)) {
             const toDownload = this.mapsQueue$.value.at(0);
             this.currentDownload$.next(toDownload);
-            const downloaded = await this.downloadMap(toDownload.map, toDownload.version)?.toPromise();
-
-            if (downloaded) {
-                this.downloadedListerners.forEach(func => func(downloaded, toDownload.version));
-            }
+            await lastValueFrom(this.downloadMap(toDownload.map, toDownload.version));
 
             const newArr = [...this.mapsQueue$.value];
             newArr.shift();
@@ -78,7 +78,7 @@ export class MapsDownloaderService {
     }
 
     public async openDownloadMapModal(version?: BSVersion, ownedMaps: BsmLocalMap[] = []): Promise<ModalResponse<void>> {
-        const res = await this.modals.openModal(DownloadMapsModal, { version, ownedMaps });
+        const res = await this.modals.openModal(DownloadMapsModal, {data: { version, ownedMaps }});
         this.progressBar.setStyle(null);
         return res;
     }
