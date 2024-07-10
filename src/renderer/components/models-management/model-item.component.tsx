@@ -1,5 +1,5 @@
 import equal from "fast-deep-equal";
-import { useRef, useState } from "react";
+import { ComponentProps, MouseEvent, useRef, useState } from "react";
 import { MSModel } from "shared/models/models/model-saber.model";
 import { BsmImage } from "../shared/bsm-image.component";
 import { motion } from "framer-motion";
@@ -27,13 +27,14 @@ type Props<T> = {
     id?: number;
     isDownloading?: boolean;
     callbackValue?: T;
+    hideNsFw?: boolean;
     onDelete?: (value: T) => void;
     onDownload?: (value: T) => void;
     onCancelDownload?: (value: T) => void;
     onDoubleClick?: (value: T) => void;
 } & Partial<MSModel> &
     Partial<BsmLocalModel> &
-    Omit<React.ComponentProps<"li">, "id" | "onDoubleClick">;
+    Omit<ComponentProps<"li">, "id" | "onDoubleClick">;
 
 function ModelItemElement<T = unknown>(props: Props<T>) {
     const t = useTranslation();
@@ -44,6 +45,10 @@ function ModelItemElement<T = unknown>(props: Props<T>) {
     const ref = useRef();
 
     const isNsfw = (() => {
+        if (!props.hideNsFw) {
+            return false;
+        }
+
         const tags = props.tags?.map(tag => tag.toLowerCase()) ?? [];
         const name = props.name.toLowerCase() ?? "";
         return (
@@ -60,7 +65,7 @@ function ModelItemElement<T = unknown>(props: Props<T>) {
     useDoubleClick({
         ref,
         latency: props.onDoubleClick ? 200 : 0,
-        onSingleClick: e => props?.onClick?.(e as unknown as React.MouseEvent<HTMLLIElement>),
+        onSingleClick: e => props?.onClick?.(e as unknown as MouseEvent<HTMLLIElement>),
         onDoubleClick: () => props?.onDoubleClick?.(props.callbackValue),
     });
 

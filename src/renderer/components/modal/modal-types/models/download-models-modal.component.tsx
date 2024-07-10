@@ -146,6 +146,7 @@ export const DownloadModelsModal: ModalComponent<void, { version: BSVersion; typ
             <ModelItem
                 key={renderModel.model.id}
                 {...renderModel.model}
+                hideNsFw
                 callbackValue={renderModel.model}
                 isDownloading={renderModel.isDownloading}
                 onDownload={!renderModel.isOwned ? handleDownloadModel : undefined}
