@@ -216,7 +216,7 @@ export enum MapSpecificity {
 
 }
 
-//[ Admin, Uploader, SageScore, None ]
+// [ Admin, Uploader, SageScore, None ]
 export const BsvDeclaredAi = {
     Admin: "Admin",
     Uploader: "Uploader",

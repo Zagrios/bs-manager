@@ -10,7 +10,6 @@ import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { ModalComponent, ModalExitCode, ModalService } from "renderer/services/modale.service"
 import { BehaviorSubject, Observable, lastValueFrom, map, take } from "rxjs";
-import { BSVersion } from "shared/bs-version.interface";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { LocalBPList } from "shared/models/playlists/local-playlist.models"
 import { BsvMapDetail, SongDetails } from "shared/models/maps";
@@ -303,7 +302,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
         ) : tmpLocalMaps;
 
         const newPlaylistMaps = {...playlistMaps$.value} ?? {};
-        mapsToAdd.forEach(map => newPlaylistMaps[getHashOfMap(map)] = { map });
+        mapsToAdd.forEach(map =>{ newPlaylistMaps[getHashOfMap(map)] = { map }; });
 
         playlistMaps$.next(newPlaylistMaps);
         availabledHashsSelected$.next([]);
@@ -345,7 +344,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
 
             if(!playlistMap?.map){ return; }
 
-            const map = playlistMap.map;
+            const { map } = playlistMap;
 
             if((map as BsmLocalMap).rawInfo?._levelAuthorName){
                 mappersSet.add((map as BsmLocalMap).rawInfo._levelAuthorName);
@@ -366,19 +365,19 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
 
             if(!playlistMap?.map){ return 0; }
 
-            const map = playlistMap.map;
+            const { map } = playlistMap;
 
             if((map as BsmLocalMap)?.songDetails?.duration){
                 return (map as BsmLocalMap).songDetails.duration;
             }
-            else if((map as SongDetails)?.duration){
+            if((map as SongDetails)?.duration){
                 return (map as SongDetails).duration;
             }
-            else if((map as BsvMapDetail)?.metadata?.duration){
+            if((map as BsvMapDetail)?.metadata?.duration){
                 return (map as BsvMapDetail).metadata.duration;
             }
             return 0;
-        }).filter(duration => !isNaN(duration));
+        }).filter(duration => !Number.isNaN(duration));
 
         const totalDuration = durations.reduce((acc, duration) => acc + duration, 0);
         return totalDuration > 3600 ? dateFormat(totalDuration * 1000, "H:MM:ss") : dateFormat(totalDuration * 1000, "MM:ss");
@@ -390,7 +389,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
 
             if(!playlistMap?.map){ return acc; }
 
-            const map = playlistMap.map;
+            const { map } = playlistMap;
 
             if(Array.isArray((map as BsmLocalMap)?.songDetails?.difficulties)){
                 acc.push(...(map as BsmLocalMap).songDetails.difficulties.map(diff => diff.nps));
@@ -402,7 +401,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
                 acc.push(...(map as BsvMapDetail).versions.flatMap(version => version.diffs.map(diff => diff.nps)));
             }
             return acc;
-        }, [] as number[]).filter(n => !isNaN(n));
+        }, [] as number[]).filter(n => !Number.isNaN(n));
 
         const minNps = Math.min(...nps);
         const maxNps = Math.max(...nps);
@@ -461,142 +460,140 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
                 if(!playlistMaps || !localMaps){
                     return <div className="flex items-center justify-center w-full h-full">{t("playlist.loading")}</div>
                 }
-                else{
-                    return (
-                        <div className="size-full flex flex-col justify-between">
-                            <div className="grow flex flex-row min-h-0 gap-2.5">
-                                <div className="flex flex-col grow basis-0 min-w-0">
-                                    <form className="h-8 flex flex-row gap-2 w-full mb-1.5 min-w-0" onSubmit={e => {e.preventDefault(); handleNewSearch()}}>
-                                        <BsmSelect className="bg-theme-1 h-full rounded-full text-center pb-0.5" options={[{ text: t("playlist.installed"), value: 0 }, { text: "BeatSaver", value: 1 }]} onChange={setAvailableMapsSource}/>
-                                        <input className="h-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2 grow pb-0.5 min-w-0" type="text" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={availableMapsSearch} onChange={e => setAvailableMapsSearch(() => e.target.value)} />
-                                        {availableMapsSource === 1 && (
-                                            <BsmButton className="h-full aspect-square z-[1] flex justify-center p-1 rounded-full min-w-0 shrink-0 !bg-light-main-color-1 dark:!bg-main-color-1" icon="search" onClick={handleNewSearch} withBar={false}/>
-                                        )}
-                                        <BsmDropdownButton ref={filterContainerRef} className="h-full aspect-square relative z-[1] flex justify-center" buttonClassName="flex items-center justify-center h-full rounded-full p-1 !bg-light-main-color-1 dark:!bg-main-color-1" icon="filter" textClassName="whitespace-nowrap" withBar={false}>
-                                            <FilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[500px] h-fit p-2 rounded-md shadow-md shadow-black -translate-x-1/4 lg:translate-x-0" filter={availableMapsFilter} onChange={setAvailableMapsFilter} onApply={availableMapsSource === 1 && handleNewSearch} onClose={() => filterContainerRef.current.close()}/>
-                                        </BsmDropdownButton>
-                                        {availableMapsSource === 1 && (
-                                            <BsmSelect className="bg-theme-1 h-full rounded-full text-center pb-0.5 min-w-0 lg:min-w-fit" options={sortOptions} onChange={handleSortChange}/>
-                                        )}
-                                    </form>
+                return (
+                    <div className="size-full flex flex-col justify-between">
+                        <div className="grow flex flex-row min-h-0 gap-2.5">
+                            <div className="flex flex-col grow basis-0 min-w-0">
+                                <form className="h-8 flex flex-row gap-2 w-full mb-1.5 min-w-0" onSubmit={e => {e.preventDefault(); handleNewSearch()}}>
+                                    <BsmSelect className="bg-theme-1 h-full rounded-full text-center pb-0.5" options={[{ text: t("playlist.installed"), value: 0 }, { text: "BeatSaver", value: 1 }]} onChange={setAvailableMapsSource}/>
+                                    <input className="h-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2 grow pb-0.5 min-w-0" type="text" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={availableMapsSearch} onChange={e => setAvailableMapsSearch(() => e.target.value)} />
+                                    {availableMapsSource === 1 && (
+                                        <BsmButton className="h-full aspect-square z-[1] flex justify-center p-1 rounded-full min-w-0 shrink-0 !bg-light-main-color-1 dark:!bg-main-color-1" icon="search" onClick={handleNewSearch} withBar={false}/>
+                                    )}
+                                    <BsmDropdownButton ref={filterContainerRef} className="h-full aspect-square relative z-[1] flex justify-center" buttonClassName="flex items-center justify-center h-full rounded-full p-1 !bg-light-main-color-1 dark:!bg-main-color-1" icon="filter" textClassName="whitespace-nowrap" withBar={false}>
+                                        <FilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[500px] h-fit p-2 rounded-md shadow-md shadow-black -translate-x-1/4 lg:translate-x-0" filter={availableMapsFilter} onChange={setAvailableMapsFilter} onApply={availableMapsSource === 1 && handleNewSearch} onClose={() => filterContainerRef.current.close()}/>
+                                    </BsmDropdownButton>
+                                    {availableMapsSource === 1 && (
+                                        <BsmSelect className="bg-theme-1 h-full rounded-full text-center pb-0.5 min-w-0 lg:min-w-fit" options={sortOptions} onChange={handleSortChange}/>
+                                    )}
+                                </form>
 
-                                    <div className="overflow-hidden size-full bg-theme-1 rounded-md ">
-                                        {(() => {
+                                <div className="overflow-hidden size-full bg-theme-1 rounded-md ">
+                                    {(() => {
 
-                                            if((availableMapsSource === 1 && !Array.isArray(bsvMaps)) || (availableMapsSource === 0 && !Array.isArray(localMaps))){
-                                                return (
-                                                    <div className="flex flex-col items-center justify-center size-full">
-                                                        <BsmImage className="size-24 spin-loading" image={BeatWaiting}/>
-                                                        <span className="text-sm italic leading-4">{t("playlist.loading")}</span>
-                                                    </div>
-                                                );
-                                            }
-
-                                            if((availableMapsSource === 1 && bsvMaps.length === 0) || (availableMapsSource === 0 && localMaps.length === 0)){
-                                                return (
-                                                    <div className="flex flex-col items-center justify-center size-full">
-                                                        <BsmImage className="size-20" image={BeatConflict}/>
-                                                        <span className="text-sm italic leading-4 w-3/4 text-center">{t("playlist.no-map-found")}</span>
-                                                    </div>
-                                                );
-                                            }
-
-                                            if(availableMapsSource === 0){
-                                                return renderList(localMaps.filter(map => {
-                                                    if(playlistMaps?.[map.hash]){ return false; }
-                                                    return isMapFitFilter({ map, filter: availableMapsFilter, search: availableMapsSearch });
-                                                }), renderAvailableMapItem);
-                                            }
-
-                                            return renderList(bsvMaps, renderBsvMapItem, { onScrollEnd: loadMoreBsvMaps });
-                                        })()}
-                                    </div>
-
-                                    <div className="w-full h-4 flex justify-start">
-                                        <span className="text-xs italic leading-4">{t("playlist.edit-playlist-shortcuts")}</span>
-                                    </div>
-                                </div>
-                                <div className="shrink-0 flex flex-col gap-2.5 pb-4 pt-10">
-                                    <Tippy content={t("playlist.add-to-playlist")} theme="default" placement="left">
-                                        <button className="grow w-9 rounded-md cursor-pointer transition-transform duration-150 hover:brightness-110 active:scale-95" style={{backgroundColor: color, color: getCorrectTextColor(color)}} type="button" onClick={addMapsToPlaylist}>
-                                            <ChevronTopIcon className="origin-center rotate-90"/>
-                                        </button>
-                                    </Tippy>
-                                    <Tippy content={t("playlist.remove-from-playlist")} theme="default" placement="right">
-                                        <button className="grow w-9 rounded-md cursor-pointer transition-transform duration-150 hover:brightness-110 active:scale-95" style={{backgroundColor: color, color: getCorrectTextColor(color)}} type="button" onClick={removeMapsFromPlaylist}>
-                                            <ChevronTopIcon className="origin-center -rotate-90"/>
-                                        </button>
-                                    </Tippy>
-                                </div>
-                                <div className="flex flex-col grow basis-0">
-                                    <div className="h-8 flex flex-row gap-2 w-full mb-1.5">
-                                        <input className="h-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2 grow pb-0.5" type="text" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={playlistMapsSearch} onChange={e => setPlaylistMapsSearch(() => e.target.value)} />
-                                        <BsmDropdownButton className="h-full aspect-square relative z-[1] flex justify-center" buttonClassName="flex items-center justify-center h-full rounded-full p-1 !bg-light-main-color-1 dark:!bg-main-color-1" icon="filter" textClassName="whitespace-nowrap" withBar={false}>
-                                            <FilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[500px] h-fit p-2 rounded-md shadow-md shadow-black -translate-x-[40%]" filter={playlistMapsFilter} onChange={setPlaylistMapsFilter}/>
-                                        </BsmDropdownButton>
-                                    </div>
-                                    <div className="overflow-hidden size-full bg-theme-1 rounded-md">
-                                        {(() => {
-                                            if(!playlistMaps){
-                                                return(
-                                                    <div className="flex flex-col items-center justify-center size-full">
-                                                        <BsmImage className="size-24 spin-loading" image={BeatWaiting}/>
-                                                        <span className="text-sm italic leading-4">{t("playlist.loading")}</span>
-                                                    </div>
-                                                );
-                                            }
-                                            if(Object.keys(playlistMaps).length === 0){
-                                                return (
-                                                    <div className="flex flex-col items-center justify-center size-full">
-                                                        <BsmImage className="size-20" image={BeatConflict}/>
-                                                        <span className="text-sm italic leading-4 w-3/4 text-center">{t("playlist.playlist-is-empty")}</span>
-                                                    </div>
-                                                );
-                                            }
-
+                                        if((availableMapsSource === 1 && !Array.isArray(bsvMaps)) || (availableMapsSource === 0 && !Array.isArray(localMaps))){
                                             return (
-                                                <DraggableVirtualScroll
-                                                    classNames={{
-                                                        mainDiv: "size-full min-w-0",
-                                                        rows: "py-2.5 px-2.5"
-                                                    }}
-                                                    itemHeight={110}
-                                                    items={displayablePlaylistMaps}
-                                                    isDragDisabled={!!Object.keys(playlistMapsFilter).length || !!playlistMapsSearch}
-                                                    renderItem={renderPlaylistMapItem}
-                                                    onDragEnd={handlePlaylistMapDragEnd}
-                                                />
+                                                <div className="flex flex-col items-center justify-center size-full">
+                                                    <BsmImage className="size-24 spin-loading" image={BeatWaiting}/>
+                                                    <span className="text-sm italic leading-4">{t("playlist.loading")}</span>
+                                                </div>
                                             );
+                                        }
 
-                                        })()}
+                                        if((availableMapsSource === 1 && bsvMaps.length === 0) || (availableMapsSource === 0 && localMaps.length === 0)){
+                                            return (
+                                                <div className="flex flex-col items-center justify-center size-full">
+                                                    <BsmImage className="size-20" image={BeatConflict}/>
+                                                    <span className="text-sm italic leading-4 w-3/4 text-center">{t("playlist.no-map-found")}</span>
+                                                </div>
+                                            );
+                                        }
+
+                                        if(availableMapsSource === 0){
+                                            return renderList(localMaps.filter(map => {
+                                                if(playlistMaps?.[map.hash]){ return false; }
+                                                return isMapFitFilter({ map, filter: availableMapsFilter, search: availableMapsSearch });
+                                            }), renderAvailableMapItem);
+                                        }
+
+                                        return renderList(bsvMaps, renderBsvMapItem, { onScrollEnd: loadMoreBsvMaps });
+                                    })()}
+                                </div>
+
+                                <div className="w-full h-4 flex justify-start">
+                                    <span className="text-xs italic leading-4">{t("playlist.edit-playlist-shortcuts")}</span>
+                                </div>
+                            </div>
+                            <div className="shrink-0 flex flex-col gap-2.5 pb-4 pt-10">
+                                <Tippy content={t("playlist.add-to-playlist")} theme="default" placement="left">
+                                    <button className="grow w-9 rounded-md cursor-pointer transition-transform duration-150 hover:brightness-110 active:scale-95" style={{backgroundColor: color, color: getCorrectTextColor(color)}} type="button" onClick={addMapsToPlaylist}>
+                                        <ChevronTopIcon className="origin-center rotate-90"/>
+                                    </button>
+                                </Tippy>
+                                <Tippy content={t("playlist.remove-from-playlist")} theme="default" placement="right">
+                                    <button className="grow w-9 rounded-md cursor-pointer transition-transform duration-150 hover:brightness-110 active:scale-95" style={{backgroundColor: color, color: getCorrectTextColor(color)}} type="button" onClick={removeMapsFromPlaylist}>
+                                        <ChevronTopIcon className="origin-center -rotate-90"/>
+                                    </button>
+                                </Tippy>
+                            </div>
+                            <div className="flex flex-col grow basis-0">
+                                <div className="h-8 flex flex-row gap-2 w-full mb-1.5">
+                                    <input className="h-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2 grow pb-0.5" type="text" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={playlistMapsSearch} onChange={e => setPlaylistMapsSearch(() => e.target.value)} />
+                                    <BsmDropdownButton className="h-full aspect-square relative z-[1] flex justify-center" buttonClassName="flex items-center justify-center h-full rounded-full p-1 !bg-light-main-color-1 dark:!bg-main-color-1" icon="filter" textClassName="whitespace-nowrap" withBar={false}>
+                                        <FilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[500px] h-fit p-2 rounded-md shadow-md shadow-black -translate-x-[40%]" filter={playlistMapsFilter} onChange={setPlaylistMapsFilter}/>
+                                    </BsmDropdownButton>
+                                </div>
+                                <div className="overflow-hidden size-full bg-theme-1 rounded-md">
+                                    {(() => {
+                                        if(!playlistMaps){
+                                            return(
+                                                <div className="flex flex-col items-center justify-center size-full">
+                                                    <BsmImage className="size-24 spin-loading" image={BeatWaiting}/>
+                                                    <span className="text-sm italic leading-4">{t("playlist.loading")}</span>
+                                                </div>
+                                            );
+                                        }
+                                        if(Object.keys(playlistMaps).length === 0){
+                                            return (
+                                                <div className="flex flex-col items-center justify-center size-full">
+                                                    <BsmImage className="size-20" image={BeatConflict}/>
+                                                    <span className="text-sm italic leading-4 w-3/4 text-center">{t("playlist.playlist-is-empty")}</span>
+                                                </div>
+                                            );
+                                        }
+
+                                        return (
+                                            <DraggableVirtualScroll
+                                                classNames={{
+                                                    mainDiv: "size-full min-w-0",
+                                                    rows: "py-2.5 px-2.5"
+                                                }}
+                                                itemHeight={110}
+                                                items={displayablePlaylistMaps}
+                                                isDragDisabled={!!Object.keys(playlistMapsFilter).length || !!playlistMapsSearch}
+                                                renderItem={renderPlaylistMapItem}
+                                                onDragEnd={handlePlaylistMapDragEnd}
+                                            />
+                                        );
+
+                                    })()}
+                                </div>
+                                <div className="w-full h-4 flex justify-end gap-3 mt-px">
+                                    <div className="h-full flex justify-center items-center gap-0.5">
+                                        <MapIcon className='h-full aspect-square mt-0.5'/>
+                                        <span className="text-xs italic leading-4">{Object.keys(playlistMaps ?? {}).length}</span>
                                     </div>
-                                    <div className="w-full h-4 flex justify-end gap-3 mt-px">
-                                        <div className="h-full flex justify-center items-center gap-0.5">
-                                            <MapIcon className='h-full aspect-square mt-0.5'/>
-                                            <span className="text-xs italic leading-4">{Object.keys(playlistMaps ?? {}).length}</span>
-                                        </div>
-                                        <div className="h-full flex justify-center items-center gap-0.5">
-                                            <PersonIcon className='h-full aspect-square mt-0.5'/>
-                                            <span className="text-xs italic leading-4">{playlistNbMappers}</span>
-                                        </div>
-                                        <div className="h-full flex justify-center items-center gap-0.5">
-                                            <ClockIcon className='h-full aspect-square mt-0.5'/>
-                                            <span className="text-xs italic leading-4">{playlistDuration}</span>
-                                        </div>
-                                        <div className="h-full flex justify-center items-center gap-0.5">
-                                            <NpsIcon className='h-full aspect-square mt-0.5'/>
-                                            <span className="text-xs italic leading-4">{`${playlistMinNps} - ${playlistMaxNps}`}</span>
-                                        </div>
+                                    <div className="h-full flex justify-center items-center gap-0.5">
+                                        <PersonIcon className='h-full aspect-square mt-0.5'/>
+                                        <span className="text-xs italic leading-4">{playlistNbMappers}</span>
+                                    </div>
+                                    <div className="h-full flex justify-center items-center gap-0.5">
+                                        <ClockIcon className='h-full aspect-square mt-0.5'/>
+                                        <span className="text-xs italic leading-4">{playlistDuration}</span>
+                                    </div>
+                                    <div className="h-full flex justify-center items-center gap-0.5">
+                                        <NpsIcon className='h-full aspect-square mt-0.5'/>
+                                        <span className="text-xs italic leading-4">{`${playlistMinNps} - ${playlistMaxNps}`}</span>
                                     </div>
                                 </div>
                             </div>
-                            <footer className="flex justify-center items-center gap-2 h-8 mt-2.5">
-                                <BsmButton className="rounded-md text-center h-full grow basis-0 flex justify-center items-center" typeColor="cancel" text="misc.cancel" withBar={false} onClick={() => resolver({ exitCode: ModalExitCode.CANCELED })}/>
-                                <BsmButton className="rounded-md text-center h-full grow basis-0 flex justify-center items-center" typeColor="primary" text="playlist.continue" withBar={false} onClick={handleContinue}/>
-                            </footer>
                         </div>
-                    )
-                }
+                        <footer className="flex justify-center items-center gap-2 h-8 mt-2.5">
+                            <BsmButton className="rounded-md text-center h-full grow basis-0 flex justify-center items-center" typeColor="cancel" text="misc.cancel" withBar={false} onClick={() => resolver({ exitCode: ModalExitCode.CANCELED })}/>
+                            <BsmButton className="rounded-md text-center h-full grow basis-0 flex justify-center items-center" typeColor="primary" text="playlist.continue" withBar={false} onClick={handleContinue}/>
+                        </footer>
+                    </div>
+                );
             })()}
         </div>
     )

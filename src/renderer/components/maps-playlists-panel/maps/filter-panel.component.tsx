@@ -219,7 +219,7 @@ export function FilterPanel({ className, ref, playlist = false, filter, localDat
             )}
         </motion.div>
     ) : (
-        <></>
+        undefined
     );
 }
 
@@ -330,24 +330,22 @@ export const isLocalMapFitMapFilter = ({filter, map, search}: { filter: MapFilte
 
 export const isBsvMapFitMapFilter = ({filter, map, search}: { filter: MapFilter, map: BsvMapDetail, search: string }): boolean => {
 
-    console.log("LAAAAAA", map);
-
-    if (!isFitEnabledTags(filter, map.tags)) { console.log(1); return false; }
+    if (!isFitEnabledTags(filter, map.tags)) { return false; }
     if (!isFitExcludedTags(filter, map.tags)) { return false; }
-    if (map.versions?.at(0)?.diffs && !map.versions.at(0).diffs.some(diff => isFitMinNps(filter, diff.nps))) { console.log(2); return false; }
-    if (map.versions?.at(0)?.diffs && !map.versions.at(0).diffs.some(diff => isFitMaxNps(filter, diff.nps))) { console.log(3); return false; }
-    if (!isFitMinDuration(filter, map.metadata.duration)) { console.log(4); return false; }
-    if (!isFitMaxDuration(filter, map.metadata.duration)) { console.log(5); return false; }
-    if (!isFitNoodle(filter, map.versions?.at(0)?.diffs.some(diff => !!diff.ne))) { console.log(6); return false; }
-    if (!isFitMe(filter, map.versions?.at(0)?.diffs.some(diff => !!diff.me))) { console.log(7); return false; }
-    if (!isFitCinema(filter, map.versions?.at(0)?.diffs.some(diff => !!diff.cinema))) { console.log(8); return false; }
-    if (!isFitChroma(filter, map.versions?.at(0)?.diffs.some(diff => !!diff.chroma))) { console.log(9); return false; }
-    if (!isFitFullSpread(filter, map.versions?.at(0)?.diffs.length)) { console.log(10); return false; }
-    if (!isFitAutomapper(filter, map.automapper)){ console.log(11); return false; }
-    if (!isFitRanked(filter, map.ranked || map.blRanked)) { console.log(12); return false; }
-    if (!isFitCurated(filter, !!map.curator)) { console.log(13); return false; }
-    if (!isFitVerified(filter, !!map.curatedAt)) { console.log(14); return false; }
-    if (!isFitSearch(search, {songName: map.name, songAuthorName: map.metadata.songAuthorName, levelAuthorName: map.metadata.levelAuthorName})) { console.log(15); return false; }
+    if (map.versions?.at(0)?.diffs && !map.versions.at(0).diffs.some(diff => isFitMinNps(filter, diff.nps))) { return false; }
+    if (map.versions?.at(0)?.diffs && !map.versions.at(0).diffs.some(diff => isFitMaxNps(filter, diff.nps))) { return false; }
+    if (!isFitMinDuration(filter, map.metadata.duration)) { return false; }
+    if (!isFitMaxDuration(filter, map.metadata.duration)) { return false; }
+    if (!isFitNoodle(filter, map.versions?.at(0)?.diffs.some(diff => !!diff.ne))) { return false; }
+    if (!isFitMe(filter, map.versions?.at(0)?.diffs.some(diff => !!diff.me))) { return false; }
+    if (!isFitCinema(filter, map.versions?.at(0)?.diffs.some(diff => !!diff.cinema))) { return false; }
+    if (!isFitChroma(filter, map.versions?.at(0)?.diffs.some(diff => !!diff.chroma))) { return false; }
+    if (!isFitFullSpread(filter, map.versions?.at(0)?.diffs.length)) { return false; }
+    if (!isFitAutomapper(filter, map.automapper)){ return false; }
+    if (!isFitRanked(filter, map.ranked || map.blRanked)) { return false; }
+    if (!isFitCurated(filter, !!map.curator)) { return false; }
+    if (!isFitVerified(filter, !!map.curatedAt)) { return false; }
+    if (!isFitSearch(search, {songName: map.name, songAuthorName: map.metadata.songAuthorName, levelAuthorName: map.metadata.levelAuthorName})) { return false; }
     return true;
 };
 

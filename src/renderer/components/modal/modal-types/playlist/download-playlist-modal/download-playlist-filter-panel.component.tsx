@@ -70,6 +70,7 @@ export function DownloadPlaylistFilterPanel({ className, params, onChange, onSub
         return <span className={`bg-inherit absolute top-[calc(100%+4px)] whitespace-nowrap h-5 font-bold rounded-md shadow-center shadow-black px-1 flex items-center ${isMax ? "text-lg" : "text-sm"}`}>{text}</span>;
     };
 
+    // eslint-disable-next-line react/no-unstable-nested-components
     const CustomRadio = (props: RadioProps) => {
         const {children, ...otherProps} = props;
 

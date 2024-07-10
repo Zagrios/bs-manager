@@ -19,6 +19,7 @@ import { ModelsDownloaderService } from "renderer/services/models-management/mod
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { BsContentLoader } from "../shared/bs-content-loader.component";
 import { VirtualScroll } from "../shared/virtual-scroll/virtual-scroll.component";
+import { noop } from "shared/helpers/function.helpers";
 
 type Props = {
     className?: string;
@@ -96,7 +97,7 @@ export const ModelsGrid = forwardRef<unknown, Props>(({ className, version, type
 
     useOnUpdate(() => {
         if (!active && !models) {
-            return;
+            return noop;
         }
 
         const onLinkStateChangeCb = (action: VersionLinkerAction) => {
@@ -204,7 +205,7 @@ export const ModelsGrid = forwardRef<unknown, Props>(({ className, version, type
 
     const renderModel = useCallback((renderableModel: RenderableModel) => {
 
-            const model = renderableModel.model;
+            const { model } = renderableModel;
 
             return (
                 <ModelItem

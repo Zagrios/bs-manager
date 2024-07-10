@@ -1,6 +1,7 @@
 import { BsvMapDetail } from "shared/models/maps";
-import { BsvPlaylist, BsvPlaylistPage, MapFilter, PlaylistSearchParams, PlaylistSearchResponse, SearchParams, SearchResponse } from "shared/models/maps/beat-saver.model";
+import { BsvPlaylistPage, MapFilter, PlaylistSearchParams, PlaylistSearchResponse, SearchParams, SearchResponse } from "shared/models/maps/beat-saver.model";
 import { RequestService } from "../../request.service";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
 
 export class BeatSaverApiService {
     private static instance: BeatSaverApiService;
@@ -22,7 +23,7 @@ export class BeatSaverApiService {
 
     private objectToStringRecord(obj: Record<string, any>): Record<string, string> {
         return Object.fromEntries(Object.entries(obj)
-            .filter(([_, value]) => value !== undefined && value !== null)
+            .filter(([, value]) => value !== undefined && value !== null)
             .map(([key, value]) => [key, String(value)] as [string, string]));
     }
 
@@ -62,7 +63,7 @@ export class BeatSaverApiService {
 
     public async getMapsDetailsByHashs<T extends string>(hashs: T[]): Promise<Record<Lowercase<T>, BsvMapDetail>> {
         if (hashs.length > 50) {
-            throw "too musch map hashs";
+            throw new CustomError("too musch map hashs", "TOO_MUCH_MAP_HASHS");
         }
 
         const paramsHashs = hashs.join(",");

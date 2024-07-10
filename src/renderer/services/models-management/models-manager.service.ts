@@ -1,6 +1,6 @@
 import { MSModelType } from "shared/models/models/model-saber.model";
 import { IpcService } from "../ipc.service";
-import { FolderLinkState, VersionFolderLinkerService, VersionLinkerActionListener, VersionLinkerActionType } from "../version-folder-linker.service";
+import { FolderLinkState, VersionFolderLinkerService, VersionLinkerActionListener } from "../version-folder-linker.service";
 import { MODEL_TYPE_FOLDERS } from "shared/models/models/constants";
 import { Observable, lastValueFrom, map } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";

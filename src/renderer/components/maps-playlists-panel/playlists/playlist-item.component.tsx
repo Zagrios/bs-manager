@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { motion } from 'framer-motion';
 import { BsmImage } from 'renderer/components/shared/bsm-image.component';
 import { ClockIcon } from 'renderer/components/svgs/icons/clock-icon.component';
@@ -126,7 +127,7 @@ export const PlaylistItem = memo(({ title,
                                     withBar={false}
                                 />
                             </Tippy>
-                        ) : (<></>)}
+                        ) : (undefined)}
                         {onClickSync ? (
                             isDownloading ? (
                                 <BsmBasicSpinner className="hover:!bg-main-color-1" spinnerClassName="brightness-75 dark:brightness-200" style={{ color }} thikness="3px"/>
@@ -141,9 +142,9 @@ export const PlaylistItem = memo(({ title,
                                         withBar={false}
                                     />
                                 </Tippy>
-                            ) : (<></>)
+                            ) : undefined
 
-                        ) : (<></>)}
+                        ) : undefined}
                         {onClickDownload ? (
                             isDownloading ? (
                                 <BsmBasicSpinner className="hover:!bg-main-color-1" spinnerClassName="brightness-75 dark:brightness-200" style={{ color }} thikness="3px"/>
@@ -158,9 +159,9 @@ export const PlaylistItem = memo(({ title,
                                         withBar={false}
                                     />
                                 </Tippy>
-                            ) : (<></>)
+                            ) : undefined
 
-                        ) : (<></>)}
+                        ) : undefined}
                         {onClickEdit ? (
                             <Tippy content={t("playlist.edit-playlist")} placement="left" theme="default">
                                 <BsmButton
@@ -172,7 +173,7 @@ export const PlaylistItem = memo(({ title,
                                     withBar={false}
                                 />
                             </Tippy>
-                        ) : (<></>)}
+                        ) : undefined}
                         {onClickOpenFile ? <Tippy content={t("playlist.open-file")} placement="left" theme="default">
                             <BsmButton
                                 icon="folder"
@@ -182,7 +183,7 @@ export const PlaylistItem = memo(({ title,
                                 onClick={onClickOpenFile}
                                 withBar={false}
                             />
-                        </Tippy> : (<></>)}
+                        </Tippy> : undefined}
                         {(onClickDelete && !isDownloading && !isInQueue) ? <Tippy content={t("misc.delete")} placement="left" theme="default">
                             <BsmButton
                                 icon="trash"
@@ -191,7 +192,7 @@ export const PlaylistItem = memo(({ title,
                                 onClick={onClickDelete}
                                 withBar={false}
                             />
-                        </Tippy> : (<></>)}
+                        </Tippy> : undefined}
                     </motion.div>
                 </motion.div>
             </div>

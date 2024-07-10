@@ -3,7 +3,7 @@ import { BSVersion } from "shared/bs-version.interface";
 import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useState } from "react";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { Subscription, BehaviorSubject } from "rxjs";
-import { MapFilter, MapTag } from "shared/models/maps/beat-saver.model";
+import { MapFilter } from "shared/models/maps/beat-saver.model";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
 import { last, tap } from "rxjs/operators";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
@@ -23,6 +23,7 @@ import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual
 import { MapItem } from "./map-item.component";
 import { isLocalMapFitMapFilter } from "./filter-panel.component";
 import { MapItemComponentPropsMapper } from "shared/mappers/map/map-item-component-props.mapper";
+import { noop } from "shared/helpers/function.helpers";
 
 type Props = {
     version: BSVersion;
@@ -70,8 +71,9 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
     }, [maps, selectedMaps]);
 
     useOnUpdate(() => {
-        if(linkedState === FolderLinkState.Pending || linkedState === FolderLinkState.Processing) return () => {};
+        if(linkedState === FolderLinkState.Pending || linkedState === FolderLinkState.Processing) return noop;
         setLinked(linkedState === FolderLinkState.Linked);
+        return noop;
     }, [linkedState]);
 
     useEffect(() => {
@@ -153,7 +155,7 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
     }
 
     const renderMap = useCallback((renderableMap: RenderableMap) => {
-        const map = renderableMap.map;
+        const { map } = renderableMap;
         return (
             <MapItem
                 key={map.path}

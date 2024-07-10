@@ -243,7 +243,7 @@ export class LocalMapsManagerService {
 
             (async () => {
                 for (const map of maps) {
-                    let mapPath = map.path;
+                    const mapPath = map.path;
 
                     if (pathExistsSync(mapPath)) {
                         await deleteFolder(mapPath);

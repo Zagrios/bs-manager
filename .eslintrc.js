@@ -57,16 +57,18 @@ module.exports = {
         'react/jsx-filename-extension': [2, { 'extensions': ['.js', '.jsx', '.ts', '.tsx'] }],
         "no-shadow": "off",
         "react/function-component-definition": "off",
+        "jsx-a11y/control-has-associated-label": "off",
+        "react/button-has-type": "off",
     },
     parserOptions: {
         ecmaVersion: 2020,
         sourceType: "module",
-        project: "./tsconfig.json",
         tsconfigRootDir: __dirname,
         createDefaultProgram: true,
     },
     globals: {
         JSX: true,
+        NodeJS: true
     },
     settings: {
         "import/resolver": {

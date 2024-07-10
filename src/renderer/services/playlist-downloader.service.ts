@@ -1,4 +1,4 @@
-import { BehaviorSubject, Observable, Subject, Subscription, distinctUntilChanged, filter, lastValueFrom, map, shareReplay, take, takeUntil, takeWhile, tap } from "rxjs";
+import { BehaviorSubject, Observable, Subject, Subscription, distinctUntilChanged, filter, lastValueFrom, map, shareReplay, take, takeUntil, tap } from "rxjs";
 import { BPList, DownloadPlaylistProgressionData } from "shared/models/playlists/playlist.interface";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
@@ -43,7 +43,7 @@ export class PlaylistDownloaderService {
 
         return new Observable<Progression<DownloadPlaylistProgressionData>>(subscriber => {
 
-            let subs: Subscription[] = [];
+            const subs: Subscription[] = [];
             let canShowProgress = false;
 
             (async () => {

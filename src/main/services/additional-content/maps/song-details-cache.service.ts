@@ -72,6 +72,7 @@ export class SongDetailsCacheService {
 
     private createIdIndex(songDetailsCache: Record<string, SongDetails>): Record<string, SongDetails> {
         const res: Record<string, SongDetails> = {};
+        // eslint-disable-next-line guard-for-in
         for(const hash in songDetailsCache){
             res[songDetailsCache[hash].id] = songDetailsCache[hash];
         }

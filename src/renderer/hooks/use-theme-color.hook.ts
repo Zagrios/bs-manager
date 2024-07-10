@@ -1,3 +1,4 @@
+/* eslint-disable no-redeclare */
 import { DefaultConfigKey } from "renderer/config/default-configuration.config";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { useObservable } from "./use-observable.hook";

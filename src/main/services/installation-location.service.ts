@@ -1,7 +1,7 @@
 import path from "path";
 import { app } from "electron";
 import ElectronStore from "electron-store";
-import { copyDirectoryWithJunctions, deleteFolder, ensureFolderExist, pathExist } from "../helpers/fs.helpers";
+import { copyDirectoryWithJunctions, deleteFolder, ensureFolderExist } from "../helpers/fs.helpers";
 import { tryit } from "../../shared/helpers/error.helpers";
 import { pathExistsSync } from "fs-extra";
 

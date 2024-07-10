@@ -1,5 +1,5 @@
 import { BSVersion } from "shared/bs-version.interface";
-import { BehaviorSubject, Observable, Subscription, lastValueFrom, map, shareReplay, throwError } from "rxjs";
+import { BehaviorSubject, Observable, Subscription, lastValueFrom, shareReplay, throwError } from "rxjs";
 import { IpcService } from "./ipc.service";
 import { ModalExitCode, ModalService } from "./modale.service";
 import { NotificationService } from "./notification.service";

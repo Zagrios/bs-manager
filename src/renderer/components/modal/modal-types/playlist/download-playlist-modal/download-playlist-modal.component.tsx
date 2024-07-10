@@ -1,6 +1,6 @@
 import { useObservable } from "renderer/hooks/use-observable.hook"
 import { ModalComponent, ModalService } from "renderer/services/modale.service"
-import { Observable, lastValueFrom, take } from "rxjs"
+import { Observable, lastValueFrom } from "rxjs"
 import { BSVersion } from "shared/bs-version.interface"
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface"
 import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.models"
@@ -49,7 +49,7 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
         setDownloadablePlaylists(() => playlists?.map(playlist => ({
                 playlist,
                 isOwned: ownedPlaylists.some(ownedPlaylist => ownedPlaylist.id === playlist.playlistId),
-                ownedMaps: ownedMaps
+                ownedMaps
         })));
     }, [playlists, ownedPlaylists, ownedMaps])
 
@@ -77,7 +77,7 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
 
     const renderPlaylist = useCallback((downloadablePlaylists: DownloadablePlaylist) => {
 
-        const playlist = downloadablePlaylists.playlist;
+        const { playlist } = downloadablePlaylists;
 
         const onClickDownload =  () => {
             lastValueFrom(playlistDownloader.downloadPlaylist({
@@ -115,7 +115,7 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
                         </div>
                     )
                 }
-                else if(downloadablePlaylists.length === 0){
+                if(downloadablePlaylists.length === 0){
                     return (
                         <div className="w-full flex flex-col justify-center items-center mt-44">
                             <BsmImage className="size-32" image={BeatConflict} />

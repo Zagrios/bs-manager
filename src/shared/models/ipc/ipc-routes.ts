@@ -116,6 +116,7 @@ export interface IpcChannelMapping {
     /* ** os-controls-ipcs ** */
     "new-window": { request: string, response: void };
     "choose-folder": { request: string, response: OpenDialogReturnValue };
+    "choose-file": { request: string, response: OpenDialogReturnValue }
     "choose-image": { request: { multiple?: boolean, base64?: boolean }, response: string[] }
     "window.progression": { request: number, response: void };
     "save-file": { request: { filename?: string; filters?: FileFilter[] }, response: string };

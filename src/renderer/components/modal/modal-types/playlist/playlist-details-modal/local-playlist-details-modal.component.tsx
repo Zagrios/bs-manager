@@ -81,7 +81,7 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
         if (!Array.isArray(installedMaps) || !localPlaylist) {
             return (
                 <div className="grow bg-red-400">
-
+                    Error
                 </div>
             );
         }

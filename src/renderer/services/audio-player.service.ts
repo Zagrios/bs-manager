@@ -1,5 +1,6 @@
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { ConfigurationService } from './configuration.service';
+import { logRenderError } from 'renderer';
 
 interface PlayerVolume {
     volume: number;
@@ -51,7 +52,7 @@ export class AudioPlayerService {
             if(!sound){ return; }
             this.player.src = sound.src;
             this._bpm$.next(sound.bpm || 0);
-            this.player.play().catch(error => console.error('Error playing sound:', error));
+            this.player.play().catch(logRenderError);
         });
 
         this._volume$.subscribe(volume => {
@@ -79,7 +80,7 @@ export class AudioPlayerService {
 
         return this.player.play().then(() => {
             this._playing$.next(true);
-        }).catch(error => console.error('Error resuming sound:', error));
+        }).catch(logRenderError);
     }
 
     public setVolume(volume: number): void {

@@ -104,11 +104,11 @@ export abstract class MapItemComponentPropsMapper {
     public static from(mapDetails: BsmLocalMap|BsvMapDetail|SongDetails): MapItemComponentProps<BsmLocalMap|BsvMapDetail|SongDetails> {
         if ((mapDetails as BsmLocalMap).rawInfo) {
             return MapItemComponentPropsMapper.fromBsmLocalMap(mapDetails as BsmLocalMap) as MapItemComponentProps<BsmLocalMap|BsvMapDetail|SongDetails>;
-        } else if ((mapDetails as BsvMapDetail).metadata) {
-            return MapItemComponentPropsMapper.fromBsvMapDetail(mapDetails as BsvMapDetail) as MapItemComponentProps<BsmLocalMap|BsvMapDetail|SongDetails>;;
-        } else {
-            return MapItemComponentPropsMapper.fromSongDetails(mapDetails as SongDetails) as MapItemComponentProps<BsmLocalMap|BsvMapDetail|SongDetails>;;
         }
+        if ((mapDetails as BsvMapDetail).metadata) {
+            return MapItemComponentPropsMapper.fromBsvMapDetail(mapDetails as BsvMapDetail) as MapItemComponentProps<BsmLocalMap|BsvMapDetail|SongDetails>;
+        }
+        return MapItemComponentPropsMapper.fromSongDetails(mapDetails as SongDetails) as MapItemComponentProps<BsmLocalMap|BsvMapDetail|SongDetails>;
     }
 
 }

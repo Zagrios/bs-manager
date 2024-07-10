@@ -1,6 +1,6 @@
 import { BSVersion } from "shared/bs-version.interface";
 import { IpcService } from "./ipc.service";
-import { Observable, lastValueFrom, of, switchMap } from "rxjs";
+import { Observable, lastValueFrom } from "rxjs";
 import { FolderLinkState, VersionFolderLinkerService } from "./version-folder-linker.service";
 import { Progression } from "main/helpers/fs.helpers";
 import { LocalBPList, LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";

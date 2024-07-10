@@ -5,7 +5,6 @@ import { NotificationService } from "./notification.service";
 import { CSSProperties } from "react";
 import { ProgressionInterface } from "shared/models/progress-bar";
 import { Progression } from "main/helpers/fs.helpers";
-import { satisfies } from "semver";
 
 export class ProgressBarService {
     private static instance: ProgressBarService;

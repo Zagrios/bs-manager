@@ -15,7 +15,7 @@ export function SettingContainer({ id, className, title, minorTitle, description
     const t = useTranslation();
 
     if (os && os !== window.electron.platform) {
-        return <></>;
+        return undefined;
     }
 
     return (

@@ -1,3 +1,4 @@
+import { CSSProperties, ReactNode } from "react";
 import { useService } from "renderer/hooks/use-service.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 
@@ -5,8 +6,8 @@ type Props = {
     className?: string;
     href?: string;
     internal?: boolean;
-    children?: React.ReactNode;
-    style?: React.CSSProperties;
+    children?: ReactNode;
+    style?: CSSProperties;
 };
 
 export function BsmLink({ className, href, children, style, internal }: Props) {
@@ -14,8 +15,6 @@ export function BsmLink({ className, href, children, style, internal }: Props) {
     const linkOpener = useService(LinkOpenerService);
 
     const openLink = () => {
-
-        console.log("Opening link", href, internal);
 
         if (!href) {
             return;

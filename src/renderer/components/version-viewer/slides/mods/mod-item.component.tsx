@@ -1,7 +1,7 @@
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmCheckbox } from "renderer/components/shared/bsm-checkbox.component";
 import { Mod } from "shared/models/mods/mod.interface";
-import { CSSProperties, useRef } from "react";
+import { CSSProperties, MouseEvent, useRef } from "react";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { BsModsManagerService } from "renderer/services/bs-mods-manager.service";
 import { useObservable } from "renderer/hooks/use-observable.hook";
@@ -34,11 +34,11 @@ export function ModItem({ className, mod, installedVersion, isDependency, isSele
         modsManager.uninstallMod(mod, pageState.getState());
     };
 
-    const handleWantInfo = (e: React.MouseEvent<Element, MouseEvent>) => {
+    const handleWantInfo = (e: MouseEvent<Element, MouseEvent>) => {
         e.preventDefault();
         onWantInfo(mod);
     };
-    const handleOnChange = (e: React.MouseEvent<Element, MouseEvent>) => {
+    const handleOnChange = (e: MouseEvent<Element, MouseEvent>) => {
         e.preventDefault();
         onChange(!isChecked);
     };

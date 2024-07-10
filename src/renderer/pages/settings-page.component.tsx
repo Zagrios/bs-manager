@@ -163,7 +163,7 @@ export function SettingsPage() {
             return;
         }
 
-        ipcService.sendV2<{ canceled: boolean; filePaths: string[] }>("choose-file").toPromise().then(res => {
+        lastValueFrom(ipcService.sendV2("choose-file")).then(res => {
             if (!res.canceled && res.filePaths?.length) {
                 const protonPath = res.filePaths[0];
                 setProtonPath(protonPath);
@@ -243,9 +243,14 @@ export function SettingsPage() {
 
     const switchDeepLink = async (manager: MapsManagerService | PlaylistsManagerService | ModelsManagerService, enable: boolean, showNotification: boolean, setter: Dispatch<SetStateAction<boolean>>) => {
         const res = await (enable ? manager.enableDeepLink() : manager.disableDeepLink()).then(() => true).catch(() => false);
-        if(showNotification){
-            res ? showDeepLinkSuccess(enable) : showDeepLinkError(enable);
+
+        if(showNotification && res){
+            showDeepLinkSuccess(enable)
         }
+        else if(showNotification && !res){
+            showDeepLinkError(enable);
+        }
+
         const isEnable = await manager.isDeepLinksEnabled();
         setter(() => isEnable);
         return res;
@@ -257,7 +262,12 @@ export function SettingsPage() {
     const toogleAllDeepLinks = async () => {
         const res = (await Promise.all([switchDeepLink(mapsManager, !allDeepLinkEnabled, false, setMapDeepLinksEnabled), switchDeepLink(playlistsManager, !allDeepLinkEnabled, false, setPlaylistsDeepLinkEnabled), switchDeepLink(modelsManager, !allDeepLinkEnabled, false, setModelsDeepLinkEnabled)])).every(activation => activation === true);
 
-        res ? showDeepLinkSuccess(allDeepLinkEnabled) : showDeepLinkError(allDeepLinkEnabled);
+        if(res){
+            showDeepLinkSuccess(allDeepLinkEnabled);
+        }
+        else{
+            showDeepLinkError(allDeepLinkEnabled);
+        }
     };
 
     return (

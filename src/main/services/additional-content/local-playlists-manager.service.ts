@@ -190,15 +190,13 @@ export class LocalPlaylistsManagerService {
         }
 
         const songsDetails = localBPList.songs?.map(s => {
-            if(!s){
-                return undefined;
-            }
             if(s.hash){
                 return this.songDetails.getSongDetails(s.hash);
             }
             if(s.key){
                 return this.songDetails.getSongDetailsById(s.key);
             }
+            return undefined;
         }).filter(Boolean);
 
         if(songsDetails && songsDetails.length){
@@ -235,7 +233,7 @@ export class LocalPlaylistsManagerService {
         });
     }
 
-    public downloadPlaylistSongs(localBPList: LocalBPList, ignoreSongsHashs: string[] = [], version: BSVersion): Observable<Progression<DownloadPlaylistProgressionData>> {
+    public downloadPlaylistSongs(localBPList: LocalBPList, ignoreSongsHashs: string[], version: BSVersion): Observable<Progression<DownloadPlaylistProgressionData>> {
 
         let destroyed = false;
 

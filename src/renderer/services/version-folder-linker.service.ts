@@ -1,4 +1,4 @@
-import { LinkOptions, UnlinkOptions } from "main/services/folder-linker.service";
+import { LinkOptions } from "main/services/folder-linker.service";
 import { map, distinctUntilChanged, filter, mergeMap, shareReplay } from "rxjs/operators";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";

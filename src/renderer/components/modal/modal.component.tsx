@@ -60,7 +60,7 @@ export function Modal() {
 
     return (
             <AnimatePresence>
-                {currentModal ? <motion.span key={crypto.randomUUID()} onClick={() => currentModal.resolver({ exitCode: ModalExitCode.NO_CHOICE })} className="fixed size-full bg-black z-[90]" initial={{ opacity: 0 }} animate={{ opacity: currentModal && 0.6 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} /> : <></>}
+                {currentModal ? <motion.span key={crypto.randomUUID()} onClick={() => currentModal.resolver({ exitCode: ModalExitCode.NO_CHOICE })} className="fixed size-full bg-black z-[90]" initial={{ opacity: 0 }} animate={{ opacity: currentModal && 0.6 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} /> : undefined}
                 {modals?.map(modal => (
                     <motion.div key={crypto.randomUUID()} className="fixed z-[90] top-1/2 left-1/2" initial={{ y: "100vh", x: "-50%" }} animate={{y: "-50%", scale: modal === currentModal ? 1 : 0, opacity: modal === currentModal ? 1 : 0, display: modal === currentModal ? "block" : ["block", "none"]}} exit={{ y: "100vh" }}>
                         {renderModal(modal)}

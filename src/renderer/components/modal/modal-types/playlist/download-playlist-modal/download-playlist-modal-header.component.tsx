@@ -28,7 +28,7 @@ export function DownloadPlaylistModalHeader({ className, value, onSubmit }: Prop
     const sortOptions: BsmSelectOption<BsvSearchOrder>[] = useConstant(() => {
         return Object.values(BsvSearchOrder).reduce((acc, value) => {
             if(value === BsvSearchOrder.Rating){ return acc; }
-            acc.push({ text: `beat-saver.maps-sorts.${value}`, value: value });
+            acc.push({ text: `beat-saver.maps-sorts.${value}`, value });
             return acc;
         }, []);
     });

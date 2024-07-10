@@ -8,7 +8,6 @@ import { BS_APP_ID, BS_EXECUTABLE, STEAMVR_APP_ID } from "../../constants";
 import log from "electron-log";
 import { AbstractLauncherService } from "./abstract-launcher.service";
 import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
-import isElevated from "is-elevated";
 import { UtilsService } from "../utils.service";
 import { exec } from "child_process";
 import fs from 'fs';
@@ -45,13 +44,6 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         return rename(steamVrFolder, `${steamVrFolder}.bak`).catch(err => {
             log.error("Error while create backup of SteamVR", err);
         });
-    }
-
-    private needStartBsAsAdmin(): Promise<boolean> {
-        return isElevated().then(elevated => {
-            if(elevated){ return false; }
-            return this.steam.isElevated();
-        })
     }
 
     private getStartBsAsAdminExePath(): string {
@@ -115,7 +107,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
 
             // Linux setup
             if (process.platform === "linux") {
-                if (launchOptions.admin == true) {
+                if (launchOptions.admin) {
                     log.warn("Launching as admin is not supported on Linux! Starting the game as a normal user.");
                     launchOptions.admin = false;
                 }

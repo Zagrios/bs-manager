@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useState } from "react";
+import { RefObject, useEffect } from "react";
 import { useConstant } from "./use-constant.hook";
 import { BehaviorSubject, debounceTime, distinctUntilChanged } from "rxjs";
 import { useObservable } from "./use-observable.hook";

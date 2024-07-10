@@ -11,6 +11,7 @@ import { useService } from "renderer/hooks/use-service.hook";
 import { BSVersion } from "shared/bs-version.interface";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
+import { logRenderError } from "renderer";
 
 export const AvailableVersionsContext = createContext<{ selectedVersion: BSVersion; setSelectedVersion: (version: BSVersion) => void }>(null);
 
@@ -28,7 +29,7 @@ export function AvailableVersionsList() {
     const startDownload = async () => {
 
         return bsDownloader.downloadVersion(selectedVersion)
-            .catch(console.log)
+            .catch(logRenderError)
             .finally(() => setSelectedVersion(null));
     };
 
@@ -40,19 +41,19 @@ export function AvailableVersionsList() {
         return Promise.all([
             versionManager.askAvailableVersions(),
             versionManager.askInstalledVersions()
-        ]).catch(console.log);
+        ]).catch(logRenderError);
     }
 
     return (
         <div className="relative h-full w-full flex items-center flex-col pt-2">
-            
+
             <Slideshow className="absolute w-full h-full top-0" />
             <h1 className="text-gray-100 text-2xl mb-4 z-[1]">{t("pages.available-versions.title")}</h1>
 
             <AvailableVersionsContext.Provider value={contextValue}>
                 <AvailableVersionsSlider />
             </AvailableVersionsContext.Provider>
-            
+
             <AnimatePresence>
                 {selectedVersion && !downloading && (
                     <motion.div initial={{ y: "150%" }} animate={{ y: "0%" }} exit={{ y: "150%" }} className="absolute bottom-5" onClick={startDownload}>

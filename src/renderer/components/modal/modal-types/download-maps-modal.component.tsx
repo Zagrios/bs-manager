@@ -132,7 +132,7 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
     };
 
     const renderMap = useCallback((downloadableMap: DownloadableMap) => {
-        const map = downloadableMap.map;
+        const { map } = downloadableMap;
 
         const downloadable = !downloadableMap.isOwned && !downloadableMap.isInQueue;
         const cancelable = downloadableMap.isInQueue && !downloadableMap.idDownloading;
@@ -274,27 +274,3 @@ type DownloadableMap = {
     idDownloading: boolean;
     isInQueue: boolean;
 };
-
-{/* <ul className="w-full grow flex content-start flex-wrap gap-2 pt-1.5 px-2 overflow-y-scroll overflow-x-hidden scrollbar-default z-0">
-                {maps.length === 0 ? (
-                    <div className="w-full h-full flex flex-col items-center justify-center">
-                        <img className={`w-32 h-32 ${loading && "spin-loading"}`} src={loading ? BeatWaitingImg : BeatConflictImg} alt=" " />
-                        <span className="text-lg">
-                            {(() => {
-                                if (loading) {
-                                    return t("modals.download-maps.loading-maps");
-                                }
-                                if (isOnline) {
-                                    return t("modals.download-maps.no-maps-found");
-                                }
-                                return t("modals.download-maps.no-internet");
-                            })()}
-                        </span>
-                    </div>
-                ) : (
-                    <>
-                        {maps.map(renderMap)}
-                        <motion.span onViewportEnter={handleLoadMore} ref={loaderRef} className="block w-full h-8" />
-                    </>
-                )}
-            </ul> */}

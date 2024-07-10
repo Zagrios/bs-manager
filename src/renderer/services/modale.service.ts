@@ -24,7 +24,7 @@ export class ModalService {
         const promise = new Promise<ModalResponse<T>>(resolve => {
             resolver = resolve as (value: ModalResponse | PromiseLike<ModalResponse>) => void;
         });
-        const modalObj = {modal: modal as ModalComponent, resolver: resolver, options};
+        const modalObj = {modal: modal as ModalComponent, resolver, options};
         this._modalToShow$.next([...this._modalToShow$.getValue(), modalObj]);
 
         promise.then(() => {

@@ -98,7 +98,7 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
     const mapUrl = mapId ? `https://beatsaver.com/maps/${mapId}` : null;
     const authorUrl = autorId ? `https://beatsaver.com/profile/${autorId}` : null;
     const likesText = likes ? Intl.NumberFormat(undefined, { notation: "compact" }).format(likes).split(" ").join("") : null;
-    const mapCoverUrl = coverUrl ? coverUrl : `https://eu.cdn.beatsaver.com/${hash}.jpg`;
+    const mapCoverUrl = coverUrl || `https://eu.cdn.beatsaver.com/${hash}.jpg`;
 
     const createdDate = useConstant(() => {
         if(!createdAt){ return null; }
@@ -167,16 +167,16 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
                 <>
                     <BsmIcon className="h-4 w-4 mr-px" icon="bsMapDifficulty" />
                     <div className="flex py-[2px] gap-[1px] h-full">
-                        {diffSet.map((diff, index) => (
-                            <span key={index} className="h-full w-[6px] rounded-full" style={{ backgroundColor: MAP_DIFFICULTIES_COLORS[diff.name] }} />
+                        {diffSet.map((diff) => (
+                            <span key={`${diff.libelle}${diff.name}${diff.stars}`} className="h-full w-[6px] rounded-full" style={{ backgroundColor: MAP_DIFFICULTIES_COLORS[diff.name] }} />
                         ))}
                     </div>
                 </>
             );
         }
         if (diffSets.length > 1) {
-            return diffSets.map(([diffType, diffSet], index) => (
-                <Fragment key={index}>
+            return diffSets.map(([diffType, diffSet]) => (
+                <Fragment key={diffType}>
                     <BsmIcon className="h-full w-fit mr-px" icon={diffType} />
                     <span className="mr-2 font-bold text-[15px] h-full flex items-center pb-px">{diffSet.length}</span>
                 </Fragment>
@@ -205,10 +205,10 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
                 <AnimatePresence>
                     {(diffsPanelHovered || bottomBarHovered) && (
                         <motion.ul key={hash} className="absolute top-[calc(100%-10px)] w-full h-fit max-h-[200%] pt-4 pb-2 px-2 overflow-y-scroll bg-light-main-color-3 dark:bg-main-color-3 text-main-color-1 dark:text-current brightness-125 rounded-md flex flex-col gap-3 scrollbar-default shadow-sm shadow-black" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} onHoverStart={diffsPanelHoverStart} onHoverEnd={diffsPanelHoverEnd}>
-                            {Array.from(diffs.entries()).map(([charac, diffSet], index) => (
-                                <ol key={index} className="flex flex-col w-full gap-1">
-                                    {diffSet.map(({ name, libelle, stars }, index) => (
-                                        <li key={`${name}${libelle}${stars}${index}`} className="w-full h-4 flex items-center gap-1">
+                            {Array.from(diffs.entries()).map(([charac, diffSet]) => (
+                                <ol key={charac} className="flex flex-col w-full gap-1">
+                                    {diffSet.map(({ name, libelle, stars }) => (
+                                        <li key={`${name}${libelle}${stars}`} className="w-full h-4 flex items-center gap-1">
                                             {onHighlightedDiffsChange && (
                                                 <Tippy content={t("maps.map-item.hightlight-difficulty")} placement="top" theme="default">
                                                     <div className="h-full aspect-square">

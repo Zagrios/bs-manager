@@ -11,7 +11,6 @@ import { map, filter, take, lastValueFrom } from "rxjs";
 import defaultImage from "../../../../assets/images/default-version-img.jpg";
 import { useService } from "renderer/hooks/use-service.hook";
 import { useConstant } from "renderer/hooks/use-constant.hook";
-import { BPList } from "shared/models/playlists/playlist.interface";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useWindowArgs } from "renderer/hooks/use-window-args.hook";
 import { useWindowControls } from "renderer/hooks/use-window-controls.hook";

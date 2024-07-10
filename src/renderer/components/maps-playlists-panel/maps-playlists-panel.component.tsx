@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, createContext, useMemo, useRef, useState } from "react";
+import { createContext, useRef, useState } from "react";
 import { BSVersion } from "shared/bs-version.interface";
 import { LocalMapsListPanel } from "./maps/local-maps-list-panel.component";
 import { BsmDropdownButton, DropDownItem } from "../shared/bsm-dropdown-button.component";
@@ -22,6 +22,7 @@ import { useConstant } from "renderer/hooks/use-constant.hook";
 import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
 import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service";
 import { LocalPlaylistFilter, LocalPlaylistFilterPanel } from "./playlists/local-playlist-filter-panel.component";
+import { noop } from "shared/helpers/function.helpers";
 
 type Props = {
     version?: BSVersion;
@@ -76,6 +77,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         switch (tabIndex) {
             case 0: return mapsDownloader.openDownloadMapModal(version, maps$.value);
             case 1: return playlistsDownloader.openDownloadPlaylistModal(version, playlists$, maps$);
+            default: return noop();
         }
     }
 

@@ -1,3 +1,4 @@
+import { MouseEventHandler } from "react";
 import { LinkBtnProps, LinkButton } from "renderer/components/shared/link-button.component";
 import { SvgIcon } from "renderer/components/svgs/svg-icon.type";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
@@ -17,7 +18,7 @@ export const BsContentTabItem: BsContentTabItemComponent = ({ text, icon: Icon, 
 
     const t = useTranslation();
 
-    const handleClick = (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+    const handleClick: MouseEventHandler<HTMLLIElement> = (e) => {
         e.preventDefault();
         e.stopPropagation();
         onClick(value);

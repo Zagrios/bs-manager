@@ -66,7 +66,7 @@ export const BsvPlaylistDetailsModal: ModalComponent<void, Props> = ({ resolver,
     }, [playlistMaps, currentMapDownload, downloadingMaps, installedMaps])
 
     const renderMapItem = useCallback((downloadableMap: DownloadableMap) => {
-        const map = downloadableMap.map;
+        const { map } = downloadableMap;
 
         const downloadable = !downloadableMap.isOwned && !downloadableMap.isInQueue;
         const cancelable = downloadableMap.isInQueue && !downloadableMap.idDownloading;
