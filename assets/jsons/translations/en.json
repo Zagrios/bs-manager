@@ -134,6 +134,11 @@
                 "description": "Change the default folder for Beat Saber versions and other upcoming features.",
                 "choose-folder": "Choose folder"
             },
+            "proton-path": {
+                "title": "Proton path",
+                "description": "Change the path to the Proton binary",
+                "choose-file": "Choose file"
+            },
             "additional-content": {
                 "title": "Additional content",
                 "description": "Additional content that allows you to customize Beat Saber!",
@@ -376,6 +381,7 @@
                     "OCULUS_NOT_RUNNING": "Oculus is not running",
                     "BS_ALREADY_RUNNING": "Beat Saber already running",
                     "EXE_NOT_FINDED": "Missing files",
+                    "PROTON_NOT_SET": "Proton path not set",
                     "EXIT": "Abrupt stop",
                     "OCULUS_LIB_NOT_FOUND": "Oculus library not found"
                 },
@@ -386,7 +392,8 @@
                     "BS_ALREADY_RUNNING": "Close BeatSaber before launching it again.",
                     "EXE_NOT_FINDED": "Some files seem to be missing, try to verify the files.",
                     "EXIT": "BeatSaber stopped abruptly, tries to check the files.",
-                    "OCULUS_LIB_NOT_FOUND": "Check that the Oculus application is properly installed, and that the libraries are correctly defined in Oculus."
+                    "OCULUS_LIB_NOT_FOUND": "Check that the Oculus application is properly installed, and that the libraries are correctly defined in Oculus.",
+                    "PROTON_NOT_SET": "Set the Proton path in settings"
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Launch Steam"
