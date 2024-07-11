@@ -427,14 +427,15 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
             playlistAuthor: res.data.playlistAuthor,
             playlistTitle: res.data.playlistTitle,
             playlistDescription: res.data.playlistDescription,
-            songs: Object.values(playlistMaps$.value ?? []).map(playlistMap => {
-                const props = MapItemComponentPropsMapper.from(playlistMap.map);
-                const playlistSong: PlaylistSong = {
-                    key: props.mapId,
-                    hash: props.hash,
-                    songName: props.title,
-                    difficulties: playlistMap.difficulties,
-                }
+            songs: Object.entries(playlistMaps$.value ?? []).map(([hash, playlistMap]) => {
+                const props = playlistMap?.map ? MapItemComponentPropsMapper.from(playlistMap.map) : undefined;
+                const playlistSong: PlaylistSong = {};
+
+                playlistSong.hash = props?.hash ?? hash;
+                if(props?.mapId){ playlistSong.key = props.mapId; }
+                if(props?.title){ playlistSong.songName = props.title; }
+                if(playlistMap?.difficulties){ playlistSong.difficulties = playlistMap.difficulties; }
+
                 return playlistSong;
             })
         }
