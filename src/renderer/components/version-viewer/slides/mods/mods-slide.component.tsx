@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BsModsManagerService } from "renderer/services/bs-mods-manager.service";
 import { BSVersion } from "shared/bs-version.interface";
 import { Mod } from "shared/models/mods/mod.interface";
@@ -175,7 +175,11 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
             return <ModStatus text="pages.version-viewer.mods.loading-mods" image={BeatWaitingImg} spin />;
         }
         if (!modsAvailable.size) {
-            return <ModStatus text="pages.version-viewer.mods.mods-not-available" image={BeatConflictImg} />;
+            return (
+                <ModStatus text="pages.version-viewer.mods.mods-not-available" image={BeatConflictImg}>
+                    <span className="text-xl tracking-wide font-bold font-mono mt-1">({version.BSVersion})</span>
+                </ModStatus>
+            );
         }
         return (
             <>
@@ -199,13 +203,14 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
     );
 }
 
-function ModStatus({ text, image, spin = false }: { text: string; image: string; spin?: boolean }) {
+function ModStatus({ text, image, spin = false, children }: { text: string; image: string; spin?: boolean, children?: ReactNode}) {
     const t = useTranslation();
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center text-gray-800 dark:text-gray-200">
             <img className={`w-32 h-32 ${spin ? "spin-loading" : ""}`} src={image} alt=" " />
-            <span className="text-xl mt-3 h-0 italic">{t(text)}</span>
+            <span className="text-xl mt-3 italic">{t(text)}</span>
+            {children}
         </div>
     );
 }
