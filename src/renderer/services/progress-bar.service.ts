@@ -54,7 +54,7 @@ export class ProgressBarService {
             }
 
             if (isProgression(value)) {
-                const progress = (value as Progression).current / (value as Progression).total * 100;
+                const progress = value.current / value.total * 100;
                 return this._progression$.next({ progression: Math.floor(progress)});
             }
 

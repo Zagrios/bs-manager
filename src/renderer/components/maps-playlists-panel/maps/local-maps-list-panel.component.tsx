@@ -41,7 +41,7 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
     const t = useTranslation();
 
     const {maps$, setMaps} = useContext(InstalledMapsContext);
-    const maps = useObservable(() => maps$, undefined);
+    const maps = useObservable(() => maps$);
     const [renderableMaps, setRenderableMaps] = useState<RenderableMap[]>([]);
     const [subs] = useState<Subscription[]>([]);
     const [selectedMaps, setSelectedMaps] = useState<BsmLocalMap[]>([]);

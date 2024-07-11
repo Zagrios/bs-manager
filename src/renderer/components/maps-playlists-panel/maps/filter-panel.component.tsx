@@ -234,7 +234,7 @@ function isFitEnabledTags(filter: MapFilter, tags: MapTag[]): boolean {
 function isFitExcludedTags(filter: MapFilter, tags: MapTag[]): boolean {
     if (!filter?.excludedTags || filter.excludedTags.size === 0) { return true; }
     if(!Array.isArray(tags)) { return false; }
-    return !tags.some(tag => filter.excludedTags.has(tag as MapTag));
+    return !tags.some(tag => filter.excludedTags.has(tag));
 }
 
 function isFitMinNps(filter: MapFilter, nps: number): boolean {

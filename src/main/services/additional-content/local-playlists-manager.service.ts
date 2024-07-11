@@ -77,7 +77,7 @@ export class LocalPlaylistsManagerService {
     }
 
     private async getPlaylistsFolder(version?: BSVersion) {
-        const rootPath = version ? await this.versions.getVersionPath(version) : await this.bsmFs.sharedContentPath();
+        const rootPath = version ? await this.versions.getVersionPath(version) : this.bsmFs.sharedContentPath();
         const fullPath = path.join(rootPath, this.PLAYLISTS_FOLDER);
 
         await ensureDir(fullPath);
@@ -179,7 +179,7 @@ export class LocalPlaylistsManagerService {
 
         const tryExtractPlaylistId = (url: string) => {
             const regex = /\/id\/(\d+)\/download/;
-            const match = url.match(regex);
+            const match = regex.exec(url);
             return match ? Number(match[1]) : undefined;
         }
 
@@ -199,7 +199,7 @@ export class LocalPlaylistsManagerService {
             return undefined;
         }).filter(Boolean);
 
-        if(songsDetails && songsDetails.length){
+        if(songsDetails?.length){
             bpListDetails.duration = songsDetails.reduce((acc, song) => acc + song.duration, 0);
             bpListDetails.nbMappers = new Set(songsDetails.map(s => s.uploader.id)).size;
             bpListDetails.minNps = Math.min(...songsDetails.map(s => Math.min(...s.difficulties.map(d => d.nps || 0))));

@@ -25,8 +25,8 @@ import { LocalPlaylistFilter, LocalPlaylistFilterPanel } from "./playlists/local
 import { noop } from "shared/helpers/function.helpers";
 
 type Props = {
-    version?: BSVersion;
-    isActive?: boolean;
+    readonly version?: BSVersion;
+    readonly isActive?: boolean;
 };
 
 export const InstalledMapsContext = createContext<{

@@ -10,7 +10,7 @@ export abstract class MapItemComponentPropsMapper {
     public static extractMapDiffs({rawMapInfo, songDetails, bsvMap}: {rawMapInfo?: RawMapInfoData, songDetails?: SongDetails, bsvMap?: BsvMapDetail}): Map<SongDetailDiffCharactertistic, ParsedMapDiff[]> {
         const res = new Map<SongDetailDiffCharactertistic, ParsedMapDiff[]>();
 
-        if (bsvMap && bsvMap.versions?.at(0)?.diffs) {
+        if (bsvMap?.versions?.at(0)?.diffs) {
             bsvMap.versions.at(0).diffs.forEach(diff => {
                 const arr = res.get(diff.characteristic) || [];
                 arr.push({ libelle: diff.difficulty, name: diff.difficulty, stars: diff.stars });
