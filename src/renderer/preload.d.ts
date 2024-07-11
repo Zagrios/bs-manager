@@ -1,6 +1,7 @@
 declare global {
     interface Window {
         electron: {
+            platform: "win32"|"linux"|"darwin",
             ipcRenderer: {
                 sendMessage(channel: string, args: any): void;
                 on(channel: string, func: (...args: any) => void): (() => void) | undefined;
@@ -10,12 +11,6 @@ declare global {
             path: {
                 sep: "/"|"\\";
                 join: (...args: string[]) => string;
-            };
-            window: {
-                close: () => void;
-                minimise: () => void;
-                maximise: () => void;
-                unmaximise: () => void;
             };
         };
     }

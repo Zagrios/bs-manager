@@ -1,40 +1,39 @@
 import { WindowManagerService } from "../services/window-manager.service";
-import { AppWindow } from "shared/models/window-manager/app-window.model";
 import { IpcService } from "../services/ipc.service";
-import { from } from "rxjs";
-import { BrowserWindow, ipcMain } from "electron";
+import { from, of } from "rxjs";
+import { BrowserWindow } from "electron";
 
 const ipc = IpcService.getInstance();
 
 // Native windows control, do not pass through IPC service
-ipcMain.on("close-window", async (event) => {
-    BrowserWindow.fromWebContents(event.sender)?.close();
+ipc.on("close-window", (_, reply, sender) => {
+    reply(of(BrowserWindow.fromWebContents(sender)?.close()));
 });
 
-ipcMain.on("maximise-window", async (event) => {
-    BrowserWindow.fromWebContents(event.sender)?.maximize();
+ipc.on("maximise-window", (_, reply, sender) => {
+    reply(of(BrowserWindow.fromWebContents(sender)?.maximize()));
 });
 
-ipcMain.on("minimise-window", async (event) => {
-    BrowserWindow.fromWebContents(event.sender)?.minimize();
+ipc.on("minimise-window", (_, reply, sender) => {
+    reply(of(BrowserWindow.fromWebContents(sender)?.minimize()));
 });
 
-ipcMain.on("unmaximise-window", async (event) => {
-    BrowserWindow.fromWebContents(event.sender)?.unmaximize();
+ipc.on("unmaximise-window", (_, reply, sender) => {
+    reply(of(BrowserWindow.fromWebContents(sender)?.unmaximize()));
 });
 
 
-ipc.on<AppWindow>("open-window-then-close-all", (req, reply) => {
+ipc.on("open-window-then-close-all", (args, reply) => {
     const windowManager = WindowManagerService.getInstance();
 
-    const res = windowManager.openWindow(req.args).then(() => {
-        windowManager.closeAllWindows(req.args);
+    const res = windowManager.openWindow(args).then(() => {
+        windowManager.closeAllWindows(args);
     });
 
     reply(from(res));
 });
 
-ipc.on<AppWindow>("open-window-or-focus", (req, reply) => {
+ipc.on("open-window-or-focus", (args, reply) => {
     const windowManager = WindowManagerService.getInstance();
-    reply(from(windowManager.openWindowOrFocus(req.args)));
+    reply(from(windowManager.openWindowOrFocus(args)));
 });

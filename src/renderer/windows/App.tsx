@@ -18,10 +18,13 @@ import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
 import { NotificationService } from "renderer/services/notification.service";
-import { timer } from "rxjs";
+import { lastValueFrom, timer } from "rxjs";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { useService } from "renderer/hooks/use-service.hook";
+import { AutoUpdaterService } from "renderer/services/auto-updater.service";
+import { gt, parse } from "semver"
+import { logRenderError } from "renderer";
 
 export default function App() {
     useService(OsDiagnosticService);
@@ -31,15 +34,29 @@ export default function App() {
     const models = useService(ModelsManagerService);
     const notification = useService(NotificationService);
     const config = useService(ConfigurationService);
+    const autoUpdater = useService(AutoUpdaterService);
 
     const location = useLocation();
     const navigate = useNavigate();
 
     useEffect(() => {
+        checkIsUpdated();
         checkOneClicks();
     }, []);
 
+    const checkIsUpdated = async () => {
+        const appVersion = await lastValueFrom(autoUpdater.getAppVersion());
+        const lastAppVersion = autoUpdater.getLastAppVersion();
+
+        autoUpdater.setLastAppVersion(appVersion);
+
+        if (parse(lastAppVersion) && gt(appVersion, lastAppVersion)) {
+            await autoUpdater.showChangelog(appVersion).catch(logRenderError);
+        }
+    };
+
     const checkOneClicks = async () => {
+
         if (config.get("not-remind-oneclick") === true) {
             return;
         }

@@ -7,7 +7,6 @@ export class BeatModsApiService {
 
     private readonly requestService: RequestService;
 
-    private readonly BEAT_MODS_VERSIONS = "https://versions.beatmods.com/versions.json";
     private readonly BEAT_MODS_ALIAS = "https://alias.beatmods.com/aliases.json";
 
     private readonly BEAT_MODS_API_URL = "https://beatmods.com/api/v1/";
@@ -57,7 +56,7 @@ export class BeatModsApiService {
             if (Array.from(aliases.keys()).some(k => k === version.BSVersion)) {
                 return version;
             }
-            const alias = Array.from(aliases.entries()).find(([key, value]) => value.find(v => v.BSVersion === version.BSVersion))?.[0];
+            const alias = Array.from(aliases.entries()).find(([, value]) => value.find(v => v.BSVersion === version.BSVersion))?.[0];
             return { BSVersion: alias } as BSVersion;
         });
     }

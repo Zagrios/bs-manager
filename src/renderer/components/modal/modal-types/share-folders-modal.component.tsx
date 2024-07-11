@@ -1,6 +1,6 @@
 import Tippy from "@tippyjs/react";
 import { useEffect, useState } from "react";
-import { LinkButton } from "renderer/components/maps-mangement-components/link-button.component";
+import { LinkButton } from "renderer/components/shared/link-button.component";
 import { BsmBasicSpinner } from "renderer/components/shared/bsm-basic-spinner/bsm-basic-spinner.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
@@ -12,9 +12,10 @@ import { ConfigurationService } from "renderer/services/configuration.service";
 import { IpcService } from "renderer/services/ipc.service";
 import { ModalComponent } from "renderer/services/modale.service";
 import { FolderLinkState, VersionFolderLinkerService, VersionLinkerActionType } from "renderer/services/version-folder-linker.service";
+import { lastValueFrom } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 
-export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ data }) => {
+export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ options: {data} }) => {
     const SHARED_FOLDERS_KEY = "default-shared-folders";
 
     const config = useService(ConfigurationService);
@@ -45,14 +46,14 @@ export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ data }) => 
     }, [folders]);
 
     const addFolder = async () => {
-        const versionPath = await versionManager.getVersionPath(data).toPromise();
-        const folder = await ipc.sendV2<{ canceled: boolean; filePaths: string[] }, string>("choose-folder", { args: versionPath }).toPromise();
+        const versionPath = await lastValueFrom(versionManager.getVersionPath(data));
+        const folder = await lastValueFrom(ipc.sendV2("choose-folder", versionPath));
 
         if (!folder || folder.canceled || !folder.filePaths?.length) {
             return;
         }
 
-        const relativeFolder = await ipc.sendV2<string>("full-version-path-to-relative", { args: { version: data, fullPath: folder.filePaths[0] } }).toPromise();
+        const relativeFolder = await lastValueFrom(ipc.sendV2("full-version-path-to-relative", { version: data, fullPath: folder.filePaths[0] }));
 
         if (folders.includes(relativeFolder)) {
             return;
@@ -73,7 +74,7 @@ export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ data }) => 
         <form className="w-full max-w-md ">
             <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t("modals.shared-folders.title")}</h1>
             <p className="my-3">{t("modals.shared-folders.description")}</p>
-            <ul className="flex flex-col gap-1 mb-2 h-[300px] max-h-[300px] overflow-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 px-1">
+            <ul className="flex flex-col gap-1 mb-2 h-[300px] max-h-[300px] overflow-scroll scrollbar-default px-1">
                 {folders.map((folder, index) => (
                     <FolderItem
                         key={folder}
@@ -137,7 +138,7 @@ const FolderItem = ({ version, relativeFolder, onDelete }: FolderProps) => {
             </span>
             <div className="flex flex-row gap-1.5">
                 <Tippy placement="left" content={t(`modals.shared-folders.buttons.${state === FolderLinkState.Linked ? "unlink-folder" : "link-folder"}`)} arrow={false}>
-                    <LinkButton 
+                    <LinkButton
                         className="p-0.5 h-7 shrink-0 aspect-square blur-0 cursor-pointer hover:brightness-75"
                         state={state}
                         onClick={onClickLink}

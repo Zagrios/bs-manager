@@ -1,6 +1,6 @@
 {
   "name": "bs-manager",
-  "version": "1.4.7",
+  "version": "1.5.0",
   "description": "BSManager",
   "main": "./dist/main/main.js",
   "author": {
@@ -9,8 +9,8 @@
     "url": "https://github.com/Zagrios/bs-manager"
   },
   "scripts": {
-    "electron-rebuild": "node -r ts-node/register ../../.erb/scripts/electron-rebuild.js",
-    "link-modules": "node -r ts-node/register ../../.erb/scripts/link-modules.ts",
+    "electron-rebuild": "node -r esbuild-register ../../.erb/scripts/electron-rebuild.js",
+    "link-modules": "node -r esbuild-register ../../.erb/scripts/link-modules.ts",
     "postinstall": "npm run electron-rebuild && npm run link-modules"
   },
   "dependencies": {
@@ -19,5 +19,8 @@
     "query-process": "^0.0.3",
     "regedit-rs": "^1.0.2"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "volta": {
+    "node": "20.11.0"
+  }
 }

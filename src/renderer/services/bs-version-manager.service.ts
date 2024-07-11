@@ -1,5 +1,5 @@
 import { BSVersion } from "shared/bs-version.interface";
-import { BehaviorSubject, Observable, Subscription, lastValueFrom, map, shareReplay, throwError } from "rxjs";
+import { BehaviorSubject, Observable, Subscription, lastValueFrom, shareReplay, throwError } from "rxjs";
 import { IpcService } from "./ipc.service";
 import { ModalExitCode, ModalService } from "./modale.service";
 import { NotificationService } from "./notification.service";
@@ -8,7 +8,6 @@ import { EditVersionModal } from "renderer/components/modal/modal-types/edit-ver
 import { popElement } from "shared/helpers/array.helpers";
 import { ImportVersionModal } from "renderer/components/modal/modal-types/import-version-modal.component";
 import { Progression } from "main/helpers/fs.helpers";
-import { ImportVersionOptions } from "main/services/bs-local-version.service";
 
 export class BSVersionManagerService {
     private static instance: BSVersionManagerService;
@@ -48,16 +47,16 @@ export class BSVersionManagerService {
     }
 
     public askAvailableVersions(): Promise<BSVersion[]> {
-        return this.ipcService.send<BSVersion[]>("bs-version.get-version-dict").then(res => {
-            this.availableVersions$.next(res.data);
-            return res.data;
+        return lastValueFrom(this.ipcService.sendV2("bs-version.get-version-dict")).then(res => {
+            this.availableVersions$.next(res);
+            return res;
         });
     }
 
     public askInstalledVersions(): Promise<BSVersion[]> {
-        return this.ipcService.send<BSVersion[]>("bs-version.installed-versions").then(res => {
-            this.setInstalledVersions(res.data);
-            return res.data;
+        return lastValueFrom(this.ipcService.sendV2("bs-version.installed-versions")).then(res => {
+            this.setInstalledVersions(res);
+            return res;
         });
     }
 
@@ -66,50 +65,52 @@ export class BSVersionManagerService {
     }
 
     public async editVersion(version: BSVersion): Promise<BSVersion> {
-        const modalRes = await this.modalService.openModal(EditVersionModal, { version, clone: false });
+        const modalRes = await this.modalService.openModal(EditVersionModal, {data: { version, clone: false }});
         if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
             return null;
         }
         if (modalRes.data.name?.length < 2) {
             return null;
         }
-        return this.ipcService.send<BSVersion>("bs-version.edit", { args: { version, name: modalRes.data.name, color: modalRes.data.color } }).then(res => {
-            if (!res.success) {
-                this.notification.notifyError({
-                    title: `notifications.custom-version.errors.titles.${res.error.title}`,
-                    ...(res.error.message && { desc: `notifications.custom-version.errors.msg.${res.error.message}` }),
-                });
-                return null;
-            }
+
+        return lastValueFrom(this.ipcService.sendV2("bs-version.edit", { version, name: modalRes.data.name, color: modalRes.data.color })).then(res => {
             this.askInstalledVersions();
-            return res.data;
-        });
+            return res;
+        }).catch(e => {
+            this.notification.notifyError({
+                title: `notifications.custom-version.errors.titles.${e.error.title}`,
+                ...(e.error.message && { desc: `notifications.custom-version.errors.msg.${e.error.message}` }),
+            });
+            return null;
+        })
     }
 
     public async cloneVersion(version: BSVersion): Promise<BSVersion> {
         if (!this.progressBar.require()) {
             return null;
         }
-        const modalRes = await this.modalService.openModal(EditVersionModal, { version, clone: true });
+        const modalRes = await this.modalService.openModal(EditVersionModal, {data: { version, clone: true }});
         if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
             return null;
         }
         if (modalRes.data.name?.length < 2) {
             return null;
         }
+
         this.progressBar.showFake(0.01);
-        return this.ipcService.send<BSVersion>("bs-version.clone", { args: { version, name: modalRes.data.name, color: modalRes.data.color } }).then(res => {
-            this.progressBar.hide(true);
-            if (!res.success) {
-                this.notification.notifyError({
-                    title: `notifications.custom-version.errors.titles.${res.error.title}`,
-                    ...(res.error.message && { desc: `notifications.custom-version.errors.msg.${res.error.message}` }),
-                });
-                return null;
-            }
+
+        return lastValueFrom(this.ipcService.sendV2("bs-version.clone", { version, name: modalRes.data.name, color: modalRes.data.color })).then(res => {
             this.notification.notifySuccess({ title: "notifications.custom-version.success.titles.CloningFinished" });
             this.askInstalledVersions();
-            return res.data;
+            return res;
+        }).catch(e => {
+            this.notification.notifyError({
+                title: `notifications.custom-version.errors.titles.${e.error.title}`,
+                ...(e.error.message && { desc: `notifications.custom-version.errors.msg.${e.error.message}` }),
+            });
+            return null;
+        }).finally(() => {
+            this.progressBar.hide(true)
         });
     }
 
@@ -128,15 +129,15 @@ export class BSVersionManagerService {
                 if(resModal.exitCode !== ModalExitCode.COMPLETED){
                     return;
                 }
-                
+
                 const store = resModal.data;
 
-                const folderRes = await lastValueFrom(this.ipcService.sendV2<{ canceled: boolean; filePaths: string[] }>("choose-folder"));
+                const folderRes = await lastValueFrom(this.ipcService.sendV2("choose-folder"));
                 if(!folderRes || folderRes.canceled || !folderRes.filePaths?.length){
                     return;
                 }
 
-                const import$ = this.ipcService.sendV2<Progression<BSVersion>, ImportVersionOptions>("import-version", { args: {fromPath: folderRes.filePaths.at(0), store} });
+                const import$ = this.ipcService.sendV2("import-version", {fromPath: folderRes.filePaths.at(0), store});
 
                 subs.push(import$.subscribe(obs));
 
@@ -161,13 +162,13 @@ export class BSVersionManagerService {
             shareReplay({ bufferSize: 1, refCount: true })
         );
 
-        this.progressBar.show(obs$.pipe(map(progress => (progress.current / progress.total) * 100)), true);
+        this.progressBar.show(obs$, true);
 
         return obs$;
     }
 
     public getVersionPath(version: BSVersion): Observable<string> {
-        return this.ipcService.sendV2("get-version-full-path", { args: version });
+        return this.ipcService.sendV2("get-version-full-path", version);
     }
 
     public static sortVersions(versions: BSVersion[]): BSVersion[] {

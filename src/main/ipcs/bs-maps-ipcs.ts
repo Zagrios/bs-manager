@@ -1,119 +1,83 @@
-import { LocalMapsManagerService } from "../services/additional-content/local-maps-manager.service";
-import { UtilsService } from "../services/utils.service";
-import { BSVersion } from "shared/bs-version.interface";
-import { IpcRequest } from "shared/models/ipc";
-import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
-import { BsvMapDetail } from "shared/models/maps";
+import { LocalMapsManagerService } from "../services/additional-content/maps/local-maps-manager.service";
 import { IpcService } from "../services/ipc.service";
-import { from } from "rxjs";
-import log from "electron-log"
+import { from, of, throwError } from "rxjs";
+import { tryit } from "shared/helpers/error.helpers";
+import { SongDetailsCacheService } from "main/services/additional-content/maps/song-details-cache.service";
+import { SongDetails } from "shared/models/maps";
 
 const ipc = IpcService.getInstance();
 
-ipc.on("load-version-maps", async (request: IpcRequest<BSVersion>, reply) => {
+ipc.on("load-version-maps", (args, reply) => {
     const localMaps = LocalMapsManagerService.getInstance();
-    reply(localMaps.getMaps(request.args));
+    reply(localMaps.getMaps(args));
 });
 
-ipc.on("verion-have-maps-linked", async (request: IpcRequest<BSVersion>) => {
-    const utils = UtilsService.getInstance();
+ipc.on("delete-maps", (args, reply) => {
     const maps = LocalMapsManagerService.getInstance();
-
-    utils.ipcSend<boolean>(request.responceChannel, { success: true, data: await maps.versionIsLinked(request.args) });
+    reply(maps.deleteMaps(args));
 });
 
-ipc.on("link-version-maps", async (request: IpcRequest<{ version: BSVersion; keepMaps: boolean }>) => {
-    const utils = UtilsService.getInstance();
+ipc.on("export-maps", async (args, reply) => {
     const maps = LocalMapsManagerService.getInstance();
-
-    maps.linkVersionMaps(request.args.version, request.args.keepMaps)
-        .then(() => {
-            utils.ipcSend<void>(request.responceChannel, { success: true });
-        })
-        .catch(err => {
-            utils.ipcSend<void>(request.responceChannel, { success: true, error: err });
-        });
+    reply(await maps.exportMaps(args.version, args.maps, args.outPath));
 });
 
-ipc.on("unlink-version-maps", async (request: IpcRequest<{ version: BSVersion; keepMaps: boolean }>) => {
-    const utils = UtilsService.getInstance();
+ipc.on("download-map", async (args, reply) => {
     const maps = LocalMapsManagerService.getInstance();
-
-    maps.unlinkVersionMaps(request.args.version, request.args.keepMaps)
-        .then(() => {
-            utils.ipcSend<void>(request.responceChannel, { success: true });
-        })
-        .catch(err => {
-            utils.ipcSend<void>(request.responceChannel, { success: true, error: err });
-        });
+    reply(from(maps.downloadMap(args.map, args.version)));
 });
 
-ipc.on("delete-maps", async (request: IpcRequest<BsmLocalMap[]>, reply) => {
+ipc.on("one-click-install-map", (args, reply) => {
     const maps = LocalMapsManagerService.getInstance();
-    reply(maps.deleteMaps(request.args));
+    reply(from(maps.oneClickDownloadMap(args)))
 });
 
-ipc.on("export-maps", async (request: IpcRequest<{ version: BSVersion; maps: BsmLocalMap[]; outPath: string }>, reply) => {
+ipc.on("register-maps-deep-link", (_, reply) => {
     const maps = LocalMapsManagerService.getInstance();
-    reply(await maps.exportMaps(request.args.version, request.args.maps, request.args.outPath));
-});
+    const { error, result } = tryit(() => maps.enableDeepLinks());
 
-ipc.on("download-map", async (request: IpcRequest<{ map: BsvMapDetail; version: BSVersion }>, reply) => {
-    const maps = LocalMapsManagerService.getInstance();
-    reply(from(maps.downloadMap(request.args.map, request.args.version)));
-});
-
-ipc.on("one-click-install-map", async (request: IpcRequest<BsvMapDetail>) => {
-    const utils = UtilsService.getInstance();
-    const maps = LocalMapsManagerService.getInstance();
-
-    maps.oneClickDownloadMap(request.args)
-        .then(() => {
-            utils.ipcSend(request.responceChannel, { success: true });
-        })
-        .catch(err => {
-            log.error(err);
-            utils.ipcSend(request.responceChannel, { success: false, error: err });
-        });
-});
-
-ipc.on("register-maps-deep-link", async (request: IpcRequest<void>) => {
-    const maps = LocalMapsManagerService.getInstance();
-    const utils = UtilsService.getInstance();
-
-    try {
-        const res = maps.enableDeepLinks();
-        utils.ipcSend(request.responceChannel, { success: true, data: res });
-    } catch (e) {
-        utils.ipcSend(request.responceChannel, { success: false });
+    if(error) {
+        return reply(throwError(() => error));
     }
+
+    reply(of(result));
 });
 
-ipc.on("unregister-maps-deep-link", async (request: IpcRequest<void>) => {
+ipc.on("unregister-maps-deep-link", (_, reply) => {
     const maps = LocalMapsManagerService.getInstance();
-    const utils = UtilsService.getInstance();
+    const { error, result } = tryit(() => maps.disableDeepLinks());
 
-    try {
-        const res = maps.disableDeepLinks();
-        utils.ipcSend(request.responceChannel, { success: true, data: res });
-    } catch (e) {
-        utils.ipcSend(request.responceChannel, { success: false });
+    if(error) {
+        return reply(throwError(() => error));
     }
+
+    reply(of(result));
 });
 
-ipc.on("is-map-deep-links-enabled", async (request: IpcRequest<void>) => {
+ipc.on("is-map-deep-links-enabled", (_, reply) => {
     const maps = LocalMapsManagerService.getInstance();
-    const utils = UtilsService.getInstance();
+    const { error, result } = tryit(() => maps.isDeepLinksEnabled());
 
-    try {
-        const res = maps.isDeepLinksEnabled();
-        utils.ipcSend(request.responceChannel, { success: true, data: res });
-    } catch (e) {
-        utils.ipcSend(request.responceChannel, { success: false });
+    if(error) {
+        return reply(throwError(() => error));
     }
+
+    reply(of(result));
 });
 
-ipc.on("get-version-maps-path", async (req: IpcRequest<BSVersion>, reply) => {
-    const maps = LocalMapsManagerService.getInstance();
-    reply(from(maps.getMapsFolderPath(req.args)));
-});
+ipc.on("get-maps-info-from-cache", (args, reply) => {
+    const songsCache = SongDetailsCacheService.getInstance();
+
+    const res = (args ?? []).reduce((acc, hash) => {
+        const songDetails = songsCache.getSongDetails(hash);
+
+        if(songDetails){
+            acc.push(songDetails);
+        }
+
+        return acc;
+    }, [] as SongDetails[]);
+
+    reply(of(res));
+
+})

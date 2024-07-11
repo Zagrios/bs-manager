@@ -134,6 +134,11 @@
                 "description": "Change the default folder for Beat Saber versions and other upcoming features.",
                 "choose-folder": "Choose folder"
             },
+            "proton-path": {
+                "title": "Proton path",
+                "description": "Change the path to the Proton binary",
+                "choose-file": "Choose file"
+            },
             "additional-content": {
                 "title": "Additional content",
                 "description": "Additional content that allows you to customize Beat Saber!",
@@ -190,6 +195,10 @@
                     "report-bug": "Report a bug",
                     "open-logs": "Open logs"
                 }
+            },
+            "changelogs": {
+                "open" : "🚀 Check Out the Changelog!",
+                "not-founds": "😕 Oops, No Changelog Here!"
             }
         }
     },
@@ -234,9 +243,6 @@
                     }
                 },
                 "errors": {
-                    "titles": {
-                        "dotnet-required": ".NET 6 Required"
-                    },
                     "msg": {
                         "401": "Steam doesn't seem to want to let us download Beat Saber 😢",
                         "404": "Unable to contact Steam servers.",
@@ -259,11 +265,7 @@
                         "LicenceError": "Unable to get the list of licenses.",
                         "RateLimitExceeded": "You've tried too many times, wait a while and try again later.",
                         "TokenRejected": "Your login token has been rejected 😕 Please try again.",
-                        "AccessDenied": "Access to Steam has been denied.",
-                        "dotnet-required": ".NET 6 Runtime must be installed in order to download a version of Beat Saber. Download it by clicking the button below."
-                    },
-                    "actions": {
-                        "download-dotnet": "Download .NET 6"
+                        "AccessDenied": "Access to Steam has been denied."
                     }
                 }
             },
@@ -379,6 +381,7 @@
                     "OCULUS_NOT_RUNNING": "Oculus is not running",
                     "BS_ALREADY_RUNNING": "Beat Saber already running",
                     "EXE_NOT_FINDED": "Missing files",
+                    "PROTON_NOT_SET": "Proton path not set",
                     "EXIT": "Abrupt stop",
                     "OCULUS_LIB_NOT_FOUND": "Oculus library not found"
                 },
@@ -389,7 +392,8 @@
                     "BS_ALREADY_RUNNING": "Close BeatSaber before launching it again.",
                     "EXE_NOT_FINDED": "Some files seem to be missing, try to verify the files.",
                     "EXIT": "BeatSaber stopped abruptly, tries to check the files.",
-                    "OCULUS_LIB_NOT_FOUND": "Check that the Oculus application is properly installed, and that the libraries are correctly defined in Oculus."
+                    "OCULUS_LIB_NOT_FOUND": "Check that the Oculus application is properly installed, and that the libraries are correctly defined in Oculus.",
+                    "PROTON_NOT_SET": "Set the Proton path in settings"
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Launch Steam"
@@ -761,13 +765,13 @@
             "rb": "r&b",
             "holiday": "holiday",
             "vocaloid": "vocaloid",
-            "jrock": "j-rock",
+            "j-rock": "j-rock",
             "trance": "trance",
             "drumbass": "drum & bass",
             "comedy": "comedy",
             "instrumental": "instrumental",
             "hardcore": "hardcore",
-            "kpop": "k-pop",
+            "k-pop": "k-pop",
             "indie": "indie",
             "techno": "techno",
             "house": "house",
@@ -778,7 +782,7 @@
             "metal": "metal",
             "anime": "anime",
             "hiphop": "hiphop",
-            "jpop": "j-pop",
+            "j-pop": "j-pop",
             "rock": "rock",
             "pop": "pop",
             "electronic": "electronic",
@@ -999,6 +1003,122 @@
                 "STEAM_LAUNCHED": "Steam successfully launched!",
                 "UNABLE_TO_LAUNCH_STEAM": "Unable to launch Steam, forcing Beat Saber launch..."
             }
+        }
+    },
+    "playlist": {
+        "error-playlist-creation-title": "Error creating playlist",
+        "error-playlist-creation-desc": "An error occurred while creating the playlist.",
+        "playlist-created-title": "Playlist created",
+        "playlist-created-desc": "The playlist has been successfully created. You can now sync its maps!",
+        "download-playlist": "Download playlist",
+        "synchronize-playlist": "Synchronize playlist",
+        "synchronize-maps": "Synchronize maps",
+        "error-playlists-synchronization-title": "Error synchronizing playlists",
+        "error-playlists-synchronization-desc": "An error occurred while synchronizing playlists.",
+        "playlists-synchronized-title": "Playlists synchronized!",
+        "playlists-synchronized-desc": "Playlists and their maps have been downloaded.",
+        "playlists-export-error-title": "Error exporting playlists",
+        "playlists-export-error-desc": "An error occurred while exporting playlists.",
+        "playlists-exported-title": "Playlists exported!",
+        "playlists-exported-desc": "Playlists have been successfully exported.",
+        "playlists-with-maps-exported-desc": "Playlists and their maps have been successfully exported.",
+        "playlist-delete-error-title": "Error deleting playlist",
+        "playlist-delete-error-desc": "An error occurred while deleting the playlist.",
+        "playlists-deleted-title": "Playlists deleted!",
+        "playlists-deleted-desc": "Playlists have been successfully deleted.",
+        "edit-playlist": "Edit playlist",
+        "playlist-edit-error-title": "Error editing playlist",
+        "playlist-edit-error-desc": "An error occurred while editing the playlist.",
+        "playlist-edited-title": "Playlist edited!",
+        "playlist-edited-desc": "The playlist has been successfully modified. You can now sync its maps!",
+        "playlists-loading": "Loading playlists...",
+        "no-playlists": "No playlists",
+        "download-playlists": "Download playlists",
+        "created-by": "Created by",
+        "stop-download": "Stop download",
+        "cancel-download": "Cancel download",
+        "open-file": "Open file",
+        "link-playlists": "Link playlists",
+        "link-playlist-desc": "Linking playlists allows sharing playlists between all versions. Once linked, this version will benefit from shared playlists",
+        "link-playlist-info": "Adding and deleting playlists will also be shared",
+        "keep-playlists": "Keep playlists",
+        "keep-playlists-tip": "Keeping playlists will move the playlists from the current version to the shared playlists folder. Otherwise, they will be lost",
+        "unlink-playlists": "Unlink playlists",
+        "unlink-playlist-desc": "Warning, unlinking playlists will no longer allow the use of shared playlists for this version.",
+        "unlink-keep-playlists-tip": "Keeping playlists will create a copy of shared playlists for the current version. Otherwise, no playlists will be kept for this version.",
+        "delete-playlist-ask": "Delete playlist?",
+        "delete-playlists-ask": "Delete playlists?",
+        "delete-playlist-desc": "Are you sure you want to delete the playlist \"{playlistTitle}\"?",
+        "delete-playlists-desc": "Are you sure you want to delete {nb} playlists?",
+        "delete-maps": "Delete maps",
+        "delete-playlist-maps-tip": "If enabled, all maps in the playlist will be deleted",
+        "delete-playlists-maps-tip": "If enabled, all maps in the playlists will be deleted",
+        "export-playlist-ask": "Export playlist?",
+        "export-playlists-ask": "Export playlists?",
+        "export-playlist-desc": "Are you sure you want to export the playlist \"{playlistTitle}\"?",
+        "export-playlists-desc": "Are you sure you want to export {nb} playlists?",
+        "export-maps": "Export maps",
+        "export-playlist-maps-tip": "If enabled, all maps in the playlist will also be exported",
+        "export-playlists-maps-tip": "If enabled, all maps in the playlists will also be exported",
+        "export": "Export",
+        "need-clone-title": "Warning",
+        "need-clone-desc-1": "This playlist has been downloaded from an external site and contains a synchronization link.",
+        "need-clone-desc-2": "To avoid losing your changes during synchronization, the playlist will be duplicated and its synchronization link removed.",
+        "need-clone-desc-3": "You can then, if you wish, delete the original playlist.",
+        "understood": "I understand",
+        "synchronize-playlist-ask": "Synchronize playlist?",
+        "synchronize-playlists-ask": "Synchronize playlists?",
+        "synchronize-playlist-desc": "Are you sure you want to synchronize the playlist \"{playlistTitle}\"?",
+        "synchronize-playlists-desc": "Are you sure you want to synchronize {nb} playlists?",
+        "synchronize-playlist-tip": "This action updates playlists and downloads missing maps; it may take several minutes.",
+        "synchronize": "Synchronize",
+        "curated": "Recommended",
+        "verified-mapper": "Verified mapper",
+        "empty-playlists": "Empty playlists",
+        "search-playlist": "Search for a playlist",
+        "no-playlists-found": "No playlists found",
+        "error-occur-while-loading-playlists": "An error occurred while loading playlists",
+        "error-occur-while-loading-playlist": "An error occurred while loading the playlist",
+        "loading-maps": "Loading maps...",
+        "no-maps-found-for-playlist": "No maps found for this playlist",
+        "playlist-contain-no-maps": "The playlist contains no maps",
+        "no-map-installed-for-playlist": "No maps installed for this playlist",
+        "playlist-is-waiting-to-download": "The playlist is waiting to download",
+        "download-maps": "Download maps",
+        "download-missing-maps": "Download missing maps",
+        "playlist-is-downloading": "The playlist is downloading",
+        "some-playlist-maps-are-missing": "Some maps in this playlist are missing",
+        "create-a-playlist": "Create a playlist",
+        "synchronize-playlists": "Synchronize playlists",
+        "export-playlists": "Export playlists",
+        "delete-playlists": "Delete playlists",
+        "choose-image": "Choose an image",
+        "title": "Title",
+        "playlist-title": "Playlist title",
+        "description": "Description",
+        "playlist-description": "Playlist description",
+        "author": "Author",
+        "playlist-author": "Playlist author",
+        "save": "Save",
+        "loading": "Loading...",
+        "installed": "Installed",
+        "no-map-found": "No map found",
+        "edit-playlist-shortcuts": "Hold Shift or Ctrl to select multiple maps",
+        "add-to-playlist": "Add to playlist",
+        "remove-from-playlist": "Remove from playlist",
+        "playlist-is-empty": "The playlist is empty",
+        "continue": "Continue",
+        "nb-maps": "Number of maps",
+        "nb-mappers": "Number of mappers",
+        "duration": "Duration",
+        "nps": "Notes per second",
+        "date-picker": {
+            "start-date-end-date": "Start date — End date",
+            "all": "All",
+            "last-24h": "Last 24h",
+            "last-week": "Last week",
+            "last-month": "Last month",
+            "3-last-month": "Last 3 months"
         }
     },
     "dateformat": {

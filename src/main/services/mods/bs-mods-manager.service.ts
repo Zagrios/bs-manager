@@ -246,7 +246,9 @@ export class BsModsManagerService {
               }))
             : extracted;
 
-        res && this.nbInstalledMods++;
+        if(res){
+            this.nbInstalledMods++;
+        }
 
         return res;
     }

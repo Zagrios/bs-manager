@@ -1,22 +1,20 @@
 
-import { LaunchOption } from "shared/models/bs-launch";
 import { BSLauncherService } from "../services/bs-launcher/bs-launcher.service"
 import { IpcService } from '../services/ipc.service';
 import { from } from "rxjs";
 import { SteamLauncherService } from "../services/bs-launcher/steam-launcher.service";
-import { OculusLauncherService } from "../services/bs-launcher/oculus-launcher.service";
 import { SteamService } from "../services/steam.service";
 import log from "electron-log";
 import isElevated from "is-elevated";
 
 const ipc = IpcService.getInstance();
 
-ipc.on<LaunchOption>('bs-launch.launch', (req, reply) => {
+ipc.on('bs-launch.launch', (args, reply) => {
     const bsLauncher = BSLauncherService.getInstance();
-    reply(bsLauncher.launch(req.args));
+    reply(bsLauncher.launch(args));
 });
 
-ipc.on<boolean>("bs-launch.need-start-as-admin", (_, reply) => {
+ipc.on("bs-launch.need-start-as-admin", (_, reply) => {
     const steam = SteamService.getInstance();
     reply(from(isElevated().then(elevated => {
         if(elevated){ return false; }
@@ -27,13 +25,12 @@ ipc.on<boolean>("bs-launch.need-start-as-admin", (_, reply) => {
     })));
 });
 
-ipc.on<LaunchOption>("create-launch-shortcut", (req, reply) => {
+ipc.on("create-launch-shortcut", (args, reply) => {
     const bsLauncher = BSLauncherService.getInstance();
-    reply(from(bsLauncher.createLaunchShortcut(req.args)));
+    reply(from(bsLauncher.createLaunchShortcut(args)));
 });
 
-
-ipc.on<void>("bs-launch.restore-steamvr", (_, reply) => {
+ipc.on("bs-launch.restore-steamvr", (_, reply) => {
     const steamLauncher = SteamLauncherService.getInstance();
     reply(from(steamLauncher.restoreSteamVR()));
 });

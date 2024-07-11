@@ -4,6 +4,7 @@ import { ProviderPlatform } from "shared/models/provider-platform.enum";
 const sep = process.platform === ProviderPlatform.WINDOWS ? "\\" : "/";
 
 contextBridge.exposeInMainWorld("electron", {
+    platform: process.platform,
     ipcRenderer: {
         sendMessage(channel: string, args: unknown[]) {
             ipcRenderer.send(channel, args);
@@ -26,12 +27,5 @@ contextBridge.exposeInMainWorld("electron", {
         join: (...args: string[]): string => {
             return args.join(sep);
         }
-    },
-    window: {
-        close: () => { ipcRenderer.send("close-window"); },
-        minimise: () => { ipcRenderer.send("minimise-window"); },
-        maximise: () => { ipcRenderer.send("maximise-window"); },
-        unmaximise: () => { ipcRenderer.send("unmaximise-window"); },
     }
-
 });

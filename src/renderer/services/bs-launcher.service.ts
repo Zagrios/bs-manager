@@ -23,6 +23,8 @@ export class BSLauncherService {
 
     public readonly versionRunning$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
 
+    private readonly PROTON_PATH_KEY = "protonPath";
+
     public static getInstance(){
         if(!BSLauncherService.instance){ BSLauncherService.instance = new BSLauncherService(); }
         return BSLauncherService.instance;
@@ -34,6 +36,14 @@ export class BSLauncherService {
         this.config = ConfigurationService.getInstance();
         this.theme = ThemeService.getInstance();
         this.modals = ModalService.getInstance();
+    }
+
+    public setProtonPath(protonPath: string|undefined): void {
+        this.config.set(this.PROTON_PATH_KEY, protonPath);
+    }
+
+    public getProtonPath(): string|undefined {
+        return this.config.get<string>(this.PROTON_PATH_KEY);
     }
 
     private notRewindBackupOculus(): boolean{
@@ -73,7 +83,7 @@ export class BSLauncherService {
     }
 
     private async doMustStartAsAdmin(): Promise<boolean> {
-        const needAdmin = await lastValueFrom(this.ipcService.sendV2<boolean, void>("bs-launch.need-start-as-admin"));
+        const needAdmin = await lastValueFrom(this.ipcService.sendV2("bs-launch.need-start-as-admin"));
         if(!needAdmin){ return false; }
         if(this.config.get("dont-remind-admin")){ return true; }
         const modalRes = await this.modals.openModal(NeedLaunchAdminModal);
@@ -83,7 +93,8 @@ export class BSLauncherService {
     }
 
     public doLaunch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
-        return this.ipcService.sendV2<BSLaunchEventData, LaunchOption>("bs-launch.launch", {args: launchOptions});
+        launchOptions.protonPath = this.getProtonPath();
+        return this.ipcService.sendV2("bs-launch.launch", launchOptions);
     }
 
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData> {
@@ -114,13 +125,13 @@ export class BSLauncherService {
 
     }
 
-    public createLaunchShortcut(launchOptions: LaunchOption): Observable<void>{
+    public createLaunchShortcut(launchOptions: LaunchOption): Observable<boolean>{
         const options: LaunchOption = {...launchOptions, version: {...launchOptions.version, color: launchOptions.version.color || this.theme.getBsmColors()[1]}};
-        return this.ipcService.sendV2<void, LaunchOption>("create-launch-shortcut", {args: options});
+        return this.ipcService.sendV2("create-launch-shortcut", options);
     }
 
     public restoreSteamVR(): Promise<void>{
-        return lastValueFrom(this.ipcService.sendV2<void, void>("bs-launch.restore-steamvr"));
+        return lastValueFrom(this.ipcService.sendV2("bs-launch.restore-steamvr"));
     }
 }
 

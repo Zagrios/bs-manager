@@ -5,4 +5,4 @@ export interface IpcRequest<T> {
     responceChannel?: string;
 }
 
-export type IpcReplier = <T>(data: Observable<T>) => void;
+export type IpcReplier<T> = (data: Observable<T>) => void;

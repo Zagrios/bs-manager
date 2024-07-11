@@ -12,7 +12,7 @@ import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { ChevronTopIcon } from "renderer/components/svgs/icons/chevron-top-icon.component";
 import Tippy from "@tippyjs/react";
 
-export const CreateLaunchShortcutModal: ModalComponent<LaunchOption, BSVersion> = ({resolver, data}) => {
+export const CreateLaunchShortcutModal: ModalComponent<LaunchOption, BSVersion> = ({resolver, options: {data}}) => {
 
     const bsLauncher = useService(BSLauncherService);
 
@@ -76,10 +76,10 @@ export const CreateLaunchShortcutModal: ModalComponent<LaunchOption, BSVersion> 
                 <div className={`grid grid-rows-[0fr] transition-[grid-template-rows] ${advanced ? "!grid-rows-[1fr]" : ""}`}>
                     <div className="overflow-hidden">
                         <div className="p-2">
-                            <input 
-                                type="text" 
-                                className="w-full rounded-md text-center outline-none bg-light-main-color-3 dark:bg-main-color-3" 
-                                placeholder={t("pages.version-viewer.launch-mods.advanced-launch.placeholder")} 
+                            <input
+                                type="text"
+                                className="w-full rounded-md text-center outline-none bg-light-main-color-3 dark:bg-main-color-3"
+                                placeholder={t("pages.version-viewer.launch-mods.advanced-launch.placeholder")}
                                 value={additionalArgsString}
                                 onChange={e => setAdditionalArgsString(e.target.value)}
                             />

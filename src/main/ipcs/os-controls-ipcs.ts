@@ -1,59 +1,64 @@
-import { ipcMain, shell, dialog, app, BrowserWindow } from "electron";
-import { UtilsService } from "../services/utils.service";
-import { IpcRequest } from "shared/models/ipc";
-import { SystemNotificationOptions } from "shared/models/notification/system-notification.model";
+import { shell, dialog, app, BrowserWindow } from "electron";
 import { NotificationService } from "../services/notification.service";
-import { SteamService } from "../services/steam.service";
 import { IpcService } from "../services/ipc.service";
 import { from, of } from "rxjs";
+import { readFileSync } from "fs-extra";
 
 // TODO IMPROVE WINDOW CONTROL BY USING WINDOW SERVICE
 
 const ipc = IpcService.getInstance();
 
-ipcMain.on("new-window", async (event, request: IpcRequest<string>) => {
-    shell.openExternal(request.args);
+ipc.on("new-window", (args, reply) => {
+    reply(from(shell.openExternal(args)));
 });
 
-ipc.on<string>("choose-folder", async (req, reply) => {
-    reply(from(dialog.showOpenDialog({ properties: ["openDirectory"], defaultPath: req.args ?? "" })));
+ipc.on("choose-folder", (args, reply) => {
+    reply(from(dialog.showOpenDialog({ properties: ["openDirectory"], defaultPath: args ?? "" })));
 });
 
-ipcMain.on("window.progression", async (event, request: IpcRequest<number>) => {
-    BrowserWindow.fromWebContents(event.sender)?.setProgressBar(request.args / 100);
+ipc.on<string>("choose-file", async (args, reply) => {
+    reply(from(dialog.showOpenDialog({ properties: ["openFile"], defaultPath: args ?? "" })));
 });
 
-ipcMain.on("save-file", async (event, request: IpcRequest<{ filename?: string; filters?: Electron.FileFilter[] }>) => {
-    dialog.showSaveDialog({ properties: ["showOverwriteConfirmation"], defaultPath: request.args.filename, filters: request.args.filters }).then(res => {
-        const utils = UtilsService.getInstance();
+ipc.on("window.progression",(args, reply, sender) => {
+    BrowserWindow.fromWebContents(sender)?.setProgressBar(args / 100);
+    reply(of(undefined));
+});
+
+ipc.on("save-file", (args, reply) => {
+    reply(from(dialog.showSaveDialog({ properties: ["showOverwriteConfirmation"], defaultPath: args.filename, filters: args.filters }).then(res => {
         if (res.canceled || !res.filePath) {
-            utils.ipcSend(request.responceChannel, { success: false });
+            throw new Error("No file path selected");
         }
-        UtilsService.getInstance().ipcSend(request.responceChannel, { success: true, data: res.filePath });
-    });
+        return res.filePath;
+    })));
 });
 
 ipc.on("current-version", (_, reply) => {
     reply(of(app.getVersion()));
 });
 
-ipcMain.on("open-logs", async (event, request: IpcRequest<void>) => {
-    shell.openPath(app.getPath("logs"));
+ipc.on("open-logs", (_, reply) => {
+    reply(from(shell.openPath(app.getPath("logs"))));
 });
 
-ipcMain.on("notify-system", async (event, request: IpcRequest<SystemNotificationOptions>) => {
-    NotificationService.getInstance().notify(request.args);
+ipc.on("notify-system", (args, reply) => {
+    const systemNotification = NotificationService.getInstance();
+    reply(of(systemNotification.notify(args)));
 });
 
-ipcMain.on("open-steam", async (event, request: IpcRequest<void>) => {
-    const steam = SteamService.getInstance();
-    const utils = UtilsService.getInstance();
-    steam
-        .openSteam()
-        .then(res => {
-            utils.ipcSend(request.responceChannel, { success: true, data: res });
-        })
-        .catch(e => {
-            utils.ipcSend(request.responceChannel, { success: false, error: e });
-        });
+ipc.on("view-path-in-explorer", (args, reply) => {
+    reply(of(shell.showItemInFolder(args)));
+});
+
+ipc.on("choose-image", (args, reply) => {
+    reply(from(dialog.showOpenDialog({ properties: ["openFile", "multiSelections"], filters: [{ name: "Images", extensions: ["jpg", "png", "jpeg"] }] }).then(res => {
+        if (res.canceled || !res.filePaths) {
+            return [];
+        }
+        if(args.base64){
+            return res.filePaths.map(path => Buffer.from(readFileSync(path)).toString("base64"));
+        }
+        return res.filePaths;
+    })));
 });

@@ -1,12 +1,12 @@
 import { BsmIcon, BsmIconType } from "../svgs/bsm-icon.component";
-import { useRef, CSSProperties, MouseEvent } from "react";
+import { useRef, CSSProperties, MouseEvent, forwardRef, useCallback, ComponentProps } from "react";
 import { BsmImage } from "./bsm-image.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { useClickOutside } from "renderer/hooks/use-click-outside.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { getCorrectTextColor } from "renderer/helpers/correct-text-color";
 
-type BsmButtonType = "primary" | "secondary" | "success" | "cancel" | "error";
+type BsmButtonType = "primary" | "secondary" | "success" | "cancel" | "error" | "none";
 
 type Props = {
     className?: string;
@@ -20,8 +20,8 @@ type Props = {
     active?: boolean;
     withBar?: boolean;
     disabled?: boolean;
-    onClickOutside?: React.ComponentProps<"div">["onClick"];
-    onClick?: React.ComponentProps<"div">["onClick"];
+    onClickOutside?: ComponentProps<"div">["onClick"];
+    onClick?: ComponentProps<"div">["onClick"];
     typeColor?: BsmButtonType;
     color?: string;
     title?: string;
@@ -29,10 +29,22 @@ type Props = {
     textClassName?: string;
 };
 
-export function BsmButton({ className, style, imgClassName, iconClassName, icon, image, text, type, active, withBar = true, disabled, onClickOutside, onClick, typeColor, color, title, iconColor, textClassName }: Props) {
+export const BsmButton = forwardRef<unknown, Props>(({ className, style, imgClassName, iconClassName, icon, image, text, type, active, withBar = true, disabled, onClickOutside, onClick, typeColor, color, title, iconColor, textClassName }, forwardedRef) => {
     const t = useTranslation();
     const { firstColor, secondColor } = useThemeColor();
-    const ref = useRef(null);
+    const ref = useRef<HTMLDivElement>(null);
+
+    const setRef = useCallback((node: HTMLDivElement) => {
+        if (ref.current) {
+            ref.current = node;
+        }
+
+        if (typeof forwardedRef === 'function') {
+          forwardedRef(node);
+        } else if (forwardedRef) {
+            forwardedRef.current = node;
+        }
+    }, [forwardedRef]);
 
     useClickOutside(ref, onClickOutside);
 
@@ -50,7 +62,7 @@ export function BsmButton({ className, style, imgClassName, iconClassName, icon,
         if (primaryColor) {
             return getCorrectTextColor(primaryColor);
         }
-        return typeColor ? "white" : undefined;
+        return typeColor && typeColor !== "none" ? "white" : undefined;
     })();
 
     const renderTypeColor = (() => {
@@ -72,7 +84,7 @@ export function BsmButton({ className, style, imgClassName, iconClassName, icon,
     const handleClick = (e: MouseEvent<HTMLDivElement>) => !disabled && onClick?.(e);
 
     return (
-        <div ref={ref} onClick={handleClick} title={t(title)} className={`${className} overflow-hidden group ${!withBar && !disabled && (!!typeColor || !!color) && "hover:brightness-[1.15]"} ${disabled ? "brightness-75 cursor-not-allowed" : "cursor-pointer"} ${renderTypeColor}`} style={{ ...style, backgroundColor: primaryColor || color }}>
+        <div ref={setRef} onClick={handleClick} title={t(title)} className={`${className} overflow-hidden group ${!withBar && !disabled && (!!typeColor || !!color) && "hover:brightness-[1.15]"} ${disabled ? "brightness-75 cursor-not-allowed" : "cursor-pointer"} ${renderTypeColor}`} style={{ ...style, backgroundColor: primaryColor || color }}>
             {image && <BsmImage image={image} className={imgClassName} />}
             {icon && <BsmIcon icon={icon} className={iconClassName ?? "h-full w-full text-gray-800 dark:text-white"} style={{ color: iconColor || textColor }} />}
             {text &&
@@ -93,4 +105,4 @@ export function BsmButton({ className, style, imgClassName, iconClassName, icon,
             )}
         </div>
     );
-}
+});

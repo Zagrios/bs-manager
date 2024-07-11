@@ -1,17 +1,15 @@
-import { motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { FilterPanel } from "renderer/components/maps-mangement-components/filter-panel.component";
-import { MapItem, ParsedMapDiff } from "renderer/components/maps-mangement-components/map-item.component";
+import { FilterPanel } from "renderer/components/maps-playlists-panel/maps/filter-panel.component";
+import { MapItem } from "renderer/components/maps-playlists-panel/maps/map-item.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-button.component";
 import { BsmSelect, BsmSelectOption } from "renderer/components/shared/bsm-select.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
-import { BSV_SORT_ORDER } from "renderer/partials/beat-saver/sort-order";
 import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
 import { ModalComponent } from "renderer/services/modale.service";
 import { BSVersion } from "shared/bs-version.interface";
-import { BsvMapCharacteristic, BsvMapDetail, MapFilter, SearchOrder, SearchParams } from "shared/models/maps/beat-saver.model";
+import { BsvMapDetail, MapFilter, BsvSearchOrder, SearchParams } from "shared/models/maps/beat-saver.model";
 import BeatWaitingImg from "../../../../../assets/images/apngs/beat-waiting.png";
 import BeatConflictImg from "../../../../../assets/images/apngs/beat-conflict.png";
 import equal from "fast-deep-equal/es6";
@@ -20,8 +18,12 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { useService } from "renderer/hooks/use-service.hook";
+import { useConstant } from "renderer/hooks/use-constant.hook";
+import { getLocalTimeZone, parseAbsolute, toCalendarDateTime } from "@internationalized/date";
+import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual-scroll.component";
+import { MapItemComponentPropsMapper } from "shared/mappers/map/map-item-component-props.mapper";
 
-export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; ownedMaps: BsmLocalMap[] }> = ({ data: { ownedMaps, version } }) => {
+export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; ownedMaps: BsmLocalMap[] }> = ({ options: {data : { ownedMaps, version }} }) => {
     const beatSaver = useService(BeatSaverService);
     const mapsDownloader = useService(MapsDownloaderService);
     const progressBar = useService(ProgressBarService);
@@ -34,7 +36,8 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
     const [filter, setFilter] = useState<MapFilter>({});
     const [query, setQuery] = useState("");
     const [maps, setMaps] = useState<BsvMapDetail[]>([]);
-    const [sortOrder, setSortOrder] = useState<SearchOrder>(BSV_SORT_ORDER.at(0));
+    const [downloadbleMaps, setDownloadbleMaps] = useState<DownloadableMap[]>([]);
+    const [sortOrder, setSortOrder] = useState<BsvSearchOrder>(BsvSearchOrder.Latest);
     const [ownedMapHashs, setOwnedMapHashs] = useState<string[]>(ownedMaps?.map(map => map.hash) ?? []);
     const [loading, setLoading] = useState(false);
     const isOnline = useObservable(() => os.isOnline$);
@@ -45,19 +48,27 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
         q: query,
     });
 
-    const loaderRef = useRef(null);
+    const sortOptions: BsmSelectOption<BsvSearchOrder>[] = useConstant(() => {
+        return Object.values(BsvSearchOrder).map(sort => ({ text: `beat-saver.maps-sorts.${sort}`, value: sort }));
+    });
 
-    const sortOptions: BsmSelectOption<SearchOrder>[] = (() => {
-        return BSV_SORT_ORDER.map(sort => ({ text: `beat-saver.maps-sorts.${sort}`, value: sort }));
-    })();
+    useEffect(() => {
+        setDownloadbleMaps(() => maps.map(map => {
+            const isMapOwned = map.versions.some(version => ownedMapHashs.includes(version.hash));
+            const isDownloading = map.id === currentDownload?.map?.id;
+            const inQueue = mapsInQueue.some(toDownload => equal(toDownload.version, version) && toDownload.map.id === map.id);
+
+            return { map, isOwned: isMapOwned, idDownloading: isDownloading, isInQueue: inQueue };
+        }));
+    }, [maps, currentDownload, mapsInQueue, ownedMapHashs])
 
     useEffect(() => {
         loadMaps(searchParams);
     }, [searchParams]);
 
     useEffect(() => {
-        const onMapDownloaded = (map: BsmLocalMap, targerVersion: BSVersion) => {
-            if (!equal(targerVersion, version)) {
+        const onMapDownloaded = (map: BsmLocalMap, targetVersion: BSVersion) => {
+            if (!equal(targetVersion, version)) {
                 return;
             }
             const downloadedHash = map.hash;
@@ -120,25 +131,34 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
             })
     };
 
-    const extractMapDiffs = (map: BsvMapDetail): Map<BsvMapCharacteristic, ParsedMapDiff[]> => {
-        const res = new Map<BsvMapCharacteristic, ParsedMapDiff[]>();
-        if (map.versions.at(0).diffs) {
-            map.versions.at(0).diffs.forEach(diff => {
-                const arr = res.get(diff.characteristic) || [];
-                arr.push({ name: diff.difficulty, type: diff.difficulty, stars: diff.stars });
-                res.set(diff.characteristic, arr);
-            });
-        }
-        return res;
-    };
+    const renderMap = useCallback((downloadableMap: DownloadableMap) => {
+        const { map } = downloadableMap;
 
-    const renderMap = (map: BsvMapDetail) => {
-        const isMapOwned = map.versions.some(version => ownedMapHashs.includes(version.hash));
-        const isDownloading = map.id === currentDownload?.map?.id;
-        const inQueue = mapsInQueue.some(toDownload => equal(toDownload.version, version) && toDownload.map.id === map.id);
+        const downloadable = !downloadableMap.isOwned && !downloadableMap.isInQueue;
+        const cancelable = downloadableMap.isInQueue && !downloadableMap.idDownloading;
 
-        return <MapItem autor={map.metadata.levelAuthorName} autorId={map.uploader.id} bpm={map.metadata.bpm} coverUrl={map.versions.at(0).coverURL} createdAt={map.createdAt} duration={map.metadata.duration} hash={map.versions.at(0).hash} likes={map.stats.upvotes} mapId={map.id} ranked={map.ranked} title={map.name} songAutor={map.metadata.songAuthorName} diffs={extractMapDiffs(map)} songUrl={map.versions.at(0).previewURL} key={map.id} onDownload={!isMapOwned && !inQueue && handleDownloadMap} onDoubleClick={!isMapOwned && !inQueue && handleDownloadMap} onCancelDownload={inQueue && !isDownloading && handleCancelDownload} downloading={isDownloading} showOwned={isMapOwned} callBackParam={map} />;
-    };
+        return <MapItem
+            autor={map.metadata.levelAuthorName}
+            autorId={map.uploader.id}
+            bpm={map.metadata.bpm}
+            coverUrl={map.versions.at(0).coverURL}
+            createdAt={map.createdAt && toCalendarDateTime(parseAbsolute(map.createdAt, getLocalTimeZone()))}
+            duration={map.metadata.duration}
+            hash={map.versions.at(0).hash}
+            likes={map.stats.upvotes}
+            mapId={map.id} ranked={map.ranked}
+            title={map.name}
+            songAutor={map.metadata.songAuthorName}
+            diffs={MapItemComponentPropsMapper.extractMapDiffs({ bsvMap: map })}
+            songUrl={map.versions.at(0).previewURL}
+            key={map.id}
+            onDownload={downloadable && handleDownloadMap}
+            onDoubleClick={downloadable && handleDownloadMap}
+            onCancelDownload={cancelable && handleCancelDownload}
+            downloading={downloadableMap.idDownloading}
+            showOwned={downloadableMap.isOwned}
+            callBackParam={map} />;
+    }, [version]);
 
     const handleDownloadMap = useCallback((map: BsvMapDetail) => {
         mapsDownloader.addMapToDownload({ map, version });
@@ -148,7 +168,7 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
         mapsDownloader.removeMapToDownload({ map, version });
     }, []);
 
-    const handleSortChange = (newSort: SearchOrder) => {
+    const handleSortChange = (newSort: BsvSearchOrder) => {
         setSortOrder(() => newSort);
         setMaps(() => []);
         setSearchParams(() => ({ ...searchParams, sortOrder: newSort }));
@@ -167,6 +187,9 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
     };
 
     const handleLoadMore = () => {
+
+        if(loading){ return; }
+
         setSearchParams(prev => {
             return { ...prev, page: prev.page + 1 };
         });
@@ -184,7 +207,7 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
                 <BsmDropdownButton ref={filterContainerRef} className="shrink-0 h-full relative z-[1] flex justify-start" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1 !bg-light-main-color-1 dark:!bg-main-color-1" icon="filter" text="pages.version-viewer.maps.search-bar.filters-btn" withBar={false}>
                     <FilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[450px] h-fit p-2 rounded-md shadow-md shadow-black" localData={false} filter={filter} onChange={setFilter} onApply={handleSearch} onClose={() => filterContainerRef.current.close()} />
                 </BsmDropdownButton>
-                <input className="h-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2 grow pb-0.5" type="text" name="" id="" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={query} onChange={e => setQuery(e.target.value)} />
+                <input className="h-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2 grow pb-0.5" type="text" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={query} onChange={e => setQuery(e.target.value)} />
                 <BsmButton
                     className="shrink-0 rounded-full py-1 px-3 !bg-light-main-color-1 dark:!bg-main-color-1 flex justify-center items-center capitalize"
                     icon="search"
@@ -197,8 +220,32 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
                 />
                 <BsmSelect className="bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-1 pb-0.5 text-center" options={sortOptions} onChange={sort => handleSortChange(sort)} />
             </div>
-            <ul className="w-full grow flex content-start flex-wrap gap-2 pt-1.5 px-2 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 z-0">
-                {maps.length === 0 ? (
+
+            {(() => {
+                if(downloadbleMaps?.length) {
+                    return (
+                        <VirtualScroll
+                            classNames={{
+                                mainDiv: "size-full",
+                                rows: "gap-x-2 px-2 py-2"
+                            }}
+                            minColumns={1}
+                            maxColumns={2}
+                            itemHeight={108}
+                            minItemWidth={400}
+                            items={downloadbleMaps}
+                            rowKey={mapsInRow => mapsInRow.map(map => map.map.id).join("-")}
+                            renderItem={renderMap}
+                            scrollEnd={{
+                                onScrollEnd: handleLoadMore,
+                                margin: 100
+                            }}
+
+                        />
+                    )
+                }
+
+                return (
                     <div className="w-full h-full flex flex-col items-center justify-center">
                         <img className={`w-32 h-32 ${loading && "spin-loading"}`} src={loading ? BeatWaitingImg : BeatConflictImg} alt=" " />
                         <span className="text-lg">
@@ -213,13 +260,17 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
                             })()}
                         </span>
                     </div>
-                ) : (
-                    <>
-                        {maps.map(renderMap)}
-                        <motion.span onViewportEnter={handleLoadMore} ref={loaderRef} className="block w-full h-8" />
-                    </>
-                )}
-            </ul>
+                )
+
+            })()}
+
         </form>
     );
+};
+
+type DownloadableMap = {
+    map: BsvMapDetail;
+    isOwned: boolean;
+    idDownloading: boolean;
+    isInQueue: boolean;
 };

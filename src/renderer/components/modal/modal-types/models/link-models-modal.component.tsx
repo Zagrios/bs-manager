@@ -7,9 +7,8 @@ import { ModalComponent, ModalExitCode } from "renderer/services/modale.service"
 import { MSModelType } from "shared/models/models/model-saber.model";
 import BeatRunning from "../../../../../../assets/images/apngs/beat-running.png";
 
-export const LinkModelsModal: ModalComponent<boolean, MSModelType> = ({ resolver, data }) => {
+export const LinkModelsModal: ModalComponent<boolean, MSModelType> = ({ resolver, options: {data} }) => {
     const t = useTranslation();
-
     const [keepMaps, setKeepMaps] = useState(true);
 
     return (

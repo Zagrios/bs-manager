@@ -11,20 +11,22 @@ import { map, filter, take, lastValueFrom } from "rxjs";
 import defaultImage from "../../../../assets/images/default-version-img.jpg";
 import { useService } from "renderer/hooks/use-service.hook";
 import { useConstant } from "renderer/hooks/use-constant.hook";
-import { BPList } from "shared/models/playlists/playlist.interface";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
+import { useWindowArgs } from "renderer/hooks/use-window-args.hook";
+import { useWindowControls } from "renderer/hooks/use-window-controls.hook";
 
 export default function OneClickDownloadPlaylist() {
 
-    
+
     const t = useTranslation();
     const playlistDownloader = useService(PlaylistDownloaderService);
     const notification = useService(NotificationService);
-    
+
+    const { close: closeWindow } = useWindowControls();
     const mapsContainer = useRef<HTMLDivElement>(null);
-    const playlistUrl = useConstant(() => new URLSearchParams(window.location.search).get("playlistUrl"));
+    const { playlistUrl } = useWindowArgs("playlistUrl");
     const download$ = useConstant(() => playlistDownloader.oneClickInstallPlaylist(playlistUrl));
-    const playlistInfos = useObservable<BPList>(() => download$.pipe(filter(progress => !!progress.data?.playlistInfos), map(progress => progress.data.playlistInfos), take(1)));
+    const playlistInfos = useObservable(() => download$.pipe(filter(progress => !!progress.data?.playlist), map(progress => progress.data.playlist), take(1)));
     const downloadedMaps = useObservable(() => download$.pipe(filter(progress => !!progress.data?.downloadedMaps), map(progress => progress.data.downloadedMaps)));
 
     useEffect(() => {
@@ -34,7 +36,7 @@ export default function OneClickDownloadPlaylist() {
         }).catch(() => {
             notification.notifySystem({ title: t("notifications.types.error"), body: t("notifications.playlists.one-click-install.error") });
         }).finally(() => {
-            window.electron.window.close();
+            closeWindow();
         });
 
     }, []);
@@ -61,7 +63,7 @@ export default function OneClickDownloadPlaylist() {
                 <BsmImage className="mt-2 aspect-square w-1/2 object-cover rounded-md shadow-black shadow-lg" placeholder={defaultImage} image={playlistImage()} errorImage={defaultImage} />
                 <h1 className="mt-4 overflow-hidden font-bold italic text-xl text-gray-200 tracking-wide w-full text-center whitespace-nowrap text-ellipsis px-2">{playlistInfos?.playlistTitle}</h1>
                 <div className="w-full py-3 flex items-center justify-center max-w-full overflow-x-scroll overflow-y-hidden scrollbar scrollbar-thin scrollbar-track-transparent scrollbar-thumb-neutral-900" ref={mapsContainer}>
-                    <div className="flex justify-start items-start gap-2.5">{downloadedMaps?.map(map => map?.coverUrl && 
+                    <div className="flex justify-start items-start gap-2.5">{downloadedMaps?.map(map => map?.coverUrl &&
                         <motion.img layout="position" key={map.hash} className="block aspect-square w-14 object-cover rounded-md shadow-black shadow-md" src={map?.coverUrl} initial={{ scale: 0 }} animate={{ scale: 1 }} whileHover={{ rotate: 5 }} />
                     )}</div>
                 </div>

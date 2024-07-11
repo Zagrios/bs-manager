@@ -1,63 +1,30 @@
-import { ipcMain } from "electron";
-import { UtilsService } from "../services/utils.service";
-import { IpcRequest } from "shared/models/ipc";
-import { SearchParams } from "shared/models/maps/beat-saver.model";
 import { BeatSaverService } from "../services/thrid-party/beat-saver/beat-saver.service";
-import log from "electron-log";
+import { IpcService } from "../services/ipc.service";
+import { from } from "rxjs";
 
-ipcMain.on("bsv-search-map", async (event, request: IpcRequest<SearchParams>) => {
-    const utlis = UtilsService.getInstance();
+const ipc = IpcService.getInstance();
+
+ipc.on("bsv-search-map", (args, reply) => {
     const bsvService = BeatSaverService.getInstance();
-
-    bsvService
-        .searchMaps(request.args)
-        .then(maps => {
-            utlis.ipcSend(request.responceChannel, { success: true, data: maps });
-        })
-        .catch(e => {
-            utlis.ipcSend(request.responceChannel, { success: false, error: e });
-        });
+    reply(from(bsvService.searchMaps(args)));
 });
 
-ipcMain.on("bsv-get-map-details-from-hashs", async (event, request: IpcRequest<string[]>) => {
-    const utlis = UtilsService.getInstance();
+ipc.on("bsv-get-map-details-from-hashs", (args, reply) => {
     const bsvService = BeatSaverService.getInstance();
-
-    bsvService
-        .getMapDetailsFromHashs(request.args)
-        .then(maps => {
-            utlis.ipcSend(request.responceChannel, { success: true, data: maps });
-        })
-        .catch(e => {
-            log.error(e);
-            utlis.ipcSend(request.responceChannel, { success: false, error: e });
-        });
+    reply(from(bsvService.getMapDetailsFromHashs(args)));
 });
 
-ipcMain.on("bsv-get-map-details-by-id", async (event, request: IpcRequest<string>) => {
-    const utlis = UtilsService.getInstance();
+ipc.on("bsv-get-map-details-by-id", (args, reply) => {
     const bsvService = BeatSaverService.getInstance();
-
-    bsvService
-        .getMapDetailsById(request.args)
-        .then(maps => {
-            utlis.ipcSend(request.responceChannel, { success: true, data: maps });
-        })
-        .catch(e => {
-            utlis.ipcSend(request.responceChannel, { success: false, error: e });
-        });
+    reply(from(bsvService.getMapDetailsById(args)));
 });
 
-ipcMain.on("bsv-get-playlist-details-by-id", async (event, request: IpcRequest<string>) => {
-    const utlis = UtilsService.getInstance();
+ipc.on("bsv-search-playlist", (args, reply) => {
     const bsvService = BeatSaverService.getInstance();
+    reply(from(bsvService.searchPlaylists(args)));
+});
 
-    bsvService
-        .getPlaylistPage(request.args)
-        .then(maps => {
-            utlis.ipcSend(request.responceChannel, { success: true, data: maps });
-        })
-        .catch(e => {
-            utlis.ipcSend(request.responceChannel, { success: false, error: e });
-        });
+ipc.on("bsv-get-playlist-details-by-id", (args, reply) => {
+    const bsvService = BeatSaverService.getInstance();
+    reply(from(bsvService.getPlaylistDetailsById(args.id, args.page)));
 });

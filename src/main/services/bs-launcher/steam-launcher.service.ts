@@ -8,9 +8,9 @@ import { BS_APP_ID, BS_EXECUTABLE, STEAMVR_APP_ID } from "../../constants";
 import log from "electron-log";
 import { AbstractLauncherService } from "./abstract-launcher.service";
 import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
-import isElevated from "is-elevated";
 import { UtilsService } from "../utils.service";
 import { exec } from "child_process";
+import fs from 'fs';
 
 export class SteamLauncherService extends AbstractLauncherService implements StoreLauncherInterface{
 
@@ -46,13 +46,6 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         });
     }
 
-    private needStartBsAsAdmin(): Promise<boolean> {
-        return isElevated().then(elevated => {
-            if(elevated){ return false; }
-            return this.steam.isElevated();
-        })
-    }
-
     private getStartBsAsAdminExePath(): string {
         return path.join(this.util.getAssetsScriptsPath(), "start_beat_saber_admin.exe");
     }
@@ -75,7 +68,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         return new Observable<BSLaunchEventData>(obs => {(async () => {
 
             const bsFolderPath = await this.localVersions.getInstalledVersionPath(launchOptions.version);
-            const exePath = path.join(bsFolderPath, BS_EXECUTABLE);
+            let exePath = path.join(bsFolderPath, BS_EXECUTABLE);
 
             if(!(await pathExists(exePath))){
                 throw CustomError.fromError(new Error(`Path not exist : ${exePath}`), BSLaunchError.BS_NOT_FOUND);
@@ -102,15 +95,66 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 await this.restoreSteamVR().catch(log.error);
             }
 
-            const launchArgs = this.buildBsLaunchArgs(launchOptions);
+            let launchArgs = this.buildBsLaunchArgs(launchOptions);
+            const steamPath = await this.steam.getSteamPath();
+
+            const env = {
+                ...process.env,
+                "SteamAppId": BS_APP_ID,
+                "SteamOverlayGameId": BS_APP_ID,
+                "SteamGameId": BS_APP_ID,
+            };
+
+            // Linux setup
+            if (process.platform === "linux") {
+                if (launchOptions.admin) {
+                    log.warn("Launching as admin is not supported on Linux! Starting the game as a normal user.");
+                    launchOptions.admin = false;
+                }
+
+                // Create the compat data path if it doesn't exist.
+                // If the user never ran Beat Saber through steam before
+                // using bsmanager, it won't exist, and proton will fail
+                // to launch the game.
+                const compatDataPath = `${steamPath}/steamapps/compatdata/${BS_APP_ID}`;
+                if (!fs.existsSync(compatDataPath)) {
+                    log.info(`Proton compat data path not found at '${compatDataPath}', creating directory`);
+                    fs.mkdirSync(compatDataPath);
+                }
+
+                // proton run BeatSaber.exe
+                launchArgs = [
+                    "run",
+                    `${exePath}`,
+                    ...launchArgs,
+                ];
+                exePath = launchOptions.protonPath;
+                if (!exePath) {
+                    throw CustomError.fromError(new Error("Proton path not set"), BSLaunchError.PROTON_NOT_SET);
+                }
+
+                // Setup Proton environment variables
+                Object.assign(env, {
+                    "WINEDLLOVERRIDES": "winhttp=n,b", // Required for mods to work
+                    "STEAM_COMPAT_DATA_PATH": compatDataPath,
+                    "STEAM_COMPAT_INSTALL_PATH": bsFolderPath,
+                    "STEAM_COMPAT_CLIENT_INSTALL_PATH": steamPath,
+                    "STEAM_COMPAT_APP_ID": BS_APP_ID,
+                    // Uncomment these to create a proton log file in the Beat Saber install directory.
+                    // "PROTON_LOG": 1,
+                    // "PROTON_LOG_DIR": bsFolderPath,
+                });
+            }
 
             obs.next({type: BSLaunchEvent.BS_LAUNCHING});
 
+            const spawnOpts = { env, cwd: bsFolderPath };
+
             const launchPromise = !launchOptions.admin ? (
-                this.launchBs(exePath, launchArgs, { env: {...process.env, "SteamAppId": BS_APP_ID} }).exit
+                this.launchBs(exePath, launchArgs, spawnOpts).exit
             ) : (
                 new Promise<number>(resolve => {
-                    const adminProcess = exec(`"${this.getStartBsAsAdminExePath()}" "${exePath}" ${launchArgs.join(" ")}`, { env: {...process.env, "SteamAppId": BS_APP_ID} });
+                    const adminProcess = exec(`"${this.getStartBsAsAdminExePath()}" "${exePath}" ${launchArgs.join(" ")}`, spawnOpts);
                     adminProcess.on("error", err => {
                         log.error("Error while starting BS as Admin", err);
                         resolve(-1)

@@ -47,18 +47,28 @@ module.exports = {
         "import/no-cycle": "off",
         "prefer-promise-reject-errors": "off",
         "react/jsx-no-target-blank": "off",
-        "@typescript-eslint/ban-types": ["error", {
-            types: {
-                Function: false,
-            }
-        }]
+        "import/extensions": "off",
+        "lines-between-class-members": "off",
+        "no-throw-literal": "warn",
+        "no-use-before-define": "off",
+        "no-useless-constructor": "off",
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": "error",
+        'react/jsx-filename-extension': [2, { 'extensions': ['.js', '.jsx', '.ts', '.tsx'] }],
+        "no-shadow": "off",
+        "react/function-component-definition": "off",
+        "jsx-a11y/control-has-associated-label": "off",
+        "react/button-has-type": "off",
     },
     parserOptions: {
         ecmaVersion: 2020,
         sourceType: "module",
-        project: "./tsconfig.json",
         tsconfigRootDir: __dirname,
         createDefaultProgram: true,
+    },
+    globals: {
+        JSX: true,
+        NodeJS: true
     },
     settings: {
         "import/resolver": {
@@ -73,4 +83,5 @@ module.exports = {
             "@typescript-eslint/parser": [".ts", ".tsx"],
         },
     },
+    "plugins": ["@typescript-eslint"]
 };

@@ -1,47 +1,42 @@
 import { BsOculusDownloaderService } from "../../services/bs-version-download/bs-oculus-downloader.service";
-import { BsSteamDownloaderService, DownloadInfo, DownloadSteamInfo } from "../../services/bs-version-download/bs-steam-downloader.service";
+import { BsSteamDownloaderService } from "../../services/bs-version-download/bs-steam-downloader.service";
 import { InstallationLocationService } from "../../services/installation-location.service";
 import { IpcService } from "../../services/ipc.service";
 import { from, of } from "rxjs";
-import { BSLocalVersionService, ImportVersionOptions } from "../../services/bs-local-version.service";
+import { BSLocalVersionService } from "../../services/bs-local-version.service";
 
 const ipc = IpcService.getInstance();
 
-ipc.on<ImportVersionOptions>("import-version", (req, reply) => {
+ipc.on("import-version", (args, reply) => {
     const versionManager = BSLocalVersionService.getInstance();
-    reply(versionManager.importVersion(req.args));
+    reply(versionManager.importVersion(args));
 });
 
-// #region Steam 
-
-ipc.on("is-dotnet-6-installed", (_, reply) => {
-    const installer = BsSteamDownloaderService.getInstance();
-    reply(from(installer.isDotNet6Installed()));
-});
+// #region Steam
 
 ipc.on("bs-download.installation-folder", (_, reply) => {
     const installLocation = InstallationLocationService.getInstance();
     reply(from(installLocation.installationDirectory()));
 });
 
-ipc.on<string>("bs-download.set-installation-folder", (req, reply) => {
+ipc.on("bs-download.set-installation-folder", (args, reply) => {
     const installerService = InstallationLocationService.getInstance();
-    reply(from(installerService.setInstallationDirectory(req.args)));
+    reply(from(installerService.setInstallationDirectory(args)));
 });
 
-ipc.on<DownloadSteamInfo>("auto-download-bs-version", (req, reply) => {
+ipc.on("auto-download-bs-version", (args, reply) => {
     const bsInstaller = BsSteamDownloaderService.getInstance();
-    reply(bsInstaller.autoDownloadBsVersion(req.args));
+    reply(bsInstaller.autoDownloadBsVersion(args));
 });
 
-ipc.on<DownloadSteamInfo>("download-bs-version", (req, reply) => {
+ipc.on("download-bs-version", (args, reply) => {
     const bsInstaller = BsSteamDownloaderService.getInstance();
-    reply(bsInstaller.downloadBsVersion(req.args))
+    reply(bsInstaller.downloadBsVersion(args))
 });
 
-ipc.on<DownloadSteamInfo>("download-bs-version-qr", (req, reply) => {
+ipc.on("download-bs-version-qr", (args, reply) => {
     const bsInstaller = BsSteamDownloaderService.getInstance();
-    reply(bsInstaller.downloadBsVersionWithQRCode(req.args))
+    reply(bsInstaller.downloadBsVersionWithQRCode(args))
 });
 
 ipc.on("stop-download-bs-version", (_, reply) => {
@@ -49,38 +44,23 @@ ipc.on("stop-download-bs-version", (_, reply) => {
     reply(of(bsInstaller.stopDownload()));
 });
 
-ipc.on<string>("send-input-bs-download", (req, reply) => {
+ipc.on("send-input-bs-download", (args, reply) => {
     const bsInstaller = BsSteamDownloaderService.getInstance();
-    reply(of(bsInstaller.sendInput(req.args)));
+    reply(of(bsInstaller.sendInput(args)));
 });
 
 // #endregion
 
 // #region Oculus
 
-ipc.on<DownloadInfo>("bs-oculus-download", async (req, reply) => {
+ipc.on("bs-oculus-download", async (args, reply) => {
     const oculusDownloader = BsOculusDownloaderService.getInstance();
-    reply(oculusDownloader.downloadVersion(req.args));
-});
-
-ipc.on<DownloadInfo>("bs-oculus-auto-download", async (req, reply) => {
-    const oculusDownloader = BsOculusDownloaderService.getInstance();
-    reply(oculusDownloader.autoDownloadVersion(req.args));
+    reply(oculusDownloader.downloadVersion(args));
 });
 
 ipc.on("bs-oculus-stop-download", async (_, reply) => {
     const oculusDownloader = BsOculusDownloaderService.getInstance();
     reply(of(oculusDownloader.stopDownload()));
-});
-
-ipc.on("bs-oculus-has-auth-token", async (_, reply) => {
-    const oculusDownloader = BsOculusDownloaderService.getInstance();
-    reply(from(oculusDownloader.getAuthToken().then(token => !!token)));
-});
-
-ipc.on("bs-oculus-clear-auth-token", async (_, reply) => {
-    const oculusDownloader = BsOculusDownloaderService.getInstance();
-    reply(from(oculusDownloader.clearAuthToken()));
 });
 
 // #endregion

@@ -1,6 +1,7 @@
 import { BsvMapDetail } from "shared/models/maps";
-import { BsvPlaylist, SearchParams } from "shared/models/maps/beat-saver.model";
+import { BsvPlaylist, BsvPlaylistPage, PlaylistSearchParams, SearchParams } from "shared/models/maps/beat-saver.model";
 import { IpcService } from "../ipc.service";
+import { lastValueFrom } from "rxjs";
 
 export class BeatSaverService {
     private static instance: BeatSaverService;
@@ -18,22 +19,22 @@ export class BeatSaverService {
     }
 
     public async getMapDetailsFromHashs(hashs: string[]): Promise<BsvMapDetail[]> {
-        const res = await this.ipc.send<BsvMapDetail[], string[]>("bsv-get-map-details-from-hashs", { args: hashs });
-        return res.data ?? [];
+        return lastValueFrom(this.ipc.sendV2("bsv-get-map-details-from-hashs", hashs));
     }
 
     public async getMapDetailsById(id: string): Promise<BsvMapDetail> {
-        const res = await this.ipc.send<BsvMapDetail, string>("bsv-get-map-details-by-id", { args: id });
-        return res.data ?? null;
+        return  lastValueFrom(this.ipc.sendV2("bsv-get-map-details-by-id", id));
     }
 
     public async searchMaps(search: SearchParams): Promise<BsvMapDetail[]> {
-        const res = await this.ipc.send<BsvMapDetail[], SearchParams>("bsv-search-map", { args: search });
-        return res.data ?? [];
+        return lastValueFrom(this.ipc.sendV2("bsv-search-map", search));
     }
 
-    public async getPlaylistDetailsById(id: string): Promise<BsvPlaylist> {
-        const res = await this.ipc.send<BsvPlaylist>("bsv-get-playlist-details-by-id", { args: id });
-        return res.data ?? null;
+    public async searchPlaylists(search: PlaylistSearchParams): Promise<BsvPlaylist[]> {
+        return lastValueFrom(this.ipc.sendV2("bsv-search-playlist", search));
+    }
+
+    public async getPlaylistDetailsById(id: string, page = 0): Promise<BsvPlaylistPage> {
+        return lastValueFrom(this.ipc.sendV2("bsv-get-playlist-details-by-id", { id, page }));
     }
 }

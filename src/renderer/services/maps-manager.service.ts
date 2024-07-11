@@ -1,19 +1,18 @@
 import { LinkMapsModal } from "renderer/components/modal/modal-types/link-maps-modal.component";
 import { UnlinkMapsModal } from "renderer/components/modal/modal-types/unlink-maps-modal.component";
-import { Subject, Observable, of } from "rxjs";
+import { Subject, Observable, of, lastValueFrom } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
-import { BsmLocalMapsProgress, BsmLocalMap, DeleteMapsProgress } from "shared/models/maps/bsm-local-map.interface";
+import { BsmLocalMapsProgress, BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { IpcService } from "./ipc.service";
 import { ModalExitCode, ModalService } from "./modale.service";
 import { DeleteMapsModal } from "renderer/components/modal/modal-types/delete-maps-modal.component";
 import { ProgressBarService } from "./progress-bar.service";
-import { OpenSaveDialogOption } from "shared/models/ipc";
 import { NotificationService } from "./notification.service";
 import { ConfigurationService } from "./configuration.service";
-import { ArchiveProgress } from "shared/models/archive.interface";
 import { map, last, catchError } from "rxjs/operators";
 import { ProgressionInterface } from "shared/models/progress-bar";
-import { FolderLinkState, VersionFolderLinkerService, VersionLinkerActionType } from "./version-folder-linker.service";
+import { FolderLinkState, VersionFolderLinkerService } from "./version-folder-linker.service";
+import { SongDetails } from "shared/models/maps";
 
 export class MapsManagerService {
     private static instance: MapsManagerService;
@@ -48,7 +47,7 @@ export class MapsManagerService {
     }
 
     public getMaps(version?: BSVersion): Observable<BsmLocalMapsProgress> {
-        return this.ipcService.sendV2<BsmLocalMapsProgress>("load-version-maps", { args: version }, { loaded: 0, total: 0, maps: [] });
+        return this.ipcService.sendV2("load-version-maps", version, { loaded: 0, total: 0, maps: [] });
     }
 
     public async versionHaveMapsLinked(version: BSVersion): Promise<boolean> {
@@ -64,7 +63,6 @@ export class MapsManagerService {
 
         return this.linker.linkVersionFolder({
             version,
-            type: VersionLinkerActionType.Link,
             relativeFolder: MapsManagerService.RELATIVE_MAPS_FOLDER,
             options: { keepContents: !!modalRes.data },
         });
@@ -79,7 +77,6 @@ export class MapsManagerService {
 
         return this.linker.unlinkVersionFolder({
             version,
-            type: VersionLinkerActionType.Unlink,
             relativeFolder: MapsManagerService.RELATIVE_MAPS_FOLDER,
             options: { keepContents: !!modalRes.data },
         });
@@ -91,7 +88,7 @@ export class MapsManagerService {
         const askModal = maps.length > 1 || !this.config.get<boolean>(MapsManagerService.REMEMBER_CHOICE_DELETE_MAP_KEY);
 
         if (askModal) {
-            const modalRes = await this.modal.openModal(DeleteMapsModal, { linked: versionLinked, maps });
+            const modalRes = await this.modal.openModal(DeleteMapsModal, {data: { linked: versionLinked, maps }});
             if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
                 return false;
             }
@@ -99,9 +96,11 @@ export class MapsManagerService {
 
         const showProgressBar = this.progressBar.require();
 
-        const progress$ = this.ipcService.sendV2<DeleteMapsProgress>("delete-maps", { args: maps }).pipe(map(progress => (progress.deleted / progress.total) * 100));
+        const progress$ = this.ipcService.sendV2("delete-maps", maps ).pipe(map(progress => (progress.deleted / progress.total) * 100));
 
-        showProgressBar && this.progressBar.show(progress$, true);
+        if (showProgressBar) {
+            this.progressBar.show(progress$, true);
+        }
 
         progress$.toPromise().finally(() => this.progressBar.hide(true));
 
@@ -120,20 +119,15 @@ export class MapsManagerService {
             return;
         }
 
-        const resFile = await this.ipcService.send<string, OpenSaveDialogOption>("save-file", {
-            args: {
-                filename: version ? `${version.BSVersion}Maps` : "Maps",
-                filters: [{ name: "zip", extensions: ["zip"] }],
-            },
-        });
+        const resFile = await lastValueFrom(this.ipcService.sendV2("save-file", { filename: version ? `${version.BSVersion}Maps` : "Maps", filters: [{ name: "zip", extensions: ["zip"] }]})).catch(() => null as string);
 
-        if (!resFile.success) {
+        if (!resFile) {
             return;
         }
 
-        const exportProgress$: Observable<ProgressionInterface> = this.ipcService.sendV2<ArchiveProgress, { version: BSVersion; maps: BsmLocalMap[]; outPath: string }>("export-maps", { args: { version, maps, outPath: resFile.data } }).pipe(
+        const exportProgress$: Observable<ProgressionInterface> = this.ipcService.sendV2("export-maps", { version, maps, outPath: resFile }).pipe(
             map(p => {
-                return { progression: (p.prossesedFiles / p.totalFiles) * 100, label: `${p.prossesedFiles} / ${p.totalFiles}` } as ProgressionInterface;
+                return { progression: (p.current / p.total) * 100, label: `${p.current} / ${p.total}` } as ProgressionInterface;
             })
         );
 
@@ -152,19 +146,20 @@ export class MapsManagerService {
             });
     }
 
+    public getMapsInfoFromHashs(hashs: string[]): Observable<SongDetails[]> {
+        return this.ipcService.sendV2("get-maps-info-from-cache", hashs);
+    }
+
     public async isDeepLinksEnabled(): Promise<boolean> {
-        const res = await this.ipcService.send<boolean>("is-map-deep-links-enabled");
-        return res.success ? res.data : false;
+        return lastValueFrom(this.ipcService.sendV2("is-map-deep-links-enabled"));
     }
 
     public async enableDeepLink(): Promise<boolean> {
-        const res = await this.ipcService.send<boolean>("register-maps-deep-link");
-        return res.success ? res.data : false;
+        return lastValueFrom(this.ipcService.sendV2("register-maps-deep-link"));
     }
 
     public async disableDeepLink(): Promise<boolean> {
-        const res = await this.ipcService.send<boolean>("unregister-maps-deep-link");
-        return res.success ? res.data : false;
+        return lastValueFrom(this.ipcService.sendV2("unregister-maps-deep-link"));
     }
 
     public get versionLinked$(): Observable<BSVersion> {
@@ -173,10 +168,6 @@ export class MapsManagerService {
 
     public get versionUnlinked$(): Observable<BSVersion> {
         return this.lastUnlinkedVersion$.asObservable();
-    }
-
-    public $mapsLinkingPending(version: BSVersion): Observable<boolean> {
-        return this.linker.$isPending(version, MapsManagerService.RELATIVE_MAPS_FOLDER);
     }
 
     public $mapsFolderLinkState(version: BSVersion): Observable<FolderLinkState> {

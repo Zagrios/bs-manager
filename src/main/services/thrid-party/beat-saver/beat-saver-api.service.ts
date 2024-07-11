@@ -1,6 +1,7 @@
 import { BsvMapDetail } from "shared/models/maps";
-import { BsvPlaylist, BsvPlaylistPage, MapFilter, SearchParams, SearchResponse } from "shared/models/maps/beat-saver.model";
+import { BsvPlaylistPage, MapFilter, PlaylistSearchParams, PlaylistSearchResponse, SearchParams, SearchResponse } from "shared/models/maps/beat-saver.model";
 import { RequestService } from "../../request.service";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
 
 export class BeatSaverApiService {
     private static instance: BeatSaverApiService;
@@ -20,6 +21,12 @@ export class BeatSaverApiService {
         this.request = RequestService.getInstance();
     }
 
+    private objectToStringRecord(obj: Record<string, any>): Record<string, string> {
+        return Object.fromEntries(Object.entries(obj)
+            .filter(([, value]) => value !== undefined && value !== null)
+            .map(([key, value]) => [key, String(value)] as [string, string]));
+    }
+
     private mapFilterToUrlParams(filter: MapFilter): URLSearchParams {
         if (!filter) {
             return new URLSearchParams();
@@ -30,24 +37,7 @@ export class BeatSaverApiService {
 
         const tags = enbledTagsString || excludedTagsString ? [...enbledTagsString, excludedTagsString].join("|") : null;
 
-        const params = {
-            ...(filter.automapper && { automapper: String(filter.automapper) }),
-            ...(filter.chroma && { chroma: String(filter.chroma) }),
-            ...(filter.cinema && { cinema: String(filter.cinema) }),
-            ...(filter.me && { me: String(filter.me) }),
-            ...(filter.noodle && { noodle: String(filter.noodle) }),
-            ...(filter.ranked && { ranked: String(filter.ranked) }),
-            ...(filter.verified && { verified: String(filter.verified) }),
-            ...(filter.curated && { curated: String(filter.curated) }),
-            ...(filter.fullSpread && { fullSpread: String(filter.fullSpread) }),
-            ...(filter.from && { from: String(filter.from) }),
-            ...(filter.to && { to: String(filter.to) }),
-            ...(tags && { tags: String(tags) }),
-            ...(filter.minDuration && { minDuration: String(filter.minDuration) }),
-            ...(filter.maxDuration && { maxDuration: String(filter.maxDuration) }),
-            ...(filter.minNps && { minNps: String(filter.minNps) }),
-            ...(filter.maxNps && { maxNps: String(filter.maxNps) }),
-        };
+        const params: Record<string, string> = this.objectToStringRecord({...filter, tags});
 
         return new URLSearchParams(params);
     }
@@ -73,7 +63,7 @@ export class BeatSaverApiService {
 
     public async getMapsDetailsByHashs<T extends string>(hashs: T[]): Promise<Record<Lowercase<T>, BsvMapDetail>> {
         if (hashs.length > 50) {
-            throw "too musch map hashs";
+            throw new CustomError("too musch map hashs", "TOO_MUCH_MAP_HASHS");
         }
 
         const paramsHashs = hashs.join(",");
@@ -95,14 +85,19 @@ export class BeatSaverApiService {
         return this.request.getJSON<BsvMapDetail>(`${this.bsaverApiUrl}/maps/id/${id}`);
     }
 
-    public async searchMaps(search: SearchParams): Promise<SearchResponse> {
+    public searchMaps(search: SearchParams): Promise<SearchResponse> {
         const url = new URL(`${this.bsaverApiUrl}/search/text/${search?.page ?? 0}`);
         url.search = this.searchParamsToUrlParams(search).toString();
         return this.request.getJSON<SearchResponse>(url.toString());
     }
 
-    public async getPlaylistDetails(id: string): Promise<BsvPlaylist> {
-        const res = await this.request.getJSON<BsvPlaylistPage>(`${this.bsaverApiUrl}/playlists/id/${id}/0`);
-        return res.playlist;
+    public searchPlaylists(search: PlaylistSearchParams): Promise<PlaylistSearchResponse> {
+        const url = new URL(`${this.bsaverApiUrl}/playlists/search/${search?.page ?? 0}`);
+        url.search = new URLSearchParams(this.objectToStringRecord(search)).toString();
+        return this.request.getJSON<PlaylistSearchResponse>(url.toString());
+    }
+
+    public getPlaylistDetailsById(id: string, page = 0): Promise<BsvPlaylistPage> {
+        return this.request.getJSON<BsvPlaylistPage>(`${this.bsaverApiUrl}/playlists/id/${id}/${page}`);
     }
 }

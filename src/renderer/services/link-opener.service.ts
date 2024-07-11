@@ -1,4 +1,4 @@
-import { Observable, Subject } from "rxjs";
+import { Observable, Subject, lastValueFrom } from "rxjs";
 import { IpcService } from "./ipc.service";
 
 export class LinkOpenerService {
@@ -23,7 +23,7 @@ export class LinkOpenerService {
         if (internal) {
             return this._iframeLink$.next(url);
         }
-        this.ipcService.sendLazy("new-window", { args: url });
+        lastValueFrom(this.ipcService.sendV2("new-window", url));
     }
 
     public closeIframe() {

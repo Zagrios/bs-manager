@@ -3,11 +3,12 @@ import { Observable, ReplaySubject, identity } from "rxjs";
 import { IpcRequest, IpcResponse } from "shared/models/ipc";
 import { deserializeError } from 'serialize-error';
 import { IpcCompleteChannel, IpcErrorChannel, IpcTearDownChannel } from "shared/models/ipc/ipc-response.interface";
+import { IpcChannels, IpcRequestType, IpcResponseType } from "shared/models/ipc/ipc-routes";
 
 export class IpcService {
     private static instance: IpcService;
 
-    private readonly channelObservables: Map<string, Observable<IpcResponse<unknown>>>;
+    private readonly channelObservables: Map<string, Observable<unknown>>;
 
     public static getInstance(): IpcService {
         if (!IpcService.instance) {
@@ -45,13 +46,13 @@ export class IpcService {
     }
 
     // Also need a rework
-    public watch<T>(channel: string): Observable<IpcResponse<T>> {
+    public watch<T>(channel: string): Observable<T> {
         if (this.channelObservables.has(channel)) {
-            return this.channelObservables.get(channel) as Observable<IpcResponse<T>>;
+            return this.channelObservables.get(channel) as Observable<T>;
         }
 
-        const obs = new Observable<IpcResponse<T>>(observer => {
-            window.electron.ipcRenderer.on(channel, (res: IpcResponse<T>) => {
+        const obs = new Observable<T>(observer => {
+            window.electron.ipcRenderer.on(channel, (res) => {
                 observer.next(res);
             });
         });
@@ -63,25 +64,23 @@ export class IpcService {
 
     // TODO : Convert all IPCs calls to V2
 
-    public sendV2<T, U = unknown>(channel: string, request?: IpcRequest<U>, defaultValue?: T): Observable<T> {
-        if (!request) {
-            request = { args: null, responceChannel: null };
-        }
+    public sendV2<C extends IpcChannels>(channel: C, data?: IpcRequestType<C>, defaultValue?: IpcResponseType<C>): Observable<IpcResponseType<C>> {
 
-        if (!request.responceChannel) {
-            request.responceChannel = `${channel}_responce_${crypto.randomUUID()}`;
-        }
+        const request: IpcRequest<IpcRequestType<C>> = {
+            args: data,
+            responceChannel: `${channel}_responce_${crypto.randomUUID()}`
+        };
 
         const completeChannel: IpcCompleteChannel = `${request.responceChannel}_complete`;
         const errorChannel: IpcErrorChannel = `${request.responceChannel}_error`;
         const teardownChannel: IpcTearDownChannel = `${request.responceChannel}_teardown`;
 
-        const obs = new Observable<T>(observer => {
-            window.electron.ipcRenderer.on(request.responceChannel, (res: T) => observer.next(res));
+        const obs = new Observable<IpcResponseType<C>>(observer => {
+            window.electron.ipcRenderer.on(request.responceChannel, (res: IpcResponseType<C>) => observer.next(res));
             window.electron.ipcRenderer.on(errorChannel, (err) => observer.error(deserializeError(err)));
             window.electron.ipcRenderer.on(completeChannel, () => observer.complete());
 
-            window.electron.ipcRenderer.sendMessage(channel, request);
+            window.electron.ipcRenderer.sendMessage(channel as string, request);
 
             return () => {
                 window.electron.ipcRenderer.removeAllListeners(request.responceChannel);
