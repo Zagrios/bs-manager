@@ -9,8 +9,8 @@ import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import BeatWaitingImg from "../../../../../../assets/images/apngs/beat-waiting.png";
 import BeatConflictImg from "../../../../../../assets/images/apngs/beat-conflict.png";
 import { useObservable } from "renderer/hooks/use-observable.hook";
-import { skip, filter, map } from "rxjs/operators";
-import { Observable, Subscription, combineLatest, lastValueFrom, noop } from "rxjs";
+import { skip, filter } from "rxjs/operators";
+import { Subscription, lastValueFrom, noop } from "rxjs";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { useInView } from "framer-motion";
@@ -96,24 +96,27 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         });
 
         modsManager.installMods(modsToInstall, version).then(() => {
-            lastValueFrom(loadMods());
+            loadMods();
         });
     };
 
-    const loadMods = (): Observable<void> => {
+    const loadMods = (): Promise<void> => {
         if (os.isOffline) {
-            return new Observable<void>(subscriber => subscriber.complete());
+            return Promise.resolve();
         }
 
-        return combineLatest([
-            modsManager.getAvailableMods(version),
-            modsManager.getInstalledMods(version)
-        ]).pipe(map(([available, installed]) => {
+        const promise = async () => {
+            const available = await lastValueFrom(modsManager.getAvailableMods(version));
+            const installed = await lastValueFrom(modsManager.getInstalledMods(version));
+            return [available, installed];
+        }
+
+        return promise().then(([available, installed]) => {
             const defaultMods = configService.get<string[]>("default_mods" as DefaultConfigKey);
             setModsAvailable(() => modsToCategoryMap(available));
             setModsSelected(() => available.filter(m => m.required || defaultMods.some(d => m.name.toLowerCase() === d.toLowerCase()) || installed.some(i => m.name === i.name)));
             setModsInstalled(() => modsToCategoryMap(installed));
-        }));
+        });
     };
 
     useEffect(() => {
@@ -141,14 +144,14 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
                 return onDisclamerDecline?.();
             }
 
-            subs.push(loadMods().subscribe());
+            loadMods();
 
             subs.push(
                 modsManager.isUninstalling$.pipe(
                     skip(1),
                     filter(uninstalling => !uninstalling)
                 ).subscribe(() => {
-                    subs.push(loadMods().subscribe());
+                    loadMods();
                 })
             );
         });
