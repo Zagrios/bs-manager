@@ -62,7 +62,7 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
     }, [searchParams]);
 
     const handleNewSearch = (value: Omit<PlaylistSearchParams, "page">) => {
-        setPlaylists(() => []);
+        setPlaylists(() => undefined);
         setSearchParams(() => ({ ...value, page: 0}));
     };
 
