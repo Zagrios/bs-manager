@@ -1,6 +1,6 @@
 import { MSModelType } from "shared/models/models/model-saber.model";
 import { IpcService } from "../ipc.service";
-import { FolderLinkState, VersionFolderLinkerService, VersionLinkerActionListener, VersionLinkerActionType } from "../version-folder-linker.service";
+import { FolderLinkState, VersionFolderLinkerService, VersionLinkerActionListener } from "../version-folder-linker.service";
 import { MODEL_TYPE_FOLDERS } from "shared/models/models/constants";
 import { Observable, lastValueFrom, map } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
@@ -72,7 +72,7 @@ export class ModelsManagerService {
     }
 
     public async linkModels(type: MSModelType, version?: BSVersion): Promise<boolean> {
-        const res = await this.modalService.openModal(LinkModelsModal, type);
+        const res = await this.modalService.openModal(LinkModelsModal, {data: type});
 
         if (res.exitCode !== ModalExitCode.COMPLETED) {
             return null;
@@ -81,13 +81,12 @@ export class ModelsManagerService {
         return this.versionFolderLinked.linkVersionFolder({
             version,
             relativeFolder: MODEL_TYPE_FOLDERS[type],
-            type: VersionLinkerActionType.Link,
             options: { keepContents: res.data !== false },
         });
     }
 
     public async unlinkModels(type: MSModelType, version?: BSVersion): Promise<boolean> {
-        const res = await this.modalService.openModal(UnlinkModelsModal, type);
+        const res = await this.modalService.openModal(UnlinkModelsModal, {data: type});
 
         if (res.exitCode !== ModalExitCode.COMPLETED) {
             return null;
@@ -96,7 +95,6 @@ export class ModelsManagerService {
         return this.versionFolderLinked.unlinkVersionFolder({
             version,
             relativeFolder: MODEL_TYPE_FOLDERS[type],
-            type: VersionLinkerActionType.Unlink,
             options: { keepContents: res.data !== false },
         });
     }
@@ -162,7 +160,7 @@ export class ModelsManagerService {
                 return false;
             })();
 
-            const res = await this.modalService.openModal(DeleteModelsModal, { models, linked });
+            const res = await this.modalService.openModal(DeleteModelsModal, {data: { models, linked }});
             if (res.exitCode !== ModalExitCode.COMPLETED) {
                 return Promise.resolve([]);
             }

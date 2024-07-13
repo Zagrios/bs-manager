@@ -19,6 +19,6 @@ export class BSUninstallerService {
     }
 
     public uninstall(version: BSVersion): Promise<boolean> {
-        return lastValueFrom(this.ipcService.sendV2<boolean>("bs.uninstall", { args: version })).catch(() => false);
+        return lastValueFrom(this.ipcService.sendV2("bs.uninstall", version)).catch(() => false);
     }
 }

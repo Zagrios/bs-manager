@@ -3,7 +3,7 @@ import { BSLocalVersionService } from "../bs-local-version.service";
 import { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio, spawn } from "child_process";
 import path from "path";
 import log from "electron-log";
-import { sToMs } from "shared/helpers/time.helpers";
+import { sToMs } from "../../../shared/helpers/time.helpers";
 
 export abstract class AbstractLauncherService {
 
@@ -53,6 +53,13 @@ export abstract class AbstractLauncherService {
         let timoutId: NodeJS.Timeout;
 
         const exit = new Promise<number>((resolve, reject) => {
+            // Don't remove, useful for debugging!
+            // process.stdout.on("data", (data) => {
+            //     log.info(`BS stdout: ${data}`);
+            // });
+            // process.stderr.on("data", (data) => {
+            //     log.error(`BS stderr: ${data}`);
+            // });
 
             process.on("error", (err) => {
                 log.error(`Error while launching BS`, err);

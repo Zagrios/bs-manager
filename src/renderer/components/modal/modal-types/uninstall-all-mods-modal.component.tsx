@@ -5,7 +5,7 @@ import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { BSVersion } from "shared/bs-version.interface";
 
-export const UninstallAllModsModal: ModalComponent<void, BSVersion> = ({ resolver, data }) => {
+export const UninstallAllModsModal: ModalComponent<void, BSVersion> = ({ resolver, options: {data} }) => {
     const version = data;
     const t = useTranslation();
 

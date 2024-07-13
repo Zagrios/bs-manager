@@ -33,12 +33,9 @@ export default function OneClickDownloadMap() {
 
         progressBar.open();
 
-        console.log("AAAA", mapId, isHash);
-
         const promise = (async () => {
 
             const mapDetails = isHash === "true" ? (await bsv.getMapDetailsFromHashs([mapId])).at(0) : await bsv.getMapDetailsById(mapId);
-            console.log(mapDetails);
 
             setMapInfo(() => mapDetails);
 

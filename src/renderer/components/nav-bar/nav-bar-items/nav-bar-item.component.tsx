@@ -1,12 +1,13 @@
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { BsmButton } from "../../shared/bsm-button.component";
+import { MouseEventHandler } from "react";
 
 type Props = {
     children: JSX.Element;
     isDownloading?: boolean;
     progress?: number;
     isActive?: boolean;
-    onCancel?: (e: React.MouseEvent) => void;
+    onCancel?: MouseEventHandler<HTMLDivElement>;
 };
 
 export function NavBarItem({ progress, isDownloading, children, isActive, onCancel }: Props) {

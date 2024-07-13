@@ -74,7 +74,7 @@ export const NotificationItem = forwardRef(({ resolver, notification }: { resolv
                 )}
             </div>
             <span className={`absolute w-full h-1 shadow-center left-0 top-0 ${renderNeonColors}`} />
-            <BsmButton icon="cross" className="absolute top-2 right-2" withBar={false} onClick={() => resolver(NotificationResult.CLOSE)} />
+            <BsmButton icon="cross" className="absolute top-2 right-2 size-4" withBar={false} onClick={() => resolver(NotificationResult.CLOSE)} />
         </motion.li>
     );
 });

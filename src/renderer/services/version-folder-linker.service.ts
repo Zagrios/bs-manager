@@ -1,4 +1,4 @@
-import { LinkOptions, UnlinkOptions } from "main/services/folder-linker.service";
+import { LinkOptions } from "main/services/folder-linker.service";
 import { map, distinctUntilChanged, filter, mergeMap, shareReplay } from "rxjs/operators";
 import { BehaviorSubject, Observable, of } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
@@ -82,7 +82,7 @@ export class VersionFolderLinkerService {
             this.onVersionFolderLinked(callBack);
         });
 
-        this._queue$.next([...this._queue$.value, action]);
+        this._queue$.next([...this._queue$.value, {...action, type: VersionLinkerActionType.Link}]);
 
         return promise;
     }
@@ -100,7 +100,7 @@ export class VersionFolderLinkerService {
             this.onVersionFolderUnlinked(callBack);
         });
 
-        this._queue$.next([...this._queue$.value, action]);
+        this._queue$.next([...this._queue$.value, {...action, type: VersionLinkerActionType.Unlink}]);
 
         return promise;
     }
@@ -179,14 +179,8 @@ export interface VersionLinkerAction {
     options?: LinkOptions;
 }
 
-export interface VersionLinkFolderAction extends VersionLinkerAction {
-    type: VersionLinkerActionType.Link;
-}
-
-export interface VersionUnlinkFolderAction extends VersionLinkerAction {
-    type: VersionLinkerActionType.Unlink;
-    options?: UnlinkOptions;
-}
+export type VersionLinkFolderAction = Omit<VersionLinkerAction, "type">;
+export type VersionUnlinkFolderAction = Omit<VersionLinkerAction, "type">;
 
 export type VersionLinkerActionListener = (action: VersionLinkerAction, linked: boolean) => void;
 

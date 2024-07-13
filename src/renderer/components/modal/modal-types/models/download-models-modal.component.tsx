@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmSelect, BsmSelectOption } from "renderer/components/shared/bsm-select.component";
 import { ModalComponent } from "renderer/services/modale.service";
@@ -22,8 +21,9 @@ import equal from "fast-deep-equal";
 import { catchError, of } from "rxjs";
 import Tippy from "@tippyjs/react";
 import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
+import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual-scroll.component";
 
-export const DownloadModelsModal: ModalComponent<void, { version: BSVersion; type: MSModelType; owned: BsmLocalModel[] }> = ({ data: { version, type, owned } }) => {
+export const DownloadModelsModal: ModalComponent<void, { version: BSVersion; type: MSModelType; owned: BsmLocalModel[] }> = ({ options: {data: { version, type, owned }} }) => {
     const modelsDownloader = useService(ModelsDownloaderService);
     const modelSaber = useService(ModelSaberService);
     const os = useService(OsDiagnosticService);
@@ -47,6 +47,7 @@ export const DownloadModelsModal: ModalComponent<void, { version: BSVersion; typ
     const currentDownload = useObservable(() => modelsDownloader.currentDownload$(), null);
     const downloadQueue = useObservable(() => modelsDownloader.getQueue$(), []);
     const [msModels, msModels$] = useBehaviorSubject<MSModel[]>([]);
+    const [renderableModels, setRenderableModels] = useState<RenderableModel[]>([]);
     const isOnline = useObservable(() => os.isOnline$, true);
     const [error, error$] = useBehaviorSubject(false);
     const [isLoading, isLoading$] = useBehaviorSubject(false);
@@ -56,6 +57,15 @@ export const DownloadModelsModal: ModalComponent<void, { version: BSVersion; typ
     const [currentSort, currentSort$] = useBehaviorSubject<MSGetSort>(MSGetSort.Date);
     const [searhInput, searhInput$] = useBehaviorSubject("");
     const [getQuery, getQuery$] = useBehaviorSubject<MSGetQuery>({ type: currentType, platform: MSModelPlatform.PC, start: 0, end: 25, sort: currentSort, sortDirection: MSGetSortDirection.Descending });
+
+    useOnUpdate(() => {
+        setRenderableModels(() => msModels?.map(msModel => ({
+            model: msModel,
+            isInQueue: downloadQueue.some(download => download.model.id === msModel.id && equal(download.version, version)),
+            isDownloading: equal(currentDownload, { model: msModel, version } as ModelDownload),
+            isOwned: ownedModels.some(owned => owned.hash === msModel.hash),
+        })))
+    }, [msModels, currentDownload, downloadQueue, ownedModels]);
 
     useOnUpdate(() => {
         const sub = modelsDownloader.onModelsDownloaded(model => {
@@ -101,6 +111,9 @@ export const DownloadModelsModal: ModalComponent<void, { version: BSVersion; typ
     }, [currentType, currentSort]);
 
     const loadMore = () => {
+
+        if(isLoading){ return; }
+
         const currentQuery = getQuery;
         currentQuery.start += 25;
         currentQuery.end += 25;
@@ -128,13 +141,20 @@ export const DownloadModelsModal: ModalComponent<void, { version: BSVersion; typ
         modelsDownloader.removeFromDownloadQueue({ model, version });
     }, []);
 
-    const modelPendingDownload = (model: MSModel) => {
-        return downloadQueue.some(download => download.model.id === model.id && equal(download.version, version));
-    };
-
-    const isModelOwned = (model: MSModel) => {
-        return !!ownedModels.some(owned => owned.hash === model.hash);
-    };
+    const renderModel = useCallback((renderModel: RenderableModel) => {
+        return (
+            <ModelItem
+                key={renderModel.model.id}
+                {...renderModel.model}
+                hideNsFw
+                callbackValue={renderModel.model}
+                isDownloading={renderModel.isDownloading}
+                onDownload={!renderModel.isOwned ? handleDownloadModel : undefined}
+                onDoubleClick={!renderModel.isOwned ? handleDownloadModel : undefined}
+                onCancelDownload={renderModel.isInQueue ? handleCancelDownload : undefined}
+            />
+        );
+    }, [version]);
 
     const renderFilterTips = useConstant(() => (
         <div className="w-fit flex">
@@ -217,21 +237,37 @@ export const DownloadModelsModal: ModalComponent<void, { version: BSVersion; typ
                 />
                 <BsmSelect className="bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-1 pb-0.5 text-center capitalize" options={querySortsOptions} onChange={value => currentSort$.next(value)} />
             </div>
-            <ul className="w-full grow flex content-start flex-wrap gap-4 pt-1.5 px-2 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 z-0">
-                {msModels.length === 0 ? (
-                    <div className="w-full h-full flex flex-col items-center justify-center">
-                        <img className={`w-32 h-32 ${isLoading && "spin-loading"}`} src={isLoading && !error ? BeatWaitingImg : BeatConflictImg} alt=" " />
-                        {renderLoadingStatus()}
-                    </div>
-                ) : (
-                    <>
-                        {msModels.map(model => (
-                            <ModelItem key={model.id} {...model} callbackValue={model} isDownloading={equal(currentDownload, { model, version } as ModelDownload)} onDownload={!isModelOwned(model) ? handleDownloadModel : undefined} onDoubleClick={!isModelOwned(model) ? handleDownloadModel : undefined} onCancelDownload={modelPendingDownload(model) ? handleCancelDownload : undefined} />
-                        ))}
-                        <motion.span onViewportEnter={loadMore} className="block w-full h-8" />
-                    </>
-                )}
-            </ul>
+
+            {!msModels.length ? (
+                <div className="size-full flex flex-col items-center justify-center">
+                    <img className={`w-32 h-32 ${isLoading && "spin-loading"}`} src={isLoading && !error ? BeatWaitingImg : BeatConflictImg} alt=" " />
+                    {renderLoadingStatus()}
+                </div>
+            ) : (
+                <VirtualScroll
+                    classNames={{
+                        mainDiv: "size-full",
+                        rows: "gap-x-4 p-4 first:pt-1.5",
+                    }}
+                    maxColumns={Infinity}
+                    itemHeight={272}
+                    minItemWidth={256}
+                    items={renderableModels}
+                    rowKey={rowModels => rowModels.map(m => m.model.id).join("-")}
+                    renderItem={renderModel}
+                    scrollEnd={{
+                        onScrollEnd: loadMore,
+                        margin: 100,
+                    }}
+                />
+            )}
         </form>
     );
+};
+
+type RenderableModel = {
+    model: MSModel;
+    isInQueue: boolean;
+    isDownloading: boolean;
+    isOwned: boolean;
 };

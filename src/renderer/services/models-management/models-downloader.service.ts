@@ -117,7 +117,7 @@ export class ModelsDownloaderService {
     }
 
     public openDownloadModelsModal(version: BSVersion, type?: MSModelType, owned?: BsmLocalModel[]): Promise<ModalResponse<void>> {
-        return this.modal.openModal(DownloadModelsModal, { version, type, owned });
+        return this.modal.openModal(DownloadModelsModal, {data: { version, type, owned }});
     }
 
     public async oneClickInstallModel(model: MSModel): Promise<boolean> {

@@ -16,6 +16,15 @@ ipc.on("bsv-get-map-details-from-hashs", (args, reply) => {
 
 ipc.on("bsv-get-map-details-by-id", (args, reply) => {
     const bsvService = BeatSaverService.getInstance();
-    console.log("AAAAAAZEZE", args);
     reply(from(bsvService.getMapDetailsById(args)));
+});
+
+ipc.on("bsv-search-playlist", (args, reply) => {
+    const bsvService = BeatSaverService.getInstance();
+    reply(from(bsvService.searchPlaylists(args)));
+});
+
+ipc.on("bsv-get-playlist-details-by-id", (args, reply) => {
+    const bsvService = BeatSaverService.getInstance();
+    reply(from(bsvService.getPlaylistDetailsById(args.id, args.page)));
 });

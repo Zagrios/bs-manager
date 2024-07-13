@@ -3,7 +3,7 @@ import { useService } from "./use-service.hook";
 import { useObservable } from "./use-observable.hook";
 
 export function useTranslation(): (translationKey: string, args?: Record<string, string>) => string {
-    
+
     const i18nService = useService(I18nService);
 
     useObservable(() => i18nService.currentLanguage$);
@@ -12,7 +12,6 @@ export function useTranslation(): (translationKey: string, args?: Record<string,
         if (!key) {
             return key;
         }
-        const tranlatables = key.split(" ");
-        return tranlatables.map(key => i18nService.translate(key, args)).join(" ");
+        return i18nService.translate(key, args);
     };
 }

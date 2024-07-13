@@ -10,8 +10,8 @@ import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import BeatConflict from "../../../../../assets/images/apngs/beat-conflict.png";
 import { useService } from "renderer/hooks/use-service.hook";
 
-export const DeleteMapsModal: ModalComponent<void, { linked: boolean; maps: BsmLocalMap[] }> = ({ resolver, data: { linked, maps } }) => {
-    
+export const DeleteMapsModal: ModalComponent<void, { linked: boolean; maps: BsmLocalMap[] }> = ({ resolver, options: {data : { linked, maps }}}) => {
+
     const config = useService(ConfigurationService);
 
     const t = useTranslation();

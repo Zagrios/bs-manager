@@ -8,7 +8,7 @@ import { IpcChannels, IpcRequestType, IpcResponseType } from "shared/models/ipc/
 export class IpcService {
     private static instance: IpcService;
 
-    private readonly channelObservables: Map<string, Observable<IpcResponse<unknown>>>;
+    private readonly channelObservables: Map<string, Observable<unknown>>;
 
     public static getInstance(): IpcService {
         if (!IpcService.instance) {
@@ -46,13 +46,13 @@ export class IpcService {
     }
 
     // Also need a rework
-    public watch<T>(channel: string): Observable<IpcResponse<T>> {
+    public watch<T>(channel: string): Observable<T> {
         if (this.channelObservables.has(channel)) {
-            return this.channelObservables.get(channel) as Observable<IpcResponse<T>>;
+            return this.channelObservables.get(channel) as Observable<T>;
         }
 
-        const obs = new Observable<IpcResponse<T>>(observer => {
-            window.electron.ipcRenderer.on(channel, (res: IpcResponse<T>) => {
+        const obs = new Observable<T>(observer => {
+            window.electron.ipcRenderer.on(channel, (res) => {
                 observer.next(res);
             });
         });

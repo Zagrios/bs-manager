@@ -2,7 +2,7 @@ import { getFoldersInFolder } from "../helpers/fs.helpers";
 import path from "path";
 import { VersionLinkerAction, VersionLinkFolderAction, VersionUnlinkFolderAction } from "renderer/services/version-folder-linker.service";
 import { BSVersion } from "shared/bs-version.interface";
-import { LocalMapsManagerService } from "./additional-content/local-maps-manager.service";
+import { LocalMapsManagerService } from "./additional-content/maps/local-maps-manager.service";
 import { BSLocalVersionService } from "./bs-local-version.service";
 import { FolderLinkerService, LinkOptions } from "./folder-linker.service";
 import { allSettled } from "../../shared/helpers/promise.helpers";

@@ -1,3 +1,6 @@
+import { ObjectValues } from "shared/helpers/type.helpers";
+import { SongDetailDiffCharactertistic, SongDiffName } from "./song-details-cache/song-details-cache.model";
+
 export interface BsvMapDetail {
     automapper: boolean;
     createdAt: string;
@@ -11,6 +14,9 @@ export interface BsvMapDetail {
     name: string;
     qualified: boolean;
     ranked: boolean;
+    blQualified: boolean
+    blRanked: boolean
+    declaredAi: ObjectValues<typeof BsvDeclaredAi>;
     stats: BsvMapStats;
     tags: MapTag[];
     updatedAt: BsvInstant;
@@ -115,10 +121,10 @@ export interface BsvMapTestplay {
 
 export interface BsvMapDifficulty {
     bombs: number;
-    characteristic: BsvMapCharacteristic;
+    characteristic: SongDetailDiffCharactertistic;
     chroma: boolean;
     cinema: boolean;
-    difficulty: BsvMapDifficultyType;
+    difficulty: SongDiffName;
     events: number;
     length: number;
     maxScore: number;
@@ -140,15 +146,83 @@ export interface BsvMapParitySummary {
     warns: number;
 }
 
-export type BsvMapCharacteristic = "Standard" | "OneSaber" | "NoArrows" | "90Degree" | "360Degree" | "Lightshow" | "Lawless";
-export type BsvMapDifficultyType = "Easy" | "Normal" | "Hard" | "Expert" | "ExpertPlus";
+export enum MapStyle {
+    Dance = "dance",
+    Swing = "swing",
+    Nightcore = "nightcore",
+    Folk = "folk",
+    Family = "family",
+    Ambient = "ambient",
+    Funk = "funk",
+    Jazz = "jazz",
+    Soul = "soul",
+    Speedcore = "speedcore",
+    Punk = "punk",
+    Rb = "rb",
+    Holiday = "holiday",
+    Vocaloid = "vocaloid",
+    JRock = "j-rock",
+    Trance = "trance",
+    DrumBass = "drumbass",
+    Comedy = "comedy",
+    Instrumental = "instrumental",
+    Hardcore = "hardcore",
+    KPop = "k-pop",
+    Indie = "indie",
+    Techno = "techno",
+    House = "house",
+    Game = "game",
+    Film = "film",
+    Alt = "alt",
+    Dubstep = "dubstep",
+    Metal = "metal",
+    Anime = "anime",
+    Hiphop = "hiphop",
+    JPop = "j-pop",
+    Rock = "rock",
+    Pop = "pop",
+    Electronic = "electronic",
+    ClassicalOrchestral = "classical-orchestral"
+}
 
-export type MapStyle = "dance" | "swing" | "nightcore" | "folk" | "family" | "ambient" | "funk" | "jazz" | "soul" | "speedcore" | "punk" | "rb" | "holiday" | "vocaloid" | "jrock" | "trance" | "drumbass" | "comedy" | "instrumental" | "hardcore" | "kpop" | "indie" | "techno" | "house" | "game" | "film" | "alt" | "dubstep" | "metal" | "anime" | "hiphop" | "jpop" | "rock" | "pop" | "electronic" | "classical-orchestral";
-export type MapType = "accuracy" | "balanced" | "challenge" | "dancestyle" | "fitness" | "speed" | "tech";
+// MapType Enum
+export enum MapType {
+    Accuracy = "accuracy",
+    Balanced = "balanced",
+    Challenge = "challenge",
+    Dancestyle = "dancestyle",
+    Fitness = "fitness",
+    Speed = "speed",
+    Tech = "tech"
+}
+
+export const MapTags = { ...MapStyle, ...MapType };
 export type MapTag = MapStyle | MapType;
 
-export type MapRequirement = "chroma" | "noodle" | "me" | "cinema";
-export type MapSpecificity = "automapper" | "ranked" | "curated" | "verified" | "fullSpread";
+export enum MapRequirement {
+    Chroma = "chroma",
+    Noodle = "noodle",
+    Me = "me",
+    Cinema = "cinema"
+
+}
+
+export enum MapSpecificity {
+    Automapper = "automapper",
+    Ranked = "ranked",
+    Curated = "curated",
+    Verified = "verified",
+    FullSpread = "fullSpread"
+
+}
+
+// [ Admin, Uploader, SageScore, None ]
+export const BsvDeclaredAi = {
+    Admin: "Admin",
+    Uploader: "Uploader",
+    SageScore: "SageScore",
+    None: "None"
+} as const;
 
 export interface MapFilter {
     automapper?: boolean;
@@ -176,15 +250,24 @@ export interface SearchResponse {
     redirect: string;
 }
 
+export interface PlaylistSearchResponse {
+    docs: BsvPlaylist[];
+}
+
 export interface SearchParams {
-    sortOrder: SearchOrder;
+    sortOrder: BsvSearchOrder;
     filter?: MapFilter;
     page?: number;
     q?: string;
     includeEmpty?: boolean;
 }
 
-export type SearchOrder = "Latest" | "Relevance" | "Rating" | "Curated";
+export enum BsvSearchOrder {
+    Latest = "Latest",
+    Relevance = "Relevance",
+    Rating = "Rating",
+    Curated = "Curated"
+}
 
 export interface BsvMapDetailWithOrder {
     map: BsvMapDetail;
@@ -203,10 +286,17 @@ export interface BsvPlaylist {
     playlistId: number;
     playlistImage: string;
     playlistImage512: string;
-    public: boolean;
     songsChangedAt: BsvInstant;
     stats: BsvPlaylistStats;
     updatedAt: BsvInstant;
+    type: BsvPlaylistType;
+}
+
+export enum BsvPlaylistType {
+    Private = "Private",
+    Public = "Public",
+    System = "System",
+    Search = "Search"
 }
 
 export interface BsvPlaylistStats {
@@ -226,4 +316,17 @@ export interface BsvPlaylistStats {
 export interface BsvPlaylistPage {
     maps: BsvMapDetailWithOrder[];
     playlist: BsvPlaylist;
+}
+
+export interface PlaylistSearchParams {
+    q?: string;
+    page?: number;
+    sortOrder: BsvSearchOrder;
+    from?: string;
+    to?: string;
+    minNps?: number;
+    maxNps?: number;
+    curated?: boolean;
+    verified?: boolean;
+    includeEmpty?: boolean;
 }

@@ -11,7 +11,8 @@ import { NotificationService } from "./notification.service";
 import { ConfigurationService } from "./configuration.service";
 import { map, last, catchError } from "rxjs/operators";
 import { ProgressionInterface } from "shared/models/progress-bar";
-import { FolderLinkState, VersionFolderLinkerService, VersionLinkerActionType } from "./version-folder-linker.service";
+import { FolderLinkState, VersionFolderLinkerService } from "./version-folder-linker.service";
+import { SongDetails } from "shared/models/maps";
 
 export class MapsManagerService {
     private static instance: MapsManagerService;
@@ -62,7 +63,6 @@ export class MapsManagerService {
 
         return this.linker.linkVersionFolder({
             version,
-            type: VersionLinkerActionType.Link,
             relativeFolder: MapsManagerService.RELATIVE_MAPS_FOLDER,
             options: { keepContents: !!modalRes.data },
         });
@@ -77,7 +77,6 @@ export class MapsManagerService {
 
         return this.linker.unlinkVersionFolder({
             version,
-            type: VersionLinkerActionType.Unlink,
             relativeFolder: MapsManagerService.RELATIVE_MAPS_FOLDER,
             options: { keepContents: !!modalRes.data },
         });
@@ -89,7 +88,7 @@ export class MapsManagerService {
         const askModal = maps.length > 1 || !this.config.get<boolean>(MapsManagerService.REMEMBER_CHOICE_DELETE_MAP_KEY);
 
         if (askModal) {
-            const modalRes = await this.modal.openModal(DeleteMapsModal, { linked: versionLinked, maps });
+            const modalRes = await this.modal.openModal(DeleteMapsModal, {data: { linked: versionLinked, maps }});
             if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
                 return false;
             }
@@ -99,7 +98,7 @@ export class MapsManagerService {
 
         const progress$ = this.ipcService.sendV2("delete-maps", maps ).pipe(map(progress => (progress.deleted / progress.total) * 100));
 
-        if(showProgressBar){
+        if (showProgressBar) {
             this.progressBar.show(progress$, true);
         }
 
@@ -147,6 +146,10 @@ export class MapsManagerService {
             });
     }
 
+    public getMapsInfoFromHashs(hashs: string[]): Observable<SongDetails[]> {
+        return this.ipcService.sendV2("get-maps-info-from-cache", hashs);
+    }
+
     public async isDeepLinksEnabled(): Promise<boolean> {
         return lastValueFrom(this.ipcService.sendV2("is-map-deep-links-enabled"));
     }
@@ -165,10 +168,6 @@ export class MapsManagerService {
 
     public get versionUnlinked$(): Observable<BSVersion> {
         return this.lastUnlinkedVersion$.asObservable();
-    }
-
-    public $mapsLinkingPending(version: BSVersion): Observable<boolean> {
-        return this.linker.$isPending(version, MapsManagerService.RELATIVE_MAPS_FOLDER);
     }
 
     public $mapsFolderLinkState(version: BSVersion): Observable<FolderLinkState> {

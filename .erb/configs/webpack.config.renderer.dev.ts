@@ -1,3 +1,4 @@
+/* eslint-disable import/no-import-module-exports */
 import "webpack-dev-server";
 import path from "path";
 import fs from "fs";

@@ -4,6 +4,7 @@ import { IpcService } from "./ipc.service";
 import { NotificationService } from "./notification.service";
 import { CSSProperties } from "react";
 import { ProgressionInterface } from "shared/models/progress-bar";
+import { Progression } from "main/helpers/fs.helpers";
 
 export class ProgressBarService {
     private static instance: ProgressBarService;
@@ -39,7 +40,7 @@ export class ProgressBarService {
         lastValueFrom(this.ipcService.sendV2("window.progression", progression));
     }
 
-    public subscribreTo(obs: Observable<ProgressionInterface | number>) {
+    public subscribreTo(obs: Observable<ProgressionInterface | number | Progression>) {
         if (this.subscription) {
             this.unsubscribe();
         }
@@ -47,6 +48,16 @@ export class ProgressBarService {
             if (typeof value === "number") {
                 return this._progression$.next({ progression: value });
             }
+
+            const isProgression = (progression: unknown): progression is Progression => {
+                return typeof (progression as Progression).current === "number" && typeof (progression as Progression).total === "number";
+            }
+
+            if (isProgression(value)) {
+                const progress = value.current / value.total * 100;
+                return this._progression$.next({ progression: Math.floor(progress)});
+            }
+
             this._progression$.next(value);
         });
     }
@@ -57,7 +68,7 @@ export class ProgressBarService {
         this.subscription = null;
     }
 
-    public show(obs?: Observable<ProgressionInterface | number>, unsubscribe?: boolean, style?: CSSProperties) {
+    public show(obs?: Observable<ProgressionInterface | number | Progression>, unsubscribe?: boolean, style?: CSSProperties) {
         if (unsubscribe) {
             this.unsubscribe();
         }

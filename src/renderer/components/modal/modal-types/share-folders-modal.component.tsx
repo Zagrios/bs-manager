@@ -1,6 +1,6 @@
 import Tippy from "@tippyjs/react";
 import { useEffect, useState } from "react";
-import { LinkButton } from "renderer/components/maps-mangement-components/link-button.component";
+import { LinkButton } from "renderer/components/shared/link-button.component";
 import { BsmBasicSpinner } from "renderer/components/shared/bsm-basic-spinner/bsm-basic-spinner.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
@@ -15,7 +15,7 @@ import { FolderLinkState, VersionFolderLinkerService, VersionLinkerActionType } 
 import { lastValueFrom } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 
-export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ data }) => {
+export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ options: {data} }) => {
     const SHARED_FOLDERS_KEY = "default-shared-folders";
 
     const config = useService(ConfigurationService);
@@ -74,7 +74,7 @@ export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ data }) => 
         <form className="w-full max-w-md ">
             <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t("modals.shared-folders.title")}</h1>
             <p className="my-3">{t("modals.shared-folders.description")}</p>
-            <ul className="flex flex-col gap-1 mb-2 h-[300px] max-h-[300px] overflow-scroll scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 px-1">
+            <ul className="flex flex-col gap-1 mb-2 h-[300px] max-h-[300px] overflow-scroll scrollbar-default px-1">
                 {folders.map((folder, index) => (
                     <FolderItem
                         key={folder}

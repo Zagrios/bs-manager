@@ -7,7 +7,7 @@ import DOMPurify from 'dompurify';
 import './changelog-modal.component.css';
 import Tippy from "@tippyjs/react";
 
-export const ChangelogModal: ModalComponent<void, ChangelogVersion> = ({ resolver, data: changelog }) => {
+export const ChangelogModal: ModalComponent<void, ChangelogVersion> = ({ options: {data: changelog} }) => {
 
     const linkOpener = useService(LinkOpenerService);
     const openGithub = () => linkOpener.open("https://github.com/Zagrios/bs-manager");

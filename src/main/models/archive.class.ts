@@ -36,8 +36,7 @@ export class Archive {
 
     public addDirectory(path: string, destPath?: string | false): void {
         this.directories.push(path);
-        destPath = destPath === false ? false : _path.basename(path);
-        this.archive.directory(path, destPath);
+        this.archive.directory(path, destPath ?? _path.basename(path));
     }
 
     public addFile(path: string, destPath?: string): void {
@@ -46,13 +45,14 @@ export class Archive {
         this.archive.file(path, { name: destPath });
     }
 
-    public finalize(): Observable<Progression> {
-        const progress: Progression = {
+    public finalize(): Observable<Progression<string>> {
+        const progress: Progression<string> = {
             total: 0,
             current: 0,
+            data: this.output,
         };
 
-        return new Observable<Progression>(observer => {
+        return new Observable<Progression<string>>(observer => {
             (async () => {
                 progress.total = await this.loadTotalFiles();
 

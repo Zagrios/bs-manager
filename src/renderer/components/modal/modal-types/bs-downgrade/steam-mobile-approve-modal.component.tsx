@@ -6,8 +6,8 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { Observable } from "rxjs";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 
-export const SteamMobileApproveModal: ModalComponent<void, { logged$: Observable<unknown> }> = ({ resolver, data }) => {
-    
+export const SteamMobileApproveModal: ModalComponent<void, { logged$: Observable<unknown> }> = ({ resolver, options: {data} }) => {
+
     const t = useTranslation();
 
     useOnUpdate(() => {

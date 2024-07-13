@@ -23,6 +23,8 @@ export class BSLauncherService {
 
     public readonly versionRunning$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
 
+    private readonly PROTON_PATH_KEY = "protonPath";
+
     public static getInstance(){
         if(!BSLauncherService.instance){ BSLauncherService.instance = new BSLauncherService(); }
         return BSLauncherService.instance;
@@ -34,6 +36,14 @@ export class BSLauncherService {
         this.config = ConfigurationService.getInstance();
         this.theme = ThemeService.getInstance();
         this.modals = ModalService.getInstance();
+    }
+
+    public setProtonPath(protonPath: string|undefined): void {
+        this.config.set(this.PROTON_PATH_KEY, protonPath);
+    }
+
+    public getProtonPath(): string|undefined {
+        return this.config.get<string>(this.PROTON_PATH_KEY);
     }
 
     private notRewindBackupOculus(): boolean{
@@ -83,6 +93,7 @@ export class BSLauncherService {
     }
 
     public doLaunch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
+        launchOptions.protonPath = this.getProtonPath();
         return this.ipcService.sendV2("bs-launch.launch", launchOptions);
     }
 

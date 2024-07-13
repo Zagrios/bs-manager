@@ -1,6 +1,6 @@
 import { CSSProperties } from "react";
 import { useObservable } from "renderer/hooks/use-observable.hook";
-import { Observable } from "rxjs";
+import { Observable, map } from "rxjs";
 
 type Props = {
     value$: Observable<number | string>;
@@ -9,7 +9,7 @@ type Props = {
 };
 
 export default function TextProgressBar({ value$, className, style }: Props) {
-    const value = useObservable(() => value$);
+    const value = useObservable(() => value$.pipe(map(v => Math.round(Number(v)))));
 
     const prefix = typeof value === "number" ? "%" : "";
 

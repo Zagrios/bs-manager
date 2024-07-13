@@ -81,10 +81,13 @@ export class I18nService {
             translated = getProperty(this.dictionary, translationKey) ?? translationKey;
             this.cache.set(translationKey, translated);
         }
-        args &&
+
+        if (args) {
             Object.keys(args).forEach(key => {
                 translated = translated.replaceAll(`{${key}}`, args[key]);
             });
+        }
+
         return translated;
     }
 }

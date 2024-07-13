@@ -1,4 +1,6 @@
+import { FileFilter } from "electron";
+
 export interface OpenSaveDialogOption {
     filename?: string;
-    filters?: Electron.FileFilter[];
+    filters?: FileFilter[];
 }

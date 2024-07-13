@@ -18,3 +18,14 @@ export function popElement<T = unknown>(func: (element: T) => boolean, arr: T[])
     }
     return arr.splice(index, 1)[0];
 }
+
+export function removeIndex<T = unknown>(index: number, arr: T[]): T[] {
+    arr.splice(index, 1);
+    return arr;
+}
+
+export function* enumerate<T = unknown>(arr: T[]): Generator<[number, T]> {
+    for (let i = 0; i < arr.length; i++) {
+        yield [i, arr[i]];
+    }
+}

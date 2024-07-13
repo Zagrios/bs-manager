@@ -11,7 +11,6 @@ import { map, filter, take, lastValueFrom } from "rxjs";
 import defaultImage from "../../../../assets/images/default-version-img.jpg";
 import { useService } from "renderer/hooks/use-service.hook";
 import { useConstant } from "renderer/hooks/use-constant.hook";
-import { BPList } from "shared/models/playlists/playlist.interface";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useWindowArgs } from "renderer/hooks/use-window-args.hook";
 import { useWindowControls } from "renderer/hooks/use-window-controls.hook";
@@ -27,7 +26,7 @@ export default function OneClickDownloadPlaylist() {
     const mapsContainer = useRef<HTMLDivElement>(null);
     const { playlistUrl } = useWindowArgs("playlistUrl");
     const download$ = useConstant(() => playlistDownloader.oneClickInstallPlaylist(playlistUrl));
-    const playlistInfos = useObservable<BPList>(() => download$.pipe(filter(progress => !!progress.data?.playlistInfos), map(progress => progress.data.playlistInfos), take(1)));
+    const playlistInfos = useObservable(() => download$.pipe(filter(progress => !!progress.data?.playlist), map(progress => progress.data.playlist), take(1)));
     const downloadedMaps = useObservable(() => download$.pipe(filter(progress => !!progress.data?.downloadedMaps), map(progress => progress.data.downloadedMaps)));
 
     useEffect(() => {
