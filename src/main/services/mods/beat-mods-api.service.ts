@@ -14,6 +14,7 @@ export class BeatModsApiService {
 
     private readonly aliasesCache = new Map<string, BSVersion[]>();
     private readonly versionModsCache = new Map<string, Mod[]>();
+    private readonly modsHashCache = new Map<string, Mod>();
 
     private allModsCache: Mod[];
 
@@ -66,6 +67,29 @@ export class BeatModsApiService {
         return mod;
     }
 
+    private updateModsHashCache(mods: Mod[]): void {
+
+        if(!Array.isArray(mods)){
+            return;
+        }
+
+        for (const mod of mods) {
+            for (const downloads of (mod.downloads ?? [])) {
+                for (const hashMd5 of (downloads.hashMd5 ?? [])) {
+                    this.modsHashCache.set(hashMd5.hash, mod);
+                }
+            }
+
+            for (const dep of (mod.dependencies ?? [])) {
+                for (const downloads of (dep.downloads ?? [])) {
+                    for (const hashMd5 of (downloads.hashMd5 ?? [])) {
+                        this.modsHashCache.set(hashMd5.hash, dep);
+                    }
+                }
+            }
+        }
+    }
+
     public async getVersionMods(version: BSVersion): Promise<Mod[]> {
         if (this.versionModsCache.has(version.BSVersion)) {
             return this.versionModsCache.get(version.BSVersion);
@@ -76,6 +100,9 @@ export class BeatModsApiService {
         return this.requestService.getJSON<Mod[]>(this.getVersionModsUrl(alias)).then(mods => {
             mods = mods.map(mod => this.asignDependencies(mod, mods));
             this.versionModsCache.set(version.BSVersion, mods);
+
+            this.updateModsHashCache(mods);
+
             return mods;
         });
     }
@@ -87,6 +114,17 @@ export class BeatModsApiService {
         return this.requestService.getJSON<Mod[]>(this.getAllModsUrl()).then(mods => {
             this.allModsCache = mods;
             return this.allModsCache;
+        });
+    }
+
+    public getModByHash(hash: string): Promise<Mod> {
+        if (this.modsHashCache.has(hash)) {
+            return Promise.resolve(this.modsHashCache.get(hash));
+        }
+
+        return this.requestService.getJSON<Mod[]>(`${this.BEAT_MODS_API_URL}mod?hash=${hash}`).then(mods => {
+            this.updateModsHashCache(mods);
+            return mods.at(0);
         });
     }
 }

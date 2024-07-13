@@ -48,23 +48,14 @@ export class BsModsManagerService {
     }
 
     private async getModFromHash(hash: string): Promise<Mod> {
-        const allMods = await this.beatModsApi.getAllMods();
-        return allMods.find(mod => {
-            if (mod.name.toLowerCase() === "bsipa") {
-                return false;
-            }
-            return mod.downloads.some(download => download.hashMd5.some(md5 => md5.hash === hash));
-        });
-    }
 
-    private async getIpaFromHash(hash: string): Promise<Mod> {
-        const allMods = await this.beatModsApi.getAllMods();
-        return allMods.find(mod => {
-            if (mod.name.toLowerCase() !== "bsipa") {
-                return false;
-            }
-            return mod.downloads.some(download => download.hashMd5.some(md5 => md5.hash === hash));
-        });
+        const mod = await this.beatModsApi.getModByHash(hash);
+
+        if(mod?.name?.toLowerCase() === "bsipa"){
+            return undefined;
+        }
+
+        return mod;
     }
 
     private async getModsInDir(version: BSVersion, modsDir: ModsInstallFolder): Promise<Mod[]> {
@@ -84,7 +75,6 @@ export class BsModsManagerService {
                     return undefined;
                 }
                 const hash = await md5File(filePath);
-
                 const mod = await this.getModFromHash(hash);
 
                 if (!mod) {
@@ -107,7 +97,7 @@ export class BsModsManagerService {
         });
 
         const mods = await Promise.all(promises);
-        return mods.filter(Boolean);
+        return  mods.filter(Boolean);
     }
 
     private async getBsipaInstalled(version: BSVersion): Promise<Mod> {
@@ -117,7 +107,7 @@ export class BsModsManagerService {
             return undefined;
         }
         const injectorMd5 = await md5File(injectorPath);
-        return this.getIpaFromHash(injectorMd5);
+        return this.beatModsApi.getModByHash(injectorMd5);
     }
 
     private async downloadZip(zipUrl: string): Promise<JSZip> {
@@ -322,8 +312,10 @@ export class BsModsManagerService {
 
     public async getInstalledMods(version: BSVersion): Promise<Mod[]> {
         this.manifestMatches = [];
-        await this.beatModsApi.getAllMods();
+
         const bsipa = await this.getBsipaInstalled(version);
+
+
         return Promise.all([this.getModsInDir(version, ModsInstallFolder.PLUGINS_PENDING), this.getModsInDir(version, ModsInstallFolder.LIBS_PENDING), this.getModsInDir(version, ModsInstallFolder.PLUGINS), this.getModsInDir(version, ModsInstallFolder.LIBS)]).then(dirMods => {
             const modsDict = new Map<string, Mod>();
 
