@@ -36,7 +36,6 @@
     },
     "build": {
         "extraResources": [
-            "./assets/favicon.ico",
             "./assets/jsons/bs-versions.json",
             "./assets/jsons/patreons.json",
             "./assets/proto/song_details_cache_v1.proto"
@@ -56,8 +55,9 @@
                 "nsis",
                 "nsis-web"
             ],
-            "icon": "assets/favicon.ico",
+            "icon": "./build/icons/win/favicon.ico",
             "extraResources": [
+                "./build/icons/win",
                 "./assets/scripts/*.exe"
             ]
         },
@@ -65,8 +65,10 @@
             "target": [
                 "AppImage"
             ],
+            "icon": "./build/icons/png",
             "category": "Development",
             "extraResources": [
+                "./build/icons/png",
                 "./assets/scripts/DepotDownloader"
             ]
         },
