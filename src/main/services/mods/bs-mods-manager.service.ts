@@ -14,7 +14,7 @@ import { lastValueFrom } from "rxjs";
 import JSZip from "jszip";
 import { extractZip } from "../../helpers/zip.helpers";
 import recursiveReadDir from "recursive-readdir";
-import { minToMs } from "../../../shared/helpers/time.helpers";
+import { sToMs } from "../../../shared/helpers/time.helpers";
 import { ensureDir } from "fs-extra";
 
 export class BsModsManagerService {
@@ -147,12 +147,18 @@ export class BsModsManagerService {
         return new Promise<boolean>(resolve => {
             const cmd = process.platform === 'linux'
                 ? `screen -dmS "BSIPA" dotnet ${ipaPath} ${args.join(" ")}` // Must run through screen, otherwise BSIPA tries to move console cursor and crashes.
-                : `start /wait /min "" "${ipaPath}" ${args.join(" ")}`;
+                : `${ipaPath} ${args.join(" ")}`;
 
             log.info("START IPA PROCESS", cmd);
             const processIPA = spawn(cmd, { cwd: versionPath, detached: true, shell: true });
 
+            const timemout = setTimeout(() => {
+                log.info("Ipa process timeout");
+                resolve(false)
+            }, sToMs(30));
+
             processIPA.once("exit", code => {
+                clearTimeout(timemout);
                 if (code === 0) {
                     log.info("Ipa process exist with code 0");
                     return resolve(true);
@@ -161,10 +167,7 @@ export class BsModsManagerService {
                 resolve(false);
             });
 
-            setTimeout(() => {
-                log.info("Ipa process timeout");
-                resolve(false)
-            }, minToMs(1));
+
         });
     }
 
