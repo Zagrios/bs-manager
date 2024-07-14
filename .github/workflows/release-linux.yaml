@@ -1,0 +1,32 @@
+# This workflow will...
+
+name: Realease Linux
+
+on:
+    workflow_dispatch:
+
+jobs:
+    release:
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+            matrix:
+                os: [ubuntu-latest]
+
+        steps:
+            - name: Check out Git repository
+              uses: actions/checkout@v4
+
+            - name: Use Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18.x
+                  cache: "npm"
+            - run: npm ci
+            - run: npm run build && electron-builder --linux --x64 --publish always
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: release
+                  path: release
