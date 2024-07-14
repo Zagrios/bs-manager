@@ -23,7 +23,7 @@ jobs:
                   node-version: 18.x
                   cache: "npm"
             - run: npm ci
-            - run: npm run build && electron-builder --linux --x64 --publish always
+            - run: npm run publish:linux
 
             - name: Upload artifact
               uses: actions/upload-artifact@v4
