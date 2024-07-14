@@ -2,6 +2,9 @@
 
 name: Realease Linux
 
+env:
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
 on:
     workflow_dispatch:
 
