@@ -9,12 +9,12 @@ import Tippy from "@tippyjs/react";
 
 export const ChangelogModal: ModalComponent<void, ChangelogVersion> = ({ options: {data: changelog} }) => {
 
-    console.log(changelog);
     const linkOpener = useService(LinkOpenerService);
     const openGithub = () => linkOpener.open("https://github.com/Zagrios/bs-manager");
     const openTwitter = () => linkOpener.open("https://twitter.com/BSManager_");
     const openSupportPage = () => linkOpener.open("https://www.patreon.com/bsmanager");
     const openDiscord = () => linkOpener.open("https://discord.gg/uSqbHVpKdV");
+    const openWebSite = () => linkOpener.open("https://bsmanager.io/");
     const date = changelog?.timestamp  ? new Date(changelog.timestamp  * 1000).toLocaleDateString() : '';
 
     return (
@@ -39,6 +39,9 @@ export const ChangelogModal: ModalComponent<void, ChangelogVersion> = ({ options
                     </Tippy>
                     <Tippy content="Patreon" placement="top" className="font-bold !bg-neutral-900" duration={[200, 0]} arrow={false}>
                         <div><BsmButton onClick={openSupportPage} className="rounded-md p-1 w-7 h-7 " icon="patreon" withBar={false} iconColor="#fff" color="#000"/></div>
+                    </Tippy>
+                    <Tippy content="Web Site" placement="top" className="font-bold !bg-neutral-900" duration={[200, 0]} arrow={false}>
+                        <div><BsmButton onClick={openWebSite} className="rounded-md p-1 w-7 h-7 " icon="web-site" withBar={false} iconColor="#fff" color="#000"/></div>
                     </Tippy>
                 </div>
             </div>
