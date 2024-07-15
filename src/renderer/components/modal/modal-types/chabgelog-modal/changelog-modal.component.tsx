@@ -9,6 +9,7 @@ import Tippy from "@tippyjs/react";
 
 export const ChangelogModal: ModalComponent<void, ChangelogVersion> = ({ options: {data: changelog} }) => {
 
+    console.log(changelog);
     const linkOpener = useService(LinkOpenerService);
     const openGithub = () => linkOpener.open("https://github.com/Zagrios/bs-manager");
     const openTwitter = () => linkOpener.open("https://twitter.com/BSManager_");
@@ -19,7 +20,7 @@ export const ChangelogModal: ModalComponent<void, ChangelogVersion> = ({ options
     return (
         <form className="w-[350px] text-gray-800 dark:text-gray-200 h-[70vh] flex flex-col justify-between">
             <h1 className=" p-4 pt-1 text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200 font-bold">{changelog?.title}</h1>
-            <div className=" overflow-y-scroll h-full content grow" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(changelog?.htmlBody) }}/>
+            <div className=" overflow-y-scroll h-full content grow scrollbar-default" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(changelog?.htmlBody) }}/>
             <span className="block w-[100%] mx-auto mt-0 mb-4 h-1 rounded-full bg-main-color-1" />
             <div className="flex flex-row justify-between">
                 <div className="my-auto flex flex-col text-sm">
