@@ -23,6 +23,7 @@ import { isValidUrl } from "shared/helpers/url.helpers";
 import { Archive } from "main/models/archive.class";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
+import { tryit } from "shared/helpers/error.helpers";
 
 export class LocalPlaylistsManagerService {
     private static instance: LocalPlaylistsManagerService;
@@ -136,6 +137,10 @@ export class LocalPlaylistsManagerService {
 
         const bpList: BPList = isLocalFile ? JSON.parse(readFileSync(source).toString()) : await this.request.getJSON<BPList>(source);
 
+        if(!bpList?.playlistTitle){
+            throw new Error(`Invalid playlist file ${source}`);
+        }
+
         return bpList;
     }
 
@@ -160,8 +165,12 @@ export class LocalPlaylistsManagerService {
 
                 for (const playlist of playlists) {
                     const playlistPath = path.join(folerPath, playlist);
-                    const bpList = await this.readPlaylistFromSource(playlistPath);
+                    const { result: bpList, error }  = await tryit(() => this.readPlaylistFromSource(playlistPath));
 
+                    if(error) {
+                        log.error(error);
+                        continue;
+                    }
 
                     const localBpList: LocalBPList = { ...bpList, path: playlistPath };
                     bpLists.push(localBpList);

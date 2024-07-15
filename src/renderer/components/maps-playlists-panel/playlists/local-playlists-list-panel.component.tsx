@@ -379,8 +379,8 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
         if(!playlists){ return []; }
 
         return playlists.filter(p => {
-            if(!p.playlistTitle.toLowerCase().includes(search.toLowerCase())){ return false; }
-            if(!p.playlistAuthor.toLowerCase().includes(search.toLowerCase())){ return false; }
+            if(!p.playlistTitle?.toLowerCase().includes(search.toLowerCase())){ return false; }
+            if(!p.playlistAuthor?.toLowerCase().includes(search.toLowerCase())){ return false; }
 
             if(typeof p.nbMaps === "number" && (typeof playlistFiler?.minNbMaps === "number" || typeof playlistFiler?.maxNbMaps === "number")){
                 if(playlistFiler?.minNbMaps && p.nbMaps < playlistFiler.minNbMaps){ return false; }
