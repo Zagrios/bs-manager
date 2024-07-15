@@ -8,9 +8,9 @@ import { LocalMapsManagerService } from "./maps/local-maps-manager.service";
 import log from "electron-log";
 import { WindowManagerService } from "../window-manager.service";
 import { BPList, DownloadPlaylistProgressionData } from "shared/models/playlists/playlist.interface";
-import { readFileSync } from "fs";
+import { readFileSync, Stats } from "fs";
 import { BeatSaverService } from "../thrid-party/beat-saver/beat-saver.service";
-import { copy, ensureDir, pathExists, pathExistsSync, readdirSync, realpath, writeFileSync } from "fs-extra";
+import { copy, ensureDir, pathExists, pathExistsSync, realpath, writeFileSync } from "fs-extra";
 import { Progression, getUniqueFileNamePath, unlinkPath } from "../../helpers/fs.helpers";
 import { FileAssociationService } from "../file-association.service";
 import { SongDetailsCacheService } from "./maps/song-details-cache.service";
@@ -24,6 +24,7 @@ import { Archive } from "main/models/archive.class";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { tryit } from "shared/helpers/error.helpers";
+import recursiveReadDir from "recursive-readdir";
 
 export class LocalPlaylistsManagerService {
     private static instance: LocalPlaylistsManagerService;
@@ -160,12 +161,17 @@ export class LocalPlaylistsManagerService {
                     throw new Error(`Playlists folder not found ${folerPath}`);
                 }
 
-                const playlists = readdirSync(folerPath).filter(file => path.extname(file) === ".bplist");
-                progress.total = playlists.length;
+                const ignoreFunc = (file: string, stats: Stats): boolean => {
+                    if(stats.isFile() && path.extname(file) !== ".bplist") { return true; }
+                    return false;
+                }
 
-                for (const playlist of playlists) {
-                    const playlistPath = path.join(folerPath, playlist);
-                    const { result: bpList, error }  = await tryit(() => this.readPlaylistFromSource(playlistPath));
+                const playlistPaths = (await recursiveReadDir(folerPath, [ignoreFunc]));
+
+                progress.total = playlistPaths.length;
+
+                for (const playlistPath of playlistPaths) {
+                    const {result: bpList, error} = await tryit(() => this.readPlaylistFromSource(playlistPath));
 
                     if(error) {
                         log.error(error);
