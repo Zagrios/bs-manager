@@ -83,7 +83,7 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
                 <div id="window-controls" className="h-full flex shrink-0 items-center">
                     <div className="h-full text-gray-800 dark:text-gray-200 pr-1 cursor-pointer flex flex-row justify-end items-center gap-2 group pl-5">
                         <div className="shrink-0 w-0 overflow-hidden transition-all group-hover:w-16 group-hover:overflow-visible group-active:w-16 group-active:overflow-visible text-main-color-3">
-                            <BsmRange min={0} max={1} step={0.01} values={[volume.muted ? 0 : volume.volume]} colors={[color, "currentColor"]} onChange={val => audio.setVolume(val[0])} onFinalChange={val => audio.setFinalVolume(val[0])} />
+                            <BsmRange min={0} max={1} step={0.01} values={[volume.muted ? 0 : volume.volume]} colors={[color, "currentColor"]} onChange={val => audio.setVolume(val[0])} onFinalChange={val => audio.setVolume(val[0])} />
                         </div>
                         <BsmButton className="shrink-0 h-[23px] w-[23px] aspect-square !bg-transparent flex items-start" iconClassName={volumeIcon === "volume-down" ? "-translate-x-[1.8px]" : null} icon={volumeIcon} withBar={false} onClick={() => audio.toggleMute()} />
                     </div>
