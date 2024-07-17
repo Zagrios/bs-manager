@@ -7,7 +7,7 @@ import { RequestService } from "../request.service";
 import { LocalMapsManagerService } from "./maps/local-maps-manager.service";
 import log from "electron-log";
 import { WindowManagerService } from "../window-manager.service";
-import { BPList, DownloadPlaylistProgressionData } from "shared/models/playlists/playlist.interface";
+import { BPList, DownloadPlaylistProgressionData, PlaylistSong } from "shared/models/playlists/playlist.interface";
 import { readFileSync, Stats } from "fs";
 import { BeatSaverService } from "../thrid-party/beat-saver/beat-saver.service";
 import { copy, ensureDir, pathExists, pathExistsSync, realpath, writeFileSync } from "fs-extra";
@@ -25,6 +25,8 @@ import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { tryit } from "shared/helpers/error.helpers";
 import recursiveReadDir from "recursive-readdir";
+import { BsvMapDetail, SongDetails } from "shared/models/maps";
+import { findHashInString } from "shared/helpers/string.helpers";
 
 export class LocalPlaylistsManagerService {
     private static instance: LocalPlaylistsManagerService;
@@ -138,9 +140,13 @@ export class LocalPlaylistsManagerService {
 
         const bpList: BPList = isLocalFile ? JSON.parse(readFileSync(source).toString()) : await this.request.getJSON<BPList>(source);
 
-        if(!bpList?.playlistTitle){
+        if(!bpList?.playlistTitle) {
             throw new Error(`Invalid playlist file ${source}`);
         }
+
+        bpList.songs = (bpList.songs ?? []).map(s => s.hash ? (
+            { ...s, hash: findHashInString(s.hash) ?? s.hash }
+        ) : s).filter(Boolean);
 
         return bpList;
     }
@@ -190,6 +196,25 @@ export class LocalPlaylistsManagerService {
         });
     }
 
+    private getSongDetailsFromPlaylistSong(song: PlaylistSong): SongDetails | undefined {
+        let songDetails: SongDetails;
+
+        const songHash = findHashInString(song.hash);
+        if(songHash){
+            songDetails = this.songDetails.getSongDetails(song.hash);
+        }
+
+        if(song.key && !songDetails){
+            songDetails = this.songDetails.getSongDetailsById(song.key);
+        }
+
+        const levelIdHash = findHashInString(song.levelid);
+        if(levelIdHash && !songDetails){
+            songDetails = this.songDetails.getSongDetails(levelIdHash);
+        }
+        return songDetails;
+    }
+
     public getLocalBPListDetails(localBPList: LocalBPList): LocalBPListsDetails {
 
         const tryExtractPlaylistId = (url: string) => {
@@ -204,22 +229,22 @@ export class LocalPlaylistsManagerService {
             id: localBPList.customData?.syncURL ? tryExtractPlaylistId(localBPList.customData.syncURL) : undefined
         }
 
-        const songsDetails = localBPList.songs?.map(s => {
-            if(s.hash){
-                return this.songDetails.getSongDetails(s.hash);
-            }
-            if(s.key){
-                return this.songDetails.getSongDetailsById(s.key);
-            }
-            return undefined;
-        }).filter(Boolean);
+        const mappers = new Set<number>();
 
-        if(songsDetails?.length){
-            bpListDetails.duration = songsDetails.reduce((acc, song) => acc + song.duration, 0);
-            bpListDetails.nbMappers = new Set(songsDetails.map(s => s.uploader.id)).size;
-            bpListDetails.minNps = Math.min(...songsDetails.map(s => Math.min(...s.difficulties.map(d => d.nps || 0))));
-            bpListDetails.maxNps = Math.max(...songsDetails.map(s => Math.max(...s.difficulties.map(d => d.nps || 0))));
+        for(const song of localBPList.songs){
+            const songDetails = this.getSongDetailsFromPlaylistSong(song);
+
+            if(!songDetails) { continue; }
+
+            bpListDetails.duration += songDetails?.duration ?? 0;
+            mappers.add(songDetails.uploader?.id);
+            bpListDetails.minNps = Math.min(bpListDetails?.minNps ?? 0, Math.min(...songDetails.difficulties?.map(d => d?.nps || 0) ?? [0]));
+            bpListDetails.maxNps = Math.max(bpListDetails?.maxNps ?? 0, Math.max(...songDetails.difficulties?.map(d => d?.nps || 0) ?? [0]));
+
+            song.songDetails = songDetails;
         }
+
+        bpListDetails.nbMappers = mappers.size;
 
         return bpListDetails;
     }
@@ -276,7 +301,28 @@ export class LocalPlaylistsManagerService {
                         continue;
                     }
 
-                    const [ mapDetail ] = await this.bsaver.getMapDetailsFromHashs([song.hash]);
+                    const mapDetail = await (async () => {
+                        let mapDetail: BsvMapDetail;
+
+                        const mapHash = findHashInString(song?.hash);
+                        if(mapHash) {
+                            mapDetail = (await this.bsaver.getMapDetailsFromHashs([findHashInString(mapHash)])).at(0);
+                        }
+
+                        if(song.key && !mapDetail) {
+                            mapDetail = await this.bsaver.getMapDetailsById(song.key);
+                        }
+
+                        const levelIdHash = findHashInString(song?.levelid);
+                        if(levelIdHash && !mapDetail) {
+                            mapDetail = (await this.bsaver.getMapDetailsFromHashs([levelIdHash])).at(0);
+                        }
+
+                        return mapDetail;
+                    })().catch(e => {
+                        log.error(e);
+                        return undefined as BsvMapDetail;
+                    });
 
                     if(!mapDetail) {
                         continue;

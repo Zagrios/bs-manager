@@ -36,6 +36,7 @@ import { DraggableVirtualScroll } from "renderer/components/shared/virtual-scrol
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import BeatWaiting from "../../../../../../../assets/images/apngs/beat-waiting.png";
 import BeatConflict from "../../../../../../../assets/images/apngs/beat-conflict.png";
+import { findHashInString } from "shared/helpers/string.helpers";
 
 type Props = {
     maps$: Observable<BsmLocalMap[]>;
@@ -115,7 +116,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
             const maps = await lastValueFrom(maps$.pipe(take(1)));
 
             const playlistMapsRes = (playlist?.songs ?? []).reduce((acc, song) => {
-                const songHash = song.hash?.toLowerCase();
+                const songHash = song?.hash?.toLowerCase() ?? song?.songDetails?.hash?.toLowerCase() ?? findHashInString(song.levelid)?.toLowerCase();
                 const map = maps.find(map => map.hash === songHash);
 
                 if(map){
