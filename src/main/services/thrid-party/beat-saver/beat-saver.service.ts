@@ -23,14 +23,15 @@ export class BeatSaverService {
     }
 
     public async getMapDetailsFromHashs(hashs: string[]): Promise<BsvMapDetail[]> {
-        const filtredHashs = hashs.map(h => h.toLowerCase()).filter(hash => !Array.from(this.cachedMapsDetails.keys()).includes(hash));
+        const filtredHashs = hashs.map(h => h.toLowerCase()).filter(hash => !this.cachedMapsDetails.has(hash));
         const chunkHash = splitIntoChunk(filtredHashs, 50);
 
-        const mapDetails = Array.from(this.cachedMapsDetails.entries()).reduce((res, [hash, details]) => {
-            if (hashs.includes(hash)) {
-                res.push(details);
+        const mapDetails = hashs.reduce((acc, hash) => {
+            const detail = this.cachedMapsDetails.get(hash.toLowerCase());
+            if (detail) {
+                acc.push(detail);
             }
-            return res;
+            return acc;
         }, [] as BsvMapDetail[]);
 
         await Promise.allSettled(

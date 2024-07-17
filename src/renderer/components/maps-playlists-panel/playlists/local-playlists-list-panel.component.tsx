@@ -282,8 +282,9 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
 
                     let map: BsmLocalMap;
 
-                    if(playlistSong.hash){
-                        map = maps.find(m => m.hash.toLowerCase() === playlistSong.hash.toLowerCase());
+                    if(playlistSong.hash || playlistSong?.songDetails?.hash){
+                        const hash = (playlistSong.hash || playlistSong.songDetails.hash).toLowerCase();
+                        map = maps.find(m => m.hash.toLowerCase() === hash);
                     }
                     else if(playlistSong.key){
                         map = maps.find(m => m?.songDetails?.id === playlistSong.key);
