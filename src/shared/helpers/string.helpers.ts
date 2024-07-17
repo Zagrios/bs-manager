@@ -8,6 +8,6 @@ export function findHashInString(str: string, algorithm: keyof typeof HashAlgori
 
     const hashLength = HashAlgorithmsLengths[algorithm];
     const regex = new RegExp(`[a-fA-F0-9]{${hashLength}}`, "g");
-    const match = str.match(regex);
+    const match = regex.exec(str);
     return match ? match[0] : undefined;
 }
