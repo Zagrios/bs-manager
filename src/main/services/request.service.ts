@@ -1,5 +1,5 @@
-import { Agent, RequestOptions, get } from "https";
-import { createWriteStream, unlink } from "fs";
+import { Agent, RequestOptions } from "https";
+import { createWriteStream } from "fs";
 import { Progression } from "main/helpers/fs.helpers";
 import { Observable, shareReplay, tap } from "rxjs";
 import log from "electron-log";
@@ -8,6 +8,8 @@ import got, { Options } from "got";
 import { IncomingMessage } from "http";
 import { app } from "electron";
 import os from "os";
+import { unlinkSync } from "fs-extra";
+import { tryit } from "shared/helpers/error.helpers";
 
 export class RequestService {
     private static instance: RequestService;
@@ -60,31 +62,33 @@ export class RequestService {
 
     public downloadFile(url: string, dest: string): Observable<Progression<string>> {
         return new Observable<Progression<string>>(subscriber => {
-            const progress: Progression<string> = { current: 0, total: 0 };
+            const progress: Progression<string> = { current: 0, total: 0, data: dest };
 
+            const stream = got.stream(url)
             const file = createWriteStream(dest);
 
-            file.on("close", () => {
-                progress.data = dest;
+            stream.on("downloadProgress", ({ transferred, total }) => {
+                progress.current = transferred;
+                progress.total = total;
+                subscriber.next(progress);
+            });
+
+            stream.on("error", err => {
+                tryit(() => unlinkSync(dest));
+                subscriber.error(err);
+            });
+
+            stream.on("end", () => {
                 subscriber.next(progress);
                 subscriber.complete();
             });
-            file.on("error", err => unlink(dest, () => subscriber.error(err)));
 
-            const req = get(url, this.requestOptionsFromDefaultInit(), res => {
-                progress.total = parseInt(res.headers?.["content-length"] || "0", 10);
+            stream.pipe(file);
 
-                res.on("data", chunk => {
-                    progress.current += chunk.length;
-                    subscriber.next(progress);
-                });
+            return () => {
+                stream.destroy();
+            }
 
-                res.pipe(file);
-            });
-
-            req.on("error", err => {
-                subscriber.error(err);
-            });
         }).pipe(tap({ error: e => log.error(e, url, dest) }), shareReplay(1));
     }
 
