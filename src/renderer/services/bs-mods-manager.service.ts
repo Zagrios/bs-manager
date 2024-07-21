@@ -11,6 +11,7 @@ import { NotificationType } from "../../shared/models/notification/notification.
 import { OsDiagnosticService } from "./os-diagnostic.service";
 import { ProgressBarService } from "./progress-bar.service";
 import { NotificationService } from "./notification.service";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -79,8 +80,8 @@ export class BsModsManagerService {
             const desc = `notifications.mods.install-mods.msg.${isFullyInstalled ? "success" : "warning"}`;
 
             this.notifications.notify({ type: isFullyInstalled ? NotificationType.SUCCESS : NotificationType.WARNING, title, desc, duration: this.NOTIFICATION_DURATION });
-        }).catch(e => {
-            this.notifications.notifyError({ title: "notifications.types.error", desc: `notifications.mods.install-mods.msg.errors.${e}`, duration: this.NOTIFICATION_DURATION });
+        }).catch((e: CustomError) => {
+            this.notifications.notifyError({ title: "notifications.types.error", desc: `notifications.mods.install-mods.msg.errors.${e?.code}`, duration: this.NOTIFICATION_DURATION });
         }).finally(() => {
             this.isInstalling$.next(false);
             this.progressBar.hide();
@@ -104,8 +105,8 @@ export class BsModsManagerService {
 
         return lastValueFrom(this.ipcService.sendV2("uninstall-mods", { mods: [mod], version })).then(() => {
             this.notifications.notifySuccess({ title: "notifications.mods.uninstall-mod.titles.success", duration: this.NOTIFICATION_DURATION });
-        }).catch(e => {
-            this.notifications.notifyError({ title: "notifications.types.error", desc: `notifications.mods.uninstall-mod.msg.errors.${e}`, duration: this.NOTIFICATION_DURATION });
+        }).catch((e: CustomError) => {
+            this.notifications.notifyError({ title: "notifications.types.error", desc: `notifications.mods.uninstall-mod.msg.errors.${e?.code}`, duration: this.NOTIFICATION_DURATION });
         }).finally(() => {
             this.isUninstalling$.next(false);
             this.progressBar.hide();
@@ -129,8 +130,8 @@ export class BsModsManagerService {
         this.isUninstalling$.next(true);
         return lastValueFrom(this.ipcService.sendV2("uninstall-all-mods", version)).then(() => {
             this.notifications.notifySuccess({ title: "notifications.mods.uninstall-all-mods.titles.success", desc: "notifications.mods.uninstall-all-mods.msg.success", duration: this.NOTIFICATION_DURATION });
-        }).catch(e => {
-            this.notifications.notifyError({ title: "notifications.types.error", desc: `notifications.mods.uninstall-all-mods.msg.errors.${e}`, duration: this.NOTIFICATION_DURATION });
+        }).catch((e: CustomError) => {
+            this.notifications.notifyError({ title: "notifications.types.error", desc: `notifications.mods.uninstall-all-mods.msg.errors.${e?.code}`, duration: this.NOTIFICATION_DURATION });
         }).finally(() => {
             this.isUninstalling$.next(false);
             this.progressBar.hide();

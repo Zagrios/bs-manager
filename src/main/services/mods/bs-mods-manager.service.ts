@@ -16,6 +16,7 @@ import { extractZip } from "../../helpers/zip.helpers";
 import recursiveReadDir from "recursive-readdir";
 import { sToMs } from "../../../shared/helpers/time.helpers";
 import { ensureDir } from "fs-extra";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -147,7 +148,7 @@ export class BsModsManagerService {
         return new Promise<boolean>(resolve => {
             const cmd = process.platform === 'linux'
                 ? `screen -dmS "BSIPA" dotnet ${ipaPath} ${args.join(" ")}` // Must run through screen, otherwise BSIPA tries to move console cursor and crashes.
-                : `${ipaPath} ${args.join(" ")}`;
+                : `"${ipaPath}" ${args.join(" ")}`;
 
             log.info("START IPA PROCESS", cmd);
             const processIPA = spawn(cmd, { cwd: versionPath, detached: true, shell: true });
@@ -156,6 +157,10 @@ export class BsModsManagerService {
                 log.info("Ipa process timeout");
                 resolve(false)
             }, sToMs(30));
+
+            processIPA.stderr.on("data", data => {
+                log.error("IPA process stderr", data.toString());
+            })
 
             processIPA.once("exit", code => {
                 clearTimeout(timemout);
@@ -166,7 +171,6 @@ export class BsModsManagerService {
                 log.error("Ipa process exist with non 0 code", code);
                 resolve(false);
             });
-
 
         });
     }
@@ -339,7 +343,7 @@ export class BsModsManagerService {
 
     public async installMods(mods: Mod[], version: BSVersion): Promise<InstallModsResult> {
         if (!mods?.length) {
-            throw "no-mods";
+            throw CustomError.fromError(new Error("No mods to install"), "no-mods");
         }
 
         const deps = await this.resolveDependencies(mods, version);
@@ -359,7 +363,7 @@ export class BsModsManagerService {
                 return false;
             });
             if (!installed) {
-                throw "cannot-install-bsipa";
+                throw CustomError.fromError(new Error("Unable to install BSIPA"), "cannot-install-bsipa");
             }
         }
 
@@ -375,7 +379,7 @@ export class BsModsManagerService {
 
     public async uninstallMods(mods: Mod[], version: BSVersion): Promise<UninstallModsResult> {
         if (!mods?.length) {
-            throw "no-mods";
+            throw CustomError.fromError(new Error("No mods to uninstall"), "no-mods");
         }
 
         this.nbModsToUninstall = mods.length;
@@ -395,7 +399,7 @@ export class BsModsManagerService {
         const mods = await this.getInstalledMods(version);
 
         if (!mods?.length) {
-            throw "no-mods";
+            throw CustomError.fromError(new Error("This version has to mods to uninstall"), "no-mods");
         }
 
         this.nbModsToUninstall = mods.length;
