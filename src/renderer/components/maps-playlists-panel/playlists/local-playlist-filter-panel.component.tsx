@@ -3,9 +3,9 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { BsmRange } from "renderer/components/shared/bsm-range.component";
 import { cn } from "renderer/helpers/css-class.helpers"
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import dateFormat from "dateformat";
 import { hourToS, sToMs } from "shared/helpers/time.helpers";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
+import formatDuration from "format-duration";
 
 type Props = {
     className?: string;
@@ -81,7 +81,8 @@ export function LocalPlaylistFilterPanel({ className, filter, onChange }: Props)
                 return "∞";
             }
 
-            return sec > 3600 ? dateFormat(sToMs(sec), "h:MM:ss") : dateFormat(sToMs(sec), "MM:ss");
+            const ms = sToMs(sec);
+            return formatDuration(ms, { leading: true });
         })();
 
         return renderLabel(textValue, sec === MAX_DURATION);

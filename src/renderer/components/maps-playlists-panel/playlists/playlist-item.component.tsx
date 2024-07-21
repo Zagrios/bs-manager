@@ -5,7 +5,6 @@ import { ClockIcon } from 'renderer/components/svgs/icons/clock-icon.component';
 import { MapIcon } from 'renderer/components/svgs/icons/map-icon.component';
 import { PersonIcon } from 'renderer/components/svgs/icons/person-icon.component';
 import { useThemeColor } from 'renderer/hooks/use-theme-color.hook';
-import dateFormat from 'dateformat';
 import { NpsIcon } from 'renderer/components/svgs/icons/nps-icon.component';
 import { GlowEffect } from 'renderer/components/shared/glow-effect.component';
 import { memo, useState } from 'react';
@@ -18,6 +17,8 @@ import { BsmBasicSpinner } from 'renderer/components/shared/bsm-basic-spinner/bs
 import defaultImage from "../../../../../assets/images/default-version-img.jpg";
 import equal from 'fast-deep-equal';
 import { useTranslation } from 'renderer/hooks/use-translation.hook';
+import { sToMs } from 'shared/helpers/time.helpers';
+import formatDuration from 'format-duration';
 
 export type PlaylistItemComponentProps = {
     title?: string;
@@ -79,10 +80,14 @@ export const PlaylistItem = memo(({ title,
     const showNps = minNps !== undefined && maxNps !== undefined;
 
     const durationText = (() => {
+
+        console.log("DURATION", duration);
+
         if (!duration) {
             return null;
         }
-        return duration > 3600 ? dateFormat(duration * 1000, "h:MM:ss") : dateFormat(duration * 1000, "MM:ss");
+        const durationMs = sToMs(duration);
+        return formatDuration(durationMs, { leading: true });
     })();
 
     return (

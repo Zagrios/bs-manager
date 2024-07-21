@@ -1,6 +1,5 @@
 import { ReactNode } from "react"
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
-import dateFormat from "dateformat";
 import { MapIcon } from "renderer/components/svgs/icons/map-icon.component";
 import { PersonIcon } from "renderer/components/svgs/icons/person-icon.component";
 import { ClockIcon } from "renderer/components/svgs/icons/clock-icon.component";
@@ -9,6 +8,8 @@ import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { ThemeColorGradientSpliter } from "renderer/components/shared/theme-color-gradient-spliter.component";
 import { CrossIcon } from "renderer/components/svgs/icons/cross-icon.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { sToMs } from "shared/helpers/time.helpers";
+import formatDuration from "format-duration";
 
 export type PlaylistDetailsTemplateProps = {
     title: string;
@@ -40,9 +41,8 @@ export function PlaylistDetailsTemplate({title, imagebase64, imageUrl, author, d
         if (!duration) {
             return null;
         }
-        const date = new Date(0);
-        date.setSeconds(duration);
-        return duration > 3600 ? dateFormat(date, "h:MM:ss") : dateFormat(date, "MM:ss");
+        const durationMs = sToMs(duration);
+        return formatDuration(durationMs, { leading: true });
     })();
 
     return (

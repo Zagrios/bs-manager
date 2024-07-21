@@ -2,8 +2,7 @@ import { BsvMapDetail, MapFilter, MapRequirement, MapSpecificity, MapStyle, MapT
 import { motion } from "framer-motion";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { BsmCheckbox } from "../../shared/bsm-checkbox.component";
-import { minToS } from "../../../../shared/helpers/time.helpers";
-import dateFormat from "dateformat";
+import { minToS, sToMs } from "../../../../shared/helpers/time.helpers";
 import { BsmRange } from "../../shared/bsm-range.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { MAP_DIFFICULTIES_COLORS } from "shared/models/maps/difficulties-colors";
@@ -13,6 +12,7 @@ import clone from "rfdc";
 import { GlowEffect } from "../../shared/glow-effect.component";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { SongDetails } from "shared/models/maps";
+import formatDuration from "format-duration";
 
 export type Props = {
     className?: string;
@@ -60,9 +60,8 @@ export function FilterPanel({ className, ref, playlist = false, filter, localDat
             if (sec === MAX_DURATION) {
                 return "∞";
             }
-            const date = new Date(0);
-            date.setSeconds(sec);
-            return sec > 3600 ? dateFormat(date, "h:MM:ss") : dateFormat(date, "MM:ss");
+            const ms = sToMs(sec);
+            return formatDuration(ms, { leading: true });
         })();
 
         return renderLabel(textValue, sec === MAX_DURATION);
