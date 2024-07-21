@@ -27,7 +27,6 @@ import { MapIcon } from "renderer/components/svgs/icons/map-icon.component";
 import { PersonIcon } from "renderer/components/svgs/icons/person-icon.component";
 import { ClockIcon } from "renderer/components/svgs/icons/clock-icon.component";
 import { NpsIcon } from "renderer/components/svgs/icons/nps-icon.component";
-import dateFormat from 'dateformat';
 import { getCorrectTextColor } from "renderer/helpers/correct-text-color";
 import { BPList, BPListDifficulty, PlaylistSong } from "shared/models/playlists/playlist.interface";
 import { EditPlaylistInfosModal } from "./edit-playlist-infos-modal.component";
@@ -37,6 +36,8 @@ import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import BeatWaiting from "../../../../../../../assets/images/apngs/beat-waiting.png";
 import BeatConflict from "../../../../../../../assets/images/apngs/beat-conflict.png";
 import { findHashInString } from "shared/helpers/string.helpers";
+import { sToMs } from "shared/helpers/time.helpers";
+import formatDuration from "format-duration";
 
 type Props = {
     maps$: Observable<BsmLocalMap[]>;
@@ -362,6 +363,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
 
     const playlistDuration = useMemo(() => {
         if(!playlistMaps || Object.keys(playlistMaps).length === 0){ return "0:00"; }
+
         const durations = Object.values(playlistMaps ?? {}).map(playlistMap => {
 
             if(!playlistMap?.map){ return 0; }
@@ -380,8 +382,8 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
             return 0;
         }).filter(duration => !Number.isNaN(duration));
 
-        const totalDuration = durations.reduce((acc, duration) => acc + duration, 0);
-        return totalDuration > 3600 ? dateFormat(totalDuration * 1000, "H:MM:ss") : dateFormat(totalDuration * 1000, "MM:ss");
+        const totalDuration = sToMs(durations.reduce((acc, duration) => acc + duration, 0));
+        return formatDuration(totalDuration, { leading: true });
     }, [playlistMaps]);
 
     const [playlistMinNps, playlistMaxNps] = useMemo(() => {

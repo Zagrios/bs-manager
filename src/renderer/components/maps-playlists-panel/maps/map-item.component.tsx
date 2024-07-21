@@ -4,7 +4,7 @@ import { BsmLink } from "../../shared/bsm-link.component";
 import { BsmIcon } from "../../svgs/bsm-icon.component";
 import { BsmButton } from "../../shared/bsm-button.component";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState, Fragment, useRef } from "react";
+import { useState, Fragment, useRef, useMemo } from "react";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import dateFormat from "dateformat";
 import { AudioPlayerService } from "renderer/services/audio-player.service";
@@ -30,6 +30,8 @@ import { BsmCheckbox } from "renderer/components/shared/bsm-checkbox.component";
 import { BPListDifficulty } from "shared/models/playlists/playlist.interface";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { cn } from "renderer/helpers/css-class.helpers";
+import { sToMs } from "shared/helpers/time.helpers";
+import formatDuration from "format-duration";
 
 export type MapItemComponentProps<T = unknown> = {
     hash: string;
@@ -106,14 +108,13 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
         return dateFormat(date, "d mmm yyyy");
     });
 
-    const durationText = (() => {
+    const durationText = useMemo(() => {
         if (!duration) {
             return null;
         }
-        const date = new Date(0);
-        date.setSeconds(duration);
-        return duration > 3600 ? dateFormat(date, "h:MM:ss") : dateFormat(date, "MM:ss");
-    })();
+        const durationMs = sToMs(duration);
+        return formatDuration(durationMs, { leading: true });
+    }, [duration]);
 
     const parseDiffLabel = (diffLabel: string) => {
         if (MAP_DIFFICULTIES.includes(diffLabel as SongDiffName)) {
