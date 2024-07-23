@@ -30,7 +30,6 @@ export function NavBar() {
 
 
     const route = useObservable(() => pageState.route$);
-    console.log(route);
 
     function listVersions(){
         const versions = Array.isArray(installedVersions) ? [...installedVersions] : [];
