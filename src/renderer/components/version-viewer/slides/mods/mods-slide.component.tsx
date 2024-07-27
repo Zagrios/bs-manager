@@ -35,6 +35,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
     const [modsInstalled, setModsInstalled] = useState(null as Map<string, Mod[]>);
     const [modsSelected, setModsSelected] = useState([] as Mod[]);
     const [moreInfoMod, setMoreInfoMod] = useState(null as Mod);
+    const [reinstallAllMods, setReinstallAllMods] = useState(false);
     const isOnline = useObservable(() => os.isOnline$);
     const installing = useObservable(() => modsManager.isInstalling$);
 
@@ -80,6 +81,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         if (installing) {
             return;
         }
+
         const modsToInstall = modsSelected.filter(mod => {
             const corespondingMod = modsAvailable.get(mod.category).find(availabeMod => availabeMod._id === mod._id);
             const installedMod = modsInstalled.get(mod.category)?.find(installedMod => installedMod.name === mod.name);
@@ -186,13 +188,17 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         }
         return (
             <>
-                <div className="grow overflow-scroll w-full min-h-0 scrollbar-thin scrollbar-thumb-neutral-900 scrollbar-thumb-rounded-full">
+                <div className="grow overflow-y-scroll w-full min-h-0 scrollbar-default p-0 m-0">
                     <ModsGrid modsMap={modsAvailable} installed={modsInstalled} modsSelected={modsSelected} onModChange={handleModChange} moreInfoMod={moreInfoMod} onWantInfos={handleMoreInfo} />
                 </div>
-                <div className="h-10 shrink-0 flex items-center justify-between px-3">
+                <div className="shrink-0 flex items-center justify-between px-3 py-2">
                     <BsmButton className="text-center rounded-md px-2 py-[2px]" text="pages.version-viewer.mods.buttons.more-infos" typeColor="cancel" withBar={false} disabled={!moreInfoMod} onClick={handleOpenMoreInfo} style={{ width: downloadWith }} />
-                    <div ref={downloadRef}>
-                        <BsmButton className="text-center rounded-md px-2 py-[2px]" text="pages.version-viewer.mods.buttons.install-or-update" withBar={false} disabled={installing} typeColor="primary" onClick={installMods} />
+                    <div ref={downloadRef} className="flex h-8 justify-center items-center gap-px overflow-hidden rounded-md">
+                        <div className="grow h-full w-36 relative">
+                            <BsmButton className="absolute top-0 left-0 flex items-center justify-center px-1 size-full transition-transform duration-200 ease-in-out" text="Install or update" typeColor="primary" withBar={false} onClick={installMods} style={{ transform: reinstallAllMods ? "translateY(-100%)" : "" }} />
+                            <BsmButton className="absolute top-full left-0 flex items-center justify-center px-1 size-full transition-transform duration-200 ease-in-out" text="Reinstall all" typeColor="primary" withBar={false} onClick={installMods} style={{ transform: reinstallAllMods ? "translateY(-100%)" : "" }}/>
+                        </div>
+                        <BsmButton className="flex items-center justify-center shrink-0 h-full" icon="chevron-top" typeColor="primary" withBar={false} onClick={() => setReinstallAllMods(prev => !prev)}/>
                     </div>
                 </div>
             </>
@@ -201,7 +207,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
 
     return (
         <div ref={ref} className="shrink-0 w-full h-full px-8 pb-7 flex justify-center">
-            <div className="relative flex flex-col grow-0 bg-light-main-color-2 dark:bg-main-color-2 h-full w-full rounded-md shadow-black shadow-center overflow-hidden">{renderContent()}</div>
+            <div className="relative flex flex-col grow-0 bg-light-main-color-2 dark:bg-main-color-2 size-full rounded-md shadow-black shadow-center overflow-hidden">{renderContent()}</div>
         </div>
     );
 }

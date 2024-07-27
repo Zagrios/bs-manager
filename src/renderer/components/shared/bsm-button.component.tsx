@@ -6,7 +6,7 @@ import { useClickOutside } from "renderer/hooks/use-click-outside.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { getCorrectTextColor } from "renderer/helpers/correct-text-color";
 
-type BsmButtonType = "primary" | "secondary" | "success" | "cancel" | "error" | "none";
+export type BsmButtonType = "primary" | "secondary" | "success" | "cancel" | "error" | "none";
 
 type Props = {
     className?: string;
