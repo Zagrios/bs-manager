@@ -190,7 +190,7 @@ export enum MapType {
     Accuracy = "accuracy",
     Balanced = "balanced",
     Challenge = "challenge",
-    Dancestyle = "dancestyle",
+    Dancestyle = "dance-style",
     Fitness = "fitness",
     Speed = "speed",
     Tech = "tech"
