@@ -24,7 +24,7 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
         if (!installed?.get(key)) {
             return undefined;
         }
-        const installedMod = installed.get(key).find(m => m.name === mod.name);
+        const installedMod = installed.get(key).find(m => m._id === mod._id);
         if (!installedMod) {
             return undefined;
         }
@@ -36,16 +36,16 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
             const deps = m.dependencies.map(dep =>
                 Array.from(modsMap.values())
                     .flat()
-                    .find(m => dep.name === m.name)
+                    .find(m => dep._id === m._id)
             );
-            if (deps.some(depMod => depMod.name === mod.name)) {
+            if (deps.some(depMod => depMod._id === mod._id)) {
                 return true;
             }
-            return deps.some(depMod => depMod.dependencies.some(depModDep => depModDep.name === mod.name));
+            return deps.some(depMod => depMod.dependencies.some(depModDep => depModDep._id === mod._id));
         });
     };
 
-    const isSelected = (mod: Mod): boolean => modsSelected.some(m => m.name === mod.name);
+    const isSelected = (mod: Mod): boolean => modsSelected.some(m => m._id === mod._id);
 
     const handleInput = (val: string) => setFilter(val.toLowerCase());
 
