@@ -16,7 +16,7 @@ ipc.on("import-version", (args, reply) => {
 
 ipc.on("bs-download.installation-folder", (_, reply) => {
     const installLocation = InstallationLocationService.getInstance();
-    reply(from(installLocation.installationDirectory()));
+    reply(of(installLocation.installationDirectory()));
 });
 
 ipc.on("bs-download.set-installation-folder", (args, reply) => {
