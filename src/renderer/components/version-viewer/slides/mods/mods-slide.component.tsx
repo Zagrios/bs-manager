@@ -186,7 +186,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         }
         return (
             <>
-                <div className="grow overflow-scroll w-full min-h-0 scrollbar-thin scrollbar-thumb-neutral-900 scrollbar-thumb-rounded-full">
+                <div className="grow overflow-y-scroll w-full min-h-0 scrollbar-default">
                     <ModsGrid modsMap={modsAvailable} installed={modsInstalled} modsSelected={modsSelected} onModChange={handleModChange} moreInfoMod={moreInfoMod} onWantInfos={handleMoreInfo} />
                 </div>
                 <div className="h-10 shrink-0 flex items-center justify-between px-3">

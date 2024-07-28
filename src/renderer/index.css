@@ -79,10 +79,21 @@
 }
 
 .scrollbar-default {
-    /* scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 */
-    @apply scrollbar-thin;
-    @apply scrollbar-thumb-rounded-full;
-    @apply scrollbar-thumb-neutral-900;
+
+
+    &::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background-color: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: rgb(23 23 23 / var(--tw-bg-opacity));
+        border-radius: 999px;
+      }
 }
 
 .tippy-box[data-theme~='default'] {
