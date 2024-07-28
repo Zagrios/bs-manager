@@ -1,4 +1,4 @@
-import { writeFileSync } from "fs-extra";
+import { pathExistsSync, readFileSync, writeFileSync } from "fs-extra";
 import { tryit } from "shared/helpers/error.helpers";
 import log from "electron-log";
 import { Subject, debounceTime } from "rxjs";
@@ -22,9 +22,13 @@ export class JsonCache<T = unknown> {
 
     private load(): void {
         try {
-            this._cache = require(this.jsonPath);
+            if(pathExistsSync(this.jsonPath)){
+                this._cache = JSON.parse(readFileSync(this.jsonPath).toString());
+            } else {
+                log.warn("File cache not exist yet", this.jsonPath);
+            }
         } catch (error) {
-            log.warn("Failed to load cache or file cache not exist yet", this.jsonPath, error);
+            log.warn("Failed to load cache file", this.jsonPath, error);
         } finally {
             this._cache ??= {};
         }

@@ -62,7 +62,7 @@ export default function OneClickDownloadPlaylist() {
                 <TitleBar template="oneclick-download-playlist.html" />
                 <BsmImage className="mt-2 aspect-square w-1/2 object-cover rounded-md shadow-black shadow-lg" placeholder={defaultImage} image={playlistImage()} errorImage={defaultImage} />
                 <h1 className="mt-4 overflow-hidden font-bold italic text-xl text-gray-200 tracking-wide w-full text-center whitespace-nowrap text-ellipsis px-2">{playlistInfos?.playlistTitle}</h1>
-                <div className="w-full py-3 flex items-center justify-center max-w-full overflow-x-scroll overflow-y-hidden scrollbar scrollbar-thin scrollbar-track-transparent scrollbar-thumb-neutral-900" ref={mapsContainer}>
+                <div className="w-full py-3 flex items-center justify-center max-w-full overflow-x-scroll overflow-y-hidden scrollbar-default" ref={mapsContainer}>
                     <div className="flex justify-start items-start gap-2.5">{downloadedMaps?.map(map => map?.coverUrl &&
                         <motion.img layout="position" key={map.hash} className="block aspect-square w-14 object-cover rounded-md shadow-black shadow-md" src={map?.coverUrl} initial={{ scale: 0 }} animate={{ scale: 1 }} whileHover={{ rotate: 5 }} />
                     )}</div>

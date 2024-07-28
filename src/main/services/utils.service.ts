@@ -8,7 +8,7 @@ import log from "electron-log";
 export class UtilsService {
     private static instance: UtilsService;
 
-    private assetsPath: string = app.isPackaged ? path.join(process.resourcesPath, "assets") : path.join(__dirname, "../../../assets");
+    private assetsPath: string = app.isPackaged ? path.join(process.resourcesPath, "assets") : path.join(__dirname, "../../assets");
 
     private constructor() {}
 

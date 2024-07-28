@@ -12,7 +12,7 @@ module.exports = {
     darkMode: "class",
     content: ["./src/renderer/**/*.{js,jsx,ts,tsx,ejs}", "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"],
     mode: "jit",
-    plugins: [require("tailwind-scrollbar-hide"), require("tailwind-scrollbar")({ nocompatible: true }), require("tailwindcss-scoped-groups")({ groups: ["one"] }), require("ps-scrollbar-tailwind"), nextui()],
+    plugins: [require("tailwindcss-scoped-groups")({ groups: ["one"] }), nextui()],
     theme: {
         colors: {
             ...colors,

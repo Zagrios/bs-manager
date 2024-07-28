@@ -113,7 +113,10 @@ export function SettingsPage() {
     };
 
     const loadInstallationFolder = () => {
-        steamDownloader.getInstallationFolder().then(res => setInstallationFolder(res));
+        steamDownloader.getInstallationFolder().then(res => {
+            console.log("AAAAA", res);
+            setInstallationFolder(res);
+        });
     };
 
     const loadDownloadersSession = () => {

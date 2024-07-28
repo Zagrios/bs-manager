@@ -44,7 +44,7 @@ export function NavBar() {
     return (
         <nav id="nav-bar" className="z-10 flex flex-col h-full max-h-full items-center p-1">
             <BsManagerIcon className="relative aspect-square w-16 h-16 mb-3" />
-            <ol id="versions" className="w-fit max-w-[150px] relative left-[2px] grow overflow-y-hidden scrollbar-track-transparent scrollbar-default hover:overflow-y-scroll">
+            <ol id="versions" className="w-fit max-w-[150px] relative left-[2px] grow overflow-y-hidden scrollbar-default hover:overflow-y-scroll">
                 <NavBarItem isActive={route === "/shared"}>
                     <SharedNavBarItem />
                 </NavBarItem>
