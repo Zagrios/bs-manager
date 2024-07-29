@@ -6,11 +6,12 @@ import { useClickOutside } from "renderer/hooks/use-click-outside.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { getCorrectTextColor } from "renderer/helpers/correct-text-color";
 
-type BsmButtonType = "primary" | "secondary" | "success" | "cancel" | "error" | "none";
+export type BsmButtonType = "primary" | "secondary" | "success" | "cancel" | "error" | "none";
 
 type Props = {
     className?: string;
     style?: CSSProperties;
+    iconStyle?: CSSProperties;
     imgClassName?: string;
     iconClassName?: string;
     icon?: BsmIconType;
@@ -29,7 +30,7 @@ type Props = {
     textClassName?: string;
 };
 
-export const BsmButton = forwardRef<unknown, Props>(({ className, style, imgClassName, iconClassName, icon, image, text, type, active, withBar = true, disabled, onClickOutside, onClick, typeColor, color, title, iconColor, textClassName }, forwardedRef) => {
+export const BsmButton = forwardRef<unknown, Props>(({ className, style, iconStyle, imgClassName, iconClassName, icon, image, text, type, active, withBar = true, disabled, onClickOutside, onClick, typeColor, color, title, iconColor, textClassName }, forwardedRef) => {
     const t = useTranslation();
     const { firstColor, secondColor } = useThemeColor();
     const ref = useRef<HTMLDivElement>(null);
@@ -86,10 +87,10 @@ export const BsmButton = forwardRef<unknown, Props>(({ className, style, imgClas
     return (
         <div ref={setRef} onClick={handleClick} title={t(title)} className={`${className} overflow-hidden group ${!withBar && !disabled && (!!typeColor || !!color) && "hover:brightness-[1.15]"} ${disabled ? "brightness-75 cursor-not-allowed" : "cursor-pointer"} ${renderTypeColor}`} style={{ ...style, backgroundColor: primaryColor || color }}>
             {image && <BsmImage image={image} className={imgClassName} />}
-            {icon && <BsmIcon icon={icon} className={iconClassName ?? "h-full w-full text-gray-800 dark:text-white"} style={{ color: iconColor || textColor }} />}
+            {icon && <BsmIcon icon={icon} className={iconClassName ?? "size-full text-gray-800 dark:text-white"} style={{ ...(iconStyle ?? {}), color: (iconColor || textColor) }} />}
             {text &&
                 (type === "submit" ? (
-                    <button type="submit" className={textClassName || "h-full w-full"} style={{ ...(!!textColor && { color: textColor }) }}>
+                    <button type="submit" className={textClassName || "size-full"} style={{ ...(!!textColor && { color: textColor }) }}>
                         {t(text)}
                     </button>
                 ) : (
@@ -99,8 +100,8 @@ export const BsmButton = forwardRef<unknown, Props>(({ className, style, imgClas
                 ))}
             {withBar && (
                 <div className="absolute bottom-0 left-0 w-full h-1 bg-current" style={{ color: secondColor }}>
-                    <div className="absolute top-0 left-0 h-full w-full bg-current brightness-50" />
-                    <div className={`absolute top-0 left-0 h-full w-full bg-inherit -translate-x-full group-hover:translate-x-0 transition-transform shadow-center shadow-current ${active && "translate-x-0"}`} />
+                    <div className="absolute top-0 left-0 size-full bg-current brightness-50" />
+                    <div className={`absolute top-0 left-0 size-full bg-inherit -translate-x-full group-hover:translate-x-0 transition-transform shadow-center shadow-current ${active && "translate-x-0"}`} />
                 </div>
             )}
         </div>

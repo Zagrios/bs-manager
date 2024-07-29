@@ -346,15 +346,12 @@ export class BsModsManagerService {
             throw CustomError.fromError(new Error("No mods to install"), "no-mods");
         }
 
-        const deps = await this.resolveDependencies(mods, version);
-        mods.push(...deps);
-
         const bsipa = mods.find(mod => mod.name.toLowerCase() === "bsipa");
         if (bsipa) {
             mods = mods.filter(mod => mod.name.toLowerCase() !== "bsipa");
         }
 
-        this.nbModsToInstall = mods.length + (bsipa && 1);
+        this.nbModsToInstall = mods.length + (bsipa ? 1 : 0);
         this.nbInstalledMods = 0;
 
         if (bsipa) {

@@ -73,7 +73,8 @@
                 "mods-not-available": "Не найдены моды для этой версии Beat Saber",
                 "buttons": {
                     "more-infos": "Подробнее",
-                    "install-or-update": "Установить или обновить"
+                    "install-or-update": "Установить или обновить",
+                    "reinstall-all": "Переустановить все"
                 },
                 "mods-grid": {
                     "header-bar": {

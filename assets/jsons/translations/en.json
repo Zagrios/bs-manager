@@ -73,7 +73,8 @@
                 "mods-not-available": "No mods are available yet for this version of Beat Saber",
                 "buttons": {
                     "more-infos": "More info",
-                    "install-or-update": "Install or update"
+                    "install-or-update": "Install or update",
+                    "reinstall-all": "Reinstall all"
                 },
                 "mods-grid": {
                     "header-bar": {

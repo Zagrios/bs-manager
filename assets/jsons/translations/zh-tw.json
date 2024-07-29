@@ -73,7 +73,8 @@
                 "mods-not-available": "該版本 BeatSaber 暫無可用 Mod",
                 "buttons": {
                     "more-infos": "更多資訊",
-                    "install-or-update": "安裝或更新"
+                    "install-or-update": "安裝或更新",
+                    "reinstall-all": "重新安裝全部"
                 },
                 "mods-grid": {
                     "header-bar": {

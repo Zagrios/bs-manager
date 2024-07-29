@@ -19,12 +19,14 @@ import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods-
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { lt } from "semver";
 import { useService } from "renderer/hooks/use-service.hook";
+import { NotificationService } from "renderer/services/notification.service";
 
 export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion; onDisclamerDecline: () => void }) {
     const ACCEPTED_DISCLAIMER_KEY = "accepted-mods-disclaimer";
 
     const modsManager = useService(BsModsManagerService);
     const configService = useService(ConfigurationService);
+    const notification = useService(NotificationService);
     const linkOpener = useService(LinkOpenerService);
     const modals = useService(ModalService);
     const os = useService(OsDiagnosticService);
@@ -35,6 +37,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
     const [modsInstalled, setModsInstalled] = useState(null as Map<string, Mod[]>);
     const [modsSelected, setModsSelected] = useState([] as Mod[]);
     const [moreInfoMod, setMoreInfoMod] = useState(null as Mod);
+    const [reinstallAllMods, setReinstallAllMods] = useState(false);
     const isOnline = useObservable(() => os.isOnline$);
     const installing = useObservable(() => modsManager.isInstalling$);
 
@@ -51,15 +54,17 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
     };
 
     const handleModChange = (selected: boolean, mod: Mod) => {
+
         if (selected) {
-            return setModsSelected([...modsSelected, mod]);
+            return setModsSelected(mods => {
+                if (mods.some(m => m._id === mod._id)) {
+                    return mods;
+                }
+                return [...mods, mod];
+            });
         }
-        const mods = [...modsSelected];
-        mods.splice(
-            mods.findIndex(m => m.name === mod.name),
-            1
-        );
-        setModsSelected(mods);
+
+        setModsSelected(mods => mods.filter(m => m._id !== mod._id));
     };
 
     const handleMoreInfo = (mod: Mod) => {
@@ -76,24 +81,27 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         linkOpener.open(moreInfoMod.link);
     };
 
-    const installMods = () => {
+    const installMods = (reinstallAll: boolean): void => {
+
+        setReinstallAllMods(() => false);
+
         if (installing) {
             return;
         }
+
         const modsToInstall = modsSelected.filter(mod => {
-            const corespondingMod = modsAvailable.get(mod.category).find(availabeMod => availabeMod._id === mod._id);
-            const installedMod = modsInstalled.get(mod.category)?.find(installedMod => installedMod.name === mod.name);
+            const installedMod = modsInstalled.get(mod.category)?.find(installedMod => installedMod._id === mod._id);
 
-            if (corespondingMod?.version && lt(corespondingMod.version, mod.version)) {
-                return false;
-            }
+            if(reinstallAll || !installedMod){ return true; }
 
-            if(installedMod?.version && lt(mod.version, installedMod?.version)){
-                return false;
-            }
-
-            return true;
+            return lt(installedMod.version, mod.version);
         });
+
+        if (!modsToInstall.length) {
+            notification.notifyInfo({ title: "Mods déjà installées", desc: "Tous les mods séléctionnées sont déjà installées" });
+            loadMods();
+            return;
+        }
 
         modsManager.installMods(modsToInstall, version).then(() => {
             loadMods();
@@ -186,13 +194,17 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         }
         return (
             <>
-                <div className="grow overflow-y-scroll w-full min-h-0 scrollbar-default">
+                <div className="grow overflow-y-scroll w-full min-h-0 scrollbar-default p-0 m-0">
                     <ModsGrid modsMap={modsAvailable} installed={modsInstalled} modsSelected={modsSelected} onModChange={handleModChange} moreInfoMod={moreInfoMod} onWantInfos={handleMoreInfo} />
                 </div>
-                <div className="h-10 shrink-0 flex items-center justify-between px-3">
-                    <BsmButton className="text-center rounded-md px-2 py-[2px]" text="pages.version-viewer.mods.buttons.more-infos" typeColor="cancel" withBar={false} disabled={!moreInfoMod} onClick={handleOpenMoreInfo} style={{ width: downloadWith }} />
-                    <div ref={downloadRef}>
-                        <BsmButton className="text-center rounded-md px-2 py-[2px]" text="pages.version-viewer.mods.buttons.install-or-update" withBar={false} disabled={installing} typeColor="primary" onClick={installMods} />
+                <div className="shrink-0 flex items-center justify-between px-3 py-2">
+                    <BsmButton className="flex items-center justify-center rounded-md px-1 h-8" text="pages.version-viewer.mods.buttons.more-infos" typeColor="cancel" withBar={false} disabled={!moreInfoMod} onClick={handleOpenMoreInfo} style={{ width: downloadWith }}/>
+                    <div ref={downloadRef} className="flex h-8 justify-center items-center gap-px overflow-hidden rounded-md">
+                        <div className="grow h-full relative">
+                            <BsmButton className="relative left-0 flex items-center justify-center px-2 size-full transition-[top] duration-200 ease-in-out" text="pages.version-viewer.mods.buttons.install-or-update" typeColor="primary" withBar={false} onClick={() => installMods(false)} style={{ top: reinstallAllMods ? "-100%" : "0" }} />
+                            <BsmButton className="relative left-0 flex items-center justify-center px-2 size-full transition-[top] duration-200 ease-in-out " text="pages.version-viewer.mods.buttons.reinstall-all" typeColor="primary" withBar={false} onClick={() => installMods(true)} style={{ top: reinstallAllMods ? "-100%" : "0" }}/>
+                        </div>
+                        <BsmButton className="flex items-center justify-center shrink-0 h-full" iconClassName="transition-transform size-full ease-in-out duration-200" iconStyle={{ transform: reinstallAllMods ? "rotate(360deg)" : "rotate(180deg)" }} icon="chevron-top" typeColor="primary" withBar={false} onClick={() => setReinstallAllMods(prev => !prev)}/>
                     </div>
                 </div>
             </>
@@ -201,7 +213,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
 
     return (
         <div ref={ref} className="shrink-0 w-full h-full px-8 pb-7 flex justify-center">
-            <div className="relative flex flex-col grow-0 bg-light-main-color-2 dark:bg-main-color-2 h-full w-full rounded-md shadow-black shadow-center overflow-hidden">{renderContent()}</div>
+            <div className="relative flex flex-col grow-0 bg-light-main-color-2 dark:bg-main-color-2 size-full rounded-md shadow-black shadow-center overflow-hidden">{renderContent()}</div>
         </div>
     );
 }
