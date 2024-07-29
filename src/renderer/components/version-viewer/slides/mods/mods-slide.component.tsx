@@ -200,9 +200,9 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
                 <div className="shrink-0 flex items-center justify-between px-3 py-2">
                     <BsmButton className="flex items-center justify-center rounded-md px-1 h-8" text="pages.version-viewer.mods.buttons.more-infos" typeColor="cancel" withBar={false} disabled={!moreInfoMod} onClick={handleOpenMoreInfo} style={{ width: downloadWith }}/>
                     <div ref={downloadRef} className="flex h-8 justify-center items-center gap-px overflow-hidden rounded-md">
-                        <div className="grow h-full w-36 relative">
-                            <BsmButton className="absolute left-0 flex items-center justify-center px-1 size-full transition-[top] duration-200 ease-in-out" text="Install or update" typeColor="primary" withBar={false} onClick={() => installMods(false)} style={{ top: reinstallAllMods ? "-100%" : "0" }} />
-                            <BsmButton className="absolute left-0 flex items-center justify-center px-1 size-full transition-[top] duration-200 ease-in-out " text="Reinstall all" typeColor="primary" withBar={false} onClick={() => installMods(true)} style={{ top: reinstallAllMods ? "0" : "100%" }}/>
+                        <div className="grow h-full relative">
+                            <BsmButton className="relative left-0 flex items-center justify-center px-2 size-full transition-[top] duration-200 ease-in-out" text="pages.version-viewer.mods.buttons.install-or-update" typeColor="primary" withBar={false} onClick={() => installMods(false)} style={{ top: reinstallAllMods ? "-100%" : "0" }} />
+                            <BsmButton className="relative left-0 flex items-center justify-center px-2 size-full transition-[top] duration-200 ease-in-out " text="pages.version-viewer.mods.buttons.reinstall-all" typeColor="primary" withBar={false} onClick={() => installMods(true)} style={{ top: reinstallAllMods ? "-100%" : "0" }}/>
                         </div>
                         <BsmButton className="flex items-center justify-center shrink-0 h-full" iconClassName="transition-transform size-full ease-in-out duration-200" iconStyle={{ transform: reinstallAllMods ? "rotate(360deg)" : "rotate(180deg)" }} icon="chevron-top" typeColor="primary" withBar={false} onClick={() => setReinstallAllMods(prev => !prev)}/>
                     </div>
