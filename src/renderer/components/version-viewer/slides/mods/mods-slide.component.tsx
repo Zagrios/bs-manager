@@ -204,7 +204,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
                             <BsmButton className="absolute left-0 flex items-center justify-center px-1 size-full transition-[top] duration-200 ease-in-out" text="Install or update" typeColor="primary" withBar={false} onClick={() => installMods(false)} style={{ top: reinstallAllMods ? "-100%" : "0" }} />
                             <BsmButton className="absolute left-0 flex items-center justify-center px-1 size-full transition-[top] duration-200 ease-in-out " text="Reinstall all" typeColor="primary" withBar={false} onClick={() => installMods(true)} style={{ top: reinstallAllMods ? "0" : "100%" }}/>
                         </div>
-                        <BsmButton className="flex items-center justify-center shrink-0 h-full" iconClassName="transition-transform size-full ease-in-out duration-200" iconStyle={{ transform: reinstallAllMods ? "360deg" : "180deg" }} icon="chevron-top" typeColor="primary" withBar={false} onClick={() => setReinstallAllMods(prev => !prev)}/>
+                        <BsmButton className="flex items-center justify-center shrink-0 h-full" iconClassName="transition-transform size-full ease-in-out duration-200" iconStyle={{ transform: reinstallAllMods ? "rotate(360deg)" : "rotate(180deg)" }} icon="chevron-top" typeColor="primary" withBar={false} onClick={() => setReinstallAllMods(prev => !prev)}/>
                     </div>
                 </div>
             </>

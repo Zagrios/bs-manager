@@ -87,7 +87,7 @@ export const BsmButton = forwardRef<unknown, Props>(({ className, style, iconSty
     return (
         <div ref={setRef} onClick={handleClick} title={t(title)} className={`${className} overflow-hidden group ${!withBar && !disabled && (!!typeColor || !!color) && "hover:brightness-[1.15]"} ${disabled ? "brightness-75 cursor-not-allowed" : "cursor-pointer"} ${renderTypeColor}`} style={{ ...style, backgroundColor: primaryColor || color }}>
             {image && <BsmImage image={image} className={imgClassName} />}
-            {icon && <BsmIcon icon={icon} className={iconClassName ?? "size-full text-gray-800 dark:text-white"} style={{ ...(iconStyle ?? {}), color: iconColor || textColor }} />}
+            {icon && <BsmIcon icon={icon} className={iconClassName ?? "size-full text-gray-800 dark:text-white"} style={{ ...(iconStyle ?? {}), color: (iconColor || textColor) }} />}
             {text &&
                 (type === "submit" ? (
                     <button type="submit" className={textClassName || "size-full"} style={{ ...(!!textColor && { color: textColor }) }}>
