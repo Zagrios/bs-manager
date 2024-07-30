@@ -57,14 +57,14 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
 
         if (selected) {
             return setModsSelected(mods => {
-                if (mods.some(m => m._id === mod._id)) {
+                if (mods.some(m => m.name === mod.name)) {
                     return mods;
                 }
                 return [...mods, mod];
             });
         }
 
-        setModsSelected(mods => mods.filter(m => m._id !== mod._id));
+        setModsSelected(mods => mods.filter(m => m.name !== mod.name));
     };
 
     const handleMoreInfo = (mod: Mod) => {
@@ -90,7 +90,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         }
 
         const modsToInstall = modsSelected.filter(mod => {
-            const installedMod = modsInstalled.get(mod.category)?.find(installedMod => installedMod._id === mod._id);
+            const installedMod = modsInstalled.get(mod.category)?.find(installedMod => installedMod.name === mod.name);
 
             if(reinstallAll || !installedMod){ return true; }
 
