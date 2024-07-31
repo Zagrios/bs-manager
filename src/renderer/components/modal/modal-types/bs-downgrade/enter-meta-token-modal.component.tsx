@@ -30,7 +30,7 @@ export const EnterMetaTokenModal: ModalComponent<string> = ({resolver}) => {
     const cancel = () => {
         resolver({exitCode: ModalExitCode.CANCELED});
     }
-    
+
     return (
         <form className="flex flex-col w-80 gap-4">
             <h1 className="text-3xl uppercase tracking-wide w-full text-center">{t("modals.enter-meta-token.title")}</h1>
@@ -205,7 +205,7 @@ const PasswordInput = ({onChange, value}: {onChange: (value : {password: string,
                 <input className="grow px-1 py-[2px] outline-none bg-transparent" onChange={e => onChange({password: e.target.value, valid: isPasswordValid(e.target.value)})} value={value} type={showPassword ? "text" : "password"} name="password" id="password" placeholder={t("modals.enter-meta-token.body.password")} />
                 <BsmButton className="shrink-0 m-1 rounded-md p-0.5 !bg-light-main-color-3 dark:!bg-main-color-3" icon={showPassword ? "eye-cross" : "eye"} withBar={false} onClick={() => setShowPassword(prev => !prev)} />
             </div>
-        </> 
+        </>
     )
 
 }

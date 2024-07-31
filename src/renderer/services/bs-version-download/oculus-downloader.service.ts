@@ -11,6 +11,7 @@ import { AbstractBsDownloaderService } from "./abstract-bs-downloader.service";
 import { DownloadInfo } from "main/services/bs-version-download/bs-steam-downloader.service";
 import { MetaAuthErrorCodes, OculusDownloaderErrorCodes } from "shared/models/bs-version-download/oculus-download.model";
 import { EnterMetaTokenModal } from "renderer/components/modal/modal-types/bs-downgrade/enter-meta-token-modal.component";
+import { addFilterStringLog } from "renderer";
 
 export class OculusDownloaderService extends AbstractBsDownloaderService implements DownloaderServiceInterface{
 
@@ -87,6 +88,8 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
             if(tokenRes.exitCode !== ModalExitCode.COMPLETED){
                 return false;
             }
+
+            addFilterStringLog(tokenRes.data);
 
             return lastValueFrom(this.startDownloadBsVersion({ bsVersion, isVerification, token: tokenRes.data })).then(() => true);
 

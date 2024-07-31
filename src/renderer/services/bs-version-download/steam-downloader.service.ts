@@ -13,6 +13,7 @@ import { DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventTy
 import { SteamMobileApproveModal } from "renderer/components/modal/modal-types/bs-downgrade/steam-mobile-approve-modal.component";
 import { DownloaderServiceInterface } from "./bs-store-downloader.interface";
 import { AbstractBsDownloaderService } from "./abstract-bs-downloader.service";
+import { addFilterStringLog } from "renderer";
 
 export class SteamDownloaderService extends AbstractBsDownloaderService implements DownloaderServiceInterface{
 
@@ -217,6 +218,10 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
 
             if(loginRes.exitCode !== ModalExitCode.COMPLETED){
                 return Promise.resolve();
+            }
+
+            if(loginRes?.data?.password){
+                addFilterStringLog(loginRes.data.password);
             }
 
             if(loginRes.data.stay){
