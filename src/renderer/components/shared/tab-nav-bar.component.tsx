@@ -1,4 +1,4 @@
-import { DetailedHTMLProps, Fragment } from "react";
+import { DetailedHTMLProps, Fragment, HTMLAttributes } from "react";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { LaserSlider } from "./laser-slider.component";
@@ -8,7 +8,7 @@ type Props = {
     tabsText: string[];
     onTabChange: (index: number) => void;
     className?: string;
-    renderTab?: (props: DetailedHTMLProps<React.HTMLAttributes<any>, any>, text: string, index?: number) => JSX.Element;
+    renderTab?: (props: DetailedHTMLProps<HTMLAttributes<any>, any>, text: string, index?: number) => JSX.Element;
 };
 
 export function TabNavBar(props: Props) {

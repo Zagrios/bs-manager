@@ -598,8 +598,7 @@
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/6169409105101272202",
 		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/clans/32055887/c328e407367e9914abaf92f609501877ee5abb63.png",
 		"ReleaseDate": "1680623885",
-		"year": "2023",
-		"recommended": true
+		"year": "2023"
 	},
 	{
 		"BSVersion": "1.29.4",
@@ -700,13 +699,50 @@
 		"ReleaseDate": "1708091473",
 		"year": "2024"
 	},
-    {
+	{
 		"BSVersion": "1.35.0",
 		"BSManifest": "1490986193481243578",
 		"OculusBinaryId": "6720809361352119",
 		"ReleaseURL": "https://store.steampowered.com/news/app/620980/view/4142820264819707009",
 		"ReleaseImg": "https://clan.cloudflare.steamstatic.com/images//32055887/9a141be5c44ca6fc81551a2c7e7f28407df413ed.png",
 		"ReleaseDate": "1709831174",
+		"year": "2024"
+	},
+	{
+		"BSVersion": "1.36.0",
+		"BSManifest": "8533509040167838423",
+		"OculusBinaryId": "6863072637125790",
+		"ReleaseURL": "https://store.steampowered.com/news/app/620980/view/4205873192610459250",
+		"ReleaseImg": "https://clan.akamai.steamstatic.com/images//32055887/b8bd8a050e2bc3903cf18a277c5489ade01f7e75.png",
+		"ReleaseDate": "1712681263",
+		"year": "2024"
+	},
+	{
+		"BSVersion": "1.36.2",
+		"BSManifest": "4832237377879752064",
+		"OculusBinaryId": "6983660338400352",
+		"ReleaseURL": "https://store.steampowered.com/news/app/620980/view/4181105931135110118",
+		"ReleaseImg": "https://clan.cloudflare.steamstatic.com/images//32055887/74541417f14dee210bcfd89eefeabd7c0cc27c7d.png",
+		"ReleaseDate": "1715008020",
+		"year": "2024"
+	},
+	{
+		"BSVersion": "1.37.0",
+		"BSManifest": "7270690075584855288",
+		"OculusBinaryId": "7062062833893435",
+		"ReleaseURL": "https://store.steampowered.com/news/app/620980/view/4161968170153497460",
+		"ReleaseImg": "https://clan.akamai.steamstatic.com/images//32055887/f82d34c7582137a6748a28c5b02670ff4b235356.png",
+		"ReleaseDate": "1717513346",
+		"year": "2024",
+		"recommended": true
+	},
+	{
+		"BSVersion": "1.37.1",
+		"BSManifest": "9129356330007601179",
+		"OculusBinaryId": "7313068492126200",
+		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/4253168598913260422",
+		"ReleaseImg": "https://clan.akamai.steamstatic.com/images/32055887/039be718c1494f948257cd5b09f0082986484a58.png",
+		"ReleaseDate": "1720710529",
 		"year": "2024"
 	}
 ]

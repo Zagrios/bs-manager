@@ -23,11 +23,12 @@ export class ConfigurationService {
     }
 
     private async initStore() {
-        const contentPath = await this.locations.installationDirectory();
+        const contentPath = this.locations.installationDirectory();
         this.store = new ElectronStore({
             cwd: contentPath,
             name: "config",
             fileExtension: "cfg",
+            accessPropertiesByDotNotation: false,
         });
     }
 

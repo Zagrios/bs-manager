@@ -3,25 +3,27 @@ import { BsmProgressBar } from "renderer/components/progress-bar/bsm-progress-ba
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import TitleBar from "renderer/components/title-bar/title-bar.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import { IpcService } from "renderer/services/ipc.service";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
 import { NotificationService } from "renderer/services/notification.service";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
-import { lastValueFrom } from "rxjs";
 import { BsvMapDetail } from "shared/models/maps";
 import defaultImage from "../../../../assets/images/default-version-img.jpg";
 import { useService } from "renderer/hooks/use-service.hook";
+import { useWindowArgs } from "renderer/hooks/use-window-args.hook";
+import { useWindowControls } from "renderer/hooks/use-window-controls.hook";
 
 export default function OneClickDownloadMap() {
-    
-    const ipc = useService(IpcService);
+
     const bsv = useService(BeatSaverService);
     const mapsDownloader = useService(MapsDownloaderService);
     const progressBar = useService(ProgressBarService);
     const notification = useService(NotificationService);
 
+    const { close: closeWindow } = useWindowControls();
+    const { mapId, isHash } = useWindowArgs("mapId", "isHash");
     const [mapInfo, setMapInfo] = useState<BsvMapDetail>(null);
+
     const t = useTranslation();
 
     const cover = mapInfo ? mapInfo.versions.at(0).coverURL : null;
@@ -32,13 +34,12 @@ export default function OneClickDownloadMap() {
         progressBar.open();
 
         const promise = (async () => {
-            const ipcRes = await lastValueFrom(ipc.sendV2<{ id: string; isHash: boolean }>("one-click-map-info"));
 
-            const mapDetails = ipcRes.isHash ? (await bsv.getMapDetailsFromHashs([ipcRes.id])).at(0) : await bsv.getMapDetailsById(ipcRes.id);
+            const mapDetails = isHash === "true" ? (await bsv.getMapDetailsFromHashs([mapId])).at(0) : await bsv.getMapDetailsById(mapId);
 
             setMapInfo(() => mapDetails);
-            
-            const res = await mapsDownloader.oneClickInstallMap(mapDetails);
+
+            const res = await mapsDownloader.oneClickInstallMap(mapDetails).then(() => true).catch(() => false);
 
             progressBar.complete();
 
@@ -57,9 +58,9 @@ export default function OneClickDownloadMap() {
         });
 
         promise.finally(() => {
-            window.electron.window.close();
+            closeWindow();
         });
-        
+
     }, []);
 
     return (

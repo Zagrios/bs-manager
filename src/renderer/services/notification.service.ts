@@ -1,4 +1,4 @@
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { SystemNotificationOptions } from "shared/models/notification/system-notification.model";
 import { IpcService } from "./ipc.service";
 import { NotificationResult, NotificationType, Notification } from "../../shared/models/notification/notification.model";
@@ -58,8 +58,8 @@ export class NotificationService {
         return this.notify(notification);
     }
 
-    public notifySystem(options: SystemNotificationOptions) {
-        this.ipc.sendLazy<SystemNotificationOptions>("notify-system", { args: options });
+    public notifySystem(options: SystemNotificationOptions): Observable<void> {
+        return this.ipc.sendV2("notify-system",  options);
     }
 }
 

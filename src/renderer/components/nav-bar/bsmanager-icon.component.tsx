@@ -8,7 +8,7 @@ import { useService } from "renderer/hooks/use-service.hook";
 // Thanks to cheddZy for the icon : https://github.com/cheddZy
 
 export const BsManagerIcon = memo(({ className }: { className?: string }) => {
-    
+
     const audioPlayer = useService(AudioPlayerService);
 
     const { firstColor, secondColor } = useThemeColor();
@@ -27,6 +27,8 @@ export const BsManagerIcon = memo(({ className }: { className?: string }) => {
     const clickAction = () => {
         if (playing) {
             audioPlayer.pause();
+        } else {
+            audioPlayer.resume();
         }
     };
 

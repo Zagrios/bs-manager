@@ -14,8 +14,9 @@ import { lastValueFrom } from "rxjs";
 import JSZip from "jszip";
 import { extractZip } from "../../helpers/zip.helpers";
 import recursiveReadDir from "recursive-readdir";
-import { minToMs } from "../../../shared/helpers/time.helpers";
+import { sToMs } from "../../../shared/helpers/time.helpers";
 import { ensureDir } from "fs-extra";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -48,23 +49,14 @@ export class BsModsManagerService {
     }
 
     private async getModFromHash(hash: string): Promise<Mod> {
-        const allMods = await this.beatModsApi.getAllMods();
-        return allMods.find(mod => {
-            if (mod.name.toLowerCase() === "bsipa") {
-                return false;
-            }
-            return mod.downloads.some(download => download.hashMd5.some(md5 => md5.hash === hash));
-        });
-    }
 
-    private async getIpaFromHash(hash: string): Promise<Mod> {
-        const allMods = await this.beatModsApi.getAllMods();
-        return allMods.find(mod => {
-            if (mod.name.toLowerCase() !== "bsipa") {
-                return false;
-            }
-            return mod.downloads.some(download => download.hashMd5.some(md5 => md5.hash === hash));
-        });
+        const mod = await this.beatModsApi.getModByHash(hash);
+
+        if(mod?.name?.toLowerCase() === "bsipa"){
+            return undefined;
+        }
+
+        return mod;
     }
 
     private async getModsInDir(version: BSVersion, modsDir: ModsInstallFolder): Promise<Mod[]> {
@@ -84,7 +76,6 @@ export class BsModsManagerService {
                     return undefined;
                 }
                 const hash = await md5File(filePath);
-
                 const mod = await this.getModFromHash(hash);
 
                 if (!mod) {
@@ -107,7 +98,7 @@ export class BsModsManagerService {
         });
 
         const mods = await Promise.all(promises);
-        return mods.filter(Boolean);
+        return  mods.filter(Boolean);
     }
 
     private async getBsipaInstalled(version: BSVersion): Promise<Mod> {
@@ -117,7 +108,7 @@ export class BsModsManagerService {
             return undefined;
         }
         const injectorMd5 = await md5File(injectorPath);
-        return this.getIpaFromHash(injectorMd5);
+        return this.beatModsApi.getModByHash(injectorMd5);
     }
 
     private async downloadZip(zipUrl: string): Promise<JSZip> {
@@ -155,9 +146,24 @@ export class BsModsManagerService {
         }
 
         return new Promise<boolean>(resolve => {
-            log.info("START IPA PROCESS", `start /wait /min "" "${ipaPath}" ${args.join(" ")}`);
-            const processIPA = spawn(`start /wait /min "" "${ipaPath}" ${args.join(" ")}`, { cwd: versionPath, detached: true, shell: true });
+            const cmd = process.platform === 'linux'
+                ? `screen -dmS "BSIPA" dotnet ${ipaPath} ${args.join(" ")}` // Must run through screen, otherwise BSIPA tries to move console cursor and crashes.
+                : `"${ipaPath}" ${args.join(" ")}`;
+
+            log.info("START IPA PROCESS", cmd);
+            const processIPA = spawn(cmd, { cwd: versionPath, detached: true, shell: true });
+
+            const timemout = setTimeout(() => {
+                log.info("Ipa process timeout");
+                resolve(false)
+            }, sToMs(30));
+
+            processIPA.stderr.on("data", data => {
+                log.error("IPA process stderr", data.toString());
+            })
+
             processIPA.once("exit", code => {
+                clearTimeout(timemout);
                 if (code === 0) {
                     log.info("Ipa process exist with code 0");
                     return resolve(true);
@@ -166,10 +172,6 @@ export class BsModsManagerService {
                 resolve(false);
             });
 
-            setTimeout(() => {
-                log.info("Ipa process timeout");
-                resolve(false)
-            }, minToMs(1));
         });
     }
 
@@ -230,7 +232,7 @@ export class BsModsManagerService {
                 log.error("Error while extracting mod zip", e);
                 return false;
             });
-        
+
         log.info("Mod zip extraction end", mod.name, "to", destDir, "success:", extracted);
 
         const res = isBSIPA
@@ -241,7 +243,9 @@ export class BsModsManagerService {
               }))
             : extracted;
 
-        res && this.nbInstalledMods++;
+        if(res){
+            this.nbInstalledMods++;
+        }
 
         return res;
     }
@@ -315,8 +319,10 @@ export class BsModsManagerService {
 
     public async getInstalledMods(version: BSVersion): Promise<Mod[]> {
         this.manifestMatches = [];
-        await this.beatModsApi.getAllMods();
+
         const bsipa = await this.getBsipaInstalled(version);
+
+
         return Promise.all([this.getModsInDir(version, ModsInstallFolder.PLUGINS_PENDING), this.getModsInDir(version, ModsInstallFolder.LIBS_PENDING), this.getModsInDir(version, ModsInstallFolder.PLUGINS), this.getModsInDir(version, ModsInstallFolder.LIBS)]).then(dirMods => {
             const modsDict = new Map<string, Mod>();
 
@@ -337,18 +343,15 @@ export class BsModsManagerService {
 
     public async installMods(mods: Mod[], version: BSVersion): Promise<InstallModsResult> {
         if (!mods?.length) {
-            throw "no-mods";
+            throw CustomError.fromError(new Error("No mods to install"), "no-mods");
         }
-
-        const deps = await this.resolveDependencies(mods, version);
-        mods.push(...deps);
 
         const bsipa = mods.find(mod => mod.name.toLowerCase() === "bsipa");
         if (bsipa) {
             mods = mods.filter(mod => mod.name.toLowerCase() !== "bsipa");
         }
 
-        this.nbModsToInstall = mods.length + (bsipa && 1);
+        this.nbModsToInstall = mods.length + (bsipa ? 1 : 0);
         this.nbInstalledMods = 0;
 
         if (bsipa) {
@@ -357,7 +360,7 @@ export class BsModsManagerService {
                 return false;
             });
             if (!installed) {
-                throw "cannot-install-bsipa";
+                throw CustomError.fromError(new Error("Unable to install BSIPA"), "cannot-install-bsipa");
             }
         }
 
@@ -373,7 +376,7 @@ export class BsModsManagerService {
 
     public async uninstallMods(mods: Mod[], version: BSVersion): Promise<UninstallModsResult> {
         if (!mods?.length) {
-            throw "no-mods";
+            throw CustomError.fromError(new Error("No mods to uninstall"), "no-mods");
         }
 
         this.nbModsToUninstall = mods.length;
@@ -393,7 +396,7 @@ export class BsModsManagerService {
         const mods = await this.getInstalledMods(version);
 
         if (!mods?.length) {
-            throw "no-mods";
+            throw CustomError.fromError(new Error("This version has to mods to uninstall"), "no-mods");
         }
 
         this.nbModsToUninstall = mods.length;

@@ -1,25 +1,37 @@
-import { BsvMapDetail } from "../maps";
+import { BsvMapDetail, SongDetails } from "../maps";
 import { BsmLocalMap } from "../maps/bsm-local-map.interface";
+import { LocalBPListsDetails } from "./local-playlist.models";
 
-export interface BPList {
+export interface BPList<SongType = PlaylistSong> {
     playlistTitle: string;
     playlistAuthor: string;
     playlistDescription?: string;
     image: string;
-    customData: unknown;
-    songs: PlaylistSong[];
+    customData?: CustomDataBPList;
+    songs: SongType[];
 }
 
 export interface PlaylistSong {
-    key: string;
-    hash: string;
-    songName: string;
-    uploader?: string;
+    key?: string;
+    hash?: string;
+    songName?: string;
+    songDetails?: SongDetails;
+    difficulties?: BPListDifficulty[];
+    levelAuthorName?: string;
+    levelid?: string;
 }
 
 export interface DownloadPlaylistProgressionData {
     downloadedMaps: BsmLocalMap[];
     currentDownload: BsvMapDetail;
-    playlistInfos: BPList;
-    playlistPath: string;
+    playlist: LocalBPListsDetails;
+}
+
+export interface CustomDataBPList {
+    syncURL?: string;
+}
+
+export interface BPListDifficulty {
+    name: string,
+    characteristic: string,
 }

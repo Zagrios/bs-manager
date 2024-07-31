@@ -9,7 +9,7 @@ import { isValidUrl } from "../../shared/helpers/url.helpers";
 export class WindowManagerService {
     private static instance: WindowManagerService;
 
-    private readonly PRELOAD_PATH = app.isPackaged ? path.join(__dirname, "preload.js") : path.join(__dirname, "../../../.erb/dll/preload.js");
+    private readonly PRELOAD_PATH = app.isPackaged ? path.join(__dirname, "preload.js") : path.join(__dirname, "../../.erb/dll/preload.js");
     private readonly IS_DEBUG = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true"
 
     private readonly utilsService: UtilsService = UtilsService.getInstance();
@@ -47,7 +47,7 @@ export class WindowManagerService {
             if(isValidUrl(url)){
                 shell.openExternal(url);
             }
-            
+
             return { action: "deny"}
         });
 

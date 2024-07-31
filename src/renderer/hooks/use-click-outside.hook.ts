@@ -1,6 +1,6 @@
-import { MutableRefObject, useEffect } from "react";
+import { ComponentProps, MutableRefObject, useEffect } from "react";
 
-export function useClickOutside(ref: MutableRefObject<any>, handler: React.ComponentProps<any>["onClick"]) {
+export function useClickOutside(ref: MutableRefObject<any>, handler: ComponentProps<any>["onClick"]) {
     useEffect(() => {
         if (!handler) {
             return () => {};

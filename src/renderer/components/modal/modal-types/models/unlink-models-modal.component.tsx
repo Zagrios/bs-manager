@@ -7,7 +7,7 @@ import { ModalComponent, ModalExitCode } from "renderer/services/modale.service"
 import BeatConflict from "../../../../../../assets/images/apngs/beat-conflict.png";
 import { MSModelType } from "shared/models/models/model-saber.model";
 
-export const UnlinkModelsModal: ModalComponent<boolean, MSModelType> = ({ resolver, data }) => {
+export const UnlinkModelsModal: ModalComponent<boolean, MSModelType> = ({ resolver, options: {data} }) => {
     const t = useTranslation();
     const [keepMaps, setKeepMaps] = useState(true);
 

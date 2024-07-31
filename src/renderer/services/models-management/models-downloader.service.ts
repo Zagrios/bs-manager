@@ -6,7 +6,6 @@ import { ModalResponse, ModalService } from "../modale.service";
 import { IpcService } from "../ipc.service";
 import { DownloadModelsModal } from "renderer/components/modal/modal-types/models/download-models-modal.component";
 import { ProgressBarService } from "../progress-bar.service";
-import { Progression } from "main/helpers/fs.helpers";
 import { ProgressionInterface } from "shared/models/progress-bar";
 import equal from "fast-deep-equal";
 
@@ -42,7 +41,7 @@ export class ModelsDownloaderService {
     }
 
     private async downloadModel(download: ModelDownload) {
-        const download$ = this.ipc.sendV2<Progression<BsmLocalModel>>("download-model", { args: download });
+        const download$ = this.ipc.sendV2("download-model",  download);
 
         if (!this.progress.isVisible) {
             const progress$: Observable<ProgressionInterface> = download$.pipe(
@@ -118,19 +117,19 @@ export class ModelsDownloaderService {
     }
 
     public openDownloadModelsModal(version: BSVersion, type?: MSModelType, owned?: BsmLocalModel[]): Promise<ModalResponse<void>> {
-        return this.modal.openModal(DownloadModelsModal, { version, type, owned });
+        return this.modal.openModal(DownloadModelsModal, {data: { version, type, owned }});
     }
 
     public async oneClickInstallModel(model: MSModel): Promise<boolean> {
         this.progress.showFake(0.04);
 
-        const res = await this.ipc.send("one-click-install-model", { args: model });
+        const res = await lastValueFrom(this.ipc.sendV2("one-click-install-model", model)).then(() => true).catch(() => false);
 
         this.progress.complete();
-        await timer(500).toPromise();
+        await lastValueFrom(timer(500));
         this.progress.hide(true);
 
-        return res.success;
+        return res;
     }
 }
 

@@ -30,7 +30,7 @@ export function BsmProgressBar() {
         <AnimatePresence>
             {" "}
             {visible && (
-                <motion.div initial={{ y: "120%" }} animate={{ y: "0%" }} exit={{ y: "120%" }} className="w-full absolute h-14 flex justify-center items-center bottom-2 pointer-events-none z-10" style={style}>
+                <motion.div initial={{ y: "120%" }} animate={{ y: "0%" }} exit={{ y: "120%" }} className="w-full absolute h-14 flex justify-center items-center bottom-2 pointer-events-none z-[10000]" style={style}>
                     <div className={`flex items-center content-center justify-center bottom-9 z-10 rounded-full bg-light-main-color-2 dark:bg-main-color-2 shadow-center shadow-black transition-all duration-300 ${!progressValue && "h-14 w-14 "} ${!!progressValue && "h-5 w-3/4 p-[6px]"}`}>
                         {!!progressValue && (
                             <div className="relative h-full w-full rounded-full bg-black">

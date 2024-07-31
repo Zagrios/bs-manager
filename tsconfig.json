@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
-        "target": "es2021",
+        "target": "ESNext",
         "module": "commonjs",
-        "lib": ["dom", "es2021"],
+        "lib": ["dom", "ESNext"],
         "declaration": true,
         "declarationMap": true,
         "jsx": "react-jsx",
@@ -20,8 +20,7 @@
         "resolveJsonModule": true,
         "allowJs": true,
         "outDir": "release/app/dist",
-        "strictNullChecks": false,
-        "experimentalDecorators": true
+        "strictNullChecks": false
     },
     "exclude": ["test", "release/build", "release/app/dist", ".erb/dll"]
 }

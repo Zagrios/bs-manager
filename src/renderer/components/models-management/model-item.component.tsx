@@ -1,5 +1,5 @@
 import equal from "fast-deep-equal";
-import { memo, useRef, useState } from "react";
+import { ComponentProps, MouseEvent, useRef, useState } from "react";
 import { MSModel } from "shared/models/models/model-saber.model";
 import { BsmImage } from "../shared/bsm-image.component";
 import { motion } from "framer-motion";
@@ -19,6 +19,7 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import useDoubleClick from "use-double-click";
 import { useDelayedState } from "renderer/hooks/use-delayed-state.hook";
 import { ChevronTopIcon } from "../svgs/icons/chevron-top-icon.component";
+import { typedMemo } from "renderer/helpers/typed-memo";
 
 type Props<T> = {
     selected?: boolean;
@@ -26,13 +27,14 @@ type Props<T> = {
     id?: number;
     isDownloading?: boolean;
     callbackValue?: T;
+    hideNsFw?: boolean;
     onDelete?: (value: T) => void;
     onDownload?: (value: T) => void;
     onCancelDownload?: (value: T) => void;
     onDoubleClick?: (value: T) => void;
 } & Partial<MSModel> &
     Partial<BsmLocalModel> &
-    Omit<React.ComponentProps<"li">, "id" | "onDoubleClick">;
+    Omit<ComponentProps<"li">, "id" | "onDoubleClick">;
 
 function ModelItemElement<T = unknown>(props: Props<T>) {
     const t = useTranslation();
@@ -42,10 +44,28 @@ function ModelItemElement<T = unknown>(props: Props<T>) {
     const [idContentCopied, setIdContentCopied] = useState<string>(null);
     const ref = useRef();
 
+    const isNsfw = (() => {
+        if (!props.hideNsFw) {
+            return false;
+        }
+
+        const tags = props.tags?.map(tag => tag.toLowerCase()) ?? [];
+        const name = props.name.toLowerCase() ?? "";
+        return (
+            tags.includes("nsfw") ||
+            tags.includes("18+") ||
+            name.includes("nsfw") ||
+            name.includes("18+") ||
+            name.includes("nude") ||
+            name.includes("naked") ||
+            name.includes("lewd")
+        );
+    })();
+
     useDoubleClick({
         ref,
         latency: props.onDoubleClick ? 200 : 0,
-        onSingleClick: e => props?.onClick?.(e as unknown as React.MouseEvent<HTMLLIElement>),
+        onSingleClick: e => props?.onClick?.(e as unknown as MouseEvent<HTMLLIElement>),
         onDoubleClick: () => props?.onDoubleClick?.(props.callbackValue),
     });
 
@@ -117,7 +137,7 @@ function ModelItemElement<T = unknown>(props: Props<T>) {
             <div className="absolute top-0 left-0 w-full h-full rounded-lg overflow-hidden blur-none bg-black shadow-sm shadow-black">
                 <div ref={ref} className="contents">
                     <BsmImage className="absolute top-0 left-0 w-full h-full object-cover brightness-50 scale-[200%] blur-md" image={thumbnailUrl} placeholder={defaultImage} loading="lazy" />
-                    <BsmImage className="absolute top-0 left-1/2 -translate-x-1/2 max-w-[20rem] w-full h-full object-cover" image={thumbnailUrl} placeholder={defaultImage} loading="lazy" />
+                    <BsmImage className="absolute top-0 left-1/2 -translate-x-1/2 max-w-[20rem] w-full h-full object-cover" image={thumbnailUrl} placeholder={defaultImage} loading="lazy" style={isNsfw && {filter: "blur(10px)"}} />
                     <div className="absolute top-0 right-0 h-full w-0 flex flex-col items-end gap-1 pt-1.5 pr-1.5">
                         {!props.isDownloading ? (
                             actionButtons().map((button, index) => (
@@ -192,7 +212,5 @@ function ModelItemElement<T = unknown>(props: Props<T>) {
         </motion.li>
     );
 }
-
-const typedMemo: <T, P>(c: T, propsAreEqual?: (prevProps: Readonly<P>, nextProps: Readonly<P>) => boolean) => T = memo;
 
 export const ModelItem = typedMemo(ModelItemElement, equal);

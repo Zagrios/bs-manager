@@ -10,11 +10,13 @@ import { BsmIconType } from "../svgs/bsm-icon.component";
 import "./title-bar.component.css";
 import { useService } from "renderer/hooks/use-service.hook";
 import { lastValueFrom } from "rxjs";
+import { useWindowControls } from "renderer/hooks/use-window-controls.hook";
 
 export default function TitleBar({ template = "index.html" }: { template: AppWindow }) {
-    
+
     const ipcService = useService(IpcService);
     const audio = useService(AudioPlayerService);
+    const windowControls = useWindowControls();
 
     const volume = useObservable(() => audio.volume$, audio.volume);
     const color = useThemeColor("first-color");
@@ -22,11 +24,11 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
     const [previewVersion, setPreviewVersion] = useState(null);
 
     useEffect(() => {
-        lastValueFrom(ipcService.sendV2<string>("current-version")).then(version => {
-            if (version.toLocaleLowerCase().includes("alpha")) {
+        lastValueFrom(ipcService.sendV2("current-version")).then(version => {
+            if (version.toLowerCase().includes("alpha")) {
                 return setPreviewVersion("ALPHA");
             }
-            if (version.toLocaleLowerCase().includes("beta")) {
+            if (version.toLowerCase().includes("beta")) {
                 return setPreviewVersion("BETA");
             }
         });
@@ -35,19 +37,19 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
     const [maximized, setMaximized] = useState(false);
 
     const closeWindow = () => {
-        return window.electron.window.close();
+        return windowControls.close();
     };
 
     const maximizeWindow = () => {
-        window.electron.window.maximise();
+        windowControls.maximise();
     };
 
     const minimizeWindow = () => {
-        window.electron.window.minimise();
+        windowControls.minimise();
     };
 
     const resetWindow = () => {
-        window.electron.window.unmaximise();
+        windowControls.unmaximise();
     };
 
     const toogleMaximize = () => {
@@ -81,7 +83,7 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
                 <div id="window-controls" className="h-full flex shrink-0 items-center">
                     <div className="h-full text-gray-800 dark:text-gray-200 pr-1 cursor-pointer flex flex-row justify-end items-center gap-2 group pl-5">
                         <div className="shrink-0 w-0 overflow-hidden transition-all group-hover:w-16 group-hover:overflow-visible group-active:w-16 group-active:overflow-visible text-main-color-3">
-                            <BsmRange min={0} max={1} step={0.01} values={[volume.muted ? 0 : volume.volume]} colors={[color, "currentColor"]} onChange={val => audio.setVolume(val[0])} onFinalChange={val => audio.setFinalVolume(val[0])} />
+                            <BsmRange min={0} max={1} step={0.01} values={[volume.muted ? 0 : volume.volume]} colors={[color, "currentColor"]} onChange={val => audio.setVolume(val[0])} onFinalChange={val => audio.setVolume(val[0])} />
                         </div>
                         <BsmButton className="shrink-0 h-[23px] w-[23px] aspect-square !bg-transparent flex items-start" iconClassName={volumeIcon === "volume-down" ? "-translate-x-[1.8px]" : null} icon={volumeIcon} withBar={false} onClick={() => audio.toggleMute()} />
                     </div>
@@ -117,7 +119,7 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
             </header>
         );
     }
-    
+
     return (
         <header id="titlebar" className="min-h-[22px] bg-transparent w-screen h-[22px] flex content-center items-center justify-start z-10">
             <div id="drag-region" className="grow h-full">

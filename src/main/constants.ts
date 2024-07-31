@@ -1,4 +1,5 @@
 import { app } from "electron";
+import { constants } from "http2";
 import path from "path";
 
 export const BS_EXECUTABLE = "Beat Saber.exe";
@@ -10,5 +11,8 @@ export const APP_NAME = "BSManager";
 
 export const STEAMVR_APP_ID = "250820";
 
-export const IMAGE_CACHE_FOLDER = "imagescache";
-export const IMAGE_CACHE_PATH = path.join(app.getPath("userData"), IMAGE_CACHE_FOLDER);
+export const CACHE_PATH = path.join(app.getPath("userData"), "CachedData");
+
+export const IMAGE_CACHE_PATH = path.join(CACHE_PATH, "imagescache");
+
+export const HTTP_STATUS_CODES = constants;

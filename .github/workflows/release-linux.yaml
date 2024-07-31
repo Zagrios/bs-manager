@@ -1,0 +1,35 @@
+# This workflow will...
+
+name: Realease Linux
+
+env:
+  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+on:
+    workflow_dispatch:
+
+jobs:
+    release:
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+            matrix:
+                os: [ubuntu-latest]
+
+        steps:
+            - name: Check out Git repository
+              uses: actions/checkout@v4
+
+            - name: Use Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18.x
+                  cache: "npm"
+            - run: npm ci
+            - run: npm run publish:linux
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: release
+                  path: release

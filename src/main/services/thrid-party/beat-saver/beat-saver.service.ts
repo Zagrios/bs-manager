@@ -1,6 +1,6 @@
 import { splitIntoChunk } from "../../../../shared/helpers/array.helpers";
 import { BsvMapDetail } from "shared/models/maps";
-import { BsvPlaylist, SearchParams } from "shared/models/maps/beat-saver.model";
+import { BsvPlaylist, BsvPlaylistPage, PlaylistSearchParams, SearchParams } from "shared/models/maps/beat-saver.model";
 import { BeatSaverApiService } from "./beat-saver-api.service";
 import log from "electron-log";
 
@@ -23,14 +23,15 @@ export class BeatSaverService {
     }
 
     public async getMapDetailsFromHashs(hashs: string[]): Promise<BsvMapDetail[]> {
-        const filtredHashs = hashs.map(h => h.toLowerCase()).filter(hash => !Array.from(this.cachedMapsDetails.keys()).includes(hash));
+        const filtredHashs = hashs.map(h => h.toLowerCase()).filter(hash => !this.cachedMapsDetails.has(hash));
         const chunkHash = splitIntoChunk(filtredHashs, 50);
 
-        const mapDetails = Array.from(this.cachedMapsDetails.entries()).reduce((res, [hash, details]) => {
-            if (hashs.includes(hash)) {
-                res.push(details);
+        const mapDetails = hashs.reduce((acc, hash) => {
+            const detail = this.cachedMapsDetails.get(hash.toLowerCase());
+            if (detail) {
+                acc.push(detail);
             }
-            return res;
+            return acc;
         }, [] as BsvMapDetail[]);
 
         await Promise.allSettled(
@@ -59,11 +60,25 @@ export class BeatSaverService {
             })
             .catch(e => {
                 log.error(e);
-                return [];
+                return e;
             });
     }
 
-    public async getPlaylistPage(id: string): Promise<BsvPlaylist> {
-        return this.bsaverApi.getPlaylistDetails(id);
+    public searchPlaylists(search: PlaylistSearchParams): Promise<BsvPlaylist[]> {
+        return this.bsaverApi
+            .searchPlaylists(search)
+            .then(res => res.docs)
+            .catch(e => {
+                log.error(e);
+                throw e;
+            });
+    }
+
+    public getPlaylistDetailsById(id: string, page = 0): Promise<BsvPlaylistPage> {
+        return this.bsaverApi.getPlaylistDetailsById(id, page)
+            .catch(e => {
+                log.error(e);
+                throw e;
+            });
     }
 }

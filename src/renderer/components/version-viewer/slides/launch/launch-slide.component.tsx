@@ -14,6 +14,7 @@ import { BsStore } from "shared/models/bs-store.enum";
 import { lastValueFrom } from "rxjs";
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
 import equal from "fast-deep-equal";
+import { GlowEffect } from "renderer/components/shared/glow-effect.component";
 
 type Props = { version: BSVersion };
 
@@ -56,21 +57,17 @@ export function LaunchSlide({ version }: Props) {
     const handleAdditionalArgsChange = (e: ChangeEvent<HTMLInputElement>) => setAdditionalArgsString(() => e.target.value);
 
     const launch = () => {
-        const additionalArgs = advancedLaunch
-            ? additionalArgsString
-                  .split(";")
-                  .map(arg => arg.trim())
-                  .filter(arg => arg.length > 0)
-            : undefined;
-            
+        const additionalArgs = additionalArgsString?.split(";").map(arg => arg.trim()).filter(arg => arg.length > 0);
+
         const launch$ = bsLauncherService.launch({
             version,
             oculus: version.oculus ? false : oculusMode,
             desktop: desktopMode,
             debug: debugMode,
-            additionalArgs
+            additionalArgs,
+            protonPath: bsLauncherService.getProtonPath(),
         });
-        
+
         return lastValueFrom(launch$).catch(() => {});
     };
 
@@ -86,24 +83,27 @@ export function LaunchSlide({ version }: Props) {
                 <LaunchModToogle infoText="pages.version-viewer.launch-mods.debug-description" icon="terminal" onClick={() => setMode(LaunchMods.DEBUG_MOD, !debugMode)} active={debugMode} text="pages.version-viewer.launch-mods.debug" />
             </div>
             <div className="pt-4 w-2/3 flex flex-col items-center gap-3">
-                <BsmButton
-                    className="rounded-full w-fit text-lg py-1 px-7 shadow-md shadow-black bg-light-main-color-2 dark:bg-main-color-2 text-gray-800 dark:text-white"
-                    text="pages.version-viewer.launch-mods.advanced-launch.button"
-                    withBar={false}
-                    onClick={e => {
-                        e.preventDefault();
-                        setAdvancedLaunch(prev => !prev);
-                    }}
-                />
+                <div className="relative">
+                    <GlowEffect className="!rounded-full" visible={!!additionalArgsString}/>
+                    <BsmButton
+                        className="rounded-full w-fit text-lg py-1 px-7 shadow-md shadow-black bg-light-main-color-2 dark:bg-main-color-2 text-gray-800 dark:text-white"
+                        text="pages.version-viewer.launch-mods.advanced-launch.button"
+                        withBar={false}
+                        onClick={e => {
+                            e.preventDefault();
+                            setAdvancedLaunch(prev => !prev);
+                        }}
+                    />
+                </div>
                 <motion.div className="bg-light-main-color-2 dark:bg-main-color-2 h-9 rounded-full overflow-hidden flex items-center justify-center" initial={{ width: "0px" }} animate={{ width: advancedLaunch ? "100%" : "0px" }}>
                     <input className="w-[calc(100%-12px)] h-[calc(100%-12px)] bg-light-main-color-1 dark:bg-main-color-1 text-black dark:text-white rounded-full outline-none text-center" type="text" placeholder={t("pages.version-viewer.launch-mods.advanced-launch.placeholder")} value={additionalArgsString} onChange={handleAdditionalArgsChange} />
                 </motion.div>
             </div>
             <div className='grow flex justify-center items-center'>
-                <BsmButton 
-                    onClick={launch} 
+                <BsmButton
+                    onClick={launch}
                     active={JSON.stringify(version) === JSON.stringify(versionRunning)}
-                    className='relative -translate-y-1/2 text-5xl text-gray-800 dark:text-gray-200 font-bold tracking-wide pt-1 pb-3 px-7 rounded-lg shadow-md italic shadow-black active:scale-90 transition-transform' 
+                    className='relative -translate-y-1/2 text-5xl text-gray-800 dark:text-gray-200 font-bold tracking-wide pt-1 pb-3 px-7 rounded-lg shadow-md italic shadow-black active:scale-90 transition-transform'
                     text="misc.launch"
                     disabled={equal(version, versionDownloading)}
                 />

@@ -18,11 +18,11 @@ export function BsContentTabPanel({className, tabIndex, tabs, onTabChange, child
         <div className={className ?? "w-full h-full flex flex-row bg-light-main-color-1 dark:bg-main-color-1 rounded-md shadow-black shadow-md overflow-hidden"}>
             <nav className="h-full grid grid-flow-row !rounded-none shadow-sm flex-shrink-0">
                 {tabs.map((tab, i) => (
-                    <BsContentTabItem 
-                        key={`${tab.text}${tab.icon}`} 
+                    <BsContentTabItem
+                        key={`${tab.text}${tab.icon}`}
                         {...tab}
-                        active={tab.active ?? tabIndex === i} 
-                        onClick={value => {onTabChange(i, tab); tab.onClick(value);}} 
+                        active={tab.active ?? tabIndex === i}
+                        onClick={value => {onTabChange(i, tab); tab.onClick(value);}}
                     />
                 ))}
             </nav>

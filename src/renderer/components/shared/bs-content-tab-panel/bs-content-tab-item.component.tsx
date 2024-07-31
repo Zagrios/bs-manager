@@ -1,4 +1,5 @@
-import { LinkBtnProps, LinkButton } from "renderer/components/maps-mangement-components/link-button.component";
+import { MouseEventHandler } from "react";
+import { LinkBtnProps, LinkButton } from "renderer/components/shared/link-button.component";
 import { SvgIcon } from "renderer/components/svgs/svg-icon.type";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 
@@ -17,7 +18,7 @@ export const BsContentTabItem: BsContentTabItemComponent = ({ text, icon: Icon, 
 
     const t = useTranslation();
 
-    const handleClick = (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
+    const handleClick: MouseEventHandler<HTMLLIElement> = (e) => {
         e.preventDefault();
         e.stopPropagation();
         onClick(value);
@@ -32,10 +33,10 @@ export const BsContentTabItem: BsContentTabItemComponent = ({ text, icon: Icon, 
             {linkProps && (
                 <div className="flex items-center absolute top-1.5 left-1.5">
                     <LinkButton
-                        state={linkProps.state} 
-                        className={linkProps.className ?? "block w-6 h-6 aspect-square blur-0 cursor-pointer hover:brightness-75"} 
-                        title={linkProps.title} 
-                        onClick={linkProps.onClick} 
+                        state={linkProps.state}
+                        className={linkProps.className ?? "block w-6 h-6 aspect-square blur-0 cursor-pointer hover:brightness-75"}
+                        title={linkProps.title}
+                        onClick={linkProps.onClick}
                     />
                 </div>
             )}
