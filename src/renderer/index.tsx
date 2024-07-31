@@ -62,4 +62,12 @@ export function logRenderError(...params: unknown[]){
     ipc.sendLazy("log-error", { args: params });
 }
 
+export function addFilterStringLog(str: string){
+    ipc.sendLazy("add-filter-string", { args: str });
+}
+
+export function addFilterPatternLog(pattern: string){
+    ipc.sendLazy("add-filter-pattern", { args: pattern });
+}
+
 

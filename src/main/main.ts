@@ -21,16 +21,20 @@ import { BSLauncherService } from "./services/bs-launcher/bs-launcher.service";
 import { IpcRequest } from "shared/models/ipc";
 import { LivShortcut } from "./services/liv/liv-shortcut.service";
 import { SteamLauncherService } from "./services/bs-launcher/steam-launcher.service";
+import { readdirSync, statSync, unlinkSync } from "fs-extra";
+
+export const filterStrings = new Set<string>();
+export const filterPatterns = new Set<RegExp>();
 
 const isDebug = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true";
 
-log.transports.file.level = "info";
-log.transports.file.resolvePath = () => {
-    const now = new Date();
-    return path.join(app.getPath("logs"), `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}-v${app.getVersion()}.log`);
-};
+// Filter all occulus tokens
+filterPatterns.add(/FRL\S{10,}/g);
 
-log.catchErrors();
+initLogger();
+deleteOlestLogs();
+deleteOldLogs();
+
 
 if (process.env.NODE_ENV === "production") {
     const sourceMapSupport = require("source-map-support");
@@ -90,11 +94,11 @@ if (!gotTheLock) {
     })
 
     app.whenReady().then(() => {
-        
+
         app.setAppUserModelId(APP_NAME);
 
         initServicesMustBeInitialized();
-        
+
         const deepLink = process.argv.find(arg => DeepLinkService.getInstance().isDeepLink(arg));
 
         if (!deepLink) {
@@ -102,13 +106,132 @@ if (!gotTheLock) {
         } else {
             DeepLinkService.getInstance().dispatchLinkOpened(deepLink);
         }
-        
+
         SteamLauncherService.getInstance().restoreSteamVR();
-        
+
         // Log renderer errors
         ipcMain.on("log-error", (_, args: IpcRequest<unknown>) => {
             log.error(args?.args);
         });
-    
+
+        ipcMain.on("add-filter-string", (_, args: IpcRequest<string>) => {
+            filterStrings.add(args?.args);
+        });
+
+        ipcMain.on("add-filter-pattern", (_, args: IpcRequest<string>) => {
+            filterPatterns.add(new RegExp(args?.args));
+        });
+
     }).catch(log.error);
+}
+
+function initLogger(){
+    log.transports.file.level = "info";
+    log.transports.file.resolvePath = () => {
+        const now = new Date();
+        return path.join(app.getPath("logs"), `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}-v${app.getVersion()}.log`);
+    };
+
+    log.hooks.push((message) => {
+
+        const filterMessage = (filter: string|RegExp, ...param: unknown[]): unknown[] => {
+            return param.map(data => {
+
+                if(typeof data === "string"){
+                    return data.replaceAll(filter, "****");
+                }
+
+                if(data instanceof Error){
+                    data.message = data.message?.replaceAll(filter, "****");
+                    data.stack = data.stack?.replaceAll(filter, "****");
+                }
+
+                if(data instanceof Array){
+                    return filterMessage(filter, ...data);
+                }
+
+                return data;
+            });
+        }
+
+        filterStrings.forEach(filter => {
+            if(filter && message.data.length){
+                message.data = filterMessage(filter, ...message.data);
+            }
+        });
+
+        filterPatterns.forEach(filter => {
+            if(filter && message.data.length){
+                message.data = filterMessage(filter, ...message.data);
+            }
+        });
+
+        return message;
+    });
+
+    log.catchErrors();
+}
+
+function getLogFilesEntries() {
+    try {
+        const logsFolder = app.getPath("logs");
+        let logs = readdirSync(logsFolder, { withFileTypes: true });
+
+        logs = logs.filter(file => file.isFile() && path.extname(file.name) === ".log");
+
+        logs.sort((a, b) => {
+            const aStat = statSync(path.join(logsFolder, a.name));
+            const bStat = statSync(path.join(logsFolder, b.name));
+            return bStat.mtime.getTime() - aStat.mtime.getTime();
+        });
+
+        return logs.map(file => {
+            const filePath = path.join(logsFolder, file.name);
+            const stat = statSync(filePath);
+            return {
+                path: filePath,
+                name: file.name,
+                stats: stat
+            };
+        });
+    } catch (err) {
+        log.error('Error while retrieving log files entries:', err);
+        return [];
+    }
+}
+
+// keep only the last 5 logs
+function deleteOldLogs(): void{
+    try {
+        let logs = getLogFilesEntries();
+
+        logs = logs.slice(5);
+
+        logs.forEach(file => {
+            try {
+                unlinkSync(file.path);
+                log.info(`Deleted log file: ${file.path}`);
+            } catch (err) {
+                log.error(`Error deleting file ${file.path}:`, err);
+            }
+        });
+    } catch (err) {
+        log.error("Error while deleting old logs:", err);
+    }
+}
+
+// Temporary function to delete logs before 2024-07-31
+function deleteOlestLogs(): void{
+    // delete all logs before 2024-07-31
+    const date = new Date(2024, 6, 31); // month is 0-based
+    const logs = getLogFilesEntries().filter(file => file.stats.mtime.getTime() < date.getTime());
+
+    logs.forEach(file => {
+        try {
+            unlinkSync(file.path);
+            log.info(`Deleted log file: ${file.path}`);
+        } catch (err) {
+            log.error(`Error deleting file ${file.path}:`, err);
+        }
+    });
 }

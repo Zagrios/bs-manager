@@ -13,9 +13,10 @@ import { DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventTy
 import { SteamMobileApproveModal } from "renderer/components/modal/modal-types/bs-downgrade/steam-mobile-approve-modal.component";
 import { DownloaderServiceInterface } from "./bs-store-downloader.interface";
 import { AbstractBsDownloaderService } from "./abstract-bs-downloader.service";
+import { addFilterStringLog } from "renderer";
 
 export class SteamDownloaderService extends AbstractBsDownloaderService implements DownloaderServiceInterface{
-    
+
     private static instance: SteamDownloaderService;
 
     public static getInstance(): SteamDownloaderService {
@@ -128,7 +129,7 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
                 return this.notificationService.notifySuccess({title: "notifications.bs-download.success.titles.verification-finished"});
             }
             return this.notificationService.notifySuccess({title: "notifications.bs-download.success.titles.download-success"});
-        }));    
+        }));
 
         return subs;
     }
@@ -182,7 +183,7 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
             }),
             share({connector: () => new ReplaySubject(1)})
         );
-        
+
     }
 
     private tryAutoDownloadBsVersion(downloadInfo: DownloadSteamInfo){
@@ -217,7 +218,7 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
         }
 
         this.progressBarService.show(this.downloadProgress$, true);
-        
+
         const downloadPromise = (async () => {
 
             const haveDotNet = await this.isDotNet6Installed().catch(() => false);
@@ -227,9 +228,9 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
             }
 
             const downloadInfo: DownloadSteamInfo = {bsVersion, isVerification}
-        
+
             const autoDownload = await lastValueFrom(this.tryAutoDownloadBsVersion(downloadInfo)).then(() => true).catch(() => false);
-            
+
             if(autoDownload){ return Promise.resolve(); }
 
             const qrCodeDownload$ = this.startQrCodeDownload(downloadInfo);
@@ -240,6 +241,10 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
 
             if(loginRes.exitCode !== ModalExitCode.COMPLETED){
                 return Promise.resolve();
+            }
+
+            if(loginRes?.data?.password){
+                addFilterStringLog(loginRes.data.password);
             }
 
             if(loginRes.data.stay){
