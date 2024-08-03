@@ -6,8 +6,20 @@ import webpack from "webpack";
 import webpackPaths from "./webpack.paths";
 import { dependencies as externals } from "../../release/app/package.json";
 
+function createExternals(): string[] {
+    const webpackExternals: string[] = [...Object.keys(externals || {})];
+    const excludedExternals: string[] = [];
+
+    if (process.platform === "linux") {
+        // Linux only uses regedit-rs types
+        excludedExternals.push("regedit-rs");
+    }
+
+    return webpackExternals.filter(external => !excludedExternals.includes(external));
+}
+
 const configuration: webpack.Configuration = {
-    externals: [...Object.keys(externals || {})],
+    externals: createExternals(),
 
     stats: "errors-only",
 
