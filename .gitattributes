@@ -15,4 +15,4 @@
 *.ttf   binary
 *.woff  binary
 *.woff2 binary
-./assets/scripts/DepotDownloader binary
+assets/scripts/* binary
