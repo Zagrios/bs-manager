@@ -18,6 +18,7 @@ We'd also love PRs. If you're thinking of a large PR, we advise opening up an is
 ## Submitting a pull request
 
 1. [Fork][fork] and clone the repository.
+1. Install the correct NodeJS version (highly recommend installing [Volta](https://volta.sh/) for that).
 1. Configure and install the dependencies: `npm install`.
 1. Create a new branch following naming convention: `git checkout -b (feature|bugfix|hotfix|chore)/(short-description)(/issue-id)`.
 1. Make your change, test, and make sure BSManager work fine.
