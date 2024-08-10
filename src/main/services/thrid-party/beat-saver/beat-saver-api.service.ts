@@ -35,7 +35,8 @@ export class BeatSaverApiService {
         const enbledTagsString = filter.enabledTags ? Array.from(filter.enabledTags) : null;
         const excludedTagsString = filter.excludedTags ? Array.from(filter.excludedTags).map(tag => `!${tag}`) : null;
 
-        const tags = enbledTagsString || excludedTagsString ? [...enbledTagsString, excludedTagsString].join("|") : null;
+        let tags = [...(enbledTagsString ?? []), ...(excludedTagsString ?? [])].join("|");
+        tags = tags.length > 0 ? tags : null;
 
         const params: Record<string, string> = this.objectToStringRecord({...filter, tags});
 
