@@ -730,6 +730,7 @@
         "map-filter-panel": {
             "duration": "Durée",
             "nps" : "Notes Par Seconde",
+            "njs": "Vitesse de saut des notes",
             "tags": "tags",
             "specificities": "général",
             "requirements": "requis",

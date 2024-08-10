@@ -729,6 +729,7 @@
         "map-filter-panel": {
             "duration": "Длительность",
             "nps" : "Нот в Секунду",
+            "njs": "Скорость прыжка нот",
             "tags": "тэги",
             "specificities": "основное",
             "requirements": "требуемые моды",
