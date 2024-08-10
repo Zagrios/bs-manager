@@ -3,7 +3,7 @@ import { MapItemComponentProps } from "renderer/components/maps-playlists-panel/
 import { BsvMapDetail, RawMapInfoData, SongDetailDiffCharactertistic, SongDetails, SongDiffName } from "shared/models/maps";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 
-export type ParsedMapDiff = { name: SongDiffName; libelle: string; stars: number };
+export type ParsedMapDiff = { name: SongDiffName; libelle: string; stars: number, nps: number, njs: number };
 
 export abstract class MapItemComponentPropsMapper {
 
@@ -13,7 +13,7 @@ export abstract class MapItemComponentPropsMapper {
         if (bsvMap?.versions?.at(0)?.diffs) {
             bsvMap.versions.at(0).diffs.forEach(diff => {
                 const arr = res.get(diff.characteristic) || [];
-                arr.push({ libelle: diff.difficulty, name: diff.difficulty, stars: diff.stars });
+                arr.push({ libelle: diff.difficulty, name: diff.difficulty, stars: diff.stars, nps: diff.nps, njs: diff.njs });
                 res.set(diff.characteristic, arr);
             });
             return res;
@@ -23,7 +23,7 @@ export abstract class MapItemComponentPropsMapper {
             songDetails?.difficulties.forEach(diff => {
                 const arr = res.get(diff.characteristic) || [];
                 const diffName = rawMapInfo?._difficultyBeatmapSets?.find(set => set._beatmapCharacteristicName === diff.characteristic)._difficultyBeatmaps.find(rawDiff => rawDiff._difficulty === diff.difficulty)?._customData?._difficultyLabel || diff.difficulty;
-                arr.push({ libelle: diffName, name: diff.difficulty, stars: diff.stars });
+                arr.push({ libelle: diffName, name: diff.difficulty, stars: diff.stars, nps: diff.nps, njs: diff.njs });
                 res.set(diff.characteristic, arr);
             });
             return res;
@@ -33,7 +33,7 @@ export abstract class MapItemComponentPropsMapper {
             rawMapInfo._difficultyBeatmapSets.forEach(set => {
                 set._difficultyBeatmaps.forEach(diff => {
                     const arr = res.get(set._beatmapCharacteristicName) || [];
-                    arr.push({ libelle: diff._customData?._difficultyLabel || diff._difficulty, name: diff._difficulty, stars: null });
+                    arr.push({ libelle: diff._customData?._difficultyLabel || diff._difficulty, name: diff._difficulty, stars: null, nps: null, njs: diff._noteJumpMovementSpeed });
                     res.set(set._beatmapCharacteristicName, arr);
                 });
             });

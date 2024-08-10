@@ -730,6 +730,7 @@
         "map-filter-panel": {
             "duration": "時長",
             "nps" : "每秒音符數",
+            "njs": "音符跳躍速度",
             "tags": "標籤",
             "specificities": "general",
             "requirements": "要求",

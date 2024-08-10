@@ -730,6 +730,7 @@
         "map-filter-panel": {
             "duration": "Länge",
             "nps" : "Noten Pro Sekunde",
+            "njs": "Notensprunggeschwindigkeit",
             "tags": "Stichworte",
             "specificities": "Allgemein",
             "requirements": "Anforderungen",

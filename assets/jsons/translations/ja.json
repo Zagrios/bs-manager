@@ -730,6 +730,7 @@
         "map-filter-panel": {
             "duration": "尺",
             "nps" : "秒間ノート数",
+            "njs": "ノートジャンプ速度",
             "tags": "タグ",
             "specificities": "一般",
             "requirements": "要Mod",

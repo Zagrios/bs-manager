@@ -32,6 +32,8 @@ import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { cn } from "renderer/helpers/css-class.helpers";
 import { sToMs } from "shared/helpers/time.helpers";
 import formatDuration from "format-duration";
+import { NpsIcon } from "renderer/components/svgs/icons/nps-icon.component";
+import { SpeedIcon } from "renderer/components/svgs/icons/speed-icon.component";
 
 export type MapItemComponentProps<T = unknown> = {
     hash: string;
@@ -208,8 +210,8 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
                         <motion.ul key={hash} className="absolute top-[calc(100%-10px)] w-full h-fit max-h-[200%] pt-4 pb-2 px-2 overflow-y-scroll bg-light-main-color-3 dark:bg-main-color-3 text-main-color-1 dark:text-current brightness-125 rounded-md flex flex-col gap-3 scrollbar-default shadow-sm shadow-black" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} onHoverStart={diffsPanelHoverStart} onHoverEnd={diffsPanelHoverEnd}>
                             {Array.from(diffs.entries()).map(([charac, diffSet]) => (
                                 <ol key={charac} className="flex flex-col w-full gap-1">
-                                    {diffSet.map(({ name, libelle, stars }) => (
-                                        <li key={`${name}${libelle}${stars}`} className="w-full h-4 flex items-center gap-1">
+                                    {diffSet.map(({ name, libelle, stars, nps, njs }) => (
+                                        <li key={`${name}${libelle}${stars}`} className="w-full h-[1.15rem] flex items-center gap-1">
                                             {onHighlightedDiffsChange && (
                                                 <Tippy content={t("maps.map-item.hightlight-difficulty")} placement="top" theme="default">
                                                     <div className="h-full aspect-square">
@@ -218,9 +220,38 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
                                                 </Tippy>
                                             )}
                                             <BsmIcon className="h-full w-fit p-px shrink-0" icon={charac} />
-                                            <span className="h-full px-2 flex items-center text-xs font-bold bg-current rounded-full" style={{ color: MAP_DIFFICULTIES_COLORS[name] }}>
-                                                {stars ? <span className="h-full block brightness-[.25]">★ {stars.toFixed(2)}</span> : <span className="h-full brightness-[.25] leading-4 pb-[2px] capitalize">{parseDiffLabel(name)}</span>}
-                                            </span>
+                                            <div className="h-full px-2 shrink-0 flex items-center text-sm font-bold bg-current rounded-full" style={{ color: MAP_DIFFICULTIES_COLORS[name] }}>
+                                                {(() => {
+                                                    if(stars){
+                                                        return (
+                                                            <div className="h-full brightness-[.15] flex justify-center items-center">
+                                                                <span className="pb-0.5">★ {stars.toFixed(2)}</span>
+                                                            </div>
+                                                        );
+                                                    }
+                                                    if(nps){
+                                                        return (
+                                                            <div className="h-full brightness-[.15] flex justify-center items-center gap-1" title={t("maps.map-filter-panel.nps")}>
+                                                                <NpsIcon className="h-full py-px"/>
+                                                                <span className="pb-0.5">{nps.toFixed(2)}</span>
+                                                            </div>
+                                                        );
+                                                    }
+                                                    if(njs){
+                                                        return (
+                                                            <p className="h-full brightness-[.15] flex justify-center items-center gap-1" title={t("maps.map-filter-panel.njs")}>
+                                                                <SpeedIcon className="h-full py-px"/>
+                                                                <span className="pb-0.5">{njs.toFixed(2)}</span>
+                                                            </p>
+                                                        );
+                                                    }
+                                                    return (
+                                                        <div className="h-full brightness-[.15] flex justify-center items-center">
+                                                            <span className="pb-0.5 capitalize">{parseDiffLabel(name)}</span>
+                                                        </div>
+                                                    );
+                                                })()}
+                                            </div>
                                             <span className={cn("text-sm leading-4 pb-[2px] line-clamp-1", isDiffHightlighted({name, characteristic: charac}) && "text-yellow-400")}>{parseDiffLabel(libelle)}</span>
                                         </li>
                                     ))}
