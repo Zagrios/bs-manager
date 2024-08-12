@@ -70,6 +70,8 @@ export const ModelsGrid = forwardRef<unknown, Props>(({ className, version, type
         [modelsSelected, models]
     );
 
+    useOnUpdate(() => setModelsSelected([]), [version]);
+
     useOnUpdate(() => setRenderableModels(() => (
         models?.map(model => ({
             model,
