@@ -122,7 +122,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         return promise().then(([available, installed]) => {
             const defaultMods = installed?.length ? [] : configService.get<string[]>("default_mods" as DefaultConfigKey);
             setModsAvailable(() => modsToCategoryMap(available));
-            setModsSelected(() => available.filter(m => m.required || defaultMods.some(d => m.name.toLowerCase() === d.toLowerCase()) || installed.some(i => m.name === i.name)));
+            setModsSelected(() => available.filter(m => m.required || defaultMods.some(d => m.name?.toLowerCase() === d?.toLowerCase()) || installed.some(i => m.name === i.name)));
             setModsInstalled(() => modsToCategoryMap(installed));
         });
     };
