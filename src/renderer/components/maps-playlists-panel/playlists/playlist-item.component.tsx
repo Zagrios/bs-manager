@@ -80,9 +80,6 @@ export const PlaylistItem = memo(({ title,
     const showNps = minNps !== undefined && maxNps !== undefined;
 
     const durationText = (() => {
-
-        console.log("DURATION", duration);
-
         if (!duration) {
             return null;
         }

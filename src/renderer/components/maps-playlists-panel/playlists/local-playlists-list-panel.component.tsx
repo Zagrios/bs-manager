@@ -183,6 +183,8 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
         return lastValueFrom(obs);
     }
 
+    useOnUpdate(() => selectedPlaylists$.next([]), [version]);
+
     useOnUpdate(() => {
 
         if(!isActiveOnce){ return noop(); }

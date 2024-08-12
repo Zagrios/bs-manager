@@ -76,6 +76,8 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
         return noop;
     }, [linkedState]);
 
+    useOnUpdate(() => setSelectedMaps([]), [version]); // Clear selected maps when version changes
+
     useEffect(() => {
         if (isActiveOnce) {
             loadMaps();
