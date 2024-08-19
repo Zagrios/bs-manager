@@ -13,7 +13,6 @@ import { lastValueFrom } from "rxjs";
 import { useWindowControls } from "renderer/hooks/use-window-controls.hook";
 
 export default function TitleBar({ template = "index.html" }: { template: AppWindow }) {
-
     const ipcService = useService(IpcService);
     const audio = useService(AudioPlayerService);
     const windowControls = useWindowControls();
@@ -52,7 +51,7 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
         windowControls.unmaximise();
     };
 
-    const toogleMaximize = () => {
+    const toggleMaximize = () => {
         if (maximized) {
             resetWindow();
         } else {
@@ -87,27 +86,28 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
                         </div>
                         <BsmButton className="shrink-0 h-[23px] w-[23px] aspect-square !bg-transparent flex items-start" iconClassName={volumeIcon === "volume-down" ? "-translate-x-[1.8px]" : null} icon={volumeIcon} withBar={false} onClick={() => audio.toggleMute()} />
                     </div>
-                    <div onClick={minimizeWindow} className="text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#4F545C] cursor-pointer w-11 h-full shrink-0 flex justify-center items-center" id="min-button">
+                    <button onClick={minimizeWindow} className="text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#4F545C] cursor-pointer w-11 h-full shrink-0 flex justify-center items-center" id="min-button">
                         <svg aria-hidden="false" width="12" height="12" viewBox="0 0 12 12">
-                            <rect fill="currentColor" width="10" height="1" x="1" y="6">
-                                {" "}
-                            </rect>
+                            <rect fill="currentColor" width="10" height="1" x="1" y="6" />
                         </svg>
-                    </div>
-                    <div onClick={toogleMaximize} className="text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#4F545C] cursor-pointer w-11 h-full shrink-0 flex justify-center items-center" id="max-button">
+                    </button>
+                    <button onClick={toggleMaximize} className="text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#4F545C] cursor-pointer w-11 h-full shrink-0 flex justify-center items-center" id="max-button">
                         <svg aria-hidden="false" width="12" height="12" viewBox="0 0 12 12">
-                            <rect width="9" height="9" x="1.5" y="1.5" fill="none" stroke="currentColor">
-                                {" "}
-                            </rect>
+                            {maximized ? (
+                                <>
+                                    <rect width="9" height="9" x="0.5" y="2.5" fill="none" stroke="currentColor" />
+                                    <path d="M 2.5 2.5 V 0.5 H 11.5 V 9.5 H 9.5" fill="none" stroke="currentColor" />
+                                </>
+                            ) : (
+                                <rect width="9" height="9" x="1.5" y="1.5" fill="none" stroke="currentColor" />
+                            )}
                         </svg>
-                    </div>
-                    <div onClick={closeWindow} className="text-gray-800 dark:text-gray-200 cursor-pointer w-11 h-full shrink-0 flex justify-center items-center" id="close-button" draggable="false">
+                    </button>
+                    <button onClick={closeWindow} className="text-gray-800 dark:text-gray-200 cursor-pointer w-11 h-full shrink-0 flex justify-center items-center" id="close-button" draggable="false">
                         <svg aria-hidden="false" width="12" height="12" viewBox="0 0 12 12">
-                            <polygon fill="currentColor" fillRule="evenodd" points="11 1.576 6.583 6 11 10.424 10.424 11 6 6.583 1.576 11 1 10.424 5.417 6 1 1.576 1.576 1 6 5.417 10.424 1">
-                                {" "}
-                            </polygon>
+                            <polygon fill="currentColor" fillRule="evenodd" points="11 1.576 6.583 6 11 10.424 10.424 11 6 6.583 1.576 11 1 10.424 5.417 6 1 1.576 1.576 1 6 5.417 10.424 1" />
                         </svg>
-                    </div>
+                    </button>
                 </div>
             </header>
         );
@@ -130,7 +130,7 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
             <div id="window-controls" className="h-full flex shrink-0">
                 <div onClick={closeWindow} className="text-gray-200 cursor-pointer w-7 h-full shrink-0 flex justify-center items-center rounded-bl-md" id="close-button" draggable="false">
                     <svg aria-hidden="false" width="12" height="12" viewBox="0 0 12 12">
-                        <polygon fill="currentColor" fillRule="evenodd" points="11 1.576 6.583 6 11 10.424 10.424 11 6 6.583 1.576 11 1 10.424 5.417 6 1 1.576 1.576 1 6 5.417 10.424 1"/>
+                        <polygon fill="currentColor" fillRule="evenodd" points="11 1.576 6.583 6 11 10.424 10.424 11 6 6.583 1.576 11 1 10.424 5.417 6 1 1.576 1.576 1 6 5.417 10.424 1" />
                     </svg>
                 </div>
             </div>
