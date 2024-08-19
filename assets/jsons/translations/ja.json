@@ -86,6 +86,12 @@
                             "uninstall-all": "全てアンインストールする"
                         }
                     }
+                },
+                "notifications": {
+                    "all-mods-already-installed": {
+                        "title": "すでにインストール済みのMOD",
+                        "description": "選択したすべてのMODはすでにインストールされています"
+                    }
                 }
             },
             "dropdown": {
