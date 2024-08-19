@@ -98,7 +98,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         });
 
         if (!modsToInstall.length) {
-            notification.notifyInfo({ title: "Mods déjà installées", desc: "Tous les mods séléctionnées sont déjà installées" });
+            notification.notifyInfo({ title: "pages.version-viewer.mods.notifications.all-mods-already-installed.title", desc: "pages.version-viewer.mods.notifications.all-mods-already-installed.description" });
             loadMods();
             return;
         }

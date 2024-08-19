@@ -86,6 +86,12 @@
                             "uninstall-all": "全部卸载"
                         }
                     }
+                },
+                "notifications": {
+                    "all-mods-already-installed": {
+                        "title": "模组已安装",
+                        "description": "所有选中的模组已经安装"
+                    }
                 }
             },
             "dropdown": {

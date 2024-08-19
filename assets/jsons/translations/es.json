@@ -86,6 +86,12 @@
                             "uninstall-all": "Desinstalar todos"
                         }
                     }
+                },
+                "notifications": {
+                    "all-mods-already-installed": {
+                        "title": "Mods ya instalados",
+                        "description": "Todos los mods seleccionados ya están instalados"
+                    }
                 }
             },
             "dropdown": {

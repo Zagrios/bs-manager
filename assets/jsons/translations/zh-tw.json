@@ -86,6 +86,12 @@
                             "uninstall-all": "全部移除"
                         }
                     }
+                },
+                "notifications": {
+                    "all-mods-already-installed": {
+                        "title": "模組已安裝",
+                        "description": "所有選中的模組已經安裝"
+                    }
                 }
             },
             "dropdown": {
