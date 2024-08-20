@@ -15,7 +15,7 @@ import JSZip from "jszip";
 import { extractZip } from "../../helpers/zip.helpers";
 import recursiveReadDir from "recursive-readdir";
 import { sToMs } from "../../../shared/helpers/time.helpers";
-import { ensureDir } from "fs-extra";
+import { ensureDir, pathExistsSync } from "fs-extra";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 
 export class BsModsManagerService {
@@ -63,7 +63,7 @@ export class BsModsManagerService {
         const bsPath = await this.bsLocalService.getVersionPath(version);
         const modsPath = path.join(bsPath, modsDir);
 
-        if (!(await pathExist(modsPath))) {
+        if (!pathExistsSync(modsPath)) {
             return [];
         }
 
@@ -81,19 +81,22 @@ export class BsModsManagerService {
                 if (!mod) {
                     return undefined;
                 }
+
                 if (ext === ".manifest") {
                     this.manifestMatches.push(mod);
                     return undefined;
                 }
-                if (filePath.includes("Libs")) {
-                    if (!this.manifestMatches.some(m => m.name === mod.name)) {
+
+                if (filePath.toLowerCase().includes("libs")) {
+                    const manifestIndex = this.manifestMatches.findIndex(m => m.name === mod.name);
+
+                    if (manifestIndex < 0) {
                         return undefined;
                     }
-                    const modIndex = this.manifestMatches.indexOf(mod);
-                    if (modIndex > -1) {
-                        this.manifestMatches.splice(modIndex, 1);
-                    }
+
+                    this.manifestMatches.splice(manifestIndex, 1);
                 }
+
                 return mod;
         });
 
@@ -250,30 +253,6 @@ export class BsModsManagerService {
         return res;
     }
 
-    private isDependency(mod: Mod, selectedMods: Mod[], availableMods: Mod[]) {
-        return selectedMods.some(m => {
-            const deps = m.dependencies.map(dep => Array.from(availableMods.values()).find(m => dep.name === m.name));
-            if (deps.some(depMod => depMod.name === mod.name)) {
-                return true;
-            }
-            return deps.some(depMod => depMod.dependencies.some(depModDep => depModDep.name === mod.name));
-        });
-    }
-
-    private async resolveDependencies(mods: Mod[], version: BSVersion): Promise<Mod[]> {
-        const availableMods = await this.beatModsApi.getVersionMods(version);
-        return Array.from(
-            new Map<string, Mod>(
-                availableMods.reduce((res, mod) => {
-                    if (this.isDependency(mod, mods, availableMods)) {
-                        res.push([mod.name, mod]);
-                    }
-                    return res;
-                }, [])
-            ).values()
-        );
-    }
-
     private async uninstallBSIPA(mod: Mod, version: BSVersion): Promise<void> {
         const download = this.getModDownload(mod, version);
 
@@ -322,23 +301,25 @@ export class BsModsManagerService {
 
         const bsipa = await this.getBsipaInstalled(version);
 
+        const pluginsMods = await Promise.all([this.getModsInDir(version, ModsInstallFolder.PLUGINS), this.getModsInDir(version, ModsInstallFolder.PLUGINS_PENDING)]);
+        const libsMods = await Promise.all([this.getModsInDir(version, ModsInstallFolder.LIBS), this.getModsInDir(version, ModsInstallFolder.LIBS_PENDING)]);
 
-        return Promise.all([this.getModsInDir(version, ModsInstallFolder.PLUGINS_PENDING), this.getModsInDir(version, ModsInstallFolder.LIBS_PENDING), this.getModsInDir(version, ModsInstallFolder.PLUGINS), this.getModsInDir(version, ModsInstallFolder.LIBS)]).then(dirMods => {
-            const modsDict = new Map<string, Mod>();
+        const dirMods = pluginsMods.flat().concat(libsMods.flat());
 
-            if (bsipa) {
-                modsDict.set(bsipa.name, bsipa);
+        const modsDict = new Map<string, Mod>();
+
+        if (bsipa) {
+            modsDict.set(bsipa.name, bsipa);
+        }
+
+        for (const mod of dirMods.flat()) {
+            if (modsDict.has(mod.name)) {
+                continue;
             }
+            modsDict.set(mod.name, mod);
+        }
 
-            for (const mod of dirMods.flat()) {
-                if (modsDict.has(mod.name)) {
-                    continue;
-                }
-                modsDict.set(mod.name, mod);
-            }
-
-            return Array.from(modsDict.values());
-        });
+        return Array.from(modsDict.values());
     }
 
     public async installMods(mods: Mod[], version: BSVersion): Promise<InstallModsResult> {
