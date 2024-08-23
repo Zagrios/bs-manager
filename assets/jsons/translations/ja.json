@@ -14,7 +14,8 @@
         "refuse": "拒否する",
         "apply": "適用",
         "copy": "コピー",
-        "copied": "コピー済み!"
+        "copied": "コピー済み!",
+        "confirm": "Confirm"
     },
     "nav-bar": {
         "add-version": "バージョンを追加",
@@ -767,6 +768,11 @@
             },
             "launch-as-admin": "管理者として起動",
             "not-remind-me": "Больше не напоминать"
+        },
+        "ask-install-path": {
+            "title": "インストールフォルダー",
+            "choose-folder": "フォルダーを選択",
+            "default": "Default"
         }
     },
     "maps": {

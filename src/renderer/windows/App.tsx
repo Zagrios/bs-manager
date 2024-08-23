@@ -23,6 +23,7 @@ import { ConfigurationService } from "renderer/services/configuration.service";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { useService } from "renderer/hooks/use-service.hook";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
+import { SetupService } from "renderer/services/setup.service";
 import { gt, parse } from "semver"
 import { logRenderError } from "renderer";
 
@@ -35,13 +36,17 @@ export default function App() {
     const notification = useService(NotificationService);
     const config = useService(ConfigurationService);
     const autoUpdater = useService(AutoUpdaterService);
+    const setup = useService(SetupService);
 
     const location = useLocation();
     const navigate = useNavigate();
 
     useEffect(() => {
         checkIsUpdated();
-        checkOneClicks();
+        setup.check()
+            .then(() => {
+                checkOneClicks();
+            })
     }, []);
 
     const checkIsUpdated = async () => {

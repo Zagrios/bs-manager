@@ -14,7 +14,8 @@
         "refuse": "拒绝",
         "apply": "应用",
         "copy": "复制",
-        "copied": "已复制!"
+        "copied": "已复制!",
+        "confirm": "Confirm"
     },
     "nav-bar": {
         "add-version": "添加版本",
@@ -767,6 +768,11 @@
             },
             "launch-as-admin": "以管理员身份启动",
             "not-remind-me": "不再提醒我"
+        },
+        "ask-install-path": {
+            "title": "安装文件夹",
+            "choose-folder": "选择文件夹",
+            "default": "Default"
         }
     },
     "maps": {

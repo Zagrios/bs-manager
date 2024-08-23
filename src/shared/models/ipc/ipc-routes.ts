@@ -27,8 +27,6 @@ export interface IpcChannelMapping {
 
     /* ** bs-download-ipcs ** */
     "import-version": { request: ImportVersionOptions, response: Progression<BSVersion>};
-    "bs-download.installation-folder": { request: void, response: string};
-    "bs-download.set-installation-folder": { request: string, response: string};
     "auto-download-bs-version": { request: DownloadSteamInfo, response: DepotDownloaderEvent};
     "download-bs-version": { request: DownloadSteamInfo, response: DepotDownloaderEvent};
     "download-bs-version-qr": { request: DownloadSteamInfo, response: DepotDownloaderEvent};
@@ -43,6 +41,12 @@ export interface IpcChannelMapping {
     "bsv-get-map-details-by-id": {request: string, response: BsvMapDetail};
     "bsv-search-playlist": {request: PlaylistSearchParams, response: BsvPlaylist[]};
     "bsv-get-playlist-details-by-id": {request: {id: string, page: number}, response: BsvPlaylistPage};
+
+    /* ** bs-installer-ipcs ** */
+    "bs-installer.folder-exists": { require: void, response: boolean };
+    "bs-installer.default-install-path": { request: void, response: string };
+    "bs-installer.install-path": { request: void, response: string};
+    "bs-installer.set-install-path": { request: string, response: string};
 
     /* ** bs-launcher-ipcs ** */
     "create-launch-shortcut": { request: LaunchOption, response: boolean };

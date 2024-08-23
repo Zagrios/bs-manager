@@ -14,7 +14,8 @@
         "refuse": "Ablehnen",
         "apply": "Übernehmen",
         "copy": "Kopieren",
-        "copied": "Kopiert!"
+        "copied": "Kopiert!",
+        "confirm": "Confirm"
     },
     "nav-bar": {
         "add-version": "Version hinzufügen",
@@ -767,6 +768,11 @@
             },
             "launch-as-admin": "Als Administrator starten",
             "not-remind-me": "Nicht mehr erinnern"
+        },
+        "ask-install-path": {
+            "title": "Installations Ordner",
+            "choose-folder": "Ordner Wählen",
+            "default": "Default"
         }
     },
     "maps": {

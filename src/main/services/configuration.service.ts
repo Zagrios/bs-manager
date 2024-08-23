@@ -1,4 +1,5 @@
 import ElectronStore from "electron-store";
+import fs from "fs-extra";
 import { InstallationLocationService } from "./installation-location.service";
 
 export class ConfigurationService {
@@ -17,13 +18,17 @@ export class ConfigurationService {
 
     private constructor() {
         this.locations = InstallationLocationService.getInstance();
-        this.initStore();
+        this.initStore(false);
 
-        this.locations.onInstallLocationUpdate(() => { this.initStore() });
+        this.locations.onInstallLocationUpdate(() => this.initStore(true));
     }
 
-    private async initStore() {
+    private async initStore(createFolder: boolean) {
         const contentPath = this.locations.installationDirectory();
+        if (!createFolder && !fs.pathExistsSync(contentPath)) {
+            return;
+        }
+
         this.store = new ElectronStore({
             cwd: contentPath,
             name: "config",

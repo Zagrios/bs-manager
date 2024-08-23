@@ -59,6 +59,12 @@ export class InstallationLocationService {
         this.updateListeners.add(fn);
     }
 
+    public defaultInstallationDirectory(): string {
+        const { result: oldPath } = tryit(() => path.join(app.getPath("documents"), this.INSTALLATION_FOLDER));
+        const installationDirectory = (oldPath && pathExistsSync(oldPath)) ? app.getPath("documents") : app.getPath("home");
+        return path.join(installationDirectory, this.INSTALLATION_FOLDER);
+    }
+
     public installationDirectory(): string {
 
         const installParentPath = () => {

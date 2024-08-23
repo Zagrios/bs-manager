@@ -10,6 +10,7 @@ declare global {
             };
             path: {
                 sep: "/"|"\\";
+                basename: (path: string) => string;
                 join: (...args: string[]) => string;
             };
         };

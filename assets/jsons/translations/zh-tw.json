@@ -14,7 +14,8 @@
         "refuse": "拒絕",
         "apply": "應用",
         "copy": "複製",
-        "copied": "已複製!"
+        "copied": "已複製!",
+        "confirm": "Confirm"
     },
     "nav-bar": {
         "add-version": "新增版本",
@@ -767,6 +768,11 @@
             },
             "launch-as-admin": "以管理員身份啟動",
             "not-remind-me": "不再提醒我"
+        },
+        "ask-install-path": {
+            "title": "安裝文件夾",
+            "choose-folder": "選擇文件夾",
+            "default": "Default"
         }
     },
     "maps": {
