@@ -77,7 +77,7 @@ export const AskInstallPathModal: ModalComponent<{ installPath: string }, {}> = 
                 <BsmButton
                     onClick={selectInstallPath}
                     className="shrink-1 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md"
-                    text={"modals.ask-install-path.choose-folder"}
+                    text="modals.ask-install-path.choose-folder"
                     withBar={false}
                 />
             </div>
@@ -88,14 +88,14 @@ export const AskInstallPathModal: ModalComponent<{ installPath: string }, {}> = 
                     className="col-start-3 rounded-md text-center transition-all"
                     onClick={onDefaultButtonPressed}
                     withBar={false}
-                    text={"modals.ask-install-path.default"}
+                    text="modals.ask-install-path.default"
                 />
                 <BsmButton
                     typeColor="primary"
                     className="col-start-4 z-0 px-1 rounded-md text-center transition-all"
                     type="submit"
                     withBar={false}
-                    text={"misc.confirm"}
+                    text="misc.confirm"
                 />
             </div>
         </form>

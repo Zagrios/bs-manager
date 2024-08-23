@@ -33,6 +33,7 @@ export class SetupService {
 
     public async check(): Promise<void> {
         try {
+            // NOTE: for modal sequencing
             await this.checkInstallationPath();
         } catch (error) {
             logRenderError(error);
@@ -57,7 +58,7 @@ export class SetupService {
             await lastValueFrom(this.steamDownloaderService.setInstallationFolder(modalResponse.data.installPath));
 
             // Refresh the versions tab
-            await this.versionManagerService.askInstalledVersions()
+            await this.versionManagerService.askInstalledVersions();
         } catch (error) {
             logRenderError(error);
         }
