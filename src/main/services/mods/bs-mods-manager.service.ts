@@ -147,7 +147,7 @@ export class BsModsManagerService {
 
         return new Promise<boolean>(resolve => {
             const cmd = process.platform === 'linux'
-                ? `screen -dmS "BSIPA" dotnet ${ipaPath} ${args.join(" ")}` // Must run through screen, otherwise BSIPA tries to move console cursor and crashes.
+                ? `screen -dmS "BSIPA" dotnet "${ipaPath}" ${args.join(" ")}` // Must run through screen, otherwise BSIPA tries to move console cursor and crashes.
                 : `"${ipaPath}" ${args.join(" ")}`;
 
             log.info("START IPA PROCESS", cmd);
