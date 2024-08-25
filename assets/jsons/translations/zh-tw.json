@@ -139,7 +139,7 @@
             },
             "installation-folder": {
                 "title": "安裝文件夾",
-                "description": "為 BeatSaber 不同版本及未來其他特性修改預設文件夾",
+                "description": "Change the folder that will contain all the content downloaded by BSManager.",
                 "choose-folder": "選擇文件夾"
             },
             "additional-content": {
@@ -771,8 +771,10 @@
         },
         "ask-install-path": {
             "title": "安裝文件夾",
+            "choose-folder-description": "Choose the folder that will contain all the content downloaded by BSManager.",
             "choose-folder": "選擇文件夾",
-            "default": "Default"
+            "default": "Default",
+            "default-tooltip": "Defaults to your home folder"
         }
     },
     "maps": {

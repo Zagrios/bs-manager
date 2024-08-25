@@ -59,18 +59,14 @@ export const AskInstallPathModal: ModalComponent<{ installPath: string }, {}> = 
                 onConfirmButtonPressed();
             }}>
 
-            <h1 className="
-                tracking-wide w-full
-                uppercase text-3xl text-center text-gray-800 dark:text-gray-200
-            ">
+            <h1 className="tracking-wide w-full uppercase text-3xl text-center text-gray-800 dark:text-gray-200">
                 {t("modals.ask-install-path.title")}
             </h1>
 
-            <div className="
-                relative rounded-md pl-2 py-1 my-3
-                flex items-center justify-between
-                w-full h-8 bg-light-main-color-1 dark:bg-main-color-1
-            ">
+            <p className="my-3 text-sm text-gray-600 dark:text-gray-400">
+                {t("modals.ask-install-path.choose-folder-description")}
+            </p>
+            <div className="relative rounded-md pl-2 py-1 my-3 flex items-center justify-between w-full h-8 bg-light-main-color-1 dark:bg-main-color-1">
                 <span className="block text-ellipsis overflow-hidden min-w-0" title={installPath}>
                     {installPath}
                 </span>
@@ -82,17 +78,18 @@ export const AskInstallPathModal: ModalComponent<{ installPath: string }, {}> = 
                 />
             </div>
 
-            <div className="grid grid-flow-col grid-cols-4 row-start-3 gap-4">
+            <div className="grid grid-flow-col grid-cols-3 gap-4">
                 <BsmButton
                     typeColor="cancel"
-                    className="col-start-3 rounded-md text-center transition-all"
+                    className="h-8 col-start-2 rounded-md text-center transition-all"
                     onClick={onDefaultButtonPressed}
                     withBar={false}
                     text="modals.ask-install-path.default"
+                    tooltip="modals.ask-install-path.default-tooltip"
                 />
                 <BsmButton
                     typeColor="primary"
-                    className="col-start-4 z-0 px-1 rounded-md text-center transition-all"
+                    className="h-8 col-start-3 z-0 px-1 rounded-md text-center transition-all"
                     type="submit"
                     withBar={false}
                     text="misc.confirm"

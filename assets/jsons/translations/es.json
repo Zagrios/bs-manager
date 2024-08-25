@@ -139,7 +139,7 @@
             },
             "installation-folder": {
                 "title": "Carpeta de instalación",
-                "description": "Cambia la carpeta por defecto para las versiones de Beat Saber y próximas funciones.",
+                "description": "Change the folder that will contain all the content downloaded by BSManager.",
                 "choose-folder": "Elige la carpeta"
             },
             "additional-content": {
@@ -771,8 +771,10 @@
         },
         "ask-install-path": {
             "title": "Carpeta de instalación",
+            "choose-folder-description": "Choose the folder that will contain all the content downloaded by BSManager.",
             "choose-folder": "Elige la carpeta",
-            "default": "Default"
+            "default": "Default",
+            "default-tooltip": "Defaults to your home folder"
         }
     },
     "maps": {

@@ -139,7 +139,7 @@
             },
             "installation-folder": {
                 "title": "インストールフォルダー",
-                "description": "BeatSaberのバージョンとその他の今後の機能を入れるフォルダを変更します。",
+                "description": "Change the folder that will contain all the content downloaded by BSManager.",
                 "choose-folder": "フォルダーを選択"
             },
             "additional-content": {
@@ -771,8 +771,10 @@
         },
         "ask-install-path": {
             "title": "インストールフォルダー",
+            "choose-folder-description": "Choose the folder that will contain all the content downloaded by BSManager.",
             "choose-folder": "フォルダーを選択",
-            "default": "Default"
+            "default": "Default",
+            "default-tooltip": "Defaults to your home folder"
         }
     },
     "maps": {

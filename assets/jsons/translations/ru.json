@@ -139,7 +139,7 @@
             },
             "installation-folder": {
                 "title": "Папка установок",
-                "description": "Измените стандартную папку, где будут версии Beat Saber и прочее.",
+                "description": "Change the folder that will contain all the content downloaded by BSManager.",
                 "choose-folder": "Изменить папку"
             },
             "additional-content": {
@@ -770,8 +770,10 @@
         },
         "ask-install-path": {
             "title": "Папка установок",
+            "choose-folder-description": "Choose the folder that will contain all the content downloaded by BSManager.",
             "choose-folder": "Изменить папку",
-            "default": "Default"
+            "default": "Default",
+            "default-tooltip": "Defaults to your home folder"
         }
     },
     "maps": {

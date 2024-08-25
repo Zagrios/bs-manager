@@ -139,7 +139,7 @@
             },
             "installation-folder": {
                 "title": "Installations-Ordner",
-                "description": "Ändere den Standardordner für Beat Saber-Versionen und andere kommende Funktionen.",
+                "description": "Change the folder that will contain all the content downloaded by BSManager.",
                 "choose-folder": "Ordner wählen"
             },
             "additional-content": {
@@ -771,8 +771,10 @@
         },
         "ask-install-path": {
             "title": "Installations Ordner",
+            "choose-folder-description": "Choose the folder that will contain all the content downloaded by BSManager.",
             "choose-folder": "Ordner Wählen",
-            "default": "Default"
+            "default": "Default",
+            "default-tooltip": "Defaults to your home folder"
         }
     },
     "maps": {
