@@ -1,10 +1,15 @@
 import { LinkOptions, UnlinkOptions } from "main/services/folder-linker.service";
 import { map, distinctUntilChanged, filter, mergeMap, shareReplay } from "rxjs/operators";
-import { BehaviorSubject, Observable, of } from "rxjs";
+import { BehaviorSubject, lastValueFrom, Observable, of } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
 import equal from "fast-deep-equal";
+import { tryit } from "shared/helpers/error.helpers";
+import { NotificationService } from "./notification.service";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
+
+
 
 export class VersionFolderLinkerService {
     private static instance: VersionFolderLinkerService;
@@ -16,8 +21,11 @@ export class VersionFolderLinkerService {
         return VersionFolderLinkerService.instance;
     }
 
+    private readonly KNOWN_ERROR_CODES = ["EPERM", "EACCES", "ENOSPC"];
+
     private readonly ipcService: IpcService;
     private readonly progress: ProgressBarService;
+    private readonly notifications: NotificationService;
 
     private readonly _queue$ = new BehaviorSubject<VersionLinkerAction[]>([]);
 
@@ -27,6 +35,7 @@ export class VersionFolderLinkerService {
     private constructor() {
         this.ipcService = IpcService.getInstance();
         this.progress = ProgressBarService.getInstance();
+        this.notifications = NotificationService.getInstance();
 
         this.currentAction$.pipe(filter(action => !!action)).subscribe(action => this.processAction(action));
     }
@@ -39,14 +48,22 @@ export class VersionFolderLinkerService {
             progressOpened = true;
         }
 
-        const linked = await this.doAction(action).toPromise();
+        const { error } = await tryit(() => lastValueFrom(this.doAction(action)));
 
-        // Spécial notification
+        if(error){
+            const { code } = (error as CustomError);
+            const message = this.KNOWN_ERROR_CODES.includes(code) ? `notifications.shared-folder.linking-error.msg.${code}` : "notifications.shared-folder.linking-error.msg.UNKNOWN_ERROR";
+            this.notifications.notifyError({
+                title: "notifications.shared-folder.linking-error.title",
+                desc: message
+            })
+        }
 
+        // Special notification
         if (action.type === VersionLinkerActionType.Link) {
-            this.linkListeners.forEach(listener => listener(action, linked));
+            this.linkListeners.forEach(listener => listener(action, !error));
         } else {
-            this.unlinkListeners.forEach(listener => listener(action, linked));
+            this.unlinkListeners.forEach(listener => listener(action, !error));
         }
 
         if (progressOpened) {
@@ -136,7 +153,7 @@ export class VersionFolderLinkerService {
                 if(currentAction && equal(currentAction.version, version) && currentAction.relativeFolder === relativeFolder) {
                     return of(FolderLinkState.Processing)
                 }
-                
+
                 if(queue.some(action => equal(action.version, version) && action.relativeFolder === relativeFolder)) {
                     return of(FolderLinkState.Pending);
                 }
@@ -146,7 +163,7 @@ export class VersionFolderLinkerService {
                 );
             }),
             distinctUntilChanged(),
-            shareReplay(1)    
+            shareReplay(1)
         );
     }
 
@@ -179,14 +196,8 @@ export interface VersionLinkerAction {
     options?: LinkOptions;
 }
 
-export interface VersionLinkFolderAction extends VersionLinkerAction {
-    type: VersionLinkerActionType.Link;
-}
-
-export interface VersionUnlinkFolderAction extends VersionLinkerAction {
-    type: VersionLinkerActionType.Unlink;
-    options?: UnlinkOptions;
-}
+export type VersionLinkFolderAction = Omit<VersionLinkerAction, "type">;
+export type VersionUnlinkFolderAction = Omit<VersionLinkerAction, "type"> & { options: UnlinkOptions };
 
 export type VersionLinkerActionListener = (action: VersionLinkerAction, linked: boolean) => void;
 

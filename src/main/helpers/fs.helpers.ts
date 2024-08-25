@@ -1,4 +1,4 @@
-import { CopyOptions, copy, createReadStream, ensureDir, move, realpath, stat, symlink } from "fs-extra";
+import { CopyOptions, MoveOptions, copy, createReadStream, ensureDir, move, realpath, stat, symlink } from "fs-extra";
 import { access, mkdir, rm, readdir, unlink, lstat, readlink } from "fs/promises";
 import path from "path";
 import { Observable, concatMap, from } from "rxjs";
@@ -7,6 +7,7 @@ import { BsmException } from "shared/models/bsm-exception.model";
 import crypto from "crypto";
 import { execSync } from "child_process";
 import { tryit } from "../../shared/helpers/error.helpers";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
 
 export async function pathExist(path: string): Promise<boolean> {
     try {
@@ -78,7 +79,7 @@ export async function getFilesInFolder(folderPath: string): Promise<string[]> {
     return dirEntries.filter(entry => entry.isFile()).map(file => path.join(folderPath, file.name));
 }
 
-export function moveFolderContent(src: string, dest: string): Observable<Progression> {
+export function moveFolderContent(src: string, dest: string, option?: MoveOptions): Observable<Progression> {
     const progress: Progression = { current: 0, total: 0 };
     return new Observable<Progression>(subscriber => {
         subscriber.next(progress);
@@ -89,25 +90,19 @@ export function moveFolderContent(src: string, dest: string): Observable<Progres
                 return subscriber.complete();
             }
 
-            ensureFolderExist(dest);
+            await ensureFolderExist(dest);
 
             const files = await readdir(src, { encoding: "utf-8" });
             progress.total = files.length;
 
-            const promises = files.map(async file => {
+            for(const file of files){
                 const srcFullPath = path.join(src, file);
                 const destFullPath = path.join(dest, file);
-                if (await pathExist(destFullPath)) {
-                    progress.current++;
-                    return subscriber.next(progress);
-                }
-                await move(srcFullPath, destFullPath);
+                await move(srcFullPath, destFullPath, option);
                 progress.current++;
                 subscriber.next(progress);
-            });
-
-            Promise.allSettled(promises).then(() => subscriber.complete());
-        })();
+            }
+        })().catch(err => subscriber.error(CustomError.fromError(err, err?.code))).finally(() => subscriber.complete());
     });
 }
 
@@ -175,7 +170,7 @@ export async function dirSize(dirPath: string): Promise<number>{
         const realPath = await realpath(fullPath);
         const stat = await lstat(realPath);
 
-        if (stat.isDirectory()) { 
+        if (stat.isDirectory()) {
             return dirSize(fullPath);
         }
 

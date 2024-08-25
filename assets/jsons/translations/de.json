@@ -481,6 +481,15 @@
                     "title": "Sicherung erstellt",
                     "msg": "Das Freigeben des Ordners „UserData“ kann zu Fehlern führen. Bei Problemen trenne den Ordner, um die Sicherung wiederherzustellen"
                 }
+            },
+            "linking-error": {
+                "title": "Fehler beim Verknüpfen des Ordners",
+                "msg": {
+                    "EPERM": "BSManager hat nicht die erforderlichen Berechtigungen, um den Ordner zu verknüpfen.",
+                    "EACCES": "BSManager hat nicht die erforderlichen Berechtigungen, um den Ordner zu verknüpfen.",
+                    "ENOSPC": "Die Festplatte ist voll, machen Sie Platz und versuchen Sie es erneut.",
+                    "UNKNOWN_ERROR": "Ein unbekannter Fehler ist beim Verknüpfen des Ordners aufgetreten."
+                }
             }
         },
         "create-launch-shortcut": {
