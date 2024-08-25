@@ -2,6 +2,7 @@ import { lastValueFrom } from "rxjs";
 import { useEffect, useState } from "react";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { useService } from "renderer/hooks/use-service.hook";
+import Tippy from "@tippyjs/react";
 
 import { IpcService } from "renderer/services/ipc.service";
 import { ModalComponent, ModalExitCode } from "renderer/services/modale.service";
@@ -79,17 +80,24 @@ export const AskInstallPathModal: ModalComponent<{ installPath: string }, {}> = 
             </div>
 
             <div className="grid grid-flow-col grid-cols-3 gap-4">
-                <BsmButton
-                    typeColor="cancel"
-                    className="h-8 col-start-2 rounded-md text-center transition-all"
-                    onClick={onDefaultButtonPressed}
-                    withBar={false}
-                    text="modals.ask-install-path.default"
-                    tooltip="modals.ask-install-path.default-tooltip"
-                />
+                <Tippy
+                    className="!bg-main-color-1"
+                    content={t("modals.ask-install-path.default-tooltip")}
+                    delay={[300, 0]}
+                    arrow={false}
+                    placement="bottom"
+                >
+                    <BsmButton
+                        typeColor="cancel"
+                        className="col-start-2 rounded-md text-center transition-all"
+                        onClick={onDefaultButtonPressed}
+                        withBar={false}
+                        text="modals.ask-install-path.default"
+                    />
+                </Tippy>
                 <BsmButton
                     typeColor="primary"
-                    className="h-8 col-start-3 z-0 px-1 rounded-md text-center transition-all"
+                    className="col-start-3 z-0 px-1 rounded-md text-center transition-all"
                     type="submit"
                     withBar={false}
                     text="misc.confirm"

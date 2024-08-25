@@ -43,7 +43,7 @@ export interface IpcChannelMapping {
     "bsv-get-playlist-details-by-id": {request: {id: string, page: number}, response: BsvPlaylistPage};
 
     /* ** bs-installer-ipcs ** */
-    "bs-installer.folder-exists": { require: void, response: boolean };
+    "bs-installer.folder-exists": { request: void, response: boolean };
     "bs-installer.default-install-path": { request: void, response: string };
     "bs-installer.install-path": { request: void, response: string};
     "bs-installer.set-install-path": { request: string, response: string};

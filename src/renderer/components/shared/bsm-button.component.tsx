@@ -5,7 +5,6 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { useClickOutside } from "renderer/hooks/use-click-outside.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { getCorrectTextColor } from "renderer/helpers/correct-text-color";
-import Tippy from "@tippyjs/react";
 
 export type BsmButtonType = "primary" | "secondary" | "success" | "cancel" | "error" | "none";
 
@@ -29,17 +28,9 @@ type Props = {
     title?: string;
     iconColor?: string;
     textClassName?: string;
-    tooltip?: string;
-    tooltipIcon?: BsmIconType;
 };
 
-export const BsmButton = forwardRef<unknown, Props>(({
-    className, style, iconStyle, imgClassName, iconClassName,
-    icon, image, text, type, active, withBar = true, disabled,
-    onClickOutside, onClick,
-    typeColor, color, title, iconColor, textClassName,
-    tooltip, tooltipIcon
-}, forwardedRef) => {
+export const BsmButton = forwardRef<unknown, Props>(({ className, style, iconStyle, imgClassName, iconClassName, icon, image, text, type, active, withBar = true, disabled, onClickOutside, onClick, typeColor, color, title, iconColor, textClassName }, forwardedRef) => {
     const t = useTranslation();
     const { firstColor, secondColor } = useThemeColor();
     const ref = useRef<HTMLDivElement>(null);
@@ -93,35 +84,18 @@ export const BsmButton = forwardRef<unknown, Props>(({
 
     const handleClick = (e: MouseEvent<HTMLDivElement>) => !disabled && onClick?.(e);
 
-    const renderTooltip = () => {
-        return (
-            <Tippy
-                className="!bg-main-color-1"
-                content={t(tooltip)}
-                delay={[300, 0]}
-                arrow={false}
-            >
-                <div className="h-[20px] w-[20px] p-1.5 rounded-full cursor-help bg-light-main-color-1 dark:bg-main-color-3 hover:brightness-110">
-                    <BsmIcon className="w-full h-full" icon={tooltipIcon || "info"} />
-                </div>
-            </Tippy>
-        );
-    }
-
     return (
         <div ref={setRef} onClick={handleClick} title={t(title)} className={`${className} overflow-hidden group ${!withBar && !disabled && (!!typeColor || !!color) && "hover:brightness-[1.15]"} ${disabled ? "brightness-75 cursor-not-allowed" : "cursor-pointer"} ${renderTypeColor}`} style={{ ...style, backgroundColor: primaryColor || color }}>
             {image && <BsmImage image={image} className={imgClassName} />}
             {icon && <BsmIcon icon={icon} className={iconClassName ?? "size-full text-gray-800 dark:text-white"} style={{ ...(iconStyle ?? {}), color: (iconColor || textColor) }} />}
             {text &&
                 (type === "submit" ? (
-                    <button type="submit" className={`h-full flex items-center justify-center gap-x-2 ${!textClassName && "size-full"}`} style={{ ...(!!textColor && { color: textColor }) }}>
-                        <span className={textClassName}>{t(text)}</span>
-                        {tooltip && renderTooltip()}
+                    <button type="submit" className={textClassName || "size-full"} style={{ ...(!!textColor && { color: textColor }) }}>
+                        {t(text)}
                     </button>
                 ) : (
-                    <span className="h-full flex items-center justify-center gap-x-2" style={{ ...(!!textColor && { color: `${textColor}` }) }}>
-                        <span className={textClassName}>{t(text)}</span>
-                        {tooltip && renderTooltip()}
+                    <span className={textClassName} style={{ ...(!!textColor && { color: `${textColor}` }) }}>
+                        {t(text)}
                     </span>
                 ))}
             {withBar && (
