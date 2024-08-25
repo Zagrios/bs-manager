@@ -84,7 +84,7 @@ export function moveFolderContent(src: string, dest: string, option?: MoveOption
     return new Observable<Progression>(subscriber => {
         subscriber.next(progress);
         (async () => {
-            const srcExist = await pathExist(src);
+            const srcExist = await pathExists(src);
 
             if (!srcExist) {
                 return subscriber.complete();
@@ -98,7 +98,14 @@ export function moveFolderContent(src: string, dest: string, option?: MoveOption
             for(const file of files){
                 const srcFullPath = path.join(src, file);
                 const destFullPath = path.join(dest, file);
-                await move(srcFullPath, destFullPath, option);
+
+                const srcChilds = await readdir(srcFullPath, { encoding: "utf-8", recursive: true });
+                const allChildsAlreadyExist = srcChilds.every(child => pathExistsSync(path.join(destFullPath, child)));
+
+                if(!allChildsAlreadyExist){
+                    await move(srcFullPath, destFullPath, option);
+                }
+
                 progress.current++;
                 subscriber.next(progress);
             }
