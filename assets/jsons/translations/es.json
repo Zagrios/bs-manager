@@ -485,6 +485,15 @@
                     "title": "Backup creado",
                     "msg": "Compartir la carpeta 'UserData' puede generar errores, en caso de problemas desvincula la carpeta para restaurar la copia de seguridad"
                 }
+            },
+            "linking-error": {
+                "title": "Error al enlazar la carpeta",
+                "msg": {
+                    "EPERM": "BSManager no tiene los permisos necesarios para enlazar la carpeta.",
+                    "EACCES": "BSManager no tiene los permisos necesarios para enlazar la carpeta.",
+                    "ENOSPC": "El disco está lleno, libera espacio e inténtalo de nuevo.",
+                    "UNKNOWN_ERROR": "Se ha producido un error desconocido al enlazar la carpeta."
+                }
             }
         },
         "create-launch-shortcut": {

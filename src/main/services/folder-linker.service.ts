@@ -4,6 +4,8 @@ import { deleteFolder, ensureFolderExist, moveFolderContent, pathExist, unlinkPa
 import { lstat, symlink } from "fs/promises";
 import path from "path";
 import { copy, readlink } from "fs-extra";
+import { lastValueFrom } from "rxjs";
+import { noop } from "shared/helpers/function.helpers";
 
 export class FolderLinkerService {
     private static instance: FolderLinkerService;
@@ -72,7 +74,7 @@ export class FolderLinkerService {
         await ensureFolderExist(folderPath);
 
         if (options?.keepContents !== false) {
-            await moveFolderContent(folderPath, sharedPath).toPromise();
+            await lastValueFrom(moveFolderContent(folderPath, sharedPath, { overwrite: true }));
         }
 
         await deleteFolder(folderPath);
@@ -95,9 +97,7 @@ export class FolderLinkerService {
         }
 
         if (options.moveContents === true) {
-            return moveFolderContent(sharedPath, folderPath)
-                .toPromise()
-                .then(() => {});
+            return lastValueFrom(moveFolderContent(sharedPath, folderPath, { overwrite: true })).then(noop);
         }
 
         if (options?.keepContents === false) {

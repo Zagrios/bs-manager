@@ -485,6 +485,15 @@
                     "title": "備份已創建",
                     "msg": "共享 “UserData” 文件夾可能會產生錯誤，如果出現問題，請取消關聯該文件夾以恢復備份"
                 }
+            },
+            "linking-error": {
+                "title": "連結文件夾時出錯",
+                "msg": {
+                    "EPERM": "BSManager沒有必要的權限來連結文件夾。",
+                    "EACCES": "BSManager沒有必要的權限來連結文件夾。",
+                    "ENOSPC": "磁碟已滿，請騰出空間後再試。",
+                    "UNKNOWN_ERROR": "連結文件夾時發生未知錯誤。"
+                }
             }
         },
         "create-launch-shortcut": {

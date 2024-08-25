@@ -485,7 +485,17 @@
                     "title": "Sauvegarde créée",
                     "msg": "Le partage du dossier 'UserData' peut générer des erreurs, en cas de soucis déliez le dossier pour restaurer la sauvegarde"
                 }
+            },
+            "linking-error": {
+                "title": "Erreur lors de la liaison du dossier",
+                "msg": {
+                    "EPERM": "BSManager n'a pas les autorisations nécessaires pour lier le dossier.",
+                    "EACCES": "BSManager n'a pas les autorisations nécessaires pour lier le dossier.",
+                    "ENOSPC": "Le disque est plein, faites de la place et réessayez.",
+                    "UNKNOWN_ERROR": "Une erreur inconnue est survenue lors de la liaison du dossier."
+                }
             }
+
         },
         "create-launch-shortcut": {
             "success": {
