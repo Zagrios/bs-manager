@@ -1,6 +1,6 @@
 import { getFoldersInFolder } from "../helpers/fs.helpers";
 import path from "path";
-import { VersionLinkerAction, VersionLinkFolderAction, VersionUnlinkFolderAction } from "renderer/services/version-folder-linker.service";
+import { VersionLinkerAction, VersionUnlinkFolderAction } from "renderer/services/version-folder-linker.service";
 import { BSVersion } from "shared/bs-version.interface";
 import { LocalMapsManagerService } from "./additional-content/maps/local-maps-manager.service";
 import { BSLocalVersionService } from "./bs-local-version.service";
@@ -58,17 +58,14 @@ export class VersionFolderLinkerService {
         return path.join(parentPath, relativePath);
     }
 
-    public async linkVersionFolder(action: VersionLinkerAction): Promise<boolean> {
+    public async linkVersionFolder(action: VersionLinkerAction): Promise<void> {
         action.options = this.specialFolderOption(action.relativeFolder, action.options);
         const versionPath = await this.localVersion.getVersionPath(action.version);
         const folderPath = this.relativeToFullPath(versionPath, action.relativeFolder);
-        return this.folderLinker
-            .linkFolder(folderPath, action.options)
-            .catch(() => false)
-            .then(() => true);
+        return this.folderLinker.linkFolder(folderPath, action.options)
     }
 
-    public async unlinkVersionFolder(action: VersionUnlinkFolderAction): Promise<boolean> {
+    public async unlinkVersionFolder(action: VersionUnlinkFolderAction): Promise<void> {
         action.options = this.specialFolderOption(action.relativeFolder, action.options);
 
         const versionPath = await this.localVersion.getVersionPath(action.version);
@@ -76,13 +73,10 @@ export class VersionFolderLinkerService {
 
         action.options.moveContents = !(await this.isOtherVersionHaveFolderLinked(action.relativeFolder, folderPath));
 
-        return this.folderLinker
-            .unlinkFolder(folderPath, action.options)
-            .catch(() => false)
-            .then(() => true);
+        return this.folderLinker.unlinkFolder(folderPath, action.options);
     }
 
-    public async doAction(action: VersionLinkerAction): Promise<boolean> {
+    public doAction(action: VersionLinkerAction): Promise<void> {
         if (action.type === "link") {
             return this.linkVersionFolder(action);
         }
@@ -123,7 +117,7 @@ export class VersionFolderLinkerService {
 
         for (const version of versions) {
             const linkedFolders = await this.getLinkedFolders(version, { relative: true, ignoreSymlinkTargetError: true });
-            const actions = linkedFolders.map(folder => ({ type: "link", version, relativeFolder: folder } as VersionLinkFolderAction));
+            const actions = linkedFolders.map(folder => ({ type: "link", version, relativeFolder: folder } as VersionLinkerAction));
             await Promise.all(actions.map(action => this.doAction(action)));
         }
     }

@@ -100,7 +100,7 @@ export interface IpcChannelMapping {
     "get-version-full-path": { request: BSVersion, response: string };
     "full-version-path-to-relative": { request: { version: BSVersion; fullPath: string }, response: string };
     "get-linked-folders": { request: { version: BSVersion; options?: { relative?: boolean } }, response: string[] };
-    "link-version-folder-action": { request: VersionLinkerAction, response: boolean };
+    "link-version-folder-action": { request: VersionLinkerAction, response: void };
     "is-version-folder-linked": { request: { version: BSVersion; relativeFolder: string }, response: boolean };
     "relink-all-versions-folders": { request: void, response: void };
 

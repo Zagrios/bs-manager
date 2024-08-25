@@ -492,6 +492,15 @@
                     "title": "Backup created",
                     "msg": "Sharing the 'UserData' folder can generate errors, in case of problems unlink the folder to restore the backup"
                 }
+            },
+            "linking-error": {
+                "title": "Error while linking folder",
+                "msg": {
+                    "EPERM": "BSManager does not have the necessary permissions to link the folder.",
+                    "EACCES": "BSManager does not have the necessary permissions to link the folder.",
+                    "ENOSPC": "The disk is full, make some space and try again.",
+                    "UNKNOWN_ERROR":"An unknown error has occurred while linking the folder."
+                }
             }
         },
         "create-launch-shortcut": {
