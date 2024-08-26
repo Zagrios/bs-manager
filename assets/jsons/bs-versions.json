@@ -733,8 +733,7 @@
 		"ReleaseURL": "https://store.steampowered.com/news/app/620980/view/4161968170153497460",
 		"ReleaseImg": "https://clan.akamai.steamstatic.com/images//32055887/f82d34c7582137a6748a28c5b02670ff4b235356.png",
 		"ReleaseDate": "1717513346",
-		"year": "2024",
-		"recommended": true
+		"year": "2024"
 	},
 	{
 		"BSVersion": "1.37.1",
@@ -743,7 +742,8 @@
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/4253168598913260422",
 		"ReleaseImg": "https://clan.akamai.steamstatic.com/images/32055887/039be718c1494f948257cd5b09f0082986484a58.png",
 		"ReleaseDate": "1720710529",
-		"year": "2024"
+		"year": "2024",
+                "recommended": true
 	},
 	{
 		"BSVersion": "1.37.2",
