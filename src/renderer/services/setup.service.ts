@@ -2,9 +2,9 @@ import { lastValueFrom } from "rxjs";
 import { logRenderError } from "renderer";
 
 import { BSVersionManagerService } from "./bs-version-manager.service";
+import { InstallationLocationService } from "./installation-location.service";
 import { IpcService } from "./ipc.service";
 import { ModalService } from "./modale.service";
-import { SteamDownloaderService } from "./bs-version-download/steam-downloader.service";
 
 import { AskInstallPathModal } from "renderer/components/modal/modal-types/ask-install-path.component";
 
@@ -12,15 +12,15 @@ import { AskInstallPathModal } from "renderer/components/modal/modal-types/ask-i
 export class SetupService {
     private static instance: SetupService;
 
+    private readonly installationLocationService: InstallationLocationService;
     private readonly ipcService: IpcService;
     private readonly modalService: ModalService;
-    private readonly steamDownloaderService: SteamDownloaderService;
     private readonly versionManagerService: BSVersionManagerService;
 
     private constructor() {
+        this.installationLocationService = InstallationLocationService.getInstance();
         this.ipcService = IpcService.getInstance();
         this.modalService = ModalService.getInstance();
-        this.steamDownloaderService = SteamDownloaderService.getInstance();
         this.versionManagerService = BSVersionManagerService.getInstance();
     }
 
@@ -52,7 +52,7 @@ export class SetupService {
                 { closable: false }
             );
 
-            await lastValueFrom(this.steamDownloaderService.setInstallationFolder(modalResponse.data.installPath));
+            await lastValueFrom(this.installationLocationService.setInstallationFolder(modalResponse.data.installPath));
 
             // Refresh the versions tab
             await this.versionManagerService.askInstalledVersions();

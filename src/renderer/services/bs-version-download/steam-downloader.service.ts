@@ -47,16 +47,6 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
     public deleteSteamSession(): void { localStorage.removeItem(this.STEAM_SESSION_USERNAME_KEY); }
     public sessionExist(): boolean { return !!localStorage.getItem(this.STEAM_SESSION_USERNAME_KEY); }
 
-    // TODO: Move to another service in the future
-    public async getInstallationFolder(): Promise<string> {
-        return lastValueFrom(this.ipcService.sendV2("bs-installer.install-path"));
-    }
-
-    // TODO: Move to another service in the future
-    public setInstallationFolder(path: string): Observable<string> {
-        return this.ipcService.sendV2("bs-installer.set-install-path",  path);
-    }
-
     // ### Downloading
 
     private handleInfoEvents(events$: Observable<DepotDownloaderEvent>): Subscription[] {
