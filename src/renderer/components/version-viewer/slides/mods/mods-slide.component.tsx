@@ -22,7 +22,7 @@ import { useService } from "renderer/hooks/use-service.hook";
 import { NotificationService } from "renderer/services/notification.service";
 import { IpcService } from "renderer/services/ipc.service";
 import { Dropzone } from "renderer/components/shared/dropzone.component";
-import { InstallExternalModModal } from "renderer/components/modal/modal-types/install-external-mod-modal.component";
+import { ExternalModModal, ExternalModModalType } from "renderer/components/modal/modal-types/external-mod-modal.component";
 
 
 export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion; onDisclamerDecline: () => void }) {
@@ -42,6 +42,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
     const [modsInstalled, setModsInstalled] = useState(null as Map<string, Mod[]>);
     const [modsSelected, setModsSelected] = useState([] as Mod[]);
     const [modsExternal, setModsExternal] = useState({} as { [key: string]: ExternalMod; });
+    const [modsExternalChanged, setModsExternalChanged] = useState([] as ExternalMod[]);
     const [moreInfoMod, setMoreInfoMod] = useState(null as Mod);
     const [reinstallAllMods, setReinstallAllMods] = useState(false);
     const isOnline = useObservable(() => os.isOnline$);
@@ -87,6 +88,58 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         linkOpener.open(moreInfoMod.link);
     };
 
+    const handleExternalModCheckboxToggle = (checked: boolean, mod: ExternalMod) => {
+        if (modsExternal[mod.id].enabled === checked) {
+            setModsExternalChanged(modsExternalChanged.filter(m => m.id !== mod.id));
+        } else {
+            const modCopy = { ...mod };
+            modCopy.enabled = checked;
+            setModsExternalChanged([ ...modsExternalChanged, modCopy ]);
+        }
+    };
+
+    const handleExternalModDoubleClick = async (mod: ExternalMod) => {
+        const modalResponse = await modals.openModal(ExternalModModal, { data: {
+            name: mod.name,
+            version: mod.version,
+            description: mod.description,
+            files: mod.files,
+            type: ExternalModModalType.UPDATE
+        }});
+        if (modalResponse.exitCode === ModalExitCode.CANCELED) {
+            notification.notifyError({
+                title: "notifications.mods.external-mod.titles.update-error",
+                desc: "notifications.mods.external-mod.msgs.update-error"
+            });
+            return;
+        }
+
+        if (modalResponse.exitCode !== ModalExitCode.COMPLETED) {
+            return;
+        }
+
+        modalResponse.data.id = mod.id;
+
+        const updatedMod = await lastValueFrom(ipcService.sendV2("bs-mods.update-external-mod", {
+            version,
+            mod: modalResponse.data,
+        }))
+        if (!updatedMod) {
+            notification.notifyError({
+                title: "notifications.mods.external-mod.titles.update-error",
+                desc: "notifications.mods.external-mod.titles.update-error"
+            });
+            return;
+        }
+
+        notification.notifySuccess({
+            title: "notifications.mods.external-mod.titles.update-success",
+            desc: "notifications.mods.external-mod.msgs.update-success",
+            duration: 10_000
+        });
+        setModsExternal({ ...modsExternal, [updatedMod.id]: updatedMod });
+    }
+
     const handleExternalModUninstall = (mod: ExternalMod) => {
         const modsCopy = { ...modsExternal };
         delete modsCopy[mod.id];
@@ -109,16 +162,16 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
             return lt(installedMod.version, mod.version);
         });
 
-        if (!modsToInstall.length) {
-            notification.notifyInfo({ title: "pages.version-viewer.mods.notifications.all-mods-already-installed.title", desc: "pages.version-viewer.mods.notifications.all-mods-already-installed.description" });
-            loadMods();
-            return;
-        }
-
         modsManager.installMods(modsToInstall, version).then(() => {
             loadMods();
         });
     };
+
+    const toggleMods = async () => {
+        await modsManager.toggleMods(modsExternalChanged, version);
+        setModsExternalChanged([]);
+        loadMods();
+    }
 
     const loadMods = (): Promise<void> => {
         if (os.isOffline) {
@@ -140,6 +193,8 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
 
     useEffect(() => {
         const subs: Subscription[] = [];
+
+        setModsExternalChanged([]);
 
         if(!isVisible || !isOnline){
             return noop();
@@ -195,18 +250,22 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         for (let i = 0; i < fileList.length; ++i) {
             files.push(fileList[i].path);
         }
-        const verifiedFiles = await lastValueFrom(ipcService.sendV2("bs-mods.verify-external-mod-files", { version, files }));
+        const verifiedFiles = await lastValueFrom(ipcService.sendV2(
+            "bs-mods.verify-external-mod-files",
+            { version, files }
+        ));
         if (verifiedFiles.length === 0) {
             notification.notifyError({
-                title: "notifications.mods.install-external-mod.titles.error",
-                desc: "notifications.mods.install-external-mod.msgs.verify-error"
+                title: "notifications.mods.external-mod.titles.install-error",
+                desc: "notifications.mods.external-mod.msgs.verify-error"
             });
             return;
         }
 
-        const conflictModIds = [...new Set(verifiedFiles
-            .map(file => file.conflicts)
-            .filter(file => file)
+        const conflictModIds = [...new Set(
+            verifiedFiles
+                .map(file => file.conflicts)
+                .filter(file => file)
         )];
 
         // Overwrite the existing mod
@@ -215,17 +274,17 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
             existingMod = modsExternal[conflictModIds[0]];
         }
 
-        const modalResponse = await modals.openModal(InstallExternalModModal, { data: {
+        const modalResponse = await modals.openModal(ExternalModModal, { data: {
             name: existingMod?.name || fileList[0].name,
             version: existingMod?.version,
             description: existingMod?.description,
-            existing: Boolean(existingMod),
-            files: verifiedFiles
+            files: verifiedFiles,
+            type: existingMod ? ExternalModModalType.EXISTING : ExternalModModalType.INSTALL
         }});
         if (modalResponse.exitCode === ModalExitCode.CANCELED) {
             notification.notifyError({
-                title: "notifications.mods.install-external-mod.titles.error",
-                desc: "notifications.mods.install-external-mod.msgs.install-error"
+                title: "notifications.mods.external-mod.titles.install-error",
+                desc: "notifications.mods.external-mod.msgs.install-error"
             });
             return;
         }
@@ -245,15 +304,15 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         }));
         if (!externalMod.id) {
             notification.notifyError({
-                title: "notifications.mods.install-external-mod.titles.error",
-                desc: "notifications.mods.install-external-mod.msgs.install-error"
+                title: "notifications.mods.external-mod.titles.install-error",
+                desc: "notifications.mods.external-mod.msgs.install-error"
             });
             return;
         }
 
         notification.notifySuccess({
-            title: "notifications.mods.install-external-mod.titles.success",
-            desc: "notifications.mods.install-external-mod.msgs.success",
+            title: "notifications.mods.external-mod.titles.install-success",
+            desc: "notifications.mods.external-mod.msgs.install-success",
             duration: 10_000
         });
         setModsExternal({ ...modsExternal, [externalMod.id]: externalMod });
@@ -295,20 +354,65 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
                         onModChange={handleModChange}
                         moreInfoMod={moreInfoMod}
                         onWantInfos={handleMoreInfo}
+                        onExternalModCheckboxToggle={handleExternalModCheckboxToggle}
+                        onExternalModDoubleClick={handleExternalModDoubleClick}
                         onExternalModUninstall={handleExternalModUninstall}
                     />
                 </div>
                 <div className="flex items-center justify-between absolute bottom-0 w-full shrink-0 px-3 py-2 z-10 bg-light-main-color-2 dark:bg-main-color-2">
-                    <BsmButton className="flex items-center justify-center rounded-md px-1 h-8" text="pages.version-viewer.mods.buttons.more-infos" typeColor="cancel" withBar={false} disabled={!moreInfoMod} onClick={handleOpenMoreInfo} style={{ width: downloadWith }}/>
-                    <div ref={downloadRef} className="flex h-8 justify-center items-center gap-px overflow-hidden rounded-md">
-                        <div className="grow h-full relative">
-                            <BsmButton className="relative left-0 flex items-center justify-center px-2 size-full transition-[top] duration-200 ease-in-out" text="pages.version-viewer.mods.buttons.install-or-update" typeColor="primary" withBar={false} onClick={() => installMods(false)} style={{ top: reinstallAllMods ? "-100%" : "0" }} />
-                            <BsmButton className="relative left-0 flex items-center justify-center px-2 size-full transition-[top] duration-200 ease-in-out " text="pages.version-viewer.mods.buttons.reinstall-all" typeColor="primary" withBar={false} onClick={() => installMods(true)} style={{ top: reinstallAllMods ? "-100%" : "0" }}/>
+                    <BsmButton
+                        className="flex items-center justify-center rounded-md px-1 h-8"
+                        text="pages.version-viewer.mods.buttons.more-infos"
+                        typeColor="cancel"
+                        withBar={false}
+                        disabled={!moreInfoMod}
+                        onClick={handleOpenMoreInfo}
+                        style={{ width: downloadWith }}
+                    />
+
+                    <div className="flex items-center gap-x-2">
+                        <BsmButton
+                            className="flex items-center justify-center rounded-md px-1 h-8"
+                            text="pages.version-viewer.mods.buttons.enable-or-disable"
+                            typeColor="secondary"
+                            withBar={false}
+                            onClick={toggleMods}
+                            style={{ width: downloadWith }}
+                        />
+
+                        <div ref={downloadRef} className="flex h-8 justify-center items-center gap-px overflow-hidden rounded-md">
+                            <div className="grow h-full relative">
+                                <BsmButton
+                                    className="relative left-0 flex items-center justify-center px-2 size-full transition-[top] duration-200 ease-in-out"
+                                    text="pages.version-viewer.mods.buttons.install-or-update"
+                                    typeColor="primary"
+                                    withBar={false}
+                                    onClick={() => installMods(false)}
+                                    style={{ top: reinstallAllMods ? "-100%" : "0" }}
+                                />
+                                <BsmButton
+                                    className="relative left-0 flex items-center justify-center px-2 size-full transition-[top] duration-200 ease-in-out "
+                                    text="pages.version-viewer.mods.buttons.reinstall-all"
+                                    typeColor="primary"
+                                    withBar={false}
+                                    onClick={() => installMods(true)}
+                                    style={{ top: reinstallAllMods ? "-100%" : "0" }}
+                                />
+                            </div>
+                            <BsmButton
+                                className="flex items-center justify-center shrink-0 h-full"
+                                iconClassName="transition-transform size-full ease-in-out duration-200"
+                                iconStyle={{ transform: reinstallAllMods ? "rotate(360deg)" : "rotate(180deg)" }}
+                                icon="chevron-top"
+                                typeColor="primary"
+                                withBar={false}
+                                onClick={() => setReinstallAllMods(prev => !prev)}
+                            />
                         </div>
-                        <BsmButton className="flex items-center justify-center shrink-0 h-full" iconClassName="transition-transform size-full ease-in-out duration-200" iconStyle={{ transform: reinstallAllMods ? "rotate(360deg)" : "rotate(180deg)" }} icon="chevron-top" typeColor="primary" withBar={false} onClick={() => setReinstallAllMods(prev => !prev)}/>
                     </div>
                     <BsmButton className="flex items-center justify-center shrink-0 h-full" iconClassName="transition-transform size-full ease-in-out duration-200" iconStyle={{ transform: reinstallAllMods ? "rotate(360deg)" : "rotate(180deg)" }} icon="chevron-top" typeColor="primary" withBar={false} onClick={() => setReinstallAllMods(prev => !prev)}/>
                 </div>
+                <BsmButton className="flex items-center justify-center shrink-0 h-full" iconClassName="transition-transform size-full ease-in-out duration-200" iconStyle={{ transform: reinstallAllMods ? "rotate(360deg)" : "rotate(180deg)" }} icon="chevron-top" typeColor="primary" withBar={false} onClick={() => setReinstallAllMods(prev => !prev)}/>
             </Dropzone>
         );
     };

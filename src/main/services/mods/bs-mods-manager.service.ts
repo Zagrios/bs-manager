@@ -18,7 +18,7 @@ import recursiveReadDir from "recursive-readdir";
 import { sToMs } from "../../../shared/helpers/time.helpers";
 import { copyFile, ensureDir, mkdir, pathExistsSync, readFile, unlink, writeFile } from "fs-extra";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
-import { ExternalMod, ExternalModFileVerify } from "shared/models/mods/mod.interface";
+import { ExternalMod, ExternalModFile, ExternalModFileVerify } from "shared/models/mods/mod.interface";
 
 
 interface ModsConfig {
@@ -368,13 +368,61 @@ export class BsModsManagerService {
         };
     }
 
+    // NOTE: Only supports external mods for now
+    public async toggleMods(externalMods: ExternalMod[], version: BSVersion): Promise<ExternalMod[]> {
+        if (externalMods.length === 0) {
+            throw CustomError.fromError(
+                new Error("No mods to enable/disable"),
+                "no-mods-toggled"
+            );
+        }
+
+        log.info(`Toggling mods for "${version.BSVersion} - ${version.name}"`, externalMods);
+
+        this.nbModsToInstall = externalMods.length;
+        this.nbInstalledMods = 0;
+
+        const editedMods: ExternalMod[] = [];
+        const versionPath = await this.bsLocalService.getVersionPath(version);
+        const modsPath = this.getExternalModsPath(versionPath);
+        const modsConfig = await this.getExternalModsConfig(modsPath);
+        for (const mod of externalMods) {
+            this.utilsService.ipcSend<ModInstallProgression>("mod-installed", {
+                success: true,
+                data: {
+                    name: mod.name,
+                    progression: ((this.nbInstalledMods + 1) / this.nbModsToInstall) * 100
+                }
+            });
+
+            if (modsConfig.mods[mod.id].enabled === mod.enabled) {
+                ++this.nbInstalledMods;
+                continue;
+            }
+
+            if (mod.enabled) {
+                await this.enableExternalMod(mod, versionPath);
+            } else {
+                await this.disableExternalMod(mod, versionPath);
+            }
+
+            modsConfig.mods[mod.id] = mod;
+            editedMods.push(mod);
+            ++this.nbInstalledMods;
+        }
+
+        log.info("Updating mods.json file");
+        await writeFile(modsPath, JSON.stringify(modsConfig));
+
+        return editedMods;
+    }
+
     public async uninstallMods(mods: Mod[], externalMods: ExternalMod[], version: BSVersion): Promise<UninstallModsResult> {
         this.nbUninstalledMods = 0;
         this.nbModsToUninstall = (mods?.length || 0) + (externalMods?.length || 0);
         if (this.nbModsToUninstall === 0) {
             throw CustomError.fromError(new Error("No mods to uninstall"), "no-mods");
         }
-
 
         log.info(`Uninstalling mods on version "${version.BSVersion} - ${version.name}"`, mods, externalMods);
 
@@ -495,6 +543,38 @@ export class BsModsManagerService {
         await mkdir(path.join(versionPath, ModsInstallFolder.LIBS), { recursive: true });
         await mkdir(path.join(versionPath, ModsInstallFolder.DISABLED_PLUGINS), { recursive: true });
         await mkdir(path.join(versionPath, ModsInstallFolder.DISABLED_LIBS), { recursive: true });
+    }
+
+    private async enableExternalMod(mod: ExternalMod, versionPath: string): Promise<void> {
+        log.info(`Enabling mod ${mod.name} (${mod.id})`);
+
+        // Move all non-disabled mods to Disabled Folder
+        for (const file of mod.files) {
+            if (!file.enabled) {
+                continue;
+            }
+
+            const sourcePath = path.join(versionPath, ModsInstallFolder.DISABLED, file.folder, file.name);
+            const destinationPath = path.join(versionPath, file.folder, file.name);
+            log.info(`Moving file "${sourcePath}" => "${destinationPath}"`);
+            await move(sourcePath, destinationPath);
+        }
+    }
+
+    private async disableExternalMod(mod: ExternalMod, versionPath: string): Promise<void> {
+        log.info(`Disabling mod ${mod.name} (${mod.id})`);
+
+        // Move all non-disabled mods to Plugins/Libs Folder
+        for (const file of mod.files) {
+            if (!file.enabled) {
+                continue;
+            }
+
+            const sourcePath = path.join(versionPath, file.folder, file.name);
+            const destinationPath = path.join(versionPath, ModsInstallFolder.DISABLED, file.folder, file.name);
+            log.info(`Moving file "${sourcePath}" => "${destinationPath}"`);
+            await move(sourcePath, destinationPath);
+        }
     }
 
     private async uninstallExternalMod(mod: ExternalMod, versionPath: string, modsConfig: ModsConfig): Promise<ModsConfig> {
@@ -675,6 +755,8 @@ export class BsModsManagerService {
                     await unlink(deletePath);
                 }
 
+                // Overwrite the id instead of creating a new one
+                file.id = crypto.randomUUID();
                 copiedFiles[file.folder][file.name] = mod.id;
             }
 
@@ -723,15 +805,15 @@ export class BsModsManagerService {
                 }
 
                 if (file.enabled) {
-                    destinationPath = path.join(versionPath, ModsInstallFolder.PLUGINS, file.name);
+                    destinationPath = path.join(versionPath, file.folder, file.name);
                     deletePath = path.join(
-                        versionPath, "Disabled", ModsInstallFolder.PLUGINS, file.name
+                        versionPath, "Disabled", file.folder, file.name
                     );
                 } else {
                     destinationPath = path.join(
-                        versionPath, "Disabled", ModsInstallFolder.PLUGINS, file.name
+                        versionPath, "Disabled", file.folder, file.name
                     );
-                    deletePath = path.join(versionPath, ModsInstallFolder.PLUGINS, file.name);
+                    deletePath = path.join(versionPath, file.folder, file.name);
                 }
 
                 log.info(`Copying file "${sourcePath}" => "${destinationPath}"`);
@@ -741,6 +823,8 @@ export class BsModsManagerService {
                     await unlink(deletePath);
                 }
 
+                // Overwrite the id instead of creating a new one
+                file.id = crypto.randomUUID();
                 copiedFiles[file.folder][file.name] = mod.id;
             }
 
@@ -756,13 +840,13 @@ export class BsModsManagerService {
     }
 
     public async installExternalMod(mod: ExternalMod, version: BSVersion, files: string[]): Promise<ExternalMod> {
-        log.info(`Installing "${mod.name}" mod to "${version.BSVersion} - ${version.name}" version`, files);
-
         if (!mod.name) {
             log.error("Name should not be empty");
             delete mod.id;
             return mod;
         }
+
+        log.info(`Installing "${mod.name}" mod from "${version.BSVersion} - ${version.name}" version`, files);
 
         if (files.length === 0 || mod.files.length === 0) {
             log.error(`No mod files were passed for mod ${mod.name}`);
@@ -776,12 +860,85 @@ export class BsModsManagerService {
 
         return this.installExternalModByMultipleFiles(version, mod, files);
     }
+
+    public async updateExternalMod(mod: ExternalMod, version: BSVersion): Promise<ExternalMod> {
+        if (!mod.name) {
+            log.error("Name should not be empty");
+            delete mod.id;
+            return mod;
+        }
+
+        log.info(`Updating "${mod.name}" mod from "${version.BSVersion} - ${version.name}"`);
+
+        const versionPath = await this.bsLocalService.getVersionPath(version);
+        const modsPath = this.getExternalModsPath(versionPath);
+        const modsConfig = await this.getExternalModsConfig(modsPath);
+
+        const modRef = modsConfig.mods[mod.id];
+        modRef.name = mod.name;
+        modRef.version = mod.version;
+        modRef.description = mod.description;
+
+        // Force enable
+        modRef.enabled = true;
+        mod.enabled = true;
+
+        const fileMap = modRef.files.reduce((map, file) => {
+            map[file.id] = file;
+            return map;
+        }, {} as { [key: string]: ExternalModFile });
+
+        // Enable/Disable mod files
+        const removeFileIds: string[] = [];
+        let sourcePath: string = "";
+        let destinationPath: string = "";
+        for (const file of mod.files) {
+            const fileRef = fileMap[file.id];
+            if (!fileRef) { // NOTE: Does not support file upload on modal yet
+                removeFileIds.push(file.id);
+                continue;
+            }
+
+            if (file.enabled === fileRef.enabled) {
+                continue;
+            }
+
+            if (file.enabled) {
+                sourcePath = path.join(versionPath, ModsInstallFolder.DISABLED, file.folder, file.name);
+                destinationPath = path.join(versionPath, file.folder, file.name);
+            } else {
+                sourcePath = path.join(versionPath, file.folder, file.name);
+                destinationPath = path.join(versionPath, ModsInstallFolder.DISABLED, file.folder, file.name);
+            }
+            log.info(`Moving file "${sourcePath}" => "${destinationPath}"`);
+            await move(sourcePath, destinationPath);
+        }
+        mod.files = mod.files.filter(file => removeFileIds.findIndex(id => id === file.id) === -1);
+
+        // Delete files
+        for (const file of modRef.files.filter(file1 => mod.files.findIndex(file2 => file1.id === file2.id) === -1)) {
+            const filepath = file.enabled
+                ? path.join(versionPath, file.folder, file.name)
+                : path.join(versionPath, ModsInstallFolder.DISABLED, file.folder, file.name);
+
+            log.info(`Deleting file "${filepath}"`);
+            await unlink(filepath);
+        }
+
+        modRef.files = mod.files;
+        await writeFile(modsPath, JSON.stringify(modsConfig));
+
+        log.info(`Updated "${mod.name}"`);
+
+        return mod;
+    }
 }
 
 const enum ModsInstallFolder {
     PLUGINS = "Plugins",
     LIBS = "Libs",
     IPA = "IPA",
+    DISABLED = "Disabled",
     PENDING = "IPA/Pending",
     PLUGINS_PENDING = "IPA/Pending/Plugins",
     LIBS_PENDING = "IPA/Pending/Libs",

@@ -45,6 +45,7 @@ export interface ExternalMod {
 }
 
 export interface ExternalModFile {
+    id?: string;
     name: string;
     folder: "Libs" | "Plugins";
     enabled: boolean;

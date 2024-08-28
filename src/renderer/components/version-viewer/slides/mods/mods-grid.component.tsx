@@ -15,8 +15,11 @@ type Props = {
     modsInstalled: Map<string, Mod[]>;
     modsExternal: { [key: string]: ExternalMod };
     modsSelected: Mod[];
+    moreInfoMod?: Mod;
     onModChange: (selected: boolean, mod: Mod) => void;
-    moreInfoMod?: Mod; onWantInfos: (mod: Mod) => void;
+    onWantInfos: (mod: Mod) => void;
+    onExternalModCheckboxToggle: (checked: boolean, mod: ExternalMod) => void;
+    onExternalModDoubleClick: (mod: ExternalMod) => void;
     onExternalModUninstall: (mod: ExternalMod) => void;
 };
 
@@ -28,6 +31,8 @@ export function ModsGrid({
     onModChange,
     moreInfoMod,
     onWantInfos,
+    onExternalModCheckboxToggle,
+    onExternalModDoubleClick,
     onExternalModUninstall,
 }: Props) {
 
@@ -103,6 +108,8 @@ export function ModsGrid({
                         {Object.values(modsExternal).map(mod =>
                             <ExternalModItem
                                 mod={mod}
+                                onCheckboxToggle={checked => onExternalModCheckboxToggle(checked, mod)}
+                                onDoubleClick={() => onExternalModDoubleClick(mod)}
                                 onUninstall={() => onExternalModUninstall(mod)}
                             />
                         )}

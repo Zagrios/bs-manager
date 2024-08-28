@@ -75,7 +75,8 @@
                 "buttons": {
                     "more-infos": "Plus d'infos",
                     "install-or-update": "Installer ou mettre à jour",
-                    "reinstall-all": "Tout réinstaller"
+                    "reinstall-all": "Tout réinstaller",
+                    "enable-or-disable": "Enable/Disable"
                 },
                 "mods-grid": {
                     "header-bar": {
@@ -491,15 +492,29 @@
                     }
                 }
             },
-            "install-external-mod": {
+            "external-mod": {
                 "titles": {
-                    "success": "Custom mod installed 🎉",
-                    "error": "Custom mod installation failed 😨"
+                    "install-success": "Custom mod installed 🎉",
+                    "update-success": "Custom mod updated 🎉",
+                    "install-error": "Custom mod installation failed 😨",
+                    "update-error": "Custom mod update failed 😨"
                 },
                 "msgs": {
-                    "success": "Custom mod has been installed.",
+                    "install-success": "Custom mod has been installed.",
+                    "update-success": "Custom mod has been updated.",
                     "verify-error": "Custom mod file/s does not contain any dll files.",
-                    "install-error": "Custom mod file/s could not be installed."
+                    "install-error": "Custom mod file/s could not be installed.",
+                    "update-error": "Custom mod could not be updated."
+                }
+            },
+            "toggle-mods": {
+                "titles": {
+                    "success": "Enable/Disable mods 🎉",
+                    "error": "Enable/Disable mods 😨"
+                },
+                "msgs": {
+                    "success": "Mods have been enabled/disabled",
+                    "no-mods-toggled": "No mods to enable/disable"
                 }
             }
         },
@@ -789,6 +804,22 @@
             "choose-folder": "Choisir un dossier",
             "default": "Par défaut",
             "default-tooltip": "Par défaut, dans votre dossier personnel"
+        },
+        "install-external-mod": {
+            "title": "Install custom mod",
+        },
+        "external-mod": {
+            "install-title": "Install custom mod",
+            "update-title": "Update custom mod",
+            "existing": "Overwriting existing mod",
+            "name": "nom",
+            "name-required": "Mod name is required",
+            "version": "Version",
+            "description": "Description",
+            "files": "Files",
+            "conflict-file": "Conflicting mod file",
+            "install-button": "Install",
+            "update-button": "Update"
         }
     },
     "maps": {

@@ -79,12 +79,14 @@ export interface IpcChannelMapping {
     /* ** bs-mods-ipcs ** */
     "get-available-mods": { request: BSVersion, response: Mod[] };
     "get-installed-mods": { request: BSVersion, response: Mod[] };
-    "install-mods": { request: { mods: Mod[]; version: BSVersion }, response: InstallModsResult };
+    "bs-mods.install-mods": { request: { mods: Mod[], version: BSVersion }, response: InstallModsResult };
+    "bs-mods.toggle-mods": { request: { externalMods: ExternalMod[], version: BSVersion }, response: ExternalMod[] };
     "bs-mods.uninstall-mods": { request: { mods: Mod[], externalMods: ExternalMod[], version: BSVersion }, response: UninstallModsResult };
     "bs-mods.uninstall-all-mods": { request: BSVersion, response: UninstallModsResult };
     "bs-mods.get-installed-external-mods": { request: BSVersion, response: { [key: string]: ExternalMod } };
     "bs-mods.verify-external-mod-files": { request: { version: BSVersion, files: string[] }, response: ExternalModFileVerify[] };
     "bs-mods.install-external-mod": { request: { mod: ExternalMod, version: BSVersion, files: string[] }, response: ExternalMod };
+    "bs-mods.update-external-mod": { request: { mod: ExternalMod, version: BSVersion }, response: ExternalMod };
 
     /* ** bs-playlist-ipcs ** */
     "one-click-install-playlist": { request: string, response: Progression<DownloadPlaylistProgressionData> };

@@ -13,6 +13,7 @@ import { ProgressBarService } from "./progress-bar.service";
 import { NotificationService } from "./notification.service";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { ExternalMod } from "shared/models/mods/mod.interface";
+import { IpcResponse } from "shared/models/ipc";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -78,7 +79,7 @@ export class BsModsManagerService {
 
         this.isInstalling$.next(true);
 
-        return lastValueFrom(this.ipcService.sendV2("install-mods", { mods, version })).then(res => {
+        return lastValueFrom(this.ipcService.sendV2("bs-mods.install-mods", { mods, version })).then(res => {
             const isFullyInstalled = res.nbInstalledMods === res.nbModsToInstall;
 
             const title = `notifications.mods.install-mods.titles.${isFullyInstalled ? "success" : "warning"}`;
@@ -91,6 +92,50 @@ export class BsModsManagerService {
             this.isInstalling$.next(false);
             this.progressBar.hide();
         })
+    }
+
+    public async toggleMods(externalMods: ExternalMod[], version: BSVersion): Promise<ExternalMod[]> {
+        if (!this.progressBar.require()) {
+            return Promise.resolve([]);
+        }
+
+        const progress$: Observable<ProgressionInterface> = this.ipcService
+            .watch<IpcResponse<ModInstallProgression>>("mod-installed")
+            .pipe(map(res => ({
+                progression: res.data.progression,
+                label: res.data.name
+            } as ProgressionInterface)));
+
+        this.progressBar.show(progress$, true, { paddingLeft: "190px", paddingRight: "190px", bottom: "20px" });
+        this.isInstalling$.next(true);
+
+        try {
+            const editedMods = await lastValueFrom(this.ipcService.sendV2(
+                "bs-mods.toggle-mods",
+                { externalMods, version }
+            ));
+            const title = `notifications.mods.toggle-mods.titles.success`;
+            const desc = `notifications.mods.toggle-mods.msgs.success`;
+
+            this.notifications.notify({
+                type: NotificationType.SUCCESS,
+                title, desc,
+                duration: this.NOTIFICATION_DURATION
+            });
+            return editedMods;
+        } catch (error: any) {
+            this.notifications.notifyError({
+                title: "notifications.mods.toggle-mods.titles.error",
+                desc: ["no-mods-toggled"].includes(error?.code)
+                    ? `notifications.mods.toggle-mods.msgs.${error.code}`
+                    : "Unknown",
+                duration: this.NOTIFICATION_DURATION
+            });
+            return [];
+        } finally {
+            this.isInstalling$.next(false);
+            this.progressBar.hide();
+        }
     }
 
     public async uninstallMod(mod: Mod, version: BSVersion): Promise<void> {

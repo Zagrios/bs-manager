@@ -14,9 +14,14 @@ ipc.on("get-installed-mods", (args, reply) => {
     reply(from(modsManager.getInstalledMods(args)));
 });
 
-ipc.on("install-mods", (args, reply) => {
+ipc.on("bs-mods.install-mods", (args, reply) => {
     const modsManager = BsModsManagerService.getInstance();
     reply(from(modsManager.installMods(args.mods, args.version)));
+});
+
+ipc.on("bs-mods.toggle-mods", (args, reply) => {
+    const modsManager = BsModsManagerService.getInstance();
+    reply(from(modsManager.toggleMods(args.externalMods, args.version)));
 });
 
 ipc.on("bs-mods.uninstall-mods", (args, reply) => {
@@ -43,4 +48,9 @@ ipc.on("bs-mods.install-external-mod", (args, reply) => {
     const modsManager = BsModsManagerService.getInstance();
    reply(from(modsManager.installExternalMod(args.mod, args.version, args.files)));
 });
+
+ipc.on("bs-mods.update-external-mod", (args, reply) => {
+    const modsManager = BsModsManagerService.getInstance();
+    reply(from(modsManager.updateExternalMod(args.mod, args.version)));
+})
 

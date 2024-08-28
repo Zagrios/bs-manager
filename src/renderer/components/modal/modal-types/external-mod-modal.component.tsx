@@ -11,12 +11,18 @@ import { BsmIcon } from "renderer/components/svgs/bsm-icon.component";
 import { BsmTextbox } from "renderer/components/shared/bsm-textbox.component";
 
 
-export const InstallExternalModModal: ModalComponent<ExternalMod, {
+export enum ExternalModModalType {
+    INSTALL,
+    EXISTING,
+    UPDATE,
+};
+
+export const ExternalModModal: ModalComponent<ExternalMod, {
     name: string;
     version?: string;
     description?: string;
-    existing: boolean;
     files: ExternalModFileVerify[]
+    type: ExternalModModalType
 }> = ({
     resolver,
     options: { data }
@@ -65,7 +71,7 @@ export const InstallExternalModModal: ModalComponent<ExternalMod, {
                             {file.conflicts &&
                                 <Tippy
                                     className="!bg-main-color-1"
-                                    content={t("modals.install-external-mod.conflict-file")}
+                                    content={t("modals.external-mod.conflict-file")}
                                     delay={[300, 0]}
                                     arrow={false}
                                 >
@@ -109,7 +115,10 @@ export const InstallExternalModModal: ModalComponent<ExternalMod, {
                     typeColor="primary"
                     className="z-0 px-1 rounded-md text-center transition-all"
                     withBar={false}
-                    text="modals.install-external-mod.install"
+                    text={data.type === ExternalModModalType.INSTALL
+                        ? "modals.external-mod.install-button"
+                        : "modals.external-mod.update-button"
+                    }
                 />
             </div>
         );
@@ -117,7 +126,7 @@ export const InstallExternalModModal: ModalComponent<ExternalMod, {
 
     const onSubmit = () => {
         if (!name) {
-            setNameError("modals.install-external-mod.name-required");
+            setNameError("modals.external-mod.name-required");
             return;
         }
 
@@ -127,6 +136,7 @@ export const InstallExternalModModal: ModalComponent<ExternalMod, {
             description,
             enabled: true,
             files: files.map(file => ({
+                id: file.id,
                 name: file.name,
                 folder: file.folder,
                 enabled: file.enabled
@@ -156,17 +166,20 @@ export const InstallExternalModModal: ModalComponent<ExternalMod, {
             onSubmit();
         }}>
             <h1 className="tracking-wide w-full mb-3 uppercase text-3xl text-center text-gray-800 dark:text-gray-200">
-                {t("modals.install-external-mod.title")}
+                {data.type === ExternalModModalType.UPDATE
+                    ? t("modals.external-mod.update-title")
+                    : t("modals.external-mod.install-title")
+                }
             </h1>
 
-            {data.existing &&
+            {data.type === ExternalModModalType.EXISTING &&
                 <h2 className="mb-1 text-center font-bold tracking-wide text-red-500">
-                    {t("modals.install-external-mod.existing")}
+                    {t("modals.external-mod.existing")}
                 </h2>
             }
 
             <BsmTextbox
-                label="modals.install-external-mod.name"
+                label="modals.external-mod.name"
                 description={nameError}
                 descriptionClassName="mb-1 font-bold text-sm text-red-500 tracking-wide"
                 tabIndex={0}
@@ -177,13 +190,13 @@ export const InstallExternalModModal: ModalComponent<ExternalMod, {
                 }}
             />
             <BsmTextbox
-                label="modals.install-external-mod.version"
+                label="modals.external-mod.version"
                 tabIndex={0}
                 value={version}
                 onChange={setVersion}
             />
             <BsmTextbox
-                label="modals.install-external-mod.description"
+                label="modals.external-mod.description"
                 tabIndex={0}
                 value={description}
                 onChange={setDescription}
@@ -191,7 +204,7 @@ export const InstallExternalModModal: ModalComponent<ExternalMod, {
 
             <div className="mb-3">
                 <h1 className="mb-2 text-2xl font-bold tracking-wide">
-                    {t("modals.install-external-mod.files")}
+                    {t("modals.external-mod.files")}
                 </h1>
 
                 {renderFiles()}
