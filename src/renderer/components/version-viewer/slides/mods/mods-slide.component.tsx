@@ -106,14 +106,6 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
             files: mod.files,
             type: ExternalModModalType.UPDATE
         }});
-        if (modalResponse.exitCode === ModalExitCode.CANCELED) {
-            notification.notifyError({
-                title: "notifications.mods.external-mod.titles.update-error",
-                desc: "notifications.mods.external-mod.msgs.update-error"
-            });
-            return;
-        }
-
         if (modalResponse.exitCode !== ModalExitCode.COMPLETED) {
             return;
         }
@@ -281,14 +273,6 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
             files: verifiedFiles,
             type: existingMod ? ExternalModModalType.EXISTING : ExternalModModalType.INSTALL
         }});
-        if (modalResponse.exitCode === ModalExitCode.CANCELED) {
-            notification.notifyError({
-                title: "notifications.mods.external-mod.titles.install-error",
-                desc: "notifications.mods.external-mod.msgs.install-error"
-            });
-            return;
-        }
-
         if (modalResponse.exitCode !== ModalExitCode.COMPLETED) {
             return;
         }

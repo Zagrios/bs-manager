@@ -13,7 +13,7 @@ import log from "electron-log";
 import { deleteFolder, pathExist, unlinkPath } from "../../helpers/fs.helpers";
 import { lastValueFrom } from "rxjs";
 import JSZip from "jszip";
-import { extractZip, getFilenames, toZip } from "../../helpers/zip.helpers";
+import { extractZip, processZip } from "../../helpers/zip.helpers";
 import recursiveReadDir from "recursive-readdir";
 import { sToMs } from "../../../shared/helpers/time.helpers";
 import { copyFile, ensureDir, mkdir, pathExistsSync, readFile, unlink, writeFile } from "fs-extra";
@@ -433,10 +433,10 @@ export class BsModsManagerService {
         if (externalMods.length > 0) {
             const versionPath = await this.bsLocalService.getVersionPath(version);
             const modsPath = this.getExternalModsPath(versionPath);
-            let modsConfig = await this.getExternalModsConfig(modsPath);
+            const modsConfig = await this.getExternalModsConfig(modsPath);
 
             for (const mod of externalMods) {
-                modsConfig = await this.uninstallExternalMod(mod, versionPath, modsConfig);
+                await this.uninstallExternalMod(mod, versionPath, modsConfig);
             }
 
             await writeFile(modsPath, JSON.stringify(modsConfig));
@@ -467,10 +467,10 @@ export class BsModsManagerService {
         const versionPath = await this.bsLocalService.getVersionPath(version);
         if (externalMods.length > 0) {
             const modsPath = this.getExternalModsPath(versionPath);
-            let modsConfig = await this.getExternalModsConfig(modsPath);
+            const modsConfig = await this.getExternalModsConfig(modsPath);
 
             for (const mod of externalMods) {
-                modsConfig = await this.uninstallExternalMod(mod, versionPath, modsConfig);
+                await this.uninstallExternalMod(mod, versionPath, modsConfig);
             }
 
             await writeFile(modsPath, JSON.stringify(modsConfig));
@@ -577,11 +577,11 @@ export class BsModsManagerService {
         }
     }
 
-    private async uninstallExternalMod(mod: ExternalMod, versionPath: string, modsConfig: ModsConfig): Promise<ModsConfig> {
+    private async uninstallExternalMod(mod: ExternalMod, versionPath: string, modsConfig: ModsConfig): Promise<void> {
         this.nbUninstalledMods++;
         if (!modsConfig.mods[mod.id]) {
             log.info("Mod does not exists");
-            return modsConfig;
+            return;
         }
 
         mod = modsConfig.mods[mod.id];
@@ -604,8 +604,6 @@ export class BsModsManagerService {
             delete modsConfig.files[file.folder][file.name];
         }
         delete modsConfig.mods[mod.id];
-
-        return modsConfig;
     }
 
     public async getInstalledExternalMods(version: BSVersion): Promise<{ [key: string]: ExternalMod }> {
@@ -641,43 +639,49 @@ export class BsModsManagerService {
 
     private async getExternalZipMods(filepath: string, modsConfig: ModsConfig): Promise<ExternalModFileVerify[]> {
         try {
-            const zip = await toZip(filepath);
-            const filenames = (await getFilenames(zip))
-                .filter(name => (
-                    name.split(path.sep).length === 2 && // Folder depth of 2
-                    (name.startsWith(ModsInstallFolder.LIBS) || name.startsWith(ModsInstallFolder.PLUGINS))
-                ));
-
-            // Check if there is a single .dll file
             let hasDll = false;
-            for (const filename of filenames) {
-                if (path.extname(filename) === ".dll") {
-                    hasDll = true;
-                    break;
+            const externalModFiles: ExternalModFileVerify[] = [];
+
+            await processZip(filepath, async (relativePath, file) => {
+                if (file.dir) {
+                    return 0;
                 }
-            }
+
+                const directories = relativePath.split(path.sep);
+                if (
+                    directories.length !== 2 ||
+                    !([ModsInstallFolder.LIBS, ModsInstallFolder.PLUGINS] as string[]).includes(directories[0])
+                ) {
+                    return 0;
+                }
+
+                const folder = directories[0] as "Libs" | "Plugins";
+                const filename = directories[1];
+
+                if (!hasDll && path.extname(filename) === ".dll") {
+                    hasDll = true;
+                }
+
+                const content = await file.async("nodebuffer");
+                externalModFiles.push({
+                    name: filename,
+                    folder,
+                    enabled: true,
+                    hash: md5Hash(content.toString()).toString(),
+                    conflicts: modsConfig.files[folder][filename]
+                });
+
+                return content.length;
+            });
 
             if (!hasDll) {
                 log.warn(`Zip file ${filepath} does not contain any dll files`);
                 return [];
             }
 
-            const externalModFiles: ExternalModFileVerify[] = [];
-            for (const filepath of filenames) {
-                const name = path.basename(filepath);
-                const folder = path.dirname(filepath) as "Plugins" | "Libs";
-                const content = await zip.file(filepath).async("string");
-                externalModFiles.push({
-                    name,
-                    folder,
-                    enabled: true,
-                    hash: md5Hash(content).toString(),
-                    conflicts: modsConfig.files[folder][name] as string
-                });
-            }
             return externalModFiles;
         } catch (error) {
-            log.error(`Could not read zip file ${path}`, error);
+            log.error(`Could not read zip file ${filepath}`, error);
             return [];
         }
     }
@@ -712,12 +716,15 @@ export class BsModsManagerService {
     private async installExternalModByZip(
         version: BSVersion,
         mod: ExternalMod,
-        zip: JSZip,
         zipPath: string
     ): Promise<ExternalMod> {
         log.info("Install external mod with zip");
 
         try {
+            if (!pathExistsSync(zipPath)) {
+                throw new Error(`Path ${zipPath} does not exists`);
+            }
+
             if (!mod.id) {
                 mod.id = crypto.randomUUID()
             }
@@ -734,6 +741,9 @@ export class BsModsManagerService {
             this.prepareExternalModFolders(versionPath);
 
             // Extract the files to the installation folder
+            const data = await readFile(zipPath);
+            const zip = await JSZip.loadAsync(data);
+
             let sourcePath: string = "";
             let destinationPath: string = "";
             let deletePath: string = ""; // Delete existing from the other path
@@ -855,7 +865,7 @@ export class BsModsManagerService {
         }
 
         if (files.length === 1 && path.extname(files[0]) === ".zip") {
-            return this.installExternalModByZip(version, mod, await toZip(files[0]), files[0]);
+            return this.installExternalModByZip(version, mod, files[0]);
         }
 
         return this.installExternalModByMultipleFiles(version, mod, files);
