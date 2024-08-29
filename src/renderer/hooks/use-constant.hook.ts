@@ -9,5 +9,5 @@ export function useConstant<T>(fn: () => T): T {
         ref.current = { v: fn() };
     }
 
-    return ref.current.v;
+    return ref.current?.v;
 }

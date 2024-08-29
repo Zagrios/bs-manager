@@ -43,6 +43,7 @@ import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 import BeatWaitingImg from "../../../assets/images/apngs/beat-waiting.png";
 import { logRenderError } from "renderer";
 import { BSLauncherService } from "renderer/services/bs-launcher.service";
+import { SettingToogleSwitchGrid } from "renderer/components/settings/setting-toogle-switch-grid.component";
 
 export function SettingsPage() {
 
@@ -92,6 +93,8 @@ export function SettingsPage() {
     const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
     const [modelsDeepLinkEnabled, setModelsDeepLinkEnabled] = useState(false);
     const [hasDownloaderSession, setHasDownloaderSession] = useState(false);
+    const [hardwareAcceleration, setHardwareAcceleration] = useState(true);
+    const [useSymlink, setUseSymlink] = useState(false);
     const appVersion = useObservable(() => ipcService.sendV2("current-version"));
 
     const [isChangelogAvailable, setIsChangelogAvailable] = useState(true);
@@ -217,6 +220,14 @@ export function SettingsPage() {
                 });
             }
         });
+    };
+
+    const onChangeHardwareAcceleration = async (enabled: boolean): Promise<boolean> => {
+        if(enabled === hardwareAcceleration){ return false; }
+
+
+
+        return true;
     };
 
     const toogleShowSupporters = () => {
@@ -500,6 +511,14 @@ export function SettingsPage() {
                         </div>
                     </SettingContainer>
                 </SettingContainer>
+
+                <SettingContainer title="Advanced" description="Changes these stettings only if your are sure of what you are doing">
+                    <SettingToogleSwitchGrid items={[
+                        { checked: hardwareAcceleration, text: "Hadware Acceleration", desc: "Enable Hardware Acceleration to use your GPU and improve BSManager's performance. Turn this off if you're experiencing frame drops.", middleWare: onChangeHardwareAcceleration },
+                        { checked: useSymlink, text: "Use Symlink", desc: "Use Symlinks instead of Junctions to link folders. Turn this on only if you really need it.", onChange: () => {} },
+                    ]}/>
+                </SettingContainer>
+
                 <Tippy content={isChangelogAvailable ? t("pages.settings.changelogs.open") : t("pages.settings.changelogs.not-founds")} placement="left" className="font-bold bg-main-color-3">
                     <div className="!bg-light-main-color-1 dark:!bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5 hover:brightness-125 h-auto w-auto">
                         <BsmButton onClick={handleVersionClick} text={`v${appVersion}`} withBar={false} typeColor="none"/>
