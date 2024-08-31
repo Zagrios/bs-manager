@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import Tippy from "@tippyjs/react";
 import { useTranslation } from "renderer/hooks/use-translation.hook"
 
-import { ExternalMod, ExternalModFileVerify } from "shared/models/mods/mod.interface"
+import { useService } from "renderer/hooks/use-service.hook";
+import { NotificationService } from "renderer/services/notification.service";
+
+import { ExternalMod, ExternalModFileState, ExternalModFileVerify } from "shared/models/mods/mod.interface"
 import { ModalComponent, ModalExitCode } from "renderer/services/modale.service"
 
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
@@ -29,6 +32,8 @@ export const ExternalModModal: ModalComponent<ExternalMod, {
 }) => {
     const t = useTranslation();
 
+    const notificationService = useService(NotificationService);
+
     const [name, setName] = useState(data.name);
     const [version, setVersion] = useState(data.version || "");
     const [description, setDescription] = useState(data.description || "");
@@ -36,9 +41,69 @@ export const ExternalModModal: ModalComponent<ExternalMod, {
 
     const [nameError, setNameError] = useState("");
 
+    const getTooltipMessage = (file: ExternalModFileVerify) => {
+        switch (file.state) {
+            case ExternalModFileState.SAME_CONFLICT:
+                return t("modals.external-mod.file-exists");
+
+            case ExternalModFileState.LOCAL_CONFLICT:
+                return t("modals.external-mod.file-local-conflict");
+
+            case ExternalModFileState.API_CONFLICT:
+                return t("modals.external-mod.file-api-conflict", {
+                    mod: file.conflicts
+                });
+
+            default:
+                return "";
+        }
+    }
+
     useEffect(() => {
         setFiles(data.files);
     }, []);
+
+    const onSubmit = () => {
+        if (!name) {
+            setNameError("modals.external-mod.name-required");
+            return;
+        }
+
+        const mod: ExternalMod = {
+            name,
+            version,
+            description,
+            enabled: true,
+            files: files
+                .filter(file => file.state !== ExternalModFileState.API_CONFLICT)
+                .map(file => ({
+                    id: file.id,
+                    name: file.name,
+                    folder: file.folder,
+                    enabled: file.enabled
+                }))
+        };
+
+        let hasDll = false;
+        for (const file of mod.files) {
+            if (file.name.endsWith(".dll")) {
+                hasDll = true;
+                break;
+            }
+        }
+
+        if (!hasDll) {
+            notificationService.notifyError({
+                title: "notifications.mods.external-mod.titles.install-error",
+                desc: "notifications.mods.external-mod.msgs.verify-error"
+            });
+            resolver({ exitCode: ModalExitCode.CANCELED });
+            return;
+        }
+
+        resolver({ data: mod, exitCode: ModalExitCode.COMPLETED })
+    }
+
 
     const renderFiles = () => {
         return (
@@ -52,7 +117,10 @@ export const ExternalModModal: ModalComponent<ExternalMod, {
                     <>
                         <BsmCheckbox
                             className="w-5 h-5 z-[1] relative bg-inherit"
-                            checked={file.enabled}
+                            checked={file.state === ExternalModFileState.API_CONFLICT
+                                ? false
+                                : file.enabled}
+                            disabled={file.state === ExternalModFileState.API_CONFLICT}
                             onChange={() => {
                                 setFiles(files.map(editFile => {
                                     if (editFile.name === file.name) {
@@ -68,10 +136,10 @@ export const ExternalModModal: ModalComponent<ExternalMod, {
                         </h2>
 
                         <div>
-                            {file.conflicts &&
+                            {file.state !== ExternalModFileState.OK &&
                                 <Tippy
                                     className="!bg-main-color-1"
-                                    content={t("modals.external-mod.conflict-file")}
+                                    content={getTooltipMessage(file)}
                                     delay={[300, 0]}
                                     arrow={false}
                                 >
@@ -122,42 +190,6 @@ export const ExternalModModal: ModalComponent<ExternalMod, {
                 />
             </div>
         );
-    }
-
-    const onSubmit = () => {
-        if (!name) {
-            setNameError("modals.external-mod.name-required");
-            return;
-        }
-
-        const mod: ExternalMod = {
-            name,
-            version,
-            description,
-            enabled: true,
-            files: files.map(file => ({
-                id: file.id,
-                name: file.name,
-                folder: file.folder,
-                enabled: file.enabled
-            }))
-        };
-
-        let hasDll = false;
-        for (const file of mod.files) {
-            if (file.name.endsWith(".dll")) {
-                hasDll = true;
-                break;
-            }
-        }
-
-        if (!hasDll) {
-
-            resolver({ exitCode: ModalExitCode.CANCELED });
-            return;
-        }
-
-        resolver({ data: mod, exitCode: ModalExitCode.COMPLETED })
     }
 
     return (

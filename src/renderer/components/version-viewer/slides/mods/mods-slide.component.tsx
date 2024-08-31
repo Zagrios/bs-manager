@@ -45,6 +45,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
     const [modsExternalChanged, setModsExternalChanged] = useState([] as ExternalMod[]);
     const [moreInfoMod, setMoreInfoMod] = useState(null as Mod);
     const [reinstallAllMods, setReinstallAllMods] = useState(false);
+    const [verifyingFiles, setVerifyingFiles] = useState(false);
     const isOnline = useObservable(() => os.isOnline$);
     const installing = useObservable(() => modsManager.isInstalling$);
 
@@ -170,10 +171,19 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
             return Promise.resolve();
         }
 
+        const getInstalledExternalModsPromise = lastValueFrom(modsManager.getInstalledExternalMods(version))
+            .catch(error => {
+                notification.notifyError({
+                    title: "notifications.mods.get-installed-mods.titles.error",
+                    desc: error.message
+                });
+                return {};
+            });
+
         return Promise.all([
             lastValueFrom(modsManager.getAvailableMods(version)),
             lastValueFrom(modsManager.getInstalledMods(version)),
-            lastValueFrom(modsManager.getInstalledExternalMods(version)),
+            getInstalledExternalModsPromise,
         ]).then(([available, installed, installedExternal]) => {
             const defaultMods = installed?.length ? [] : configService.get<string[]>("default_mods" as DefaultConfigKey);
             setModsAvailable(() => modsToCategoryMap(available));
@@ -237,69 +247,82 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
     }, [modsAvailable]);
 
     const onFileDrop = async (fileList: FileList) => {
-        // Parse the current files with the server
-        const files: string[] = [];
-        for (let i = 0; i < fileList.length; ++i) {
-            files.push(fileList[i].path);
-        }
-        const verifiedFiles = await lastValueFrom(ipcService.sendV2(
-            "bs-mods.verify-external-mod-files",
-            { version, files }
-        ));
-        if (verifiedFiles.length === 0) {
+        try {
+            // Parse the current files with the server
+            const files: string[] = [];
+            for (let i = 0; i < fileList.length; ++i) {
+                files.push(fileList[i].path);
+            }
+
+            setVerifyingFiles(true);
+            const verifiedFiles = await lastValueFrom(ipcService.sendV2(
+                "bs-mods.verify-external-mod-files",
+                { version, files }
+            ));
+            setVerifyingFiles(false);
+
+            if (verifiedFiles.length === 0) {
+                notification.notifyError({
+                    title: "notifications.mods.external-mod.titles.install-error",
+                    desc: "notifications.mods.external-mod.msgs.verify-error"
+                });
+                return;
+            }
+
+            const conflictModIds = [...new Set(
+                verifiedFiles
+                    .map(file => file.conflicts)
+                    .filter(file => file)
+            )];
+
+            // Overwrite the existing mod
+            let existingMod: ExternalMod | undefined;
+            if (conflictModIds.length === 1) {
+                existingMod = modsExternal[conflictModIds[0]];
+            }
+
+            const modalResponse = await modals.openModal(ExternalModModal, { data: {
+                name: existingMod?.name || fileList[0].name,
+                version: existingMod?.version,
+                description: existingMod?.description,
+                files: verifiedFiles,
+                type: existingMod ? ExternalModModalType.EXISTING : ExternalModModalType.INSTALL
+            }});
+            if (modalResponse.exitCode !== ModalExitCode.COMPLETED) {
+                return;
+            }
+
+            if (existingMod) {
+                modalResponse.data.id = existingMod.id;
+            }
+
+            const externalMod = await lastValueFrom(ipcService.sendV2("bs-mods.install-external-mod", {
+                version,
+                mod: modalResponse.data,
+                files
+            }));
+            if (!externalMod.id) {
+                notification.notifyError({
+                    title: "notifications.mods.external-mod.titles.install-error",
+                    desc: "notifications.mods.external-mod.msgs.install-error"
+                });
+                return;
+            }
+
+            notification.notifySuccess({
+                title: "notifications.mods.external-mod.titles.install-success",
+                desc: "notifications.mods.external-mod.msgs.install-success",
+                duration: 10_000
+            });
+            setModsExternal({ ...modsExternal, [externalMod.id]: externalMod });
+        } catch (error: any) {
             notification.notifyError({
                 title: "notifications.mods.external-mod.titles.install-error",
-                desc: "notifications.mods.external-mod.msgs.verify-error"
+                desc: ["no-files-error"].includes(error?.code)
+                    ? `notifications.mods.external-mod.titles.${error.code}`
+                    : error.message
             });
-            return;
         }
-
-        const conflictModIds = [...new Set(
-            verifiedFiles
-                .map(file => file.conflicts)
-                .filter(file => file)
-        )];
-
-        // Overwrite the existing mod
-        let existingMod: ExternalMod | undefined;
-        if (conflictModIds.length === 1) {
-            existingMod = modsExternal[conflictModIds[0]];
-        }
-
-        const modalResponse = await modals.openModal(ExternalModModal, { data: {
-            name: existingMod?.name || fileList[0].name,
-            version: existingMod?.version,
-            description: existingMod?.description,
-            files: verifiedFiles,
-            type: existingMod ? ExternalModModalType.EXISTING : ExternalModModalType.INSTALL
-        }});
-        if (modalResponse.exitCode !== ModalExitCode.COMPLETED) {
-            return;
-        }
-
-        if (existingMod) {
-            modalResponse.data.id = existingMod.id;
-        }
-
-        const externalMod = await lastValueFrom(ipcService.sendV2("bs-mods.install-external-mod", {
-            version,
-            mod: modalResponse.data,
-            files
-        }));
-        if (!externalMod.id) {
-            notification.notifyError({
-                title: "notifications.mods.external-mod.titles.install-error",
-                desc: "notifications.mods.external-mod.msgs.install-error"
-            });
-            return;
-        }
-
-        notification.notifySuccess({
-            title: "notifications.mods.external-mod.titles.install-success",
-            desc: "notifications.mods.external-mod.msgs.install-success",
-            duration: 10_000
-        });
-        setModsExternal({ ...modsExternal, [externalMod.id]: externalMod });
     }
 
     const renderContent = () => {
@@ -328,6 +351,12 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
                     </div>
                 }
             >
+                {verifyingFiles &&
+                    <div
+                        className="absolute w-full h-full flex items-center justify-center z-[50] pointer-events-none"
+                        style={{ backgroundColor: "#000000CC" }}
+                    />
+                }
 
                 <div className="grow w-full min-h-0 p-0 pb-14 m-0">
                     <ModsGrid

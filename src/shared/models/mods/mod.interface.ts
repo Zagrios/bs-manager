@@ -52,7 +52,15 @@ export interface ExternalModFile {
     hash?: string;
 }
 
+export enum ExternalModFileState {
+    OK             = "ok",
+    SAME_CONFLICT  = "same",  // File already exists and same file hash
+    LOCAL_CONFLICT = "local", // File already exists but different file hash
+    API_CONFLICT   = "api",   // File conflicts with a defined Mod object
+}
+
 export interface ExternalModFileVerify extends ExternalModFile {
-    conflicts?: string;
+    state?: ExternalModFileState;
+    conflicts?: string; // name of the `Mod` or id of the `ExternalMod`
 }
 

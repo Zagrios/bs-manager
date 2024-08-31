@@ -457,6 +457,11 @@
             }
         },
         "mods": {
+            "get-installed-mods": {
+                "titles": {
+                    "error": "Get installed mods 😨"
+                }
+            },
             "install-mods": {
                 "titles": {
                     "success": "Mods instalados 🎉",
@@ -504,6 +509,7 @@
                     "update-success": "Custom mod has been updated.",
                     "verify-error": "Custom mod file/s does not contain any dll files.",
                     "install-error": "Custom mod file/s could not be installed.",
+                    "no-files-error": "Custom mod does not contain any files.",
                     "update-error": "Custom mod could not be updated."
                 }
             },
@@ -816,7 +822,9 @@
             "version": "Version",
             "description": "Description",
             "files": "Files",
-            "conflict-file": "Conflicting mod file",
+            "file-exists": "Mod file already exists",
+            "file-local-conflict": "Conflicting mod file",
+            "file-api-conflict": "Install {mod} mod instead",
             "install-button": "Install",
             "update-button": "Update"
         }
