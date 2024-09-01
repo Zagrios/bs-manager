@@ -6,6 +6,7 @@ import path from "path";
 import { copy, readlink } from "fs-extra";
 import { lastValueFrom } from "rxjs";
 import { noop } from "shared/helpers/function.helpers";
+import { StaticConfigurationService } from "./static-configuration.service";
 
 export class FolderLinkerService {
     private static instance: FolderLinkerService;
@@ -18,9 +19,20 @@ export class FolderLinkerService {
     }
 
     private readonly installLocationService = InstallationLocationService.getInstance();
+    private readonly staticConfig: StaticConfigurationService;
+
+    private linkingType: "junction" | "symlink" = "junction";
 
     private constructor() {
         this.installLocationService = InstallationLocationService.getInstance();
+        this.staticConfig = StaticConfigurationService.getInstance();
+
+        this.linkingType = this.staticConfig.get("use-symlinks") === true ? "symlink" : "junction";
+
+        this.staticConfig.$watch("use-symlinks").subscribe(({ newValue: useSymlink }) => {
+            this.linkingType = useSymlink === true ? "symlink" : "junction";
+            log.info(`Linking type set to ${this.linkingType}`);
+        });
     }
 
     private async sharedFolder(): Promise<string> {
@@ -51,6 +63,10 @@ export class FolderLinkerService {
         });
     }
 
+    private getLinkingType(): "junction" | undefined {
+        return this.linkingType === "junction" ? "junction" : undefined;
+    }
+
     public async linkFolder(folderPath: string, options?: LinkOptions): Promise<void> {
         const sharedPath = await this.getSharedFolder(folderPath, options?.intermediateFolder);
 
@@ -62,7 +78,9 @@ export class FolderLinkerService {
                 return;
             }
             await unlinkPath(folderPath);
-            return symlink(sharedPath, folderPath, "junction");
+
+            log.info(`Linking ${folderPath} to ${sharedPath}; type: ${this.linkingType}`);
+            return symlink(sharedPath, folderPath, this.getLinkingType());
         }
 
         await ensureFolderExist(sharedPath);
@@ -79,7 +97,8 @@ export class FolderLinkerService {
 
         await deleteFolder(folderPath);
 
-        return symlink(sharedPath, folderPath, "junction");
+        log.info(`Linking ${folderPath} to ${sharedPath}; type: ${this.linkingType}`);
+        return symlink(sharedPath, folderPath, this.getLinkingType());
     }
 
     public async unlinkFolder(folderPath: string, options?: UnlinkOptions): Promise<void> {

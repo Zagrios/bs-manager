@@ -1,7 +1,6 @@
 import path from "path";
 import { ensureDirSync, existsSync, readFile, writeFile } from "fs-extra";
 import { BehaviorSubject, Observable, catchError, filter, lastValueFrom, of, take, timeout } from "rxjs";
-import { ConfigurationService } from "../../configuration.service";
 import { RequestService } from "../../request.service";
 import { tryit } from "shared/helpers/error.helpers";
 import { CACHE_PATH, HTTP_STATUS_CODES } from "main/constants";
@@ -12,6 +11,7 @@ import { SongDetails } from "shared/models/maps/song-details-cache/song-details-
 import { inflate } from "pako";
 import { RawSongDetailsCache } from "shared/models/maps/song-details-cache/raw-song-details-cache.model";
 import { RawSongDetailsDeserializer } from "shared/models/maps/song-details-cache/raw-song-details-deserializer.class";
+import { StaticConfigurationService } from "main/services/static-configuration.service";
 
 export class SongDetailsCacheService {
 
@@ -32,7 +32,7 @@ export class SongDetailsCacheService {
     private readonly PROTO_CACHE_PATH = path.join(CACHE_PATH, "song-details-cache");
     private readonly etagKey = "song-details-cache-etag";
 
-    private readonly config: ConfigurationService;
+    private readonly staticConfig: StaticConfigurationService;
     private readonly request: RequestService;
     private readonly utils: UtilsService;
 
@@ -41,7 +41,7 @@ export class SongDetailsCacheService {
     private readonly _loaded$ = new BehaviorSubject<boolean>(null);
 
     private constructor(){
-        this.config = ConfigurationService.getInstance();
+        this.staticConfig = StaticConfigurationService.getInstance();
         this.request = RequestService.getInstance();
         this.utils = UtilsService.getInstance();
         this.loadCache()
@@ -49,10 +49,10 @@ export class SongDetailsCacheService {
 
     private async loadCache(): Promise<void> {
         const protoCacheExists = existsSync(this.PROTO_CACHE_PATH);
-        const etag = protoCacheExists ? this.config.get<string>(this.etagKey) : null;
+        const etag = protoCacheExists ? this.staticConfig.get(this.etagKey) : null;
 
         await this.downloadCacheFile(etag).then(etag => {
-            this.config.set(this.etagKey, etag);
+            this.staticConfig.set(this.etagKey, etag);
             log.info("SongDetailsCache downloaded");
             this.songDetailsIdIndex = this.createIdIndex(this.songDetailsCache);
             log.info("SongDetailsIdIndex created");

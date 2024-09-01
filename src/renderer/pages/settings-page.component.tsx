@@ -41,8 +41,13 @@ import { OculusIcon } from "renderer/components/svgs/icons/oculus-icon.component
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 import BeatWaitingImg from "../../../assets/images/apngs/beat-waiting.png";
+import BeatConflict from "../../../assets/images/apngs/beat-conflict.png";
 import { logRenderError } from "renderer";
 import { BSLauncherService } from "renderer/services/bs-launcher.service";
+import { SettingToogleSwitchGrid } from "renderer/components/settings/setting-toogle-switch-grid.component";
+import { BasicModal } from "renderer/components/modal/basic-modal.component";
+import { StaticConfigurationService } from "renderer/services/static-configuration.service";
+import { tryit } from "shared/helpers/error.helpers";
 
 export function SettingsPage() {
 
@@ -62,6 +67,7 @@ export function SettingsPage() {
     const modelsManager = useService(ModelsManagerService);
     const versionLinker = useService(VersionFolderLinkerService);
     const autoUpdater = useService(AutoUpdaterService);
+    const staticConfig = useService(StaticConfigurationService);
 
     const { firstColor, secondColor } = useThemeColor();
 
@@ -92,6 +98,8 @@ export function SettingsPage() {
     const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
     const [modelsDeepLinkEnabled, setModelsDeepLinkEnabled] = useState(false);
     const [hasDownloaderSession, setHasDownloaderSession] = useState(false);
+    const [hardwareAccelerationEnabled, setHardwareAccelerationEnabled] = useState(true);
+    const [useSymlink, setUseSymlink] = useState(false);
     const appVersion = useObservable(() => ipcService.sendV2("current-version"));
 
     const [isChangelogAvailable, setIsChangelogAvailable] = useState(true);
@@ -103,6 +111,9 @@ export function SettingsPage() {
         mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
+
+        staticConfig.get("disable-hadware-acceleration").then(disabled =>setHardwareAccelerationEnabled(() => disabled !== true));
+        staticConfig.get("use-symlinks").then(useSymlinks => setUseSymlink(() => useSymlinks));
     }, []);
 
     const allDeepLinkEnabled = mapDeepLinksEnabled && playlistsDeepLinkEnabled && modelsDeepLinkEnabled;
@@ -218,6 +229,66 @@ export function SettingsPage() {
             }
         });
     };
+
+    const onChangeHardwareAcceleration = async (newHardwareAccelerationEnabled: boolean) => {
+        if(newHardwareAccelerationEnabled === hardwareAccelerationEnabled){ return; }
+
+        const res = await modalService.openModal(BasicModal, { data: {
+            title: "pages.settings.advanced.hardware-acceleration.modal.title",
+            body: "pages.settings.advanced.hardware-acceleration.modal.body",
+            image: BeatConflict,
+            buttons: [
+                { id: "cancel", text: "misc.cancel", type: "cancel", isCancel: true },
+                { id: "confirm", text: "pages.settings.advanced.hardware-acceleration.modal.confirm-btn", type: "error" }
+            ]
+        }});
+
+        if(res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm"){ return; }
+
+        const { error } = await tryit(() => staticConfig.set("disable-hadware-acceleration", !newHardwareAccelerationEnabled));
+
+        if(error){
+            notificationService.notifyError({ title: "notifications.types.error", desc: "pages.settings.advanced.hardware-acceleration.error-notification.message" });
+            setHardwareAccelerationEnabled(() => !newHardwareAccelerationEnabled);
+                return;
+        }
+
+        setHardwareAccelerationEnabled(() => newHardwareAccelerationEnabled);
+
+        if(!progressBarService.require()){
+            return;
+        }
+
+        await lastValueFrom(ipcService.sendV2("restart-app"));
+    };
+
+    const onChangeUseSymlinks = async (newUseSymlink: boolean) => {
+
+        if(newUseSymlink === useSymlink){ return; }
+
+        if(newUseSymlink){
+            const res = await modalService.openModal(BasicModal, { data: {
+                title: "pages.settings.advanced.use-symlinks.modal.title",
+                body: "pages.settings.advanced.use-symlinks.modal.body",
+                image: BeatConflict,
+                buttons: [
+                    { id: "cancel", text: "misc.cancel", type: "cancel", isCancel: true },
+                    { id: "confirm", text: "pages.settings.advanced.use-symlinks.modal.confirm-btn", type: "error" }
+                ]
+            }});
+
+            if(res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm"){ return; }
+        }
+
+        const { error } = await tryit(() => staticConfig.set("use-symlinks", newUseSymlink));
+
+        if(error){
+            notificationService.notifyError({ title: "notifications.types.error", desc: "pages.settings.advanced.use-symlinks.error-notification.message" });
+            return;
+        }
+
+        setUseSymlink(() => newUseSymlink);
+    }
 
     const toogleShowSupporters = () => {
         setShowSupporters(show => !show);
@@ -500,6 +571,14 @@ export function SettingsPage() {
                         </div>
                     </SettingContainer>
                 </SettingContainer>
+
+                <SettingContainer title="pages.settings.advanced.title" description="pages.settings.advanced.description">
+                    <SettingToogleSwitchGrid items={[
+                        { checked: hardwareAccelerationEnabled, text: t("pages.settings.advanced.hardware-acceleration.title"), desc: t("pages.settings.advanced.hardware-acceleration.description"), onChange: onChangeHardwareAcceleration },
+                        { checked: useSymlink, text: t("pages.settings.advanced.use-symlinks.title"), desc: t("pages.settings.advanced.use-symlinks.description"), onChange: onChangeUseSymlinks },
+                    ]}/>
+                </SettingContainer>
+
                 <Tippy content={isChangelogAvailable ? t("pages.settings.changelogs.open") : t("pages.settings.changelogs.not-founds")} placement="left" className="font-bold bg-main-color-3">
                     <div className="!bg-light-main-color-1 dark:!bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5 hover:brightness-125 h-auto w-auto">
                         <BsmButton onClick={handleVersionClick} text={`v${appVersion}`} withBar={false} typeColor="none"/>

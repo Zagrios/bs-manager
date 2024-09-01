@@ -201,6 +201,34 @@
             "changelogs": {
                 "open" : "🚀 Jetez un œil au Changelog !",
                 "not-founds": "😕 Oups, Changelog introuvable !"
+            },
+            "advanced": {
+                "title": "Avancés",
+                "description": "Paramètres avancés pour BSManager.",
+                "hardware-acceleration": {
+                    "title": "Accélération matérielle",
+                    "description": "Activez l'accélération matérielle pour utiliser votre GPU et améliorer les performances de BSManager. Désactivez cette option si vous rencontrez des chutes d'IPS.",
+                    "modal": {
+                        "title": "Redémarrage nécessaire",
+                        "body": "Changer le paramètre d'accélération matérielle va quitter et relancer BSManager. Êtes-vous sûr de vouloir continuer ?",
+                        "confirm-btn": "Oui, je suis sûr"
+                    },
+                    "error-notification": {
+                        "message": "Une erreur s'est produite, impossible de désactiver l'accélération matérielle."
+                    }
+                },
+                "use-symlinks": {
+                    "title": "Utiliser des liens symboliques",
+                    "description": "Utilisez des liens symboliques au lieu de jonctions pour lier des dossiers. Activez cette option uniquement si vous en avez besoin.",
+                    "modal": {
+                        "title": "Permissions des liens symboliques",
+                        "body": "Lors de la création de liens symboliques, BSManager nécessitera des privilèges administrateur ou le mode développeur activé sur votre système. Êtes-vous sûr de vouloir continuer ?",
+                        "confirm-btn": "Oui, je suis sûr"
+                    },
+                    "error-notification": {
+                        "message": "Une erreur s'est produite, impossible de changer les paramètres des liens symboliques."
+                    }
+                }
             }
         }
     },

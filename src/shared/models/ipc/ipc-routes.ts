@@ -19,6 +19,7 @@ import { SystemNotificationOptions } from "../notification/system-notification.m
 import { Supporter } from "../supporters";
 import { AppWindow } from "../window-manager/app-window.model";
 import { LocalBPList, LocalBPListsDetails } from "../playlists/local-playlist.models";
+import { StaticConfigGetIpcRequestResponse, StaticConfigKeys, StaticConfigSetIpcRequest } from "main/services/static-configuration.service";
 
 export type IpcReplier<T> = (data: Observable<T>) => void;
 
@@ -124,6 +125,7 @@ export interface IpcChannelMapping {
     "open-logs": { request: void, response: string };
     "notify-system": { request: SystemNotificationOptions, response: void };
     "view-path-in-explorer": { request: string, response: void };
+    "restart-app": { request: void, response: void };
 
     /* ** supporters-ipcs ** */
     "get-supporters": { request: void, response: Supporter[] };
@@ -135,6 +137,10 @@ export interface IpcChannelMapping {
     "unmaximise-window": { request: void, response: void };
     "open-window-then-close-all": { request: AppWindow, response: void };
     "open-window-or-focus": { request: AppWindow, response: void };
+
+    /* ** static-configuration.ipcs ** */
+    "static-configuration.get": StaticConfigGetIpcRequestResponse<StaticConfigKeys>;
+    "static-configuration.set": StaticConfigSetIpcRequest<StaticConfigKeys>;
 
     /* ** OTHERS (if your IPC channel is not in a "-ipcs" file, put it here) ** */
     "shortcut-launch-options": { request: void, response: LaunchOption };

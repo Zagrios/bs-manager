@@ -153,7 +153,7 @@ export async function copyDirectoryWithJunctions(src: string, dest: string, opti
             const symlinkTarget = await readlink(sourcePath);
             const relativePath = path.relative(src, symlinkTarget);
             const newTarget = path.join(dest, relativePath);
-            await symlink(newTarget, destinationPath, "junction");
+            await symlink(newTarget, destinationPath, "junction"); // Only junction to avoid right issues while copying content of BSManager folder
         }
     }
 }

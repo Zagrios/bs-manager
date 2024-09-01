@@ -206,6 +206,34 @@
             "changelogs": {
                 "open" : "🚀 Check Out the Changelog!",
                 "not-founds": "😕 Oops, No Changelog Here!"
+            },
+            "advanced": {
+                "title": "Advanced",
+                "description": "Advanced settings for BSManager.",
+                "hardware-acceleration": {
+                    "title": "Hardware Acceleration",
+                    "description": "Enable Hardware Acceleration to use your GPU and improve BSManager's performance. Turn this off if you're experiencing frame drops.",
+                    "modal": {
+                        "title": "Restart Needed",
+                        "body": "Changing hardware acceleration setting will quit and re-launch BSManager. Are you sure you want to do this?",
+                        "confirm-btn": "Yes I'm sure"
+                    },
+                    "error-notification": {
+                        "message": "An error occur, unable to disable hardware acceleration."
+                    }
+                },
+                "use-symlinks": {
+                    "title": "Use Symlinks",
+                    "description": "Use Symlinks instead of Junctions to link folders. Turn this on only if you really need it.",
+                    "modal": {
+                        "title": "Symlink Permissions",
+                        "body": "When creating symlinks, BSManager will require administrator privileges or developer mode enabled on your system. Are you sure you want to continue?",
+                        "confirm-btn": "Yes I'm sure"
+                    },
+                    "error-notification": {
+                        "message": "An error occur, unable to change symlinks settings."
+                    }
+                }
             }
         }
     },
