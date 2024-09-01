@@ -5,7 +5,6 @@ type Item = {
     desc?: string;
     checked?: boolean;
     onChange?: (isChecked: boolean) => void;
-    middleWare?: (newState: boolean) => boolean|Promise<boolean>;
 };
 
 type Props = {
@@ -26,7 +25,7 @@ export function SettingToogleSwitchGrid({ items }: Props) {
                         <h2 className="font-bold">{item.text}</h2>
                         <p className="text-sm text-gray-600 dark:text-gray-400">{item.desc}</p>
                     </div>
-                    <ToogleSwitch checked={item.checked} className="shrink-0 h-7 w-12" onChange={checked => handleItemChange(item, checked)} middleWare={item.middleWare}/>
+                    <ToogleSwitch checked={item.checked} className="shrink-0 h-7 w-12" onChange={checked => handleItemChange(item, checked)}/>
                 </div>
             ))}
         </div>

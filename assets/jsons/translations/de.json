@@ -201,6 +201,34 @@
             "changelogs": {
                 "open" : "🚀 Neues im Changelog entdecken!",
                 "not-founds": "😕 Hoppla, kein Changelog zu sehen!"
+            },
+            "advanced": {
+                "title": "Erweiterte",
+                "description": "Erweiterte Einstellungen für BSManager.",
+                "hardware-acceleration": {
+                    "title": "Hardware-Beschleunigung",
+                    "description": "Aktivieren Sie die Hardware-Beschleunigung, um Ihre GPU zu nutzen und die Leistung von BSManager zu verbessern. Deaktivieren Sie diese Option, wenn Sie Frame-Drops erleben.",
+                    "modal": {
+                        "title": "Neustart erforderlich",
+                        "body": "Das Ändern der Hardware-Beschleunigungseinstellung wird BSManager beenden und neu starten. Sind Sie sicher, dass Sie dies tun möchten?",
+                        "confirm-btn": "Ja, ich bin sicher"
+                    },
+                    "error-notification": {
+                        "message": "Ein Fehler ist aufgetreten, die Hardware-Beschleunigung kann nicht deaktiviert werden."
+                    }
+                },
+                "use-symlinks": {
+                    "title": "Symbolische Links verwenden",
+                    "description": "Verwenden Sie symbolische Links anstelle von Verknüpfungen, um Ordner zu verknüpfen. Aktivieren Sie dies nur, wenn Sie es wirklich benötigen.",
+                    "modal": {
+                        "title": "Berechtigungen für symbolische Links",
+                        "body": "Beim Erstellen symbolischer Links benötigt BSManager Administratorrechte oder den aktivierten Entwicklermodus auf Ihrem System. Sind Sie sicher, dass Sie fortfahren möchten?",
+                        "confirm-btn": "Ja, ich bin sicher"
+                    },
+                    "error-notification": {
+                        "message": "Ein Fehler ist aufgetreten, die Einstellungen für symbolische Links können nicht geändert werden."
+                    }
+                }
             }
         }
     },

@@ -201,6 +201,34 @@
             "changelogs": {
                 "open" : "🚀 探索更新日志！",
                 "not-founds": "😕 哎呀，找不到更新日志！"
+            },
+            "advanced": {
+                "title": "高级设置",
+                "description": "BSManager的高级设置。",
+                "hardware-acceleration": {
+                    "title": "硬件加速",
+                    "description": "启用硬件加速以使用您的GPU并提高BSManager的性能。如果您遇到帧丢失，请关闭此功能。",
+                    "modal": {
+                        "title": "需要重启",
+                        "body": "更改硬件加速设置将退出并重新启动BSManager。您确定要这样做吗？",
+                        "confirm-btn": "是的，我确定"
+                    },
+                    "error-notification": {
+                        "message": "发生错误，无法禁用硬件加速。"
+                    }
+                },
+                "use-symlinks": {
+                    "title": "使用符号链接",
+                    "description": "使用符号链接而不是联接来链接文件夹。仅在确实需要时才启用此功能。",
+                    "modal": {
+                        "title": "符号链接权限",
+                        "body": "创建符号链接时，BSManager将需要管理员权限或启用开发者模式。您确定要继续吗？",
+                        "confirm-btn": "是的，我确定"
+                    },
+                    "error-notification": {
+                        "message": "发生错误，无法更改符号链接设置。"
+                    }
+                }
             }
         }
     },

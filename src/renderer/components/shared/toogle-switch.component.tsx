@@ -1,10 +1,8 @@
-import { useEffect, useMemo, useState } from "react"
+import { useMemo } from "react"
 import { getCorrectTextColor } from "renderer/helpers/correct-text-color";
 import { cn } from "renderer/helpers/css-class.helpers";
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
-import { noop } from "shared/helpers/function.helpers";
-import { isPromise } from "shared/helpers/promise.helpers";
 
 type Props = {
     checked?: boolean;
@@ -17,13 +15,11 @@ type Props = {
     }
     bgColor?: string;
     onChange?: (isChecked: boolean) => void;
-    middleWare?: (newState: boolean) => boolean|Promise<boolean>;
 }
 
-export function ToogleSwitch({ checked, className, classNames, bgColor, onChange, middleWare }: Props) {
+export function ToogleSwitch({ checked, className, classNames, bgColor, onChange }: Props) {
 
     const uuid = useConstant(() => crypto.randomUUID());
-    const [isChecked, setIsChecked] = useState(!!checked);
     const { firstColor } = useThemeColor();
     const backgroundColor = useMemo(() => bgColor ?? firstColor, [bgColor, firstColor]);
     const dotColor = useMemo(() => {
@@ -33,47 +29,17 @@ export function ToogleSwitch({ checked, className, classNames, bgColor, onChange
         return getCorrectTextColor(dotColor)
     }, [dotColor]);
 
-    useEffect(() => {
-        setIsChecked(checked);
-    }, [checked]);
-
     const handleCheckboxChange = () => {
-        if (middleWare) {
-            setIsChecked(prev => {
-                const newState = !prev;
-                const result = middleWare(newState);
-                if (isPromise(result)) {
-                    result.then(shouldChange => {
-                        if (shouldChange) {
-                            setIsChecked(() => {
-                                onChange?.(newState);
-                                return newState;
-                            });
-                        }
-                    }).catch(noop);
-                } else if (result) {
-                    setIsChecked(() => {
-                        onChange?.(newState);
-                        return newState;
-                    });
-                }
-                return prev;
-            });
-        } else {
-            setIsChecked(prev => {
-                onChange?.(!prev);
-                return !prev;
-            });
-        }
+        onChange?.(!checked);
     }
 
     return (
         <label className={cn("flex cursor-pointer select-none items-center h-8 w-14", className, classNames?.container)} htmlFor={uuid}>
-            <div className='relative size-full rounded-full p-1 bg-neutral-500 transition-colors duration-200' style={{ backgroundColor: isChecked && backgroundColor }}>
+            <div className='relative size-full rounded-full p-1 bg-neutral-500 transition-colors duration-200' style={{ backgroundColor: checked && backgroundColor }}>
                 <input
                     id={uuid}
                     type='checkbox'
-                    checked={isChecked}
+                    checked={checked}
                     onChange={handleCheckboxChange}
                     className='sr-only peer'
                 />
@@ -81,7 +47,7 @@ export function ToogleSwitch({ checked, className, classNames, bgColor, onChange
                     className={cn("dot top-0 left-0 flex h-full aspect-square items-center justify-center rounded-full transition duration-200 peer-checked:translate-x-full", classNames?.dot)}
                     style={{ backgroundColor:  dotColor }}
                 >
-                    {isChecked && <span className="text-current" style={{ color: textColor }}>
+                    {checked && <span className="text-current" style={{ color: textColor }}>
                         <svg
                             width='11'
                             height='8'
@@ -96,7 +62,7 @@ export function ToogleSwitch({ checked, className, classNames, bgColor, onChange
                             />
                         </svg>
                     </span>}
-                    {!isChecked && <span className="text-current" style={{ color: textColor }}>
+                    {!checked && <span className="text-current" style={{ color: textColor }}>
                         <svg
                             className='h-4 w-4 stroke-current'
                             fill='black'

@@ -201,6 +201,34 @@
             "changelogs": {
                 "open" : "🚀 ¡Descubre lo nuevo en el Changelog!",
                 "not-founds": "😕 Uy, ¡Changelog no encontrado!"
+            },
+            "advanced": {
+                "title": "Avanzados",
+                "description": "Configuraciones avanzadas para BSManager.",
+                "hardware-acceleration": {
+                    "title": "Aceleración de hardware",
+                    "description": "Habilite la aceleración de hardware para usar su GPU y mejorar el rendimiento de BSManager. Desactive esta opción si experimenta caídas de fotogramas.",
+                    "modal": {
+                        "title": "Reinicio necesario",
+                        "body": "Cambiar la configuración de aceleración de hardware cerrará y reiniciará BSManager. ¿Estás seguro de que quieres hacer esto?",
+                        "confirm-btn": "Sí, estoy seguro"
+                    },
+                    "error-notification": {
+                        "message": "Ocurrió un error, no se puede desactivar la aceleración de hardware."
+                    }
+                },
+                "use-symlinks": {
+                    "title": "Usar enlaces simbólicos",
+                    "description": "Utilice enlaces simbólicos en lugar de uniones para enlazar carpetas. Actívelo solo si realmente lo necesita.",
+                    "modal": {
+                        "title": "Permisos de enlace simbólico",
+                        "body": "Al crear enlaces simbólicos, BSManager requerirá privilegios de administrador o el modo desarrollador activado en su sistema. ¿Estás seguro de que quieres continuar?",
+                        "confirm-btn": "Sí, estoy seguro"
+                    },
+                    "error-notification": {
+                        "message": "Ocurrió un error, no se pueden cambiar los ajustes de los enlaces simbólicos."
+                    }
+                }
             }
         }
     },

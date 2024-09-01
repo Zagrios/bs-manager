@@ -112,7 +112,7 @@ export function SettingsPage() {
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
 
-        staticConfig.get("disable-hadware-acceleration").then(disabled =>setHardwareAccelerationEnabled(() => disabled === false));
+        staticConfig.get("disable-hadware-acceleration").then(disabled =>setHardwareAccelerationEnabled(() => disabled !== true));
         staticConfig.get("use-symlinks").then(useSymlinks => setUseSymlink(() => useSymlinks));
     }, []);
 
@@ -230,37 +230,30 @@ export function SettingsPage() {
         });
     };
 
-    const onAboutToChangeHardwareAcceleration = async (enabled: boolean): Promise<boolean> => {
-        if(enabled === hardwareAccelerationEnabled){ return false; }
+    const onChangeHardwareAcceleration = async (newHardwareAccelerationEnabled: boolean) => {
+        if(newHardwareAccelerationEnabled === hardwareAccelerationEnabled){ return; }
 
         const res = await modalService.openModal(BasicModal, { data: {
-            title: "Restart Needed",
-            body: "Changing hardware acceleration setting will quit and re-launch BSManager. Are you sure you want to do this?",
+            title: "pages.settings.advanced.hardware-acceleration.modal.title",
+            body: "pages.settings.advanced.hardware-acceleration.modal.body",
             image: BeatConflict,
             buttons: [
-                { id: "cancel", text: "Cancel", type: "cancel", isCancel: true },
-                { id: "confirm", text: "Yes I'm sure", type: "error" }
+                { id: "cancel", text: "misc.cancel", type: "cancel", isCancel: true },
+                { id: "confirm", text: "pages.settings.advanced.hardware-acceleration.modal.confirm-btn", type: "error" }
             ]
         }});
 
-        if(res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm"){
-            return false;
-        }
+        if(res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm"){ return; }
 
-
-        return true;
-    };
-
-    const onChangeHardwareAcceleration = async (enabled: boolean) => {
-
-        const { error } = await tryit(() => staticConfig.set("disable-hadware-acceleration", !enabled));
+        const { error } = await tryit(() => staticConfig.set("disable-hadware-acceleration", !newHardwareAccelerationEnabled));
 
         if(error){
-            notificationService.notifyError({ title: "notifications.types.error", desc: "An error occur, unable to disable hardware acceleration" });
-            return;
+            notificationService.notifyError({ title: "notifications.types.error", desc: "pages.settings.advanced.hardware-acceleration.error-notification.message" });
+            setHardwareAccelerationEnabled(() => !newHardwareAccelerationEnabled);
+                return;
         }
 
-        setHardwareAccelerationEnabled(() => enabled);
+        setHardwareAccelerationEnabled(() => newHardwareAccelerationEnabled);
 
         if(!progressBarService.require()){
             return;
@@ -269,36 +262,32 @@ export function SettingsPage() {
         await lastValueFrom(ipcService.sendV2("restart-app"));
     };
 
-    const onAboutToChangeUseSymlinks = async (newUseSymlink: boolean): Promise<boolean> => {
-        if(newUseSymlink === useSymlink){ return false; }
-        if(!newUseSymlink){ return true; } // If we are disabling symlinks, no need to inform about admin rights
+    const onChangeUseSymlinks = async (newUseSymlink: boolean) => {
 
-        const res = await modalService.openModal(BasicModal, { data: {
-            title: "Permission Needed",
-            body: "In order to create symlinks, BSManager will need to run as administrator or your system will need to have developer mode enabled. Are you sure you want to do this?",
-            image: BeatConflict,
-            buttons: [
-                { id: "cancel", text: "Cancel", type: "cancel", isCancel: true },
-                { id: "confirm", text: "Yes I'm sure", type: "error" }
-            ]
-        }});
+        if(newUseSymlink === useSymlink){ return; }
 
-        if(res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm"){
-            return false;
+        if(newUseSymlink){
+            const res = await modalService.openModal(BasicModal, { data: {
+                title: "pages.settings.advanced.use-symlinks.modal.title",
+                body: "pages.settings.advanced.use-symlinks.modal.body",
+                image: BeatConflict,
+                buttons: [
+                    { id: "cancel", text: "misc.cancel", type: "cancel", isCancel: true },
+                    { id: "confirm", text: "pages.settings.advanced.use-symlinks.modal.confirm-btn", type: "error" }
+                ]
+            }});
+
+            if(res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm"){ return; }
         }
 
-        return true;
-    }
-
-    const onChangeUseSymlinks = async (useSymlink: boolean) => {
-        const { error } = await tryit(() => staticConfig.set("use-symlinks", useSymlink));
+        const { error } = await tryit(() => staticConfig.set("use-symlinks", newUseSymlink));
 
         if(error){
-            notificationService.notifyError({ title: "notifications.types.error", desc: "An error occur, unable to change symlinks settings" });
+            notificationService.notifyError({ title: "notifications.types.error", desc: "pages.settings.advanced.use-symlinks.error-notification.message" });
             return;
         }
 
-        setUseSymlink(() => useSymlink);
+        setUseSymlink(() => newUseSymlink);
     }
 
     const toogleShowSupporters = () => {
@@ -583,10 +572,10 @@ export function SettingsPage() {
                     </SettingContainer>
                 </SettingContainer>
 
-                <SettingContainer title="Advanced" description="Changes these stettings only if your are sure of what you are doing">
+                <SettingContainer title="pages.settings.advanced.title" description="pages.settings.advanced.description">
                     <SettingToogleSwitchGrid items={[
-                        { checked: hardwareAccelerationEnabled, text: "Hadware Acceleration", desc: "Enable Hardware Acceleration to use your GPU and improve BSManager's performance. Turn this off if you're experiencing frame drops.", middleWare: onAboutToChangeHardwareAcceleration, onChange: onChangeHardwareAcceleration },
-                        { checked: useSymlink, text: "Use Symlinks", desc: "Use Symlinks instead of Junctions to link folders. Turn this on only if you really need it.", middleWare: onAboutToChangeUseSymlinks, onChange: onChangeUseSymlinks },
+                        { checked: hardwareAccelerationEnabled, text: t("pages.settings.advanced.hardware-acceleration.title"), desc: t("pages.settings.advanced.hardware-acceleration.description"), onChange: onChangeHardwareAcceleration },
+                        { checked: useSymlink, text: t("pages.settings.advanced.use-symlinks.title"), desc: t("pages.settings.advanced.use-symlinks.description"), onChange: onChangeUseSymlinks },
                     ]}/>
                 </SettingContainer>
 

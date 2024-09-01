@@ -28,10 +28,10 @@ export const BasicModal: ModalComponent<BasicModalOptions["buttons"][0]["id"], B
     }
 
     return (
-        <form className="text-gray-800 dark:text-gray-200">
+        <form className="text-gray-900 dark:text-white">
             <h1 className="text-3xl uppercase tracking-wide w-full text-center">{t(title)}</h1>
             <BsmImage className="mx-auto h-24" image={image} />
-            { body && <p className="max-w-sm w-full">{t(body)}</p> }
+            { body && <p className="w-full">{t(body)}</p> }
             <div className={cn("grid gap-2 mt-4")} style={{ gridAutoFlow: buttonsLayout, ...(buttonsLayout === "row" ? { gridTemplateRows: `repeat(${buttons.length}, 1fr)` } : { gridTemplateColumns: `repeat(${buttons.length}, 1fr)` }) }}>
                 {buttons.map(button => (
                     <BsmButton key={button.id} typeColor={button.type} className="h-8 rounded-md text-center flex justify-center items-center" onClick={() => handleClick(button)} withBar={false} text={button.text} />
