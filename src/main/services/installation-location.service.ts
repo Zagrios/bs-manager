@@ -1,9 +1,9 @@
 import path from "path";
 import { app } from "electron";
-import ElectronStore from "electron-store";
 import { copyDirectoryWithJunctions, deleteFolder, ensureFolderExist } from "../helpers/fs.helpers";
 import { tryit } from "../../shared/helpers/error.helpers";
 import { pathExistsSync } from "fs-extra";
+import { StaticConfigurationService } from "./static-configuration.service";
 
 export class InstallationLocationService {
     private static instance: InstallationLocationService;
@@ -23,15 +23,15 @@ export class InstallationLocationService {
 
     private readonly STORE_INSTALLATION_PATH_KEY = "installation-folder";
 
-    private readonly installPathConfig: ElectronStore;
+    private readonly staticConfig: StaticConfigurationService;
     private readonly updateListeners: Set<Listener> = new Set();
 
     private _installationDirectory: string;
 
     private constructor() {
-        this.installPathConfig = new ElectronStore({ watch: true });
+        this.staticConfig = StaticConfigurationService.getInstance();
 
-        this.installPathConfig.onDidChange(this.STORE_INSTALLATION_PATH_KEY, () => {
+        this.staticConfig.$watch(this.STORE_INSTALLATION_PATH_KEY).subscribe(() => {
             this.triggerListeners();
         });
     }
@@ -48,7 +48,7 @@ export class InstallationLocationService {
         await copyDirectoryWithJunctions(oldDir, path.join(newDir, this.INSTALLATION_FOLDER), { overwrite: true });
 
         this._installationDirectory = newDir;
-        this.installPathConfig.set(this.STORE_INSTALLATION_PATH_KEY, newDir);
+        this.staticConfig.set(this.STORE_INSTALLATION_PATH_KEY, newDir);
 
         deleteFolder(oldDir);
 
@@ -66,8 +66,8 @@ export class InstallationLocationService {
                 return this._installationDirectory;
             }
 
-            if(this.installPathConfig.has(this.STORE_INSTALLATION_PATH_KEY)) {
-                return this.installPathConfig.get(this.STORE_INSTALLATION_PATH_KEY) as string;
+            if(this.staticConfig.has(this.STORE_INSTALLATION_PATH_KEY)) {
+                return this.staticConfig.get(this.STORE_INSTALLATION_PATH_KEY) as string;
             }
 
             const { result: oldPath } = tryit(() => path.join(app.getPath("documents"), this.INSTALLATION_FOLDER));

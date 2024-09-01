@@ -41,9 +41,13 @@ import { OculusIcon } from "renderer/components/svgs/icons/oculus-icon.component
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 import BeatWaitingImg from "../../../assets/images/apngs/beat-waiting.png";
+import BeatConflict from "../../../assets/images/apngs/beat-conflict.png";
 import { logRenderError } from "renderer";
 import { BSLauncherService } from "renderer/services/bs-launcher.service";
 import { SettingToogleSwitchGrid } from "renderer/components/settings/setting-toogle-switch-grid.component";
+import { BasicModal } from "renderer/components/modal/basic-modal.component";
+import { StaticConfigurationService } from "renderer/services/static-configuration.service";
+import { tryit } from "shared/helpers/error.helpers";
 
 export function SettingsPage() {
 
@@ -63,6 +67,7 @@ export function SettingsPage() {
     const modelsManager = useService(ModelsManagerService);
     const versionLinker = useService(VersionFolderLinkerService);
     const autoUpdater = useService(AutoUpdaterService);
+    const staticConfig = useService(StaticConfigurationService);
 
     const { firstColor, secondColor } = useThemeColor();
 
@@ -93,7 +98,7 @@ export function SettingsPage() {
     const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
     const [modelsDeepLinkEnabled, setModelsDeepLinkEnabled] = useState(false);
     const [hasDownloaderSession, setHasDownloaderSession] = useState(false);
-    const [hardwareAcceleration, setHardwareAcceleration] = useState(true);
+    const [hardwareAccelerationEnabled, setHardwareAccelerationEnabled] = useState(true);
     const [useSymlink, setUseSymlink] = useState(false);
     const appVersion = useObservable(() => ipcService.sendV2("current-version"));
 
@@ -106,6 +111,9 @@ export function SettingsPage() {
         mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
+
+        staticConfig.get("disable-hadware-acceleration").then(disabled =>setHardwareAccelerationEnabled(() => disabled === false));
+        staticConfig.get("use-symlinks").then(useSymlinks => setUseSymlink(() => useSymlinks));
     }, []);
 
     const allDeepLinkEnabled = mapDeepLinksEnabled && playlistsDeepLinkEnabled && modelsDeepLinkEnabled;
@@ -222,13 +230,76 @@ export function SettingsPage() {
         });
     };
 
-    const onChangeHardwareAcceleration = async (enabled: boolean): Promise<boolean> => {
-        if(enabled === hardwareAcceleration){ return false; }
+    const onAboutToChangeHardwareAcceleration = async (enabled: boolean): Promise<boolean> => {
+        if(enabled === hardwareAccelerationEnabled){ return false; }
 
+        const res = await modalService.openModal(BasicModal, { data: {
+            title: "Restart Needed",
+            body: "Changing hardware acceleration setting will quit and re-launch BSManager. Are you sure you want to do this?",
+            image: BeatConflict,
+            buttons: [
+                { id: "cancel", text: "Cancel", type: "cancel", isCancel: true },
+                { id: "confirm", text: "Yes I'm sure", type: "error" }
+            ]
+        }});
+
+        if(res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm"){
+            return false;
+        }
 
 
         return true;
     };
+
+    const onChangeHardwareAcceleration = async (enabled: boolean) => {
+
+        const { error } = await tryit(() => staticConfig.set("disable-hadware-acceleration", !enabled));
+
+        if(error){
+            notificationService.notifyError({ title: "notifications.types.error", desc: "An error occur, unable to disable hardware acceleration" });
+            return;
+        }
+
+        setHardwareAccelerationEnabled(() => enabled);
+
+        if(!progressBarService.require()){
+            return;
+        }
+
+        await lastValueFrom(ipcService.sendV2("restart-app"));
+    };
+
+    const onAboutToChangeUseSymlinks = async (newUseSymlink: boolean): Promise<boolean> => {
+        if(newUseSymlink === useSymlink){ return false; }
+        if(!newUseSymlink){ return true; } // If we are disabling symlinks, no need to inform about admin rights
+
+        const res = await modalService.openModal(BasicModal, { data: {
+            title: "Permission Needed",
+            body: "In order to create symlinks, BSManager will need to run as administrator or your system will need to have developer mode enabled. Are you sure you want to do this?",
+            image: BeatConflict,
+            buttons: [
+                { id: "cancel", text: "Cancel", type: "cancel", isCancel: true },
+                { id: "confirm", text: "Yes I'm sure", type: "error" }
+            ]
+        }});
+
+        if(res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm"){
+            return false;
+        }
+
+        return true;
+    }
+
+    const onChangeUseSymlinks = async (useSymlink: boolean) => {
+        const { error } = await tryit(() => staticConfig.set("use-symlinks", useSymlink));
+
+        if(error){
+            notificationService.notifyError({ title: "notifications.types.error", desc: "An error occur, unable to change symlinks settings" });
+            return;
+        }
+
+        setUseSymlink(() => useSymlink);
+    }
 
     const toogleShowSupporters = () => {
         setShowSupporters(show => !show);
@@ -514,8 +585,8 @@ export function SettingsPage() {
 
                 <SettingContainer title="Advanced" description="Changes these stettings only if your are sure of what you are doing">
                     <SettingToogleSwitchGrid items={[
-                        { checked: hardwareAcceleration, text: "Hadware Acceleration", desc: "Enable Hardware Acceleration to use your GPU and improve BSManager's performance. Turn this off if you're experiencing frame drops.", middleWare: onChangeHardwareAcceleration },
-                        { checked: useSymlink, text: "Use Symlink", desc: "Use Symlinks instead of Junctions to link folders. Turn this on only if you really need it.", onChange: () => {} },
+                        { checked: hardwareAccelerationEnabled, text: "Hadware Acceleration", desc: "Enable Hardware Acceleration to use your GPU and improve BSManager's performance. Turn this off if you're experiencing frame drops.", middleWare: onAboutToChangeHardwareAcceleration, onChange: onChangeHardwareAcceleration },
+                        { checked: useSymlink, text: "Use Symlinks", desc: "Use Symlinks instead of Junctions to link folders. Turn this on only if you really need it.", middleWare: onAboutToChangeUseSymlinks, onChange: onChangeUseSymlinks },
                     ]}/>
                 </SettingContainer>
 

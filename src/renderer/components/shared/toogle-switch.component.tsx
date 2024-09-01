@@ -34,36 +34,36 @@ export function ToogleSwitch({ checked, className, classNames, bgColor, onChange
     }, [dotColor]);
 
     useEffect(() => {
-        if (checked !== undefined) {
-            setIsChecked(checked);
-        }
+        setIsChecked(checked);
     }, [checked]);
-
-    useEffect(() => {
-        if (onChange) {
-            onChange(isChecked);
-        }
-    }, [isChecked]);
 
     const handleCheckboxChange = () => {
         if (middleWare) {
             setIsChecked(prev => {
                 const newState = !prev;
-                console.log('newState', newState);
                 const result = middleWare(newState);
                 if (isPromise(result)) {
                     result.then(shouldChange => {
                         if (shouldChange) {
-                            setIsChecked(newState);
+                            setIsChecked(() => {
+                                onChange?.(newState);
+                                return newState;
+                            });
                         }
                     }).catch(noop);
                 } else if (result) {
-                    setIsChecked(newState);
+                    setIsChecked(() => {
+                        onChange?.(newState);
+                        return newState;
+                    });
                 }
                 return prev;
             });
         } else {
-            setIsChecked(prev => !prev);
+            setIsChecked(prev => {
+                onChange?.(!prev);
+                return !prev;
+            });
         }
     }
 

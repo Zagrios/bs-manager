@@ -24,8 +24,10 @@ import { SteamLauncherService } from "./services/bs-launcher/steam-launcher.serv
 import { FileAssociationService } from "./services/file-association.service";
 import { SongDetailsCacheService } from "./services/additional-content/maps/song-details-cache.service";
 import { readdirSync, statSync, unlinkSync } from "fs-extra";
+import { StaticConfigurationService } from "./services/static-configuration.service";
 
 const isDebug = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true";
+const staticConfig = StaticConfigurationService.getInstance();
 
 export const filterStrings = new Set<string>();
 export const filterPatterns = new Set<RegExp>();
@@ -36,6 +38,13 @@ filterPatterns.add(/FRL\S{10,}/g);
 initLogger();
 deleteOlestLogs();
 deleteOldLogs();
+
+staticConfig.take("disable-hadware-acceleration", disabled => {
+    if(disabled === true){ // strictly check for true
+        log.info("Disabling hardware acceleration");
+        app.disableHardwareAcceleration();
+    }
+});
 
 
 if (process.env.NODE_ENV === "production") {
@@ -108,7 +117,7 @@ if (!gotTheLock) {
 
     app.whenReady().then(() => {
 
-        // C:\\Users\\Mathieu\\Desktop\\BSManager\\BSInstances\\My Version\\UserData\\SongDetailsCache.proto
+
 
         app.setAppUserModelId(APP_NAME);
 

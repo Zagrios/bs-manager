@@ -3,6 +3,7 @@ import { NotificationService } from "../services/notification.service";
 import { IpcService } from "../services/ipc.service";
 import { from, of } from "rxjs";
 import { readFileSync } from "fs-extra";
+import log from "electron-log";
 
 // TODO IMPROVE WINDOW CONTROL BY USING WINDOW SERVICE
 
@@ -16,7 +17,7 @@ ipc.on("choose-folder", (args, reply) => {
     reply(from(dialog.showOpenDialog({ properties: ["openDirectory"], defaultPath: args ?? "" })));
 });
 
-ipc.on<string>("choose-file", async (args, reply) => {
+ipc.on("choose-file", async (args, reply) => {
     reply(from(dialog.showOpenDialog({ properties: ["openFile"], defaultPath: args ?? "" })));
 });
 
@@ -61,4 +62,13 @@ ipc.on("choose-image", (args, reply) => {
         }
         return res.filePaths;
     })));
+});
+
+ipc.on("restart-app", (_, reply) => {
+    log.info("App was requested to restart");
+
+    reply(of()); // Reply before restarting to avoid any issue
+
+    app.relaunch();
+    app.quit();
 });
