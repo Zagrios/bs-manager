@@ -4,14 +4,14 @@ type Item = {
     text: string;
     desc?: string;
     checked?: boolean;
-    onChange?: (isChecked: boolean) => void;
+    onChange?: (isChecked: boolean) => void|Promise<void>;
 };
 
 type Props = {
     items: Item[];
 };
 
-export function SettingToogleSwitchGrid({ items }: Props) {
+export function SettingToogleSwitchGrid({ items }: Readonly<Props>) {
 
     const handleItemChange = (item: Item, state: boolean) => {
         item.onChange?.(state);

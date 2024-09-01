@@ -17,7 +17,7 @@ type Props = {
     onChange?: (isChecked: boolean) => void;
 }
 
-export function ToogleSwitch({ checked, className, classNames, bgColor, onChange }: Props) {
+export function ToogleSwitch({ checked, className, classNames, bgColor, onChange }: Readonly<Props>) {
 
     const uuid = useConstant(() => crypto.randomUUID());
     const { firstColor } = useThemeColor();

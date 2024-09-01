@@ -67,7 +67,7 @@ export class InstallationLocationService {
             }
 
             if(this.staticConfig.has(this.STORE_INSTALLATION_PATH_KEY)) {
-                return this.staticConfig.get(this.STORE_INSTALLATION_PATH_KEY) as string;
+                return this.staticConfig.get(this.STORE_INSTALLATION_PATH_KEY);
             }
 
             const { result: oldPath } = tryit(() => path.join(app.getPath("documents"), this.INSTALLATION_FOLDER));
