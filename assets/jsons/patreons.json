@@ -99,5 +99,10 @@
 	},
     {
         "username": "Austin"
-    }
+    },
+    {
+		"username": "Fatalution",
+		"type": "diamond",
+		"link": "https://x.com/fatalution"
+	}
 ]
