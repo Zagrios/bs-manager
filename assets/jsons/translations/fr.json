@@ -772,7 +772,7 @@
         },
         "ask-install-path": {
             "title": "Dossier d'installation",
-            "choose-folder-description": "Choose the folder that will contain all the content downloaded by BSManager.",
+            "choose-folder-description": "Choose the folder that will contain all the content downloaded by BSManager. (e.g. versions, mods, maps, playlists, etc.)",
             "choose-folder": "Choisir un dossier",
             "default": "Default",
             "default-tooltip": "Defaults to your home folder"

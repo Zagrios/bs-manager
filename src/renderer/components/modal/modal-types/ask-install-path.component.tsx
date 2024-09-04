@@ -54,42 +54,43 @@ export const AskInstallPathModal: ModalComponent<{ installPath: string }, {}> = 
 
     return (
         <form
-            className="static min-w-96"
+            className="max-w-xl w-max"
             onSubmit={event => {
                 event.preventDefault();
                 onConfirmButtonPressed();
             }}>
 
-            <h1 className="tracking-wide w-full uppercase text-3xl text-center text-gray-800 dark:text-gray-200">
+            <h1 className="tracking-wide w-full uppercase text-3xl text-center">
                 {t("modals.ask-install-path.title")}
             </h1>
 
-            <p className="my-3 text-sm text-gray-600 dark:text-gray-400">
+            <p className="py-3">
                 {t("modals.ask-install-path.choose-folder-description")}
             </p>
-            <div className="relative rounded-md pl-2 py-1 my-3 flex items-center justify-between w-full h-8 bg-light-main-color-1 dark:bg-main-color-1">
-                <span className="block text-ellipsis overflow-hidden min-w-0" title={installPath}>
+
+            <div className="relative rounded-md pl-2 py-1 mb-3 flex items-center justify-between gap-1 w-full h-8 bg-light-main-color- dark:bg-main-color-1">
+                <span className="text-ellipsis overflow-hidden min-w-0 text-nowrap text-left cursor-help" title={installPath} style={{ direction: "rtl" }}>
                     {installPath}
                 </span>
                 <BsmButton
                     onClick={selectInstallPath}
-                    className="shrink-1 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md"
+                    className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md"
                     text="modals.ask-install-path.choose-folder"
                     withBar={false}
                 />
             </div>
 
-            <div className="grid grid-flow-col grid-cols-3 gap-4">
+            <div className="h-8 grid grid-flow-col grid-cols-2 gap-2">
                 <Tippy
-                    className="!bg-main-color-1"
                     content={t("modals.ask-install-path.default-tooltip")}
+                    theme="default"
                     delay={[300, 0]}
                     arrow={false}
                     placement="bottom"
                 >
                     <BsmButton
                         typeColor="cancel"
-                        className="col-start-2 rounded-md text-center transition-all"
+                        className="rounded-md text-center transition-all flex items-center justify-center"
                         onClick={onDefaultButtonPressed}
                         withBar={false}
                         text="modals.ask-install-path.default"
@@ -97,7 +98,7 @@ export const AskInstallPathModal: ModalComponent<{ installPath: string }, {}> = 
                 </Tippy>
                 <BsmButton
                     typeColor="primary"
-                    className="col-start-3 z-0 px-1 rounded-md text-center transition-all"
+                    className="rounded-md text-center transition-all"
                     type="submit"
                     withBar={false}
                     text="misc.confirm"

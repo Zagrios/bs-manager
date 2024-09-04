@@ -771,7 +771,7 @@
         },
         "ask-install-path": {
             "title": "安裝文件夾",
-            "choose-folder-description": "Choose the folder that will contain all the content downloaded by BSManager.",
+            "choose-folder-description": "Choose the folder that will contain all the content downloaded by BSManager. (e.g. versions, mods, maps, playlists, etc.)",
             "choose-folder": "選擇文件夾",
             "default": "Default",
             "default-tooltip": "Defaults to your home folder"
