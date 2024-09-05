@@ -52,7 +52,7 @@ export class SetupService {
                 { closable: false }
             );
 
-            await lastValueFrom(this.installationLocationService.setInstallationFolder(modalResponse.data.installPath));
+            await lastValueFrom(this.installationLocationService.setInstallationFolder(modalResponse.data.installPath, false));
 
             // Refresh the versions tab
             await this.versionManagerService.askInstalledVersions();

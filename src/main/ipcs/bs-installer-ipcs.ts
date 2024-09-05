@@ -23,5 +23,5 @@ ipc.on("bs-installer.install-path", (_, reply) => {
 
 ipc.on("bs-installer.set-install-path", (args, reply) => {
     const service = InstallationLocationService.getInstance();
-    reply(from(service.setInstallationDirectory(args)));
+    reply(from(service.setInstallationDirectory(args.path, args.move)));
 });

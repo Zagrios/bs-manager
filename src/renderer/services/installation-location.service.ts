@@ -23,7 +23,13 @@ export class InstallationLocationService {
         return lastValueFrom(this.ipcService.sendV2("bs-installer.install-path"));
     }
 
-    public setInstallationFolder(path: string): Observable<string> {
-        return this.ipcService.sendV2("bs-installer.set-install-path", path);
+    /**
+     * @param move - if true, move the old installation path to the path param
+     */
+    public setInstallationFolder(path: string, move: boolean): Observable<string> {
+        return this.ipcService.sendV2(
+            "bs-installer.set-install-path",
+            { path, move }
+        );
     }
 }

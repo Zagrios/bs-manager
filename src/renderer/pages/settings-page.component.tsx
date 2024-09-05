@@ -204,7 +204,7 @@ export function SettingsPage() {
 
                 notificationService.notifySuccess({ title: "notifications.settings.move-folder.success.titles.transfer-started", desc: "notifications.settings.move-folder.success.descs.transfer-started" });
 
-                lastValueFrom(installationLocationService.setInstallationFolder(fileChooserRes.filePaths[0])).then(res => {
+                lastValueFrom(installationLocationService.setInstallationFolder(fileChooserRes.filePaths[0], true)).then(res => {
 
                     progressBarService.complete();
                     progressBarService.hide(true);

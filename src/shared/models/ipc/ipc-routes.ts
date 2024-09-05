@@ -46,7 +46,7 @@ export interface IpcChannelMapping {
     "bs-installer.folder-exists": { request: void, response: boolean };
     "bs-installer.default-install-path": { request: void, response: string };
     "bs-installer.install-path": { request: void, response: string};
-    "bs-installer.set-install-path": { request: string, response: string};
+    "bs-installer.set-install-path": { request: { path: string, move: boolean }, response: string};
 
     /* ** bs-launcher-ipcs ** */
     "create-launch-shortcut": { request: LaunchOption, response: boolean };

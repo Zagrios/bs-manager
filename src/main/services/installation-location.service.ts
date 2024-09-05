@@ -40,17 +40,21 @@ export class InstallationLocationService {
         this.updateListeners.forEach(listener => listener());
     }
 
-    public async setInstallationDirectory(newDir: string): Promise<string> {
+    /**
+     * @param move - if true, move the old installation path to the path param
+     */
+    public async setInstallationDirectory(newDir: string, move: boolean): Promise<string> {
         newDir = path.basename(newDir) === this.INSTALLATION_FOLDER ? path.join(newDir, "..") : newDir;
-        const oldDir = this.installationDirectory();
 
-        await ensureFolderExist(oldDir);
-        await copyDirectoryWithJunctions(oldDir, path.join(newDir, this.INSTALLATION_FOLDER), { overwrite: true });
+        if (move) {
+            const oldDir = this.installationDirectory();
+            await ensureFolderExist(oldDir);
+            await copyDirectoryWithJunctions(oldDir, path.join(newDir, this.INSTALLATION_FOLDER), { overwrite: true });
+            deleteFolder(oldDir);
+        }
 
         this._installationDirectory = newDir;
         this.staticConfig.set(this.STORE_INSTALLATION_PATH_KEY, newDir);
-
-        deleteFolder(oldDir);
 
         return this.installationDirectory();
     }
