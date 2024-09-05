@@ -196,6 +196,27 @@ export class MapsManagerService {
         })
     }
 
+    public async importMap(path: string, version?: BSVersion): Promise<BsmLocalMap | null> {
+        try {
+            if (!this.progressBar.require()) {
+                return null;
+            }
+
+            return await lastValueFrom(this.ipcService.sendV2(
+                "bs-maps.import-map",
+                { path, version }
+            ));
+        } catch (error: any) {
+            this.notifications.notifyError({
+                title: "notifications.maps.import-map.titles.error",
+                desc: ["not-found-zip", "invalid-zip"].includes(error?.code)
+                    ? `notifications.maps.import-map.msgs.${error.code}`
+                    : "Unknown"
+            });
+            return null;
+        }
+    }
+
     public getMapsInfoFromHashs(hashs: string[]): Observable<SongDetails[]> {
         return this.ipcService.sendV2("get-maps-info-from-cache", hashs);
     }
