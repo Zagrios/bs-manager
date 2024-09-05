@@ -7,7 +7,7 @@ import { InstallationLocationService } from "../../installation-location.service
 import { UtilsService } from "../../utils.service";
 import crypto from "crypto";
 import { lstatSync } from "fs";
-import { copy, createReadStream, ensureDir, pathExists, pathExistsSync, realpath, unlink } from "fs-extra";
+import { copy, createReadStream, ensureDir, pathExists, pathExistsSync, realpath, unlink, writeFile } from "fs-extra";
 import StreamZip from "node-stream-zip";
 import { RequestService } from "../../request.service";
 import sanitize from "sanitize-filename";
@@ -26,6 +26,9 @@ import { SongCacheService } from "./song-cache.service";
 import { pathToFileURL } from "url";
 import { sToMs } from "../../../../shared/helpers/time.helpers";
 import { FieldRequired } from "shared/helpers/type.helpers";
+import { processZip } from "main/helpers/zip.helpers";
+import JSZip from "jszip";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
 
 export class LocalMapsManagerService {
     private static instance: LocalMapsManagerService;
@@ -305,6 +308,55 @@ export class LocalMapsManagerService {
         return null;
     }
 
+    public async importMap(zipPath: string, version?: BSVersion): Promise<BsmLocalMap> {
+        try {
+            if (!pathExistsSync(zipPath)) {
+                throw new CustomError(`Zip file "${zipPath}" does not exist`, "not-found-zip");
+            }
+
+            const mapFolderName = path.basename(zipPath, ".zip");
+            const mapsFolder = await this.getMapsFolderPath(version);
+            const mapPath = path.join(mapsFolder, mapFolderName);
+
+            log.info(`Importing map "${zipPath}" to "${mapPath}"`);
+
+            const zip = await JSZip.loadAsync(await readFile(zipPath));
+            const infoFile = zip.file("Info.dat");
+            if (!infoFile) { // Simple check for importing maps
+                throw new CustomError(`Invalid zip file "${zipPath}"`, "invalid-zip");
+            }
+
+            await ensureFolderExist(mapPath);
+            await processZip(zip, async (relativePath, file) => {
+                const filepath = path.join(mapPath, relativePath);
+                if (file.dir) {
+                    await ensureFolderExist(filepath);
+                    return 0;
+                }
+
+                log.info(`Extracting "${filepath}"`);
+                const content = await file.async("nodebuffer");
+                await writeFile(filepath, content);
+
+                return content.length;
+            });
+
+            const localMap = await this.loadMapInfoFromPath(mapPath);
+            localMap.songDetails = this.songDetailsCache.getSongDetails(localMap.hash);
+
+            this.ipc.send<{map: BsmLocalMap, version?: BSVersion}>(
+                "map-downloaded",
+                this.windows.getWindows("index.html").at(0),
+                { map: localMap, version }
+            );
+
+            return localMap;
+        } catch (error: any) {
+            throw error instanceof CustomError
+                ? error
+                : CustomError.fromError(error);
+        }
+    }
 
     public async downloadMap(map: BsvMapDetail, version?: BSVersion): Promise<BsmLocalMap> {
         if (!map.versions.at(0).hash) {
