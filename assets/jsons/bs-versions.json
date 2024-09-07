@@ -771,5 +771,12 @@
 		"ReleaseImg": "https://clan.akamai.steamstatic.com/images/32055887/23e6e6f219a56d2f9ea4a27b560c54ac1214aec3.png",
 		"ReleaseDate": "1725548547",
 		"year": "2024"
+	},
+	{
+		"BSVersion": "1.37.5",
+		"BSManifest": "3122533396458693889",
+		"OculusBinaryId": "7685108391588873",
+		"ReleaseDate": "1725628356",
+		"year": "2024"
 	}
 ]
