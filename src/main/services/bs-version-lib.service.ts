@@ -5,6 +5,7 @@ import { BSVersion } from "shared/bs-version.interface";
 import { RequestService } from "./request.service";
 import { readJSON } from "fs-extra";
 import { allSettled } from "../../shared/helpers/promise.helpers";
+import { StaticConfigurationService } from "./static-configuration.service";
 
 export class BSVersionLibService {
     private readonly REMOTE_BS_VERSIONS_URL: string = "https://raw.githubusercontent.com/Zagrios/bs-manager/master/assets/jsons/bs-versions.json";
@@ -14,12 +15,14 @@ export class BSVersionLibService {
 
     private utilsService: UtilsService;
     private requestService: RequestService;
+    private staticConfigurationService: StaticConfigurationService;
 
     private bsVersions: BSVersion[];
 
     private constructor() {
         this.utilsService = UtilsService.getInstance();
         this.requestService = RequestService.getInstance();
+        this.staticConfigurationService = StaticConfigurationService.getInstance();
     }
 
     public static getInstance(): BSVersionLibService {
@@ -35,12 +38,28 @@ export class BSVersionLibService {
 
     private async getLocalVersions(): Promise<BSVersion[]> {
         const localVersionsPath = path.join(this.utilsService.getAssestsJsonsPath(), this.VERSIONS_FILE);
+
+        if (process.platform === "linux") {
+            let versions = this.staticConfigurationService.get("versions");
+            if (!versions) {
+                versions = (await readJSON(localVersionsPath)) as BSVersion[];
+                this.staticConfigurationService.set("versions", versions);
+            }
+            return versions;
+        }
+
         return readJSON(localVersionsPath);
     }
 
     private async updateLocalVersions(versions: BSVersion[]): Promise<void> {
         const localVersionsPath = path.join(this.utilsService.getAssestsJsonsPath(), this.VERSIONS_FILE);
-        writeFileSync(localVersionsPath, JSON.stringify(versions, null, "\t"), { encoding: "utf-8", flag: "w" });
+
+        // Do not write on readonly memory in linux when running on AppImage
+        if (process.platform === "linux") {
+            this.staticConfigurationService.set("versions", versions);
+        } else {
+            writeFileSync(localVersionsPath, JSON.stringify(versions, null, "\t"), { encoding: "utf-8", flag: "w" });
+        }
     }
 
     private async loadBsVersions(): Promise<BSVersion[]> {

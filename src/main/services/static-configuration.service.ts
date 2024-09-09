@@ -1,5 +1,6 @@
 import ElectronStore from "electron-store";
 import { Observable } from "rxjs";
+import { BSVersion } from "shared/bs-version.interface";
 
 export class StaticConfigurationService {
     private static instance: StaticConfigurationService;
@@ -53,6 +54,7 @@ export class StaticConfigurationService {
 }
 
 export interface StaticConfigKeyValues {
+    "versions": BSVersion[];
     "installation-folder": string;
     "song-details-cache-etag": string;
     "disable-hadware-acceleration": boolean;
