@@ -512,7 +512,8 @@
                     "error": "An error occurred while importing the map"
                 },
                 "msgs": {
-                    "success": "Imported \"{mapName}\"map successfully",
+                    "success": "Imported all maps successfully",
+                    "some-success": "Imported some maps successfully",
                     "only-accept-zip": "Only zip files are supported",
                     "not-found-zip": "Zip file does not exists",
                     "invalid-zip": "Invalid zip file contents"
