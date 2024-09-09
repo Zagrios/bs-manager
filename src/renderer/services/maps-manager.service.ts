@@ -39,6 +39,9 @@ export class MapsManagerService {
     private readonly lastLinkedVersion$: Subject<BSVersion> = new Subject();
     private readonly lastUnlinkedVersion$: Subject<BSVersion> = new Subject();
 
+    private importListeners: ((map: BsmLocalMap, version?: BSVersion) => void)[] = [];
+    private importCount = 0;
+
     private constructor() {
         this.ipcService = IpcService.getInstance();
         this.modal = ModalService.getInstance();
@@ -46,6 +49,23 @@ export class MapsManagerService {
         this.notifications = NotificationService.getInstance();
         this.config = ConfigurationService.getInstance();
         this.linker = VersionFolderLinkerService.getInstance();
+
+        this.ipcService.watch<{map: BsmLocalMap, version?: BSVersion}>("map-imported")
+            .subscribe(data => {
+                ++this.importCount;
+                this.importListeners.forEach(listener => listener(data.map, data.version));
+            });
+
+        // NOTE: Generic notify call from server side
+        this.ipcService.watch<{map: string, error: string}>("map-not-imported")
+            .subscribe(data => {
+                this.notifications.notifyError({
+                    title: "notifications.maps.import-map.titles.error",
+                    desc: ["not-found-zip", "invalid-zip"].includes(data.error)
+                        ? `notifications.maps.import-map.msgs.${data.error}`
+                        : data.error
+                });
+            });
     }
 
     public getMaps(version?: BSVersion): Observable<BsmLocalMapsProgress> {
@@ -196,24 +216,34 @@ export class MapsManagerService {
         })
     }
 
-    public async importMap(path: string, version?: BSVersion): Promise<BsmLocalMap | null> {
+    public async importMaps(paths: string[], version?: BSVersion): Promise<number> {
         try {
             if (!this.progressBar.require()) {
-                return null;
+                return 0;
             }
 
-            return await lastValueFrom(this.ipcService.sendV2(
-                "bs-maps.import-map",
-                { path, version }
-            ));
+            // Incremented by receiving an ipc call on "map-imported"
+            this.importCount = 0;
+
+            const importProgress$: Observable<ProgressionInterface> = this.ipcService.sendV2(
+                    "bs-maps.import-maps",
+                    { paths, version }
+                )
+                .pipe(map(progress => ({
+                    progression: (progress.current / progress.total) * 100,
+                    label: progress.data
+                } as ProgressionInterface)));
+
+            this.progressBar.show(importProgress$);
+            await lastValueFrom(importProgress$);
+            return this.importCount;
         } catch (error: any) {
             this.notifications.notifyError({
                 title: "notifications.maps.import-map.titles.error",
-                desc: ["not-found-zip", "invalid-zip"].includes(error?.code)
-                    ? `notifications.maps.import-map.msgs.${error.code}`
-                    : "Unknown"
             });
-            return null;
+            return 0;
+        } finally {
+            this.progressBar.hide();
         }
     }
 
@@ -231,6 +261,17 @@ export class MapsManagerService {
 
     public async disableDeepLink(): Promise<boolean> {
         return lastValueFrom(this.ipcService.sendV2("unregister-maps-deep-link"));
+    }
+
+    public addImportListener(listener: (map: BsmLocalMap, version?: BSVersion) => void): void {
+        this.importListeners.push(listener);
+    }
+
+    public removeImportListener(listener: (map: BsmLocalMap, version?: BSVersion) => void): void {
+        const index = this.importListeners.indexOf(listener);
+        if (index > -1) {
+            this.importListeners.splice(index, 1);
+        }
     }
 
     public get versionLinked$(): Observable<BSVersion> {

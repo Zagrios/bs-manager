@@ -104,8 +104,16 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         return playlistsManager.unlinkVersion(version);
     }
 
-    const handleFileDrop = async (file: File) => {
-        if (file.type !== "application/zip") {
+    const handleFileDrop = async (files: FileList) => {
+        const paths: string[] = [];
+        for (let i = 0; i < files.length; ++i) {
+            const file = files[i];
+            if (file.type === "application/zip") {
+                paths.push(file.path);
+            }
+        }
+
+        if (paths.length === 0) {
             notifications.notifyError({
                 title: "notifications.maps.import-map.titles.error",
                 desc: "notifications.maps.import-map.msgs.zip-accept-only"
@@ -113,15 +121,23 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
             return;
         }
 
-        const localMap = await mapsManager.importMap(file.path, version);
-        if (localMap) {
+        const importCount = await mapsManager.importMaps(paths, version);
+        if (importCount === 0) {
+            return;
+        }
+
+        if (importCount < paths.length) {
             notifications.notifySuccess({
                 title: "notifications.maps.import-map.titles.success",
-                desc: t("notifications.maps.import-map.msgs.success", {
-                    mapName: localMap.rawInfo._songName
-                })
+                desc: "notifications.maps.import-map.msgs.some-success",
             });
+            return;
         }
+
+        notifications.notifySuccess({
+            title: "notifications.maps.import-map.titles.success",
+            desc: "notifications.maps.import-map.msgs.success",
+        });
     }
 
     const dropDownItems = ((): DropDownItem[] => {
@@ -201,7 +217,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                     <Dropzone
                         className="w-full h-full shrink-0"
                         onDrop={event => {
-                            handleFileDrop(event.dataTransfer.files[0]);
+                            handleFileDrop(event.dataTransfer.files);
                         }}
                         overlay={
                             <div className="text-3xl pointer-events-none">

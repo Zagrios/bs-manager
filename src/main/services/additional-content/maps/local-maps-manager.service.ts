@@ -328,7 +328,37 @@ export class LocalMapsManagerService {
         return null;
     }
 
-    public async importMap(zipPath: string, version?: BSVersion): Promise<BsmLocalMap> {
+    public importMaps(zipPaths: string[], version?: BSVersion): Observable<Progression> {
+        const progress: Progression<string> = {
+            total: zipPaths.length,
+            current: 0,
+            data: "",
+        };
+
+        return new Observable<Progression<string>>(observer => {
+            (async () => {
+                for (const zipPath of zipPaths) {
+                    ++progress.current;
+                    progress.data = zipPath;
+                    observer.next(progress);
+
+                    try {
+                        await this.importMap(zipPath, version);
+                    } catch (error: any) {
+                        log.error(`Could not import "${zipPath}"`, error);
+                        this.ipc.send<{map: string, error: string}>(
+                            "map-not-imported",
+                            this.windows.getWindows("index.html").at(0),
+                            { map: zipPath, error: error.code }
+                        );
+                    }
+                }
+                observer.complete();
+            })();
+        });
+    }
+
+    private async importMap(zipPath: string, version?: BSVersion): Promise<BsmLocalMap> {
         try {
             if (!pathExistsSync(zipPath)) {
                 throw new CustomError(`Zip file "${zipPath}" does not exist`, "not-found-zip");
@@ -365,7 +395,7 @@ export class LocalMapsManagerService {
             localMap.songDetails = this.songDetailsCache.getSongDetails(localMap.hash);
 
             this.ipc.send<{map: BsmLocalMap, version?: BSVersion}>(
-                "map-downloaded",
+                "map-imported",
                 this.windows.getWindows("index.html").at(0),
                 { map: localMap, version }
             );
