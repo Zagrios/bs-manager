@@ -15,7 +15,7 @@
         "apply": "Appliquer",
         "copy": "Copier",
         "copied": "Copié !",
-        "confirm": "Confirm"
+        "confirm": "Confirmer"
     },
     "nav-bar": {
         "add-version": "Ajouter une version",
@@ -139,7 +139,7 @@
             },
             "installation-folder": {
                 "title": "Dossier d'installation",
-                "description": "Change the folder that will contain all the content downloaded by BSManager.",
+                "description": "Changer le dossier qui contiendra tout le contenu téléchargé par BSManager.",
                 "choose-folder": "Choisir un dossier"
             },
             "additional-content": {
@@ -772,10 +772,10 @@
         },
         "ask-install-path": {
             "title": "Dossier d'installation",
-            "choose-folder-description": "Choose the folder that will contain all the content downloaded by BSManager. (e.g. versions, mods, maps, playlists, etc.)",
+            "choose-folder-description": "Choisissez le dossier qui contiendra tout le contenu téléchargé par BSManager. (versions, mods, cartes, playlists, etc.)",
             "choose-folder": "Choisir un dossier",
-            "default": "Default",
-            "default-tooltip": "Defaults to your home folder"
+            "default": "Par défaut",
+            "default-tooltip": "Par défaut, dans votre dossier personnel"
         }
     },
     "maps": {

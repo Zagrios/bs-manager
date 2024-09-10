@@ -15,7 +15,7 @@
         "apply": "Применить",
         "copy": "Скопировать",
         "copied": "Скопировано!",
-        "confirm": "Confirm"
+        "confirm": "Подтвердить"
     },
     "nav-bar": {
         "add-version": "Добавить версию игры",
@@ -139,7 +139,7 @@
             },
             "installation-folder": {
                 "title": "Папка установок",
-                "description": "Change the folder that will contain all the content downloaded by BSManager.",
+                "description": "Изменить папку, которая будет содержать весь контент, загруженный BSManager.",
                 "choose-folder": "Изменить папку"
             },
             "additional-content": {
@@ -770,10 +770,10 @@
         },
         "ask-install-path": {
             "title": "Папка установок",
-            "choose-folder-description": "Choose the folder that will contain all the content downloaded by BSManager. (e.g. versions, mods, maps, playlists, etc.)",
+            "choose-folder-description": "Выберите папку, которая будет содержать весь контент, загруженный BSManager. (версии, моды, карты, плейлисты и т.д.)",
             "choose-folder": "Изменить папку",
-            "default": "Default",
-            "default-tooltip": "Defaults to your home folder"
+            "default": "По умолчанию",
+            "default-tooltip": "По умолчанию в вашей домашней папке"
         }
     },
     "maps": {

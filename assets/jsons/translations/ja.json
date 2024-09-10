@@ -15,7 +15,7 @@
         "apply": "適用",
         "copy": "コピー",
         "copied": "コピー済み!",
-        "confirm": "Confirm"
+        "confirm": "確認"
     },
     "nav-bar": {
         "add-version": "バージョンを追加",
@@ -139,7 +139,7 @@
             },
             "installation-folder": {
                 "title": "インストールフォルダー",
-                "description": "Change the folder that will contain all the content downloaded by BSManager.",
+                "description": "BSManager によってダウンロードされたすべてのコンテンツを含むフォルダを変更します。",
                 "choose-folder": "フォルダーを選択"
             },
             "additional-content": {
@@ -771,10 +771,10 @@
         },
         "ask-install-path": {
             "title": "インストールフォルダー",
-            "choose-folder-description": "Choose the folder that will contain all the content downloaded by BSManager. (e.g. versions, mods, maps, playlists, etc.)",
+            "choose-folder-description": "BSManager によってダウンロードされたすべてのコンテンツ (バージョン、MOD、マップ、プレイリストなど) を含むフォルダを選択してください。",
             "choose-folder": "フォルダーを選択",
-            "default": "Default",
-            "default-tooltip": "Defaults to your home folder"
+            "default": "デフォルト",
+            "default-tooltip": "デフォルトでは、ホームフォルダに設定されます"
         }
     },
     "maps": {

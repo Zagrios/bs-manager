@@ -15,7 +15,7 @@
         "apply": "應用",
         "copy": "複製",
         "copied": "已複製!",
-        "confirm": "Confirm"
+        "confirm": "確認"
     },
     "nav-bar": {
         "add-version": "新增版本",
@@ -139,7 +139,7 @@
             },
             "installation-folder": {
                 "title": "安裝文件夾",
-                "description": "Change the folder that will contain all the content downloaded by BSManager.",
+                "description": "更改將包含 BSManager 下載的所有內容的文件夾。",
                 "choose-folder": "選擇文件夾"
             },
             "additional-content": {
@@ -771,10 +771,10 @@
         },
         "ask-install-path": {
             "title": "安裝文件夾",
-            "choose-folder-description": "Choose the folder that will contain all the content downloaded by BSManager. (e.g. versions, mods, maps, playlists, etc.)",
+            "choose-folder-description": "選擇將包含 BSManager 下載的所有內容的文件夾。(版本、mod、地圖、播放列表等)",
             "choose-folder": "選擇文件夾",
-            "default": "Default",
-            "default-tooltip": "Defaults to your home folder"
+            "default": "預設",
+            "default-tooltip": "預設為您的主資料夾"
         }
     },
     "maps": {
