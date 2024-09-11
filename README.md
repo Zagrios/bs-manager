@@ -546,7 +546,7 @@
 <div>
   <h2>Credits</h2>
   <ul>
-    <li><a href="https://github.com/Zagrios">Zagrios</a> - Lead Developer & Founder.</li>
+    <li><a href="https://github.com/Zagrios">Zagrios - Mathieu GRIES-PEROZ</a> - Lead Developer & Founder.</li>
     <li><a href="https://github.com/Iluhadesu">Iluhadesu</a> - Co-Developer & Co-Founder, Discord Bot Developer.</li>
     <li><a href="https://github.com/GaetanGrd">GaetanGrd</a> - Co-Developer & Co-Founder, Documentation Lead.</li>
     <li><a href="https://github.com/cheddZy">cheddZy</a> - Icon Creator.</li>
