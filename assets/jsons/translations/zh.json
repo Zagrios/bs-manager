@@ -14,7 +14,8 @@
         "refuse": "拒绝",
         "apply": "应用",
         "copy": "复制",
-        "copied": "已复制!"
+        "copied": "已复制!",
+        "confirm": "确认"
     },
     "nav-bar": {
         "add-version": "添加版本",
@@ -138,7 +139,7 @@
             },
             "installation-folder": {
                 "title": "安装文件夹",
-                "description": "为 BeatSaber 不同版本及未来其他特性修改默认文件夹",
+                "description": "更改将包含 BSManager 下载的所有内容的文件夹。",
                 "choose-folder": "选择文件夹"
             },
             "additional-content": {
@@ -767,6 +768,13 @@
             },
             "launch-as-admin": "以管理员身份启动",
             "not-remind-me": "不再提醒我"
+        },
+        "ask-install-path": {
+            "title": "安装文件夹",
+            "choose-folder-description": "选择将包含 BSManager 下载的所有内容的文件夹。(版本、mod、地图、播放列表等)",
+            "choose-folder": "选择文件夹",
+            "default": "默认",
+            "default-tooltip": "默认为您的主文件夹"
         }
     },
     "maps": {

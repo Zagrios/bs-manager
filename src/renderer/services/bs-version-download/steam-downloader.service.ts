@@ -8,7 +8,6 @@ import { NotificationService } from "../notification.service";
 import { ProgressBarService } from "../progress-bar.service";
 import { LoginToSteamModal } from "renderer/components/modal/modal-types/bs-downgrade/login-to-steam-modal.component";
 import { SteamGuardModal } from "renderer/components/modal/modal-types/bs-downgrade/steam-guard-modal.component";
-import { LinkOpenerService } from "../link-opener.service";
 import { DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderInfoEvent, DepotDownloaderWarningEvent } from "../../../shared/models/bs-version-download/depot-downloader.model";
 import { SteamMobileApproveModal } from "renderer/components/modal/modal-types/bs-downgrade/steam-mobile-approve-modal.component";
 import { DownloaderServiceInterface } from "./bs-store-downloader.interface";
@@ -30,7 +29,6 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
     private readonly ipcService: IpcService;
     private readonly progressBarService: ProgressBarService;
     private readonly notificationService: NotificationService;
-    private readonly linkOpener: LinkOpenerService;
 
     private readonly STEAM_SESSION_USERNAME_KEY = "STEAM-USERNAME";
 
@@ -42,21 +40,12 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
         this.modalService = ModalService.getInstance();
         this.progressBarService = ProgressBarService.getInstance();
         this.notificationService = NotificationService.getInstance();
-        this.linkOpener = LinkOpenerService.getInstance();
     }
 
     private setSteamSession(username: string): void { localStorage.setItem(this.STEAM_SESSION_USERNAME_KEY, username); }
     public getSteamUsername(): string { return localStorage.getItem(this.STEAM_SESSION_USERNAME_KEY); }
     public deleteSteamSession(): void { localStorage.removeItem(this.STEAM_SESSION_USERNAME_KEY); }
     public sessionExist(): boolean { return !!localStorage.getItem(this.STEAM_SESSION_USERNAME_KEY); }
-
-    public async getInstallationFolder(): Promise<string> {
-        return lastValueFrom(this.ipcService.sendV2("bs-download.installation-folder"));
-    }
-
-    public setInstallationFolder(path: string): Observable<string> {
-        return this.ipcService.sendV2("bs-download.set-installation-folder",  path);
-    }
 
     // ### Downloading
 

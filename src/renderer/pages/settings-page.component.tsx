@@ -48,6 +48,7 @@ import { SettingToogleSwitchGrid } from "renderer/components/settings/setting-to
 import { BasicModal } from "renderer/components/modal/basic-modal.component";
 import { StaticConfigurationService } from "renderer/services/static-configuration.service";
 import { tryit } from "shared/helpers/error.helpers";
+import { InstallationLocationService } from "renderer/services/installation-location.service";
 
 export function SettingsPage() {
 
@@ -68,6 +69,7 @@ export function SettingsPage() {
     const versionLinker = useService(VersionFolderLinkerService);
     const autoUpdater = useService(AutoUpdaterService);
     const staticConfig = useService(StaticConfigurationService);
+    const installationLocationService = useService(InstallationLocationService);
 
     const { firstColor, secondColor } = useThemeColor();
 
@@ -124,7 +126,7 @@ export function SettingsPage() {
     };
 
     const loadInstallationFolder = () => {
-        steamDownloader.getInstallationFolder().then(res => {
+        installationLocationService.getInstallationFolder().then(res => {
             setInstallationFolder(res);
         });
     };
@@ -202,7 +204,7 @@ export function SettingsPage() {
 
                 notificationService.notifySuccess({ title: "notifications.settings.move-folder.success.titles.transfer-started", desc: "notifications.settings.move-folder.success.descs.transfer-started" });
 
-                lastValueFrom(steamDownloader.setInstallationFolder(fileChooserRes.filePaths[0])).then(res => {
+                lastValueFrom(installationLocationService.setInstallationFolder(fileChooserRes.filePaths[0], true)).then(res => {
 
                     progressBarService.complete();
                     progressBarService.hide(true);

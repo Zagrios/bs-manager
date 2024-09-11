@@ -1,4 +1,5 @@
 import "./os-controls-ipcs";
+import "./bs-installer-ipcs.ts";
 import "./bs-launcher-ipcs";
 import "./bs-version-ipcs";
 import "./bs-uninstall-ipcs";

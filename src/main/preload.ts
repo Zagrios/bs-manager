@@ -24,6 +24,9 @@ contextBridge.exposeInMainWorld("electron", {
     },
     path: {
         sep,
+        basename: (path: string): string => {
+            return !path ? "" : path.split(sep).at(-1);
+        },
         join: (...args: string[]): string => {
             return args.join(sep);
         }

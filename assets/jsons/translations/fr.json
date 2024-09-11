@@ -14,7 +14,8 @@
         "refuse": "Refuser",
         "apply": "Appliquer",
         "copy": "Copier",
-        "copied": "Copié !"
+        "copied": "Copié !",
+        "confirm": "Confirmer"
     },
     "nav-bar": {
         "add-version": "Ajouter une version",
@@ -138,7 +139,7 @@
             },
             "installation-folder": {
                 "title": "Dossier d'installation",
-                "description": "Change le dossier par défaut pour les versions de Beat Saber et d'autres fonctionnalités à venir.",
+                "description": "Changer le dossier qui contiendra tout le contenu téléchargé par BSManager.",
                 "choose-folder": "Choisir un dossier"
             },
             "additional-content": {
@@ -768,6 +769,13 @@
             },
             "launch-as-admin": "Lancer en administateur",
             "not-remind-me": "Ne plus me rappeler"
+        },
+        "ask-install-path": {
+            "title": "Dossier d'installation",
+            "choose-folder-description": "Choisissez le dossier qui contiendra tout le contenu téléchargé par BSManager. (versions, mods, cartes, playlists, etc.)",
+            "choose-folder": "Choisir un dossier",
+            "default": "Par défaut",
+            "default-tooltip": "Par défaut, dans votre dossier personnel"
         }
     },
     "maps": {

@@ -17,7 +17,7 @@ export function Modal() {
 
     useEffect(() => {
         const onEscape = (e: KeyboardEvent) => {
-            if (e.key !== "Escape") {
+            if (currentModal.options.closable === false || e.key !== "Escape") {
                 return;
             }
             currentModal.resolver({ exitCode: ModalExitCode.CLOSED });
@@ -34,6 +34,20 @@ export function Modal() {
         };
     }, [currentModal]);
 
+    const renderCloseButton = (modal: ModalObject) => {
+        return (
+            <div
+                className="w-2.5 h-2.5 absolute top-2.5 right-1.5 cursor-pointer"
+                onClick={e => {
+                    e.stopPropagation();
+                    modal.resolver({ exitCode: ModalExitCode.CLOSED });
+                }}
+            >
+                <BsmIcon className="size-full" icon="cross" />
+            </div>
+        )
+    }
+
     const renderModal = (modal: ModalObject) => {
         if (!modal?.modal) { return null; }
 
@@ -44,23 +58,23 @@ export function Modal() {
         return (
             <div className="relative p-4 text-gray-800 dark:text-gray-200 rounded-md shadow-lg shadow-black bg-gradient-to-br from-light-main-color-3 to-light-main-color-2 dark:from-main-color-3 dark:to-main-color-2">
                 <ThemeColorGradientSpliter className="absolute top-0 w-full left-0 h-1 rounded-t-md overflow-hidden"/>
-                <div
-                    className="w-2.5 h-2.5 absolute top-2.5 right-1.5 cursor-pointer"
-                    onClick={e => {
-                        e.stopPropagation();
-                        modal.resolver({ exitCode: ModalExitCode.CLOSED });
-                    }}
-                >
-                    <BsmIcon className="size-full" icon="cross" />
-                </div>
+                {modal.options?.closable === false ? undefined : renderCloseButton(modal)}
                 <modal.modal resolver={modal.resolver} options={modal.options} />
             </div>
         )
     }
 
+    const onOverlayClicked = () => {
+        if (currentModal.options.closable === false) {
+            return;
+        }
+
+        currentModal.resolver({ exitCode: ModalExitCode.NO_CHOICE });
+    }
+
     return (
             <AnimatePresence>
-                {currentModal ? <motion.span key={crypto.randomUUID()} onClick={() => currentModal.resolver({ exitCode: ModalExitCode.NO_CHOICE })} className="fixed size-full bg-black z-[90]" initial={{ opacity: 0 }} animate={{ opacity: currentModal && 0.6 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} /> : undefined}
+                {currentModal ? <motion.span key={crypto.randomUUID()} onClick={onOverlayClicked} className="fixed size-full bg-black z-[90]" initial={{ opacity: 0 }} animate={{ opacity: currentModal && 0.6 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} /> : undefined}
                 {modals?.map(modal => (
                     <motion.div key={crypto.randomUUID()} className="fixed z-[90] top-1/2 left-1/2" initial={{ y: "100vh", x: "-50%" }} animate={{y: "-50%", scale: modal === currentModal ? 1 : 0, opacity: modal === currentModal ? 1 : 0, display: modal === currentModal ? "block" : ["block", "none"]}} exit={{ y: "100vh" }}>
                         {renderModal(modal)}
