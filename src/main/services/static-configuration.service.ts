@@ -1,5 +1,5 @@
 import ElectronStore from "electron-store";
-import { Observable } from "rxjs";
+import { Observable, Subject } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 
 export class StaticConfigurationService {
@@ -14,8 +14,12 @@ export class StaticConfigurationService {
 
     private readonly store: ElectronStore;
 
+    private readonly watchers: {
+        [K in StaticConfigKeys]?: Subject<StaticConfigKeyValues[K]>;
+    } = {};
+
     private constructor() {
-        this.store = new ElectronStore({ watch: true });
+        this.store = new ElectronStore();
     }
 
     public has<K extends StaticConfigKeys>(key: K): boolean {
@@ -32,6 +36,10 @@ export class StaticConfigurationService {
 
     public set<K extends StaticConfigKeys>(key: K, value: StaticConfigKeyValues[K]): void {
         this.store.set(key, value);
+
+        if (this.watchers[key]) {
+            this.watchers[key].next(value); // update watchers if any
+        }
     }
 
     public delete<K extends StaticConfigKeys>(key: K): void {
@@ -42,14 +50,12 @@ export class StaticConfigurationService {
         return this.store;
     }
 
-    public $watch<K extends StaticConfigKeys>(key: K): Observable<{ newValue: StaticConfigKeyValues[K], oldValue: StaticConfigKeyValues[K] }> {
-        return new Observable(obs => {
-            const unsub = this.store.onDidChange(key, (newValue, oldValue) => {
-                obs.next({ newValue, oldValue } as { newValue: StaticConfigKeyValues[K], oldValue: StaticConfigKeyValues[K] });
-            });
+    public $watch<K extends StaticConfigKeys>(key: K): Observable<StaticConfigKeyValues[K]> {
+        if (!this.watchers[key]) {
+            this.watchers[key] = new Subject() as any; // avoid type error here, the essential is that it work using the function
+        }
 
-            return () => unsub();
-        })
+        return this.watchers[key];
     }
 }
 

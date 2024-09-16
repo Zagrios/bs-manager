@@ -28,8 +28,9 @@ export class FolderLinkerService {
         this.staticConfig = StaticConfigurationService.getInstance();
 
         this.linkingType = this.staticConfig.get("use-symlinks") === true ? "symlink" : "junction";
+        log.info(`Linking type is set to ${this.linkingType}`);
 
-        this.staticConfig.$watch("use-symlinks").subscribe(({ newValue: useSymlink }) => {
+        this.staticConfig.$watch("use-symlinks").subscribe((useSymlink) => {
             this.linkingType = useSymlink === true ? "symlink" : "junction";
             log.info(`Linking type set to ${this.linkingType}`);
         });
