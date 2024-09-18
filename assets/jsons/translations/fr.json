@@ -441,7 +441,8 @@
                     "CantEditSteam": "Modification impossible",
                     "CantRename": "Renommage impossible",
                     "VersionAlreadExist": "Cette version existe déjà",
-                    "CantClone": "Clonage impossible"
+                    "CantClone": "Clonage impossible",
+                    "UnknownError": "Une erreur inconnue s'est produite"
                 },
                 "msg": {
                     "CantEditSteam": "Tu ne peux pas modifier la version Steam, cependant tu peux la cloner."
