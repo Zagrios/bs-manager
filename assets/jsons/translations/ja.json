@@ -441,7 +441,8 @@
                     "CantEditSteam": "編集不可",
                     "CantRename": "改名不可能",
                     "VersionAlreadExist": "このバージョンは既に存在しています!",
-                    "CantClone": "クローン作成不可"
+                    "CantClone": "クローン作成不可",
+                    "UnknownError": "不明なエラーが発生しました"
                 },
                 "msg": {
                     "CantEditSteam": "Steam版は編集できませんがクローンを作ることは可能です。"

@@ -441,7 +441,8 @@
                     "CantEditSteam": "无法编辑",
                     "CantRename": "无法重命名",
                     "VersionAlreadExist": "该版本已存在",
-                    "CantClone": "无法克隆"
+                    "CantClone": "无法克隆",
+                    "UnknownError": "发生了未知错误"
                 },
                 "msg": {
                     "CantEditSteam": "你不能编辑 Steam 版本。不过你可以克隆它。"

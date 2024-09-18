@@ -6,14 +6,13 @@ import { BS_APP_ID, OCULUS_BS_BACKUP_DIR, OCULUS_BS_DIR } from "../constants";
 import path from "path";
 import { ConfigurationService } from "./configuration.service";
 import { lstat, rename } from "fs/promises";
-import { BsmException } from "shared/models/bsm-exception.model";
 import log from "electron-log";
 import { OculusService } from "./oculus.service";
 import { DownloadLinkType } from "shared/models/mods";
 import sanitize from "sanitize-filename";
 import { Progression, copyDirectoryWithJunctions, deleteFolder, ensurePathNotAlreadyExist, getFoldersInFolder, rxCopy } from "../helpers/fs.helpers";
 import { FolderLinkerService } from "./folder-linker.service";
-import { ReadStream, createReadStream, pathExists, readFile, writeFile } from "fs-extra";
+import { ReadStream, createReadStream, pathExists, pathExistsSync, readFile, writeFile } from "fs-extra";
 import readline from "readline";
 import { Observable, Subject, catchError, finalize, from, map, switchMap, throwError } from "rxjs";
 import { BsStore } from "../../shared/models/bs-store.enum";
@@ -306,54 +305,58 @@ export class BSLocalVersionService {
             .catch(() => { return false; })
     }
 
-   public async editVersion(version: BSVersion, name: string, color: string): Promise<BSVersion>{
-      if(version.steam || version.oculus){ throw {title: "CantEditSteam", message: "CantEditSteam"} as BsmException; }
-      const oldPath = await this.getVersionPath(version);
-      const editedVersion: BSVersion = version.BSVersion === name
-         ? {...version, name: undefined, color}
-         : {...version, name: sanitize(name), color};
-      const newPath = await this.getVersionPath(editedVersion);
+    public async editVersion(version: BSVersion, name: string, color: string): Promise<BSVersion>{
+        if(version.steam || version.oculus){ throw new CustomError("Do not edit official Beat Saber versions", "CantEditSteam") }
+        const oldPath = await this.getVersionPath(version);
+        const editedVersion: BSVersion = version.BSVersion === name
+            ? {...version, name: undefined, color}
+            : {...version, name: sanitize(name), color};
+        const newPath = await this.getVersionPath(editedVersion);
 
-      if(oldPath === newPath){
-         this.deleteCustomVersion(version);
-         this.addCustomVersion(editedVersion);
-         return editedVersion;
-      }
+        if(oldPath === newPath){
+            this.deleteCustomVersion(version);
+            this.addCustomVersion(editedVersion);
+            return editedVersion;
+        }
 
-      if((await pathExists(newPath)) && newPath === oldPath){ throw {title: "VersionAlreadExist"} as BsmException; }
+        if(pathExistsSync(newPath)){
+            throw new CustomError("Unable to edit the version, path already exist", "VersionAlreadExist");
+        }
 
-      return rename(oldPath, newPath).then(() => {
-         this.deleteCustomVersion(version);
-         this.addCustomVersion(editedVersion);
-         return editedVersion;
-      }).catch((err: Error) => {
-         log.error("edit version error", err, version, name, color);
-         throw {title: "CantRename", ...err} as BsmException;
-      });
-   }
+        return rename(oldPath, newPath).then(() => {
+            this.deleteCustomVersion(version);
+            this.addCustomVersion(editedVersion);
+            return editedVersion;
+        }).catch((err: Error) => {
+            log.error("edit version error", err, version, name, color);
+            throw CustomError.fromError(err, "CantRename");
+        });
+    }
 
-   public async cloneVersion(version: BSVersion, name: string, color: string): Promise<BSVersion>{
-      const originPath = await this.getVersionPath(version);
-      const cloneVersion: BSVersion = version.BSVersion === name
-         ? {...version, name: undefined, color, steam: false, oculus: false}
-         : {...version, name: sanitize(name), color, steam: false, oculus: false};
-      const newPath = await this.getVersionPath(cloneVersion);
+    public async cloneVersion(version: BSVersion, name: string, color: string): Promise<BSVersion>{
+        const originPath = await this.getVersionPath(version);
+        const cloneVersion: BSVersion = version.BSVersion === name
+            ? {...version, name: undefined, color, steam: false, oculus: false}
+            : {...version, name: sanitize(name), color, steam: false, oculus: false};
+        const newPath = await this.getVersionPath(cloneVersion);
 
-      if(originPath === newPath){
-         this.deleteCustomVersion(version);
-         this.addCustomVersion(cloneVersion);
-      }
+        if(pathExistsSync(newPath)){
+            throw new CustomError("Unable to clone the version, path already exist", "VersionAlreadExist");
+        }
 
-      if(await pathExists(newPath)){ throw {title: "VersionAlreadExist"} as BsmException; }
+        if(originPath === newPath){
+            this.deleteCustomVersion(version);
+            this.addCustomVersion(cloneVersion);
+        }
 
-      return copyDirectoryWithJunctions(originPath, newPath).then(() => {
-         this.addCustomVersion(cloneVersion);
-         return cloneVersion;
-      }).catch((err: Error) => {
-         log.error("clone version error", err, version, name, color);
-         throw {title: "CantClone", ...err} as BsmException
-      })
-   }
+        return copyDirectoryWithJunctions(originPath, newPath).then(() => {
+            this.addCustomVersion(cloneVersion);
+            return cloneVersion;
+        }).catch((err: Error) => {
+            log.error("Error occured while cloning the version", err, version, name, color);
+            throw CustomError.fromError(err, "CantClone");
+        })
+    }
 
     public importVersion(opt: ImportVersionOptions): Observable<Progression<BSVersion>>{
         const { fromPath, store } = opt;

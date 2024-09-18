@@ -441,7 +441,8 @@
                     "CantEditSteam": "無法編輯",
                     "CantRename": "無法重命名",
                     "VersionAlreadExist": "該版本已存在",
-                    "CantClone": "無法複製"
+                    "CantClone": "無法複製",
+                    "UnknownError": "發生了未知錯誤"
                 },
                 "msg": {
                     "CantEditSteam": "你不能編輯 Steam 版本。不過你可以複製它。"

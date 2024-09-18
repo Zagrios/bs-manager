@@ -8,6 +8,7 @@ import { EditVersionModal } from "renderer/components/modal/modal-types/edit-ver
 import { popElement } from "shared/helpers/array.helpers";
 import { ImportVersionModal } from "renderer/components/modal/modal-types/import-version-modal.component";
 import { Progression } from "main/helpers/fs.helpers";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
 
 export class BSVersionManagerService {
     private static instance: BSVersionManagerService;
@@ -77,10 +78,19 @@ export class BSVersionManagerService {
             this.askInstalledVersions();
             return res;
         }).catch(e => {
-            this.notification.notifyError({
-                title: `notifications.custom-version.errors.titles.${e.error.title}`,
-                ...(e.error.message && { desc: `notifications.custom-version.errors.msg.${e.error.message}` }),
-            });
+
+            const knownErrorTitlesCodes = ["CantEditSteam", "VersionAlreadExist", "CantRename"];
+            const knownErrorMessagesCodes = ["CantEditSteam"];
+
+            if(knownErrorTitlesCodes.includes(e.code)){
+                this.notification.notifyError({
+                    title: `notifications.custom-version.errors.titles.${e.code}`,
+                    desc: knownErrorMessagesCodes.includes(e.code) ? `notifications.custom-version.errors.msg.${e.code}` : null
+                });
+            } else {
+                this.notification.notifyError({ title: `notifications.custom-version.errors.titles.UnknownError` });
+            }
+
             return null;
         })
     }
@@ -103,11 +113,16 @@ export class BSVersionManagerService {
             this.notification.notifySuccess({ title: "notifications.custom-version.success.titles.CloningFinished" });
             this.askInstalledVersions();
             return res;
-        }).catch(e => {
-            this.notification.notifyError({
-                title: `notifications.custom-version.errors.titles.${e.error.title}`,
-                ...(e.error.message && { desc: `notifications.custom-version.errors.msg.${e.error.message}` }),
-            });
+        }).catch((e: CustomError) => {
+
+            const knownErrorTitlesCodes = ["VersionAlreadExist", "CantClone"];
+
+            if(knownErrorTitlesCodes.includes(e.code)){
+                this.notification.notifyError({ title: `notifications.custom-version.errors.titles.${e.code}` });
+            } else {
+                this.notification.notifyError({ title: `notifications.custom-version.errors.titles.UnknownError` });
+            }
+
             return null;
         }).finally(() => {
             this.progressBar.hide(true)
