@@ -118,8 +118,8 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
     })();
 
     return (
-        <div className="w-full h-full flex flex-col items-center justify-center gap-4">
-            <nav className="w-full shrink-0 flex h-9 justify-center px-40 gap-2 text-main-color-1 dark:text-white">
+        <>
+            <nav className="w-full shrink-0 flex h-9 justify-center px-40 gap-2 text-main-color-1 dark:text-white mb-4">
                 <BsmButton
                     className="flex items-center justify-center w-fit rounded-full px-2 py-1 font-bold whitespace-nowrap"
                     icon="add"
@@ -178,6 +178,6 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                     <LocalPlaylistsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 1} ref={playlistsRef} version={version} linkedState={playlistLinkedState} filter={playlistFilter} search={search}/>
                 </InstalledMapsContext.Provider>
             </BsContentTabPanel>
-        </div>
+            </>
     );
 }

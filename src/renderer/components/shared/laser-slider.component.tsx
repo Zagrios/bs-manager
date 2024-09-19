@@ -1,4 +1,5 @@
 import { CSSProperties } from "react";
+import { cn } from "renderer/helpers/css-class.helpers";
 
 type Props = Readonly<{
     mode: "horizontal" | "vertical";
@@ -27,7 +28,7 @@ export function LaserSlider({mode, color, className, nbSteps, step}: Props) {
     })();
 
     return (
-        <div className={className} style={{ color }}>
+        <div className={cn("relative", className)} style={{ color }}>
             <span className="absolute h-full w-full bg-current brightness-50" />
             <span className="absolute block bg-current transition-transform duration-300 shadow-center shadow-current" style={sliderStyle} />
         </div>

@@ -15,8 +15,8 @@ export function BsContentTabPanel({className, tabIndex, tabs, onTabChange, child
     const sliderColor = useThemeColor("second-color");
 
     return (
-        <div className={className ?? "w-full h-full flex flex-row bg-light-main-color-1 dark:bg-main-color-1 rounded-md shadow-black shadow-md overflow-hidden"}>
-            <nav className="h-full grid grid-flow-row !rounded-none shadow-sm flex-shrink-0">
+        <div className={className ?? "flex-grow basis-0 min-h-0 w-full flex flex-row bg-light-main-color-1 dark:bg-main-color-1 rounded-md shadow-black shadow-md"}>
+            <nav className="h-full grid grid-flow-row shadow-sm flex-shrink-0">
                 {tabs.map((tab, i) => (
                     <BsContentTabItem
                         key={`${tab.text}${tab.icon}`}
@@ -26,9 +26,11 @@ export function BsContentTabPanel({className, tabIndex, tabs, onTabChange, child
                     />
                 ))}
             </nav>
-            <LaserSlider className="h-full w-1 relative shrink-0" mode="vertical" color={sliderColor} nbSteps={tabs.length} step={tabIndex}/>
-            <div className="flex-grow h-full flex flex-col transition-all duration-300" style={{ translate: `0 ${0 - tabIndex * 100}%` }}>
-                {children}
+            <LaserSlider className="h-full w-1 shrink-0" mode="vertical" color={sliderColor} nbSteps={tabs.length} step={tabIndex}/>
+            <div className="flex-grow overflow-y-hidden">
+                <div className="size-full flex flex-col transition-transform duration-300" style={{ transform: `translateY(${0 - tabIndex * 100}%)` }}>
+                    {children}
+                </div>
             </div>
         </div>
   )
