@@ -53,6 +53,14 @@ export default function App() {
         const appVersion = await lastValueFrom(autoUpdater.getAppVersion());
         const lastAppVersion = autoUpdater.getLastAppVersion();
 
+        if (lastAppVersion.toLowerCase().includes("alpha")) {
+            autoUpdater.setLastAppVersion("0"); // Reset last app version if it's an alpha version for users with alpha versions in the var stored.
+        }
+
+        if (appVersion.toLowerCase().includes("alpha")) {
+            return;
+        }
+
         autoUpdater.setLastAppVersion(appVersion);
 
         if (parse(lastAppVersion) && gt(appVersion, lastAppVersion)) {
