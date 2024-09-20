@@ -34,8 +34,12 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
     const installedMaps = useObservable(() => options.data.installedMaps$, null);
 
     const isMissingMaps$ = useConstant(() => combineLatest([options.data.installedMaps$, options.data.localPlaylist$]).pipe(map(([maps, playlist]) => maps.length !== playlist.songs.length)));
-    const isPlaylistDownloading$ = useConstant(() => options.data.localPlaylist$.pipe(switchMap(playlist => playlistDownloader.$isPlaylistDownloading(playlist.path, options.data.version))));
-    const isPlaylistInQueue$ = useConstant(() => options.data.localPlaylist$.pipe(switchMap(playlist => playlistDownloader.$isPlaylistInQueue(playlist.path, options.data.version))));
+    const isPlaylistDownloading$ = useConstant(() => options.data.localPlaylist$.pipe(switchMap(
+        playlist => playlistDownloader.$isPlaylistDownloading(playlist?.customData?.syncURL ?? playlist.path, options.data.version)
+    )));
+    const isPlaylistInQueue$ = useConstant(() => options.data.localPlaylist$.pipe(switchMap(
+        playlist => playlistDownloader.$isPlaylistInQueue(playlist?.customData?.syncURL ?? playlist.path, options.data.version)
+    )));
 
     const isInQueue = useObservable(() => isPlaylistInQueue$, false);
 
@@ -44,7 +48,7 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
         const ignoreSongsHashs = installedMaps?.map(map => map.hash);
 
         const obs$ = playlistDownloader.downloadPlaylist({
-            downloadSource: localPlaylist.path,
+            downloadSource: localPlaylist?.customData?.syncURL ?? localPlaylist.path,
             dest: localPlaylist.path,
             version: options.data.version,
             ignoreSongsHashs,
