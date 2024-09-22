@@ -1,6 +1,6 @@
 # This workflow will...
 
-name: Realease Linux
+name: Release Linux
 
 env:
   GH_TOKEN: ${{ secrets.GH_TOKEN }}
