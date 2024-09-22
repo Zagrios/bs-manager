@@ -442,6 +442,8 @@
                     "OCULUS_NOT_RUNNING": "Oculus n'est pas lancé",
                     "BS_ALREADY_RUNNING": "Beat Saber est déjà lancé",
                     "EXE_NOT_FINDED": "Fichiers manquants",
+                    "PROTON_NOT_SET": "Proton folder not set",
+                    "PROTON_NOT_FOUND": "Proton binary not found",
                     "EXIT": "Arrêt brutal",
                     "OCULUS_LIB_NOT_FOUND": "Librairie Oculus introuvable"
                 },
@@ -452,7 +454,9 @@
                     "BS_ALREADY_RUNNING": "Ferme Beat Saber avant de le lancer à nouveau.",
                     "EXE_NOT_FINDED": "Quelques fichiers semblent manquants. Essaye de vérifier les fichiers.",
                     "EXIT": "Beat Saber s'est arrêté brusquement, essaye de vérifier les fichiers.",
-                    "OCULUS_LIB_NOT_FOUND": "Vérifie que l'application Oculus est correctement installée, et que les librairies sont bien définies dans Oculus."
+                    "OCULUS_LIB_NOT_FOUND": "Vérifie que l'application Oculus est correctement installée, et que les librairies sont bien définies dans Oculus.",
+                    "PROTON_NOT_SET": "Set the Proton path in settings",
+                    "PROTON_NOT_FOUND": "Set the Proton path in settings"
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Lancer Steam"
@@ -833,6 +837,12 @@
             "choose-folder": "Choisir un dossier",
             "default": "Par défaut",
             "default-tooltip": "Par défaut, dans votre dossier personnel"
+        },
+        "linux-setup": {
+            "title": "Linux Setup",
+            "proton-folder": "Proton folder",
+            "proton-folder-description": "Choose the folder to the Proton path. (eg. Proton - Experimental)",
+            "choose-folder": "Choisir un dossier"
         }
     },
     "maps": {

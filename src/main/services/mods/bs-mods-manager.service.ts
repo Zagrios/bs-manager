@@ -6,7 +6,7 @@ import path from "path";
 import md5File from "md5-file";
 import { RequestService } from "../request.service";
 import { spawn } from "child_process";
-import { BS_EXECUTABLE } from "../../constants";
+import { BS_EXECUTABLE, WINE_BINARY_PREFIX } from "../../constants";
 import log from "electron-log";
 import { deleteFolder, pathExist, Progression, unlinkPath } from "../../helpers/fs.helpers";
 import { lastValueFrom, Observable } from "rxjs";
@@ -153,7 +153,7 @@ export class BsModsManagerService {
 
             winePath = path.join(
                 this.staticConfig.get("proton-folder"),
-                "files", "bin", "wine"
+                WINE_BINARY_PREFIX
             );
 
             if (!pathExistsSync(winePath)) {

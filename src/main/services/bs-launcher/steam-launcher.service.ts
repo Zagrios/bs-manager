@@ -4,7 +4,7 @@ import { StoreLauncherInterface } from "./store-launcher.interface";
 import { pathExists, pathExistsSync, rename } from "fs-extra";
 import { SteamService } from "../steam.service";
 import path from "path";
-import { BS_APP_ID, BS_EXECUTABLE, STEAMVR_APP_ID } from "../../constants";
+import { BS_APP_ID, BS_EXECUTABLE, PROTON_BINARY_PREFIX, STEAMVR_APP_ID } from "../../constants";
 import log from "electron-log";
 import { AbstractLauncherService } from "./abstract-launcher.service";
 import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
@@ -135,7 +135,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 if (!this.staticConfig.has("proton-folder")) {
                     throw CustomError.fromError(new Error("Proton folder not set"), BSLaunchError.PROTON_NOT_SET);
                 }
-                exePath = path.join(this.staticConfig.get("proton-folder"), "proton");
+                exePath = path.join(this.staticConfig.get("proton-folder"), PROTON_BINARY_PREFIX);
                 if (!pathExistsSync(exePath)) {
                     throw CustomError.fromError(
                         new Error("Could not locate proton binary"),
