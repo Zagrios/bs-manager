@@ -4,7 +4,9 @@ to get you oculus token check here : https://github.com/Zagrios/bs-manager/wiki/
 
 ---
 
-To add to the wiki:
+This Wiki accepts contributions!
+
+To contribute to the wiki:
 
 - Fork the project
 - Add/Edit `.md` files in the `docs/wiki/` folder
