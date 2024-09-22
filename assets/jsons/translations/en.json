@@ -120,6 +120,7 @@
                 "title": "Steam & Oculus",
                 "description": "Logging out will allow you to switch accounts on the next Beat Saber download.",
                 "logout": "Log out",
+                "logout-success": "Logout Successful",
                 "download-platform": {
                     "title": "Default Platform",
                     "desc": "Choose the default platform that will be used to download versions of Beat Saber.",
