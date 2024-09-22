@@ -15,7 +15,8 @@
         "apply": "Применить",
         "copy": "Скопировать",
         "copied": "Скопировано!",
-        "confirm": "Подтвердить"
+        "confirm": "Подтвердить",
+        "unknown": "Неизвестная ошибка ¯\\_(ツ)_/¯"
     },
     "nav-bar": {
         "add-version": "Добавить версию игры",
@@ -159,6 +160,15 @@
                 "title": "Папка установок",
                 "description": "Изменить папку, которая будет содержать весь контент, загруженный BSManager.",
                 "choose-folder": "Изменить папку"
+            },
+            "proton-folder": {
+                "title": "Proton folder",
+                "description": "Change the folder to the Proton path. (eg. Proton - Experimental)",
+                "choose-folder": "Choose folder",
+                "errors": {
+                    "title": "Change Proton folder failed",
+                    "invalid-folder": "Invalid Proton folder path"
+                }
             },
             "additional-content": {
                 "title": "Дополнительный контент",

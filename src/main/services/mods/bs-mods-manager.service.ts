@@ -17,6 +17,7 @@ import { sToMs } from "../../../shared/helpers/time.helpers";
 import { ensureDir, pathExistsSync } from "fs-extra";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { popElement } from "shared/helpers/array.helpers";
+import { StaticConfigurationService } from "../static-configuration.service";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -24,6 +25,7 @@ export class BsModsManagerService {
     private readonly beatModsApi: BeatModsApiService;
     private readonly bsLocalService: BSLocalVersionService;
     private readonly requestService: RequestService;
+    private readonly staticConfig: StaticConfigurationService;
 
     private manifestMatches: Mod[];
 
@@ -38,6 +40,7 @@ export class BsModsManagerService {
         this.beatModsApi = BeatModsApiService.getInstance();
         this.bsLocalService = BSLocalVersionService.getInstance();
         this.requestService = RequestService.getInstance();
+        this.staticConfig = StaticConfigurationService.getInstance();
     }
 
     private async getModFromHash(hash: string): Promise<Mod> {
@@ -140,9 +143,28 @@ export class BsModsManagerService {
             return false;
         }
 
+        // Just use the wine binary within the proton folder so no additional wine installation is needed
+        let winePath: string = "";
+        if (process.platform === "linux") {
+            if (!this.staticConfig.has("proton-folder")) {
+                log.error("Proton folder not setup");
+                return false;
+            }
+
+            winePath = path.join(
+                this.staticConfig.get("proton-folder"),
+                "files", "bin", "wine"
+            );
+
+            if (!pathExistsSync(winePath)) {
+                log.error("Wine binary not found");
+                return false;
+            }
+        }
+
         return new Promise<boolean>(resolve => {
-            const cmd = process.platform === 'linux'
-                ? `screen -dmS "BSIPA" dotnet "${ipaPath}" ${args.join(" ")}` // Must run through screen, otherwise BSIPA tries to move console cursor and crashes.
+            const cmd = process.platform === "linux"
+                ? `"${winePath}" "${ipaPath}" ${args.join(" ")}`
                 : `"${ipaPath}" ${args.join(" ")}`;
 
             log.info("START IPA PROCESS", cmd);
@@ -153,6 +175,9 @@ export class BsModsManagerService {
                 resolve(false)
             }, sToMs(30));
 
+            processIPA.stdout.on("data", data => {
+                log.info("IPA process stdout", data.toString());
+            });
             processIPA.stderr.on("data", data => {
                 log.error("IPA process stderr", data.toString());
             })
@@ -195,7 +220,7 @@ export class BsModsManagerService {
         }
 
         const crypto = require("crypto");
-        const files = await zip.files;
+        const { files } = zip;
 
         const checkedEntries = (
             await Promise.all(

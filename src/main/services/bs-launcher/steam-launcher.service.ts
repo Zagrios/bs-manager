@@ -1,7 +1,7 @@
 import { Observable } from "rxjs";
 import { BSLaunchError, BSLaunchEvent, BSLaunchEventData, BSLaunchWarning, LaunchOption } from "../../../shared/models/bs-launch";
 import { StoreLauncherInterface } from "./store-launcher.interface";
-import { pathExists, rename } from "fs-extra";
+import { pathExists, pathExistsSync, rename } from "fs-extra";
 import { SteamService } from "../steam.service";
 import path from "path";
 import { BS_APP_ID, BS_EXECUTABLE, STEAMVR_APP_ID } from "../../constants";
@@ -11,6 +11,7 @@ import { CustomError } from "../../../shared/models/exceptions/custom-error.clas
 import { UtilsService } from "../utils.service";
 import { exec } from "child_process";
 import fs from 'fs';
+import { StaticConfigurationService } from "../static-configuration.service";
 
 export class SteamLauncherService extends AbstractLauncherService implements StoreLauncherInterface{
 
@@ -23,11 +24,13 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         return SteamLauncherService.instance;
     }
 
+    private readonly staticConfig: StaticConfigurationService;
     private readonly steam: SteamService;
     private readonly util: UtilsService;
 
     private constructor(){
         super();
+        this.staticConfig = StaticConfigurationService.getInstance();
         this.steam = SteamService.getInstance();
         this.util = UtilsService.getInstance();
     }
@@ -128,9 +131,16 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                     `${exePath}`,
                     ...launchArgs,
                 ];
-                exePath = launchOptions.protonPath;
-                if (!exePath) {
-                    throw CustomError.fromError(new Error("Proton path not set"), BSLaunchError.PROTON_NOT_SET);
+
+                if (!this.staticConfig.has("proton-folder")) {
+                    throw CustomError.fromError(new Error("Proton folder not set"), BSLaunchError.PROTON_NOT_SET);
+                }
+                exePath = path.join(this.staticConfig.get("proton-folder"), "proton");
+                if (!pathExistsSync(exePath)) {
+                    throw CustomError.fromError(
+                        new Error("Could not locate proton binary"),
+                        BSLaunchError.PROTON_NOT_FOUND
+                    );
                 }
 
                 // Setup Proton environment variables

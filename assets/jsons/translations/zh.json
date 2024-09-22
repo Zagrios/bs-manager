@@ -15,7 +15,8 @@
         "apply": "应用",
         "copy": "复制",
         "copied": "已复制!",
-        "confirm": "确认"
+        "confirm": "确认",
+        "Unknown": "发生了一个错误 ¯\\_(ツ)_/¯"
     },
     "nav-bar": {
         "add-version": "添加版本",
@@ -159,6 +160,15 @@
                 "title": "安装文件夹",
                 "description": "更改将包含 BSManager 下载的所有内容的文件夹。",
                 "choose-folder": "选择文件夹"
+            },
+            "proton-folder": {
+                "title": "Proton folder",
+                "description": "Change the folder to the Proton path. (eg. Proton - Experimental)",
+                "choose-folder": "Choose folder",
+                "errors": {
+                    "title": "Change Proton folder failed",
+                    "invalid-folder": "Invalid Proton folder path"
+                }
             },
             "additional-content": {
                 "title": "附加内容",

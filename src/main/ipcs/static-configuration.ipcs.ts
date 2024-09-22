@@ -1,4 +1,4 @@
-import { of } from "rxjs";
+import { from, of } from "rxjs";
 import { IpcService } from "../services/ipc.service";
 import { StaticConfigurationService } from "../services/static-configuration.service";
 
@@ -10,5 +10,5 @@ ipc.on("static-configuration.get", (args, reply) => {
 });
 
 ipc.on("static-configuration.set", (args, reply) => {
-    reply(of(staticConfig.set(args.key, args.value)));
+    reply(from(staticConfig.set(args.key, args.value)));
 });

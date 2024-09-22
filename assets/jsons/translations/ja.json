@@ -15,7 +15,8 @@
         "apply": "適用",
         "copy": "コピー",
         "copied": "コピー済み!",
-        "confirm": "確認"
+        "confirm": "確認",
+        "unknown": "不明なエラーが発生しました (´・ω・`)"
     },
     "nav-bar": {
         "add-version": "バージョンを追加",
@@ -159,6 +160,15 @@
                 "title": "インストールフォルダー",
                 "description": "BSManager によってダウンロードされたすべてのコンテンツを含むフォルダを変更します。",
                 "choose-folder": "フォルダーを選択"
+            },
+            "proton-folder": {
+                "title": "Proton folder",
+                "description": "Change the folder to the Proton path. (eg. Proton - Experimental)",
+                "choose-folder": "Choose folder",
+                "errors": {
+                    "title": "Change Proton folder failed",
+                    "invalid-folder": "Invalid Proton folder path"
+                }
             },
             "additional-content": {
                 "title": "追加コンテンツ",

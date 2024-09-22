@@ -43,7 +43,6 @@ import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 import BeatWaitingImg from "../../../assets/images/apngs/beat-waiting.png";
 import BeatConflict from "../../../assets/images/apngs/beat-conflict.png";
 import { logRenderError } from "renderer";
-import { BSLauncherService } from "renderer/services/bs-launcher.service";
 import { SettingToogleSwitchGrid } from "renderer/components/settings/setting-toogle-switch-grid.component";
 import { BasicModal } from "renderer/components/modal/basic-modal.component";
 import { StaticConfigurationService } from "renderer/services/static-configuration.service";
@@ -57,7 +56,6 @@ export function SettingsPage() {
     const ipcService = useService(IpcService);
     const modalService = useService(ModalService);
     const bsDownloader = useService(BsDownloaderService);
-    const bsLauncher = useService(BSLauncherService);
     const steamDownloader = useService(SteamDownloaderService);
     const progressBarService = useService(ProgressBarService);
     const notificationService = useService(NotificationService);
@@ -94,7 +92,7 @@ export function SettingsPage() {
     const downloadStore = useObservable(() => bsDownloader.defaultStore$);
 
     const [installationFolder, setInstallationFolder] = useState(null);
-    const [protonPath, setProtonPath] = useState(bsLauncher.getProtonPath());
+    const [protonFolder, setProtonFolder] = useState("");
     const [showSupporters, setShowSupporters] = useState(false);
     const [mapDeepLinksEnabled, setMapDeepLinksEnabled] = useState(false);
     const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
@@ -116,6 +114,7 @@ export function SettingsPage() {
 
         staticConfig.get("disable-hadware-acceleration").then(disabled =>setHardwareAccelerationEnabled(() => disabled !== true));
         staticConfig.get("use-symlinks").then(useSymlinks => setUseSymlink(() => useSymlinks));
+        staticConfig.get("proton-folder").then(setProtonFolder);
     }, []);
 
     const allDeepLinkEnabled = mapDeepLinksEnabled && playlistsDeepLinkEnabled && modelsDeepLinkEnabled;
@@ -180,18 +179,32 @@ export function SettingsPage() {
         clearTimeout(timeoutId);
     };
 
-    const setDefaultProtonPath = () => {
+    const setDefaultProtonFolder = async () => {
         if (!progressBarService.require()) {
             return;
         }
 
-        lastValueFrom(ipcService.sendV2("choose-file")).then(res => {
-            if (!res.canceled && res.filePaths?.length) {
-                const protonPath = res.filePaths[0];
-                setProtonPath(protonPath);
-                bsLauncher.setProtonPath(protonPath);
+        try {
+            const pathResponse = await lastValueFrom(ipcService.sendV2("choose-folder"));
+            if (
+                pathResponse.canceled
+                || !pathResponse.filePaths
+                || pathResponse.filePaths.length === 0
+            ) {
+                return;
             }
-        });
+
+            const folder = pathResponse.filePaths[0];
+            await staticConfig.set("proton-folder", folder);
+            setProtonFolder(folder);
+        } catch (error: any) {
+            notificationService.notifyError({
+                title: "pages.settings.proton-folder.errors.title",
+                desc: ["invalid-folder"].includes(error?.code)
+                    ? `pages.settings.proton-folder.errors.${error.code}`
+                    : "misc.unknown",
+            });
+        }
     };
 
     const setDefaultInstallationFolder = () => {
@@ -394,12 +407,12 @@ export function SettingsPage() {
                     </div>
                 </SettingContainer>
 
-                <SettingContainer os="linux" title="pages.settings.proton-path.title" description="pages.settings.proton-path.description">
+                <SettingContainer os="linux" title="pages.settings.proton-folder.title" description="pages.settings.proton-folder.description">
                     <div className="relative flex items-center justify-between w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 rounded-md pl-2 py-1">
-                        <span className="block text-ellipsis overflow-hidden min-w-0 whitespace-nowrap" title={protonPath}>
-                            {protonPath}
+                        <span className="block text-ellipsis overflow-hidden min-w-0 whitespace-nowrap" title={protonFolder}>
+                            {protonFolder}
                         </span>
-                        <BsmButton onClick={setDefaultProtonPath} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="pages.settings.proton-path.choose-file" withBar={false} />
+                        <BsmButton onClick={setDefaultProtonFolder} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="pages.settings.proton-folder.choose-folder" withBar={false} />
                     </div>
                 </SettingContainer>
 

@@ -15,7 +15,8 @@
         "apply": "Appliquer",
         "copy": "Copier",
         "copied": "Copié !",
-        "confirm": "Confirmer"
+        "confirm": "Confirmer",
+        "unknown": "Une erreur inconnue s'est produite ¯\\_(ツ)_/¯"
     },
     "nav-bar": {
         "add-version": "Ajouter une version",
@@ -159,6 +160,15 @@
                 "title": "Dossier d'installation",
                 "description": "Changer le dossier qui contiendra tout le contenu téléchargé par BSManager.",
                 "choose-folder": "Choisir un dossier"
+            },
+            "proton-folder": {
+                "title": "Proton folder",
+                "description": "Change the folder to the Proton path. (eg. Proton - Experimental)",
+                "choose-folder": "Choose folder",
+                "errors": {
+                    "title": "Change Proton folder failed",
+                    "invalid-folder": "Invalid Proton folder path"
+                }
             },
             "additional-content": {
                 "title": "Contenus additionnels",
