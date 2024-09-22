@@ -146,6 +146,9 @@ export interface IpcChannelMapping {
     "static-configuration.get": StaticConfigGetIpcRequestResponse<StaticConfigKeys>;
     "static-configuration.set": StaticConfigSetIpcRequest<StaticConfigKeys>;
 
+    /* ** linux.ipcs ** */
+    "linux.verify-proton-folder": { request: void, response: boolean };
+
     /* ** OTHERS (if your IPC channel is not in a "-ipcs" file, put it here) ** */
     "shortcut-launch-options": { request: void, response: LaunchOption };
 }

@@ -16,3 +16,12 @@ export const CACHE_PATH = path.join(app.getPath("userData"), "CachedData");
 export const IMAGE_CACHE_PATH = path.join(CACHE_PATH, "imagescache");
 
 export const HTTP_STATUS_CODES = constants;
+
+// Linux related stuff
+
+export const PROTON_BINARY_PREFIX = "proton";
+export const WINE_BINARY_PREFIX = path.join(
+    "files", "bin", "wine"
+);
+
+
