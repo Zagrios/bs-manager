@@ -1,6 +1,9 @@
 import ElectronStore from "electron-store";
+import { pathExistsSync } from "fs-extra";
+import path from "path";
 import { Observable, Subject } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
 
 export class StaticConfigurationService {
     private static instance: StaticConfigurationService;
@@ -34,11 +37,31 @@ export class StaticConfigurationService {
         cb(this.get(key));
     }
 
-    public set<K extends StaticConfigKeys>(key: K, value: StaticConfigKeyValues[K]): void {
+    public async set<K extends StaticConfigKeys>(key: K, value: StaticConfigKeyValues[K]): Promise<void> {
+        // Validate the setters
+        switch (key) {
+            case "proton-folder":
+                this.validateProtonFolder(value as string);
+                break;
+
+            default:
+                break;
+        }
+
         this.store.set(key, value);
 
         if (this.watchers[key]) {
             this.watchers[key].next(value); // update watchers if any
+        }
+    }
+
+    // Setters with validation
+
+    private validateProtonFolder(protonFolder: string): void {
+        const protonPath = path.join(protonFolder, "proton");
+        const winePath = path.join(protonFolder, "files", "bin", "wine");
+        if (!pathExistsSync(protonPath) || !pathExistsSync(winePath)) {
+            throw new CustomError("Invalid proton folder path", "invalid-folder");
         }
     }
 
@@ -60,12 +83,15 @@ export class StaticConfigurationService {
 }
 
 export interface StaticConfigKeyValues {
-    "versions": BSVersion[];
     "installation-folder": string;
     "song-details-cache-etag": string;
     "disable-hadware-acceleration": boolean;
     "use-symlinks": boolean;
-}
+
+    // Linux Specific static configs
+    "versions": BSVersion[];
+    "proton-folder": string;
+};
 
 export type StaticConfigKeys = keyof StaticConfigKeyValues;
 
@@ -77,5 +103,5 @@ export type StaticConfigGetIpcRequestResponse<K extends StaticConfigKeys> = {
 export type StaticConfigSetIpcRequest<K extends StaticConfigKeys> = {
     request: { key: K, value: StaticConfigKeyValues[K] };
     response: void;
-}
+};
 
