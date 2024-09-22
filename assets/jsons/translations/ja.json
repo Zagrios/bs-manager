@@ -120,6 +120,7 @@
                 "title": "Steam & Oculus",
                 "description": "ログアウトすると、次のBeat Saberダウンロード時にアカウントを切り替えることができます。",
                 "logout": "ログアウト",
+                "logout-success": "Logout Successful",
                 "download-platform": {
                     "title": "デフォルトプラットフォーム",
                     "desc": "Beat Saberのダウンロードに使用するデフォルトのプラットフォームを選択します。",

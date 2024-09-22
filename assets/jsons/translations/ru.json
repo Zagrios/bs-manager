@@ -120,6 +120,7 @@
                 "title": "Steam & Oculus",
                 "description": "Выход позволит вам сменить учетную запись при следующей загрузке Beat Saber.",
                 "logout": "Выйти",
+                "logout-success": "Logout Successful",
                 "download-platform": {
                     "title": "Основная платформа",
                     "desc": "Выберите основную платформу, которая будет использоваться для скачивания версий Beat Saber.",

@@ -120,6 +120,7 @@
                 "title": "Steam & Oculus",
                 "description": "登出后，您可以在下一次下载 Beat Saber 时切换帐户。",
                 "logout": "登出",
+                "logout-success": "Logout Successful",
                 "download-platform": {
                     "title": "，默认平台",
                     "desc": "选择要下载 BeatSaber 的默认平台。",

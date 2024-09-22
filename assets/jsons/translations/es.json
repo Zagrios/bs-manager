@@ -120,6 +120,7 @@
                 "title": "Steam & Oculus",
                 "description": "Desconectarte te permitirá cambiar de cuenta en la próxima descarga de Beat Saber.",
                 "logout": "Cerrar sesión",
+                "logout-success": "Logout Successful",
                 "download-platform": {
                     "title": "Plataforma predeterminada",
                     "desc": "Elige la plataforma predeterminada que se utilizará para descargar las versiones de Beat Saber.",

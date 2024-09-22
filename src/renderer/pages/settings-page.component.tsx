@@ -136,7 +136,14 @@ export function SettingsPage() {
     }
 
     const clearDownloadersSession = () => {
+        if (!hasDownloaderSession) {
+            return;
+        }
+
         steamDownloader.deleteSteamSession();
+        notificationService.notifyInfo({
+            title: "pages.settings.steam-and-oculus.logout-success",
+        });
         loadDownloadersSession();
     }
 
