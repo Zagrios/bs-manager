@@ -1,0 +1,24 @@
+name: Labeler
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  label-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Add Linux label
+      if: |
+        contains(github.event.issue.title, 'linux') ||
+        contains(github.event.issue.body, 'linux') ||
+        contains(github.event.issue.title, 'ubuntu') ||
+        contains(github.event.issue.body, 'ubuntu') ||
+        contains(github.event.issue.title, 'arch') ||
+        contains(github.event.issue.body, 'arch') ||
+        contains(github.event.issue.title, 'kde') ||
+        contains(github.event.issue.body, 'kde')
+      uses: actions-ecosystem/action-add-labels@v1
+      with:
+        github_token: ${{ secrets.GH_TOKEN }}
+        labels: linux
