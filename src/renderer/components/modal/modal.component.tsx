@@ -17,7 +17,7 @@ export function Modal() {
 
     useEffect(() => {
         const onEscape = (e: KeyboardEvent) => {
-            if (currentModal.options.closable === false || e.key !== "Escape") {
+            if (currentModal.options?.closable === false || e.key !== "Escape") {
                 return;
             }
             currentModal.resolver({ exitCode: ModalExitCode.CLOSED });
@@ -65,7 +65,7 @@ export function Modal() {
     }
 
     const onOverlayClicked = () => {
-        if (currentModal.options.closable === false) {
+        if (currentModal.options?.closable === false) {
             return;
         }
 
