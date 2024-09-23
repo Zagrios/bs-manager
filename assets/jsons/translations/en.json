@@ -825,7 +825,7 @@
             "update-title": "Update custom mod",
             "existing": "Overwriting existing mod",
             "name": "Name",
-            "name-required": "Mod name is required",
+            "name-required": "Mod name is required.",
             "version": "Version",
             "description": "Description",
             "files": "Files",

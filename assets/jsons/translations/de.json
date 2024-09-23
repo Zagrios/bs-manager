@@ -459,7 +459,7 @@
         "mods": {
             "get-installed-mods": {
                 "titles": {
-                    "error": "Get installed mods 😨"
+                    "error": "Installierte Mods abrufen 😨"
                 }
             },
             "install-mods": {
@@ -499,18 +499,18 @@
             },
             "external-mod": {
                 "titles": {
-                    "install-success": "Custom mod installed 🎉",
-                    "update-success": "Custom mod updated 🎉",
-                    "install-error": "Custom mod installation failed 😨",
-                    "update-error": "Custom mod update failed 😨"
+                    "install-success": "Benutzerdefiniertes Mod installiert 🎉",
+                    "update-success": "Benutzerdefiniertes Mod aktualisiert 🎉",
+                    "install-error": "Installation des benutzerdefinierten Mods fehlgeschlagen 😨",
+                    "update-error": "Aktualisierung des benutzerdefinierten Mods fehlgeschlagen 😨"
                 },
                 "msgs": {
-                    "install-success": "Custom mod has been installed.",
-                    "update-success": "Custom mod has been updated.",
-                    "verify-error": "Custom mod file/s does not contain any dll files.",
-                    "install-error": "Custom mod file/s could not be installed.",
-                    "no-files-error": "Custom mod does not contain any files.",
-                    "update-error": "Custom mod could not be updated."
+                    "install-success": "Benutzerdefiniertes Mod wurde installiert.",
+                    "update-success": "Benutzerdefiniertes Mod wurde aktualisiert.",
+                    "verify-error": "Die benutzerdefinierten Mod-Dateien enthalten keine DLL-Dateien.",
+                    "install-error": "Die benutzerdefinierten Mod-Dateien konnten nicht installiert werden.",
+                    "no-files-error": "Der benutzerdefinierte Mod enthält keine Dateien.",
+                    "update-error": "Der benutzerdefinierte Mod konnte nicht aktualisiert werden."
                 }
             },
             "toggle-mods": {
@@ -814,19 +814,19 @@
             "title": "Install custom mod",
         },
         "external-mod": {
-            "install-title": "Install custom mod",
-            "update-title": "Update custom mod",
-            "existing": "Overwriting existing mod",
+            "install-title": "Benutzerdefiniertes Mod installieren",
+            "update-title": "Benutzerdefiniertes Mod aktualisieren",
+            "existing": "Überschreiben des vorhandenen Mods",
             "name": "Name",
-            "name-required": "Mod name is required",
+            "name-required": "Der Mod-Name ist erforderlich.",
             "version": "Version",
-            "description": "Description",
-            "files": "Files",
-            "file-exists": "Mod file already exists",
-            "file-local-conflict": "Conflicting mod file",
-            "file-api-conflict": "Install {mod} mod instead",
-            "install-button": "Install",
-            "update-button": "Update"
+            "description": "Beschreibung",
+            "files": "Dateien",
+            "file-exists": "Mod-Datei existiert bereits",
+            "file-local-conflict": "Konfliktierende Mod-Datei",
+            "file-api-conflict": "Stattdessen {mod} Mod installieren",
+            "install-button": "Installieren",
+            "update-button": "Aktualisieren"
         }
     },
     "maps": {

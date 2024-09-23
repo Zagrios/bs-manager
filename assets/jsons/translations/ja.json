@@ -459,7 +459,7 @@
         "mods": {
             "get-installed-mods": {
                 "titles": {
-                    "error": "Get installed mods 😨"
+                    "error": "インストールされたモッドを取得 😨"
                 }
             },
             "install-mods": {
@@ -499,18 +499,18 @@
             },
             "external-mod": {
                 "titles": {
-                    "install-success": "Custom mod installed 🎉",
-                    "update-success": "Custom mod updated 🎉",
-                    "install-error": "Custom mod installation failed 😨",
-                    "update-error": "Custom mod update failed 😨"
+                    "install-success": "カスタムモッドがインストールされました 🎉",
+                    "update-success": "カスタムモッドが更新されました 🎉",
+                    "install-error": "カスタムモッドのインストールに失敗しました 😨",
+                    "update-error": "カスタムモッドの更新に失敗しました 😨"
                 },
                 "msgs": {
-                    "install-success": "Custom mod has been installed.",
-                    "update-success": "Custom mod has been updated.",
-                    "verify-error": "Custom mod file/s does not contain any dll files.",
-                    "install-error": "Custom mod file/s could not be installed.",
-                    "no-files-error": "Custom mod does not contain any files.",
-                    "update-error": "Custom mod could not be updated."
+                    "install-success": "カスタムモッドがインストールされました。",
+                    "update-success": "カスタムモッドが更新されました。",
+                    "verify-error": "カスタムモッドのファイルにはDLLファイルが含まれていません。",
+                    "install-error": "カスタムモッドのファイルをインストールできませんでした。",
+                    "no-files-error": "カスタムモッドにはファイルが含まれていません。",
+                    "update-error": "カスタムモッドを更新できませんでした。"
                 }
             },
             "toggle-mods": {
@@ -814,19 +814,19 @@
             "title": "Install custom mod",
         },
         "external-mod": {
-            "install-title": "Install custom mod",
-            "update-title": "Update custom mod",
-            "existing": "Overwriting existing mod",
+            "install-title": "カスタムモッドをインストール",
+            "update-title": "カスタムモッドを更新",
+            "existing": "既存のモッドを上書きしています",
             "name": "名前",
-            "name-required": "Mod name is required",
-            "version": "Version",
-            "description": "Description",
-            "files": "Files",
-            "file-exists": "Mod file already exists",
-            "file-local-conflict": "Conflicting mod file",
-            "file-api-conflict": "Install {mod} mod instead",
-            "install-button": "Install",
-            "update-button": "Update"
+            "name-required": "モッド名は必須です。",
+            "version": "バージョン",
+            "description": "説明",
+            "files": "ファイル",
+            "file-exists": "モッドファイルはすでに存在します",
+            "file-local-conflict": "衝突するモッドファイル",
+            "file-api-conflict": "代わりに {mod} モッドをインストール",
+            "install-button": "インストール",
+            "update-button": "更新"
         }
     },
     "maps": {

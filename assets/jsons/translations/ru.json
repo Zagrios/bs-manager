@@ -459,7 +459,7 @@
         "mods": {
             "get-installed-mods": {
                 "titles": {
-                    "error": "Get installed mods 😨"
+                    "error": "Получить установленные моды 😨"
                 }
             },
             "install-mods": {
@@ -499,18 +499,18 @@
             },
             "external-mod": {
                 "titles": {
-                    "install-success": "Custom mod installed 🎉",
-                    "update-success": "Custom mod updated 🎉",
-                    "install-error": "Custom mod installation failed 😨",
-                    "update-error": "Custom mod update failed 😨"
+                    "install-success": "Пользовательский мод установлен 🎉",
+                    "update-success": "Пользовательский мод обновлён 🎉",
+                    "install-error": "Установка пользовательского мода не удалась 😨",
+                    "update-error": "Обновление пользовательского мода не удалось 😨"
                 },
                 "msgs": {
-                    "install-success": "Custom mod has been installed.",
-                    "update-success": "Custom mod has been updated.",
-                    "verify-error": "Custom mod file/s does not contain any dll files.",
-                    "install-error": "Custom mod file/s could not be installed.",
-                    "no-files-error": "Custom mod does not contain any files.",
-                    "update-error": "Custom mod could not be updated."
+                    "install-success": "Пользовательский мод был установлен.",
+                    "update-success": "Пользовательский мод был обновлён.",
+                    "verify-error": "Файлы пользовательского мода не содержат файлов DLL.",
+                    "install-error": "Файлы пользовательского мода не удалось установить.",
+                    "no-files-error": "Пользовательский мод не содержит файлов.",
+                    "update-error": "Пользовательский мод не удалось обновить."
                 }
             },
             "toggle-mods": {
@@ -813,19 +813,19 @@
             "title": "Install custom mod",
         },
         "external-mod": {
-            "install-title": "Install custom mod",
-            "update-title": "Update custom mod",
-            "existing": "Overwriting existing mod",
+            "install-title": "Установить пользовательский мод",
+            "update-title": "Обновить пользовательский мод",
+            "existing": "Перезапись существующего мода",
             "name": "Имя",
-            "name-required": "Mod name is required",
-            "version": "Version",
-            "description": "Description",
-            "files": "Files",
-            "file-exists": "Mod file already exists",
-            "file-local-conflict": "Conflicting mod file",
-            "file-api-conflict": "Install {mod} mod instead",
-            "install-button": "Install",
-            "update-button": "Update"
+            "name-required": "Название мода обязательно.",
+            "version": "Версия",
+            "description": "Описание",
+            "files": "Файлы",
+            "file-exists": "Файл мода уже существует",
+            "file-local-conflict": "Конфликтующий файл мода",
+            "file-api-conflict": "Установить мод {mod} вместо этого",
+            "install-button": "Установить",
+            "update-button": "Обновить"
         }
     },
     "maps": {

@@ -459,7 +459,7 @@
         "mods": {
             "get-installed-mods": {
                 "titles": {
-                    "error": "Get installed mods 😨"
+                    "error": "Obtener mods instalados 😨"
                 }
             },
             "install-mods": {
@@ -499,18 +499,18 @@
             },
             "external-mod": {
                 "titles": {
-                    "install-success": "Custom mod installed 🎉",
-                    "update-success": "Custom mod updated 🎉",
-                    "install-error": "Custom mod installation failed 😨",
-                    "update-error": "Custom mod update failed 😨"
+                    "install-success": "Mod personalizado instalado 🎉",
+                    "update-success": "Mod personalizado actualizado 🎉",
+                    "install-error": "La instalación del mod personalizado falló 😨",
+                    "update-error": "La actualización del mod personalizado falló 😨"
                 },
                 "msgs": {
-                    "install-success": "Custom mod has been installed.",
-                    "update-success": "Custom mod has been updated.",
-                    "verify-error": "Custom mod file/s does not contain any dll files.",
-                    "install-error": "Custom mod file/s could not be installed.",
-                    "no-files-error": "Custom mod does not contain any files.",
-                    "update-error": "Custom mod could not be updated."
+                    "install-success": "El mod personalizado ha sido instalado.",
+                    "update-success": "El mod personalizado ha sido actualizado.",
+                    "verify-error": "Los archivos del mod personalizado no contienen archivos DLL.",
+                    "install-error": "Los archivos del mod personalizado no se pudieron instalar.",
+                    "no-files-error": "El mod personalizado no contiene ningún archivo.",
+                    "update-error": "El mod personalizado no se pudo actualizar."
                 }
             },
             "toggle-mods": {
@@ -814,19 +814,19 @@
             "title": "Install custom mod",
         },
         "external-mod": {
-            "install-title": "Install custom mod",
-            "update-title": "Update custom mod",
-            "existing": "Overwriting existing mod",
+            "install-title": "Instalar mod personalizado",
+            "update-title": "Actualizar mod personalizado",
+            "existing": "Sobrescribiendo el mod existente",
             "name": "Nombre",
-            "name-required": "Mod name is required",
-            "version": "Version",
-            "description": "Description",
-            "files": "Files",
-            "file-exists": "Mod file already exists",
-            "file-local-conflict": "Conflicting mod file",
-            "file-api-conflict": "Install {mod} mod instead",
-            "install-button": "Install",
-            "update-button": "Update"
+            "name-required": "Se requiere el nombre del mod.",
+            "version": "Versión",
+            "description": "Descripción",
+            "files": "Archivos",
+            "file-exists": "El archivo del mod ya existe",
+            "file-local-conflict": "Archivo de mod en conflicto",
+            "file-api-conflict": "Instalar el mod {mod} en su lugar",
+            "install-button": "Instalar",
+            "update-button": "Actualizar"
         }
     },
     "maps": {

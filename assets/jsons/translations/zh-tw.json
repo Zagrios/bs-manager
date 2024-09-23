@@ -459,7 +459,7 @@
         "mods": {
             "get-installed-mods": {
                 "titles": {
-                    "error": "Get installed mods 😨"
+                    "error": "獲取已安裝的模組 😨"
                 }
             },
             "install-mods": {
@@ -499,18 +499,18 @@
             },
             "external-mod": {
                 "titles": {
-                    "install-success": "Custom mod installed 🎉",
-                    "update-success": "Custom mod updated 🎉",
-                    "install-error": "Custom mod installation failed 😨",
-                    "update-error": "Custom mod update failed 😨"
+                    "install-success": "自訂模組已安裝 🎉",
+                    "update-success": "自訂模組已更新 🎉",
+                    "install-error": "自訂模組安裝失敗 😨",
+                    "update-error": "自訂模組更新失敗 😨"
                 },
                 "msgs": {
-                    "install-success": "Custom mod has been installed.",
-                    "update-success": "Custom mod has been updated.",
-                    "verify-error": "Custom mod file/s does not contain any dll files.",
-                    "install-error": "Custom mod file/s could not be installed.",
-                    "no-files-error": "Custom mod does not contain any files.",
-                    "update-error": "Custom mod could not be updated."
+                    "install-success": "自訂模組已安裝。",
+                    "update-success": "自訂模組已更新。",
+                    "verify-error": "自訂模組檔案不包含任何 DLL 檔案。",
+                    "install-error": "自訂模組檔案無法安裝。",
+                    "no-files-error": "自訂模組不包含任何檔案。",
+                    "update-error": "自訂模組無法更新。"
                 }
             },
             "toggle-mods": {
@@ -814,19 +814,19 @@
             "title": "Install custom mod",
         },
         "external-mod": {
-            "install-title": "Install custom mod",
-            "update-title": "Update custom mod",
-            "existing": "Overwriting existing mod",
+            "install-title": "安裝自訂模組",
+            "update-title": "更新自訂模組",
+            "existing": "覆蓋現有模組",
             "name": "名稱",
-            "name-required": "Mod name is required",
-            "version": "Version",
-            "description": "Description",
-            "files": "Files",
-            "file-exists": "Mod file already exists",
-            "file-local-conflict": "Conflicting mod file",
-            "file-api-conflict": "Install {mod} mod instead",
-            "install-button": "Install",
-            "update-button": "Update"
+            "name-required": "模組名稱是必填項。",
+            "version": "版本",
+            "description": "描述",
+            "files": "檔案",
+            "file-exists": "模組檔案已存在",
+            "file-local-conflict": "衝突的模組檔案",
+            "file-api-conflict": "改為安裝 {mod} 模組",
+            "install-button": "安裝",
+            "update-button": "更新"
         }
     },
     "maps": {
