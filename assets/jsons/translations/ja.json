@@ -162,12 +162,12 @@
                 "choose-folder": "フォルダーを選択"
             },
             "proton-folder": {
-                "title": "Proton folder",
-                "description": "Change the folder to the Proton path. (eg. Proton - Experimental)",
-                "choose-folder": "Choose folder",
+                "title": "Protonフォルダー",
+                "description": "フォルダーをProtonのパスに変更してください。（例：Proton - Experimental）",
+                "choose-folder": "フォルダーを選択",
                 "errors": {
-                    "title": "Change Proton folder failed",
-                    "invalid-folder": "Invalid Proton folder path"
+                    "title": "Protonフォルダーの設定に失敗しました",
+                    "invalid-folder": "無効なProtonフォルダーのパスです"
                 }
             },
             "additional-content": {
@@ -442,8 +442,8 @@
                     "OCULUS_NOT_RUNNING": "Oculusが起動していません",
                     "BS_ALREADY_RUNNING": "Beat Saberはすでに起動しています",
                     "EXE_NOT_FINDED": "ファイルが見つかりません",
-                    "PROTON_NOT_SET": "Proton folder not set",
-                    "PROTON_NOT_FOUND": "Proton binary not found",
+                    "PROTON_NOT_SET": "Protonフォルダーが設定されていません",
+                    "PROTON_NOT_FOUND": "Protonのバイナリが見つかりません",
                     "EXIT": "緊急停止",
                     "OCULUS_LIB_NOT_FOUND": "Oculusライブラリが見つかりません"
                 },
@@ -455,8 +455,8 @@
                     "EXE_NOT_FINDED": "いくつかのファイルが見つからないようです。",
                     "EXIT": "BeatSaberが緊急停止したため、ファイルをチェックします。",
                     "OCULUS_LIB_NOT_FOUND": "Oculusアプリケーションが正しくインストールしていることと、Oculusライブラリが正しく定義されていることを確認してください。",
-                    "PROTON_NOT_SET": "Set the Proton path in settings",
-                    "PROTON_NOT_FOUND": "Set the Proton path in settings"
+                    "PROTON_NOT_SET": "設定でProtonのパスを設定してください。",
+                    "PROTON_NOT_FOUND": "設定でProtonのパスを設定してください。"
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Steamを起動"
@@ -838,9 +838,9 @@
             "default-tooltip": "デフォルトでは、ホームフォルダに設定されます"
         },
         "linux-setup": {
-            "title": "Linux Setup",
-            "proton-folder": "Proton folder",
-            "proton-folder-description": "Choose the folder to the Proton path. (eg. Proton - Experimental)",
+            "title": "Linuxセットアップ",
+            "proton-folder": "Protonフォルダー",
+            "proton-folder-description": "Protonのパスにフォルダーを選択してください。（例：Proton - Experimental）",
             "choose-folder": "フォルダーを選択"
         }
     },

@@ -162,12 +162,12 @@
                 "choose-folder": "选择文件夹"
             },
             "proton-folder": {
-                "title": "Proton folder",
-                "description": "Change the folder to the Proton path. (eg. Proton - Experimental)",
-                "choose-folder": "Choose folder",
+                "title": "Proton文件夹",
+                "description": "将文件夹更改为Proton路径。（例如：Proton - Experimental）",
+                "choose-folder": "选择文件夹",
                 "errors": {
-                    "title": "Change Proton folder failed",
-                    "invalid-folder": "Invalid Proton folder path"
+                    "title": "设置Proton文件夹失败",
+                    "invalid-folder": "无效的Proton文件夹路径"
                 }
             },
             "additional-content": {
@@ -442,8 +442,8 @@
                     "OCULUS_NOT_RUNNING": "Oculus 未运行",
                     "BS_ALREADY_RUNNING": "Beat Saber 已在运行",
                     "EXE_NOT_FINDED": "缺少文件",
-                    "PROTON_NOT_SET": "Proton folder not set",
-                    "PROTON_NOT_FOUND": "Proton binary not found",
+                    "PROTON_NOT_SET": "Proton文件夹未设置",
+                    "PROTON_NOT_FOUND": "未找到Proton二进制文件",
                     "EXIT": "突然停止",
                     "OCULUS_LIB_NOT_FOUND": "未找到 Oculus 库"
                 },
@@ -455,8 +455,8 @@
                     "EXE_NOT_FINDED": "某些文件似乎丢失了，尝试验证文件。",
                     "EXIT": "BeatSaber 突然停止，请检查文件。",
                     "OCULUS_LIB_NOT_FOUND": "检查 Oculus 应用是否正确安装，以及库是否在 Oculus 中正确定义。",
-                    "PROTON_NOT_SET": "Set the Proton path in settings",
-                    "PROTON_NOT_FOUND": "Set the Proton path in settings"
+                    "PROTON_NOT_SET": "在设置中设置Proton路径。",
+                    "PROTON_NOT_FOUND": "在设置中设置Proton路径。"
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "启动 Steam"
@@ -838,9 +838,9 @@
             "default-tooltip": "默认为您的主文件夹"
         },
         "linux-setup": {
-            "title": "Linux Setup",
-            "proton-folder": "Proton folder",
-            "proton-folder-description": "Choose the folder to the Proton path. (eg. Proton - Experimental)",
+            "title": "Linux设置",
+            "proton-folder": "Proton文件夹",
+            "proton-folder-description": "选择文件夹作为Proton路径。（例如：Proton - Experimental）",
             "choose-folder": "选择文件夹"
         }
     },

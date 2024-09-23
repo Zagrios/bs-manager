@@ -166,7 +166,7 @@
                 "description": "Change the folder to the Proton path. (eg. Proton - Experimental)",
                 "choose-folder": "Choose folder",
                 "errors": {
-                    "title": "Change Proton folder failed",
+                    "title": "Setting the Proton folder failed",
                     "invalid-folder": "Invalid Proton folder path"
                 }
             },
@@ -455,8 +455,8 @@
                     "EXE_NOT_FINDED": "Some files seem to be missing, try to verify the files.",
                     "EXIT": "BeatSaber stopped abruptly, tries to check the files.",
                     "OCULUS_LIB_NOT_FOUND": "Check that the Oculus application is properly installed, and that the libraries are correctly defined in Oculus.",
-                    "PROTON_NOT_SET": "Set the Proton path in settings",
-                    "PROTON_NOT_FOUND": "Set the Proton path in settings"
+                    "PROTON_NOT_SET": "Set the Proton path in settings.",
+                    "PROTON_NOT_FOUND": "Set the Proton path in settings."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Launch Steam"

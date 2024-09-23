@@ -162,12 +162,12 @@
                 "choose-folder": "Изменить папку"
             },
             "proton-folder": {
-                "title": "Proton folder",
-                "description": "Change the folder to the Proton path. (eg. Proton - Experimental)",
-                "choose-folder": "Choose folder",
+                "title": "Папка Proton",
+                "description": "Измените папку на путь к Proton. (например, Proton - Experimental)",
+                "choose-folder": "Изменить папку",
                 "errors": {
-                    "title": "Change Proton folder failed",
-                    "invalid-folder": "Invalid Proton folder path"
+                    "title": "Не удалось установить папку Proton",
+                    "invalid-folder": "Недействительный путь к папке Proton"
                 }
             },
             "additional-content": {
@@ -442,8 +442,8 @@
                     "OCULUS_NOT_RUNNING": "Oculus не запущен",
                     "BS_ALREADY_RUNNING": "Beat Saber уде запущен",
                     "EXE_NOT_FINDED": "Отсутствуют файлы",
-                    "PROTON_NOT_SET": "Proton folder not set",
-                    "PROTON_NOT_FOUND": "Proton binary not found",
+                    "PROTON_NOT_SET": "Папка Proton не установлена",
+                    "PROTON_NOT_FOUND": "Бинарный файл Proton не найде",
                     "EXIT": "Вылет",
                     "OCULUS_LIB_NOT_FOUND": "Библиотека Oculus не найдена"
                 },
@@ -455,8 +455,8 @@
                     "EXE_NOT_FINDED": "Некоторые файлы отсутствуют, пробуем их проверить.",
                     "EXIT": "Beat Saber вылетел, пытаемся проверить файлы.",
                     "OCULUS_LIB_NOT_FOUND": "Проверьте, правильно ли установлено приложение Oculus, и правильно ли определены библиотеки в Oculus.",
-                    "PROTON_NOT_SET": "Set the Proton path in settings",
-                    "PROTON_NOT_FOUND": "Set the Proton path in settings"
+                    "PROTON_NOT_SET": "Установите путь к Proton в настройках.",
+                    "PROTON_NOT_FOUND": "Установите путь к Proton в настройках."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Запустить Steam"
@@ -837,9 +837,9 @@
             "default-tooltip": "По умолчанию в вашей домашней папке"
         },
         "linux-setup": {
-            "title": "Linux Setup",
-            "proton-folder": "Proton folder",
-            "proton-folder-description": "Choose the folder to the Proton path. (eg. Proton - Experimental)",
+            "title": "Настройка Linux",
+            "proton-folder": "Папка Proton",
+            "proton-folder-description": "Выберите папку для пути к Proton. (например, Proton - Experimental)",
             "choose-folder": "Изменить папку"
         }
     },
