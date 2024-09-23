@@ -16,6 +16,7 @@
         "copy": "复制",
         "copied": "已复制!",
         "confirm": "确认",
+        "choose-folder": "选择文件夹",
         "Unknown": "发生了一个错误 ¯\\_(ツ)_/¯"
     },
     "nav-bar": {
@@ -158,13 +159,11 @@
             },
             "installation-folder": {
                 "title": "安装文件夹",
-                "description": "更改将包含 BSManager 下载的所有内容的文件夹。",
-                "choose-folder": "选择文件夹"
+                "description": "更改将包含 BSManager 下载的所有内容的文件夹。"
             },
             "proton-folder": {
                 "title": "Proton文件夹",
                 "description": "将文件夹更改为Proton路径。（例如：Proton - Experimental）",
-                "choose-folder": "选择文件夹",
                 "errors": {
                     "title": "设置Proton文件夹失败",
                     "invalid-folder": "无效的Proton文件夹路径"
@@ -833,15 +832,13 @@
         "ask-install-path": {
             "title": "安装文件夹",
             "choose-folder-description": "选择将包含 BSManager 下载的所有内容的文件夹。(版本、mod、地图、播放列表等)",
-            "choose-folder": "选择文件夹",
             "default": "默认",
             "default-tooltip": "默认为您的主文件夹"
         },
         "linux-setup": {
             "title": "Linux设置",
             "proton-folder": "Proton文件夹",
-            "proton-folder-description": "选择文件夹作为Proton路径。（例如：Proton - Experimental）",
-            "choose-folder": "选择文件夹"
+            "proton-folder-description": "选择文件夹作为Proton路径。（例如：Proton - Experimental）"
         }
     },
     "maps": {

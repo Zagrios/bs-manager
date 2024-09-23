@@ -78,7 +78,7 @@ export const LinuxSetupModal: ModalComponent<{}, {}> = ({ resolver }) => {
                     <BsmButton
                         onClick={selectProtonPath}
                         className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md"
-                        text="modals.linux-setup.choose-folder"
+                        text="misc.choose-folder"
                         withBar={false}
                     />
                 </div>

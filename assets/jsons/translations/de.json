@@ -16,6 +16,7 @@
         "copy": "Kopieren",
         "copied": "Kopiert!",
         "confirm": "Bestätigen",
+        "choose-folder": "Ordner Wählen",
         "unknown": "Ein unbekannter Fehler ist aufgetreten ¯\\_(ツ)_/¯"
     },
     "nav-bar": {
@@ -158,13 +159,11 @@
             },
             "installation-folder": {
                 "title": "Installations-Ordner",
-                "description": "Ändern Sie den Ordner, der alle von BSManager heruntergeladenen Inhalte enthalten wird.",
-                "choose-folder": "Ordner wählen"
+                "description": "Ändern Sie den Ordner, der alle von BSManager heruntergeladenen Inhalte enthalten wird."
             },
             "proton-folder": {
                 "title": "Proton-Ordner",
                 "description": "Ändern Sie den Ordner zum Proton-Pfad. (z. B. Proton - Experimental)",
-                "choose-folder": "Ordner wählen",
                 "errors": {
                     "title": "Das Einstellen des Proton-Ordners ist fehlgeschlagen",
                     "invalid-folder": "Ungültiger Proton-Ordnerpfad"
@@ -833,15 +832,13 @@
         "ask-install-path": {
             "title": "Installations Ordner",
             "choose-folder-description": "Wählen Sie den Ordner aus, der alle von BSManager heruntergeladenen Inhalte enthalten soll. (Versionen, Mods, Karten, Playlists, etc.)",
-            "choose-folder": "Ordner Wählen",
             "default": "Standard",
             "default-tooltip": "Standardmäßig in Ihrem persönlichen Ordner"
         },
         "linux-setup": {
             "title": "Linux-Setup",
             "proton-folder": "Proton-Ordner",
-            "proton-folder-description": "Wählen Sie den Ordner zum Proton-Pfad aus. (z. B. Proton - Experimental)",
-            "choose-folder": "Ordner Wählen"
+            "proton-folder-description": "Wählen Sie den Ordner zum Proton-Pfad aus. (z. B. Proton - Experimental)"
         }
     },
     "maps": {

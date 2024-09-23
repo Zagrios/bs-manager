@@ -16,6 +16,7 @@
         "copy": "Copiar",
         "copied": "¡Copiado!",
         "confirm": "Confirmar",
+        "choose-folder": "Elige la carpeta",
         "unknown": "Se ha producido un error desconocido ¯\\_(ツ)_/¯"
     },
     "nav-bar": {
@@ -158,13 +159,11 @@
             },
             "installation-folder": {
                 "title": "Carpeta de instalación",
-                "description": "Cambiar la carpeta que contendrá todo el contenido descargado por BSManager.",
-                "choose-folder": "Elige la carpeta"
+                "description": "Cambiar la carpeta que contendrá todo el contenido descargado por BSManager."
             },
             "proton-folder": {
                 "title": "Carpeta de Proton",
                 "description": "Cambia la carpeta a la ruta de Proton. (por ejemplo, Proton - Experimental)",
-                "choose-folder": "Elige la carpeta",
                 "errors": {
                     "title": "Falló al configurar la carpeta de Proton",
                     "invalid-folder": "Ruta de carpeta de Proton no válida"
@@ -833,15 +832,13 @@
         "ask-install-path": {
             "title": "Carpeta de instalación",
             "choose-folder-description": "Elija la carpeta que contendrá todo el contenido descargado por BSManager. (versiones, mods, mapas, listas de reproducción, etc.)",
-            "choose-folder": "Elige la carpeta",
             "default": "Predeterminado",
             "default-tooltip": "Por defecto, en su carpeta personal"
         },
         "linux-setup": {
             "title": "Configuración de Linux",
             "proton-folder": "Carpeta de Proton",
-            "proton-folder-description": "Elige la carpeta en la ruta de Proton. (por ejemplo, Proton - Experimental)",
-            "choose-folder": "Elige la carpeta"
+            "proton-folder-description": "Elige la carpeta en la ruta de Proton. (por ejemplo, Proton - Experimental)"
         }
     },
     "maps": {

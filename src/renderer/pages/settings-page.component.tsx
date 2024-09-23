@@ -403,7 +403,7 @@ export function SettingsPage() {
                         <span className="block text-ellipsis overflow-hidden min-w-0" title={installationFolder}>
                             {installationFolder}
                         </span>
-                        <BsmButton onClick={setDefaultInstallationFolder} className="shrink-1 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="pages.settings.installation-folder.choose-folder" withBar={false} />
+                        <BsmButton onClick={setDefaultInstallationFolder} className="shrink-1 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="misc.choose-folder" withBar={false} />
                     </div>
                 </SettingContainer>
 
@@ -412,7 +412,7 @@ export function SettingsPage() {
                         <span className="block text-ellipsis overflow-hidden min-w-0 whitespace-nowrap" title={protonFolder}>
                             {protonFolder}
                         </span>
-                        <BsmButton onClick={setDefaultProtonFolder} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="pages.settings.proton-folder.choose-folder" withBar={false} />
+                        <BsmButton onClick={setDefaultProtonFolder} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="misc.choose-folder" withBar={false} />
                     </div>
                 </SettingContainer>
 

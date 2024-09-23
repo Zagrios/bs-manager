@@ -16,6 +16,7 @@
         "copy": "Copy",
         "copied": "Copied!",
         "confirm": "Confirm",
+        "choose-folder": "Choose folder",
         "unknown": "An unknown error occurred ¯\\_(ツ)_/¯"
     },
     "nav-bar": {
@@ -158,13 +159,11 @@
             },
             "installation-folder": {
                 "title": "Installation folder",
-                "description": "Change the folder that will contain all the content downloaded by BSManager.",
-                "choose-folder": "Choose folder"
+                "description": "Change the folder that will contain all the content downloaded by BSManager."
             },
             "proton-folder": {
                 "title": "Proton folder",
                 "description": "Change the folder to the Proton path. (eg. Proton - Experimental)",
-                "choose-folder": "Choose folder",
                 "errors": {
                     "title": "Setting the Proton folder failed",
                     "invalid-folder": "Invalid Proton folder path"
@@ -833,15 +832,13 @@
         "ask-install-path": {
             "title": "Installation folder",
             "choose-folder-description": "Choose the folder that will contain all the content downloaded by BSManager. (versions, mods, maps, playlists, etc.)",
-            "choose-folder": "Choose folder",
             "default": "Default",
             "default-tooltip": "Defaults to your home folder"
         },
         "linux-setup": {
             "title": "Linux Setup",
             "proton-folder": "Proton folder",
-            "proton-folder-description": "Choose the folder to the Proton path. (eg. Proton - Experimental)",
-            "choose-folder": "Choose folder"
+            "proton-folder-description": "Choose the folder to the Proton path. (eg. Proton - Experimental)"
         }
     },
     "maps": {
