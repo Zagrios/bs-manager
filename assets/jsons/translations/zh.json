@@ -508,15 +508,15 @@
             },
             "import-map": {
                 "titles": {
-                    "success": "Map import complete",
-                    "error": "An error occurred while importing the map"
+                    "success": "地图导入完成",
+                    "error": "在导入地图时发生错误"
                 },
                 "msgs": {
-                    "success": "Imported all maps successfully",
-                    "some-success": "Imported some maps successfully",
-                    "only-accept-zip": "Only zip files are supported",
-                    "not-found-zip": "Zip file does not exists",
-                    "invalid-zip": "Invalid zip file contents"
+                    "success": "所有地图已成功导入。",
+                    "some-success": "一些地图已成功导入。",
+                    "only-accept-zip": "只支持 ZIP 文件。",
+                    "not-found-zip": "ZIP 文件不存在。",
+                    "invalid-zip": "ZIP 文件不包含任何 DAT 文件。"
                 }
             }
         },
