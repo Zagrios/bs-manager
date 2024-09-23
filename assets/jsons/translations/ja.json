@@ -508,15 +508,15 @@
             },
             "import-map": {
                 "titles": {
-                    "success": "Map import complete",
-                    "error": "An error occurred while importing the map"
+                    "success": "マップのインポートが完了しました",
+                    "error": "マップのインポート中にエラーが発生しました"
                 },
                 "msgs": {
-                    "success": "Imported all maps successfully",
-                    "some-success": "Imported some maps successfully",
-                    "only-accept-zip": "Only zip files are supported",
-                    "not-found-zip": "Zip file does not exists",
-                    "invalid-zip": "Invalid zip file contents"
+                    "success": "すべてのマップが正常にインポートされました。",
+                    "some-success": "一部のマップが正常にインポートされました。",
+                    "only-accept-zip": "ZIPファイルのみがサポートされています。",
+                    "not-found-zip": "ZIPファイルが存在しません。",
+                    "invalid-zip": "ZIPファイルにはDATファイルが含まれていません。"
                 }
             }
         },

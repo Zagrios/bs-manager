@@ -508,15 +508,15 @@
             },
             "import-map": {
                 "titles": {
-                    "success": "Map import complete",
-                    "error": "An error occurred while importing the map"
+                    "success": "Importación de mapa completa",
+                    "error": "Ocurrió un error al importar el mapa"
                 },
                 "msgs": {
-                    "success": "Imported all maps successfully",
-                    "some-success": "Imported some maps successfully",
-                    "only-accept-zip": "Only zip files are supported",
-                    "not-found-zip": "Zip file does not exists",
-                    "invalid-zip": "Invalid zip file contents"
+                    "success": "Se importaron todas las mapas con éxito.",
+                    "some-success": "Se importaron algunos mapas con éxito.",
+                    "only-accept-zip": "Solo se admiten archivos ZIP.",
+                    "not-found-zip": "El archivo ZIP no existe.",
+                    "invalid-zip": "El archivo ZIP no contiene archivos DAT."
                 }
             }
         },
