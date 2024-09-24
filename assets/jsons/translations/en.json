@@ -497,6 +497,17 @@
                         "no-mods": "No mods are installed in this version 😑"
                     }
                 }
+            },
+            "install-external-mod": {
+                "titles": {
+                    "success": "Custom mod installed 🎉",
+                    "error": "Custom mod installation failed 😨"
+                },
+                "msgs": {
+                    "success": "Custom mod has been installed.",
+                    "verify-error": "Custom mod file/s does not contain any dll files.",
+                    "install-error": "Custom mod file/s could not be installed."
+                }
             }
         },
         "maps": {

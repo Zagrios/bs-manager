@@ -19,12 +19,28 @@ ipc.on("install-mods", (args, reply) => {
     reply(from(modsManager.installMods(args.mods, args.version)));
 });
 
-ipc.on("uninstall-mods", (args, reply) => {
+ipc.on("bs-mods.uninstall-mods", (args, reply) => {
     const modsManager = BsModsManagerService.getInstance();
-    reply(from(modsManager.uninstallMods(args.mods, args.version)));
+    reply(from(modsManager.uninstallMods(args.mods, args.externalMods, args.version)));
 });
 
-ipc.on("uninstall-all-mods", (args, reply) => {
+ipc.on("bs-mods.uninstall-all-mods", (args, reply) => {
     const modsManager = BsModsManagerService.getInstance();
     reply(from(modsManager.uninstallAllMods(args)));
 });
+
+ipc.on("bs-mods.get-installed-external-mods", (args, reply) => {
+    const modsManager = BsModsManagerService.getInstance();
+    reply(from(modsManager.getInstalledExternalMods(args)));
+});
+
+ipc.on("bs-mods.verify-external-mod-files", (args, reply) => {
+    const modsManager = BsModsManagerService.getInstance();
+    reply(from(modsManager.verifyExternalModFiles(args.version, args.files)));
+});
+
+ipc.on("bs-mods.install-external-mod", (args, reply) => {
+    const modsManager = BsModsManagerService.getInstance();
+   reply(from(modsManager.installExternalMod(args.mod, args.version, args.files)));
+});
+

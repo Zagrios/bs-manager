@@ -5,13 +5,31 @@ import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-butto
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { BsModsManagerService } from "renderer/services/bs-mods-manager.service";
 import { PageStateService } from "renderer/services/page-state.service";
-import { Mod } from "shared/models/mods/mod.interface";
+import { ExternalMod, Mod } from "shared/models/mods/mod.interface";
 import { ModItem } from "./mod-item.component";
 import { useService } from "renderer/hooks/use-service.hook";
+import { ExternalModItem } from "./external-mod-item.component";
 
-type Props = { modsMap: Map<string, Mod[]>; installed: Map<string, Mod[]>; modsSelected: Mod[]; onModChange: (selected: boolean, mod: Mod) => void; moreInfoMod?: Mod; onWantInfos: (mod: Mod) => void };
+type Props = {
+    modsMap: Map<string, Mod[]>;
+    modsInstalled: Map<string, Mod[]>;
+    modsExternal: { [key: string]: ExternalMod };
+    modsSelected: Mod[];
+    onModChange: (selected: boolean, mod: Mod) => void;
+    moreInfoMod?: Mod; onWantInfos: (mod: Mod) => void;
+    onExternalModUninstall: (mod: ExternalMod) => void;
+};
 
-export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreInfoMod, onWantInfos }: Props) {
+export function ModsGrid({
+    modsMap,
+    modsInstalled,
+    modsExternal,
+    modsSelected,
+    onModChange,
+    moreInfoMod,
+    onWantInfos,
+    onExternalModUninstall,
+}: Props) {
 
     const pageState = useService(PageStateService);
     const modsManager = useService(BsModsManagerService);
@@ -21,10 +39,10 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
     const t = useTranslation();
 
     const installedModVersion = (key: string, mod: Mod): string => {
-        if (!installed?.get(key)) {
+        if (!modsInstalled?.get(key)) {
             return undefined;
         }
-        const installedMod = installed.get(key).find(m => m.name === mod.name);
+        const installedMod = modsInstalled.get(key).find(m => m.name === mod.name);
         if (!installedMod) {
             return undefined;
         }
@@ -78,6 +96,18 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
                             </ul>
                         )
                 )}
+
+                {(Object.values(modsExternal).length > 0) &&
+                    <ul className="contents">
+                        <h2 className="col-span-full py-1 font-bold pl-3">Custom</h2>
+                        {Object.values(modsExternal).map(mod =>
+                            <ExternalModItem
+                                mod={mod}
+                                onUninstall={() => onExternalModUninstall(mod)}
+                            />
+                        )}
+                    </ul>
+                }
             </div>
         )
     );

@@ -12,6 +12,7 @@ import { OsDiagnosticService } from "./os-diagnostic.service";
 import { ProgressBarService } from "./progress-bar.service";
 import { NotificationService } from "./notification.service";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
+import { ExternalMod } from "shared/models/mods/mod.interface";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -48,6 +49,10 @@ export class BsModsManagerService {
 
     public getInstalledMods(version: BSVersion): Observable<Mod[]> {
         return this.ipcService.sendV2("get-installed-mods", version);
+    }
+
+    public getInstalledExternalMods(version: BSVersion): Observable<{ [key: string]: ExternalMod }> {
+        return this.ipcService.sendV2("bs-mods.get-installed-external-mods", version);
     }
 
     public installMods(mods: Mod[], version: BSVersion): Promise<void> {
@@ -87,12 +92,13 @@ export class BsModsManagerService {
             this.progressBar.hide();
         })
     }
+
     public async uninstallMod(mod: Mod, version: BSVersion): Promise<void> {
         if (!this.progressBar.require()) {
             return;
         }
 
-        const modalRes = await this.modals.openModal(UninstallModModal, {data: mod});
+        const modalRes = await this.modals.openModal(UninstallModModal, { data: mod.name });
 
         if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
             return;
@@ -103,10 +109,53 @@ export class BsModsManagerService {
 
         this.isUninstalling$.next(true);
 
-        return lastValueFrom(this.ipcService.sendV2("uninstall-mods", { mods: [mod], version })).then(() => {
+        return lastValueFrom(this.ipcService.sendV2("bs-mods.uninstall-mods", {
+            mods: [mod],
+            externalMods: [],
+            version
+        })).then(() => {
             this.notifications.notifySuccess({ title: "notifications.mods.uninstall-mod.titles.success", duration: this.NOTIFICATION_DURATION });
         }).catch((e: CustomError) => {
             this.notifications.notifyError({ title: "notifications.types.error", desc: `notifications.mods.uninstall-mod.msg.errors.${e?.code}`, duration: this.NOTIFICATION_DURATION });
+        }).finally(() => {
+            this.isUninstalling$.next(false);
+            this.progressBar.hide();
+        })
+    }
+
+    public async uninstallExternalMod(mod: ExternalMod, version: BSVersion): Promise<boolean> {
+        if (!this.progressBar.require()) {
+            return false;
+        }
+
+        const modalRes = await this.modals.openModal(UninstallModModal, { data: mod.name });
+
+        if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
+            return false;
+        }
+
+        const progress$ = this.ipcService.watch<ModInstallProgression>("mod-uninstalled").pipe(map(res => res.data.progression));
+        this.progressBar.show(progress$, true, { paddingLeft: "190px", paddingRight: "190px", bottom: "20px" });
+
+        this.isUninstalling$.next(true);
+
+        return lastValueFrom(this.ipcService.sendV2("bs-mods.uninstall-mods", {
+            mods: [],
+            externalMods: [mod],
+            version
+        })).then(() => {
+            this.notifications.notifySuccess({
+                title: "notifications.mods.uninstall-mod.titles.success",
+                duration: this.NOTIFICATION_DURATION
+            });
+            return true;
+        }).catch((e: CustomError) => {
+            this.notifications.notifyError({
+                title: "notifications.types.error",
+                desc: `notifications.mods.uninstall-mod.msg.errors.${e?.code}`,
+                duration: this.NOTIFICATION_DURATION
+            });
+            return false;
         }).finally(() => {
             this.isUninstalling$.next(false);
             this.progressBar.hide();
@@ -128,7 +177,7 @@ export class BsModsManagerService {
         this.progressBar.show(progress$, true, { paddingLeft: "190px", paddingRight: "190px", bottom: "20px" });
 
         this.isUninstalling$.next(true);
-        return lastValueFrom(this.ipcService.sendV2("uninstall-all-mods", version)).then(() => {
+        return lastValueFrom(this.ipcService.sendV2("bs-mods.uninstall-all-mods", version)).then(() => {
             this.notifications.notifySuccess({ title: "notifications.mods.uninstall-all-mods.titles.success", desc: "notifications.mods.uninstall-all-mods.msg.success", duration: this.NOTIFICATION_DURATION });
         }).catch((e: CustomError) => {
             this.notifications.notifyError({ title: "notifications.types.error", desc: `notifications.mods.uninstall-all-mods.msg.errors.${e?.code}`, duration: this.NOTIFICATION_DURATION });

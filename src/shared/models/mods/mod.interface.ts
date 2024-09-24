@@ -34,3 +34,24 @@ export interface FileHashes {
     hash: string;
     file: string;
 }
+
+export interface ExternalMod {
+    id?: string;
+    name: string;
+    version: string;
+    description: string;
+    enabled: boolean;
+    files: ExternalModFile[];
+}
+
+export interface ExternalModFile {
+    name: string;
+    folder: "Libs" | "Plugins";
+    enabled: boolean;
+    hash?: string;
+}
+
+export interface ExternalModFileVerify extends ExternalModFile {
+    conflicts?: string;
+}
+
