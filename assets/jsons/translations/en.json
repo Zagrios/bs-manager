@@ -817,9 +817,6 @@
             "default": "Default",
             "default-tooltip": "Defaults to your home folder"
         },
-        "install-external-mod": {
-            "title": "Install custom mod",
-        },
         "external-mod": {
             "install-title": "Install custom mod",
             "update-title": "Update custom mod",

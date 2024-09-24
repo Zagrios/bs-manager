@@ -809,9 +809,6 @@
             "default": "По умолчанию",
             "default-tooltip": "По умолчанию в вашей домашней папке"
         },
-        "install-external-mod": {
-            "title": "Install custom mod",
-        },
         "external-mod": {
             "install-title": "Установить пользовательский мод",
             "update-title": "Обновить пользовательский мод",

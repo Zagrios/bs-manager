@@ -810,9 +810,6 @@
             "default": "Standard",
             "default-tooltip": "Standardmäßig in Ihrem persönlichen Ordner"
         },
-        "install-external-mod": {
-            "title": "Install custom mod",
-        },
         "external-mod": {
             "install-title": "Benutzerdefiniertes Mod installieren",
             "update-title": "Benutzerdefiniertes Mod aktualisieren",

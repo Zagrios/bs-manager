@@ -810,9 +810,6 @@
             "default": "預設",
             "default-tooltip": "預設為您的主資料夾"
         },
-        "install-external-mod": {
-            "title": "Install custom mod",
-        },
         "external-mod": {
             "install-title": "安裝自訂模組",
             "update-title": "更新自訂模組",

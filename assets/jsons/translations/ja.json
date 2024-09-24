@@ -810,9 +810,6 @@
             "default": "デフォルト",
             "default-tooltip": "デフォルトでは、ホームフォルダに設定されます"
         },
-        "install-external-mod": {
-            "title": "Install custom mod",
-        },
         "external-mod": {
             "install-title": "カスタムモッドをインストール",
             "update-title": "カスタムモッドを更新",

@@ -810,9 +810,6 @@
             "default": "默认",
             "default-tooltip": "默认为您的主文件夹"
         },
-        "install-external-mod": {
-            "title": "Install custom mod",
-        },
         "external-mod": {
             "install-title": "安装自定义模组",
             "update-title": "更新自定义模组",

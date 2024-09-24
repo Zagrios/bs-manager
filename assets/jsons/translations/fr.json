@@ -811,9 +811,6 @@
             "default": "Par défaut",
             "default-tooltip": "Par défaut, dans votre dossier personnel"
         },
-        "install-external-mod": {
-            "title": "Install custom mod",
-        },
         "external-mod": {
             "install-title": "Installer le mod personnalisé",
             "update-title": "Mettre à jour le mod personnalisé",
