@@ -140,6 +140,8 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                     "STEAM_COMPAT_INSTALL_PATH": bsFolderPath,
                     "STEAM_COMPAT_CLIENT_INSTALL_PATH": steamPath,
                     "STEAM_COMPAT_APP_ID": BS_APP_ID,
+                    // Run game in steam environment; fixes #585 for unicode song titles
+                    "SteamEnv": "1",
                     // Uncomment these to create a proton log file in the Beat Saber install directory.
                     // "PROTON_LOG": 1,
                     // "PROTON_LOG_DIR": bsFolderPath,
