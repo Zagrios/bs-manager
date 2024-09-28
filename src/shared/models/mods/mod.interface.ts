@@ -34,3 +34,33 @@ export interface FileHashes {
     hash: string;
     file: string;
 }
+
+export interface ExternalMod {
+    id?: string;
+    name: string;
+    version: string;
+    description: string;
+    enabled: boolean;
+    files: ExternalModFile[];
+}
+
+export interface ExternalModFile {
+    id?: string;
+    name: string;
+    folder: "Libs" | "Plugins";
+    enabled: boolean;
+    hash?: string;
+}
+
+export enum ExternalModFileState {
+    OK             = "ok",
+    SAME_CONFLICT  = "same",  // File already exists and same file hash
+    LOCAL_CONFLICT = "local", // File already exists but different file hash
+    API_CONFLICT   = "api",   // File conflicts with a defined Mod object
+}
+
+export interface ExternalModFileVerify extends ExternalModFile {
+    state?: ExternalModFileState;
+    conflicts?: string; // name of the `Mod` or id of the `ExternalMod`
+}
+

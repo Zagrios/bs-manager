@@ -75,7 +75,8 @@
                 "buttons": {
                     "more-infos": "更多資訊",
                     "install-or-update": "安裝或更新",
-                    "reinstall-all": "重新安裝全部"
+                    "reinstall-all": "重新安裝全部",
+                    "enable-or-disable": "Enable/Disable"
                 },
                 "mods-grid": {
                     "header-bar": {
@@ -456,6 +457,11 @@
             }
         },
         "mods": {
+            "get-installed-mods": {
+                "titles": {
+                    "error": "獲取已安裝的模組 😨"
+                }
+            },
             "install-mods": {
                 "titles": {
                     "success": "Mod 已安裝 🎉",
@@ -489,6 +495,32 @@
                     "errors": {
                         "no-mods": "該版本中沒有安裝 Mod 😑"
                     }
+                }
+            },
+            "external-mod": {
+                "titles": {
+                    "install-success": "自訂模組已安裝 🎉",
+                    "update-success": "自訂模組已更新 🎉",
+                    "install-error": "自訂模組安裝失敗 😨",
+                    "update-error": "自訂模組更新失敗 😨"
+                },
+                "msgs": {
+                    "install-success": "自訂模組已安裝。",
+                    "update-success": "自訂模組已更新。",
+                    "verify-error": "自訂模組檔案不包含任何 DLL 檔案。",
+                    "install-error": "自訂模組檔案無法安裝。",
+                    "no-files-error": "自訂模組不包含任何檔案。",
+                    "update-error": "自訂模組無法更新。"
+                }
+            },
+            "toggle-mods": {
+                "titles": {
+                    "success": "Enable/Disable mods 🎉",
+                    "error": "Enable/Disable mods 😨"
+                },
+                "msgs": {
+                    "success": "Mods have been enabled/disabled",
+                    "no-mods-toggled": "No mods to enable/disable"
                 }
             }
         },
@@ -777,6 +809,21 @@
             "choose-folder": "選擇文件夾",
             "default": "預設",
             "default-tooltip": "預設為您的主資料夾"
+        },
+        "external-mod": {
+            "install-title": "安裝自訂模組",
+            "update-title": "更新自訂模組",
+            "existing": "覆蓋現有模組",
+            "name": "名稱",
+            "name-required": "模組名稱是必填項。",
+            "version": "版本",
+            "description": "描述",
+            "files": "檔案",
+            "file-exists": "模組檔案已存在",
+            "file-local-conflict": "衝突的模組檔案",
+            "file-api-conflict": "改為安裝 {mod} 模組",
+            "install-button": "安裝",
+            "update-button": "更新"
         }
     },
     "maps": {

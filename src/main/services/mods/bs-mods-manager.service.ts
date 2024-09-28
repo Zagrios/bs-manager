@@ -12,14 +12,31 @@ import log from "electron-log";
 import { deleteFolder, pathExist, unlinkPath } from "../../helpers/fs.helpers";
 import { lastValueFrom } from "rxjs";
 import JSZip from "jszip";
-import { extractZip } from "../../helpers/zip.helpers";
+import { extractZip, processZip } from "../../helpers/zip.helpers";
 import recursiveReadDir from "recursive-readdir";
 import { sToMs } from "../../../shared/helpers/time.helpers";
-import { ensureDir, pathExistsSync } from "fs-extra";
+import { ensureDir, move, mkdir, pathExistsSync, readFile, unlink, writeFile } from "fs-extra";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
+import { ExternalMod, ExternalModFile, ExternalModFileState, ExternalModFileVerify } from "shared/models/mods/mod.interface";
+import crypto from "crypto";
+
+interface ExternalModFileInfo {
+    mod: string;
+    hash: string;
+};
+
+interface ModsConfig {
+    mods: { [key: string]: ExternalMod; };
+    files: {
+        Plugins: { [key: string]: ExternalModFileInfo };
+        Libs: { [key: string]: ExternalModFileInfo };
+    }
+};
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
+
+    private readonly MODS_FILE = "mods.json"
 
     private readonly beatModsApi: BeatModsApiService;
     private readonly bsLocalService: BSLocalVersionService;
@@ -46,6 +63,12 @@ export class BsModsManagerService {
         this.bsLocalService = BSLocalVersionService.getInstance();
         this.utilsService = UtilsService.getInstance();
         this.requestService = RequestService.getInstance();
+    }
+
+    private md5Hash(buffer: Buffer): string {
+        return crypto.createHash("md5")
+            .update(buffer)
+            .digest("hex");
     }
 
     private async getModFromHash(hash: string): Promise<Mod> {
@@ -203,14 +226,11 @@ export class BsModsManagerService {
             return false;
         }
 
-        const crypto = require("crypto");
-        const files = await zip.files;
-
         const checkedEntries = (
             await Promise.all(
-                Object.values(files).map(async entry => {
+                Object.values(zip.files).map(async entry => {
                     const data = await entry.async("nodebuffer");
-                    const entryMd5 = crypto.createHash("md5").update(data).digest("hex");
+                    const entryMd5 = this.md5Hash(data);
                     return download.hashMd5.some(md5 => md5.hash === entryMd5) ? entry : undefined;
                 })
             ).catch(e => {
@@ -355,17 +375,81 @@ export class BsModsManagerService {
         };
     }
 
-    public async uninstallMods(mods: Mod[], version: BSVersion): Promise<UninstallModsResult> {
-        if (!mods?.length) {
+    // NOTE: Only supports external mods for now
+    public async toggleMods(externalMods: ExternalMod[], version: BSVersion): Promise<ExternalMod[]> {
+        if (externalMods.length === 0) {
+            throw CustomError.fromError(
+                new Error("No mods to enable/disable"),
+                "no-mods-toggled"
+            );
+        }
+
+        log.info(`Toggling mods for "${version.BSVersion} - ${version.name}"`, externalMods);
+
+        this.nbModsToInstall = externalMods.length;
+        this.nbInstalledMods = 0;
+
+        const editedMods: ExternalMod[] = [];
+        const versionPath = await this.bsLocalService.getVersionPath(version);
+        const modsPath = this.getExternalModsPath(versionPath);
+        const modsConfig = await this.getExternalModsConfig(modsPath);
+        for (const mod of externalMods) {
+            this.utilsService.ipcSend<ModInstallProgression>("mod-installed", {
+                success: true,
+                data: {
+                    name: mod.name,
+                    progression: ((this.nbInstalledMods + 1) / this.nbModsToInstall) * 100
+                }
+            });
+
+            if (modsConfig.mods[mod.id].enabled === mod.enabled) {
+                ++this.nbInstalledMods;
+                continue;
+            }
+
+            if (mod.enabled) {
+                await this.enableExternalMod(mod, versionPath);
+            } else {
+                await this.disableExternalMod(mod, versionPath);
+            }
+
+            modsConfig.mods[mod.id] = mod;
+            editedMods.push(mod);
+            ++this.nbInstalledMods;
+        }
+
+        log.info("Updating mods.json file");
+        await writeFile(modsPath, JSON.stringify(modsConfig));
+
+        return editedMods;
+    }
+
+    public async uninstallMods(mods: Mod[], externalMods: ExternalMod[], version: BSVersion): Promise<UninstallModsResult> {
+        this.nbUninstalledMods = 0;
+        this.nbModsToUninstall = (mods?.length || 0) + (externalMods?.length || 0);
+        if (this.nbModsToUninstall === 0) {
             throw CustomError.fromError(new Error("No mods to uninstall"), "no-mods");
         }
 
-        this.nbModsToUninstall = mods.length;
-        this.nbUninstalledMods = 0;
+        log.info(`Uninstalling mods on version "${version.BSVersion} - ${version.name}"`, mods, externalMods);
 
         for (const mod of mods) {
             await this.uninstallMod(mod, version);
         }
+
+        if (externalMods.length > 0) {
+            const versionPath = await this.bsLocalService.getVersionPath(version);
+            const modsPath = this.getExternalModsPath(versionPath);
+            const modsConfig = await this.getExternalModsConfig(modsPath);
+
+            for (const mod of externalMods) {
+                await this.uninstallExternalMod(mod, versionPath, modsConfig);
+            }
+
+            await writeFile(modsPath, JSON.stringify(modsConfig));
+        }
+
+        log.info(`Finished uninstalling mods "${version.BSVersion} - ${version.name}"`);
 
         return {
             nbModsToUninstall: this.nbModsToUninstall,
@@ -375,28 +459,528 @@ export class BsModsManagerService {
 
     public async uninstallAllMods(version: BSVersion): Promise<UninstallModsResult> {
         const mods = await this.getInstalledMods(version);
+        const externalMods = Object.values(await this.getInstalledExternalMods(version));
 
-        if (!mods?.length) {
+        this.nbUninstalledMods = 0;
+        this.nbModsToUninstall = mods.length + externalMods.length;
+        if (this.nbModsToUninstall === 0) {
             throw CustomError.fromError(new Error("This version has to mods to uninstall"), "no-mods");
         }
-
-        this.nbModsToUninstall = mods.length;
-        this.nbUninstalledMods = 0;
 
         for (const mod of mods) {
             await this.uninstallMod(mod, version);
         }
 
         const versionPath = await this.bsLocalService.getVersionPath(version);
+        if (externalMods.length > 0) {
+            const modsPath = this.getExternalModsPath(versionPath);
+            const modsConfig = await this.getExternalModsConfig(modsPath);
+
+            for (const mod of externalMods) {
+                await this.uninstallExternalMod(mod, versionPath, modsConfig);
+            }
+
+            await writeFile(modsPath, JSON.stringify(modsConfig));
+        }
 
         await deleteFolder(path.join(versionPath, ModsInstallFolder.PLUGINS));
         await deleteFolder(path.join(versionPath, ModsInstallFolder.LIBS));
         await deleteFolder(path.join(versionPath, ModsInstallFolder.IPA));
+        await deleteFolder(path.join(versionPath, ModsInstallFolder.DISABLED));
 
         return {
             nbModsToUninstall: this.nbModsToUninstall,
             nbUninstalledMods: this.nbUninstalledMods,
         };
+    }
+
+
+    /* ** External Mods Handling ** */
+
+    private getExternalModsPath(versionPath: string): string {
+        return path.join(versionPath, this.MODS_FILE);
+    }
+
+    private async getExternalModsConfig(
+        modsPath: string
+    ): Promise<ModsConfig> {
+        const modsConfig = pathExistsSync(modsPath)
+            ? JSON.parse(await readFile(modsPath, "utf-8"))
+            : { mods: {}, files: { Plugins: {}, Libs: {} } };
+
+        if (!modsConfig.mods) modsConfig.mods = {};
+        if (!modsConfig.files) modsConfig.files = { Plugins: {}, Libs: {} };
+
+        return modsConfig;
+    }
+
+    private async updateExternalModsConfig(
+        versionPath: string,
+        mod: ExternalMod,
+        files: {
+            Plugins: { [key: string]: ExternalModFileInfo };
+            Libs: { [key: string]: ExternalModFileInfo };
+        }
+    ): Promise<void> {
+            const modsPath = this.getExternalModsPath(versionPath);
+            const modsConfig = await this.getExternalModsConfig(modsPath);
+
+            if (modsConfig.mods[mod.id]) {
+                const ref = modsConfig.mods[mod.id].files;
+                for (const file of mod.files) {
+                    const index = ref.findIndex(f => f.name === file.name);
+                    if (index > -1) {
+                        ref[index] = file;
+                    } else {
+                        ref.push(file);
+                    }
+                }
+                mod.files = modsConfig.mods[mod.id].files;
+            }
+            modsConfig.mods[mod.id] = mod;
+            modsConfig.files.Plugins = { ...modsConfig.files.Plugins, ...files.Plugins };
+            modsConfig.files.Libs = { ...modsConfig.files.Libs, ...files.Libs };
+
+            await writeFile(modsPath, JSON.stringify(modsConfig));
+    }
+
+    private async prepareExternalModFolders(versionPath: string): Promise<void> {
+        log.info("Creating external mod folders");
+        await mkdir(path.join(versionPath, ModsInstallFolder.PLUGINS), { recursive: true });
+        await mkdir(path.join(versionPath, ModsInstallFolder.LIBS), { recursive: true });
+        await mkdir(path.join(versionPath, ModsInstallFolder.DISABLED_PLUGINS), { recursive: true });
+        await mkdir(path.join(versionPath, ModsInstallFolder.DISABLED_LIBS), { recursive: true });
+    }
+
+    private async enableExternalMod(mod: ExternalMod, versionPath: string): Promise<void> {
+        log.info(`Enabling mod ${mod.name} (${mod.id})`);
+
+        // Move all non-disabled mods to Disabled Folder
+        for (const file of mod.files) {
+            if (!file.enabled) {
+                continue;
+            }
+
+            const sourcePath = path.join(versionPath, ModsInstallFolder.DISABLED, file.folder, file.name);
+            const destinationPath = path.join(versionPath, file.folder, file.name);
+            log.info(`Moving file "${sourcePath}" => "${destinationPath}"`);
+            await move(sourcePath, destinationPath);
+        }
+    }
+
+    private async disableExternalMod(mod: ExternalMod, versionPath: string): Promise<void> {
+        log.info(`Disabling mod ${mod.name} (${mod.id})`);
+
+        // Move all non-disabled mods to Plugins/Libs Folder
+        for (const file of mod.files) {
+            if (!file.enabled) {
+                continue;
+            }
+
+            const sourcePath = path.join(versionPath, file.folder, file.name);
+            const destinationPath = path.join(versionPath, ModsInstallFolder.DISABLED, file.folder, file.name);
+            log.info(`Moving file "${sourcePath}" => "${destinationPath}"`);
+            await move(sourcePath, destinationPath);
+        }
+    }
+
+    private async uninstallExternalMod(mod: ExternalMod, versionPath: string, modsConfig: ModsConfig): Promise<void> {
+        this.nbUninstalledMods++;
+        if (!modsConfig.mods[mod.id]) {
+            log.info("Mod does not exists");
+            return;
+        }
+
+        mod = modsConfig.mods[mod.id];
+        log.info(`Uninstalling mod ${mod.name} (${mod.id})`);
+
+        this.utilsService.ipcSend<ModInstallProgression>("mod-uninstalled", {
+            success: true,
+            data: {
+                name: mod.name,
+                progression: (this.nbUninstalledMods / this.nbModsToUninstall) * 100
+            }
+        });
+
+        for (const file of mod.files) {
+            const filepath = file.enabled
+                ? path.join(versionPath, ModsInstallFolder.PLUGINS, file.name)
+                : path.join(versionPath, ModsInstallFolder.DISABLED, ModsInstallFolder.PLUGINS, file.name);
+            log.info(`Deleting file ${filepath}`);
+            await unlinkPath(filepath);
+            delete modsConfig.files[file.folder][file.name];
+        }
+        delete modsConfig.mods[mod.id];
+    }
+
+    public async getInstalledExternalMods(version: BSVersion): Promise<{ [key: string]: ExternalMod }> {
+        log.info(`Getting installed external mods for "${version.BSVersion} - ${version.name}"`);
+
+        try {
+            const versionPath = await this.bsLocalService.getVersionPath(version);
+            const modsJsonPath = this.getExternalModsPath(versionPath);
+            if (!pathExistsSync(modsJsonPath)) {
+                return {};
+            }
+
+            const modsJson = JSON.parse(await readFile(modsJsonPath, "utf-8"));
+
+            return modsJson.mods || {};
+        } catch (error: any) {
+            log.error(`Can't get installed external mods for ${version.BSVersion} - ${version.name}`);
+            throw CustomError.fromError(error);
+        }
+    }
+
+    private async checkExternalModFileHash(file: ExternalModFileVerify, modsConfig: ModsConfig): Promise<ExternalModFileVerify> {
+        const fileConfig = modsConfig.files.Plugins[file.name];
+        if (fileConfig) {
+            file.conflicts = fileConfig.mod;
+            file.state = fileConfig.hash === file.hash
+                ? ExternalModFileState.SAME_CONFLICT
+                : ExternalModFileState.LOCAL_CONFLICT;
+        } else if (file.name.endsWith(".dll")) {
+            const existingMod = await this.beatModsApi.getModByHash(file.hash);
+            if (existingMod) {
+                file.state = ExternalModFileState.API_CONFLICT;
+                file.conflicts = existingMod.name;
+            }
+        }
+
+        return file;
+    }
+
+    private async getExternalDllMod(filepath: string, modsConfig: ModsConfig): Promise<ExternalModFileVerify> {
+        const name = path.basename(filepath);
+        const content = await readFile(filepath);
+        const hash = this.md5Hash(content);
+
+        return this.checkExternalModFileHash({
+            name,
+            folder: "Plugins",
+            enabled: true,
+            hash,
+            state: ExternalModFileState.OK
+        }, modsConfig);
+    }
+
+    private async getExternalZipMods(filepath: string, modsConfig: ModsConfig): Promise<ExternalModFileVerify[]> {
+        try {
+            let hasDll = false;
+            const externalModFiles: ExternalModFileVerify[] = [];
+
+            await processZip(filepath, async (relativePath, file) => {
+                if (file.dir) {
+                    return 0;
+                }
+
+                const directories = relativePath.split(path.sep);
+                if (
+                    directories.length !== 2 ||
+                    !([ModsInstallFolder.LIBS, ModsInstallFolder.PLUGINS] as string[]).includes(directories[0])
+                ) {
+                    return 0;
+                }
+
+                const folder = directories[0] as "Libs" | "Plugins";
+                const filename = directories[1];
+
+                if (!hasDll && path.extname(filename) === ".dll") {
+                    hasDll = true;
+                }
+
+                const content = await file.async("nodebuffer");
+                const hash = this.md5Hash(content);
+
+                externalModFiles.push({
+                    name: filename,
+                    folder,
+                    enabled: true,
+                    hash,
+                    state: ExternalModFileState.OK,
+                });
+
+                return content.length;
+            });
+
+            if (!hasDll) {
+                log.warn(`Zip file ${filepath} does not contain any dll files`);
+                return [];
+            }
+
+            return await Promise.all(
+                externalModFiles.map(file => this.checkExternalModFileHash(file, modsConfig))
+            );
+        } catch (error: any) {
+            log.error(`Could not read zip file ${filepath}`);
+            throw CustomError.fromError(error);
+        }
+    }
+
+    public async verifyExternalModFiles(version: BSVersion, files: string[]): Promise<ExternalModFileVerify[]> {
+        log.info("Verifying files", files);
+
+        const versionPath = await this.bsLocalService.getVersionPath(version);
+        const modsPath = this.getExternalModsPath(versionPath);
+        const modsConfig = await this.getExternalModsConfig(modsPath);
+
+        let filenames: ExternalModFileVerify[] = [];
+        for (const filepath of files) {
+            switch(path.extname(filepath)) {
+            case ".dll":
+                filenames.push(await this.getExternalDllMod(filepath, modsConfig));
+                break;
+
+            case ".zip":
+                filenames = filenames.concat(await this.getExternalZipMods(filepath, modsConfig));
+                break;
+
+            default:
+                break;
+            }
+        }
+
+        log.info("Verified files", filenames);
+        return filenames;
+    }
+
+    private async installExternalModByZip(
+        version: BSVersion,
+        mod: ExternalMod,
+        zipPath: string
+    ): Promise<ExternalMod> {
+        log.info("Install external mod with zip");
+
+        try {
+            if (!pathExistsSync(zipPath)) {
+                throw new Error(`Path ${zipPath} does not exists`);
+            }
+
+            if (!mod.id) {
+                mod.id = crypto.randomUUID()
+            }
+
+            const copiedFiles: {
+                Plugins: { [key: string]: ExternalModFileInfo };
+                Libs: { [key: string]: ExternalModFileInfo };
+            } = {
+                Plugins: {},
+                Libs: {},
+            };
+
+            const versionPath = await this.bsLocalService.getVersionPath(version);
+            this.prepareExternalModFolders(versionPath);
+
+            // Extract the files to the installation folder
+            const data = await readFile(zipPath);
+            const zip = await JSZip.loadAsync(data);
+
+            let sourcePath: string = "";
+            let destinationPath: string = "";
+            let deletePath: string = ""; // Delete existing from the other path
+            for (const file of mod.files) {
+                sourcePath = path.join(file.folder, file.name);
+
+                if (file.enabled) {
+                    destinationPath = path.join(versionPath, sourcePath);
+                    deletePath = path.join(versionPath, ModsInstallFolder.DISABLED, sourcePath);
+                } else {
+                    destinationPath = path.join(versionPath, ModsInstallFolder.DISABLED, sourcePath);
+                    deletePath = path.join(versionPath, sourcePath);
+                }
+
+                const content = await zip.file(sourcePath).async("nodebuffer");
+                await writeFile(destinationPath, content);
+                if (pathExistsSync(deletePath)) {
+                    log.info(`Deleting file "${deletePath}"`);
+                    await unlink(deletePath);
+                }
+
+                // Overwrite the id instead of creating a new one
+                file.id = crypto.randomUUID();
+                file.hash = this.md5Hash(content);
+                copiedFiles[file.folder][file.name] = {
+                    mod: mod.id,
+                    hash: file.hash
+                };
+            }
+
+            await this.updateExternalModsConfig(versionPath, mod, copiedFiles);
+
+            log.info("Custom mod installed", mod);
+
+            return mod;
+        } catch (error: any) {
+            log.error(`Could not install mod ${mod.name} with ${zipPath}`);
+            throw CustomError.fromError(error);
+        }
+    }
+
+    private async installExternalModByMultipleFiles(
+        version: BSVersion,
+        mod: ExternalMod,
+        files: string[]
+    ): Promise<ExternalMod> {
+        log.info("Installing external mod with files");
+
+        try {
+            if (!mod.id) {
+                mod.id = crypto.randomUUID();
+            }
+
+            const copiedFiles: {
+                Plugins: { [key: string]: ExternalModFileInfo };
+                Libs: { [key: string]: ExternalModFileInfo };
+            } = {
+                Plugins: {},
+                Libs: {},
+            };
+
+            const versionPath = await this.bsLocalService.getVersionPath(version);
+            this.prepareExternalModFolders(versionPath);
+
+            // Copy the files to the installation folder
+            let destinationPath: string = "";
+            let deletePath: string = "";
+            for (const sourcePath of files) {
+                const filename = path.basename(sourcePath);
+                const file = mod.files.find(file => file.name === filename);
+                if (!file) {
+                    continue;
+                }
+
+                if (file.enabled) {
+                    destinationPath = path.join(versionPath, file.folder, file.name);
+                    deletePath = path.join(
+                        versionPath, ModsInstallFolder.DISABLED, file.folder, file.name
+                    );
+                } else {
+                    destinationPath = path.join(
+                        versionPath, ModsInstallFolder.DISABLED, file.folder, file.name
+                    );
+                    deletePath = path.join(versionPath, file.folder, file.name);
+                }
+
+                log.info(`Copying file "${sourcePath}" => "${destinationPath}"`);
+                const content = await readFile(sourcePath);
+                await writeFile(destinationPath, content);
+                if (pathExistsSync(deletePath)) {
+                    log.info(`Deleting file "${deletePath}"`);
+                    await unlink(deletePath);
+                }
+
+                // Overwrite the id instead of creating a new one
+                file.id = crypto.randomUUID();
+                file.hash = this.md5Hash(content);
+                copiedFiles[file.folder][file.name] = {
+                    mod: mod.id,
+                    hash: file.hash
+                };
+            }
+
+            await this.updateExternalModsConfig(versionPath, mod, copiedFiles);
+
+            log.info("Custom mod installed", mod);
+
+            return mod;
+        } catch (error: any) {
+            log.error(`Could not install mod ${mod.name}`);
+            throw CustomError.fromError(error);
+        }
+    }
+
+    public async installExternalMod(mod: ExternalMod, version: BSVersion, files: string[]): Promise<ExternalMod> {
+        if (!mod.name) {
+            log.error("Name should not be empty");
+            throw new CustomError("Name should not be empty", "name-required");
+        }
+
+        log.info(`Installing "${mod.name}" mod from "${version.BSVersion} - ${version.name}" version`, files);
+
+        if (files.length === 0 || mod.files.length === 0) {
+            throw new CustomError(`No mod files were passed for mod ${mod.name}`, "no-files-error");
+        }
+
+        if (files.length === 1 && path.extname(files[0]) === ".zip") {
+            return this.installExternalModByZip(version, mod, files[0]);
+        }
+
+        return this.installExternalModByMultipleFiles(version, mod, files);
+    }
+
+    public async updateExternalMod(mod: ExternalMod, version: BSVersion): Promise<ExternalMod> {
+        if (!mod.name) {
+            throw new CustomError("Name should not be empty", "modals.external-mod.name-required");
+        }
+
+        log.info(`Updating "${mod.name}" mod from "${version.BSVersion} - ${version.name}"`);
+
+        try {
+            const versionPath = await this.bsLocalService.getVersionPath(version);
+            const modsPath = this.getExternalModsPath(versionPath);
+            const modsConfig = await this.getExternalModsConfig(modsPath);
+
+            const modRef = modsConfig.mods[mod.id];
+            modRef.name = mod.name;
+            modRef.version = mod.version;
+            modRef.description = mod.description;
+
+            // Force enable
+            modRef.enabled = true;
+            mod.enabled = true;
+
+            const fileMap = modRef.files.reduce((map, file) => {
+                map[file.id] = file;
+                return map;
+            }, {} as { [key: string]: ExternalModFile });
+
+            // Enable/Disable mod files
+            const removeFileIds: string[] = [];
+            let sourcePath: string = "";
+            let destinationPath: string = "";
+            for (const file of mod.files) {
+                const fileRef = fileMap[file.id];
+                if (!fileRef) { // NOTE: Does not support file upload on modal yet
+                    removeFileIds.push(file.id);
+                    continue;
+                }
+
+                if (file.enabled === fileRef.enabled) {
+                    continue;
+                }
+
+                if (file.enabled) {
+                    sourcePath = path.join(versionPath, ModsInstallFolder.DISABLED, file.folder, file.name);
+                    destinationPath = path.join(versionPath, file.folder, file.name);
+                } else {
+                    sourcePath = path.join(versionPath, file.folder, file.name);
+                    destinationPath = path.join(versionPath, ModsInstallFolder.DISABLED, file.folder, file.name);
+                }
+                log.info(`Moving file "${sourcePath}" => "${destinationPath}"`);
+                await move(sourcePath, destinationPath);
+            }
+            mod.files = mod.files.filter(file => removeFileIds.findIndex(id => id === file.id) === -1);
+
+            // Delete files
+            for (const file of modRef.files.filter(file1 => mod.files.findIndex(file2 => file1.id === file2.id) === -1)) {
+                const filepath = file.enabled
+                    ? path.join(versionPath, file.folder, file.name)
+                    : path.join(versionPath, ModsInstallFolder.DISABLED, file.folder, file.name);
+
+                log.info(`Deleting file "${filepath}"`);
+                await unlink(filepath);
+            }
+
+            modRef.files = mod.files;
+            await writeFile(modsPath, JSON.stringify(modsConfig));
+
+            log.info(`Updated "${mod.name}"`);
+
+            return mod;
+        } catch (error: any) {
+            log.error(`Could not update mod ${mod.name}`);
+            throw CustomError.fromError(error);
+        }
     }
 }
 
@@ -404,7 +988,10 @@ const enum ModsInstallFolder {
     PLUGINS = "Plugins",
     LIBS = "Libs",
     IPA = "IPA",
+    DISABLED = "Disabled",
     PENDING = "IPA/Pending",
     PLUGINS_PENDING = "IPA/Pending/Plugins",
     LIBS_PENDING = "IPA/Pending/Libs",
+    DISABLED_PLUGINS = "Disabled/Plugins",
+    DISABLED_LIBS = "Disabled/Libs"
 }

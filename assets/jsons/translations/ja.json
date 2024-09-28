@@ -75,7 +75,8 @@
                 "buttons": {
                     "more-infos": "詳細情報",
                     "install-or-update": "インストールとアップデート",
-                    "reinstall-all": "すべて再インストール"
+                    "reinstall-all": "すべて再インストール",
+                    "enable-or-disable": "Enable/Disable"
                 },
                 "mods-grid": {
                     "header-bar": {
@@ -456,6 +457,11 @@
             }
         },
         "mods": {
+            "get-installed-mods": {
+                "titles": {
+                    "error": "インストールされたモッドを取得 😨"
+                }
+            },
             "install-mods": {
                 "titles": {
                     "success": "Modをインストールしました 🎉",
@@ -489,6 +495,32 @@
                     "errors": {
                         "no-mods": "このバージョンのModはインストールされていません 😑"
                     }
+                }
+            },
+            "external-mod": {
+                "titles": {
+                    "install-success": "カスタムモッドがインストールされました 🎉",
+                    "update-success": "カスタムモッドが更新されました 🎉",
+                    "install-error": "カスタムモッドのインストールに失敗しました 😨",
+                    "update-error": "カスタムモッドの更新に失敗しました 😨"
+                },
+                "msgs": {
+                    "install-success": "カスタムモッドがインストールされました。",
+                    "update-success": "カスタムモッドが更新されました。",
+                    "verify-error": "カスタムモッドのファイルにはDLLファイルが含まれていません。",
+                    "install-error": "カスタムモッドのファイルをインストールできませんでした。",
+                    "no-files-error": "カスタムモッドにはファイルが含まれていません。",
+                    "update-error": "カスタムモッドを更新できませんでした。"
+                }
+            },
+            "toggle-mods": {
+                "titles": {
+                    "success": "Enable/Disable mods 🎉",
+                    "error": "Enable/Disable mods 😨"
+                },
+                "msgs": {
+                    "success": "Mods have been enabled/disabled",
+                    "no-mods-toggled": "No mods to enable/disable"
                 }
             }
         },
@@ -777,6 +809,21 @@
             "choose-folder": "フォルダーを選択",
             "default": "デフォルト",
             "default-tooltip": "デフォルトでは、ホームフォルダに設定されます"
+        },
+        "external-mod": {
+            "install-title": "カスタムモッドをインストール",
+            "update-title": "カスタムモッドを更新",
+            "existing": "既存のモッドを上書きしています",
+            "name": "名前",
+            "name-required": "モッド名は必須です。",
+            "version": "バージョン",
+            "description": "説明",
+            "files": "ファイル",
+            "file-exists": "モッドファイルはすでに存在します",
+            "file-local-conflict": "衝突するモッドファイル",
+            "file-api-conflict": "代わりに {mod} モッドをインストール",
+            "install-button": "インストール",
+            "update-button": "更新"
         }
     },
     "maps": {

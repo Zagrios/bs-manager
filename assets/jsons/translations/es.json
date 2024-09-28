@@ -75,7 +75,8 @@
                 "buttons": {
                     "more-infos": "Más información",
                     "install-or-update": "Instalar o actualizar",
-                    "reinstall-all": "Reinstalar todo"
+                    "reinstall-all": "Reinstalar todo",
+                    "enable-or-disable": "Enable/Disable"
                 },
                 "mods-grid": {
                     "header-bar": {
@@ -456,6 +457,11 @@
             }
         },
         "mods": {
+            "get-installed-mods": {
+                "titles": {
+                    "error": "Obtener mods instalados 😨"
+                }
+            },
             "install-mods": {
                 "titles": {
                     "success": "Mods instalados 🎉",
@@ -489,6 +495,32 @@
                     "errors": {
                         "no-mods": "No hay mods instalados en esta versión 😑"
                     }
+                }
+            },
+            "external-mod": {
+                "titles": {
+                    "install-success": "Mod personalizado instalado 🎉",
+                    "update-success": "Mod personalizado actualizado 🎉",
+                    "install-error": "La instalación del mod personalizado falló 😨",
+                    "update-error": "La actualización del mod personalizado falló 😨"
+                },
+                "msgs": {
+                    "install-success": "El mod personalizado ha sido instalado.",
+                    "update-success": "El mod personalizado ha sido actualizado.",
+                    "verify-error": "Los archivos del mod personalizado no contienen archivos DLL.",
+                    "install-error": "Los archivos del mod personalizado no se pudieron instalar.",
+                    "no-files-error": "El mod personalizado no contiene ningún archivo.",
+                    "update-error": "El mod personalizado no se pudo actualizar."
+                }
+            },
+            "toggle-mods": {
+                "titles": {
+                    "success": "Enable/Disable mods 🎉",
+                    "error": "Enable/Disable mods 😨"
+                },
+                "msgs": {
+                    "success": "Mods have been enabled/disabled",
+                    "no-mods-toggled": "No mods to enable/disable"
                 }
             }
         },
@@ -777,6 +809,21 @@
             "choose-folder": "Elige la carpeta",
             "default": "Predeterminado",
             "default-tooltip": "Por defecto, en su carpeta personal"
+        },
+        "external-mod": {
+            "install-title": "Instalar mod personalizado",
+            "update-title": "Actualizar mod personalizado",
+            "existing": "Sobrescribiendo el mod existente",
+            "name": "Nombre",
+            "name-required": "Se requiere el nombre del mod.",
+            "version": "Versión",
+            "description": "Descripción",
+            "files": "Archivos",
+            "file-exists": "El archivo del mod ya existe",
+            "file-local-conflict": "Archivo de mod en conflicto",
+            "file-api-conflict": "Instalar el mod {mod} en su lugar",
+            "install-button": "Instalar",
+            "update-button": "Actualizar"
         }
     },
     "maps": {

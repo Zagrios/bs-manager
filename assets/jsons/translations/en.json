@@ -75,7 +75,8 @@
                 "buttons": {
                     "more-infos": "More info",
                     "install-or-update": "Install or update",
-                    "reinstall-all": "Reinstall all"
+                    "reinstall-all": "Reinstall all",
+                    "enable-or-disable": "Enable/Disable"
                 },
                 "mods-grid": {
                     "header-bar": {
@@ -463,6 +464,11 @@
             }
         },
         "mods": {
+            "get-installed-mods": {
+                "titles": {
+                    "error": "Get installed mods 😨"
+                }
+            },
             "install-mods": {
                 "titles": {
                     "success": "Mods installed 🎉",
@@ -496,6 +502,32 @@
                     "errors": {
                         "no-mods": "No mods are installed in this version 😑"
                     }
+                }
+            },
+            "external-mod": {
+                "titles": {
+                    "install-success": "Custom mod installed 🎉",
+                    "update-success": "Custom mod updated 🎉",
+                    "install-error": "Custom mod installation failed 😨",
+                    "update-error": "Custom mod update failed 😨"
+                },
+                "msgs": {
+                    "install-success": "Custom mod has been installed.",
+                    "update-success": "Custom mod has been updated.",
+                    "verify-error": "Custom mod file/s does not contain any dll files.",
+                    "install-error": "Custom mod file/s could not be installed.",
+                    "no-files-error": "Custom mod does not contain any files.",
+                    "update-error": "Custom mod could not be updated."
+                }
+            },
+            "toggle-mods": {
+                "titles": {
+                    "success": "Enable/Disable mods 🎉",
+                    "error": "Enable/Disable mods 😨"
+                },
+                "msgs": {
+                    "success": "Mods have been enabled/disabled",
+                    "no-mods-toggled": "No mods to enable/disable"
                 }
             }
         },
@@ -784,6 +816,21 @@
             "choose-folder": "Choose folder",
             "default": "Default",
             "default-tooltip": "Defaults to your home folder"
+        },
+        "external-mod": {
+            "install-title": "Install custom mod",
+            "update-title": "Update custom mod",
+            "existing": "Overwriting existing mod",
+            "name": "Name",
+            "name-required": "Mod name is required.",
+            "version": "Version",
+            "description": "Description",
+            "files": "Files",
+            "file-exists": "Mod file already exists",
+            "file-local-conflict": "Conflicting mod file",
+            "file-api-conflict": "Install {mod} mod instead",
+            "install-button": "Install",
+            "update-button": "Update"
         }
     },
     "maps": {

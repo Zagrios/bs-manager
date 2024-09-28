@@ -75,7 +75,8 @@
                 "buttons": {
                     "more-infos": "Подробнее",
                     "install-or-update": "Установить или обновить",
-                    "reinstall-all": "Переустановить все"
+                    "reinstall-all": "Переустановить все",
+                    "enable-or-disable": "Enable/Disable"
                 },
                 "mods-grid": {
                     "header-bar": {
@@ -456,6 +457,11 @@
             }
         },
         "mods": {
+            "get-installed-mods": {
+                "titles": {
+                    "error": "Получить установленные моды 😨"
+                }
+            },
             "install-mods": {
                 "titles": {
                     "success": "Моды установлены 🎉",
@@ -489,6 +495,32 @@
                     "errors": {
                         "no-mods": "Для этой версии не было установлено модов 😑"
                     }
+                }
+            },
+            "external-mod": {
+                "titles": {
+                    "install-success": "Пользовательский мод установлен 🎉",
+                    "update-success": "Пользовательский мод обновлён 🎉",
+                    "install-error": "Установка пользовательского мода не удалась 😨",
+                    "update-error": "Обновление пользовательского мода не удалось 😨"
+                },
+                "msgs": {
+                    "install-success": "Пользовательский мод был установлен.",
+                    "update-success": "Пользовательский мод был обновлён.",
+                    "verify-error": "Файлы пользовательского мода не содержат файлов DLL.",
+                    "install-error": "Файлы пользовательского мода не удалось установить.",
+                    "no-files-error": "Пользовательский мод не содержит файлов.",
+                    "update-error": "Пользовательский мод не удалось обновить."
+                }
+            },
+            "toggle-mods": {
+                "titles": {
+                    "success": "Enable/Disable mods 🎉",
+                    "error": "Enable/Disable mods 😨"
+                },
+                "msgs": {
+                    "success": "Mods have been enabled/disabled",
+                    "no-mods-toggled": "No mods to enable/disable"
                 }
             }
         },
@@ -776,6 +808,21 @@
             "choose-folder": "Изменить папку",
             "default": "По умолчанию",
             "default-tooltip": "По умолчанию в вашей домашней папке"
+        },
+        "external-mod": {
+            "install-title": "Установить пользовательский мод",
+            "update-title": "Обновить пользовательский мод",
+            "existing": "Перезапись существующего мода",
+            "name": "Имя",
+            "name-required": "Название мода обязательно.",
+            "version": "Версия",
+            "description": "Описание",
+            "files": "Файлы",
+            "file-exists": "Файл мода уже существует",
+            "file-local-conflict": "Конфликтующий файл мода",
+            "file-api-conflict": "Установить мод {mod} вместо этого",
+            "install-button": "Установить",
+            "update-button": "Обновить"
         }
     },
     "maps": {

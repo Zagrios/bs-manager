@@ -75,7 +75,8 @@
                 "buttons": {
                     "more-infos": "更多信息",
                     "install-or-update": "安装或更新",
-                    "reinstall-all": "重新安装全部"
+                    "reinstall-all": "重新安装全部",
+                    "enable-or-disable": "Enable/Disable"
                 },
                 "mods-grid": {
                     "header-bar": {
@@ -456,6 +457,11 @@
             }
         },
         "mods": {
+            "get-installed-mods": {
+                "titles": {
+                    "error": "获取已安装的模组 😨"
+                }
+            },
             "install-mods": {
                 "titles": {
                     "success": "Mod 已安装 🎉",
@@ -489,6 +495,32 @@
                     "errors": {
                         "no-mods": "该版本中没有安装 Mod 😑"
                     }
+                }
+            },
+            "external-mod": {
+                "titles": {
+                    "install-success": "自定义模组已安装 🎉",
+                    "update-success": "自定义模组已更新 🎉",
+                    "install-error": "自定义模组安装失败 😨",
+                    "update-error": "自定义模组更新失败 😨"
+                },
+                "msgs": {
+                    "install-success": "自定义模组已安装。",
+                    "update-success": "自定义模组已更新。",
+                    "verify-error": "自定义模组文件不包含任何 DLL 文件。",
+                    "install-error": "自定义模组文件无法安装。",
+                    "no-files-error": "自定义模组不包含任何文件。",
+                    "update-error": "自定义模组无法更新。"
+                }
+            },
+            "toggle-mods": {
+                "titles": {
+                    "success": "Enable/Disable mods 🎉",
+                    "error": "Enable/Disable mods 😨"
+                },
+                "msgs": {
+                    "success": "Mods have been enabled/disabled",
+                    "no-mods-toggled": "No mods to enable/disable"
                 }
             }
         },
@@ -777,6 +809,21 @@
             "choose-folder": "选择文件夹",
             "default": "默认",
             "default-tooltip": "默认为您的主文件夹"
+        },
+        "external-mod": {
+            "install-title": "安装自定义模组",
+            "update-title": "更新自定义模组",
+            "existing": "覆盖现有模组",
+            "name": "名称",
+            "name-required": "模组名称是必填项。",
+            "version": "版本",
+            "description": "描述",
+            "files": "文件",
+            "file-exists": "模组文件已存在",
+            "file-local-conflict": "冲突的模组文件",
+            "file-api-conflict": "改为安装 {mod} 模组",
+            "install-button": "安裝",
+            "update-button": "更新"
         }
     },
     "maps": {
