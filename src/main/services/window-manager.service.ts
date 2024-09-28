@@ -25,7 +25,9 @@ export class WindowManagerService {
 
     private readonly baseWindowOption: BrowserWindowConstructorOptions = {
         title: APP_NAME,
-        icon: this.utilsService.getAssetsPath("favicon.ico"),
+        icon: process.platform === "linux"
+            ? this.utilsService.getBuildPath(path.join("icons", "png", "256x256.png"))
+            : this.utilsService.getBuildPath(path.join("icons", "win", "favicon.ico")),
         show: false,
         frame: false,
         titleBarOverlay: false,

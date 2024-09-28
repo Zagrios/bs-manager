@@ -8,7 +8,12 @@ import log from "electron-log";
 export class UtilsService {
     private static instance: UtilsService;
 
-    private assetsPath: string = app.isPackaged ? path.join(process.resourcesPath, "assets") : path.join(__dirname, "../../assets");
+    private assetsPath: string = app.isPackaged
+        ? path.join(process.resourcesPath, "assets")
+        : path.join(path.dirname(path.dirname(__dirname)), "assets");
+    private readonly buildPath: string = app.isPackaged
+        ? path.join(process.resourcesPath, "build")
+        : path.join(path.dirname(path.dirname(__dirname)), "build");
 
     private constructor() {}
 
@@ -34,6 +39,10 @@ export class UtilsService {
     }
     public getTempPath(): string {
         return path.join(app.getPath("temp"), app.getName());
+    }
+
+    public getBuildPath(filepath: string): string {
+        return path.join(this.buildPath, filepath);
     }
 
     public ipcSend<T = unknown>(channel: string, response: IpcResponse<T>): void {
