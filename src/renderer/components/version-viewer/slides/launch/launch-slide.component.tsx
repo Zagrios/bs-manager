@@ -65,7 +65,6 @@ export function LaunchSlide({ version }: Props) {
             desktop: desktopMode,
             debug: debugMode,
             additionalArgs,
-            protonPath: bsLauncherService.getProtonPath(),
         });
 
         return lastValueFrom(launch$).catch(() => {});

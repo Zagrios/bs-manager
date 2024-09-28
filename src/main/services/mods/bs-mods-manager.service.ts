@@ -7,7 +7,7 @@ import { UtilsService } from "../utils.service";
 import md5File from "md5-file";
 import { RequestService } from "../request.service";
 import { spawn } from "child_process";
-import { BS_EXECUTABLE } from "../../constants";
+import { BS_EXECUTABLE, WINE_BINARY_PREFIX } from "../../constants";
 import log from "electron-log";
 import { deleteFolder, pathExist, unlinkPath } from "../../helpers/fs.helpers";
 import { lastValueFrom } from "rxjs";
@@ -17,14 +17,16 @@ import recursiveReadDir from "recursive-readdir";
 import { sToMs } from "../../../shared/helpers/time.helpers";
 import { ensureDir, pathExistsSync } from "fs-extra";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
+import { StaticConfigurationService } from "../static-configuration.service";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
 
     private readonly beatModsApi: BeatModsApiService;
     private readonly bsLocalService: BSLocalVersionService;
-    private readonly utilsService: UtilsService;
     private readonly requestService: RequestService;
+    private readonly staticConfig: StaticConfigurationService;
+    private readonly utilsService: UtilsService;
 
     private manifestMatches: Mod[];
 
@@ -44,8 +46,9 @@ export class BsModsManagerService {
     private constructor() {
         this.beatModsApi = BeatModsApiService.getInstance();
         this.bsLocalService = BSLocalVersionService.getInstance();
-        this.utilsService = UtilsService.getInstance();
         this.requestService = RequestService.getInstance();
+        this.staticConfig = StaticConfigurationService.getInstance();
+        this.utilsService = UtilsService.getInstance();
     }
 
     private async getModFromHash(hash: string): Promise<Mod> {
@@ -148,9 +151,28 @@ export class BsModsManagerService {
             return false;
         }
 
+        // Just use the wine binary within the proton folder so no additional wine installation is needed
+        let winePath: string = "";
+        if (process.platform === "linux") {
+            if (!this.staticConfig.has("proton-folder")) {
+                log.error("Proton folder not setup");
+                return false;
+            }
+
+            winePath = path.join(
+                this.staticConfig.get("proton-folder"),
+                WINE_BINARY_PREFIX
+            );
+
+            if (!pathExistsSync(winePath)) {
+                log.error("Wine binary not found");
+                return false;
+            }
+        }
+
         return new Promise<boolean>(resolve => {
-            const cmd = process.platform === 'linux'
-                ? `screen -dmS "BSIPA" dotnet "${ipaPath}" ${args.join(" ")}` // Must run through screen, otherwise BSIPA tries to move console cursor and crashes.
+            const cmd = process.platform === "linux"
+                ? `"${winePath}" "${ipaPath}" ${args.join(" ")}`
                 : `"${ipaPath}" ${args.join(" ")}`;
 
             log.info("START IPA PROCESS", cmd);
@@ -161,6 +183,9 @@ export class BsModsManagerService {
                 resolve(false)
             }, sToMs(30));
 
+            processIPA.stdout.on("data", data => {
+                log.info("IPA process stdout", data.toString());
+            });
             processIPA.stderr.on("data", data => {
                 log.error("IPA process stderr", data.toString());
             })
@@ -204,7 +229,7 @@ export class BsModsManagerService {
         }
 
         const crypto = require("crypto");
-        const files = await zip.files;
+        const { files } = zip;
 
         const checkedEntries = (
             await Promise.all(
