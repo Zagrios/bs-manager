@@ -39,7 +39,7 @@ export class MapsManagerService {
     private readonly lastLinkedVersion$: Subject<BSVersion> = new Subject();
     private readonly lastUnlinkedVersion$: Subject<BSVersion> = new Subject();
 
-    private importListeners: ((map: BsmLocalMap, version?: BSVersion) => void)[] = [];
+    private importListeners = new Set<((map: BsmLocalMap, version?: BSVersion) => void)>();
     private importCount = 0;
 
     private constructor() {
@@ -49,23 +49,6 @@ export class MapsManagerService {
         this.notifications = NotificationService.getInstance();
         this.config = ConfigurationService.getInstance();
         this.linker = VersionFolderLinkerService.getInstance();
-
-        this.ipcService.watch<{map: BsmLocalMap, version?: BSVersion}>("map-imported")
-            .subscribe(data => {
-                ++this.importCount;
-                this.importListeners.forEach(listener => listener(data.map, data.version));
-            });
-
-        // NOTE: Generic notify call from server side
-        this.ipcService.watch<{map: string, error: string}>("map-not-imported")
-            .subscribe(data => {
-                this.notifications.notifyError({
-                    title: "notifications.maps.import-map.titles.error",
-                    desc: ["not-found-zip", "invalid-zip"].includes(data.error)
-                        ? `notifications.maps.import-map.msgs.${data.error}`
-                        : data.error
-                });
-            });
     }
 
     public getMaps(version?: BSVersion): Observable<BsmLocalMapsProgress> {
@@ -222,20 +205,29 @@ export class MapsManagerService {
                 return 0;
             }
 
-            // Incremented by receiving an ipc call on "map-imported"
             this.importCount = 0;
 
-            const importProgress$: Observable<ProgressionInterface> = this.ipcService.sendV2(
-                    "bs-maps.import-maps",
-                    { paths, version }
-                )
-                .pipe(map(progress => ({
-                    progression: (progress.current / progress.total) * 100,
-                    label: progress.data
-                } as ProgressionInterface)));
+            const importObserver$ = this.ipcService.sendV2(
+                "bs-maps.import-maps",
+                { paths, version }
+            );
+            importObserver$.subscribe(progress => {
+                if (!progress.data) {
+                    return;
+                }
 
-            this.progressBar.show(importProgress$);
-            await lastValueFrom(importProgress$);
+                ++this.importCount;
+                this.importListeners.forEach(listeners => listeners(progress.data, version));
+            });
+
+            this.progressBar.show(importObserver$.pipe(
+                map(progress => ({
+                    progression: (progress.current / progress.total) * 100,
+                    label: progress.data?.songDetails?.name
+                } as ProgressionInterface))
+            ));
+
+            await lastValueFrom(importObserver$);
             return this.importCount;
         } catch (error: any) {
             this.notifications.notifyError({
@@ -264,14 +256,11 @@ export class MapsManagerService {
     }
 
     public addImportListener(listener: (map: BsmLocalMap, version?: BSVersion) => void): void {
-        this.importListeners.push(listener);
+        this.importListeners.add(listener);
     }
 
     public removeImportListener(listener: (map: BsmLocalMap, version?: BSVersion) => void): void {
-        const index = this.importListeners.indexOf(listener);
-        if (index > -1) {
-            this.importListeners.splice(index, 1);
-        }
+        this.importListeners.delete(listener);
     }
 
     public get versionLinked$(): Observable<BSVersion> {

@@ -328,32 +328,34 @@ export class LocalMapsManagerService {
         return null;
     }
 
-    public importMaps(zipPaths: string[], version?: BSVersion): Observable<Progression> {
-        const progress: Progression<string> = {
+
+
+    public importMaps(zipPaths: string[], version?: BSVersion): Observable<Progression<BsmLocalMap>> {
+        const progress: Progression<BsmLocalMap> = {
             total: zipPaths.length,
             current: 0,
-            data: "",
         };
 
-        return new Observable<Progression<string>>(observer => {
+        return new Observable<Progression<BsmLocalMap>>(observer => {
             (async () => {
-                for (const zipPath of zipPaths) {
-                    ++progress.current;
-                    progress.data = zipPath;
-                    observer.next(progress);
+                try {
+                    observer.next(progress); // 0%
 
-                    try {
-                        await this.importMap(zipPath, version);
-                    } catch (error: any) {
-                        log.error(`Could not import "${zipPath}"`, error);
-                        this.ipc.send<{map: string, error: string}>(
-                            "map-not-imported",
-                            this.windows.getWindows("index.html").at(0),
-                            { map: zipPath, error: error.code }
-                        );
+                    for (const zipPath of zipPaths) {
+                        ++progress.current;
+                        try {
+                            progress.data = await this.importMap(zipPath, version);
+                        } catch (error: any) {
+                            log.error(`Could not import "${zipPath}"`, error);
+                            progress.data = undefined;
+                        }
+                        observer.next(progress);
                     }
+                } catch(error: any) {
+                    observer.error(error);
+                } finally {
+                    observer.complete();
                 }
-                observer.complete();
             })();
         });
     }
@@ -371,8 +373,8 @@ export class LocalMapsManagerService {
             log.info(`Importing map "${zipPath}" to "${mapPath}"`);
 
             const zip = await JSZip.loadAsync(await readFile(zipPath));
-            const infoFile = zip.file("Info.dat");
-            if (!infoFile) { // Simple check for importing maps
+            const infoFiles = zip.file(/(I|i)nfo.dat/);
+            if (infoFiles.length === 0) { // Simple check for importing maps
                 throw new CustomError(`Invalid zip file "${zipPath}"`, "invalid-zip");
             }
 
@@ -393,12 +395,6 @@ export class LocalMapsManagerService {
 
             const localMap = await this.loadMapInfoFromPath(mapPath);
             localMap.songDetails = this.songDetailsCache.getSongDetails(localMap.hash);
-
-            this.ipc.send<{map: BsmLocalMap, version?: BSVersion}>(
-                "map-imported",
-                this.windows.getWindows("index.html").at(0),
-                { map: localMap, version }
-            );
 
             return localMap;
         } catch (error: any) {
