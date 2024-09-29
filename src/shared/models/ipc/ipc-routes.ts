@@ -11,7 +11,7 @@ import { DepotDownloaderEvent } from "../bs-version-download/depot-downloader.mo
 import { MSGetQuery, MSModel, MSModelType } from "../models/model-saber.model";
 import { ModelDownload } from "renderer/services/models-management/models-downloader.service";
 import { BsmLocalModel } from "../models/bsm-local-model.interface";
-import { Mod, UninstallModsResult } from "../mods";
+import { Mod } from "../mods";
 import { BPList, DownloadPlaylistProgressionData } from "../playlists/playlist.interface";
 import { VersionLinkerAction } from "renderer/services/version-folder-linker.service";
 import { FileFilter, OpenDialogReturnValue } from "electron";
