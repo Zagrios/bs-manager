@@ -1,12 +1,11 @@
-import { autoUpdater } from "electron-updater";
+import { autoUpdater, CancellationToken, ProgressInfo } from "electron-updater";
 import log from "electron-log";
-import { UtilsService } from "./utils.service";
 import { gt } from "semver";
+import { Progression } from "main/helpers/fs.helpers";
+import { Observable } from "rxjs";
 
 export class AutoUpdaterService {
     private static instance: AutoUpdaterService;
-
-    private readonly utilsService: UtilsService;
 
     public static getInstance(): AutoUpdaterService {
         if (!AutoUpdaterService.instance) {
@@ -18,37 +17,46 @@ export class AutoUpdaterService {
     constructor() {
         autoUpdater.logger = log;
         autoUpdater.autoDownload = false;
-
-        this.utilsService = UtilsService.getInstance();
     }
 
     public isUpdateAvailable(): Promise<boolean> {
-        return new Promise(resolve => {
-            autoUpdater
-                .checkForUpdates()
-                .then(info => {
-                    const needUpdate = (() => {
-                        if (!info?.updateInfo) {
-                            return false;
-                        }
-                        return gt(info.updateInfo.version, autoUpdater.currentVersion.version);
-                    })();
-                    resolve(needUpdate);
-                })
-                .catch(() => resolve(false));
-        });
+        return autoUpdater.checkForUpdates().then(info => {
+            return !!info?.updateInfo && gt(info.updateInfo.version, autoUpdater.currentVersion.version);
+        }).catch(() => false);
     }
 
-    public downloadUpdate(): Promise<boolean> {
-        autoUpdater.removeAllListeners("download-progress");
-        autoUpdater.addListener("download-progress", info => {
-            this.utilsService.ipcSend("update-download-progress", { success: true, data: info.percent });
-        });
+    public downloadUpdate(): Observable<Progression> {
+        return new Observable<Progression>(observer => {
 
-        return autoUpdater.downloadUpdate().then(res => !!res && !!res.length);
+            observer.next({ current: 0, total: 0 });
+
+            const progressListener = (progress: ProgressInfo) => {
+                observer.next({ current: progress.transferred, total: progress.total });
+            };
+
+            const downloadedListener = () => {
+                observer.next({ current: 100, total: 100 });
+            };
+
+            autoUpdater.addListener("download-progress", progressListener);
+            autoUpdater.addListener("update-downloaded", downloadedListener);
+
+            const cancelToken = new CancellationToken();
+
+            autoUpdater.downloadUpdate(cancelToken)
+                .catch(err => observer.error(err))
+                .finally(() => observer.complete());
+
+            return () => {
+                cancelToken.cancel();
+                autoUpdater.removeListener("download-progress", progressListener);
+                autoUpdater.removeListener("update-downloaded", downloadedListener);
+            }
+        });
     }
 
     public quitAndInstall() {
-        autoUpdater.quitAndInstall();
+        log.info("Quit and install");
+        return autoUpdater.quitAndInstall();
     }
 }

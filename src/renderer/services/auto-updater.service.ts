@@ -1,10 +1,10 @@
-import { map } from "rxjs/operators";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
 import { ModalService } from "renderer/services/modale.service";
 import { ChangelogModal } from "renderer/components/modal/modal-types/chabgelog-modal/changelog-modal.component";
 import { ConfigurationService } from "./configuration.service";
 import { Observable, lastValueFrom } from "rxjs";
+import { Progression } from "main/helpers/fs.helpers";
 
 
 export interface Changelog {
@@ -21,8 +21,6 @@ export class AutoUpdaterService {
 
     private progressService: ProgressBarService;
     private ipcService: IpcService;
-
-    private downloadProgress$: Observable<number>;
 
     private modal: ModalService;
 
@@ -42,22 +40,28 @@ export class AutoUpdaterService {
         this.ipcService = IpcService.getInstance();
         this.modal = ModalService.getInstance();
         this.configurationService = ConfigurationService.getInstance();
-
-        this.downloadProgress$ = this.ipcService.watch<number>("update-download-progress").pipe(map(res => (res.success ? res.data : 0)));
     }
 
     public isUpdateAvailable(): Promise<boolean> {
         return lastValueFrom(this.ipcService.sendV2("check-update")).catch(() => false);
     }
 
-    public downloadUpdate(): Promise<boolean> {
-        const promise = lastValueFrom(this.ipcService.sendV2("download-update")).then(() => true).catch(() => false);
-        this.progressService.show(this.downloadProgress$, true);
-        return promise;
+    public downloadUpdate(): Observable<Progression> {
+        return new Observable<Progression>(obs => {
+            const download$ = this.ipcService.sendV2("download-update");
+            this.progressService.show(download$, true);
+
+            const sub = download$.subscribe(obs);
+
+            return () => {
+                sub.unsubscribe();
+                this.progressService.hide(true);
+            }
+        });
     }
 
-    public quitAndInstall() {
-        lastValueFrom(this.ipcService.sendV2("install-update"));
+    public quitAndInstall(): Promise<void> {
+        return lastValueFrom(this.ipcService.sendV2("install-update"));
     }
 
     public getLastAppVersion(): string {

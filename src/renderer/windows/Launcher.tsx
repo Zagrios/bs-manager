@@ -7,6 +7,8 @@ import { useTranslation } from "../hooks/use-translation.hook";
 import { AutoUpdaterService } from "../services/auto-updater.service";
 import { WindowManagerService } from "../services/window-manager.service";
 import { useService } from "renderer/hooks/use-service.hook";
+import { lastValueFrom } from "rxjs";
+import { logRenderError } from "renderer";
 
 export default function Launcher() {
     const updaterService = useService(AutoUpdaterService);
@@ -24,13 +26,11 @@ export default function Launcher() {
                 return windowService.openThenCloseAll("index.html");
             }
             setText("auto-update.downloading");
-            updaterService.downloadUpdate().then(installed => {
-                if (!installed) {
-                    return windowService.openThenCloseAll("index.html");
-                }
-                updaterService.quitAndInstall();
-            });
-        });
+
+            return lastValueFrom(updaterService.downloadUpdate())
+                .then(() => updaterService.quitAndInstall())
+                .catch((err) => {logRenderError("omg", err); windowService.openThenCloseAll("index.html")});
+        }).catch(() => windowService.openThenCloseAll("index.html"));
     }, []);
 
     return (

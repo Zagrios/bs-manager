@@ -6,7 +6,7 @@ const ipc = IpcService.getInstance();
 
 ipc.on("download-update", (_, reply) => {
     const updaterService = AutoUpdaterService.getInstance();
-    reply(from(updaterService.downloadUpdate()));
+    reply(updaterService.downloadUpdate());
 });
 
 ipc.on("check-update", (_, reply) => {

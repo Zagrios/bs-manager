@@ -67,22 +67,21 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
     }, [searchParams]);
 
     useEffect(() => {
-        const onMapDownloaded = (map: BsmLocalMap, targetVersion: BSVersion) => {
+
+        const sub = mapsDownloader.lastDownloadedMap$.subscribe({ next: ({ map, version: targetVersion }) => {
             if (!equal(targetVersion, version)) {
                 return;
             }
             const downloadedHash = map.hash;
             setOwnedMapHashs(prev => [...prev, downloadedHash]);
-        };
-
-        mapsDownloader.addOnMapDownloadedListener(onMapDownloaded);
+        }});
 
         if (mapsDownloader.isDownloading) {
             progressBar.setStyle(mapsDownloader.progressBarStyle);
         }
 
         return () => {
-            mapsDownloader.removeOnMapDownloadedListener(onMapDownloaded);
+            sub.unsubscribe();
             progressBar.setStyle(null);
         };
     }, []);

@@ -9,8 +9,7 @@ import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import BeatWaitingImg from "../../../../../../assets/images/apngs/beat-waiting.png";
 import BeatConflictImg from "../../../../../../assets/images/apngs/beat-conflict.png";
 import { useObservable } from "renderer/hooks/use-observable.hook";
-import { skip, filter } from "rxjs/operators";
-import { Subscription, lastValueFrom, noop } from "rxjs";
+import { lastValueFrom } from "rxjs";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { useInView } from "framer-motion";
@@ -20,6 +19,8 @@ import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { lt } from "semver";
 import { useService } from "renderer/hooks/use-service.hook";
 import { NotificationService } from "renderer/services/notification.service";
+import { noop } from "shared/helpers/function.helpers";
+import { UninstallAllModsModal } from "renderer/components/modal/modal-types/uninstall-all-mods-modal.component";
 
 export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion; onDisclamerDecline: () => void }) {
     const ACCEPTED_DISCLAIMER_KEY = "accepted-mods-disclaimer";
@@ -39,7 +40,8 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
     const [moreInfoMod, setMoreInfoMod] = useState(null as Mod);
     const [reinstallAllMods, setReinstallAllMods] = useState(false);
     const isOnline = useObservable(() => os.isOnline$);
-    const installing = useObservable(() => modsManager.isInstalling$);
+    const [installing, setInstalling] = useState(false);
+    const [uninstalling, setUninstalling] = useState(false);
 
     const downloadRef = useRef(null);
     const [downloadWith, setDownloadWidth] = useState(0);
@@ -103,9 +105,32 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
             return;
         }
 
-        modsManager.installMods(modsToInstall, version).then(() => {
+        setInstalling(() => true)
+        lastValueFrom(modsManager.installMods(modsToInstall, version)).then(() => {
             loadMods();
+        }).catch(noop).finally(() => setInstalling(() => false));
+    };
+
+    const uninstallMod = (mod: Mod): void => {
+        setUninstalling(() => true);
+        lastValueFrom(modsManager.uninstallMod(mod, version)).catch(noop).finally(() => {
+            loadMods();
+            setUninstalling(() => false);
         });
+    };
+
+    const uninstallAllMods = async () => {
+        const res = await modals.openModal(UninstallAllModsModal, {data: version});
+
+        if (res.exitCode !== ModalExitCode.COMPLETED) {
+            return;
+        }
+
+        setUninstalling(() => true);
+        lastValueFrom(modsManager.uninstallAllMods(version)).catch(noop).finally(() => {
+            loadMods();
+            setUninstalling(() => false);
+        })
     };
 
     const loadMods = (): Promise<void> => {
@@ -128,7 +153,6 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
     };
 
     useEffect(() => {
-        const subs: Subscription[] = [];
 
         if(!isVisible || !isOnline){
             return noop();
@@ -153,22 +177,12 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
             }
 
             loadMods();
-
-            subs.push(
-                modsManager.isUninstalling$.pipe(
-                    skip(1),
-                    filter(uninstalling => !uninstalling)
-                ).subscribe(() => {
-                    loadMods();
-                })
-            );
         });
 
         return () => {
             setMoreInfoMod(null);
             setModsAvailable(null);
             setModsInstalled(null);
-            subs.forEach(s => s.unsubscribe());
         };
     }, [isVisible, isOnline, version]);
 
@@ -195,7 +209,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         return (
             <>
                 <div className="grow overflow-y-scroll w-full min-h-0 scrollbar-default p-0 m-0">
-                    <ModsGrid modsMap={modsAvailable} installed={modsInstalled} modsSelected={modsSelected} onModChange={handleModChange} moreInfoMod={moreInfoMod} onWantInfos={handleMoreInfo} />
+                    <ModsGrid modsMap={modsAvailable} installed={modsInstalled} modsSelected={modsSelected} onModChange={handleModChange} moreInfoMod={moreInfoMod} onWantInfos={handleMoreInfo} disabled={uninstalling || installing} uninstallMod={uninstallMod} uninstallAllMods={uninstallAllMods}/>
                 </div>
                 <div className="shrink-0 flex items-center justify-between px-3 py-2">
                     <BsmButton className="flex items-center justify-center rounded-md px-1 h-8" text="pages.version-viewer.mods.buttons.more-infos" typeColor="cancel" withBar={false} disabled={!moreInfoMod} onClick={handleOpenMoreInfo} style={{ width: downloadWith }}/>

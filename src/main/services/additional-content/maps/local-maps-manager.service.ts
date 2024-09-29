@@ -14,7 +14,7 @@ import sanitize from "sanitize-filename";
 import { DeepLinkService } from "../../deep-link.service";
 import log from "electron-log";
 import { WindowManagerService } from "../../window-manager.service";
-import { Observable, lastValueFrom } from "rxjs";
+import { Observable, Subject, lastValueFrom } from "rxjs";
 import { Archive } from "../../../models/archive.class";
 import { Progression, deleteFolder, ensureFolderExist, getFilesInFolder, getFoldersInFolder, pathExist } from "../../../helpers/fs.helpers";
 import { readFile } from "fs/promises";
@@ -23,7 +23,6 @@ import { allSettled } from "../../../../shared/helpers/promise.helpers";
 import { splitIntoChunk } from "../../../../shared/helpers/array.helpers";
 import { SongDetailsCacheService } from "./song-details-cache.service";
 import { SongCacheService } from "./song-cache.service";
-import { IpcService } from "../../ipc.service";
 import { pathToFileURL } from "url";
 import { sToMs } from "../../../../shared/helpers/time.helpers";
 import { FieldRequired } from "shared/helpers/type.helpers";
@@ -57,7 +56,8 @@ export class LocalMapsManagerService {
     private readonly linker: FolderLinkerService;
     private readonly songDetailsCache: SongDetailsCacheService;
     private readonly songCache: SongCacheService;
-    private readonly ipc: IpcService;
+
+    private readonly _lastDownloadedMap = new Subject<{ map: BsmLocalMap, version?: BSVersion }>();
 
     private constructor() {
         this.localVersion = BSLocalVersionService.getInstance();
@@ -69,7 +69,6 @@ export class LocalMapsManagerService {
         this.linker = FolderLinkerService.getInstance();
         this.songDetailsCache = SongDetailsCacheService.getInstance();
         this.songCache = SongCacheService.getInstance();
-        this.ipc = IpcService.getInstance();
 
         const handleOneClick = (mapId: string, isHash = false) => {
             this.windows.openWindow(`oneclick-download-map.html?mapId=${mapId}&isHash=${isHash}`);
@@ -344,7 +343,7 @@ export class LocalMapsManagerService {
         const localMap = await this.loadMapInfoFromPath(mapPath);
         localMap.songDetails = this.songDetailsCache.getSongDetails(localMap.hash);
 
-        this.ipc.send<{map: BsmLocalMap, version?: BSVersion}>("map-downloaded", this.windows.getWindows("index.html").at(0), { map: localMap, version });
+        this._lastDownloadedMap.next({ map: localMap, version });
 
         return localMap;
     }
@@ -391,5 +390,9 @@ export class LocalMapsManagerService {
 
     public isDeepLinksEnabled(): boolean {
         return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.isDeepLinkRegistered(link));
+    }
+
+    public get lastDownloadedMap$(): Observable<{ map: BsmLocalMap, version?: BSVersion }> {
+        return this._lastDownloadedMap.asObservable();
     }
 }

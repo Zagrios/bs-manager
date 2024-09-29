@@ -3,22 +3,26 @@ import { BsmCheckbox } from "renderer/components/shared/bsm-checkbox.component";
 import { Mod } from "shared/models/mods/mod.interface";
 import { CSSProperties, MouseEvent, useMemo, useRef } from "react";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
-import { BsModsManagerService } from "renderer/services/bs-mods-manager.service";
-import { useObservable } from "renderer/hooks/use-observable.hook";
-import { PageStateService } from "renderer/services/page-state.service";
 import useDoubleClick from "use-double-click";
 import { gt } from "semver";
-import { useService } from "renderer/hooks/use-service.hook";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 
-type Props = { className?: string; mod: Mod; installedVersion: string; isDependency?: boolean; isSelected?: boolean; onChange?: (val: boolean) => void; wantInfo?: boolean; onWantInfo?: (mod: Mod) => void };
+type Props = {
+    className?: string;
+    mod: Mod;
+    installedVersion: string;
+    isDependency?: boolean;
+    isSelected?: boolean;
+    onChange?: (val: boolean) => void;
+    wantInfo?: boolean;
+    onWantInfo?: (mod: Mod) => void;
+    disabled?: boolean;
+    onUninstall?: () => void;
+};
 
-export function ModItem({ className, mod, installedVersion, isDependency, isSelected, onChange, wantInfo, onWantInfo }: Props) {
-    const modsManager = useService(BsModsManagerService);
-    const pageState = useService(PageStateService);
+export function ModItem({ className, mod, installedVersion, isDependency, isSelected, onChange, wantInfo, onWantInfo, disabled, onUninstall }: Props) {
 
     const themeColor = useThemeColor("second-color");
-    const uninstalling = useObservable(() => modsManager.isUninstalling$);
     const clickRef = useRef();
 
     const isChecked = useMemo(() => isDependency || isSelected || mod.required, [isDependency, isSelected, mod.required]);
@@ -37,10 +41,6 @@ export function ModItem({ className, mod, installedVersion, isDependency, isSele
     const wantInfoStyle: CSSProperties = wantInfo ? { borderColor: themeColor } : { borderColor: "transparent" };
     const isOutDated = installedVersion ? gt(mod.version, installedVersion) : false;
 
-    const uninstall = () => {
-        modsManager.uninstallMod(mod, pageState.getState());
-    };
-
     const handleWantInfo = (e: MouseEvent) => {
         e.preventDefault();
         onWantInfo(mod);
@@ -53,7 +53,7 @@ export function ModItem({ className, mod, installedVersion, isDependency, isSele
     return (
         <li ref={clickRef} className={`${className} group`}>
             <div className="h-full aspect-square flex items-center justify-center p-[7px] rounded-l-md bg-inherit ml-3 border-2 border-r-0 z-[1] group-hover:brightness-90" style={wantInfoStyle}>
-                <BsmCheckbox className="h-full aspect-square z-[1] relative bg-inherit" onChange={() => onChange(!isChecked)} disabled={mod.required || isDependency} checked={isChecked} />
+                <BsmCheckbox className="h-full aspect-square z-[1] relative bg-inherit" onChange={() => onChange(!isChecked)} disabled={mod.required || isDependency || disabled} checked={isChecked} />
             </div>
             <span className="bg-inherit py-2 pl-3 font-bold text-sm whitespace-nowrap border-t-2 border-b-2 blur-none group-hover:brightness-90" style={wantInfoStyle}>
                 {mod.name}
@@ -72,11 +72,11 @@ export function ModItem({ className, mod, installedVersion, isDependency, isSele
                     <BsmButton
                         className="z-[1] h-7 w-7 p-[5px] rounded-full group-hover:brightness-90"
                         icon="trash"
-                        disabled={uninstalling}
+                        disabled={disabled}
                         withBar={false}
                         onClick={e => {
                             e.stopPropagation();
-                            uninstall();
+                            onUninstall?.();
                         }}
                     />
                 )}

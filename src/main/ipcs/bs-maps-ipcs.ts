@@ -27,6 +27,11 @@ ipc.on("download-map", async (args, reply) => {
     reply(from(maps.downloadMap(args.map, args.version)));
 });
 
+ipc.on("last-downloaded-map", (_, reply) => {
+    const maps = LocalMapsManagerService.getInstance();
+    reply(maps.lastDownloadedMap$);
+})
+
 ipc.on("one-click-install-map", (args, reply) => {
     const maps = LocalMapsManagerService.getInstance();
     reply(from(maps.oneClickDownloadMap(args)))

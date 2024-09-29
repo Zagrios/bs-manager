@@ -1,5 +1,5 @@
 import { DownloadMapsModal } from "renderer/components/modal/modal-types/download-maps-modal.component";
-import { map, filter } from "rxjs/operators";
+import { map, filter, share } from "rxjs/operators";
 import { BehaviorSubject, timer, Observable, lastValueFrom } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { ModalResponse, ModalService } from "./modale.service";
@@ -30,8 +30,9 @@ export class MapsDownloaderService {
     private readonly mapsQueue$: BehaviorSubject<MapDownload[]> = new BehaviorSubject([]);
     private readonly currentDownload$: BehaviorSubject<MapDownload> = new BehaviorSubject(null);
     private queueMaxLenght = 0;
-    private downloadedListerners: ((map: BsmLocalMap, version: BSVersion) => void)[] = [];
     public readonly progressBarStyle: CSSProperties = { zIndex: 100000, position: "fixed", bottom: "10px", right: 0 };
+
+    private _lastDownloadedMap$: Observable<{map: BsmLocalMap, version?: BSVersion}>;
 
     private constructor() {
         this.modals = ModalService.getInstance();
@@ -42,10 +43,6 @@ export class MapsDownloaderService {
         this.mapsQueue$.pipe(filter(queue => queue.length === 1 && !this.isDownloading)).subscribe(() => this.startDownloadMaps());
         this.mapsQueue$.pipe(filter(queue => queue.length === 0)).subscribe(() => {
             this.queueMaxLenght = 0;
-        });
-
-        this.ipc.watch<{map: BsmLocalMap, version?: BSVersion}>("map-downloaded").subscribe((data) => {
-            this.downloadedListerners.forEach(func => func(data.map, data.version));
         });
     }
 
@@ -119,16 +116,19 @@ export class MapsDownloaderService {
         return this.mapsQueue$.asObservable();
     }
 
-    public addOnMapDownloadedListener(func: (map: BsmLocalMap, version: BSVersion) => void) {
-        this.downloadedListerners.push(func);
-    }
+    public get lastDownloadedMap$(): Observable<{map: BsmLocalMap, version?: BSVersion}> {
+        if(!this._lastDownloadedMap$){
+            this._lastDownloadedMap$ = new Observable<{map: BsmLocalMap, version?: BSVersion}>(observer => {
+                const sub = this.ipc.sendV2("last-downloaded-map").subscribe(observer);
 
-    public removeOnMapDownloadedListener(func: (map: BsmLocalMap, version: BSVersion) => void) {
-        const funcIndex = this.downloadedListerners.indexOf(func);
-        if (funcIndex < 0) {
-            return;
+                return () => {
+                    this._lastDownloadedMap$ = null;
+                    sub.unsubscribe();
+                }
+            }).pipe(share());
         }
-        this.downloadedListerners.splice(funcIndex, 1);
+
+        return this._lastDownloadedMap$;
     }
 
     public async oneClickInstallMap(map: BsvMapDetail): Promise<void> {
@@ -145,3 +145,5 @@ export interface MapDownload {
     map: BsvMapDetail;
     version: BSVersion;
 }
+
+export type MapsDownloadedListener = (map: BsmLocalMap, version: BSVersion) => void;
