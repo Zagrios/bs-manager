@@ -9,7 +9,7 @@ import { DeleteMapsModal } from "renderer/components/modal/modal-types/delete-ma
 import { ProgressBarService } from "./progress-bar.service";
 import { NotificationService } from "./notification.service";
 import { ConfigurationService } from "./configuration.service";
-import { map, last, catchError } from "rxjs/operators";
+import { map, last, catchError, tap } from "rxjs/operators";
 import { ProgressionInterface } from "shared/models/progress-bar";
 import { FolderLinkState, VersionFolderLinkerService } from "./version-folder-linker.service";
 import { SongDetails } from "shared/models/maps";
@@ -29,6 +29,8 @@ export class MapsManagerService {
     public static readonly REMEMBER_CHOICE_DELETE_MAP_KEY = "not-confirm-delete-map";
     public static readonly RELATIVE_MAPS_FOLDER = window.electron.path.join("Beat Saber_Data", "CustomLevels");
 
+    private readonly IMPORT_BATCH_SIZE = 8;
+
     private readonly ipcService: IpcService;
     private readonly modal: ModalService;
     private readonly progressBar: ProgressBarService;
@@ -39,8 +41,7 @@ export class MapsManagerService {
     private readonly lastLinkedVersion$: Subject<BSVersion> = new Subject();
     private readonly lastUnlinkedVersion$: Subject<BSVersion> = new Subject();
 
-    private importListeners = new Set<((map: BsmLocalMap, version?: BSVersion) => void)>();
-    private importCount = 0;
+    private importListeners = new Set<((maps: BsmLocalMap[], version?: BSVersion) => void)>();
 
     private constructor() {
         this.ipcService = IpcService.getInstance();
@@ -199,41 +200,70 @@ export class MapsManagerService {
         })
     }
 
-    public async importMaps(paths: string[], version?: BSVersion): Promise<number> {
+    public async importMaps(paths: string[], version?: BSVersion): Promise<void> {
         try {
             if (!this.progressBar.require()) {
-                return 0;
+                return;
             }
-
-            this.importCount = 0;
 
             const importObserver$ = this.ipcService.sendV2(
                 "bs-maps.import-maps",
                 { paths, version }
             );
-            importObserver$.subscribe(progress => {
-                if (!progress.data) {
-                    return;
-                }
-
-                ++this.importCount;
-                this.importListeners.forEach(listeners => listeners(progress.data, version));
-            });
 
             this.progressBar.show(importObserver$.pipe(
+                catchError(() => of()),
                 map(progress => ({
                     progression: (progress.current / progress.total) * 100,
                     label: progress.data?.songDetails?.name
                 } as ProgressionInterface))
             ));
 
-            await lastValueFrom(importObserver$);
-            return this.importCount;
+            // Processing
+            let importCount = 0;
+            let importTotal = 0;
+            const mapBatch: BsmLocalMap[] = []; // For batching
+
+            await lastValueFrom(importObserver$.pipe(
+                tap(progress => {
+                    if (!progress.data) {
+                        importTotal = progress.total;
+                        return;
+                    }
+
+                    ++importCount;
+                    mapBatch.push(progress.data);
+                    if (mapBatch.length >= this.IMPORT_BATCH_SIZE) {
+                        const currentBatch = mapBatch.splice(0, this.IMPORT_BATCH_SIZE);
+                        this.importListeners.forEach(
+                            listeners => listeners(currentBatch, version)
+                        );
+                    }
+                }),
+            ));
+            if (mapBatch.length > 0) {
+                this.importListeners.forEach(listeners => listeners(mapBatch, version));
+            }
+
+            // Done processing
+            if (importCount === importTotal) {
+                this.notifications.notifySuccess({
+                    title: "notifications.maps.import-map.titles.success",
+                    desc: "notifications.maps.import-map.msgs.success",
+                });
+            } else if (importCount > 0) {
+                this.notifications.notifySuccess({
+                    title: "notifications.maps.import-map.titles.success",
+                    desc: "notifications.maps.import-map.msgs.some-success",
+                });
+            }
         } catch (error: any) {
             this.notifications.notifyError({
                 title: "notifications.maps.import-map.titles.error",
+                desc: ["invalid-zip"].includes(error?.code)
+                    ? `notifications.maps.import-map.msgs.${error.code}`
+                    : "misc.unknown"
             });
-            return 0;
         } finally {
             this.progressBar.hide();
         }
@@ -255,11 +285,11 @@ export class MapsManagerService {
         return lastValueFrom(this.ipcService.sendV2("unregister-maps-deep-link"));
     }
 
-    public addImportListener(listener: (map: BsmLocalMap, version?: BSVersion) => void): void {
+    public addImportListener(listener: (maps: BsmLocalMap[], version?: BSVersion) => void): void {
         this.importListeners.add(listener);
     }
 
-    public removeImportListener(listener: (map: BsmLocalMap, version?: BSVersion) => void): void {
+    public removeImportListener(listener: (maps: BsmLocalMap[], version?: BSVersion) => void): void {
         this.importListeners.delete(listener);
     }
 

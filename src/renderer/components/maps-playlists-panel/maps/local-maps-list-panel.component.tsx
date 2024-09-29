@@ -123,20 +123,24 @@ export const LocalMapsListPanel = forwardRef<LocalMapsListPanelRef, Props>(({ ve
 
     }, [isActiveOnce, version])
 
-    const importListener = (importMap: BsmLocalMap, targetVersion?: BSVersion) => {
+    const importListener = (importMaps: BsmLocalMap[], targetVersion?: BSVersion) => {
         if (!equal(targetVersion, version)) {
             return;
         }
 
         const mapsCopy = maps ? [ ...maps ] : [];
 
-        // importMap can collide with existing map
-        const index = maps.findIndex(map => map.songDetails?.name === importMap.songDetails.name);
-        if (index > -1) {
-            mapsCopy.splice(index, 1);
+        for (const importMap of importMaps) {
+            if (importMap.songDetails) {
+                // importMap can collide with existing map
+                const index = maps.findIndex(map => map.songDetails?.name === importMap.songDetails.name);
+                if (index > -1) {
+                    mapsCopy.splice(index, 1);
+                }
+            }
         }
 
-        setMaps([importMap, ...mapsCopy]);
+        setMaps([...importMaps, ...mapsCopy]);
     };
 
     const loadMaps = () => {

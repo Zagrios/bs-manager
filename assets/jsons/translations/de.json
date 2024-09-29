@@ -515,8 +515,7 @@
                     "success": "Alle Karten wurden erfolgreich importiert.",
                     "some-success": "Einige Karten wurden erfolgreich importiert.",
                     "only-accept-zip": "Nur ZIP-Dateien werden unterstützt.",
-                    "not-found-zip": "Die ZIP-Datei existiert nicht.",
-                    "invalid-zip": "Die ZIP-Datei enthält keine DAT-Dateien."
+                    "invalid-zip": "Die Zip-Datei(en) enthält/en keine \"Info.dat\"-Datei."
                 }
             }
         },

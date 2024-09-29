@@ -121,23 +121,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
             return;
         }
 
-        const importCount = await mapsManager.importMaps(paths, version);
-        if (importCount === 0) {
-            return;
-        }
-
-        if (importCount < paths.length) {
-            notifications.notifySuccess({
-                title: "notifications.maps.import-map.titles.success",
-                desc: "notifications.maps.import-map.msgs.some-success",
-            });
-            return;
-        }
-
-        notifications.notifySuccess({
-            title: "notifications.maps.import-map.titles.success",
-            desc: "notifications.maps.import-map.msgs.success",
-        });
+        await mapsManager.importMaps(paths, version);
     }
 
     const dropDownItems = ((): DropDownItem[] => {
