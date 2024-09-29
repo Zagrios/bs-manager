@@ -515,8 +515,7 @@
                     "success": "所有地圖已成功導入。",
                     "some-success": "一些地圖已成功導入。",
                     "only-accept-zip": "只支持 ZIP 文件。",
-                    "not-found-zip": "ZIP 文件不存在。",
-                    "invalid-zip": "ZIP 文件不包含任何 DAT 文件。"
+                    "invalid-zip": "ZIP 檔案不包含任何 \"Info.dat\" 檔案。"
                 }
             }
         },

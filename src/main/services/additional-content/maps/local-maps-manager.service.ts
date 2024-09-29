@@ -7,14 +7,14 @@ import { InstallationLocationService } from "../../installation-location.service
 import { UtilsService } from "../../utils.service";
 import crypto, { BinaryLike } from "crypto";
 import { lstatSync } from "fs";
-import { copy, createReadStream, ensureDir, pathExists, pathExistsSync, realpath, unlink, writeFile } from "fs-extra";
+import { copy, createReadStream, ensureDir, mkdir, pathExists, pathExistsSync, realpath, unlink, unlinkSync, writeFile } from "fs-extra";
 import StreamZip from "node-stream-zip";
 import { RequestService } from "../../request.service";
 import sanitize from "sanitize-filename";
 import { DeepLinkService } from "../../deep-link.service";
 import log from "electron-log";
 import { WindowManagerService } from "../../window-manager.service";
-import { Observable, Subject, lastValueFrom } from "rxjs";
+import { Observable, Subject, Subscriber, lastValueFrom } from "rxjs";
 import { Archive } from "../../../models/archive.class";
 import { Progression, deleteFolder, ensureFolderExist, getFilesInFolder, getFoldersInFolder, pathExist } from "../../../helpers/fs.helpers";
 import { readFile } from "fs/promises";
@@ -29,7 +29,6 @@ import { FieldRequired } from "shared/helpers/type.helpers";
 import { MapInfo } from "shared/models/maps/info/map-info.model";
 import { parseMapInfoDat } from "shared/parsers/maps/map-info.parser";
 import { tryit } from "shared/helpers/error.helpers";
-import { processZip } from "main/helpers/zip.helpers";
 import JSZip from "jszip";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 
@@ -52,6 +51,10 @@ export class LocalMapsManagerService {
         BeatSaver: "beatsaver",
         ScoreSaber: "web+bsmap",
     };
+
+    private readonly INFO_DAT_REGEX = path.sep === "/"
+        ? /(^|\/)(I|i)nfo.dat$/
+        : /(^|\\\\)(I|i)nfo.dat$/;
 
     private readonly localVersion: BSLocalVersionService;
     private readonly installLocation: InstallationLocationService;
@@ -328,76 +331,163 @@ export class LocalMapsManagerService {
         return null;
     }
 
-
-
     public importMaps(zipPaths: string[], version?: BSVersion): Observable<Progression<BsmLocalMap>> {
-        const progress: Progression<BsmLocalMap> = {
-            total: zipPaths.length,
-            current: 0,
-        };
-
         return new Observable<Progression<BsmLocalMap>>(observer => {
-            (async () => {
-                try {
-                    observer.next(progress); // 0%
-
-                    for (const zipPath of zipPaths) {
-                        ++progress.current;
-                        try {
-                            progress.data = await this.importMap(zipPath, version);
-                        } catch (error: any) {
-                            log.error(`Could not import "${zipPath}"`, error);
-                            progress.data = undefined;
-                        }
-                        observer.next(progress);
-                    }
-                } catch(error: any) {
-                    observer.error(error);
-                } finally {
-                    observer.complete();
-                }
-            })();
+            this.handleZipPaths(zipPaths, observer, version)
+                .catch(error => observer.error(error))
+                .finally(() => observer.complete());
         });
     }
 
-    private async importMap(zipPath: string, version?: BSVersion): Promise<BsmLocalMap> {
+    private async handleZipPaths(
+        zipPaths: string[],
+        observer: Subscriber<Progression<BsmLocalMap>>,
+        version?: BSVersion
+    ): Promise<void> {
+        const info: {
+            zips: ({
+                path: string;
+                // if the zip contains single or multiple maps
+                single: boolean;
+                // paths within the zip file where a map is located
+                folders: string[];
+            })[];
+            total: number;
+        } = {
+            zips: [],
+            total: 0,
+        };
+
+        for (const zipPath of zipPaths) {
+            try {
+                const zip = await JSZip.loadAsync(await readFile(zipPath));
+                const files = zip.file(this.INFO_DAT_REGEX);
+                if (files.length === 0) {
+                    log.warn(`Zip file "${zipPath}" does not contain any "Info.dat" file`);
+                    continue;
+                }
+
+                info.total += files.length;
+                info.zips.push({
+                    path: zipPath,
+                    single: files.findIndex(file => file.name.includes(path.sep)) === -1,
+                    folders: files.map(file => path.dirname(file.name)),
+                });
+            } catch (error: any) {
+                log.warn(`Could not count maps ${zipPath}`, error);
+            }
+        }
+
+        if (info.total === 0) {
+            throw new CustomError("No \"Info.dat\" file located in any of the zip files", "invalid-zip");
+        }
+
+        // Setting up the progress bar
+        const progress: Progression<BsmLocalMap> = {
+            total: info.total,
+            current: 0,
+        };
+        const mapsFolder = await this.getMapsFolderPath(version);
+
+        observer.next(progress); // 0%
+
+        for (const zipInfo of info.zips) {
+            try {
+                const content = await readFile(zipInfo.path);
+                const zip = await JSZip.loadAsync(content);
+
+                // Zip containing only a single map
+                if (zipInfo.single) {
+                    ++progress.current;
+
+                    progress.data = await this.importMap(
+                        zip, zipInfo.path, "",
+                        path.basename(zipInfo.path, ".zip"),
+                        mapsFolder
+                    )
+                    observer.next(progress);
+                    continue;
+                }
+
+                // Zip containing multiple maps
+                for (const relativeFolder of zipInfo.folders) {
+                    ++progress.current;
+                    try {
+                        progress.data = await this.importMap(
+                            zip, zipInfo.path,
+                            relativeFolder,
+                            path.basename(relativeFolder),
+                            mapsFolder
+                        );
+                    } catch (error: any) {
+                        log.error(`Could not import "${zipInfo.path}"`, error);
+                        progress.data = undefined;
+                    } finally {
+                        observer.next(progress);
+                    }
+                }
+            } catch (error: any) {
+                log.error(`Could not import "${zipInfo.path}"`, error);
+                progress.data = undefined;
+                observer.next(progress);
+            }
+        }
+    }
+
+    private async importMap(
+        zip: JSZip,
+        zipPath: string, // where the zip file is located
+        relativeFolder: string, // where is the map relative in the zip file
+        mapName: string, // Map/Song name
+        mapsFolder: string // Maps folder depending on the version
+    ): Promise<BsmLocalMap> {
+        let mapPath = "";
+        let existing = false;
         try {
-            if (!pathExistsSync(zipPath)) {
-                throw new CustomError(`Zip file "${zipPath}" does not exist`, "not-found-zip");
+            mapPath = path.join(mapsFolder, mapName);
+            existing = pathExistsSync(mapPath);
+            log.info(`Importing map from "${zipPath}" in "${relativeFolder}" to "${mapPath}"`);
+
+            if (!existing) {
+                await mkdir(mapPath, { recursive: true });
             }
 
-            const mapFolderName = path.basename(zipPath, ".zip");
-            const mapsFolder = await this.getMapsFolderPath(version);
-            const mapPath = path.join(mapsFolder, mapFolderName);
-
-            log.info(`Importing map "${zipPath}" to "${mapPath}"`);
-
-            const zip = await JSZip.loadAsync(await readFile(zipPath));
-            const infoFiles = zip.file(/(I|i)nfo.dat/);
-            if (infoFiles.length === 0) { // Simple check for importing maps
-                throw new CustomError(`Invalid zip file "${zipPath}"`, "invalid-zip");
+            // Prep the files
+            let files: { [key: string]: JSZip.JSZipObject; } = {};
+            if (relativeFolder === "") {
+                // Zip containing only a single map
+                files = zip.files;
+            } else {
+                // Zip containing multiple maps
+                // async doesn't work here and zip.folder().files does not work as you expect
+                zip.folder(relativeFolder).forEach((relativeFolder, file) => {
+                    files[relativeFolder] = file;
+                });
             }
 
-            await ensureFolderExist(mapPath);
-            await processZip(zip, async (relativePath, file) => {
+            for (const [relativePath, file] of Object.entries(files)) {
                 const filepath = path.join(mapPath, relativePath);
                 if (file.dir) {
                     await ensureFolderExist(filepath);
-                    return 0;
+                    continue;
                 }
 
-                log.info(`Extracting "${filepath}"`);
+                log.info(`Extracting to "${filepath}"`);
                 const content = await file.async("nodebuffer");
                 await writeFile(filepath, content);
-
-                return content.length;
-            });
+            }
 
             const localMap = await this.loadMapInfoFromPath(mapPath);
             localMap.songDetails = this.songDetailsCache.getSongDetails(localMap.hash);
-
             return localMap;
         } catch (error: any) {
+            // If the mapPath isn't yet added, delete the map folder
+            if (!existing && mapPath) {
+                unlinkSync(mapPath);
+            } else if (existing && mapPath) {
+                log.warn(`Map folder ${mapPath} could be broken`);
+            }
+
             throw error instanceof CustomError
                 ? error
                 : CustomError.fromError(error);

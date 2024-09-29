@@ -515,8 +515,7 @@
                     "success": "すべてのマップが正常にインポートされました。",
                     "some-success": "一部のマップが正常にインポートされました。",
                     "only-accept-zip": "ZIPファイルのみがサポートされています。",
-                    "not-found-zip": "ZIPファイルが存在しません。",
-                    "invalid-zip": "ZIPファイルにはDATファイルが含まれていません。"
+                    "invalid-zip": "ZIPファイルには「Info.dat」ファイルが含まれていません。"
                 }
             }
         },
