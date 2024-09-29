@@ -1,7 +1,5 @@
 import path from "path";
-import { app, BrowserWindow } from "electron";
-import { IpcResponse } from "shared/models/ipc";
-import log from "electron-log";
+import { app } from "electron";
 
 // TODO : REFACTOR
 
@@ -43,13 +41,5 @@ export class UtilsService {
 
     public getBuildPath(filepath: string): string {
         return path.join(this.buildPath, filepath);
-    }
-
-    public ipcSend<T = unknown>(channel: string, response: IpcResponse<T>): void {
-        try {
-            BrowserWindow.getAllWindows().forEach(window => window?.webContents?.send(channel, response));
-        } catch (error) {
-            log.error(error);
-        }
     }
 }
