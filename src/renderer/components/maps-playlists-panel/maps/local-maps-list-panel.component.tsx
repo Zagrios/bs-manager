@@ -87,25 +87,27 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
             setMaps(null);
             loadPercent$.next(0);
             subs.forEach(s => s.unsubscribe());
-            mapsDownloader.removeOnMapDownloadedListener(loadMaps);
         };
     }, [isActiveOnce, version, linked]);
 
     useEffect(() => {
+
+        let sub: Subscription;
+
         if(isActiveOnce){
-            mapsDownloader.addOnMapDownloadedListener((map, targetVersion) => {
+            sub = mapsDownloader.lastDownloadedMap$.subscribe({ next: ({map, version: targetVersion}) => {
                 if (!equal(targetVersion, version)) {
                     return;
                 }
-                setMaps((maps ? [map, ...maps] : [map]));
-            });
+                setMaps((maps$.value ? [map, ...maps$.value] : [map]));
+            }});
         }
 
         return () => {
-            mapsDownloader.removeOnMapDownloadedListener(loadMaps);
+            sub?.unsubscribe();
         }
 
-    }, [isActiveOnce, version, maps])
+    }, [isActiveOnce, version])
 
     const loadMaps = () => {
         setMaps(null);

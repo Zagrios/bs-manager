@@ -1,38 +1,31 @@
 import { BSVersion } from "shared/bs-version.interface";
-import { DownloadLink, InstallModsResult, Mod, ModInstallProgression, UninstallModsResult } from "shared/models/mods";
+import { DownloadLink, Mod } from "shared/models/mods";
 import { BeatModsApiService } from "./beat-mods-api.service";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import path from "path";
-import { UtilsService } from "../utils.service";
 import md5File from "md5-file";
 import { RequestService } from "../request.service";
 import { spawn } from "child_process";
 import { BS_EXECUTABLE } from "../../constants";
 import log from "electron-log";
-import { deleteFolder, pathExist, unlinkPath } from "../../helpers/fs.helpers";
-import { lastValueFrom } from "rxjs";
+import { deleteFolder, pathExist, Progression, unlinkPath } from "../../helpers/fs.helpers";
+import { lastValueFrom, Observable } from "rxjs";
 import JSZip from "jszip";
 import { extractZip } from "../../helpers/zip.helpers";
 import recursiveReadDir from "recursive-readdir";
 import { sToMs } from "../../../shared/helpers/time.helpers";
 import { ensureDir, pathExistsSync } from "fs-extra";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
+import { popElement } from "shared/helpers/array.helpers";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
 
     private readonly beatModsApi: BeatModsApiService;
     private readonly bsLocalService: BSLocalVersionService;
-    private readonly utilsService: UtilsService;
     private readonly requestService: RequestService;
 
     private manifestMatches: Mod[];
-
-    private nbModsToInstall = 0;
-    private nbInstalledMods = 0;
-
-    private nbModsToUninstall = 0;
-    private nbUninstalledMods = 0;
 
     public static getInstance(): BsModsManagerService {
         if (!BsModsManagerService.instance) {
@@ -44,7 +37,6 @@ export class BsModsManagerService {
     private constructor() {
         this.beatModsApi = BeatModsApiService.getInstance();
         this.bsLocalService = BSLocalVersionService.getInstance();
-        this.utilsService = UtilsService.getInstance();
         this.requestService = RequestService.getInstance();
     }
 
@@ -187,7 +179,6 @@ export class BsModsManagerService {
 
     private async installMod(mod: Mod, version: BSVersion): Promise<boolean> {
         log.info("INSTALL MOD", mod.name, "for version", `${version.BSVersion} - ${version.name}`);
-        this.utilsService.ipcSend<ModInstallProgression>("mod-installed", { success: true, data: { name: mod.name, progression: ((this.nbInstalledMods + 1) / this.nbModsToInstall) * 100 } });
 
         const download = this.getModDownload(mod, version);
 
@@ -246,10 +237,6 @@ export class BsModsManagerService {
               }))
             : extracted;
 
-        if(res){
-            this.nbInstalledMods++;
-        }
-
         return res;
     }
 
@@ -275,9 +262,6 @@ export class BsModsManagerService {
     }
 
     private async uninstallMod(mod: Mod, version: BSVersion): Promise<void> {
-        this.nbUninstalledMods++;
-        this.utilsService.ipcSend<ModInstallProgression>("mod-uninstalled", { success: true, data: { name: mod.name, progression: (this.nbUninstalledMods / this.nbModsToUninstall) * 100 } });
-
         if (mod.name.toLowerCase() === "bsipa") {
             return this.uninstallBSIPA(mod, version);
         }
@@ -322,81 +306,92 @@ export class BsModsManagerService {
         return Array.from(modsDict.values());
     }
 
-    public async installMods(mods: Mod[], version: BSVersion): Promise<InstallModsResult> {
-        if (!mods?.length) {
-            throw CustomError.fromError(new Error("No mods to install"), "no-mods");
-        }
+    public installMods(mods: Mod[], version: BSVersion): Observable<Progression> {
+        const progress = { current: 0, total: mods.length };
 
-        const bsipa = mods.find(mod => mod.name.toLowerCase() === "bsipa");
-        if (bsipa) {
-            mods = mods.filter(mod => mod.name.toLowerCase() !== "bsipa");
-        }
+        return new Observable<Progression>(obs => {
+            (async () => {
+                if (!mods?.length) {
+                    throw CustomError.throw(new Error("No mods to install"), "no-mods", mods);
+                }
 
-        this.nbModsToInstall = mods.length + (bsipa ? 1 : 0);
-        this.nbInstalledMods = 0;
+                obs.next(progress);
 
-        if (bsipa) {
-            const installed = await this.installMod(bsipa, version).catch(err => {
-                log.error("INSTALL BSIPA", err);
-                return false;
-            });
-            if (!installed) {
-                throw CustomError.fromError(new Error("Unable to install BSIPA"), "cannot-install-bsipa");
-            }
-        }
+                const bsipa = popElement(mod => mod.name.toLowerCase() === "bsipa", mods);
 
-        for (const mod of mods) {
-            await this.installMod(mod, version);
-        }
+                if(bsipa){
+                    const bsipaInstalled = await this.installMod(bsipa, version).catch(err => {
+                        log.error("Error while installing BSIPA", err);
+                    });
 
-        return {
-            nbModsToInstall: this.nbModsToInstall,
-            nbInstalledMods: this.nbInstalledMods,
-        };
+                    if(!bsipaInstalled){
+                        throw CustomError.throw(new Error("BSIPA failed to install"), "cannot-install-bsipa");
+                    }
+
+                    progress.current++;
+                    obs.next(progress);
+                }
+
+                for (const mod of mods) {
+                    await this.installMod(mod, version);
+                    progress.current++;
+                    obs.next(progress);
+                }
+            })()
+            .catch(err => obs.error(err))
+            .finally(() => obs.complete());
+        });
     }
 
-    public async uninstallMods(mods: Mod[], version: BSVersion): Promise<UninstallModsResult> {
-        if (!mods?.length) {
-            throw CustomError.fromError(new Error("No mods to uninstall"), "no-mods");
-        }
+    public uninstallMods(mods: Mod[], version: BSVersion): Observable<Progression> {
+        const progress = { current: 0, total: mods.length };
 
-        this.nbModsToUninstall = mods.length;
-        this.nbUninstalledMods = 0;
+        return new Observable<Progression>(obs => {
+            (async () => {
+                if (!mods?.length) {
+                    throw CustomError.throw(new Error("No mods to uninstall"), "no-mods", mods);
+                }
 
-        for (const mod of mods) {
-            await this.uninstallMod(mod, version);
-        }
+                obs.next(progress);
 
-        return {
-            nbModsToUninstall: this.nbModsToUninstall,
-            nbUninstalledMods: this.nbUninstalledMods,
-        };
+                for (const mod of mods) {
+                    await this.uninstallMod(mod, version);
+                    progress.current++;
+                    obs.next(progress);
+                }
+            })()
+            .catch(err => obs.error(err))
+            .finally(() => obs.complete());
+        });
     }
 
-    public async uninstallAllMods(version: BSVersion): Promise<UninstallModsResult> {
-        const mods = await this.getInstalledMods(version);
+    public uninstallAllMods(version: BSVersion): Observable<Progression> {
+        return new Observable<Progression>(obs => {
+            (async () => {
+                const mods = await this.getInstalledMods(version).catch(err => {
+                    log.error(err);
+                    return [];
+                });
 
-        if (!mods?.length) {
-            throw CustomError.fromError(new Error("This version has to mods to uninstall"), "no-mods");
-        }
+                const progress = { current: 0, total: mods.length };
 
-        this.nbModsToUninstall = mods.length;
-        this.nbUninstalledMods = 0;
+                obs.next(progress);
 
-        for (const mod of mods) {
-            await this.uninstallMod(mod, version);
-        }
+                for (const mod of mods) {
+                    await this.uninstallMod(mod, version);
+                    progress.current++;
+                    obs.next(progress);
+                }
 
-        const versionPath = await this.bsLocalService.getVersionPath(version);
+                const versionPath = await this.bsLocalService.getVersionPath(version);
 
-        await deleteFolder(path.join(versionPath, ModsInstallFolder.PLUGINS));
-        await deleteFolder(path.join(versionPath, ModsInstallFolder.LIBS));
-        await deleteFolder(path.join(versionPath, ModsInstallFolder.IPA));
-
-        return {
-            nbModsToUninstall: this.nbModsToUninstall,
-            nbUninstalledMods: this.nbUninstalledMods,
-        };
+                await deleteFolder(path.join(versionPath, ModsInstallFolder.PLUGINS));
+                await deleteFolder(path.join(versionPath, ModsInstallFolder.LIBS));
+                await deleteFolder(path.join(versionPath, ModsInstallFolder.IPA));
+            })()
+            .catch(err => obs.error(err))
+            .finally(() => obs.complete());
+        });
     }
 }
 

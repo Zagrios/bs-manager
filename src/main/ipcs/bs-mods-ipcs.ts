@@ -16,15 +16,15 @@ ipc.on("get-installed-mods", (args, reply) => {
 
 ipc.on("install-mods", (args, reply) => {
     const modsManager = BsModsManagerService.getInstance();
-    reply(from(modsManager.installMods(args.mods, args.version)));
+    reply(modsManager.installMods(args.mods, args.version));
 });
 
 ipc.on("uninstall-mods", (args, reply) => {
     const modsManager = BsModsManagerService.getInstance();
-    reply(from(modsManager.uninstallMods(args.mods, args.version)));
+    reply(modsManager.uninstallMods(args.mods, args.version));
 });
 
 ipc.on("uninstall-all-mods", (args, reply) => {
     const modsManager = BsModsManagerService.getInstance();
-    reply(from(modsManager.uninstallAllMods(args)));
+    reply(modsManager.uninstallAllMods(args));
 });

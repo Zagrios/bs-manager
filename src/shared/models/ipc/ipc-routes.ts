@@ -11,7 +11,7 @@ import { DepotDownloaderEvent } from "../bs-version-download/depot-downloader.mo
 import { MSGetQuery, MSModel, MSModelType } from "../models/model-saber.model";
 import { ModelDownload } from "renderer/services/models-management/models-downloader.service";
 import { BsmLocalModel } from "../models/bsm-local-model.interface";
-import { InstallModsResult, Mod, UninstallModsResult } from "../mods";
+import { Mod, UninstallModsResult } from "../mods";
 import { BPList, DownloadPlaylistProgressionData } from "../playlists/playlist.interface";
 import { VersionLinkerAction } from "renderer/services/version-folder-linker.service";
 import { FileFilter, OpenDialogReturnValue } from "electron";
@@ -59,6 +59,7 @@ export interface IpcChannelMapping {
     "delete-maps": { request: BsmLocalMap[], response: DeleteMapsProgress };
     "export-maps": { request: { version: BSVersion; maps: BsmLocalMap[]; outPath: string }, response: Progression };
     "download-map": { request: { map: BsvMapDetail; version: BSVersion }, response: BsmLocalMap };
+    "last-downloaded-map": { request: void, response: { version?: BSVersion, map: BsmLocalMap } };
     "one-click-install-map": { request: BsvMapDetail, response: void };
     "register-maps-deep-link": { request: void, response: boolean };
     "unregister-maps-deep-link": { request: void, response: boolean };
@@ -78,9 +79,9 @@ export interface IpcChannelMapping {
     /* ** bs-mods-ipcs ** */
     "get-available-mods": { request: BSVersion, response: Mod[] };
     "get-installed-mods": { request: BSVersion, response: Mod[] };
-    "install-mods": { request: { mods: Mod[]; version: BSVersion }, response: InstallModsResult };
-    "uninstall-mods": { request: { mods: Mod[]; version: BSVersion }, response: UninstallModsResult };
-    "uninstall-all-mods": { request: BSVersion, response: UninstallModsResult };
+    "install-mods": { request: { mods: Mod[]; version: BSVersion }, response: Progression };
+    "uninstall-mods": { request: { mods: Mod[]; version: BSVersion }, response: Progression };
+    "uninstall-all-mods": { request: BSVersion, response: Progression };
 
     /* ** bs-playlist-ipcs ** */
     "one-click-install-playlist": { request: string, response: Progression<DownloadPlaylistProgressionData> };
@@ -110,7 +111,7 @@ export interface IpcChannelMapping {
     "relink-all-versions-folders": { request: void, response: void };
 
     /* ** launcher-ipcs ** */
-    "download-update": { request: void, response: boolean };
+    "download-update": { request: void, response: Progression };
     "check-update": { request: void, response: boolean };
     "install-update": { request: void, response: void };
 
