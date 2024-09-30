@@ -1,0 +1,54 @@
+
+
+name: "[BUG] Bug report"
+description: Create a report to help us improve
+title: "[BUG] : "
+labels: bug
+assignees: Zagrios
+body:
+    - type: markdown
+      attributes:
+        value: |
+          ## Thanks for taking the time to fill out this bug report! 😊
+    - type: textarea
+      id: description
+      attributes:
+        label: Issue encountered
+        description: Tell us what issue you've encountered.
+      validations:
+        required: true
+    - type: textarea
+      id: expected
+      attributes:
+        label: Expected Behavior
+        description: Tell us what should expected to happen.
+    - type: textarea
+      id: replication
+      attributes:
+        label: Steps to Reproduce
+        description: Provide a link to a live example, or an unambiguous set of steps to reproduce this bug. Include code to reproduce, if relevant.
+        placeholder: |
+            1. Go to '...'
+            2. Click on '....'
+            3. Scroll down to '....'
+            4. See error
+    - type: dropdown
+      id: os
+      attributes:
+        label: Operating System
+        options:
+          - Windows 10
+          - Windows 11
+          - Linux
+    - type: input
+      id: version
+      attributes:
+        label: Version
+        description: What version of BSManager are you running?
+        placeholder: eg. 1.4.8 or 1.5.0-alpha-4
+    - type: textarea
+      id: additional-context
+      attributes:
+        label: Additional Context
+        description: Any other context that you may share about the issue.
+
