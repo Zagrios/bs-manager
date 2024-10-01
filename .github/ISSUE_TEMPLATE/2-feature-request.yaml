@@ -1,0 +1,45 @@
+
+name: "[FEAT.] Feature request"
+description: Suggest an idea for this project
+title: "[FEAT.] : "
+labels: enhancement
+assignees: Zagrios
+body:
+    - type: markdown
+      attributes:
+        value: |
+          ## Thanks for taking the time to fill out this feature request! 😊
+    - type: textarea
+      id: problem
+      attributes:
+        label: Problem
+        description: Is your feature request related to a problem? Please describe.
+        placeholder: Ex. I'm always frustrated when [...]
+      validations:
+        required: true
+    - type: textarea
+      id: solution
+      attributes:
+        label: Solution
+        description: Describe the solution you'd like.
+      validations:
+        required: true
+    - type: textarea
+      id: alternative-solution
+      attributes:
+        label: Alternative Solution
+        description: Describe alternatives you've considered.
+    - type: dropdown
+      id: os
+      attributes:
+        label: Operating System
+        description: If the feature is only applicable to a specific OS. Leave it to `None` if it's applicable to all OS'es.
+        options:
+          - Windows
+          - Linux
+    - type: textarea
+      id: additional-context
+      attributes:
+        label: Additional Context
+        description: Add any other context or screenshots about the feature request here.
+
