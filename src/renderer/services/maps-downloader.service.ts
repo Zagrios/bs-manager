@@ -47,7 +47,7 @@ export class MapsDownloaderService {
     }
 
     private async startDownloadMaps() {
-        this.progressBar.show(this.downloadProgress$, true, this.progressBarStyle);
+        this.progressBar.show(this.downloadProgress$, this.progressBarStyle);
 
         await timer(2000).toPromise();
 
@@ -64,7 +64,7 @@ export class MapsDownloaderService {
         await timer(500).toPromise();
 
         this.currentDownload$.next(null);
-        this.progressBar.hide(true);
+        this.progressBar.hide();
     }
 
     private downloadMap(map: BsvMapDetail, version: BSVersion): Observable<BsmLocalMap> {

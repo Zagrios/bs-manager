@@ -214,7 +214,7 @@ export function SettingsPage() {
                 lastValueFrom(installationLocationService.setInstallationFolder(fileChooserRes.filePaths[0], true)).then(res => {
 
                     progressBarService.complete();
-                    progressBarService.hide(true);
+                    progressBarService.hide();
 
                     setInstallationFolder(res);
 
@@ -226,7 +226,7 @@ export function SettingsPage() {
                     });
 
                 }).catch((err: BsmException) => {
-                    progressBarService.hide(true);
+                    progressBarService.hide();
 
                     if (err?.code === "COPY_TO_SUBPATH") {
                         notificationService.notifyError({ title: "notifications.settings.move-folder.errors.titles.transfer-failed", desc: "notifications.settings.move-folder.errors.descs.COPY_TO_SUBPATH", duration: 10_000 });

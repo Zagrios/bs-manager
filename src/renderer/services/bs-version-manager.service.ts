@@ -125,7 +125,7 @@ export class BSVersionManagerService {
 
             return null;
         }).finally(() => {
-            this.progressBar.hide(true)
+            this.progressBar.hide()
         });
     }
 
@@ -167,7 +167,7 @@ export class BSVersionManagerService {
                 obs.error(err)
             }).finally(() => {
                 this.askInstalledVersions();
-                this.progressBar.hide(true);
+                this.progressBar.hide();
             });
 
             return () => {
@@ -177,7 +177,7 @@ export class BSVersionManagerService {
             shareReplay({ bufferSize: 1, refCount: true })
         );
 
-        this.progressBar.show(obs$, true);
+        this.progressBar.show(obs$);
 
         return obs$;
     }

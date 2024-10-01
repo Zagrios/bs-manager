@@ -99,10 +99,10 @@ export class MapsManagerService {
         const progress$ = this.ipcService.sendV2("delete-maps", maps ).pipe(map(progress => (progress.deleted / progress.total) * 100));
 
         if (showProgressBar) {
-            this.progressBar.show(progress$, true);
+            this.progressBar.show(progress$);
         }
 
-        progress$.toPromise().finally(() => this.progressBar.hide(true));
+        progress$.toPromise().finally(() => this.progressBar.hide());
 
         return progress$
             .pipe(
@@ -131,7 +131,7 @@ export class MapsManagerService {
             })
         );
 
-        this.progressBar.show(exportProgress$, true);
+        this.progressBar.show(exportProgress$);
 
         await exportProgress$
             .toPromise()
@@ -142,7 +142,7 @@ export class MapsManagerService {
                 // TODO TRANSLATE
                 this.notifications.notifySuccess({ title: "Export terminé 🎉", duration: 3000 });
                 this.progressBar.complete();
-                this.progressBar.hide(true);
+                this.progressBar.hide();
             });
     }
 

@@ -123,7 +123,7 @@ export class ModelsManagerService {
             })
         );
 
-        this.progressBar.show(exportProgress$, true);
+        this.progressBar.show(exportProgress$);
 
         lastValueFrom(exportProgress$)
             .then(() => {
@@ -133,7 +133,7 @@ export class ModelsManagerService {
                 this.notifications.notifyError({ title: "notifications.types.error", desc: "notifications.common.msg.error-occurred", duration: 3000 });
             })
             .finally(() => {
-                this.progressBar.hide(true);
+                this.progressBar.hide();
             });
     }
 
@@ -182,7 +182,7 @@ export class ModelsManagerService {
                 this.notifications.notifyError({ title: "notifications.types.error", desc: "notifications.common.msg.error-occurred", duration: 3000 });
                 return [];
             })
-            .finally(() => this.progressBar.hide(true));
+            .finally(() => this.progressBar.hide());
     }
 
     public isDeepLinksEnabled(): Promise<boolean> {

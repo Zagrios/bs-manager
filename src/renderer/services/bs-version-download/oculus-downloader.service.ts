@@ -50,7 +50,7 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
 
     private handleDownload(download: Observable<Progression<BSVersion>>, ingoreErrorCodes?: string[]): Observable<Progression<BSVersion>> {
         const progress$ = download.pipe(map(progress => (progress.current / progress.total) * 100), catchError(() => of(0)));
-        this.progressBar.show(progress$, true);
+        this.progressBar.show(progress$);
 
         const subs: Subscription[] = [];
 
@@ -106,7 +106,7 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
             }
 
             return bsVersion;
-        }).finally(() => this.progressBar.hide(true));
+        }).finally(() => this.progressBar.hide());
     }
 
     public downloadBsVersion(version: BSVersion): Promise<BSVersion> {

@@ -49,13 +49,13 @@ export class AutoUpdaterService {
     public downloadUpdate(): Observable<Progression> {
         return new Observable<Progression>(obs => {
             const download$ = this.ipcService.sendV2("download-update");
-            this.progressService.show(download$, true);
+            this.progressService.show(download$);
 
             const sub = download$.subscribe(obs);
 
             return () => {
                 sub.unsubscribe();
-                this.progressService.hide(true);
+                this.progressService.hide();
             }
         });
     }

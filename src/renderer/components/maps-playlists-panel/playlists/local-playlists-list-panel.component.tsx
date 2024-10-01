@@ -151,7 +151,7 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
 
             const obs$ = playlistService.exportPlaylists({ version, bpLists: toExport, dest: folderRes.filePaths.at(0), playlistsMaps: mapsToExport });
 
-            progess.show(obs$, true);
+            progess.show(obs$);
 
             const { error } = await tryit(() => lastValueFrom(obs$));
 
@@ -163,7 +163,7 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
 
             notification.notifySuccess({ title: "playlist.playlists-exported-title", desc: exportMaps ? "playlist.playlists-exported-desc" : "playlist.playlists-with-maps-exported-desc", duration: 5000 });
 
-            progess.hide(true);
+            progess.hide();
         },
         deletePlaylists: () => {
             const toDelete = selectedPlaylists$.value?.length ? selectedPlaylists$.value : playlists$.value;
@@ -247,7 +247,7 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
         if(exitCode !== ModalExitCode.COMPLETED){ return; }
 
         const progess$ = new BehaviorSubject<ProgressionInterface>({ progression: 0 });
-        progess.show(progess$, true)
+        progess.show(progess$)
 
         for(const [i, bpList] of enumerate(bpLists)){
 
@@ -256,7 +256,7 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
             if(error){
                 logRenderError("Error occured while deleting playlist", error);
                 notification.notifyError({ title: "playlist.playlist-delete-error-title", desc: "playlist.playlist-delete-error-desc" });
-                progess.hide(true);
+                progess.hide();
                 return;
             }
 
@@ -270,7 +270,7 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
 
         notification.notifySuccess({ title: "playlist.playlists-deleted-title", desc: "playlist.playlists-deleted-desc", duration: 5000 });
 
-        progess.hide(true);
+        progess.hide();
     };
 
     const openPlaylistDetails = (playlistPath: string) => {

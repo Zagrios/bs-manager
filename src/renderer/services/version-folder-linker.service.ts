@@ -67,7 +67,7 @@ export class VersionFolderLinkerService {
         }
 
         if (progressOpened) {
-            this.progress.hide(true);
+            this.progress.hide();
         }
 
         const newArr = [...this._queue$.value];
