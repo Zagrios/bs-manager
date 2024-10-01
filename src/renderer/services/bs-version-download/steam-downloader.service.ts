@@ -189,7 +189,7 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
             return Promise.resolve();
         }
 
-        this.progressBarService.show(this.downloadProgress$, true);
+        this.progressBarService.show(this.downloadProgress$);
 
         const downloadPromise = (async () => {
 
@@ -225,7 +225,7 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
 
         return downloadPromise.then(() => {}).finally(() => {
             this.downloadProgress$.next(0);
-            this.progressBarService.hide(true);
+            this.progressBarService.hide();
         });
 
     }

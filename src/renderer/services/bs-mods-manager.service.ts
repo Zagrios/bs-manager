@@ -47,7 +47,7 @@ export class BsModsManagerService {
 
         return new Observable<Progression>(obs => {
             const install$ = this.ipcService.sendV2("install-mods", { mods, version });
-            this.progressBar.show(install$.pipe(catchError(() => of({ current: 0, total: 0} as Progression))), true, { paddingLeft: "190px", paddingRight: "190px", bottom: "20px" });
+            this.progressBar.show(install$.pipe(catchError(() => of({ current: 0, total: 0} as Progression))), { paddingLeft: "190px", paddingRight: "190px", bottom: "20px" });
 
             const sub = install$.pipe(
                 tap({
@@ -66,7 +66,7 @@ export class BsModsManagerService {
 
             return () => {
                 sub.unsubscribe();
-                this.progressBar.hide(true);
+                this.progressBar.hide();
             }
         });
     }
@@ -78,7 +78,7 @@ export class BsModsManagerService {
 
         return new Observable<Progression>(obs => {
             const uninstall$ = this.ipcService.sendV2("uninstall-mods", { mods: [mod], version });
-            this.progressBar.show(uninstall$.pipe(catchError(() => of({ current: 0, total: 0} as Progression))), true, { paddingLeft: "190px", paddingRight: "190px", bottom: "20px" });
+            this.progressBar.show(uninstall$.pipe(catchError(() => of({ current: 0, total: 0} as Progression))), { paddingLeft: "190px", paddingRight: "190px", bottom: "20px" });
 
             const sub = uninstall$.pipe(
                 tap({
@@ -97,7 +97,7 @@ export class BsModsManagerService {
 
             return () => {
                 sub.unsubscribe();
-                this.progressBar.hide(true);
+                this.progressBar.hide();
             }
         });
     }
@@ -109,7 +109,7 @@ export class BsModsManagerService {
 
         return new Observable<Progression>(obs => {
             const uninstall$ = this.ipcService.sendV2("uninstall-all-mods", version);
-            this.progressBar.show(uninstall$.pipe(catchError(() => of({ current: 0, total: 0} as Progression))), true, { paddingLeft: "190px", paddingRight: "190px", bottom: "20px" });
+            this.progressBar.show(uninstall$.pipe(catchError(() => of({ current: 0, total: 0} as Progression))), { paddingLeft: "190px", paddingRight: "190px", bottom: "20px" });
 
             const sub = uninstall$.pipe(
                 tap({
@@ -128,7 +128,7 @@ export class BsModsManagerService {
 
             return () => {
                 sub.unsubscribe();
-                this.progressBar.hide(true);
+                this.progressBar.hide();
             }
 
         });

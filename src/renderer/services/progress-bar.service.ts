@@ -40,7 +40,7 @@ export class ProgressBarService {
         lastValueFrom(this.ipcService.sendV2("window.progression", progression));
     }
 
-    public subscribreTo(obs: Observable<ProgressionInterface | number | Progression>) {
+    private subscribreTo(obs: Observable<ProgressionInterface | number | Progression>) {
         if (this.subscription) {
             this.unsubscribe();
         }
@@ -62,16 +62,16 @@ export class ProgressBarService {
         });
     }
 
-    public unsubscribe() {
+    private unsubscribe() {
         this._progression$.next({ progression: 0 });
         this.subscription?.unsubscribe();
         this.subscription = null;
     }
 
-    public show(obs?: Observable<ProgressionInterface | number | Progression>, unsubscribe?: boolean, style?: CSSProperties) {
-        if (unsubscribe) {
-            this.unsubscribe();
-        }
+    public show(obs?: Observable<ProgressionInterface | number | Progression>, style?: CSSProperties) {
+
+        this.unsubscribe();
+
         if (obs) {
             this.subscribreTo(obs);
         }
@@ -90,7 +90,7 @@ export class ProgressBarService {
                 return { progression: progress, label } as ProgressionInterface;
             })
         );
-        this.show(obs, true, style);
+        this.show(obs, style);
     }
 
     public complete(): void {
@@ -98,13 +98,11 @@ export class ProgressBarService {
     }
 
     public open(): void {
-        this.show(of(0), true, this._style$.value);
+        this.show(of(0), this._style$.value);
     }
 
-    public hide(unsubscribe = true) {
-        if (unsubscribe) {
-            this.unsubscribe();
-        }
+    public hide() {
+        this.unsubscribe();
         this._visible$.next(false);
     }
 

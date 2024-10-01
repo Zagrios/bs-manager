@@ -57,7 +57,7 @@ export class PlaylistDownloaderService {
 
                 canShowProgress = !this.progress.isVisible;
                 if (canShowProgress) {
-                    this.progress.show(download$, true);
+                    this.progress.show(download$);
                 }
 
                 await lastValueFrom(download$.pipe(tap(subscriber)));
@@ -68,7 +68,7 @@ export class PlaylistDownloaderService {
                 this._currentDownload$.next(null);
                 this.downloadQueue$.next(this.downloadQueue$.value.filter(qInfo => !equal(qInfo.info.version, info.version) || !equal(qInfo.info.downloadSource, info.downloadSource)));
                 if (canShowProgress) {
-                    this.progress.hide(true);
+                    this.progress.hide();
                 }
             });
 
@@ -115,11 +115,11 @@ export class PlaylistDownloaderService {
         const download$ = this.ipc.sendV2("one-click-install-playlist", bpListUrl);
         const progress$ = download$.pipe(map(data => (data.current / data.total) * 100));
 
-        this.progress.show(progress$, true);
+        this.progress.show(progress$);
 
         return download$.pipe(tap({
-            error: () => this.progress.hide(true),
-            complete: () => this.progress.hide(true)
+            error: () => this.progress.hide(),
+            complete: () => this.progress.hide()
         }));
     }
 

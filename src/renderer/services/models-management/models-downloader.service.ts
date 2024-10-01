@@ -53,13 +53,13 @@ export class ModelsDownloaderService {
                 }),
                 startWith({ progression: 0.1, label: download.model.name })
             );
-            this.progress.show(progress$, true);
+            this.progress.show(progress$);
         }
 
         const downloaded = await lastValueFrom(download$);
         this.lastDownload$.next(downloaded.data);
 
-        this.progress.hide(true);
+        this.progress.hide();
 
         this.queue$.next(this.queue$.value.filter(m => m.model.hash !== download.model.hash));
     }
@@ -127,7 +127,7 @@ export class ModelsDownloaderService {
 
         this.progress.complete();
         await lastValueFrom(timer(500));
-        this.progress.hide(true);
+        this.progress.hide();
 
         return res;
     }
