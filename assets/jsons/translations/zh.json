@@ -67,6 +67,15 @@
                             "button": "下载谱面"
                         }
                     }
+                },
+                "sort": {
+                    "name": "Name",
+                    "song-author": "Song Author",
+                    "map-author": "Map Author",
+                    "bpm": "BPM",
+                    "duration": "Duration",
+                    "likes": "Likes",
+                    "date-uploaded": "Date Uploaded"
                 }
             },
             "mods": {
