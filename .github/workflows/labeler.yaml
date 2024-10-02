@@ -8,17 +8,19 @@ jobs:
   label-linux:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v3
+
+    - name: Search Linux Term
+      uses: actions-ecosystem/action-regex-match@v2
+      id: regex-match
+      with:
+        text: ${{ github.event.issue.body }}
+        regex: '\# Operating System(\s*)Linux'
+        flags: m
+
     - name: Add Linux label
-      if: |
-        contains(github.event.issue.title, 'linux') ||
-        contains(github.event.issue.body, 'linux') ||
-        contains(github.event.issue.title, 'ubuntu') ||
-        contains(github.event.issue.body, 'ubuntu') ||
-        contains(github.event.issue.title, 'arch') ||
-        contains(github.event.issue.body, 'arch') ||
-        contains(github.event.issue.title, 'kde') ||
-        contains(github.event.issue.body, 'kde')
       uses: actions-ecosystem/action-add-labels@v1
+      if: ${{ steps.regex-match.outputs.match != '' }}
       with:
         github_token: ${{ secrets.GH_TOKEN }}
         labels: linux
