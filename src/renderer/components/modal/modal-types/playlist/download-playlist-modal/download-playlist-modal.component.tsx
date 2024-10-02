@@ -20,6 +20,7 @@ import BeatConflict from "../../../../../../../assets/images/apngs/beat-conflict
 import { cn } from "renderer/helpers/css-class.helpers"
 import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual-scroll.component"
 import { useTranslation } from "renderer/hooks/use-translation.hook"
+import { ConfigurationService } from "renderer/services/configuration.service"
 
 export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ownedPlaylists$: Observable<LocalBPListsDetails[]>, ownedMaps$: Observable<BsmLocalMap[]>}> = (
     { options: { data: { version, ownedPlaylists$, ownedMaps$ }} }
@@ -27,8 +28,9 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
 
     const t = useTranslation();
 
-    const modal = useService(ModalService);
     const beatSaver = useService(BeatSaverService);
+    const config = useService(ConfigurationService);
+    const modal = useService(ModalService);
     const playlistDownloader = useService(PlaylistDownloaderService);
 
     const [playlists, setPlaylists] = useState<BsvPlaylist[]>(null);
@@ -41,7 +43,7 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
     const [error, setError] = useState(false);
     const [searchParams, setSearchParams] = useState<PlaylistSearchParams>({
         q: "",
-        sortOrder: BsvSearchOrder.Relevance,
+        sortOrder: config.get("playlist-sort-order") || BsvSearchOrder.Relevance,
         page: 0,
     });
 
@@ -63,6 +65,7 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
 
     const handleNewSearch = (value: Omit<PlaylistSearchParams, "page">) => {
         setPlaylists(() => undefined);
+        config.set("playlist-sort-order", value.sortOrder);
         setSearchParams(() => ({ ...value, page: 0}));
     };
 

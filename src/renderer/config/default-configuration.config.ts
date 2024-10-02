@@ -12,6 +12,6 @@ export const defaultConfiguration: { [key in DefaultConfigKey]: any } = {
     ],
 };
 
-export type DefaultConfigKey = "first-color" | "second-color" | "theme" | "language" | "supported_languages" | "default_mods" | "default-shared-folders";
+export type DefaultConfigKey = "first-color" | "second-color" | "theme" | "language" | "supported_languages" | "default_mods" | "default-shared-folders" | "playlist-sort-order";
 
 export type ThemeConfig = "dark" | "light" | "os";
