@@ -106,13 +106,13 @@
                     }
                 },
                 "sort": {
-                    "name": "Name",
-                    "song-author": "Song Author",
-                    "map-author": "Map Author",
+                    "name": "名字",
+                    "song-author": "歌曲作者",
+                    "map-author": "地圖作者",
                     "bpm": "BPM",
-                    "duration": "Duration",
-                    "likes": "Likes",
-                    "date-uploaded": "Date Uploaded"
+                    "duration": "持續時間",
+                    "likes": "喜歡",
+                    "date-uploaded": "上傳日期"
                 }
             },
             "mods": {

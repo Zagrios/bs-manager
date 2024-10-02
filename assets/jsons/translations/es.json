@@ -106,13 +106,13 @@
                     }
                 },
                 "sort": {
-                    "name": "Name",
-                    "song-author": "Song Author",
-                    "map-author": "Map Author",
+                    "name": "Nombre",
+                    "song-author": "Autor de la canción",
+                    "map-author": "Autor del mapa",
                     "bpm": "BPM",
-                    "duration": "Duration",
-                    "likes": "Likes",
-                    "date-uploaded": "Date Uploaded"
+                    "duration": "Duración",
+                    "likes": "Me gusta",
+                    "date-uploaded": "Fecha de subida"
                 }
             },
             "mods": {

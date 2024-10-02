@@ -106,13 +106,13 @@
                     }
                 },
                 "sort": {
-                    "name": "Name",
-                    "song-author": "Song Author",
-                    "map-author": "Map Author",
+                    "name": "名前",
+                    "song-author": "曲の作者",
+                    "map-author": "地図の作者",
                     "bpm": "BPM",
-                    "duration": "Duration",
-                    "likes": "Likes",
-                    "date-uploaded": "Date Uploaded"
+                    "duration": "持続時間",
+                    "likes": "いいね",
+                    "date-uploaded": "アップロード日"
                 }
             },
             "mods": {
