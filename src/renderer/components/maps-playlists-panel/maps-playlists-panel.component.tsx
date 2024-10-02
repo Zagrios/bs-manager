@@ -3,7 +3,7 @@ import { BSVersion } from "shared/bs-version.interface";
 import { LocalMapsListPanel, LocalMapsListPanelRef } from "./maps/local-maps-list-panel.component";
 import { BsmDropdownButton, DropDownItem } from "../shared/bsm-dropdown-button.component";
 import { FilterPanel } from "./maps/filter-panel.component";
-import { MapFilter } from "shared/models/maps/beat-saver.model";
+import { MapFilter, MapSort } from "shared/models/maps/beat-saver.model";
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
@@ -24,6 +24,9 @@ import { LocalPlaylistFilter, LocalPlaylistFilterPanel } from "./playlists/local
 import { noop } from "shared/helpers/function.helpers";
 import { Dropzone } from "../shared/dropzone.component";
 import { logRenderError } from "renderer";
+import { BsmSelect, BsmSelectOption } from "../shared/bsm-select.component";
+import { MapsSorterService } from "renderer/services/maps/sorter.service";
+import { BsmButton } from "../shared/bsm-button.component";
 
 type Props = {
     readonly version?: BSVersion;
@@ -41,6 +44,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
 
     const mapsManager = useService(MapsManagerService);
     const mapsDownloader = useService(MapsDownloaderService);
+    const mapsSorter = useService(MapsSorterService);
     const playlistsManager = useService(PlaylistsManagerService);
     const playlistsDownloader = useService(PlaylistDownloaderService);
 
@@ -64,6 +68,10 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
     const playlistsRef = useRef<LocalPlaylistsListRef>();
 
     const [mapFilter, setMapFilter] = useState<MapFilter>({});
+    const [mapSort, setMapSort] = useState<MapSort>({
+        compare: mapsSorter.getDefaultComparator(),
+        ascending: true,
+    });
     const [playlistFilter, setPlaylistFilter] = useState<LocalPlaylistFilter>({});
 
     const [search, setSearch] = useState("");
@@ -135,6 +143,20 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         ];
     })();
 
+    const sortOptions: BsmSelectOption<string>[] = useConstant(() => {
+        return mapsSorter.getComparatorKeys().map(key => ({
+            text: `pages.version-viewer.maps.sort.${key}`,
+            value: key,
+        }));
+    });
+
+    const handleSortChange = (key: string) => {
+        setMapSort({
+            compare: mapsSorter.getComparator(key),
+            ascending: mapSort.ascending,
+        });
+    }
+
     const dropDownItems = ((): DropDownItem[] => {
         if (tabIndex === 0) {
             return [
@@ -188,6 +210,24 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                         )
                     )}
                 </BsmDropdownButton>
+                <BsmSelect
+                    className="bg-theme-1 rounded-full px-1 pb-0.5 text-center cursor-pointer"
+                    options={sortOptions}
+                    selected="name"
+                    onChange={handleSortChange}
+                />
+                <BsmButton
+                    className="h-full flex aspect-square relative rounded-full z-[1] bg-light-main-color-1 dark:bg-main-color-3"
+                    iconClassName="transition-transform size-full ease-in-out duration-200 bg-light-main-color-1 dark:bg-main-color-3"
+                    iconStyle={{ transform: mapSort.ascending ? "rotate(360deg)" : "rotate(180deg)" }}
+                    icon="chevron-top"
+                    typeColor="primary"
+                    withBar={false}
+                    onClick={() => setMapSort({
+                        compare: mapSort.compare,
+                        ascending: !mapSort.ascending,
+                    })}
+                />
                 <BsmDropdownButton className="h-full flex aspect-square relative rounded-full z-[1] bg-light-main-color-1 dark:bg-main-color-3" buttonClassName="rounded-full h-full w-full p-[6px]" icon="three-dots" withBar={false} items={dropDownItems} menuTranslationY="6px" align="center" />
             </nav>
             <BsContentTabPanel
@@ -228,7 +268,16 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                             properties: ["openFile", "multiSelections"],
                         }}}
                     >
-                        <LocalMapsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 0} ref={mapsRef} version={version} filter={mapFilter} search={search} linkedState={mapsLinkedState} />
+                        <LocalMapsListPanel
+                            className="w-full h-full shrink-0"
+                            isActive={isActive && tabIndex === 0}
+                            ref={mapsRef}
+                            version={version}
+                            filter={mapFilter}
+                            search={search}
+                            linkedState={mapsLinkedState}
+                            sort={mapSort}
+                        />
                     </Dropzone>
 
                     <Dropzone
