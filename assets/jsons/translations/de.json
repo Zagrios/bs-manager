@@ -107,12 +107,12 @@
                 },
                 "sort": {
                     "name": "Name",
-                    "song-author": "Song Author",
-                    "map-author": "Map Author",
+                    "song-author": "Liedautor",
+                    "map-author": "Kartenautor",
                     "bpm": "BPM",
-                    "duration": "Duration",
+                    "duration": "Dauer",
                     "likes": "Likes",
-                    "date-uploaded": "Date Uploaded"
+                    "date-uploaded": "Hochladedatum"
                 }
             },
             "mods": {
