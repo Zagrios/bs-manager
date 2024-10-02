@@ -104,6 +104,15 @@
                             "subtext": "将您的 \".bplist\" 或 \".json\" 文件拖放到这里进行导入"
                         }
                     }
+                },
+                "sort": {
+                    "name": "Name",
+                    "song-author": "Song Author",
+                    "map-author": "Map Author",
+                    "bpm": "BPM",
+                    "duration": "Duration",
+                    "likes": "Likes",
+                    "date-uploaded": "Date Uploaded"
                 }
             },
             "mods": {

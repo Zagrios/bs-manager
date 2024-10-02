@@ -104,6 +104,15 @@
                             "subtext": "Déposez vos fichiers \".bplist\" ou \".json\" ici pour les importer"
                         }
                     }
+                },
+                "sort": {
+                    "name": "Name",
+                    "song-author": "Song Author",
+                    "map-author": "Map Author",
+                    "bpm": "BPM",
+                    "duration": "Duration",
+                    "likes": "Likes",
+                    "date-uploaded": "Date Uploaded"
                 }
             },
             "mods": {

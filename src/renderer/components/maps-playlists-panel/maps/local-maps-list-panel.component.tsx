@@ -3,7 +3,7 @@ import { BSVersion } from "shared/bs-version.interface";
 import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useState } from "react";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { Subscription, BehaviorSubject, lastValueFrom } from "rxjs";
-import { MapFilter } from "shared/models/maps/beat-saver.model";
+import { MapFilter, MapSort } from "shared/models/maps/beat-saver.model";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
 import { bufferTime, last, tap } from "rxjs/operators";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
@@ -32,6 +32,7 @@ type Props = {
     search?: string;
     linkedState?: FolderLinkState;
     isActive?: boolean;
+    sort: MapSort;
 };
 
 export type LocalMapsListPanelRef = {
@@ -40,7 +41,15 @@ export type LocalMapsListPanelRef = {
     removeDuplicates: () => void;
 }
 
-export const LocalMapsListPanel = forwardRef<LocalMapsListPanelRef, Props>(({ version, className, filter, search, linkedState, isActive }, forwardRef) => {
+export const LocalMapsListPanel = forwardRef<unknown, Props>(({
+    version,
+    className,
+    filter,
+    search,
+    linkedState,
+    isActive,
+    sort,
+}, forwardRef) => {
     const mapsManager = useService(MapsManagerService);
     const mapsDownloader = useService(MapsDownloaderService);
 
@@ -204,7 +213,9 @@ export const LocalMapsListPanel = forwardRef<LocalMapsListPanelRef, Props>(({ ve
     }, [version]);
 
     const preppedMaps: RenderableMap[] = (() => {
-        return renderableMaps?.filter(renderableMap => isLocalMapFitMapFilter({ map: renderableMap.map, filter, search })) ?? [];
+        return (renderableMaps?.filter(renderableMap => isLocalMapFitMapFilter({ map: renderableMap.map, filter, search })) ?? [])
+        // NOTE: might be good to cache sorted maps, to reduce loading
+            .sort((map1, map2) => sort.compare(map1.map, map2.map) * (sort.ascending === false ? -1 : 1));
     })();
 
     if (!maps) {
