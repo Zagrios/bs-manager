@@ -131,12 +131,9 @@ export const LocalMapsListPanel = forwardRef<LocalMapsListPanelRef, Props>(({ ve
         const mapsCopy = maps ? [ ...maps ] : [];
 
         for (const importMap of importMaps) {
-            if (importMap.songDetails) {
-                // importMap can collide with existing map
-                const index = maps.findIndex(map => map.songDetails?.name === importMap.songDetails.name);
-                if (index > -1) {
-                    mapsCopy.splice(index, 1);
-                }
+            const index = mapsCopy.findIndex(map => map.hash === importMap.hash);
+            if (index > -1) {
+                mapsCopy.splice(index, 1);
             }
         }
 
