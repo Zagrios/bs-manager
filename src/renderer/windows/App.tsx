@@ -27,6 +27,7 @@ import { SetupService } from "renderer/services/setup.service";
 import { gt, parse } from "semver"
 import { logRenderError } from "renderer";
 import { StaticConfigurationService } from "renderer/services/static-configuration.service";
+import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
 
 export default function App() {
     useService(OsDiagnosticService);
@@ -39,6 +40,7 @@ export default function App() {
     const autoUpdater = useService(AutoUpdaterService);
     const setup = useService(SetupService);
     const staticConfig = useService(StaticConfigurationService);
+    const versionManager = useService(BSVersionManagerService);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -74,6 +76,11 @@ export default function App() {
     const navigateToDefaultPage = async () => {
         const version = await staticConfig.get("last-version-launched");
         if (!version) {
+            return;
+        }
+
+        if (!await versionManager.isVersionInstalled(version)) {
+            await staticConfig.delete("last-version-launched");
             return;
         }
 
