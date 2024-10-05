@@ -106,7 +106,7 @@
             }
         },
         "available-versions": {
-            "title": "バージョンを選択",
+            "title": "バージョンをダウンロード",
             "steam-release": "リリースページ",
             "dropdown": {
                 "refresh": "バージョンの更新",
