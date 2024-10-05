@@ -18,6 +18,7 @@ import { Observable, Subject, catchError, finalize, from, map, switchMap, throwE
 import { BsStore } from "../../shared/models/bs-store.enum";
 import { CustomError } from "../../shared/models/exceptions/custom-error.class";
 import crypto from "crypto";
+import { StaticConfigurationService } from "./static-configuration.service";
 
 
 export class BSLocalVersionService {
@@ -32,6 +33,7 @@ export class BSLocalVersionService {
     private readonly remoteVersionService: BSVersionLibService;
     private readonly configService: ConfigurationService;
     private readonly linker: FolderLinkerService;
+    private readonly staticConfig: StaticConfigurationService;
     private readonly _loadedVersions$: Subject<BSVersion[]>;
 
     public static getInstance(): BSLocalVersionService {
@@ -48,6 +50,7 @@ export class BSLocalVersionService {
         this.remoteVersionService = BSVersionLibService.getInstance();
         this.configService = ConfigurationService.getInstance();
         this.linker = FolderLinkerService.getInstance();
+        this.staticConfig = StaticConfigurationService.getInstance();
 
         this._loadedVersions$ = new Subject<BSVersion[]>();
     }
@@ -169,6 +172,24 @@ export class BSLocalVersionService {
 
     private addCustomVersion(version: BSVersion): void{
         this.setCustomVersions([...this.getCustomVersions() ?? [], version]);
+    }
+
+    private updateLastVersionLaunched(version: BSVersion, editedVersion: BSVersion): void {
+        const lastVersion = this.staticConfig.get("last-version-launched");
+        if (!lastVersion) {
+            return;
+        }
+
+        if (
+            version.BSVersion !== lastVersion.BSVersion
+            || version.name !== lastVersion.name
+            || version.steam !== lastVersion.steam
+            || version.oculus !== lastVersion.oculus
+        ) {
+            return;
+        }
+
+        this.staticConfig.set("last-version-launched", editedVersion);
     }
 
     private getCustomVersions(): BSVersion[]{
@@ -317,6 +338,7 @@ export class BSLocalVersionService {
         if(oldPath === newPath){
             this.deleteCustomVersion(version);
             this.addCustomVersion(editedVersion);
+            this.updateLastVersionLaunched(version, editedVersion);
             return editedVersion;
         }
 
@@ -327,6 +349,7 @@ export class BSLocalVersionService {
         return rename(oldPath, newPath).then(() => {
             this.deleteCustomVersion(version);
             this.addCustomVersion(editedVersion);
+            this.updateLastVersionLaunched(version, editedVersion);
             return editedVersion;
         }).catch((err: Error) => {
             log.error("edit version error", err, version, name, color);

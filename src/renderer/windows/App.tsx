@@ -24,6 +24,7 @@ import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { useService } from "renderer/hooks/use-service.hook";
 import { SetupService } from "renderer/services/setup.service";
 import { StaticConfigurationService } from "renderer/services/static-configuration.service";
+import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
 
 export default function App() {
 
@@ -36,6 +37,7 @@ export default function App() {
     const config = useService(ConfigurationService);
     const setup = useService(SetupService);
     const staticConfig = useService(StaticConfigurationService);
+    const versionManager = useService(BSVersionManagerService);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -51,6 +53,11 @@ export default function App() {
     const navigateToDefaultPage = async () => {
         const version = await staticConfig.get("last-version-launched");
         if (!version) {
+            return;
+        }
+
+        if (!await versionManager.isVersionInstalled(version)) {
+            await staticConfig.delete("last-version-launched");
             return;
         }
 
