@@ -89,6 +89,7 @@ export interface StaticConfigKeyValues {
     "disable-hadware-acceleration": boolean;
     "use-symlinks": boolean;
     "use-system-proxy": boolean;
+    "last-version-launched": BSVersion;
 
     // Linux Specific static configs
     "proton-folder": string;
