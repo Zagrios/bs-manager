@@ -150,7 +150,7 @@
             }
         },
         "available-versions": {
-            "title": "选择版本",
+            "title": "下载一个版本",
             "steam-release": "发布页面",
             "dropdown": {
                 "refresh": "刷新版本",

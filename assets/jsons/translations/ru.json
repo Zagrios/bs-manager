@@ -150,7 +150,7 @@
             }
         },
         "available-versions": {
-            "title": "Выберите версию",
+            "title": "Скачать версию",
             "steam-release": "Список изменений",
             "dropdown": {
                 "refresh": "Обновить версии",

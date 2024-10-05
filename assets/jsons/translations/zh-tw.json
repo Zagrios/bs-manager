@@ -150,7 +150,7 @@
             }
         },
         "available-versions": {
-            "title": "選擇版本",
+            "title": "下載一個版本",
             "steam-release": "發布頁面",
             "dropdown": {
                 "refresh": "刷新版本",
