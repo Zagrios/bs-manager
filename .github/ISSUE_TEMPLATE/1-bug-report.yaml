@@ -50,5 +50,5 @@ body:
       id: additional-context
       attributes:
         label: Additional Context
-        description: Any other context that you may share about the issue.
+        description: Any other context that you may share about the issue. You may add your log files here.
 
