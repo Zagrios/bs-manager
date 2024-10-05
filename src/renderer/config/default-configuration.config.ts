@@ -1,3 +1,5 @@
+import { BsvSearchOrder } from "shared/models/maps/beat-saver.model";
+
 export const defaultConfiguration: { [key in DefaultConfigKey]: any } = {
     "first-color": "#3b82ff",
     "second-color": "#ff4444",
@@ -10,8 +12,10 @@ export const defaultConfiguration: { [key in DefaultConfigKey]: any } = {
         window.electron.path.join("Beat Saber_Data", "CustomWIPLevels"),
         "DLC"
     ],
+    "playlist-sort-order": BsvSearchOrder.Relevance,
+    "map-sort-order": BsvSearchOrder.Latest,
 };
 
-export type DefaultConfigKey = "first-color" | "second-color" | "theme" | "language" | "supported_languages" | "default_mods" | "default-shared-folders" | "playlist-sort-order";
+export type DefaultConfigKey = "first-color" | "second-color" | "theme" | "language" | "supported_languages" | "default_mods" | "default-shared-folders" | "playlist-sort-order" | "map-sort-order";
 
 export type ThemeConfig = "dark" | "light" | "os";

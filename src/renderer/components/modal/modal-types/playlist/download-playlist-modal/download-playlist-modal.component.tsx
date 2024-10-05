@@ -5,7 +5,7 @@ import { BSVersion } from "shared/bs-version.interface"
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface"
 import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.models"
 import { DownloadPlaylistModalHeader } from "./download-playlist-modal-header.component"
-import { BsvPlaylist, BsvSearchOrder, PlaylistSearchParams } from "shared/models/maps/beat-saver.model"
+import { BsvPlaylist, PlaylistSearchParams } from "shared/models/maps/beat-saver.model"
 import { useCallback, useState } from "react"
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook"
 import { useService } from "renderer/hooks/use-service.hook"
@@ -43,7 +43,7 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
     const [error, setError] = useState(false);
     const [searchParams, setSearchParams] = useState<PlaylistSearchParams>({
         q: "",
-        sortOrder: config.get("playlist-sort-order") || BsvSearchOrder.Relevance,
+        sortOrder: config.get("playlist-sort-order"),
         page: 0,
     });
 
