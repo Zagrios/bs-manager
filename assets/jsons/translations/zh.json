@@ -45,7 +45,8 @@
                     "filters-btn": "筛选",
                     "dropdown": {
                         "export-maps": "导出谱面",
-                        "delete-maps": "删除谱面"
+                        "delete-maps": "删除谱面",
+                        "delete-duplicate-maps": "删除重复项"
                     }
                 },
                 "tabs": {
@@ -496,6 +497,14 @@
             "one-click-install": {
                 "success": "谱面安装完成",
                 "error": "安装谱面时发生错误"
+            },
+            "no-duplicates-maps": {
+                "title": "没有重复",
+                "msg": "没有删除地图"
+            },
+            "duplicates-maps-deleted": {
+                "title": "重复已删除",
+                "msg": "重复已删除"
             }
         },
         "playlists": {
@@ -690,6 +699,11 @@
                     "title": "保留谱面将会在取消关联后把共享文件夹的所有谱面复制到当前版本。如果此项被禁用，谱面也不会丢失。"
                 },
                 "valid-btn": "取消关联谱面"
+            },
+            "delete-duplicate-maps": {
+                "title": "删除地图",
+                "desc": "只有地图 \"{map}\" 是重复的。你确定要删除它吗？",
+                "desc-plural": "发现了 {nb} 个重复的地图。你确定要删除它们吗？"
             }
         },
         "download-maps": {

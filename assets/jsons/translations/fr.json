@@ -45,7 +45,8 @@
                     "filters-btn": "Filtres",
                     "dropdown": {
                         "export-maps": "Exporter les maps",
-                        "delete-maps": "Supprimer les maps"
+                        "delete-maps": "Supprimer les maps",
+                        "delete-duplicate-maps": "Supprimer les doublons"
                     }
                 },
                 "tabs": {
@@ -496,6 +497,14 @@
             "one-click-install": {
                 "success": "Installation de la map terminée",
                 "error": "Une erreur s'est produite lors de l'installation de la map"
+            },
+            "no-duplicates-maps": {
+                "title": "Pas de doublons",
+                "msg": "Aucune carte n'a été supprimée"
+            },
+            "duplicates-maps-deleted": {
+                "title": "Doublons supprimés",
+                "msg": "Les doublons ont été supprimés"
             }
         },
         "playlists": {
@@ -691,6 +700,11 @@
                     "title": "Conserver les maps créera une copie des maps partagées pour la version actuelle. Dans le cas contraire, aucune map ne sera conservée pour cette version."
                 },
                 "valid-btn": "Délier les maps"
+            },
+            "delete-duplicate-maps": {
+                "title": "Supprimer les maps ?",
+                "desc": "Seule la map \"{map}\" est en double. Es-tu sûr de vouloir la supprimer ?",
+                "desc-plural": "{nb} maps en double ont été trouvées. Es-tu sûr de vouloir les supprimer ?"
             }
         },
         "download-maps": {

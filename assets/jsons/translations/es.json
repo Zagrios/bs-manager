@@ -45,7 +45,8 @@
                     "filters-btn": "Filtros",
                     "dropdown": {
                         "export-maps": "Exportar mapas",
-                        "delete-maps": "Borrar mapas"
+                        "delete-maps": "Borrar mapas",
+                        "delete-duplicate-maps": "Borrar duplicados"
                     }
                 },
                 "tabs": {
@@ -496,6 +497,14 @@
             "one-click-install": {
                 "success": "Instalación del mapa completada",
                 "error": "Se produjo un error durante la instalación del mapa"
+            },
+            "no-duplicates-maps": {
+                "title": "Sin duplicados",
+                "msg": "No se eliminó ninguna carta"
+            },
+            "duplicates-maps-deleted": {
+                "title": "Duplicados eliminados",
+                "msg": "Se eliminaron los duplicados"
             }
         },
         "playlists": {
@@ -690,6 +699,11 @@
                     "title": "Mantener los mapas creará una copia de los mapas compartidos para la versión actual. De lo contrario, no se mantendrá ningún mapa para esta versión."
                 },
                 "valid-btn": "Desvincular mapas"
+            },
+            "delete-duplicate-maps": {
+                "title": "¿Borrar mapas?",
+                "desc": "Solo el mapa \"{map}\" está duplicado. ¿Estás seguro de que quieres eliminarlo?",
+                "desc-plural": "Se han encontrado {nb} mapas duplicados. ¿Estás seguro de que quieres eliminarlos?"
             }
         },
         "download-maps": {
