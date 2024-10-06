@@ -1,6 +1,6 @@
 import { createContext, useRef, useState } from "react";
 import { BSVersion } from "shared/bs-version.interface";
-import { LocalMapsListPanel } from "./maps/local-maps-list-panel.component";
+import { LocalMapsListPanel, LocalMapsListPanelRef } from "./maps/local-maps-list-panel.component";
 import { BsmDropdownButton, DropDownItem } from "../shared/bsm-dropdown-button.component";
 import { FilterPanel } from "./maps/filter-panel.component";
 import { MapFilter } from "shared/models/maps/beat-saver.model";
@@ -56,7 +56,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         setPlaylists: playlists$.next.bind(playlists$),
     }));
 
-    const mapsRef = useRef<any>();
+    const mapsRef = useRef<LocalMapsListPanelRef>();
     const playlistsRef = useRef<LocalPlaylistsListRef>();
 
     const [mapFilter, setMapFilter] = useState<MapFilter>({});
@@ -106,6 +106,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
             return [
                 { icon: "export", text: "pages.version-viewer.maps.search-bar.dropdown.export-maps", onClick: () => mapsRef.current.exportMaps?.() },
                 { icon: "trash", text: "pages.version-viewer.maps.search-bar.dropdown.delete-maps", onClick: () => mapsRef.current.deleteMaps?.() },
+                { icon: "clean", text: "pages.version-viewer.maps.search-bar.dropdown.delete-duplicate-maps", onClick: () => mapsRef.current.removeDuplicates?.() },
             ];
         }
 

@@ -45,7 +45,8 @@
                     "filters-btn": "絞り込み",
                     "dropdown": {
                         "export-maps": "マップをエクスポート",
-                        "delete-maps": "マップを削除"
+                        "delete-maps": "マップを削除",
+                        "delete-duplicate-maps": " 重複を削除"
                     }
                 },
                 "tabs": {
@@ -496,6 +497,14 @@
             "one-click-install": {
                 "success": "マップのインストール完了",
                 "error": "マップのインストール中にエラーが発生しました"
+            },
+            "no-duplicates-maps": {
+                "title": "重複なし",
+                "msg": "マップは削除されませんでした"
+            },
+            "duplicates-maps-deleted": {
+                "title": "重複削除",
+                "msg": "重複が削除されました"
             }
         },
         "playlists": {
@@ -690,6 +699,11 @@
                     "title": "マップを保持は、リンクを解除した後、共有フォルダから現在のバージョンにすべてのマップをコピーします。これを無効をしても共有マップは失われません。"
                 },
                 "valid-btn": "マップのリンクを解除"
+            },
+            "delete-duplicate-maps": {
+                "title": "マップを削除しますか?",
+                "desc": "マップ「{map}」のみが重複しています。削除してもよろしいですか？",
+                "desc-plural": "{nb}個の重複したマップが見つかりました。削除してもよろしいですか？"
             }
         },
         "download-maps": {

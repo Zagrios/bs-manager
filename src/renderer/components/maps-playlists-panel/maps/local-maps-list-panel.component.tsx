@@ -2,7 +2,7 @@ import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { BSVersion } from "shared/bs-version.interface";
 import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useState } from "react";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
-import { Subscription, BehaviorSubject } from "rxjs";
+import { Subscription, BehaviorSubject, lastValueFrom } from "rxjs";
 import { MapFilter } from "shared/models/maps/beat-saver.model";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
 import { last, tap } from "rxjs/operators";
@@ -34,7 +34,13 @@ type Props = {
     isActive?: boolean;
 };
 
-export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, className, filter, search, linkedState, isActive }, forwardRef) => {
+export type LocalMapsListPanelRef = {
+    deleteMaps: () => void;
+    exportMaps: () => void;
+    removeDuplicates: () => void;
+}
+
+export const LocalMapsListPanel = forwardRef<LocalMapsListPanelRef, Props>(({ version, className, filter, search, linkedState, isActive }, forwardRef) => {
     const mapsManager = useService(MapsManagerService);
     const mapsDownloader = useService(MapsDownloaderService);
 
@@ -63,6 +69,12 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({ version, classNa
         },
         exportMaps() {
             mapsManager.exportMaps(version, selectedMaps);
+        },
+        removeDuplicates() {
+            return lastValueFrom(mapsManager.deleteDuplicateMaps(maps$.value)).then(res => {
+                if(!res?.current){ return; }
+                loadMaps();
+            }).catch(noop);
         }
     }),[selectedMaps, maps, version]);
 

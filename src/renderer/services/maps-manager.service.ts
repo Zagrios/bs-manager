@@ -1,6 +1,6 @@
 import { LinkMapsModal } from "renderer/components/modal/modal-types/link-maps-modal.component";
 import { UnlinkMapsModal } from "renderer/components/modal/modal-types/unlink-maps-modal.component";
-import { Subject, Observable, of, lastValueFrom } from "rxjs";
+import { Subject, Observable, of, lastValueFrom, Subscription, throwError } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { BsmLocalMapsProgress, BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { IpcService } from "./ipc.service";
@@ -13,6 +13,8 @@ import { map, last, catchError } from "rxjs/operators";
 import { ProgressionInterface } from "shared/models/progress-bar";
 import { FolderLinkState, VersionFolderLinkerService } from "./version-folder-linker.service";
 import { SongDetails } from "shared/models/maps";
+import { Progression } from "main/helpers/fs.helpers";
+import { DeleteDuplicateMapsModal } from "renderer/components/modal/modal-types/delete-duplicate-maps-modal.component";
 
 export class MapsManagerService {
     private static instance: MapsManagerService;
@@ -144,6 +146,54 @@ export class MapsManagerService {
                 this.progressBar.complete();
                 this.progressBar.hide();
             });
+    }
+
+    public deleteDuplicateMaps(maps: BsmLocalMap[]): Observable<Progression> {
+        const hashMap = Object.groupBy(maps, m => m.hash);
+        const mapsToDelete: BsmLocalMap[] = [];
+
+        for (const maps of Object.values(hashMap)) {
+            if(!Array.isArray(maps)){ continue; }
+            maps.sort((a, b) => b.path.length - a.path.length).pop(); // The longest paths are most likely to be the duplicate ones (path: '../Awesome maps (copy)')
+            mapsToDelete.push(...maps);
+        }
+
+        if(mapsToDelete.length === 0){
+            this.notifications.notifySuccess({ title: "notifications.maps.no-duplicates-maps.title", desc: "notifications.maps.no-duplicates-maps.msg", duration: 4000 });
+            return of({ current: 0, total: 0 });
+        }
+
+        if(!this.progressBar.require()){
+            return throwError(() => new Error("Progress bar is required to delete duplicate maps"));
+        }
+
+        return new Observable<Progression>(obs => {
+            let sub: Subscription;
+            (async () => {
+                const modalRes = await this.modal.openModal(DeleteDuplicateMapsModal, { data: { maps: mapsToDelete } });
+
+                if(modalRes.exitCode !== ModalExitCode.COMPLETED){
+                    throw new Error("Operation to delete duplicate maps as been canceled by the user");
+                }
+
+                const progress$: Observable<Progression> = this.ipcService.sendV2("delete-maps", mapsToDelete).pipe(map(p => ({ total: p.total, current: p.deleted })));
+
+                this.progressBar.show(progress$);
+                sub = progress$.subscribe(obs);
+
+                await lastValueFrom(progress$);
+            })()
+            .then(() => this.notifications.notifySuccess({ title: "notifications.maps.duplicates-maps-deleted.title", desc: "notifications.maps.duplicates-maps-deleted.msg", duration: 4000 }))
+            .catch(e => obs.error(e))
+            .finally(() => obs.complete());
+
+            return () => {
+                if(sub){
+                    this.progressBar.hide();
+                    sub.unsubscribe();
+                }
+            }
+        })
     }
 
     public getMapsInfoFromHashs(hashs: string[]): Observable<SongDetails[]> {

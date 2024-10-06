@@ -79,7 +79,7 @@ export const BsmDropdownButton = forwardRef(({ className, classNames, buttonColo
                 {items?.map(
                     i =>
                         i && (
-                            <div key={crypto.randomUUID()} onClick={() => i.onClick?.()} className="flex w-full px-3 py-2 hover:backdrop-brightness-150">
+                            <div key={crypto.randomUUID()} onClick={() => { setExpanded(() => false); i.onClick?.()}} className="flex w-full px-3 py-2 hover:backdrop-brightness-150">
                                 {i.icon && <BsmIcon icon={i.icon} className="h-5 w-5 mr-1 text-inherit" />}
                                 <span className="w-max">{t(i.text)}</span>
                             </div>

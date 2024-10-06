@@ -45,7 +45,8 @@
                     "filters-btn": "Filters",
                     "dropdown": {
                         "export-maps": "Export maps",
-                        "delete-maps": "Delete maps"
+                        "delete-maps": "Delete maps",
+                        "delete-duplicate-maps": "Delete duplicates"
                     }
                 },
                 "tabs": {
@@ -503,6 +504,14 @@
             "one-click-install": {
                 "success": "Map installation complete",
                 "error": "An error occurred while installing the map"
+            },
+            "no-duplicates-maps": {
+                "title": "No Duplicates",
+                "msg": "No maps were deleted"
+            },
+            "duplicates-maps-deleted": {
+                "title": "Duplicates Deleted",
+                "msg": "Duplicates were deleted"
             }
         },
         "playlists": {
@@ -697,6 +706,11 @@
                     "title": "Keeping maps will copy all maps from the shared folder to the current version after unlinking. Maps will not be lost if this is disabled."
                 },
                 "valid-btn": "Unlink maps"
+            },
+            "delete-duplicate-maps": {
+                "title": "Delete maps?",
+                "desc": "Only the map \"{map}\" is a duplicate. Are you sure you want to delete it?",
+                "desc-plural": "{nb} duplicate maps have been found. Are you sure you want to delete them?"
             }
         },
         "download-maps": {
