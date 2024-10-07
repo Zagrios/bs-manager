@@ -49,8 +49,18 @@ export class MapsSorterService {
         }
     };
 
+    private addTiebreak(comparator: Comparator<BsmLocalMap>): Comparator<BsmLocalMap> {
+        return (map1, map2) =>
+            comparator(map1, map2)
+            || this.getDefaultComparator()(map1, map2);
+    }
+
     public getComparatorKeys(): string[] {
         return Object.keys(this.comparators);
+    }
+
+    public getDefaultComparatorKey(): string {
+        return "name";
     }
 
     public getDefaultComparator(): Comparator<BsmLocalMap> {
@@ -59,7 +69,9 @@ export class MapsSorterService {
 
     public getComparator(key: string): Comparator<BsmLocalMap> {
         const comparator = this.comparators[key];
-        return comparator || this.comparators.name;
+        return comparator
+            ? this.addTiebreak(comparator)
+            : this.getDefaultComparator();
     }
 
 }

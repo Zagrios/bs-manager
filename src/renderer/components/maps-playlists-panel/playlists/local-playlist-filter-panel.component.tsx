@@ -6,6 +6,8 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { hourToS, sToMs } from "shared/helpers/time.helpers";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import formatDuration from "format-duration";
+import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
+import { Comparator } from "shared/models/generics.type";
 
 type Props = {
     className?: string;
@@ -120,3 +122,8 @@ export type LocalPlaylistFilter = Partial<{
     minDuration: number;
     maxDuration: number;
 }>
+
+export interface LocalPlaylistSort {
+    compare: Comparator<LocalBPListsDetails>;
+    ascending: boolean;
+}
