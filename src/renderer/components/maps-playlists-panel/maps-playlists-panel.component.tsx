@@ -20,13 +20,14 @@ import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
 import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service";
-import { LocalPlaylistFilter, LocalPlaylistFilterPanel } from "./playlists/local-playlist-filter-panel.component";
+import { LocalPlaylistFilter, LocalPlaylistFilterPanel, LocalPlaylistSort } from "./playlists/local-playlist-filter-panel.component";
 import { noop } from "shared/helpers/function.helpers";
 import { Dropzone } from "../shared/dropzone.component";
 import { logRenderError } from "renderer";
 import { BsmSelect, BsmSelectOption } from "../shared/bsm-select.component";
 import { MapsSorterService } from "renderer/services/maps/sorter.service";
 import { BsmButton } from "../shared/bsm-button.component";
+import { PlaylistsSorterService } from "renderer/services/playlists/sorter.service";
 
 type Props = {
     readonly version?: BSVersion;
@@ -42,11 +43,15 @@ export const InstalledMapsContext = createContext<{
 
 export function MapsPlaylistsPanel({ version, isActive }: Props) {
 
+    const MAP_TAB = 0;
+    const PLAYLIST_TAB = 1;
+
     const mapsManager = useService(MapsManagerService);
     const mapsDownloader = useService(MapsDownloaderService);
     const mapsSorter = useService(MapsSorterService);
     const playlistsManager = useService(PlaylistsManagerService);
     const playlistsDownloader = useService(PlaylistDownloaderService);
+    const playlistsSorter = useService(PlaylistsSorterService);
 
     const t = useTranslation();
     const [tabIndex, setTabIndex] = useState(0);
@@ -73,6 +78,18 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         ascending: true,
     });
     const [playlistFilter, setPlaylistFilter] = useState<LocalPlaylistFilter>({});
+    const [playlistSort, setPlaylistSort] = useState<LocalPlaylistSort>({
+        compare: playlistsSorter.getDefaultComparator(),
+        ascending: true,
+    });
+    const [selectedSort, setSelectedSort] = useState<string>("name");
+
+    const [sortOptions, setSortOptions] = useState<BsmSelectOption<string>[]>(
+        () => mapsSorter.getComparatorKeys().map(key => ({
+            text: `pages.version-viewer.maps.sort.${key}`,
+            value: key,
+        }))
+    );
 
     const [search, setSearch] = useState("");
     const mapsLinkedState = useObservable(() => {
@@ -106,6 +123,39 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         }
 
         return mapsManager.unlinkVersion(version);
+    };
+
+    const handleTabChange = (index: number) => {
+        setTabIndex(index);
+
+        switch (index) {
+        case MAP_TAB:
+            setSortOptions(() => mapsSorter.getComparatorKeys().map(key => ({
+                text: `pages.version-viewer.maps.sort.${key}`,
+                value: key,
+            })));
+            setSelectedSort(mapsSorter.getDefaultComparatorKey());
+            setMapSort({
+                compare: mapsSorter.getDefaultComparator(),
+                ascending: playlistSort.ascending,
+            });
+            break;
+
+        case PLAYLIST_TAB:
+            setSortOptions(() => playlistsSorter.getComparatorKeys().map(key => ({
+                text: `pages.version-viewer.playlists.sort.${key}`,
+                value: key,
+            })));
+            setSelectedSort(playlistsSorter.getDefaultComparatorKey());
+            setPlaylistSort({
+                compare: playlistsSorter.getDefaultComparator(),
+                ascending: mapSort.ascending,
+            });
+            break;
+
+        default:
+            break;
+        }
     };
 
     const handlePlaylistLinkClick = () => {
@@ -143,22 +193,50 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         ];
     })();
 
-    const sortOptions: BsmSelectOption<string>[] = useConstant(() => {
-        return mapsSorter.getComparatorKeys().map(key => ({
-            text: `pages.version-viewer.maps.sort.${key}`,
-            value: key,
-        }));
-    });
-
     const handleSortChange = (key: string) => {
-        setMapSort({
-            compare: mapsSorter.getComparator(key),
-            ascending: mapSort.ascending,
-        });
+        switch (tabIndex) {
+        case MAP_TAB:
+            setMapSort({
+                compare: mapsSorter.getComparator(key),
+                ascending: mapSort.ascending,
+            });
+            break;
+
+        case PLAYLIST_TAB:
+            setPlaylistSort({
+                compare: playlistsSorter.getComparator(key),
+                ascending: playlistSort.ascending,
+            });
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    const handleAscendingClick = () => {
+        switch (tabIndex) {
+        case MAP_TAB:
+            setMapSort({
+                compare: mapSort.compare,
+                ascending: !mapSort.ascending,
+            });
+            break;
+
+        case PLAYLIST_TAB:
+            setPlaylistSort({
+                compare: playlistSort.compare,
+                ascending: !playlistSort.ascending,
+            });
+            break;
+
+        default:
+            break;
+        }
     }
 
     const dropDownItems = ((): DropDownItem[] => {
-        if (tabIndex === 0) {
+        if (tabIndex === MAP_TAB) {
             return [
                 { icon: "export", text: "pages.version-viewer.maps.search-bar.dropdown.export-maps", onClick: () => mapsRef.current.exportMaps?.() },
                 { icon: "trash", text: "pages.version-viewer.maps.search-bar.dropdown.delete-maps", onClick: () => mapsRef.current.deleteMaps?.() },
@@ -195,7 +273,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                     <input
                         type="text"
                         className="h-full w-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2"
-                        placeholder={tabIndex === 0 ? t("pages.version-viewer.maps.search-bar.search-placeholder") : t("playlist.search-playlist")}
+                        placeholder={tabIndex === MAP_TAB ? t("pages.version-viewer.maps.search-bar.search-placeholder") : t("playlist.search-playlist")}
                         value={search}
                         onChange={e => setSearch(() => e.target.value)}
                         tabIndex={-1}
@@ -213,31 +291,30 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                 <BsmSelect
                     className="bg-theme-1 rounded-full px-1 pb-0.5 text-center cursor-pointer"
                     options={sortOptions}
-                    selected="name"
+                    selected={selectedSort}
                     onChange={handleSortChange}
                 />
                 <BsmButton
                     className="h-full flex aspect-square relative rounded-full z-[1] bg-light-main-color-1 dark:bg-main-color-3"
                     iconClassName="transition-transform size-full ease-in-out duration-200 bg-light-main-color-1 dark:bg-main-color-3"
-                    iconStyle={{ transform: mapSort.ascending ? "rotate(360deg)" : "rotate(180deg)" }}
+                    iconStyle={{ transform: (tabIndex === MAP_TAB && mapSort.ascending)
+                                            || (tabIndex === PLAYLIST_TAB && playlistSort.ascending)
+                                                ? "rotate(360deg)" : "rotate(180deg)"}}
                     icon="chevron-top"
                     typeColor="primary"
                     withBar={false}
-                    onClick={() => setMapSort({
-                        compare: mapSort.compare,
-                        ascending: !mapSort.ascending,
-                    })}
+                    onClick={handleAscendingClick}
                 />
                 <BsmDropdownButton className="h-full flex aspect-square relative rounded-full z-[1] bg-light-main-color-1 dark:bg-main-color-3" buttonClassName="rounded-full h-full w-full p-[6px]" icon="three-dots" withBar={false} items={dropDownItems} menuTranslationY="6px" align="center" />
             </nav>
             <BsContentTabPanel
                 tabIndex={tabIndex}
-                onTabChange={index => setTabIndex(index)}
+                onTabChange={handleTabChange}
                 tabs={[
                     {
                         text: "misc.maps",
                         icon: MapIcon,
-                        onClick: () => setTabIndex(0),
+                        onClick: () => handleTabChange(MAP_TAB),
                         linkProps: version ? {
                             state: mapsLinkedState,
                             onClick: handleMapsLinkClick,
@@ -246,7 +323,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                     {
                         text: "misc.playlists",
                         icon: PlaylistIcon,
-                        onClick: () => setTabIndex(1),
+                        onClick: () => handleTabChange(PLAYLIST_TAB),
                         linkProps: version ? {
                             state: playlistLinkedState,
                             onClick: handlePlaylistLinkClick,
@@ -292,7 +369,16 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                             properties: ["openFile", "multiSelections"],
                         }}}
                     >
-                        <LocalPlaylistsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 1} ref={playlistsRef} version={version} linkedState={playlistLinkedState} filter={playlistFilter} search={search}/>
+                        <LocalPlaylistsListPanel
+                            className="w-full h-full shrink-0"
+                            isActive={isActive && tabIndex === 1}
+                            ref={playlistsRef}
+                            version={version}
+                            linkedState={playlistLinkedState}
+                            filter={playlistFilter}
+                            search={search}
+                            sort={playlistSort}
+                        />
                     </Dropzone>
 
                 </InstalledMapsContext.Provider>

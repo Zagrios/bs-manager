@@ -115,6 +115,16 @@
                     "date-uploaded": "Hochladedatum"
                 }
             },
+            "playlists": {
+                "sort": {
+                    "title": "Title",
+                    "author": "Author",
+                    "number-of-maps": "Number of Maps",
+                    "duration": "Duration",
+                    "min-notes-per-second": "Min Notes per Second",
+                    "max-notes-per-second": "Max Notes per Second"
+                }
+            },
             "mods": {
                 "loading-mods": "Lade Mods...",
                 "no-internet": "Kein Internet",

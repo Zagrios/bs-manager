@@ -115,6 +115,16 @@
                     "date-uploaded": "上传日期"
                 }
             },
+            "playlists": {
+                "sort": {
+                    "title": "Title",
+                    "author": "Author",
+                    "number-of-maps": "Number of Maps",
+                    "duration": "Duration",
+                    "min-notes-per-second": "Min Notes per Second",
+                    "max-notes-per-second": "Max Notes per Second"
+                }
+            },
             "mods": {
                 "loading-mods": "Mod 加载中...",
                 "no-internet": "无网络",
