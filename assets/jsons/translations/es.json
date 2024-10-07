@@ -117,12 +117,12 @@
             },
             "playlists": {
                 "sort": {
-                    "title": "Title",
-                    "author": "Author",
-                    "number-of-maps": "Number of Maps",
-                    "duration": "Duration",
-                    "min-notes-per-second": "Min Notes per Second",
-                    "max-notes-per-second": "Max Notes per Second"
+                    "title": "Título",
+                    "author": "Autor",
+                    "number-of-maps": "Número de mapas",
+                    "duration": "Duración",
+                    "min-notes-per-second": "Mínimo de notas por segundo",
+                    "max-notes-per-second": "Máximo de notas por segundo"
                 }
             },
             "mods": {

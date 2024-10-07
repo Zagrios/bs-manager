@@ -117,12 +117,12 @@
             },
             "playlists": {
                 "sort": {
-                    "title": "Title",
-                    "author": "Author",
-                    "number-of-maps": "Number of Maps",
-                    "duration": "Duration",
-                    "min-notes-per-second": "Min Notes per Second",
-                    "max-notes-per-second": "Max Notes per Second"
+                    "title": "タイトル",
+                    "author": "著者",
+                    "number-of-maps": "地図の数",
+                    "duration": "持続時間",
+                    "min-notes-per-second": "秒あたりの最小ノート数",
+                    "max-notes-per-second": "秒あたりの最大ノート数"
                 }
             },
             "mods": {

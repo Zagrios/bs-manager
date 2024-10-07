@@ -117,12 +117,12 @@
             },
             "playlists": {
                 "sort": {
-                    "title": "Title",
-                    "author": "Author",
-                    "number-of-maps": "Number of Maps",
-                    "duration": "Duration",
-                    "min-notes-per-second": "Min Notes per Second",
-                    "max-notes-per-second": "Max Notes per Second"
+                    "title": "标题",
+                    "author": "作者",
+                    "number-of-maps": "地图数量",
+                    "duration": "持续时间",
+                    "min-notes-per-second": "每秒最少音符数",
+                    "max-notes-per-second": "每秒最多音符数"
                 }
             },
             "mods": {
