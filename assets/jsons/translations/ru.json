@@ -117,12 +117,12 @@
             },
             "playlists": {
                 "sort": {
-                    "title": "Title",
-                    "author": "Author",
-                    "number-of-maps": "Number of Maps",
-                    "duration": "Duration",
-                    "min-notes-per-second": "Min Notes per Second",
-                    "max-notes-per-second": "Max Notes per Second"
+                    "title": "Заголовок",
+                    "author": "Автор",
+                    "number-of-maps": "Количество карт",
+                    "duration": "Длительность",
+                    "min-notes-per-second": "Минимальное количество нот в секунду",
+                    "max-notes-per-second": "Максимальное количество нот в секунду"
                 }
             },
             "mods": {
