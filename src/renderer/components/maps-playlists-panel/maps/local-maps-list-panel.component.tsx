@@ -128,8 +128,12 @@ export const LocalMapsListPanel = forwardRef<LocalMapsListPanelRef, Props>(({ ve
             return;
         }
 
-        const mapsCopy = maps ? [ ...maps ] : [];
+        if (!maps$.value) {
+            setMaps(importMaps);
+            return;
+        }
 
+        const mapsCopy = [ ...maps$.value ];
         for (const importMap of importMaps) {
             const index = mapsCopy.findIndex(map => map.hash === importMap.hash);
             if (index > -1) {

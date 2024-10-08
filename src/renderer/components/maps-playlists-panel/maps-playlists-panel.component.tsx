@@ -104,11 +104,12 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         return playlistsManager.unlinkVersion(version);
     }
 
+    const zipMimeTypes = ["application/zip", "application/zip-compressed", "application/x-zip-compressed"];
     const handleFileDrop = async (files: FileList) => {
         const paths: string[] = [];
         for (let i = 0; i < files.length; ++i) {
             const file = files[i];
-            if (file.type === "application/zip") {
+            if (zipMimeTypes.includes(file.type)) {
                 paths.push(file.path);
             }
         }
