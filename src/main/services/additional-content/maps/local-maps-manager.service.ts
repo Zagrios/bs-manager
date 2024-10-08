@@ -356,6 +356,9 @@ export class LocalMapsManagerService {
             total: 0,
         };
 
+
+        log.info("Import maps processing following zip files", zipPaths);
+
         for (const zipPath of zipPaths) {
             try {
                 const zip = await JSZip.loadAsync(await readFile(zipPath));
@@ -425,6 +428,8 @@ export class LocalMapsManagerService {
                         observer.next(progress);
                     }
                 }
+
+                log.info("Import maps done");
             } catch (error: any) {
                 log.error(`Could not import "${zipInfo.path}"`, error);
                 progress.data = undefined;
