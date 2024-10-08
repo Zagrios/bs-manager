@@ -7,7 +7,7 @@ import { InstallationLocationService } from "../../installation-location.service
 import { UtilsService } from "../../utils.service";
 import crypto, { BinaryLike } from "crypto";
 import { lstatSync } from "fs";
-import { copy, createReadStream, ensureDir, mkdir, pathExists, pathExistsSync, realpath, unlink, unlinkSync, writeFile } from "fs-extra";
+import { copy, createReadStream, ensureDir, mkdir, pathExists, pathExistsSync, realpath, rmSync, unlink, writeFile } from "fs-extra";
 import StreamZip from "node-stream-zip";
 import { RequestService } from "../../request.service";
 import sanitize from "sanitize-filename";
@@ -52,9 +52,7 @@ export class LocalMapsManagerService {
         ScoreSaber: "web+bsmap",
     };
 
-    private readonly INFO_DAT_REGEX = path.sep === "/"
-        ? /(^|\/)(I|i)nfo.dat$/
-        : /(^|\\\\)(I|i)nfo.dat$/;
+    private readonly INFO_DAT_REGEX = /(^|\/)(I|i)nfo.dat$/;
 
     private readonly localVersion: BSLocalVersionService;
     private readonly installLocation: InstallationLocationService;
@@ -370,7 +368,8 @@ export class LocalMapsManagerService {
                 info.total += files.length;
                 info.zips.push({
                     path: zipPath,
-                    single: files.findIndex(file => file.name.includes(path.sep)) === -1,
+                    // If any Info.dat file is within a folder in the zip file
+                    single: files.findIndex(file => file.name.includes("/")) === -1,
                     folders: files.map(file => path.dirname(file.name)),
                 });
             } catch (error: any) {
@@ -483,7 +482,7 @@ export class LocalMapsManagerService {
         } catch (error: any) {
             // If the mapPath isn't yet added, delete the map folder
             if (!existing && mapPath) {
-                unlinkSync(mapPath);
+                rmSync(mapPath, { recursive: true, force: true });
             } else if (existing && mapPath) {
                 log.warn(`Map folder ${mapPath} could be broken`);
             }
