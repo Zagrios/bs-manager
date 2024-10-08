@@ -67,6 +67,25 @@
                             "button": "Télécharger des maps"
                         }
                     }
+                },
+                "sort": {
+                    "name": "Nom",
+                    "song-author": "Auteur de la chanson",
+                    "map-author": "Auteur de la carte",
+                    "bpm": "BPM",
+                    "duration": "Durée",
+                    "likes": "J'aime",
+                    "date-uploaded": "Date de téléchargement"
+                }
+            },
+            "playlists": {
+                "sort": {
+                    "title": "Titre",
+                    "author": "Auteur",
+                    "number-of-maps": "Nombre de cartes",
+                    "duration": "Durée",
+                    "min-notes-per-second": "Minimum de notes par seconde",
+                    "max-notes-per-second": "Maximum de notes par seconde"
                 }
             },
             "mods": {
