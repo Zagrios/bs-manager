@@ -107,7 +107,7 @@
             }
         },
         "available-versions": {
-            "title": "Select a version",
+            "title": "Download a version",
             "steam-release": "Release page",
             "dropdown": {
                 "refresh": "Refresh versions",
