@@ -778,5 +778,14 @@
 		"OculusBinaryId": "7685108391588873",
 		"ReleaseDate": "1725628356",
 		"year": "2024"
+	},
+	{
+		"BSVersion": "1.38.0",
+		"BSManifest": "3482902979520746178",
+		"OculusBinaryId": "7834818833284494",
+		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/4669760442595134838",
+		"ReleaseImg": "https://clan.akamai.steamstatic.com/images/32055887/57cfa043407c091e67b7e0a8ae86fe5590deae33.png",
+		"ReleaseDate": "1728399815",
+		"year": "2024"
 	}
 ]
