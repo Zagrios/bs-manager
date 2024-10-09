@@ -512,6 +512,18 @@
             "duplicates-maps-deleted": {
                 "title": "Duplicates Deleted",
                 "msg": "Duplicates were deleted"
+            },
+            "import-map": {
+                "titles": {
+                    "success": "Map import complete",
+                    "error": "An error occurred while importing the map"
+                },
+                "msgs": {
+                    "success": "Imported all maps successfully.",
+                    "some-success": "Imported some maps successfully.",
+                    "only-accept-zip": "Only zip files are supported.",
+                    "invalid-zip": "Zip/s file do not contain any \"Info.dat\" file."
+                }
             }
         },
         "playlists": {

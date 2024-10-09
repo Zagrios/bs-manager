@@ -1,3 +1,5 @@
+import { webUtils } from "electron";
+
 declare global {
     interface Window {
         electron: {
@@ -12,6 +14,9 @@ declare global {
                 sep: "/"|"\\";
                 basename: (path: string) => string;
                 join: (...args: string[]) => string;
+            };
+            webUtils: {
+                getPathForFile: typeof webUtils.getPathForFile;
             };
         };
     }

@@ -113,13 +113,36 @@ export const LocalMapsListPanel = forwardRef<LocalMapsListPanelRef, Props>(({ ve
                 }
                 setMaps((maps$.value ? [map, ...maps$.value] : [map]));
             }});
+            mapsManager.addImportListener(importListener);
         }
 
         return () => {
             sub?.unsubscribe();
+            mapsManager.removeImportListener(importListener);
         }
 
     }, [isActiveOnce, version])
+
+    const importListener = (importMaps: BsmLocalMap[], targetVersion?: BSVersion) => {
+        if (!equal(targetVersion, version)) {
+            return;
+        }
+
+        if (!maps$.value) {
+            setMaps(importMaps);
+            return;
+        }
+
+        const mapsCopy = [ ...maps$.value ];
+        for (const importMap of importMaps) {
+            const index = mapsCopy.findIndex(map => map.hash === importMap.hash);
+            if (index > -1) {
+                mapsCopy.splice(index, 1);
+            }
+        }
+
+        setMaps([...importMaps, ...mapsCopy]);
+    };
 
     const loadMaps = () => {
         setMaps(null);

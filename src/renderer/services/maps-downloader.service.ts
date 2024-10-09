@@ -71,7 +71,7 @@ export class MapsDownloaderService {
         if (this.os.isOffline) {
             return null;
         }
-        return this.ipc.sendV2("download-map", { map, version });
+        return this.ipc.sendV2("bs-maps.download-map", { map, version });
     }
 
     public async openDownloadMapModal(version?: BSVersion, ownedMaps: BsmLocalMap[] = []): Promise<ModalResponse<void>> {

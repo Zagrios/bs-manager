@@ -23,6 +23,8 @@ import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.mode
 import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service";
 import { LocalPlaylistFilter, LocalPlaylistFilterPanel } from "./playlists/local-playlist-filter-panel.component";
 import { noop } from "shared/helpers/function.helpers";
+import { Dropzone } from "../shared/dropzone.component";
+import { NotificationService } from "renderer/services/notification.service";
 
 type Props = {
     readonly version?: BSVersion;
@@ -42,6 +44,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
     const mapsDownloader = useService(MapsDownloaderService);
     const playlistsManager = useService(PlaylistsManagerService);
     const playlistsDownloader = useService(PlaylistDownloaderService);
+    const notifications = useService(NotificationService);
 
     const t = useTranslation();
     const [tabIndex, setTabIndex] = useState(0);
@@ -99,6 +102,27 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         }
 
         return playlistsManager.unlinkVersion(version);
+    }
+
+    const zipMimeTypes = ["application/zip", "application/zip-compressed", "application/x-zip-compressed"];
+    const handleFileDrop = async (files: FileList) => {
+        const paths: string[] = [];
+        for (let i = 0; i < files.length; ++i) {
+            const file = files[i];
+            if (zipMimeTypes.includes(file.type)) {
+                paths.push(window.electron.webUtils.getPathForFile(file));
+            }
+        }
+
+        if (paths.length === 0) {
+            notifications.notifyError({
+                title: "notifications.maps.import-map.titles.error",
+                desc: "notifications.maps.import-map.msgs.zip-accept-only"
+            });
+            return;
+        }
+
+        await mapsManager.importMaps(paths, version);
     }
 
     const dropDownItems = ((): DropDownItem[] => {
@@ -175,7 +199,20 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                 ]}
             >
                 <InstalledMapsContext.Provider value={mapsContextValue}>
-                    <LocalMapsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 0} ref={mapsRef} version={version} filter={mapFilter} search={search} linkedState={mapsLinkedState} />
+                    <Dropzone
+                        className="w-full h-full shrink-0"
+                        onDrop={event => {
+                            handleFileDrop(event.dataTransfer.files);
+                        }}
+                        overlay={
+                            <div className="text-3xl pointer-events-none">
+                                Drop map files here 😃
+                            </div>
+                        }
+                    >
+                        <LocalMapsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 0} ref={mapsRef} version={version} filter={mapFilter} search={search} linkedState={mapsLinkedState} />
+                    </Dropzone>
+
                     <LocalPlaylistsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 1} ref={playlistsRef} version={version} linkedState={playlistLinkedState} filter={playlistFilter} search={search}/>
                 </InstalledMapsContext.Provider>
             </BsContentTabPanel>
