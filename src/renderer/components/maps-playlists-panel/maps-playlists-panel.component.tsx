@@ -110,7 +110,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         for (let i = 0; i < files.length; ++i) {
             const file = files[i];
             if (zipMimeTypes.includes(file.type)) {
-                paths.push(file.path);
+                paths.push(window.electron.webUtils.getPathForFile(file));
             }
         }
 
