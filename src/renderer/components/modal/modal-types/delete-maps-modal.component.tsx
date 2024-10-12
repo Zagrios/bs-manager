@@ -11,7 +11,7 @@ import BeatConflict from "../../../../../assets/images/apngs/beat-conflict.png";
 import { useService } from "renderer/hooks/use-service.hook";
 
 export const DeleteMapsModal: ModalComponent<void, { linked: boolean; maps: BsmLocalMap[] }> = ({ resolver, data: { linked, maps } }) => {
-    
+
     const config = useService(ConfigurationService);
 
     const t = useTranslation();
@@ -34,7 +34,7 @@ export const DeleteMapsModal: ModalComponent<void, { linked: boolean; maps: BsmL
         <form className="text-gray-800 dark:text-gray-200">
             <h1 className="text-3xl uppercase tracking-wide w-full text-center">{t(titleText)}</h1>
             <BsmImage className="mx-auto h-24" image={BeatConflict} />
-            <p className="max-w-sm w-full">{t(descText, multiple ? { nb: maps.length.toString() } : { name: maps.at(0).rawInfo._songName })}</p>
+            <p className="max-w-sm w-full">{t(descText, multiple ? { nb: maps.length.toString() } : { name: maps.at(0).mapInfo.songName })}</p>
             {linked && (
                 <p className="text-sm italic mt-2 cursor-help w-fit" title={t(infoTitleText)}>
                     {t(infoText)}

@@ -1,11 +1,11 @@
 import { BsvMapDetail } from "./beat-saver.model";
-import { RawMapInfoData } from "./raw-map.model";
+import { MapInfo } from "./info/map-info.model";
 
 export interface BsmLocalMap {
     hash: string;
     coverUrl: string;
     songUrl: string;
-    rawInfo: RawMapInfoData;
+    mapInfo: MapInfo;
     bsaverInfo?: BsvMapDetail;
     path: string;
 }

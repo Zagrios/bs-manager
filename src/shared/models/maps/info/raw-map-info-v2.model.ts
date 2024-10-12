@@ -1,6 +1,6 @@
-import { BsvMapCharacteristic, BsvMapDifficultyType } from "./beat-saver.model";
+import { BsvMapCharacteristic, BsvMapDifficultyType } from "../beat-saver.model";
 
-export interface RawMapInfoData<T = unknown> {
+export interface RawMapInfoDataV2 {
     _version: string;
     _songName: string;
     _songSubName: string;
@@ -16,24 +16,24 @@ export interface RawMapInfoData<T = unknown> {
     _environmentName: string;
     _allDirectionsEnvironmentName: string;
     _songTimeOffset: number;
-    _customData: T;
-    _difficultyBeatmapSets: RawDifficultySet[];
+    _difficultyBeatmapSets: RawDifficultySetV2[];
+    // Additional fields for 2.1.0
+    _environmentNames?: string[];
+    _colorSchemes?: unknown[];
 }
 
-export interface RawDifficultySet {
+interface RawDifficultySetV2 {
     _beatmapCharacteristicName: BsvMapCharacteristic;
-    _difficultyBeatmaps: RawMapDifficulty[];
+    _difficultyBeatmaps: RawMapDifficultyV2[];
 }
 
-export interface RawMapDifficulty {
+interface RawMapDifficultyV2 {
     _difficulty: BsvMapDifficultyType;
-    _difficultyRank: string;
+    _difficultyRank: number;
     _beatmapFilename: string;
     _noteJumpMovementSpeed: number;
     _noteJumpStartBeatOffset: number;
-    _customData?: RawMapDifficultyCustomData;
-}
-
-export interface RawMapDifficultyCustomData {
-    _difficultyLabel?: string;
+    _beatmapColorSchemeIdx?: number;
+    _environmentNameIdx?: number;
+    _customData?: { _difficultyLabel?: string; };
 }

@@ -1,6 +1,6 @@
 import path from "path";
 import { BSVersion } from "shared/bs-version.interface";
-import { BsvMapDetail, RawMapInfoData } from "shared/models/maps";
+import { BsvMapDetail } from "shared/models/maps";
 import { BsmLocalMap, BsmLocalMapsProgress, DeleteMapsProgress } from "shared/models/maps/bsm-local-map.interface";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import { InstallationLocationService } from "../installation-location.service";
@@ -22,6 +22,7 @@ import { FolderLinkerService } from "../folder-linker.service";
 import { allSettled } from "../../../shared/helpers/promise.helpers";
 import { splitIntoChunk } from "../../../shared/helpers/array.helpers";
 import { IpcService } from "../ipc.service";
+import { parseMapInfoDat } from "../../../shared/parsers/maps/map-info.parser";
 
 export class LocalMapsManagerService {
     private static instance: LocalMapsManagerService;
@@ -84,27 +85,37 @@ export class LocalMapsManagerService {
     }
 
     private async computeMapHash(mapPath: string, rawInfoString: string): Promise<string> {
-        const mapRawInfo: RawMapInfoData = JSON.parse(rawInfoString);
+        const mapInfo = parseMapInfoDat(JSON.parse(rawInfoString));
         const shasum = crypto.createHash("sha1");
         shasum.update(rawInfoString);
-    
+
         const hashFile = (filePath: string): Promise<void> => {
             return new Promise<void>((resolve, reject) => {
                 const stream = createReadStream(filePath);
-                stream.on("data", data => shasum.update(data));
+                stream.on("data", (data: Buffer) => shasum.update(data as unknown as Uint8Array));
                 stream.on("error", reject);
                 stream.on("close", resolve);
             });
         };
 
-        for (const set of mapRawInfo._difficultyBeatmapSets) {
-            for (const diff of set._difficultyBeatmaps) {
-                const diffFilePath = path.join(mapPath, diff._beatmapFilename);
+
+        for (const diff of mapInfo.difficulties) {
+            if(diff.beatmapFilename){
+                const diffFilePath = path.join(mapPath, diff.beatmapFilename);
                 await hashFile(diffFilePath);
             }
+
+            if(diff.lightshowDataFilename) {
+                const lightshowFilePath = path.join(mapPath, diff.lightshowDataFilename);
+                await hashFile(lightshowFilePath);
+            }
         }
-    
-        return shasum.digest("hex");
+
+        const hash = shasum.digest("hex");
+
+        console.log(mapPath, hash);
+
+        return hash;
     }
 
     private async loadMapInfoFromPath(mapPath: string): Promise<BsmLocalMap> {
@@ -116,14 +127,14 @@ export class LocalMapsManagerService {
         }
 
         const rawInfoString = await readFile(infoFile, { encoding: "utf-8" });
+        const mapInfo = parseMapInfoDat(JSON.parse(rawInfoString));
 
-        const rawInfo: RawMapInfoData = JSON.parse(rawInfoString);
-        const coverUrl = new URL(`file:///${path.join(mapPath, rawInfo._coverImageFilename)}`).href;
-        const songUrl = new URL(`file:///${path.join(mapPath, rawInfo._songFilename)}`).href;
+        const coverUrl = new URL(`file:///${path.join(mapPath, mapInfo.coverImageFilename)}`).href;
+        const songUrl = new URL(`file:///${path.join(mapPath, mapInfo.songFilename)}`).href;
 
         const hash = await this.computeMapHash(mapPath, rawInfoString);
 
-        return { rawInfo, coverUrl, songUrl, hash, path: mapPath };
+        return { mapInfo, coverUrl, songUrl, hash, path: mapPath };
     }
 
     private async downloadMapZip(zipUrl: string): Promise<{ zip: StreamZip.StreamZipAsync; zipPath: string }> {
@@ -147,7 +158,7 @@ export class LocalMapsManagerService {
 
         });
 
-        
+
     }
 
     public getMaps(version?: BSVersion): Observable<BsmLocalMapsProgress> {
@@ -261,7 +272,7 @@ export class LocalMapsManagerService {
             if(!exists){ return null; }
             return this.loadMapInfoFromPath(mapPath);
         }).catch(() => null);
-        
+
         if(map.versions.every(version => version.hash === installedMap?.hash)) {
             return installedMap;
         }

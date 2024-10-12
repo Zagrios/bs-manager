@@ -26,43 +26,40 @@ export const MapsRow = memo(({ maps, style, selectedMaps$, onMapSelect, onMapDel
         if (map.bsaverInfo?.versions[0]?.diffs) {
             map.bsaverInfo.versions[0].diffs.forEach(diff => {
                 const arr = res.get(diff.characteristic) || [];
-                const diffName = map.rawInfo._difficultyBeatmapSets.find(set => set._beatmapCharacteristicName === diff.characteristic)._difficultyBeatmaps.find(rawDiff => rawDiff._difficulty === diff.difficulty)?._customData?._difficultyLabel || diff.difficulty;
+                const diffName = map.mapInfo.difficulties.find(set => set.characteristic === diff.characteristic && set.difficulty === diff.difficulty).difficultyLabel || diff.difficulty;
                 arr.push({ name: diffName, type: diff.difficulty, stars: diff.stars });
                 res.set(diff.characteristic, arr);
             });
             return res;
         }
 
-        map.rawInfo._difficultyBeatmapSets.forEach(set => {
-            set._difficultyBeatmaps.forEach(diff => {
-                const arr = res.get(set._beatmapCharacteristicName) || [];
-                arr.push({ name: diff._customData?._difficultyLabel || diff._difficulty, type: diff._difficulty, stars: null });
-                res.set(set._beatmapCharacteristicName, arr);
-            });
+        map.mapInfo.difficulties.forEach(diff => {
+            const arr = res.get(diff.characteristic) || [];
+            arr.push({ name: diff.difficultyLabel || diff.difficulty, type: diff.difficulty, stars: null });
         });
 
         return res;
     };
 
     const renderMapItem = (map: BsmLocalMap) => {
-        return <MapItem 
-            key={map.hash} 
-            hash={map.hash} 
-            title={map.rawInfo._songName} 
-            coverUrl={map.coverUrl} 
-            songUrl={map.songUrl} 
-            autor={map.rawInfo._levelAuthorName} 
-            songAutor={map.rawInfo._songAuthorName} 
-            bpm={map.rawInfo._beatsPerMinute} 
-            duration={map.bsaverInfo?.metadata?.duration} 
-            selected={selectedMaps.some(selected => selected.hash === map.hash)} 
-            diffs={extractMapDiffs(map)} mapId={map.bsaverInfo?.id} 
-            ranked={map.bsaverInfo?.ranked} 
-            autorId={map.bsaverInfo?.uploader?.id} 
-            likes={map.bsaverInfo?.stats?.upvotes} 
-            createdAt={map.bsaverInfo?.createdAt} 
-            onDelete={onMapDelete} 
-            onSelected={onMapSelect} 
+        return <MapItem
+            key={map.hash}
+            hash={map.hash}
+            title={map.mapInfo.songName}
+            coverUrl={map.coverUrl}
+            songUrl={map.songUrl}
+            autor={map.mapInfo.levelMappers.at(0)}
+            songAutor={map.mapInfo.songAuthorName}
+            bpm={map.mapInfo.beatsPerMinute}
+            duration={map.bsaverInfo?.metadata?.duration}
+            selected={selectedMaps.some(selected => selected.hash === map.hash)}
+            diffs={extractMapDiffs(map)} mapId={map.bsaverInfo?.id}
+            ranked={map.bsaverInfo?.ranked}
+            autorId={map.bsaverInfo?.uploader?.id}
+            likes={map.bsaverInfo?.stats?.upvotes}
+            createdAt={map.bsaverInfo?.createdAt}
+            onDelete={onMapDelete}
+            onSelected={onMapSelect}
             callBackParam={map}
         />;
     };

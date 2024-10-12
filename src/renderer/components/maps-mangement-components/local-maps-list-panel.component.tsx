@@ -358,7 +358,7 @@ export const LocalMapsListPanel = forwardRef(({ version, className, filter, sear
         }
 
         const searchCheck = (() => {
-            return ((map.rawInfo?._songName ?? map.bsaverInfo?.name) || "")?.toLowerCase().includes(search.toLowerCase()) || ((map.rawInfo?._songAuthorName ?? map.bsaverInfo?.metadata?.songAuthorName) || "")?.toLowerCase().includes(search.toLowerCase()) || ((map.rawInfo?._levelAuthorName ?? map.bsaverInfo?.metadata?.levelAuthorName) || "")?.toLowerCase().includes(search.toLowerCase());
+            return ((map.mapInfo?.songName ?? map.bsaverInfo?.name) || "")?.toLowerCase().includes(search.toLowerCase()) || ((map.mapInfo?.songAuthorName ?? map.bsaverInfo?.metadata?.songAuthorName) || "")?.toLowerCase().includes(search.toLowerCase()) || ((map.mapInfo?.levelMappers.at(0) ?? map.bsaverInfo?.metadata?.levelAuthorName) || "")?.toLowerCase().includes(search.toLowerCase());
         })();
 
         if (!searchCheck) {
