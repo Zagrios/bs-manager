@@ -14,7 +14,7 @@
         "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
         "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
         "test": "jest",
-        "publish": "npm run build && electron-builder -c.win.certificateSha1=842a817a51e2a1d360fcd62f54bf5f9193e919e1 --publish always --win --x64"
+        "publish": "npm run build && electron-builder -c.win.certificateSha1=2164d6a7d641ecf6ad57852f665a518ca2bf960f --publish always --win --x64"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx}": [
@@ -76,6 +76,7 @@
             ]
         },
         "win": {
+            "signingHashAlgorithms": ["sha256"],
             "target": [
                 "nsis",
                 "nsis-web"
