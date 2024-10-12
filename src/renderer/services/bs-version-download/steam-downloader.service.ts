@@ -45,8 +45,8 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
         this.linkOpener = LinkOpenerService.getInstance();
     }
 
-    public isDotNet6Installed(): Promise<boolean> {
-        return lastValueFrom(this.ipcService.sendV2<boolean>("is-dotnet-6-installed"));
+    public isDotNetInstalled(): Promise<boolean> {
+        return lastValueFrom(this.ipcService.sendV2<boolean>("is-dotnet-installed"));
     }
 
     private setSteamSession(username: string): void { localStorage.setItem(this.STEAM_SESSION_USERNAME_KEY, username); }
@@ -63,7 +63,7 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
         });
 
         if (choice === "0") {
-            this.linkOpener.open("https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-6.0.12-windows-x64-installer");
+            this.linkOpener.open("https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-8.0.10-windows-x64-installer");
         }
     }
 
@@ -221,7 +221,7 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
 
         const downloadPromise = (async () => {
 
-            const haveDotNet = await this.isDotNet6Installed().catch(() => false);
+            const haveDotNet = await this.isDotNetInstalled().catch(() => false);
             if(!haveDotNet){
                 this.showDotNetNotInstalledError();
                 return Promise.reject(new Error("DotNet not installed"));

@@ -235,7 +235,7 @@
                 },
                 "errors": {
                     "titles": {
-                        "dotnet-required": ".NET 6が必要です!"
+                        "dotnet-required": ".NET 8が必要です!"
                     },
                     "msg": {
                         "401": "SteamがBeat Saberのダウンロードを許可してくれないようだ。😢",
@@ -260,10 +260,10 @@
                         "RateLimitExceeded": "何度も試しているのでしばらくたって、もう一度お試しください。",
                         "TokenRejected": "ログイントークンが拒否されました 😕 もう一度お試しください。",
                         "AccessDenied": "Steamへのアクセスが拒否されました。",
-                        "dotnet-required": "Beat Saberをダウンロードするには、.NET 6 Runtimeがインストールされている必要があります。下のボタンをクリックしてダウンロードしてください。"
+                        "dotnet-required": "Beat Saberをダウンロードするには、.NET 8 Runtimeがインストールされている必要があります。下のボタンをクリックしてダウンロードしてください。"
                     },
                     "actions": {
-                        "download-dotnet": ".NET 6をダウンロード"
+                        "download-dotnet": ".NET 8をダウンロード"
                     }
                 }
             },

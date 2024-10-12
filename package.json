@@ -317,5 +317,8 @@
             "!assets/**"
         ],
         "logLevel": "quiet"
+    },
+    "volta": {
+        "node": "20.18.0"
     }
 }

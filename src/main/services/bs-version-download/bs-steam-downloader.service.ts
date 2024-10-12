@@ -44,7 +44,7 @@ export class BsSteamDownloaderService {
         return path.join(this.utils.getAssetsScriptsPath(), "depot-downloader", `DepotDownloader.${process.platform === 'linux' ? 'dll' : 'exe'}`);
     }
 
-    public async isDotNet6Installed(): Promise<boolean> {
+    public async isDotNetInstalled(): Promise<boolean> {
         try {
            const proc = process.platform === 'linux'
                 ? spawnSync('dotnet', [this.getDepotDownloaderExePath()])
@@ -55,7 +55,7 @@ export class BsSteamDownloaderService {
             }
             return true;
         } catch (e) {
-            log.error("Error while checking .NET 6", e);
+            log.error("Error while checking .NET 8", e);
             return false;
         }
     }

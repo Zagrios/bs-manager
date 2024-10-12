@@ -235,7 +235,7 @@
                 },
                 "errors": {
                     "titles": {
-                        "dotnet-required": ".NET 6 Requis"
+                        "dotnet-required": ".NET 8 Requis"
                     },
                     "msg": {
                         "401": "Steam ne semble pas vouloir nous laisser télécharger Beat Saber 😢",
@@ -260,10 +260,10 @@
                         "RateLimitExceeded": "Tu as essayé trop de fois attends un peu et recommence plus tard.",
                         "TokenRejected": "Votre token de connexion a été rejeté 😕 Veuillez réessayer.",
                         "AccessDenied": "L'accès à Steam a été refusé.",
-                        "dotnet-required": ".NET 6 Runtime doit être installé pour pouvoir télécharger une version de Beat Saber. Télécharge-le en cliquant sur le bouton ci-dessous."
+                        "dotnet-required": ".NET 8 Runtime doit être installé pour pouvoir télécharger une version de Beat Saber. Télécharge-le en cliquant sur le bouton ci-dessous."
                     },
                     "actions": {
-                        "download-dotnet": "Télécharger .NET 6"
+                        "download-dotnet": "Télécharger .NET 8"
                     }
                 }
             },

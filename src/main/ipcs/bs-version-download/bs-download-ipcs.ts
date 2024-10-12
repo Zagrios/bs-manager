@@ -12,11 +12,11 @@ ipc.on<ImportVersionOptions>("import-version", (req, reply) => {
     reply(versionManager.importVersion(req.args));
 });
 
-// #region Steam 
+// #region Steam
 
-ipc.on("is-dotnet-6-installed", (_, reply) => {
+ipc.on("is-dotnet-installed", (_, reply) => {
     const installer = BsSteamDownloaderService.getInstance();
-    reply(from(installer.isDotNet6Installed()));
+    reply(from(installer.isDotNetInstalled()));
 });
 
 ipc.on("bs-download.installation-folder", (_, reply) => {

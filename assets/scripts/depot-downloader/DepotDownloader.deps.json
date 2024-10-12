@@ -1,16 +1,17 @@
 {
   "runtimeTarget": {
-    "name": ".NETCoreApp,Version=v6.0",
+    "name": ".NETCoreApp,Version=v8.0/win-x64",
     "signature": ""
   },
   "compilationOptions": {},
   "targets": {
-    ".NETCoreApp,Version=v6.0": {
-      "DepotDownloader/2.5.0": {
+    ".NETCoreApp,Version=v8.0": {},
+    ".NETCoreApp,Version=v8.0/win-x64": {
+      "DepotDownloader/2.7.3": {
         "dependencies": {
-          "QRCoder": "1.4.3",
-          "SteamKit2": "2.5.0-Beta.1",
-          "protobuf-net": "3.2.16"
+          "Microsoft.Windows.CsWin32": "0.3.106",
+          "SteamKit2": "3.0.0-Beta.4",
+          "protobuf-net": "3.2.30"
         },
         "runtime": {
           "DepotDownloader.dll": {}
@@ -23,60 +24,64 @@
           "System.Security.Principal.Windows": "5.0.0"
         }
       },
-      "protobuf-net/3.2.16": {
+      "Microsoft.Windows.CsWin32/0.3.106": {
         "dependencies": {
-          "protobuf-net.Core": "3.2.16"
+          "Microsoft.Windows.SDK.Win32Docs": "0.1.42-alpha",
+          "Microsoft.Windows.SDK.Win32Metadata": "60.0.34-preview",
+          "Microsoft.Windows.WDK.Win32Metadata": "0.11.4-experimental"
+        }
+      },
+      "Microsoft.Windows.SDK.Win32Docs/0.1.42-alpha": {},
+      "Microsoft.Windows.SDK.Win32Metadata/60.0.34-preview": {},
+      "Microsoft.Windows.WDK.Win32Metadata/0.11.4-experimental": {
+        "dependencies": {
+          "Microsoft.Windows.SDK.Win32Metadata": "60.0.34-preview"
+        }
+      },
+      "protobuf-net/3.2.30": {
+        "dependencies": {
+          "protobuf-net.Core": "3.2.30"
         },
         "runtime": {
           "lib/net6.0/protobuf-net.dll": {
             "assemblyVersion": "3.0.0.0",
-            "fileVersion": "3.2.16.54102"
+            "fileVersion": "3.2.30.709"
           }
         }
       },
-      "protobuf-net.Core/3.2.16": {
+      "protobuf-net.Core/3.2.30": {
         "dependencies": {
           "System.Collections.Immutable": "7.0.0"
         },
         "runtime": {
           "lib/net6.0/protobuf-net.Core.dll": {
             "assemblyVersion": "3.0.0.0",
-            "fileVersion": "3.2.16.54102"
+            "fileVersion": "3.2.30.709"
           }
         }
       },
-      "QRCoder/1.4.3": {
-        "runtime": {
-          "lib/net6.0/QRCoder.dll": {
-            "assemblyVersion": "1.4.3.0",
-            "fileVersion": "1.4.3.0"
-          }
-        }
-      },
-      "SteamKit2/2.5.0-Beta.1": {
+      "SteamKit2/3.0.0-Beta.4": {
         "dependencies": {
           "Microsoft.Win32.Registry": "5.0.0",
-          "protobuf-net": "3.2.16"
+          "System.IO.Hashing": "8.0.0",
+          "protobuf-net": "3.2.30"
         },
         "runtime": {
-          "lib/net6.0/SteamKit2.dll": {
-            "assemblyVersion": "2.5.0.0",
-            "fileVersion": "2.5.0.0"
+          "lib/net8.0/SteamKit2.dll": {
+            "assemblyVersion": "3.0.0.0",
+            "fileVersion": "3.0.0.0"
           }
         }
       },
-      "System.Collections.Immutable/7.0.0": {
-        "dependencies": {
-          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
-        },
+      "System.Collections.Immutable/7.0.0": {},
+      "System.IO.Hashing/8.0.0": {
         "runtime": {
-          "lib/net6.0/System.Collections.Immutable.dll": {
-            "assemblyVersion": "7.0.0.0",
-            "fileVersion": "7.0.22.51805"
+          "lib/net8.0/System.IO.Hashing.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.23.53103"
           }
         }
       },
-      "System.Runtime.CompilerServices.Unsafe/6.0.0": {},
       "System.Security.AccessControl/5.0.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "5.0.0",
@@ -87,7 +92,7 @@
     }
   },
   "libraries": {
-    "DepotDownloader/2.5.0": {
+    "DepotDownloader/2.7.3": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -106,33 +111,54 @@
       "path": "microsoft.win32.registry/5.0.0",
       "hashPath": "microsoft.win32.registry.5.0.0.nupkg.sha512"
     },
-    "protobuf-net/3.2.16": {
+    "Microsoft.Windows.CsWin32/0.3.106": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-W6RM2B2f5O7SigBGfkXFYzI/a7Mks+rCHtuGlE/b5O3NMupDon7I0akjCLhrfcnqIfdWDkDafseav/MnIzUSHA==",
-      "path": "protobuf-net/3.2.16",
-      "hashPath": "protobuf-net.3.2.16.nupkg.sha512"
+      "sha512": "sha512-Mx5fK7uN6fwLR4wUghs6//HonAnwPBNmC2oonyJVhCUlHS/r6SUS3NkBc3+gaQiv+0/9bqdj1oSCKQFkNI+21Q==",
+      "path": "microsoft.windows.cswin32/0.3.106",
+      "hashPath": "microsoft.windows.cswin32.0.3.106.nupkg.sha512"
     },
-    "protobuf-net.Core/3.2.16": {
+    "Microsoft.Windows.SDK.Win32Docs/0.1.42-alpha": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-ZFoY0lfMUWGJ4RoyI0oNj2o2l8t08n3k27YyDD0kYWQ+vXj0hTbWEwYWOpGAfCWvyUPkq9Jcc/4uR74GICZL2g==",
-      "path": "protobuf-net.core/3.2.16",
-      "hashPath": "protobuf-net.core.3.2.16.nupkg.sha512"
+      "sha512": "sha512-Z/9po23gUA9aoukirh2ItMU2ZS9++Js9Gdds9fu5yuMojDrmArvY2y+tq9985tR3cxFxpZO1O35Wjfo0khj5HA==",
+      "path": "microsoft.windows.sdk.win32docs/0.1.42-alpha",
+      "hashPath": "microsoft.windows.sdk.win32docs.0.1.42-alpha.nupkg.sha512"
     },
-    "QRCoder/1.4.3": {
+    "Microsoft.Windows.SDK.Win32Metadata/60.0.34-preview": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-fWuFqjm8GTlEb2GqBl3Hi8HZZeZQwBSHxvRPtPjyNbT82H0ff0JwavKRBmMaXCno1Av6McPC8aJzri0Mj2w9Jw==",
-      "path": "qrcoder/1.4.3",
-      "hashPath": "qrcoder.1.4.3.nupkg.sha512"
+      "sha512": "sha512-TA3DUNi4CTeo+ItTXBnGZFt2159XOGSl0UOlG5vjDj4WHqZjhwYyyUnzOtrbCERiSaP2Hzg7otJNWwOSZgutyA==",
+      "path": "microsoft.windows.sdk.win32metadata/60.0.34-preview",
+      "hashPath": "microsoft.windows.sdk.win32metadata.60.0.34-preview.nupkg.sha512"
     },
-    "SteamKit2/2.5.0-Beta.1": {
+    "Microsoft.Windows.WDK.Win32Metadata/0.11.4-experimental": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-fwwdF0cZZEIdNpcUc1+B9zbP5Q48A3DFOAclPhBh2dMTU03aROaIDktFW+Ww/NN1Z/Emp/LwVqHB+hCM8uxS4Q==",
-      "path": "steamkit2/2.5.0-beta.1",
-      "hashPath": "steamkit2.2.5.0-beta.1.nupkg.sha512"
+      "sha512": "sha512-bf5MCmUyZf0gBlYQjx9UpRAZWBkRndyt9XicR+UNLvAUAFTZQbu6YaX/sNKZlR98Grn0gydfh/yT4I3vc0AIQA==",
+      "path": "microsoft.windows.wdk.win32metadata/0.11.4-experimental",
+      "hashPath": "microsoft.windows.wdk.win32metadata.0.11.4-experimental.nupkg.sha512"
+    },
+    "protobuf-net/3.2.30": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-C/UTlmxEJHAHpqm8xQK1UyJKaIynVCSNG4mVrbLgnZ7ccH28nN49O8iMJvKEodTgVbnimvy+3mIiAdW6mATwnw==",
+      "path": "protobuf-net/3.2.30",
+      "hashPath": "protobuf-net.3.2.30.nupkg.sha512"
+    },
+    "protobuf-net.Core/3.2.30": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-v2ZxxYrz+X212ukSx+uqkLuPu414bvmSAnTyf+PBUKR9ENJxO4P/csorA/27456MCp1JNoMssDj/f91RDiwBfQ==",
+      "path": "protobuf-net.core/3.2.30",
+      "hashPath": "protobuf-net.core.3.2.30.nupkg.sha512"
+    },
+    "SteamKit2/3.0.0-Beta.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-gDLccGTbvg5RzqQE75uqL3z2Z0F8MTOnier97DdbBGi9F6DDbZQvquHf0INOAEyN7S5Ku+CgaKnkm409UD7avA==",
+      "path": "steamkit2/3.0.0-beta.4",
+      "hashPath": "steamkit2.3.0.0-beta.4.nupkg.sha512"
     },
     "System.Collections.Immutable/7.0.0": {
       "type": "package",
@@ -141,12 +167,12 @@
       "path": "system.collections.immutable/7.0.0",
       "hashPath": "system.collections.immutable.7.0.0.nupkg.sha512"
     },
-    "System.Runtime.CompilerServices.Unsafe/6.0.0": {
+    "System.IO.Hashing/8.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-/iUeP3tq1S0XdNNoMz5C9twLSrM/TH+qElHkXWaPvuNOt+99G75NrV0OS2EqHx5wMN7popYjpc8oTjC1y16DLg==",
-      "path": "system.runtime.compilerservices.unsafe/6.0.0",
-      "hashPath": "system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
+      "sha512": "sha512-ne1843evDugl0md7Fjzy6QjJrzsjh46ZKbhf8GwBXb5f/gw97J4bxMs0NQKifDuThh/f0bZ0e62NPl1jzTuRqA==",
+      "path": "system.io.hashing/8.0.0",
+      "hashPath": "system.io.hashing.8.0.0.nupkg.sha512"
     },
     "System.Security.AccessControl/5.0.0": {
       "type": "package",

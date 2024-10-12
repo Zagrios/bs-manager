@@ -235,7 +235,7 @@
                 },
                 "errors": {
                     "titles": {
-                        "dotnet-required": ".NET 6 Benötigt"
+                        "dotnet-required": ".NET 8 Benötigt"
                     },
                     "msg": {
                         "401": "Steam scheint uns BeatSaber nicht herunterladen zu lassen 😢",
@@ -260,10 +260,10 @@
                         "RateLimitExceeded": "Du hast es zu oft versucht, warte eine Weile und versuche es später erneut.",
                         "TokenRejected": "Ihr Anmeldetoken wurde abgelehnt 😕 Bitte versuchen Sie es erneut.",
                         "AccessDenied": "Der Zugang zu Steam wurde verweigert.",
-                        "dotnet-required": ".NET 6 Runtime muss installiert sein, um eine Version von BeatSaber herunterzuladen. Lade es herunter, indem Du auf die Schaltfläche unten klickst."
+                        "dotnet-required": ".NET 8 Runtime muss installiert sein, um eine Version von BeatSaber herunterzuladen. Lade es herunter, indem Du auf die Schaltfläche unten klickst."
                     },
                     "actions": {
-                        "download-dotnet": ".NET 6 Herunterladen"
+                        "download-dotnet": ".NET 8 Herunterladen"
                     }
                 }
             },

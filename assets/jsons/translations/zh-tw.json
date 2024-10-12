@@ -235,7 +235,7 @@
                 },
                 "errors": {
                     "titles": {
-                        "dotnet-required": "需要 .NET 6"
+                        "dotnet-required": "需要 .NET 8"
                     },
                     "msg": {
                         "401": "Steam 似乎不想讓我們下載 Beat Saber😢",
@@ -260,10 +260,10 @@
                         "RateLimitExceeded": "你已經嘗試了太多次，請稍等片刻，稍後再試。",
                         "TokenRejected": "你的登錄令牌已被拒絕 😕 請重試。",
                         "AccessDenied": "訪問 Steam 被拒絕。",
-                        "dotnet-required": "必須安裝 .NET 6 Runtime 才能下載 Beat Saber 版本。單擊下面的按鈕下載它。"
+                        "dotnet-required": "必須安裝 .NET 8 Runtime 才能下載 Beat Saber 版本。單擊下面的按鈕下載它。"
                     },
                     "actions": {
-                        "download-dotnet": "下載 .NET 6"
+                        "download-dotnet": "下載 .NET 8"
                     }
                 }
             },
