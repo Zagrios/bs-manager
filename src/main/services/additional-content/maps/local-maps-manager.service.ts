@@ -142,10 +142,26 @@ export class LocalMapsManagerService {
         }
 
         const rawInfoString = await readFile(infoFile, { encoding: "utf-8" });
-        const rawInfo: RawMapInfoData = JSON.parse(rawInfoString);
+        const rawInfo: RawMapInfoData = await this.parseRawInfoString(mapPath, rawInfoString);
+        if (rawInfo == null) { return null; }
+
         const hash = await this.computeMapHash(mapPath, rawInfoString);
 
         return getUrlsAndReturn(rawInfo, hash, mapPath);
+    }
+
+    private async parseRawInfoString(mapPath: string, rawInfoString: string): Promise<RawMapInfoData | null> {
+        try {
+            return JSON.parse(rawInfoString);
+        } catch (error) {
+            if (!(error instanceof SyntaxError)) { throw error; }
+
+            // rawInfoString might either be invalid or corrupted,
+            //   just delete the map immediately to not break anything
+            log.error("Deleting map folder", `"${mapPath}"`, "containing invalid/corrupted \"info.dat\" file", error);
+            await deleteFolder(mapPath);
+            return null;
+        }
     }
 
     private async downloadMapZip(zipUrl: string): Promise<{ zip: StreamZip.StreamZipAsync; zipPath: string }> {
