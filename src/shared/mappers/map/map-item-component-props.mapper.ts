@@ -1,13 +1,14 @@
 import { getLocalTimeZone, parseAbsolute, toCalendarDateTime } from "@internationalized/date";
 import { MapItemComponentProps } from "renderer/components/maps-playlists-panel/maps/map-item.component";
-import { BsvMapDetail, RawMapInfoData, SongDetailDiffCharactertistic, SongDetails, SongDiffName } from "shared/models/maps";
+import { BsvMapDetail, SongDetailDiffCharactertistic, SongDetails, SongDiffName } from "shared/models/maps";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
+import { MapInfo } from "shared/models/maps/info/map-info.model";
 
 export type ParsedMapDiff = { name: SongDiffName; libelle: string; stars: number, nps: number, njs: number };
 
 export abstract class MapItemComponentPropsMapper {
 
-    public static extractMapDiffs({rawMapInfo, songDetails, bsvMap}: {rawMapInfo?: RawMapInfoData, songDetails?: SongDetails, bsvMap?: BsvMapDetail}): Map<SongDetailDiffCharactertistic, ParsedMapDiff[]> {
+    public static extractMapDiffs({mapInfo, songDetails, bsvMap}: {mapInfo?: MapInfo, songDetails?: SongDetails, bsvMap?: BsvMapDetail}): Map<SongDetailDiffCharactertistic, ParsedMapDiff[]> {
         const res = new Map<SongDetailDiffCharactertistic, ParsedMapDiff[]>();
 
         if (bsvMap?.versions?.at(0)?.diffs) {
@@ -22,20 +23,18 @@ export abstract class MapItemComponentPropsMapper {
         if (songDetails?.difficulties) {
             songDetails?.difficulties.forEach(diff => {
                 const arr = res.get(diff.characteristic) || [];
-                const diffName = rawMapInfo?._difficultyBeatmapSets?.find(set => set._beatmapCharacteristicName === diff.characteristic)._difficultyBeatmaps.find(rawDiff => rawDiff._difficulty === diff.difficulty)?._customData?._difficultyLabel || diff.difficulty;
+                const diffName = mapInfo?.difficulties?.find(mapDiff => mapDiff.characteristic === diff.characteristic && mapDiff.difficulty === diff.difficulty)?.difficultyLabel || diff.difficulty;
                 arr.push({ libelle: diffName, name: diff.difficulty, stars: diff.stars, nps: diff.nps, njs: diff.njs });
                 res.set(diff.characteristic, arr);
             });
             return res;
         }
 
-        if(rawMapInfo?._difficultyBeatmapSets){
-            rawMapInfo._difficultyBeatmapSets.forEach(set => {
-                set._difficultyBeatmaps.forEach(diff => {
-                    const arr = res.get(set._beatmapCharacteristicName) || [];
-                    arr.push({ libelle: diff._customData?._difficultyLabel || diff._difficulty, name: diff._difficulty, stars: null, nps: null, njs: diff._noteJumpMovementSpeed });
-                    res.set(set._beatmapCharacteristicName, arr);
-                });
+        if(mapInfo?.difficulties){
+            mapInfo.difficulties.forEach(diff => {
+                const arr = res.get(diff.characteristic) || [];
+                arr.push({ libelle: diff.difficultyLabel || diff.difficulty, name: diff.difficulty, stars: null, nps: null, njs: diff.noteJumpMovementSpeed });
+                res.set(diff.characteristic, arr);
             });
         }
 
@@ -45,14 +44,14 @@ export abstract class MapItemComponentPropsMapper {
     public static fromBsmLocalMap(map: BsmLocalMap): MapItemComponentProps<BsmLocalMap> {
         return {
             hash: map.hash,
-            title: map.rawInfo._songName,
+            title: map.mapInfo.songName,
             coverUrl: map.coverUrl,
             songUrl: map.songUrl,
-            autor: map.rawInfo._levelAuthorName,
-            songAutor: map.rawInfo._songAuthorName,
-            bpm: map.rawInfo._beatsPerMinute,
+            autor: map.mapInfo.levelMappers.at(0),
+            songAutor: map.mapInfo.songAuthorName,
+            bpm: map.mapInfo.beatsPerMinute,
             duration: map.songDetails?.duration,
-            diffs: MapItemComponentPropsMapper.extractMapDiffs({ rawMapInfo: map.rawInfo, songDetails: map.songDetails }),
+            diffs: MapItemComponentPropsMapper.extractMapDiffs({ mapInfo: map.mapInfo, songDetails: map.songDetails }),
             mapId: map.songDetails?.id,
             ranked: map.songDetails?.ranked,
             blRanked: map.songDetails?.blRanked,
@@ -102,7 +101,7 @@ export abstract class MapItemComponentPropsMapper {
     }
 
     public static from(mapDetails: BsmLocalMap|BsvMapDetail|SongDetails): MapItemComponentProps<BsmLocalMap|BsvMapDetail|SongDetails> {
-        if ((mapDetails as BsmLocalMap).rawInfo) {
+        if ((mapDetails as BsmLocalMap).mapInfo) {
             return MapItemComponentPropsMapper.fromBsmLocalMap(mapDetails as BsmLocalMap) as MapItemComponentProps<BsmLocalMap|BsvMapDetail|SongDetails>;
         }
         if ((mapDetails as BsvMapDetail).metadata) {

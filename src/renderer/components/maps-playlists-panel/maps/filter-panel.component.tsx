@@ -13,6 +13,7 @@ import { GlowEffect } from "../../shared/glow-effect.component";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { SongDetails } from "shared/models/maps";
 import formatDuration from "format-duration";
+import { MapInfo } from "shared/models/maps/info/map-info.model";
 
 export type Props = {
     className?: string;
@@ -302,9 +303,10 @@ function isFitVerified(filter: MapFilter, verified: boolean): boolean {
     return verified;
 }
 
-function isFitSearch(search: string, {songName, songAuthorName, levelAuthorName}: {songName: string, songAuthorName: string, levelAuthorName: string}): boolean {
+function isFitSearch(search: string, {songName, songAuthorName, levelMappers}: {songName: MapInfo["songName"], songAuthorName: MapInfo["songAuthorName"], levelMappers: MapInfo["levelMappers"]}): boolean {
     if (!search) { return true; }
-    return songName?.toLowerCase().includes(search.toLowerCase()) || songAuthorName?.toLowerCase().includes(search.toLowerCase()) || levelAuthorName?.toLowerCase().includes(search.toLowerCase());
+    if(levelMappers?.some(mapper => mapper?.toLowerCase().includes(search.toLowerCase()))) { return true; }
+    return songName?.toLowerCase().includes(search.toLowerCase()) || songAuthorName?.toLowerCase().includes(search.toLowerCase());
 }
 
 export const isLocalMapFitMapFilter = ({filter, map, search}: { filter: MapFilter, map: BsmLocalMap, search: string }): boolean => {
@@ -323,7 +325,7 @@ export const isLocalMapFitMapFilter = ({filter, map, search}: { filter: MapFilte
     if (!isFitRanked(filter, map.songDetails?.ranked || map.songDetails?.blRanked)) { return false; }
     if (!isFitCurated(filter, map.songDetails?.curated)) { return false; }
     if (!isFitVerified(filter, map.songDetails?.uploader.verified)) { return false; }
-    if (!isFitSearch(search, {songName: map.rawInfo?._songName, songAuthorName: map.rawInfo?._songAuthorName, levelAuthorName: map.rawInfo?._levelAuthorName})) { return false; }
+    if (!isFitSearch(search, {songName: map.mapInfo?.songName, songAuthorName: map.mapInfo?.songAuthorName, levelMappers: map.mapInfo?.levelMappers})) { return false; }
     return true;
 };
 
@@ -344,7 +346,7 @@ export const isBsvMapFitMapFilter = ({filter, map, search}: { filter: MapFilter,
     if (!isFitRanked(filter, map.ranked || map.blRanked)) { return false; }
     if (!isFitCurated(filter, !!map.curator)) { return false; }
     if (!isFitVerified(filter, !!map.curatedAt)) { return false; }
-    if (!isFitSearch(search, {songName: map.name, songAuthorName: map.metadata.songAuthorName, levelAuthorName: map.metadata.levelAuthorName})) { return false; }
+    if (!isFitSearch(search, {songName: map.name, songAuthorName: map.metadata.songAuthorName, levelMappers: [map.metadata.levelAuthorName]})) { return false; }
     return true;
 };
 
@@ -364,12 +366,12 @@ export const isSongDetailsFitMapFilter = ({filter, map, search}: { filter: MapFi
     if (!isFitRanked(filter, map.ranked || map.blRanked)) { return false; }
     if (!isFitCurated(filter, map.curated)) { return false; }
     if (!isFitVerified(filter, map.uploader.verified)) { return false; }
-    if (!isFitSearch(search, {songName: map.name, songAuthorName: map.uploader.name, levelAuthorName: map.uploader.name})) { return false; }
+    if (!isFitSearch(search, {songName: map.name, songAuthorName: map.uploader.name, levelMappers: [map.uploader.name]})) { return false; }
     return true;
 }
 
 export const isMapFitFilter = ({filter, map, search}: { filter: MapFilter, map: BsmLocalMap | BsvMapDetail | SongDetails, search: string }): boolean => {
-    if ((map as BsmLocalMap)?.rawInfo) { return isLocalMapFitMapFilter({filter, map: (map as BsmLocalMap), search}); }
+    if ((map as BsmLocalMap)?.mapInfo) { return isLocalMapFitMapFilter({filter, map: (map as BsmLocalMap), search}); }
     if ((map as BsvMapDetail)?.metadata) { return isBsvMapFitMapFilter({filter, map: (map as BsvMapDetail), search}); }
     if ((map as SongDetails).hash) { return isSongDetailsFitMapFilter({filter, map: (map as SongDetails), search}); }
     return false;

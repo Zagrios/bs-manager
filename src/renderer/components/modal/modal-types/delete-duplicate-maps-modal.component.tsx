@@ -18,7 +18,7 @@ export const DeleteDuplicateMapsModal: ModalComponent<void, { maps: BsmLocalMap[
             <p>{
                 multiple
                     ? t("modals.maps-actions.delete-duplicate-maps.desc-plural", { nb: `${maps.length}` })
-                    : t("modals.maps-actions.delete-duplicate-maps.desc", { map: `${maps.at(0).rawInfo._songName}` })
+                    : t("modals.maps-actions.delete-duplicate-maps.desc", { map: `${maps.at(0).mapInfo.songName}` })
             }</p>
             <div className="grid grid-flow-col grid-cols-2 gap-4 mt-4 h-8">
                 <BsmButton typeColor="cancel" className="rounded-md flex justify-center items-center transition-all" onClick={() => resolver({ exitCode: ModalExitCode.CANCELED })} withBar={false} text="misc.cancel" />

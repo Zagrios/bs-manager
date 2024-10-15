@@ -1,11 +1,11 @@
 import path from "path";
 import { BSVersion } from "shared/bs-version.interface";
-import { BsvMapDetail, RawMapInfoData } from "shared/models/maps";
+import { BsvMapDetail } from "shared/models/maps";
 import { BsmLocalMap, BsmLocalMapsProgress, DeleteMapsProgress } from "shared/models/maps/bsm-local-map.interface";
 import { BSLocalVersionService } from "../../bs-local-version.service";
 import { InstallationLocationService } from "../../installation-location.service";
 import { UtilsService } from "../../utils.service";
-import crypto from "crypto";
+import crypto, { BinaryLike } from "crypto";
 import { lstatSync } from "fs";
 import { copy, createReadStream, ensureDir, pathExists, pathExistsSync, realpath, unlink } from "fs-extra";
 import StreamZip from "node-stream-zip";
@@ -26,6 +26,10 @@ import { SongCacheService } from "./song-cache.service";
 import { pathToFileURL } from "url";
 import { sToMs } from "../../../../shared/helpers/time.helpers";
 import { FieldRequired } from "shared/helpers/type.helpers";
+import { MapInfo } from "shared/models/maps/info/map-info.model";
+import { parseMapInfoDat } from "shared/parsers/maps/map-info.parser";
+import { tryit } from "shared/helpers/error.helpers";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
 
 export class LocalMapsManagerService {
     private static instance: LocalMapsManagerService;
@@ -97,23 +101,34 @@ export class LocalMapsManagerService {
     }
 
     private async computeMapHash(mapPath: string, rawInfoString: string): Promise<string> {
-        const mapRawInfo: RawMapInfoData = JSON.parse(rawInfoString);
+        const { result: mapInfo, error } = tryit(() => parseMapInfoDat(JSON.parse(rawInfoString)));
+
+        if(!mapInfo || error) {
+            log.error(`Unable to cumpute hash, cannot parse map info at ${mapPath}`, error);
+            throw CustomError.fromError(error, `Unable to cumpute hash, cannot parse map info at ${mapPath}`, "cannot-parse-map-info");
+        }
+
         const shasum = crypto.createHash("sha1");
         shasum.update(rawInfoString);
 
         const hashFile = (filePath: string): Promise<void> => {
             return new Promise<void>((resolve, reject) => {
                 const stream = createReadStream(filePath);
-                stream.on("data", data => shasum.update(data));
+                stream.on("data", data => shasum.update(data as BinaryLike));
                 stream.on("error", reject);
                 stream.on("close", resolve);
             });
         };
 
-        for (const set of mapRawInfo._difficultyBeatmapSets) {
-            for (const diff of set._difficultyBeatmaps) {
-                const diffFilePath = path.join(mapPath, diff._beatmapFilename);
+        for (const diff of mapInfo.difficulties) {
+            if(diff.beatmapFilename){
+                const diffFilePath = path.join(mapPath, diff.beatmapFilename);
                 await hashFile(diffFilePath);
+            }
+
+            if(diff.lightshowDataFilename) {
+                const lightshowFilePath = path.join(mapPath, diff.lightshowDataFilename);
+                await hashFile(lightshowFilePath);
             }
         }
 
@@ -122,16 +137,16 @@ export class LocalMapsManagerService {
 
     public async loadMapInfoFromPath(mapPath: string): Promise<BsmLocalMap> {
 
-        const getUrlsAndReturn = (rawInfo: RawMapInfoData, hash: string, mapPath: string) => {
-            const coverUrl = pathToFileURL(path.join(mapPath, rawInfo._coverImageFilename)).href;
-            const songUrl = pathToFileURL(path.join(mapPath, rawInfo._songFilename)).href;
-            return { rawInfo, coverUrl, songUrl, hash, path: mapPath, songDetails: this.songDetailsCache.getSongDetails(hash) } as BsmLocalMap;
+        const getUrlsAndReturn = (mapInfo: MapInfo, hash: string, mapPath: string): BsmLocalMap => {
+            const coverUrl = pathToFileURL(path.join(mapPath, mapInfo.coverImageFilename)).href;
+            const songUrl = pathToFileURL(path.join(mapPath, mapInfo.songFilename)).href;
+            return { mapInfo, coverUrl, songUrl, hash, path: mapPath, songDetails: this.songDetailsCache.getSongDetails(hash) };
         };
 
-        const cachedInfos = this.songCache.getMapInfoFromDirname(path.basename(mapPath));
+        const cachedMapInfos = this.songCache.getMapInfoFromDirname(path.basename(mapPath));
 
-        if (cachedInfos) {
-            return getUrlsAndReturn(cachedInfos.rawInfo, cachedInfos.hash, mapPath);
+        if (cachedMapInfos) {
+            return getUrlsAndReturn(cachedMapInfos.mapInfo, cachedMapInfos.hash, mapPath);
         }
 
         const files = await getFilesInFolder(mapPath);
@@ -142,10 +157,16 @@ export class LocalMapsManagerService {
         }
 
         const rawInfoString = await readFile(infoFile, { encoding: "utf-8" });
-        const rawInfo: RawMapInfoData = JSON.parse(rawInfoString);
+        const { result: mapInfo, error } = tryit(() => parseMapInfoDat(JSON.parse(rawInfoString)));
+
+        if (error) {
+            log.error(`Cannot parse map info.dat. Map path: ${mapPath}`, error);
+            throw CustomError.fromError(error, `Cannot read map info.dat. Map path: ${mapPath}`, "cannot-parse-map-info");
+        }
+
         const hash = await this.computeMapHash(mapPath, rawInfoString);
 
-        return getUrlsAndReturn(rawInfo, hash, mapPath);
+        return getUrlsAndReturn(mapInfo, hash, mapPath);
     }
 
     private async downloadMapZip(zipUrl: string): Promise<{ zip: StreamZip.StreamZipAsync; zipPath: string }> {
@@ -193,7 +214,7 @@ export class LocalMapsManagerService {
                             return null;
                         }
 
-                        this.songCache.setMapInfoFromDirname(path.basename(mapPath), { rawInfo: mapInfo.rawInfo, hash: mapInfo.hash });
+                        this.songCache.setMapInfoFromDirname(path.basename(mapPath), { mapInfo: mapInfo.mapInfo, hash: mapInfo.hash });
 
                         progression.loaded++;
                         observer.next(progression);
@@ -267,8 +288,8 @@ export class LocalMapsManagerService {
                 const mapsPaths = await getFoldersInFolder(versionMapsPath);
 
                 for (const mapPath of mapsPaths) {
-                    const mapInfo = await this.loadMapInfoFromPath(mapPath);
-                    if (hashs.includes(mapInfo.hash)) {
+                    const { result: mapInfo } = await tryit(() => this.loadMapInfoFromPath(mapPath));
+                    if (mapInfo && hashs.includes(mapInfo.hash)) {
                         await deleteFolder(mapPath);
                         this.songCache.deleteMapInfoFromDirname(path.basename(mapPath));
                         progress.current++;
@@ -296,8 +317,8 @@ export class LocalMapsManagerService {
         const mapsPaths = await getFoldersInFolder(versionMapsPath);
 
         for (const mapPath of mapsPaths) {
-            const mapInfo = await this.loadMapInfoFromPath(mapPath);
-            if (mapInfo.hash === hash) {
+            const { result: mapInfo } = await tryit(() => this.loadMapInfoFromPath(mapPath));
+            if (mapInfo?.hash === hash) {
                 return mapInfo;
             }
         }
