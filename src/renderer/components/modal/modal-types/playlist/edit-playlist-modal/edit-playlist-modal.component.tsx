@@ -348,8 +348,8 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
 
             const { map } = playlistMap;
 
-            if((map as BsmLocalMap).rawInfo?._levelAuthorName){
-                mappersSet.add((map as BsmLocalMap).rawInfo._levelAuthorName);
+            if((map as BsmLocalMap).mapInfo?.levelMappers){
+                (map as BsmLocalMap).mapInfo.levelMappers.forEach(mapper => mappersSet.add(mapper));
             }
             else if((map as SongDetails).uploader?.name){
                 mappersSet.add((map as SongDetails).uploader.name);

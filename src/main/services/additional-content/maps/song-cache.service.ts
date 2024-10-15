@@ -1,7 +1,7 @@
 import { CACHE_PATH } from "main/constants";
 import { JsonCache } from "main/models/json-cache.class";
 import path from "path";
-import { RawMapInfoData } from "shared/models/maps";
+import { MapInfo } from "shared/models/maps/info/map-info.model";
 
 export class SongCacheService {
 
@@ -14,34 +14,35 @@ export class SongCacheService {
         return SongCacheService.instance;
     }
 
-    private readonly RAW_INFOS_CACHE_PATH = path.join(CACHE_PATH, "song-raw-info-cache.json");
+    private readonly MAPS_INFO_CACHE_PATH = path.join(CACHE_PATH, "map-info-cache.json");
 
-    private readonly rawInfosCache: JsonCache<CachedRawInfoWithHash>;
+    private readonly mapsInfoCache: JsonCache<CachedMapInfoWithHash>;
 
     private constructor(){
-        this.rawInfosCache = new JsonCache(this.RAW_INFOS_CACHE_PATH);
+        console.log(this.MAPS_INFO_CACHE_PATH);
+        this.mapsInfoCache = new JsonCache(this.MAPS_INFO_CACHE_PATH);
     }
 
-    public getMapInfoFromDirname(dirname: string): CachedRawInfoWithHash {
-        return this.rawInfosCache.get(dirname);
+    public getMapInfoFromDirname(dirname: string): CachedMapInfoWithHash {
+        return this.mapsInfoCache.get(dirname);
     }
 
-    public getMapInfoFromHash(hash: string): { dirname: string, info: CachedRawInfoWithHash } | undefined {
-        const res = Object.entries(this.rawInfosCache.cache).find(([, info]) => info.hash === hash);
+    public getMapInfoFromHash(hash: string): { dirname: string, info: CachedMapInfoWithHash } | undefined {
+        const res = Object.entries(this.mapsInfoCache.cache).find(([, info]) => info.hash === hash);
         return res ? { dirname: res[0], info: res[1] } : undefined;
     }
 
-    public setMapInfoFromDirname(dirname: string, info: CachedRawInfoWithHash): void {
-        this.rawInfosCache.set(dirname, info);
+    public setMapInfoFromDirname(dirname: string, info: CachedMapInfoWithHash): void {
+        this.mapsInfoCache.set(dirname, info);
     }
 
     public deleteMapInfoFromDirname(dirname: string): void {
-        this.rawInfosCache.delete(dirname);
+        this.mapsInfoCache.delete(dirname);
     }
 
 }
 
-export type CachedRawInfoWithHash = {
+export type CachedMapInfoWithHash = {
     hash: string;
-    rawInfo: RawMapInfoData;
+    mapInfo: MapInfo;
 };
