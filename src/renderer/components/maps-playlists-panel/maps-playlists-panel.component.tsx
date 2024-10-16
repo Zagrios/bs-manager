@@ -204,11 +204,8 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                         onDrop={event => {
                             handleFileDrop(event.dataTransfer.files);
                         }}
-                        overlay={
-                            <div className="text-3xl pointer-events-none">
-                                Drop map files here 😃
-                            </div>
-                        }
+                        text={t("pages.version-viewer.maps.tabs.maps.drop-zone.text")}
+                        subtext={t("pages.version-viewer.maps.tabs.maps.drop-zone.subtext")}
                     >
                         <LocalMapsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 0} ref={mapsRef} version={version} filter={mapFilter} search={search} linkedState={mapsLinkedState} />
                     </Dropzone>

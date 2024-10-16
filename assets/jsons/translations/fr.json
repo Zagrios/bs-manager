@@ -65,6 +65,10 @@
                         "empty-maps": {
                             "text": "Aucune map",
                             "button": "Télécharger des maps"
+                        },
+                        "drop-zone": {
+                            "text": "Importer vos maps",
+                            "subtext": "Déposez vos fichiers zip ici pour importer vos maps"
                         }
                     }
                 }
@@ -508,12 +512,12 @@
             },
             "import-map": {
                 "titles": {
-                    "success": "Importation de la carte terminée",
-                    "error": "Une erreur est survenue lors de l'importation de la carte"
+                    "success": "Importation des maps terminée",
+                    "error": "Une erreur est survenue lors de l'importation des maps"
                 },
                 "msgs": {
-                    "success": "Toutes les cartes ont été importées avec succès.",
-                    "some-success": "Certaines cartes ont été importées avec succès.",
+                    "success": "Toutes les maps ont été importées avec succès.",
+                    "some-success": "Certaines maps ont été importées avec succès.",
                     "only-accept-zip": "Seules les fichiers ZIP sont pris en charge.",
                     "invalid-zip": "Le(s) fichier(s) Zip ne contient/contiennent aucun fichier \"Info.dat\"."
                 }

@@ -65,7 +65,12 @@
                         "empty-maps": {
                             "text": "No maps",
                             "button": "Download maps"
+                        },
+                        "drop-zone": {
+                            "text": "Import your maps",
+                            "subtext": "Drop your zip files here to import your maps"
                         }
+
                     }
                 }
             },

@@ -65,6 +65,10 @@
                         "empty-maps": {
                             "text": "無譜面",
                             "button": "下載譜面"
+                        },
+                        "drop-zone": {
+                            "text": "導入您的地圖",
+                            "subtext": "將ZIP文件拖放到此處以導入您的地圖"
                         }
                     }
                 }
