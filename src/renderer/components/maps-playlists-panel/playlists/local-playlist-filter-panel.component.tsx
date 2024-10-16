@@ -7,7 +7,7 @@ import { hourToS, sToMs } from "shared/helpers/time.helpers";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import formatDuration from "format-duration";
 import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
-import { Comparator } from "shared/models/generics.type";
+import { Comparator } from "shared/models/comparator.type";
 
 type Props = {
     className?: string;
