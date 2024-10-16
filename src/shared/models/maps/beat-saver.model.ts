@@ -1,7 +1,7 @@
 import { ObjectValues } from "shared/helpers/type.helpers";
 import { SongDetailDiffCharactertistic, SongDiffName } from "./song-details-cache/song-details-cache.model";
 import { BsmLocalMap } from "./bsm-local-map.interface";
-import { Comparator } from "../generics.type";
+import { Comparator } from "../comparator.type";
 
 export interface BsvMapDetail {
     automapper: boolean;
