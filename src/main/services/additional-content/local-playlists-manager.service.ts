@@ -16,7 +16,6 @@ import { FileAssociationService } from "../file-association.service";
 import { SongDetailsCacheService } from "./maps/song-details-cache.service";
 import { sToMs } from "shared/helpers/time.helpers";
 import { LocalBPList, LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
-import { SongCacheService } from "./maps/song-cache.service";
 import { InstallationLocationService } from "../installation-location.service";
 import sanitize from "sanitize-filename";
 import { isValidUrl } from "shared/helpers/url.helpers";
@@ -51,7 +50,6 @@ export class LocalPlaylistsManagerService {
     private readonly windows: WindowManagerService;
     private readonly bsaver: BeatSaverService;
     private readonly songDetails: SongDetailsCacheService;
-    private readonly songCache: SongCacheService;
     private readonly bsmFs: InstallationLocationService;
 
     private constructor() {
@@ -63,7 +61,6 @@ export class LocalPlaylistsManagerService {
         this.windows = WindowManagerService.getInstance();
         this.bsaver = BeatSaverService.getInstance();
         this.songDetails = SongDetailsCacheService.getInstance();
-        this.songCache = SongCacheService.getInstance();
         this.bsmFs = InstallationLocationService.getInstance();
 
 
@@ -111,11 +108,11 @@ export class LocalPlaylistsManagerService {
     }
 
     private async installBPListFile(opt: {
-        bslistSource: string,
+        bplistSource: string,
         version?: BSVersion,
         dest?: string
     }): Promise<{path: string, localBPList: LocalBPList}> {
-        const bplist = await this.readPlaylistFromSource(opt.bslistSource);
+        const bplist = await this.readPlaylistFromSource(opt.bplistSource);
 
         const dest = await (async () => {
             if(opt.dest && path.isAbsolute(opt.dest) && path.extname(opt.dest) === ".bplist") { return opt.dest; }
@@ -347,8 +344,8 @@ export class LocalPlaylistsManagerService {
         });
     }
 
-    public downloadPlaylist({ bpListUrl, version, ignoreSongsHashs = [], dest }: {
-        bpListUrl: string,
+    public downloadPlaylist({ bplistSource, version, ignoreSongsHashs = [], dest }: {
+        bplistSource: string,
         version?: BSVersion
         ignoreSongsHashs?: string[]
         dest?: string
@@ -359,7 +356,7 @@ export class LocalPlaylistsManagerService {
         return new Observable<Progression<DownloadPlaylistProgressionData>>(obs => {
             (async () => {
 
-                const { localBPList } = await this.installBPListFile({ bslistSource: bpListUrl, version, dest });
+                const { localBPList } = await this.installBPListFile({ bplistSource, version, dest });
 
                 await lastValueFrom(this.downloadPlaylistSongs(localBPList, ignoreSongsHashs, version).pipe(
                     tap({ next: p => obs.next(p) }),
