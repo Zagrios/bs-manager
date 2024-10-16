@@ -9,12 +9,13 @@ import { DeleteMapsModal } from "renderer/components/modal/modal-types/delete-ma
 import { ProgressBarService } from "./progress-bar.service";
 import { NotificationService } from "./notification.service";
 import { ConfigurationService } from "./configuration.service";
-import { map, last, catchError, tap } from "rxjs/operators";
+import { map, last, catchError, filter, distinctUntilChanged } from "rxjs/operators";
 import { ProgressionInterface } from "shared/models/progress-bar";
 import { FolderLinkState, VersionFolderLinkerService } from "./version-folder-linker.service";
 import { SongDetails } from "shared/models/maps";
 import { Progression } from "main/helpers/fs.helpers";
 import { DeleteDuplicateMapsModal } from "renderer/components/modal/modal-types/delete-duplicate-maps-modal.component";
+import equal from "fast-deep-equal";
 
 export class MapsManagerService {
     private static instance: MapsManagerService;
@@ -29,8 +30,6 @@ export class MapsManagerService {
     public static readonly REMEMBER_CHOICE_DELETE_MAP_KEY = "not-confirm-delete-map";
     public static readonly RELATIVE_MAPS_FOLDER = window.electron.path.join("Beat Saber_Data", "CustomLevels");
 
-    private readonly IMPORT_BATCH_SIZE = 8;
-
     private readonly ipcService: IpcService;
     private readonly modal: ModalService;
     private readonly progressBar: ProgressBarService;
@@ -41,7 +40,7 @@ export class MapsManagerService {
     private readonly lastLinkedVersion$: Subject<BSVersion> = new Subject();
     private readonly lastUnlinkedVersion$: Subject<BSVersion> = new Subject();
 
-    private importListeners = new Set<((maps: BsmLocalMap[], version?: BSVersion) => void)>();
+    private readonly lastImportedMap$: Subject<{ version: BSVersion, map: BsmLocalMap }> = new Subject();
 
     private constructor() {
         this.ipcService = IpcService.getInstance();
@@ -200,73 +199,62 @@ export class MapsManagerService {
         })
     }
 
-    public async importMaps(paths: string[], version?: BSVersion): Promise<void> {
-        try {
-            if (!this.progressBar.require()) {
-                return;
-            }
-
-            const importObserver$ = this.ipcService.sendV2(
-                "bs-maps.import-maps",
-                { paths, version }
-            );
-
-            this.progressBar.show(importObserver$.pipe(
-                catchError(() => of()),
-                map(progress => ({
-                    progression: (progress.current / progress.total) * 100,
-                    label: progress.data?.songDetails?.name
-                } as ProgressionInterface))
-            ));
-
-            // Processing
-            let importCount = 0;
-            let importTotal = 0;
-            const mapBatch: BsmLocalMap[] = []; // For batching
-
-            await lastValueFrom(importObserver$.pipe(
-                tap(progress => {
-                    if (!progress.data) {
-                        importTotal = progress.total;
-                        return;
-                    }
-
-                    ++importCount;
-                    mapBatch.push(progress.data);
-                    if (mapBatch.length >= this.IMPORT_BATCH_SIZE) {
-                        const currentBatch = mapBatch.splice(0, this.IMPORT_BATCH_SIZE);
-                        this.importListeners.forEach(
-                            listeners => listeners(currentBatch, version)
-                        );
-                    }
-                }),
-            ));
-            if (mapBatch.length > 0) {
-                this.importListeners.forEach(listeners => listeners(mapBatch, version));
-            }
-
-            // Done processing
-            if (importCount === importTotal) {
-                this.notifications.notifySuccess({
-                    title: "notifications.maps.import-map.titles.success",
-                    desc: "notifications.maps.import-map.msgs.success",
-                });
-            } else if (importCount > 0) {
-                this.notifications.notifySuccess({
-                    title: "notifications.maps.import-map.titles.success",
-                    desc: "notifications.maps.import-map.msgs.some-success",
-                });
-            }
-        } catch (error: any) {
-            this.notifications.notifyError({
-                title: "notifications.maps.import-map.titles.error",
-                desc: ["invalid-zip"].includes(error?.code)
-                    ? `notifications.maps.import-map.msgs.${error.code}`
-                    : "misc.unknown"
-            });
-        } finally {
-            this.progressBar.hide();
+    public importMaps(paths: string[], version?: BSVersion): Observable<Progression<BsmLocalMap>> {
+        if(!this.progressBar.require()){
+            return throwError(() => new Error("Another operation is already in progress (importMaps)"));
         }
+
+        return new Observable<Progression<BsmLocalMap>>(obs => {
+            const subs: Subscription[] = [];
+            (async () => {
+                const import$ = this.ipcService.sendV2("bs-maps.import-maps", { paths, version });
+
+                this.progressBar.show(import$.pipe(
+                    catchError(() => of()),
+                    map(progress => ({
+                        progression: (progress.current / progress.total) * 100,
+                        label: progress.data?.songDetails?.name
+                    } as ProgressionInterface))
+                ));
+
+                subs.push(import$.subscribe(obs));
+
+                subs.push(import$.pipe(catchError(() => of()), map(progress => progress?.data), filter(Boolean), distinctUntilChanged((a, b) => equal(a, b))).subscribe({ next: map => {
+                    this.lastImportedMap$.next({ version, map });
+                }}));
+
+                return lastValueFrom(import$);
+            })()
+            .then(progress => {
+                if (progress.current === progress.total) {
+                    this.notifications.notifySuccess({
+                        title: "notifications.maps.import-map.titles.success",
+                        desc: "notifications.maps.import-map.msgs.success",
+                    });
+                } else if (progress.current > 0) {
+                    this.notifications.notifySuccess({
+                        title: "notifications.maps.import-map.titles.success",
+                        desc: "notifications.maps.import-map.msgs.some-success",
+                    });
+                }
+            }).catch(err => {
+                this.notifications.notifyError({
+                    title: "notifications.maps.import-map.titles.error",
+                    desc: ["invalid-zip"].includes(err?.code)
+                        ? `notifications.maps.import-map.msgs.${err.code}`
+                        : "misc.unknown"
+                });
+                obs.error(err);
+            })
+            .finally(() => obs.complete());
+
+            return () => {
+                if(subs.length){
+                    this.progressBar.hide();
+                    subs.forEach(s => s.unsubscribe());
+                }
+            }
+        });
     }
 
     public getMapsInfoFromHashs(hashs: string[]): Observable<SongDetails[]> {
@@ -285,20 +273,16 @@ export class MapsManagerService {
         return lastValueFrom(this.ipcService.sendV2("unregister-maps-deep-link"));
     }
 
-    public addImportListener(listener: (maps: BsmLocalMap[], version?: BSVersion) => void): void {
-        this.importListeners.add(listener);
-    }
-
-    public removeImportListener(listener: (maps: BsmLocalMap[], version?: BSVersion) => void): void {
-        this.importListeners.delete(listener);
-    }
-
     public get versionLinked$(): Observable<BSVersion> {
         return this.lastLinkedVersion$.asObservable();
     }
 
     public get versionUnlinked$(): Observable<BSVersion> {
         return this.lastUnlinkedVersion$.asObservable();
+    }
+
+    public $onMapImported(version: BSVersion): Observable<BsmLocalMap> {
+        return this.lastImportedMap$.pipe(filter(newMap => equal(newMap.version, version)), map(m => m.map));
     }
 
     public $mapsFolderLinkState(version: BSVersion): Observable<FolderLinkState> {

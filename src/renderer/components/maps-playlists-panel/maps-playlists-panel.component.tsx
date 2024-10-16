@@ -14,7 +14,7 @@ import { BsmButton } from "../shared/bsm-button.component";
 import { MapIcon } from "../svgs/icons/map-icon.component";
 import { PlaylistIcon } from "../svgs/icons/playlist-icon.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
-import { BehaviorSubject, of } from "rxjs";
+import { BehaviorSubject, lastValueFrom, of } from "rxjs";
 import { LocalPlaylistsListPanel, LocalPlaylistsListRef } from "./playlists/local-playlists-list-panel.component";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
@@ -25,6 +25,7 @@ import { LocalPlaylistFilter, LocalPlaylistFilterPanel } from "./playlists/local
 import { noop } from "shared/helpers/function.helpers";
 import { Dropzone } from "../shared/dropzone.component";
 import { NotificationService } from "renderer/services/notification.service";
+import { logRenderError } from "renderer";
 
 type Props = {
     readonly version?: BSVersion;
@@ -122,7 +123,8 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
             return;
         }
 
-        await mapsManager.importMaps(paths, version);
+        const import$ = mapsManager.importMaps(paths, version);
+        return lastValueFrom(import$).catch(logRenderError);
     }
 
     const dropDownItems = ((): DropDownItem[] => {

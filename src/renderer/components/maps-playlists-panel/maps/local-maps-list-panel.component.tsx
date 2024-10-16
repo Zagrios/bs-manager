@@ -5,7 +5,7 @@ import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { Subscription, BehaviorSubject, lastValueFrom } from "rxjs";
 import { MapFilter } from "shared/models/maps/beat-saver.model";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
-import { last, tap } from "rxjs/operators";
+import { bufferTime, last, tap } from "rxjs/operators";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import BeatConflict from "../../../../../assets/images/apngs/beat-conflict.png";
 import { BsmImage } from "../../shared/bsm-image.component";
@@ -104,45 +104,27 @@ export const LocalMapsListPanel = forwardRef<LocalMapsListPanelRef, Props>(({ ve
 
     useEffect(() => {
 
-        let sub: Subscription;
+        const subs: Subscription[] = [];
 
         if(isActiveOnce){
-            sub = mapsDownloader.lastDownloadedMap$.subscribe({ next: ({map, version: targetVersion}) => {
+            subs.push(mapsDownloader.lastDownloadedMap$.subscribe({ next: ({map, version: targetVersion}) => {
                 if (!equal(targetVersion, version)) {
                     return;
                 }
                 setMaps((maps$.value ? [map, ...maps$.value] : [map]));
-            }});
-            mapsManager.addImportListener(importListener);
+            }}));
+
+            subs.push(mapsManager.$onMapImported(version).pipe(bufferTime(500)).subscribe({ next: newMaps => {
+                const maps = (maps$.value ?? []).filter(map => !newMaps.some(newMap => newMap.path === map.path));
+                setMaps([...newMaps, ...maps]);
+            }}));
         }
 
         return () => {
-            sub?.unsubscribe();
-            mapsManager.removeImportListener(importListener);
+            subs.forEach(s => s.unsubscribe());
         }
 
     }, [isActiveOnce, version])
-
-    const importListener = (importMaps: BsmLocalMap[], targetVersion?: BSVersion) => {
-        if (!equal(targetVersion, version)) {
-            return;
-        }
-
-        if (!maps$.value) {
-            setMaps(importMaps);
-            return;
-        }
-
-        const mapsCopy = [ ...maps$.value ];
-        for (const importMap of importMaps) {
-            const index = mapsCopy.findIndex(map => map.hash === importMap.hash);
-            if (index > -1) {
-                mapsCopy.splice(index, 1);
-            }
-        }
-
-        setMaps([...importMaps, ...mapsCopy]);
-    };
 
     const loadMaps = () => {
         setMaps(null);
