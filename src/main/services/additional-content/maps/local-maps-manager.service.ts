@@ -51,8 +51,6 @@ export class LocalMapsManagerService {
         ScoreSaber: "web+bsmap",
     };
 
-    private readonly INFO_DAT_REGEX = /(^|\/)(I|i)nfo.dat$/;
-
     private readonly localVersion: BSLocalVersionService;
     private readonly installLocation: InstallationLocationService;
     private readonly utils: UtilsService;
