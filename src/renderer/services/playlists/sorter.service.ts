@@ -1,4 +1,4 @@
-import { Comparator } from "shared/models/generics.type";
+import { Comparator, Comparison } from "shared/models/comparator.type";
 import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
 
 export class PlaylistsSorterService {
@@ -14,42 +14,34 @@ export class PlaylistsSorterService {
     private readonly comparators: {
         [key: string]: Comparator<LocalBPListsDetails>;
     } = {
-        title: (playlist1, playlist2) =>
-            playlist1.playlistTitle.localeCompare(playlist2.playlistTitle),
-        author: (playlist1, playlist2) =>
-            playlist1.playlistAuthor.localeCompare(playlist2.playlistAuthor),
-        "number-of-maps": (playlist1, playlist2) =>
-            playlist1.nbMaps - playlist2.nbMaps,
+        title: (playlist1, playlist2) => playlist1.playlistTitle.localeCompare(playlist2.playlistTitle),
+        author: (playlist1, playlist2) => playlist1.playlistAuthor.localeCompare(playlist2.playlistAuthor),
+        "number-of-maps": (playlist1, playlist2) => playlist1.nbMaps - playlist2.nbMaps,
         duration: (playlist1, playlist2) => {
             if (!playlist1.duration) {
-                return playlist2.duration ? -1 : 0;
+                return playlist2.duration ? Comparison.LESSER : Comparison.EQUAL;
             }
 
-            return !playlist2.duration ? -1
-                : playlist1.duration - playlist2.duration;
+            return !playlist2.duration ? Comparison.GREATER : playlist1.duration - playlist2.duration;
         },
         "min-notes-per-second": (playlist1, playlist2) => {
             if (!playlist1.minNps) {
-                return playlist2.minNps ? -1 : 0;
+                return playlist2.minNps ? Comparison.LESSER : Comparison.EQUAL;
             }
 
-            return !playlist2.minNps ? -1
-                : playlist1.minNps - playlist2.minNps;
+            return !playlist2.minNps ? Comparison.GREATER : playlist1.minNps - playlist2.minNps;
         },
         "max-notes-per-second": (playlist1, playlist2) => {
             if (!playlist1.maxNps) {
-                return playlist2.maxNps ? -1 : 0;
+                return playlist2.maxNps ? Comparison.LESSER : Comparison.EQUAL;
             }
 
-            return !playlist2.maxNps ? -1
-                : playlist1.maxNps - playlist2.maxNps;
+            return !playlist2.maxNps ? Comparison.GREATER : playlist1.maxNps - playlist2.maxNps;
         },
     };
 
     private addTiebreak(comparator: Comparator<LocalBPListsDetails>): Comparator<LocalBPListsDetails> {
-        return (playlist1, playlist2) =>
-            comparator(playlist1, playlist2)
-            || this.getDefaultComparator()(playlist1, playlist2);
+        return (playlist1, playlist2) => comparator(playlist1, playlist2) || this.getDefaultComparator()(playlist1, playlist2);
     }
 
     public getComparatorKeys(): string[] {
@@ -66,9 +58,6 @@ export class PlaylistsSorterService {
 
     public getComparator(key: string): Comparator<LocalBPListsDetails> {
         const comparator = this.comparators[key];
-        return comparator
-            ? this.addTiebreak(comparator)
-            : this.getDefaultComparator();
+        return comparator ? this.addTiebreak(comparator) : this.getDefaultComparator();
     }
-
 }
