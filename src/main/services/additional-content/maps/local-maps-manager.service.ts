@@ -334,25 +334,30 @@ export class LocalMapsManagerService {
 
             (async () => {
                 const mapsPath = await this.getMapsFolderPath(version);
-                root: for(const zipPath of zipPaths) {
-                    if(unsubscribed) { break; }
+                for(const zipPath of zipPaths) {
+
+                    if(unsubscribed) {
+                        log.info("Maps importation from zip has been cancelled");
+                        return;
+                    }
 
                     progress = { total: 0, current: 0 };
                     obs.next(progress); // reset progress for each zip
 
                     if(!pathExistsSync(zipPath)) { continue; }
+
                     const zip = new StreamZip.async({ file: zipPath });
                     const { result: zipEntries, error } = await tryit(() => zip.entries());
                     const zipEntriesValues = Object.values(zipEntries);
 
                     if(error) {
                         log.error("Could not read zip entries", zipPath, error);
-                        zip.close();
+                        await zip.close();
                         continue;
                     }
 
                     const mapsFolders = zipEntriesValues.reduce((acc, entry) => {
-                        if(!/(^|\/)(I|i)nfo.dat$/.test(entry.name)){ return acc; }
+                        if(!/(^|\/)[I-i]nfo\.dat$/.test(entry.name)){ return acc; }
                         acc.push(path.dirname(entry.name));
                         return acc;
                     }, []);
@@ -365,9 +370,11 @@ export class LocalMapsManagerService {
                     obs.next(progress);
 
                     for(const folder of mapsFolders) {
+
                         if(unsubscribed) {
-                            zip.close();
-                            break root;
+                            log.info("Maps importation from zip has been cancelled");
+                            await zip.close();
+                            return;
                         }
 
                         const isRoot = folder === ".";
@@ -406,7 +413,7 @@ export class LocalMapsManagerService {
                         obs.next(progress);
                     }
 
-                    zip.close();
+                    await zip.close();
                 }
             })()
             .then(() => {

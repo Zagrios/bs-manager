@@ -107,13 +107,12 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
 
     const handleFileDrop = async (files: FileList) => {
         const zipMimeTypes = ["application/zip", "application/zip-compressed", "application/x-zip-compressed"];
-        const paths: string[] = [];
-        for (let i = 0; i < files.length; ++i) {
-            const file = files[i];
+        const paths: string[] = Array.from(files).reduce((acc, file) => {
             if (zipMimeTypes.includes(file.type)) {
-                paths.push(window.electron.webUtils.getPathForFile(file));
+                acc.push(window.electron.webUtils.getPathForFile(file));
             }
-        }
+            return acc;
+        }, []);
 
         if (paths.length === 0) {
             notifications.notifyError({
