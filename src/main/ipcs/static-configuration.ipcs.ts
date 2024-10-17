@@ -12,3 +12,7 @@ ipc.on("static-configuration.get", (args, reply) => {
 ipc.on("static-configuration.set", (args, reply) => {
     reply(of(staticConfig.set(args.key, args.value)));
 });
+
+ipc.on("static-configuration.delete", (key, reply) => {
+    reply(of(staticConfig.delete(key)));
+});

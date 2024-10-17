@@ -111,7 +111,7 @@
             }
         },
         "available-versions": {
-            "title": "Choisis une version",
+            "title": "Télécharger une version",
             "steam-release": "Notes de version",
             "dropdown": {
                 "refresh": "Actualiser les versions",
