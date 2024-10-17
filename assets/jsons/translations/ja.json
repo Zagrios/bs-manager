@@ -65,6 +65,10 @@
                         "empty-maps": {
                             "text": "マップがありません",
                             "button": "マップをダウンロードする"
+                        },
+                        "drop-zone": {
+                            "text": "マップをインポート",
+                            "subtext": "ZIPファイルをここにドロップしてマップをインポート"
                         }
                     }
                 }
@@ -505,6 +509,18 @@
             "duplicates-maps-deleted": {
                 "title": "重複削除",
                 "msg": "重複が削除されました"
+            },
+            "import-map": {
+                "titles": {
+                    "success": "マップのインポートが完了しました",
+                    "error": "マップのインポート中にエラーが発生しました"
+                },
+                "msgs": {
+                    "success": "マップが正常にインポートされました。",
+                    "some-success": "一部のマップが正常にインポートされました。",
+                    "only-accept-zip": "zipファイルのみがサポートされています。",
+                    "invalid-zip": "zipファイルにマップが含まれていません。"
+                }
             }
         },
         "playlists": {

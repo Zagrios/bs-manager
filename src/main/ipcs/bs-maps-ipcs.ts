@@ -22,7 +22,12 @@ ipc.on("export-maps", async (args, reply) => {
     reply(await maps.exportMaps(args.version, args.maps, args.outPath));
 });
 
-ipc.on("download-map", async (args, reply) => {
+ipc.on("bs-maps.import-maps", async (args, reply) => {
+    const maps = LocalMapsManagerService.getInstance();
+    reply(maps.importMaps(args.paths, args.version));
+})
+
+ipc.on("bs-maps.download-map", async (args, reply) => {
     const maps = LocalMapsManagerService.getInstance();
     reply(from(maps.downloadMap(args.map, args.version)));
 });

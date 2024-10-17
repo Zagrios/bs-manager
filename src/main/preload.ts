@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer, IpcRendererEvent } from "electron";
+import { contextBridge, ipcRenderer, IpcRendererEvent, webUtils } from "electron";
 import { ProviderPlatform } from "shared/models/provider-platform.enum";
 
 const sep = process.platform === ProviderPlatform.WINDOWS ? "\\" : "/";
@@ -30,5 +30,8 @@ contextBridge.exposeInMainWorld("electron", {
         join: (...args: string[]): string => {
             return args.join(sep);
         }
+    },
+    webUtils: {
+        getPathForFile: webUtils.getPathForFile
     }
 });

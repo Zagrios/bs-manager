@@ -14,7 +14,7 @@ import { BsmButton } from "../shared/bsm-button.component";
 import { MapIcon } from "../svgs/icons/map-icon.component";
 import { PlaylistIcon } from "../svgs/icons/playlist-icon.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
-import { BehaviorSubject, of } from "rxjs";
+import { BehaviorSubject, lastValueFrom, of } from "rxjs";
 import { LocalPlaylistsListPanel, LocalPlaylistsListRef } from "./playlists/local-playlists-list-panel.component";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
@@ -23,6 +23,9 @@ import { LocalBPListsDetails } from "shared/models/playlists/local-playlist.mode
 import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service";
 import { LocalPlaylistFilter, LocalPlaylistFilterPanel } from "./playlists/local-playlist-filter-panel.component";
 import { noop } from "shared/helpers/function.helpers";
+import { Dropzone } from "../shared/dropzone.component";
+import { NotificationService } from "renderer/services/notification.service";
+import { logRenderError } from "renderer";
 
 type Props = {
     readonly version?: BSVersion;
@@ -42,6 +45,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
     const mapsDownloader = useService(MapsDownloaderService);
     const playlistsManager = useService(PlaylistsManagerService);
     const playlistsDownloader = useService(PlaylistDownloaderService);
+    const notifications = useService(NotificationService);
 
     const t = useTranslation();
     const [tabIndex, setTabIndex] = useState(0);
@@ -99,6 +103,27 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         }
 
         return playlistsManager.unlinkVersion(version);
+    }
+
+    const handleFileDrop = async (files: FileList) => {
+        const zipMimeTypes = ["application/zip", "application/zip-compressed", "application/x-zip-compressed"];
+        const paths: string[] = Array.from(files).reduce((acc, file) => {
+            if (zipMimeTypes.includes(file.type)) {
+                acc.push(window.electron.webUtils.getPathForFile(file));
+            }
+            return acc;
+        }, []);
+
+        if (paths.length === 0) {
+            notifications.notifyError({
+                title: "notifications.maps.import-map.titles.error",
+                desc: "notifications.maps.import-map.msgs.only-accept-zip"
+            });
+            return;
+        }
+
+        const import$ = mapsManager.importMaps(paths, version);
+        return lastValueFrom(import$).catch(logRenderError);
     }
 
     const dropDownItems = ((): DropDownItem[] => {
@@ -175,7 +200,17 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                 ]}
             >
                 <InstalledMapsContext.Provider value={mapsContextValue}>
-                    <LocalMapsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 0} ref={mapsRef} version={version} filter={mapFilter} search={search} linkedState={mapsLinkedState} />
+                    <Dropzone
+                        className="w-full h-full shrink-0"
+                        onDrop={event => {
+                            handleFileDrop(event.dataTransfer.files);
+                        }}
+                        text={t("pages.version-viewer.maps.tabs.maps.drop-zone.text")}
+                        subtext={t("pages.version-viewer.maps.tabs.maps.drop-zone.subtext")}
+                    >
+                        <LocalMapsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 0} ref={mapsRef} version={version} filter={mapFilter} search={search} linkedState={mapsLinkedState} />
+                    </Dropzone>
+
                     <LocalPlaylistsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 1} ref={playlistsRef} version={version} linkedState={playlistLinkedState} filter={playlistFilter} search={search}/>
                 </InstalledMapsContext.Provider>
             </BsContentTabPanel>

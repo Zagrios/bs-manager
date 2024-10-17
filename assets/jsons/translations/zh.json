@@ -65,6 +65,10 @@
                         "empty-maps": {
                             "text": "无谱面",
                             "button": "下载谱面"
+                        },
+                        "drop-zone": {
+                            "text": "导入您的地图",
+                            "subtext": "将ZIP文件拖放到此处以导入您的地图"
                         }
                     }
                 }
@@ -505,6 +509,18 @@
             "duplicates-maps-deleted": {
                 "title": "重复已删除",
                 "msg": "重复已删除"
+            },
+            "import-map": {
+                "titles": {
+                    "success": "地图导入完成",
+                    "error": "导入地图时发生错误"
+                },
+                "msgs": {
+                    "success": "地图已成功导入。",
+                    "some-success": "部分地图已成功导入。",
+                    "only-accept-zip": "仅支持zip文件。",
+                    "invalid-zip": "zip文件中没有地图。"
+                }
             }
         },
         "playlists": {

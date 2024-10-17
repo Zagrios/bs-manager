@@ -65,7 +65,12 @@
                         "empty-maps": {
                             "text": "No maps",
                             "button": "Download maps"
+                        },
+                        "drop-zone": {
+                            "text": "Import your maps",
+                            "subtext": "Drop your zip files here to import your maps"
                         }
+
                     }
                 }
             },
@@ -512,6 +517,18 @@
             "duplicates-maps-deleted": {
                 "title": "Duplicates Deleted",
                 "msg": "Duplicates were deleted"
+            },
+            "import-map": {
+                "titles": {
+                    "success": "Maps import completed",
+                    "error": "An error occurred during the maps import"
+                },
+                "msgs": {
+                    "success": "Maps successfully imported.",
+                    "some-success": "Some maps were successfully imported.",
+                    "only-accept-zip": "Only zip files are supported.",
+                    "invalid-zip": "The zip file(s) do not contain any maps."
+                }
             }
         },
         "playlists": {
