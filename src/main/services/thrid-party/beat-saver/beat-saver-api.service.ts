@@ -40,6 +40,9 @@ export class BeatSaverApiService {
 
         const params: Record<string, string> = this.objectToStringRecord({...filter, tags});
 
+        delete params.enabledTags;
+        delete params.excludedTags;
+
         return new URLSearchParams(params);
     }
 
