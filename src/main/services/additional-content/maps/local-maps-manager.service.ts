@@ -357,7 +357,7 @@ export class LocalMapsManagerService {
                     }
 
                     const mapsFolders = zipEntriesValues.reduce((acc, entry) => {
-                        if(!/(^|\/)[I-i]nfo\.dat$/.test(entry.name)){ return acc; }
+                        if(!/(^|\/)[Ii]nfo\.dat$/.test(entry.name)){ return acc; }
                         acc.push(path.dirname(entry.name));
                         return acc;
                     }, []);
