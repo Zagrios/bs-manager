@@ -520,14 +520,14 @@
             },
             "import-map": {
                 "titles": {
-                    "success": "Map import complete",
-                    "error": "An error occurred while importing the map"
+                    "success": "Maps import completed",
+                    "error": "An error occurred during the maps import"
                 },
                 "msgs": {
-                    "success": "Imported all maps successfully.",
-                    "some-success": "Imported some maps successfully.",
+                    "success": "Maps successfully imported.",
+                    "some-success": "Some maps were successfully imported.",
                     "only-accept-zip": "Only zip files are supported.",
-                    "invalid-zip": "Zip/s file do not contain any \"Info.dat\" file."
+                    "invalid-zip": "The zip file(s) do not contain any maps."
                 }
             }
         },

@@ -512,14 +512,14 @@
             },
             "import-map": {
                 "titles": {
-                    "success": "地圖導入完成",
-                    "error": "在導入地圖時發生錯誤"
+                    "success": "地圖匯入完成",
+                    "error": "地圖匯入時發生錯誤"
                 },
                 "msgs": {
-                    "success": "所有地圖已成功導入。",
-                    "some-success": "一些地圖已成功導入。",
-                    "only-accept-zip": "只支持 ZIP 文件。",
-                    "invalid-zip": "ZIP 檔案不包含任何 \"Info.dat\" 檔案。"
+                    "success": "地圖已成功匯入。",
+                    "some-success": "部分地圖已成功匯入。",
+                    "only-accept-zip": "僅支援zip檔案。",
+                    "invalid-zip": "zip檔案中沒有地圖。"
                 }
             }
         },

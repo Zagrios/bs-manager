@@ -516,10 +516,10 @@
                     "error": "Une erreur est survenue lors de l'importation des maps"
                 },
                 "msgs": {
-                    "success": "Toutes les maps ont été importées avec succès.",
+                    "success": "Les maps ont été importées avec succès.",
                     "some-success": "Certaines maps ont été importées avec succès.",
-                    "only-accept-zip": "Seules les fichiers ZIP sont pris en charge.",
-                    "invalid-zip": "Le(s) fichier(s) Zip ne contient/contiennent aucun fichier \"Info.dat\"."
+                    "only-accept-zip": "Seules les fichiers zip sont pris en charge.",
+                    "invalid-zip": "Le ou les fichiers zip ne contiennent aucune maps."
                 }
             }
         },

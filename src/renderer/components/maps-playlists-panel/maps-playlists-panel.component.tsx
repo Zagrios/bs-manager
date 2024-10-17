@@ -105,8 +105,8 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         return playlistsManager.unlinkVersion(version);
     }
 
-    const zipMimeTypes = ["application/zip", "application/zip-compressed", "application/x-zip-compressed"];
     const handleFileDrop = async (files: FileList) => {
+        const zipMimeTypes = ["application/zip", "application/zip-compressed", "application/x-zip-compressed"];
         const paths: string[] = [];
         for (let i = 0; i < files.length; ++i) {
             const file = files[i];
@@ -118,7 +118,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         if (paths.length === 0) {
             notifications.notifyError({
                 title: "notifications.maps.import-map.titles.error",
-                desc: "notifications.maps.import-map.msgs.zip-accept-only"
+                desc: "notifications.maps.import-map.msgs.only-accept-zip"
             });
             return;
         }

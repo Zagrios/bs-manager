@@ -513,13 +513,13 @@
             "import-map": {
                 "titles": {
                     "success": "地图导入完成",
-                    "error": "在导入地图时发生错误"
+                    "error": "导入地图时发生错误"
                 },
                 "msgs": {
-                    "success": "所有地图已成功导入。",
-                    "some-success": "一些地图已成功导入。",
-                    "only-accept-zip": "只支持 ZIP 文件。",
-                    "invalid-zip": "ZIP 文件不包含任何 \"Info.dat\" 文件。"
+                    "success": "地图已成功导入。",
+                    "some-success": "部分地图已成功导入。",
+                    "only-accept-zip": "仅支持zip文件。",
+                    "invalid-zip": "zip文件中没有地图。"
                 }
             }
         },
