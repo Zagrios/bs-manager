@@ -832,7 +832,8 @@
             "tags": "标签",
             "specificities": "general",
             "requirements": "要求",
-            "exclude": "排除"
+            "exclude": "排除",
+            "leaderboard": "leaderboard"
         },
         "map-types": {
             "accuracy": "精确度",
@@ -887,6 +888,12 @@
             "curated": "curated",
             "verified": "verified",
             "fullSpread": "full spread"
+        },
+        "map-leaderboard": {
+            "All": "All",
+            "Ranked": "Ranked",
+            "BeatLeader": "BeatLeader",
+            "ScoreSaber": "ScoreSaber"
         },
         "map-excludes": {
             "installed": "已安装"

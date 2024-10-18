@@ -833,7 +833,8 @@
             "tags": "tags",
             "specificities": "général",
             "requirements": "requis",
-            "exclude": "exclure"
+            "exclude": "exclure",
+            "leaderboard": "leaderboard"
         },
         "map-types": {
             "accuracy": "précision",
@@ -888,6 +889,12 @@
             "curated": "recommandée",
             "verified": "vérifiée",
             "fullSpread": "panel complet"
+        },
+        "map-leaderboard": {
+            "All": "All",
+            "Ranked": "Ranked",
+            "BeatLeader": "BeatLeader",
+            "ScoreSaber": "ScoreSaber"
         },
         "map-excludes": {
             "installed": "installé"

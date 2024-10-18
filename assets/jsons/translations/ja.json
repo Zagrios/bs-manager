@@ -832,7 +832,8 @@
             "tags": "タグ",
             "specificities": "一般",
             "requirements": "要Mod",
-            "exclude": "除外する"
+            "exclude": "除外する",
+            "leaderboard": "leaderboard"
         },
         "map-types": {
             "accuracy": "正確",
@@ -887,6 +888,12 @@
             "curated": "厳選済み",
             "verified": "認証済み",
             "fullSpread": "フルスプレッド"
+        },
+        "map-leaderboard": {
+            "All": "All",
+            "Ranked": "Ranked",
+            "BeatLeader": "BeatLeader",
+            "ScoreSaber": "ScoreSaber"
         },
         "map-excludes": {
             "installed": "インストール済み"

@@ -832,7 +832,8 @@
             "tags": "Stichwörter",
             "specificities": "Allgemein",
             "requirements": "Anforderungen",
-            "exclude": "Ausschließen"
+            "exclude": "Ausschließen",
+            "leaderboard": "leaderboard"
         },
         "map-types": {
             "accuracy": "Präzision",
@@ -887,6 +888,12 @@
             "curated": "Curated",
             "verified": "Verifiziert",
             "fullSpread": "Full Spread"
+        },
+        "map-leaderboard": {
+            "All": "All",
+            "Ranked": "Ranked",
+            "BeatLeader": "BeatLeader",
+            "ScoreSaber": "ScoreSaber"
         },
         "map-excludes": {
             "installed": "Installiert"

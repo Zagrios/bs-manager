@@ -1,4 +1,4 @@
-import { BsvMapDetail, MapFilter, MapRequirement, MapSpecificity, MapStyle, MapTag, MapType } from "shared/models/maps/beat-saver.model";
+import { BsvMapDetail, MapFilter, MapLeaderboard, MapRequirement, MapSpecificity, MapStyle, MapTag, MapType } from "shared/models/maps/beat-saver.model";
 import { motion } from "framer-motion";
 import { MutableRefObject, useEffect, useRef, useState } from "react";
 import { BsmCheckbox } from "../../shared/bsm-checkbox.component";
@@ -14,6 +14,8 @@ import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { SongDetails } from "shared/models/maps";
 import formatDuration from "format-duration";
 import { MapInfo } from "shared/models/maps/info/map-info.model";
+import { BsmSelect, BsmSelectOption } from "renderer/components/shared/bsm-select.component";
+import { useConstant } from "renderer/hooks/use-constant.hook";
 
 export type Props = {
     className?: string;
@@ -44,6 +46,13 @@ export function FilterPanel({ className, ref, playlist = false, filter, localDat
 
     const isTagActivated = (tag: MapTag): boolean => filter?.enabledTags?.has(tag) || filter?.excludedTags?.has(tag);
     const isTagExcluded = (tag: MapTag): boolean => filter?.excludedTags?.has(tag);
+
+    const leaderboardOptions: BsmSelectOption<MapLeaderboard>[] = useConstant(
+        () => Object.values(MapLeaderboard).map(key => ({
+            text: `maps.map-leaderboard.${key}`,
+            value: key,
+        }))
+    );
 
     useEffect(() => {
         if (firstRun.current) {
@@ -137,10 +146,6 @@ export function FilterPanel({ className, ref, playlist = false, filter, localDat
         return t(`maps.map-styles.${style}`);
     };
 
-    const translateMapSpecificity = (specificity: MapSpecificity): string => {
-        return t(`maps.map-specificities.${specificity}`);
-    };
-
     type BooleanKeys<T> = { [k in keyof T]: T[k] extends boolean ? k : never }[keyof T];
 
     const handleCheckbox = (key: BooleanKeys<MapFilter>) => {
@@ -152,6 +157,12 @@ export function FilterPanel({ className, ref, playlist = false, filter, localDat
         }
         onChange(newFilter);
     };
+
+    const handleLeaderboardChange = (value: MapLeaderboard) => {
+        const newFilter = { ...(filter ?? {}) };
+        newFilter.leaderboard = value;
+        onChange(newFilter);
+    }
 
     const handleApply = () => {
         onApply(filter);
@@ -173,9 +184,17 @@ export function FilterPanel({ className, ref, playlist = false, filter, localDat
                     {Object.values(MapSpecificity).map(specificity => (
                         <div key={specificity} className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={() => handleCheckbox(specificity)}>
                             <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1" checked={filter?.[specificity]} onChange={() => handleCheckbox(specificity)} />
-                            <span className="grow capitalize">{translateMapSpecificity(specificity)}</span>
+                            <span className="grow capitalize">{t(`maps.map-specificities.${specificity}`)}</span>
                         </div>
                     ))}
+
+                    <h2 className="mb-1 uppercase text-sm">{t("maps.map-filter-panel.leaderboard")}</h2>
+                    <BsmSelect
+                        options={leaderboardOptions}
+                        selected={MapLeaderboard.All}
+                        onChange={handleLeaderboardChange}
+                    />
+
                     <h2 className="my-1 uppercase text-sm">{t("maps.map-filter-panel.requirements")}</h2>
                     {Object.values(MapRequirement).map(requirement => (
                         <div key={requirement} className="flex justify-start items-center h-[22px] z-20 relative py-0.5 cursor-pointer" onClick={() => handleCheckbox(requirement)}>
