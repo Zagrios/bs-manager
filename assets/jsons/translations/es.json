@@ -833,7 +833,7 @@
             "specificities": "general",
             "requirements": "requisitos",
             "exclude": "excluir",
-            "leaderboard": "leaderboard"
+            "leaderboard": "tabla de clasificación"
         },
         "map-types": {
             "accuracy": "precisión",
@@ -890,8 +890,8 @@
             "fullSpread": "panel completo"
         },
         "map-leaderboard": {
-            "All": "All",
-            "Ranked": "Ranked",
+            "All": "Todos",
+            "Ranked": "Clasificado",
             "BeatLeader": "BeatLeader",
             "ScoreSaber": "ScoreSaber"
         },

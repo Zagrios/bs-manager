@@ -834,7 +834,7 @@
             "specificities": "général",
             "requirements": "requis",
             "exclude": "exclure",
-            "leaderboard": "leaderboard"
+            "leaderboard": "tableau des leaders"
         },
         "map-types": {
             "accuracy": "précision",
@@ -891,8 +891,8 @@
             "fullSpread": "panel complet"
         },
         "map-leaderboard": {
-            "All": "All",
-            "Ranked": "Ranked",
+            "All": "Tout",
+            "Ranked": "Classé",
             "BeatLeader": "BeatLeader",
             "ScoreSaber": "ScoreSaber"
         },

@@ -832,7 +832,7 @@
             "specificities": "основное",
             "requirements": "требуемые моды",
             "exclude": "исключить",
-            "leaderboard": "leaderboard"
+            "leaderboard": "Таблица лидеров"
         },
         "map-types": {
             "accuracy": "точность",
@@ -889,8 +889,8 @@
             "fullSpread": "полный набор"
         },
         "map-leaderboard": {
-            "All": "All",
-            "Ranked": "Ranked",
+            "All": "все",
+            "Ranked": "ранжированный",
             "BeatLeader": "BeatLeader",
             "ScoreSaber": "ScoreSaber"
         },

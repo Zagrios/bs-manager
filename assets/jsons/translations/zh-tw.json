@@ -833,7 +833,7 @@
             "specificities": "general",
             "requirements": "要求",
             "exclude": "排除",
-            "leaderboard": "leaderboard"
+            "leaderboard": "排行榜"
         },
         "map-types": {
             "accuracy": "精確度",
@@ -890,8 +890,8 @@
             "fullSpread": "Full spread"
         },
         "map-leaderboard": {
-            "All": "All",
-            "Ranked": "Ranked",
+            "All": "所有",
+            "Ranked": "排名的",
             "BeatLeader": "BeatLeader",
             "ScoreSaber": "ScoreSaber"
         },
