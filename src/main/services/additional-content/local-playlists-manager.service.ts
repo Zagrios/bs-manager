@@ -41,6 +41,7 @@ export class LocalPlaylistsManagerService {
     private readonly DEEP_LINKS = {
         BeatSaver: "bsplaylist",
     };
+    private readonly PLAYLIST_FILETYPES = [".bplist", ".json"];
 
     private readonly versions: BSLocalVersionService;
     private readonly maps: LocalMapsManagerService;
@@ -86,13 +87,17 @@ export class LocalPlaylistsManagerService {
         return fullPath;
     }
 
+    private acceptPlaylistFiletype(filename: string): boolean {
+        return this.PLAYLIST_FILETYPES.includes(path.extname(filename).toLowerCase());
+    }
+
     public writeBPListFile(opt: { bpList: BPList, version?: BSVersion, dest?: string }): Observable<LocalBPList> {
         return new Observable<LocalBPList>(obs => {
             (async () => {
                 const dest = await (async () => {
-                    if(opt.dest && path.isAbsolute(opt.dest) && path.extname(opt.dest) === ".bplist") { return opt.dest; }
+                    if(opt.dest && path.isAbsolute(opt.dest) && this.acceptPlaylistFiletype(opt.dest)) { return opt.dest; }
                     const playlistFolder = await this.getPlaylistsFolder(opt.version);
-                    const playlistPath = path.join(playlistFolder, `${sanitize(opt.bpList.playlistTitle)}.bplist`);
+                    const playlistPath = path.join(playlistFolder, `${sanitize(opt.bpList.playlistTitle)}${path.extname(opt.dest)}`);
                     return getUniqueFileNamePath(playlistPath);
                 })();
 
@@ -115,9 +120,9 @@ export class LocalPlaylistsManagerService {
         const bplist = await this.readPlaylistFromSource(opt.bplistSource);
 
         const dest = await (async () => {
-            if(opt.dest && path.isAbsolute(opt.dest) && path.extname(opt.dest) === ".bplist") { return opt.dest; }
+            if(opt.dest && path.isAbsolute(opt.dest) && this.acceptPlaylistFiletype(opt.dest)) { return opt.dest; }
             const playlistFolder = await this.getPlaylistsFolder(opt.version);
-            return path.join(playlistFolder, `${sanitize(bplist.playlistTitle)}.bplist`);
+            return path.join(playlistFolder, `${sanitize(bplist.playlistTitle)}${path.extname(opt.dest)}`);
         })();
 
         writeFileSync(dest, JSON.stringify(bplist, null, 2));
@@ -165,7 +170,7 @@ export class LocalPlaylistsManagerService {
                 }
 
                 const ignoreFunc = (file: string, stats: Stats): boolean => {
-                    if(stats.isFile() && path.extname(file) !== ".bplist") { return true; }
+                    if(stats.isFile() && !this.acceptPlaylistFiletype(file)) { return true; }
                     return false;
                 }
 
@@ -425,13 +430,13 @@ export class LocalPlaylistsManagerService {
         return archive.finalize();
     }
 
-    public oneClickInstallPlaylist(bpListUrl: string): Observable<Progression<DownloadPlaylistProgressionData>> {
+    public oneClickInstallPlaylist(bplistUrl: string): Observable<Progression<DownloadPlaylistProgressionData>> {
 
         return new Observable<Progression<DownloadPlaylistProgressionData>>(obs => {
             (async () => {
                 const versions = await this.versions.getInstalledVersions();
 
-                const download$ = this.downloadPlaylist({ bpListUrl, version: versions.pop() }).pipe(tap({
+                const download$ = this.downloadPlaylist({ bplistSource: bplistUrl, version: versions.pop() }).pipe(tap({
                     next: progress => obs.next(progress),
                     error: err => obs.error(err),
                 }));
@@ -443,7 +448,7 @@ export class LocalPlaylistsManagerService {
                 const realSourceMapsFolder = await realpath(path.dirname(downloadedMaps[0].path));
 
                 for (const version of versions) {
-                    await this.installBPListFile({ bslistSource: playlist.path, version});
+                    await this.installBPListFile({ bplistSource: playlist.path, version});
 
                     const versionMapsFolder = await this.maps.getMapsFolderPath(version);
                     const realDestMapsFolder = await realpath(versionMapsFolder).catch(e => {
