@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { ChangeEvent, useEffect, useState } from "react";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
@@ -15,6 +14,7 @@ import { lastValueFrom } from "rxjs";
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
 import equal from "fast-deep-equal";
 import { GlowEffect } from "renderer/components/shared/glow-effect.component";
+import { cn } from "renderer/helpers/css-class.helpers";
 
 type Props = { version: BSVersion };
 
@@ -44,6 +44,7 @@ export function LaunchSlide({ version }: Props) {
     }, [desktopMode]);
 
     const setMode = (mode: LaunchMods, value: boolean) => {
+
         if (mode === LaunchMods.DEBUG_MOD) {
             setDebugMode(value);
         } else if (mode === LaunchMods.OCULUS_MOD) {
@@ -64,7 +65,7 @@ export function LaunchSlide({ version }: Props) {
             oculus: version.oculus ? false : oculusMode,
             desktop: desktopMode,
             debug: debugMode,
-            additionalArgs,
+            additionalArgs: advancedLaunch ? additionalArgs : [],
             protonPath: bsLauncherService.getProtonPath(),
         });
 
@@ -84,9 +85,9 @@ export function LaunchSlide({ version }: Props) {
             </div>
             <div className="pt-4 w-2/3 flex flex-col items-center gap-3">
                 <div className="relative">
-                    <GlowEffect className="!rounded-full" visible={!!additionalArgsString}/>
+                    <GlowEffect className="!rounded-full" visible={!!(advancedLaunch && additionalArgsString)}/>
                     <BsmButton
-                        className="rounded-full w-fit text-lg py-1 px-7 shadow-md shadow-black bg-light-main-color-2 dark:bg-main-color-2 text-gray-800 dark:text-white"
+                        className={cn("rounded-full w-fit text-lg py-1 px-7 bg-theme-2 text-gray-800 dark:text-white", (advancedLaunch && additionalArgsString) ? "" : "shadow-md shadow-black")}
                         text="pages.version-viewer.launch-mods.advanced-launch.button"
                         withBar={false}
                         onClick={e => {
@@ -95,9 +96,9 @@ export function LaunchSlide({ version }: Props) {
                         }}
                     />
                 </div>
-                <motion.div className="bg-light-main-color-2 dark:bg-main-color-2 h-9 rounded-full overflow-hidden flex items-center justify-center" initial={{ width: "0px" }} animate={{ width: advancedLaunch ? "100%" : "0px" }}>
+                <div className="bg-light-main-color-2 dark:bg-main-color-2 h-9 rounded-full overflow-hidden flex items-center justify-center transition-all duration-100 ease-in-out w-full origin-top shadow-black shadow-sm" style={{ scale: advancedLaunch ? "100% 100%" : "0 0" }}>
                     <input className="w-[calc(100%-12px)] h-[calc(100%-12px)] bg-light-main-color-1 dark:bg-main-color-1 text-black dark:text-white rounded-full outline-none text-center" type="text" placeholder={t("pages.version-viewer.launch-mods.advanced-launch.placeholder")} value={additionalArgsString} onChange={handleAdditionalArgsChange} />
-                </motion.div>
+                </div>
             </div>
             <div className='grow flex justify-center items-center'>
                 <BsmButton
