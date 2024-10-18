@@ -303,7 +303,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
             availabledHashsSelected$.value.map(hash => tmpLocalMaps.find(map => getHashOfMap(map) === hash)).filter(Boolean)
         ) : tmpLocalMaps;
 
-        const newPlaylistMaps = {...playlistMaps$.value} ?? {};
+        const newPlaylistMaps = {...playlistMaps$.value ?? {}};
         mapsToAdd.forEach(map =>{ newPlaylistMaps[getHashOfMap(map)] = { map }; });
 
         playlistMaps$.next(newPlaylistMaps);
