@@ -884,7 +884,6 @@
         },
         "map-specificities": {
             "automapper": "AI",
-            "ranked": "ranked",
             "curated": "curated",
             "verified": "verified",
             "fullSpread": "full spread"

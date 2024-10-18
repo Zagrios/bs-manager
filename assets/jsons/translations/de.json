@@ -884,14 +884,13 @@
         },
         "map-specificities": {
             "automapper": "KI",
-            "ranked": "Ranked",
             "curated": "Curated",
             "verified": "Verifiziert",
             "fullSpread": "Full Spread"
         },
         "map-leaderboard": {
             "All": "Alle",
-            "Ranked": "Eingestuft",
+            "Ranked": "Ranked",
             "BeatLeader": "BeatLeader",
             "ScoreSaber": "ScoreSaber"
         },

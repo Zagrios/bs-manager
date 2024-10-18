@@ -883,14 +883,13 @@
         },
         "map-specificities": {
             "automapper": "ИИ",
-            "ranked": "с рейтингом",
             "curated": "оценённые куратором",
             "verified": "проверенные авторы",
             "fullSpread": "полный набор"
         },
         "map-leaderboard": {
             "All": "все",
-            "Ranked": "ранжированный",
+            "Ranked": "с рейтингом",
             "BeatLeader": "BeatLeader",
             "ScoreSaber": "ScoreSaber"
         },

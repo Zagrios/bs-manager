@@ -884,14 +884,13 @@
         },
         "map-specificities": {
             "automapper": "AI",
-            "ranked": "ランク入賞",
             "curated": "厳選済み",
             "verified": "認証済み",
             "fullSpread": "フルスプレッド"
         },
         "map-leaderboard": {
             "All": "すべて",
-            "Ranked": "ランク付けされた",
+            "Ranked": "ランク入賞",
             "BeatLeader": "BeatLeader",
             "ScoreSaber": "ScoreSaber"
         },
