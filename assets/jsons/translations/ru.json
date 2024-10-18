@@ -816,7 +816,8 @@
             "tags": "тэги",
             "specificities": "основное",
             "requirements": "требуемые моды",
-            "exclude": "исключить"
+            "exclude": "исключить",
+            "leaderboard": "leaderboard"
         },
         "map-types": {
             "accuracy": "точность",
@@ -871,6 +872,12 @@
             "curated": "оценённые куратором",
             "verified": "проверенные авторы",
             "fullSpread": "полный набор"
+        },
+        "map-leaderboard": {
+            "All": "All",
+            "Ranked": "Ranked",
+            "BeatLeader": "BeatLeader",
+            "ScoreSaber": "ScoreSaber"
         },
         "map-excludes": {
             "installed": "установленный"
