@@ -147,6 +147,7 @@ export interface IpcChannelMapping {
     /* ** static-configuration.ipcs ** */
     "static-configuration.get": StaticConfigGetIpcRequestResponse<StaticConfigKeys>;
     "static-configuration.set": StaticConfigSetIpcRequest<StaticConfigKeys>;
+    "static-configuration.delete": { request: StaticConfigKeys; response: void };
 
     /* ** OTHERS (if your IPC channel is not in a "-ipcs" file, put it here) ** */
     "shortcut-launch-options": { request: void, response: LaunchOption };
