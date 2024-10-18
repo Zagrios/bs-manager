@@ -30,7 +30,7 @@ export class ConfigurationService {
     public get<Type>(key: string | DefaultConfigKey): Type {
         const rawValue = (window.sessionStorage.getItem(key) ?? window.localStorage.getItem(key));
         const tryParse = tryit<Type>(() => JSON.parse(rawValue));
-        
+
         const res = (tryParse.error ? rawValue : tryParse.result) as Type;
 
         if(!res && Object.keys(defaultConfiguration).includes(key)){
@@ -40,7 +40,7 @@ export class ConfigurationService {
         return res;
     }
 
-    public set(key: string, value: unknown, persistant = true) {
+    public set(key: string | DefaultConfigKey, value: unknown, persistant = true) {
 
         if(value != null){
             this.getPropperStorage(persistant).setItem(key, JSON.stringify(value));
@@ -51,7 +51,7 @@ export class ConfigurationService {
         this.emitChange(key);
     }
 
-    public delete(key: string) {
+    public delete(key: string | DefaultConfigKey) {
         window.localStorage.removeItem(key);
         window.sessionStorage.removeItem(key);
         this.emitChange(key);
