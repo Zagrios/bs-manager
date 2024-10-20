@@ -6,7 +6,7 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
 import { NotificationService } from "renderer/services/notification.service";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
-import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
+import { BeatSaverService } from "renderer/services/third-parties/beat-saver.service";
 import { BsvMapDetail } from "shared/models/maps";
 import defaultImage from "../../../../assets/images/default-version-img.jpg";
 import { useService } from "renderer/hooks/use-service.hook";
