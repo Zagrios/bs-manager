@@ -59,6 +59,11 @@ ipc.on("export-playlists", (args, reply) => {
     reply(playlists.exportPlaylists(args));
 });
 
+ipc.on("import-playlists", (args, reply) => {
+    const playlists = LocalPlaylistsManagerService.getInstance();
+    reply(playlists.importPlaylists(args));
+});
+
 ipc.on("install-playlist-file", (args, reply) => {
     const playlists = LocalPlaylistsManagerService.getInstance();
 

@@ -348,13 +348,14 @@ export class LocalMapsManagerService {
 
                     const zip = new StreamZip.async({ file: zipPath });
                     const { result: zipEntries, error } = await tryit(() => zip.entries());
-                    const zipEntriesValues = Object.values(zipEntries);
 
                     if(error) {
-                        log.error("Could not read zip entries", zipPath, error);
-                        await zip.close();
+                        const res = await tryit(() => zip.close());
+                        log.error("Could not read zip entries", zipPath, error, res?.error);
                         continue;
                     }
+
+                    const zipEntriesValues = Object.values(zipEntries);
 
                     const mapsFolders = zipEntriesValues.reduce((acc, entry) => {
                         if(!/(^|\/)[Ii]nfo\.dat$/.test(entry.name)){ return acc; }
