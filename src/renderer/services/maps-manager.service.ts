@@ -242,7 +242,7 @@ export class MapsManagerService {
                     title: "notifications.maps.import-map.titles.error",
                     desc: ["invalid-zip"].includes(err?.code)
                         ? `notifications.maps.import-map.msgs.${err.code}`
-                        : "misc.unknown"
+                        : "notifications.maps.import-map.msgs.unknown"
                 });
                 obs.error(err);
             })

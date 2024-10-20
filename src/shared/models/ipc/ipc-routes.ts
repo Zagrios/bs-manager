@@ -14,7 +14,7 @@ import { BsmLocalModel } from "../models/bsm-local-model.interface";
 import { Mod } from "../mods";
 import { BPList, DownloadPlaylistProgressionData } from "../playlists/playlist.interface";
 import { VersionLinkerAction } from "renderer/services/version-folder-linker.service";
-import { FileFilter, OpenDialogReturnValue } from "electron";
+import { FileFilter, OpenDialogOptions, OpenDialogReturnValue } from "electron";
 import { SystemNotificationOptions } from "../notification/system-notification.model";
 import { Supporter } from "../supporters";
 import { AppWindow } from "../window-manager/app-window.model";
@@ -93,6 +93,7 @@ export interface IpcChannelMapping {
     "get-version-playlists-details": {request: BSVersion, response: Progression<LocalBPListsDetails[]>};
     "delete-playlist": {request: {version: BSVersion, bpList: LocalBPList, deleteMaps?: boolean}, response: Progression};
     "export-playlists": {request: {version?: BSVersion, bpLists: LocalBPList[], dest: string, playlistsMaps?: BsmLocalMap[]}, response: Progression<string>};
+    "import-playlists": {request: {version?: BSVersion, paths: string[]}, response: Progression<LocalBPListsDetails>};
     "install-playlist-file": {request: {bplist: BPList, version?: BSVersion, dest?: string}, response: LocalBPListsDetails};
 
     /* ** bs-uninstall-ipcs ** */
@@ -122,6 +123,7 @@ export interface IpcChannelMapping {
 
     /* ** os-controls-ipcs ** */
     "new-window": { request: string, response: void };
+    "open-dialog": { request: OpenDialogOptions, response: OpenDialogReturnValue };
     "choose-folder": { request: string, response: OpenDialogReturnValue };
     "choose-file": { request: string, response: OpenDialogReturnValue }
     "choose-image": { request: { multiple?: boolean, base64?: boolean }, response: string[] }

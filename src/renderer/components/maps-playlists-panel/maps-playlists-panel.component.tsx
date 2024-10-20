@@ -10,7 +10,6 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { FolderLinkState } from "renderer/services/version-folder-linker.service";
 import { useService } from "renderer/hooks/use-service.hook";
 import { BsContentTabPanel } from "../shared/bs-content-tab-panel/bs-content-tab-panel.component";
-import { BsmButton } from "../shared/bsm-button.component";
 import { MapIcon } from "../svgs/icons/map-icon.component";
 import { PlaylistIcon } from "../svgs/icons/playlist-icon.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
@@ -24,7 +23,6 @@ import { PlaylistDownloaderService } from "renderer/services/playlist-downloader
 import { LocalPlaylistFilter, LocalPlaylistFilterPanel } from "./playlists/local-playlist-filter-panel.component";
 import { noop } from "shared/helpers/function.helpers";
 import { Dropzone } from "../shared/dropzone.component";
-import { NotificationService } from "renderer/services/notification.service";
 import { logRenderError } from "renderer";
 
 type Props = {
@@ -45,10 +43,12 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
     const mapsDownloader = useService(MapsDownloaderService);
     const playlistsManager = useService(PlaylistsManagerService);
     const playlistsDownloader = useService(PlaylistDownloaderService);
-    const notifications = useService(NotificationService);
 
     const t = useTranslation();
     const [tabIndex, setTabIndex] = useState(0);
+
+    const [mapsDropZoneOpen, setMapsDropZoneOpen] = useState(false);
+    const [playlistsDropZoneOpen, setPlaylistsDropZoneOpen] = useState(false);
 
     const maps$ = useConstant(() => new BehaviorSubject<BsmLocalMap[]>(undefined));
     const playlists$ = useConstant(() => new BehaviorSubject<LocalBPListsDetails[]>(undefined));
@@ -77,11 +77,16 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         return playlistsManager.$playlistsFolderLinkState(version);
     }, FolderLinkState.Unlinked, [version]);
 
-    const handleAddClick = () => {
+    const handleBrowse = () => {
         switch (tabIndex) {
-            case 0: return mapsDownloader.openDownloadMapModal(version, maps$.value);
-            case 1: return playlistsDownloader.openDownloadPlaylistModal(version, playlists$, maps$);
-            default: return noop();
+            case 0:
+                mapsDownloader.openDownloadMapModal(version, maps$.value);
+                return;
+            case 1:
+                playlistsDownloader.openDownloadPlaylistModal(version, playlists$, maps$);
+                return;
+            default:
+                return noop();
         }
     }
 
@@ -105,26 +110,30 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         return playlistsManager.unlinkVersion(version);
     }
 
-    const handleFileDrop = async (files: FileList) => {
-        const zipMimeTypes = ["application/zip", "application/zip-compressed", "application/x-zip-compressed"];
-        const paths: string[] = Array.from(files).reduce((acc, file) => {
-            if (zipMimeTypes.includes(file.type)) {
-                acc.push(window.electron.webUtils.getPathForFile(file));
-            }
-            return acc;
-        }, []);
+    const importMaps = async (paths: string[]) => {
+        setMapsDropZoneOpen(() => false);
+        return lastValueFrom(mapsManager.importMaps(paths, version)).catch(logRenderError);
+    }
 
-        if (paths.length === 0) {
-            notifications.notifyError({
-                title: "notifications.maps.import-map.titles.error",
-                desc: "notifications.maps.import-map.msgs.only-accept-zip"
-            });
-            return;
+    const importPlaylists = async (paths: string[]) => {
+        setPlaylistsDropZoneOpen(() => false);
+        return lastValueFrom(playlistsManager.importPlaylists({ version, paths })).catch(logRenderError);
+    }
+
+    const addDropDownItems = ((): DropDownItem[] => {
+        if(tabIndex === 0){
+            return [
+                { icon: "browse", text: "pages.version-viewer.maps.tabs.maps.actions.drop-down.browse-maps", onClick: handleBrowse },
+                { icon: "download", text: "pages.version-viewer.maps.tabs.maps.actions.drop-down.import-maps", onClick: () => setMapsDropZoneOpen(true) }
+            ];
         }
 
-        const import$ = mapsManager.importMaps(paths, version);
-        return lastValueFrom(import$).catch(logRenderError);
-    }
+        return [
+            { icon: "browse", text: "pages.version-viewer.maps.tabs.playlists.drop-down.browse-playlists", onClick: handleBrowse },
+            { icon: "add-file", text: "pages.version-viewer.maps.tabs.playlists.drop-down.create-a-playlist", onClick: () => playlistsRef?.current?.createPlaylist?.()  },
+            { icon: "download", text: "pages.version-viewer.maps.tabs.playlists.drop-down.import-playlists", onClick: () => setPlaylistsDropZoneOpen(true) }
+        ];
+    })();
 
     const dropDownItems = ((): DropDownItem[] => {
         if (tabIndex === 0) {
@@ -136,7 +145,6 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         }
 
         return [
-            { icon: "add", text: t("playlist.create-a-playlist"), onClick: () => playlistsRef?.current?.createPlaylist?.() },
             { icon: "sync", text: t("playlist.synchronize-playlists"), onClick: () => playlistsRef?.current?.syncPlaylists?.() },
             { icon: "export", text: t("playlist.export-playlists"), onClick: () => playlistsRef?.current?.exportPlaylists?.() },
             { icon: "trash", text: t("playlist.delete-playlists"), onClick: () => playlistsRef?.current?.deletePlaylists?.() },
@@ -146,13 +154,20 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
     return (
         <>
             <nav className="w-full shrink-0 flex h-9 justify-center px-40 gap-2 text-main-color-1 dark:text-white mb-4">
-                <BsmButton
-                    className="flex items-center justify-center w-fit rounded-full px-2 py-1 font-bold whitespace-nowrap"
+                <BsmDropdownButton
+                    classNames={{
+                        mainContainer: "h-full relative z-[1] flex justify-center w-fit",
+                        button: "flex items-center justify-center h-full rounded-full px-2 py-1 font-bold whitespace-nowrap shadow-none",
+                        itemsContainer: "bg-theme-3",
+                    }}
+                    textClassName="whitespace-nowrap"
                     icon="add"
+                    buttonColor="primary"
                     text="misc.add"
-                    typeColor="primary"
+                    align="center"
+                    menuTranslationY="6px"
                     withBar={false}
-                    onClick={handleAddClick}
+                    items={addDropDownItems}
                 />
                 <div className="h-full rounded-full bg-light-main-color-2 dark:bg-main-color-2 grow p-[6px]">
                     <input
@@ -200,18 +215,37 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                 ]}
             >
                 <InstalledMapsContext.Provider value={mapsContextValue}>
+
                     <Dropzone
                         className="w-full h-full shrink-0"
-                        onDrop={event => {
-                            handleFileDrop(event.dataTransfer.files);
-                        }}
+                        onFiles={importMaps}
                         text={t("pages.version-viewer.maps.tabs.maps.drop-zone.text")}
                         subtext={t("pages.version-viewer.maps.tabs.maps.drop-zone.subtext")}
+                        open={mapsDropZoneOpen}
+                        onClose={mapsDropZoneOpen ? () => setMapsDropZoneOpen(() => false) : undefined}
+                        filters={[{ name: ".zip", extensions: ["zip"] }]}
+                        dialogOptions={{ dialog: {
+                            properties: ["openFile", "multiSelections"],
+                        }}}
                     >
                         <LocalMapsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 0} ref={mapsRef} version={version} filter={mapFilter} search={search} linkedState={mapsLinkedState} />
                     </Dropzone>
 
-                    <LocalPlaylistsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 1} ref={playlistsRef} version={version} linkedState={playlistLinkedState} filter={playlistFilter} search={search}/>
+                    <Dropzone
+                        className="w-full h-full shrink-0"
+                        onFiles={importPlaylists}
+                        text={t("pages.version-viewer.maps.tabs.playlists.drop-zone.text")}
+                        subtext={t("pages.version-viewer.maps.tabs.playlists.drop-zone.subtext")}
+                        open={playlistsDropZoneOpen}
+                        onClose={playlistsDropZoneOpen ? () => setPlaylistsDropZoneOpen(() => false) : undefined}
+                        filters={[{ name: ".bplist, .json", extensions: ["bplist", "json"] }]}
+                        dialogOptions={{ dialog: {
+                            properties: ["openFile", "multiSelections"],
+                        }}}
+                    >
+                        <LocalPlaylistsListPanel className="w-full h-full shrink-0" isActive={isActive && tabIndex === 1} ref={playlistsRef} version={version} linkedState={playlistLinkedState} filter={playlistFilter} search={search}/>
+                    </Dropzone>
+
                 </InstalledMapsContext.Provider>
             </BsContentTabPanel>
             </>

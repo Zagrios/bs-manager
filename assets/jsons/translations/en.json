@@ -52,8 +52,9 @@
                 "tabs": {
                     "maps": {
                         "actions": {
-                            "add-maps": {
-                                "text": "Add"
+                            "drop-down": {
+                                "browse-maps": "Browse maps",
+                                "import-maps": "Import maps"
                             },
                             "link-maps": {
                                 "tooltips": {
@@ -70,7 +71,17 @@
                             "text": "Import your maps",
                             "subtext": "Drop your zip files here to import your maps"
                         }
-
+                    },
+                    "playlists": {
+                        "drop-down": {
+                            "browse-playlists": "Browse playlists",
+                            "create-a-playlist": "Create a playlist",
+                            "import-playlists": "Import playlists"
+                        },
+                        "drop-zone": {
+                            "text": "Import your playlists",
+                            "subtext": "Drop your \".bplist\" or \".json\" files here to import them"
+                        }
                     }
                 }
             },
@@ -260,11 +271,13 @@
             "errors": {
                 "titles": {
                     "operation-running": "Operation running",
-                    "no-internet": "No internet"
+                    "no-internet": "No internet",
+                    "file-not-supported": "File not supported"
                 },
                 "msg": {
                     "operation-running": "Wait for the current operation to finish, then try again.",
-                    "no-internet": "Check your connection and try again."
+                    "no-internet": "Check your connection and try again.",
+                    "file-not-supported": "Only {types} files are supported."
                 }
             }
         },
@@ -527,7 +540,8 @@
                     "success": "Maps successfully imported.",
                     "some-success": "Some maps were successfully imported.",
                     "only-accept-zip": "Only zip files are supported.",
-                    "invalid-zip": "The zip file(s) do not contain any maps."
+                    "invalid-zip": "The zip file(s) do not contain any maps.",
+                    "unknown": "An unknown error occurred."
                 }
             }
         },
@@ -1091,6 +1105,9 @@
             }
         }
     },
+    "drop-zone": {
+        "or-browse-files": "Or browse files"
+    },
     "playlist": {
         "error-playlist-creation-title": "Error creating playlist",
         "error-playlist-creation-desc": "An error occurred while creating the playlist.",
@@ -1205,6 +1222,24 @@
             "last-week": "Last week",
             "last-month": "Last month",
             "3-last-month": "Last 3 months"
+        },
+        "playlists-imported": "Playlists imported",
+        "all-playlists-have-been-successfully-imported": "All playlists have been successfully imported",
+        "no-playlist-found": "No playlist found",
+        "no-playlist-found-in-selected-files": "No playlist found in the selected files",
+        "some-playlists-not-imported": "Some playlists not imported",
+        "some-playlists-have-been-imported": {
+            "INVALID_SOURCE": "Some playlists could not be found",
+            "INVALID_PLAYLIST_FILE": "Some playlists are invalid",
+            "CANNOT_PARSE_PLAYLIST": "Some playlists are unreadable",
+            "unknown": "Some playlists could not be imported"
+        },
+        "no-playlists-imported": "No playlists imported",
+        "no-playlists-imported-errors": {
+            "INVALID_SOURCE": "Playlists could not be found",
+            "INVALID_PLAYLIST_FILE": "Playlists are invalid",
+            "CANNOT_PARSE_PLAYLIST": "Playlists are unreadable",
+            "unknown": "No playlist could be imported"
         }
     },
     "dateformat": {

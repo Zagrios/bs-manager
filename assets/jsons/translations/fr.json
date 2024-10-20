@@ -52,8 +52,9 @@
                 "tabs": {
                     "maps": {
                         "actions": {
-                            "add-maps": {
-                                "text": "Ajouter"
+                            "drop-down": {
+                                "browse-maps": "Explorer les maps",
+                                "import-maps": "Importer des maps"
                             },
                             "link-maps": {
                                 "tooltips": {
@@ -69,6 +70,17 @@
                         "drop-zone": {
                             "text": "Importer vos maps",
                             "subtext": "Déposez vos fichiers zip ici pour importer vos maps"
+                        }
+                    },
+                    "playlists": {
+                        "drop-down": {
+                            "browse-playlists": "Explorer les playlists",
+                            "create-a-playlist": "Créer une playlist",
+                            "import-playlists": "Importer des playlists"
+                        },
+                        "drop-zone": {
+                            "text": "Importer vos playlists",
+                            "subtext": "Déposez vos fichiers \".bplist\" ou \".json\" ici pour les importer"
                         }
                     }
                 }
@@ -254,11 +266,13 @@
             "errors": {
                 "titles": {
                     "operation-running": "Opération en cours",
-                    "no-internet": "Pas d'accès Internet"
+                    "no-internet": "Pas d'accès Internet",
+                    "file-not-supported": "Fichier non supporté"
                 },
                 "msg": {
                     "operation-running": "Attends la fin de l'opération en cours puis recommence.",
-                    "no-internet": "Vérifie ta connexion internet et ressaye."
+                    "no-internet": "Vérifie ta connexion internet et ressaye.",
+                    "file-not-supported": "Seuls les fichiers {types} sont pris en charge."
                 }
             }
         },
@@ -519,7 +533,8 @@
                     "success": "Les maps ont été importées avec succès.",
                     "some-success": "Certaines maps ont été importées avec succès.",
                     "only-accept-zip": "Seules les fichiers zip sont pris en charge.",
-                    "invalid-zip": "Le ou les fichiers zip ne contiennent aucune maps."
+                    "invalid-zip": "Le ou les fichiers zip ne contiennent aucune maps.",
+                    "unknown": "Une erreur inconnue s'est produite."
                 }
             }
         },
@@ -1085,6 +1100,9 @@
             }
         }
     },
+    "drop-zone": {
+        "or-browse-files": "Ou parcourir les fichiers"
+    },
     "playlist": {
         "error-playlist-creation-title": "Erreur lors de la création de la playlist",
         "error-playlist-creation-desc": "Une erreur est survenue lors de la création de la playlist.",
@@ -1199,7 +1217,26 @@
             "last-week": "Dernière semaine",
             "last-month": "Dernier mois",
             "3-last-month": "3 derniers mois"
+        },
+        "playlists-imported": "Playlists importées",
+        "all-playlists-have-been-successfully-imported": "Toutes les playlists ont été importées avec succès",
+        "no-playlist-found": "Aucune playlist trouvée",
+        "no-playlist-found-in-selected-files": "Aucune playlist trouvée dans les fichiers sélectionnés",
+        "some-playlists-not-imported": "Certaines playlists non importées",
+        "some-playlists-have-been-imported": {
+            "INVALID_SOURCE": "Certaines playlists n'ont pas pu être trouvées",
+            "INVALID_PLAYLIST_FILE": "Certaines playlists ne sont pas valides",
+            "CANNOT_PARSE_PLAYLIST": "Certaines playlists ne sont pas lisibles",
+            "unknown": "Certaines playlists n'ont pas pu être importées"
+        },
+        "no-playlists-imported": "Aucune playlist importée",
+        "no-playlists-imported-errors": {
+            "INVALID_SOURCE": "Les playlists n'ont pas été trouvées",
+            "INVALID_PLAYLIST_FILE": "Les playlists ne sont pas valides",
+            "CANNOT_PARSE_PLAYLIST": "Les playlists ne sont pas lisibles",
+            "unknown": "Aucune playlist n'a pu être importée"
         }
+
     },
     "dateformat": {
         "dayNames": ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],

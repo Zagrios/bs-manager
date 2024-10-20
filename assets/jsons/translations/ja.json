@@ -52,8 +52,9 @@
                 "tabs": {
                     "maps": {
                         "actions": {
-                            "add-maps": {
-                                "text": "追加"
+                            "drop-down": {
+                                "browse-maps": "マップを閲覧",
+                                "import-maps": "マップをインポート"
                             },
                             "link-maps": {
                                 "tooltips": {
@@ -69,6 +70,17 @@
                         "drop-zone": {
                             "text": "マップをインポート",
                             "subtext": "ZIPファイルをここにドロップしてマップをインポート"
+                        }
+                    },
+                    "playlists": {
+                        "drop-down": {
+                            "browse-playlists": "プレイリストを閲覧",
+                            "create-a-playlist": "プレイリストを作成",
+                            "import-playlists": "プレイリストをインポート"
+                        },
+                        "drop-zone": {
+                            "text": "プレイリストをインポート",
+                            "subtext": "\".bplist\" または \".json\" ファイルをここにドロップしてインポート"
                         }
                     }
                 }
@@ -254,11 +266,13 @@
             "errors": {
                 "titles": {
                     "operation-running": "稼働中",
-                    "no-internet": "インターネット接続がありません"
+                    "no-internet": "インターネット接続がありません",
+                    "file-not-supported": "ファイルはサポートされていません"
                 },
                 "msg": {
                     "operation-running": "現在の処理が終了するのを待ってから、もう一度試してください。",
-                    "no-internet": "インターネット接続を確認し、もう一度お試しください。"
+                    "no-internet": "インターネット接続を確認し、もう一度お試しください。",
+                    "file-not-supported": "{types}ファイルのみがサポートされています。"
                 }
             }
         },
@@ -519,7 +533,8 @@
                     "success": "マップが正常にインポートされました。",
                     "some-success": "一部のマップが正常にインポートされました。",
                     "only-accept-zip": "zipファイルのみがサポートされています。",
-                    "invalid-zip": "zipファイルにマップが含まれていません。"
+                    "invalid-zip": "zipファイルにマップが含まれていません。",
+                    "unknown": "不明なエラーが発生しました。"
                 }
             }
         },
@@ -1083,6 +1098,9 @@
             }
         }
     },
+    "drop-zone": {
+        "or-browse-files": "またはファイルを参照"
+    },
     "playlist": {
         "error-playlist-creation-title": "プレイリストの作成エラー",
         "error-playlist-creation-desc": "プレイリストの作成中にエラーが発生しました。",
@@ -1197,6 +1215,24 @@
             "last-week": "先週",
             "last-month": "先月",
             "3-last-month": "過去3ヶ月"
+        },
+        "playlists-imported": "プレイリストがインポートされました",
+        "all-playlists-have-been-successfully-imported": "すべてのプレイリストが正常にインポートされました",
+        "no-playlist-found": "プレイリストが見つかりません",
+        "no-playlist-found-in-selected-files": "選択されたファイルにプレイリストが見つかりません",
+        "some-playlists-not-imported": "一部のプレイリストはインポートされませんでした",
+        "some-playlists-have-been-imported": {
+            "INVALID_SOURCE": "一部のプレイリストが見つかりませんでした",
+            "INVALID_PLAYLIST_FILE": "一部のプレイリストは無効です",
+            "CANNOT_PARSE_PLAYLIST": "一部のプレイリストは読み取れません",
+            "unknown": "一部のプレイリストをインポートできませんでした"
+        },
+        "no-playlists-imported": "プレイリストはインポートされませんでした",
+        "no-playlists-imported-errors": {
+            "INVALID_SOURCE": "プレイリストが見つかりませんでした",
+            "INVALID_PLAYLIST_FILE": "プレイリストは無効です",
+            "CANNOT_PARSE_PLAYLIST": "プレイリストは読み取れません",
+            "unknown": "プレイリストをインポートできませんでした"
         }
     },
     "dateformat": {

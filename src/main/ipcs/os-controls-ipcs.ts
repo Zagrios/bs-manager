@@ -13,6 +13,11 @@ ipc.on("new-window", (args, reply) => {
     reply(from(shell.openExternal(args)));
 });
 
+ipc.on("open-dialog", (args, reply) => {
+    // Use this ipc instead of "choose-folder" or "choose-file" to have more control over the dialog
+    reply(from(dialog.showOpenDialog(args)));
+})
+
 ipc.on("choose-folder", (args, reply) => {
     reply(from(dialog.showOpenDialog({ properties: ["openDirectory"], defaultPath: args ?? "" })));
 });
