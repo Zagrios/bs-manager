@@ -26,6 +26,7 @@ import { tryit } from "shared/helpers/error.helpers";
 import recursiveReadDir from "recursive-readdir";
 import { BsvMapDetail, SongDetails } from "shared/models/maps";
 import { findHashInString } from "shared/helpers/string.helpers";
+import { serializeError } from "serialize-error";
 
 export class LocalPlaylistsManagerService {
     private static instance: LocalPlaylistsManagerService;
@@ -97,7 +98,7 @@ export class LocalPlaylistsManagerService {
                 const dest = await (async () => {
                     if(opt.dest && path.isAbsolute(opt.dest) && this.acceptPlaylistFiletype(opt.dest)) { return opt.dest; }
                     const playlistFolder = await this.getPlaylistsFolder(opt.version);
-                    const playlistPath = path.join(playlistFolder, `${sanitize(opt.bpList.playlistTitle)}${path.extname(opt.dest)}`);
+                    const playlistPath = path.join(playlistFolder, `${sanitize(opt.bpList.playlistTitle)}.bplist`);
                     return getUniqueFileNamePath(playlistPath);
                 })();
 
@@ -122,7 +123,7 @@ export class LocalPlaylistsManagerService {
         const dest = await (async () => {
             if(opt.dest && path.isAbsolute(opt.dest) && this.acceptPlaylistFiletype(opt.dest)) { return opt.dest; }
             const playlistFolder = await this.getPlaylistsFolder(opt.version);
-            return path.join(playlistFolder, `${sanitize(bplist.playlistTitle)}${path.extname(opt.dest)}`);
+            return path.join(playlistFolder, `${sanitize(bplist.playlistTitle)}.bplist`);
         })();
 
         writeFileSync(dest, JSON.stringify(bplist, null, 2));
@@ -137,13 +138,22 @@ export class LocalPlaylistsManagerService {
         const isLocalFile = await pathExists(source).catch(e => { log.error(e); return false; });
 
         if(!isLocalFile && !isValidUrl(source)) {
-            throw new Error(`Invalid source ${source}`);
+            throw new CustomError(`Invalid source (${source})`, "INVALID_SOURCE");
         }
 
-        const bpList: BPList = isLocalFile ? JSON.parse(readFileSync(source).toString()) : await this.request.getJSON<BPList>(source);
+        const bpList: BPList = await (async () => {
+            if(isLocalFile){
+                const res = await tryit(async () => JSON.parse(readFileSync(source).toString()));
+                if(res.error) {
+                    throw CustomError.fromError(res.error, "CANNOT_PARSE_PLAYLIST");
+                }
+                return res.result;
+            }
+            return this.request.getJSON<BPList>(source);
+        })();
 
         if(!bpList?.playlistTitle) {
-            throw new Error(`Invalid playlist file ${source}`);
+            throw new CustomError(`Invalid playlist file (${source})`, "INVALID_PLAYLIST_FILE");
         }
 
         bpList.songs = (bpList.songs ?? []).map(s => s.hash ? (
@@ -428,6 +438,49 @@ export class LocalPlaylistsManagerService {
         }
 
         return archive.finalize();
+    }
+
+    public importPlaylists({ version, paths }: { version?: BSVersion, paths: string[] }): Observable<Progression<LocalBPListsDetails>> {
+        return new Observable<Progression<LocalBPListsDetails>>(obs => {
+
+            let canceled = false;
+
+            (async () => {
+                const bplistPaths = paths.filter(p => this.acceptPlaylistFiletype(p));
+                const progress: Progression<LocalBPListsDetails> = { current: 0, total: bplistPaths.length, data: null };
+
+                obs.next(progress);
+
+                for(const playlistPath of bplistPaths) {
+                    if(canceled) {
+                        log.info("Playlist import canceled");
+                        return;
+                    }
+
+                    const { result: localBPList, error } = await tryit(() => this.installBPListFile({ bplistSource: playlistPath, version }));
+
+                    if(error) {
+                        progress.lastError = serializeError(CustomError.fromError(error));
+                        obs.next(progress);
+
+                        log.error(error);
+                        continue;
+                    }
+
+                    const bpListDetails = this.getLocalBPListDetails(localBPList.localBPList);
+
+                    progress.current += 1;
+                    progress.data = bpListDetails;
+                    obs.next(progress);
+                }
+            })()
+            .catch(err => obs.error(err))
+            .finally(() => obs.complete());
+
+            return () => {
+                canceled = true;
+            }
+        });
     }
 
     public oneClickInstallPlaylist(bplistUrl: string): Observable<Progression<DownloadPlaylistProgressionData>> {

@@ -6,7 +6,7 @@ import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useService } from "renderer/hooks/use-service.hook";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { FolderLinkState } from "renderer/services/version-folder-linker.service";
-import { BehaviorSubject, Observable, combineLatest, distinctUntilChanged, filter, finalize, lastValueFrom, map, tap } from "rxjs";
+import { BehaviorSubject, Observable, Subscription, bufferTime, combineLatest, distinctUntilChanged, filter, finalize, lastValueFrom, map, tap } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { noop } from "shared/helpers/function.helpers";
 import { LocalBPList, LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
@@ -52,7 +52,7 @@ type Props = {
 
 export type LocalPlaylistsListRef = {
     createPlaylist: () => Promise<void>;
-    syncPlaylists: () => Promise<void>;
+    syncPlaylists: (playlists?: LocalBPList[]) => Promise<void>;
     deletePlaylists: () => Promise<void>;
     exportPlaylists: () => Promise<void>;
 }
@@ -111,9 +111,9 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
             }
 
         },
-        syncPlaylists: async () => {
+        syncPlaylists: async (playlists?: LocalBPList[]) => {
             if(!isOnline){ return; }
-            const toSync = selectedPlaylists$.value?.length ? selectedPlaylists$.value : playlists$.value;
+            const toSync = playlists ?? (selectedPlaylists$.value?.length ? selectedPlaylists$.value : playlists$.value);
             if(!toSync.length){ return; }
 
             const modalRes = await modals.openModal(SyncPlaylistModal, { data: toSync });
@@ -211,10 +211,22 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
             setPlaylists(newPlaylist);
         }
 
-        const sub = playlistDownloader.currentDownload$.pipe(filter(download => download?.downloaded && equal(download?.info.version, version))).subscribe(download => onPlaylistDownloadedCB(download.downloaded));
+        const subs: Subscription[] = [];
+
+        subs.push(playlistDownloader.currentDownload$.pipe(
+            filter(download => download?.downloaded && equal(download?.info.version, version))
+        ).subscribe(download => onPlaylistDownloadedCB(download.downloaded)));
+
+        subs.push(playlistService.$onPlaylistImported(version).pipe(bufferTime(500)).subscribe({
+            next: newPlaylists => {
+                if(!newPlaylists.length){ return; }
+                const playlists = (playlists$.value ?? []).filter(p => !newPlaylists.some(np => np.path === p.path));
+                setPlaylists([...newPlaylists, ...playlists]);
+            }
+        }));
 
         return () => {
-            sub.unsubscribe();
+            subs.forEach(s => s.unsubscribe());
         }
 
     }, [isActiveOnce, version, linked]);

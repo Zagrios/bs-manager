@@ -1,16 +1,13 @@
 export class CustomError extends Error {
 
-    private readonly _code: string;
-    private readonly _data?: unknown;
+    public readonly code: string;
+    public readonly data?: unknown;
 
     constructor(message: string, code: string, data?: unknown){
         super(message);
-        this._code = code;
-        this._data = data;
+        this.code = code;
+        this.data = data;
     }
-
-    public get code(): string { return this._code; }
-    public get data(): unknown { return this._data; }
 
     public static fromError(error: Error, code?: string, data?: unknown): CustomError{
 
