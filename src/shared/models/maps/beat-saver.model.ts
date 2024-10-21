@@ -240,7 +240,7 @@ export interface MapFilter {
     from?: number;
     to?: number;
     fullSpread?: boolean;
-    leaderboard?: string;
+    leaderboard?: MapLeaderboard;
     installed?: boolean;
     minDuration?: number;
     maxDuration?: number;
