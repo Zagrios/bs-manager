@@ -52,8 +52,9 @@
                 "tabs": {
                     "maps": {
                         "actions": {
-                            "add-maps": {
-                                "text": "Добавить"
+                            "drop-down": {
+                                "browse-maps": "Просмотр карт",
+                                "import-maps": "Импорт карт"
                             },
                             "link-maps": {
                                 "tooltips": {
@@ -69,6 +70,17 @@
                         "drop-zone": {
                             "text": "Импортируйте свои карты",
                             "subtext": "Перетащите сюда файлы ZIP, чтобы импортировать свои карты"
+                        }
+                    },
+                    "playlists": {
+                        "drop-down": {
+                            "browse-playlists": "Просмотр плейлистов",
+                            "create-a-playlist": "Создать плейлист",
+                            "import-playlists": "Импорт плейлистов"
+                        },
+                        "drop-zone": {
+                            "text": "Импортируйте ваши плейлисты",
+                            "subtext": "Перетащите сюда файлы \".bplist\" или \".json\" для их импорта"
                         }
                     }
                 }
@@ -254,11 +266,13 @@
             "errors": {
                 "titles": {
                     "operation-running": "Операция в процессе",
-                    "no-internet": "Нет интернета"
+                    "no-internet": "Нет интернета",
+                    "file-not-supported": "Файл не поддерживается"
                 },
                 "msg": {
                     "operation-running": "Дождитесь завершения операции, потом попробуйте снова.",
-                    "no-internet": "Проверьте своё соединение и попробуйте снова."
+                    "no-internet": "Проверьте своё соединение и попробуйте снова.",
+                    "file-not-supported": "Поддерживаются только файлы {types}."
                 }
             }
         },
@@ -519,7 +533,8 @@
                     "success": "Карты были успешно импортированы.",
                     "some-success": "Некоторые карты успешно импортированы.",
                     "only-accept-zip": "Поддерживаются только zip-файлы.",
-                    "invalid-zip": "В zip-файле(ах) нет карт."
+                    "invalid-zip": "В zip-файле(ах) нет карт.",
+                    "unknown": "Произошла неизвестная ошибка."
                 }
             }
         },
@@ -1082,6 +1097,9 @@
             }
         }
     },
+    "drop-zone": {
+        "or-browse-files": "Или просмотреть файлы"
+    },
     "playlist": {
         "error-playlist-creation-title": "Ошибка при создании плейлиста",
         "error-playlist-creation-desc": "Произошла ошибка при создании плейлиста.",
@@ -1196,6 +1214,24 @@
             "last-week": "Последняя неделя",
             "last-month": "Последний месяц",
             "3-last-month": "Последние 3 месяца"
+        },
+        "playlists-imported": "Плейлисты импортированы",
+        "all-playlists-have-been-successfully-imported": "Все плейлисты успешно импортированы",
+        "no-playlist-found": "Плейлист не найден",
+        "no-playlist-found-in-selected-files": "Плейлист не найден в выбранных файлах",
+        "some-playlists-not-imported": "Некоторые плейлисты не импортированы",
+        "some-playlists-have-been-imported": {
+            "INVALID_SOURCE": "Некоторые плейлисты не найдены",
+            "INVALID_PLAYLIST_FILE": "Некоторые плейлисты недействительны",
+            "CANNOT_PARSE_PLAYLIST": "Некоторые плейлисты нечитаемы",
+            "unknown": "Некоторые плейлисты не удалось импортировать"
+        },
+        "no-playlists-imported": "Плейлисты не импортированы",
+        "no-playlists-imported-errors": {
+            "INVALID_SOURCE": "Плейлисты не найдены",
+            "INVALID_PLAYLIST_FILE": "Плейлисты недействительны",
+            "CANNOT_PARSE_PLAYLIST": "Плейлисты нечитаемы",
+            "unknown": "Не удалось импортировать плейлисты"
         }
     },
     "dateformat": {

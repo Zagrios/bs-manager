@@ -52,8 +52,9 @@
                 "tabs": {
                     "maps": {
                         "actions": {
-                            "add-maps": {
-                                "text": "Hinzufügen"
+                            "drop-down": {
+                                "browse-maps": "Karten durchsuchen",
+                                "import-maps": "Karten importieren"
                             },
                             "link-maps": {
                                 "tooltips": {
@@ -69,6 +70,17 @@
                         "drop-zone": {
                             "text": "Deine Karten importieren",
                             "subtext": "Lasse deine ZIP-Dateien hier fallen, um deine Karten zu importieren"
+                        }
+                    },
+                    "playlists": {
+                        "drop-down": {
+                            "browse-playlists": "Wiedergabelisten durchsuchen",
+                            "create-a-playlist": "Eine Wiedergabeliste erstellen",
+                            "import-playlists": "Wiedergabelisten importieren"
+                        },
+                        "drop-zone": {
+                            "text": "Importiere deine Wiedergabelisten",
+                            "subtext": "Ziehe deine \".bplist\" oder \".json\" Dateien hierhin, um sie zu importieren"
                         }
                     }
                 }
@@ -254,11 +266,13 @@
             "errors": {
                 "titles": {
                     "operation-running": "Vorgang läuft",
-                    "no-internet": "Kein Internet"
+                    "no-internet": "Kein Internet",
+                    "file-not-supported": "Datei wird nicht unterstützt"
                 },
                 "msg": {
                     "operation-running": "Warte auf das Ende des aktuellen Vorgangs und versuche es erneut.",
-                    "no-internet": "Überprüfe deine Verbindung und versuche es erneut."
+                    "no-internet": "Überprüfe deine Verbindung und versuche es erneut.",
+                    "file-not-supported": "Nur {types}-Dateien werden unterstützt."
                 }
             }
         },
@@ -519,7 +533,8 @@
                     "success": "Die Karten wurden erfolgreich importiert.",
                     "some-success": "Einige Karten wurden erfolgreich importiert.",
                     "only-accept-zip": "Nur Zip-Dateien werden unterstützt.",
-                    "invalid-zip": "Die Zip-Datei(en) enthalten keine Karten."
+                    "invalid-zip": "Die Zip-Datei(en) enthalten keine Karten.",
+                    "unknown": "Ein unbekannter Fehler ist aufgetreten."
                 }
             }
         },
@@ -1083,6 +1098,9 @@
             }
         }
     },
+    "drop-zone": {
+        "or-browse-files": "Oder Dateien durchsuchen"
+    },
     "playlist": {
         "error-playlist-creation-title": "Fehler beim Erstellen der Playlist",
         "error-playlist-creation-desc": "Beim Erstellen der Playlist ist ein Fehler aufgetreten.",
@@ -1197,6 +1215,24 @@
             "last-week": "Letzte Woche",
             "last-month": "Letzter Monat",
             "3-last-month": "Letzte 3 Monate"
+        },
+        "playlists-imported": "Wiedergabelisten importiert",
+        "all-playlists-have-been-successfully-imported": "Alle Wiedergabelisten wurden erfolgreich importiert",
+        "no-playlist-found": "Keine Wiedergabeliste gefunden",
+        "no-playlist-found-in-selected-files": "Keine Wiedergabeliste in den ausgewählten Dateien gefunden",
+        "some-playlists-not-imported": "Einige Wiedergabelisten wurden nicht importiert",
+        "some-playlists-have-been-imported": {
+            "INVALID_SOURCE": "Einige Wiedergabelisten konnten nicht gefunden werden",
+            "INVALID_PLAYLIST_FILE": "Einige Wiedergabelisten sind ungültig",
+            "CANNOT_PARSE_PLAYLIST": "Einige Wiedergabelisten sind nicht lesbar",
+            "unknown": "Einige Wiedergabelisten konnten nicht importiert werden"
+        },
+        "no-playlists-imported": "Keine Wiedergabelisten importiert",
+        "no-playlists-imported-errors": {
+            "INVALID_SOURCE": "Wiedergabelisten konnten nicht gefunden werden",
+            "INVALID_PLAYLIST_FILE": "Wiedergabelisten sind ungültig",
+            "CANNOT_PARSE_PLAYLIST": "Wiedergabelisten sind nicht lesbar",
+            "unknown": "Es konnte keine Wiedergabeliste importiert werden"
         }
     },
     "dateformat": {

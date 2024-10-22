@@ -8,6 +8,7 @@ import crypto from "crypto";
 import { execSync } from "child_process";
 import { tryit } from "../../shared/helpers/error.helpers";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
+import { ErrorObject } from "serialize-error";
 
 export async function pathExist(path: string): Promise<boolean> {
     try {
@@ -279,4 +280,5 @@ export interface Progression<T = unknown, D = unknown> {
     diff?: number;
     data?: T;
     extra?: D;
+    lastError?: ErrorObject;
 }

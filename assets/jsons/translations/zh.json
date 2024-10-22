@@ -52,8 +52,9 @@
                 "tabs": {
                     "maps": {
                         "actions": {
-                            "add-maps": {
-                                "text": "添加"
+                            "drop-down": {
+                                "browse-maps": "浏览地图",
+                                "import-maps": "导入地图"
                             },
                             "link-maps": {
                                 "tooltips": {
@@ -69,6 +70,17 @@
                         "drop-zone": {
                             "text": "导入您的地图",
                             "subtext": "将ZIP文件拖放到此处以导入您的地图"
+                        }
+                    },
+                    "playlists": {
+                        "drop-down": {
+                            "browse-playlists": "浏览播放列表",
+                            "create-a-playlist": "创建播放列表",
+                            "import-playlists": "导入播放列表"
+                        },
+                        "drop-zone": {
+                            "text": "导入您的播放列表",
+                            "subtext": "将您的 \".bplist\" 或 \".json\" 文件拖放到这里进行导入"
                         }
                     }
                 }
@@ -254,11 +266,13 @@
             "errors": {
                 "titles": {
                     "operation-running": "操作进行中",
-                    "no-internet": "无网络"
+                    "no-internet": "无网络",
+                    "file-not-supported": "文件不受支持"
                 },
                 "msg": {
                     "operation-running": "等待当前操作完成，然后重试。",
-                    "no-internet": "检查你的连接并重试。"
+                    "no-internet": "检查你的连接并重试。",
+                    "file-not-supported": "仅支持{types}文件。"
                 }
             }
         },
@@ -519,7 +533,8 @@
                     "success": "地图已成功导入。",
                     "some-success": "部分地图已成功导入。",
                     "only-accept-zip": "仅支持zip文件。",
-                    "invalid-zip": "zip文件中没有地图。"
+                    "invalid-zip": "zip文件中没有地图。",
+                    "unknown": "发生了未知错误。"
                 }
             }
         },
@@ -1083,6 +1098,9 @@
             }
         }
     },
+    "drop-zone": {
+        "or-browse-files": "或浏览文件"
+    },
     "playlist": {
         "error-playlist-creation-title": "创建播放列表时出错",
         "error-playlist-creation-desc": "创建播放列表时发生错误。",
@@ -1197,6 +1215,24 @@
             "last-week": "上周",
             "last-month": "上个月",
             "3-last-month": "最近3个月"
+        },
+        "playlists-imported": "播放列表已导入",
+        "all-playlists-have-been-successfully-imported": "所有播放列表已成功导入",
+        "no-playlist-found": "未找到播放列表",
+        "no-playlist-found-in-selected-files": "在选定文件中未找到播放列表",
+        "some-playlists-not-imported": "部分播放列表未导入",
+        "some-playlists-have-been-imported": {
+            "INVALID_SOURCE": "某些播放列表未找到",
+            "INVALID_PLAYLIST_FILE": "某些播放列表无效",
+            "CANNOT_PARSE_PLAYLIST": "某些播放列表无法解析",
+            "unknown": "某些播放列表无法导入"
+        },
+        "no-playlists-imported": "未导入任何播放列表",
+        "no-playlists-imported-errors": {
+            "INVALID_SOURCE": "播放列表未找到",
+            "INVALID_PLAYLIST_FILE": "播放列表无效",
+            "CANNOT_PARSE_PLAYLIST": "播放列表无法解析",
+            "unknown": "无法导入任何播放列表"
         }
     },
     "dateformat": {
