@@ -906,7 +906,8 @@
             "bsr-code" : "BSR Code",
             "download" : "Karte herunterladen",
             "downloading" :"Karte wird heruntergeladen",
-            "cancel-download" : "Download abbrechen"
+            "cancel-download" : "Download abbrechen",
+            "hightlight-difficulty": "Schwierigkeit hervorheben"
         }
     },
     "models": {

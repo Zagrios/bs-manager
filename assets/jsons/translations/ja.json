@@ -906,7 +906,8 @@
             "bsr-code" : "BSRコード",
             "download" : "マップをダウンロード",
             "downloading" :"マップをダウンロード中",
-            "cancel-download" : "ダウンロードをキャンセル"
+            "cancel-download" : "ダウンロードをキャンセル",
+            "hightlight-difficulty": "難易度をハイライト"
         }
     },
     "models": {

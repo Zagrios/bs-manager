@@ -906,7 +906,8 @@
             "bsr-code" : "BSR代码",
             "download" : "下载地图",
             "downloading" :"正在下载地图",
-            "cancel-download" : "取消下载"
+            "cancel-download" : "取消下载",
+            "hightlight-difficulty": "突出显示难度"
         }
     },
     "models": {

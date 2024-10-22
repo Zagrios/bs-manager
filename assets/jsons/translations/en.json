@@ -913,7 +913,8 @@
             "bsr-code" : "BSR code",
             "download" : "Download map",
             "downloading" :"Downloading map",
-            "cancel-download" : "Cancel download"
+            "cancel-download" : "Cancel download",
+            "hightlight-difficulty": "Highlight difficulty"
         }
     },
     "models": {

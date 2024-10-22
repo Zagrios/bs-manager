@@ -906,7 +906,8 @@
             "bsr-code" : "BSR代碼",
             "download" : "下載地圖",
             "downloading" :"正在下載地圖",
-            "cancel-download" : "取消下載"
+            "cancel-download" : "取消下載",
+            "hightlight-difficulty": "突出顯示難度"
         }
     },
     "models": {

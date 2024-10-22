@@ -906,7 +906,8 @@
             "bsr-code" : "Código BSR",
             "download" : "Descargar mapa",
             "downloading" :"Descargando mapa",
-            "cancel-download" : "Cancelar descarga"
+            "cancel-download" : "Cancelar descarga",
+            "hightlight-difficulty": "Resaltar la dificultad"
         }
     },
     "models": {

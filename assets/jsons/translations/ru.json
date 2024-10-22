@@ -905,7 +905,8 @@
             "bsr-code" : "Код BSR",
             "download" : "Скачать карту",
             "downloading" :"Загрузка карты",
-            "cancel-download" : "Отменить загрузку"
+            "cancel-download" : "Отменить загрузку",
+            "hightlight-difficulty": "Выделить сложность"
         }
     },
     "models": {
