@@ -13,6 +13,7 @@ import { SteamMobileApproveModal } from "renderer/components/modal/modal-types/b
 import { DownloaderServiceInterface } from "./bs-store-downloader.interface";
 import { AbstractBsDownloaderService } from "./abstract-bs-downloader.service";
 import { addFilterStringLog } from "renderer";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
 
 export class SteamDownloaderService extends AbstractBsDownloaderService implements DownloaderServiceInterface{
 
@@ -120,11 +121,11 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
         return subs;
     }
 
-    private hanndleErrorEvent(errorEvent: DepotDownloaderEvent) {
+    private hanndleErrorEvent(errorEvent: CustomError) {
         const handledErrors = Object.values(DepotDownloaderErrorEvent);
 
-        if(handledErrors.includes(errorEvent?.subType as DepotDownloaderErrorEvent)){
-            return this.notificationService.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.steam-download.errors.msg.${errorEvent.subType}`, duration: 10_000});
+        if(handledErrors.includes(errorEvent?.code as DepotDownloaderErrorEvent)){
+            return this.notificationService.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.steam-download.errors.msg.${errorEvent.code}`, duration: 10_000});
         }
 
         return this.notificationService.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.steam-download.errors.msg.${DepotDownloaderErrorEvent.Unknown}`, duration: 10_000});

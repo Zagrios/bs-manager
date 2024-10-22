@@ -12,6 +12,7 @@ import { DepotDownloaderArgsOptions, DepotDownloaderErrorEvent, DepotDownloaderE
 import { DepotDownloader } from "../../models/depot-downloader.class";
 import { app } from "electron";
 import { BsStore } from "../../../shared/models/bs-store.enum";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
 
 export class BsSteamDownloaderService {
     private static instance: BsSteamDownloaderService;
@@ -96,7 +97,7 @@ export class BsSteamDownloaderService {
                 depotDownloader.$events().pipe(
                     map(event => {
                         if(event.type === DepotDownloaderEventType.Error){
-                            throw event;
+                            throw new CustomError(JSON.stringify(event.data) ?? "An error occur in the DepotDownloader process", event?.subType ?? DepotDownloaderErrorEvent.Unknown, event)
                         }
                         return event;
                     }),
