@@ -145,7 +145,9 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
             duration={map.metadata.duration}
             hash={map.versions.at(0).hash}
             likes={map.stats.upvotes}
-            mapId={map.id} ranked={map.ranked}
+            mapId={map.id}
+            ranked={map.ranked}
+            blRanked={map.blRanked}
             title={map.name}
             songAutor={map.metadata.songAuthorName}
             diffs={MapItemComponentPropsMapper.extractMapDiffs({ bsvMap: map })}

@@ -72,6 +72,7 @@ export const LocalPlaylistDetailsModal: ModalComponent<void, Props> = ({resolver
                 diffs={MapItemComponentPropsMapper.extractMapDiffs({ mapInfo: map.mapInfo, songDetails: map.songDetails })}
                 mapId={map.songDetails?.id}
                 ranked={map.songDetails?.ranked}
+                blRanked={map.songDetails?.blRanked}
                 autorId={map.songDetails?.uploader.id}
                 likes={map.songDetails?.upVotes}
                 createdAt={map.songDetails?.uploadedAt}
