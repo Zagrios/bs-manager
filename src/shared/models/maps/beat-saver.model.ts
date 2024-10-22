@@ -209,11 +209,16 @@ export enum MapRequirement {
 
 export enum MapSpecificity {
     Automapper = "automapper",
-    Ranked = "ranked",
     Curated = "curated",
     Verified = "verified",
     FullSpread = "fullSpread"
+}
 
+export enum MapLeaderboard {
+    All = "All",
+    Ranked = "Ranked",
+    BeatLeader = "BeatLeader",
+    ScoreSaber = "ScoreSaber",
 }
 
 // [ Admin, Uploader, SageScore, None ]
@@ -235,7 +240,7 @@ export interface MapFilter {
     from?: number;
     to?: number;
     fullSpread?: boolean;
-    ranked?: boolean;
+    leaderboard?: MapLeaderboard;
     installed?: boolean;
     minDuration?: number;
     maxDuration?: number;
