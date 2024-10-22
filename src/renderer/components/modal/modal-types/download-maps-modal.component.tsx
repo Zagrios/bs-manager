@@ -22,9 +22,11 @@ import { useConstant } from "renderer/hooks/use-constant.hook";
 import { getLocalTimeZone, parseAbsolute, toCalendarDateTime } from "@internationalized/date";
 import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual-scroll.component";
 import { MapItemComponentPropsMapper } from "shared/mappers/map/map-item-component-props.mapper";
+import { ConfigurationService } from "renderer/services/configuration.service";
 
 export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; ownedMaps: BsmLocalMap[] }> = ({ options: {data : { ownedMaps, version }} }) => {
     const beatSaver = useService(BeatSaverService);
+    const config = useService(ConfigurationService);
     const mapsDownloader = useService(MapsDownloaderService);
     const progressBar = useService(ProgressBarService);
     const os = useService(OsDiagnosticService);
@@ -37,12 +39,11 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
     const [query, setQuery] = useState("");
     const [maps, setMaps] = useState<BsvMapDetail[]>([]);
     const [downloadbleMaps, setDownloadbleMaps] = useState<DownloadableMap[]>([]);
-    const [sortOrder, setSortOrder] = useState<BsvSearchOrder>(BsvSearchOrder.Latest);
     const [ownedMapHashs, setOwnedMapHashs] = useState<string[]>(ownedMaps?.map(map => map.hash) ?? []);
     const [loading, setLoading] = useState(false);
     const isOnline = useObservable(() => os.isOnline$);
     const [searchParams, setSearchParams] = useState<SearchParams>({
-        sortOrder,
+        sortOrder: config.get("map-sort-order"),
         filter,
         page: 0,
         q: query,
@@ -170,21 +171,21 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
     }, []);
 
     const handleSortChange = (newSort: BsvSearchOrder) => {
-        setSortOrder(() => newSort);
+        config.set("map-sort-order", newSort);
         setMaps(() => []);
         setSearchParams(() => ({ ...searchParams, sortOrder: newSort }));
     };
 
     const handleSearch = () => {
-        const searchParams: SearchParams = {
-            sortOrder,
+        const searchParamsLocal: SearchParams = {
+            sortOrder: searchParams.sortOrder,
             filter,
             q: query.trim(),
             page: 0,
         };
 
         setMaps(() => []);
-        setSearchParams(() => searchParams);
+        setSearchParams(() => searchParamsLocal);
     };
 
     const handleLoadMore = () => {
@@ -219,7 +220,7 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
                         handleSearch();
                     }}
                 />
-                <BsmSelect className="bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-1 pb-0.5 text-center" options={sortOptions} onChange={sort => handleSortChange(sort)} />
+                <BsmSelect className="bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-1 pb-0.5 text-center" options={sortOptions} selected={searchParams.sortOrder} onChange={sort => handleSortChange(sort)} />
             </div>
 
             {(() => {
