@@ -123,7 +123,7 @@
             }
         },
         "available-versions": {
-            "title": "Wähle eine Version",
+            "title": "Eine Version herunterladen",
             "steam-release": "Versionsseite",
             "dropdown": {
                 "refresh": "Aktualisiere die Versionen",

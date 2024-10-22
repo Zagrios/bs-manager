@@ -26,6 +26,8 @@ import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 import { SetupService } from "renderer/services/setup.service";
 import { gt, parse } from "semver"
 import { logRenderError } from "renderer";
+import { StaticConfigurationService } from "renderer/services/static-configuration.service";
+import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
 
 export default function App() {
     useService(OsDiagnosticService);
@@ -37,6 +39,8 @@ export default function App() {
     const config = useService(ConfigurationService);
     const autoUpdater = useService(AutoUpdaterService);
     const setup = useService(SetupService);
+    const staticConfig = useService(StaticConfigurationService);
+    const versionManager = useService(BSVersionManagerService);
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -45,8 +49,9 @@ export default function App() {
         checkIsUpdated();
         setup.check()
             .then(() => {
+                navigateToDefaultPage();
                 checkOneClicks();
-            })
+            });
     }, []);
 
     const checkIsUpdated = async () => {
@@ -70,6 +75,20 @@ export default function App() {
         if (parse(lastAppVersion) && gt(appVersion, lastAppVersion)) {
             await autoUpdater.showChangelog(appVersion).catch(logRenderError);
         }
+    };
+
+    const navigateToDefaultPage = async () => {
+        const version = await staticConfig.get("last-version-launched");
+        if (!version) {
+            return;
+        }
+
+        if (!await versionManager.isVersionInstalled(version)) {
+            await staticConfig.delete("last-version-launched");
+            return;
+        }
+
+        navigate(`/bs-version/${version.BSVersion}`, { state: version });
     };
 
     const checkOneClicks = async () => {

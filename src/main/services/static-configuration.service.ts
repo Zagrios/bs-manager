@@ -65,6 +65,7 @@ export interface StaticConfigKeyValues {
     "song-details-cache-etag": string;
     "disable-hadware-acceleration": boolean;
     "use-symlinks": boolean;
+    "last-version-launched": BSVersion;
 }
 
 export type StaticConfigKeys = keyof StaticConfigKeyValues;
