@@ -8,7 +8,6 @@ export const defaultConfiguration: { [key in DefaultConfigKey]: any } = {
     "default-shared-folders": [
         window.electron.path.join("Beat Saber_Data", "CustomLevels"),
         window.electron.path.join("Beat Saber_Data", "CustomWIPLevels"),
-        "DLC"
     ],
 };
 
