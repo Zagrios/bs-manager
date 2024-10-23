@@ -47,7 +47,9 @@ export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ options: {d
 
     const addFolder = async () => {
         const versionPath = await lastValueFrom(versionManager.getVersionPath(data));
-        const folder = await lastValueFrom(ipc.sendV2("choose-folder", versionPath));
+        const folder = await lastValueFrom(ipc.sendV2("choose-folder", {
+            defaultPath: versionPath
+        }));
 
         if (!folder || folder.canceled || !folder.filePaths?.length) {
             return;

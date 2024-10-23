@@ -25,7 +25,11 @@ export const LinuxSetupModal: ModalComponent<{}, {}> = ({ resolver }) => {
     }
 
     const selectProtonPath = async () => {
-        const response = await lastValueFrom(ipcService.sendV2("choose-folder"));
+        const response = await lastValueFrom(ipcService.sendV2("choose-folder", {
+            parent: "home",
+            defaultPath: ".local/share/Steam/steamapps/common",
+            showHidden: true,
+        }));
         if (response.canceled || !response.filePaths?.length) {
             return;
         }
