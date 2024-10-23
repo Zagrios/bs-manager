@@ -7,5 +7,4 @@ export interface LaunchOption {
     debug?: boolean,
     additionalArgs?: string[],
     admin?: boolean,
-    protonPath?: string,
 }

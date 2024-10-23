@@ -124,7 +124,7 @@ export interface IpcChannelMapping {
     /* ** os-controls-ipcs ** */
     "new-window": { request: string, response: void };
     "open-dialog": { request: OpenDialogOptions, response: OpenDialogReturnValue };
-    "choose-folder": { request: string, response: OpenDialogReturnValue };
+    "choose-folder": { request: { defaultPath?: string, parent?: "home", showHidden?: boolean }, response: OpenDialogReturnValue };
     "choose-file": { request: string, response: OpenDialogReturnValue }
     "choose-image": { request: { multiple?: boolean, base64?: boolean }, response: string[] }
     "window.progression": { request: number, response: void };
@@ -149,6 +149,9 @@ export interface IpcChannelMapping {
     /* ** static-configuration.ipcs ** */
     "static-configuration.get": StaticConfigGetIpcRequestResponse<StaticConfigKeys>;
     "static-configuration.set": StaticConfigSetIpcRequest<StaticConfigKeys>;
+
+    /* ** linux.ipcs ** */
+    "linux.verify-proton-folder": { request: void, response: boolean };
 
     /* ** OTHERS (if your IPC channel is not in a "-ipcs" file, put it here) ** */
     "shortcut-launch-options": { request: void, response: LaunchOption };
