@@ -28,7 +28,6 @@ export const defaultConfiguration: {
     "default-shared-folders": [
         window.electron.path.join("Beat Saber_Data", "CustomLevels"),
         window.electron.path.join("Beat Saber_Data", "CustomWIPLevels"),
-        "DLC"
     ],
     "playlist-sort-order": BsvSearchOrder.Relevance,
     "map-sort-order": BsvSearchOrder.Latest,
