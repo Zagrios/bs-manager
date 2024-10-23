@@ -6,7 +6,7 @@ import path from "path";
 import md5File from "md5-file";
 import { RequestService } from "../request.service";
 import { spawn } from "child_process";
-import { BS_EXECUTABLE, WINE_BINARY_PREFIX } from "../../constants";
+import { BS_EXECUTABLE } from "../../constants";
 import log from "electron-log";
 import { deleteFolder, pathExist, Progression, unlinkPath } from "../../helpers/fs.helpers";
 import { lastValueFrom, Observable } from "rxjs";
@@ -17,15 +17,15 @@ import { sToMs } from "../../../shared/helpers/time.helpers";
 import { ensureDir, pathExistsSync } from "fs-extra";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { popElement } from "shared/helpers/array.helpers";
-import { StaticConfigurationService } from "../static-configuration.service";
+import { LinuxService } from "../linux.service";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
 
     private readonly beatModsApi: BeatModsApiService;
     private readonly bsLocalService: BSLocalVersionService;
+    private readonly linuxService: LinuxService;
     private readonly requestService: RequestService;
-    private readonly staticConfig: StaticConfigurationService;
 
     private manifestMatches: Mod[];
 
@@ -39,8 +39,8 @@ export class BsModsManagerService {
     private constructor() {
         this.beatModsApi = BeatModsApiService.getInstance();
         this.bsLocalService = BSLocalVersionService.getInstance();
+        this.linuxService = LinuxService.getInstance();
         this.requestService = RequestService.getInstance();
-        this.staticConfig = StaticConfigurationService.getInstance();
     }
 
     private async getModFromHash(hash: string): Promise<Mod> {
@@ -143,34 +143,24 @@ export class BsModsManagerService {
             return false;
         }
 
-        // Just use the wine binary within the proton folder so no additional wine installation is needed
-        let winePath: string = "";
+        let cmd = "";
         if (process.platform === "linux") {
-            if (!this.staticConfig.has("proton-folder")) {
-                log.error("Proton folder not setup");
+            try {
+                const winePath = await this.linuxService.getWinePath();
+                cmd = `"${winePath}" "${ipaPath}" "${bsExePath}" ${args.join(" ")}`;
+            } catch (error) {
+                log.error("wine not found", error);
                 return false;
             }
-
-            winePath = path.join(
-                this.staticConfig.get("proton-folder"),
-                WINE_BINARY_PREFIX
-            );
-
-            if (!pathExistsSync(winePath)) {
-                log.error("Wine binary not found");
-                return false;
-            }
+        } else {
+            cmd = `"${ipaPath}" "${bsExePath}" ${args.join(" ")}`;
         }
 
         return new Promise<boolean>(resolve => {
-            const cmd = process.platform === "linux"
-                ? `"${winePath}" "${ipaPath}" ${args.join(" ")}`
-                : `"${ipaPath}" ${args.join(" ")}`;
-
             log.info("START IPA PROCESS", cmd);
             const processIPA = spawn(cmd, { cwd: versionPath, detached: true, shell: true });
 
-            const timemout = setTimeout(() => {
+            const timeout = setTimeout(() => {
                 log.info("Ipa process timeout");
                 resolve(false)
             }, sToMs(30));
@@ -183,7 +173,7 @@ export class BsModsManagerService {
             })
 
             processIPA.once("exit", code => {
-                clearTimeout(timemout);
+                clearTimeout(timeout);
                 if (code === 0) {
                     log.info("Ipa process exist with code 0");
                     return resolve(true);

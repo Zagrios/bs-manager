@@ -1,7 +1,7 @@
 import ElectronStore from "electron-store";
 import { pathExistsSync } from "fs-extra";
 import path from "path";
-import { PROTON_BINARY_PREFIX, WINE_BINARY_PREFIX } from "main/constants";
+import { PROTON_BINARY_PREFIX } from "main/constants";
 import { Observable, Subject } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
@@ -60,8 +60,7 @@ export class StaticConfigurationService {
 
     private validateProtonFolder(protonFolder: string): void {
         const protonPath = path.join(protonFolder, PROTON_BINARY_PREFIX);
-        const winePath = path.join(protonFolder, WINE_BINARY_PREFIX);
-        if (!pathExistsSync(protonPath) || !pathExistsSync(winePath)) {
+        if (!pathExistsSync(protonPath)) {
             throw new CustomError("Invalid proton folder path", "invalid-folder");
         }
     }
