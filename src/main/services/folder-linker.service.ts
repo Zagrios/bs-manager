@@ -5,7 +5,7 @@ import { lstat, symlink } from "fs/promises";
 import path from "path";
 import { copy, readlink } from "fs-extra";
 import { lastValueFrom } from "rxjs";
-import { noop } from "shared/helpers/function.helpers";
+import { noop } from "../../shared/helpers/function.helpers";
 
 export class FolderLinkerService {
     private static instance: FolderLinkerService;

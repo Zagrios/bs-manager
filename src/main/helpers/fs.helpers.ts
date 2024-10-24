@@ -1,4 +1,4 @@
-import { CopyOptions, MoveOptions, copy, createReadStream, ensureDir, move, realpath, stat, symlink } from "fs-extra";
+import { CopyOptions, MoveOptions, copy, createReadStream, ensureDir, move, pathExistsSync, realpath, stat, symlink } from "fs-extra";
 import { access, mkdir, rm, readdir, unlink, lstat, readlink } from "fs/promises";
 import path from "path";
 import { Observable, concatMap, from } from "rxjs";
@@ -7,7 +7,7 @@ import { BsmException } from "shared/models/bsm-exception.model";
 import crypto from "crypto";
 import { execSync } from "child_process";
 import { tryit } from "../../shared/helpers/error.helpers";
-import { CustomError } from "shared/models/exceptions/custom-error.class";
+import { CustomError } from "../../shared/models/exceptions/custom-error.class"
 
 export async function pathExist(path: string): Promise<boolean> {
     try {
