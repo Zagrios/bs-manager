@@ -86,6 +86,15 @@
                 ]
             }
         },
+        "deb": {
+            "fpm": ["--after-install=build/after-install.sh"]
+        },
+        "rpm": {
+            "fpm": ["--after-install=build/after-install.sh"]
+        },
+        "pacman": {
+            "fpm": ["--after-install=build/after-install.sh"]
+        },
         "directories": {
             "app": "release/app",
             "buildResources": "assets",
