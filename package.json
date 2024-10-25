@@ -69,14 +69,22 @@
         },
         "linux": {
             "target": [
-                "AppImage"
+                "deb",
+                "rpm",
+                "pacman"
             ],
             "icon": "./build/icons/png",
             "category": "Utility;Game;",
             "extraResources": [
                 "./build/icons/png",
                 "./assets/scripts/DepotDownloader"
-            ]
+            ],
+            "protocols": {
+                "name": "BSManager",
+                "schemes": [
+                    "bsmanager"
+                ]
+            }
         },
         "directories": {
             "app": "release/app",

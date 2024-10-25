@@ -20,6 +20,9 @@ jobs:
             - name: Check out Git repository
               uses: actions/checkout@v4
 
+            - name: Install dependencies for rpm and pacman
+              run: sudo apt-get install -y rpm libarchive-tools
+
             - name: Use Node.js
               uses: actions/setup-node@v4
               with:
