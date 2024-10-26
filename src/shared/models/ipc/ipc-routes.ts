@@ -20,6 +20,7 @@ import { Supporter } from "../supporters";
 import { AppWindow } from "../window-manager/app-window.model";
 import { LocalBPList, LocalBPListsDetails } from "../playlists/local-playlist.models";
 import { StaticConfigGetIpcRequestResponse, StaticConfigKeys, StaticConfigSetIpcRequest } from "main/services/static-configuration.service";
+import { OAuthType } from "../oauth.types";
 
 export type IpcReplier<T> = (data: Observable<T>) => void;
 
@@ -111,6 +112,9 @@ export interface IpcChannelMapping {
     "link-version-folder-action": { request: VersionLinkerAction, response: void };
     "is-version-folder-linked": { request: { version: BSVersion; relativeFolder: string }, response: boolean };
     "relink-all-versions-folders": { request: void, response: void };
+
+    /* ** auth ** */
+    "auth.open-oauth": { request: { type: OAuthType, codeVerifier: string }, response: void };
 
     /* ** launcher-ipcs ** */
     "download-update": { request: void, response: Progression };

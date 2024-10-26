@@ -15,7 +15,7 @@ export class DeepLinkService {
         return DeepLinkService.instance;
     }
 
-    private readonly listeners = new Map<string, Listerner[]>();
+    private readonly listeners = new Map<string, Listener[]>();
 
     private constructor() {}
 
@@ -43,15 +43,15 @@ export class DeepLinkService {
         return app.isDefaultProtocolClient(protocol);
     }
 
-    public addLinkOpenedListener(protocol: string, fn: Listerner) {
+    public addLinkOpenedListener(protocol: string, fn: Listener) {
         if (!this.listeners.has(protocol)) {
-            this.listeners.set(protocol, [] as Listerner[]);
+            this.listeners.set(protocol, [] as Listener[]);
         }
 
         this.listeners.get(protocol).push(fn);
     }
 
-    public removeLinkOpenedListener(protocol: string, fn: Listerner) {
+    public removeLinkOpenedListener(protocol: string, fn: Listener) {
         if (!this.listeners.get(protocol)?.length) {
             return;
         }
@@ -73,7 +73,6 @@ export class DeepLinkService {
         const url = new URL(link);
 
         const protocolListeners = this.listeners.get(url.protocol.replace(":", "")) ?? [];
-
         protocolListeners.forEach(listerner => {
             listerner(link);
         });
@@ -90,4 +89,4 @@ export class DeepLinkService {
     }
 }
 
-type Listerner = (link: string) => void;
+type Listener = (link: string) => void;

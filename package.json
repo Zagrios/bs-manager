@@ -36,65 +36,6 @@
             "prettier --ignore-path .eslintignore --single-quote --write"
         ]
     },
-    "build": {
-        "extraResources": [
-            "./assets/jsons/bs-versions.json",
-            "./assets/jsons/patreons.json",
-            "./assets/proto/song_details_cache_v1.proto"
-        ],
-        "productName": "BSManager",
-        "appId": "org.erb.BSManager",
-        "asarUnpack": "**\\*.{node,dll}",
-        "files": [
-            "dist/**/*",
-            "node_modules",
-            "package.json"
-        ],
-        "afterSign": ".erb/scripts/notarize.js",
-        "afterPack": ".erb/scripts/after-pack.js",
-        "win": {
-            "signingHashAlgorithms": [
-                "sha256"
-            ],
-            "target": [
-                "nsis",
-                "nsis-web"
-            ],
-            "icon": "./build/icons/win/favicon.ico",
-            "extraResources": [
-                "./build/icons/win",
-                "./assets/scripts/*.exe"
-            ]
-        },
-        "linux": {
-            "target": [
-                "AppImage"
-            ],
-            "icon": "./build/icons/png",
-            "category": "Utility;Game;",
-            "extraResources": [
-                "./build/icons/png",
-                "./assets/scripts/DepotDownloader"
-            ]
-        },
-        "directories": {
-            "app": "release/app",
-            "buildResources": "assets",
-            "output": "release/build"
-        },
-        "publish": {
-            "provider": "github",
-            "owner": "Zagrios"
-        },
-        "fileAssociations": [
-            {
-                "ext": "bplist",
-                "description": "Beat Saber Playlist (BSManager)",
-                "icon": "./assets/bsm_file.ico",
-                "role": "Viewer"
-            }
-        ]
-    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/Zagrios/bs-manager.git"
@@ -186,6 +127,7 @@
         "css-loader": "^6.10.0",
         "css-minimizer-webpack-plugin": "^6.0.0",
         "detect-port": "^1.5.1",
+        "dotenv": "^16.4.5",
         "electron": "^32.1.2",
         "electron-builder": "^24.13.3",
         "electron-devtools-installer": "^3.2.0",

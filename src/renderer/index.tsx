@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { HashRouter } from "react-router-dom";
+import { BrowserRouter, HashRouter } from "react-router-dom";
 import "tailwindcss/tailwind.css";
 import "./index.css";
 import { IpcService } from "./services/ipc.service";
@@ -10,6 +10,7 @@ const oneclickDownloadMapContainer = document.getElementById("oneclick-download-
 const oneclickDownloadPlaylistContainer = document.getElementById("oneclick-download-playlist");
 const oneclickDownloadModelContainer = document.getElementById("oneclick-download-model");
 const shortcutLaunchContainer = document.getElementById("shortcut-launch");
+const oauthCallbackContainer = document.getElementById("oauth");
 
 const ipc = IpcService.getInstance();
 const themeService = ThemeService.getInstance();
@@ -46,6 +47,14 @@ if (launcherContainer) {
 } else if (shortcutLaunchContainer) {
     import("./windows/ShortcutLaunch").then(reactWindow => {
         createRoot(shortcutLaunchContainer).render(<reactWindow.default />);
+    });
+} else if (oauthCallbackContainer) {
+    import("./windows/OAuth").then(reactWindow => {
+        createRoot(oauthCallbackContainer).render(
+            <BrowserRouter>
+                <reactWindow.default />
+            </BrowserRouter>
+        );
     });
 } else {
     const root = document.getElementById("root");

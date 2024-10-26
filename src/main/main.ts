@@ -26,6 +26,12 @@ import { SongDetailsCacheService } from "./services/additional-content/maps/song
 import { readdirSync, statSync, unlinkSync } from "fs-extra";
 import { StaticConfigurationService } from "./services/static-configuration.service";
 
+require("dotenv").config({
+    path: app.isPackaged
+        ? path.join(process.resourcesPath, '.env')
+        : path.resolve(process.cwd(), '.env.development'),
+});
+
 const isDebug = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true";
 const staticConfig = StaticConfigurationService.getInstance();
 

@@ -5,6 +5,12 @@ const sep = process.platform === ProviderPlatform.WINDOWS ? "\\" : "/";
 
 contextBridge.exposeInMainWorld("electron", {
     platform: process.platform,
+    envVariables: {
+        beatleader: {
+            clientId: process.env.BEATLEADER_CLIENT_ID,
+            redirectUri: process.env.BEATLEADER_REDIRECT_URI,
+        },
+    },
     ipcRenderer: {
         sendMessage(channel: string, args: unknown[]) {
             ipcRenderer.send(channel, args);
