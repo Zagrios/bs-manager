@@ -87,12 +87,14 @@ export class LocalModelsManagerService {
 
             (async () => {
                 const modelFolder = await this.getModelFolderPath(model.type, version);
-                const modelDest = path.join(modelFolder, sanitize(path.basename(model.download)));
 
                 const url = model.download.split("/");
                 url[url.length - 1] = encodeURIComponent(url[url.length - 1]);
 
-                const download$ = this.request.downloadFile(url.join("/"), modelDest);
+                const download$ = this.request.downloadFile(url.join("/"), {
+                    destFolder: modelFolder,
+                    filename: sanitize(path.basename(model.download))
+                });
 
                 subs.push(download$.subscribe({ next: value => subscriber.next({ ...value, data: undefined }), error: e => subscriber.error(e) }));
 

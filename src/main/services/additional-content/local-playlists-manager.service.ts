@@ -77,9 +77,13 @@ export class LocalPlaylistsManagerService {
         if (isLocalFile) {
             return copyFile(bslistSource, destFile).then(() => destFile);
         }
-        return lastValueFrom(this.request.downloadFile(bslistSource, destFile)).then(res => res.data);
+        return lastValueFrom(this.request.downloadFile(bslistSource, {
+            destFolder: playlistFolder,
+            filename,
+            preferContentDisposition: true,
+        })).then(res => res.data);
     }
-        
+
 
     private async readPlaylistFile(path: string): Promise<BPList> {
         if (!(await pathExist(path))) {
@@ -102,8 +106,8 @@ export class LocalPlaylistsManagerService {
 
                 const bpListFilePath = await this.installBPListFile(bpListUrl, version);
                 const bpList = await this.readPlaylistFile(bpListFilePath);
-                
-                const progress: Progression<DownloadPlaylistProgressionData> = { 
+
+                const progress: Progression<DownloadPlaylistProgressionData> = {
                     total: bpList.songs.length,
                     current: 0,
                     data: {

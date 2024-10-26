@@ -141,9 +141,11 @@ export class LocalMapsManagerService {
         const fileName = `${path.basename(zipUrl, ".zip")}-${crypto.randomUUID()}.zip`;
         const tempPath = this.utils.getTempPath();
         await ensureFolderExist(this.utils.getTempPath());
-        const dest = path.join(tempPath, fileName);
 
-        const zipPath = (await lastValueFrom(this.reqService.downloadFile(zipUrl, dest))).data;
+        const zipPath = (await lastValueFrom(this.reqService.downloadFile(zipUrl, {
+            destFolder: tempPath,
+            filename: fileName
+        }))).data;
         const zip = new StreamZip.async({ file: zipPath });
 
         return { zip, zipPath };
@@ -263,7 +265,7 @@ export class LocalMapsManagerService {
         }
 
         const zipUrl = map.versions.at(0).downloadURL;
-        const mapFolderName = sanitize(`${map.id}-${map.name}`);
+        const mapFolderName = sanitize(`${map.id} (${map.metadata.songName} - ${map.metadata.levelAuthorName})`);
         const mapsFolder = await this.getMapsFolderPath(version);
 
         const mapPath = path.join(mapsFolder, mapFolderName);
