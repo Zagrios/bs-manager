@@ -109,7 +109,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
             lastValueFrom(modsManager.getAvailableMods(version)),
             lastValueFrom(modsManager.getInstalledMods(version))
         ]).then(([available, installed]) => {
-            const defaultMods = configService.get<string[]>("default_mods" as DefaultConfigKey);
+            const defaultMods = installed?.length ? [] : configService.get<string[]>("default_mods" as DefaultConfigKey);
             setModsAvailable(modsToCategoryMap(available));
             setModsSelected(available.filter(m => m.required || defaultMods.some(d => m.name.toLowerCase() === d.toLowerCase()) || installed.some(i => m.name === i.name)));
             setModsInstalled(modsToCategoryMap(installed));
@@ -120,7 +120,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         const subs: Subscription[] = [];
 
         if (isVisible && isOnline) {
-            
+
             (async () => {
                 if (configService.get<boolean>(ACCEPTED_DISCLAIMER_KEY)) {
                     return true;
@@ -138,7 +138,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
                 if (!canLoad) {
                     return onDisclamerDecline?.();
                 }
-                
+
                 loadMods();
 
                 subs.push(
