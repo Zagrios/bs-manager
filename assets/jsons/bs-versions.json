@@ -598,8 +598,7 @@
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/6169409105101272202",
 		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/clans/32055887/c328e407367e9914abaf92f609501877ee5abb63.png",
 		"ReleaseDate": "1680623885",
-		"year": "2023",
-		"recommended": true
+		"year": "2023"
 	},
 	{
 		"BSVersion": "1.29.4",
@@ -700,7 +699,7 @@
 		"ReleaseDate": "1708091473",
 		"year": "2024"
 	},
-    {
+	{
 		"BSVersion": "1.35.0",
 		"BSManifest": "1490986193481243578",
 		"OculusBinaryId": "6720809361352119",
@@ -708,5 +707,85 @@
 		"ReleaseImg": "https://clan.cloudflare.steamstatic.com/images//32055887/9a141be5c44ca6fc81551a2c7e7f28407df413ed.png",
 		"ReleaseDate": "1709831174",
 		"year": "2024"
+	},
+	{
+		"BSVersion": "1.36.0",
+		"BSManifest": "8533509040167838423",
+		"OculusBinaryId": "6863072637125790",
+		"ReleaseURL": "https://store.steampowered.com/news/app/620980/view/4205873192610459250",
+		"ReleaseImg": "https://clan.akamai.steamstatic.com/images//32055887/b8bd8a050e2bc3903cf18a277c5489ade01f7e75.png",
+		"ReleaseDate": "1712681263",
+		"year": "2024"
+	},
+	{
+		"BSVersion": "1.36.2",
+		"BSManifest": "4832237377879752064",
+		"OculusBinaryId": "6983660338400352",
+		"ReleaseURL": "https://store.steampowered.com/news/app/620980/view/4181105931135110118",
+		"ReleaseImg": "https://clan.cloudflare.steamstatic.com/images//32055887/74541417f14dee210bcfd89eefeabd7c0cc27c7d.png",
+		"ReleaseDate": "1715008020",
+		"year": "2024"
+	},
+	{
+		"BSVersion": "1.37.0",
+		"BSManifest": "7270690075584855288",
+		"OculusBinaryId": "7062062833893435",
+		"ReleaseURL": "https://store.steampowered.com/news/app/620980/view/4161968170153497460",
+		"ReleaseImg": "https://clan.akamai.steamstatic.com/images//32055887/f82d34c7582137a6748a28c5b02670ff4b235356.png",
+		"ReleaseDate": "1717513346",
+		"year": "2024"
+	},
+	{
+		"BSVersion": "1.37.1",
+		"BSManifest": "9129356330007601179",
+		"OculusBinaryId": "7313068492126200",
+		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/4253168598913260422",
+		"ReleaseImg": "https://clan.akamai.steamstatic.com/images/32055887/039be718c1494f948257cd5b09f0082986484a58.png",
+		"ReleaseDate": "1720710529",
+		"year": "2024"
+	},
+	{
+		"BSVersion": "1.37.2",
+		"BSManifest": "6848299977215652352",
+		"OculusBinaryId": "7438773609555687",
+		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/4349999161850643744",
+		"ReleaseImg": "https://clan.akamai.steamstatic.com/images/32055887/7c03af6d12fad23f1d439666d4be86b492d40003.png",
+		"ReleaseDate": "1722945814",
+		"year": "2024"
+	},
+	{
+		"BSVersion": "1.37.3",
+		"BSManifest": "5834150512217183366",
+		"OculusBinaryId": "7553569971409383",
+		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/6808965920900622902",
+		"ReleaseImg": "https://clan.akamai.steamstatic.com/images/32055887/a1c9a6737cc5182fca8cddc7c8088eda6dd4d82d.png",
+		"ReleaseDate": "1724061712",
+		"year": "2024"
+	},
+	{
+		"BSVersion": "1.37.4",
+		"BSManifest": "7585106640515547731",
+		"OculusBinaryId": "7630971613669218",
+		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/4601078012425941968",
+		"ReleaseImg": "https://clan.akamai.steamstatic.com/images/32055887/23e6e6f219a56d2f9ea4a27b560c54ac1214aec3.png",
+		"ReleaseDate": "1725548547",
+		"year": "2024"
+	},
+	{
+		"BSVersion": "1.37.5",
+		"BSManifest": "3122533396458693889",
+		"OculusBinaryId": "7685108391588873",
+		"ReleaseDate": "1725628356",
+		"year": "2024"
+	},
+	{
+		"BSVersion": "1.38.0",
+		"BSManifest": "3482902979520746178",
+		"OculusBinaryId": "7834818833284494",
+		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/4669760442595134838",
+		"ReleaseImg": "https://clan.akamai.steamstatic.com/images/32055887/57cfa043407c091e67b7e0a8ae86fe5590deae33.png",
+		"ReleaseDate": "1728399815",
+		"year": "2024",
+		"recommended": true
 	}
 ]

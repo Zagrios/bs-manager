@@ -143,12 +143,72 @@ export interface BsvMapParitySummary {
 export type BsvMapCharacteristic = "Standard" | "OneSaber" | "NoArrows" | "90Degree" | "360Degree" | "Lightshow" | "Lawless";
 export type BsvMapDifficultyType = "Easy" | "Normal" | "Hard" | "Expert" | "ExpertPlus";
 
-export type MapStyle = "dance" | "swing" | "nightcore" | "folk" | "family" | "ambient" | "funk" | "jazz" | "soul" | "speedcore" | "punk" | "rb" | "holiday" | "vocaloid" | "jrock" | "trance" | "drumbass" | "comedy" | "instrumental" | "hardcore" | "kpop" | "indie" | "techno" | "house" | "game" | "film" | "alt" | "dubstep" | "metal" | "anime" | "hiphop" | "jpop" | "rock" | "pop" | "electronic" | "classical-orchestral";
-export type MapType = "accuracy" | "balanced" | "challenge" | "dancestyle" | "fitness" | "speed" | "tech";
+export enum MapStyle {
+    Alt = "alternative",
+    Ambient = "ambient",
+    Anime = "anime",
+    ClassicalOrchestral = "classical-orchestral",
+    Comedy = "comedy-meme",
+    Dance = "dance",
+    DrumBass = "drum-and-bass",
+    Dubstep = "dubstep",
+    Electronic = "electronic",
+    Folk = "folk-acoustic",
+    Funk = "funk-disco",
+    Hardcore = "hardcore",
+    Hiphop = "hip-hop-rap",
+    Holiday = "holiday",
+    House = "house",
+    Indie = "indie",
+    Instrumental = "instrumental",
+    JPop = "j-pop",
+    JRock = "j-rock",
+    Jazz = "jazz",
+    KPop = "k-pop",
+    Family = "kids-family",
+    Metal = "metal",
+    Nightcore = "nightcore",
+    Pop = "pop",
+    Punk = "punk",
+    Rb = "rb",
+    Rock = "rock",
+    Soul = "soul",
+    Speedcore = "speedcore",
+    Swing = "swing",
+    Film = "tv-movie-soundtrack",
+    Techno = "techno",
+    Trance = "trance",
+    Game = "video-game-soundtrack",
+    Vocaloid = "vocaloid",
+}
+
+export enum MapType {
+    Accuracy = "accuracy",
+    Balanced = "balanced",
+    Challenge = "challenge",
+    Dancestyle = "dance-style",
+    Fitness = "fitness",
+    Speed = "speed",
+    Tech = "tech"
+}
+
 export type MapTag = MapStyle | MapType;
 
-export type MapRequirement = "chroma" | "noodle" | "me" | "cinema";
-export type MapSpecificity = "automapper" | "ranked" | "curated" | "verified" | "fullSpread";
+export enum MapRequirement {
+    Chroma = "chroma",
+    Noodle = "noodle",
+    Me = "me",
+    Cinema = "cinema"
+
+}
+
+export enum MapSpecificity {
+    Automapper = "automapper",
+    Ranked = "ranked",
+    Curated = "curated",
+    Verified = "verified",
+    FullSpread = "fullSpread"
+}
 
 export interface MapFilter {
     automapper?: boolean;

@@ -49,6 +49,9 @@ export class BeatSaverApiService {
             ...(filter.maxNps && { maxNps: String(filter.maxNps) }),
         };
 
+        delete params.enabledTags;
+        delete params.excludedTags;
+
         return new URLSearchParams(params);
     }
 
