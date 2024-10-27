@@ -15,7 +15,7 @@ import JSZip from "jszip";
 import { extractZip } from "../../helpers/zip.helpers";
 import recursiveReadDir from "recursive-readdir";
 import { sToMs } from "../../../shared/helpers/time.helpers";
-import { ensureDir } from "fs-extra";
+import { ensureDir, pathExistsSync } from "fs-extra";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -71,7 +71,7 @@ export class BsModsManagerService {
         const bsPath = await this.bsLocalService.getVersionPath(version);
         const modsPath = path.join(bsPath, modsDir);
 
-        if (!(await pathExist(modsPath))) {
+        if (!pathExistsSync(modsPath)) {
             return [];
         }
 
@@ -90,19 +90,22 @@ export class BsModsManagerService {
                 if (!mod) {
                     return undefined;
                 }
+
                 if (ext === ".manifest") {
                     this.manifestMatches.push(mod);
                     return undefined;
                 }
-                if (filePath.includes("Libs")) {
-                    if (!this.manifestMatches.some(m => m.name === mod.name)) {
+
+                if (filePath.toLowerCase().includes("libs")) {
+                    const manifestIndex = this.manifestMatches.findIndex(m => m.name === mod.name);
+
+                    if (manifestIndex < 0) {
                         return undefined;
                     }
-                    const modIndex = this.manifestMatches.indexOf(mod);
-                    if (modIndex > -1) {
-                        this.manifestMatches.splice(modIndex, 1);
-                    }
+
+                    this.manifestMatches.splice(manifestIndex, 1);
                 }
+
                 return mod;
         });
 
@@ -155,17 +158,23 @@ export class BsModsManagerService {
         }
 
         return new Promise<boolean>(resolve => {
-            const cmd = process.platform === 'linux'
-                ? `screen -dmS "BSIPA" dotnet ${ipaPath} ${args.join(" ")}` // Must run through screen, otherwise BSIPA tries to move console cursor and crashes.
-                : `${ipaPath} ${args.join(" ")}`;
 
-            log.info("START IPA PROCESS", cmd);
-            const processIPA = spawn(cmd, { cwd: versionPath, detached: true, shell: true });
+            log.info("START IPA PROCESS", `"${ipaPath}"`, args);
+            const processIPA = spawn(`"${ipaPath}"`, args, { cwd: versionPath, detached: true, shell: true });
 
             const timemout = setTimeout(() => {
                 log.info("Ipa process timeout");
                 resolve(false)
             }, sToMs(30));
+
+            processIPA.on("error", e => {
+                log.error("Ipa process error", e);
+                resolve(false);
+            })
+
+            processIPA.stderr.on("data", data => {
+                log.error("Ipa process stderr", data.toString());
+            });
 
             processIPA.once("exit", code => {
                 clearTimeout(timemout);
@@ -325,22 +334,26 @@ export class BsModsManagerService {
         this.manifestMatches = [];
         await this.beatModsApi.getAllMods();
         const bsipa = await this.getBsipaInstalled(version);
-        return Promise.all([this.getModsInDir(version, ModsInstallFolder.PLUGINS_PENDING), this.getModsInDir(version, ModsInstallFolder.LIBS_PENDING), this.getModsInDir(version, ModsInstallFolder.PLUGINS), this.getModsInDir(version, ModsInstallFolder.LIBS)]).then(dirMods => {
-            const modsDict = new Map<string, Mod>();
 
-            if (bsipa) {
-                modsDict.set(bsipa.name, bsipa);
+        const pluginsMods = await Promise.all([this.getModsInDir(version, ModsInstallFolder.PLUGINS), this.getModsInDir(version, ModsInstallFolder.PLUGINS_PENDING)]);
+        const libsMods = await Promise.all([this.getModsInDir(version, ModsInstallFolder.LIBS), this.getModsInDir(version, ModsInstallFolder.LIBS_PENDING)]);
+
+        const dirMods = pluginsMods.flat().concat(libsMods.flat());
+
+        const modsDict = new Map<string, Mod>();
+
+        if (bsipa) {
+            modsDict.set(bsipa.name, bsipa);
+        }
+
+        for (const mod of dirMods.flat()) {
+            if (modsDict.has(mod.name)) {
+                continue;
             }
+            modsDict.set(mod.name, mod);
+        }
 
-            for (const mod of dirMods.flat()) {
-                if (modsDict.has(mod.name)) {
-                    continue;
-                }
-                modsDict.set(mod.name, mod);
-            }
-
-            return Array.from(modsDict.values());
-        });
+        return Array.from(modsDict.values());
     }
 
     public async installMods(mods: Mod[], version: BSVersion): Promise<InstallModsResult> {
