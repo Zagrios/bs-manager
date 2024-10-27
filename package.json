@@ -76,7 +76,9 @@
             ]
         },
         "win": {
-            "signingHashAlgorithms": ["sha256"],
+            "signingHashAlgorithms": [
+                "sha256"
+            ],
             "target": [
                 "nsis",
                 "nsis-web"
@@ -159,7 +161,7 @@
         "@types/crypto-js": "^4.2.1",
         "@types/dateformat": "^5.0.0",
         "@types/jest": "^27.5.2",
-        "@types/node": "17.0.23",
+        "@types/node": "^20",
         "@types/node-fetch": "^2.6.3",
         "@types/pako": "^2.0.1",
         "@types/react": "^18.0.33",
