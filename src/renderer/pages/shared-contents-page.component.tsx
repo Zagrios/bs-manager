@@ -5,14 +5,13 @@ import { ModelsPanel } from "renderer/components/models-management/models-panel.
 import { TabNavBar } from "renderer/components/shared/tab-nav-bar.component";
 import { Slideshow } from "renderer/components/slideshow/slideshow.component";
 
-// TODO: Update locales and isActive
 export function SharedContentsPage() {
 
     const MAPS_INDEX = 0;
     const MODELS_INDEX = 1;
-    // const RANK_INDEX = 2;
+    const LEADERBOARD_INDEX = 2;
 
-    const [tabIndex, setTabIndex] = useState(0);
+    const [tabIndex, setTabIndex] = useState(MAPS_INDEX);
 
     return (
         <div className="relative flex items-center flex-col w-full h-full text-gray-200 backdrop-blur-lg">
@@ -26,7 +25,7 @@ export function SharedContentsPage() {
                     <ModelsPanel isActive={tabIndex === MODELS_INDEX} />
                 </div>
                 <div className="w-full shrink-0 px-3 pb-3 flex flex-col items-center">
-                    <LeaderboardPanel />
+                    <LeaderboardPanel isActive={tabIndex === LEADERBOARD_INDEX}/>
                 </div>
             </div>
         </div>

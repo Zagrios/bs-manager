@@ -1,5 +1,3 @@
-// TODO: Move this out of auth
-
 export interface BsmResponse {
     status: number;
     body: any;
@@ -50,3 +48,6 @@ export function createFetchService(): FetchService {
         },
     };
 }
+
+// TODO: Should be static somewhere
+export const fetchService = createFetchService();

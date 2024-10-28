@@ -40,6 +40,12 @@ export class ConfigurationService {
         return res;
     }
 
+    public getAndDelete<Type>(key: string | DefaultConfigKey): Type {
+        const value = this.get<Type>(key);
+        this.delete(key);
+        return value;
+    }
+
     public set(key: string | DefaultConfigKey, value: unknown, persistant = true) {
 
         if(value != null){

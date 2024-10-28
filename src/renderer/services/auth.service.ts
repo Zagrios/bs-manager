@@ -1,7 +1,9 @@
+import { CODE_VERIFIER_KEY } from "renderer/consts";
 import { lastValueFrom } from "rxjs";
-import { IpcService } from "../ipc.service";
 import { OAuthType } from "shared/models/oauth.types";
-import { ConfigurationService } from "../configuration.service";
+import { IpcService } from "./ipc.service";
+import { ConfigurationService } from "./configuration.service";
+
 
 const CODE_VERIFIER_SIZE = 64;
 const CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
@@ -39,4 +41,13 @@ export function createAuthClientService({
             configService.delete(type);
         }
     };
+}
+
+
+export function defaultAuthService() {
+    return createAuthClientService({
+        codeVerifierKey: CODE_VERIFIER_KEY,
+        configService: ConfigurationService.getInstance(),
+        ipcService: IpcService.getInstance(),
+    });
 }
