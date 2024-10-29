@@ -12,7 +12,7 @@ type Props = {
 export function BeatleaderHeaderSection({
     playerInfo,
     onLogoutClicked
-}: Props) {
+}: Readonly<Props>) {
     return <div className="w-full rounded-md pt-4 bg-light-main-color-2 dark:bg-main-color-2">
         <div className="flex flex-row justify-between px-4 pb-4">
             <div className="flex flex-row items-center gap-x-4">

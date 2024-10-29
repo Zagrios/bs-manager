@@ -10,7 +10,7 @@ type Props = {
 
 export function BeatleaderStatsSection({
     playerInfo
-}: Props) {
+}: Readonly<Props>) {
     const [showHidden, setShowHidden] = useState(false);
 
     const intFormatter = new Intl.NumberFormat("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
@@ -142,6 +142,7 @@ export function BeatleaderStatsSection({
                 <div className="flex flex-row flex-wrap gap-2">
                     {topChips.filter(chip => showHidden || !chip.hidden).map(chip =>
                         <BeatleaderChip
+                            key={chip.key}
                             name={chip.resource}
                             value={chip.formatter(playerInfo.scoreStats[chip.key])}
                         />
@@ -150,6 +151,7 @@ export function BeatleaderStatsSection({
                 <div className="flex flex-row flex-wrap gap-2">
                     {bottomChips.map(chip =>
                         <BeatleaderChip
+                            key={chip.key}
                             name={chip.resource}
                             value={chip.formatter(playerInfo.scoreStats[chip.key])}
                         />
@@ -168,11 +170,11 @@ export function BeatleaderStatsSection({
     </div>
 }
 
-function BeatleaderRowInfo({ name, hoverText, children }: {
+function BeatleaderRowInfo({ name, hoverText, children }: Readonly<{
     name: string;
     hoverText: string;
     children: JSX.Element;
-}) {
+}>) {
     return <div className="flex justify-between gap-x-4">
         <Tippy content={hoverText}>
             <div className="capitalize font-semibold">{name}</div>

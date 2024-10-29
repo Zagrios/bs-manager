@@ -46,7 +46,7 @@ function useAuthentication(type: OAuthType, code: string) {
 }
 
 export default function OAuthWindow() {
-    const { close: closeWindow } = useWindowControls();
+    const windowControls = useWindowControls();
 
     const [searchParams,] = useSearchParams();
     const { loading, authenticated, errorMessage } = useAuthentication(
@@ -76,19 +76,19 @@ export default function OAuthWindow() {
                 withBar={false}
                 onClick={event => {
                     event.preventDefault();
-                    closeWindow();
+                    windowControls.close();
                 }}
             />
         </OAuthStatus>
     </div>
 }
 
-function OAuthStatus({ text, image, spin = false, children }: {
+function OAuthStatus({ text, image, spin = false, children }: Readonly<{
     text: string;
     image: string;
     spin?: boolean,
     children?: ReactNode
-}) {
+}>) {
     const t = useTranslation();
 
     return (

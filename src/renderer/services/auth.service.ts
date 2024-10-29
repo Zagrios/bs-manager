@@ -3,15 +3,15 @@ import { OAuthType } from "shared/models/oauth.types";
 import { ConfigurationClientService, IpcClientService } from "./types";
 
 
-const CODE_VERIFIER_SIZE = 64;
-const CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+const CODE_VERIFIER_SIZE = 32;
 
-function randomString(length: number): string {
-    let str = "";
-    while (--length >= 0) {
-        str += CHARACTERS.charAt(Math.floor(Math.random() * CHARACTERS.length));
-    }
-    return str;
+function createCodeVerifier(): string {
+    const random = new Uint8Array(CODE_VERIFIER_SIZE);
+    crypto.getRandomValues(random);
+    return btoa(String.fromCharCode.apply(null, Array.from(random)))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=/g, "");
 }
 
 export function createAuthClientService({
@@ -25,7 +25,7 @@ export function createAuthClientService({
 }) {
     return {
         async openOAuth(type: OAuthType) {
-            const codeVerifier = randomString(CODE_VERIFIER_SIZE);
+            const codeVerifier = createCodeVerifier();
             configService.set(codeVerifierKey, codeVerifier);
             return lastValueFrom(
                 ipcService.sendV2("auth.open-oauth", {

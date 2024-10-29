@@ -7,7 +7,7 @@ type Props = {
     socials: BeatleaderSocial[]
 }
 
-export function BeatleaderSocials({ externalPlayerUrl, socials }: Props) {
+export function BeatleaderSocials({ externalPlayerUrl, socials }: Readonly<Props>) {
     if (socials.length === 0) {
         return <div className="rounded-b-md bg-light-main-color-1 dark:bg-main-color-1" />
     }
@@ -21,7 +21,7 @@ export function BeatleaderSocials({ externalPlayerUrl, socials }: Props) {
         }
 
         {filteredSocials.map(social =>
-            <BsmLink href={social.link}>
+            <BsmLink key={social.id} href={social.link}>
                 <BsmButton className="w-8 h-8" icon="discord" />
             </BsmLink>
         )}

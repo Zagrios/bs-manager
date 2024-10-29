@@ -1,5 +1,5 @@
 import { shell } from "electron";
-import { DeepLinkService } from "../deep-link.service";
+import { BsmProtocolService } from "../bsm-protocol.service";
 import { WindowManagerService } from "../window-manager.service";
 
 import { createBeatleaderAuthServerService } from "./beatleader-auth.service";
@@ -9,11 +9,9 @@ const navigateLink = process.env.NODE_ENV === "development" && process.platform 
     ? (url: string) => WindowManagerService.getInstance().openWindow(url)
     : (url: string) => shell.openExternal(url);
 
-DeepLinkService.getInstance().addLinkOpenedListener("bsmanager", link => {
+BsmProtocolService.getInstance().on("oauth", link => {
     const url = new URL(link);
-    if (url.host === "oauth") {
-        WindowManagerService.getInstance().openWindow(`oauth.html${url.search}`);
-    }
+    WindowManagerService.getInstance().openWindow(`oauth.html${url.search}`);
 });
 
 function defaultBeatleaderAuthServerService() {

@@ -21,14 +21,14 @@ type Props = {
     isActive: boolean;
 }
 
-export function LeaderboardPanel({ isActive }: Props) {
+export function LeaderboardPanel({ isActive }: Readonly<Props>) {
     const osService = useService(OsDiagnosticService);
 
     const online = useObservable(() => osService.isOnline$);
 
-    const { openOAuth, logoutOAuth } = defaultAuthService();
-    const { isAuthenticated, getCurrentPlayerInfo } = defaultBeatleaderAPIClientService();
-    const [authenticated, setAuthenticated] = useState(isAuthenticated());
+    const authService = defaultAuthService();
+    const beatleaderService = defaultBeatleaderAPIClientService();
+    const [authenticated, setAuthenticated] = useState(beatleaderService.isAuthenticated());
     const [playerInfo, setPlayerInfo] = useState(null as BeatleaderPlayerInfo | null);
     const isActiveOnce = useChangeUntilEqual(isActive, { untilEqual: true });
 
@@ -41,12 +41,12 @@ export function LeaderboardPanel({ isActive }: Props) {
         // NOTE: Might need a service or something
         window.onstorage = (event) => {
             if (event.key === OAuthType.Beatleader) {
-                setAuthenticated(isAuthenticated());
+                setAuthenticated(beatleaderService.isAuthenticated());
             }
         };
 
         if (online && authenticated) {
-            getCurrentPlayerInfo()
+            beatleaderService.getCurrentPlayerInfo()
                 .then(setPlayerInfo);
         }
 
@@ -61,7 +61,7 @@ export function LeaderboardPanel({ isActive }: Props) {
             textClassName="rounded-md p-2 bg-light-main-color-1 dark:bg-main-color-1"
             onClick={event => {
                 event.stopPropagation();
-                openOAuth(OAuthType.Beatleader);
+                authService.openOAuth(OAuthType.Beatleader);
             }}
         />
     }
@@ -89,7 +89,7 @@ export function LeaderboardPanel({ isActive }: Props) {
         <BeatleaderHeaderSection
             playerInfo={playerInfo}
             onLogoutClicked={() => {
-                logoutOAuth(OAuthType.Beatleader);
+                authService.logoutOAuth(OAuthType.Beatleader);
                 setAuthenticated(false);
                 setPlayerInfo(null);
             }}
@@ -99,12 +99,12 @@ export function LeaderboardPanel({ isActive }: Props) {
     </div>
 }
 
-function LeaderboardStatus({ text, image, spin = false, children }: {
+function LeaderboardStatus({ text, image, spin = false, children }: Readonly<{
     text: string;
     image: string;
     spin?: boolean,
     children?: ReactNode
-}) {
+}>) {
     const t = useTranslation();
 
     return (

@@ -7,6 +7,13 @@ import { createBeatleaderAuthServerService } from "main/services/auth/beatleader
 import { BeatleaderAuthInfo, createBeatleaderAPIClientService } from "renderer/services/third-parties/beatleader.service";
 import { ConfigurationClientService, FetchOptions, FetchResponse, FetchService, IpcClientService } from "renderer/services/types";
 
+Object.defineProperty(global, "crypto", {
+  value: {
+    // should be 1:1 to browser crypto.getRandomValues
+    getRandomValues: (array: any) =>
+        crypto.webcrypto.getRandomValues(array)
+  }
+});
 
 const CLIENT_ID = "some-client-id";
 const REDIRECT_URI = "https://bsmanager.io/oauth";
@@ -128,6 +135,8 @@ test("Mocked Beatleader authentication flow", async () => {
     await authClientService.openOAuth(OAuthType.Beatleader);
     const codeVerifier = mockConfigurationService.get<string | undefined>(CODE_VERIFIER_KEY);
     expect(codeVerifier).toBeTruthy();
+    // Search for invalid characters
+    expect(codeVerifier).not.toMatch(/[^A-Za-z0-9-_.~]/);
 
     expect(ipcData.type).toEqual(OAuthType.Beatleader);
     expect(ipcData.codeVerifier).toEqual(codeVerifier);
