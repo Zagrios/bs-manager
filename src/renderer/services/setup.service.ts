@@ -7,7 +7,7 @@ import { IpcService } from "./ipc.service";
 import { ModalService } from "./modale.service";
 
 import { AskInstallPathModal } from "renderer/components/modal/modal-types/setup/ask-install-path.component";
-import { LinuxSetupModal } from "renderer/components/modal/modal-types/setup/linux-setup-modal.component";
+import { ChooseProtonFolderModal } from "renderer/components/modal/modal-types/setup/choose-proton-folder-modal.component";
 
 // Handle setup modals/prompts, ordering of the modals/prompts may be done here
 export class SetupService {
@@ -74,7 +74,7 @@ export class SetupService {
             }
 
             await this.modalService.openModal(
-                LinuxSetupModal,
+                ChooseProtonFolderModal,
                 { closable: false }
             );
         } catch (error) {

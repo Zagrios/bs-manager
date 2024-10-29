@@ -9,20 +9,15 @@ import { NotificationService } from "renderer/services/notification.service";
 import { StaticConfigurationService } from "renderer/services/static-configuration.service";
 
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
-import { SettingContainer } from "renderer/components/settings/setting-container.component";
 
-export const LinuxSetupModal: ModalComponent<{}, {}> = ({ resolver }) => {
+export const ChooseProtonFolderModal: ModalComponent<{}, {}> = ({ resolver }) => {
 
     const t = useTranslation();
     const ipcService = useService(IpcService);
     const notificationService = useService(NotificationService);
     const staticConfigService = useService(StaticConfigurationService);
 
-    const [protonFolder, setProtonFolder] = useState("");
-
-    const validateFields = () => {
-        return !!protonFolder;
-    }
+    const [protonFolder, setProtonFolder] = useState(null);
 
     const selectProtonPath = async () => {
         const response = await lastValueFrom(ipcService.sendV2("choose-folder", {
@@ -30,23 +25,23 @@ export const LinuxSetupModal: ModalComponent<{}, {}> = ({ resolver }) => {
             defaultPath: ".local/share/Steam/steamapps/common",
             showHidden: true,
         }));
+
         if (response.canceled || !response.filePaths?.length) {
             return;
         }
 
         const path = response.filePaths[0];
-        try {
-            await staticConfigService.set("proton-folder", path);
+
+        await staticConfigService.set("proton-folder", path).then(() => {
             setProtonFolder(path);
-            validateFields();
-        } catch (error: any) {
+        }).catch(err => {
             notificationService.notifyError({
                 title: "pages.settings.proton-folder.errors.title",
-                desc: ["invalid-folder"].includes(error?.code)
-                    ? `pages.settings.proton-folder.errors.${error.code}`
+                desc: ["invalid-folder"].includes(err?.code)
+                    ? `pages.settings.proton-folder.errors.${err.code}`
                     : "misc.unknown"
             });
-        }
+        });
     }
 
     const onConfirmButtonPressed = async () => {
@@ -57,36 +52,35 @@ export const LinuxSetupModal: ModalComponent<{}, {}> = ({ resolver }) => {
 
     return (
         <form
-            className="max-w-xl w-max"
+            className="max-w-lg w-max flex flex-col gap-3"
             onSubmit={event => {
                 event.preventDefault();
                 onConfirmButtonPressed();
             }}>
 
-            <h1 className="tracking-wide w-full uppercase text-3xl text-center mb-4">
-                {t("modals.linux-setup.title")}
-            </h1>
+            <h1 className="tracking-wide w-full uppercase text-3xl text-center mb-4">{t("modals.choose-proton-folder.title")}</h1>
 
-            <SettingContainer
-                os="linux"
-                title="modals.linux-setup.proton-folder"
-                description="modals.linux-setup.proton-folder-description"
-            >
-                <div className="relative flex items-center justify-between w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 rounded-md pl-2 py-1">
-                    <span
-                        className="block text-ellipsis overflow-hidden min-w-0 whitespace-nowrap"
-                        title={protonFolder}
-                    >
-                        {protonFolder}
-                    </span>
+            <p>{t("modals.choose-proton-folder.proton-folder-description")}</p>
+
+            <a className="underline" href="https://github.com/ValveSoftware/Proton/wiki/Proton-FAQ#where-is-proton-installed" target="_blank">{t("modals.choose-proton-folder.where-is-proton-installed")}</a>
+            <div className="relative flex items-center justify-between w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 rounded-md pl-2 py-1">
+                    {protonFolder ? (
+                        <span
+                            className="block text-ellipsis overflow-hidden min-w-0 whitespace-nowrap"
+                            title={protonFolder}
+                        >
+                            {protonFolder}
+                        </span>
+                    ) : (
+                        <span className="text-gray-500 italic font-bold">{t("modals.choose-proton-folder.proton-folder-placeholder")}</span>
+                    )}
                     <BsmButton
                         onClick={selectProtonPath}
                         className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md"
                         text="misc.choose-folder"
                         withBar={false}
                     />
-                </div>
-            </SettingContainer>
+            </div>
 
             <div className="h-8 grid grid-flow-col grid-cols-1">
                 <BsmButton
@@ -95,7 +89,7 @@ export const LinuxSetupModal: ModalComponent<{}, {}> = ({ resolver }) => {
                     type="submit"
                     withBar={false}
                     text="misc.confirm"
-                    disabled={!validateFields()}
+                    disabled={!protonFolder}
                 />
             </div>
         </form>

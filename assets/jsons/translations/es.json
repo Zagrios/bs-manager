@@ -835,10 +835,11 @@
             "default": "Predeterminado",
             "default-tooltip": "Por defecto, en su carpeta personal"
         },
-        "linux-setup": {
-            "title": "Configuración de Linux",
-            "proton-folder": "Carpeta de Proton",
-            "proton-folder-description": "Elige la carpeta en la ruta de Proton. (por ejemplo, Proton - Experimental)"
+        "choose-proton-folder": {
+            "title": "Carpeta de Proton",
+            "proton-folder-description": "En Linux, BSManager necesita Proton para funcionar. Elija la carpeta de instalación de Proton para continuar.",
+            "proton-folder-placeholder": "Carpeta de instalación de Proton",
+            "where-is-proton-installed": "¿Dónde está instalado Proton?"
         }
     },
     "maps": {

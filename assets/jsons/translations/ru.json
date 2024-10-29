@@ -834,10 +834,11 @@
             "default": "По умолчанию",
             "default-tooltip": "По умолчанию в вашей домашней папке"
         },
-        "linux-setup": {
-            "title": "Настройка Linux",
-            "proton-folder": "Папка Proton",
-            "proton-folder-description": "Выберите папку для пути к Proton. (например, Proton - Experimental)"
+        "choose-proton-folder": {
+            "title": "Папка Proton",
+            "proton-folder-description": "В Linux BSManager требует Proton для работы. Выберите папку установки Proton, чтобы продолжить.",
+            "proton-folder-placeholder": "Папка установки Proton",
+            "where-is-proton-installed": "Где установлен Proton?"
         }
     },
     "maps": {

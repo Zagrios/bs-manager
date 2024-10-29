@@ -836,10 +836,11 @@
             "default": "Par défaut",
             "default-tooltip": "Par défaut, dans votre dossier personnel"
         },
-        "linux-setup": {
-            "title": "Configuration de Linux",
-            "proton-folder": "Dossier Proton",
-            "proton-folder-description": "Choisissez le dossier vers le chemin de Proton. (par exemple, Proton - Experimental)"
+        "choose-proton-folder": {
+            "title": "Dossier Proton",
+            "proton-folder-description": "Sous Linux, BSManager a besoin de Proton pour fonctionner. Choisissez le dossier d'installation de Proton pour continuer.",
+            "proton-folder-placeholder": "Dossier d'installation de Proton",
+            "where-is-proton-installed": "Où est installé Proton ?"
         }
     },
     "maps": {

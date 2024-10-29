@@ -835,10 +835,11 @@
             "default": "預設",
             "default-tooltip": "預設為您的主資料夾"
         },
-        "linux-setup": {
-            "title": "Linux設置",
-            "proton-folder": "Proton資料夾",
-            "proton-folder-description": "選擇資料夾作為Proton路徑。（例如：Proton - Experimental）"
+        "choose-proton-folder": {
+            "title": "Proton資料夾",
+            "proton-folder-description": "在Linux上，BSManager需要Proton才能運行。請選擇Proton的安裝資料夾以繼續。",
+            "proton-folder-placeholder": "Proton安裝資料夾",
+            "where-is-proton-installed": "Proton安裝在哪裡？"
         }
     },
     "maps": {

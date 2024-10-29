@@ -90,7 +90,7 @@ export const BsmButton = forwardRef<unknown, Props>(({ className, style, iconSty
             {icon && <BsmIcon icon={icon} className={iconClassName ?? "size-full text-gray-800 dark:text-white"} style={{ ...(iconStyle ?? {}), color: (iconColor || textColor) }} />}
             {text &&
                 (type === "submit" ? (
-                    <button type="submit" className={textClassName || "size-full"} style={{ ...(!!textColor && { color: textColor }) }}>
+                    <button type="submit" className={textClassName || "size-full"} style={{ ...(!!textColor && { color: textColor }) }} disabled={disabled}>
                         {t(text)}
                     </button>
                 ) : (

@@ -835,10 +835,11 @@
             "default": "デフォルト",
             "default-tooltip": "デフォルトでは、ホームフォルダに設定されます"
         },
-        "linux-setup": {
-            "title": "Linuxセットアップ",
-            "proton-folder": "Protonフォルダー",
-            "proton-folder-description": "Protonのパスにフォルダーを選択してください。（例：Proton - Experimental）"
+        "choose-proton-folder": {
+            "title": "Protonフォルダ",
+            "proton-folder-description": "Linuxでは、BSManagerを動作させるためにProtonが必要です。続行するには、Protonのインストールフォルダを選択してください。",
+            "proton-folder-placeholder": "Protonのインストールフォルダ",
+            "where-is-proton-installed": "Protonはどこにインストールされていますか？"
         }
     },
     "maps": {
