@@ -3,7 +3,7 @@ import { logRenderError } from "renderer";
 import { useSearchParams } from "react-router-dom"
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { useWindowControls } from "renderer/hooks/use-window-controls.hook";
-import { defaultBeatleaderAPIClientService } from "renderer/services/third-parties/beatleader.service";
+import { defaultBeatleaderAPIClientService } from "renderer/services/third-parties";
 import { OAuthType } from "shared/models/oauth.types";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import BeatRunningImg from "../../../assets/images/apngs/beat-running.png";

@@ -1,8 +1,6 @@
-import { CODE_VERIFIER_KEY } from "renderer/consts";
 import { lastValueFrom } from "rxjs";
 import { OAuthType } from "shared/models/oauth.types";
-import { IpcService } from "./ipc.service";
-import { ConfigurationService } from "./configuration.service";
+import { ConfigurationClientService, IpcClientService } from "./types";
 
 
 const CODE_VERIFIER_SIZE = 64;
@@ -22,8 +20,8 @@ export function createAuthClientService({
     ipcService,
 }: {
     codeVerifierKey: string;
-    configService: ConfigurationService;
-    ipcService: IpcService;
+    configService: ConfigurationClientService;
+    ipcService: IpcClientService;
 }) {
     return {
         async openOAuth(type: OAuthType) {
@@ -43,11 +41,3 @@ export function createAuthClientService({
     };
 }
 
-
-export function defaultAuthService() {
-    return createAuthClientService({
-        codeVerifierKey: CODE_VERIFIER_KEY,
-        configService: ConfigurationService.getInstance(),
-        ipcService: IpcService.getInstance(),
-    });
-}

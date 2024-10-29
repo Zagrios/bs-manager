@@ -1,7 +1,5 @@
-import { CODE_VERIFIER_KEY } from "renderer/consts";
-import { OAuthType } from "shared/models/oauth.types";
-import { ConfigurationService } from "../configuration.service";
-import { FetchService, fetchService } from "../fetch.service";
+import { OAuthTokenResponse, OAuthType } from "shared/models/oauth.types";
+import { ConfigurationClientService, FetchService } from "../types";
 
 
 const CODE_GRANT_TYPE = "authorization_code";
@@ -22,7 +20,7 @@ export function createBeatleaderAPIClientService({
     clientId: string;
     redirectUri: string;
     codeVerifierKey: string;
-    configService: ConfigurationService;
+    configService: ConfigurationClientService;
     fetchService: FetchService;
 }) {
     function getAuthInfo(): BeatleaderAuthInfo {
@@ -52,7 +50,7 @@ export function createBeatleaderAPIClientService({
                 code,
             }).toString();
 
-            const tokenResponse = await fetchService.post(TOKEN_ENDPOINT, {
+            const tokenResponse = await fetchService.post<OAuthTokenResponse>(TOKEN_ENDPOINT, {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
@@ -64,7 +62,7 @@ export function createBeatleaderAPIClientService({
             const tokenJson = tokenResponse.body;
 
             const authorization = `Bearer ${tokenJson.access_token}`;
-            const identityResponse = await fetchService.get(IDENTITY_ENDPOINT, {
+            const identityResponse = await fetchService.get<{ id: string }>(IDENTITY_ENDPOINT, {
                 headers: {
                     Authorization: authorization,
                 },
@@ -80,7 +78,7 @@ export function createBeatleaderAPIClientService({
                 playerId: identityResponse.body.id,
                 authorization,
                 refreshToken: tokenJson.refresh_token,
-                expires,
+                expires: expires.toISOString(),
                 scope: tokenJson.scope,
             };
             // Just reuse the enum as the config key
@@ -94,10 +92,9 @@ export function createBeatleaderAPIClientService({
                 client_id: clientId,
                 refresh_token: authInfo.refreshToken,
                 grant_type: REFRESH_TOKEN_GRANT_TYPE,
-                // redirect_uri: redirectUri,
             }).toString();
 
-            const tokenResponse = await fetchService.post(TOKEN_ENDPOINT, {
+            const tokenResponse = await fetchService.post<OAuthTokenResponse>(TOKEN_ENDPOINT, {
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded",
                 },
@@ -112,7 +109,7 @@ export function createBeatleaderAPIClientService({
             expires.setSeconds(expires.getSeconds() + tokenJson.expires_in);
 
             authInfo.authorization = `Bearer ${tokenJson.access_token}`;
-            authInfo.expires = expires;
+            authInfo.expires = expires.toISOString();
             if (tokenJson.refresh_token) {
                 authInfo.refreshToken = tokenJson.refresh_token;
             }
@@ -125,7 +122,7 @@ export function createBeatleaderAPIClientService({
 
         async getCurrentPlayerInfo(): Promise<BeatleaderPlayerInfo | null> {
             const authInfo = getAuthInfo();
-            const response = await fetchService.get(`${API_ENDPOINT}/player/${authInfo.playerId}`);
+            const response = await fetchService.get<BeatleaderPlayerInfo>(`${API_ENDPOINT}/player/${authInfo.playerId}`);
             if (response.status !== 200) {
                 return null;
             }
@@ -135,24 +132,12 @@ export function createBeatleaderAPIClientService({
     };
 }
 
-
-export function defaultBeatleaderAPIClientService() {
-    const { clientId, redirectUri } = window.electron.envVariables.beatleader;
-    return createBeatleaderAPIClientService({
-        clientId,
-        redirectUri,
-        codeVerifierKey: CODE_VERIFIER_KEY,
-        configService: ConfigurationService.getInstance(),
-        fetchService,
-    });
-}
-
 // Types
 export interface BeatleaderAuthInfo {
     playerId: string;
     authorization: string;
     refreshToken: string;
-    expires: Date;
+    expires: string;
     scope: string;
 }
 

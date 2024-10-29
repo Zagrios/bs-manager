@@ -1,6 +1,7 @@
 import { BehaviorSubject, Observable } from "rxjs";
 import { DefaultConfigKey, defaultConfiguration } from "renderer/config/default-configuration.config";
 import { tryit } from "shared/helpers/error.helpers";
+import { ConfigurationClientService } from "./types";
 
 export class ConfigurationService {
     private static instance: ConfigurationService;
@@ -70,4 +71,24 @@ export class ConfigurationService {
         this.observers.set(key, new BehaviorSubject(this.get(key)));
         return this.observers.get(key).asObservable() as Observable<T>;
     }
+}
+
+
+// Wrapper for DI implementation
+export const configClientService: ConfigurationClientService = {
+    get(key: string) {
+        return ConfigurationService.getInstance().get(key);
+    },
+
+    set(key, value, persistent = true) {
+        ConfigurationService.getInstance().set(key, value, persistent);
+    },
+
+    delete(key) {
+        ConfigurationService.getInstance().delete(key);
+    },
+
+    getAndDelete(key) {
+        return ConfigurationService.getInstance().getAndDelete(key);
+    },
 }

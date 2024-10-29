@@ -1,18 +1,4 @@
-export interface BsmResponse {
-    status: number;
-    body: any;
-}
-
-export interface FetchOptions {
-    headers?: Record<string, string>;
-    query?: Record<string, string | number | string[]>;
-    body?: any;
-}
-
-export interface FetchService {
-    get(url: string, options?: FetchOptions): Promise<BsmResponse>;
-    post(url: string, options?: FetchOptions): Promise<BsmResponse>;
-}
+import { FetchOptions, FetchService } from "./types";
 
 async function send(method: string, url: string, options?: FetchOptions) {
     try {

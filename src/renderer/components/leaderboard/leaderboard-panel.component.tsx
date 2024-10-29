@@ -1,5 +1,5 @@
 import { noop } from "shared/helpers/function.helpers";
-import { defaultAuthService } from "renderer/services/auth.service";
+import { defaultAuthService } from "renderer/services";
 import { BsmButton } from "../shared/bsm-button.component";
 import { OAuthType } from "shared/models/oauth.types";
 import { ReactNode, useState } from "react";
@@ -8,12 +8,13 @@ import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useService } from "renderer/hooks/use-service.hook";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import { BeatleaderPlayerInfo, defaultBeatleaderAPIClientService } from "renderer/services/third-parties/beatleader.service";
+import { defaultBeatleaderAPIClientService } from "renderer/services/third-parties";
+import { BeatleaderPlayerInfo } from "renderer/services/third-parties/beatleader.service";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
-import BeatConflictImg from "../../../../assets/images/apngs/beat-conflict.png";
-import BeatWaitingImg from "../../../../assets/images/apngs/beat-waiting.png";
 import { BeatleaderHeaderSection } from "./beatleader/header-section.component";
 import { BeatleaderStatsSection } from "./beatleader/stats-section.component";
+import BeatConflictImg from "../../../../assets/images/apngs/beat-conflict.png";
+import BeatWaitingImg from "../../../../assets/images/apngs/beat-waiting.png";
 
 
 type Props = {
