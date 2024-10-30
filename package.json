@@ -20,7 +20,7 @@
         "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
         "test": "jest",
         "test:unit": "jest ./src/__tests__/unit",
-        "publish": "npm run build && electron-builder -c.win.certificateSha1=2164d6a7d641ecf6ad57852f665a518ca2bf960f --publish always --win --x64",
+        "publish": "npm run build && electron-builder --publish always --win --x64",
         "publish:linux": "npm run build && electron-builder --publish always --linux --x64"
     },
     "lint-staged": {
@@ -35,82 +35,6 @@
         ],
         "*.{html,md,yml}": [
             "prettier --ignore-path .eslintignore --single-quote --write"
-        ]
-    },
-    "build": {
-        "extraResources": [
-            "./assets/jsons/bs-versions.json",
-            "./assets/jsons/patreons.json",
-            "./assets/proto/song_details_cache_v1.proto"
-        ],
-        "productName": "BSManager",
-        "appId": "org.erb.BSManager",
-        "asarUnpack": "**\\*.{node,dll}",
-        "files": [
-            "dist/**/*",
-            "node_modules",
-            "package.json"
-        ],
-        "afterSign": ".erb/scripts/notarize.js",
-        "afterPack": ".erb/scripts/after-pack.js",
-        "win": {
-            "signingHashAlgorithms": [
-                "sha256"
-            ],
-            "target": [
-                "nsis",
-                "nsis-web"
-            ],
-            "icon": "./build/icons/win/favicon.ico",
-            "extraResources": [
-                "./build/icons/win",
-                "./assets/scripts/*.exe"
-            ]
-        },
-        "linux": {
-            "target": [
-                "deb",
-                "rpm",
-                "pacman"
-            ],
-            "icon": "./build/icons/png",
-            "category": "Utility;Game;",
-            "extraResources": [
-                "./build/icons/png",
-                "./assets/scripts/DepotDownloader"
-            ],
-            "protocols": {
-                "name": "BSManager",
-                "schemes": [
-                    "bsmanager"
-                ]
-            }
-        },
-        "deb": {
-            "fpm": ["--after-install=build/after-install.sh"]
-        },
-        "rpm": {
-            "fpm": ["--after-install=build/after-install.sh"]
-        },
-        "pacman": {
-            "fpm": ["--after-install=build/after-install.sh"]
-        },
-        "directories": {
-            "app": "release/app",
-            "buildResources": "assets",
-            "output": "release/build"
-        },
-        "publish": {
-            "provider": "github",
-            "owner": "Zagrios"
-        },
-        "fileAssociations": [
-            {
-                "ext": "bplist",
-                "description": "Beat Saber Playlist (BSManager)",
-                "icon": "./assets/bsm_file.ico",
-                "role": "Viewer"
-            }
         ]
     },
     "repository": {
