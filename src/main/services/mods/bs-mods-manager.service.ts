@@ -18,6 +18,7 @@ import { ensureDir, pathExistsSync } from "fs-extra";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { popElement } from "shared/helpers/array.helpers";
 import { LinuxService } from "../linux.service";
+import { tryit } from "shared/helpers/error.helpers";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -143,17 +144,14 @@ export class BsModsManagerService {
             return false;
         }
 
-        let cmd = "";
+        let cmd = `"${ipaPath}" "${bsExePath}" ${args.join(" ")}`;
         if (process.platform === "linux") {
-            try {
-                const winePath = await this.linuxService.getWinePath();
-                cmd = `"${winePath}" "${ipaPath}" "${bsExePath}" ${args.join(" ")}`;
-            } catch (error) {
-                log.error("wine not found", error);
+            const { error, result: winePath } = tryit(() => this.linuxService.getWinePath());
+            if (error) {
+                log.error(error);
                 return false;
             }
-        } else {
-            cmd = `"${ipaPath}" "${bsExePath}" ${args.join(" ")}`;
+            cmd = `"${winePath}" ${cmd}`;
         }
 
         return new Promise<boolean>(resolve => {
