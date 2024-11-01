@@ -1,12 +1,13 @@
 import { SongDetailDiffCharactertistic, SongDiffName } from "../song-details-cache/song-details-cache.model";
 
-export interface RawMapInfoDataV2 {
-    _version: `2.${number}.${number}`;
+export interface RawMapInfoDataV3 {
+    _version: `3.${number}.${number}`;
     _songName: string;
     _songSubName: string;
     _songAuthorName: string;
     _levelAuthorName: string;
     _beatsPerMinute: number;
+    _songTimeOffset: number;
     _shuffle: number;
     _shufflePeriod: number;
     _previewStartTime: number;
@@ -14,20 +15,17 @@ export interface RawMapInfoDataV2 {
     _songFilename: string;
     _coverImageFilename: string;
     _environmentName: string;
-    _allDirectionsEnvironmentName: string;
-    _songTimeOffset: number;
-    _difficultyBeatmapSets: RawDifficultySetV2[];
-    // Additional fields for 2.1.0
     _environmentNames?: string[];
-    _colorSchemes?: unknown[];
+    _allDirectionsEnvironmentName: string;
+    _difficultyBeatmapSets: RawDifficultySetV3[];
 }
 
-interface RawDifficultySetV2 {
+interface RawDifficultySetV3 {
     _beatmapCharacteristicName: SongDetailDiffCharactertistic;
-    _difficultyBeatmaps: RawMapDifficultyV2[];
+    _difficultyBeatmaps: RawMapDifficultyV3[];
 }
 
-interface RawMapDifficultyV2 {
+interface RawMapDifficultyV3 {
     _difficulty: SongDiffName;
     _difficultyRank: number;
     _beatmapFilename: string;
@@ -35,5 +33,7 @@ interface RawMapDifficultyV2 {
     _noteJumpStartBeatOffset: number;
     _beatmapColorSchemeIdx?: number;
     _environmentNameIdx?: number;
-    _customData?: { _difficultyLabel?: string; };
+    _customData?: {
+        _difficultyLabel?: string;
+    }
 }
