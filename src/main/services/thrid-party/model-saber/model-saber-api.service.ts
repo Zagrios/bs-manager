@@ -58,6 +58,6 @@ export class ModelSaberApiService {
         const url = new URL(this.ENDPOINTS.get, this.API_URL);
         url.search = this.buildUrlQuery(query).toString();
 
-        return this.request.getJSON<MSGetResponse>(url.toString());
+        return (await this.request.getJSON<MSGetResponse>(url.toString())).data;
     }
 }

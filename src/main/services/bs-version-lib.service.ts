@@ -33,7 +33,7 @@ export class BSVersionLibService {
     }
 
     private getRemoteVersions(): Promise<BSVersion[]> {
-        return this.requestService.getJSON<BSVersion[]>(this.REMOTE_BS_VERSIONS_URL);
+        return this.requestService.getJSON<BSVersion[]>(this.REMOTE_BS_VERSIONS_URL).then(res => res.data);
     }
 
     private async getLocalVersions(): Promise<BSVersion[]> {

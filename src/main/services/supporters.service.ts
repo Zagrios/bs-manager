@@ -35,7 +35,7 @@ export class SupportersService {
     }
 
     private getRemoteSupporters(): Promise<Supporter[]> {
-        return this.requestService.getJSON(this.PATREONS_URL);
+        return this.requestService.getJSON<Supporter[]>(this.PATREONS_URL).then(res => res.data);
     }
 
     private async getLocalSupporters(): Promise<Supporter[]> {
