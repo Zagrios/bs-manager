@@ -1,15 +1,13 @@
-import { Agent, RequestOptions } from "https";
 import { createWriteStream } from "fs";
 import { Progression } from "main/helpers/fs.helpers";
 import { Observable, shareReplay, tap } from "rxjs";
 import log from "electron-log";
-import fetch, { RequestInfo, RequestInit } from "node-fetch";
 import got, { Options } from "got";
-import { IncomingMessage } from "http";
-import { app } from "electron";
-import os from "os";
+import { IncomingHttpHeaders, IncomingMessage } from "http";
 import { unlinkSync } from "fs-extra";
 import { tryit } from "shared/helpers/error.helpers";
+import path from "path";
+import { pipeline } from "stream/promises";
 
 export class RequestService {
     private static instance: RequestService;
@@ -21,51 +19,64 @@ export class RequestService {
         return RequestService.instance;
     }
 
-    private readonly defaultRequestInit: RequestInit;
+    private constructor() {}
 
-    private constructor() {
+    public getFilenameFromContentDisposition(disposition: string): string | undefined {
 
-        this.defaultRequestInit = {
-            headers: {
-                "User-Agent": `BSManager/${app.getVersion()} (${os.type()} ${os.release()})`
-            },
-            agent: new Agent({ family: 4 }),
-        };
+        if(!disposition) {
+            return undefined;
+        }
+
+        const utf8FilenameRegex = /filename\*=UTF-8''([\w%\-\.]+)(?:; ?|$)/i;
+        const asciiFilenameRegex = /^filename=(["']?)(.*?[^\\])\1(?:; ?|$)/i;
+
+        const utf8Match = utf8FilenameRegex.exec(disposition);
+        if (utf8Match?.[1]) {
+            return decodeURIComponent(utf8Match[1]);
+        }
+
+        const filenameStart = disposition.toLowerCase().indexOf('filename=');
+
+        if (filenameStart < 0) {
+            return undefined;
+        }
+
+        const partialDisposition = disposition.slice(filenameStart);
+        return asciiFilenameRegex.exec(partialDisposition)?.[2];
     }
 
-    private getInitWithOptions(options?: RequestInit): RequestInit {
-        return { ...this.defaultRequestInit, ...(options || {}) };
-    }
+    public async getJSON<T = unknown>(url: string): Promise<{ data: T, headers: IncomingHttpHeaders }> {
 
-    private requestOptionsFromDefaultInit(): RequestOptions {
-        return {
-            headers: this.defaultRequestInit.headers as Record<string, string>,
-            agent: this.defaultRequestInit.agent as Agent,
-        };
-    }
-
-    public async getJSON<T = unknown>(url: RequestInfo, options?: RequestInit): Promise<T> {
-
-        try {
-            const response = await fetch(url, this.getInitWithOptions(options));
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status} ${url}`);
-            }
-
-            return await response.json() as T;
+        try{
+            const res = await got(url);
+            return { data: JSON.parse(res.body), headers: res.headers };
         } catch (err) {
             log.error(err);
             throw err;
         }
     }
 
-    public downloadFile(url: string, dest: string): Observable<Progression<string>> {
+    public downloadFile(url: string, dest: string, opt?:{ preferContentDisposition?: boolean }): Observable<Progression<string>> {
         return new Observable<Progression<string>>(subscriber => {
-            const progress: Progression<string> = { current: 0, total: 0, data: dest };
+            const progress: Progression<string> = { current: 0, total: 0 };
 
             const stream = got.stream(url)
-            const file = createWriteStream(dest);
+
+            stream.on("response", response => {
+                const filename = opt?.preferContentDisposition ? this.getFilenameFromContentDisposition(response.headers["content-disposition"]) : null;
+
+                if (filename) {
+                    dest = path.join(path.dirname(dest), filename);
+                }
+
+                progress.data = dest;
+
+                const file = createWriteStream(dest);
+
+                pipeline(stream, file).catch(err => {
+                    subscriber.error(err);
+                });
+            });
 
             stream.on("downloadProgress", ({ transferred, total }) => {
                 progress.current = transferred;
@@ -82,8 +93,6 @@ export class RequestService {
                 subscriber.next(progress);
                 subscriber.complete();
             });
-
-            stream.pipe(file);
 
             return () => {
                 stream.destroy();

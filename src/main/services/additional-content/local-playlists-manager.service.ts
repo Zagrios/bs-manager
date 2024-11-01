@@ -118,38 +118,41 @@ export class LocalPlaylistsManagerService {
         version?: BSVersion,
         dest?: string
     }): Promise<{path: string, localBPList: LocalBPList}> {
-        const bplist = await this.readPlaylistFromSource(opt.bplistSource);
+        const { bpList, filename } = await this.readPlaylistFromSource(opt.bplistSource);
 
         const dest = await (async () => {
             if(opt.dest && path.isAbsolute(opt.dest) && this.acceptPlaylistFiletype(opt.dest)) { return opt.dest; }
             const playlistFolder = await this.getPlaylistsFolder(opt.version);
-            return path.join(playlistFolder, `${sanitize(bplist.playlistTitle)}.bplist`);
+            return path.join(playlistFolder, filename);
         })();
 
-        writeFileSync(dest, JSON.stringify(bplist, null, 2));
+        writeFileSync(dest, JSON.stringify(bpList, null, 2));
 
-        const localBPList: LocalBPList = { ...bplist, path: dest };
+        const localBPList: LocalBPList = { ...bpList, path: dest };
 
         return { path: dest, localBPList };
     }
 
 
-    private async readPlaylistFromSource(source: string): Promise<BPList> {
+    private async readPlaylistFromSource(source: string): Promise<{ bpList: BPList, filename: string }> {
         const isLocalFile = await pathExists(source).catch(e => { log.error(e); return false; });
 
         if(!isLocalFile && !isValidUrl(source)) {
             throw new CustomError(`Invalid source (${source})`, "INVALID_SOURCE");
         }
 
-        const bpList: BPList = await (async () => {
+        const { bpList, filename }: { bpList: BPList, filename: string } = await (async () => {
             if(isLocalFile){
-                const res = await tryit(async () => JSON.parse(readFileSync(source).toString()));
+                const res = await tryit(async () => JSON.parse(readFileSync(source).toString()) as BPList);
                 if(res.error) {
                     throw CustomError.fromError(res.error, "CANNOT_PARSE_PLAYLIST");
                 }
-                return res.result;
+                return { bpList: res.result, filename: path.basename(source) };
             }
-            return this.request.getJSON<BPList>(source);
+
+            const res = await this.request.getJSON<BPList>(source);
+            const filename = this.request.getFilenameFromContentDisposition(res.headers["content-disposition"]) ?? `${res.data.playlistTitle}.bplist`;
+            return { bpList: res.data, filename };
         })();
 
         if(!bpList?.playlistTitle) {
@@ -160,7 +163,7 @@ export class LocalPlaylistsManagerService {
             { ...s, hash: findHashInString(s.hash) ?? s.hash }
         ) : s).filter(Boolean);
 
-        return bpList;
+        return { bpList, filename };
     }
 
     private openOneClickDownloadPlaylistWindow(downloadUrl: string): void {
@@ -189,14 +192,14 @@ export class LocalPlaylistsManagerService {
                 progress.total = playlistPaths.length;
 
                 for (const playlistPath of playlistPaths) {
-                    const {result: bpList, error} = await tryit(() => this.readPlaylistFromSource(playlistPath));
+                    const {result, error} = await tryit(() => this.readPlaylistFromSource(playlistPath));
 
                     if(error) {
                         log.error(error);
                         continue;
                     }
 
-                    const localBpList: LocalBPList = { ...bpList, path: playlistPath };
+                    const localBpList: LocalBPList = { ...result.bpList, path: playlistPath };
                     bpLists.push(localBpList);
                     progress.current += 1;
                     obs.next(progress);

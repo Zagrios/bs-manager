@@ -41,7 +41,7 @@ export class BeatModsApiService {
         if (this.aliasesCache.size) {
             return this.aliasesCache;
         }
-        return this.requestService.getJSON<Record<string, string[]>>(this.BEAT_MODS_ALIAS).then(rawAliases => {
+        return this.requestService.getJSON<Record<string, string[]>>(this.BEAT_MODS_ALIAS).then(({ data: rawAliases }) => {
             Object.entries(rawAliases).forEach(([key, value]) => {
                 this.aliasesCache.set(
                     key,
@@ -97,7 +97,7 @@ export class BeatModsApiService {
 
         const alias = await this.getAliasOfVersion(version);
 
-        return this.requestService.getJSON<Mod[]>(this.getVersionModsUrl(alias)).then(mods => {
+        return this.requestService.getJSON<Mod[]>(this.getVersionModsUrl(alias)).then(({ data: mods }) => {
             mods = mods.map(mod => this.asignDependencies(mod, mods));
             this.versionModsCache.set(version.BSVersion, mods);
 
@@ -111,7 +111,7 @@ export class BeatModsApiService {
         if (this.allModsCache) {
             return this.allModsCache;
         }
-        return this.requestService.getJSON<Mod[]>(this.getAllModsUrl()).then(mods => {
+        return this.requestService.getJSON<Mod[]>(this.getAllModsUrl()).then(({ data: mods }) => {
             this.allModsCache = mods;
             return this.allModsCache;
         });
@@ -122,7 +122,7 @@ export class BeatModsApiService {
             return Promise.resolve(this.modsHashCache.get(hash));
         }
 
-        return this.requestService.getJSON<Mod[]>(`${this.BEAT_MODS_API_URL}mod?hash=${hash}`).then(mods => {
+        return this.requestService.getJSON<Mod[]>(`${this.BEAT_MODS_API_URL}mod?hash=${hash}`).then(({ data: mods }) => {
             this.updateModsHashCache(mods);
             return mods.at(0);
         });

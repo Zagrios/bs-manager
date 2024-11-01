@@ -440,7 +440,7 @@ export class LocalMapsManagerService {
         log.info("Downloading map", map.name, map.id);
 
         const zipUrl = map.versions.at(0).downloadURL;
-        const mapFolderName = sanitize(`${map.id}-${map.name}`);
+        const mapFolderName = sanitize(`${map.id} (${map.metadata.songName} - ${map.metadata.levelAuthorName})`);
         const mapsFolder = await this.getMapsFolderPath(version);
 
         const mapPath = path.join(mapsFolder, mapFolderName);

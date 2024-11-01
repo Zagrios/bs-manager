@@ -53,7 +53,9 @@
         "afterSign": ".erb/scripts/notarize.js",
         "afterPack": ".erb/scripts/after-pack.js",
         "win": {
-            "signingHashAlgorithms": ["sha256"],
+            "signingHashAlgorithms": [
+                "sha256"
+            ],
             "target": [
                 "nsis",
                 "nsis-web"
@@ -157,7 +159,7 @@
         "@types/dompurify": "^3.0.5",
         "@types/got": "^9.6.12",
         "@types/jest": "^29.5.11",
-        "@types/node": "20.11.15",
+        "@types/node": "22.8.6",
         "@types/node-fetch": "^2.6.3",
         "@types/pako": "^2.0.1",
         "@types/react": "^18.0.33",
@@ -249,7 +251,7 @@
         "format-duration": "^3.0.2",
         "framer-motion": "^11.2.6",
         "fs-extra": "^11.2.0",
-        "got": "^14.4.2",
+        "got": "^14.4.3",
         "history": "^5.3.0",
         "is-elevated": "^4.0.0",
         "jszip": "^3.10.1",
@@ -321,6 +323,6 @@
         "logLevel": "quiet"
     },
     "volta": {
-        "node": "20.17.0"
+        "node": "22.11.0"
     }
 }
