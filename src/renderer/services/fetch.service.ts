@@ -1,14 +1,17 @@
 import { FetchOptions, FetchService } from "./types";
 
-async function send(method: string, url: string, options?: FetchOptions) {
+async function send(method: "GET" | "POST", url: string, options?: FetchOptions) {
     try {
         const fetchOptions: any = { method };
         if (options?.headers) {
             fetchOptions.headers = options.headers;
         }
+
         if (options?.query) {
-            // TODO:
+            url += "?"
+            url += new URLSearchParams(options.query as any).toString();
         }
+
         if (options?.body) {
             fetchOptions.body = options.body;
         }
@@ -16,7 +19,9 @@ async function send(method: string, url: string, options?: FetchOptions) {
         const response = await fetch(url, fetchOptions);
         return {
             status: response.status,
-            body: await response.json(),
+            body: response.status < 300
+                ? await response.json()
+                : null,
         };
     } catch (error) {
         throw new Error(`[${method}] ${url} failed`, error);
@@ -35,5 +40,4 @@ export function createFetchService(): FetchService {
     };
 }
 
-// TODO: Should be static somewhere
 export const fetchService = createFetchService();

@@ -1,6 +1,9 @@
+import { formatAccuracy, formatInt, formatPp } from "renderer/helpers/leaderboard";
+import { LeaderboardColumn, LeaderboardScore } from "shared/models/leaderboard.types";
 import { OAuthTokenResponse, OAuthType } from "shared/models/oauth.types";
+import { SongDetailDiffCharactertistic, SongDiffName } from "shared/models/maps";
 import { ConfigurationClientService, FetchService } from "../types";
-
+import BeatleaderIcon from "../../../../assets/images/third-party-icons/beat-leader.png";
 
 const CODE_GRANT_TYPE = "authorization_code";
 const REFRESH_TOKEN_GRANT_TYPE = "refresh_token";
@@ -9,6 +12,48 @@ const API_ENDPOINT = "https://api.beatleader.xyz";
 const TOKEN_ENDPOINT = `${API_ENDPOINT}/oauth2/token`;
 const IDENTITY_ENDPOINT = `${API_ENDPOINT}/oauth2/identity`;
 
+const COLUMNS: LeaderboardColumn[] = [
+    {
+        header: "Rank",
+        key: "rank",
+        textAlignment: "center",
+        formatter: formatInt,
+    },
+    {
+        header: "Player",
+        key: "player",
+    },
+    {
+        header: "Score",
+        key: "score",
+        textAlignment: "right",
+        font: "mono",
+        formatter: formatInt,
+    },
+    {
+        header: "Mods",
+        key: "mods",
+        textAlignment: "center",
+        default: "-",
+    },
+    {
+        header: "Acc",
+        key: "accuracy",
+        textAlignment: "right",
+        font: "mono",
+        formatter: formatAccuracy,
+    },
+    {
+        header: "PP",
+        key: "pp",
+        textAlignment: "right",
+        font: "mono",
+        formatter: formatPp,
+        default: "0pp",
+        // NOTE: Some songs that are blRanked are sometimes undefined
+        // condition: (map: BsmLocalMap) => map.songDetails?.blRanked,
+    },
+];
 
 export function createBeatleaderAPIClientService({
     clientId,
@@ -120,6 +165,18 @@ export function createBeatleaderAPIClientService({
             return !!configService.get<string | undefined>(OAuthType.Beatleader);
         },
 
+        getTitle(): string {
+            return "BeatLeader";
+        },
+
+        getIcon(): string {
+            return BeatleaderIcon;
+        },
+
+        getColumns(): LeaderboardColumn[] {
+            return COLUMNS;
+        },
+
         async getCurrentPlayerInfo(): Promise<BeatleaderPlayerInfo | null> {
             const authInfo = getAuthInfo();
             const response = await fetchService.get<BeatleaderPlayerInfo>(`${API_ENDPOINT}/player/${authInfo.playerId}`);
@@ -128,6 +185,65 @@ export function createBeatleaderAPIClientService({
             }
 
             return response.body;
+        },
+
+        async getMapPlayerHighscore(
+            hash: string,
+            characteristic: SongDetailDiffCharactertistic,
+            difficulty: SongDiffName
+        ): Promise<LeaderboardScore | null> {
+            const authInfo = getAuthInfo();
+            const response = await fetchService.get<BeatleaderSimpleScore>(`${API_ENDPOINT}/score/${authInfo.playerId}/${hash}/${difficulty}/${characteristic}`);
+            if (response.status !== 200) {
+                return null;
+            }
+
+            const score = response.body;
+            return {
+                id: score.id.toString(),
+                rank: score.rank,
+                player: (score.player as BeatleaderPlayerInfo).name,
+                score: score.modifiedScore,
+                mods: score.modifiers,
+                accuracy: score.accuracy,
+                pp: score.pp,
+            };
+        },
+
+        async getMapScores(
+            hash: string,
+            characteristic: SongDetailDiffCharactertistic,
+            difficulty: SongDiffName,
+            page: number = 1,
+            count: number = 10
+        ): Promise<{
+            scores: LeaderboardScore[];
+            total: number;
+        }> {
+            const response = await fetchService.get<{
+                data: BeatleaderSimpleScore[];
+                metadata: { total: number };
+            }>(`${API_ENDPOINT}/v5/scores/${hash}/${difficulty}/${characteristic}`, {
+                query: { page, count }
+            });
+            if (response.status !== 200) {
+                throw new Error("scores not found");
+            }
+
+            return {
+                scores: response.body.data.map(
+                    (score): LeaderboardScore => ({
+                        id: score.id.toString(),
+                        rank: score.rank,
+                        player: score.player as string,
+                        score: score.modifiedScore,
+                        mods: score.modifiers,
+                        accuracy: score.accuracy,
+                        pp: score.pp,
+                    })
+                ),
+                total: response.body.metadata.total,
+            };
         },
     };
 }
@@ -190,4 +306,16 @@ export interface BeatleaderPlayerInfo {
     externalProfileUrl: string; // Can be steam
     scoreStats: BeatleaderScoreStats;
     socials: BeatleaderSocial[];
+}
+
+export interface BeatleaderSimpleScore {
+    id: number;
+    rank: number;
+    // baseScore: number;
+    modifiedScore: number;
+    modifiers: string;
+    accuracy: number;
+    pp: number;
+    // Can either be BeatleaderPlayerInfo or string (player name)
+    player: BeatleaderPlayerInfo | string;
 }

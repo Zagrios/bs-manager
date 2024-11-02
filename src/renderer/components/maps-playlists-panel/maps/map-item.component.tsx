@@ -34,6 +34,7 @@ import { sToMs } from "shared/helpers/time.helpers";
 import formatDuration from "format-duration";
 import { NpsIcon } from "renderer/components/svgs/icons/nps-icon.component";
 import { SpeedIcon } from "renderer/components/svgs/icons/speed-icon.component";
+import { LeaderboardType } from "renderer/components/modal/modal-types/leaderboard.component";
 
 export type MapItemComponentProps<T = unknown> = {
     hash: string;
@@ -66,9 +67,17 @@ export type MapItemComponentProps<T = unknown> = {
     onCancelDownload?: (param: T) => void;
     onDoubleClick?: (param: T) => void;
     onHighlightedDiffsChange?: (diffs: BPListDifficulty[]) => void;
+    onShowLeaderboard?: (
+        leaderboard: LeaderboardType,
+        param: T,
+        difficulty?: {
+            characteristic: SongDetailDiffCharactertistic;
+            name: SongDiffName;
+        }
+    ) => void;
 };
 
-export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, highlightedDiffs, ranked, blRanked, bpm, duration, likes, createdAt, selected, selected$, downloading, showOwned, isOwned$, canOpenMapDetails, canOpenAuthorDetails, callBackParam, onDelete, onDownload, onSelected, onCancelDownload, onDoubleClick, onHighlightedDiffsChange }: MapItemComponentProps<T>) {
+export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, coverUrl, songUrl, autorId, mapId, diffs, highlightedDiffs, ranked, blRanked, bpm, duration, likes, createdAt, selected, selected$, downloading, showOwned, isOwned$, canOpenMapDetails, canOpenAuthorDetails, callBackParam, onDelete, onDownload, onSelected, onCancelDownload, onDoubleClick, onHighlightedDiffsChange, onShowLeaderboard }: MapItemComponentProps<T>) {
     const linkOpener = useService(LinkOpenerService);
     const audioPlayer = useService(AudioPlayerService);
 
@@ -211,7 +220,18 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
                             {Array.from(diffs.entries()).map(([charac, diffSet]) => (
                                 <ol key={charac} className="flex flex-col w-full gap-1">
                                     {diffSet.map(({ name, libelle, stars, nps, njs }) => (
-                                        <li key={`${name}${libelle}${stars}`} className="w-full h-[1.15rem] flex items-center gap-1">
+                                        <li
+                                            key={`${name}${libelle}${stars}`}
+                                            className="w-full h-[1.15rem] flex items-center gap-1"
+                                            onClick={event => {
+                                                event.stopPropagation();
+                                                onShowLeaderboard?.(
+                                                    LeaderboardType.None,
+                                                    callBackParam,
+                                                    { characteristic: charac, name }
+                                                )
+                                            }}
+                                        >
                                             {onHighlightedDiffsChange && (
                                                 <Tippy content={t("maps.map-item.hightlight-difficulty")} placement="top" theme="default">
                                                     <div className="h-full aspect-square">
@@ -322,16 +342,36 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
                             )}
                         </div>
                         <motion.div className="w-full h-5 pb-1 pr-7 flex items-center gap-1" onHoverStart={bottomBarHoverStart} onHoverEnd={bottomBarHoverEnd}>
-                            {ranked && (
-                                <div className="text-yellow-300 bg-current rounded-full px-1 h-full flex items-center justify-center">
-                                    <span className="uppercase text-xs font-bold tracking-wide brightness-[.25]">{t("maps.map-specificities.ranked")}</span>
-                                </div>
-                            )}
-                            {blRanked && (
-                                <div className="bg-pink-400 bg-current rounded-full px-1 h-full flex items-center justify-center">
-                                    <span className="uppercase text-xs font-bold tracking-wide brightness-[.25]">{t("maps.map-specificities.ranked")}</span>
-                                </div>
-                            )}
+                            {!ranked && !blRanked &&
+                                <MapRankCapsule
+                                    text="unranked"
+                                    className="bg-gray-400"
+                                    onClick={() => onShowLeaderboard?.(
+                                        LeaderboardType.None,
+                                        callBackParam
+                                    )}
+                                />
+                            }
+                            {ranked &&
+                                <MapRankCapsule
+                                    text={t("maps.map-specificities.ranked")}
+                                    className="text-yellow-300"
+                                    onClick={() => onShowLeaderboard?.(
+                                        LeaderboardType.ScoreSaber,
+                                        callBackParam
+                                    )}
+                                />
+                            }
+                            {blRanked &&
+                                <MapRankCapsule
+                                    text={t("maps.map-specificities.ranked")}
+                                    className="bg-pink-400"
+                                    onClick={() => onShowLeaderboard?.(
+                                        LeaderboardType.Beatleader,
+                                        callBackParam
+                                    )}
+                                />
+                            }
                             <div className="h-full grow flex items-start content-start">{renderDiffPreview()}</div>
                         </motion.div>
                     </div>
@@ -428,5 +468,29 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
         </motion.li>
     );
 };
+
+function MapRankCapsule({
+    text,
+    className,
+    onClick,
+}: Readonly<{
+    text: string;
+    className: string;
+    onClick: () => void;
+}>) {
+    return <div
+        className={`bg-current rounded-full px-1 h-full flex items-center justify-center ${className ?? ""}`}
+        role="button"
+        tabIndex={0}
+        onClick={event => {
+            event.stopPropagation();
+            onClick();
+        }}
+    >
+        <span className="uppercase text-xs font-bold tracking-wide brightness-[.25]">
+            {text}
+        </span>
+    </div>
+}
 
 export const MapItem = typedMemo(MapItemComponent, equal);

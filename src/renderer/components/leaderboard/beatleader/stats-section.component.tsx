@@ -1,7 +1,8 @@
 import Tippy from "@tippyjs/react";
+import { formatAccuracy, formatInt, formatPercentile, formatPp, formatRank } from "renderer/helpers/leaderboard";
 import { BeatleaderPlayerInfo, BeatleaderScoreStats } from "renderer/services/third-parties/beatleader.service"
-import { BeatleaderChip } from "./chip.component";
 import { useState } from "react";
+import { BeatleaderChip } from "./chip.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 
 type Props = {
@@ -13,30 +14,23 @@ export function BeatleaderStatsSection({
 }: Readonly<Props>) {
     const [showHidden, setShowHidden] = useState(false);
 
-    const intFormatter = new Intl.NumberFormat("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 })
-    const numberFormatter = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const formatPp = (pp: number) => `${numberFormatter.format(pp)}pp`;
-    const formatAccuracy = (accuracy: number) => `${(Math.round(accuracy * 1000) / 100).toFixed(2)}%`;
-    const formatPercentile = (percentile: number) => `Top ${(Math.round(percentile * 1000) / 100).toFixed(2)}% of players`;
-    const formatRank = (rank: number) => `#${numberFormatter.format(rank)}`;
-
     const topChips: ChipInfo[] = [{
         resource: "total play count",
         key: "totalPlayCount",
-        formatter: intFormatter.format,
+        formatter: formatInt,
     }, {
         resource: "total score",
         key: "totalScore",
-        formatter: intFormatter.format,
+        formatter: formatInt,
         hidden: true,
     }, {
         resource: "ranked play count",
         key: "rankedPlayCount",
-        formatter: intFormatter.format,
+        formatter: formatInt,
     }, {
         resource: "total ranked score",
         key: "totalRankedScore",
-        formatter: intFormatter.format,
+        formatter: formatInt,
         hidden: true,
     }, {
         resource: "top PP",
@@ -65,7 +59,7 @@ export function BeatleaderStatsSection({
     }, {
         resource: "average ranked acc",
         key: "averageRankedAccuracy",
-        formatter: formatRank,
+        formatter: formatAccuracy,
     }, {
         resource: "weighted ranked acc",
         key: "averageWeightedRankedAccuracy",
@@ -84,7 +78,7 @@ export function BeatleaderStatsSection({
     }, {
         resource: "peak rank",
         key: "peakRank",
-        formatter: intFormatter.format,
+        formatter: formatInt,
         hidden: true,
     }, {
         resource: "average rank",
@@ -105,19 +99,19 @@ export function BeatleaderStatsSection({
     const bottomChips: ChipInfo[] = [{
         resource: "SS+",
         key: "sspPlays",
-        formatter: intFormatter.format,
+        formatter: formatInt,
     }, {
         resource: "SS",
         key: "ssPlays",
-        formatter: intFormatter.format,
+        formatter: formatInt,
     }, {
         resource: "S+",
         key: "spPlays",
-        formatter: intFormatter.format,
+        formatter: formatInt,
     }, {
         resource: "S",
         key: "sPlays",
-        formatter: intFormatter.format,
+        formatter: formatInt,
     }];
 
     return <div className="w-full h-fit flex gap-x-4 rounded-md p-4 bg-light-main-color-2 dark:bg-main-color-2">
