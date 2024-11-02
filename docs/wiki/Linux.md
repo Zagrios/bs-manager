@@ -29,11 +29,7 @@ pacman -U bsmanager.pacman
 
 [Proton](https://github.com/ValveSoftware/Proton) is needed to run the Beat Saber executable under Linux. You need to download this from either from Steam or building it from their GitHub repo.
 
-Once Proton is installed, when you open your BSManager application for the first time, it will ask you to link the _Proton Folder_ so that it can access the `proton` binary inside it. This will also check if the folder you've selected is valid or not. You can also change this in the future by going to the **settings page** and search for the _Proton Folder_.
-
-## Wine Install [Optional]
-
-[Wine](https://www.winehq.org/) is a tool to run windows application under Linux. BSManager uses to run [BSIPA](https://nike4613.github.io/BeatSaber-IPA-Reloaded/) so that you can play Beat Saber with mods. You can install `wine` depending on your package manager. If you don't install it, this will just fallback to using the `wine` executable found in your _Proton Folder_.
+Once Proton is installed, when you open your BSManager application for the first time, it will ask you to link the _Proton Folder_. The _Proton Folder_ also verifies if the `proton` and `files/bin/wine64` binaries exists. Once set, you should be able to launch the Beat Saber (using `proton`) and install mods (using `files/bin/wine64`). You can still change the _Proton Folder_ in the **settings page** if any new version of Steam Proton is downloaded.
 
 # Troubleshooting
 
