@@ -180,6 +180,7 @@
                     "zh-CN": "简体中文",
                     "zh-TW": "正體中文",
                     "ja-JP": "日本語",
+                    "ko-KR": "한국어",
                     "translated": {
                         "en-EN": "Inglés, Reino Unido",
                         "en-US": "Inglés, Estados Unidos",
@@ -189,7 +190,8 @@
                         "ru-RU": "Ruso",
                         "zh-CN": "Chino simplificado",
                         "zh-TW": "Chino tradicional",
-                        "ja-JP": "Japonés"
+                        "ja-JP": "Japonés",
+                        "ko-KR": "Coreano"
                     }
                 }
             },
@@ -218,7 +220,7 @@
                 }
             },
             "changelogs": {
-                "open" : "🚀 ¡Descubre lo nuevo en el Changelog!",
+                "open": "🚀 ¡Descubre lo nuevo en el Changelog!",
                 "not-founds": "😕 Uy, ¡Changelog no encontrado!"
             },
             "advanced": {
@@ -827,7 +829,7 @@
     "maps": {
         "map-filter-panel": {
             "duration": "Duración",
-            "nps" : "Notas Por Segundo",
+            "nps": "Notas Por Segundo",
             "njs": "Velocidad de salto de nota",
             "tags": "tags",
             "specificities": "general",
@@ -902,11 +904,11 @@
             "by": "Por {songAutor}",
             "mapped-by": "mapeado por",
             "delete": "Borrar",
-            "preview" : "Vista previa del mapa",
-            "bsr-code" : "Código BSR",
-            "download" : "Descargar mapa",
-            "downloading" :"Descargando mapa",
-            "cancel-download" : "Cancelar descarga",
+            "preview": "Vista previa del mapa",
+            "bsr-code": "Código BSR",
+            "download": "Descargar mapa",
+            "downloading": "Descargando mapa",
+            "cancel-download": "Cancelar descarga",
             "hightlight-difficulty": "Resaltar la dificultad"
         }
     },
@@ -1233,8 +1235,57 @@
         }
     },
     "dateformat": {
-        "dayNames": ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
-        "monthNames": ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
-        "timeNames": ["a", "p", "am", "pm", "A", "P", "AM", "PM"]
+        "dayNames": [
+            "Dom",
+            "Lun",
+            "Mar",
+            "Mié",
+            "Jue",
+            "Vie",
+            "Sáb",
+            "Domingo",
+            "Lunes",
+            "Martes",
+            "Miércoles",
+            "Jueves",
+            "Viernes",
+            "Sábado"
+        ],
+        "monthNames": [
+            "Ene",
+            "Feb",
+            "Mar",
+            "Abr",
+            "May",
+            "Jun",
+            "Jul",
+            "Ago",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dic",
+            "Enero",
+            "Febrero",
+            "Marzo",
+            "Abril",
+            "Mayo",
+            "Junio",
+            "Julio",
+            "Agosto",
+            "Septiembre",
+            "Octubre",
+            "Noviembre",
+            "Diciembre"
+        ],
+        "timeNames": [
+            "a",
+            "p",
+            "am",
+            "pm",
+            "A",
+            "P",
+            "AM",
+            "PM"
+        ]
     }
 }
