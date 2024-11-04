@@ -1064,10 +1064,6 @@
                 "go-to-mods": "Modインストーラーに移動",
                 "not-remind": "二度と表示しないで"
             },
-            "prevent-for-models-breaks": {
-                "title": "モデルが壊れています!",
-                "desc": "Beat Saberのエンジンアップデート以来、すべてのカスタムモデルのMODが壊れており、更新が必要です。まだ更新されていません。"
-            },
             "export-success": {
                 "title": "エクスポート完了🎉"
             }

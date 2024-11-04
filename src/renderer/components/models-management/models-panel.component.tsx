@@ -74,20 +74,6 @@ export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersi
             });
     }, [isActive]);
 
-    useOnUpdate(() => {
-        if (!isActive || !version || lt(version.BSVersion, "1.29.4")) {
-            return;
-        }
-        if (config.get("not-remind-models-breaks")) {
-            return;
-        }
-        notification.notifyInfo({ title: "models.notifications.prevent-for-models-breaks.title", desc: "models.notifications.prevent-for-models-breaks.desc", actions: [{ id: "0", title: "models.notifications.prevent-for-mods.not-remind", cancel: true }], duration: 12_000 }).then(res => {
-            if (res === "0") {
-                config.set("not-remind-models-breaks", true);
-            }
-        });
-    }, [isActive, version]);
-
     const exportModels = () => {
         const selectedModels = modelsGridRefs.map(ref => ref.current?.getSelectedModels() as BsmLocalModel[]).flat();
         modelsManager.exportModels(selectedModels, version);

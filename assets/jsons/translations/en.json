@@ -1071,10 +1071,6 @@
                 "go-to-mods": "Go to mods",
                 "not-remind": "Don't remind me"
             },
-            "prevent-for-models-breaks": {
-                "title": "Broken models",
-                "desc": "Since the Beat Saber engine update, all custom model mods have broken and need to be updated. They have not been updated yet."
-            },
             "export-success": {
                 "title": "Export completed 🎉"
             }

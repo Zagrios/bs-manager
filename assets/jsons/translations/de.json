@@ -1064,10 +1064,6 @@
                 "go-to-mods": "Zu den Mods",
                 "not-remind": "Nicht mehr erinnern"
             },
-            "prevent-for-models-breaks": {
-                "title": "Gebrochene Modelle",
-                "desc": "Seit dem Update der Beat Saber Engine sind alle benutzerdefinierten Modellmods defekt und müssen aktualisiert werden. Sie wurden noch nicht aktualisiert."
-            },
             "export-success": {
                 "title": "Export abgeschlossen 🎉"
             }
