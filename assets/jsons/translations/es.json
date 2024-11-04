@@ -975,10 +975,6 @@
                 "go-to-mods": "Ir a mods",
                 "not-remind": "No volver a recordarme"
             },
-            "prevent-for-models-breaks": {
-                "title": "Modelos rotos",
-                "desc": "Desde la actualización del motor de Beat Saber, todos los mods de modelos personalizados se han roto y necesitan ser actualizados. Todavía no han sido actualizados."
-            },
             "export-success": {
                 "title": "Exportación completada 🎉"
             }

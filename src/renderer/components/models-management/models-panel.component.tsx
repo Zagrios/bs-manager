@@ -12,7 +12,6 @@ import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { NotificationService } from "renderer/services/notification.service";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import { lt } from "semver";
 import { lastValueFrom, of, take } from "rxjs";
 import { FolderLinkState } from "renderer/services/version-folder-linker.service";
 import { BsContentTabItemProps } from "../shared/bs-content-tab-panel/bs-content-tab-item.component";
@@ -73,20 +72,6 @@ export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersi
                 }
             });
     }, [isActive]);
-
-    useOnUpdate(() => {
-        if (!isActive || !version || lt(version.BSVersion, "1.29.4")) {
-            return;
-        }
-        if (config.get("not-remind-models-breaks")) {
-            return;
-        }
-        notification.notifyInfo({ title: "models.notifications.prevent-for-models-breaks.title", desc: "models.notifications.prevent-for-models-breaks.desc", actions: [{ id: "0", title: "models.notifications.prevent-for-mods.not-remind", cancel: true }], duration: 12_000 }).then(res => {
-            if (res === "0") {
-                config.set("not-remind-models-breaks", true);
-            }
-        });
-    }, [isActive, version]);
 
     const exportModels = () => {
         const selectedModels = modelsGridRefs.map(ref => ref.current?.getSelectedModels() as BsmLocalModel[]).flat();
