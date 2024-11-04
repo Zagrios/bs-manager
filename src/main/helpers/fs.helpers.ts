@@ -78,7 +78,6 @@ export async function getFilesInFolder(folderPath: string): Promise<string[]> {
 
     return dirEntries.filter(entry => entry.isFile()).map(file => path.join(folderPath, file.name));
 }
-
 export function moveFolderContent(src: string, dest: string, option?: MoveOptions): Observable<Progression> {
     const progress: Progression = { current: 0, total: 0 };
     return new Observable<Progression>(subscriber => {
@@ -92,17 +91,17 @@ export function moveFolderContent(src: string, dest: string, option?: MoveOption
 
             await ensureFolderExist(dest);
 
-            const files = await readdir(src, { encoding: "utf-8" });
+            const files = await readdir(src, { encoding: "utf-8", withFileTypes: true });
             progress.total = files.length;
 
             for(const file of files){
-                const srcFullPath = path.join(src, file);
-                const destFullPath = path.join(dest, file);
+                const srcFullPath = path.join(src, file.name);
+                const destFullPath = path.join(dest, file.name);
 
-                const srcChilds = await readdir(srcFullPath, { encoding: "utf-8", recursive: true });
+                const srcChilds = file.isDirectory() ? await readdir(srcFullPath, { encoding: "utf-8", recursive: true }) : [];
                 const allChildsAlreadyExist = srcChilds.every(child => pathExistsSync(path.join(destFullPath, child)));
 
-                if(!allChildsAlreadyExist){
+                if(file.isFile() || !allChildsAlreadyExist){
                     await move(srcFullPath, destFullPath, option);
                 }
 
