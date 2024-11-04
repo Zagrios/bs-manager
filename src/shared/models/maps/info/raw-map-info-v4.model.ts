@@ -2,7 +2,7 @@ import { BsvMapCharacteristic, BsvMapDifficultyType } from "../beat-saver.model"
 
 // interfaces/version4.ts
 export interface RawMapInfoDataV4 {
-    version: string;
+    version: `4.${number}.${number}`;
     song: {
       title: string;
       subTitle: string;

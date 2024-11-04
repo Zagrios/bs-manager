@@ -1,8 +1,9 @@
 import { BsvMapCharacteristic, BsvMapDifficultyType } from "../beat-saver.model";
 import { RawMapInfoDataV2 } from "./raw-map-info-v2.model";
+import { RawMapInfoDataV3 } from "./raw-map-info-v3.model";
 import { RawMapInfoDataV4 } from "./raw-map-info-v4.model";
 
-export type AnyRawMapInfo = RawMapInfoDataV2 | RawMapInfoDataV4;
+export type AnyRawMapInfo = RawMapInfoDataV2 | RawMapInfoDataV3 | RawMapInfoDataV4;
 
 // interfaces/mapInfo.ts
 export interface MapInfo {

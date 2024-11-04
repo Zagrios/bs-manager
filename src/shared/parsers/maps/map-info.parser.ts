@@ -1,5 +1,6 @@
 import { MapDifficulty, MapInfo, AnyRawMapInfo } from "shared/models/maps/info/map-info.model";
 import { RawMapInfoDataV2 } from "shared/models/maps/info/raw-map-info-v2.model";
+import { RawMapInfoDataV3 } from "shared/models/maps/info/raw-map-info-v3.model";
 import { RawMapInfoDataV4 } from "shared/models/maps/info/raw-map-info-v4.model";
 
 function parseVersion2(data: RawMapInfoDataV2): MapInfo {
@@ -34,6 +35,11 @@ function parseVersion2(data: RawMapInfoDataV2): MapInfo {
     };
 }
 
+function parseVersion3(data: RawMapInfoDataV3): MapInfo {
+    // It's the same treatment as the version 2
+    return parseVersion2(data as unknown as RawMapInfoDataV2)
+}
+
 function parseVersion4(data: RawMapInfoDataV4): MapInfo {
     return {
         version: data.version,
@@ -64,7 +70,7 @@ function parseVersion4(data: RawMapInfoDataV4): MapInfo {
 }
 
 export function parseMapInfoDat(info: AnyRawMapInfo): MapInfo | never {
-    const version = (info as RawMapInfoDataV2)?._version || (info as RawMapInfoDataV4)?.version;
+    const version = (info as RawMapInfoDataV2)?._version || (info as RawMapInfoDataV3)?._version || (info as RawMapInfoDataV4)?.version;
 
     if(!version) {
         throw new Error('Cannot determine info.dat version');
@@ -72,6 +78,10 @@ export function parseMapInfoDat(info: AnyRawMapInfo): MapInfo | never {
 
     if (version.startsWith('2.')) {
         return parseVersion2(info as RawMapInfoDataV2);
+    }
+
+    if (version.startsWith('3.')) {
+        return parseVersion3(info as RawMapInfoDataV3);
     }
 
     if (version.startsWith('4.')) {
