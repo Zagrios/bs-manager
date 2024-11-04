@@ -12,7 +12,6 @@ import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { NotificationService } from "renderer/services/notification.service";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import { lt } from "semver";
 import { lastValueFrom, of, take } from "rxjs";
 import { FolderLinkState } from "renderer/services/version-folder-linker.service";
 import { BsContentTabItemProps } from "../shared/bs-content-tab-panel/bs-content-tab-item.component";
