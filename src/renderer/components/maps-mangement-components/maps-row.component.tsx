@@ -26,7 +26,7 @@ export const MapsRow = memo(({ maps, style, selectedMaps$, onMapSelect, onMapDel
         if (map.bsaverInfo?.versions[0]?.diffs) {
             map.bsaverInfo.versions[0].diffs.forEach(diff => {
                 const arr = res.get(diff.characteristic) || [];
-                const diffName = map.mapInfo.difficulties.find(set => set.characteristic === diff.characteristic && set.difficulty === diff.difficulty).difficultyLabel || diff.difficulty;
+                const diffName = map.mapInfo.difficulties.find(set => set.characteristic === diff.characteristic && set.difficulty === diff.difficulty)?.difficultyLabel || diff.difficulty;
                 arr.push({ name: diffName, type: diff.difficulty, stars: diff.stars });
                 res.set(diff.characteristic, arr);
             });
@@ -35,7 +35,7 @@ export const MapsRow = memo(({ maps, style, selectedMaps$, onMapSelect, onMapDel
 
         map.mapInfo.difficulties.forEach(diff => {
             const arr = res.get(diff.characteristic) || [];
-            arr.push({ name: diff.difficultyLabel || diff.difficulty, type: diff.difficulty, stars: null });
+            arr.push({ name: diff?.difficultyLabel || diff.difficulty, type: diff.difficulty, stars: null });
         });
 
         return res;
