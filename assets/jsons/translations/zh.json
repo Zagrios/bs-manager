@@ -1064,10 +1064,6 @@
                 "go-to-mods": "前往 Mod 页",
                 "not-remind": "不再提醒我"
             },
-            "prevent-for-models-breaks": {
-                "title": "已损坏的模型",
-                "desc": "自从Beat Saber引擎更新以来，所有自定义模型的MOD都已损坏，需要更新。它们还没有被更新。"
-            },
             "export-success": {
                 "title": "导出成功 🎉"
             }
