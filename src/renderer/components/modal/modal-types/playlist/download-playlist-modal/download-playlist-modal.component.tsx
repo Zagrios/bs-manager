@@ -9,7 +9,7 @@ import { BsvPlaylist, PlaylistSearchParams } from "shared/models/maps/beat-saver
 import { useCallback, useState } from "react"
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook"
 import { useService } from "renderer/hooks/use-service.hook"
-import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service"
+import { BeatSaverService } from "renderer/services/third-parties/beat-saver.service"
 import { PlaylistItem } from "renderer/components/maps-playlists-panel/playlists/playlist-item.component"
 import { PlaylistItemComponentPropsMapper } from "shared/mappers/playlist/playlist-item-component-props.mapper"
 import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service"

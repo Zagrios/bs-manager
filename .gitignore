@@ -30,3 +30,9 @@ npm-debug.log.*
 
 # externals
 externals/**/target/*
+
+# env files
+.env
+.env.*
+!.env.example
+!.env.*.example

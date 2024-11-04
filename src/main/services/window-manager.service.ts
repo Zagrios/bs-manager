@@ -10,7 +10,8 @@ export class WindowManagerService {
     private static instance: WindowManagerService;
 
     private readonly PRELOAD_PATH = app.isPackaged ? path.join(__dirname, "preload.js") : path.join(__dirname, "../../.erb/dll/preload.js");
-    private readonly IS_DEBUG = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true"
+    private readonly IS_DEV = process.env.NODE_ENV === "development";
+    private readonly IS_DEBUG = this.IS_DEV || process.env.DEBUG_PROD === "true"
 
     private readonly utilsService: UtilsService = UtilsService.getInstance();
 
@@ -21,6 +22,14 @@ export class WindowManagerService {
         "oneclick-download-playlist.html": { width: 350, height: 400, minWidth: 350, minHeight: 400, resizable: false },
         "oneclick-download-model.html": { width: 350, height: 400, minWidth: 350, minHeight: 400, resizable: false },
         "shortcut-launch.html": { width: 600, height: 300, minWidth: 600, minHeight: 300, resizable: false },
+        [this.IS_DEV && process.platform === "linux" ? "oauth.html" : "bsmanager://oauth"]: {
+            width: 1080, height: 720, minWidth: 1080, minHeight: 720, resizable: false,
+            webPreferences: {
+                nodeIntegration: false,
+                preload: this.PRELOAD_PATH,
+                webSecurity: !this.IS_DEBUG,
+            },
+         },
     };
 
     private readonly baseWindowOption: BrowserWindowConstructorOptions = {

@@ -4,6 +4,7 @@ import { IpcRequest } from "shared/models/ipc";
 import { deserializeError } from 'serialize-error';
 import { IpcCompleteChannel, IpcErrorChannel, IpcTearDownChannel } from "shared/models/ipc/ipc-response.interface";
 import { IpcChannels, IpcRequestType, IpcResponseType } from "shared/models/ipc/ipc-routes";
+import { IpcClientService } from "./types";
 
 export class IpcService {
     private static instance: IpcService;
@@ -49,4 +50,16 @@ export class IpcService {
 
         return obs;
     }
+}
+
+
+// Wrapper for DI implementation
+export const ipcClientService: IpcClientService = {
+    sendLazy(channel, request) {
+        IpcService.getInstance().sendLazy(channel, request);
+    },
+
+    sendV2(channel, data, defaultValue) {
+        return IpcService.getInstance().sendV2(channel, data, defaultValue);
+    },
 }

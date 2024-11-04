@@ -5,7 +5,7 @@ import TitleBar from "renderer/components/title-bar/title-bar.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { NotificationService } from "renderer/services/notification.service";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
-import { ModelSaberService } from "renderer/services/thrird-partys/model-saber.service";
+import { ModelSaberService } from "renderer/services/third-parties/model-saber.service";
 import { MSModel } from "shared/models/models/model-saber.model";
 import defaultImage from "../../../../assets/images/default-version-img.jpg";
 import { ModelsDownloaderService } from "renderer/services/models-management/models-downloader.service";

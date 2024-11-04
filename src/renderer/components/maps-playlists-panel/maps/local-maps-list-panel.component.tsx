@@ -24,6 +24,9 @@ import { MapItem } from "./map-item.component";
 import { isLocalMapFitMapFilter } from "./filter-panel.component";
 import { MapItemComponentPropsMapper } from "shared/mappers/map/map-item-component-props.mapper";
 import { noop } from "shared/helpers/function.helpers";
+import { LeaderboardModal, LeaderboardType } from "renderer/components/modal/modal-types/leaderboard.component";
+import { ModalService } from "renderer/services/modale.service";
+import { SongDetailDiffCharactertistic, SongDiffName } from "shared/models/maps";
 
 type Props = {
     version: BSVersion;
@@ -43,6 +46,7 @@ export type LocalMapsListPanelRef = {
 export const LocalMapsListPanel = forwardRef<LocalMapsListPanelRef, Props>(({ version, className, filter, search, linkedState, isActive }, forwardRef) => {
     const mapsManager = useService(MapsManagerService);
     const mapsDownloader = useService(MapsDownloaderService);
+    const modals = useService(ModalService);
 
     const t = useTranslation();
 
@@ -175,6 +179,21 @@ export const LocalMapsListPanel = forwardRef<LocalMapsListPanelRef, Props>(({ ve
         });
     }
 
+    const handleShowLeaderboard = (
+        leaderboard: LeaderboardType,
+        map: BsmLocalMap,
+        difficulty?: {
+            characteristic: SongDetailDiffCharactertistic;
+            name: SongDiffName;
+        }
+    ) => {
+        modals.openModal(LeaderboardModal, { data: {
+            leaderboard,
+            map,
+            difficulty
+        }});
+    }
+
     const renderMap = useCallback((renderableMap: RenderableMap) => {
         const { map } = renderableMap;
         return (
@@ -198,6 +217,7 @@ export const LocalMapsListPanel = forwardRef<LocalMapsListPanelRef, Props>(({ ve
                 createdAt={map.songDetails?.uploadedAt}
                 onDelete={handleDelete}
                 onSelected={onMapSelected}
+                onShowLeaderboard={handleShowLeaderboard}
                 callBackParam={map}
             />
         );

@@ -4,6 +4,12 @@ declare global {
     interface Window {
         electron: {
             platform: "win32"|"linux"|"darwin",
+            envVariables: {
+                beatleader: {
+                    clientId: string;
+                    redirectUri: string;
+                };
+            };
             ipcRenderer: {
                 sendMessage(channel: string, args: any): void;
                 on(channel: string, func: (...args: any) => void): (() => void) | undefined;

@@ -21,7 +21,7 @@ import { MapItemComponentPropsMapper } from "shared/mappers/map/map-item-compone
 import { BsvSearchOrder, MapFilter, SearchParams } from "shared/models/maps/beat-saver.model";
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import Tippy from "@tippyjs/react";
-import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
+import { BeatSaverService } from "renderer/services/third-parties/beat-saver.service";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { MapIcon } from "renderer/components/svgs/icons/map-icon.component";
 import { PersonIcon } from "renderer/components/svgs/icons/person-icon.component";

@@ -9,7 +9,7 @@ import { useCallback, useState } from "react";
 import { ModelItem } from "renderer/components/models-management/model-item.component";
 import { useService } from "renderer/hooks/use-service.hook";
 import { ModelDownload, ModelsDownloaderService } from "renderer/services/models-management/models-downloader.service";
-import { ModelSaberService } from "renderer/services/thrird-partys/model-saber.service";
+import { ModelSaberService } from "renderer/services/third-parties/model-saber.service";
 import { useBehaviorSubject } from "renderer/hooks/use-behavior-subject.hook";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";

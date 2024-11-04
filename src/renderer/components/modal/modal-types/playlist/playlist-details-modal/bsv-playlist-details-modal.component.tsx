@@ -9,7 +9,7 @@ import { useCallback, useEffect, useState } from "react";
 import { MapItem } from "renderer/components/maps-playlists-panel/maps/map-item.component";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useService } from "renderer/hooks/use-service.hook";
-import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.service";
+import { BeatSaverService } from "renderer/services/third-parties/beat-saver.service";
 import { getLocalTimeZone, parseAbsolute, toCalendarDateTime } from "@internationalized/date";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
 import equal from "fast-deep-equal";

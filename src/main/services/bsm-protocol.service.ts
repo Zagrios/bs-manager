@@ -10,12 +10,12 @@ export class BsmProtocolService {
         if(!BsmProtocolService.instance){ BsmProtocolService.instance = new BsmProtocolService(); }
         return BsmProtocolService.instance;
     }
-    
+
     private readonly BSM_PROTOCOL = "bsmanager";
 
     private readonly deepLink: DeepLinkService;
 
-    private linkeReceived$ = new Subject<URL>();
+    private linkReceived$ = new Subject<URL>();
 
     private constructor(){
         this.deepLink = DeepLinkService.getInstance();
@@ -24,7 +24,7 @@ export class BsmProtocolService {
 
         this.deepLink.addLinkOpenedListener(this.BSM_PROTOCOL, link => {
             if(!isValidUrl(link)){ return; }
-            this.linkeReceived$.next(new URL(link));
+            this.linkReceived$.next(new URL(link));
         });
     }
 
@@ -34,7 +34,7 @@ export class BsmProtocolService {
     }
 
     public on(host: string, listener: (link: URL) => void): Subscription {
-        return this.linkeReceived$.pipe(filter(link => link.host === host)).subscribe(listener);
+        return this.linkReceived$.pipe(filter(link => link.host === host)).subscribe(listener);
     }
 
     public buildLink(host: string, params?: Record<string, string|string[]>): URL {
