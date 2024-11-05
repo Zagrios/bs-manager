@@ -15,7 +15,9 @@
         "apply": "적용",
         "copy": "복사",
         "copied": "복사 완료!",
-        "confirm": "확인"
+        "confirm": "확인",
+        "choose-folder": "폴더를 선택하세요",
+        "unknown": "알 수 없는 오류가 발생했습니다 (´・ω・`)"
     },
     "nav-bar": {
         "add-version": "버전 추가",
@@ -157,8 +159,15 @@
             },
             "installation-folder": {
                 "title": "설치 폴더",
-                "description": "BSManager가 다운로드한 모든 콘텐츠를 포함할 폴더를 변경합니다.",
-                "choose-folder": "폴더 선택"
+                "description": "BSManager가 다운로드한 모든 콘텐츠를 포함할 폴더를 변경합니다."
+            },
+            "proton-folder": {
+                "title": "Proton 폴더",
+                "description": "Proton 경로로 폴더를 변경하세요. (예: Proton - Experimental)",
+                "errors": {
+                    "title": "Proton 폴더 설정 실패",
+                    "invalid-folder": "잘못된 Proton 폴더 경로입니다"
+                }
             },
             "additional-content": {
                 "title": "추가 콘텐츠",
@@ -434,6 +443,8 @@
                     "OCULUS_NOT_RUNNING": "Oculus가 실행 중이 아님",
                     "BS_ALREADY_RUNNING": "Beat Saber가 이미 실행 중임",
                     "EXE_NOT_FINDED": "파일을 찾을 수 없음",
+                    "PROTON_NOT_SET": "Proton 폴더가 설정되지 않음",
+                    "PROTON_NOT_FOUND": "Proton 바이너리를 찾을 수 없음",
                     "EXIT": "긴급 중지",
                     "OCULUS_LIB_NOT_FOUND": "Oculus 라이브러리를 찾을 수 없음"
                 },
@@ -444,7 +455,9 @@
                     "BS_ALREADY_RUNNING": "다시 실행하기 전에 Beat Saber를 닫아주세요.",
                     "EXE_NOT_FINDED": "몇 가지 파일을 찾을 수 없는 것 같습니다.",
                     "EXIT": "Beat Saber가 긴급 중지되었습니다. 파일을 점검합니다.",
-                    "OCULUS_LIB_NOT_FOUND": "Oculus 앱이 올바르게 설치되었는지와 Oculus 라이브러리가 올바르게 정의되었는지 확인하세요."
+                    "OCULUS_LIB_NOT_FOUND": "Oculus 앱이 올바르게 설치되었는지와 Oculus 라이브러리가 올바르게 정의되었는지 확인하세요.",
+                    "PROTON_NOT_SET": "설정에서 Proton 경로를 설정하세요.",
+                    "PROTON_NOT_FOUND": "설정에서 Proton 경로를 설정하세요."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Steam 실행"
@@ -821,9 +834,14 @@
         "ask-install-path": {
             "title": "설치 폴더",
             "choose-folder-description": "BSManager에 의해 다운로드된 모든 콘텐츠 (버전, MOD, 맵, 재생 목록 등)를 포함하는 폴더를 선택하세요.",
-            "choose-folder": "폴더 선택하기",
             "default": "기본값",
             "default-tooltip": "기본적으로 홈 폴더로 설정됩니다"
+        },
+        "choose-proton-folder": {
+            "title": "Proton 폴더",
+            "proton-folder-description": "Linux에서는 BSManager가 작동하려면 Proton이 필요합니다. 계속하려면 Proton 설치 폴더를 선택하세요.",
+            "proton-folder-placeholder": "Proton 설치 폴더",
+            "where-is-proton-installed": "Proton이 설치된 위치는 어디인가요?"
         }
     },
     "maps": {
@@ -1076,7 +1094,7 @@
             "Latest": "최신",
             "Relevance": "관련성",
             "Rating": "평점",
-            "Curated": "엄선됨"
+            "Curated": "선별됨"
         }
     },
     "auto-update": {
