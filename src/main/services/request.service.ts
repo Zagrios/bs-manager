@@ -8,6 +8,7 @@ import { unlinkSync } from "fs-extra";
 import { tryit } from "shared/helpers/error.helpers";
 import path from "path";
 import { pipeline } from "stream/promises";
+import sanitize from "sanitize-filename";
 
 export class RequestService {
     private static instance: RequestService;
@@ -66,7 +67,7 @@ export class RequestService {
                 const filename = opt?.preferContentDisposition ? this.getFilenameFromContentDisposition(response.headers["content-disposition"]) : null;
 
                 if (filename) {
-                    dest = path.join(path.dirname(dest), filename);
+                    dest = path.join(path.dirname(dest), sanitize(filename));
                 }
 
                 progress.data = dest;
