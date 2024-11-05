@@ -123,7 +123,7 @@ export class LocalPlaylistsManagerService {
         const dest = await (async () => {
             if(opt.dest && path.isAbsolute(opt.dest) && this.acceptPlaylistFiletype(opt.dest)) { return opt.dest; }
             const playlistFolder = await this.getPlaylistsFolder(opt.version);
-            return path.join(playlistFolder, filename);
+            return path.join(playlistFolder, sanitize(filename));
         })();
 
         writeFileSync(dest, JSON.stringify(bpList, null, 2));
