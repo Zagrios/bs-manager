@@ -229,6 +229,7 @@ export const DownloadModelsModal: ModalComponent<void, { version: BSVersion; typ
                     icon="search"
                     type="submit"
                     text="models.modals.download-models.search-btn"
+                    textClassName="whitespace-nowrap"
                     withBar={false}
                     onClick={e => {
                         e.preventDefault();
