@@ -13,6 +13,7 @@ import { BeatSaverService } from "../thrid-party/beat-saver/beat-saver.service";
 import { copy, copyFile, pathExists, realpath } from "fs-extra";
 import { Progression, ensureFolderExist, pathExist } from "../../helpers/fs.helpers";
 import { IpcService } from "../ipc.service";
+import sanitize from "sanitize-filename";
 
 export class LocalPlaylistsManagerService {
     private static instance: LocalPlaylistsManagerService;
@@ -71,12 +72,13 @@ export class LocalPlaylistsManagerService {
     private async installBPListFile(bslistSource: string, version: BSVersion): Promise<string> {
         const playlistFolder = await this.getPlaylistsFolder(version);
         const isLocalFile = await pathExists(bslistSource).catch(e => { log.error(e); return false; });
-        const filename = isLocalFile ? path.basename(bslistSource) :  new URL(bslistSource).pathname.split('/').pop()
+        const filename = isLocalFile ? path.basename(bslistSource) :  sanitize(new URL(bslistSource).pathname.split('/').pop())
         const destFile = path.join(playlistFolder, filename);
 
         if (isLocalFile) {
             return copyFile(bslistSource, destFile).then(() => destFile);
         }
+
         return lastValueFrom(this.request.downloadFile(bslistSource, {
             destFolder: playlistFolder,
             filename,
