@@ -185,6 +185,7 @@
                     "zh-CN": "简体中文",
                     "zh-TW": "正體中文",
                     "ja-JP": "日本語",
+                    "ko-KR": "한국어",
                     "translated": {
                         "en-EN": "English, United Kingdom",
                         "en-US": "English, USA",
@@ -194,7 +195,8 @@
                         "ru-RU": "Russian",
                         "zh-CN": "Chinese (Simplified)",
                         "zh-TW": "Chinese (Traditional)",
-                        "ja-JP": "Japanese"
+                        "ja-JP": "Japanese",
+                        "ko-KR": "Korean"
                     }
                 }
             },
@@ -223,7 +225,7 @@
                 }
             },
             "changelogs": {
-                "open" : "🚀 Check Out the Changelog!",
+                "open": "🚀 Check Out the Changelog!",
                 "not-founds": "😕 Oops, No Changelog Here!"
             },
             "advanced": {
@@ -570,7 +572,7 @@
                     "EPERM": "BSManager does not have the necessary permissions to link the folder.",
                     "EACCES": "BSManager does not have the necessary permissions to link the folder.",
                     "ENOSPC": "The disk is full, make some space and try again.",
-                    "UNKNOWN_ERROR":"An unknown error has occurred while linking the folder."
+                    "UNKNOWN_ERROR": "An unknown error has occurred while linking the folder."
                 }
             }
         },
@@ -834,7 +836,7 @@
     "maps": {
         "map-filter-panel": {
             "duration": "Duration",
-            "nps" : "Notes Per Second",
+            "nps": "Notes Per Second",
             "njs": "Note Jump Speed",
             "tags": "tags",
             "specificities": "general",
@@ -909,11 +911,11 @@
             "by": "By {songAutor}",
             "mapped-by": "mapped by",
             "delete": "Delete",
-            "preview" : "Preview map",
-            "bsr-code" : "BSR code",
-            "download" : "Download map",
-            "downloading" :"Downloading map",
-            "cancel-download" : "Cancel download",
+            "preview": "Preview map",
+            "bsr-code": "BSR code",
+            "download": "Download map",
+            "downloading": "Downloading map",
+            "cancel-download": "Cancel download",
             "hightlight-difficulty": "Highlight difficulty"
         }
     },
@@ -1240,8 +1242,57 @@
         }
     },
     "dateformat": {
-        "dayNames": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-        "monthNames": ["Jan", "Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-        "timeNames": ["a", "p", "am", "pm", "A", "P", "AM", "PM"]
+        "dayNames": [
+            "Sun",
+            "Mon",
+            "Tue",
+            "Wed",
+            "Thu",
+            "Fri",
+            "Sat",
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ],
+        "monthNames": [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "June",
+            "Jul",
+            "Aug",
+            "Sept",
+            "Oct",
+            "Nov",
+            "Dec",
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+        ],
+        "timeNames": [
+            "a",
+            "p",
+            "am",
+            "pm",
+            "A",
+            "P",
+            "AM",
+            "PM"
+        ]
     }
 }

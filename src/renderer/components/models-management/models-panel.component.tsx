@@ -139,6 +139,7 @@ export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersi
                     icon="add"
                     text="misc.add"
                     typeColor="primary"
+                    textClassName="whitespace-nowrap"
                     withBar={false}
                     onClick={e => {
                         e.preventDefault();
