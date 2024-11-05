@@ -75,7 +75,7 @@ export const AskInstallPathModal: ModalComponent<{ installPath: string }, {}> = 
                 <BsmButton
                     onClick={selectInstallPath}
                     className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md"
-                    text="modals.ask-install-path.choose-folder"
+                    text="misc.choose-folder"
                     withBar={false}
                 />
             </div>

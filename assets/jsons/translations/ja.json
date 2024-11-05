@@ -15,7 +15,9 @@
         "apply": "適用",
         "copy": "コピー",
         "copied": "コピー済み!",
-        "confirm": "確認"
+        "confirm": "確認",
+        "choose-folder": "フォルダーを選択",
+        "unknown": "不明なエラーが発生しました (´・ω・`)"
     },
     "nav-bar": {
         "add-version": "バージョンを追加",
@@ -157,8 +159,15 @@
             },
             "installation-folder": {
                 "title": "インストールフォルダー",
-                "description": "BSManager によってダウンロードされたすべてのコンテンツを含むフォルダを変更します。",
-                "choose-folder": "フォルダーを選択"
+                "description": "BSManager によってダウンロードされたすべてのコンテンツを含むフォルダを変更します。"
+            },
+            "proton-folder": {
+                "title": "Protonフォルダー",
+                "description": "フォルダーをProtonのパスに変更してください。（例：Proton - Experimental）",
+                "errors": {
+                    "title": "Protonフォルダーの設定に失敗しました",
+                    "invalid-folder": "無効なProtonフォルダーのパスです"
+                }
             },
             "additional-content": {
                 "title": "追加コンテンツ",
@@ -434,6 +443,8 @@
                     "OCULUS_NOT_RUNNING": "Oculusが起動していません",
                     "BS_ALREADY_RUNNING": "Beat Saberはすでに起動しています",
                     "EXE_NOT_FINDED": "ファイルが見つかりません",
+                    "PROTON_NOT_SET": "Protonフォルダーが設定されていません",
+                    "PROTON_NOT_FOUND": "Protonのバイナリが見つかりません",
                     "EXIT": "緊急停止",
                     "OCULUS_LIB_NOT_FOUND": "Oculusライブラリが見つかりません"
                 },
@@ -444,7 +455,9 @@
                     "BS_ALREADY_RUNNING": "再度起動する前にBeatSaberを閉じてください。",
                     "EXE_NOT_FINDED": "いくつかのファイルが見つからないようです。",
                     "EXIT": "BeatSaberが緊急停止したため、ファイルをチェックします。",
-                    "OCULUS_LIB_NOT_FOUND": "Oculusアプリケーションが正しくインストールしていることと、Oculusライブラリが正しく定義されていることを確認してください。"
+                    "OCULUS_LIB_NOT_FOUND": "Oculusアプリケーションが正しくインストールしていることと、Oculusライブラリが正しく定義されていることを確認してください。",
+                    "PROTON_NOT_SET": "設定でProtonのパスを設定してください。",
+                    "PROTON_NOT_FOUND": "設定でProtonのパスを設定してください。"
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Steamを起動"
@@ -821,9 +834,14 @@
         "ask-install-path": {
             "title": "インストールフォルダー",
             "choose-folder-description": "BSManager によってダウンロードされたすべてのコンテンツ (バージョン、MOD、マップ、プレイリストなど) を含むフォルダを選択してください。",
-            "choose-folder": "フォルダーを選択",
             "default": "デフォルト",
             "default-tooltip": "デフォルトでは、ホームフォルダに設定されます"
+        },
+        "choose-proton-folder": {
+            "title": "Protonフォルダ",
+            "proton-folder-description": "Linuxでは、BSManagerを動作させるためにProtonが必要です。続行するには、Protonのインストールフォルダを選択してください。",
+            "proton-folder-placeholder": "Protonのインストールフォルダ",
+            "where-is-proton-installed": "Protonはどこにインストールされていますか？"
         }
     },
     "maps": {

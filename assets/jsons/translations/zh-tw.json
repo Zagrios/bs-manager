@@ -15,7 +15,9 @@
         "apply": "應用",
         "copy": "複製",
         "copied": "已複製!",
-        "confirm": "確認"
+        "confirm": "確認",
+        "choose-folder": "選擇文件夾",
+        "unknown": "發生了一個錯誤 ¯\\_(ツ)_/¯"
     },
     "nav-bar": {
         "add-version": "新增版本",
@@ -157,8 +159,15 @@
             },
             "installation-folder": {
                 "title": "安裝文件夾",
-                "description": "更改將包含 BSManager 下載的所有內容的文件夾。",
-                "choose-folder": "選擇文件夾"
+                "description": "更改將包含 BSManager 下載的所有內容的文件夾。"
+            },
+            "proton-folder": {
+                "title": "Proton資料夾",
+                "description": "將資料夾更改為Proton路徑。（例如：Proton - Experimental）",
+                "errors": {
+                    "title": "設置Proton資料夾失敗",
+                    "invalid-folder": "無效的Proton資料夾路徑"
+                }
             },
             "additional-content": {
                 "title": "附加內容",
@@ -434,6 +443,8 @@
                     "OCULUS_NOT_RUNNING": "Oculus 未運行",
                     "BS_ALREADY_RUNNING": "Beat Saber 已在運行",
                     "EXE_NOT_FINDED": "缺少文件",
+                    "PROTON_NOT_SET": "Proton資料夾未設置",
+                    "PROTON_NOT_FOUND": "找不到Proton二進位檔",
                     "EXIT": "突然停止",
                     "OCULUS_LIB_NOT_FOUND": "未找到 Oculus 庫"
                 },
@@ -444,7 +455,9 @@
                     "BS_ALREADY_RUNNING": "再次啟動前請關閉 BeatSaber。",
                     "EXE_NOT_FINDED": "某些文件似乎遺失了，嘗試驗證文件。",
                     "EXIT": "BeatSaber 突然停止，請檢查文件。",
-                    "OCULUS_LIB_NOT_FOUND": "檢查 Oculus 應用是否正確安裝，以及庫是否在 Oculus 中正確定義。"
+                    "OCULUS_LIB_NOT_FOUND": "檢查 Oculus 應用是否正確安裝，以及庫是否在 Oculus 中正確定義。",
+                    "PROTON_NOT_SET": "在設定中設置Proton路徑。",
+                    "PROTON_NOT_FOUND": "在設定中設置Proton路徑。"
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "啟動 Steam"
@@ -821,9 +834,14 @@
         "ask-install-path": {
             "title": "安裝文件夾",
             "choose-folder-description": "選擇將包含 BSManager 下載的所有內容的文件夾。(版本、mod、地圖、播放列表等)",
-            "choose-folder": "選擇文件夾",
             "default": "預設",
             "default-tooltip": "預設為您的主資料夾"
+        },
+        "choose-proton-folder": {
+            "title": "Proton資料夾",
+            "proton-folder-description": "在Linux上，BSManager需要Proton才能運行。請選擇Proton的安裝資料夾以繼續。",
+            "proton-folder-placeholder": "Proton安裝資料夾",
+            "where-is-proton-installed": "Proton安裝在哪裡？"
         }
     },
     "maps": {

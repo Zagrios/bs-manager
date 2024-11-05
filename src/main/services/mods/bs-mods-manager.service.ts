@@ -17,12 +17,15 @@ import { sToMs } from "../../../shared/helpers/time.helpers";
 import { ensureDir, pathExistsSync } from "fs-extra";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { popElement } from "shared/helpers/array.helpers";
+import { LinuxService } from "../linux.service";
+import { tryit } from "shared/helpers/error.helpers";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
 
     private readonly beatModsApi: BeatModsApiService;
     private readonly bsLocalService: BSLocalVersionService;
+    private readonly linuxService: LinuxService;
     private readonly requestService: RequestService;
 
     private manifestMatches: Mod[];
@@ -37,6 +40,7 @@ export class BsModsManagerService {
     private constructor() {
         this.beatModsApi = BeatModsApiService.getInstance();
         this.bsLocalService = BSLocalVersionService.getInstance();
+        this.linuxService = LinuxService.getInstance();
         this.requestService = RequestService.getInstance();
     }
 
@@ -140,25 +144,34 @@ export class BsModsManagerService {
             return false;
         }
 
-        return new Promise<boolean>(resolve => {
-            const cmd = process.platform === 'linux'
-                ? `screen -dmS "BSIPA" dotnet "${ipaPath}" ${args.join(" ")}` // Must run through screen, otherwise BSIPA tries to move console cursor and crashes.
-                : `"${ipaPath}" ${args.join(" ")}`;
+        let cmd = `"${ipaPath}" "${bsExePath}" ${args.join(" ")}`;
+        if (process.platform === "linux") {
+            const { error, result: winePath } = tryit(() => this.linuxService.getWinePath());
+            if (error) {
+                log.error(error);
+                return false;
+            }
+            cmd = `"${winePath}" ${cmd}`;
+        }
 
+        return new Promise<boolean>(resolve => {
             log.info("START IPA PROCESS", cmd);
             const processIPA = spawn(cmd, { cwd: versionPath, detached: true, shell: true });
 
-            const timemout = setTimeout(() => {
+            const timeout = setTimeout(() => {
                 log.info("Ipa process timeout");
                 resolve(false)
             }, sToMs(30));
 
+            processIPA.stdout.on("data", data => {
+                log.info("IPA process stdout", data.toString());
+            });
             processIPA.stderr.on("data", data => {
                 log.error("IPA process stderr", data.toString());
             })
 
             processIPA.once("exit", code => {
-                clearTimeout(timemout);
+                clearTimeout(timeout);
                 if (code === 0) {
                     log.info("Ipa process exist with code 0");
                     return resolve(true);
@@ -195,7 +208,7 @@ export class BsModsManagerService {
         }
 
         const crypto = require("crypto");
-        const files = await zip.files;
+        const { files } = zip;
 
         const checkedEntries = (
             await Promise.all(

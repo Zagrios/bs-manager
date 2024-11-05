@@ -15,7 +15,9 @@
         "apply": "Übernehmen",
         "copy": "Kopieren",
         "copied": "Kopiert!",
-        "confirm": "Bestätigen"
+        "confirm": "Bestätigen",
+        "choose-folder": "Ordner Wählen",
+        "unknown": "Ein unbekannter Fehler ist aufgetreten ¯\\_(ツ)_/¯"
     },
     "nav-bar": {
         "add-version": "Version hinzufügen",
@@ -157,8 +159,15 @@
             },
             "installation-folder": {
                 "title": "Installations-Ordner",
-                "description": "Ändern Sie den Ordner, der alle von BSManager heruntergeladenen Inhalte enthalten wird.",
-                "choose-folder": "Ordner wählen"
+                "description": "Ändern Sie den Ordner, der alle von BSManager heruntergeladenen Inhalte enthalten wird."
+            },
+            "proton-folder": {
+                "title": "Proton-Ordner",
+                "description": "Ändern Sie den Ordner zum Proton-Pfad. (z. B. Proton - Experimental)",
+                "errors": {
+                    "title": "Das Einstellen des Proton-Ordners ist fehlgeschlagen",
+                    "invalid-folder": "Ungültiger Proton-Ordnerpfad"
+                }
             },
             "additional-content": {
                 "title": "Zusätzlicher Inhalt",
@@ -434,6 +443,8 @@
                     "OCULUS_NOT_RUNNING": "Oculus läuft nicht",
                     "BS_ALREADY_RUNNING": "Beat Saber läuft bereits",
                     "EXE_NOT_FINDED": "Dateien fehlen",
+                    "PROTON_NOT_SET": "Proton-Ordner nicht festgelegt",
+                    "PROTON_NOT_FOUND": "Proton-Binärdatei nicht gefunden",
                     "EXIT": "Abrupter Stop",
                     "OCULUS_LIB_NOT_FOUND": "Oculus-Bibliothek nicht gefunden"
                 },
@@ -444,7 +455,9 @@
                     "BS_ALREADY_RUNNING": "Schließe Beat Saber, bevor du es erneut startest.",
                     "EXE_NOT_FINDED": "Einige Dateien scheinen zu fehlen. Versuche, die Dateien zu überprüfen.",
                     "EXIT": "Beat Saber stoppte abrupt. Versuche, die Dateien zu überprüfen.",
-                    "OCULUS_LIB_NOT_FOUND": "Überprüfe, ob die Oculus-Anwendung korrekt installiert ist und dass die Bibliotheken in Oculus richtig definiert sind."
+                    "OCULUS_LIB_NOT_FOUND": "Überprüfe, ob die Oculus-Anwendung korrekt installiert ist und dass die Bibliotheken in Oculus richtig definiert sind.",
+                    "PROTON_NOT_SET": "Stellen Sie den Proton-Pfad in den Einstellungen ein.",
+                    "PROTON_NOT_FOUND": "Stellen Sie den Proton-Pfad in den Einstellungen ein."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Starte Steam"
@@ -821,9 +834,14 @@
         "ask-install-path": {
             "title": "Installations Ordner",
             "choose-folder-description": "Wählen Sie den Ordner aus, der alle von BSManager heruntergeladenen Inhalte enthalten soll. (Versionen, Mods, Karten, Playlists, etc.)",
-            "choose-folder": "Ordner Wählen",
             "default": "Standard",
             "default-tooltip": "Standardmäßig in Ihrem persönlichen Ordner"
+        },
+        "choose-proton-folder": {
+            "title": "Proton-Ordner",
+            "proton-folder-description": "Unter Linux benötigt BSManager Proton, um zu funktionieren. Wählen Sie den Installationsordner von Proton, um fortzufahren.",
+            "proton-folder-placeholder": "Proton-Installationsordner",
+            "where-is-proton-installed": "Wo ist Proton installiert?"
         }
     },
     "maps": {

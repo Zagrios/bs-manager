@@ -14,3 +14,4 @@ import "./model-saber.ipcs";
 import "./bs-model-ipcs";
 import "./bs-version-download/bs-download-ipcs";
 import "./static-configuration.ipcs";
+import "./linux.ipcs.ts";
