@@ -9,6 +9,8 @@ import { tryit } from "shared/helpers/error.helpers";
 import path from "path";
 import { pipeline } from "stream/promises";
 import sanitize from "sanitize-filename";
+import { LookupAddress, LookupAllOptions, LookupOptions } from "dns";
+import dns from "node:dns";
 
 export class RequestService {
     private static instance: RequestService;
@@ -21,6 +23,14 @@ export class RequestService {
     }
 
     private constructor() {}
+
+    private dnslookup( hostname: string, options: LookupOptions, callback: (err: NodeJS.ErrnoException | null, address: string | LookupAddress[], family?: number) => void,): void {
+        console.log("OPTINOS", options);
+        const checkAllOptions: LookupAllOptions = {...(options ?? {}), all: true};
+        dns.lookup(hostname, checkAllOptions, (err: Error, adresses: LookupAddress[]) => {
+            callback(err, adresses);
+        });
+    }
 
     public getFilenameFromContentDisposition(disposition: string): string | undefined {
 
@@ -49,7 +59,7 @@ export class RequestService {
     public async getJSON<T = unknown>(url: string): Promise<{ data: T, headers: IncomingHttpHeaders }> {
 
         try{
-            const res = await got(url);
+            const res = await got(url, { dnsLookup: this.dnslookup });
             return { data: JSON.parse(res.body), headers: res.headers };
         } catch (err) {
             log.error(err);
@@ -61,7 +71,7 @@ export class RequestService {
         return new Observable<Progression<string>>(subscriber => {
             const progress: Progression<string> = { current: 0, total: 0 };
 
-            const stream = got.stream(url)
+            const stream = got.stream(url, { dnsLookup: this.dnslookup })
 
             stream.on("response", response => {
                 const filename = opt?.preferContentDisposition ? this.getFilenameFromContentDisposition(response.headers["content-disposition"]) : null;
@@ -110,7 +120,9 @@ export class RequestService {
                 data: null,
             };
 
-            const req = got.stream(url, options);
+            const _options = {...(options ?? {}), dnsLookup: this.dnslookup}
+
+            const req = got.stream(url, _options);
 
             let data = Buffer.alloc(0);
             let response: IncomingMessage;
