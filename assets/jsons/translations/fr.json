@@ -228,10 +228,6 @@
                     "open-logs": "Ouvrir les logs"
                 }
             },
-            "changelogs": {
-                "open" : "🚀 Jetez un œil au Changelog !",
-                "not-founds": "😕 Oups, Changelog introuvable !"
-            },
             "advanced": {
                 "title": "Avancés",
                 "description": "Paramètres avancés pour BSManager.",

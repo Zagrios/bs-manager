@@ -228,10 +228,6 @@
                     "open-logs": "Protokolle öffnen"
                 }
             },
-            "changelogs": {
-                "open" : "🚀 Neues im Changelog entdecken!",
-                "not-founds": "😕 Hoppla, kein Changelog zu sehen!"
-            },
             "advanced": {
                 "title": "Erweiterte",
                 "description": "Erweiterte Einstellungen für BSManager.",

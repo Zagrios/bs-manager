@@ -228,10 +228,6 @@
                     "open-logs": "Abrir los registros"
                 }
             },
-            "changelogs": {
-                "open": "🚀 ¡Descubre lo nuevo en el Changelog!",
-                "not-founds": "😕 Uy, ¡Changelog no encontrado!"
-            },
             "advanced": {
                 "title": "Avanzados",
                 "description": "Configuraciones avanzadas para BSManager.",
