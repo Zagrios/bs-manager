@@ -39,15 +39,13 @@ import { BsStore } from "shared/models/bs-store.enum";
 import { SteamIcon } from "renderer/components/svgs/icons/steam-icon.component";
 import { OculusIcon } from "renderer/components/svgs/icons/oculus-icon.component";
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
-import { AutoUpdaterService } from "renderer/services/auto-updater.service";
-import BeatWaitingImg from "../../../assets/images/apngs/beat-waiting.png";
 import BeatConflict from "../../../assets/images/apngs/beat-conflict.png";
-import { logRenderError } from "renderer";
 import { SettingToogleSwitchGrid } from "renderer/components/settings/setting-toogle-switch-grid.component";
 import { BasicModal } from "renderer/components/modal/basic-modal.component";
 import { StaticConfigurationService } from "renderer/services/static-configuration.service";
 import { tryit } from "shared/helpers/error.helpers";
 import { InstallationLocationService } from "renderer/services/installation-location.service";
+import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 
 export function SettingsPage() {
 
@@ -65,9 +63,9 @@ export function SettingsPage() {
     const playlistsManager = useService(PlaylistsManagerService);
     const modelsManager = useService(ModelsManagerService);
     const versionLinker = useService(VersionFolderLinkerService);
-    const autoUpdater = useService(AutoUpdaterService);
     const staticConfig = useService(StaticConfigurationService);
     const installationLocationService = useService(InstallationLocationService);
+    const autoUpdater = useService(AutoUpdaterService);
 
     const { firstColor, secondColor } = useThemeColor();
 
@@ -100,10 +98,7 @@ export function SettingsPage() {
     const [hasDownloaderSession, setHasDownloaderSession] = useState(false);
     const [hardwareAccelerationEnabled, setHardwareAccelerationEnabled] = useState(true);
     const [useSymlink, setUseSymlink] = useState(false);
-    const appVersion = useObservable(() => ipcService.sendV2("current-version"));
-
-    const [isChangelogAvailable, setIsChangelogAvailable] = useState(true);
-    const [changlogsLoading, setChanglogsLoading] = useState(false);
+    const appVersion = useObservable(() => autoUpdater.getAppVersion());
 
     useEffect(() => {
         loadInstallationFolder();
@@ -159,24 +154,6 @@ export function SettingsPage() {
 
     const handleChangeLanguage = (item: RadioItem<string>) => {
         i18nService.setLanguage(item.value);
-    };
-
-    const handleVersionClick = async () => {
-        let isChangelogResolved = false;
-        const timeoutId = setTimeout(() => setChanglogsLoading(() => !isChangelogResolved), 100);
-
-        await autoUpdater.showChangelog(await lastValueFrom(autoUpdater.getAppVersion()))
-            .then(() => {
-                setIsChangelogAvailable(() => true);
-            })
-            .catch(err => {
-                logRenderError(err);
-                setIsChangelogAvailable(() => false);
-            })
-            .finally(() => { isChangelogResolved = true; });
-
-        setChanglogsLoading(() => false);
-        clearTimeout(timeoutId);
     };
 
     const setDefaultProtonFolder = async () => {
@@ -605,12 +582,7 @@ export function SettingsPage() {
                     ]}/>
                 </SettingContainer>
 
-                <Tippy content={isChangelogAvailable ? t("pages.settings.changelogs.open") : t("pages.settings.changelogs.not-founds")} placement="left" className="font-bold bg-main-color-3">
-                    <div className="!bg-light-main-color-1 dark:!bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5 hover:brightness-125 h-auto w-auto">
-                        <BsmButton onClick={handleVersionClick} text={`v${appVersion}`} withBar={false} typeColor="none"/>
-                    </div>
-                </Tippy>
-                <BsmImage className={`h-7 my-auto spin-loading float-right ${changlogsLoading ? "" : "hidden"}`} image={BeatWaitingImg} loading="eager" />
+                <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5">v{appVersion}</span>
             </div>
             <SupportersView isVisible={showSupporters} setVisible={setShowSupporters} />
         </div>

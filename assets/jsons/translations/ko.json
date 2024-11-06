@@ -228,10 +228,6 @@
                     "open-logs": "로그 보기"
                 }
             },
-            "changelogs": {
-                "open": "🚀 변경 로그를 확인해보세요!",
-                "not-founds": "😕 변경 로그가 보이지 않습니다!"
-            },
             "advanced": {
                 "title": "고급 설정",
                 "description": "BSManager의 고급 설정입니다.",
