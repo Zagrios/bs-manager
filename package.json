@@ -19,6 +19,7 @@
         "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
         "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
         "test": "jest",
+        "test:unit": "jest ./src/__tests__/unit",
         "publish": "npm run build && electron-builder -c.win.certificateSha1=2164d6a7d641ecf6ad57852f665a518ca2bf960f --publish always --win --x64",
         "publish:linux": "npm run build && electron-builder --publish always --linux --x64"
     },
@@ -116,34 +117,6 @@
         "beat-saber"
     ],
     "homepage": "https://github.com/Zagrios/bs-manager#readme",
-    "jest": {
-        "testURL": "http://localhost/",
-        "testEnvironment": "jsdom",
-        "transform": {
-            "\\.(ts|tsx|js|jsx)$": "ts-jest"
-        },
-        "moduleNameMapper": {
-            "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/.erb/mocks/fileMock.js",
-            "\\.(css|less|sass|scss)$": "identity-obj-proxy"
-        },
-        "moduleFileExtensions": [
-            "js",
-            "jsx",
-            "ts",
-            "tsx",
-            "json"
-        ],
-        "moduleDirectories": [
-            "node_modules",
-            "src"
-        ],
-        "testPathIgnorePatterns": [
-            "release/app/dist"
-        ],
-        "setupFiles": [
-            "./.erb/scripts/check-build-exists.ts"
-        ]
-    },
     "devDependencies": {
         "@electron/fuses": "^1.7.0",
         "@electron/notarize": "^2.3.0",
@@ -281,7 +254,8 @@
         "tippy.js": "^6.3.7",
         "to-ico": "^1.1.5",
         "use-double-click": "^1.0.5",
-        "use-fit-text": "^2.4.0"
+        "use-fit-text": "^2.4.0",
+        "yauzl": "^3.2.0"
     },
     "engines": {
         "node": ">=20.0.0"

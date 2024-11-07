@@ -30,6 +30,7 @@ import { MapInfo } from "shared/models/maps/info/map-info.model";
 import { parseMapInfoDat } from "shared/parsers/maps/map-info.parser";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { tryit } from "shared/helpers/error.helpers";
+import { extractZip } from "main/helpers/zip.helpers";
 
 export class LocalMapsManagerService {
     private static instance: LocalMapsManagerService;
@@ -169,17 +170,13 @@ export class LocalMapsManagerService {
         return getUrlsAndReturn(mapInfo, hash, mapPath);
     }
 
-    private async downloadMapZip(zipUrl: string): Promise<{ zip: StreamZip.StreamZipAsync; zipPath: string }> {
+    private async downloadMapZip(zipUrl: string): Promise<string> {
         const fileName = `${path.basename(zipUrl, ".zip")}-${crypto.randomUUID()}.zip`;
         const tempPath = this.utils.getTempPath();
         await ensureFolderExist(this.utils.getTempPath());
         const dest = path.join(tempPath, fileName);
 
-
-        const zipPath = (await lastValueFrom(this.reqService.downloadFile(zipUrl, dest))).data;
-        const zip = new StreamZip.async({ file: zipPath });
-
-        return { zip, zipPath };
+        return (await lastValueFrom(this.reqService.downloadFile(zipUrl, dest))).data;
     }
 
     public getMaps(version?: BSVersion): Observable<BsmLocalMapsProgress> {
@@ -454,16 +451,8 @@ export class LocalMapsManagerService {
             return installedMap;
         }
 
-        const { zip, zipPath } = await this.downloadMapZip(zipUrl);
-
-        if (!zip) {
-            throw new Error(`Cannot download ${zipUrl}`);
-        }
-
-        await ensureFolderExist(mapPath);
-
-        await zip.extract(null, mapPath);
-        await zip.close();
+        const zipPath = await this.downloadMapZip(zipUrl);
+        await extractZip(zipPath, mapPath);
         await unlink(zipPath);
 
         const localMap = await this.loadMapInfoFromPath(mapPath);
