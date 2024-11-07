@@ -141,6 +141,7 @@ export class SongDetailsCacheService {
 
             if(error) {
                 lastError = error;
+                log.error("Failed to download SongDetailCache file", etag, error);
                 continue;
             }
 
@@ -152,7 +153,6 @@ export class SongDetailsCacheService {
             }
         }
 
-        log.error("Failed to download SongDetailCache file", etag, lastError);
         throw lastError;
     }
 

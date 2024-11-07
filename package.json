@@ -249,7 +249,7 @@
         "format-duration": "^3.0.2",
         "framer-motion": "^11.2.6",
         "fs-extra": "^11.2.0",
-        "got": "^14.4.3",
+        "got": "^14.4.4",
         "history": "^5.3.0",
         "is-elevated": "^4.0.0",
         "jszip": "^3.10.1",
