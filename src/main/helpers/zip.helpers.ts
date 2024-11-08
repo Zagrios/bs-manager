@@ -23,6 +23,8 @@ export interface ZipExtractOptions {
 };
 
 export interface ZipProcessOptions {
+    // Stops the extraction immediately when set to true
+    terminate?: (entry: ZipEntry) => boolean;
     getBuffer?: boolean;
 };
 
@@ -96,7 +98,8 @@ function handleExtractZip(
             zipEntry.buffer = undefined;
 
             if (options?.terminate?.(zipEntry)) {
-                return readStream.destroy();
+                readStream.destroy();
+                return zip.close();
             }
 
             if (options?.condition) {
@@ -129,23 +132,28 @@ function handleExtractZip(
 
 // @params loop - this should not throw an error
 export function processZip<T>(
-    zipPath: string,
+    data: string | Buffer,
     options: Readonly<ZipProcessOptions>,
     loop: (accumulator: T, entry: ZipEntry) => T,
     initValue: T
 ): Promise<T> {
     return new Promise((resolve, reject) => {
-        yauzl.open(zipPath, {
-            lazyEntries: true,
-            decodeStrings: true,
-        },
-        (openError, zip) => {
+        const callback = (openError: Error, zip: yauzl.ZipFile) => {
             if (openError) return reject(openError);
             handleProcessZip<T>(
                 zip, options, loop, initValue,
                 resolve, reject
             );
-        });
+        }
+
+        if (typeof data === "string") {
+            yauzl.open(data, {
+                lazyEntries: true,
+                decodeStrings: true,
+            }, callback);
+        } else {
+            yauzl.fromBuffer(data, callback);
+        }
     });
 }
 
@@ -177,14 +185,21 @@ async function handleProcessZip<T>(
         zip.openReadStream(entry, (readError, readStream) => {
             if (readError) return reject(readError);
 
+            zipEntry.name = entry.fileName;
+            zipEntry.directory = false;
+            zipEntry.buffer = undefined;
+            if (options?.terminate?.(zipEntry)) {
+                readStream.destroy();
+                zip.close();
+                return;
+            }
+
             const chunks: Buffer[] = [];
             readStream.on("data", data => {
                 chunks.push(data);
             });
 
             readStream.on("end", () => {
-                zipEntry.name = entry.fileName;
-                zipEntry.directory = false;
                 zipEntry.buffer = Buffer.concat(chunks);
                 accumulator = loop(accumulator, zipEntry);
                 zip.readEntry();
