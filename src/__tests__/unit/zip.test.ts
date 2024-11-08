@@ -5,6 +5,7 @@ import { extractZip } from "main/helpers/zip.helpers";
 const TEST_FOLDER = path.resolve(__dirname, "../../..", "assets", "tests");
 const STANDARD_ZIP = path.join(TEST_FOLDER, "standard.zip");
 const WINDOWS_LEGACY_MAP_ZIP = path.join(TEST_FOLDER, "windows_legacy.zip");
+const SPECIAL_ZIP = path.join(TEST_FOLDER, "special.zip");
 const DESTINATION_FOLDER = path.join(TEST_FOLDER, "out");
 
 describe("Zip Server Service Test", () => {
@@ -66,6 +67,22 @@ describe("Zip Server Service Test", () => {
                 .toBe(true);
         }
     });
+
+    it("Extract special zip file", async () => {
+        const beforeExtracted: string[] = [];
+        const afterExtracted: string[] = [];
+        await extractZip(SPECIAL_ZIP, DESTINATION_FOLDER, {
+            beforeFolderExtracted: (folder) => beforeExtracted.push(folder),
+            afterFolderExtracted: (folder) => afterExtracted.push(folder),
+        });
+
+        const expected = [
+            "1/a", "1/aa", "1/aaa",
+            "2/a", "2/aa", "2/aaa",
+        ]
+        expect(beforeExtracted).toEqual(expected);
+        expect(afterExtracted).toEqual(expected);
+    })
 
     afterAll(async () => {
         if (pathExistsSync(DESTINATION_FOLDER)) {

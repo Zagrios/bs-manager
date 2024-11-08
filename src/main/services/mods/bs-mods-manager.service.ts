@@ -10,7 +10,7 @@ import { BS_EXECUTABLE } from "../../constants";
 import log from "electron-log";
 import { deleteFolder, ensureFolderExist, pathExist, Progression, unlinkPath } from "../../helpers/fs.helpers";
 import { lastValueFrom, Observable } from "rxjs";
-import { extractZip, validateZip } from "../../helpers/zip.helpers";
+import { extractZip, processZip } from "../../helpers/zip.helpers";
 import recursiveReadDir from "recursive-readdir";
 import { sToMs } from "../../../shared/helpers/time.helpers";
 import { pathExistsSync, unlinkSync } from "fs-extra";
@@ -205,7 +205,18 @@ export class BsModsManagerService {
             return false;
         }
 
-        if (!(await validateZip(zipPath, download.hashMd5))) {
+        const hashCount = await processZip(zipPath, {
+            getBuffer: true
+        }, (acc, entry) => {
+            if (entry.directory) return acc;
+
+            const md5Hash = crypto.createHash("md5")
+                .update(entry.buffer)
+                .digest("hex");
+            return acc + +download.hashMd5.some(md5 => md5.hash === md5Hash);
+        }, 0);
+
+        if (hashCount !== download.hashMd5.length) {
             return false;
         }
 

@@ -1,13 +1,36 @@
-import crypto from "crypto";
 import fs from "fs-extra";
 import path from "path";
 import yauzl from "yauzl";
-import { FileHashes } from "shared/models/mods";
 import { ensureFolderExist } from "./fs.helpers";
 
-// NOTE: yauzl needs to be reopened when it is read
+// NOTE: yauzl needs to be reopened once readEntry is done
 
-export async function extractZip(zipPath: string, destination: string): Promise<string[]> {
+export interface ZipEntry {
+    name: string;
+    directory: boolean;
+    buffer?: Buffer;
+};
+
+export interface ZipExtractOptions {
+    // Stops the extraction immediately when set to true
+    terminate?: (entry: ZipEntry) => boolean;
+    // Whether or not to extract the file
+    condition?: (entry: ZipEntry) => boolean;
+    // Called before extracting the folder
+    beforeFolderExtracted?: (folder: string) => void;
+    // Called when the folder contents is fully extracted
+    afterFolderExtracted?: (folder: string) => void;
+};
+
+export interface ZipProcessOptions {
+    getBuffer?: boolean;
+};
+
+export async function extractZip(
+    zipPath: string,
+    destination: string,
+    options?: Readonly<ZipExtractOptions>
+): Promise<string[]> {
     await ensureFolderExist(destination);
 
     return new Promise((resolve, reject) => {
@@ -17,16 +40,23 @@ export async function extractZip(zipPath: string, destination: string): Promise<
         },
         (openError, zip) => {
             if (openError) return reject(openError);
-            handleExtractZip(zip, destination, resolve, reject);
+            handleExtractZip(zip, destination, options, resolve, reject);
         });
     });
 }
 
 function handleExtractZip(
-    zip: yauzl.ZipFile, destination: string,
-    resolve: (result: string[]) => void, reject: (error: any) => void
+    zip: yauzl.ZipFile,
+    destination: string,
+    options: Readonly<ZipExtractOptions> | undefined,
+    resolve: (result: string[]) => void, reject: (error: Error) => void
 ) {
     const files: string[] = [];
+    const zipEntry: ZipEntry = {
+        name: "",
+        directory: false,
+    };
+    let currentDirname = "";
 
     zip.readEntry();
 
@@ -45,6 +75,37 @@ function handleExtractZip(
         zip.openReadStream(entry, (readError, readStream) => {
             if (readError) return reject(readError);
 
+            const dirname = path.dirname(entry.fileName);
+            if (dirname !== currentDirname) {
+                if (path.dirname(dirname) === path.dirname(currentDirname)) {
+                    options?.afterFolderExtracted?.(currentDirname);
+                    options?.beforeFolderExtracted?.(dirname);
+                } else if (currentDirname.startsWith(dirname)) {
+                    options?.afterFolderExtracted?.(currentDirname);
+                } else if (dirname.startsWith(currentDirname)) {
+                    options?.beforeFolderExtracted?.(dirname);
+                } else {
+                    options?.afterFolderExtracted?.(currentDirname);
+                    options?.beforeFolderExtracted?.(dirname);
+                }
+                currentDirname = dirname;
+            }
+
+            zipEntry.name = entry.fileName;
+            zipEntry.directory = false;
+            zipEntry.buffer = undefined;
+
+            if (options?.terminate?.(zipEntry)) {
+                return readStream.destroy();
+            }
+
+            if (options?.condition) {
+                if (!options.condition(zipEntry)) {
+                    readStream.destroy();
+                    return zip.readEntry();
+                }
+            }
+
             // For forward slashes since they don't create directories
             const directory = path.dirname(absolutePath);
             if (!fs.pathExistsSync(directory)) {
@@ -53,18 +114,26 @@ function handleExtractZip(
 
             const writeStream = fs.createWriteStream(absolutePath);
             readStream.pipe(writeStream);
-
-            readStream.on("end", () => zip.readEntry());
+            readStream.on("end", () => {
+                zip.readEntry()
+            });
         });
     });
 
     zip.once("end", () => {
+        options?.afterFolderExtracted?.(currentDirname);
         zip.close();
         resolve(files);
     });
 }
 
-export function validateZip(zipPath: string, hashes: FileHashes[]): Promise<boolean> {
+// @params loop - this should not throw an error
+export function processZip<T>(
+    zipPath: string,
+    options: Readonly<ZipProcessOptions>,
+    loop: (accumulator: T, entry: ZipEntry) => T,
+    initValue: T
+): Promise<T> {
     return new Promise((resolve, reject) => {
         yauzl.open(zipPath, {
             lazyEntries: true,
@@ -72,22 +141,35 @@ export function validateZip(zipPath: string, hashes: FileHashes[]): Promise<bool
         },
         (openError, zip) => {
             if (openError) return reject(openError);
-            handleValidateZip(zip, hashes, resolve, reject);
+            handleProcessZip<T>(
+                zip, options, loop, initValue,
+                resolve, reject
+            );
         });
     });
 }
 
-function handleValidateZip(
-    zip: yauzl.ZipFile, hashes: FileHashes[],
-    resolve: (result: boolean) => void, reject: (error: any) => void
-) {
-    let hashCount = 0;
+async function handleProcessZip<T>(
+    zip: yauzl.ZipFile,
+    options: Readonly<ZipProcessOptions>,
+    loop: (accumulator: T, entry: ZipEntry) => T,
+    accumulator: T,
+    resolve: (result: T) => void, reject: (error: Error) => void
+): Promise<void> {
+    const zipEntry: ZipEntry = {
+        name: "",
+        directory: false,
+    };
 
     zip.readEntry();
 
     zip.on("entry", (entry: yauzl.Entry) => {
-        // Entry is a directory / folder
-        if (entry.fileName.endsWith("/")) {
+        const isDirectory = entry.fileName.endsWith("/");
+        if (isDirectory || !options.getBuffer) {
+            zipEntry.name = entry.fileName;
+            zipEntry.directory = isDirectory;
+            zipEntry.buffer = undefined;
+            accumulator = loop(accumulator, zipEntry);
             return zip.readEntry();
         }
 
@@ -101,10 +183,10 @@ function handleValidateZip(
             });
 
             readStream.on("end", () => {
-                const md5Hash = crypto.createHash("md5")
-                    .update(Buffer.concat(chunks))
-                    .digest("hex");
-                hashCount += +hashes.some(md5 => md5.hash === md5Hash);
+                zipEntry.name = entry.fileName;
+                zipEntry.directory = false;
+                zipEntry.buffer = Buffer.concat(chunks);
+                accumulator = loop(accumulator, zipEntry);
                 zip.readEntry();
             });
         });
@@ -112,7 +194,7 @@ function handleValidateZip(
 
     zip.once("end", () => {
         zip.close();
-        resolve(hashCount === hashes.length);
+        resolve(accumulator);
     });
 }
 
