@@ -4,26 +4,36 @@
 
 Go to [Releases](https://github.com/Zagrios/bs-manager/releases) page and go to the latest release. Download the necessary build installer for your distro (see below).
 
-### Ubuntu, Debian
+### Universal (flatpak)
 
-Install the `.deb` build and run the following command:
+You are required to have `flatpak` installed your system. After installing that, download the `.flatpak` file in the releases and run the following command:
+
 ```bash
-apt install bsmanager.deb
+flatpak install ./bsmanager.flatpak
 ```
 
-### CentOS, Fedora
+If you are getting errors like packages not existing, run this command so that it finds the correct packages.
 
-Install the `.rpm` build and run the following command:
 ```bash
-rpm -i bsmanager.rpm
+sudo flatpak remote-add --if-not-exists --system flathub https://flathub.org/repo/flathub.flatpakrepo
+
+# or
+
+flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
 ```
 
-### Arch, Manjaro
+### Ubuntu, Debian (deb)
 
-Install the `.pacman` build and run the following command:
+Download the `.deb` file in the releases and run the following command:
 ```bash
-pacman -U bsmanager.pacman
+dpkg -i ./bsmanager.deb
 ```
+
+### Arch (AUR)
+
+Refer to [bs-manager-git](https://aur.archlinux.org/packages/bs-manager-git).
+
+To install AUR packages, you need to install [yay](https://github.com/Jguer/yay).
 
 ## Proton Setup
 

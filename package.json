@@ -21,7 +21,7 @@
         "test": "jest",
         "test:unit": "jest ./src/__tests__/unit",
         "publish": "npm run build && electron-builder --publish always --win --x64",
-        "publish:linux": "npm run build && electron-builder --publish always --linux --x64"
+        "publish:linux": "npm run build && electron-builder --publish never --linux --x64"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx}": [

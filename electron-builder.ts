@@ -32,8 +32,6 @@ const config: Configuration = {
     linux: {
         target: [
             "deb",
-            "rpm",
-            "pacman"
         ],
         icon: "./build/icons/png",
         category: "Utility;Game;",
@@ -53,12 +51,6 @@ const config: Configuration = {
         },
     },
     deb: {
-        fpm: ["--after-install=build/after-install.sh"],
-    },
-    rpm: {
-        fpm: ["--after-install=build/after-install.sh"],
-    },
-    pacman: {
         fpm: ["--after-install=build/after-install.sh"],
     },
     directories: {
