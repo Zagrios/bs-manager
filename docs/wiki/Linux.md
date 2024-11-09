@@ -4,24 +4,6 @@
 
 Go to [Releases](https://github.com/Zagrios/bs-manager/releases) page and go to the latest release. Download the necessary build installer for your distro (see below).
 
-### Universal (flatpak)
-
-You are required to have `flatpak` installed your system. After installing that, download the `.flatpak` file in the releases and run the following command:
-
-```bash
-flatpak install ./bsmanager.flatpak
-```
-
-If you are getting errors like packages not existing, run this command so that it finds the correct packages.
-
-```bash
-sudo flatpak remote-add --if-not-exists --system flathub https://flathub.org/repo/flathub.flatpakrepo
-
-# or
-
-flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
-```
-
 ### Ubuntu, Debian (deb)
 
 Download the `.deb` file in the releases and run the following command:
@@ -34,6 +16,26 @@ dpkg -i ./bsmanager.deb
 Refer to [bs-manager-git](https://aur.archlinux.org/packages/bs-manager-git).
 
 To install AUR packages, you need to install [yay](https://github.com/Jguer/yay).
+
+### Universal (flatpak)
+
+This should work on any linux distribution. You are only required to have `flatpak` installed in your system. If it is not installed, then go to [flatpak](https://flatpak.org/setup/) to look for a guide on how to install it on your distro.
+
+After installing, download the `.flatpak` file in the releases and run the following command:
+
+```bash
+flatpak install --user ./bsmanager.flatpak
+```
+
+If you are getting errors like packages not existing, run the command below so that it finds the correct packages.
+
+```bash
+sudo flatpak remote-add --if-not-exists --system flathub https://flathub.org/repo/flathub.flatpakrepo
+
+# or
+
+flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
+```
 
 ## Proton Setup
 
