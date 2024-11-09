@@ -116,7 +116,7 @@ export class SteamService {
 
     public async openSteam(): Promise<void> {
 
-        await shell.openPath("steam://open/games");
+        await shell.openExternal("steam://open/games");
 
         return new Promise((resolve, reject) => {
             // Every 3 seconds check if steam is running
