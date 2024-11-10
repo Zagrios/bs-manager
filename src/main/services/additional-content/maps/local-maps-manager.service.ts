@@ -329,7 +329,6 @@ export class LocalMapsManagerService {
             let nbImportedMaps = 0;
 
             (async () => {
-                // BUG: UI bug where the map is not showing even if it was extracted properly
                 const terminate = () => unsubscribed;
                 let completeNewFolder: () => void;
                 const newFolderTap = tap((folder: string) => {
@@ -402,11 +401,11 @@ export class LocalMapsManagerService {
                         condition: !isRoot && ((entry) => mapsFolders.has(path.dirname(entry.name))),
                         beforeFolderExtracted: (folder) => {
                             if (!mapsFolders.has(folder)) return;
-                            log.info("*", `"${folder}"`);
+                            log.info("*", `"${folder}"`, "before");
                         },
                         afterFolderExtracted: (folder) => {
                             if (!mapsFolders.has(folder)) return;
-                            newFolder.next(path.join(destination, folder));
+                            newFolder.next(path.resolve(destination, folder));
                         }
                     });
 

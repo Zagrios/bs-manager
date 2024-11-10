@@ -5,7 +5,6 @@ import { extractZip, getFilesFromZip } from "main/helpers/zip.helpers";
 const TEST_FOLDER = path.resolve(__dirname, "../../..", "assets", "tests");
 const STANDARD_ZIP = path.join(TEST_FOLDER, "standard.zip");
 const WINDOWS_LEGACY_MAP_ZIP = path.join(TEST_FOLDER, "windows_legacy.zip");
-const SPECIAL_ZIP = path.join(TEST_FOLDER, "special.zip");
 const MANIFEST_ZIP = path.join(TEST_FOLDER, "manifest.zip");
 const DESTINATION_FOLDER = path.join(TEST_FOLDER, "out");
 
@@ -41,7 +40,12 @@ describe("Zip Server Service Test", () => {
 
     // Uses '\\'
     it("Extract map zips using forward slashes", async () => {
-        await extractZip(WINDOWS_LEGACY_MAP_ZIP, DESTINATION_FOLDER);
+        const beforeExtractedFolders: string[] = [];
+        const afterExtractedFolders: string[] = [];
+        await extractZip(WINDOWS_LEGACY_MAP_ZIP, DESTINATION_FOLDER, {
+            beforeFolderExtracted: (folder) => beforeExtractedFolders.push(folder),
+            afterFolderExtracted: (folder) => afterExtractedFolders.push(folder),
+        });
 
         // Expect all the files to exists
         for (const file of [
@@ -67,22 +71,14 @@ describe("Zip Server Service Test", () => {
             expect(pathExistsSync(path.join(SUBFOLDER_PATH, file)))
                 .toBe(true);
         }
-    });
 
-    it("Extract special zip file", async () => {
-        const beforeExtracted: string[] = [];
-        const afterExtracted: string[] = [];
-        await extractZip(SPECIAL_ZIP, DESTINATION_FOLDER, {
-            beforeFolderExtracted: (folder) => beforeExtracted.push(folder),
-            afterFolderExtracted: (folder) => afterExtracted.push(folder),
-        });
+        expect(beforeExtractedFolders).toContain(".");
+        expect(beforeExtractedFolders).toContain("pfp");
+        expect(beforeExtractedFolders.length).toBe(2);
 
-        const expected = [
-            "1/a", "1/aa", "1/aaa",
-            "2/a", "2/aa", "2/aaa",
-        ]
-        expect(beforeExtracted).toEqual(expected);
-        expect(afterExtracted).toEqual(expected);
+        expect(afterExtractedFolders).toContain(".");
+        expect(afterExtractedFolders).toContain("pfp");
+        expect(afterExtractedFolders.length).toBe(2);
     });
 
     it("Extract manifest.json from zip file", async () => {

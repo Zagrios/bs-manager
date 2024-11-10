@@ -67,7 +67,37 @@ function handleExtractZip(
         name: "",
         directory: false,
     };
-    let currentDirname = "";
+    let indexes: number[] = [];
+    let dirname = "";
+
+    options?.beforeFolderExtracted?.(".");
+    const folderExtractEvents = options?.beforeFolderExtracted
+        || options?.afterFolderExtracted
+            ? (filename: string) => {
+                let newDirname = path.dirname(filename);
+                if (newDirname === ".") newDirname = "";
+
+                const comparison = compareStringIndex(dirname, newDirname);
+                if (comparison === -1) { return; }
+
+                // Push after extraction
+                if (options?.afterFolderExtracted) {
+                    for (let i = indexes.length - 1; i > -1 && indexes[i] > comparison; --i) {
+                        options.afterFolderExtracted(dirname.substring(0, indexes[i]));
+                    }
+                }
+
+                // Push before extraction
+                indexes = getSlashIndexes(newDirname);
+                if (options?.beforeFolderExtracted) {
+                    for (let i = 0; i < indexes.length; ++i) {
+                        if (indexes[i] <= comparison) { continue; }
+                        options.beforeFolderExtracted(newDirname.substring(0, indexes[i]));
+                    }
+                }
+
+                dirname = newDirname;
+            } : () => {};
 
     zip.readEntry();
 
@@ -86,21 +116,7 @@ function handleExtractZip(
         zip.openReadStream(entry, (readError, readStream) => {
             if (readError) return reject(readError);
 
-            const dirname = path.dirname(entry.fileName);
-            if (dirname !== currentDirname) {
-                if (path.dirname(dirname) === path.dirname(currentDirname)) {
-                    options?.afterFolderExtracted?.(currentDirname);
-                    options?.beforeFolderExtracted?.(dirname);
-                } else if (currentDirname.startsWith(dirname)) {
-                    options?.afterFolderExtracted?.(currentDirname);
-                } else if (dirname.startsWith(currentDirname)) {
-                    options?.beforeFolderExtracted?.(dirname);
-                } else {
-                    options?.afterFolderExtracted?.(currentDirname);
-                    options?.beforeFolderExtracted?.(dirname);
-                }
-                currentDirname = dirname;
-            }
+            folderExtractEvents(entry.fileName);
 
             zipEntry.name = entry.fileName;
             zipEntry.directory = false;
@@ -134,7 +150,14 @@ function handleExtractZip(
     });
 
     zip.once("end", () => {
-        options?.afterFolderExtracted?.(currentDirname);
+        if (options?.afterFolderExtracted) {
+            // Push after extraction
+            for (let i = indexes.length - 1; i > -1; --i) {
+                options.afterFolderExtracted(dirname.substring(0, indexes[i]));
+            }
+            options.afterFolderExtracted(".");
+        }
+
         zip.close();
         resolve(files);
     });
@@ -270,5 +293,39 @@ function handleProcessZip<T>(
         zip.close();
         resolve(accumulator);
     });
+}
+
+/**
+ * @returns(number)
+ *   -1 = string are the same
+ *   > 0 = index where they don't equal the same
+ */
+function compareStringIndex(str1: string, str2: string) {
+    const N = Math.min(str1.length, str2.length);
+    let i = 0;
+    for (; i < N; ++i) {
+        if (str1[i] !== str2[i]) { break; }
+    }
+
+    return i === str1.length && i === str2.length
+        ? -1 : i;
+}
+
+/**
+ * @returns(number[]) - int array of the positions of the slashes
+ */
+function getSlashIndexes(str: string) {
+    if (str === "") {
+        return [];
+    }
+
+    const indexes: number[] = [];
+    for (let i = 0; i < str.length; ++i) {
+        if (str[i] === "/") {
+            indexes.push(i);
+        }
+    }
+    indexes.push(str.length);
+    return indexes;
 }
 
