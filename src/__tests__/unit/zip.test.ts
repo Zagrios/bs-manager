@@ -1,11 +1,12 @@
 import path from "path";
-import { mkdir, pathExistsSync, rm } from "fs-extra";
-import { extractZip } from "main/helpers/zip.helpers";
+import { mkdir, pathExistsSync, readFile, rm } from "fs-extra";
+import { extractZip, getFilesFromZip } from "main/helpers/zip.helpers";
 
 const TEST_FOLDER = path.resolve(__dirname, "../../..", "assets", "tests");
 const STANDARD_ZIP = path.join(TEST_FOLDER, "standard.zip");
 const WINDOWS_LEGACY_MAP_ZIP = path.join(TEST_FOLDER, "windows_legacy.zip");
 const SPECIAL_ZIP = path.join(TEST_FOLDER, "special.zip");
+const MANIFEST_ZIP = path.join(TEST_FOLDER, "manifest.zip");
 const DESTINATION_FOLDER = path.join(TEST_FOLDER, "out");
 
 describe("Zip Server Service Test", () => {
@@ -82,7 +83,19 @@ describe("Zip Server Service Test", () => {
         ]
         expect(beforeExtracted).toEqual(expected);
         expect(afterExtracted).toEqual(expected);
-    })
+    });
+
+    it("Extract manifest.json from zip file", async () => {
+        const zipBuffer = await readFile(MANIFEST_ZIP);
+        const buffers = await getFilesFromZip(zipBuffer, ["manifest.json"]);
+        const manifest = JSON.parse(buffers["manifest.json"].toString());
+        expect(manifest).toBeTruthy();
+
+        // Check some of the fields if they are correct
+        expect(manifest.appId).toBe("some-app-id");
+        expect(manifest.canonicalName).toBe("some-canonical-name");
+        expect(manifest.isCore).toBe(true);
+    });
 
     afterAll(async () => {
         if (pathExistsSync(DESTINATION_FOLDER)) {

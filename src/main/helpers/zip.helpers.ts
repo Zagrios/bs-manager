@@ -28,19 +28,28 @@ export interface ZipProcessOptions {
     getBuffer?: boolean;
 };
 
+const YAUZL_OPTIONS: yauzl.Options = {
+    lazyEntries: true,
+    decodeStrings: true,
+};
+
+function openZip(data: string | Buffer, callback: (error: Error, zip: yauzl.ZipFile) => void) {
+    if (typeof data === "string") {
+        yauzl.open(data, YAUZL_OPTIONS, callback);
+    } else {
+        yauzl.fromBuffer(data, YAUZL_OPTIONS, callback);
+    }
+}
+
 export async function extractZip(
-    zipPath: string,
+    data: string | Buffer,
     destination: string,
     options?: Readonly<ZipExtractOptions>
 ): Promise<string[]> {
     await ensureFolderExist(destination);
 
     return new Promise((resolve, reject) => {
-        yauzl.open(zipPath, {
-            lazyEntries: true,
-            decodeStrings: true,
-        },
-        (openError, zip) => {
+        openZip(data, (openError: Error, zip: yauzl.ZipFile) => {
             if (openError) return reject(openError);
             handleExtractZip(zip, destination, options, resolve, reject);
         });
@@ -99,7 +108,8 @@ function handleExtractZip(
 
             if (options?.terminate?.(zipEntry)) {
                 readStream.destroy();
-                return zip.close();
+                zip.close();
+                return resolve(files);
             }
 
             if (options?.condition) {
@@ -130,6 +140,64 @@ function handleExtractZip(
     });
 }
 
+export function getFilesFromZip(
+    data: string | Buffer,
+    files: string[]
+): Promise<Record<string, Buffer>> {
+    return new Promise((resolve, reject) => {
+        openZip(data, (openError: Error, zip: yauzl.ZipFile) => {
+            if (openError) return reject(openError);
+            handleGetFilesFromZip(zip, files, resolve, reject);
+        });
+    });
+}
+
+function handleGetFilesFromZip(
+    zip: yauzl.ZipFile,
+    files: string[],
+    resolve: (buffers: Record<string, Buffer>) => void,
+    reject: (error: Error) => void
+) {
+    const buffers: Record<string, Buffer> = {};
+    let count = 0;
+
+    zip.readEntry();
+
+    zip.on("entry", (entry: yauzl.Entry) => {
+        // Entry is a directory / folder
+        if (entry.fileName.endsWith("/") || !files.includes(entry.fileName)) {
+            return zip.readEntry();
+        }
+
+        // Entry is in the files list
+        zip.openReadStream(entry, (readError, readStream) => {
+            if (readError) return reject(readError);
+
+            const chunks: Buffer[] = [];
+            readStream.on("data", data => {
+                chunks.push(data);
+            });
+
+            readStream.on("end", () => {
+                buffers[entry.fileName] = Buffer.concat(chunks);
+
+                ++count;
+                if (count === files.length) {
+                    zip.close();
+                    return resolve(buffers);
+                }
+
+                zip.readEntry();
+            });
+        });
+    });
+
+    zip.once("end", () => {
+        zip.close();
+        resolve(buffers);
+    });
+}
+
 // @params loop - this should not throw an error
 export function processZip<T>(
     data: string | Buffer,
@@ -138,32 +206,23 @@ export function processZip<T>(
     initValue: T
 ): Promise<T> {
     return new Promise((resolve, reject) => {
-        const callback = (openError: Error, zip: yauzl.ZipFile) => {
+        openZip(data, (openError: Error, zip: yauzl.ZipFile) => {
             if (openError) return reject(openError);
             handleProcessZip<T>(
                 zip, options, loop, initValue,
                 resolve, reject
             );
-        }
-
-        if (typeof data === "string") {
-            yauzl.open(data, {
-                lazyEntries: true,
-                decodeStrings: true,
-            }, callback);
-        } else {
-            yauzl.fromBuffer(data, callback);
-        }
+        });
     });
 }
 
-async function handleProcessZip<T>(
+function handleProcessZip<T>(
     zip: yauzl.ZipFile,
     options: Readonly<ZipProcessOptions>,
     loop: (accumulator: T, entry: ZipEntry) => T,
     accumulator: T,
     resolve: (result: T) => void, reject: (error: Error) => void
-): Promise<void> {
+): void {
     const zipEntry: ZipEntry = {
         name: "",
         directory: false,
@@ -191,7 +250,7 @@ async function handleProcessZip<T>(
             if (options?.terminate?.(zipEntry)) {
                 readStream.destroy();
                 zip.close();
-                return;
+                return resolve(accumulator);
             }
 
             const chunks: Buffer[] = [];
