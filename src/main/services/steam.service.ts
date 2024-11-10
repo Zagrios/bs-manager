@@ -13,7 +13,9 @@ const { list } = (execOnOs({ win32: () => require("regedit-rs") }, true) ?? {}) 
 
 export class SteamService {
 
-    private static readonly PROCESS_NAME = "steam";
+    private static readonly PROCESS_NAME: string = process.platform === "linux"
+        ? "steam-runtime-launcher-service"
+        : "steam";
 
     private static instance: SteamService;
 
