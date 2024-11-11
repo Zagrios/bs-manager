@@ -405,7 +405,7 @@ export function SettingsPage() {
                                 <span className="font-extrabold">{t("notifications.settings.additional-content.deep-link.select-all")}</span>
                             </div>
                             <div className="flex h-full gap-2">
-                                <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                     <BsmImage
                                         className="h-8 cursor-pointer"
                                         image={beatSaverIcon}
@@ -415,7 +415,7 @@ export function SettingsPage() {
                                         }}
                                     />
                                 </Tippy>
-                                <Tippy content="BeastSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                <Tippy content="BeastSaber" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                     <BsmImage
                                         className="h-8 rounded-md cursor-pointer"
                                         image={beastSaberIcon}
@@ -425,7 +425,7 @@ export function SettingsPage() {
                                         }}
                                     />
                                 </Tippy>
-                                <Tippy content="ScoreSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                <Tippy content="ScoreSaber" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                     <BsmImage
                                         className="h-8 cursor-pointer"
                                         image={scoreSaberIcon}
@@ -435,7 +435,7 @@ export function SettingsPage() {
                                         }}
                                     />
                                 </Tippy>
-                                <Tippy content="BeatLeader" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                <Tippy content="BeatLeader" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                     <BsmImage
                                         className="h-8 cursor-pointer"
                                         image={beatleaderIcon}
@@ -445,7 +445,7 @@ export function SettingsPage() {
                                         }}
                                     />
                                 </Tippy>
-                                <Tippy content="ModelSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                <Tippy content="ModelSaber" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                     <BsmImage
                                         className="h-8 cursor-pointer"
                                         image={modelSaberIcon}
@@ -464,7 +464,7 @@ export function SettingsPage() {
                                     <span className="font-extrabold">{t("misc.maps")}</span>
                                 </div>
                                 <div className="flex h-full gap-2">
-                                    <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                         <BsmImage
                                             className="h-8 cursor-pointer"
                                             image={beatSaverIcon}
@@ -474,7 +474,7 @@ export function SettingsPage() {
                                             }}
                                         />
                                     </Tippy>
-                                    <Tippy content="BeastSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <Tippy content="BeastSaber" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                         <BsmImage
                                             className="h-8 rounded-md cursor-pointer"
                                             image={beastSaberIcon}
@@ -484,7 +484,7 @@ export function SettingsPage() {
                                             }}
                                         />
                                     </Tippy>
-                                    <Tippy content="ScoreSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <Tippy content="ScoreSaber" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                         <BsmImage
                                             className="h-8 cursor-pointer"
                                             image={scoreSaberIcon}
@@ -494,7 +494,7 @@ export function SettingsPage() {
                                             }}
                                         />
                                     </Tippy>
-                                    <Tippy content="BeatLeader" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <Tippy content="BeatLeader" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                         <BsmImage
                                             className="h-8 cursor-pointer"
                                             image={beatleaderIcon}
@@ -511,14 +511,24 @@ export function SettingsPage() {
                                     <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={() => tooglePlaylistsDeepLinks()} checked={playlistsDeepLinkEnabled} />
                                     <span className="font-extrabold">{t("misc.playlists")}</span>
                                 </div>
-                                <div className="flex h-full">
-                                    <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                <div className="flex h-full gap-2">
+                                    <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                         <BsmImage
                                             className="h-8 cursor-pointer"
                                             image={beatSaverIcon}
                                             onClick={e => {
                                                 e.stopPropagation();
                                                 linkOpener.open("https://beatsaver.com/");
+                                            }}
+                                        />
+                                    </Tippy>
+                                    <Tippy content="BeatLeader" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
+                                        <BsmImage
+                                            className="h-8 cursor-pointer"
+                                            image={beatleaderIcon}
+                                            onClick={e => {
+                                                e.stopPropagation();
+                                                linkOpener.open("https://www.beatleader.xyz/");
                                             }}
                                         />
                                     </Tippy>
@@ -530,7 +540,7 @@ export function SettingsPage() {
                                     <span className="font-extrabold">{t("misc.models")}</span>
                                 </div>
                                 <div className="flex h-full">
-                                    <Tippy content="ModelSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <Tippy content="ModelSaber" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                         <BsmImage
                                             className="h-8 cursor-pointer"
                                             image={modelSaberIcon}
