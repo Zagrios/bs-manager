@@ -17,7 +17,9 @@
         "copied": "コピー済み!",
         "confirm": "確認",
         "choose-folder": "フォルダーを選択",
-        "unknown": "不明なエラーが発生しました (´・ω・`)"
+        "unknown": "不明なエラーが発生しました (´・ω・`)",
+        "warning": "警告",
+        "continue": "続ける"
     },
     "nav-bar": {
         "add-version": "バージョンを追加",
@@ -838,6 +840,9 @@
             "proton-folder-description": "Linuxでは、BSManagerを動作させるためにProtonが必要です。続行するには、Protonのインストールフォルダを選択してください。",
             "proton-folder-placeholder": "Protonのインストールフォルダ",
             "where-is-proton-installed": "Protonはどこにインストールされていますか？"
+        },
+        "bs-version-outdated": {
+            "body": "バージョン {outdatedVersion} は古いため、一部のモッドや機能が期待通りに動作しない場合があります。最新の機能やバグ修正を楽しむために、推奨される最新バージョンの Beat Saber ({recommendedVersion}) をダウンロードしてください。"
         }
     },
     "maps": {

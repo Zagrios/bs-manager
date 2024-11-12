@@ -17,7 +17,9 @@
         "copied": "已複製!",
         "confirm": "確認",
         "choose-folder": "選擇文件夾",
-        "unknown": "發生了一個錯誤 ¯\\_(ツ)_/¯"
+        "unknown": "發生了一個錯誤 ¯\\_(ツ)_/¯",
+        "warning": "警告",
+        "continue": "繼續"
     },
     "nav-bar": {
         "add-version": "新增版本",
@@ -838,6 +840,9 @@
             "proton-folder-description": "在Linux上，BSManager需要Proton才能運行。請選擇Proton的安裝資料夾以繼續。",
             "proton-folder-placeholder": "Proton安裝資料夾",
             "where-is-proton-installed": "Proton安裝在哪裡？"
+        },
+        "bs-version-outdated": {
+            "body": "版本 {outdatedVersion} 已過時，某些模組或功能可能無法正常運作。請下載最新推薦的 Beat Saber 版本 ({recommendedVersion})，以享受最新功能和修正。"
         }
     },
     "maps": {

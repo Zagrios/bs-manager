@@ -17,7 +17,9 @@
         "copied": "Copied!",
         "confirm": "Confirm",
         "choose-folder": "Choose folder",
-        "unknown": "An unknown error occurred ¯\\_(ツ)_/¯"
+        "unknown": "An unknown error occurred ¯\\_(ツ)_/¯",
+        "warning": "Warning",
+        "continue": "Continue"
     },
     "nav-bar": {
         "add-version": "Add a version",
@@ -838,6 +840,9 @@
             "proton-folder-description": "On Linux, BSManager requires Proton to work. Choose the Proton installation folder to continue.",
             "proton-folder-placeholder": "Proton installation folder",
             "where-is-proton-installed": "Where is Proton installed?"
+        },
+        "bs-version-outdated": {
+            "body": "The version {outdatedVersion} is outdated, and some mods or features may no longer work as expected. Please download the latest recommended version ({recommendedVersion}) of Beat Saber to enjoy the latest features and bugfixes."
         }
     },
     "maps": {
