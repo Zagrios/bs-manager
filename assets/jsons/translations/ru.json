@@ -17,7 +17,9 @@
         "copied": "Скопировано!",
         "confirm": "Подтвердить",
         "choose-folder": "Изменить папку",
-        "unknown": "Неизвестная ошибка ¯\\_(ツ)_/¯"
+        "unknown": "Неизвестная ошибка ¯\\_(ツ)_/¯",
+        "warning": "Внимание",
+        "continue": "Продолжить"
     },
     "nav-bar": {
         "add-version": "Добавить версию игры",
@@ -837,6 +839,9 @@
             "proton-folder-description": "В Linux BSManager требует Proton для работы. Выберите папку установки Proton, чтобы продолжить.",
             "proton-folder-placeholder": "Папка установки Proton",
             "where-is-proton-installed": "Где установлен Proton?"
+        },
+        "bs-version-outdated": {
+            "body": "Версия {outdatedVersion} устарела, и некоторые моды или функции могут работать некорректно. Пожалуйста, скачайте последнюю рекомендуемую версию ({recommendedVersion}) Beat Saber, чтобы воспользоваться новейшими функциями и исправлениями ошибок."
         }
     },
     "maps": {
