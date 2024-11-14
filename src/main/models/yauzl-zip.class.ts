@@ -7,6 +7,7 @@ export class YauzlZip {
     private static readonly YAUZL_OPEN_OPTIONS: Options = {
         lazyEntries: true,
         decodeStrings: true,
+        autoClose: false,
     };
 
     public static fromPath(path: string): Promise<YauzlZip> {
@@ -36,7 +37,6 @@ export class YauzlZip {
 
     private async readEntry(): Promise<YauzlZipEntry> {
         return new Promise((resolve, reject) => {
-
             const onEntry = (entry: Entry) => {
                 cleanup();
                 resolve(new YauzlZipEntry({ entry, zip: this.zip }));

@@ -10,7 +10,6 @@ import { BS_EXECUTABLE } from "../../constants";
 import log from "electron-log";
 import { deleteFolder, ensureFolderExist, pathExist, Progression, unlinkPath } from "../../helpers/fs.helpers";
 import { lastValueFrom, Observable } from "rxjs";
-import { extractZip, processZip } from "../../helpers/zip.helpers";
 import recursiveReadDir from "recursive-readdir";
 import { sToMs } from "../../../shared/helpers/time.helpers";
 import { pathExistsSync, unlinkSync } from "fs-extra";
@@ -20,6 +19,7 @@ import { LinuxService } from "../linux.service";
 import { tryit } from "shared/helpers/error.helpers";
 import { UtilsService } from "../utils.service";
 import crypto from "crypto";
+import { YauzlZip } from "main/models/yauzl-zip.class";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -205,16 +205,15 @@ export class BsModsManagerService {
             return false;
         }
 
-        const hashCount = await processZip(zipPath, {
-            getBuffer: true
-        }, (acc, entry) => {
-            if (entry.directory) return acc;
-
+        const zip = await YauzlZip.fromPath(zipPath);
+        let hashCount = 0;
+        for await (const entry of zip.entries()) {
+            const buffer = await entry.read();
             const md5Hash = crypto.createHash("md5")
-                .update(entry.buffer)
+                .update(buffer)
                 .digest("hex");
-            return acc + +download.hashMd5.some(md5 => md5.hash === md5Hash);
-        }, 0);
+            hashCount += +download.hashMd5.some(md5 => md5.hash === md5Hash);
+        }
 
         if (hashCount !== download.hashMd5.length) {
             return false;
@@ -225,13 +224,14 @@ export class BsModsManagerService {
         const destDir = isBSIPA ? versionPath : path.join(versionPath, ModsInstallFolder.PENDING);
 
         log.info("Start extracting mod zip", mod.name, "to", destDir);
-        const extracted = await extractZip(zipPath, destDir)
+        const extracted = await zip.extract(destDir)
             .then(() => true)
             .catch(e => {
                 log.error("Error while extracting mod zip", e);
                 return false;
             })
             .finally(() => {
+                zip.close();
                 if (pathExistsSync(zipPath)) {
                     unlinkSync(zipPath);
                 }

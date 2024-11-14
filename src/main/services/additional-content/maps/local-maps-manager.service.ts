@@ -13,7 +13,7 @@ import sanitize from "sanitize-filename";
 import { DeepLinkService } from "../../deep-link.service";
 import log from "electron-log";
 import { WindowManagerService } from "../../window-manager.service";
-import { Observable, Subject, lastValueFrom, tap } from "rxjs";
+import { Observable, Subject, lastValueFrom } from "rxjs";
 import { Archive } from "../../../models/archive.class";
 import { Progression, deleteFolder, ensureFolderExist, getFilesInFolder, getFoldersInFolder, pathExist } from "../../../helpers/fs.helpers";
 import { readFile } from "fs/promises";
@@ -29,7 +29,7 @@ import { MapInfo } from "shared/models/maps/info/map-info.model";
 import { parseMapInfoDat } from "shared/parsers/maps/map-info.parser";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { tryit } from "shared/helpers/error.helpers";
-import { extractZip, processZip } from "main/helpers/zip.helpers";
+import { YauzlZip } from "main/models/yauzl-zip.class";
 
 export class LocalMapsManagerService {
     private static instance: LocalMapsManagerService;
@@ -324,35 +324,15 @@ export class LocalMapsManagerService {
 
     public importMaps(zipPaths: string[], version?: BSVersion): Observable<Progression<BsmLocalMap>> {
         return new Observable<Progression<BsmLocalMap>>(obs => {
-            let unsubscribed = false;
             let progress: Progression<BsmLocalMap> = { total: 0, current: 0 };
             let nbImportedMaps = 0;
+            const abortController = new AbortController();
+            let zip: YauzlZip;
 
             (async () => {
-                const terminate = () => unsubscribed;
-                let completeNewFolder: () => void;
-                const newFolderTap = tap((folder: string) => {
-                    this.loadMapInfoFromPath(folder)
-                        .then(map => {
-                            progress.data = map;
-                        })
-                        .catch(error => {
-                            log.error("Could not load map info", error);
-                            progress.data = null;
-                        })
-                        .finally(() => {
-                            ++nbImportedMaps;
-                            ++progress.current;
-                            obs.next(progress);
-                            if (progress.current === progress.total) {
-                                completeNewFolder();
-                            }
-                        });
-                });
-
                 const mapsPath = await this.getMapsFolderPath(version);
                 for(const zipPath of zipPaths) {
-                    if(unsubscribed) {
+                    if(abortController.signal?.aborted) {
                         log.info("Maps import from zip has been cancelled");
                         return;
                     }
@@ -362,59 +342,68 @@ export class LocalMapsManagerService {
 
                     if(!pathExistsSync(zipPath)) { continue; }
 
-                    const { result: mapsFolders, error } = await tryit(() => processZip(
-                        zipPath, {},
-                        (set, entry) => {
-                            if (!entry.directory && /(^|\/)[Ii]nfo\.dat$/.test(entry.name)) {
-                                set.add(path.dirname(entry.name));
-                            }
-                            return set;
-                       },
-                        new Set<string>())
-                    );
+                    const mapsFolders: string[] = [];
 
+                    zip = await YauzlZip.fromPath(zipPath);
+                    for await (const entry of zip.entries()) {
+                        if (/(^|\/)[Ii]nfo\.dat$/.test(entry.fileName)) {
+                            mapsFolders.push(path.dirname(entry.fileName));
+                        }
+                    }
 
-                    if (error) {
-                        log.error("Could not read zip entries", zipPath, error);
+                    if (mapsFolders.length === 0) {
+                        log.warn("No maps \"info.dat\" found in zip", zipPath);
+                        progress.total = 1;
+                        progress.current = 1;
+                        obs.next(progress);
                         continue;
                     }
 
-                    if (mapsFolders.size === 0) {
-                        log.warn("No maps \"info.dat\" found in zip", zipPath);
-                    }
-
-                    progress.total = mapsFolders.size;
+                    progress.total = mapsFolders.length;
                     obs.next(progress);
 
-                    const newFolder = new Subject<string>();
-                    const promise = lastValueFrom(newFolder.pipe(newFolderTap));
-                    completeNewFolder = () => newFolder.complete();
-
-                    const isRoot = mapsFolders.size === 1 && mapsFolders.has(".");
+                    const isRoot = mapsFolders.length === 1 && mapsFolders[0] === ".";
                     const destination = isRoot
                         ? path.join(mapsPath, path.basename(zipPath, ".zip"))
                         : mapsPath;
 
                     log.info("Extracting", `"${zipPath}"`, "into", `"${mapsPath}"`);
-                    await extractZip(zipPath, destination, {
-                        terminate,
-                        condition: !isRoot && ((entry) => mapsFolders.has(path.dirname(entry.name))),
-                        beforeFolderExtracted: (folder) => {
-                            if (!mapsFolders.has(folder)) return;
-                            log.info("*", `"${folder}"`, "before");
-                        },
-                        afterFolderExtracted: (folder) => {
-                            if (!mapsFolders.has(folder)) return;
-                            newFolder.next(path.resolve(destination, folder));
-                        }
-                    });
+                    for (const folder of mapsFolders) {
+                        log.info("*", folder);
+                        const regex = new RegExp(`^${folder
+                            .replaceAll(".", "\\.")
+                            .replaceAll("+", "\\+")
+                            .replaceAll("(", "\\(")
+                            .replaceAll(")", "\\)")
+                            .replaceAll("[", "\\[")
+                            .replaceAll("]", "\\]")
+                        }\/`);
 
-                    if (unsubscribed) {
+                        await zip.extract(destination, {
+                            entriesNames: [regex],
+                            abortToken: abortController
+                        });
+
+                        if (abortController.signal?.aborted) {
+                            break;
+                        }
+
+                        ++nbImportedMaps;
+                        ++progress.current;
+                        progress.data = await this.loadMapInfoFromPath(path.join(destination, folder));
+                        obs.next(progress);
+
+                        if (abortController.signal?.aborted) {
+                            break;
+                        }
+                    }
+
+                    zip.close();
+
+                    if (abortController.signal?.aborted) {
                         log.info("Maps import from zip has been cancelled");
                         return;
                     }
-
-                    await promise;
                 }
             })()
             .then(() => {
@@ -424,10 +413,15 @@ export class LocalMapsManagerService {
                 return log.info("Successfully imported", nbImportedMaps, "maps from", zipPaths.length, "zips");
             })
             .catch(e => obs.error(e))
-            .finally(() => obs.complete());
+            .finally(() => {
+                if (zip) {
+                    zip.close();
+                }
+                obs.complete()
+            });
 
             return () => {
-                unsubscribed = true;
+                abortController.abort();
             };
         });
     }
@@ -455,7 +449,9 @@ export class LocalMapsManagerService {
         }
 
         const zipPath = await this.downloadMapZip(zipUrl);
-        await extractZip(zipPath, mapPath);
+        const zip = await YauzlZip.fromPath(zipPath);
+        await zip.extract(mapPath);
+        zip.close();
         await unlink(zipPath);
 
         const localMap = await this.loadMapInfoFromPath(mapPath);
