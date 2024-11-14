@@ -795,7 +795,7 @@
         "original-version-backup-oculus": {
             "title": "주의",
             "body": {
-                "must-be-installed-once": "Oculus Store에서 적어도 한 번은 Beat Saber를 설치해야 합니다. 그렇지 않으면 Beat Saber가 실행 후 자동으로 종료될 수 있습니다.",
+                "must-be-installed-once": "이 장치에 Oculus 스토어에서 Beat Saber를 설치해야 합니다. 그렇지 않으면 Beat Saber가 실행 후 자동으로 종료됩니다..",
                 "will-backup": "이 버전을 실행하기 위해 Oculus 라이브러리에 있는 Beat Saber의 원래 설치 폴더의 이름이 변경되며, Beat Saber가 종료되면 자동으로 복원됩니다."
             },
             "not-remind-me": "다시 표시하지 않기",

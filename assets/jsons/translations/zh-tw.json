@@ -795,7 +795,7 @@
         "original-version-backup-oculus": {
             "title": "警告",
             "body": {
-                "must-be-installed-once": "你必須至少從 Oculus 商店安裝過一次 BeatSaber，否則 BeatSaber 可能會在啟動後自動關閉。",
+                "must-be-installed-once": "您必須在此設備上從Oculus商店安裝Beat Saber，否則Beat Saber將在啟動後自動關閉。",
                 "will-backup": "為了啟動這個版本，位於您的Oculus庫中的Beat Saber的原始安裝文件夾將被重新命名，並且在Beat Saber關閉時會自動恢復。"
             },
             "not-remind-me": "不再提醒我",

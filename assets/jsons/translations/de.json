@@ -795,7 +795,7 @@
         "original-version-backup-oculus": {
             "title": "Achtung",
             "body": {
-                "must-be-installed-once": "Du musst Beat Saber mindestens einmal aus dem Oculus Store installiert haben, sonst könnte sich Beat Saber nach dem Start automatisch schließen.",
+                "must-be-installed-once": "Sie müssen Beat Saber aus dem Oculus Store auf diesem Gerät installiert haben, andernfalls wird Beat Saber nach dem Start automatisch geschlossen.",
                 "will-backup": "Um diese Version zu starten, wird der ursprüngliche Installationsordner von Beat Saber in deiner Oculus-Bibliothek umbenannt und beim Schließen von Beat Saber automatisch wiederhergestellt."
             },
             "not-remind-me": "Nicht mehr erinnern",
