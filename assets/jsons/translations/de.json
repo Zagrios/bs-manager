@@ -442,7 +442,8 @@
                     "PROTON_NOT_SET": "Proton-Ordner nicht festgelegt",
                     "PROTON_NOT_FOUND": "Proton-Binärdatei nicht gefunden",
                     "EXIT": "Abrupter Stop",
-                    "OCULUS_LIB_NOT_FOUND": "Oculus-Bibliothek nicht gefunden"
+                    "OCULUS_LIB_NOT_FOUND": "Oculus-Bibliothek nicht gefunden",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Original Oculus-Version nicht gefunden"
                 },
                 "msg": {
                     "UNKNOWN_ERROR": "Ein unbekannter Fehler ist aufgetreten.",
@@ -453,7 +454,8 @@
                     "EXIT": "Beat Saber stoppte abrupt. Versuche, die Dateien zu überprüfen.",
                     "OCULUS_LIB_NOT_FOUND": "Überprüfe, ob die Oculus-Anwendung korrekt installiert ist und dass die Bibliotheken in Oculus richtig definiert sind.",
                     "PROTON_NOT_SET": "Stellen Sie den Proton-Pfad in den Einstellungen ein.",
-                    "PROTON_NOT_FOUND": "Stellen Sie den Proton-Pfad in den Einstellungen ein."
+                    "PROTON_NOT_FOUND": "Stellen Sie den Proton-Pfad in den Einstellungen ein.",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Laden Sie das originale Beat Saber aus dem Oculus Store herunter, bevor Sie es öffnen."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Starte Steam"

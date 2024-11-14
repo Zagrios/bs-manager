@@ -442,7 +442,8 @@
                     "PROTON_NOT_SET": "Папка Proton не установлена",
                     "PROTON_NOT_FOUND": "Бинарный файл Proton не найде",
                     "EXIT": "Вылет",
-                    "OCULUS_LIB_NOT_FOUND": "Библиотека Oculus не найдена"
+                    "OCULUS_LIB_NOT_FOUND": "Библиотека Oculus не найдена",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Оригинальная версия Oculus не найдена"
                 },
                 "msg": {
                     "UNKNOWN_ERROR": "Возникла неизвестная ошибка.",
@@ -453,7 +454,8 @@
                     "EXIT": "Beat Saber вылетел, пытаемся проверить файлы.",
                     "OCULUS_LIB_NOT_FOUND": "Проверьте, правильно ли установлено приложение Oculus, и правильно ли определены библиотеки в Oculus.",
                     "PROTON_NOT_SET": "Установите путь к Proton в настройках.",
-                    "PROTON_NOT_FOUND": "Установите путь к Proton в настройках."
+                    "PROTON_NOT_FOUND": "Установите путь к Proton в настройках.",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Скачайте оригинальную версию Beat Saber с Oculus перед открытием."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Запустить Steam"

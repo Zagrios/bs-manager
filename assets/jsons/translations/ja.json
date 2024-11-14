@@ -442,7 +442,8 @@
                     "PROTON_NOT_SET": "Protonフォルダーが設定されていません",
                     "PROTON_NOT_FOUND": "Protonのバイナリが見つかりません",
                     "EXIT": "緊急停止",
-                    "OCULUS_LIB_NOT_FOUND": "Oculusライブラリが見つかりません"
+                    "OCULUS_LIB_NOT_FOUND": "Oculusライブラリが見つかりません",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "オリジナルのOculusバージョンが見つかりませんでした"
                 },
                 "msg": {
                     "UNKNOWN_ERROR": "不明なエラーが発生しました。",
@@ -453,7 +454,8 @@
                     "EXIT": "BeatSaberが緊急停止したため、ファイルをチェックします。",
                     "OCULUS_LIB_NOT_FOUND": "Oculusアプリケーションが正しくインストールしていることと、Oculusライブラリが正しく定義されていることを確認してください。",
                     "PROTON_NOT_SET": "設定でProtonのパスを設定してください。",
-                    "PROTON_NOT_FOUND": "設定でProtonのパスを設定してください。"
+                    "PROTON_NOT_FOUND": "設定でProtonのパスを設定してください。",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "開く前にOculusからオリジナルのBeat Saberをダウンロードしてください。"
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Steamを起動"

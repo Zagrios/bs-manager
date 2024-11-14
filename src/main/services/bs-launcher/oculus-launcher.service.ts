@@ -127,6 +127,11 @@ export class OculusLauncherService extends AbstractLauncherService implements St
 
         const prepareDowngradedVersion: () => Promise<string> = async () => {
 
+            const originalVersionPath = await prepareOriginalVersion().catch(() => null);
+            if (!originalVersionPath) {
+                throw CustomError.fromError(new Error("Original Oculus Beat Saber not installed"), BSLaunchError.ORIGINAL_OCULUS_NOT_INSTALLED);
+            }
+
             const oculusLib = await lastValueFrom(this.oculusLib$.pipe(take(1), timeout(sToMs(30)), catchError(() => of(null))));
 
             if(!oculusLib){

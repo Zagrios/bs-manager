@@ -442,7 +442,8 @@
                     "PROTON_NOT_SET": "Proton資料夾未設置",
                     "PROTON_NOT_FOUND": "找不到Proton二進位檔",
                     "EXIT": "突然停止",
-                    "OCULUS_LIB_NOT_FOUND": "未找到 Oculus 庫"
+                    "OCULUS_LIB_NOT_FOUND": "未找到 Oculus 庫",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "找不到原始Oculus版本"
                 },
                 "msg": {
                     "UNKNOWN_ERROR": "發生未知錯誤。",
@@ -453,7 +454,8 @@
                     "EXIT": "BeatSaber 突然停止，請檢查文件。",
                     "OCULUS_LIB_NOT_FOUND": "檢查 Oculus 應用是否正確安裝，以及庫是否在 Oculus 中正確定義。",
                     "PROTON_NOT_SET": "在設定中設置Proton路徑。",
-                    "PROTON_NOT_FOUND": "在設定中設置Proton路徑。"
+                    "PROTON_NOT_FOUND": "在設定中設置Proton路徑。",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "在開啟之前，請從Oculus下載原版Beat Saber。"
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "啟動 Steam"

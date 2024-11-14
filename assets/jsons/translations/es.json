@@ -442,7 +442,8 @@
                     "PROTON_NOT_SET": "Carpeta de Proton no establecida",
                     "PROTON_NOT_FOUND": "Binario de Proton no encontrado",
                     "EXIT": "Parada abrupta",
-                    "OCULUS_LIB_NOT_FOUND": "Librería Oculus no encontrada"
+                    "OCULUS_LIB_NOT_FOUND": "Librería Oculus no encontrada",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "No se encontró la versión original de Oculus"
                 },
                 "msg": {
                     "UNKNOWN_ERROR": "Se ha producido un error desconocido.",
@@ -453,7 +454,8 @@
                     "EXIT": "Beat Saber se detuvo abruptamente, trata de verificar los archivos.",
                     "OCULUS_LIB_NOT_FOUND": "Verifica que la aplicación Oculus esté correctamente instalada y que las librerías estén bien definidas en Oculus.",
                     "PROTON_NOT_SET": "Establece la ruta de Proton en la configuración.",
-                    "PROTON_NOT_FOUND": "Establece la ruta de Proton en la configuración."
+                    "PROTON_NOT_FOUND": "Establece la ruta de Proton en la configuración.",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Descarga la versión original de Beat Saber desde Oculus antes de abrirlo."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Iniciar Steam"
