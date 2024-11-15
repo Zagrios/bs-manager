@@ -239,7 +239,7 @@
                     "modal": {
                         "title": "재시작 필요",
                         "body": "하드웨어 가속 설정을 변경하면 BSManager가 종료 후 재시작됩니다. 계속하시겠습니까?",
-                        "confirm-btn": "네, 맞습니다"
+                        "confirm-btn": "네!"
                     },
                     "error-notification": {
                         "message": "오류가 발생했습니다. 하드웨어 가속을 비활성화할 수 없습니다."
@@ -251,7 +251,7 @@
                     "modal": {
                         "title": "심볼릭 링크 권한",
                         "body": "심볼릭 링크를 생성하려면 BSManager는 관리자 권한 또는 시스템에 활성화된 개발자 모드를 필요로 합니다. 계속하시겠습니까?",
-                        "confirm-btn": "네, 맞습니다"
+                        "confirm-btn": "네!"
                     },
                     "error-notification": {
                         "message": "오류가 발생했습니다. 심볼릭 링크 설정을 변경할 수 없습니다."
@@ -341,7 +341,7 @@
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "일부 파일을 다운로드하지 못했습니다.",
                         "OCULUS_LOGIN_TIMED_OUT": "로그인 토큰을 얻는 데 시간이 너무 오래 걸렸습니다.",
                         "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER": "메타 로그인 창이 닫혔습니다.",
-                        "NO_META_AUTH_TOKEN": "다운로드에 필요한 Meta 로그인 토큰을 얻을 수 없습니다.",
+                        "NO_META_AUTH_TOKEN": "다운로드에 필요한 메타 로그인 토큰을 얻을 수 없습니다.",
                         "UNKNOWN_ERROR": "알 수 없는 오류가 발생했습니다."
                     }
                 }
@@ -490,8 +490,8 @@
         "mods": {
             "install-mods": {
                 "titles": {
-                    "success": "Mod 설치 완료 🎉",
-                    "warning": "Mod 설치 완료 🤔"
+                    "success": "모드 설치 완료 🎉",
+                    "warning": "모드 설치 완료 🤔"
                 },
                 "msg": {
                     "success": "모든 MOD가 설치되었습니다.",
@@ -504,7 +504,7 @@
             },
             "uninstall-mod": {
                 "titles": {
-                    "success": "Mod 제거 완료 🎉"
+                    "success": "모드 제거 완료 🎉"
                 },
                 "msg": {
                     "errors": {
@@ -514,7 +514,7 @@
             },
             "uninstall-all-mods": {
                 "titles": {
-                    "success": "Mod 제거 완료 🎉"
+                    "success": "모드 제거 완료 🎉"
                 },
                 "msg": {
                     "success": "모든 Mod가 제거되었습니다.",
@@ -831,7 +831,7 @@
         },
         "ask-install-path": {
             "title": "설치 폴더",
-            "choose-folder-description": "BSManager에 의해 다운로드된 모든 콘텐츠 (버전, MOD, 맵, 재생 목록 등)를 포함하는 폴더를 선택하세요.",
+            "choose-folder-description": "BSManager에 의해 다운로드된 모든 콘텐츠 (버전, 모드, 맵, 재생 목록 등)를 포함하는 폴더를 선택하세요.",
             "default": "기본값",
             "default-tooltip": "기본적으로 홈 폴더로 설정됩니다"
         },
@@ -885,7 +885,7 @@
             "comedy-meme": "코미디 & 밈",
             "instrumental": "기악",
             "hardcore": "하드코어",
-            "k-pop": "K-팝",
+            "k-pop": "K-POP",
             "indie": "인디",
             "techno": "테크노",
             "house": "하우스",
@@ -896,15 +896,15 @@
             "metal": "메탈",
             "anime": "애니메이션",
             "hip-hop-rap": "힙합 & 랩",
-            "j-pop": "J-팝",
+            "j-pop": "J-POP",
             "rock": "록",
             "pop": "팝",
             "electronic": "일렉트로닉",
             "classical-orchestral": "클래식 & 오케스트라"
         },
         "map-specificities": {
-            "automapper": "AI",
-            "ranked": "랭크 인",
+            "automapper": "오토매핑",
+            "ranked": "랭크",
             "curated": "선별됨",
             "verified": "인증됨",
             "fullSpread": "풀 스프레드"
@@ -920,8 +920,8 @@
             "ExpertPlus": "전문가+"
         },
         "map-item": {
-            "by": "{songAutor} 작성",
-            "mapped-by": "작성자 ",
+            "by": "{songAutor} 작곡",
+            "mapped-by": "매퍼: ",
             "delete": "삭제",
             "preview": "맵 미리보기",
             "bsr-code": "BSR 코드",
@@ -970,7 +970,7 @@
         "modals": {
             "delete-model": {
                 "title": "모델 삭제",
-                "desc": "정말로 모델 {modelName}를 삭제하시겠습니까?",
+                "desc": "정말로 모델 {modelName}을(를) 삭제하시겠습니까?",
                 "linked-annotation": "이 모델은 모든 링크된 버전에서 삭제됩니다."
             },
             "delete-models": {
@@ -1187,7 +1187,7 @@
         "synchronize-playlist-tip": "이 작업은 재생목록을 업데이트하고 부족한 맵을 다운로드합니다. 몇 분이 걸릴 수 있습니다.",
         "synchronize": "동기화",
         "curated": "추천",
-        "verified-mapper": "인증된 맵퍼",
+        "verified-mapper": "인증된 매퍼",
         "empty-playlists": "빈 재생목록",
         "search-playlist": "재생목록 검색",
         "no-playlists-found": "재생목록이 없습니다",
@@ -1223,7 +1223,7 @@
         "playlist-is-empty": "재생목록이 비어 있습니다",
         "continue": "계속",
         "nb-maps": "맵 수",
-        "nb-mappers": "맵퍼 수",
+        "nb-mappers": "매퍼 수",
         "duration": "지속 시간",
         "nps": "초당 음표 수",
         "date-picker": {
