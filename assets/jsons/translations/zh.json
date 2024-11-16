@@ -116,6 +116,10 @@
                         "title": "模组已安装",
                         "description": "所有选中的模组已经安装"
                     }
+                },
+                "drop-zone": {
+                    "text": "导入你的模组",
+                    "subtext": "将你的 \"zip\" 或 \"dll\" 文件拖放到这里进行导入"
                 }
             },
             "dropdown": {
@@ -525,6 +529,17 @@
                     "errors": {
                         "no-mods": "该版本中没有安装 Mod 😑"
                     }
+                }
+            },
+            "import-mod": {
+                "titles": {
+                    "success": "模组导入完成",
+                    "error": "模组导入过程中发生错误"
+                },
+                "msgs": {
+                    "success": "模组成功导入。",
+                    "some-success": "一些模组已成功导入。",
+                    "no-dlls": "文件中不包含任何 \"dll\" 文件。"
                 }
             }
         },

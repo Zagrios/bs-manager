@@ -116,6 +116,10 @@
                         "title": "模組已安裝",
                         "description": "所有選中的模組已經安裝"
                     }
+                },
+                "drop-zone": {
+                    "text": "匯入你的模組",
+                    "subtext": "將你的 \"zip\" 或 \"dll\" 檔案拖放到這裡以進行匯入"
                 }
             },
             "dropdown": {
@@ -525,6 +529,17 @@
                     "errors": {
                         "no-mods": "該版本中沒有安裝 Mod 😑"
                     }
+                }
+            },
+            "import-mod": {
+                "titles": {
+                    "success": "模組匯入完成",
+                    "error": "模組匯入過程中發生錯誤"
+                },
+                "msgs": {
+                    "success": "模組成功匯入。",
+                    "some-success": "一些模組已成功匯入。",
+                    "no-dlls": "檔案中不包含任何 \"dll\" 檔案。"
                 }
             }
         },
