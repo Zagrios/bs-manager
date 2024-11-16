@@ -13,7 +13,9 @@ const { list } = (execOnOs({ win32: () => require("regedit-rs") }, true) ?? {}) 
 
 export class SteamService {
 
-    private static readonly PROCESS_NAME = "steam";
+    private static readonly PROCESS_NAME: string = process.platform === "linux"
+        ? "steam-runtime-launcher-service"
+        : "steam";
 
     private static instance: SteamService;
 
@@ -116,7 +118,7 @@ export class SteamService {
 
     public async openSteam(): Promise<void> {
 
-        await shell.openPath("steam://open/games");
+        await shell.openExternal("steam://open/games");
 
         return new Promise((resolve, reject) => {
             // Every 3 seconds check if steam is running
