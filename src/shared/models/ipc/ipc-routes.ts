@@ -20,6 +20,7 @@ import { Supporter } from "../supporters";
 import { AppWindow } from "../window-manager/app-window.model";
 import { LocalBPList, LocalBPListsDetails } from "../playlists/local-playlist.models";
 import { StaticConfigGetIpcRequestResponse, StaticConfigKeys, StaticConfigSetIpcRequest } from "main/services/static-configuration.service";
+import { ExternalMod } from "../mods/mod.interface";
 
 export type IpcReplier<T> = (data: Observable<T>) => void;
 
@@ -78,11 +79,12 @@ export interface IpcChannelMapping {
     "delete-models": { request: BsmLocalModel[], response: Progression<BsmLocalModel[]> };
 
     /* ** bs-mods-ipcs ** */
-    "get-available-mods": { request: BSVersion, response: Mod[] };
-    "get-installed-mods": { request: BSVersion, response: Mod[] };
-    "install-mods": { request: { mods: Mod[]; version: BSVersion }, response: Progression };
-    "uninstall-mods": { request: { mods: Mod[]; version: BSVersion }, response: Progression };
-    "uninstall-all-mods": { request: BSVersion, response: Progression };
+    "bs-mods.get-available-mods": { request: BSVersion, response: Mod[] };
+    "bs-mods.get-installed-mods": { request: BSVersion, response: Mod[] };
+    "bs-mods.import-mods": { request: { paths: string[]; version: BSVersion; }, response: Progression<ExternalMod> };
+    "bs-mods.install-mods": { request: { mods: Mod[]; version: BSVersion }, response: Progression };
+    "bs-mods.uninstall-mods": { request: { mods: Mod[]; version: BSVersion }, response: Progression };
+    "bs-mods.uninstall-all-mods": { request: BSVersion, response: Progression };
 
     /* ** bs-playlist-ipcs ** */
     "one-click-install-playlist": { request: string, response: Progression<DownloadPlaylistProgressionData> };

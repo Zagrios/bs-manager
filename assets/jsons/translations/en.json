@@ -116,6 +116,10 @@
                         "title": "Mods already installed",
                         "description": "All selected mods are already installed"
                     }
+                },
+                "drop-zone": {
+                    "text": "Import your mods",
+                    "subtext": "Drop your \"zip\" or \"dll\" files here to import them"
                 }
             },
             "dropdown": {
@@ -525,6 +529,17 @@
                     "errors": {
                         "no-mods": "No mods are installed in this version 😑"
                     }
+                }
+            },
+            "import-mod": {
+                "titles": {
+                    "success": "Mods import completed",
+                    "error": "An error occurred during the mods import"
+                },
+                "msgs": {
+                    "success": "Mods successfully imported.",
+                    "some-success": "Some mods were successfully imported.",
+                    "no-dlls": "The file(s) do not contain any \"dll\" files."
                 }
             }
         },

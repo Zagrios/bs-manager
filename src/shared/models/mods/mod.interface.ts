@@ -34,3 +34,9 @@ export interface FileHashes {
     hash: string;
     file: string;
 }
+
+// Any mods that are not supported in beatmods
+export interface ExternalMod {
+    name: string;
+    files: string[];
+}
