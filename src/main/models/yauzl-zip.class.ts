@@ -1,5 +1,6 @@
 import { createWriteStream, ensureDir } from "fs-extra";
 import path from "path";
+import { Readable } from "stream";
 import yauzl, { ZipFile, Options, Entry } from "yauzl"
 
 export class YauzlZip {
@@ -12,7 +13,7 @@ export class YauzlZip {
 
     public static fromPath(path: string): Promise<YauzlZip> {
         return new Promise((resolve, reject) => {
-            yauzl.open(path, YauzlZip.YAUZL_OPEN_OPTIONS, (error, zip) => {
+            yauzl.open(path, YauzlZip.YAUZL_OPEN_OPTIONS, (error: Error, zip: yauzl.ZipFile) => {
                 if (error) return reject(error);
                 resolve(new YauzlZip(zip));
             });
@@ -21,7 +22,7 @@ export class YauzlZip {
 
     public static fromBuffer(buffer: Buffer): Promise<YauzlZip> {
         return new Promise((resolve, reject) => {
-            yauzl.fromBuffer(buffer, YauzlZip.YAUZL_OPEN_OPTIONS, (error, zip) => {
+            yauzl.fromBuffer(buffer, YauzlZip.YAUZL_OPEN_OPTIONS, (error: Error, zip: yauzl.ZipFile) => {
                 if (error) return reject(error);
                 resolve(new YauzlZip(zip));
             });
@@ -31,7 +32,7 @@ export class YauzlZip {
     private readonly zip: ZipFile;
     private readonly entriesMap = new Map<string, YauzlZipEntry>();
 
-    constructor(zip: ZipFile){
+    private constructor(zip: ZipFile) {
         this.zip = zip;
     }
 
@@ -160,7 +161,7 @@ class YauzlZipEntry {
 
     public async read(): Promise<Buffer> {
         return new Promise((resolve, reject) => {
-            this.zip.openReadStream(this.entry, (error, stream) => {
+            this.zip.openReadStream(this.entry, (error: Error, stream: Readable) => {
                 if (error) return reject(error);
                 const buffers: Buffer[] = [];
                 stream.on("data", (data) => buffers.push(data as Buffer));
@@ -179,7 +180,7 @@ class YauzlZipEntry {
         }
 
         return new Promise((resolve, reject) => {
-            this.zip.openReadStream(this.entry, async (error, stream) => {
+            this.zip.openReadStream(this.entry, async (error: Error, stream: Readable) => {
                 if (error) return reject(error);
 
                 await ensureDir(path.dirname(destPath));

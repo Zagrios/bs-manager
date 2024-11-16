@@ -369,7 +369,7 @@ export class LocalMapsManagerService {
 
                     log.info("Extracting", `"${zipPath}"`, "into", `"${mapsPath}"`);
                     for (const folder of mapsFolders) {
-                        log.info("*", folder);
+                        log.info(">", folder);
                         const regex = new RegExp(`^${folder
                             .replaceAll(".", "\\.")
                             .replaceAll("+", "\\+")
@@ -377,7 +377,7 @@ export class LocalMapsManagerService {
                             .replaceAll(")", "\\)")
                             .replaceAll("[", "\\[")
                             .replaceAll("]", "\\]")
-                        }\/`);
+                        }\\/`);
 
                         await zip.extract(destination, {
                             entriesNames: [regex],
