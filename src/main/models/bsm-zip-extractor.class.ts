@@ -133,7 +133,7 @@ export class BsmZipExtractor {
                 break;
             }
 
-            if (entriesNames && !entriesNames.some(name => typeof name === "string" ? (entry.fileName === name || path.matchesGlob(entry.fileName, name)) : name.test(entry.fileName))){
+            if (entriesNames && !entriesNames.some(name => typeof name === "string" ? entry.fileName === name : name.test(entry.fileName))){
                 continue;
             }
 
