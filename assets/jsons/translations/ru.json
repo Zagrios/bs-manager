@@ -457,7 +457,7 @@
                     "OCULUS_LIB_NOT_FOUND": "Проверьте, правильно ли установлено приложение Oculus, и правильно ли определены библиотеки в Oculus.",
                     "PROTON_NOT_SET": "Установите путь к Proton в настройках.",
                     "PROTON_NOT_FOUND": "Установите путь к Proton в настройках.",
-                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Скачайте оригинальную версию Beat Saber с Oculus перед открытием."
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Beat Saber должен быть установлен из приложения Oculus перед открытием."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Запустить Steam"

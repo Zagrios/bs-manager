@@ -457,7 +457,7 @@
                     "OCULUS_LIB_NOT_FOUND": "檢查 Oculus 應用是否正確安裝，以及庫是否在 Oculus 中正確定義。",
                     "PROTON_NOT_SET": "在設定中設置Proton路徑。",
                     "PROTON_NOT_FOUND": "在設定中設置Proton路徑。",
-                    "ORIGINAL_OCULUS_NOT_INSTALLED": "在開啟之前，請從Oculus下載原版Beat Saber。"
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "在打開之前，必須從Oculus應用程式安裝Beat Saber。"
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "啟動 Steam"
