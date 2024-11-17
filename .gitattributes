@@ -16,4 +16,4 @@
 *.woff  binary
 *.woff2 binary
 assets/scripts/* binary
-assets/tests/*.zip binary
+*.zip binary
