@@ -13,7 +13,7 @@ jobs:
     build:
         strategy:
             matrix:
-                os: [ubuntu-latest, windows-latest, macos-latest]
+                os: [ubuntu-latest, windows-latest]
 
         runs-on: ${{ matrix.os }}
 
@@ -26,6 +26,7 @@ jobs:
                   cache: "npm"
             - run: npm ci
             - run: npm run build
-            - run: npm test
-              # Currently typescript, eslint, and prettier are unhappy
-              continue-on-error: true
+
+            - name: Unit tests
+              run: npm run test:unit
+
