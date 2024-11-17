@@ -444,7 +444,8 @@
                     "PROTON_NOT_SET": "Dossier Proton non défini",
                     "PROTON_NOT_FOUND": "Binaire Proton non trouvé",
                     "EXIT": "Arrêt brutal",
-                    "OCULUS_LIB_NOT_FOUND": "Librairie Oculus introuvable"
+                    "OCULUS_LIB_NOT_FOUND": "Librairie Oculus introuvable",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Version originale Oculus non trouvée"
                 },
                 "msg": {
                     "UNKNOWN_ERROR": "Une erreur inconnue s'est produite.",
@@ -455,7 +456,8 @@
                     "EXIT": "Beat Saber s'est arrêté brusquement, essaye de vérifier les fichiers.",
                     "OCULUS_LIB_NOT_FOUND": "Vérifie que l'application Oculus est correctement installée, et que les librairies sont bien définies dans Oculus.",
                     "PROTON_NOT_SET": "Définissez le chemin de Proton dans les paramètres.",
-                    "PROTON_NOT_FOUND": "Définissez le chemin de Proton dans les paramètres."
+                    "PROTON_NOT_FOUND": "Définissez le chemin de Proton dans les paramètres.",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Beat Saber doit être installé depuis l'application Oculus avant de l'ouvrir."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Lancer Steam"
@@ -777,7 +779,7 @@
         },
         "create-launch-shortcut": {
             "title": "Créer un raccourci",
-            "desc": "Créer un raccourci te permettra de démarrer Beat Saber avec les options choisi sans passé par BSManager.",
+            "desc": "Créer un raccourci te permettra de démarrer Beat Saber avec les options choisies sans passer par BSManager.",
             "launch-options": "Options de lancement",
             "advanced-launch": "Lancement avancé",
             "valid-btn": "Créer le raccourci"
@@ -796,7 +798,7 @@
         "original-version-backup-oculus": {
             "title": "Attention",
             "body": {
-                "must-be-installed-once": "Vous devez avoir installé au moins une fois Beat Saber depuis l'Oculus Store, sinon Beat Saber pourrait se fermer automatiquement après son lancement.",
+                "must-be-installed-once": "Vous devez avoir Beat Saber installé depuis le Oculus Store sur cet appareil, sinon Beat Saber se fermera automatiquement après le lancement.",
                 "will-backup": "Afin de lancer cette version, le dossier d'installation original de Beat Saber se trouvant dans votre bibliothèque Oculus va être renommé et sera automatiquement restauré à l'arrêt de Beat Saber."
             },
             "not-remind-me": "Ne plus me rappeler",

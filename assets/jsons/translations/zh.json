@@ -444,7 +444,8 @@
                     "PROTON_NOT_SET": "Proton文件夹未设置",
                     "PROTON_NOT_FOUND": "未找到Proton二进制文件",
                     "EXIT": "突然停止",
-                    "OCULUS_LIB_NOT_FOUND": "未找到 Oculus 库"
+                    "OCULUS_LIB_NOT_FOUND": "未找到 Oculus 库",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "未找到原始Oculus版本"
                 },
                 "msg": {
                     "UNKNOWN_ERROR": "发生未知错误。",
@@ -455,7 +456,8 @@
                     "EXIT": "BeatSaber 突然停止，请检查文件。",
                     "OCULUS_LIB_NOT_FOUND": "检查 Oculus 应用是否正确安装，以及库是否在 Oculus 中正确定义。",
                     "PROTON_NOT_SET": "在设置中设置Proton路径。",
-                    "PROTON_NOT_FOUND": "在设置中设置Proton路径。"
+                    "PROTON_NOT_FOUND": "在设置中设置Proton路径。",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "在打开之前，必须从Oculus应用程序安装Beat Saber。"
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "启动 Steam"
@@ -795,7 +797,7 @@
         "original-version-backup-oculus": {
             "title": "警告",
             "body": {
-                "must-be-installed-once": "你必须至少从 Oculus 商店安装过一次 BeatSaber，否则 BeatSaber 可能会在启动后自动关闭。",
+                "must-be-installed-once": "您必须在此设备上从Oculus商店安装Beat Saber，否则Beat Saber将在启动后自动关闭。",
                 "will-backup": "为了启动这个版本，位于您的Oculus库中的Beat Saber的原始安装文件夹将被重命名，并且在Beat Saber关闭时会自动恢复。"
             },
             "not-remind-me": "不再提醒我",
