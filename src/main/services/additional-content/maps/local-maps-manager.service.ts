@@ -29,7 +29,8 @@ import { MapInfo } from "shared/models/maps/info/map-info.model";
 import { parseMapInfoDat } from "shared/parsers/maps/map-info.parser";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { tryit } from "shared/helpers/error.helpers";
-import { YauzlZip } from "main/models/yauzl-zip.class";
+import { BsmZipExtractor } from "main/models/bsm-zip-extractor.class";
+import { escapeRegExp } from "../../../../shared/helpers/string.helpers";
 
 export class LocalMapsManagerService {
     private static instance: LocalMapsManagerService;
@@ -327,7 +328,7 @@ export class LocalMapsManagerService {
             let progress: Progression<BsmLocalMap> = { total: 0, current: 0 };
             let nbImportedMaps = 0;
             const abortController = new AbortController();
-            let zip: YauzlZip;
+            let zip: BsmZipExtractor;
 
             (async () => {
                 const mapsPath = await this.getMapsFolderPath(version);
@@ -342,14 +343,9 @@ export class LocalMapsManagerService {
 
                     if(!pathExistsSync(zipPath)) { continue; }
 
-                    const mapsFolders: string[] = [];
-
-                    zip = await YauzlZip.fromPath(zipPath);
-                    for await (const entry of zip.entries()) {
-                        if (/(^|\/)[Ii]nfo\.dat$/.test(entry.fileName)) {
-                            mapsFolders.push(path.dirname(entry.fileName));
-                        }
-                    }
+                    zip = await BsmZipExtractor.fromPath(zipPath);
+                    const mapsFolders = (await zip.filterEntries(entry => /(^|\/)[Ii]nfo\.dat$/.test(entry.fileName)))
+                        .map(entry => path.dirname(entry.fileName));
 
                     if (mapsFolders.length === 0) {
                         log.warn("No maps \"info.dat\" found in zip", zipPath);
@@ -370,19 +366,18 @@ export class LocalMapsManagerService {
                     log.info("Extracting", `"${zipPath}"`, "into", `"${mapsPath}"`);
                     for (const folder of mapsFolders) {
                         log.info(">", folder);
-                        const regex = new RegExp(`^${folder
-                            .replaceAll(".", "\\.")
-                            .replaceAll("+", "\\+")
-                            .replaceAll("(", "\\(")
-                            .replaceAll(")", "\\)")
-                            .replaceAll("[", "\\[")
-                            .replaceAll("]", "\\]")
-                        }\\/`);
 
-                        await zip.extract(destination, {
+                        const regex = new RegExp(`^${escapeRegExp(folder)}\\/`);
+
+                        const exported = await zip.extract(destination, {
                             entriesNames: [regex],
                             abortToken: abortController
                         });
+
+                        if(exported.length === 0) {
+                            log.warn("No files extracted from", folder);
+                            continue;
+                        }
 
                         if (abortController.signal?.aborted) {
                             break;
@@ -449,7 +444,7 @@ export class LocalMapsManagerService {
         }
 
         const zipPath = await this.downloadMapZip(zipUrl);
-        const zip = await YauzlZip.fromPath(zipPath);
+        const zip = await BsmZipExtractor.fromPath(zipPath);
         await zip.extract(mapPath);
         zip.close();
         await unlink(zipPath);

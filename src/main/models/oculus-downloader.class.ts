@@ -6,7 +6,8 @@ import { inflate } from "pako"
 import { EMPTY, Observable, ReplaySubject, Subscriber, catchError, filter, from, lastValueFrom, mergeMap, scan, share, tap } from "rxjs";
 import { Progression, hashFile } from "../helpers/fs.helpers";
 import { OculusDownloaderErrorCodes } from "../../shared/models/bs-version-download/oculus-download.model";
-import { YauzlZip } from "./yauzl-zip.class";
+import { BsmZipExtractor } from "./bsm-zip-extractor.class";
+import { tryit } from "shared/helpers/error.helpers";
 
 export class OculusDownloader {
 
@@ -34,19 +35,23 @@ export class OculusDownloader {
         const buffer = await this.downloadManifestZip(downloadUrl)
             .catch(err => CustomError.throw(err, "DOWNLOAD_MANIFEST_FAILED"));
 
-        const manifestName = "manifest.json";
-        const zip = await YauzlZip.fromBuffer(buffer);
-        const entry = await zip.findEntry((entry) => entry.fileName === manifestName);
+        const zip = await BsmZipExtractor.fromBuffer(buffer);
+        const entry = await zip.getEntry("manifest.json");
+
         if(!entry) {
             throw new CustomError("Manifest file not found", "MANIFEST_FILE_NOT_FOUND");
         }
 
         const manifest = await entry.read();
-        return JSON.parse(manifest.toString())
-            .catch((err: Error) => CustomError.throw(err, "PARSE_MANIFEST_FILE_FAILED"))
-            .finally(() => {
-                zip.close();
-            });
+        zip.close();
+
+        const { result, error } = tryit(() => JSON.parse(manifest.toString()) as OculusManifest);
+
+        if(error){
+            throw CustomError.throw(error, "PARSE_MANIFEST_FILE_FAILED")
+        }
+
+        return result;
     }
 
     private downloadManifestFile(file: OculusManifestFile, destination: string): Observable<Progression<OculusManifestFile>> {

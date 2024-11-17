@@ -8,18 +8,18 @@ import { RequestService } from "../request.service";
 import { spawn } from "child_process";
 import { BS_EXECUTABLE } from "../../constants";
 import log from "electron-log";
-import { deleteFolder, ensureFolderExist, pathExist, Progression, unlinkPath } from "../../helpers/fs.helpers";
+import { deleteFolder, pathExist, Progression, unlinkPath } from "../../helpers/fs.helpers";
 import { lastValueFrom, Observable } from "rxjs";
 import recursiveReadDir from "recursive-readdir";
 import { sToMs } from "../../../shared/helpers/time.helpers";
-import { pathExistsSync, unlinkSync } from "fs-extra";
+import { pathExistsSync } from "fs-extra";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { popElement } from "shared/helpers/array.helpers";
 import { LinuxService } from "../linux.service";
 import { tryit } from "shared/helpers/error.helpers";
 import { UtilsService } from "../utils.service";
 import crypto from "crypto";
-import { YauzlZip } from "main/models/yauzl-zip.class";
+import { BsmZipExtractor } from "main/models/bsm-zip-extractor.class";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -113,22 +113,23 @@ export class BsModsManagerService {
         return this.beatModsApi.getModByHash(injectorMd5);
     }
 
-    private async downloadZip(zipUrl: string): Promise<string> {
+    private async downloadZip(zipUrl: string): Promise<BsmZipExtractor> {
         zipUrl = path.join(this.beatModsApi.BEAT_MODS_URL, zipUrl);
 
         log.info("Download mod zip", zipUrl);
 
-        const fileName = `${path.basename(zipUrl, ".zip")}-${crypto.randomUUID()}.zip`;
-        const tempPath = this.utilsService.getTempPath();
-        const destination = path.join(tempPath, fileName);
+        const buffer = await lastValueFrom(this.requestService.downloadBuffer(zipUrl))
+            .then(progress => progress.data)
+            .catch(e => {
+                log.error("ZIP", "Error while downloading zip", e);
+                return undefined;
+            });
 
-        try {
-            await ensureFolderExist(tempPath);
-            return (await lastValueFrom(this.requestService.downloadFile(zipUrl, destination))).data;
-        } catch (error) {
-            log.error("Could not download zip file at", zipUrl);
+        if (!buffer) {
             return null;
         }
+
+        return BsmZipExtractor.fromBuffer(buffer);
     }
 
     private async executeBSIPA(version: BSVersion, args: string[]): Promise<boolean> {
@@ -199,13 +200,13 @@ export class BsModsManagerService {
         }
 
         log.info("Start download mod zip", mod.name, download.url);
-        const zipPath = await this.downloadZip(download.url);
-        log.info("Mod zip download end", mod.name, download.url, !!zipPath);
-        if (!zipPath) {
+        const zip = await this.downloadZip(download.url);
+        log.info("Mod zip download end", mod.name, download.url);
+
+        if (!zip) {
             return false;
         }
 
-        const zip = await YauzlZip.fromPath(zipPath);
         let hashCount = 0;
         for await (const entry of zip.entries()) {
             const buffer = await entry.read();
@@ -232,9 +233,6 @@ export class BsModsManagerService {
             })
             .finally(() => {
                 zip.close();
-                if (pathExistsSync(zipPath)) {
-                    unlinkSync(zipPath);
-                }
             });
 
         log.info("Mod zip extraction end", mod.name, "to", destDir, "success:", extracted);
