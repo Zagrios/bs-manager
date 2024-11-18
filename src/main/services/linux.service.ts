@@ -6,6 +6,7 @@ import { BS_APP_ID, PROTON_BINARY_PREFIX, WINE_BINARY_PREFIX } from "main/consta
 import { StaticConfigurationService } from "./static-configuration.service";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { BSLaunchError, LaunchOption } from "shared/models/bs-launch";
+import { app } from "electron";
 
 export class LinuxService {
     private static instance: LinuxService;
@@ -93,30 +94,6 @@ export class LinuxService {
         return spawn(command, spawnOptions);
     }
 
-    private createFlatpakCommand(protonPath: string, bsExePath: string, args: string[], spawnOptions: SpawnOptionsWithoutStdio): string {
-
-        // DON'T REMOVE: Good for injecting commands while debugging with flatpak
-        // return args.slice(1).join(" ");
-
-        // The env vars are hidden to flatpak-spawn, need to set them manually in --env arg
-        // Minimal copy of the env, don't need to copy them all
-        const envArgs = [
-            "SteamAppId",
-            "SteamOverlayGameId",
-            "SteamGameId",
-            "WINEDLLOVERRIDES",
-            "STEAM_COMPAT_DATA_PATH",
-            "STEAM_COMPAT_INSTALL_PATH",
-            "STEAM_COMPAT_CLIENT_INSTALL_PATH",
-            "STEAM_COMPAT_APP_ID",
-            "SteamEnv",
-        ].map(envName => {
-            return `--env=${envName}="${spawnOptions.env[envName]}"`;
-        }).join(" ");
-
-        return `flatpak-spawn --host ${envArgs} "${protonPath}" run "${bsExePath}" ${args.join(" ")}`;
-    }
-
     public verifyProtonPath(protonFolder: string = ""): boolean {
         if (protonFolder === "") {
             if (!this.staticConfig.has("proton-folder")) {
@@ -146,4 +123,39 @@ export class LinuxService {
 
         return winePath;
     }
+
+    // === Flatpak Specific === //
+
+    private createFlatpakCommand(protonPath: string, bsExePath: string, args: string[], spawnOptions: SpawnOptionsWithoutStdio): string {
+
+        // DON'T REMOVE: Good for injecting commands while debugging with flatpak
+        // return args.slice(1).join(" ");
+
+        // The env vars are hidden to flatpak-spawn, need to set them manually in --env arg
+        // Minimal copy of the env, don't need to copy them all
+        const envArgs = [
+            "SteamAppId",
+            "SteamOverlayGameId",
+            "SteamGameId",
+            "WINEDLLOVERRIDES",
+            "STEAM_COMPAT_DATA_PATH",
+            "STEAM_COMPAT_INSTALL_PATH",
+            "STEAM_COMPAT_CLIENT_INSTALL_PATH",
+            "STEAM_COMPAT_APP_ID",
+            "SteamEnv",
+        ].map(envName => {
+            return `--env=${envName}="${spawnOptions.env[envName]}"`;
+        }).join(" ");
+
+        return `flatpak-spawn --host ${envArgs} "${protonPath}" run "${bsExePath}" ${args.join(" ")}`;
+    }
+
+    public getFlatpakLocalVersionFolder(): string {
+        return path.join(
+            app.getPath("home"),
+            ".var", "app", "org.erb.BSManager",
+            "resources", "assets", "jsons"
+        );
+    }
+
 }

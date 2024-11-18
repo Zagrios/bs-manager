@@ -3,8 +3,9 @@ import path from "path";
 import { writeFileSync } from "fs";
 import { BSVersion } from "shared/bs-version.interface";
 import { RequestService } from "./request.service";
-import { readJSON } from "fs-extra";
+import { pathExistsSync, readJSON } from "fs-extra";
 import { allSettled } from "../../shared/helpers/promise.helpers";
+import { LinuxService } from "./linux.service";
 
 export class BSVersionLibService {
     private readonly REMOTE_BS_VERSIONS_URL: string = "https://raw.githubusercontent.com/Zagrios/bs-manager/master/assets/jsons/bs-versions.json";
@@ -12,12 +13,14 @@ export class BSVersionLibService {
 
     private static instance: BSVersionLibService;
 
+    private linuxService: LinuxService;
     private utilsService: UtilsService;
     private requestService: RequestService;
 
     private bsVersions: BSVersion[];
 
     private constructor() {
+        this.linuxService = LinuxService.getInstance();
         this.utilsService = UtilsService.getInstance();
         this.requestService = RequestService.getInstance();
     }
@@ -29,17 +32,29 @@ export class BSVersionLibService {
         return BSVersionLibService.instance;
     }
 
-    private getRemoteVersions(): Promise<BSVersion[]> {
+    private async getRemoteVersions(): Promise<BSVersion[]> {
         return this.requestService.getJSON<BSVersion[]>(this.REMOTE_BS_VERSIONS_URL).then(res => res.data);
     }
 
     private async getLocalVersions(): Promise<BSVersion[]> {
+        if (this.linuxService.isFlatpak) {
+            const flatpakVersionsPath = path.join(this.linuxService.getFlatpakLocalVersionFolder(), this.VERSIONS_FILE);
+            if (pathExistsSync(flatpakVersionsPath)) {
+                return readJSON(flatpakVersionsPath);
+            }
+        }
+
         const localVersionsPath = path.join(this.utilsService.getAssestsJsonsPath(), this.VERSIONS_FILE);
         return readJSON(localVersionsPath);
     }
 
     private async updateLocalVersions(versions: BSVersion[]): Promise<void> {
-        const localVersionsPath = path.join(this.utilsService.getAssestsJsonsPath(), this.VERSIONS_FILE);
+        const localVersionsPath = path.join(
+            this.linuxService.isFlatpak
+                ? this.linuxService.getFlatpakLocalVersionFolder()
+                : this.utilsService.getAssestsJsonsPath(),
+            this.VERSIONS_FILE
+        );
         writeFileSync(localVersionsPath, JSON.stringify(versions, null, "\t"), { encoding: "utf-8", flag: "w" });
     }
 

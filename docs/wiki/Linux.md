@@ -37,6 +37,8 @@ sudo flatpak remote-add --if-not-exists --system flathub https://flathub.org/rep
 flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
 ```
 
+Flatpak also supports sandboxing which gives the minimal access to your machine. To configure this, you can download [Flatseal](https://flathub.org/apps/com.github.tchx84.Flatseal) which has a GUI to edit your permissions. You can also this with the `flatpak` executable but it will not be discussed here.
+
 ## Proton Setup
 
 [Proton](https://github.com/ValveSoftware/Proton) is needed to run the Beat Saber executable under Linux. You need to download this from either from Steam or building it from their GitHub repo.
@@ -45,7 +47,7 @@ Once Proton is installed, when you open your BSManager application for the first
 
 # Troubleshooting
 
-## Permission denied on "bs-version.json"
+## Permission denied on "bs-versions.json"
 
 <pre>
 Unhandled Exception UnhandledRejection Error: EACCES: permission denied, open '/opt/BSManager/resources/assets/jsons/bs-versions.json'
@@ -60,4 +62,15 @@ chmod +002 /opt/BSManager/resources/assets/jsons/bs-versions.json
 
 chown $(whoami) /opt/BSManager/resources/assets/jsons/bs-versions.json
 ```
+
+## [Flatpak] Steam Beat Saber version not showing / Proton not detected
+
+Flatpak should have permissions with the steam games folder. By default, the minimum permissions are `~/.steam/steam/steamapps/common:ro` and `~/.steam/steam/steamapps/common:ro`. If you changed the steam installation path, add that path instead into the permissions.
+
+## [Flatpak] Changing installation folder
+
+To change the installation path of the **BSManager** folder, you have to edit the flatpak permissions to destination folder.
+- In flatpak or Flatseal, add the destination folder with `:create` permissions.
+- In BSM, move the folder to the destination folder.
+- [Optional] In flatpak or Flatseal, remove the original folder permissions.
 

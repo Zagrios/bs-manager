@@ -64,7 +64,9 @@ const config: Configuration = {
             // Audio output
             "--socket=pulseaudio",
             // Read/write home directory access
-            "--filesystem=home",
+            "--filesystem=~/BSManager:create", // Default BSManager installation folder
+            "--filesystem=~/.steam/steam/steamapps:ro", // for the libraryfolders.vdf
+            "--filesystem=~/.steam/steam/steamapps/common:ro", // Steam game folder
             // Allow communication with network
             "--share=network",
             // System notifications with libnotify
