@@ -53,6 +53,25 @@ const config: Configuration = {
     deb: {
         fpm: ["--after-install=build/after-install.sh"],
     },
+    flatpak: {
+        finishArgs: [
+            // Wayland/X11 Rendering
+            "--socket=wayland",
+            "--socket=x11",
+            "--share=ipc",
+            // Open GL
+            "--device=dri",
+            // Audio output
+            "--socket=pulseaudio",
+            // Read/write home directory access
+            "--filesystem=home",
+            // Allow communication with network
+            "--share=network",
+            // System notifications with libnotify
+            "--talk-name=org.freedesktop.Notifications",
+            "--talk-name=org.freedesktop.Flatpak",
+        ]
+    },
     directories: {
         app: "release/app",
         buildResources: "assets",

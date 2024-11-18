@@ -4,12 +4,15 @@ import { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio, spawn } from 
 import path from "path";
 import log from "electron-log";
 import { sToMs } from "../../../shared/helpers/time.helpers";
+import { LinuxService } from "../linux.service";
 
 export abstract class AbstractLauncherService {
 
+    protected readonly linux = LinuxService.getInstance();
     protected readonly localVersions = BSLocalVersionService.getInstance();
 
     constructor(){
+        this.linux = LinuxService.getInstance();
         this.localVersions = BSLocalVersionService.getInstance();
     }
 
@@ -44,10 +47,12 @@ export abstract class AbstractLauncherService {
             spawnOptions.windowsVerbatimArguments = true;
         }
 
-        log.info(`Launch BS exe at ${bsExePath} with args ${args?.join(" ")}`);
+        if (process.platform === "linux") {
+            return this.linux.spawnBsProcess(bsExePath, args, spawnOptions)
+        }
 
+        log.info("Windows launch BS command\n>" ,bsExePath, args?.join(" "));
         return spawn(bsExePath, args, spawnOptions);
-
     }
 
     protected launchBs(bsExePath: string, args: string[], options?: SpawnBsProcessOptions): {process: ChildProcessWithoutNullStreams, exit: Promise<number>} {
