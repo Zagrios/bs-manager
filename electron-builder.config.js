@@ -1,6 +1,4 @@
-import { Configuration } from "electron-builder";
-
-const config: Configuration = {
+const config = {
     extraResources: [
         "./assets/jsons/bs-versions.json",
         "./assets/jsons/patreons.json",
@@ -18,7 +16,6 @@ const config: Configuration = {
     afterPack: ".erb/scripts/after-pack.js",
     win: {
         signingHashAlgorithms: ["sha256"],
-        certificateSha1: "2164d6a7d641ecf6ad57852f665a518ca2bf960f",
         target: [
             "nsis",
             "nsis-web"
