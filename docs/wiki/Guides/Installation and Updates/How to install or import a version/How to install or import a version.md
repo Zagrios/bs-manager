@@ -17,7 +17,9 @@
 5. Once logged into Steam, the download will start automatically. Please wait for it to complete.
 6. When the download is finished, select the downloaded version and click the **`Launch`** button to verify if the game launches correctly.
 
-(Video coming soon™)
+<div align="center">
+    <img src="../How to install or import a version/SteamLogin.png"/>
+</div>
 
 ## Install a Version with Oculus Store (PCVR)
 
@@ -33,7 +35,9 @@
 5. Once logged into Oculus, the download will start automatically. Please wait for it to complete.
 6. When the download is finished, select the downloaded version and click the **`Launch`** button to verify if the game launches correctly.
 
-(Video coming soon™)
+<div align="center">
+    <img src="../How to install or import a version/OculusLogin.png"/>
+</div>
 
 ## How to Import a Version
 
