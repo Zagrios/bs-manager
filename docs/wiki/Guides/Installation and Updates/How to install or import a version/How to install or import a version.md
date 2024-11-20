@@ -48,4 +48,6 @@
 4. Choose the file containing the version to be imported.
 5. Wait a few moments. The imported version should appear alongside the others in the version list.
 
-(Video coming soon™)
+<div align="center">
+  <video src="../How to install or import a version/ImportVersion.mov"/>
+</div>
