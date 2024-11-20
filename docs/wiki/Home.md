@@ -12,3 +12,5 @@ To contribute to the wiki:
 - Add/Edit `.md` files in the `docs/wiki/` folder
 - Create a Pull Request
 - Once the PR is merged (after review), it will be present in the repository's wiki
+
+test
