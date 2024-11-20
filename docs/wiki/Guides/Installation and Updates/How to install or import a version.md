@@ -37,7 +37,11 @@
 
 ## How to Import a Version
 
-0. Follow any tutorial to download a version
+> ## 📍Important
+>
+> - You will need to download a version of Beat Saber yourself before you can import it.
+> - The BSManager team will provide tutorials like this one to help you download official versions of Beat Saber. However, no team member will offer assistance for cracked versions.
+
 1. Launch BSManager.
 2. Click the gear icon in the top-right corner of the interface.
 3. Select the **`Import a Version`** option.
