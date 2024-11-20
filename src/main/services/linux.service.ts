@@ -1,7 +1,6 @@
 import fs from "fs-extra";
 import log from "electron-log";
 import path from "path";
-import { SpawnOptionsWithoutStdio, spawn } from "child_process";
 import { BS_APP_ID, PROTON_BINARY_PREFIX, WINE_BINARY_PREFIX } from "main/constants";
 import { StaticConfigurationService } from "./static-configuration.service";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
@@ -19,8 +18,7 @@ export class LinuxService {
     }
 
     private readonly staticConfig: StaticConfigurationService;
-
-    public readonly isFlatpak = process.env.container === "flatpak";
+    private protonCommand = "";
 
     private constructor() {
         this.staticConfig = StaticConfigurationService.getInstance();
@@ -55,13 +53,17 @@ export class LinuxService {
                 BSLaunchError.PROTON_NOT_SET
             );
         }
-        const protonPath = path.join(this.staticConfig.get("proton-folder"), PROTON_BINARY_PREFIX);
+        const protonPath = path.join(
+            this.staticConfig.get("proton-folder"),
+            PROTON_BINARY_PREFIX
+        );
         if (!fs.pathExistsSync(protonPath)) {
             throw CustomError.fromError(
                 new Error("Could not locate proton binary"),
                 BSLaunchError.PROTON_NOT_FOUND
             );
         }
+        this.protonCommand = `"${protonPath}" run`;
 
         // Setup Proton environment variables
         Object.assign(env, {
@@ -76,22 +78,6 @@ export class LinuxService {
             // "PROTON_LOG": 1,
             // "PROTON_LOG_DIR": bsFolderPath,
         });
-    }
-
-    public spawnBsProcess(bsExePath: string, args: string[], spawnOptions: SpawnOptionsWithoutStdio) {
-        // Already checked in setupLaunch
-        const protonPath = path.join(this.staticConfig.get("proton-folder"), PROTON_BINARY_PREFIX);
-
-        // "/bin/sh" does not see flatpak-spawn
-        // Most Debian and Arch should also support "/bin/bash"
-        spawnOptions.shell = "/bin/bash";
-
-        const command = this.isFlatpak
-            ? this.createFlatpakCommand(protonPath, bsExePath, args, spawnOptions)
-            : `"${protonPath}" run "${bsExePath}" ${args.join(" ")}`;
-
-        log.info("Linux launch BS command\n>", command);
-        return spawn(command, spawnOptions);
     }
 
     public verifyProtonPath(protonFolder: string = ""): boolean {
@@ -124,31 +110,12 @@ export class LinuxService {
         return winePath;
     }
 
-    // === Flatpak Specific === //
-
-    private createFlatpakCommand(protonPath: string, bsExePath: string, args: string[], spawnOptions: SpawnOptionsWithoutStdio): string {
-
-        // DON'T REMOVE: Good for injecting commands while debugging with flatpak
-        // return args.slice(1).join(" ");
-
-        // The env vars are hidden to flatpak-spawn, need to set them manually in --env arg
-        // Minimal copy of the env, don't need to copy them all
-        const envArgs = [
-            "SteamAppId",
-            "SteamOverlayGameId",
-            "SteamGameId",
-            "WINEDLLOVERRIDES",
-            "STEAM_COMPAT_DATA_PATH",
-            "STEAM_COMPAT_INSTALL_PATH",
-            "STEAM_COMPAT_CLIENT_INSTALL_PATH",
-            "STEAM_COMPAT_APP_ID",
-            "SteamEnv",
-        ].map(envName => {
-            return `--env=${envName}="${spawnOptions.env[envName]}"`;
-        }).join(" ");
-
-        return `flatpak-spawn --host ${envArgs} "${protonPath}" run "${bsExePath}" ${args.join(" ")}`;
+    public getProtonCommand(): string {
+        // Set in setupLaunch
+        return this.protonCommand;
     }
+
+    // === Flatpak Specific === //
 
     public getFlatpakLocalVersionFolder(): string {
         return path.join(

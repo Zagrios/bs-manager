@@ -4,7 +4,7 @@ import log from "electron-log";
 import { lstat } from "fs-extra";
 import { tryit } from "../../shared/helpers/error.helpers";
 import { shell } from "electron";
-import { taskRunning } from "../helpers/os.helpers";
+import { isProcessRunning } from "../helpers/os.helpers";
 import { sToMs } from "../../shared/helpers/time.helpers";
 import { execOnOs } from "../helpers/env.helpers";
 
@@ -99,7 +99,7 @@ export class OculusService {
     }
 
     public oculusRunning(): Promise<boolean> {
-        return taskRunning("OculusClient");
+        return isProcessRunning("OculusClient");
     }
 
     public async startOculus(): Promise<void>{

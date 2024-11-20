@@ -6,6 +6,7 @@ import { RequestService } from "./request.service";
 import { pathExistsSync, readJSON } from "fs-extra";
 import { allSettled } from "../../shared/helpers/promise.helpers";
 import { LinuxService } from "./linux.service";
+import { IS_FLATPAK } from "main/constants";
 
 export class BSVersionLibService {
     private readonly REMOTE_BS_VERSIONS_URL: string = "https://raw.githubusercontent.com/Zagrios/bs-manager/master/assets/jsons/bs-versions.json";
@@ -37,7 +38,7 @@ export class BSVersionLibService {
     }
 
     private async getLocalVersions(): Promise<BSVersion[]> {
-        if (this.linuxService.isFlatpak) {
+        if (IS_FLATPAK) {
             const flatpakVersionsPath = path.join(this.linuxService.getFlatpakLocalVersionFolder(), this.VERSIONS_FILE);
             if (pathExistsSync(flatpakVersionsPath)) {
                 return readJSON(flatpakVersionsPath);
@@ -50,7 +51,7 @@ export class BSVersionLibService {
 
     private async updateLocalVersions(versions: BSVersion[]): Promise<void> {
         const localVersionsPath = path.join(
-            this.linuxService.isFlatpak
+            IS_FLATPAK
                 ? this.linuxService.getFlatpakLocalVersionFolder()
                 : this.utilsService.getAssestsJsonsPath(),
             this.VERSIONS_FILE

@@ -74,7 +74,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
             }
 
             // Open Steam if not running
-            if(!(await this.steam.steamRunning())){
+            if(!(await this.steam.isSteamRunning())){
                 obs.next({type: BSLaunchEvent.STEAM_LAUNCHING});
 
                 await this.steam.openSteam().then(() => {
