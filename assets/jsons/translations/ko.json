@@ -105,7 +105,8 @@
                         "latest": "최신",
                         "description": "설명",
                         "dropdown": {
-                            "uninstall-all": "모두 제거"
+                            "uninstall-all": "모두 제거",
+                            "unselect-all": "모두 선택 해제"
                         }
                     }
                 },
