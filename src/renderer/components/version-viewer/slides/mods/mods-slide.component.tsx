@@ -133,6 +133,10 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         })
     };
 
+    const unselectAllMods = () => {
+        setModsSelected(() => []);
+    }
+
     const loadMods = (): Promise<void> => {
         if (os.isOffline) {
             return Promise.resolve();
@@ -209,7 +213,18 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         return (
             <>
                 <div className="grow overflow-y-scroll w-full min-h-0 scrollbar-default p-0 m-0">
-                    <ModsGrid modsMap={modsAvailable} installed={modsInstalled} modsSelected={modsSelected} onModChange={handleModChange} moreInfoMod={moreInfoMod} onWantInfos={handleMoreInfo} disabled={uninstalling || installing} uninstallMod={uninstallMod} uninstallAllMods={uninstallAllMods}/>
+                    <ModsGrid
+                        modsMap={modsAvailable}
+                        installed={modsInstalled}
+                        modsSelected={modsSelected}
+                        onModChange={handleModChange}
+                        moreInfoMod={moreInfoMod}
+                        onWantInfos={handleMoreInfo}
+                        disabled={uninstalling || installing}
+                        uninstallMod={uninstallMod}
+                        uninstallAllMods={uninstallAllMods}
+                        unselectAllMods={unselectAllMods}
+                    />
                 </div>
                 <div className="shrink-0 flex items-center justify-between px-3 py-2">
                     <BsmButton className="flex items-center justify-center rounded-md px-1 h-8" text="pages.version-viewer.mods.buttons.more-infos" typeColor="cancel" withBar={false} disabled={!moreInfoMod} onClick={handleOpenMoreInfo} style={{ width: downloadWith }}/>

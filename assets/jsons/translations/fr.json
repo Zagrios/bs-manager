@@ -105,7 +105,8 @@
                         "latest": "Récent",
                         "description": "Description",
                         "dropdown": {
-                            "uninstall-all": "Tout désinstaller"
+                            "uninstall-all": "Tout désinstaller",
+                            "unselect-all": "Tout désélectionner"
                         }
                     }
                 },

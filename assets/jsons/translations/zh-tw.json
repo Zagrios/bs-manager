@@ -105,7 +105,8 @@
                         "latest": "最新",
                         "description": "描述",
                         "dropdown": {
-                            "uninstall-all": "全部移除"
+                            "uninstall-all": "全部移除",
+                            "unselect-all": "取消全選"
                         }
                     }
                 },
