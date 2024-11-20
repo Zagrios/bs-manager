@@ -1,7 +1,9 @@
 > ## ⚠️ Important ⚠️
+>
 > BSManager does not store your login information. It uses the open-source tool `DepotDownloader` to download versions of Beat Saber.
 
 # Summary
+
 - [Install a Version with Steam](#install-a-version-with-steam)
 - [Install a Version with Oculus Store (PC)](#install-a-version-with-oculus-store-pcvr)
 - [Import a Version](#how-to-import-a-version)
@@ -21,9 +23,10 @@
 
 ## Install a Version with Oculus Store (PCVR)
 
-> ## 📍Important :
+> ## 📍Important
+>
 > - Ensure that Beat Saber is in your **Oculus PCVR** library to enable downgrading.
->- You must run Beat Saber at least once on your computer before attempting to launch retrograde Oculus versions from BSManager.
+> - You must run Beat Saber at least once on your computer before attempting to launch retrograde Oculus versions from BSManager.
 
 1. Download and install BSManager from [GitHub](https://github.com/Zagrios/bs-manager/releases/latest).
 2. Open the **`Add Versions`** interface and select the version you wish to download.
