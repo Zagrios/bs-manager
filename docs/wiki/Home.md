@@ -19,19 +19,25 @@ Our comprehensive guides are crafted to assist you in maximizing BSManager's cap
         - [Install your mods in BSManager]()
     - **🖼️ Models**: Find out how to integrate custom models into your Beat Saber experience.
         - [Modify your models]()
-- **🛠️ Support**: Solutions to common issues and answers to frequently asked questions to ensure a smooth experience with BSManager.
-    - [Send your logs]()
 - **🤝 Contribution**: Information on how to contribute to the development and improvement of BSManager.
 
-## Troubleshoots
+## 🐞 Troubleshooting
 
-blablabla
+Our troubleshooting section is here to help you resolve common issues quickly and efficiently:
 
+<!-- - **⚙️ Connection Issues**: Solutions for problems related to connecting BSManager to required services. -->
 
+<!-- - **💾 Installation Problems**: Guidance on fixing errors during setup or version updates. -->
+
+<!-- - **🎮 Gameplay Issues**: Fixes for issues impacting Beat Saber performance. -->
+
+- **🔍 Debugging Tips**: Steps to gather logs and identify specific issues.
+    - [How to find your logs]()
+    - [Submitting a bug report]()
 ----
 
-We are committed to keeping this wiki up-to-date with the latest information and best practices. Your contributions are welcome; please refer to our [contribution guidelines](https://github.com/Zagrios/bs-manager/wiki) to get started.
+We are committed to keeping this wiki up-to-date with the latest information and best practices. Your contributions are welcome; please refer to our [contribution guidelines]() to get started.
 
-For additional support and community interaction, join our [Discord server](https://discord.gg/bsmanager).
+For additional support and community interaction, join our [Discord server]().
 
 Thank you for using BSManager!
