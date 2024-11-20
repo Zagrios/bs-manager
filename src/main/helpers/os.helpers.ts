@@ -98,7 +98,7 @@ export function bsmExec(command: string, options?: BsmExecOptions): Promise<{
             if (error) { return reject(error); }
             resolve({ stdout, stderr });
         });
-    })
+    });
 }
 
 async function isProcessRunningLinux(name: string): Promise<boolean> {
