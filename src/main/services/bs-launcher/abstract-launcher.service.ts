@@ -14,8 +14,11 @@ export abstract class AbstractLauncherService {
     }
 
     protected buildBsLaunchArgs(launchOptions: LaunchOption): string[]{
-        const launchArgs = ["--no-yeet"];
+        const launchArgs = [];
 
+        if(!launchOptions.version.steam && !launchOptions.version.oculus){
+            launchArgs.push("--no-yeet")
+        }
         if (launchOptions.oculus) {
             launchArgs.push("-vrmode");
             launchArgs.push("oculus");
