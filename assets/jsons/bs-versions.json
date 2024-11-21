@@ -785,8 +785,7 @@
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/4669760442595134838",
 		"ReleaseImg": "https://clan.akamai.steamstatic.com/images/32055887/57cfa043407c091e67b7e0a8ae86fe5590deae33.png",
 		"ReleaseDate": "1728399815",
-		"year": "2024",
-		"recommended": true
+		"year": "2024"
 	},
 	{
 		"BSVersion": "1.39.0",
@@ -795,7 +794,8 @@
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/4451339035198095638",
 		"ReleaseImg": "https://clan.cloudflare.steamstatic.com/images/32055887/fd8e2c783e46decdf5e10fed1e16f124616d9321.png",
 		"ReleaseDate": "1731426932",
-		"year": "2024"
+		"year": "2024",
+        "recommended": true
 	},
 	{
 		"BSVersion": "1.39.1",
