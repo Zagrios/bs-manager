@@ -37,6 +37,13 @@
             "prettier --ignore-path .eslintignore --single-quote --write"
         ]
     },
+    "build": {
+        "directories": {
+            "app": "release/app",
+            "buildResources": "assets",
+            "output": "release/build"
+        }
+    },
     "repository": {
         "type": "git",
         "url": "git+https://github.com/Zagrios/bs-manager.git"
