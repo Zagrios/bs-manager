@@ -41,7 +41,9 @@
                 "advanced-launch": {
                     "button": "Advanced launch",
                     "placeholder": "Additional arguments ex: --revert; --nowait"
-                }
+                },
+                "skipvr": "Skip SteamVR",
+                "skipvr-description": "Stops SteamVR from opening automatically with Beat Saber, enable if you are using a different VR runtime like WiVRn or Monado that SteamVR may interfere with."
             },
             "maps": {
                 "search-bar": {
@@ -242,7 +244,7 @@
                         "confirm-btn": "Yes I'm sure"
                     },
                     "error-notification": {
-                        "message": "An error occur, unable to disable hardware acceleration."
+                        "message": "An error occured, unable to disable hardware acceleration."
                     }
                 },
                 "use-symlinks": {
@@ -254,7 +256,7 @@
                         "confirm-btn": "Yes I'm sure"
                     },
                     "error-notification": {
-                        "message": "An error occur, unable to change symlinks settings."
+                        "message": "An error occured, unable to change symlinks settings."
                     }
                 }
             }
@@ -427,11 +429,13 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "Launching...🚀",
-                    "STEAM_LAUNCHING": "Steam is launching!"
+                    "STEAM_LAUNCHING": "Steam is launching!",
+                    "SKIPPING_STEAM_LAUNCH": "Skipping Steam launch"
                 },
                 "msg": {
                     "BS_LAUNCHING": "Don't forget to warm up 😉",
-                    "STEAM_LAUNCHING": "Beat Saber will automatically launch after Steam."
+                    "STEAM_LAUNCHING": "Beat Saber will automatically launch after Steam.",
+                    "SKIPPING_STEAM_LAUNCH": "I hope you know what you're doing :)"
                 }
             },
             "errors": {
