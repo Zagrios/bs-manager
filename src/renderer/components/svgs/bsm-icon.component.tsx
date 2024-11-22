@@ -67,7 +67,7 @@ import { BrowseIcon } from "./icons/browse-icon.component";
 import { AddFileIcon } from "./icons/add-file-icon.component";
 
 
-export type BsmIconType = SongDetailDiffCharactertistic | ("settings" | "trash" | "favorite" | "folder" | "bsNote" | "check" | "three-dots" | "twitch" | "eye" | "play" | "checkCircleIcon" | "discord" | "info" | "eye-cross" | "terminal" | "desktop" | "oculus" | "add" | "cross" | "task" | "github" | "close" | "thumbUpFill" | "timerFill" | "pause" | "twitter" | "sync" | "chevron-top" | "copy" | "steam" | "edit" | "export" | "patreon" | "search" | "bsMapDifficulty" | "link" | "unlink" | "download" | "filter" | "mee6" | "volume-up" | "volume-off" | "volume-down" | "shortcut" | "backup-restore" | "web-site" | "clean" | "browse" | "add-file" | "fr-FR-flag" | "es-ES-flag" | "en-US-flag" | "en-EN-flag" | "de-DE-flag" | "ru-RU-flag" | "zh-CN-flag" | "zh-TW-flag" | "ja-JP-flag" | "ko-KR-flag");
+export type BsmIconType = SongDetailDiffCharactertistic | ("settings" | "trash" | "favorite" | "folder" | "bsNote" | "check" | "three-dots" | "twitch" | "eye" | "play" | "checkCircleIcon" | "discord" | "info" | "eye-cross" | "terminal" | "desktop" | "oculus" | "add" | "cross" | "task" | "github" | "close" | "thumbUpFill" | "timerFill" | "pause" | "twitter" | "sync" | "chevron-top" | "copy" | "steam" | "edit" | "export" | "patreon" | "search" | "bsMapDifficulty" | "link" | "unlink" | "download" | "filter" | "mee6" | "volume-up" | "volume-off" | "volume-down" | "shortcut" | "backup-restore" | "web-site" | "clean" | "browse" | "add-file" | "fr-FR-flag" | "es-ES-flag" | "en-US-flag" | "en-EN-flag" | "de-DE-flag" | "ru-RU-flag" | "zh-CN-flag" | "zh-TW-flag" | "ja-JP-flag" | "ko-KR-flag" | "null" );
 
 export const BsmIcon = memo(({ className, icon, style }: { className?: string; icon: BsmIconType; style?: CSSProperties }) => {
     // TODO : Very ugly very messy, need to find a better way to do this
@@ -275,7 +275,9 @@ export const BsmIcon = memo(({ className, icon, style }: { className?: string; i
         if(icon === "add-file") {
             return <AddFileIcon className={className} style={style} />;
         }
-
+        if(icon === "null") {
+            return null;
+        }
         return <TrashIcon className={className} style={style} />;
 
 

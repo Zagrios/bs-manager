@@ -77,8 +77,10 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 throw CustomError.fromError(new Error(`Path not exist : ${exePath}`), BSLaunchError.BS_NOT_FOUND);
             }
 
+            const skipVR: boolean = launchOptions.skipVR ?? false;
+
             // Open Steam if not running
-            if(!(await this.steam.steamRunning())){
+            if(!skipVR && !(await this.steam.steamRunning())){
                 obs.next({type: BSLaunchEvent.STEAM_LAUNCHING});
 
                 await this.steam.openSteam().then(() => {
@@ -87,6 +89,9 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                     log.error(e);
                     obs.next({type: BSLaunchWarning.UNABLE_TO_LAUNCH_STEAM});
                 });
+            }
+            else if (!launchOptions.desktop) {
+                obs.next({ type: BSLaunchEvent.SKIPPING_STEAM_LAUNCH});
             }
 
             // Backup SteamVR when desktop mode is enabled
