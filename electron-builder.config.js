@@ -64,6 +64,7 @@ const config = {
             "--filesystem=~/BSManager:create", // Default BSManager installation folder
             "--filesystem=~/.steam/steam/steamapps:ro", // for the libraryfolders.vdf
             "--filesystem=~/.steam/steam/steamapps/common:ro", // Steam game folder
+            "--filesystem=~/.steam/steam/steamapps/common/Beat Saber:create", // For installing mods/maps to original Beat Saber version
             // Allow communication with network
             "--share=network",
             // System notifications with libnotify
