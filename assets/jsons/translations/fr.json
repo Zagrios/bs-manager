@@ -38,6 +38,7 @@
                 "desktop-description": "Cela vous permet d'utiliser WASD et la souris pour naviguer dans le menu en jeu. Cela rend les tests beaucoup plus faciles, car vous n'avez pas à mettre votre casque!",
                 "debug": "Mode Debug",
                 "debug-description": "Active la fenêtre de log pour IPA. Cela affichera la console de débogage utilisée par les mods.",
+                "outdated-tippy": "Cette version est obsolète et certains mods ou fonctionnalités peuvent ne plus fonctionner comme prévu. Préférez utiliser la version recommandée ({recommendedVersion}) de Beat Saber pour profiter des dernières fonctionnalités et correctifs.",
                 "advanced-launch": {
                     "button": "Lancement avancé",
                     "placeholder": "Arguments supplémentaires ex: --revert; --nowait"
@@ -591,6 +592,14 @@
             },
             "error": {
                 "msg": "Une erreur s'est produite lors de la création du raccourci."
+            }
+        },
+        "bs-version-oudated": {
+            "title": "Version obsolète",
+            "msg": "Cette version de Beat Saber est obsolète. Utilisez la version recommandée pour profiter des dernières fonctionnalités et correctifs.",
+            "actions": {
+                "do-not-remind": "Ne plus me rappeler",
+                "ok": "Ok"
             }
         }
     },

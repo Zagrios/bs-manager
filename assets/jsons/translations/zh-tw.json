@@ -38,6 +38,7 @@
                 "desktop-description": "第一人稱飛控模式允許你使用鍵盤 WASD 和滑鼠在遊戲中進行導航。你無需帶上頭顯即可進行測試!",
                 "debug": "Debug 模式",
                 "debug-description": "為 IPA 啟用輸出日誌窗口。 會顯示所用 Mod 的 debug 輸出",
+                "outdated-tippy": "此版本已過時，某些模組或功能可能無法按預期運作。建議使用推薦版本的 Beat Saber ({recommendedVersion})，以享受最新功能和修復。",
                 "advanced-launch": {
                     "button": "高級啟動",
                     "placeholder": "額外啟動參數，例如: --revert; --nowait"
@@ -590,6 +591,14 @@
             },
             "error": {
                 "msg": "創建捷徑時發生錯誤"
+            }
+        },
+        "bs-version-oudated": {
+            "title": "版本過時",
+            "msg": "此 Beat Saber 版本已過時，請使用推薦版本以享受最新功能和修復。",
+            "actions": {
+                "do-not-remind": "不要再提醒我",
+                "ok": "確定"
             }
         }
     },
