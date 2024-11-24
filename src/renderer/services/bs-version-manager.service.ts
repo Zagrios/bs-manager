@@ -211,4 +211,8 @@ export class BSVersionManagerService {
             version
         ]))).values());
     }
+
+    public getRecommendedVersion(): BSVersion | undefined {
+        return (this.availableVersions$.value ?? []).find(v => v.recommended);
+    }
 }
