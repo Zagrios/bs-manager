@@ -11,6 +11,12 @@ import { useService } from "renderer/hooks/use-service.hook";
 import { BSVersion } from "shared/bs-version.interface";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
+import { logRenderError } from "renderer";
+import { ModalExitCode, ModalService } from "renderer/services/modale.service";
+import { BSVersionOutdatedModal } from "renderer/components/modal/modal-types/bs-version-outdated-modal.component";
+import { ConfigurationService } from "renderer/services/configuration.service";
+import { coerce, lt, valid } from "semver";
+import { tryit } from "shared/helpers/error.helpers";
 
 export const AvailableVersionsContext = createContext<{ selectedVersion: BSVersion; setSelectedVersion: (version: BSVersion) => void }>(null);
 
@@ -18,6 +24,8 @@ export function AvailableVersionsList() {
 
     const bsDownloader = useService(BsDownloaderService);
     const versionManager = useService(BSVersionManagerService);
+    const modals = useService(ModalService);
+    const config = useService(ConfigurationService);
 
     const [selectedVersion, setSelectedVersion] = useState<BSVersion>(null);
     const contextValue = useMemo(() => ({ selectedVersion, setSelectedVersion }), [selectedVersion]);
@@ -25,10 +33,25 @@ export function AvailableVersionsList() {
     const downloading = useObservable(() => bsDownloader.downloadingVersion$.pipe(map(v => !!v)));
     const t = useTranslation();
 
-    const startDownload = async () => {
+    const startDownload = async (version: BSVersion) => {
+        const showOutdated = !config.get("not-show-bs-version-outdated");
+        const recommendedVersion = showOutdated ? versionManager.availableVersions$.value.find(v => v.recommended) : undefined;
 
-        return bsDownloader.downloadVersion(selectedVersion)
-            .catch(console.log)
+        const isVersionOutdated = recommendedVersion?.BSVersion ? (
+            tryit(() => lt(valid(coerce(version.BSVersion)), valid(coerce(recommendedVersion.BSVersion)))).result ?? false
+        ) : false;
+
+        if (showOutdated && isVersionOutdated) {
+
+            const res = await modals.openModal(BSVersionOutdatedModal, { outdated: version, recommended: recommendedVersion });
+
+            if (res.exitCode !== ModalExitCode.COMPLETED) {
+                return;
+            }
+        }
+
+        return bsDownloader.downloadVersion(version)
+            .catch(logRenderError)
             .finally(() => setSelectedVersion(null));
     };
 
@@ -45,17 +68,17 @@ export function AvailableVersionsList() {
 
     return (
         <div className="relative h-full w-full flex items-center flex-col pt-2">
-            
+
             <Slideshow className="absolute w-full h-full top-0" />
             <h1 className="text-gray-100 text-2xl mb-4 z-[1]">{t("pages.available-versions.title")}</h1>
 
             <AvailableVersionsContext.Provider value={contextValue}>
                 <AvailableVersionsSlider />
             </AvailableVersionsContext.Provider>
-            
+
             <AnimatePresence>
                 {selectedVersion && !downloading && (
-                    <motion.div initial={{ y: "150%" }} animate={{ y: "0%" }} exit={{ y: "150%" }} className="absolute bottom-5" onClick={startDownload}>
+                    <motion.div initial={{ y: "150%" }} animate={{ y: "0%" }} exit={{ y: "150%" }} className="absolute bottom-5" onClick={() => startDownload(selectedVersion)}>
                         <BsmButton text="misc.download" className="relative text-gray-800 dark:text-gray-100 rounded-md text-3xl font-bold italic tracking-wide px-3 pb-2 pt-1 shadow-md shadow-black" />
                     </motion.div>
                 )}

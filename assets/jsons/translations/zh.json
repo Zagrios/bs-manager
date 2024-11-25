@@ -14,7 +14,12 @@
         "refuse": "拒绝",
         "apply": "应用",
         "copy": "复制",
-        "copied": "已复制!"
+        "copied": "已复制!",
+        "confirm": "确认",
+        "choose-folder": "选择文件夹",
+        "Unknown": "发生了一个错误 ¯\\_(ツ)_/¯",
+        "warning": "警告",
+        "continue": "继续"
     },
     "nav-bar": {
         "add-version": "添加版本",
@@ -735,6 +740,9 @@
             },
             "launch-as-admin": "以管理员身份启动",
             "not-remind-me": "不再提醒我"
+        },
+        "bs-version-outdated": {
+            "body": "版本 {outdatedVersion} 已过时，某些模组或功能可能无法正常工作。请下载最新推荐的 Beat Saber 版本 ({recommendedVersion})，以享受最新功能和修复。"
         }
     },
     "maps": {

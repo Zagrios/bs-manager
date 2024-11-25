@@ -14,7 +14,12 @@
         "refuse": "Refuse",
         "apply": "Apply",
         "copy": "Copy",
-        "copied": "Copied!"
+        "copied": "Copied!",
+        "confirm": "Confirm",
+        "choose-folder": "Choose folder",
+        "unknown": "An unknown error occurred ¯\\_(ツ)_/¯",
+        "warning": "Warning",
+        "continue": "Continue"
     },
     "nav-bar": {
         "add-version": "Add a version",
@@ -735,6 +740,9 @@
             },
             "launch-as-admin": "Launch as Administrator",
             "not-remind-me": "Do not remind me"
+        },
+        "bs-version-outdated": {
+            "body": "The version {outdatedVersion} is outdated, and some mods or features may no longer work as expected. Please download the latest recommended version ({recommendedVersion}) of Beat Saber to enjoy the latest features and bugfixes."
         }
     },
     "maps": {
