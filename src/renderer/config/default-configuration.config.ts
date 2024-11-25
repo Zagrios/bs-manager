@@ -30,7 +30,7 @@ export const defaultConfiguration: {
         window.electron.path.join("Beat Saber_Data", "CustomWIPLevels"),
     ],
     "playlist-sort-order": BsvSearchOrder.Relevance,
-    "map-sort-order": BsvSearchOrder.Latest,
+    "map-sort-order": BsvSearchOrder.Relevance,
 };
 
 export type ThemeConfig = "dark" | "light" | "os";
