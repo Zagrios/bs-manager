@@ -18,7 +18,7 @@ export const BSVersionOutdatedModal: ModalComponent<void, { outdated: BSVersion,
 
     const handleContinue = () => {
         if (remember) {
-            config.set("not-show-bs-version-outdated", true);
+            config.set("not-show-bs-version-outdated-modal", true);
         }
 
         resolver({ exitCode: ModalExitCode.COMPLETED });

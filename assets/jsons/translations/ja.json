@@ -38,6 +38,7 @@
                 "desktop-description": "ファーストパーソン・フライング・コントローラー・モードでは、WASDとマウスを使ってゲーム内のメニューを操作できます。ヘッドセットを装着する必要がないので、テストがより簡単になります!",
                 "debug": "デバックモード",
                 "debug-description": "IPAの出力ログウィンドウを有効にします。これはMODのデバッグコンソールを表示します。",
+                "outdated-tippy": "このバージョンは古いため、一部のMODや機能が期待通りに動作しない可能性があります。最新の機能やバグ修正を楽しむには、推奨バージョン ({recommendedVersion}) のBeat Saberを使用することをお勧めします。",
                 "advanced-launch": {
                     "button": "高度な起動",
                     "placeholder": "追加引数 例：--revert; --nowait"
@@ -509,6 +510,14 @@
             },
             "error": {
                 "msg": "ショートカットの作成中にエラーが発生しました。"
+            }
+        },
+        "bs-version-oudated": {
+            "title": "バージョンが古い",
+            "msg": "このBeat Saberのバージョンは古いため、推奨バージョンを使用して最新の機能やバグ修正をお楽しみください。",
+            "actions": {
+                "do-not-remind": "再度通知しない",
+                "ok": "OK"
             }
         }
     },

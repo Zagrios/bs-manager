@@ -1,8 +1,7 @@
-import { motion } from "framer-motion";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
-import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { BSLauncherService, LaunchMods } from "renderer/services/bs-launcher.service";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { BSVersion } from "shared/bs-version.interface";
@@ -14,15 +13,21 @@ import { BsStore } from "shared/models/bs-store.enum";
 import { lastValueFrom } from "rxjs";
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
 import equal from "fast-deep-equal";
+import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
+import { safeLt } from "shared/helpers/semver.helpers";
+import { WarningIcon } from "renderer/components/svgs/icons/warning-icon.component";
+import Tippy from "@tippyjs/react";
+import { motion } from "framer-motion"
 
 type Props = { version: BSVersion };
 
 export function LaunchSlide({ version }: Props) {
-    const t = useTranslation();
+    const { text: t, element: te } = useTranslationV2();
 
     const configService = useService(ConfigurationService);
     const bsLauncherService = useService(BSLauncherService);
     const bsDownloader = useService(BsDownloaderService);
+    const versions = useService(BSVersionManagerService);
 
     const [oculusMode, setOculusMode] = useState(!!configService.get<boolean>(LaunchMods.OCULUS_MOD));
     const [desktopMode, setDesktopMode] = useState(!!configService.get<boolean>(LaunchMods.DESKTOP_MOD));
@@ -62,7 +67,7 @@ export function LaunchSlide({ version }: Props) {
                   .map(arg => arg.trim())
                   .filter(arg => arg.length > 0)
             : undefined;
-            
+
         const launch$ = bsLauncherService.launch({
             version,
             oculus: version.oculus ? false : oculusMode,
@@ -70,15 +75,28 @@ export function LaunchSlide({ version }: Props) {
             debug: debugMode,
             additionalArgs
         });
-        
+
         return lastValueFrom(launch$).catch(() => {});
     };
+
+    const isOutdated = useMemo(() => {
+        return safeLt(version?.BSVersion, versions.getRecommendedVersion()?.BSVersion);
+    }, [version]);
 
     return (
         <div className="w-full shrink-0 items-center relative flex flex-col justify-start">
             <div className="flex flex-col gap-3 justify-center items-center mb-5">
                 <BsmImage className="relative object-cover h-28" image={BSLogo} />
-                <h1 className="relative text-4xl font-bold italic -top-3">{version.name ? `${version.BSVersion} - ${version.name}` : version.BSVersion}</h1>
+                <h1 className="relative text-4xl font-bold italic -top-3">
+                    {version.name ? `${version.BSVersion} - ${version.name}` : version.BSVersion}
+                    {isOutdated && (
+                        <Tippy theme="default" content={te("pages.version-viewer.launch-mods.outdated-tippy", { recommendedVersion: <b>{versions.getRecommendedVersion().BSVersion}</b> })}>
+                            <span className="absolute bg-theme-1 size-7 rounded-full p-1.5 flex justify-center items-center -right-2 top-2 translate-x-full translate-y-px cursor-help">
+                                <WarningIcon className="text-warning-400 animate-pulse"/>
+                            </span>
+                        </Tippy>
+                    )}
+                </h1>
             </div>
             <div className="grid grid-flow-col gap-6">
                 {!(version.oculus || version.metadata?.store === BsStore.OCULUS) && <LaunchModToogle infoText="pages.version-viewer.launch-mods.oculus-description" icon="oculus" onClick={() => setMode(LaunchMods.OCULUS_MOD, !oculusMode)} active={oculusMode} text="pages.version-viewer.launch-mods.oculus" />}
@@ -100,10 +118,10 @@ export function LaunchSlide({ version }: Props) {
                 </motion.div>
             </div>
             <div className='grow flex justify-center items-center'>
-                <BsmButton 
-                    onClick={launch} 
+                <BsmButton
+                    onClick={launch}
                     active={JSON.stringify(version) === JSON.stringify(versionRunning)}
-                    className='relative -translate-y-1/2 text-5xl text-gray-800 dark:text-gray-200 font-bold tracking-wide pt-1 pb-3 px-7 rounded-lg shadow-md italic shadow-black active:scale-90 transition-transform' 
+                    className='relative -translate-y-1/2 text-5xl text-gray-800 dark:text-gray-200 font-bold tracking-wide pt-1 pb-3 px-7 rounded-lg shadow-md italic shadow-black active:scale-90 transition-transform'
                     text="misc.launch"
                     disabled={equal(version, versionDownloading)}
                 />
@@ -111,3 +129,5 @@ export function LaunchSlide({ version }: Props) {
         </div>
     );
 }
+
+

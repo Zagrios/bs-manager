@@ -37,7 +37,8 @@
                 "desktop": "FPFC Modus",
                 "desktop-description": "Auf diese Weise kannst du WASD und die Maus verwenden, um im Spiel durch das Menü zu navigieren. Dies erleichtert das Testen erheblich, da Du dein Headset nicht aufsetzen musst!",
                 "debug": "Debug Modus",
-                "debug-description": "Aktiviert das Ausgabeprotokollfenster für IPA. Dies zeigt die Debug-Konsole, die Mods verwenden.",
+                "debug-description": "Aktiviert das Ausgabeprotokollfenster für IPA. Dies zeigt die Debug-Konsole, welche die Mods verwenden.",
+                "outdated-tippy": "Diese Version ist veraltet, und einige Mods oder Funktionen funktionieren möglicherweise nicht wie erwartet. Es wird empfohlen, die empfohlene Version ({recommendedVersion}) von Beat Saber zu verwenden, um die neuesten Funktionen und Fehlerbehebungen zu genießen.",
                 "advanced-launch": {
                     "button": "Erweiterter Start",
                     "placeholder": "Weitere Argumente Bspw: --revert; --nowait"
@@ -509,6 +510,14 @@
             },
             "error": {
                 "msg": "Beim Erstellen der Verknüpfung ist ein Fehler aufgetreten."
+            }
+        },
+        "bs-version-oudated": {
+            "title": "Veraltete Version",
+            "msg": "Diese Version von Beat Saber ist veraltet. Verwenden Sie die empfohlene Version, um die neuesten Funktionen und Fehlerbehebungen zu nutzen.",
+            "actions": {
+                "do-not-remind": "Nicht mehr daran erinnern",
+                "ok": "Ok"
             }
         }
     },

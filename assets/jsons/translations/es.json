@@ -38,6 +38,7 @@
                 "desktop-description": "El modo FPFC te permite usar WASD y el mouse para navegar por el menú en juego. Esto hace que las pruebas sean mucho más fáciles, ¡porque no tienes que ponerte las gafas VR!",
                 "debug": "Modo Depuración",
                 "debug-description": "Habilita la ventana de registro de salida para IPA. Esto mostrará la consola de depuración que usan los mods.",
+                "outdated-tippy": "Esta versión está desactualizada, y algunos mods o funciones pueden no funcionar como se espera. Es mejor usar la versión recomendada ({recommendedVersion}) de Beat Saber para disfrutar de las últimas características y correcciones.",
                 "advanced-launch": {
                     "button": "Opciones avanzadas",
                     "placeholder": "Argumentos adicionales ej: --revert; --no-wait"
@@ -509,6 +510,14 @@
             },
             "error": {
                 "msg": "Se produjo un error al crear el acceso directo."
+            }
+        },
+        "bs-version-oudated": {
+            "title": "Versión desactualizada",
+            "msg": "Esta versión de Beat Saber está desactualizada. Usa la versión recomendada para disfrutar de las últimas características y correcciones.",
+            "actions": {
+                "do-not-remind": "No volver a recordármelo",
+                "ok": "Ok"
             }
         }
     },
