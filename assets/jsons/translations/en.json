@@ -385,7 +385,8 @@
                     "BS_ALREADY_RUNNING": "Beat Saber already running",
                     "EXE_NOT_FINDED": "Missing files",
                     "EXIT": "Abrupt stop",
-                    "OCULUS_LIB_NOT_FOUND": "Oculus library not found"
+                    "OCULUS_LIB_NOT_FOUND": "Oculus library not found",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Original Oculus version not found"
                 },
                 "msg": {
                     "UNKNOWN_ERROR": "An unknown error has occurred.",
@@ -394,7 +395,10 @@
                     "BS_ALREADY_RUNNING": "Close BeatSaber before launching it again.",
                     "EXE_NOT_FINDED": "Some files seem to be missing, try to verify the files.",
                     "EXIT": "BeatSaber stopped abruptly, tries to check the files.",
-                    "OCULUS_LIB_NOT_FOUND": "Check that the Oculus application is properly installed, and that the libraries are correctly defined in Oculus."
+                    "OCULUS_LIB_NOT_FOUND": "Check that the Oculus application is properly installed, and that the libraries are correctly defined in Oculus.",
+                    "PROTON_NOT_SET": "Set the Proton path in settings.",
+                    "PROTON_NOT_FOUND": "Set the Proton path in settings.",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Beat Saber must be installed from the Oculus app before opening."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Launch Steam"
@@ -707,7 +711,7 @@
         "original-version-backup-oculus": {
             "title": "Warning",
             "body": {
-                "must-be-installed-once": "You must have installed Beat Saber at least once from the Oculus Store, otherwise Beat Saber might automatically close after launching.",
+                "must-be-installed-once": "You must have Beat Saber installed from the Oculus Store on this device, otherwise Beat Saber might automatically close after launching.",
                 "will-backup": "To launch this version, the original installation folder of Beat Saber located in your Oculus library will be renamed and will be automatically restored when Beat Saber is closed."
             },
             "not-remind-me": "Do not remind me",

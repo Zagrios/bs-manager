@@ -385,7 +385,8 @@
                     "BS_ALREADY_RUNNING": "Beat Saber уде запущен",
                     "EXE_NOT_FINDED": "Отсутствуют файлы",
                     "EXIT": "Вылет",
-                    "OCULUS_LIB_NOT_FOUND": "Библиотека Oculus не найдена"
+                    "OCULUS_LIB_NOT_FOUND": "Библиотека Oculus не найдена",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Оригинальная версия Oculus не найдена"
                 },
                 "msg": {
                     "UNKNOWN_ERROR": "Возникла неизвестная ошибка.",
@@ -394,7 +395,10 @@
                     "BS_ALREADY_RUNNING": "Закройте Beat Saber, чтобы запустить его.",
                     "EXE_NOT_FINDED": "Некоторые файлы отсутствуют, пробуем их проверить.",
                     "EXIT": "Beat Saber вылетел, пытаемся проверить файлы.",
-                    "OCULUS_LIB_NOT_FOUND": "Проверьте, правильно ли установлено приложение Oculus, и правильно ли определены библиотеки в Oculus."
+                    "OCULUS_LIB_NOT_FOUND": "Проверьте, правильно ли установлено приложение Oculus, и правильно ли определены библиотеки в Oculus.",
+                    "PROTON_NOT_SET": "Установите путь к Proton в настройках.",
+                    "PROTON_NOT_FOUND": "Установите путь к Proton в настройках.",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Beat Saber должен быть установлен из приложения Oculus перед открытием."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Запустить Steam"
@@ -707,7 +711,7 @@
         "original-version-backup-oculus": {
             "title": "Внимание",
             "body": {
-                "must-be-installed-once": "Вы должны были установить Beat Saber хотя бы один раз из Oculus Store, иначе Beat Saber может автоматически закрыться после запуска.",
+                "must-be-installed-once": "Вы должны установить Beat Saber из магазина Oculus на этом устройстве, в противном случае Beat Saber автоматически закроется после запуска.",
                 "will-backup": "Для запуска этой версии исходная папка установки Beat Saber, находящаяся в вашей библиотеке Oculus, будет переименована и автоматически восстановлена при выходе из Beat Saber."
             },
             "not-remind-me": "Больше не напоминать",
