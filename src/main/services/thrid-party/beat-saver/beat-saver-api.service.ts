@@ -14,7 +14,7 @@ export class BeatSaverApiService {
 
     private readonly request: RequestService;
 
-    private readonly bsaverApiUrl = "https://beatsaver.com/api";
+    private readonly bsaverApiUrl = "https://api.beatsaver.com";
 
     private constructor() {
         this.request = RequestService.getInstance();
