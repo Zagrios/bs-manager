@@ -8,7 +8,7 @@ export const defaultConfiguration: { [key in DefaultConfigKey]: any } = {
     "default-shared-folders": [
         window.electron.path.join("Beat Saber_Data", "CustomLevels"),
         window.electron.path.join("Beat Saber_Data", "CustomWIPLevels"),
-    ],
+    ]
 };
 
 export type DefaultConfigKey = "first-color" | "second-color" | "theme" | "language" | "supported_languages" | "default_mods" | "default-shared-folders";

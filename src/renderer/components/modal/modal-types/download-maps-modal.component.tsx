@@ -34,7 +34,7 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
     const [filter, setFilter] = useState<MapFilter>({});
     const [query, setQuery] = useState("");
     const [maps, setMaps] = useState<BsvMapDetail[]>([]);
-    const [sortOrder, setSortOrder] = useState<SearchOrder>(BSV_SORT_ORDER.at(0));
+    const [sortOrder, setSortOrder] = useState<SearchOrder>("Relevance");
     const [ownedMapHashs, setOwnedMapHashs] = useState<string[]>(ownedMaps?.map(map => map.hash) ?? []);
     const [loading, setLoading] = useState(false);
     const isOnline = useObservable(() => os.isOnline$);
@@ -195,7 +195,7 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
                         handleSearch();
                     }}
                 />
-                <BsmSelect className="bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-1 pb-0.5 text-center" options={sortOptions} onChange={sort => handleSortChange(sort)} />
+                <BsmSelect className="bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-1 pb-0.5 text-center" options={sortOptions} onChange={sort => handleSortChange(sort)} selected={sortOrder}/>
             </div>
             <ul className="w-full grow flex content-start flex-wrap gap-2 pt-1.5 px-2 overflow-y-scroll overflow-x-hidden scrollbar-thin scrollbar-thumb-rounded-full scrollbar-thumb-neutral-900 z-0">
                 {maps.length === 0 ? (
