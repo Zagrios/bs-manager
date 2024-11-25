@@ -1,4 +1,3 @@
-import JSZip from "jszip";
 import fetch from "node-fetch";
 import { CustomError } from "../../shared/models/exceptions/custom-error.class";
 import { mkdirs, createWriteStream, pathExists, WriteStream } from "fs-extra";
@@ -7,6 +6,8 @@ import { inflate } from "pako"
 import { EMPTY, Observable, ReplaySubject, Subscriber, catchError, filter, from, lastValueFrom, mergeMap, scan, share, tap } from "rxjs";
 import { Progression, hashFile } from "../helpers/fs.helpers";
 import { OculusDownloaderErrorCodes } from "../../shared/models/bs-version-download/oculus-download.model";
+import { BsmZipExtractor } from "./bsm-zip-extractor.class";
+import { tryit } from "../../shared/helpers/error.helpers";
 
 export class OculusDownloader {
 
@@ -23,26 +24,38 @@ export class OculusDownloader {
         return `https://securecdn.oculus.com/binaries/segment/?access_token=${token}&binary_id=${binaryId}&segment_sha256=${segmentSha256}`;
     }
 
-    private async downloadManifestZip(manifestUrl: string): Promise<JSZip> {
+    private async downloadManifestZip(manifestUrl: string): Promise<Buffer> {
         const response = await fetch(manifestUrl);
         const arrBuffer = await response.arrayBuffer();
-        return JSZip.loadAsync(arrBuffer);
+        return Buffer.from(arrBuffer);
     }
 
     private async getManifest(): Promise<OculusManifest> {
         const downloadUrl = this.getDownloadManifestUrl(this.options.accessToken, this.options.binaryId);
-        const manifestZip = await this.downloadManifestZip(downloadUrl).catch(err => CustomError.throw(err, "DOWNLOAD_MANIFEST_FAILED"));
-        const manifestFile = manifestZip.file("manifest.json");
+        const buffer = await this.downloadManifestZip(downloadUrl)
+            .catch(err => CustomError.throw(err, "DOWNLOAD_MANIFEST_FAILED"));
 
-        if(!manifestFile){
+        const zip = await BsmZipExtractor.fromBuffer(buffer);
+        const entry = await zip.getEntry("manifest.json");
+
+        if(!entry) {
             throw new CustomError("Manifest file not found", "MANIFEST_FILE_NOT_FOUND");
         }
 
-        return manifestFile.async("text").then(JSON.parse).catch(err => CustomError.throw(err, "PARSE_MANIFEST_FILE_FAILED"));
+        const manifest = await entry.read();
+        zip.close();
+
+        const { result, error } = tryit(() => JSON.parse(manifest.toString()) as OculusManifest);
+
+        if(error){
+            throw CustomError.throw(error, "PARSE_MANIFEST_FILE_FAILED")
+        }
+
+        return result;
     }
 
     private downloadManifestFile(file: OculusManifestFile, destination: string): Observable<Progression<OculusManifestFile>> {
-            
+
             const downloadSegment = async (segment: OculusManifestFileSegment): Promise<ArrayBuffer> => {
                 const segmentUrl = this.getDownloadSegmentUrl(this.options.accessToken, this.options.binaryId, segment[1]);
                 const response = await fetch(segmentUrl);
@@ -66,11 +79,11 @@ export class OculusDownloader {
 
                         const arrBuffer = await downloadSegment(segment);
                         const inflated = inflate(arrBuffer);
-                        await writeStream.write(inflated);
+                        writeStream.write(inflated);
 
                         progress.current += inflated.byteLength;
                         progress.diff = inflated.byteLength;
-                        
+
                         sub.next(progress);
                     }
 
@@ -86,7 +99,7 @@ export class OculusDownloader {
             });
     }
 
-    private isFileIntegrityValid(file: OculusFileWithName, folder: string): Promise<boolean> {
+    private async isFileIntegrityValid(file: OculusFileWithName, folder: string): Promise<boolean> {
         const [fileName, fileData] = file;
         const destination = path.join(folder, fileName);
 
@@ -138,7 +151,7 @@ export class OculusDownloader {
             if(this.isDownloading){
                 throw new CustomError("Already downloading", "ALREADY_DOWNLOADING");
             }
-    
+
             this.options = options;
             this.isDownloading = true;
 
@@ -182,7 +195,7 @@ export class OculusDownloader {
                 })));
 
                 const integrity = await lastValueFrom(this.verifyIntegrity(manifest, options.destination)).catch(err => CustomError.throw(err, "VERIFY_INTEGRITY_FAILED"));
-                
+
                 if(integrity.data.length > 0){
                     throw new CustomError("Some files failed to download", "SOME_FILES_FAILED_TO_DOWNLOAD", integrity.data);
                 }

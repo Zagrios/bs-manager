@@ -8,7 +8,6 @@ import { UtilsService } from "../utils.service";
 import crypto from "crypto";
 import { lstatSync } from "fs";
 import { copy, createReadStream, ensureDir, pathExists, realpath, unlink } from "fs-extra";
-import StreamZip from "node-stream-zip";
 import { RequestService } from "../request.service";
 import sanitize from "sanitize-filename";
 import { DeepLinkService } from "../deep-link.service";
@@ -23,6 +22,7 @@ import { allSettled } from "../../../shared/helpers/promise.helpers";
 import { splitIntoChunk } from "../../../shared/helpers/array.helpers";
 import { IpcService } from "../ipc.service";
 import { parseMapInfoDat } from "../../../shared/parsers/maps/map-info.parser";
+import { BsmZipExtractor } from "../../models/bsm-zip-extractor.class";
 
 export class LocalMapsManagerService {
     private static instance: LocalMapsManagerService;
@@ -137,18 +137,15 @@ export class LocalMapsManagerService {
         return { mapInfo, coverUrl, songUrl, hash, path: mapPath };
     }
 
-    private async downloadMapZip(zipUrl: string): Promise<{ zip: StreamZip.StreamZipAsync; zipPath: string }> {
+    private async downloadMapZip(zipUrl: string): Promise<string> {
         const fileName = `${path.basename(zipUrl, ".zip")}-${crypto.randomUUID()}.zip`;
         const tempPath = this.utils.getTempPath();
         await ensureFolderExist(this.utils.getTempPath());
 
-        const zipPath = (await lastValueFrom(this.reqService.downloadFile(zipUrl, {
+        return (await lastValueFrom(this.reqService.downloadFile(zipUrl, {
             destFolder: tempPath,
             filename: fileName
         }))).data;
-        const zip = new StreamZip.async({ file: zipPath });
-
-        return { zip, zipPath };
     }
 
     private openOneClickDownloadMapWindow(mapId: string, isHash = false): void {
@@ -279,16 +276,15 @@ export class LocalMapsManagerService {
             return installedMap;
         }
 
-        const { zip, zipPath } = await this.downloadMapZip(zipUrl);
+        const zipPath = await this.downloadMapZip(zipUrl);
+        const zip = await BsmZipExtractor.fromPath(zipPath);
 
         if (!zip) {
             throw `Cannot download ${zipUrl}`;
         }
 
-        await ensureFolderExist(mapPath);
-
-        await zip.extract(null, mapPath);
-        await zip.close();
+        await zip.extract(mapPath);
+        zip.close();
         await unlink(zipPath);
 
         const localMap = await this.loadMapInfoFromPath(mapPath);

@@ -15,3 +15,5 @@
 *.ttf   binary
 *.woff  binary
 *.woff2 binary
+assets/scripts/* binary
+*.zip binary

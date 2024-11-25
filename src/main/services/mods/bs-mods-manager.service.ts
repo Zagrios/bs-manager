@@ -11,11 +11,11 @@ import { BS_EXECUTABLE } from "../../constants";
 import log from "electron-log";
 import { deleteFolder, pathExist, unlinkPath } from "../../helpers/fs.helpers";
 import { lastValueFrom } from "rxjs";
-import JSZip from "jszip";
-import { extractZip } from "../../helpers/zip.helpers";
 import recursiveReadDir from "recursive-readdir";
 import { sToMs } from "../../../shared/helpers/time.helpers";
-import { ensureDir, pathExistsSync } from "fs-extra";
+import { pathExistsSync } from "fs-extra";
+import { BsmZipExtractor } from "../../models/bsm-zip-extractor.class";
+import crypto from "crypto";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -45,6 +45,7 @@ export class BsModsManagerService {
         this.bsLocalService = BSLocalVersionService.getInstance();
         this.utilsService = UtilsService.getInstance();
         this.requestService = RequestService.getInstance();
+        this.utilsService = UtilsService.getInstance();
     }
 
     private async getModFromHash(hash: string): Promise<Mod> {
@@ -123,7 +124,7 @@ export class BsModsManagerService {
         return this.getIpaFromHash(injectorMd5);
     }
 
-    private async downloadZip(zipUrl: string): Promise<JSZip> {
+    private async downloadZip(zipUrl: string): Promise<BsmZipExtractor> {
         zipUrl = path.join(this.beatModsApi.BEAT_MODS_URL, zipUrl);
 
         log.info("Download mod zip", zipUrl);
@@ -139,10 +140,7 @@ export class BsModsManagerService {
             return null;
         }
 
-        return JSZip.loadAsync(buffer).catch(e => {
-            log.error("ZIP", "Error while loading zip", e);
-            return null;
-        });
+        return BsmZipExtractor.fromBuffer(buffer);
     }
 
     private async executeBSIPA(version: BSVersion, args: string[]): Promise<boolean> {
@@ -209,43 +207,38 @@ export class BsModsManagerService {
 
         log.info("Start download mod zip", mod.name, download.url);
         const zip = await this.downloadZip(download.url);
-        log.info("Mod zip download end", mod.name, download.url, !!zip);
+        log.info("Mod zip download end", mod.name, download.url);
 
         if (!zip) {
             return false;
         }
 
-        const crypto = require("crypto");
-        const files = await zip.files;
+        let hashCount = 0;
+        for await (const entry of zip.entries()) {
+            const buffer = await entry.read();
+            const md5Hash = crypto.createHash("md5")
+                .update(buffer)
+                .digest("hex");
+            hashCount += +download.hashMd5.some(md5 => md5.hash === md5Hash);
+        }
 
-        const checkedEntries = (
-            await Promise.all(
-                Object.values(files).map(async entry => {
-                    const data = await entry.async("nodebuffer");
-                    const entryMd5 = crypto.createHash("md5").update(data).digest("hex");
-                    return download.hashMd5.some(md5 => md5.hash === entryMd5) ? entry : undefined;
-                })
-            ).catch(e => {
-                log.error("Error while checking mod zip entries", mod.name, e);
-                throw e;
-            })
-        ).filter(entry => !!entry);
-
-        if (checkedEntries.length !== download.hashMd5.length) {
+        if (hashCount !== download.hashMd5.length) {
             return false;
         }
 
-        const verionPath = await this.bsLocalService.getVersionPath(version);
+        const versionPath = await this.bsLocalService.getVersionPath(version);
         const isBSIPA = mod.name.toLowerCase() === "bsipa";
-        const destDir = isBSIPA ? verionPath : path.join(verionPath, ModsInstallFolder.PENDING);
+        const destDir = isBSIPA ? versionPath : path.join(versionPath, ModsInstallFolder.PENDING);
 
-        await ensureDir(destDir);
         log.info("Start extracting mod zip", mod.name, "to", destDir);
-        const extracted = await extractZip(zip, destDir)
+        const extracted = await zip.extract(destDir)
             .then(() => true)
             .catch(e => {
                 log.error("Error while extracting mod zip", e);
                 return false;
+            })
+            .finally(() => {
+                zip.close();
             });
 
         log.info("Mod zip extraction end", mod.name, "to", destDir, "success:", extracted);
