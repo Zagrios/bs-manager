@@ -87,7 +87,8 @@
                         "latest": "Latest",
                         "description": "Описание",
                         "dropdown": {
-                            "uninstall-all": "Удалить всё"
+                            "uninstall-all": "Удалить всё",
+                            "unselect-all": "Снять все выделения"
                         }
                     }
                 }

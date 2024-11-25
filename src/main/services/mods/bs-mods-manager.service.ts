@@ -271,7 +271,7 @@ export class BsModsManagerService {
         return Array.from(
             new Map<string, Mod>(
                 availableMods.reduce((res, mod) => {
-                    if (this.isDependency(mod, mods, availableMods)) {
+                    if (mod.required || this.isDependency(mod, mods, availableMods)) {
                         res.push([mod.name, mod]);
                     }
                     return res;
@@ -350,12 +350,12 @@ export class BsModsManagerService {
     }
 
     public async installMods(mods: Mod[], version: BSVersion): Promise<InstallModsResult> {
+        const deps = await this.resolveDependencies(mods, version);
+        mods.push(...deps);
+
         if (!mods?.length) {
             throw "no-mods";
         }
-
-        const deps = await this.resolveDependencies(mods, version);
-        mods.push(...deps);
 
         const bsipa = mods.find(mod => mod.name.toLowerCase() === "bsipa");
         if (bsipa) {

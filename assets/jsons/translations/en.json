@@ -87,7 +87,8 @@
                         "latest": "Latest",
                         "description": "Description",
                         "dropdown": {
-                            "uninstall-all": "Uninstall all"
+                            "uninstall-all": "Uninstall all",
+                            "unselect-all": "Unselect all"
                         }
                     }
                 }

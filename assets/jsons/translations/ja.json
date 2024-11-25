@@ -87,7 +87,8 @@
                         "latest": "最新",
                         "description": "說明",
                         "dropdown": {
-                            "uninstall-all": "全てアンインストールする"
+                            "uninstall-all": "全てアンインストールする",
+                            "unselect-all": "すべて選択解除"
                         }
                     }
                 }

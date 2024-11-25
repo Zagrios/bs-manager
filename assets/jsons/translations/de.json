@@ -87,7 +87,8 @@
                         "latest": "Neueste",
                         "description": "Beschreibung",
                         "dropdown": {
-                            "uninstall-all": "Alle deinstallieren"
+                            "uninstall-all": "Alle deinstallieren",
+                            "unselect-all": "Alle abwählen"
                         }
                     }
                 }

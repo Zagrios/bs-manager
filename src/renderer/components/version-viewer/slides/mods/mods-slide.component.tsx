@@ -116,6 +116,10 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         });
     };
 
+    const unselectAllMods = () => {
+        setModsSelected(() => []);
+    };
+
     useEffect(() => {
         const subs: Subscription[] = [];
 
@@ -181,7 +185,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         return (
             <>
                 <div className="grow overflow-scroll w-full min-h-0 scrollbar-thin scrollbar-thumb-neutral-900 scrollbar-thumb-rounded-full">
-                    <ModsGrid modsMap={modsAvailable} installed={modsInstalled} modsSelected={modsSelected} onModChange={handleModChange} moreInfoMod={moreInfoMod} onWantInfos={handleMoreInfo} />
+                    <ModsGrid modsMap={modsAvailable} installed={modsInstalled} modsSelected={modsSelected} onModChange={handleModChange} moreInfoMod={moreInfoMod} onWantInfos={handleMoreInfo} unselectAllMods={unselectAllMods} />
                 </div>
                 <div className="h-10 shrink-0 flex items-center justify-between px-3">
                     <BsmButton className="text-center rounded-md px-2 py-[2px]" text="pages.version-viewer.mods.buttons.more-infos" typeColor="cancel" withBar={false} disabled={!moreInfoMod} onClick={handleOpenMoreInfo} style={{ width: downloadWith }} />
