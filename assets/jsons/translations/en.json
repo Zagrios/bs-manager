@@ -38,6 +38,7 @@
                 "desktop-description": "First Person Flying Controller mode allows you to use WASD and the mouse to navigate around the menu in game. This makes testing much easier, because you don't have to put on your headset!",
                 "debug": "Debug Mode",
                 "debug-description": "Enables the output log window for IPA. This will show the debug console that mods use.",
+                "outdated-tippy": "This version is outdated, and some mods or features may no longer work as expected. Prefer using the recommended version ({recommendedVersion}) of Beat Saber to enjoy the latest features and bugfixes.",
                 "advanced-launch": {
                     "button": "Advanced launch",
                     "placeholder": "Additional arguments ex: --revert; --nowait"
@@ -107,7 +108,8 @@
                         "latest": "Latest",
                         "description": "Description",
                         "dropdown": {
-                            "uninstall-all": "Uninstall all"
+                            "uninstall-all": "Uninstall all",
+                            "unselect-all": "Unselect all"
                         }
                     }
                 },
@@ -593,6 +595,14 @@
             },
             "error": {
                 "msg": "An error occurred while creating the shortcut."
+            }
+        },
+        "bs-version-oudated": {
+            "title": "Version Outdated",
+            "msg": "This Beat Saber version is outdated, use the recommended version to enjoy the latest features and bugfixes",
+            "actions": {
+                "do-not-remind": "Do not remind me",
+                "ok": "Ok"
             }
         }
     },

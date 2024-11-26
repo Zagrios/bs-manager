@@ -19,6 +19,7 @@
         "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
         "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
         "test": "jest",
+        "test:unit": "jest ./src/__tests__/unit",
         "publish": "npm run build && electron-builder -c.win.certificateSha1=2164d6a7d641ecf6ad57852f665a518ca2bf960f --publish always --win --x64",
         "publish:linux": "npm run build && electron-builder --publish always --linux --x64"
     },
@@ -116,34 +117,6 @@
         "beat-saber"
     ],
     "homepage": "https://github.com/Zagrios/bs-manager#readme",
-    "jest": {
-        "testURL": "http://localhost/",
-        "testEnvironment": "jsdom",
-        "transform": {
-            "\\.(ts|tsx|js|jsx)$": "ts-jest"
-        },
-        "moduleNameMapper": {
-            "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/.erb/mocks/fileMock.js",
-            "\\.(css|less|sass|scss)$": "identity-obj-proxy"
-        },
-        "moduleFileExtensions": [
-            "js",
-            "jsx",
-            "ts",
-            "tsx",
-            "json"
-        ],
-        "moduleDirectories": [
-            "node_modules",
-            "src"
-        ],
-        "testPathIgnorePatterns": [
-            "release/app/dist"
-        ],
-        "setupFiles": [
-            "./.erb/scripts/check-build-exists.ts"
-        ]
-    },
     "devDependencies": {
         "@electron/fuses": "^1.7.0",
         "@electron/notarize": "^2.3.0",
@@ -252,11 +225,9 @@
         "got": "^14.4.4",
         "history": "^5.3.0",
         "is-elevated": "^4.0.0",
-        "jszip": "^3.10.1",
         "md5-file": "^5.0.0",
         "node-abi": "^3.65.0",
         "node-fetch": "^3.3.2",
-        "node-stream-zip": "^1.15.0",
         "pako": "^2.1.0",
         "protobufjs": "^7.4.0",
         "qrcode.react": "^4.0.1",
@@ -281,7 +252,8 @@
         "tippy.js": "^6.3.7",
         "to-ico": "^1.1.5",
         "use-double-click": "^1.0.5",
-        "use-fit-text": "^2.4.0"
+        "use-fit-text": "^2.4.0",
+        "yauzl": "^3.2.0"
     },
     "engines": {
         "node": ">=20.0.0"
