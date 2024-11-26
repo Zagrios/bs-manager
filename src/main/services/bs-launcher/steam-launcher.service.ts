@@ -77,10 +77,10 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 throw CustomError.fromError(new Error(`Path not exist : ${exePath}`), BSLaunchError.BS_NOT_FOUND);
             }
 
-            const skipVR: boolean = launchOptions.skipVR ?? false;
+            const skipSteam: boolean = launchOptions.skipSteam ?? false;
 
             // Open Steam if not running
-            if(!skipVR && !(await this.steam.steamRunning())){
+            if(!skipSteam && !(await this.steam.steamRunning())){
                 obs.next({type: BSLaunchEvent.STEAM_LAUNCHING});
 
                 await this.steam.openSteam().then(() => {
@@ -90,7 +90,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                     obs.next({type: BSLaunchWarning.UNABLE_TO_LAUNCH_STEAM});
                 });
             }
-            else if (launchOptions.skipVR) {
+            else if (launchOptions.skipSteam) {
                 obs.next({ type: BSLaunchEvent.SKIPPING_STEAM_LAUNCH});
             }
 

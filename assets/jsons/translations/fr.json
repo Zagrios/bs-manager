@@ -43,8 +43,8 @@
                     "button": "Lancement avancé",
                     "placeholder": "Arguments supplémentaires ex: --revert; --nowait"
                 },
-                "skipvr": "Ignorer SteamVR",
-                "skipvr-description": "Empêche SteamVR de s'ouvrir automatiquement avec Beat Saber, activez-le si vous utilisez un autre runtime VR comme WiVRn ou Monado avec lequel SteamVR pourrait interférer."
+                "skipsteam": "Ignorer Steam",
+                "skipsteam-description": "Empêche Steam de s'ouvrir automatiquement avec Beat Saber, activez-le si vous utilisez un autre runtime VR comme WiVRn ou Monado avec lequel SteamVR pourrait interférer."
             },
             "maps": {
                 "search-bar": {

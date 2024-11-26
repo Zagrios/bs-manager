@@ -7,5 +7,5 @@ export interface LaunchOption {
     debug?: boolean,
     additionalArgs?: string[],
     admin?: boolean,
-    skipVR?: boolean
+    skipSteam?: boolean
 }

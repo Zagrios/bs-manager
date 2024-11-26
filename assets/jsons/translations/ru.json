@@ -43,8 +43,8 @@
                     "button": "Расширенный запуск",
                     "placeholder": "Параметры запуска, например: --revert; --nowait"
                 },
-                "skipvr": "Пропустить SteamVR",
-                "skipvr-description": "Предотвращает автоматическое открытие SteamVR с Beat Saber, включите, если вы используете другую VR-среду, такую как WiVRn или Monado, с которой SteamVR может мешать."
+                "skipsteam": "Пропустить Steam",
+                "skipsteam-description": "Предотвращает автоматическое открытие Steam с Beat Saber, включите, если вы используете другую VR-среду, такую как WiVRn или Monado, с которой SteamVR может мешать."
             },
             "maps": {
                 "search-bar": {

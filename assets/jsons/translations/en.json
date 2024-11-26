@@ -43,8 +43,8 @@
                     "button": "Advanced launch",
                     "placeholder": "Additional arguments ex: --revert; --nowait"
                 },
-                "skipvr": "Skip SteamVR",
-                "skipvr-description": "Stops SteamVR from opening automatically with Beat Saber, enable if you are using a different VR runtime like WiVRn or Monado that SteamVR may interfere with."
+                "skipsteam": "Skip Steam",
+                "skipsteam-description": "Stops Steam from opening automatically with Beat Saber, enable if you are using a different VR runtime like WiVRn or Monado that SteamVR may interfere with."
             },
             "maps": {
                 "search-bar": {

@@ -43,8 +43,8 @@
                     "button": "Erweiterter Start",
                     "placeholder": "Weitere Argumente, bspw: --revert; --nowait"
                 },
-                "skipvr": "SteamVR überspringen",
-                "skipvr-description": "Verhindert, dass SteamVR automatisch mit Beat Saber geöffnet wird. Aktivieren Sie dies, wenn Sie eine andere VR-Laufzeit wie WiVRn oder Monado verwenden, mit der SteamVR interferieren könnte."
+                "skipsteam": "Steam überspringen",
+                "skipsteam-description": "Verhindert, dass Steam automatisch mit Beat Saber geöffnet wird. Aktivieren Sie dies, wenn Sie eine andere VR-Laufzeit wie WiVRn oder Monado verwenden, mit der SteamVR interferieren könnte."
             },
             "maps": {
                 "search-bar": {

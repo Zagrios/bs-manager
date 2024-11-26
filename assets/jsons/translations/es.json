@@ -53,8 +53,8 @@
                         "delete-maps": "Borrar mapas",
                         "delete-duplicate-maps": "Borrar duplicados"
                     },
-                    "skipvr": "Saltar SteamVR",
-                    "skipvr-description": "Evita que SteamVR se abra automáticamente con Beat Saber, habilita esto si estás usando un runtime de VR diferente como WiVRn o Monado que SteamVR podría interferir."
+                    "skipsteam": "Saltar Steam",
+                    "skipsteam-description": "Evita que Steam se abra automáticamente con Beat Saber, habilita esto si estás usando un runtime de VR diferente como WiVRn o Monado que SteamVR podría interferir."
                 },
                 "tabs": {
                     "maps": {

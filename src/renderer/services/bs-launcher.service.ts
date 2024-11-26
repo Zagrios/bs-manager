@@ -51,7 +51,7 @@ export class BSLauncherService {
             desktop: this.config.get(LaunchMods.DESKTOP_MOD),
             debug: this.config.get(LaunchMods.DEBUG_MOD),
             additionalArgs: (this.config.get<string>("additionnal-args") || "").split(";").map(arg => arg.trim()).filter(arg => arg.length > 0),
-            skipVR: this.config.get(LaunchMods.SKIPVR_MOD),
+            skipSteam: this.config.get(LaunchMods.SKIPSTEAM_MOD),
         }
     }
 
@@ -129,5 +129,5 @@ export enum LaunchMods {
     OCULUS_MOD = "LAUNCH_OCULUS_MOD",
     DESKTOP_MOD = "LAUNCH_DESKTOP_MOD",
     DEBUG_MOD = "LAUNCH_DEBUG_MOD",
-    SKIPVR_MOD = "LAUNCH_SKIPVR_MOD",
+    SKIPSTEAM_MOD = "LAUNCH_SKIPSTEAM_MOD",
 }

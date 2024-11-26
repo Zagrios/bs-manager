@@ -43,8 +43,8 @@
                     "button": "高度な起動",
                     "placeholder": "追加引数 例：--revert; --nowait"
                 },
-                "skipvr": "SteamVRをスキップ",
-                "skipvr-description": "Beat Saberと一緒にSteamVRが自動的に開くのを防ぎます。SteamVRが干渉する可能性のあるWiVRnやMonadoなど、別のVRランタイムを使用している場合は有効にしてください。"
+                "skipsteam": "Steamをスキップ",
+                "skipsteam-description": "Beat Saberと一緒にSteamが自動的に開くのを防ぎます。SteamVRが干渉する可能性のあるWiVRnやMonadoなど、別のVRランタイムを使用している場合は有効にしてください。"
             },
             "maps": {
                 "search-bar": {

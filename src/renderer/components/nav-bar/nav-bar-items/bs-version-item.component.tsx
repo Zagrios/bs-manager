@@ -63,7 +63,7 @@ export function BsVersionItem(props: { version: BSVersion }) {
             oculus: !!configService.get<boolean>(LaunchMods.OCULUS_MOD),
             desktop: !!configService.get<boolean>(LaunchMods.DESKTOP_MOD),
             debug: !!configService.get<boolean>(LaunchMods.DEBUG_MOD),
-            skipVR: !!configService.get<boolean>(LaunchMods.SKIPVR_MOD),
+            skipSteam: !!configService.get<boolean>(LaunchMods.SKIPSTEAM_MOD),
         });
         return lastValueFrom(launch$).catch(() => {});
     };

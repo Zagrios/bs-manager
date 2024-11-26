@@ -106,7 +106,7 @@ export class BSLauncherService {
             desktop: params.desktopMode === "true",
             debug: params.debug === "true",
             additionalArgs: params.additionalArgs,
-            skipVR: params.skipVR === "true",
+            skipSteam: params.skipSteam === "true",
         };
 
         return res;
@@ -124,7 +124,7 @@ export class BSLauncherService {
         if(launchOptions.desktop){ res.desktopMode = "true"; }
         if(launchOptions.debug){ res.debug = "true"; }
         if(launchOptions.additionalArgs){ res.additionalArgs = launchOptions.additionalArgs; }
-        if(launchOptions.skipVR){ res.skipVR = "true"; }
+        if(launchOptions.skipSteam){ res.skipSteam = "true"; }
 
         return res;
     }
@@ -241,7 +241,7 @@ type ShortcutParams = {
     desktopMode?: string;
     debug?: string;
     additionalArgs?: string[];
-    skipVR?: string;
+    skipSteam?: string;
     version: string;
     versionName?: string;
     versionIno?: string;

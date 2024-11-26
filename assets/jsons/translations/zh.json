@@ -43,8 +43,8 @@
                     "button": "高级启动",
                     "placeholder": "额外启动参数，例如: --revert; --nowait"
                 },
-                "skipvr": "跳过 SteamVR",
-                "skipvr-description": "防止 SteamVR 与 Beat Saber 自动打开，如果您使用的是其他 VR 运行时，如 WiVRn 或 Monado，SteamVR 可能会干扰，请启用此选项。"
+                "skipsteam": "跳过 Steam",
+                "skipsteam-description": "防止 Steam 与 Beat Saber 自动打开，如果您使用的是其他 VR 运行时，如 WiVRn 或 Monado，SteamVR 可能会干扰，请启用此选项。"
             },
             "maps": {
                 "search-bar": {
