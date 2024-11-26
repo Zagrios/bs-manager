@@ -15,7 +15,7 @@
         "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
         "test": "jest",
         "test:unit": "jest ./src/__tests__/unit",
-        "publish": "npm run build && electron-builder -c.win.certificateSha1=2164d6a7d641ecf6ad57852f665a518ca2bf960f --publish always --win --x64"
+        "publish": "npm run build && electron-builder -c.win.certificateSha1=206941d969c4fa8a0e04d9427def361e13b02fd0 --publish always --win --x64"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx}": [
