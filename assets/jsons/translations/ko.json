@@ -38,6 +38,7 @@
                 "desktop-description": "FPFC 모드에서는 WASD와 마우스로 게임 내 메뉴를 조작할 수 있어 테스트가 더 쉬워집니다. 헤드셋을 착용할 필요가 없습니다!",
                 "debug": "디버그 모드",
                 "debug-description": "IPA 출력 로그 창을 활성화하여 MOD의 디버그 콘솔을 표시합니다.",
+                "outdated-tippy": "이 버전은 오래되어 일부 모드나 기능이 예상대로 작동하지 않을 수 있습니다. 최신 기능과 버그 수정을 사용하려면 권장 버전({recommendedVersion})의 Beat Saber를 사용하는 것이 좋습니다.",
                 "advanced-launch": {
                     "button": "고급 실행",
                     "placeholder": "추가 인수 예: --revert; --nowait"
@@ -107,7 +108,8 @@
                         "latest": "최신",
                         "description": "설명",
                         "dropdown": {
-                            "uninstall-all": "모두 제거"
+                            "uninstall-all": "모두 제거",
+                            "unselect-all": "모두 선택 해제"
                         }
                     }
                 },
@@ -593,6 +595,14 @@
             },
             "error": {
                 "msg": "바로 가기 생성 중 오류가 발생했습니다."
+            }
+        },
+        "bs-version-oudated": {
+            "title": "버전이 오래됨",
+            "msg": "이 Beat Saber 버전은 오래되었습니다. 최신 기능과 버그 수정을 즐기려면 권장 버전을 사용하세요.",
+            "actions": {
+                "do-not-remind": "다시 알리지 않기",
+                "ok": "확인"
             }
         }
     },
