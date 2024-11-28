@@ -37,10 +37,10 @@ jobs:
             - run: npm run build
 
             - name: Build deb
-              run: npx electron-builder --publish always --linux deb --x64
+              run: npx electron-builder --config electron-builder.config.js --publish always --linux deb --x64
 
             - name: Build flatpak
-              run: env DEBUG="@malept/flatpak-bundler" npx electron-builder --publish always --linux flatpak
+              run: env DEBUG="@malept/flatpak-bundler" npx electron-builder --config electron-builder.config.js --publish always --linux flatpak
 
             - name: Upload artifact
               uses: actions/upload-artifact@v4
