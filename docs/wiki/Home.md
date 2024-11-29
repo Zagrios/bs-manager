@@ -20,6 +20,8 @@ Our comprehensive guides are crafted to assist you in maximizing BSManager's cap
     - **🖼️ Models**: Find out how to integrate custom models into your Beat Saber experience.
         - [Modify your models]()
 - **🤝 Contribution**: Information on how to contribute to the development and improvement of BSManager.
+    - [Develop the wiki]()
+    - [Contibute for BSManager]()
 
 ## 🐞 Troubleshooting
 
