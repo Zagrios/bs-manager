@@ -18,7 +18,7 @@
 6. When the download is finished, select the downloaded version and click the **`Launch`** button to verify if the game launches correctly.
 
 <div align="center">
-    <img src="wiki/Guides/Installation and updates/How to install or import a version/SteamLogin.png"/>
+    <img src="/Guides/Installation-and-updates/How-to-install-or-import-a-version/SteamLogin.png"/>
 </div>
 
 [[/Guides/Installation-and-updates/How-to-install-or-import-a-version/SteamLogin.png]]
