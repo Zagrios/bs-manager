@@ -18,10 +18,8 @@
 6. When the download is finished, select the downloaded version and click the **`Launch`** button to verify if the game launches correctly.
 
 <div align="center">
-    [[/Guides/Installation-and-updates/How-to-install-or-import-a-version/SteamLogin.png]]
+    [[/Guides/Installation-and-updates/Install-or-import-a-version/SteamLogin.png]]
 </div>
-
-
 
 ## Install a Version with Oculus Store (PCVR)
 
@@ -38,7 +36,7 @@
 6. When the download is finished, select the downloaded version and click the **`Launch`** button to verify if the game launches correctly.
 
 <div align="center">
-    <img src="../How to install or import a version/OculusLogin.png"/>
+    [[/Guides/Installation-and-updates/Install-or-import-a-version/OculusLogin.png]]
 </div>
 
 ## How to Import a Version
@@ -55,5 +53,5 @@
 5. Wait a few moments. The imported version should appear alongside the others in the version list.
 
 <div align="center">
-  <video src="../How to install or import a version/ImportVersion.mov"/>
+    [[/Guides/Installation-and-updates/Install-or-import-a-version/ImportVersion.mov]]
 </div>
