@@ -7,7 +7,7 @@ BSManager is your all-in-one tool designed to simplify and enhance your Beat Sab
 Our comprehensive guides are crafted to assist you in maximizing BSManager's capabilities:
 
 - **🛠️ Installation and Updates**: Step-by-step instructions to install BSManager on your system and keep it up-to-date.
-    - [Install or import a version](how-to-install-or-import-a-version)
+    - [Install or import a version](/Guides/Installation-and-updates/How-to-install-or-import-a-version/How-to-install-or-import-a-version.md)
     - [Create a shortcut (Windows/Linux/Steam)]()
 - **🔑 Login**: Guidance on logging into BSManager to access all features.
     - [Get your Oculus token]()
