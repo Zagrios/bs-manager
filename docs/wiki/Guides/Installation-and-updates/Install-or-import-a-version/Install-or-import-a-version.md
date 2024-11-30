@@ -53,5 +53,5 @@
 5. Wait a few moments. The imported version should appear alongside the others in the version list.
 
 <div align="center">
-    [![Import a version (video)](https://img.youtube.com/vi/eEVA03hQiJM?si=FIiU7npiBBQOrw_x/0.jpg)](https://www.youtube.com/watch?v=eEVA03hQiJM?si=FIiU7npiBBQOrw_x)
+    (Import Video here "How to Import a Version.mov)
 </div>
