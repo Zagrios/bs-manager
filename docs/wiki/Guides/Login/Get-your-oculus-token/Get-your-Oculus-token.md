@@ -11,6 +11,7 @@
 - [Step 3 - Copy your Token](#step-3---copy-your-token)
 
 ## Step 1 - Install and log into the Oculus Rift app
+
 - Get the Oculus Rift app setup from the [Meta website](https://www.oculus.com/rift/setup/)
 - Install the Oculus Rift app
 
