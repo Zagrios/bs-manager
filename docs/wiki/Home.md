@@ -8,7 +8,7 @@ Our comprehensive guides are crafted to assist you in maximizing [BSManager](htt
 
 - **🛠️ Installation and Updates**: Step-by-step instructions to install [BSManager](https://www.bsmanager.io) on your system and keep it up-to-date.
     - [Install or import a version](install-or-import-a-version)
-    - [Create a shortcut (Windows/Linux/Steam)](Create-a-shortcut-(Windows/Linux/Steam))
+    - [Create a shortcut](Create-a-shortcut)
 - **🔑 Login**: Guidance on logging into [BSManager](https://www.bsmanager.io) to access all features.
     - [Get your Oculus token](Get-your-Oculus-token)
 - **🎮 Content Management**:
