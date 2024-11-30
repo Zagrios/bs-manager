@@ -10,7 +10,7 @@ Our comprehensive guides are crafted to assist you in maximizing BSManager's cap
     - [Install or import a version](install-or-import-a-version)
     - [Create a shortcut](create-a-shortcut)
 - **🔑 Login**: Guidance on logging into BSManager to access all features.
-    - [Get your Oculus token](Get-your-Oculus-token)
+    - [Get your Oculus token](get-your-oculus-token)
 - **🎮 Content Management**:
     - **🗺️ Maps**: Learn how to download and organize custom maps for endless entertainment.
         - [Install any maps](Install-any-maps)
