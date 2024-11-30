@@ -24,7 +24,6 @@ Our comprehensive guides are crafted to assist you in maximizing [BSManager](htt
     - [Contribute to the project](Contribute-to-the-project)
 
 ## 🐞 Troubleshooting
-cdtbtfntf
 
 Our troubleshooting section is here to help you resolve common issues quickly and efficiently:
 
