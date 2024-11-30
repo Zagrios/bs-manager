@@ -13,15 +13,15 @@ Our comprehensive guides are crafted to assist you in maximizing BSManager's cap
     - [Get your Oculus token](get-your-oculus-token)
 - **🎮 Content Management**:
     - **🗺️ Maps**: Learn how to download and organize custom maps for endless entertainment.
-        - [Install any maps](Install-any-maps)
-        - [Install all playlists you want](Install-all-playlists-you-want)
+        - ~~[Install any maps](Install-any-maps)~~
+        - ~~[Install all playlists you want](Install-all-playlists-you-want)~~
     - **🧩 Mods**: Discover how to install, update, and manage mods to enhance your gameplay.
-        - [Install mods on your version](Install-mods-on-your-version)
+        - ~~[Install mods on your version](Install-mods-on-your-version)~~
     - **🖼️ Models**: Find out how to integrate custom models into your Beat Saber experience.
-        - [Modify models in your beat Saber](Modify-models-in-your-beat-saber)
+        - ~~[Modify models in your beat Saber](Modify-models-in-your-beat-saber)~~
 - **🤝 Contribution**: Information on how to contribute to the development and improvement of BSManager.
-    - [Help us to update the wiki](Help-us-to-update-the-wiki)
-    - [Contribute to the project](Contribute-to-the-project)
+    - ~~[Help us to update the wiki](Help-us-to-update-the-wiki)~~
+    - ~~[Contribute to the project](Contribute-to-the-project)~~
 
 ## 🐞 Troubleshooting
 
@@ -34,8 +34,8 @@ Our troubleshooting section is here to help you resolve common issues quickly an
 <!-- - **🎮 Gameplay Issues**: Fixes for issues impacting Beat Saber performance. -->
 
 - **🔍 Debugging Tips**: Steps to gather logs and identify specific issues.
-    - [How to find your logs](How-to-find-your-logs)
-    - [Submitting a bug report](Submitting-a-bug-report)
+    - ~~[How to find your logs](How-to-find-your-logs)~~
+    - ~~[Submitting a bug report](Submitting-a-bug-report)~~
   
 ***
 
