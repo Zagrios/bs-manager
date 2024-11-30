@@ -26,11 +26,11 @@
 
 In the developer tools :
 
-- Open the `Network` tab ***(1)***
-- Filter for `graph` ***(2)***
-- Click on the first request  ***(3)***
-- Open the `Headers` tab ***(4)***
-- Scroll to the bottom to locate your token, it should start with `FRL` ***(5)***
+- Open the `Network` tab
+- Filter for `graph`
+- Click on the first request
+- Open the `Playload` tab
+- Scroll to the bottom to locate your token, it should start with `FRL`
 - Select the token using your mouse and press `Ctrl` + `c` to copy it
 
 <div align="center">
