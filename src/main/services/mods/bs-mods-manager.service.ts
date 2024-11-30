@@ -5,7 +5,6 @@ import { BSLocalVersionService } from "../bs-local-version.service";
 import path from "path";
 import md5File from "md5-file";
 import { RequestService } from "../request.service";
-import { spawn } from "child_process";
 import { BS_EXECUTABLE } from "../../constants";
 import log from "electron-log";
 import { deleteFolder, pathExist, Progression, unlinkPath } from "../../helpers/fs.helpers";
@@ -17,9 +16,9 @@ import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { popElement } from "shared/helpers/array.helpers";
 import { LinuxService } from "../linux.service";
 import { tryit } from "shared/helpers/error.helpers";
-import { UtilsService } from "../utils.service";
 import crypto from "crypto";
 import { BsmZipExtractor } from "main/models/bsm-zip-extractor.class";
+import { bsmSpawn } from "main/helpers/os.helpers";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -28,7 +27,6 @@ export class BsModsManagerService {
     private readonly bsLocalService: BSLocalVersionService;
     private readonly linuxService: LinuxService;
     private readonly requestService: RequestService;
-    private readonly utilsService: UtilsService;
 
     private manifestMatches: Mod[];
 
@@ -44,7 +42,6 @@ export class BsModsManagerService {
         this.bsLocalService = BSLocalVersionService.getInstance();
         this.linuxService = LinuxService.getInstance();
         this.requestService = RequestService.getInstance();
-        this.utilsService = UtilsService.getInstance();
     }
 
     private async getModFromHash(hash: string): Promise<Mod> {
@@ -144,19 +141,28 @@ export class BsModsManagerService {
             return false;
         }
 
-        let cmd = `"${ipaPath}" "${bsExePath}" ${args.join(" ")}`;
+        const cmd = `"${ipaPath}" "${bsExePath}" ${args.join(" ")}`;
+        let winePath: string = "";
         if (process.platform === "linux") {
-            const { error, result: winePath } = tryit(() => this.linuxService.getWinePath());
+            const { error, result } = tryit(() => this.linuxService.getWinePath());
             if (error) {
                 log.error(error);
                 return false;
             }
-            cmd = `"${winePath}" ${cmd}`;
+            winePath = `"${result}"`;
         }
 
         return new Promise<boolean>(resolve => {
             log.info("START IPA PROCESS", cmd);
-            const processIPA = spawn(cmd, { cwd: versionPath, detached: true, shell: true });
+            const processIPA = bsmSpawn(cmd, {
+                log: true,
+                options: {
+                    cwd: versionPath,
+                    detached: true,
+                    shell: true
+                },
+                linux: { prefix: winePath },
+            });
 
             const timeout = setTimeout(() => {
                 log.info("Ipa process timeout");
