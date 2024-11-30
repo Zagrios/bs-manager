@@ -53,5 +53,5 @@
 5. Wait a few moments. The imported version should appear alongside the others in the version list.
 
 <div align="center">
-    (Import Video here "ImportVersion.mov")
+  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/cdedb951-d97a-474d-a217-2422be3919f7" alt="ImportVersion.mov"/>
 </div>
