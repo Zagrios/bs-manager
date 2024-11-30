@@ -1,4 +1,4 @@
-# Summary
+## Summary
 
 - [How to create a shortcut on Windows](#how-to-create-a-shortcut-on-windows)
     - [On desktop](#on-desktop)

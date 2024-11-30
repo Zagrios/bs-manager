@@ -4,7 +4,7 @@
 >
 > However, you might wonder why it is necessary to provide this token to [BSManager](https://www.bsmanager.io). The reason is that [BSManager](https://www.bsmanager.io) requires the token to continue the download with Oculus. Once you've input the token, it is used exclusively to communicate with Oculus servers to verify that you are the rightful owner of the game.
 
-# Summary
+## Summary
 
 - [Step 1 - Install and log into the Oculus Rift app](#step-1---install-and-log-into-the-oculus-rift-app)
 - [Step 2 - Open developer tools](#step-2---open-developer-tools)
