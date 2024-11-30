@@ -22,7 +22,7 @@
 ### On task bar
 
 1. Open notepad and drag&drop the version shortcut you need
-2. Grab the version link *(e.g. bsmanager://launch/?version=1.34.2&versionIno=19140298416807704) -  More info [here](https://discord.com/channels/1049624409276694588/1238363810767835136/1240945451964829747)*
+2. Grab the version link *`(e.g. bsmanager://launch/?version=1.34.2&versionIno=19140298416807704)` -  More info [here](https://discord.com/channels/1049624409276694588/1238363810767835136/1240945451964829747)*
 3. open a new notepad and type
 
 ```bat
