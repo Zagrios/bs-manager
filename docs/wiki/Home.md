@@ -6,12 +6,16 @@ BSManager is your all-in-one tool designed to simplify and enhance your Beat Sab
 
 Our comprehensive guides are crafted to assist you in maximizing BSManager's capabilities:
 
-### 🛠️ Installation and Updates: Step-by-step instructions to install BSManager on your system and keep it up-to-date
+### 🛠️ Installation and Updates: 
+
+Step-by-step instructions to install BSManager on your system and keep it up-to-date
 
 - [Install or import a version](install-or-import-a-version)
 - [Create a shortcut](create-a-shortcut)
 
-### 🔑 Login: Guidance on logging into BSManager to access all features
+### 🔑 Login: 
+
+Guidance on logging into BSManager to access all features
 
 - [Get your Oculus token](get-your-oculus-token)
 
@@ -25,7 +29,9 @@ Our comprehensive guides are crafted to assist you in maximizing BSManager's cap
 - **🖼️ Models**: Find out how to integrate custom models into your Beat Saber experience.
     - ~~[Modify models in your beat Saber](modify-models-in-your-beat-saber)~~
 
-### 🤝 Contribution: Information on how to contribute to the development and improvement of BSManager
+### 🤝 Contribution: 
+
+Information on how to contribute to the development and improvement of BSManager
 
 - ~~[Help us to update the wiki](help-us-to-update-the-wiki)~~
 - ~~[Contribute to the project](contribute-to-the-project)~~
@@ -40,7 +46,9 @@ Our troubleshooting section is here to help you resolve common issues quickly an
 
 <!-- ### 🎮 Gameplay Issues: Fixes for issues impacting Beat Saber performance. -->
 
-### 🔍 Debugging Tips: Steps to gather logs and identify specific issues
+### 🔍 Debugging Tips: 
+
+Steps to gather logs and identify specific issues
 
 - ~~[How to find your logs](How-to-find-your-logs)~~
 - ~~[Submitting a bug report](Submitting-a-bug-report)~~
