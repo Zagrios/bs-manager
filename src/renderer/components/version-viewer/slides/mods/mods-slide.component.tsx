@@ -82,22 +82,77 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         }
         linkOpener.open(moreInfoMod.link);
     };
+    // private isDependency(mod: Mod, selectedMods: Mod[], availableMods: Mod[]) {
+    //     return selectedMods.some(m => {
+    //         const deps = m.dependencies.map(dep => Array.from(availableMods.values()).find(m => dep.name === m.name));
+    //         if (deps.some(depMod => depMod.name === mod.name)) {
+    //             return true;
+    //         }
+    //         return deps.some(depMod => depMod.dependencies.some(depModDep => depModDep.name === mod.name));
+    //     });
+    // }
+
+    // private async resolveDependencies(mods: Mod[], version: BSVersion): Promise<Mod[]> {
+    //     const availableMods = await this.beatModsApi.getVersionMods(version);
+    //     return Array.from(
+    //         new Map<string, Mod>(
+    //             availableMods.reduce((res, mod) => {
+    //                 if (mod.required || this.isDependency(mod, mods, availableMods)) {
+    //                     res.push([mod.name, mod]);
+    //                 }
+    //                 return res;
+    //             }, [])
+    //         ).values()
+    //     );
+    // }
+    const getAllDependencies = (mods: Mod[], availableMods: Mod[]): Mod[] => {
+        const collectedDependencies = new Set<Mod>();
+
+        const collectDependencies = (mod: Mod) => {
+            if (!mod.dependencies) { return; }
+            for (const dependency of mod.dependencies) {
+                const dependencyMod = availableMods.find(avMod => avMod.name === dependency.name);
+                if (dependencyMod && !collectedDependencies.has(dependencyMod)) {
+                    collectedDependencies.add(dependencyMod);
+                    collectDependencies(dependencyMod);
+                }
+            }
+        };
+
+        mods.forEach(collectDependencies);
+
+        availableMods.forEach(mod => {
+            if(mod.required){
+                collectedDependencies.add(mod);
+            }
+        });
+
+        return Array.from(collectedDependencies);
+    };
 
     const installMods = (reinstallAll: boolean): void => {
 
-        setReinstallAllMods(() => false);
+        setReinstallAllMods(false);
 
         if (installing) {
             return;
         }
 
-        const modsToInstall = modsSelected.filter(mod => {
-            const installedMod = modsInstalled.get(mod.category)?.find(installedMod => installedMod.name === mod.name);
+        let modsToInstall = [
+            ...modsSelected,
+            ...getAllDependencies(modsSelected, Array.from(modsAvailable.values()).flat())
+        ]
 
-            if(reinstallAll || !installedMod){ return true; }
+        modsToInstall = reinstallAll ? (
+            modsToInstall // If reinstalling all, we install all selected mods
+        ) : (
+            modsToInstall.filter(mod => { // Else we only install the mods that are not installed or have a newer version
+                const installedMod = modsInstalled.get(mod.category)?.find(installedMod => installedMod.name === mod.name);
+                return !installedMod || lt(installedMod.version, mod.version);
+            })
+        );
 
-            return lt(installedMod.version, mod.version);
-        });
+        modsToInstall = Array.from(new Set(modsToInstall)); // Remove duplicates
 
         if (!modsToInstall.length) {
             notification.notifyInfo({ title: "pages.version-viewer.mods.notifications.all-mods-already-installed.title", desc: "pages.version-viewer.mods.notifications.all-mods-already-installed.description" });
