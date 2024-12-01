@@ -57,6 +57,6 @@ Steps to gather logs and identify specific issues
 
 We are committed to keeping this wiki up-to-date with the latest information and best practices. Your contributions are welcome; please refer to our [Help us to update the wiki](Help-us-to-update-the-wiki) to get started.
 
-For additional support and community interaction, join our [Discord server]().
+For additional support and community interaction, join our [Discord server](https://discord.gg/uSqbHVpKdV).
 
 Thank you for using BSManager!
