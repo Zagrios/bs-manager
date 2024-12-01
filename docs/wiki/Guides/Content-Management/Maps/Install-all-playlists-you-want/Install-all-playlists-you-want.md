@@ -1,4 +1,4 @@
-## Summary
+## Table of content
 
 - [With BSmanager](#with-bsmanager)
 - [Manual installation](#manual-installation)

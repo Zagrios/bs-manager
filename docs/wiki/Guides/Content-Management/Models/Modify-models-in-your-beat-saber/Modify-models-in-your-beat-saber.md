@@ -7,7 +7,7 @@
 > - For custom blocks, use [Custom Notes](https://github.com/legoandmars/BeatSaberCustomNotes) or an equivalent mod.
 > - For custom platforms, use [Custom Platforms](https://github.com/affederaffe/CustomPlatforms) or an equivalent mod.
 
-# Summary
+## Table of content
 
 - [With BSManager](#with-bsmanager)
 - [One-Click Installation](#one-click-installation)
