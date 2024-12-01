@@ -27,7 +27,7 @@ Guidance on logging into BSManager to access all features
 - **🧩 Mods**: Discover how to install, update, and manage mods to enhance your gameplay.
     - [Install mods on your version](install-mods-on-your-version)
 - **🖼️ Models**: Find out how to integrate custom models into your Beat Saber experience.
-    - ~~[Modify models in your beat Saber](modify-models-in-your-beat-saber)~~
+    - [Modify models in your beat Saber](modify-models-in-your-beat-saber)
 
 ### 🤝 Contribution
 
