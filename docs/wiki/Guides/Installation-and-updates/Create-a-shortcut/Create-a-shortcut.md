@@ -39,15 +39,15 @@ start <version link>
 2. Click the gear icon at the top right and select "Create a Shortcut." This will create a shortcut on your desktop for launching the game.
 3. Open Notepad (or any other text editor), and drag and drop the shortcut file into the text editor. You will see a string of text similar to this:
 
-```yaml
-bsmanager://launch/?version=1.29.1&versionIno=3940649674381032
-```
+    ```yaml
+    bsmanager://launch/?version=1.29.1&versionIno=3940649674381032
+    ```
 
 4. Copy this text and remove any spaces.
 
-<div align="center">
-    <img src="../wiki/Guides/Installation-and-updates/Create-a-shortcut/SeeTxtFile.png" alt="SeeTxtFile.png" />
-</div>
+    <div align="center">
+        <img src="../wiki/Guides/Installation-and-updates/Create-a-shortcut/SeeTxtFile.png" alt="SeeTxtFile.png" />
+    </div>
 
 5. Open Steam and add [BSManager](https://www.bsmanager.io) itself as a non-Steam game entry.
 6. In your Steam library, right-click on [BSManager](https://www.bsmanager.io) -> Properties, and add the link from step 4 as a launch parameter.
