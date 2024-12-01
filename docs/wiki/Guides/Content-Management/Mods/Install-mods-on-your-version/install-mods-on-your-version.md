@@ -25,7 +25,7 @@
 4. Installing Different Types of Mods:
     - __For mods that come as a single `.dll` file:__ If the mod consists of a single __`.dll`__ file, simply copy this file into the __`Plugins`__ folder in the directory you opened in step 2.
 
-        > ## 📍 Note
+        > ### 📍 Note
         >
         > Do __not__ place files in __`Beat Saber_Data\Plugins`__. If you do not see a __`Plugins`__ folder directly in the folder you opened in step 2, make sure you have core mods installed and have run your game at least once after installing mods.
     - __For Mods that come as a `.zip` file:__ If the mod includes multiple files or folders, you need to maintain the provided folder structure. Double click the zip file to open it, press __`CTRL+A`__ and then __`CTRL+C`__ to copy all files/folders inside the zip, go to the directory you opened in step 2, and press __`CTRL+V`__ to paste them there. Do __not__ paste them in any subfolder, so do not paste these files in __`Plugins`__ or __`Beat Saber_Data`__. If you are prompted to merge folders or overwrite files, click yes.
