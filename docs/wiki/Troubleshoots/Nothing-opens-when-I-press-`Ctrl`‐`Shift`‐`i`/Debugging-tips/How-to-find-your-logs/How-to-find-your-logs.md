@@ -14,7 +14,7 @@
 5. `Paste` your file in the channel where log files are requested.
 
 <div align="center">
-    <img src="../wiki/Troubleshoots/Debugging tips/How-to-find-your-logs/BSMLogs.png" alt="BSMLogs.png" />
+    <img src="../wiki/Troubleshoots/Debugging-tips/How-to-find-your-logs/BSMLogs.png" alt="BSMLogs.png" />
 </div>
 
 ## Beat Saber (BSIPA) log files
