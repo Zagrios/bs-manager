@@ -5,13 +5,13 @@
 
 ## With BSManager
 
-> 1. Download and install [BSManager](https://www.bsmanager.io) from [GitHub](https://github.com/Zagrios/bs-manager/releases/latest) / [Nexus Mods](https://www.nexusmods.com/beatsaber/mods/18?tab=images) or [Website](https://www.bsmanager.io).
-> 2. Launch [BSManager](https://www.bsmanager.io) and select the version of Beat Saber that you want to use from the list at the left of the interface.
-> 3. Go to  mods by clicking on the __`Mods`__ tab.
-> 4. Find the mods that you want to install from the provided list. You can use the search bar at the top of the interface to filter mods by name.
-> 5. Check the box next to the name of each mod that you want to install.
-> 6. Click __`Install or Update`__ at the bottom right of the interface.
-> 7. Wait for the installation to complete. Once it's finished, you can launch Beat Saber directly from [BSManager](https://www.bsmanager.io) to enjoy your new mods!
+1. Download and install [BSManager](https://www.bsmanager.io) from [GitHub](https://github.com/Zagrios/bs-manager/releases/latest) / [Nexus Mods](https://www.nexusmods.com/beatsaber/mods/18?tab=images) or [Website](https://www.bsmanager.io).
+2. Launch [BSManager](https://www.bsmanager.io) and select the version of Beat Saber that you want to use from the list at the left of the interface.
+3. Go to  mods by clicking on the __`Mods`__ tab.
+4. Find the mods that you want to install from the provided list. You can use the search bar at the top of the interface to filter mods by name.
+5. Check the box next to the name of each mod that you want to install.
+6. Click __`Install or Update`__ at the bottom right of the interface.
+7. Wait for the installation to complete. Once it's finished, you can launch Beat Saber directly from [BSManager](https://www.bsmanager.io) to enjoy your new mods!
 
 ## Manual Installation
 
