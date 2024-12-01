@@ -1,7 +1,7 @@
 ## Summary
 
-- [With BSManager](https://discord.com/channels/1049624409276694588/1240969086180003840/1240969127649218592)
-- [Manual Installation](https://discord.com/channels/1049624409276694588/1240969086180003840/1240969181340631081)
+- [With BSManager](#with-bsmanager)
+- [Manual Installation](#manual-installation)
 
 ## With BSManager
 
