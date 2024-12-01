@@ -14,7 +14,7 @@ Our comprehensive guides are crafted to assist you in maximizing BSManager's cap
 - **🎮 Content Management**:
     - **🗺️ Maps**: Learn how to download and organize custom maps for endless entertainment.
         - [Install any maps](install-any-maps)
-        - ~~[Install all playlists you want](install-all-playlists-you-want)~~
+        - [Install all playlists you want](install-all-playlists-you-want)
     - **🧩 Mods**: Discover how to install, update, and manage mods to enhance your gameplay.
         - ~~[Install mods on your version](install-mods-on-your-version)~~
     - **🖼️ Models**: Find out how to integrate custom models into your Beat Saber experience.
