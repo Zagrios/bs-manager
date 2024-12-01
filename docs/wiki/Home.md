@@ -50,7 +50,7 @@ Our troubleshooting section is here to help you resolve common issues quickly an
 
 Steps to gather logs and identify specific issues
 
-- ~~[How to find your logs](How-to-find-your-logs)~~
+- [How to find your logs](how-to-find-your-logs)
 - [Submitting a bug report](https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&projects=&template=1-bug-report.yaml&title=%5BBUG%5D+%3A+)
   
 ***
