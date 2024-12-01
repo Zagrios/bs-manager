@@ -3,7 +3,6 @@ import { pathExistsSync } from "fs-extra";
 import path from "path";
 import { PROTON_BINARY_PREFIX, WINE_BINARY_PREFIX } from "main/constants";
 import { Observable, Subject } from "rxjs";
-import { BSVersion } from "shared/bs-version.interface";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 
 export class StaticConfigurationService {
@@ -90,7 +89,6 @@ export interface StaticConfigKeyValues {
     "use-symlinks": boolean;
 
     // Linux Specific static configs
-    "versions": BSVersion[];
     "proton-folder": string;
 };
 

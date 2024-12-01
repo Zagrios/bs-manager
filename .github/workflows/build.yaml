@@ -22,10 +22,28 @@ jobs:
             - name: Use Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: 18.x
+                  node-version: 22.11.0
                   cache: "npm"
             - run: npm ci
             - run: npm run package
+
+             # Install and setup Flatpak for Ubuntu
+            - name: Install flatpak packages (Ubuntu only)
+              if: matrix.os == 'ubuntu-latest'
+              run: sudo apt-get install -y flatpak flatpak-builder
+
+            - name: Setup flatpak repo (Ubuntu only)
+              if: matrix.os == 'ubuntu-latest'
+              run: |
+                flatpak remote-add --if-not-exists --user \
+                  flathub https://flathub.org/repo/flathub.flatpakrepo
+
+            # Build Flatpak package
+            - name: Build Flatpak (Ubuntu only)
+              if: matrix.os == 'ubuntu-latest'
+              run: |
+                  env DEBUG="@malept/flatpak-bundler" \
+                  npx electron-builder --config electron-builder.config.js --publish never --linux flatpak
 
             - name: Upload artifact
               uses: actions/upload-artifact@v4

@@ -1,15 +1,20 @@
 import { LaunchOption } from "shared/models/bs-launch";
 import { BSLocalVersionService } from "../bs-local-version.service";
-import { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio, spawn } from "child_process";
+import { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio } from "child_process";
 import path from "path";
 import log from "electron-log";
 import { sToMs } from "../../../shared/helpers/time.helpers";
+import { LinuxService } from "../linux.service";
+import { bsmSpawn } from "main/helpers/os.helpers";
+import { IS_FLATPAK } from "main/constants";
 
 export abstract class AbstractLauncherService {
 
+    protected readonly linux = LinuxService.getInstance();
     protected readonly localVersions = BSLocalVersionService.getInstance();
 
     constructor(){
+        this.linux = LinuxService.getInstance();
         this.localVersions = BSLocalVersionService.getInstance();
     }
 
@@ -47,10 +52,25 @@ export abstract class AbstractLauncherService {
             spawnOptions.windowsVerbatimArguments = true;
         }
 
-        log.info(`Launch BS exe at ${bsExePath} with args ${args?.join(" ")}`);
-
-        return spawn(bsExePath, args, spawnOptions);
-
+        spawnOptions.shell = true; // For windows to spawn properly
+        return bsmSpawn(`"${bsExePath}"`, {
+            args, options: spawnOptions, log: true,
+            linux: { prefix: this.linux.getProtonCommand() },
+            flatpak: {
+                host: IS_FLATPAK,
+                env: [
+                    "SteamAppId",
+                    "SteamOverlayGameId",
+                    "SteamGameId",
+                    "WINEDLLOVERRIDES",
+                    "STEAM_COMPAT_DATA_PATH",
+                    "STEAM_COMPAT_INSTALL_PATH",
+                    "STEAM_COMPAT_CLIENT_INSTALL_PATH",
+                    "STEAM_COMPAT_APP_ID",
+                    "SteamEnv",
+                ],
+            },
+        });
     }
 
     protected launchBs(bsExePath: string, args: string[], options?: SpawnBsProcessOptions): {process: ChildProcessWithoutNullStreams, exit: Promise<number>} {
