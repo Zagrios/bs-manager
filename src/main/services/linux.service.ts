@@ -6,6 +6,7 @@ import { StaticConfigurationService } from "./static-configuration.service";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { BSLaunchError, LaunchOption } from "shared/models/bs-launch";
 import { app } from "electron";
+import config from "../../../electron-builder.config";
 
 export class LinuxService {
     private static instance: LinuxService;
@@ -120,7 +121,7 @@ export class LinuxService {
     public getFlatpakLocalVersionFolder(): string {
         return path.join(
             app.getPath("home"),
-            ".var", "app", "org.erb.BSManager",
+            ".var", "app", config.appId,
             "resources", "assets", "jsons"
         );
     }

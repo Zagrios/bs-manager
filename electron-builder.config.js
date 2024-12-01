@@ -5,7 +5,7 @@ const config = {
         "./assets/proto/song_details_cache_v1.proto"
     ],
     productName: "BSManager",
-    appId: "org.erb.BSManager",
+    appId: "io.bsmanager.bsmanager",
     asarUnpack: "**\\*.{node,dll}",
     files: [
         "dist/**/*",
