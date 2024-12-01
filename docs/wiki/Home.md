@@ -6,7 +6,7 @@ BSManager is your all-in-one tool designed to simplify and enhance your Beat Sab
 
 Our comprehensive guides are crafted to assist you in maximizing BSManager's capabilities:
 
-### 🛠️ Installation and Updates: 
+### 🛠️ Installation and Updates
 
 Step-by-step instructions to install BSManager on your system and keep it up-to-date
 
@@ -29,7 +29,7 @@ Guidance on logging into BSManager to access all features
 - **🖼️ Models**: Find out how to integrate custom models into your Beat Saber experience.
     - ~~[Modify models in your beat Saber](modify-models-in-your-beat-saber)~~
 
-### 🤝 Contribution: 
+### 🤝 Contribution
 
 Information on how to contribute to the development and improvement of BSManager
 
@@ -46,7 +46,7 @@ Our troubleshooting section is here to help you resolve common issues quickly an
 
 <!-- ### 🎮 Gameplay Issues: Fixes for issues impacting Beat Saber performance. -->
 
-### 🔍 Debugging Tips: 
+### 🔍 Debugging Tips
 
 Steps to gather logs and identify specific issues
 
