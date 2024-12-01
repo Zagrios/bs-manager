@@ -13,7 +13,7 @@ Step-by-step instructions to install BSManager on your system and keep it up-to-
 - [Install or import a version](install-or-import-a-version)
 - [Create a shortcut](create-a-shortcut)
 
-### 🔑 Login: 
+### 🔑 Login
 
 Guidance on logging into BSManager to access all features
 
