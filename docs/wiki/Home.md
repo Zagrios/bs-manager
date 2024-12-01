@@ -33,8 +33,8 @@ Guidance on logging into BSManager to access all features
 
 Information on how to contribute to the development and improvement of BSManager
 
-- ~~[Help us to update the wiki](help-us-to-update-the-wiki)~~
-- ~~[Contribute to the project](contribute-to-the-project)~~
+- [Help us to update the wiki](help-us-to-update-the-wiki)
+- [Contribute to the project](https://github.com/Zagrios/bs-manager/blob/master/CONTRIBUTING.md)
 
 ## 🐞 Troubleshooting
 
@@ -51,7 +51,7 @@ Our troubleshooting section is here to help you resolve common issues quickly an
 Steps to gather logs and identify specific issues
 
 - ~~[How to find your logs](How-to-find-your-logs)~~
-- ~~[Submitting a bug report](Submitting-a-bug-report)~~
+- [Submitting a bug report](https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&projects=&template=1-bug-report.yaml&title=%5BBUG%5D+%3A+)
   
 ***
 
