@@ -12,7 +12,6 @@ import { readFileSync } from "fs";
 import { BeatSaverService } from "../thrid-party/beat-saver/beat-saver.service";
 import { copy, copyFile, pathExists, realpath } from "fs-extra";
 import { Progression, ensureFolderExist, pathExist } from "../../helpers/fs.helpers";
-import { IpcService } from "../ipc.service";
 import sanitize from "sanitize-filename";
 
 export class LocalPlaylistsManagerService {
@@ -36,7 +35,6 @@ export class LocalPlaylistsManagerService {
     private readonly deepLink: DeepLinkService;
     private readonly windows: WindowManagerService;
     private readonly bsaver: BeatSaverService;
-    private readonly ipc: IpcService;
 
     private constructor() {
         this.maps = LocalMapsManagerService.getInstance();
@@ -45,13 +43,12 @@ export class LocalPlaylistsManagerService {
         this.deepLink = DeepLinkService.getInstance();
         this.windows = WindowManagerService.getInstance();
         this.bsaver = BeatSaverService.getInstance();
-        this.ipc = IpcService.getInstance();
 
         this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.BeatSaver, link => {
             log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.BeatSaver, link);
             const url = new URL(link);
-            const bplistUrl = url.host === "playlist" ? url.pathname.replace("/", "") : "";
-            this.openOneClickDownloadPlaylistWindow(bplistUrl);
+            const bplistUrl = url.host === "playlist" ? url.pathname.replace("/", "") + url.search : "";
+            this.windows.openWindow(`oneclick-download-playlist.html?playlistUrl=${encodeURIComponent(bplistUrl)}`);
         });
     }
 
@@ -95,10 +92,6 @@ export class LocalPlaylistsManagerService {
         const rawContent = readFileSync(path).toString();
 
         return JSON.parse(rawContent);
-    }
-
-    private openOneClickDownloadPlaylistWindow(downloadUrl: string): void {
-        this.windows.openWindow(`oneclick-download-playlist.html?playlistUrl=${downloadUrl}`);
     }
 
     public downloadPlaylist(bpListUrl: string, version: BSVersion): Observable<Progression<DownloadPlaylistProgressionData>> {
