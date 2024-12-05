@@ -5,8 +5,6 @@ import { BS_APP_ID, IS_FLATPAK, PROTON_BINARY_PREFIX, WINE_BINARY_PREFIX } from 
 import { StaticConfigurationService } from "./static-configuration.service";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { BSLaunchError, LaunchOption } from "shared/models/bs-launch";
-import { app } from "electron";
-import config from "../../../electron-builder.config";
 import { bsmExec } from "main/helpers/os.helpers";
 
 export class LinuxService {

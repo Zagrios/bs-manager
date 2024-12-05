@@ -15,10 +15,10 @@ export class BSVersionLibService {
 
     private static instance: BSVersionLibService;
 
-    private linuxService: LinuxService;
-    private utilsService: UtilsService;
-    private requestService: RequestService;
-    private configService: StaticConfigurationService;
+    private readonly linuxService: LinuxService;
+    private readonly utilsService: UtilsService;
+    private readonly requestService: RequestService;
+    private readonly configService: StaticConfigurationService;
 
     private bsVersions: BSVersion[];
 
@@ -48,7 +48,7 @@ export class BSVersionLibService {
     private async getLocalVersions(): Promise<BSVersion[]> {
         const localVersionsPath = path.join(this.utilsService.getAssestsJsonsPath(), this.VERSIONS_FILE);
 
-        if (!this.shouldLoadFromConfig()) {
+        if (!(await this.shouldLoadFromConfig())) {
             return readJSON(localVersionsPath);
         }
 
@@ -60,7 +60,7 @@ export class BSVersionLibService {
     }
 
     private async updateLocalVersions(versions: BSVersion[]): Promise<void> {
-        if (this.shouldLoadFromConfig()) {
+        if (await this.shouldLoadFromConfig()) {
             this.configService.set("versions", versions);
             return;
         }
