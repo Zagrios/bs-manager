@@ -196,8 +196,14 @@ ifDescribe(IS_LINUX)("Test os.helpers isProcessRunning", () => {
         const running = await isProcessRunning(`bs-manager-${crypto.randomUUID()}`);
         expect(running).toBe(false);
 
-        // No errors received
-        expect(logSpy).toHaveBeenCalledTimes(0);
+        // Throws because grep couldn't find any process with that name
+        expect(logSpy).toHaveBeenCalledTimes(1);
     });
+
+    it("Empty process name", async () => {
+        const running = await isProcessRunning("");
+        expect(running).toBe(false);
+        expect(logSpy).toHaveBeenCalledTimes(0);
+    })
 });
 
