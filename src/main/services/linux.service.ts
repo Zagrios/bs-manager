@@ -1,12 +1,13 @@
 import fs from "fs-extra";
 import log from "electron-log";
 import path from "path";
-import { BS_APP_ID, PROTON_BINARY_PREFIX, WINE_BINARY_PREFIX } from "main/constants";
+import { BS_APP_ID, IS_FLATPAK, PROTON_BINARY_PREFIX, WINE_BINARY_PREFIX } from "main/constants";
 import { StaticConfigurationService } from "./static-configuration.service";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { BSLaunchError, LaunchOption } from "shared/models/bs-launch";
 import { app } from "electron";
 import config from "../../../electron-builder.config";
+import { bsmExec } from "main/helpers/os.helpers";
 
 export class LinuxService {
     private static instance: LinuxService;
@@ -19,7 +20,9 @@ export class LinuxService {
     }
 
     private readonly staticConfig: StaticConfigurationService;
-    private protonCommand = "";
+    private protonPrefix = "";
+
+    private nixOS: boolean | undefined;
 
     private constructor() {
         this.staticConfig = StaticConfigurationService.getInstance();
@@ -27,7 +30,7 @@ export class LinuxService {
 
     // === Launching === //
 
-    public setupLaunch(
+    public async setupLaunch(
         launchOptions: LaunchOption,
         steamPath: string,
         bsFolderPath: string,
@@ -64,7 +67,10 @@ export class LinuxService {
                 BSLaunchError.PROTON_NOT_FOUND
             );
         }
-        this.protonCommand = `"${protonPath}" run`;
+
+        this.protonPrefix = await this.isNixOS()
+            ? `steam-run "${protonPath}" run`
+            : `"${protonPath}" run`;
 
         // Setup Proton environment variables
         Object.assign(env, {
@@ -111,9 +117,9 @@ export class LinuxService {
         return winePath;
     }
 
-    public getProtonCommand(): string {
+    public getProtonPrefix(): string {
         // Set in setupLaunch
-        return this.protonCommand;
+        return this.protonPrefix;
     }
 
     // === Flatpak Specific === //
@@ -126,4 +132,24 @@ export class LinuxService {
         );
     }
 
+    // === NixOS Specific === //
+
+    private async isNixOS(): Promise<boolean> {
+        if (this.nixOS !== undefined) {
+            return this.nixOS;
+        }
+
+        try {
+            await bsmExec("nixos-version", {
+                log: true,
+                flatpak: { host: IS_FLATPAK },
+            });
+            this.nixOS = true;
+        } catch (error) {
+            log.info("Not NixOS", error);
+            this.nixOS = false;
+        }
+
+        return this.nixOS;
+    }
 }

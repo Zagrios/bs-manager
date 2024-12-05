@@ -106,7 +106,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
 
             // Linux setup
             if (process.platform === "linux") {
-                this.linux.setupLaunch(launchOptions, steamPath, bsFolderPath, env);
+                await this.linux.setupLaunch(launchOptions, steamPath, bsFolderPath, env);
             }
 
             obs.next({type: BSLaunchEvent.BS_LAUNCHING});
