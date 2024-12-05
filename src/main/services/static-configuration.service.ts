@@ -4,6 +4,7 @@ import path from "path";
 import { PROTON_BINARY_PREFIX, WINE_BINARY_PREFIX } from "main/constants";
 import { Observable, Subject } from "rxjs";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
+import { BSVersion } from "shared/bs-version.interface";
 
 export class StaticConfigurationService {
     private static instance: StaticConfigurationService;
@@ -90,6 +91,7 @@ export interface StaticConfigKeyValues {
 
     // Linux Specific static configs
     "proton-folder": string;
+    "versions": BSVersion[];
 };
 
 export type StaticConfigKeys = keyof StaticConfigKeyValues;

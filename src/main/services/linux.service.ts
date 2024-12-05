@@ -122,19 +122,9 @@ export class LinuxService {
         return this.protonPrefix;
     }
 
-    // === Flatpak Specific === //
-
-    public getFlatpakLocalVersionFolder(): string {
-        return path.join(
-            app.getPath("home"),
-            ".var", "app", config.appId,
-            "resources", "assets", "jsons"
-        );
-    }
-
     // === NixOS Specific === //
 
-    private async isNixOS(): Promise<boolean> {
+    public async isNixOS(): Promise<boolean> {
         if (this.nixOS !== undefined) {
             return this.nixOS;
         }

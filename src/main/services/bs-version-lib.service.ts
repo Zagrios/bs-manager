@@ -3,10 +3,11 @@ import path from "path";
 import { writeFileSync } from "fs";
 import { BSVersion } from "shared/bs-version.interface";
 import { RequestService } from "./request.service";
-import { pathExistsSync, readJSON } from "fs-extra";
+import { readJSON } from "fs-extra";
 import { allSettled } from "../../shared/helpers/promise.helpers";
 import { LinuxService } from "./linux.service";
 import { IS_FLATPAK } from "main/constants";
+import { StaticConfigurationService } from "./static-configuration.service";
 
 export class BSVersionLibService {
     private readonly REMOTE_BS_VERSIONS_URL: string = "https://raw.githubusercontent.com/Zagrios/bs-manager/master/assets/jsons/bs-versions.json";
@@ -17,6 +18,7 @@ export class BSVersionLibService {
     private linuxService: LinuxService;
     private utilsService: UtilsService;
     private requestService: RequestService;
+    private configService: StaticConfigurationService;
 
     private bsVersions: BSVersion[];
 
@@ -24,6 +26,7 @@ export class BSVersionLibService {
         this.linuxService = LinuxService.getInstance();
         this.utilsService = UtilsService.getInstance();
         this.requestService = RequestService.getInstance();
+        this.configService = StaticConfigurationService.getInstance();
     }
 
     public static getInstance(): BSVersionLibService {
@@ -37,25 +40,32 @@ export class BSVersionLibService {
         return this.requestService.getJSON<BSVersion[]>(this.REMOTE_BS_VERSIONS_URL).then(res => res.data);
     }
 
+    private async shouldLoadFromConfig(): Promise<boolean> {
+        // Some special cases of readonly memory installations
+        return IS_FLATPAK || this.linuxService.isNixOS();
+    }
+
     private async getLocalVersions(): Promise<BSVersion[]> {
-        if (IS_FLATPAK) {
-            const flatpakVersionsPath = path.join(this.linuxService.getFlatpakLocalVersionFolder(), this.VERSIONS_FILE);
-            if (pathExistsSync(flatpakVersionsPath)) {
-                return readJSON(flatpakVersionsPath);
-            }
+        const localVersionsPath = path.join(this.utilsService.getAssestsJsonsPath(), this.VERSIONS_FILE);
+
+        if (!this.shouldLoadFromConfig()) {
+            return readJSON(localVersionsPath);
         }
 
-        const localVersionsPath = path.join(this.utilsService.getAssestsJsonsPath(), this.VERSIONS_FILE);
-        return readJSON(localVersionsPath);
+        let versions = this.configService.get("versions");
+        if (!versions) {
+            versions = await readJSON(localVersionsPath)
+        }
+        return versions;
     }
 
     private async updateLocalVersions(versions: BSVersion[]): Promise<void> {
-        const localVersionsPath = path.join(
-            IS_FLATPAK
-                ? this.linuxService.getFlatpakLocalVersionFolder()
-                : this.utilsService.getAssestsJsonsPath(),
-            this.VERSIONS_FILE
-        );
+        if (this.shouldLoadFromConfig()) {
+            this.configService.set("versions", versions);
+            return;
+        }
+
+        const localVersionsPath = path.join(this.utilsService.getAssestsJsonsPath(), this.VERSIONS_FILE);
         writeFileSync(localVersionsPath, JSON.stringify(versions, null, "\t"), { encoding: "utf-8", flag: "w" });
     }
 
