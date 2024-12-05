@@ -21,4 +21,5 @@ export const HTTP_STATUS_CODES = constants;
 
 export const PROTON_BINARY_PREFIX = "proton";
 export const WINE_BINARY_PREFIX = path.join("files", "bin", "wine64");
+export const IS_FLATPAK = process.env.container === "flatpak";
 

@@ -5,7 +5,7 @@ import { readFile } from "fs/promises";
 import { pathExist } from "../helpers/fs.helpers";
 import log from "electron-log";
 import { app, shell } from "electron";
-import { getProcessPid, taskRunning } from "../helpers/os.helpers";
+import { getProcessId, isProcessRunning } from "main/helpers/os.helpers";
 import { isElevated } from "query-process";
 import { execOnOs } from "../helpers/env.helpers";
 
@@ -15,7 +15,7 @@ export class SteamService {
 
     private static readonly PROCESS_NAME: string = process.platform === "linux"
         ? "steam-runtime-launcher-service"
-        : "steam";
+        : "steam.exe";
 
     private static instance: SteamService;
 
@@ -37,15 +37,15 @@ export class SteamService {
         return registryValue.value;
     }
 
-    public async steamRunning(): Promise<boolean>{
-        const steamProcessRunning = await taskRunning(SteamService.PROCESS_NAME);
+    public async isSteamRunning(): Promise<boolean>{
+        const steamProcessRunning = await isProcessRunning(SteamService.PROCESS_NAME);
         if(process.platform === "linux") { return steamProcessRunning; }
         const activeUser = await this.getActiveUser().catch(err => log.error(err));
         return steamProcessRunning && !!activeUser;
     }
 
     public async getSteamPid(): Promise<number>{
-        return getProcessPid(SteamService.PROCESS_NAME);
+        return getProcessId(SteamService.PROCESS_NAME);
     }
 
     /**
@@ -123,7 +123,7 @@ export class SteamService {
         return new Promise((resolve, reject) => {
             // Every 3 seconds check if steam is running
             const interval = setInterval(() => {
-                const steamRunning = this.steamRunning().catch(() => false);
+                const steamRunning = this.isSteamRunning().catch(() => false);
                 steamRunning.then(running => {
                     if(!running){ return; }
                     clearInterval(interval);
