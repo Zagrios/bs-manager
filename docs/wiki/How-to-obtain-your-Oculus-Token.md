@@ -21,7 +21,7 @@ In the developer tools :
 - Filter for `graph`
 - Click on the first request
 - Open the `Payload` tab
-- Scroll to the bottom to locate your token, it should start with `FRL`
+- Locate your token, it should start with `FRL`
 - Select the token using your mouse and press <kbd>Ctrl</kbd> + <kbd>c</kbd> to copy it
 
 ![image](https://raw.githubusercontent.com/Zagrios/bs-manager/refs/heads/master/docs/assets/oculus-token.png)
