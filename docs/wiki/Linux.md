@@ -2,7 +2,7 @@
 
 ## Installation
 
-Go to [Releases](https://github.com/Zagrios/bs-manager/releases) page and go to the latest release. Download the necessary build installer for your distro (see below).
+Go to [Releases](https://github.com/Zagrios/bs-manager/releases) page and go to the latest alpha release (version 1.5.0-alpha.5 or higher). Download the necessary build installer for your distro (see below).
 
 ### Ubuntu, Debian (deb)
 
