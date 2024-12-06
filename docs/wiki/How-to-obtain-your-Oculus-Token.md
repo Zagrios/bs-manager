@@ -24,7 +24,7 @@ In the developer tools :
 - Scroll to the bottom to locate your token, it should start with `FRL`
 - Select the token using your mouse and press <kbd>Ctrl</kbd> + <kbd>c</kbd> to copy it
 
-![image](../assets/oculus-token.png)
+![image](https://raw.githubusercontent.com/Zagrios/bs-manager/refs/heads/master/docs/assets/oculus-token.png)
 
 # Known bugs
 - ⁠[Nothing opens when I press `Ctrl`+`Shift`+`i`.](https://github.com/Zagrios/bs-manager/wiki/Nothing-opens-when-I-press-%60Ctrl%60%E2%80%90%60Shift%60%E2%80%90%60i%60.)﻿﻿
