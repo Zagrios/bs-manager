@@ -42,7 +42,9 @@
                 "advanced-launch": {
                     "button": "高级启动",
                     "placeholder": "额外启动参数，例如: --revert; --nowait"
-                }
+                },
+                "skipsteam": "跳过 Steam",
+                "skipsteam-description": "防止 Steam 与 Beat Saber 自动打开，如果您使用的是其他 VR 运行时，如 WiVRn 或 Monado，SteamVR 可能会干扰，请启用此选项。"
             },
             "maps": {
                 "search-bar": {
@@ -434,11 +436,13 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "启动中...🚀",
-                    "STEAM_LAUNCHING": "Steam 正在启动！"
+                    "STEAM_LAUNCHING": "Steam 正在启动！",
+                    "SKIPPING_STEAM_LAUNCH": "跳过 Steam 启动"
                 },
                 "msg": {
                     "BS_LAUNCHING": "别忘了热身哦 😉",
-                    "STEAM_LAUNCHING": "Beat Saber 会在 Steam 启动后自动启动。"
+                    "STEAM_LAUNCHING": "Beat Saber 会在 Steam 启动后自动启动。",
+                    "SKIPPING_STEAM_LAUNCH": "希望你知道自己在做什么 :)"
                 }
             },
             "errors": {

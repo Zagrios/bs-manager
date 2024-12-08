@@ -52,7 +52,9 @@
                         "export-maps": "Exportar mapas",
                         "delete-maps": "Borrar mapas",
                         "delete-duplicate-maps": "Borrar duplicados"
-                    }
+                    },
+                    "skipsteam": "Saltar Steam",
+                    "skipsteam-description": "Evita que Steam se abra automáticamente con Beat Saber, habilita esto si estás usando un runtime de VR diferente como WiVRn o Monado que SteamVR podría interferir."
                 },
                 "tabs": {
                     "maps": {
@@ -434,11 +436,13 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "Lanzamiento...🚀",
-                    "STEAM_LAUNCHING": "¡Steam se está iniciando!"
+                    "STEAM_LAUNCHING": "¡Steam se está iniciando!",
+                    "SKIPPING_STEAM_LAUNCH": "Saltando el lanzamiento de Steam"
                 },
                 "msg": {
                     "BS_LAUNCHING": "No olvides calentar 😉",
-                    "STEAM_LAUNCHING": "Beat Saber se iniciará automáticamente después de Steam."
+                    "STEAM_LAUNCHING": "Beat Saber se iniciará automáticamente después de Steam.",
+                    "SKIPPING_STEAM_LAUNCH": "Espero que sepas lo que estás haciendo :)"
                 }
             },
             "errors": {

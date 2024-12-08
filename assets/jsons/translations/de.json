@@ -42,7 +42,9 @@
                 "advanced-launch": {
                     "button": "Erweiterter Start",
                     "placeholder": "Weitere Argumente, bspw: --revert; --nowait"
-                }
+                },
+                "skipsteam": "Steam überspringen",
+                "skipsteam-description": "Verhindert, dass Steam automatisch mit Beat Saber geöffnet wird. Aktivieren Sie dies, wenn Sie eine andere VR-Laufzeit wie WiVRn oder Monado verwenden, mit der SteamVR interferieren könnte."
             },
             "maps": {
                 "search-bar": {
@@ -434,11 +436,13 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "Starte... 🚀",
-                    "STEAM_LAUNCHING": "Steam startet!"
+                    "STEAM_LAUNCHING": "Steam startet!",
+                    "SKIPPING_STEAM_LAUNCH": "Steam-Start überspringen"
                 },
                 "msg": {
                     "BS_LAUNCHING": "Vergiss nicht, dich aufzuwärmen 😉",
-                    "STEAM_LAUNCHING": "Beat Saber wird automatisch nach Steam gestartet."
+                    "STEAM_LAUNCHING": "Beat Saber wird automatisch nach Steam gestartet.",
+                    "SKIPPING_STEAM_LAUNCH": "Ich hoffe, du weißt, was du tust :)"
                 }
             },
             "errors": {

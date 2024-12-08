@@ -42,7 +42,9 @@
                 "advanced-launch": {
                     "button": "Расширенный запуск",
                     "placeholder": "Параметры запуска, например: --revert; --nowait"
-                }
+                },
+                "skipsteam": "Пропустить Steam",
+                "skipsteam-description": "Предотвращает автоматическое открытие Steam с Beat Saber, включите, если вы используете другую VR-среду, такую как WiVRn или Monado, с которой SteamVR может мешать."
             },
             "maps": {
                 "search-bar": {
@@ -434,11 +436,13 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "Запуск...🚀",
-                    "STEAM_LAUNCHING": "Steam запускается!"
+                    "STEAM_LAUNCHING": "Steam запускается!",
+                    "SKIPPING_STEAM_LAUNCH": "Пропуск запуска Steam"
                 },
                 "msg": {
                     "BS_LAUNCHING": "Не забудьте разогреться 😉",
-                    "STEAM_LAUNCHING": "Beat Saber запустится сам после Steam."
+                    "STEAM_LAUNCHING": "Beat Saber запустится сам после Steam.",
+                    "SKIPPING_STEAM_LAUNCH": "Надеюсь, вы знаете, что делаете :)"
                 }
             },
             "errors": {

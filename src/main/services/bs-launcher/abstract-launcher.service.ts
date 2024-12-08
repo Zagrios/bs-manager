@@ -37,6 +37,9 @@ export abstract class AbstractLauncherService {
         if (launchOptions.additionalArgs) {
             launchArgs.push(...launchOptions.additionalArgs);
         }
+        if (launchOptions.launchVR) {
+            launchArgs.push(...launchOptions.launchVR);
+        }
 
         return Array.from(new Set(launchArgs).values());
     }
