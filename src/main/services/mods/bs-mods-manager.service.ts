@@ -11,7 +11,7 @@ import { deleteFolder, pathExist, Progression, unlinkPath } from "../../helpers/
 import { lastValueFrom, Observable } from "rxjs";
 import recursiveReadDir from "recursive-readdir";
 import { sToMs } from "../../../shared/helpers/time.helpers";
-import { copyFile, pathExistsSync } from "fs-extra";
+import { copyFile, ensureDir, pathExistsSync } from "fs-extra";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { popElement } from "shared/helpers/array.helpers";
 import { LinuxService } from "../linux.service";
@@ -325,9 +325,13 @@ export class BsModsManagerService {
         const extensionName = path.extname(modPath).toLowerCase();
 
         if (extensionName === ".dll") {
-            log.info("Copying", `${modPath}`, "to", `"${destination}"`);
-            const filename = path.basename(modPath, ".dll");
-            const copied = await copyFile(modPath, path.join(destination, filename))
+            const filename = path.basename(modPath);
+            // Defaultly copy the ".dll" to the "IPA/Pending/Plugins" folder
+            const fileFolder = path.join(destination, ModsInstallFolder.PLUGINS);
+
+            log.info("Copying", `${modPath}`, "to", `"${fileFolder}"`);
+            await ensureDir(fileFolder);
+            const copied = await copyFile(modPath, path.join(fileFolder, filename))
                 .then(() => true)
                 .catch(error => {
                     log.warn("Could not copy", `"${modPath}"`, error);
@@ -397,7 +401,6 @@ export class BsModsManagerService {
                     if (modFiles.length > 0) {
                         ++modsInstalledCount;
                         modFilesCount += modFiles.length;
-                        log.info(modFiles);
 
                         externalMod.name = path.basename(modPath, path.extname(modPath));
                         externalMod.files = modFiles;
