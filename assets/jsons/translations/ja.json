@@ -106,6 +106,7 @@
                         "latest": "最新",
                         "description": "說明",
                         "dropdown": {
+                            "import-mods": "モッドをインポート",
                             "uninstall-all": "全てアンインストールする",
                             "unselect-all": "すべて選択解除"
                         }
@@ -116,6 +117,10 @@
                         "title": "すでにインストール済みのMOD",
                         "description": "選択したすべてのMODはすでにインストールされています"
                     }
+                },
+                "drop-zone": {
+                    "text": "モッドをインポートする",
+                    "subtext": "「zip」または「dll」ファイルをここにドロップしてインポートする"
                 }
             },
             "dropdown": {
@@ -525,6 +530,17 @@
                     "errors": {
                         "no-mods": "このバージョンのModはインストールされていません 😑"
                     }
+                }
+            },
+            "import-mod": {
+                "titles": {
+                    "success": "モッドのインポートが完了しました",
+                    "error": "モッドのインポート中にエラーが発生しました"
+                },
+                "msgs": {
+                    "success": "モッドが正常にインポートされました。",
+                    "some-success": "一部のモッドが正常にインポートされました。",
+                    "no-dlls": "ファイルに \"dll\" ファイルが含まれていません。"
                 }
             }
         },

@@ -106,6 +106,7 @@
                         "latest": "Récent",
                         "description": "Description",
                         "dropdown": {
+                            "import-mods": "Importer des mods",
                             "uninstall-all": "Tout désinstaller",
                             "unselect-all": "Tout désélectionner"
                         }
@@ -116,6 +117,10 @@
                         "title": "Mods déjà installées",
                         "description": "Tous les mods séléctionnées sont déjà installées"
                     }
+                },
+                "drop-zone": {
+                    "text": "Importez vos mods",
+                    "subtext": "Déposez vos fichiers \"zip\" ou \"dll\" ici pour les importer"
                 }
             },
             "dropdown": {
@@ -525,6 +530,17 @@
                     "errors": {
                         "no-mods": "Aucun mod n'est installé dans dans cette version 😑"
                     }
+                }
+            },
+            "import-mod": {
+                "titles": {
+                    "success": "Importation des mods terminée",
+                    "error": "Une erreur est survenue lors de l'importation des mods"
+                },
+                "msgs": {
+                    "success": "Mods importés avec succès.",
+                    "some-success": "Certains mods ont été importés avec succès.",
+                    "no-dlls": "Le(s) fichier(s) ne contient(ent) aucun fichier \"dll\"."
                 }
             }
         },

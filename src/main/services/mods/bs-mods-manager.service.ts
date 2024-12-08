@@ -11,7 +11,7 @@ import { deleteFolder, pathExist, Progression, unlinkPath } from "../../helpers/
 import { lastValueFrom, Observable } from "rxjs";
 import recursiveReadDir from "recursive-readdir";
 import { sToMs } from "../../../shared/helpers/time.helpers";
-import { pathExistsSync } from "fs-extra";
+import { copyFile, ensureDir, pathExistsSync } from "fs-extra";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { popElement } from "shared/helpers/array.helpers";
 import { LinuxService } from "../linux.service";
@@ -19,6 +19,7 @@ import { tryit } from "shared/helpers/error.helpers";
 import crypto from "crypto";
 import { BsmZipExtractor } from "main/models/bsm-zip-extractor.class";
 import { bsmSpawn } from "main/helpers/os.helpers";
+import { ExternalMod } from "shared/models/mods/mod.interface";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -318,6 +319,108 @@ export class BsModsManagerService {
         }
 
         return Array.from(modsDict.values());
+    }
+
+    private async importMod(modPath: string, destination: string): Promise<string[]> {
+        const extensionName = path.extname(modPath).toLowerCase();
+
+        if (extensionName === ".dll") {
+            const filename = path.basename(modPath);
+            // Defaultly copy the ".dll" to the "IPA/Pending/Plugins" folder
+            const fileFolder = path.join(destination, ModsInstallFolder.PLUGINS);
+
+            log.info("Copying", `${modPath}`, "to", `"${fileFolder}"`);
+            await ensureDir(fileFolder);
+            const copied = await copyFile(modPath, path.join(fileFolder, filename))
+                .then(() => true)
+                .catch(error => {
+                    log.warn("Could not copy", `"${modPath}"`, error);
+                    return false;
+                });
+            return copied ? [ filename ] : [];
+        }
+
+        if (extensionName !== ".zip") {
+            log.warn("Mod file is not a dll or zip file");
+            return [];
+        }
+
+        log.info("Extracting", `"${modPath}"`, "to", `"${destination}"`);
+        const zip = await BsmZipExtractor.fromPath(modPath);
+
+        try {
+            const dll = await zip.findEntry(entry => entry.fileName.endsWith(".dll"));
+
+            if (!dll) {
+                log.warn("No \"dll\" found in zip", modPath);
+                return [];
+            }
+
+            return await zip.extract(destination);
+        } catch (error) {
+            log.warn("Could not extract", `"${modPath}"`, error);
+            return [];
+        } finally {
+            zip.close();
+        }
+    }
+
+    public importMods(paths: string[], version: BSVersion): Observable<Progression<ExternalMod>> {
+        return new Observable<Progression<ExternalMod>>(obs => {
+            const progress: Progression<ExternalMod> = { total: 0, current: 0 };
+            const externalMod: ExternalMod = {
+                name: "",
+                files: [],
+            };
+            let modsInstalledCount = 0;
+            let modFilesCount = 0;
+            const abortController = new AbortController();
+
+            (async () => {
+                const versionPath = await this.bsLocalService.getVersionPath(version);
+                const modsPendingFolder = path.join(versionPath, ModsInstallFolder.PENDING);
+
+                for (const modPath of paths) {
+                    if (abortController.signal?.aborted) {
+                        log.info("Mods import has been cancelled");
+                        return;
+                    }
+
+                    progress.total = paths.length;
+                    obs.next(progress);
+
+                    if (!pathExistsSync(modPath)) { continue; }
+
+                    const modFiles = await this.importMod(modPath, modsPendingFolder);
+                    if (modFiles.length > 0) {
+                        ++modsInstalledCount;
+                        modFilesCount += modFiles.length;
+
+                        externalMod.name = path.basename(modPath, path.extname(modPath));
+                        externalMod.files = modFiles;
+                        progress.data = externalMod;
+                    } else {
+                        progress.data = undefined;
+                    }
+                    ++progress.current;
+                    obs.next(progress);
+                }
+            })()
+              .then(() => {
+                  if (modsInstalledCount === 0) {
+                      throw new CustomError("No \"dll\" found in any of the files dropped", "no-dlls");
+                  }
+                  log.info("Successfully imported", modsInstalledCount, "mods from", paths.length, "files paths. Total files/folders added", modFilesCount);
+              })
+              .catch(error => {
+                  obs.error(error);
+              })
+              .finally(() => obs.complete());
+
+            return () => {
+                abortController.abort();
+            }
+        });
     }
 
     public installMods(mods: Mod[], version: BSVersion): Observable<Progression> {

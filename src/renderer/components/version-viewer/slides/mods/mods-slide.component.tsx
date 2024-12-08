@@ -21,9 +21,12 @@ import { useService } from "renderer/hooks/use-service.hook";
 import { NotificationService } from "renderer/services/notification.service";
 import { noop } from "shared/helpers/function.helpers";
 import { UninstallAllModsModal } from "renderer/components/modal/modal-types/uninstall-all-mods-modal.component";
+import { Dropzone } from "renderer/components/shared/dropzone.component";
 
 export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion; onDisclamerDecline: () => void }) {
     const ACCEPTED_DISCLAIMER_KEY = "accepted-mods-disclaimer";
+
+    const t = useTranslation();
 
     const modsManager = useService(BsModsManagerService);
     const configService = useService(ConfigurationService);
@@ -42,6 +45,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
     const isOnline = useObservable(() => os.isOnline$);
     const [installing, setInstalling] = useState(false);
     const [uninstalling, setUninstalling] = useState(false);
+    const [modsDropZoneOpen, setModsDropZoneOpen] = useState(false);
 
     const downloadRef = useRef(null);
     const [downloadWith, setDownloadWidth] = useState(0);
@@ -166,6 +170,11 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         }).catch(noop).finally(() => setInstalling(() => false));
     };
 
+    const importMods = (files: string[]): void => {
+        setModsDropZoneOpen(false);
+        modsManager.importMods(files, version);
+    };
+
     const uninstallMod = (mod: Mod): void => {
         setUninstalling(() => true);
         lastValueFrom(modsManager.uninstallMod(mod, version)).catch(noop).finally(() => {
@@ -192,7 +201,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         setModsSelected(() => []);
     }
 
-    const loadMods = (): Promise<void> => {
+    const loadMods = async (): Promise<void> => {
         if (os.isOffline) {
             return Promise.resolve();
         }
@@ -265,6 +274,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
                 </ModStatus>
             );
         }
+
         return (
             <>
                 <div className="grow overflow-y-scroll w-full min-h-0 scrollbar-default p-0 m-0">
@@ -279,6 +289,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
                         uninstallMod={uninstallMod}
                         uninstallAllMods={uninstallAllMods}
                         unselectAllMods={unselectAllMods}
+                        openModsDropZone={() => setModsDropZoneOpen(true)}
                     />
                 </div>
                 <div className="shrink-0 flex items-center justify-between px-3 py-2">
@@ -297,7 +308,23 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
 
     return (
         <div ref={ref} className="shrink-0 w-full h-full px-8 pb-7 flex justify-center">
-            <div className="relative flex flex-col grow-0 bg-light-main-color-2 dark:bg-main-color-2 size-full rounded-md shadow-black shadow-center overflow-hidden">{renderContent()}</div>
+            <Dropzone
+                className="w-full h-full shrink-0"
+                onFiles={importMods}
+                text={t("pages.version-viewer.mods.drop-zone.text")}
+                subtext={t("pages.version-viewer.mods.drop-zone.subtext")}
+                open={modsDropZoneOpen}
+                onClose={modsDropZoneOpen ? () => setModsDropZoneOpen(false) : undefined}
+                filters={[
+                    { name: ".zip", extensions: ["zip"] },
+                    { name: ".dll", extensions: ["dll"] }
+                ]}
+                dialogOptions={{ dialog: {
+                    properties: ["openFile", "multiSelections"],
+                }}}
+            >
+                <div className="relative flex flex-col grow-0 bg-light-main-color-2 dark:bg-main-color-2 size-full rounded-md shadow-black shadow-center overflow-hidden">{renderContent()}</div>
+            </Dropzone>
         </div>
     );
 }
