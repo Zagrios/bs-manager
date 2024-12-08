@@ -349,15 +349,9 @@ export class BsModsManagerService {
         const zip = await BsmZipExtractor.fromPath(modPath);
 
         try {
-            let hasDll = false;
-            for await (const entry of zip.entries()) {
-                if (entry.fileName.endsWith(".dll")) {
-                    hasDll = true;
-                    break;
-                }
-            }
+            const dll = await zip.findEntry(entry => entry.fileName.endsWith(".dll"));
 
-            if (!hasDll) {
+            if (!dll) {
                 log.warn("No \"dll\" found in zip", modPath);
                 return [];
             }
