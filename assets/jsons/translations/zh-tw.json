@@ -106,6 +106,7 @@
                         "latest": "最新",
                         "description": "描述",
                         "dropdown": {
+                            "import-mods": "導入模組",
                             "uninstall-all": "全部移除",
                             "unselect-all": "取消全選"
                         }

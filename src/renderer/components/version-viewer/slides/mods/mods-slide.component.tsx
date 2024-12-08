@@ -45,6 +45,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
     const isOnline = useObservable(() => os.isOnline$);
     const [installing, setInstalling] = useState(false);
     const [uninstalling, setUninstalling] = useState(false);
+    const [modsDropZoneOpen, setModsDropZoneOpen] = useState(false);
 
     const downloadRef = useRef(null);
     const [downloadWith, setDownloadWidth] = useState(0);
@@ -170,6 +171,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
     };
 
     const importMods = (files: string[]): void => {
+        setModsDropZoneOpen(false);
         modsManager.importMods(files, version);
     };
 
@@ -287,6 +289,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
                         uninstallMod={uninstallMod}
                         uninstallAllMods={uninstallAllMods}
                         unselectAllMods={unselectAllMods}
+                        openModsDropZone={() => setModsDropZoneOpen(true)}
                     />
                 </div>
                 <div className="shrink-0 flex items-center justify-between px-3 py-2">
@@ -310,10 +313,15 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
                 onFiles={importMods}
                 text={t("pages.version-viewer.mods.drop-zone.text")}
                 subtext={t("pages.version-viewer.mods.drop-zone.subtext")}
+                open={modsDropZoneOpen}
+                onClose={modsDropZoneOpen ? () => setModsDropZoneOpen(false) : undefined}
                 filters={[
                     { name: ".zip", extensions: ["zip"] },
                     { name: ".dll", extensions: ["dll"] }
                 ]}
+                dialogOptions={{ dialog: {
+                    properties: ["openFile", "multiSelections"],
+                }}}
             >
                 <div className="relative flex flex-col grow-0 bg-light-main-color-2 dark:bg-main-color-2 size-full rounded-md shadow-black shadow-center overflow-hidden">{renderContent()}</div>
             </Dropzone>

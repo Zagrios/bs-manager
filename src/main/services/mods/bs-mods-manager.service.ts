@@ -375,6 +375,7 @@ export class BsModsManagerService {
                 files: [],
             };
             let modsInstalledCount = 0;
+            let modFilesCount = 0;
             const abortController = new AbortController();
 
             (async () => {
@@ -395,6 +396,8 @@ export class BsModsManagerService {
                     const modFiles = await this.importMod(modPath, modsPendingFolder);
                     if (modFiles.length > 0) {
                         ++modsInstalledCount;
+                        modFilesCount += modFiles.length;
+                        log.info(modFiles);
 
                         externalMod.name = path.basename(modPath, path.extname(modPath));
                         externalMod.files = modFiles;
@@ -410,7 +413,7 @@ export class BsModsManagerService {
                   if (modsInstalledCount === 0) {
                       throw new CustomError("No \"dll\" found in any of the files dropped", "no-dlls");
                   }
-                  log.info("Successfully imported", modsInstalledCount, "mods from", paths.length, "files");
+                  log.info("Successfully imported", modsInstalledCount, "mods from", paths.length, "files paths. Total files/folders added", modFilesCount);
               })
               .catch(error => {
                   obs.error(error);

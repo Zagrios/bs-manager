@@ -106,6 +106,7 @@
                         "latest": "Latest",
                         "description": "Описание",
                         "dropdown": {
+                            "import-mods": "Импортировать моды",
                             "uninstall-all": "Удалить всё",
                             "unselect-all": "Снять все выделения"
                         }

@@ -106,6 +106,7 @@
                         "latest": "Récent",
                         "description": "Description",
                         "dropdown": {
+                            "import-mods": "Importer des mods",
                             "uninstall-all": "Tout désinstaller",
                             "unselect-all": "Tout désélectionner"
                         }
