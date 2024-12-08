@@ -3,9 +3,6 @@ import log from "electron-log";
 import psList from "ps-list";
 import { IS_FLATPAK } from "main/constants";
 
-// There are 2 erroneous lines ps | grep which is both the ps and grep calls themselves
-const MIN_PROCESS_COUNT_LINUX = 2;
-
 type LinuxOptions = {
     // Add the prefix to the command
     //   eg. command - "./Beat Saber.exe" --no-yeet, prefix - "path/to/proton" run
@@ -101,14 +98,24 @@ export function bsmExec(command: string, options?: BsmExecOptions): Promise<{
     });
 }
 
+// Transform command from "steam" to "[s]team"
+// NOTE: Can add an option to isProcessRunning/getProcessId to ignore this transformation
+//   in the future if needed
+const transformProcessNameForPS = (name: string) => `[${name.at(0)}]${name.substring(1)}`;
+
 async function isProcessRunningLinux(name: string): Promise<boolean> {
+    if (!name) {
+        return false;
+    }
+
     try {
-        const { stdout: count } = await bsmExec(`ps awwxo args | grep -c "${name}"`, {
+        const processName = transformProcessNameForPS(name);
+        const { stdout: count } = await bsmExec(`ps awwxo args | grep -c "${processName}"`, {
             log: true,
             flatpak: { host: IS_FLATPAK },
         });
 
-        return +count.trim() > MIN_PROCESS_COUNT_LINUX;
+        return +count.trim() > 0;
     } catch(error) {
         log.error(error);
         return false;
@@ -143,14 +150,22 @@ async function isProcessRunningWindows(name: string): Promise<boolean> {
 }
 
 async function getProcessIdLinux(name: string): Promise<number | null> {
+    if (!name) {
+        return null;
+    }
+
     try {
-        const { stdout } = await bsmExec(`ps awwxo pid,args | grep "${name}"`, {
+        const processName = transformProcessNameForPS(name);
+        const { stdout } = await bsmExec(`ps awwxo pid,args | grep "${processName}"`, {
             log: true,
             flatpak: { host: IS_FLATPAK },
         });
 
+        if (!stdout) {
+            return null;
+        }
+
         const line = stdout.split("\n")
-            .slice(0, -MIN_PROCESS_COUNT_LINUX)
             .map(line => line.trimStart())
             .find(line => line.includes(name) && !line.includes("grep"));
         return line ? +line.split(" ").at(0) : null;
