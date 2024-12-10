@@ -21,6 +21,9 @@
         "warning": "경고",
         "continue": "계속"
     },
+    "title-bar": {
+        "outdated": "구식"
+    },
     "nav-bar": {
         "add-version": "버전 추가",
         "settings": "설정",

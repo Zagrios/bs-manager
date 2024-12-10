@@ -11,12 +11,12 @@ import "./title-bar.component.css";
 import { useService } from "renderer/hooks/use-service.hook";
 import { lastValueFrom } from "rxjs";
 import { useWindowControls } from "renderer/hooks/use-window-controls.hook";
+import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 
-function TitleBarTags({
-    ipcService
-}: Readonly<{
-    ipcService: IpcService
-}>) {
+function TitleBarTags() {
+    const ipcService = useService(IpcService);
+    const t = useTranslationV2();
+
     const [previewVersion, setPreviewVersion] = useState("");
     const [outdated, setOutdated] = useState(false);
 
@@ -50,15 +50,14 @@ function TitleBarTags({
             </span>
         }
         {outdated &&
-            <span className="bg-main-color-1 text-white dark:text-black dark:bg-white rounded-full ml-1 text-[10px] italic px-1 uppercase h-3.5 font-bold">
-                Outdated
+            <span className="bg-warning-500 text-black rounded-full ml-1 text-[10px] italic px-1 uppercase h-3.5 font-bold">
+                {t.text("title-bar.outdated")}
             </span>
         }
     </>;
 }
 
 export default function TitleBar({ template = "index.html" }: { template: AppWindow }) {
-    const ipcService = useService(IpcService);
     const audio = useService(AudioPlayerService);
     const windowControls = useWindowControls();
 
@@ -108,7 +107,7 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
                 <div id="drag-region" className="grow basis-0 h-full">
                     <div id="window-title" className="pl-1">
                         <span className="text-gray-800 dark:text-gray-100 font-bold text-xs italic">BSManager</span>
-                        <TitleBarTags ipcService={ipcService} />
+                        <TitleBarTags />
                     </div>
                 </div>
                 <div id="window-controls" className="h-full flex shrink-0 items-center">
