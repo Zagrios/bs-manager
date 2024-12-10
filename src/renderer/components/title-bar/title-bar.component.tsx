@@ -12,6 +12,51 @@ import { useService } from "renderer/hooks/use-service.hook";
 import { lastValueFrom } from "rxjs";
 import { useWindowControls } from "renderer/hooks/use-window-controls.hook";
 
+function TitleBarTags({
+    ipcService
+}: Readonly<{
+    ipcService: IpcService
+}>) {
+    const [previewVersion, setPreviewVersion] = useState("");
+    const [outdated, setOutdated] = useState(false);
+
+    useEffect(() => {
+        const requests: Promise<any>[] = [
+            lastValueFrom(ipcService.sendV2("current-version"))
+        ];
+        if (window.electron.platform === "linux") {
+            requests.push(lastValueFrom(ipcService.sendV2("check-update")));
+        }
+
+        Promise.all(requests).then(([ currentVersion, outdated ]) => {
+            handlePrerelease(currentVersion);
+            setOutdated(outdated);
+        });
+    }, []);
+
+    const handlePrerelease = (version: string) => {
+        if (version.toLowerCase().includes("alpha")) {
+            return setPreviewVersion("ALPHA");
+        }
+        if (version.toLowerCase().includes("beta")) {
+            return setPreviewVersion("BETA");
+        }
+    }
+
+    return <>
+        {previewVersion &&
+            <span className="bg-main-color-1 text-white dark:text-black dark:bg-white rounded-full ml-1 text-[10px] italic px-1 uppercase h-3.5 font-bold">
+                {previewVersion}
+            </span>
+        }
+        {outdated &&
+            <span className="bg-main-color-1 text-white dark:text-black dark:bg-white rounded-full ml-1 text-[10px] italic px-1 uppercase h-3.5 font-bold">
+                Outdated
+            </span>
+        }
+    </>;
+}
+
 export default function TitleBar({ template = "index.html" }: { template: AppWindow }) {
     const ipcService = useService(IpcService);
     const audio = useService(AudioPlayerService);
@@ -19,19 +64,6 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
 
     const volume = useObservable(() => audio.volume$, audio.volume);
     const color = useThemeColor("first-color");
-
-    const [previewVersion, setPreviewVersion] = useState(null);
-
-    useEffect(() => {
-        lastValueFrom(ipcService.sendV2("current-version")).then(version => {
-            if (version.toLowerCase().includes("alpha")) {
-                return setPreviewVersion("ALPHA");
-            }
-            if (version.toLowerCase().includes("beta")) {
-                return setPreviewVersion("BETA");
-            }
-        });
-    }, []);
 
     const [maximized, setMaximized] = useState(false);
 
@@ -76,7 +108,7 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
                 <div id="drag-region" className="grow basis-0 h-full">
                     <div id="window-title" className="pl-1">
                         <span className="text-gray-800 dark:text-gray-100 font-bold text-xs italic">BSManager</span>
-                        {previewVersion && <span className="bg-main-color-1 text-white dark:text-black dark:bg-white rounded-full ml-1 text-[10px] italic px-1 uppercase h-3.5 font-bold">{previewVersion}</span>}
+                        <TitleBarTags ipcService={ipcService} />
                     </div>
                 </div>
                 <div id="window-controls" className="h-full flex shrink-0 items-center">

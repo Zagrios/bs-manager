@@ -69,7 +69,7 @@ const installExtensions = async () => {
         .catch(log.error);
 };
 
-const createWindow = async (window: AppWindow = "launcher.html") => {
+const createWindow = async (window: AppWindow) => {
     if (isDebug) {
         await installExtensions();
     }
@@ -131,7 +131,9 @@ if (!gotTheLock) {
         } else if (associatedFile) {
             FileAssociationService.getInstance().handleFileAssociation(associatedFile);
         } else {
-            createWindow();
+            createWindow(process.platform === "linux"
+                ? "index.html" : "launcher.html"
+            );
         }
 
         SteamLauncherService.getInstance().restoreSteamVR();
