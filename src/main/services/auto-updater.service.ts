@@ -19,10 +19,16 @@ export class AutoUpdaterService {
         autoUpdater.autoDownload = false;
     }
 
-    public isUpdateAvailable(): Promise<boolean> {
-        return autoUpdater.checkForUpdates().then(info => {
-            return !!info?.updateInfo && gt(info.updateInfo.version, autoUpdater.currentVersion.version);
-        }).catch(() => false);
+    public async isUpdateAvailable(): Promise<boolean> {
+        return autoUpdater.checkForUpdates()
+            .then(info => {
+                return !!info?.updateInfo && gt(
+                info.updateInfo.version, autoUpdater.currentVersion.version
+            )})
+            .catch(error => {
+                log.error("Could not get update", error);
+                return false;
+            });
     }
 
     public downloadUpdate(): Observable<Progression> {
