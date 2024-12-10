@@ -41,8 +41,8 @@ function updateCommand(command: string, options: BsmSpawnOptions) {
 
     if (process.platform === "linux") {
         // "/bin/sh" does not see flatpak-spawn
-        // Most Debian and Arch should also support "/bin/bash"
-        options.options.shell = "/bin/bash";
+        // All distros should support "bash" by default
+        options.options.shell = "bash";
 
         if (options.linux?.prefix) {
             command = `${options.linux.prefix} ${command}`;
