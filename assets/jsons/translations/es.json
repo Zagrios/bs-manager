@@ -21,6 +21,9 @@
         "warning": "Advertencia",
         "continue": "Continuar"
     },
+    "title-bar": {
+        "outdated": "obsoleto"
+    },
     "nav-bar": {
         "add-version": "Agregar una versión",
         "settings": "Ajustes",

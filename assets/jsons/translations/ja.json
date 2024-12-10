@@ -21,6 +21,9 @@
         "warning": "警告",
         "continue": "続ける"
     },
+    "title-bar": {
+        "outdated": "時代遅れ"
+    },
     "nav-bar": {
         "add-version": "バージョンを追加",
         "settings": "設定",

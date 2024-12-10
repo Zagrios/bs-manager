@@ -21,6 +21,9 @@
         "warning": "Внимание",
         "continue": "Продолжить"
     },
+    "title-bar": {
+        "outdated": "устаревший"
+    },
     "nav-bar": {
         "add-version": "Добавить версию игры",
         "settings": "Настройки",

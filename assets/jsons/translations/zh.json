@@ -21,6 +21,9 @@
         "warning": "警告",
         "continue": "继续"
     },
+    "title-bar": {
+        "outdated": "过时"
+    },
     "nav-bar": {
         "add-version": "添加版本",
         "settings": "设置",
