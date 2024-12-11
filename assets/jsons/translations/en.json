@@ -604,7 +604,7 @@
             },
             "adding-error": {
                 "title": "Adding shared folder failed",
-                "msg": "You can't add \"{folder}\" to shared folders"
+                "msg": "You can't add \"{folder}\" to shared folders."
             }
         },
         "create-launch-shortcut": {
@@ -811,7 +811,7 @@
         },
         "adding-shared-folder": {
             "title": "Adding Shared Folder",
-            "description": "Are you sure you want to add \"{folder}\" to shared folder?"
+            "description": "You might experience issues when linking the \"{folder}\" folder. Are you sure you want to add it?"
         },
         "create-launch-shortcut": {
             "title": "Create a shortcut",

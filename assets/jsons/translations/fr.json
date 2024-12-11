@@ -601,6 +601,10 @@
                     "ENOSPC": "Le disque est plein, faites de la place et réessayez.",
                     "UNKNOWN_ERROR": "Une erreur inconnue est survenue lors de la liaison du dossier."
                 }
+            },
+            "adding-error": {
+                "title": "L'ajout du dossier partagé a échoué",
+                "msg": "Vous ne pouvez pas ajouter \"{folder}\" aux dossiers partagés."
             }
 
         },
@@ -805,6 +809,10 @@
                 "unlink-folder": "Délier le dossier",
                 "link-all": "Tout lier"
             }
+        },
+        "adding-shared-folder": {
+            "title": "Ajout d'un dossier partagé",
+            "description": "Vous pourriez rencontrer des problèmes lors de la liaison du dossier \"{folder}\". Êtes-vous sûr de vouloir l'ajouter ?"
         },
         "create-launch-shortcut": {
             "title": "Créer un raccourci",
