@@ -241,8 +241,8 @@ export function SettingsPage() {
             body: "pages.settings.advanced.hardware-acceleration.modal.body",
             image: BeatConflict,
             buttons: [
-                { id: "cancel", text: "misc.cancel", type: "cancel", isCancel: true },
-                { id: "confirm", text: "pages.settings.advanced.hardware-acceleration.modal.confirm-btn", type: "error" }
+                { id: "cancel", text: "misc.cancel", type: "cancel" },
+                { id: "confirm", text: "pages.settings.advanced.hardware-acceleration.modal.confirm-btn", type: "error", onClick: () => true },
             ]
         }});
 
@@ -275,8 +275,8 @@ export function SettingsPage() {
                 body: "pages.settings.advanced.use-symlinks.modal.body",
                 image: BeatConflict,
                 buttons: [
-                    { id: "cancel", text: "misc.cancel", type: "cancel", isCancel: true },
-                    { id: "confirm", text: "pages.settings.advanced.use-symlinks.modal.confirm-btn", type: "error" }
+                    { id: "cancel", text: "misc.cancel", type: "cancel" },
+                    { id: "confirm", text: "pages.settings.advanced.use-symlinks.modal.confirm-btn", type: "error", onClick: () => true }
                 ]
             }});
 

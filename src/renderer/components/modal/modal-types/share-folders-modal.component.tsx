@@ -6,30 +6,32 @@ import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useService } from "renderer/hooks/use-service.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
-import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { IpcService } from "renderer/services/ipc.service";
-import { ModalComponent } from "renderer/services/modale.service";
+import { ModalComponent, ModalService } from "renderer/services/modale.service";
 import { FolderLinkState, VersionFolderLinkerService, VersionLinkerActionType } from "renderer/services/version-folder-linker.service";
 import { lastValueFrom } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
+import { SHARED_FOLDER_BLACKLIST } from "renderer/config/default-configuration.config";
+import { NotificationService } from "renderer/services/notification.service";
+import { BasicModal } from "../basic-modal.component";
+import BeatConflict from "../../../../../assets/images/apngs/beat-conflict.png";
 
-export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ options: {data} }) => {
-    const SHARED_FOLDERS_KEY = "default-shared-folders";
+const SHARED_FOLDERS_KEY = "default-shared-folders";
 
+export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ options: { data: version } }) => {
     const config = useService(ConfigurationService);
-    const ipc = useService(IpcService);
     const linker = useService(VersionFolderLinkerService);
-    const versionManager = useService(BSVersionManagerService);
 
-    const t = useTranslation();
+    const t = useTranslationV2();
 
     const [folders, setFolders] = useState<string[]>(Array.from(new Set([...config.get<string[]>(SHARED_FOLDERS_KEY)]).values()));
 
     useEffect(() => {
         linker
-            .getLinkedFolders(data, { relative: true })
+            .getLinkedFolders(version, { relative: true })
             .toPromise()
             .then(linkedFolders => {
                 setFolders(prev => Array.from(new Set([...prev, ...linkedFolders]).values()));
@@ -45,42 +47,24 @@ export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ options: {d
         config.set(SHARED_FOLDERS_KEY, folders);
     }, [folders]);
 
-    const addFolder = async () => {
-        const versionPath = await lastValueFrom(versionManager.getVersionPath(data));
-        const folder = await lastValueFrom(ipc.sendV2("choose-folder", {
-            defaultPath: versionPath
-        }));
-
-        if (!folder || folder.canceled || !folder.filePaths?.length) {
-            return;
-        }
-
-        const relativeFolder = await lastValueFrom(ipc.sendV2("full-version-path-to-relative", { version: data, fullPath: folder.filePaths[0] }));
-
-        if (folders.includes(relativeFolder)) {
-            return;
-        }
-
-        setFolders(pre => [...pre, relativeFolder]);
-    };
 
     const removeFolder = (index: number) => {
         setFolders(prev => prev.filter((_, i) => i !== index));
     };
 
     const linkAll = () => {
-        folders.forEach(relativeFolder => linker.linkVersionFolder({ version: data, relativeFolder, type: VersionLinkerActionType.Link }));
+        folders.forEach(relativeFolder => linker.linkVersionFolder({ version, relativeFolder, type: VersionLinkerActionType.Link }));
     };
 
     return (
         <form className="w-full max-w-md ">
-            <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t("modals.shared-folders.title")}</h1>
-            <p className="my-3">{t("modals.shared-folders.description")}</p>
+            <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t.text("modals.shared-folders.title")}</h1>
+            <p className="my-3">{t.text("modals.shared-folders.description")}</p>
             <ul className="flex flex-col gap-1 mb-2 h-[300px] max-h-[300px] overflow-scroll scrollbar-default px-1">
                 {folders.map((folder, index) => (
                     <FolderItem
                         key={folder}
-                        version={data}
+                        version={version}
                         relativeFolder={folder}
                         onDelete={() => {
                             removeFolder(index);
@@ -89,12 +73,92 @@ export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ options: {d
                 ))}
             </ul>
             <div className="grid grid-flow-col gap-3 grid-cols-2">
-                <BsmButton icon="add" className="h-8 rounded-md flex justify-center items-center font-bold bg-light-main-color-1 dark:bg-main-color-1" iconClassName="h-6 aspect-square text-current" onClick={addFolder} withBar={false} text="modals.shared-folders.buttons.add-folder" />
+                <AddFolderButton
+                    version={version}
+                    folders={folders}
+                    setFolders={setFolders}
+                />
                 <BsmButton icon="link" className="h-8 rounded-md flex justify-center items-center font-bold" typeColor="primary" iconClassName="h-6 aspect-square text-current -rotate-45" onClick={linkAll} withBar={false} text="modals.shared-folders.buttons.link-all" />
             </div>
         </form>
     );
 };
+
+function AddFolderButton({
+    version,
+    folders,
+    setFolders,
+}: Readonly<{
+    version: BSVersion;
+    folders: string[];
+    setFolders: (value: string[]) => void;
+}>) {
+    const config = useService(ConfigurationService);
+    const ipc = useService(IpcService);
+    const versionManager = useService(BSVersionManagerService);
+    const notification = useService(NotificationService);
+    const modal = useService(ModalService);
+
+    const t = useTranslationV2();
+
+    const addFolder = async () => {
+        const versionPath = await lastValueFrom(versionManager.getVersionPath(version));
+        const folder = await lastValueFrom(ipc.sendV2("choose-folder", {
+            defaultPath: versionPath
+        }));
+
+        if (!folder || folder.canceled || !folder.filePaths?.length) {
+            return;
+        }
+
+        const relativeFolder = await lastValueFrom(ipc.sendV2("full-version-path-to-relative", { version, fullPath: folder.filePaths[0] }));
+        if (folders.includes(relativeFolder)) {
+            return;
+        }
+
+        if (SHARED_FOLDER_BLACKLIST.error.includes(relativeFolder)) {
+            notification.notifyError({
+                title: "notifications.shared-folder.adding-error.title",
+                desc: t.text("notifications.shared-folder.adding-error.msg", {
+                    folder: relativeFolder
+                }),
+            });
+            return;
+        }
+
+        if (SHARED_FOLDER_BLACKLIST.warn.includes(relativeFolder)) {
+            await modal.openModal(BasicModal, { data: {
+                title: "modals.adding-shared-folder.title",
+                body: t.text("modals.adding-shared-folder.description", {
+                    folder: relativeFolder
+                }),
+                image: BeatConflict,
+                buttons: [
+                    { id: "cancel", text: "misc.cancel", type: "cancel" },
+                    {
+                        id: "confirm", text: "misc.confirm", type: "primary",
+                        onClick() {
+                            config.set(SHARED_FOLDERS_KEY, [...folders, relativeFolder]);
+                            return true;
+                        },
+                    }
+                ]
+            }});
+            return;
+        }
+
+        setFolders([...folders, relativeFolder]);
+    };
+
+    return <BsmButton
+        icon="add"
+        className="h-8 rounded-md flex justify-center items-center font-bold bg-light-main-color-1 dark:bg-main-color-1"
+        iconClassName="h-6 aspect-square text-current"
+        onClick={addFolder}
+        withBar={false}
+        text="modals.shared-folders.buttons.add-folder"
+    />;
+}
 
 // -------- FOLDER ITEM --------
 
@@ -107,7 +171,7 @@ type FolderProps = {
 const FolderItem = ({ version, relativeFolder, onDelete }: FolderProps) => {
     const linker = useService(VersionFolderLinkerService);
 
-    const t = useTranslation();
+    const t = useTranslationV2();
 
     const color = useThemeColor("first-color");
     const state = useObservable(() => linker.$folderLinkedState(version, relativeFolder), FolderLinkState.Unlinked, [version, relativeFolder]);
@@ -139,7 +203,7 @@ const FolderItem = ({ version, relativeFolder, onDelete }: FolderProps) => {
                 {name}
             </span>
             <div className="flex flex-row gap-1.5">
-                <Tippy placement="left" content={t(`modals.shared-folders.buttons.${state === FolderLinkState.Linked ? "unlink-folder" : "link-folder"}`)} arrow={false}>
+                <Tippy placement="left" content={t.text(`modals.shared-folders.buttons.${state === FolderLinkState.Linked ? "unlink-folder" : "link-folder"}`)} arrow={false}>
                     <LinkButton
                         className="p-0.5 h-7 shrink-0 aspect-square blur-0 cursor-pointer hover:brightness-75"
                         state={state}
