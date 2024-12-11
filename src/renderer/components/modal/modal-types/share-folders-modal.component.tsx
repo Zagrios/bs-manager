@@ -14,12 +14,25 @@ import { ModalComponent, ModalService } from "renderer/services/modale.service";
 import { FolderLinkState, VersionFolderLinkerService, VersionLinkerActionType } from "renderer/services/version-folder-linker.service";
 import { lastValueFrom } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
-import { SHARED_FOLDER_BLACKLIST } from "renderer/config/default-configuration.config";
 import { NotificationService } from "renderer/services/notification.service";
 import { BasicModal } from "../basic-modal.component";
 import BeatConflict from "../../../../../assets/images/apngs/beat-conflict.png";
 
 const SHARED_FOLDERS_KEY = "default-shared-folders";
+const SHARED_FOLDER_BLACKLIST = {
+    error: [
+        ".DepotDownloader",
+        "Beat Saber_Data",
+        "IPA",
+        "Libs",
+        "Plugins",
+        "MonoBleedingEdge",
+    ],
+    warn: [
+        "DLC",
+        "Logs",
+    ],
+};
 
 export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ options: { data: version } }) => {
     const config = useService(ConfigurationService);

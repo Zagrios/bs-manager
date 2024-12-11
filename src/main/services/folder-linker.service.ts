@@ -21,19 +21,24 @@ export class FolderLinkerService {
     private readonly installLocationService = InstallationLocationService.getInstance();
     private readonly staticConfig: StaticConfigurationService;
 
-    private linkingType: "junction" | "symlink" = "junction";
+    // Only Windows support "junction", this is disregarded in other os'es
+    private linkingType: "junction" | "symlink" =
+        process.platform === "win32" ? "junction" : "symlink";
 
     private constructor() {
         this.installLocationService = InstallationLocationService.getInstance();
         this.staticConfig = StaticConfigurationService.getInstance();
 
-        this.linkingType = this.staticConfig.get("use-symlinks") === true ? "symlink" : "junction";
-        log.info(`Linking type is set to ${this.linkingType}`);
+        if (process.platform === "win32") {
+            // Only Windows support "junction", this is disregarded in other os'es
+            this.linkingType = this.staticConfig.get("use-symlinks") === true ? "symlink" : "junction";
+            log.info(`Linking type is set to ${this.linkingType}`);
 
-        this.staticConfig.$watch("use-symlinks").subscribe((useSymlink) => {
-            this.linkingType = useSymlink === true ? "symlink" : "junction";
-            log.info(`Linking type set to ${this.linkingType}`);
-        });
+            this.staticConfig.$watch("use-symlinks").subscribe((useSymlink) => {
+                this.linkingType = useSymlink === true ? "symlink" : "junction";
+                log.info(`Linking type set to ${this.linkingType}`);
+            });
+        }
     }
 
     private async sharedFolder(): Promise<string> {

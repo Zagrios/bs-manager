@@ -35,18 +35,3 @@ export const defaultConfiguration: {
 
 export type ThemeConfig = "dark" | "light" | "os";
 
-export const SHARED_FOLDER_BLACKLIST = {
-    error: [
-        ".DepotDownloader",
-        "Beat Saber_Data",
-        "IPA",
-        "Libs",
-        "Plugins",
-        "MonoBleedingEdge",
-    ],
-    warn: [
-        "DLC",
-        "Logs",
-    ],
-};
-
