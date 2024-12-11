@@ -3,7 +3,7 @@ import { webUtils } from "electron";
 declare global {
     interface Window {
         electron: {
-            platform: "win32"|"linux"|"darwin",
+            platform: "win32" | "linux",
             ipcRenderer: {
                 sendMessage(channel: string, args: any): void;
                 on(channel: string, func: (...args: any) => void): (() => void) | undefined;
