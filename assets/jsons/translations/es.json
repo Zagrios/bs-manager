@@ -601,6 +601,10 @@
                     "ENOSPC": "El disco está lleno, libera espacio e inténtalo de nuevo.",
                     "UNKNOWN_ERROR": "Se ha producido un error desconocido al enlazar la carpeta."
                 }
+            },
+            "adding-error": {
+                "title": "Error al agregar una carpeta compartida",
+                "msg": "No puedes agregar \"{folder}\" a las carpetas compartidas."
             }
         },
         "create-launch-shortcut": {
@@ -804,6 +808,10 @@
                 "unlink-folder": "Desenlazar Carpeta",
                 "link-all": "Enlazar todo"
             }
+        },
+        "adding-shared-folder": {
+            "title": "Agregar una carpeta compartida",
+            "description": "Es posible que experimentes problemas al vincular la carpeta \"{folder}\". ¿Estás seguro de que deseas agregarla?"
         },
         "create-launch-shortcut": {
             "title": "Crear un atajo",

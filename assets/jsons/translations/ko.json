@@ -601,6 +601,10 @@
                     "ENOSPC": "디스크가 가득 찼습니다. 공간을 확보하고 다시 시도하세요.",
                     "UNKNOWN_ERROR": "폴더를 연결하는 중 알 수 없는 오류가 발생했습니다."
                 }
+            },
+            "adding-error": {
+                "title": "공유 폴더 추가에 실패했습니다.",
+                "msg": "공유 폴더에 「{folder}」을 추가할 수 없습니다."
             }
         },
         "create-launch-shortcut": {
@@ -804,6 +808,10 @@
                 "unlink-folder": "폴더 연결 해제",
                 "link-all": "모두 연결"
             }
+        },
+        "adding-shared-folder": {
+            "title": "공유 폴더 추가",
+            "description": "「{folder}」폴더를 연결할 때 문제가 발생할 수 있습니다. 정말 추가하시겠습니까?"
         },
         "create-launcher-shortcut": {
             "title": "런처 바로가기 만들기",
