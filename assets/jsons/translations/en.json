@@ -8,6 +8,10 @@
         "maps": "Maps",
         "playlists": "Playlists",
         "models": "Models",
+        "avatars": "Avatars",
+        "sabers": "Sabers",
+        "platforms": "Platforms",
+        "blocks": "Blocks",
         "cancel": "Cancel",
         "delete": "Delete",
         "accept": "Accept",
@@ -19,7 +23,8 @@
         "choose-folder": "Choose folder",
         "unknown": "An unknown error occurred ¯\\_(ツ)_/¯",
         "warning": "Warning",
-        "continue": "Continue"
+        "continue": "Continue",
+        "shared": "Shared"
     },
     "title-bar": {
         "outdated": "outdated"
@@ -755,31 +760,24 @@
                         "multiple": "These maps will also be removed from versions using shared maps"
                     }
                 }
-            },
-            "link-maps": {
-                "title": "Link maps",
-                "desc": "Linking maps allows sharing maps between all versions with this feature enabled. Once linked, this version will benefit from shared maps.",
-                "info": "Adding and deleting maps will also be shared",
-                "keep-maps": {
-                    "label": "Keep maps",
-                    "title": "Keeping maps will copy all maps from the current version to the shared maps folder. Otherwise, no maps will be kept from this version and they will be lost."
-                },
-                "valid-btn": "Link maps"
-            },
-            "unlink-maps": {
-                "title": "Unlink maps",
-                "desc": "Be careful, unlinking maps will disable the use of shared maps for this version, until it is reenabled.",
-                "keep-maps": {
-                    "label": "Keep maps",
-                    "title": "Keeping maps will copy all maps from the shared folder to the current version after unlinking. Maps will not be lost if this is disabled."
-                },
-                "valid-btn": "Unlink maps"
-            },
-            "delete-duplicate-maps": {
-                "title": "Delete maps?",
-                "desc": "Only the map \"{map}\" is a duplicate. Are you sure you want to delete it?",
-                "desc-plural": "{nb} duplicate maps have been found. Are you sure you want to delete them?"
             }
+        },
+        "link-contents":{
+            "title": "Link {contentType}",
+            "p-1": "Linking {contentType} allows sharing {contentType} between all versions with this feature enabled. Once linked, this version will benefit from shared {contentType}.",
+            "p-2": "In order to enjoy the linking feature, all your {itemsHtml} will be moved to the {sharedHtml} folder. After that, a symbolic link pointing to the shared {contentType} folder will replace your original {contentType} folder.",
+            "warning": "Please note that any changes affecting {contentType} will also affect all versions with this feature enabled.",
+            "what-is-a-symbolic-link": "What is a symbolic link?",
+            "i-need-help": "I need help",
+            "valid-btn": "Link {contentType}"
+        },
+        "unlink-contents":{
+            "title": "Unlink {contentType}",
+            "p-1": "Be careful, unlinking {contentType} will disable the use of shared {contentType} for this version, until it is reenabled.",
+            "p-2": "In order to unlink your maps, the symbolic link pointing to the {sharedHtml} will be removed. After that, all maps in the shared folder will be copied to the {itemsHtml} folder of your Beat Saber version.",
+            "do-not-copy-contents": "Do not copy {contentType}",
+            "do-not-copy-contents-tip": "If enabled, {contentType} in the shared folder will not be copied to your Beat Saber version. As a result, no {contentType} will remain in your Beat Saber version after unlinking.",
+            "valid-btn": "Unlink {contentType}"
         },
         "download-maps": {
             "search-btn": "Search",
@@ -1027,86 +1025,6 @@
                 "no-models": "No models found.",
                 "no-internet": "No internet connection.",
                 "error-occured": "An error occurred, try again later."
-            },
-            "link-models": {
-                "avatar": {
-                    "title": "Link Avatars",
-                    "desc": "Linking avatars allows sharing avatars between all versions with this feature enabled. Once linked, this version will benefit from shared avatars.",
-                    "info": "Adding and deleting avatars will also be shared",
-                    "keep-models": {
-                        "label": "Keep Avatars",
-                        "title": "Keeping avatars will copy all avatars from the current version to the shared avatars folder. Otherwise, no avatars will be kept from this version and they will be lost."
-                    },
-                    "valid-btn": "Link Avatars"
-                },
-                "saber": {
-                    "title": "Link Sabers",
-                    "desc": "Linking sabers allows sharing sabers between all versions with this feature enabled. Once linked, this version will benefit from shared sabers.",
-                    "info": "Adding and deleting sabers will also be shared",
-                    "keep-models": {
-                        "label": "Keep Sabers",
-                        "title": "Keeping sabers will copy all sabers from the current version to the shared sabers folder. Otherwise, no sabers will be kept from this version and they will be lost."
-                    },
-                    "valid-btn": "Link Sabers"
-                },
-                "platform": {
-                    "title": "Link Platforms",
-                    "desc": "Linking platforms allows sharing platforms between all versions with this feature enabled. Once linked, this version will benefit from shared platforms.",
-                    "info": "Adding and deleting platforms will also be shared",
-                    "keep-models": {
-                        "label": "Keep Platforms",
-                        "title": "Keeping platforms will copy all platforms from the current version to the shared platforms folder. Otherwise, no platforms will be kept from this version and they will be lost."
-                    },
-                    "valid-btn": "Link Platforms"
-                },
-                "bloq": {
-                    "title": "Link Bloqs",
-                    "desc": "Linking bloqs allows sharing bloqs between all versions with this feature enabled. Once linked, this version will benefit from shared bloqs.",
-                    "info": "Adding and deleting bloqs will also be shared",
-                    "keep-models": {
-                        "label": "Keep Bloqs",
-                        "title": "Keeping bloqs will copy all bloqs from the current version to the shared bloqs folder. Otherwise, no bloqs will be kept from this version and they will be lost."
-                    },
-                    "valid-btn": "Link Bloqs"
-                }
-            },
-            "unlink-models": {
-                "avatar": {
-                    "title": "Unlink Avatars",
-                    "desc": "Be careful, unlinking avatars will disable the use of shared avatars for this version, until it is reenabled.",
-                    "keep-models": {
-                        "label": "Keep Avatars",
-                        "title": "Keeping avatars will copy all avatars from the shared folder to the current version after unlinking. Avatars will not be lost if this is disabled."
-                    },
-                    "valid-btn": "Unlink Avatars"
-                },
-                "saber": {
-                    "title": "Unlink Sabers",
-                    "desc": "Be careful, unlinking sabers will disable the use of shared sabers for this version, until it is reenabled.",
-                    "keep-models": {
-                        "label": "Keep Sabers",
-                        "title": "Keeping sabers will copy all sabers from the shared folder to the current version after unlinking. Sabers will not be lost if this is disabled."
-                    },
-                    "valid-btn": "Unlink Sabers"
-                },
-                "platform": {
-                    "title": "Unlink Platforms",
-                    "desc": "Be careful, unlinking platforms will disable the use of shared platforms for this version, until it is reenabled.",
-                    "keep-models": {
-                        "label": "Keep Platforms",
-                        "title": "Keeping platforms will copy all platforms from the shared folder to the current version after unlinking. Platforms will not be lost if this is disabled."
-                    },
-                    "valid-btn": "Unlink Platforms"
-                },
-                "bloq": {
-                    "title": "Unlink Bloqs",
-                    "desc": "Be careful, unlinking bloqs will disable the use of shared bloqs for this version, until it is reenabled.",
-                    "keep-models": {
-                        "label": "Keep Bloqs",
-                        "title": "Keeping bloqs will copy all bloqs from the shared folder to the current version after unlinking. Bloqs will not be lost if this is disabled."
-                    },
-                    "valid-btn": "Unlink Bloqs"
-                }
             }
         },
         "notifications": {
@@ -1183,14 +1101,6 @@
         "stop-download": "Stop download",
         "cancel-download": "Cancel download",
         "open-file": "Open file",
-        "link-playlists": "Link playlists",
-        "link-playlist-desc": "Linking playlists allows sharing playlists between all versions. Once linked, this version will benefit from shared playlists",
-        "link-playlist-info": "Adding and deleting playlists will also be shared",
-        "keep-playlists": "Keep playlists",
-        "keep-playlists-tip": "Keeping playlists will move the playlists from the current version to the shared playlists folder. Otherwise, they will be lost",
-        "unlink-playlists": "Unlink playlists",
-        "unlink-playlist-desc": "Warning, unlinking playlists will no longer allow the use of shared playlists for this version.",
-        "unlink-keep-playlists-tip": "Keeping playlists will create a copy of shared playlists for the current version. Otherwise, no playlists will be kept for this version.",
         "delete-playlist-ask": "Delete playlist?",
         "delete-playlists-ask": "Delete playlists?",
         "delete-playlist-desc": "Are you sure you want to delete the playlist \"{playlistTitle}\"?",

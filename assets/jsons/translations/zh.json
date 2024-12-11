@@ -8,6 +8,10 @@
         "maps": "谱面",
         "playlists": "歌单",
         "models": "模型",
+        "avatars": "头像",
+        "sabers": "光剑",
+        "platforms": "平台",
+        "blocks": "方块",
         "cancel": "取消",
         "delete": "删除",
         "accept": "接受",
@@ -19,7 +23,8 @@
         "choose-folder": "选择文件夹",
         "Unknown": "发生了一个错误 ¯\\_(ツ)_/¯",
         "warning": "警告",
-        "continue": "继续"
+        "continue": "继续",
+        "shared": "共享"
     },
     "title-bar": {
         "outdated": "过时"
@@ -756,30 +761,28 @@
                     }
                 }
             },
-            "link-maps": {
-                "title": "关联谱面",
-                "desc": "关联谱面可以在所有启用此功能的版本之间共享谱面。一旦关联，该版本将受益于共享谱面。",
-                "info": "添加和删除的谱面也将被共享",
-                "keep-maps": {
-                    "label": "保留谱面",
-                    "title": "保留谱面将会把当前版本的所有谱面复制到共享谱面文件夹。否则，该版本的谱面将不会被保留，它们将丢失。"
-                },
-                "valid-btn": "关联谱面"
-            },
-            "unlink-maps": {
-                "title": "取消关联谱面",
-                "desc": "请注意，取消关联谱面后该版本将无法使用共享谱面，直到重新启用。",
-                "keep-maps": {
-                    "label": "保留谱面",
-                    "title": "保留谱面将会在取消关联后把共享文件夹的所有谱面复制到当前版本。如果此项被禁用，谱面也不会丢失。"
-                },
-                "valid-btn": "取消关联谱面"
-            },
             "delete-duplicate-maps": {
                 "title": "删除地图",
                 "desc": "只有地图 \"{map}\" 是重复的。你确定要删除它吗？",
                 "desc-plural": "发现了 {nb} 个重复的地图。你确定要删除它们吗？"
             }
+        },
+        "link-contents": {
+            "title": "链接{contentType}",
+            "p-1": "链接{contentType}允许在启用此功能的所有版本之间共享{contentType}。链接后，该版本将受益于共享的{contentType}。",
+            "p-2": "为了使用链接功能，所有的{itemsHtml}将被移动到{sharedHtml}文件夹中。之后，一个指向共享{contentType}文件夹的符号链接将取代您原来的{contentType}文件夹。",
+            "warning": "请注意，任何影响{contentType}的更改也会影响所有启用此功能的版本。",
+            "what-is-a-symbolic-link": "什么是符号链接？",
+            "i-need-help": "我需要帮助",
+            "valid-btn": "链接{contentType}"
+        },
+        "unlink-contents": {
+            "title": "取消链接{contentType}",
+            "p-1": "注意：取消链接{contentType}将禁用此版本中共享的{contentType}功能，直到该功能再次启用。",
+            "p-2": "为了取消链接您的{contentType}，指向{sharedHtml}的符号链接将被删除。之后，共享文件夹中的所有{contentType}将被复制到您Beat Saber版本的{itemsHtml}文件夹中。",
+            "do-not-copy-contents": "不复制{contentType}",
+            "do-not-copy-contents-tip": "如果启用，共享文件夹中的{contentType}不会被复制到您的Beat Saber版本中。结果是，取消链接后，您的Beat Saber版本中将不再保留任何{contentType}。",
+            "valid-btn": "取消链接{contentType}"
         },
         "download-maps": {
             "search-btn": "搜索",
@@ -1027,86 +1030,6 @@
                 "no-models": "未找到模型",
                 "no-internet": "无网络连接",
                 "error-occured": "发生了一个错误，稍后重试。"
-            },
-            "link-models": {
-                "avatar": {
-                    "title": "关联 Avatar",
-                    "desc": "关联 Avatar 允许在所有启用此功能的版本之间共享 Avatar。一旦关联，该版本将受益于共享 Avatar。",
-                    "info": "对 Avatar 的添加和删除也将被共享",
-                    "keep-models": {
-                        "label": "保留 Avatar",
-                        "title": "保留 Avatar 将会把当前版本的所有 Avatar复制到共享 Avatar文件夹。否则，该版本的 Avatar将不会被保留，它们将丢失。"
-                    },
-                    "valid-btn": "关联 Avatar "
-                },
-                "saber": {
-                    "title": "关联光剑",
-                    "desc": "关联光剑允许在所有启用此功能的版本之间共享光剑。一旦关联，该版本将受益于共享光剑。",
-                    "info": "对光剑的添加和删除也将被共享",
-                    "keep-models": {
-                        "label": "保留光剑",
-                        "title": "保留光剑将会把当前版本的所有光剑复制到共享光剑文件夹。否则，该版本的光剑将不会被保留，它们将丢失。"
-                    },
-                    "valid-btn": "关联光剑"
-                },
-                "platform": {
-                    "title": "关联平台",
-                    "desc": "关联平台允许在所有启用此功能的版本之间共享平台。一旦关联，该版本将受益于共享平台。",
-                    "info": "对平台的添加和删除也将被共享",
-                    "keep-models": {
-                        "label": "保留平台",
-                        "title": "保留平台将会把当前版本的所有平台复制到共享平台文件夹。否则，该版本的平台将不会被保留，它们将丢失。"
-                    },
-                    "valid-btn": "关联平台"
-                },
-                "bloq": {
-                    "title": "关联方块",
-                    "desc": "关联方块允许在所有启用此功能的版本之间共享方块。一旦关联，该版本将受益于共享方块。",
-                    "info": "对方块的添加和删除也将被共享",
-                    "keep-models": {
-                        "label": "保留方块",
-                        "title": "保留方块将会把当前版本的所有方块复制到共享方块文件夹。否则，该版本的方块将不会被保留，它们将丢失。"
-                    },
-                    "valid-btn": "关联方块"
-                }
-            },
-            "unlink-models": {
-                "avatar": {
-                    "title": "取消关联 Avatar",
-                    "desc": "请注意，取消关联 Avatar 将禁用该版本的共享 Avatar 使用，直到重新启用。",
-                    "keep-models": {
-                        "label": "保留 Avatar",
-                        "title": "保留 Avatar 将会在取消关联后把共享文件夹的所有 Avatar 复制到当前版本。如果此项被禁用，Avatar 将不会丢失。"
-                    },
-                    "valid-btn": "取消关联 Avatar"
-                },
-                "saber": {
-                    "title": "取消关联光剑",
-                    "desc": "请注意，取消关联光剑将禁用该版本的共享光剑使用，直到重新启用。",
-                    "keep-models": {
-                        "label": "保留光剑",
-                        "title": "保留光剑将会在取消关联后把共享文件夹的所有光剑复制到当前版本。如果此项被禁用，光剑将不会丢失。"
-                    },
-                    "valid-btn": "取消关联光剑"
-                },
-                "platform": {
-                    "title": "取消关联平台",
-                    "desc": "请注意，取消关联平台将禁用该版本的共享平台使用，直到重新启用。",
-                    "keep-models": {
-                        "label": "保留平台",
-                        "title": "保留平台将会在取消关联后把共享文件夹的所有平台复制到当前版本。如果此项被禁用，平台将不会丢失。"
-                    },
-                    "valid-btn": "取消关联平台"
-                },
-                "bloq": {
-                    "title": "取消关联方块",
-                    "desc": "请注意，取消关联方块将禁用该版本的共享方块使用，直到重新启用。",
-                    "keep-models": {
-                        "label": "保留方块",
-                        "title": "保留方块将会在取消关联后把共享文件夹的所有方块复制到当前版本。如果此项被禁用，方块将不会丢失。"
-                    },
-                    "valid-btn": "取消关联方块"
-                }
             }
         },
         "notifications": {
@@ -1183,14 +1106,6 @@
         "stop-download": "停止下载",
         "cancel-download": "取消下载",
         "open-file": "打开文件",
-        "link-playlists": "链接播放列表",
-        "link-playlist-desc": "链接播放列表允许在所有版本之间共享播放列表。一旦链接，此版本将受益于共享播放列表",
-        "link-playlist-info": "添加和删除播放列表也将被共享",
-        "keep-playlists": "保留播放列表",
-        "keep-playlists-tip": "保留播放列表将把当前版本的播放列表移动到共享播放列表文件夹。否则，它们将丢失",
-        "unlink-playlists": "取消链接播放列表",
-        "unlink-playlist-desc": "警告，取消链接播放列表将不再允许此版本使用共享播放列表。",
-        "unlink-keep-playlists-tip": "保留播放列表将为当前版本创建共享播放列表的副本。否则，此版本将不保留任何播放列表。",
         "delete-playlist-ask": "删除播放列表？",
         "delete-playlists-ask": "删除播放列表？",
         "delete-playlist-desc": "您确定要删除播放列表 \"{playlistTitle}\" 吗？",

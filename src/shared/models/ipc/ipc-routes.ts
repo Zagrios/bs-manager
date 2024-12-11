@@ -113,6 +113,7 @@ export interface IpcChannelMapping {
     "link-version-folder-action": { request: VersionLinkerAction, response: void };
     "is-version-folder-linked": { request: { version: BSVersion; relativeFolder: string }, response: boolean };
     "relink-all-versions-folders": { request: void, response: void };
+    "get-shared-folder": { request: void, response: string };
 
     /* ** launcher-ipcs ** */
     "download-update": { request: void, response: Progression };
