@@ -1,5 +1,5 @@
 import { BsvMapDetail } from "shared/models/maps";
-import { BsvPlaylistPage, MapFilter, PlaylistSearchParams, PlaylistSearchResponse, SearchParams, SearchResponse } from "shared/models/maps/beat-saver.model";
+import { BsvPlaylistPage, MapFilter, MapLeaderboard, PlaylistSearchParams, PlaylistSearchResponse, SearchParams, SearchResponse } from "shared/models/maps/beat-saver.model";
 import { RequestService } from "../../request.service";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 
@@ -30,6 +30,10 @@ export class BeatSaverApiService {
     private mapFilterToUrlParams(filter: MapFilter): URLSearchParams {
         if (!filter) {
             return new URLSearchParams();
+        }
+
+        if (!filter.leaderboard) {
+            filter.leaderboard = MapLeaderboard.All;
         }
 
         const enbledTagsString = filter.enabledTags ? Array.from(filter.enabledTags) : null;
