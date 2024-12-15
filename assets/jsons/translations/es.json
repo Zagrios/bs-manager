@@ -8,6 +8,10 @@
         "maps": "Mapas",
         "playlists": "Playlists",
         "models": "Modelos",
+        "avatars": "Avatares",
+        "sabers": "Sables",
+        "platforms": "Plataformas",
+        "blocks": "Bloques",
         "cancel": "Cancelar",
         "delete": "Borrar",
         "accept": "Aceptar",
@@ -19,7 +23,8 @@
         "choose-folder": "Elige la carpeta",
         "unknown": "Se ha producido un error desconocido ¯\\_(ツ)_/¯",
         "warning": "Advertencia",
-        "continue": "Continuar"
+        "continue": "Continuar",
+        "shared": "Compartido"
     },
     "title-bar": {
         "outdated": "obsoleto"
@@ -756,30 +761,28 @@
                     }
                 }
             },
-            "link-maps": {
-                "title": "Vincular mapas",
-                "desc": "La vinculación de mapas permite compartir mapas entre todas las versiones. Una vez vinculada, esta versión se beneficiará de los mapas compartidos",
-                "info": "También se compartirá la adición y eliminación de mapas.",
-                "keep-maps": {
-                    "label": "Mantener mapas",
-                    "title": "Mantener mapas moverá los mapas de la versión actual a la carpeta de mapas compartidos. De lo contrario, se perderán"
-                },
-                "valid-btn": "Vincular mapas"
-            },
-            "unlink-maps": {
-                "title": "Desvincular mapas",
-                "desc": "Ten en cuenta que desvincular mapas no permitirá el uso de mapas compartidos para esta versión.",
-                "keep-maps": {
-                    "label": "Mantener mapas",
-                    "title": "Mantener los mapas creará una copia de los mapas compartidos para la versión actual. De lo contrario, no se mantendrá ningún mapa para esta versión."
-                },
-                "valid-btn": "Desvincular mapas"
-            },
             "delete-duplicate-maps": {
                 "title": "¿Borrar mapas?",
                 "desc": "Solo el mapa \"{map}\" está duplicado. ¿Estás seguro de que quieres eliminarlo?",
                 "desc-plural": "Se han encontrado {nb} mapas duplicados. ¿Estás seguro de que quieres eliminarlos?"
             }
+        },
+        "link-contents": {
+            "title": "Vincular los {contentType}",
+            "p-1": "Vincular los {contentType} permite compartir los {contentType} entre todas las versiones que tengan esta función activada. Una vez vinculados, esta versión se beneficiará de los {contentType} compartidos.",
+            "p-2": "Para disfrutar de la función de vinculación, todos tus {itemsHtml} se moverán a la carpeta {sharedHtml}. Después de eso, un enlace simbólico que apunta a la carpeta compartida de {contentType} reemplazará tu carpeta original de {contentType}.",
+            "warning": "Ten en cuenta que cualquier cambio que afecte a los {contentType} también afectará a todas las versiones con esta función activada.",
+            "what-is-a-symbolic-link": "¿Qué es un enlace simbólico?",
+            "i-need-help": "Necesito ayuda",
+            "valid-btn": "Vincular los {contentType}"
+        },
+        "unlink-contents": {
+            "title": "Desvincular los {contentType}",
+            "p-1": "Ten cuidado, desvincular los {contentType} desactivará el uso de los {contentType} compartidos para esta versión, hasta que se vuelva a activar.",
+            "p-2": "Para desvincular tus {contentType}, se eliminará el enlace simbólico que apunta a la carpeta {sharedHtml}. Después de eso, todos los {contentType} en la carpeta compartida se copiarán a la carpeta {itemsHtml} de tu versión de Beat Saber.",
+            "do-not-copy-contents": "No copiar los {contentType}",
+            "do-not-copy-contents-tip": "Si se activa, los {contentType} en la carpeta compartida no se copiarán a tu versión de Beat Saber. Como resultado, ningún {contentType} permanecerá en tu versión de Beat Saber después de desvincular.",
+            "valid-btn": "Desvincular los {contentType}"
         },
         "download-maps": {
             "search-btn": "Buscar",
@@ -1027,86 +1030,6 @@
                 "no-models": "No se encontraron modelos.",
                 "no-internet": "Sin conexión a Internet.",
                 "error-occured": "Ocurrió un error, inténtalo de nuevo más tarde."
-            },
-            "link-models": {
-                "avatar": {
-                    "title": "Vincular avatares",
-                    "desc": "La vinculación de avatares permite compartir avatares entre todas las versiones. Una vez vinculada, esta versión se beneficiará de los avatares compartidos",
-                    "info": "La adición y eliminación de avatares también se compartirá",
-                    "keep-models": {
-                        "label": "Conservar los avatares",
-                        "title": "Conservar los avatares moverá los avatares de la versión actual a la carpeta de avatares compartidos. De lo contrario, se perderán"
-                    },
-                    "valid-btn": "Vincular avatares"
-                },
-                "saber": {
-                    "title": "Vincular sables",
-                    "desc": "La vinculación de sables permite compartir sables entre todas las versiones. Una vez vinculada, esta versión se beneficiará de los sables compartidos",
-                    "info": "La adición y eliminación de sables también se compartirá",
-                    "keep-models": {
-                        "label": "Conservar los sables",
-                        "title": "Conservar los sables moverá los sables de la versión actual a la carpeta de sables compartidos. De lo contrario, se perderán"
-                    },
-                    "valid-btn": "Vincular sables"
-                },
-                "platform": {
-                    "title": "Vincular plataformas",
-                    "desc": "La vinculación de plataformas permite compartir plataformas entre todas las versiones. Una vez vinculada, esta versión se beneficiará de las plataformas compartidas",
-                    "info": "La adición y eliminación de plataformas también se compartirá",
-                    "keep-models": {
-                        "label": "Conservar las plataformas",
-                        "title": "Conservar las plataformas moverá las plataformas de la versión actual a la carpeta de plataformas compartidas. De lo contrario, se perderán"
-                    },
-                    "valid-btn": "Vincular plataformas"
-                },
-                "bloq": {
-                    "title": "Vincular bloques",
-                    "desc": "La vinculación de bloques permite compartir bloques entre todas las versiones. Una vez vinculada, esta versión se beneficiará de los bloques compartidos",
-                    "info": "La adición y eliminación de bloques también se compartirá",
-                    "keep-models": {
-                        "label": "Conservar los bloques",
-                        "title": "Conservar los bloques moverá los bloques de la versión actual a la carpeta de bloques compartidos. De lo contrario, se perderán"
-                    },
-                    "valid-btn": "Vincular bloques"
-                }
-            },
-            "unlink-models": {
-                "avatar": {
-                    "title": "Desvincular avatares",
-                    "desc": "Atención, desvincular los avatares ya no permitirá el uso de avatares compartidos para esta versión.",
-                    "keep-models": {
-                        "label": "Conservar los avatares",
-                        "title": "Conservar los avatares creará una copia de los avatares compartidos para la versión actual. En caso contrario, ningún avatar se conservará para esta versión."
-                    },
-                    "valid-btn": "Desvincular avatares"
-                },
-                "saber": {
-                    "title": "Desvincular sables",
-                    "desc": "Atención, desvincular los sables ya no permitirá el uso de sables compartidos para esta versión.",
-                    "keep-models": {
-                        "label": "Conservar los sables",
-                        "title": "Conservar los sables creará una copia de los sables compartidos para la versión actual. En caso contrario, ningún sable se conservará para esta versión."
-                    },
-                    "valid-btn": "Desvincular sables"
-                },
-                "platform": {
-                    "title": "Desvincular plataformas",
-                    "desc": "Atención, desvincular las plataformas ya no permitirá el uso de plataformas compartidas para esta versión.",
-                    "keep-models": {
-                        "label": "Conservar las plataformas",
-                        "title": "Conservar las plataformas creará una copia de las plataformas compartidas para la versión actual. En caso contrario, ninguna plataforma se conservará para esta versión."
-                    },
-                    "valid-btn": "Desvincular plataformas"
-                },
-                "bloq": {
-                    "title": "Desvincular bloques",
-                    "desc": "Atención, desvincular los bloques ya no permitirá el uso de bloques compartidos para esta versión.",
-                    "keep-models": {
-                        "label": "Conservar los bloques",
-                        "title": "Conservar los bloques creará una copia de los bloques compartidos para la versión actual. En caso contrario, ningún bloques se conservará para esta versión."
-                    },
-                    "valid-btn": "Desvincular bloques"
-                }
             }
         },
         "notifications": {
@@ -1183,14 +1106,6 @@
         "stop-download": "Detener descarga",
         "cancel-download": "Cancelar descarga",
         "open-file": "Abrir archivo",
-        "link-playlists": "Vincular listas de reproducción",
-        "link-playlist-desc": "Vincular listas de reproducción permite compartirlas entre todas las versiones. Una vez vinculada, esta versión se beneficiará de las listas de reproducción compartidas",
-        "link-playlist-info": "Añadir y eliminar listas de reproducción también se compartirá",
-        "keep-playlists": "Mantener listas de reproducción",
-        "keep-playlists-tip": "Mantener las listas de reproducción moverá las listas de la versión actual a la carpeta de listas compartidas. De lo contrario, se perderán",
-        "unlink-playlists": "Desvincular listas de reproducción",
-        "unlink-playlist-desc": "Advertencia, desvincular las listas de reproducción ya no permitirá el uso de listas compartidas para esta versión.",
-        "unlink-keep-playlists-tip": "Mantener las listas de reproducción creará una copia de las listas compartidas para la versión actual. De lo contrario, no se mantendrán listas para esta versión.",
         "delete-playlist-ask": "¿Eliminar lista de reproducción?",
         "delete-playlists-ask": "¿Eliminar listas de reproducción?",
         "delete-playlist-desc": "¿Estás seguro de que quieres eliminar la lista de reproducción \"{playlistTitle}\"?",

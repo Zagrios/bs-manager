@@ -104,6 +104,7 @@ export class BSLocalVersionService {
 
         const versionFilePath = path.join(bsPath, 'Beat Saber_Data', 'globalgamemanagers');
         const folderVersion = await this.getVersionFromGlobalGameManagerFile(versionFilePath);
+        folderVersion.path = bsPath;
 
         if(!folderVersion){ return null; }
 

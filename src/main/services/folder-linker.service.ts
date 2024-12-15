@@ -36,12 +36,12 @@ export class FolderLinkerService {
         });
     }
 
-    private async sharedFolder(): Promise<string> {
+    public sharedFolder(): string {
         return this.installLocationService.sharedContentPath();
     }
 
     private async getSharedFolder(folderPath: string, intermediateFolder?: string): Promise<string> {
-        return path.join(await this.sharedFolder(), intermediateFolder ?? "", path.basename(folderPath));
+        return path.join(this.sharedFolder(), intermediateFolder ?? "", path.basename(folderPath));
     }
 
     private getBackupFolder(folderPath: string): string {

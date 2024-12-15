@@ -2,10 +2,11 @@ import { shell } from "electron";
 import { BSVersionLibService } from "../services/bs-version-lib.service";
 import { BSLocalVersionService } from "../services/bs-local-version.service";
 import { IpcService } from "../services/ipc.service";
-import { from } from "rxjs";
+import { from, of } from "rxjs";
 import path from "path";
 import { pathExists } from "fs-extra";
 import { VersionFolderLinkerService } from "../services/version-folder-linker.service";
+import { FolderLinkerService } from "main/services/folder-linker.service";
 
 const ipc = IpcService.getInstance();
 
@@ -66,4 +67,9 @@ ipc.on("is-version-folder-linked", (args, reply) => {
 ipc.on("relink-all-versions-folders", (_, reply) => {
     const versionLinker = VersionFolderLinkerService.getInstance();
     reply(from(versionLinker.relinkAllVersionsFolders()));
+});
+
+ipc.on("get-shared-folder", (_, reply) => {
+    const versionLinker = FolderLinkerService.getInstance();
+    reply(of(versionLinker.sharedFolder()));
 });

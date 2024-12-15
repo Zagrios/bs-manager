@@ -8,6 +8,10 @@
         "maps": "Maps",
         "playlists": "Playlists",
         "models": "Modèles",
+        "avatars": "Avatars",
+        "sabers": "Sabres",
+        "platforms": "Plateformes",
+        "blocks": "Blocs",
         "cancel": "Annuler",
         "delete": "Supprimer",
         "accept": "Accepter",
@@ -19,7 +23,8 @@
         "choose-folder": "Choisir un dossier",
         "unknown": "Une erreur inconnue s'est produite ¯\\_(ツ)_/¯",
         "warning": "Attention",
-        "continue": "Continuer"
+        "continue": "Continuer",
+        "shared": "Partagé"
     },
     "title-bar": {
         "outdated": "obsolète"
@@ -757,30 +762,28 @@
                     }
                 }
             },
-            "link-maps": {
-                "title": "Lier les maps",
-                "desc": "La liaison des maps permet de partager les maps entre toute les version. Une fois liée, cette version profitera des maps partagées",
-                "info": "L'ajout et la suppression de maps sera également partagé",
-                "keep-maps": {
-                    "label": "Conserver les maps",
-                    "title": "Conserver les maps déplacera les maps de la version actuelle dans le dossier des maps partagées. Dans le cas contraire elles seront perdues"
-                },
-                "valid-btn": "Lier les maps"
-            },
-            "unlink-maps": {
-                "title": "Délier les maps",
-                "desc": "Attention, délier les maps ne permettra plus l'utilisation des maps paratagées pour cette version.",
-                "keep-maps": {
-                    "label": "Conserver les maps",
-                    "title": "Conserver les maps créera une copie des maps partagées pour la version actuelle. Dans le cas contraire, aucune map ne sera conservée pour cette version."
-                },
-                "valid-btn": "Délier les maps"
-            },
             "delete-duplicate-maps": {
                 "title": "Supprimer les maps ?",
                 "desc": "Seule la map \"{map}\" est en double. Es-tu sûr de vouloir la supprimer ?",
                 "desc-plural": "{nb} maps en double ont été trouvées. Es-tu sûr de vouloir les supprimer ?"
             }
+        },
+        "link-contents": {
+            "title": "Lier les {contentType}",
+            "p-1": "Lier les {contentType} permet de partager les {contentType} entre toutes les versions ayant cette fonctionnalité activée. Une fois liés, cette version bénéficiera des {contentType} partagés.",
+            "p-2": "Pour profiter de la fonctionnalité de liaison, les {itemsHtml} seront déplacés dans le dossier {sharedHtml}. Ensuite, un lien symbolique pointant vers le dossier partagé des {contentType} remplacera votre dossier original des {contentType}.",
+            "warning": "Veuillez noter que toute modification affectant les {contentType} affectera également toutes les versions ayant cette fonctionnalité activée.",
+            "what-is-a-symbolic-link": "Qu'est-ce qu'un lien symbolique ?",
+            "i-need-help": "J'ai besoin d'aide",
+            "valid-btn": "Lier les {contentType}"
+        },
+        "unlink-contents": {
+            "title": "Délier les {contentType}",
+            "p-1": "Attention, délier les {contentType} désactivera l'utilisation des {contentType} partagés pour cette version, jusqu'à ce qu'elle soit réactivée.",
+            "p-2": "Pour délier vos {contentType}, le lien symbolique pointant vers le dossier {sharedHtml} sera supprimé. Ensuite, les {contentType} dans le dossier partagé seront copiés dans le dossier {itemsHtml} de votre version de Beat Saber.",
+            "do-not-copy-contents": "Ne pas copier les {contentType}",
+            "do-not-copy-contents-tip": "Si activé, les {contentType} dans le dossier partagé ne seront pas copiés dans votre version de Beat Saber. En conséquence, aucun(e)s {contentType} ne restera dans votre version de Beat Saber après la suppression de la liaison.",
+            "valid-btn": "Délier les {contentType}"
         },
         "download-maps": {
             "search-btn": "Rechercher",
@@ -1028,86 +1031,6 @@
                 "no-models": "Aucun modèles trouvés.",
                 "no-internet": "Pas de connexion internet.",
                 "error-occured": "Une erreur est survenue, réessaye plus tard."
-            },
-            "link-models": {
-                "avatar": {
-                    "title": "Lier les avatars",
-                    "desc": "La liaison des avatars permet de partager les avatars entre toutes les version. Une fois liée, cette version profitera des avatars partagés",
-                    "info": "L'ajout et la suppression d'avatars seront également partagés",
-                    "keep-models": {
-                        "label": "Conserver les avatars",
-                        "title": "Conserver les avatars déplacera les avatars de la version actuelle dans le dossier des avatars partagés. Dans le cas contraire ils seront perdus"
-                    },
-                    "valid-btn": "Lier les avatars"
-                },
-                "saber": {
-                    "title": "Lier les sabres",
-                    "desc": "La liaison des sabres permet de partager les sabres entre toutes les version. Une fois liée, cette version profitera des sabres partagés",
-                    "info": "L'ajout et la suppression de sabres seront également partagés",
-                    "keep-models": {
-                        "label": "Conserver les sabres",
-                        "title": "Conserver les sabres déplacera les sabres de la version actuelle dans le dossier des sabres partagés. Dans le cas contraire ils seront perdus"
-                    },
-                    "valid-btn": "Lier les sabres"
-                },
-                "platform": {
-                    "title": "Lier les plateformes",
-                    "desc": "La liaison des plateformes permet de partager les plateformes entre toutes les version. Une fois liée, cette version profitera des plateformes partagées",
-                    "info": "L'ajout et la suppression de plateformes seront également partagés",
-                    "keep-models": {
-                        "label": "Conserver les plateformes",
-                        "title": "Conserver les plateformes déplacera les plateformes de la version actuelle dans le dossier des plateformes partagées. Dans le cas contraire ils seront perdus"
-                    },
-                    "valid-btn": "Lier les plateformes"
-                },
-                "bloq": {
-                    "title": "Lier les bloqs",
-                    "desc": "La liaison des bloqs permet de partager les bloqs entre toutes les version. Une fois liée, cette version profitera des bloqs partagés",
-                    "info": "L'ajout et la suppression de bloqs seront également partagés",
-                    "keep-models": {
-                        "label": "Conserver les bloqs",
-                        "title": "Conserver les bloqs déplacera les bloqs de la version actuelle dans le dossier des bloqs partagés. Dans le cas contraire ils seront perdus"
-                    },
-                    "valid-btn": "Lier les bloqs"
-                }
-            },
-            "unlink-models": {
-                "avatar": {
-                    "title": "Délier les avatars",
-                    "desc": "Attention, délier les avatars ne permettra plus l'utilisation des avatars paratagés pour cette version.",
-                    "keep-models": {
-                        "label": "Conserver les avatars",
-                        "title": "Conserver les avatars créera une copie des avatars partagés pour la version actuelle. Dans le cas contraire, aucun avatar ne sera conservé pour cette version."
-                    },
-                    "valid-btn": "Délier les avatars"
-                },
-                "saber": {
-                    "title": "Délier les sabres",
-                    "desc": "Attention, délier les sabres ne permettra plus l'utilisation des sabres paratagés pour cette version.",
-                    "keep-models": {
-                        "label": "Conserver les sabres",
-                        "title": "Conserver les sabres créera une copie des sabres partagés pour la version actuelle. Dans le cas contraire, aucun sabre ne sera conservé pour cette version."
-                    },
-                    "valid-btn": "Délier les sabres"
-                },
-                "platform": {
-                    "title": "Délier les plateformes",
-                    "desc": "Attention, délier les plateformes ne permettra plus l'utilisation des plateformes paratagées pour cette version.",
-                    "keep-models": {
-                        "label": "Conserver les plateformes",
-                        "title": "Conserver les plateformes créera une copie des plateformes partagées pour la version actuelle. Dans le cas contraire, aucune plateforme ne sera conservée pour cette version."
-                    },
-                    "valid-btn": "Délier les plateformes"
-                },
-                "bloq": {
-                    "title": "Délier les bloqs",
-                    "desc": "Attention, délier les bloqs ne permettra plus l'utilisation des bloqs paratagés pour cette version.",
-                    "keep-models": {
-                        "label": "Conserver les bloqs",
-                        "title": "Conserver les bloqs créera une copie des bloqs partagés pour la version actuelle. Dans le cas contraire, aucun bloq ne sera conservé pour cette version."
-                    },
-                    "valid-btn": "Délier les bloqs"
-                }
             }
         },
         "notifications": {
@@ -1184,14 +1107,6 @@
         "stop-download": "Arrêter le téléchargement",
         "cancel-download": "Annuler le téléchargement",
         "open-file": "Ouvrir le fichier",
-        "link-playlists": "Lier les playlists",
-        "link-playlist-desc": "La liaison des playlists permet de partager les playlists entre toute les version. Une fois liée, cette version profitera des playlists partagées",
-        "link-playlist-info": "L'ajout et la suppression de playlists sera également partagé",
-        "keep-playlists": "Conserver les playlists",
-        "keep-playlists-tip": "Conserver les playlists déplacera les playlists de la version actuelle dans le dossier des playlists partagées. Dans le cas contraire elles seront perdues",
-        "unlink-playlists": "Délier les playlists",
-        "unlink-playlist-desc": "Attention, délier les playlists ne permettra plus l'utilisation des playlists paratagées pour cette version.",
-        "unlink-keep-playlists-tip": "Conserver les playlists créera une copie des playlists partagées pour la version actuelle. Dans le cas contraire, aucune playlist ne sera conservée pour cette version.",
         "delete-playlist-ask": "Supprimer la playlist ?",
         "delete-playlists-ask": "Supprimer les playlists ?",
         "delete-playlist-desc": "Es-tu sur de vouloir supprimer la playlist \"{playlistTitle}\" ?",
