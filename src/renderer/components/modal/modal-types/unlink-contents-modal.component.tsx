@@ -60,7 +60,7 @@ export const UnlinkContentsModal: ModalComponent<boolean, {version: BSVersion, c
         }
     });
 
-    const [keepsContents, setKeepContents] = useState(true);
+    const [keepContents, setKeepContents] = useState(true);
     const [pathCopied, setPathCopied] = useState<"maps"|"shared">(null);
 
     const putInClipboard = (text: string, element: "maps"|"shared") => {
@@ -90,7 +90,7 @@ export const UnlinkContentsModal: ModalComponent<boolean, {version: BSVersion, c
             </div>
             <Tippy content={t("modals.unlink-contents.do-not-copy-contents-tip", { contentType: t(`misc.${contentType}`).toLowerCase() })} theme="default">
                 <div className="relative h-5 flex my-3 items-center w-fit">
-                    <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1.5 z-[1]" checked={!keepsContents} onChange={v => setKeepContents(!v)} />
+                    <BsmCheckbox className="h-full aspect-square relative bg-inherit mr-1.5 z-[1]" checked={!keepContents} onChange={v => setKeepContents(!v)} />
                     <span className="text-sm mb-0.5 cursor-help">
                         {t("modals.unlink-contents.do-not-copy-contents", { contentType: t(`misc.${contentType}`).toLowerCase() })}
                     </span>
@@ -98,7 +98,7 @@ export const UnlinkContentsModal: ModalComponent<boolean, {version: BSVersion, c
             </Tippy>
             <div className="grid grid-flow-col grid-cols-2 gap-2 mt-4 h-8">
                 <BsmButton typeColor="cancel" className="rounded-md text-center transition-all flex justify-center items-center" onClick={() => resolver({ exitCode: ModalExitCode.CANCELED })} withBar={false} text="misc.cancel" />
-                <BsmButton typeColor="error" className="rounded-md text-center transition-all flex justify-center items-center" onClick={() => resolver({ exitCode: ModalExitCode.COMPLETED, data: keepsContents })} withBar={false} text={t("modals.unlink-contents.valid-btn", { contentType: t(`misc.${contentType}`).toLowerCase() })} />
+                <BsmButton typeColor="error" className="rounded-md text-center transition-all flex justify-center items-center" onClick={() => resolver({ exitCode: ModalExitCode.COMPLETED, data: keepContents })} withBar={false} text={t("modals.unlink-contents.valid-btn", { contentType: t(`misc.${contentType}`).toLowerCase() })} />
             </div>
         </form>
     );
