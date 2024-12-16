@@ -50,7 +50,9 @@
                 "advanced-launch": {
                     "button": "高度な起動",
                     "placeholder": "追加引数 例：--revert; --nowait"
-                }
+                },
+                "skipsteam": "Steamをスキップ",
+                "skipsteam-description": "Beat Saberと一緒にSteamが自動的に開くのを防ぎます。SteamVRが干渉する可能性のあるWiVRnやMonadoなど、別のVRランタイムを使用している場合は有効にしてください。"
             },
             "maps": {
                 "search-bar": {
@@ -442,11 +444,13 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "起動中...🚀",
-                    "STEAM_LAUNCHING": "Steamの起動を確認しました!"
+                    "STEAM_LAUNCHING": "Steamの起動を確認しました!",
+                    "SKIPPING_STEAM_LAUNCH": "Steamの起動をスキップ"
                 },
                 "msg": {
                     "BS_LAUNCHING": "ウォームアップを忘れずに 😉",
-                    "STEAM_LAUNCHING": "Beat SaberはSteamの起動後に自動的に起動します。"
+                    "STEAM_LAUNCHING": "Beat SaberはSteamの起動後に自動的に起動します。",
+                    "SKIPPING_STEAM_LAUNCH": "あなたが何をしているのか分かっていることを願っています :)"
                 }
             },
             "errors": {

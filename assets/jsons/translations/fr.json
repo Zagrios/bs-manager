@@ -50,7 +50,9 @@
                 "advanced-launch": {
                     "button": "Lancement avancé",
                     "placeholder": "Arguments supplémentaires ex: --revert; --nowait"
-                }
+                },
+                "skipsteam": "Ignorer Steam",
+                "skipsteam-description": "Empêche Steam de s'ouvrir automatiquement avec Beat Saber, activez-le si vous utilisez un autre runtime VR comme WiVRn ou Monado avec lequel SteamVR pourrait interférer."
             },
             "maps": {
                 "search-bar": {
@@ -442,11 +444,13 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "Lancement...🚀",
-                    "STEAM_LAUNCHING": "Steam se lance !"
+                    "STEAM_LAUNCHING": "Steam se lance !",
+                    "SKIPPING_STEAM_LAUNCH": "Sauter le lancement de Steam"
                 },
                 "msg": {
                     "BS_LAUNCHING": "N'oublie pas de t'échauffer 😉",
-                    "STEAM_LAUNCHING": "Beat Saber se lancera automatiquement après Steam."
+                    "STEAM_LAUNCHING": "Beat Saber se lancera automatiquement après Steam.",
+                    "SKIPPING_STEAM_LAUNCH": "J'espère que vous savez ce que vous faites :)"
                 }
             },
             "errors": {
