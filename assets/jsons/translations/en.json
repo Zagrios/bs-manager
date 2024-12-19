@@ -606,6 +606,10 @@
                     "ENOSPC": "The disk is full, make some space and try again.",
                     "UNKNOWN_ERROR": "An unknown error has occurred while linking the folder."
                 }
+            },
+            "adding-error": {
+                "title": "Adding shared folder failed",
+                "msg": "You can't add \"{folder}\" to shared folders."
             }
         },
         "create-launch-shortcut": {
@@ -800,8 +804,13 @@
                 "add-folder": "Add Folder",
                 "link-folder": "Link Folder",
                 "unlink-folder": "Unlink Folder",
-                "link-all": "Link all"
+                "link-all": "Link all",
+                "remove-from-the-list": "Remove from the list"
             }
+        },
+        "adding-shared-folder": {
+            "title": "Adding Shared Folder",
+            "description": "You might experience issues when linking the \"{folder}\" folder. Are you sure you want to add it?"
         },
         "create-launch-shortcut": {
             "title": "Create a shortcut",

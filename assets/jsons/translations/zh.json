@@ -606,6 +606,10 @@
                     "ENOSPC": "磁盘已满，请腾出空间后再试。",
                     "UNKNOWN_ERROR": "链接文件夹时发生未知错误。"
                 }
+            },
+            "adding-error": {
+                "title": "添加共享文件夹失败",
+                "msg": "您无法将\"{folder}\"添加到共享文件夹。"
             }
         },
         "create-launch-shortcut": {
@@ -805,8 +809,13 @@
                 "add-folder": "添加文件夹",
                 "link-folder": "关联文件夹",
                 "unlink-folder": "取消关联文件夹",
-                "link-all": "关联所有"
+                "link-all": "关联所有",
+                "remove-from-the-list": "从列表中移除"
             }
+        },
+        "adding-shared-folder": {
+            "title": "添加共享文件夹",
+            "description": "链接\"{folder}\"文件夹时可能会遇到问题。您确定要添加它吗？"
         },
         "create-launch-shortcut": {
             "title": "创建快捷方式",

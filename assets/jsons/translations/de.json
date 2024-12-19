@@ -606,6 +606,10 @@
                     "ENOSPC": "Die Festplatte ist voll, machen Sie Platz und versuchen Sie es erneut.",
                     "UNKNOWN_ERROR": "Ein unbekannter Fehler ist beim Verknüpfen des Ordners aufgetreten."
                 }
+            },
+            "adding-error": {
+                "title": "Das Hinzufügen des freigegebenen Ordners ist fehlgeschlagen",
+                "msg": "Sie können \"{folder}\" nicht zu freigegebenen Ordnern hinzufügen."
             }
         },
         "create-launch-shortcut": {
@@ -805,8 +809,13 @@
                 "add-folder": "Ordner hinzufügen",
                 "link-folder": "Ordner verknüpfen",
                 "unlink-folder": "Ordner-Verknüpfung aufheben",
-                "link-all": "Alle verlinken"
+                "link-all": "Alle verlinken",
+                "remove-from-the-list": "Aus der Liste entfernen"
             }
+        },
+        "adding-shared-folder": {
+            "title": "Freigegebenen Ordner hinzufügen",
+            "description": "Beim Verknüpfen des Ordners \"{folder}\" können Probleme auftreten. Möchten Sie ihn wirklich hinzufügen?"
         },
         "create-launch-shortcut": {
             "title": "Verknüpfung erstellen",
