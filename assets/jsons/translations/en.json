@@ -806,7 +806,8 @@
                 "add-folder": "Add Folder",
                 "link-folder": "Link Folder",
                 "unlink-folder": "Unlink Folder",
-                "link-all": "Link all"
+                "link-all": "Link all",
+                "remove-from-the-list": "Remove from the list"
             }
         },
         "adding-shared-folder": {

@@ -806,7 +806,8 @@
                 "add-folder": "Ordner hinzufügen",
                 "link-folder": "Ordner verknüpfen",
                 "unlink-folder": "Ordner-Verknüpfung aufheben",
-                "link-all": "Alle verlinken"
+                "link-all": "Alle verlinken",
+                "remove-from-the-list": "Aus der Liste entfernen"
             }
         },
         "adding-shared-folder": {

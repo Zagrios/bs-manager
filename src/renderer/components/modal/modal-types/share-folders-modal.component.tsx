@@ -216,7 +216,7 @@ const FolderItem = ({ version, relativeFolder, onDelete }: FolderProps) => {
                 {name}
             </span>
             <div className="flex flex-row gap-1.5">
-                <Tippy placement="left" content={t.text(`modals.shared-folders.buttons.${state === FolderLinkState.Linked ? "unlink-folder" : "link-folder"}`)} arrow={false}>
+                <Tippy placement="top" theme="default" content={t.text(`modals.shared-folders.buttons.${state === FolderLinkState.Linked ? "unlink-folder" : "link-folder"}`)}>
                     <LinkButton
                         className="p-0.5 h-7 shrink-0 aspect-square blur-0 cursor-pointer hover:brightness-75"
                         state={state}
@@ -241,15 +241,17 @@ const FolderItem = ({ version, relativeFolder, onDelete }: FolderProps) => {
                         );
                     }
                     return (
-                        <BsmButton
-                            className="aspect-square h-7 rounded-md p-1"
-                            icon="trash"
-                            withBar={false}
-                            onClick={e => {
-                                e.preventDefault();
-                                onDelete?.();
-                            }}
-                        />
+                        <Tippy content={t.text("modals.shared-folders.buttons.remove-from-the-list")} theme="default" hideOnClick={false} placement="top">
+                            <BsmButton
+                                className="aspect-square h-7 rounded-md p-1"
+                                icon="trash"
+                                withBar={false}
+                                onClick={e => {
+                                    e.preventDefault();
+                                    onDelete?.();
+                                }}
+                            />
+                        </Tippy>
                     );
                 })()}
             </div>

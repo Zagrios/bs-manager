@@ -806,7 +806,8 @@
                 "add-folder": "Добавить папку",
                 "link-folder": "Связать папку",
                 "unlink-folder": "Отвязать папку",
-                "link-all": "Связать всё"
+                "link-all": "Связать всё",
+                "remove-from-the-list": "Удалить из списка"
             }
         },
         "adding-shared-folder": {

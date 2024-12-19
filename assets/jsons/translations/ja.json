@@ -806,7 +806,8 @@
                 "add-folder": "フォルダーを追加",
                 "link-folder": "フォルダーをリンク",
                 "unlink-folder": "フォルダーのリンクを解除",
-                "link-all": "すべてリンク"
+                "link-all": "すべてリンク",
+                "remove-from-the-list": "リストから削除"
             }
         },
         "adding-shared-folder": {

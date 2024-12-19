@@ -806,7 +806,8 @@
                 "add-folder": "添加文件夹",
                 "link-folder": "关联文件夹",
                 "unlink-folder": "取消关联文件夹",
-                "link-all": "关联所有"
+                "link-all": "关联所有",
+                "remove-from-the-list": "从列表中移除"
             }
         },
         "adding-shared-folder": {

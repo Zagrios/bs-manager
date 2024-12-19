@@ -806,7 +806,8 @@
                 "add-folder": "Añadir Carpeta",
                 "link-folder": "Enlazar Carpeta",
                 "unlink-folder": "Desenlazar Carpeta",
-                "link-all": "Enlazar todo"
+                "link-all": "Enlazar todo",
+                "remove-from-the-list": "Eliminar de la lista"
             }
         },
         "adding-shared-folder": {

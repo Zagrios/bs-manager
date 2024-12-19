@@ -806,7 +806,8 @@
                 "add-folder": "폴더 추가",
                 "link-folder": "폴더 연결",
                 "unlink-folder": "폴더 연결 해제",
-                "link-all": "모두 연결"
+                "link-all": "모두 연결",
+                "remove-from-the-list": "목록에서 제거"
             }
         },
         "adding-shared-folder": {
