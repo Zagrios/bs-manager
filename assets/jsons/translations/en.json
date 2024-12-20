@@ -323,6 +323,8 @@
                     "msg": {
                         "401": "Steam doesn't seem to want to let us download Beat Saber 😢",
                         "404": "Unable to contact Steam servers.",
+                        "ExeNotFoundWindows": "\"DepotDownloader.exe\" is missing. Please check if the executable is quarantined by your anti-virus.",
+                        "ExeNotFoundLinux": "\"DepotDownloader\" binary is missing.",
                         "Password": "Password is invalid.",
                         "InvalidCredentials": "Invalid login credentials, unapproved connection, or too many login attempts.",
                         "NoManifest": "No manifest was found",
