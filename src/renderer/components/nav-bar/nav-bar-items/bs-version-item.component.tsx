@@ -64,6 +64,7 @@ export function BsVersionItem(props: { version: BSVersion }) {
             desktop: !!configService.get<boolean>(LaunchMods.DESKTOP_MOD),
             debug: !!configService.get<boolean>(LaunchMods.DEBUG_MOD),
             skipSteam: !!configService.get<boolean>(LaunchMods.SKIPSTEAM_MOD),
+            protonLogs: !!configService.get<boolean>(LaunchMods.PROTON_LOGS_MOD),
         });
         return lastValueFrom(launch$).catch(() => {});
     };
