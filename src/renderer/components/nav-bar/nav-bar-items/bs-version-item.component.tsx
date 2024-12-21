@@ -35,7 +35,7 @@ export function BsVersionItem(props: { version: BSVersion }) {
 
     useOnUpdate(() => {
         const subs: Subscription[] = []
-        
+
         subs.push(bsDownloader.downloadingVersion$.pipe(map(download => equal(download, props.version)), distinctUntilChanged()).subscribe(isDownloading => {
             setIsDownloading(() => isDownloading);
         }));
@@ -63,6 +63,7 @@ export function BsVersionItem(props: { version: BSVersion }) {
             oculus: !!configService.get<boolean>(LaunchMods.OCULUS_MOD),
             desktop: !!configService.get<boolean>(LaunchMods.DESKTOP_MOD),
             debug: !!configService.get<boolean>(LaunchMods.DEBUG_MOD),
+            skipSteam: !!configService.get<boolean>(LaunchMods.SKIPSTEAM_MOD),
         });
         return lastValueFrom(launch$).catch(() => {});
     };

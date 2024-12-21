@@ -35,6 +35,7 @@ export function LaunchSlide({ version }: Props) {
     const [debugMode, setDebugMode] = useState(!!configService.get<boolean>(LaunchMods.DEBUG_MOD));
     const [advancedLaunch, setAdvancedLaunch] = useState(false);
     const [additionalArgsString, setAdditionalArgsString] = useState<string>(configService.get<string>("additionnal-args") || "");
+    const [skipSteamMode, setSkipSteamMode] = useState(!!configService.get<boolean>(LaunchMods.SKIPSTEAM_MOD));
     const versionDownloading = useObservable(() => bsDownloader.downloadingVersion$);
 
     const versionRunning = useObservable(() => bsLauncherService.versionRunning$);
@@ -56,6 +57,8 @@ export function LaunchSlide({ version }: Props) {
             setOculusMode(value);
         } else if (mode === LaunchMods.DESKTOP_MOD) {
             setDesktopMode(value);
+        } else if (mode === LaunchMods.SKIPSTEAM_MOD) {
+            setSkipSteamMode(value);
         }
         configService.set(mode, value);
     };
@@ -71,6 +74,7 @@ export function LaunchSlide({ version }: Props) {
             desktop: desktopMode,
             debug: debugMode,
             additionalArgs: advancedLaunch ? additionalArgs : [],
+            skipSteam: skipSteamMode,
         });
 
         return lastValueFrom(launch$).catch(() => {});
@@ -115,6 +119,9 @@ export function LaunchSlide({ version }: Props) {
                 </div>
                 <div className="bg-light-main-color-2 dark:bg-main-color-2 h-9 rounded-full overflow-hidden flex items-center justify-center transition-all duration-100 ease-in-out w-full origin-top shadow-black shadow-sm" style={{ scale: advancedLaunch ? "100% 100%" : "0 0" }}>
                     <input className="w-[calc(100%-12px)] h-[calc(100%-12px)] bg-light-main-color-1 dark:bg-main-color-1 text-black dark:text-white rounded-full outline-none text-center" type="text" placeholder={t("pages.version-viewer.launch-mods.advanced-launch.placeholder")} value={additionalArgsString} onChange={handleAdditionalArgsChange} />
+                </div>
+                <div className="grid grid-cols-3 gap-3 transition-all duration-300 ease-in-out origin-top" style={{ scale: advancedLaunch ? "75% 75%" : "0% 0%" }}>
+                    {advancedLaunch && !(version.oculus || version.metadata?.store === BsStore.OCULUS) && <LaunchModToogle infoText="pages.version-viewer.launch-mods.skipsteam-description" icon="null" onClick={() => setMode(LaunchMods.SKIPSTEAM_MOD, !skipSteamMode)} active={skipSteamMode} text="pages.version-viewer.launch-mods.skipsteam" />}
                 </div>
             </div>
             <div className='grow flex justify-center items-center'>

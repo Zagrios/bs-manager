@@ -105,7 +105,8 @@ export class BSLauncherService {
             oculus: params.oculusMode === "true",
             desktop: params.desktopMode === "true",
             debug: params.debug === "true",
-            additionalArgs: params.additionalArgs
+            additionalArgs: params.additionalArgs,
+            skipSteam: params.skipSteam === "true",
         };
 
         return res;
@@ -123,6 +124,7 @@ export class BSLauncherService {
         if(launchOptions.desktop){ res.desktopMode = "true"; }
         if(launchOptions.debug){ res.debug = "true"; }
         if(launchOptions.additionalArgs){ res.additionalArgs = launchOptions.additionalArgs; }
+        if(launchOptions.skipSteam){ res.skipSteam = "true"; }
 
         return res;
     }
@@ -239,6 +241,7 @@ type ShortcutParams = {
     desktopMode?: string;
     debug?: string;
     additionalArgs?: string[];
+    skipSteam?: string;
     version: string;
     versionName?: string;
     versionIno?: string;
