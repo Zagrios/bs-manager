@@ -42,7 +42,7 @@ export class BSVersionLibService {
 
     private async shouldLoadFromConfig(): Promise<boolean> {
         // Some special cases of readonly memory installations
-        return IS_FLATPAK || this.linuxService.isNixOS();
+        return process.platform === "linux" && (IS_FLATPAK || this.linuxService.isNixOS());
     }
 
     private async getLocalVersions(): Promise<BSVersion[]> {
