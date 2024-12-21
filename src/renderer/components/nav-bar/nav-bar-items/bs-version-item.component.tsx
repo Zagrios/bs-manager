@@ -60,10 +60,7 @@ export function BsVersionItem(props: { version: BSVersion }) {
         if(equal(downloadingVersion, props.version)){ return; }
         const launch$ = launcherService.launch({
             version: state,
-            oculus: !!configService.get<boolean>(LaunchMods.OCULUS_MOD),
-            desktop: !!configService.get<boolean>(LaunchMods.DESKTOP_MOD),
-            debug: !!configService.get<boolean>(LaunchMods.DEBUG_MOD),
-            skipSteam: !!configService.get<boolean>(LaunchMods.SKIPSTEAM_MOD),
+            launchMods: configService.get("launch-mods") ?? [],
         });
         return lastValueFrom(launch$).catch(() => {});
     };

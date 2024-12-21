@@ -47,11 +47,8 @@ export class BSLauncherService {
     public getLaunchOptions(version: BSVersion): LaunchOption{
         return {
             version,
-            oculus: this.config.get(LaunchMods.OCULUS_MOD),
-            desktop: this.config.get(LaunchMods.DESKTOP_MOD),
-            debug: this.config.get(LaunchMods.DEBUG_MOD),
+            launchMods: this.config.get("launch-mods") ?? [],
             additionalArgs: (this.config.get<string>("additionnal-args") || "").split(";").map(arg => arg.trim()).filter(arg => arg.length > 0),
-            skipSteam: this.config.get(LaunchMods.SKIPSTEAM_MOD),
         }
     }
 
@@ -123,11 +120,4 @@ export class BSLauncherService {
     public restoreSteamVR(): Promise<void>{
         return lastValueFrom(this.ipcService.sendV2("bs-launch.restore-steamvr"));
     }
-}
-
-export enum LaunchMods {
-    OCULUS_MOD = "LAUNCH_OCULUS_MOD",
-    DESKTOP_MOD = "LAUNCH_DESKTOP_MOD",
-    DEBUG_MOD = "LAUNCH_DEBUG_MOD",
-    SKIPSTEAM_MOD = "LAUNCH_SKIPSTEAM_MOD",
 }

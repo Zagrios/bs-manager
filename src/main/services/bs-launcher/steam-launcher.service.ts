@@ -10,6 +10,7 @@ import { AbstractLauncherService } from "./abstract-launcher.service";
 import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
 import { UtilsService } from "../utils.service";
 import { exec } from "child_process";
+import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 
 export class SteamLauncherService extends AbstractLauncherService implements StoreLauncherInterface{
 
@@ -73,7 +74,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 throw CustomError.fromError(new Error(`Path not exist : ${bsExePath}`), BSLaunchError.BS_NOT_FOUND);
             }
 
-            const skipSteam: boolean = launchOptions.skipSteam ?? false;
+            const skipSteam: boolean = launchOptions.launchMods?.includes(LaunchMods.SKIP_STEAM) ?? false;
 
             // Open Steam if not running
             if(!skipSteam && !(await this.steam.isSteamRunning())){
@@ -87,12 +88,12 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                     obs.next({type: BSLaunchWarning.UNABLE_TO_LAUNCH_STEAM});
                 });
             }
-            else if (launchOptions.skipSteam) {
+            else {
                 obs.next({ type: BSLaunchEvent.SKIPPING_STEAM_LAUNCH});
             }
 
             // Backup SteamVR when desktop mode is enabled
-            if(launchOptions.desktop){
+            if(launchOptions.launchMods?.includes(LaunchMods.FPFC)){
                 await this.backupSteamVR().catch(() => {
                     return this.restoreSteamVR();
                 });

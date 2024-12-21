@@ -7,6 +7,7 @@ import { sToMs } from "../../../shared/helpers/time.helpers";
 import { LinuxService } from "../linux.service";
 import { bsmSpawn } from "main/helpers/os.helpers";
 import { IS_FLATPAK } from "main/constants";
+import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 
 export abstract class AbstractLauncherService {
 
@@ -24,14 +25,14 @@ export abstract class AbstractLauncherService {
         if(!launchOptions.version.steam && !launchOptions.version.oculus){
             launchArgs.push("--no-yeet")
         }
-        if (launchOptions.oculus) {
+        if (launchOptions.launchMods?.includes(LaunchMods.OCULUS)) {
             launchArgs.push("-vrmode");
             launchArgs.push("oculus");
         }
-        if (launchOptions.desktop) {
+        if (launchOptions.launchMods?.includes(LaunchMods.FPFC)) {
             launchArgs.push("fpfc");
         }
-        if (launchOptions.debug) {
+        if (launchOptions.launchMods?.includes(LaunchMods.DEBUG)) {
             launchArgs.push("--verbose");
         }
         if (launchOptions.additionalArgs) {
