@@ -323,6 +323,8 @@
                     "msg": {
                         "401": "Steam 似乎不想让我们下载 Beat Saber😢",
                         "404": "无法联系 Steam 服务器。",
+                        "ExeNotFoundWindows": "\"DepotDownloader.exe\" 缺失。请检查执行文件是否被您的防病毒软件隔离。",
+                        "ExeNotFoundLinux": "\"DepotDownloader\" 的可执行文件缺失。",
                         "Password": "密码无效",
                         "InvalidCredentials": "登录凭据无效、连接未经批准或登录尝试次数过多。",
                         "NoManifest": "未找到清单",
