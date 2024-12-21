@@ -56,7 +56,9 @@
                 "skipsteam": "Skip Steam",
                 "skipsteam-description": "Stops Steam from opening automatically with Beat Saber, enable if you are using a different VR runtime like WiVRn or Monado that SteamVR may interfere with.",
                 "map-editor": "Map Editor",
-                "map-editor-description": "Start the official Beat Saber map editor instead of the game."
+                "map-editor-description": "Start the official Beat Saber map editor instead of the game.",
+                "proton-logs": "Proton Logs",
+                "proton-logs-description": "Writes the proton logs within the Beat Saber version. To access logs, go to \"Version Settings ⚙️ > Open Folder > Open `Logs` Folder\"."
             },
             "maps": {
                 "search-bar": {
