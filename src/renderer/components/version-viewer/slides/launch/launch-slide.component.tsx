@@ -19,30 +19,129 @@ import { BSVersionManagerService } from "renderer/services/bs-version-manager.se
 import { safeLt } from "shared/helpers/semver.helpers";
 import { WarningIcon } from "renderer/components/svgs/icons/warning-icon.component";
 import Tippy from "@tippyjs/react";
+import { BsmIconType } from "renderer/components/svgs/bsm-icon.component";
 
 type Props = { version: BSVersion };
 
+type AdvancedButton = Readonly<{
+    text: string;
+    infoText: string;
+    active: boolean;
+    icon: BsmIconType;
+    onClick: () => void;
+}>;
+
+function useAdvancedOptions({
+    version
+}: Readonly<{
+    version: BSVersion
+}>) {
+    const { text: t } = useTranslationV2();
+    const configService = useService(ConfigurationService);
+
+    const [advancedLaunch, setAdvancedLaunch] = useState(false);
+    const [additionalArgsString, setAdditionalArgsString] = useState<string>(configService.get<string>("additionnal-args") || "");
+
+    const [skipSteamMode, setSkipSteamMode] = useState(!!configService.get<boolean>(LaunchMods.SKIPSTEAM_MOD));
+    const [protonLogs, setProtonLogs] = useState(!!configService.get<boolean>(LaunchMods.PROTON_LOGS_MOD));
+
+    useEffect(() => {
+        configService.set("additionnal-args", additionalArgsString);
+    }, [additionalArgsString]);
+
+    const handleAdditionalArgsChange = (e: ChangeEvent<HTMLInputElement>) => setAdditionalArgsString(() => e.target.value);
+
+    const advancedButtons: AdvancedButton[] = [];
+    if (!(version.oculus || version.metadata?.store === BsStore.OCULUS)) {
+        advancedButtons.push({
+            text: "pages.version-viewer.launch-mods.skipsteam",
+            infoText: "pages.version-viewer.launch-mods.skipsteam-description",
+            active: skipSteamMode,
+            icon: "null",
+            onClick: () => {
+                const value = !skipSteamMode;
+                setSkipSteamMode(value);
+                configService.set(LaunchMods.SKIPSTEAM_MOD, value);
+            }
+        });
+    }
+
+    if (window.electron.platform === "linux") {
+        advancedButtons.push({
+            text: "pages.version-viewer.launch-mods.proton-logs",
+            infoText: "pages.version-viewer.launch-mods.proton-logs-description",
+            active: protonLogs,
+            icon: "null",
+            onClick: () => {
+                const value = !protonLogs;
+                setProtonLogs(value);
+                configService.set(LaunchMods.PROTON_LOGS_MOD, value);
+            }
+        });
+    }
+
+    const renderAdvancedLaunchOptions = () => {
+        return <div className="pt-4 w-2/3 flex flex-col items-center gap-3">
+                <div className="relative">
+                    <GlowEffect className="!rounded-full" visible={!!(advancedLaunch && additionalArgsString)}/>
+                    <BsmButton
+                        className={cn("rounded-full w-fit text-lg py-1 px-7 bg-theme-2 text-gray-800 dark:text-white", (advancedLaunch && additionalArgsString) ? "" : "shadow-md shadow-black")}
+                        text="pages.version-viewer.launch-mods.advanced-launch.button"
+                        withBar={false}
+                        onClick={e => {
+                            e.preventDefault();
+                            setAdvancedLaunch(prev => !prev);
+                        }}
+                    />
+                </div>
+
+                <div className="bg-light-main-color-2 dark:bg-main-color-2 h-9 rounded-full overflow-hidden flex items-center justify-center transition-all duration-100 ease-in-out w-full origin-top shadow-black shadow-sm" style={{ scale: advancedLaunch ? "100% 100%" : "0 0" }}>
+                    <input className="w-[calc(100%-12px)] h-[calc(100%-12px)] bg-light-main-color-1 dark:bg-main-color-1 text-black dark:text-white rounded-full outline-none text-center" type="text" placeholder={t("pages.version-viewer.launch-mods.advanced-launch.placeholder")} value={additionalArgsString} onChange={handleAdditionalArgsChange} />
+                </div>
+
+                {advancedButtons.length > 0 &&
+                    <div className="grid grid-cols-3 gap-3 transition-all duration-300 ease-in-out origin-top" style={{ scale: advancedLaunch ? "75% 75%" : "0% 0%" }}>
+                        {advancedLaunch && advancedButtons.map(button =>
+                            <LaunchModToogle
+                                text={button.text}
+                                infoText={button.infoText}
+                                active={button.active}
+                                icon={button.icon}
+                                onClick={button.onClick}
+                            />
+                        )}
+                    </div>
+                }
+            </div>
+    }
+
+    return {
+        advancedLaunch, additionalArgsString,
+        skipSteamMode, protonLogs,
+        renderAdvancedLaunchOptions
+    };
+}
+
 export function LaunchSlide({ version }: Props) {
-    const { text: t, element: te } = useTranslationV2();
+    const { element: te } = useTranslationV2();
 
     const configService = useService(ConfigurationService);
     const bsLauncherService = useService(BSLauncherService);
     const bsDownloader = useService(BsDownloaderService);
     const versions = useService(BSVersionManagerService);
 
+    const {
+        advancedLaunch, additionalArgsString,
+        skipSteamMode, protonLogs,
+        renderAdvancedLaunchOptions
+    } = useAdvancedOptions({ version });
+
     const [oculusMode, setOculusMode] = useState(!!configService.get<boolean>(LaunchMods.OCULUS_MOD));
     const [desktopMode, setDesktopMode] = useState(!!configService.get<boolean>(LaunchMods.DESKTOP_MOD));
     const [debugMode, setDebugMode] = useState(!!configService.get<boolean>(LaunchMods.DEBUG_MOD));
-    const [advancedLaunch, setAdvancedLaunch] = useState(false);
-    const [additionalArgsString, setAdditionalArgsString] = useState<string>(configService.get<string>("additionnal-args") || "");
-    const [skipSteamMode, setSkipSteamMode] = useState(!!configService.get<boolean>(LaunchMods.SKIPSTEAM_MOD));
     const versionDownloading = useObservable(() => bsDownloader.downloadingVersion$);
 
     const versionRunning = useObservable(() => bsLauncherService.versionRunning$);
-
-    useEffect(() => {
-        configService.set("additionnal-args", additionalArgsString);
-    }, [additionalArgsString]);
 
     useEffect(() => {
         if(desktopMode){ return; }
@@ -57,15 +156,11 @@ export function LaunchSlide({ version }: Props) {
             setOculusMode(value);
         } else if (mode === LaunchMods.DESKTOP_MOD) {
             setDesktopMode(value);
-        } else if (mode === LaunchMods.SKIPSTEAM_MOD) {
-            setSkipSteamMode(value);
         }
         configService.set(mode, value);
     };
 
-    const handleAdditionalArgsChange = (e: ChangeEvent<HTMLInputElement>) => setAdditionalArgsString(() => e.target.value);
-
-    const launch = () => {
+    const launch = async () => {
         const additionalArgs = additionalArgsString?.split(";").map(arg => arg.trim()).filter(arg => arg.length > 0);
 
         const launch$ = bsLauncherService.launch({
@@ -75,6 +170,7 @@ export function LaunchSlide({ version }: Props) {
             debug: debugMode,
             additionalArgs: advancedLaunch ? additionalArgs : [],
             skipSteam: skipSteamMode,
+            protonLogs,
         });
 
         return lastValueFrom(launch$).catch(() => {});
@@ -104,26 +200,9 @@ export function LaunchSlide({ version }: Props) {
                 <LaunchModToogle infoText="pages.version-viewer.launch-mods.desktop-description" icon="desktop" onClick={() => setMode(LaunchMods.DESKTOP_MOD, !desktopMode)} active={desktopMode} text="pages.version-viewer.launch-mods.desktop" />
                 <LaunchModToogle infoText="pages.version-viewer.launch-mods.debug-description" icon="terminal" onClick={() => setMode(LaunchMods.DEBUG_MOD, !debugMode)} active={debugMode} text="pages.version-viewer.launch-mods.debug" />
             </div>
-            <div className="pt-4 w-2/3 flex flex-col items-center gap-3">
-                <div className="relative">
-                    <GlowEffect className="!rounded-full" visible={!!(advancedLaunch && additionalArgsString)}/>
-                    <BsmButton
-                        className={cn("rounded-full w-fit text-lg py-1 px-7 bg-theme-2 text-gray-800 dark:text-white", (advancedLaunch && additionalArgsString) ? "" : "shadow-md shadow-black")}
-                        text="pages.version-viewer.launch-mods.advanced-launch.button"
-                        withBar={false}
-                        onClick={e => {
-                            e.preventDefault();
-                            setAdvancedLaunch(prev => !prev);
-                        }}
-                    />
-                </div>
-                <div className="bg-light-main-color-2 dark:bg-main-color-2 h-9 rounded-full overflow-hidden flex items-center justify-center transition-all duration-100 ease-in-out w-full origin-top shadow-black shadow-sm" style={{ scale: advancedLaunch ? "100% 100%" : "0 0" }}>
-                    <input className="w-[calc(100%-12px)] h-[calc(100%-12px)] bg-light-main-color-1 dark:bg-main-color-1 text-black dark:text-white rounded-full outline-none text-center" type="text" placeholder={t("pages.version-viewer.launch-mods.advanced-launch.placeholder")} value={additionalArgsString} onChange={handleAdditionalArgsChange} />
-                </div>
-                <div className="grid grid-cols-3 gap-3 transition-all duration-300 ease-in-out origin-top" style={{ scale: advancedLaunch ? "75% 75%" : "0% 0%" }}>
-                    {advancedLaunch && !(version.oculus || version.metadata?.store === BsStore.OCULUS) && <LaunchModToogle infoText="pages.version-viewer.launch-mods.skipsteam-description" icon="null" onClick={() => setMode(LaunchMods.SKIPSTEAM_MOD, !skipSteamMode)} active={skipSteamMode} text="pages.version-viewer.launch-mods.skipsteam" />}
-                </div>
-            </div>
+
+            {renderAdvancedLaunchOptions()}
+
             <div className='grow flex justify-center items-center'>
                 <BsmButton
                     onClick={launch}

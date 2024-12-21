@@ -7,5 +7,8 @@ export interface LaunchOption {
     debug?: boolean,
     additionalArgs?: string[],
     admin?: boolean,
-    skipSteam?: boolean
+
+    // Advanced options
+    skipSteam?: boolean,
+    protonLogs?: boolean,
 }

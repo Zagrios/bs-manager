@@ -52,7 +52,9 @@
                     "placeholder": "Additional arguments ex: --revert; --nowait"
                 },
                 "skipsteam": "Skip Steam",
-                "skipsteam-description": "Stops Steam from opening automatically with Beat Saber, enable if you are using a different VR runtime like WiVRn or Monado that SteamVR may interfere with."
+                "skipsteam-description": "Stops Steam from opening automatically with Beat Saber, enable if you are using a different VR runtime like WiVRn or Monado that SteamVR may interfere with.",
+                "proton-logs": "Proton Logs",
+                "proton-logs-description": "Writes the proton logs within the Beat Saber version. To access logs, go to \"Version Settings ⚙️ > Open Folder > Open `Logs` Folder\"."
             },
             "maps": {
                 "search-bar": {
