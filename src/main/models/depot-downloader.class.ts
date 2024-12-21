@@ -1,30 +1,48 @@
+import path from "path";
+import fs from "fs";
 import { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio, spawn } from "child_process";
 import { Observable, ReplaySubject, Subscriber, filter, map, share } from "rxjs";
 import { DepotDownloaderArgsOptions, DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderEventTypes, DepotDownloaderInfoEvent, DepotDownloaderWarningEvent } from "../../shared/models/bs-version-download/depot-downloader.model";
+import { UtilsService } from 'main/services/utils.service';
+import { CustomError } from "shared/models/exceptions/custom-error.class";
 
 export class DepotDownloader {
+
+    private static readonly EXE_PATH = path.join(
+        UtilsService.getInstance().getAssetsScriptsPath(),
+        process.platform === "win32" ? "DepotDownloader.exe" : "DepotDownloader"
+    );
 
     private process: ChildProcessWithoutNullStreams;
     private processOut$: Observable<string>;
     private subscriber: Subscriber<string>;
 
+
     public constructor(
         options: {
-            command: string, args?: string[], options?: SpawnOptionsWithoutStdio, echoStartData?: unknown
-        }, 
+            args?: string[], options?: SpawnOptionsWithoutStdio, echoStartData?: unknown
+        },
         logger?: Logger
-    ){
-        this.processOut$ = new Observable<string>(subscriber => {
+    ) {
+        if (!fs.existsSync(DepotDownloader.EXE_PATH)) {
+            throw new CustomError(
+                "DepotDownloader executable not found",
+                process.platform === "win32"
+                    ? DepotDownloaderErrorEvent.ExeNotFoundWindows
+                    : DepotDownloaderErrorEvent.ExeNotFoundLinux
+            );
+        }
 
+        this.processOut$ = new Observable<string>(subscriber => {
             this.subscriber = subscriber;
 
-            this.process = spawn(options.command, options.args ?? [], options.options);
+            this.process = spawn(DepotDownloader.EXE_PATH, options.args ?? [], options.options);
 
             subscriber.next(`[Info]|[Start]|${JSON.stringify(options.echoStartData) ?? ""}`);
-            
+
             this.process.stdout.on("data", data => {
                 const stringData: string = data.toString();
-                
+
                 if(!stringData.includes(DepotDownloaderInfoEvent.Progress) && !stringData.includes(DepotDownloaderInfoEvent.Validated)){
                     logger?.info("DepotDownloader stdout:", stringData);
                 }
@@ -32,7 +50,7 @@ export class DepotDownloader {
                 const lines: string[] = stringData.split("\n");
                 lines.forEach(line => subscriber.next(line));
             });
-            
+
             this.process.on("error", error => subscriber.error(error));
             this.process.stderr.on("error", error => subscriber.error(error));
             this.process.on("exit", () => subscriber.complete());
@@ -74,7 +92,7 @@ export class DepotDownloader {
                 data: splitedLine[2],
             }
 
-        }), 
+        }),
         filter(Boolean));
     }
 
@@ -93,7 +111,7 @@ export class DepotDownloader {
         const args: string[] = [];
 
         for(const [key, value] of Object.entries(depotDownloaderArgs)){
-            
+
             if(value === true){
                 args.push(`-${key}`);
             }
@@ -102,7 +120,7 @@ export class DepotDownloader {
                 args.push(`${value}`);
             }
         }
-        
+
         return args;
     }
 
