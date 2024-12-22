@@ -52,7 +52,7 @@ export function LaunchModItem({ id, icon: Icon, label, description, active, visi
     const { text: t } = useTranslationV2();
 
     return (
-        <Tippy theme="default" placement="top" content={description}>
+        <Tippy theme="default" className="break-words" placement="top" content={description}>
             <button id={id} className={cn("grow rounded-md bg-theme-1 relative flex justify-center items-center h-10 py-1 px-3", visible === false && "hidden")} onClick={e => { e.preventDefault(); e.stopPropagation(); onChange?.(!active) }}>
                 <BsmCheckbox className="h-4 aspect-square z-[1] relative mr-1.5" checked={active} onChange={onChange}/>
                 {Icon && <Icon className="h-full w-fit py-0.5 mr-1.5"/>}

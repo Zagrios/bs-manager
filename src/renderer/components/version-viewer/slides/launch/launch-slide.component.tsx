@@ -71,6 +71,13 @@ export function LaunchSlide({ version }: Props) {
         : setPinnedLaunchMods(prev => prev.filter(mod => mod !== launchMod));
 
     useEffect(() => {
+        let protonLogsPath: string[] = [];
+        if (window.electron.platform === "linux") {
+            protonLogsPath = version.steam
+                ? [version.path, "Logs"]
+                : ["BSInstances", version.name, "Logs"];
+        }
+
         setLaunchModItems(() => [
             {
                 id: LaunchMods.OCULUS,
@@ -126,7 +133,9 @@ export function LaunchSlide({ version }: Props) {
             {
                 id: LaunchMods.PROTON_LOGS,
                 label: t("pages.version-viewer.launch-mods.proton-logs"),
-                description: t("pages.version-viewer.launch-mods.proton-logs-description"),
+                description: t("pages.version-viewer.launch-mods.proton-logs-description", {
+                    versionPath: `${window.electron.path.join(...protonLogsPath)}/`
+                }),
                 active: activeLaunchMods.includes(LaunchMods.PROTON_LOGS),
                 pinned: pinnedLaunchMods.includes(LaunchMods.PROTON_LOGS),
                 visible: window.electron.platform === "linux",

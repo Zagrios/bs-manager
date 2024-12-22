@@ -22,7 +22,7 @@ export function LaunchModToogle({ onClick, active, text, icon: Icon, infoText }:
                 {Icon && <Icon className="h-7 shrink-0 text-gray-800 dark:text-white" />}
                 <span className="w-fit min-w-fit text-lg font-bold uppercase tracking-wide italic ">{t(text)}</span>
                 {infoText && (
-                    <Tippy content={t(infoText)} placement="top" theme="default" delay={[400, 0]}>
+                    <Tippy content={t(infoText)} className="break-words" placement="bottom" delay={[400, 0]}>
                         <div className="h-[25px] w-[25px] shrink-0 p-1.5 rounded-full cursor-help bg-light-main-color-1 dark:bg-main-color-3 hover:brightness-110">
                             <BsmIcon className="w-full h-full" icon="info" />
                         </div>
