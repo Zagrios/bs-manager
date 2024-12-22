@@ -54,7 +54,9 @@
                     "placeholder": "Параметры запуска, например: --revert; --nowait"
                 },
                 "skipsteam": "Пропустить Steam",
-                "skipsteam-description": "Предотвращает автоматическое открытие Steam с Beat Saber, включите, если вы используете другую VR-среду, такую как WiVRn или Monado, с которой SteamVR может мешать."
+                "skipsteam-description": "Предотвращает автоматическое открытие Steam с Beat Saber, включите, если вы используете другую VR-среду, такую как WiVRn или Monado, с которой SteamVR может мешать.",
+                "map-editor": "Редактор карт",
+                "map-editor-description": "Запусти официальный редактор карт Beat Saber вместо игры."
             },
             "maps": {
                 "search-bar": {

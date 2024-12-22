@@ -16,7 +16,7 @@ export function LaunchModToogle({ onClick, active, text, icon: Icon, infoText }:
     const t = useTranslation();
 
     return (
-        <button className={`relative rounded-full cursor-pointer group active:scale-95 transition-transform ${!active && "shadow-md shadow-black"}`} onClick={() => onClick(!active)}>
+        <button className={`shrink-0 relative rounded-full cursor-pointer group active:scale-95 transition-transform ${!active && "shadow-md shadow-black"}`} onClick={() => onClick(!active)}>
             <GlowEffect visible={active} className="absolute !rounded-full blur-[2px]" />
             <div className="w-full h-full px-6 flex gap-1.5 justify-center items-center bg-light-main-color-2 dark:bg-main-color-2 p-3 rounded-full text-gray-800 dark:text-white group-hover:bg-light-main-color-1 dark:group-hover:bg-main-color-1">
                 {Icon && <Icon className="h-7 shrink-0 text-gray-800 dark:text-white" />}

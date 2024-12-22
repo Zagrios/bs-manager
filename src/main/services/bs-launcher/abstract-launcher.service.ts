@@ -25,16 +25,20 @@ export abstract class AbstractLauncherService {
         if(!launchOptions.version.steam && !launchOptions.version.oculus){
             launchArgs.push("--no-yeet")
         }
-        if (launchOptions.launchMods?.includes(LaunchMods.OCULUS)) {
+        if(launchOptions.launchMods?.includes(LaunchMods.OCULUS)) {
             launchArgs.push("-vrmode");
             launchArgs.push("oculus");
         }
-        if (launchOptions.launchMods?.includes(LaunchMods.FPFC)) {
+        if(launchOptions.launchMods?.includes(LaunchMods.FPFC)) {
             launchArgs.push("fpfc");
         }
-        if (launchOptions.launchMods?.includes(LaunchMods.DEBUG)) {
+        if(launchOptions.launchMods?.includes(LaunchMods.DEBUG)) {
             launchArgs.push("--verbose");
         }
+        if(launchOptions.launchMods?.includes(LaunchMods.EDITOR)) {
+            launchArgs.push("editor");
+        }
+
         if (launchOptions.additionalArgs) {
             launchArgs.push(...launchOptions.additionalArgs);
         }

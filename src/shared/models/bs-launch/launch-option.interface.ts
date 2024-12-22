@@ -5,6 +5,7 @@ export const LaunchMods = {
     FPFC: "fpfc",
     DEBUG: "debug",
     SKIP_STEAM: "skip_steam",
+    EDITOR: "editor",
 } as const;
 
 export type LaunchMod = typeof LaunchMods[keyof typeof LaunchMods];

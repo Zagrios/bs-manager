@@ -25,6 +25,7 @@ import { OculusIcon } from "renderer/components/svgs/icons/oculus-icon.component
 import { DesktopIcon } from "renderer/components/svgs/icons/desktop-icon.component";
 import { TerminalIcon } from "renderer/components/svgs/icons/terminal-icon.component";
 import { DefaultConfigKey } from "renderer/config/default-configuration.config";
+import { EditIcon } from "renderer/components/svgs/icons/edit-icon.component";
 
 type Props = { version: BSVersion };
 
@@ -65,7 +66,7 @@ export function LaunchSlide({ version }: Props) {
         setLaunchModItems(() => [
             {
                 id: LaunchMods.OCULUS,
-                Icon: OculusIcon,
+                icon: OculusIcon,
                 label: t("pages.version-viewer.launch-mods.oculus"),
                 description: t("pages.version-viewer.launch-mods.oculus-description"),
                 active: activeLaunchMods.includes(LaunchMods.OCULUS),
@@ -76,7 +77,7 @@ export function LaunchSlide({ version }: Props) {
             },
             {
                 id: LaunchMods.FPFC,
-                Icon: DesktopIcon,
+                icon: DesktopIcon,
                 label: t("pages.version-viewer.launch-mods.desktop"),
                 description: t("pages.version-viewer.launch-mods.desktop-description"),
                 active: activeLaunchMods.includes(LaunchMods.FPFC),
@@ -86,7 +87,7 @@ export function LaunchSlide({ version }: Props) {
             },
             {
                 id: LaunchMods.DEBUG,
-                Icon: TerminalIcon,
+                icon: TerminalIcon,
                 label: t("pages.version-viewer.launch-mods.debug"),
                 description: t("pages.version-viewer.launch-mods.debug-description"),
                 active: activeLaunchMods.includes(LaunchMods.DEBUG),
@@ -102,6 +103,18 @@ export function LaunchSlide({ version }: Props) {
                 pinned: pinnedLaunchMods.includes(LaunchMods.SKIP_STEAM),
                 onChange: checked => checked ? setActiveLaunchMods(prev => [...prev, LaunchMods.SKIP_STEAM]) : setActiveLaunchMods(prev => prev.filter(mod => mod !== LaunchMods.SKIP_STEAM)),
                 onPinChange: pinned => pinned ? setPinnedLaunchMods(prev => [...prev, LaunchMods.SKIP_STEAM]) : setPinnedLaunchMods(prev => prev.filter(mod => mod !== LaunchMods.SKIP_STEAM)),
+            },
+            {
+                id: LaunchMods.EDITOR,
+                icon: EditIcon,
+                label: t("pages.version-viewer.launch-mods.map-editor"),
+                description: t("pages.version-viewer.launch-mods.map-editor-description"),
+                active: activeLaunchMods.includes(LaunchMods.EDITOR),
+                pinned: pinnedLaunchMods.includes(LaunchMods.EDITOR),
+                visible: !safeLt(version.BSVersion, "1.23.0"),
+                onChange: checked => checked ? setActiveLaunchMods(prev => [...prev, LaunchMods.EDITOR]) : setActiveLaunchMods(prev => prev.filter(mod => mod !== LaunchMods.EDITOR)),
+                onPinChange: pinned => pinned ? setPinnedLaunchMods(prev => [...prev, LaunchMods.EDITOR]) : setPinnedLaunchMods(prev => prev.filter(mod => mod !== LaunchMods.EDITOR)),
+
             }
         ]);
     }, [activeLaunchMods, pinnedLaunchMods, version]);
@@ -123,8 +136,8 @@ export function LaunchSlide({ version }: Props) {
     }, [version]);
 
     return (
-        <div className="w-full shrink-0 items-center relative flex flex-col justify-start">
-            <div className="flex flex-col gap-3 justify-center items-center mb-5">
+        <div className="w-full shrink-0 items-center relative flex flex-col justify-start overflow-hidden">
+            <div className="flex flex-col gap-3 justify-center items-center mb-4">
                 <div className="h-24 flex justify-center items-center">
                     <BsmImage className="relative object-cover h-28" image={BSLogo} />
                 </div>
@@ -139,12 +152,12 @@ export function LaunchSlide({ version }: Props) {
                     )}
                 </h1>
             </div>
-            <div className="grid grid-flow-col gap-6">
+            <div className="w-full flex justify-center items-center gap-4 flex-wrap scrollbar-default">
                 {pinnedLaunchMods.map(id => launchModItems.find(mod => mod.id === id)).map(launchMod => {
                     if(launchMod?.visible === false || !launchMod?.pinned) { return undefined; }
                     return (
                         <LaunchModToogle
-                            icon={launchMod.Icon}
+                            icon={launchMod.icon}
                             infoText={launchMod.description}
                             text={launchMod.label}
                             active={launchMod.active}
@@ -153,7 +166,7 @@ export function LaunchSlide({ version }: Props) {
                     );
                 })}
             </div>
-            <div className="pt-4 w-2/3 flex flex-col items-center gap-3">
+            <div className="mt-4 flex flex-col items-center justify-center gap-3">
                 <div className="relative">
                     <GlowEffect className="!rounded-full" visible={!!(activeLaunchMods?.length || additionalArgsString)}/>
                     <BsmButton
