@@ -2,7 +2,7 @@ import Tippy from "@tippyjs/react";
 import { GlowEffect } from "renderer/components/shared/glow-effect.component";
 import { BsmIcon } from "renderer/components/svgs/bsm-icon.component";
 import { SvgIcon } from "renderer/components/svgs/svg-icon.type";
-import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 
 type Props = {
     onClick: (active: boolean) => void;
@@ -13,7 +13,7 @@ type Props = {
 };
 
 export function LaunchModToogle({ onClick, active, text, icon: Icon, infoText }: Props) {
-    const t = useTranslation();
+    const { text: t } = useTranslationV2();
 
     return (
         <button className={`shrink-0 relative rounded-full cursor-pointer group active:scale-95 transition-transform ${!active && "shadow-md shadow-black"}`} onClick={() => onClick(!active)}>

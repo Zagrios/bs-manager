@@ -58,7 +58,7 @@
                 "map-editor": "Map Editor",
                 "map-editor-description": "Start the official Beat Saber map editor instead of the game.",
                 "proton-logs": "Proton Logs",
-                "proton-logs-description": "Writes the proton logs within the Beat Saber version. To access logs, go to \"Version Settings ⚙️ > Open Folder > Open `Logs` Folder\"."
+                "proton-logs-description": "Enables the recording of proton logs for this Beat Saber install to \"{versionPath}\"."
             },
             "maps": {
                 "search-bar": {
