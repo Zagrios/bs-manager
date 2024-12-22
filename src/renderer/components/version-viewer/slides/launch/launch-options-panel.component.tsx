@@ -24,7 +24,7 @@ export function LaunchOptionsPanel({ className, open, launchArgs, launchMods, on
             <div className="flex flex-col overflow-y-scroll scrollbar-default">
                 <div className="p-3.5">
                     <input className="h-10 w-full rounded-md bg-theme-1 text-center mb-2" type="text" placeholder={t("pages.version-viewer.launch-mods.advanced-launch.placeholder")} value={launchArgs} onChange={e => onLaunchArgsChange(e.target.value)}/>
-                    <div className="flex gap-2 flex-wrap">
+                    <div className={cn("flex gap-2 flex-wrap")}>
                         {launchMods?.map((mod) => (
                             <LaunchModItem key={mod.id} {...mod}/>
                         ))}

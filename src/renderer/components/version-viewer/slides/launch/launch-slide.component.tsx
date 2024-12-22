@@ -155,7 +155,7 @@ export function LaunchSlide({ version }: Props) {
             </div>
             <div className="pt-4 w-2/3 flex flex-col items-center gap-3">
                 <div className="relative">
-                    <GlowEffect className="!rounded-full" visible={!!(advancedLaunch && additionalArgsString)}/>
+                    <GlowEffect className="!rounded-full" visible={!!(activeLaunchMods?.length || additionalArgsString)}/>
                     <BsmButton
                         className={cn("rounded-full w-fit text-lg py-1 px-7 bg-theme-2 text-gray-800 dark:text-white", (advancedLaunch && additionalArgsString) ? "" : "shadow-md shadow-black")}
                         text="pages.version-viewer.launch-mods.advanced-launch.button"
@@ -167,7 +167,7 @@ export function LaunchSlide({ version }: Props) {
                     />
                 </div>
             </div>
-            <LaunchOptionsPanel open={advancedLaunch} launchMods={launchModItems} className="w-full max-w-3xl mt-3" onLaunchArgsChange={setAdditionalArgsString}/>
+            <LaunchOptionsPanel open={advancedLaunch} launchMods={launchModItems} launchArgs={additionalArgsString} className="w-full max-w-3xl mt-3" onLaunchArgsChange={setAdditionalArgsString}/>
             <div className='grow flex justify-center items-center p-2'>
                 <BsmButton
                     onClick={launch}
