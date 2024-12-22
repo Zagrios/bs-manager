@@ -24,7 +24,9 @@
         "Unknown": "发生了一个错误 ¯\\_(ツ)_/¯",
         "warning": "警告",
         "continue": "继续",
-        "shared": "共享"
+        "shared": "共享",
+        "pin": "固定",
+        "unpin": "取消固定"
     },
     "title-bar": {
         "outdated": "过时"
@@ -48,11 +50,13 @@
                 "debug-description": "为 IPA 启用输出日志窗口。 会显示所用 Mod 的 debug 输出",
                 "outdated-tippy": "此版本已过时，某些模组或功能可能无法按预期运行。建议使用推荐版本的 Beat Saber ({recommendedVersion})，以享受最新功能和修复。",
                 "advanced-launch": {
-                    "button": "高级启动",
+                    "button": "启动选项",
                     "placeholder": "额外启动参数，例如: --revert; --nowait"
                 },
                 "skipsteam": "跳过 Steam",
-                "skipsteam-description": "防止 Steam 与 Beat Saber 自动打开，如果您使用的是其他 VR 运行时，如 WiVRn 或 Monado，SteamVR 可能会干扰，请启用此选项。"
+                "skipsteam-description": "防止 Steam 与 Beat Saber 自动打开，如果您使用的是其他 VR 运行时，如 WiVRn 或 Monado，SteamVR 可能会干扰，请启用此选项。",
+                "map-editor": "地图编辑器",
+                "map-editor-description": "启动官方的 Beat Saber 地图编辑器，而不是游戏。"
             },
             "maps": {
                 "search-bar": {

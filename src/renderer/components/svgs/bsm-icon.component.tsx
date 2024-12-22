@@ -16,7 +16,7 @@ import { TaskIcon } from "./icons/task-icon.component";
 import { CopyIcon } from "./icons/copy-icon.component";
 import { SteamIcon } from "./icons/steam-icon.component";
 import { CSSProperties, memo } from "react";
-import EditIcon from "./icons/edit-icon.component";
+import { EditIcon } from "./icons/edit-icon.component";
 import { ExportIcon } from "./icons/export-icon.component";
 import PatreonIcon from "./icons/patreon-icon.component";
 import { SearchIcon } from "./icons/search-icon.component";

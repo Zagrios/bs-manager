@@ -2,7 +2,7 @@ import { BSVersion } from "shared/bs-version.interface";
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { distinctUntilChanged, lastValueFrom, map, of, Subscription, switchMap, take } from "rxjs";
-import { BSLauncherService, LaunchMods } from "renderer/services/bs-launcher.service";
+import { BSLauncherService } from "renderer/services/bs-launcher.service";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { BSUninstallerService } from "renderer/services/bs-uninstaller.service";
 import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
@@ -60,10 +60,7 @@ export function BsVersionItem(props: { version: BSVersion }) {
         if(equal(downloadingVersion, props.version)){ return; }
         const launch$ = launcherService.launch({
             version: state,
-            oculus: !!configService.get<boolean>(LaunchMods.OCULUS_MOD),
-            desktop: !!configService.get<boolean>(LaunchMods.DESKTOP_MOD),
-            debug: !!configService.get<boolean>(LaunchMods.DEBUG_MOD),
-            skipSteam: !!configService.get<boolean>(LaunchMods.SKIPSTEAM_MOD),
+            launchMods: configService.get("launch-mods") ?? [],
         });
         return lastValueFrom(launch$).catch(() => {});
     };

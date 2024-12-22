@@ -24,7 +24,9 @@
         "unknown": "Une erreur inconnue s'est produite ¯\\_(ツ)_/¯",
         "warning": "Attention",
         "continue": "Continuer",
-        "shared": "Partagé"
+        "shared": "Partagé",
+        "pin": "Épingler",
+        "unpin": "Désépingler"
     },
     "title-bar": {
         "outdated": "obsolète"
@@ -48,11 +50,13 @@
                 "debug-description": "Active la fenêtre de log pour IPA. Cela affichera la console de débogage utilisée par les mods.",
                 "outdated-tippy": "Cette version est obsolète et certains mods ou fonctionnalités peuvent ne plus fonctionner comme prévu. Préférez utiliser la version recommandée ({recommendedVersion}) de Beat Saber pour profiter des dernières fonctionnalités et correctifs.",
                 "advanced-launch": {
-                    "button": "Lancement avancé",
+                    "button": "Options de lancement",
                     "placeholder": "Arguments supplémentaires ex: --revert; --nowait"
                 },
                 "skipsteam": "Ignorer Steam",
-                "skipsteam-description": "Empêche Steam de s'ouvrir automatiquement avec Beat Saber, activez-le si vous utilisez un autre runtime VR comme WiVRn ou Monado avec lequel SteamVR pourrait interférer."
+                "skipsteam-description": "Empêche Steam de s'ouvrir automatiquement avec Beat Saber, activez-le si vous utilisez un autre runtime VR comme WiVRn ou Monado avec lequel SteamVR pourrait interférer.",
+                "map-editor": "Éditeur de map",
+                "map-editor-description": "Lance l'éditeur officiel de map de Beat Saber au lieu du jeu."
             },
             "maps": {
                 "search-bar": {
