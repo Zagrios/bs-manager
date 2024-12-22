@@ -24,7 +24,9 @@
         "unknown": "An unknown error occurred ¯\\_(ツ)_/¯",
         "warning": "Warning",
         "continue": "Continue",
-        "shared": "Shared"
+        "shared": "Shared",
+        "pin": "Pin",
+        "unpin": "Unpin"
     },
     "title-bar": {
         "outdated": "outdated"
@@ -48,7 +50,7 @@
                 "debug-description": "Enables the output log window for IPA. This will show the debug console that mods use.",
                 "outdated-tippy": "This version is outdated, and some mods or features may no longer work as expected. Prefer using the recommended version ({recommendedVersion}) of Beat Saber to enjoy the latest features and bugfixes.",
                 "advanced-launch": {
-                    "button": "Advanced launch",
+                    "button": "Launch options",
                     "placeholder": "Additional arguments ex: --revert; --nowait"
                 },
                 "skipsteam": "Skip Steam",

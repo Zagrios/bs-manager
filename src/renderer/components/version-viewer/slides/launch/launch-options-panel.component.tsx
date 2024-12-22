@@ -49,13 +49,15 @@ export type LaunchModItemProps = {
 
 export function LaunchModItem({ id, Icon, label, description, active, visible, pinned, onChange, onPinChange }: LaunchModItemProps) {
 
+    const { text: t } = useTranslationV2();
+
     return (
         <Tippy theme="default" placement="top" content={description}>
             <button id={id} className={cn("grow rounded-md bg-theme-1 relative flex justify-center items-center gap-1.5 h-10 py-1 px-3", visible === false && "hidden")} onClick={e => { e.preventDefault(); e.stopPropagation(); onChange?.(!active) }}>
                 <BsmCheckbox className="h-4 aspect-square z-[1] relative" checked={active} onChange={onChange}/>
                 {Icon && <Icon className="h-full w-fit py-0.5"/>}
                 <span className="font-bold">{label}</span>
-                <Tippy theme="default" placement="right" content="Pin" hideOnClick>
+                <Tippy theme="default" placement="right" content={pinned ? t("misc.unpin") : t("misc.pin")} hideOnClick>
                     <button className="h-full py-2" onClick={e => { e.preventDefault(); e.stopPropagation(); onPinChange?.(!pinned) }}>
                         {pinned ? <UnpinIcon className="size-full"/> : <PinIcon className="size-full"/>}
                     </button>

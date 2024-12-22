@@ -24,7 +24,9 @@
         "unknown": "發生了一個錯誤 ¯\\_(ツ)_/¯",
         "warning": "警告",
         "continue": "繼續",
-        "shared": "共享"
+        "shared": "共享",
+        "pin": "固定",
+        "unpin": "取消固定"
     },
     "title-bar": {
         "outdated": "過時"
@@ -48,7 +50,7 @@
                 "debug-description": "為 IPA 啟用輸出日誌窗口。 會顯示所用 Mod 的 debug 輸出",
                 "outdated-tippy": "此版本已過時，某些模組或功能可能無法按預期運作。建議使用推薦版本的 Beat Saber ({recommendedVersion})，以享受最新功能和修復。",
                 "advanced-launch": {
-                    "button": "高級啟動",
+                    "button": "啟動選項",
                     "placeholder": "額外啟動參數，例如: --revert; --nowait"
                 },
                 "skipsteam": "跳過 Steam",

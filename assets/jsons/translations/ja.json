@@ -24,7 +24,9 @@
         "unknown": "不明なエラーが発生しました (´・ω・`)",
         "warning": "警告",
         "continue": "続ける",
-        "shared": "共有"
+        "shared": "共有",
+        "pin": "固定",
+        "unpin": "固定解除"
     },
     "title-bar": {
         "outdated": "時代遅れ"
@@ -48,7 +50,7 @@
                 "debug-description": "IPAの出力ログウィンドウを有効にします。これはMODのデバッグコンソールを表示します。",
                 "outdated-tippy": "このバージョンは古いため、一部のMODや機能が期待通りに動作しない可能性があります。最新の機能やバグ修正を楽しむには、推奨バージョン ({recommendedVersion}) のBeat Saberを使用することをお勧めします。",
                 "advanced-launch": {
-                    "button": "高度な起動",
+                    "button": "起動オプション",
                     "placeholder": "追加引数 例：--revert; --nowait"
                 },
                 "skipsteam": "Steamをスキップ",
