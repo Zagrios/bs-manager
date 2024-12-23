@@ -11,7 +11,7 @@ async function isProxyEnabled(): Promise<boolean>{
     if(!key.exists){ throw new Error("Key \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\" not exist"); }
     const registryValue = key.values.ProxyEnable as RegDwordValue;
     if(!registryValue){ throw new Error("Value \"ProxyEnable\" not exist"); }
-    return (1 === registryValue.value) ? true : false;
+    return (1 === registryValue.value);
 }
 
 async function getProxyServer(): Promise<string>{
