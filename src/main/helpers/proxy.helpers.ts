@@ -1,6 +1,53 @@
 import log from 'electron-log';
-import Winreg from 'winreg';
+import { RegDwordValue, RegSzValue } from "regedit-rs"
+import { execOnOs } from "../helpers/env.helpers";
 import { bootstrap } from 'global-agent';
+
+const { list } = (execOnOs({ win32: () => require("regedit-rs") }, true) ?? {}) as typeof import("regedit-rs");
+
+async function isProxyEnabled(): Promise<boolean>{
+    const res = await list("HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings");
+    const key = res["HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings"];
+    if(!key.exists){ throw new Error("Key \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\" not exist"); }
+    const registryValue = key.values.ProxyEnable as RegDwordValue;
+    if(!registryValue){ throw new Error("Value \"ProxyEnable\" not exist"); }
+    return (1 === registryValue.value) ? true : false;
+}
+
+async function getProxyServer(): Promise<string>{
+    const res = await list("HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings");
+    const key = res["HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings"];
+    if(!key.exists){ throw new Error("Key \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\" not exist"); }
+    const registryValue = key.values.ProxyServer as RegSzValue;
+    if(!registryValue){ throw new Error("Value \"ProxyServer\" not exist"); }
+    return registryValue.value;
+}
+
+async function getProxyOverride(): Promise<string>{
+    const res = await list("HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings");
+    const key = res["HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings"];
+    if(!key.exists){ throw new Error("Key \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\" not exist"); }
+    const registryValue = key.values.ProxyOverride as RegSzValue;
+    if(!registryValue){ throw new Error("Value \"ProxyOverride\" not exist"); }
+    return registryValue.value;
+}
+
+async function configureWindowsProxy() : Promise<void> {
+    if (await isProxyEnabled().catch(err => log.error(err))) {
+        const httpProxyUrl = `http://${await getProxyServer().catch(err => log.error(err))}`
+        process.env.GLOBAL_AGENT_HTTP_PROXY = httpProxyUrl;
+        process.env.GLOBAL_AGENT_HTTPS_PROXY = httpProxyUrl;
+
+        process.env.GLOBAL_AGENT_NO_PROXY = `${await getProxyOverride().catch(err => log.error(err))}`;
+
+        log.info(`configureWindowsProxy: Using system proxy: ${process.env.GLOBAL_AGENT_HTTP_PROXY}`);
+
+        bootstrap();
+    }
+    else {
+        log.info(`configureWindowsProxy: System proxy not detected`);
+    }
+}
 
 export function configureProxy() {
     if (process.platform === "win32") {
@@ -8,61 +55,4 @@ export function configureProxy() {
     } else {
         log.info('configureProxy: Unsupported platform');
     }
-}
-
-async function configureWindowsProxy() {
-    if (await getWindowsProxy()){
-        bootstrap();
-        log.info(`Using system proxy: ${process.env.GLOBAL_AGENT_HTTP_PROXY}`);
-    }
-}
-
-function getWindowsProxy() {
-    return new Promise((resolve, reject) => {
-        const regKey = new Winreg({
-            hive: Winreg.HKCU,
-            key: '\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings'
-        });
-
-        regKey.get('ProxyEnable', (err, result) => {
-            if (err) {
-                log.error('Error accessing registry for ProxyEnable: ', err);
-                resolve(false);
-            }
-
-            // ProxyEnable = 1 means proxy is enabled, 0 means it's disabled
-            if (parseInt(result.value) !== 1) {
-                log.info('Proxy Enabled: false');
-                resolve(false);
-            } else {
-                log.info('Proxy Enabled: true');
-
-                regKey.get('ProxyServer', (err, result) => {
-                    if (err) {
-                        log.error('Error accessing registry for ProxyServer: ', err);
-                        resolve(false);
-                    }
-
-                    const httpProxyUrl = `http://${result.value}`
-                    process.env.GLOBAL_AGENT_HTTP_PROXY = httpProxyUrl;
-                    process.env.GLOBAL_AGENT_HTTPS_PROXY = httpProxyUrl;
-
-                    log.info('Proxy Server: ', httpProxyUrl);
-
-                    regKey.get('ProxyOverride', (err, result) => {
-                        if (err) {
-                            log.error('Error accessing registry for ProxyOverride: ', err);
-                            resolve(false);
-                        }
-
-                        process.env.GLOBAL_AGENT_NO_PROXY = result.value;
-
-                        log.info('Proxy Override: ', result.value);
-
-                        resolve(true);
-                    });
-                });
-            }
-        });
-    });
 }
