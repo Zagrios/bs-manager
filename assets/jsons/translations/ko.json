@@ -329,6 +329,8 @@
                     "msg": {
                         "401": "Steam이 Beat Saber 다운로드를 허용하지 않는 것 같습니다 😢",
                         "404": "Steam 서버에 연결할 수 없습니다.",
+                        "ExeNotFoundWindows": "「DepotDownloader.exe」가 없습니다. 실행 파일이 바이러스 백신 프로그램에 의해 격리되었는지 확인하십시오.",
+                        "ExeNotFoundLinux": "「DepotDownloader」 실행 파일이 없습니다.",
                         "Password": "비밀번호가 올바르지 않습니다.",
                         "InvalidCredentials": "유효하지 않은 로그인 자격 증명, 허가되지 않은 연결 또는 너무 많은 로그인 시도입니다.",
                         "NoManifest": "매니페스트를 찾을 수 없습니다",

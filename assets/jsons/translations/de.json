@@ -329,6 +329,8 @@
                     "msg": {
                         "401": "Steam scheint uns Beat Saber nicht herunterladen zu lassen 😢",
                         "404": "Steam-Server können nicht kontaktiert werden.",
+                        "ExeNotFoundWindows": "\"DepotDownloader.exe\" fehlt. Bitte überprüfen Sie, ob die ausführbare Datei von Ihrer Antivirensoftware quarantäneiert wurde.",
+                        "ExeNotFoundLinux": "Die ausführbare Datei \"DepotDownloader\" fehlt.",
                         "Password": "Passwort ist ungültig.",
                         "InvalidCredentials": "Ungültige Anmeldedaten, nicht genehmigte Verbindung oder zu viele Anmeldeversuche.",
                         "NoManifest": "Es wurde kein Manifest gefunden.",

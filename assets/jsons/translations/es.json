@@ -329,6 +329,8 @@
                     "msg": {
                         "401": "Parece que Steam no quiere dejarnos descargar Beat Saber 😢",
                         "404": "No se puede contactar con los servidores de Steam",
+                        "ExeNotFoundWindows": "Falta \"DepotDownloader.exe\". Por favor, verifique si el ejecutable está en cuarentena por su antivirus.",
+                        "ExeNotFoundLinux": "Falta el ejecutable de \"DepotDownloader\".",
                         "Password": "La contraseña es inválida.",
                         "InvalidCredentials": "Credenciales de inicio de sesión inválidas, conexión no aprobada o demasiados intentos de inicio de sesión.",
                         "NoManifest": "No se ha encontrado el manifiesto",
