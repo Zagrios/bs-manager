@@ -96,7 +96,6 @@
         "@types/use-double-click": "^1.0.4",
         "@types/webpack-bundle-analyzer": "^4.4.2",
         "@types/webpack-env": "^1.18.0",
-        "@types/winreg": "^1.2.36",
         "@typescript-eslint/eslint-plugin": "^6.20.0",
         "@typescript-eslint/parser": "^6.20.0",
         "autoprefixer": "^10.4.17",
@@ -204,7 +203,6 @@
         "to-ico": "^1.1.5",
         "use-double-click": "^1.0.5",
         "use-fit-text": "^2.4.0",
-        "winreg": "^1.2.5",
         "yauzl": "^3.2.0"
     },
     "engines": {
