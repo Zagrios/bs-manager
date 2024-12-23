@@ -6,6 +6,7 @@ export const LaunchMods = {
     DEBUG: "debug",
     SKIP_STEAM: "skip_steam",
     EDITOR: "editor",
+    PROTON_LOGS: "proton_logs",
 } as const;
 
 export type LaunchMod = typeof LaunchMods[keyof typeof LaunchMods];

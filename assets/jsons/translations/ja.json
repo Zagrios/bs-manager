@@ -54,7 +54,11 @@
                     "placeholder": "追加引数 例：--revert; --nowait"
                 },
                 "skipsteam": "Steamをスキップ",
-                "skipsteam-description": "Beat Saberと一緒にSteamが自動的に開くのを防ぎます。SteamVRが干渉する可能性のあるWiVRnやMonadoなど、別のVRランタイムを使用している場合は有効にしてください。"
+                "skipsteam-description": "Beat Saberと一緒にSteamが自動的に開くのを防ぎます。SteamVRが干渉する可能性のあるWiVRnやMonadoなど、別のVRランタイムを使用している場合は有効にしてください。",
+                "map-editor": "マップエディタ",
+                "map-editor-description": "ゲームの代わりに公式のBeat Saberマップエディタを起動する。",
+                "proton-logs": "プロトンログ",
+                "proton-logs-description": "このBeat Saberインストールのプロトンログの記録を「{versionPath}」に有効にします。"
             },
             "maps": {
                 "search-bar": {

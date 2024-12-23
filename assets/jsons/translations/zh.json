@@ -56,7 +56,9 @@
                 "skipsteam": "跳过 Steam",
                 "skipsteam-description": "防止 Steam 与 Beat Saber 自动打开，如果您使用的是其他 VR 运行时，如 WiVRn 或 Monado，SteamVR 可能会干扰，请启用此选项。",
                 "map-editor": "地图编辑器",
-                "map-editor-description": "启动官方的 Beat Saber 地图编辑器，而不是游戏。"
+                "map-editor-description": "启动官方的 Beat Saber 地图编辑器，而不是游戏。",
+                "proton-logs": "Proton日志",
+                "proton-logs-description": "启用此 Beat Saber 安装的质子日志，路径为\"{versionPath}\"。"
             },
             "maps": {
                 "search-bar": {

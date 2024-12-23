@@ -56,7 +56,9 @@
                 "skipsteam": "Steam 실행 건너뛰기",
                 "skipsteam-description": "Beat Saber와 함께 Steam이 자동으로 열리는 것을 방지합니다. SteamVR이 간섭할 수 있는 WiVRn 또는 Monado와 같은 다른 VR 런타임을 사용하는 경우 활성화하세요.",
                 "map-editor": "맵 편집기",
-                "map-editor-description": "게임 대신 공식 Beat Saber 맵 편집기를 실행해."
+                "map-editor-description": "게임 대신 공식 Beat Saber 맵 편집기를 실행해.",
+                "proton-logs": "프로톤 로그",
+                "proton-logs-description": "이 Beat Saber 설치에 대한 프로톤 로그 기록을 「{versionPath}」로 활성화합니다."
             },
             "maps": {
                 "search-bar": {

@@ -56,7 +56,9 @@
                 "skipsteam": "Пропустить Steam",
                 "skipsteam-description": "Предотвращает автоматическое открытие Steam с Beat Saber, включите, если вы используете другую VR-среду, такую как WiVRn или Monado, с которой SteamVR может мешать.",
                 "map-editor": "Редактор карт",
-                "map-editor-description": "Запусти официальный редактор карт Beat Saber вместо игры."
+                "map-editor-description": "Запусти официальный редактор карт Beat Saber вместо игры.",
+                "proton-logs": "Протонные логи",
+                "proton-logs-description": "Включает запись протонных логов для этой установки Beat Saber в \"{versionPath}\"."
             },
             "maps": {
                 "search-bar": {
