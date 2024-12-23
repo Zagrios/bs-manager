@@ -1,6 +1,6 @@
 import { ToogleSwitch } from "../shared/toogle-switch.component";
 
-type Item = {
+export type Item = {
     text: string;
     desc?: string;
     checked?: boolean;

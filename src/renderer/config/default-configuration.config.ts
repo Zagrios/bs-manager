@@ -1,3 +1,4 @@
+import { LaunchMod, LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { BsvSearchOrder } from "shared/models/maps/beat-saver.model";
 
 // NOTE: To refactor. Rename to LocalStorageConfigKeyValues since these are stored in the
@@ -12,6 +13,7 @@ export interface DefaultConfigKeyValues {
     "default-shared-folders": string[];
     "playlist-sort-order": BsvSearchOrder;
     "map-sort-order": BsvSearchOrder;
+    "pinned-launch-mods": LaunchMod[];
 };
 
 export type DefaultConfigKey = keyof DefaultConfigKeyValues;
@@ -31,6 +33,8 @@ export const defaultConfiguration: {
     ],
     "playlist-sort-order": BsvSearchOrder.Relevance,
     "map-sort-order": BsvSearchOrder.Relevance,
+    "pinned-launch-mods": [LaunchMods.OCULUS, LaunchMods.DEBUG]
 };
 
 export type ThemeConfig = "dark" | "light" | "os";
+

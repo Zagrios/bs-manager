@@ -20,6 +20,7 @@ import { SteamLauncherService } from "./steam-launcher.service";
 import { OculusLauncherService } from "./oculus-launcher.service";
 import { BSVersion } from "shared/bs-version.interface";
 import { BsStore } from "../../../shared/models/bs-store.enum";
+import { LaunchMod, LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 
 export class BSLauncherService {
     private static instance: BSLauncherService;
@@ -94,6 +95,14 @@ export class BSLauncherService {
     }
 
     private shortcutParamsToLaunchOption(params: ShortcutParams): LaunchOption{
+
+        const launchMods: LaunchMod[] = [];
+
+        if(params.oculusMode === "true"){ launchMods.push(LaunchMods.OCULUS); }
+        if(params.desktopMode === "true"){ launchMods.push(LaunchMods.FPFC); }
+        if(params.debug === "true"){ launchMods.push(LaunchMods.DEBUG); }
+        if(params.skipSteam === "true"){ launchMods.push(LaunchMods.SKIP_STEAM); }
+
         const res: LaunchOption = {
             version: {
                 BSVersion: params.version,
@@ -102,10 +111,8 @@ export class BSLauncherService {
                 oculus: params.versionOculus === "true",
                 ino: +params.versionIno
             },
-            oculus: params.oculusMode === "true",
-            desktop: params.desktopMode === "true",
-            debug: params.debug === "true",
-            additionalArgs: params.additionalArgs
+            additionalArgs: params.additionalArgs,
+            launchMods,
         };
 
         return res;
@@ -119,10 +126,11 @@ export class BSLauncherService {
         if(launchOptions.version.oculus){ res.versionOculus = `${launchOptions.version.oculus}`; }
         if(launchOptions.version.ino){ res.versionIno = `${launchOptions.version.ino}`; }
 
-        if(launchOptions.oculus){ res.oculusMode = "true"; }
-        if(launchOptions.desktop){ res.desktopMode = "true"; }
-        if(launchOptions.debug){ res.debug = "true"; }
+        if(launchOptions.launchMods?.includes(LaunchMods.OCULUS)){ res.oculusMode = "true"; }
+        if(launchOptions.launchMods?.includes(LaunchMods.FPFC)){ res.desktopMode = "true"; }
+        if(launchOptions.launchMods?.includes(LaunchMods.DEBUG)){ res.debug = "true"; }
         if(launchOptions.additionalArgs){ res.additionalArgs = launchOptions.additionalArgs; }
+        if(launchOptions.launchMods?.includes(LaunchMods.SKIP_STEAM)){ res.skipSteam = "true"; }
 
         return res;
     }
@@ -239,6 +247,7 @@ type ShortcutParams = {
     desktopMode?: string;
     debug?: string;
     additionalArgs?: string[];
+    skipSteam?: string;
     version: string;
     versionName?: string;
     versionIno?: string;

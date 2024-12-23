@@ -24,7 +24,9 @@
         "Unknown": "发生了一个错误 ¯\\_(ツ)_/¯",
         "warning": "警告",
         "continue": "继续",
-        "shared": "共享"
+        "shared": "共享",
+        "pin": "固定",
+        "unpin": "取消固定"
     },
     "title-bar": {
         "outdated": "过时"
@@ -48,9 +50,13 @@
                 "debug-description": "为 IPA 启用输出日志窗口。 会显示所用 Mod 的 debug 输出",
                 "outdated-tippy": "此版本已过时，某些模组或功能可能无法按预期运行。建议使用推荐版本的 Beat Saber ({recommendedVersion})，以享受最新功能和修复。",
                 "advanced-launch": {
-                    "button": "高级启动",
+                    "button": "启动选项",
                     "placeholder": "额外启动参数，例如: --revert; --nowait"
-                }
+                },
+                "skipsteam": "跳过 Steam",
+                "skipsteam-description": "防止 Steam 与 Beat Saber 自动打开，如果您使用的是其他 VR 运行时，如 WiVRn 或 Monado，SteamVR 可能会干扰，请启用此选项。",
+                "map-editor": "地图编辑器",
+                "map-editor-description": "启动官方的 Beat Saber 地图编辑器，而不是游戏。"
             },
             "maps": {
                 "search-bar": {
@@ -442,11 +448,13 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "启动中...🚀",
-                    "STEAM_LAUNCHING": "Steam 正在启动！"
+                    "STEAM_LAUNCHING": "Steam 正在启动！",
+                    "SKIPPING_STEAM_LAUNCH": "跳过 Steam 启动"
                 },
                 "msg": {
                     "BS_LAUNCHING": "别忘了热身哦 😉",
-                    "STEAM_LAUNCHING": "Beat Saber 会在 Steam 启动后自动启动。"
+                    "STEAM_LAUNCHING": "Beat Saber 会在 Steam 启动后自动启动。",
+                    "SKIPPING_STEAM_LAUNCH": "希望你知道自己在做什么 :)"
                 }
             },
             "errors": {
@@ -606,6 +614,10 @@
                     "ENOSPC": "磁盘已满，请腾出空间后再试。",
                     "UNKNOWN_ERROR": "链接文件夹时发生未知错误。"
                 }
+            },
+            "adding-error": {
+                "title": "添加共享文件夹失败",
+                "msg": "您无法将\"{folder}\"添加到共享文件夹。"
             }
         },
         "create-launch-shortcut": {
@@ -805,8 +817,13 @@
                 "add-folder": "添加文件夹",
                 "link-folder": "关联文件夹",
                 "unlink-folder": "取消关联文件夹",
-                "link-all": "关联所有"
+                "link-all": "关联所有",
+                "remove-from-the-list": "从列表中移除"
             }
+        },
+        "adding-shared-folder": {
+            "title": "添加共享文件夹",
+            "description": "链接\"{folder}\"文件夹时可能会遇到问题。您确定要添加它吗？"
         },
         "create-launch-shortcut": {
             "title": "创建快捷方式",

@@ -24,7 +24,9 @@
         "unknown": "An unknown error occurred ¯\\_(ツ)_/¯",
         "warning": "Warning",
         "continue": "Continue",
-        "shared": "Shared"
+        "shared": "Shared",
+        "pin": "Pin",
+        "unpin": "Unpin"
     },
     "title-bar": {
         "outdated": "outdated"
@@ -48,9 +50,13 @@
                 "debug-description": "Enables the output log window for IPA. This will show the debug console that mods use.",
                 "outdated-tippy": "This version is outdated, and some mods or features may no longer work as expected. Prefer using the recommended version ({recommendedVersion}) of Beat Saber to enjoy the latest features and bugfixes.",
                 "advanced-launch": {
-                    "button": "Advanced launch",
+                    "button": "Launch options",
                     "placeholder": "Additional arguments ex: --revert; --nowait"
-                }
+                },
+                "skipsteam": "Skip Steam",
+                "skipsteam-description": "Stops Steam from opening automatically with Beat Saber, enable if you are using a different VR runtime like WiVRn or Monado that SteamVR may interfere with.",
+                "map-editor": "Map Editor",
+                "map-editor-description": "Start the official Beat Saber map editor instead of the game."
             },
             "maps": {
                 "search-bar": {
@@ -257,7 +263,7 @@
                         "confirm-btn": "Yes I'm sure"
                     },
                     "error-notification": {
-                        "message": "An error occur, unable to disable hardware acceleration."
+                        "message": "An error occured, unable to disable hardware acceleration."
                     }
                 },
                 "use-symlinks": {
@@ -269,7 +275,7 @@
                         "confirm-btn": "Yes I'm sure"
                     },
                     "error-notification": {
-                        "message": "An error occur, unable to change symlinks settings."
+                        "message": "An error occured, unable to change symlinks settings."
                     }
                 }
             }
@@ -442,11 +448,13 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "Launching...🚀",
-                    "STEAM_LAUNCHING": "Steam is launching!"
+                    "STEAM_LAUNCHING": "Steam is launching!",
+                    "SKIPPING_STEAM_LAUNCH": "Skipping Steam launch"
                 },
                 "msg": {
                     "BS_LAUNCHING": "Don't forget to warm up 😉",
-                    "STEAM_LAUNCHING": "Beat Saber will automatically launch after Steam."
+                    "STEAM_LAUNCHING": "Beat Saber will automatically launch after Steam.",
+                    "SKIPPING_STEAM_LAUNCH": "I hope you know what you're doing :)"
                 }
             },
             "errors": {
@@ -606,6 +614,10 @@
                     "ENOSPC": "The disk is full, make some space and try again.",
                     "UNKNOWN_ERROR": "An unknown error has occurred while linking the folder."
                 }
+            },
+            "adding-error": {
+                "title": "Adding shared folder failed",
+                "msg": "You can't add \"{folder}\" to shared folders."
             }
         },
         "create-launch-shortcut": {
@@ -800,8 +812,13 @@
                 "add-folder": "Add Folder",
                 "link-folder": "Link Folder",
                 "unlink-folder": "Unlink Folder",
-                "link-all": "Link all"
+                "link-all": "Link all",
+                "remove-from-the-list": "Remove from the list"
             }
+        },
+        "adding-shared-folder": {
+            "title": "Adding Shared Folder",
+            "description": "You might experience issues when linking the \"{folder}\" folder. Are you sure you want to add it?"
         },
         "create-launch-shortcut": {
             "title": "Create a shortcut",

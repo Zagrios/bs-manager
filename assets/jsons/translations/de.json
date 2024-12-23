@@ -24,7 +24,9 @@
         "unknown": "Ein unbekannter Fehler ist aufgetreten ¯\\_(ツ)_/¯",
         "warning": "Achtung",
         "continue": "Weiter",
-        "shared": "Geteilt"
+        "shared": "Geteilt",
+        "pin": "Anheften",
+        "unpin": "Lösen"
     },
     "title-bar": {
         "outdated": "veraltet"
@@ -48,9 +50,13 @@
                 "debug-description": "Aktiviert das Ausgabeprotokollfenster für IPA. Dies zeigt die Debug-Konsole, welche die Mods verwenden.",
                 "outdated-tippy": "Diese Version ist veraltet, und einige Mods oder Funktionen funktionieren möglicherweise nicht wie erwartet. Es wird empfohlen, die empfohlene Version ({recommendedVersion}) von Beat Saber zu verwenden, um die neuesten Funktionen und Fehlerbehebungen zu genießen.",
                 "advanced-launch": {
-                    "button": "Erweiterter Start",
+                    "button": "Startoptionen",
                     "placeholder": "Weitere Argumente, bspw: --revert; --nowait"
-                }
+                },
+                "skipsteam": "Steam überspringen",
+                "skipsteam-description": "Verhindert, dass Steam automatisch mit Beat Saber geöffnet wird. Aktivieren Sie dies, wenn Sie eine andere VR-Laufzeit wie WiVRn oder Monado verwenden, mit der SteamVR interferieren könnte.",
+                "map-editor": "Karteneditor",
+                "map-editor-description": "Starte den offiziellen Beat Saber-Karteneditor anstelle des Spiels."
             },
             "maps": {
                 "search-bar": {
@@ -442,11 +448,13 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "Starte... 🚀",
-                    "STEAM_LAUNCHING": "Steam startet!"
+                    "STEAM_LAUNCHING": "Steam startet!",
+                    "SKIPPING_STEAM_LAUNCH": "Steam-Start überspringen"
                 },
                 "msg": {
                     "BS_LAUNCHING": "Vergiss nicht, dich aufzuwärmen 😉",
-                    "STEAM_LAUNCHING": "Beat Saber wird automatisch nach Steam gestartet."
+                    "STEAM_LAUNCHING": "Beat Saber wird automatisch nach Steam gestartet.",
+                    "SKIPPING_STEAM_LAUNCH": "Ich hoffe, du weißt, was du tust :)"
                 }
             },
             "errors": {
@@ -606,6 +614,10 @@
                     "ENOSPC": "Die Festplatte ist voll, machen Sie Platz und versuchen Sie es erneut.",
                     "UNKNOWN_ERROR": "Ein unbekannter Fehler ist beim Verknüpfen des Ordners aufgetreten."
                 }
+            },
+            "adding-error": {
+                "title": "Das Hinzufügen des freigegebenen Ordners ist fehlgeschlagen",
+                "msg": "Sie können \"{folder}\" nicht zu freigegebenen Ordnern hinzufügen."
             }
         },
         "create-launch-shortcut": {
@@ -805,8 +817,13 @@
                 "add-folder": "Ordner hinzufügen",
                 "link-folder": "Ordner verknüpfen",
                 "unlink-folder": "Ordner-Verknüpfung aufheben",
-                "link-all": "Alle verlinken"
+                "link-all": "Alle verlinken",
+                "remove-from-the-list": "Aus der Liste entfernen"
             }
+        },
+        "adding-shared-folder": {
+            "title": "Freigegebenen Ordner hinzufügen",
+            "description": "Beim Verknüpfen des Ordners \"{folder}\" können Probleme auftreten. Möchten Sie ihn wirklich hinzufügen?"
         },
         "create-launch-shortcut": {
             "title": "Verknüpfung erstellen",

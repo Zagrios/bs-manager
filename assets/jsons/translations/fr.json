@@ -24,7 +24,9 @@
         "unknown": "Une erreur inconnue s'est produite ¯\\_(ツ)_/¯",
         "warning": "Attention",
         "continue": "Continuer",
-        "shared": "Partagé"
+        "shared": "Partagé",
+        "pin": "Épingler",
+        "unpin": "Désépingler"
     },
     "title-bar": {
         "outdated": "obsolète"
@@ -48,9 +50,13 @@
                 "debug-description": "Active la fenêtre de log pour IPA. Cela affichera la console de débogage utilisée par les mods.",
                 "outdated-tippy": "Cette version est obsolète et certains mods ou fonctionnalités peuvent ne plus fonctionner comme prévu. Préférez utiliser la version recommandée ({recommendedVersion}) de Beat Saber pour profiter des dernières fonctionnalités et correctifs.",
                 "advanced-launch": {
-                    "button": "Lancement avancé",
+                    "button": "Options de lancement",
                     "placeholder": "Arguments supplémentaires ex: --revert; --nowait"
-                }
+                },
+                "skipsteam": "Ignorer Steam",
+                "skipsteam-description": "Empêche Steam de s'ouvrir automatiquement avec Beat Saber, activez-le si vous utilisez un autre runtime VR comme WiVRn ou Monado avec lequel SteamVR pourrait interférer.",
+                "map-editor": "Éditeur de map",
+                "map-editor-description": "Lance l'éditeur officiel de map de Beat Saber au lieu du jeu."
             },
             "maps": {
                 "search-bar": {
@@ -442,11 +448,13 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "Lancement...🚀",
-                    "STEAM_LAUNCHING": "Steam se lance !"
+                    "STEAM_LAUNCHING": "Steam se lance !",
+                    "SKIPPING_STEAM_LAUNCH": "Sauter le lancement de Steam"
                 },
                 "msg": {
                     "BS_LAUNCHING": "N'oublie pas de t'échauffer 😉",
-                    "STEAM_LAUNCHING": "Beat Saber se lancera automatiquement après Steam."
+                    "STEAM_LAUNCHING": "Beat Saber se lancera automatiquement après Steam.",
+                    "SKIPPING_STEAM_LAUNCH": "J'espère que vous savez ce que vous faites :)"
                 }
             },
             "errors": {
@@ -606,6 +614,10 @@
                     "ENOSPC": "Le disque est plein, faites de la place et réessayez.",
                     "UNKNOWN_ERROR": "Une erreur inconnue est survenue lors de la liaison du dossier."
                 }
+            },
+            "adding-error": {
+                "title": "L'ajout du dossier partagé a échoué",
+                "msg": "Vous ne pouvez pas ajouter \"{folder}\" aux dossiers partagés."
             }
 
         },
@@ -806,8 +818,13 @@
                 "add-folder": "Ajouter un dossier",
                 "link-folder": "Lier le dossier",
                 "unlink-folder": "Délier le dossier",
-                "link-all": "Tout lier"
+                "link-all": "Tout lier",
+                "remove-from-the-list": "Retirer de la liste"
             }
+        },
+        "adding-shared-folder": {
+            "title": "Ajout d'un dossier partagé",
+            "description": "Vous pourriez rencontrer des problèmes lors de la liaison du dossier \"{folder}\". Êtes-vous sûr de vouloir l'ajouter ?"
         },
         "create-launch-shortcut": {
             "title": "Créer un raccourci",

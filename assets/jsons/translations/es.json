@@ -24,7 +24,9 @@
         "unknown": "Se ha producido un error desconocido ¯\\_(ツ)_/¯",
         "warning": "Advertencia",
         "continue": "Continuar",
-        "shared": "Compartido"
+        "shared": "Compartido",
+        "pin": "Fijar",
+        "unpin": "Desfijar"
     },
     "title-bar": {
         "outdated": "obsoleto"
@@ -48,7 +50,7 @@
                 "debug-description": "Habilita la ventana de registro de salida para IPA. Esto mostrará la consola de depuración que usan los mods.",
                 "outdated-tippy": "Esta versión está desactualizada, y algunos mods o funciones pueden no funcionar como se espera. Es mejor usar la versión recomendada ({recommendedVersion}) de Beat Saber para disfrutar de las últimas características y correcciones.",
                 "advanced-launch": {
-                    "button": "Opciones avanzadas",
+                    "button": "Opciones de lanzamiento",
                     "placeholder": "Argumentos adicionales ej: --revert; --no-wait"
                 }
             },
@@ -60,7 +62,11 @@
                         "export-maps": "Exportar mapas",
                         "delete-maps": "Borrar mapas",
                         "delete-duplicate-maps": "Borrar duplicados"
-                    }
+                    },
+                    "skipsteam": "Saltar Steam",
+                    "skipsteam-description": "Evita que Steam se abra automáticamente con Beat Saber, habilita esto si estás usando un runtime de VR diferente como WiVRn o Monado que SteamVR podría interferir.",
+                    "map-editor": "Editor de mapas",
+                    "map-editor-description": "Inicia el editor oficial de mapas de Beat Saber en lugar del juego."
                 },
                 "tabs": {
                     "maps": {
@@ -442,11 +448,13 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "Lanzamiento...🚀",
-                    "STEAM_LAUNCHING": "¡Steam se está iniciando!"
+                    "STEAM_LAUNCHING": "¡Steam se está iniciando!",
+                    "SKIPPING_STEAM_LAUNCH": "Saltando el lanzamiento de Steam"
                 },
                 "msg": {
                     "BS_LAUNCHING": "No olvides calentar 😉",
-                    "STEAM_LAUNCHING": "Beat Saber se iniciará automáticamente después de Steam."
+                    "STEAM_LAUNCHING": "Beat Saber se iniciará automáticamente después de Steam.",
+                    "SKIPPING_STEAM_LAUNCH": "Espero que sepas lo que estás haciendo :)"
                 }
             },
             "errors": {
@@ -606,6 +614,10 @@
                     "ENOSPC": "El disco está lleno, libera espacio e inténtalo de nuevo.",
                     "UNKNOWN_ERROR": "Se ha producido un error desconocido al enlazar la carpeta."
                 }
+            },
+            "adding-error": {
+                "title": "Error al agregar una carpeta compartida",
+                "msg": "No puedes agregar \"{folder}\" a las carpetas compartidas."
             }
         },
         "create-launch-shortcut": {
@@ -805,8 +817,13 @@
                 "add-folder": "Añadir Carpeta",
                 "link-folder": "Enlazar Carpeta",
                 "unlink-folder": "Desenlazar Carpeta",
-                "link-all": "Enlazar todo"
+                "link-all": "Enlazar todo",
+                "remove-from-the-list": "Eliminar de la lista"
             }
+        },
+        "adding-shared-folder": {
+            "title": "Agregar una carpeta compartida",
+            "description": "Es posible que experimentes problemas al vincular la carpeta \"{folder}\". ¿Estás seguro de que deseas agregarla?"
         },
         "create-launch-shortcut": {
             "title": "Crear un atajo",
