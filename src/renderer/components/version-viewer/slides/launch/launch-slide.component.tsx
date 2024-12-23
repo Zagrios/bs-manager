@@ -42,7 +42,6 @@ export function LaunchSlide({ version }: Props) {
     const versionDownloading = useObservable(() => bsDownloader.downloadingVersion$);
     const [activeLaunchMods, setActiveLaunchMods] = useState<LaunchMod[]>(configService.get("launch-mods") ?? []);
     const [pinnedLaunchMods, setPinnedLaunchMods] = useState<LaunchMod[]>(configService.get("pinned-launch-mods" as DefaultConfigKey) ?? []);
-    const [launchModItems, setLaunchModItems] = useState<LaunchModItemProps[]>([]);
 
     const versionRunning = useObservable(() => bsLauncherService.versionRunning$);
 
@@ -70,7 +69,8 @@ export function LaunchSlide({ version }: Props) {
         ? setPinnedLaunchMods(prev => [...prev, launchMod])
         : setPinnedLaunchMods(prev => prev.filter(mod => mod !== launchMod));
 
-    useEffect(() => {
+    const launchModItems = useMemo<LaunchModItemProps[]>(() => {
+
         let protonLogsPath: string[] = [];
         if (window.electron.platform === "linux") {
             protonLogsPath = version.steam
@@ -78,7 +78,7 @@ export function LaunchSlide({ version }: Props) {
                 : ["BSInstances", version.name, "Logs"];
         }
 
-        setLaunchModItems(() => [
+        return [
             {
                 id: LaunchMods.OCULUS,
                 icon: OculusIcon,
@@ -142,7 +142,7 @@ export function LaunchSlide({ version }: Props) {
                 onChange: (checked) => toggleActiveLaunchMod(checked, LaunchMods.PROTON_LOGS),
                 onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.PROTON_LOGS),
             },
-        ]);
+        ]
     }, [activeLaunchMods, pinnedLaunchMods, version]);
 
     const launch = async () => {
