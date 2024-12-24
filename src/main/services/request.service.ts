@@ -11,7 +11,6 @@ import path from 'path';
 import { pipeline } from 'stream/promises';
 import sanitize from 'sanitize-filename';
 import internal from 'stream';
-import { configureProxy } from 'main/helpers/proxy.helpers';
 
 export class RequestService {
     private static instance: RequestService;
@@ -24,9 +23,7 @@ export class RequestService {
         return RequestService.instance;
     }
 
-    private constructor() {
-        configureProxy();
-    }
+    private constructor() {}
 
     public async getJSON<T = unknown>(url: string): Promise<{ data: T; headers: IncomingHttpHeaders }> {
 
