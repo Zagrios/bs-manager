@@ -364,8 +364,8 @@
                         "UNABLE_TO_GET_MANIFEST": "Невозможно получить манифест, необходимый для загрузки.",
                         "VERIFY_INTEGRITY_FAILED": "При проверке файлов произошла ошибка.",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "Некоторые файлы не удалось загрузить.",
-                        "OCULUS_LOGIN_TIMED_OUT": "Получение токена входа заняло слишком много времени.",
-                        "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER": "Окно входа в Meta было закрыто.",
+                        "META_LOGIN_TIMED_OUT": "Получение токена входа заняло слишком много времени.",
+                        "META_LOGIN_WINDOW_CLOSED_BY_USER": "Окно входа в Meta было закрыто.",
                         "NO_META_AUTH_TOKEN": "Невозможно получить токен входа в Meta, необходимый для загрузки.",
                         "UNKNOWN_ERROR": "Произошла неизвестная ошибка."
                     }

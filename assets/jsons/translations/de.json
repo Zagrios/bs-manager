@@ -364,8 +364,8 @@
                         "UNABLE_TO_GET_MANIFEST": "Unmöglich, das für den Download erforderliche Manifest zu erhalten.",
                         "VERIFY_INTEGRITY_FAILED": "Beim Überprüfen der Dateien ist ein Fehler aufgetreten.",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "Einige Dateien konnten nicht heruntergeladen werden.",
-                        "OCULUS_LOGIN_TIMED_OUT": "Es hat zu lange gedauert, das Anmelde-Token abzurufen.",
-                        "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER": "Das Meta-Anmeldefenster wurde geschlossen.",
+                        "META_LOGIN_TIMED_OUT": "Es hat zu lange gedauert, das Anmelde-Token abzurufen.",
+                        "META_LOGIN_WINDOW_CLOSED_BY_USER": "Das Meta-Anmeldefenster wurde geschlossen.",
                         "NO_META_AUTH_TOKEN": "Unmöglich, das für den Download erforderliche Meta-Anmelde-Token zu erhalten.",
                         "UNKNOWN_ERROR": "Ein unbekannter Fehler ist aufgetreten."
                     }

@@ -364,8 +364,8 @@
                         "UNABLE_TO_GET_MANIFEST": "無法獲取下載所需的清單。",
                         "VERIFY_INTEGRITY_FAILED": "文件驗證過程中發生錯誤。",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "一些文件下載失敗。",
-                        "OCULUS_LOGIN_TIMED_OUT": "獲取登錄令牌用時過長。",
-                        "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER": "Meta 登錄窗口被關閉。",
+                        "META_LOGIN_TIMED_OUT": "獲取登錄令牌用時過長。",
+                        "META_LOGIN_WINDOW_CLOSED_BY_USER": "Meta 登錄窗口被關閉。",
                         "NO_META_AUTH_TOKEN": "無法獲取下載所需的 Meta 登錄令牌。",
                         "UNKNOWN_ERROR": "發生未知錯誤。"
                     }

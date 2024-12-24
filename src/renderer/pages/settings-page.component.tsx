@@ -46,6 +46,7 @@ import { StaticConfigurationService } from "renderer/services/static-configurati
 import { tryit } from "shared/helpers/error.helpers";
 import { InstallationLocationService } from "renderer/services/installation-location.service";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
+import { OculusDownloaderService } from "renderer/services/bs-version-download/oculus-downloader.service";
 
 export function SettingsPage() {
 
@@ -55,6 +56,7 @@ export function SettingsPage() {
     const modalService = useService(ModalService);
     const bsDownloader = useService(BsDownloaderService);
     const steamDownloader = useService(SteamDownloaderService);
+    const oculusDownloader = useService(OculusDownloaderService);
     const progressBarService = useService(ProgressBarService);
     const notificationService = useService(NotificationService);
     const i18nService = useService(I18nService);
@@ -121,16 +123,17 @@ export function SettingsPage() {
         });
     };
 
-    const loadDownloadersSession = () => {
-        setHasDownloaderSession(steamDownloader.sessionExist());
+    const loadDownloadersSession = async () => {
+        setHasDownloaderSession(steamDownloader.sessionExist() || await oculusDownloader.metaSessionExists());
     }
 
-    const clearDownloadersSession = () => {
+    const clearDownloadersSession = async () => {
         if (!hasDownloaderSession) {
             return;
         }
 
         steamDownloader.deleteSteamSession();
+        await oculusDownloader.deleteMetaSession()
         notificationService.notifyInfo({
             title: "pages.settings.steam-and-oculus.logout-success",
         });

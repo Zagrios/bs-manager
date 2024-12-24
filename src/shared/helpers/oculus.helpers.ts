@@ -12,8 +12,8 @@ export function isOculusTokenValid(token: string, logger?: (...args: unknown[]) 
         logger?.("Token contains %. Token most likely comes from an uri and won't work");
         return false;
     }
-    if(!token.startsWith("FRL")){
-        logger?.("Tokens must start with 'FRL'.");
+    if(!token.startsWith("FRL") && !token.startsWith("OC") ){
+        logger?.("Tokens must start with 'FRL' or 'OC'.");
         return false;
     }
     if(token.includes("|")){

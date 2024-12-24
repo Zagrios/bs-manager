@@ -6,7 +6,7 @@ import { BsvMapDetail, SongDetails } from "shared/models/maps";
 import { BsmLocalMap, BsmLocalMapsProgress, DeleteMapsProgress } from "shared/models/maps/bsm-local-map.interface";
 import { BsvPlaylist, BsvPlaylistPage, PlaylistSearchParams, SearchParams } from "../maps/beat-saver.model";
 import { ImportVersionOptions } from "main/services/bs-local-version.service";
-import { DownloadInfo, DownloadSteamInfo } from "main/services/bs-version-download/bs-steam-downloader.service";
+import { DownloadSteamInfo } from "main/services/bs-version-download/bs-steam-downloader.service";
 import { DepotDownloaderEvent } from "../bs-version-download/depot-downloader.model";
 import { MSGetQuery, MSModel, MSModelType } from "../models/model-saber.model";
 import { ModelDownload } from "renderer/services/models-management/models-downloader.service";
@@ -21,6 +21,7 @@ import { AppWindow } from "../window-manager/app-window.model";
 import { LocalBPList, LocalBPListsDetails } from "../playlists/local-playlist.models";
 import { StaticConfigGetIpcRequestResponse, StaticConfigKeys, StaticConfigSetIpcRequest } from "main/services/static-configuration.service";
 import { ExternalMod } from "../mods/mod.interface";
+import { OculusDownloadInfo } from "main/services/bs-version-download/bs-oculus-downloader.service";
 
 export type IpcReplier<T> = (data: Observable<T>) => void;
 
@@ -33,8 +34,11 @@ export interface IpcChannelMapping {
     "download-bs-version-qr": { request: DownloadSteamInfo, response: DepotDownloaderEvent};
     "stop-download-bs-version": { request: void, response: void};
     "send-input-bs-download": { request: string, response: boolean};
-    "bs-oculus-download": { request: DownloadInfo, response: Progression<BSVersion>};
+    "bs-oculus-download": { request: OculusDownloadInfo, response: Progression<BSVersion>};
     "bs-oculus-stop-download": { request: void, response: void};
+    "login-with-meta": { request: boolean, response: string };
+    "delete-meta-session": { request: void, response: void };
+    "meta-session-exists": { request: void, response: boolean };
 
     /* ** beat-saver-ipcs ** */
     "bsv-search-map": {request: SearchParams, response: BsvMapDetail[]};
