@@ -35,41 +35,47 @@ async function getProxyOverride(): Promise<string>{
     return registryValue.value;
 }
 
-async function configureWindowsProxy() : Promise<void> {
-    if (await isProxyEnabled().catch(err => log.error(err))) {
-        const httpProxyUrl = `http://${await getProxyServer().catch(err => log.error(err))}`
-        process.env.GLOBAL_AGENT_HTTP_PROXY = httpProxyUrl;
-        process.env.GLOBAL_AGENT_HTTPS_PROXY = httpProxyUrl;
-
-        process.env.GLOBAL_AGENT_NO_PROXY = `${await getProxyOverride().catch(err => log.error(err))}`;
-
-        log.info(`configureWindowsProxy: Using system proxy: ${process.env.GLOBAL_AGENT_HTTP_PROXY}`);
-
-        bootstrap();
+async function enableWindowsProxy(enable: boolean): Promise<void> {
+    if (!(await isProxyEnabled().catch(err => log.error(err)))) {
+        log.info("enableWindowsProxy: System proxy not detected");
+        return;
     }
-    else {
-        log.info(`configureWindowsProxy: System proxy not detected`);
+
+    let { GLOBAL_AGENT: globalProxyAgent } = global as any;
+    if (!globalProxyAgent) { // If this is undefined, call bootstrap to set it up
+        if (!bootstrap()) {
+            log.error("enableWindowsProxy: Could not setup proxy stuff");
+            return;
+        }
+        globalProxyAgent = (global as any).GLOBAL_AGENT;
+    }
+
+    if (enable) {
+        const httpProxyUrl = `http://${await getProxyServer().catch(err => log.error(err))}`
+        globalProxyAgent.HTTP_PROXY = httpProxyUrl;
+        globalProxyAgent.HTTPS_PROXY = httpProxyUrl;
+        globalProxyAgent.NO_PROXY = `${await getProxyOverride().catch(err => log.error(err))}`;
+
+        log.info(`enableWindowsProxy: Using system proxy: ${httpProxyUrl}`);
+    } else {
+        delete globalProxyAgent.HTTP_PROXY;
+        delete globalProxyAgent.HTTPS_PROXY;
+        delete globalProxyAgent.NO_PROXY;
+
+        log.info("enableWindowsProxy: proxy disabled");
     }
 }
 
 export function configureProxy() {
     if (process.platform === "win32") {
-        const useSystemProxy = staticConfig.get("use-system-proxy");
-        
-        if (useSystemProxy === true) {
-            configureWindowsProxy();
-        }
-
-        log.info(`configureProxy: UseSystemProxy is set to ${useSystemProxy}`);
+        enableWindowsProxy(staticConfig.get("use-system-proxy"));
 
         staticConfig.$watch("use-system-proxy").subscribe((useSystemProxy) => {
-            if (useSystemProxy === true) {
-                configureWindowsProxy();
-            }
+            enableWindowsProxy(useSystemProxy);
 
             log.info(`configureProxy: UseSystemProxy is set to ${useSystemProxy}`);
         });
     } else {
-        log.info('configureProxy: Unsupported platform');
+        log.info("configureProxy: Unsupported platform");
     }
 }

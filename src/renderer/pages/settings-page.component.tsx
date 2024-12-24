@@ -617,20 +617,6 @@ function AdvancedSettings() {
             return;
         }
 
-        if(!newUseSystemProxy){
-            const res = await modal.openModal(BasicModal, { data: {
-                title: "pages.settings.advanced.use-system-proxy.modal.title",
-                body: "pages.settings.advanced.use-system-proxy.modal.body",
-                image: BeatConflict,
-                buttons: [
-                    { id: "cancel", text: "misc.cancel", type: "cancel" },
-                    { id: "confirm", text: "pages.settings.advanced.use-system-proxy.modal.confirm-btn", type: "error", onClick: () => true }
-                ]
-            }});
-
-            if(res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm"){ return; }
-        }
-
         const { error } = await tryit(() => staticConfig.set("use-system-proxy", newUseSystemProxy));
 
         if(error){
@@ -639,15 +625,6 @@ function AdvancedSettings() {
         }
 
         setUseSystemProxy(() => newUseSystemProxy);
-
-        if(!progressBar.require()){
-            return;
-        }
-
-        if (!newUseSystemProxy) {
-            await lastValueFrom(ipc.sendV2("restart-app"));
-        }
-        
     }
 
     const advancedItems: Item[] = [{
