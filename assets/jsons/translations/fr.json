@@ -56,7 +56,9 @@
                 "skipsteam": "Ignorer Steam",
                 "skipsteam-description": "Empêche Steam de s'ouvrir automatiquement avec Beat Saber, activez-le si vous utilisez un autre runtime VR comme WiVRn ou Monado avec lequel SteamVR pourrait interférer.",
                 "map-editor": "Éditeur de map",
-                "map-editor-description": "Lance l'éditeur officiel de map de Beat Saber au lieu du jeu."
+                "map-editor-description": "Lance l'éditeur officiel de map de Beat Saber au lieu du jeu.",
+                "proton-logs": "Journaux de Proton",
+                "proton-logs-description": "Active l'enregistrement des journaux Proton pour cette installation de Beat Saber sur \"{versionPath}\"."
             },
             "maps": {
                 "search-bar": {
@@ -327,6 +329,8 @@
                     "msg": {
                         "401": "Steam ne semble pas vouloir nous laisser télécharger Beat Saber 😢",
                         "404": "Impossible de contacter les serveurs de Steam.",
+                        "ExeNotFoundWindows": "\"DepotDownloader.exe\" est manquant. Veuillez vérifier si l'exécutable est mis en quarantaine par votre antivirus.",
+                        "ExeNotFoundLinux": "L'exécutable \"DepotDownloader\" est manquanto.",
                         "Password": "Le mot de passe est invalide.",
                         "InvalidCredentials": "Identifiants de connexion invalides, connexion non approuvée, ou trop de tentatives de connexion.",
                         "NoManifest": "Aucun manifest n'a été trouvé.",

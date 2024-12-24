@@ -6,6 +6,7 @@ import { StaticConfigurationService } from "./static-configuration.service";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { BSLaunchError, LaunchOption } from "shared/models/bs-launch";
 import { bsmExec } from "main/helpers/os.helpers";
+import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 
 export class LinuxService {
     private static instance: LinuxService;
@@ -78,11 +79,15 @@ export class LinuxService {
             "STEAM_COMPAT_CLIENT_INSTALL_PATH": steamPath,
             "STEAM_COMPAT_APP_ID": BS_APP_ID,
             // Run game in steam environment; fixes #585 for unicode song titles
-            "SteamEnv": "1",
-            // Uncomment these to create a proton log file in the Beat Saber install directory.
-            // "PROTON_LOG": 1,
-            // "PROTON_LOG_DIR": bsFolderPath,
+            "SteamEnv": 1,
         });
+
+        if (launchOptions.launchMods?.includes(LaunchMods.PROTON_LOGS)) {
+            Object.assign(env, {
+                "PROTON_LOG": 1,
+                "PROTON_LOG_DIR": path.join(bsFolderPath, "Logs"),
+            });
+        }
     }
 
     public verifyProtonPath(protonFolder: string = ""): boolean {

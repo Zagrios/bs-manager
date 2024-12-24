@@ -56,7 +56,9 @@
                 "skipsteam": "跳過 Steam",
                 "skipsteam-description": "防止 Steam 與 Beat Saber 自動打開，如果您使用的是其他 VR 執行時，如 WiVRn 或 Monado，SteamVR 可能會干擾，請啟用此選項。",
                 "map-editor": "地圖編輯器",
-                "map-editor-description": "啟動官方的 Beat Saber 地圖編輯器，而不是遊戲。"
+                "map-editor-description": "啟動官方的 Beat Saber 地圖編輯器，而不是遊戲。",
+                "proton-logs": "Proton紀錄",
+                "proton-logs-description": "啟用此 Beat Saber 安裝的質子紀錄，路徑為\"{versionPath}\"。"
             },
             "maps": {
                 "search-bar": {
@@ -327,6 +329,8 @@
                     "msg": {
                         "401": "Steam 似乎不想讓我們下載 Beat Saber😢",
                         "404": "無法聯繫 Steam 伺服器。",
+                        "ExeNotFoundWindows": "\"DepotDownloader.exe\" 缺失。請檢查執行檔是否被您的防毒軟體隔離。",
+                        "ExeNotFoundLinux": "\"DepotDownloader\" 的可執行檔缺失。",
                         "Password": "密碼無效",
                         "InvalidCredentials": "登錄憑據無效、連接未經批准或登錄嘗試次數過多。",
                         "NoManifest": "未找到清單",

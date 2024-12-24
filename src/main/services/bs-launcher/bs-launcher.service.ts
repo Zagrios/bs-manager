@@ -131,6 +131,7 @@ export class BSLauncherService {
         if(launchOptions.launchMods?.includes(LaunchMods.DEBUG)){ res.debug = "true"; }
         if(launchOptions.additionalArgs){ res.additionalArgs = launchOptions.additionalArgs; }
         if(launchOptions.launchMods?.includes(LaunchMods.SKIP_STEAM)){ res.skipSteam = "true"; }
+        if(launchOptions.launchMods?.includes(LaunchMods.PROTON_LOGS)){ res.protonLogs = "true"; }
 
         return res;
     }
@@ -248,6 +249,7 @@ type ShortcutParams = {
     debug?: string;
     additionalArgs?: string[];
     skipSteam?: string;
+    protonLogs?: string;
     version: string;
     versionName?: string;
     versionIno?: string;

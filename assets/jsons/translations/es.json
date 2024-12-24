@@ -52,7 +52,13 @@
                 "advanced-launch": {
                     "button": "Opciones de lanzamiento",
                     "placeholder": "Argumentos adicionales ej: --revert; --no-wait"
-                }
+                },
+                "skipsteam": "Saltar Steam",
+                "skipsteam-description": "Evita que Steam se abra automáticamente con Beat Saber, habilita esto si estás usando un runtime de VR diferente como WiVRn o Monado que SteamVR podría interferir.",
+                "map-editor": "Editor de mapas",
+                "map-editor-description": "Inicia el editor oficial de mapas de Beat Saber en lugar del juego.",
+                "proton-logs": "Registros de Proton",
+                "proton-logs-description": "Habilita el registro de los logs de Proton para esta instalación de Beat Saber en \"{versionPath}\"."
             },
             "maps": {
                 "search-bar": {
@@ -62,11 +68,7 @@
                         "export-maps": "Exportar mapas",
                         "delete-maps": "Borrar mapas",
                         "delete-duplicate-maps": "Borrar duplicados"
-                    },
-                    "skipsteam": "Saltar Steam",
-                    "skipsteam-description": "Evita que Steam se abra automáticamente con Beat Saber, habilita esto si estás usando un runtime de VR diferente como WiVRn o Monado que SteamVR podría interferir.",
-                    "map-editor": "Editor de mapas",
-                    "map-editor-description": "Inicia el editor oficial de mapas de Beat Saber en lugar del juego."
+                    }
                 },
                 "tabs": {
                     "maps": {
@@ -327,6 +329,8 @@
                     "msg": {
                         "401": "Parece que Steam no quiere dejarnos descargar Beat Saber 😢",
                         "404": "No se puede contactar con los servidores de Steam",
+                        "ExeNotFoundWindows": "Falta \"DepotDownloader.exe\". Por favor, verifique si el ejecutable está en cuarentena por su antivirus.",
+                        "ExeNotFoundLinux": "Falta el ejecutable de \"DepotDownloader\".",
                         "Password": "La contraseña es inválida.",
                         "InvalidCredentials": "Credenciales de inicio de sesión inválidas, conexión no aprobada o demasiados intentos de inicio de sesión.",
                         "NoManifest": "No se ha encontrado el manifiesto",

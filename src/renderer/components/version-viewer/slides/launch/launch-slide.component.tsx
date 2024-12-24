@@ -62,7 +62,22 @@ export function LaunchSlide({ version }: Props) {
         }
     }, [activeLaunchMods]);
 
+    const toggleActiveLaunchMod = (checked: boolean, launchMod: LaunchMod) => checked
+        ? setActiveLaunchMods(prev => [...prev, launchMod])
+        : setActiveLaunchMods(prev => prev.filter(mod => mod !== launchMod));
+
+    const togglePinnedLaunchMod = (pinned: boolean, launchMod: LaunchMod) => pinned
+        ? setPinnedLaunchMods(prev => [...prev, launchMod])
+        : setPinnedLaunchMods(prev => prev.filter(mod => mod !== launchMod));
+
     useEffect(() => {
+        let protonLogsPath: string[] = [];
+        if (window.electron.platform === "linux") {
+            protonLogsPath = version.steam
+                ? [version.path, "Logs"]
+                : ["BSInstances", version.name, "Logs"];
+        }
+
         setLaunchModItems(() => [
             {
                 id: LaunchMods.OCULUS,
@@ -72,8 +87,8 @@ export function LaunchSlide({ version }: Props) {
                 active: activeLaunchMods.includes(LaunchMods.OCULUS),
                 visible: !(version.metadata?.store === BsStore.OCULUS),
                 pinned: pinnedLaunchMods.includes(LaunchMods.OCULUS),
-                onChange: checked => checked ? setActiveLaunchMods(prev => [...prev, LaunchMods.OCULUS]) : setActiveLaunchMods(prev => prev.filter(mod => mod !== LaunchMods.OCULUS)),
-                onPinChange: pinned => pinned ? setPinnedLaunchMods(prev => [...prev, LaunchMods.OCULUS]) : setPinnedLaunchMods(prev => prev.filter(mod => mod !== LaunchMods.OCULUS)),
+                onChange: (checked) => toggleActiveLaunchMod(checked, LaunchMods.OCULUS),
+                onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.OCULUS),
             },
             {
                 id: LaunchMods.FPFC,
@@ -82,8 +97,8 @@ export function LaunchSlide({ version }: Props) {
                 description: t("pages.version-viewer.launch-mods.desktop-description"),
                 active: activeLaunchMods.includes(LaunchMods.FPFC),
                 pinned: pinnedLaunchMods.includes(LaunchMods.FPFC),
-                onChange: checked => checked ? setActiveLaunchMods(prev => [...prev, LaunchMods.FPFC]) : setActiveLaunchMods(prev => prev.filter(mod => mod !== LaunchMods.FPFC)),
-                onPinChange: pinned => pinned ? setPinnedLaunchMods(prev => [...prev, LaunchMods.FPFC]) : setPinnedLaunchMods(prev => prev.filter(mod => mod !== LaunchMods.FPFC)),
+                onChange: (checked) => toggleActiveLaunchMod(checked, LaunchMods.FPFC),
+                onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.FPFC),
             },
             {
                 id: LaunchMods.DEBUG,
@@ -92,8 +107,8 @@ export function LaunchSlide({ version }: Props) {
                 description: t("pages.version-viewer.launch-mods.debug-description"),
                 active: activeLaunchMods.includes(LaunchMods.DEBUG),
                 pinned: pinnedLaunchMods.includes(LaunchMods.DEBUG),
-                onChange: checked => checked ? setActiveLaunchMods(prev => [...prev, LaunchMods.DEBUG]) : setActiveLaunchMods(prev => prev.filter(mod => mod !== LaunchMods.DEBUG)),
-                onPinChange: pinned => pinned ? setPinnedLaunchMods(prev => [...prev, LaunchMods.DEBUG]) : setPinnedLaunchMods(prev => prev.filter(mod => mod !== LaunchMods.DEBUG)),
+                onChange: (checked) => toggleActiveLaunchMod(checked, LaunchMods.DEBUG),
+                onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.DEBUG),
             },
             {
                 id: LaunchMods.SKIP_STEAM,
@@ -101,8 +116,8 @@ export function LaunchSlide({ version }: Props) {
                 description: t("pages.version-viewer.launch-mods.skipsteam-description"),
                 active: activeLaunchMods.includes(LaunchMods.SKIP_STEAM),
                 pinned: pinnedLaunchMods.includes(LaunchMods.SKIP_STEAM),
-                onChange: checked => checked ? setActiveLaunchMods(prev => [...prev, LaunchMods.SKIP_STEAM]) : setActiveLaunchMods(prev => prev.filter(mod => mod !== LaunchMods.SKIP_STEAM)),
-                onPinChange: pinned => pinned ? setPinnedLaunchMods(prev => [...prev, LaunchMods.SKIP_STEAM]) : setPinnedLaunchMods(prev => prev.filter(mod => mod !== LaunchMods.SKIP_STEAM)),
+                onChange: (checked) => toggleActiveLaunchMod(checked, LaunchMods.SKIP_STEAM),
+                onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.SKIP_STEAM),
             },
             {
                 id: LaunchMods.EDITOR,
@@ -112,14 +127,25 @@ export function LaunchSlide({ version }: Props) {
                 active: activeLaunchMods.includes(LaunchMods.EDITOR),
                 pinned: pinnedLaunchMods.includes(LaunchMods.EDITOR),
                 visible: !safeLt(version.BSVersion, "1.23.0"),
-                onChange: checked => checked ? setActiveLaunchMods(prev => [...prev, LaunchMods.EDITOR]) : setActiveLaunchMods(prev => prev.filter(mod => mod !== LaunchMods.EDITOR)),
-                onPinChange: pinned => pinned ? setPinnedLaunchMods(prev => [...prev, LaunchMods.EDITOR]) : setPinnedLaunchMods(prev => prev.filter(mod => mod !== LaunchMods.EDITOR)),
-
-            }
+                onChange: (checked) => toggleActiveLaunchMod(checked, LaunchMods.EDITOR),
+                onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.EDITOR),
+            },
+            {
+                id: LaunchMods.PROTON_LOGS,
+                label: t("pages.version-viewer.launch-mods.proton-logs"),
+                description: t("pages.version-viewer.launch-mods.proton-logs-description", {
+                    versionPath: `${window.electron.path.join(...protonLogsPath)}/`
+                }),
+                active: activeLaunchMods.includes(LaunchMods.PROTON_LOGS),
+                pinned: pinnedLaunchMods.includes(LaunchMods.PROTON_LOGS),
+                visible: window.electron.platform === "linux",
+                onChange: (checked) => toggleActiveLaunchMod(checked, LaunchMods.PROTON_LOGS),
+                onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.PROTON_LOGS),
+            },
         ]);
     }, [activeLaunchMods, pinnedLaunchMods, version]);
 
-    const launch = () => {
+    const launch = async () => {
         const additionalArgs = additionalArgsString?.split(";").map(arg => arg.trim()).filter(arg => arg.length > 0);
 
         const launch$ = bsLauncherService.launch({
@@ -193,5 +219,3 @@ export function LaunchSlide({ version }: Props) {
         </div>
     );
 }
-
-
