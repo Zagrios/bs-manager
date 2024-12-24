@@ -283,11 +283,6 @@
                 "use-system-proxy": {
                     "title": "システムプロキシを使用",
                     "description": "BSManagerはシステムプロキシを通じてネットワークリクエストを行います。",
-                    "modal": {
-                        "title": "再起動が必要",
-                        "body": "システムプロキシをオフにすると、BSManagerが終了して再起動します。本当にこれを実行しますか？",
-                        "confirm-btn": "はい、確かです"
-                    },
                     "error-notification": {
                         "message": "エラーが発生しました。システムプロキシ設定を変更できません。"
                     }

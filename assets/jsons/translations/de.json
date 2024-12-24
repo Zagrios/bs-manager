@@ -283,11 +283,6 @@
                 "use-system-proxy": {
                     "title": "System-Proxy verwenden",
                     "description": "BSManager wird Netzwerkrequests über Ihren Systemproxy durchführen.",
-                    "modal": {
-                        "title": "Neustart erforderlich",
-                        "body": "Das Deaktivieren des Systemproxys beendet BSManager und startet ihn neu. Sind Sie sicher, dass Sie dies tun möchten?",
-                        "confirm-btn": "Ja, ich bin sicher"
-                    },
                     "error-notification": {
                         "message": "Es ist ein Fehler aufgetreten, die Systemproxyeinstellungen können nicht geändert werden."
                     }

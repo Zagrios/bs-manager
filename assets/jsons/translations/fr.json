@@ -283,11 +283,6 @@
                 "use-system-proxy": {
                     "title": "Utiliser le proxy du système",
                     "description": "BSManager effectuera des requêtes réseau via votre proxy système.",
-                    "modal": {
-                        "title": "Redémarrage nécessaire",
-                        "body": "Désactiver le proxy système fermera et relancera BSManager. Êtes-vous sûr de vouloir faire cela ?",
-                        "confirm-btn": "Oui, je suis sûr"
-                    },
                     "error-notification": {
                         "message": "Une erreur est survenue, impossible de modifier les paramètres du proxy système."
                     }
