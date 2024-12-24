@@ -2,6 +2,9 @@ import log from 'electron-log';
 import { RegDwordValue, RegSzValue } from "regedit-rs"
 import { execOnOs } from "../helpers/env.helpers";
 import { bootstrap } from 'global-agent';
+import { StaticConfigurationService } from "../services/static-configuration.service";
+
+const staticConfig = StaticConfigurationService.getInstance();
 
 const { list } = (execOnOs({ win32: () => require("regedit-rs") }, true) ?? {}) as typeof import("regedit-rs");
 
@@ -51,7 +54,21 @@ async function configureWindowsProxy() : Promise<void> {
 
 export function configureProxy() {
     if (process.platform === "win32") {
-        configureWindowsProxy();
+        const useSystemProxy = staticConfig.get("use-system-proxy");
+        
+        if (useSystemProxy === true) {
+            configureWindowsProxy();
+        }
+
+        log.info(`configureProxy: UseSystemProxy is set to ${useSystemProxy}`);
+
+        staticConfig.$watch("use-system-proxy").subscribe((useSystemProxy) => {
+            if (useSystemProxy === true) {
+                configureWindowsProxy();
+            }
+
+            log.info(`configureProxy: UseSystemProxy is set to ${useSystemProxy}`);
+        });
     } else {
         log.info('configureProxy: Unsupported platform');
     }

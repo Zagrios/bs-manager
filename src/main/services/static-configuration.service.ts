@@ -88,6 +88,7 @@ export interface StaticConfigKeyValues {
     "song-details-cache-etag": string;
     "disable-hadware-acceleration": boolean;
     "use-symlinks": boolean;
+    "use-system-proxy": boolean;
 
     // Linux Specific static configs
     "proton-folder": string;

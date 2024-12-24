@@ -277,6 +277,18 @@
                     "error-notification": {
                         "message": "An error occured, unable to change symlinks settings."
                     }
+                },
+                "use-system-proxy": {
+                    "title": "Use system proxy",
+                    "description": "BSMansger will make network requests through system proxy.",
+                    "modal": {
+                        "title": "Restart Needed",
+                        "body": "Turning off system proxy will quit and re-launch BSManager. Are you sure you want to do this?",
+                        "confirm-btn": "Yes I'm sure"
+                    },
+                    "error-notification": {
+                        "message": "An error occured, unable to use system proxy."
+                    }
                 }
             }
         }
