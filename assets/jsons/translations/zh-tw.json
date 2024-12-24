@@ -279,6 +279,18 @@
                     "error-notification": {
                         "message": "發生錯誤，無法更改符號鏈接設置。"
                     }
+                },
+                "use-system-proxy": {
+                    "title": "使用系統代理",
+                    "description": "BSManager將通過您的系統代理發送網絡請求。",
+                    "modal": {
+                        "title": "需要重新啟動",
+                        "body": "關閉系統代理會退出並重新啟動BSManager。您確定要這麼做嗎？",
+                        "confirm-btn": "是的，我確定"
+                    },
+                    "error-notification": {
+                        "message": "發生錯誤，無法更改系統代理設置。"
+                    }
                 }
             }
         }

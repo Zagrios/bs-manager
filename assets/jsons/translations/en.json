@@ -265,7 +265,7 @@
                         "confirm-btn": "Yes I'm sure"
                     },
                     "error-notification": {
-                        "message": "An error occured, unable to disable hardware acceleration."
+                        "message": "An error occurred, unable to disable hardware acceleration."
                     }
                 },
                 "use-symlinks": {
@@ -277,19 +277,19 @@
                         "confirm-btn": "Yes I'm sure"
                     },
                     "error-notification": {
-                        "message": "An error occured, unable to change symlinks settings."
+                        "message": "An error occurred, unable to change symlinks settings."
                     }
                 },
                 "use-system-proxy": {
                     "title": "Use system proxy",
-                    "description": "BSMansger will make network requests through system proxy.",
+                    "description": "BSManager will make network requests through your system proxy.",
                     "modal": {
                         "title": "Restart Needed",
                         "body": "Turning off system proxy will quit and re-launch BSManager. Are you sure you want to do this?",
                         "confirm-btn": "Yes I'm sure"
                     },
                     "error-notification": {
-                        "message": "An error occured, unable to use system proxy."
+                        "message": "An error occurred, unable to change system proxy settings."
                     }
                 }
             }
@@ -1057,7 +1057,7 @@
                 },
                 "no-models": "No models found.",
                 "no-internet": "No internet connection.",
-                "error-occured": "An error occurred, try again later."
+                "error-occurred": "An error occurred, try again later."
             }
         },
         "notifications": {
