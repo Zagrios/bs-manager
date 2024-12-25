@@ -6,10 +6,33 @@ Go to [Releases](https://github.com/Zagrios/bs-manager/releases) page and go to 
 
 ### Ubuntu, Debian (deb)
 
+#### PPA Repository
+
+Refer to [bs-manager-deb](https://github.com/silentrald/bs-manager-deb).
+
+Add the BSManager PPA repository into your system with the following commands.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/silentrald/bs-manager-deb/refs/heads/main/KEY.gpg | sudo gpg --dearmor -o /usr/share/keyrings/bs-manager.gpg
+echo "deb [signed-by=/usr/share/keyrings/bs-manager.gpg] https://raw.githubusercontent.com/silentrald/bs-manager-deb/refs/heads/main ./" | sudo tee /etc/apt/sources.list.d/bs-manager.list
+sudo apt update
+```
+
+Install the `bs-manager` package using `apt`.
+```bash
+sudo apt install bs-manager
+```
+
+#### dpkg install
+
 Download the `.deb` file in the releases and run the following command:
 ```bash
 dpkg -i ./bsmanager.deb
 ```
+
+**NOTE:** When installed using dpkg, BSManager will not automatically update to the latest version. You have to either:
+* Download the latest `.deb` file on the Releases page; or
+* Install thru PPA repository to automatically update with `sudo apt update & sudo apt upgrade`.
 
 ### Arch (AUR)
 
