@@ -364,8 +364,8 @@
                         "UNABLE_TO_GET_MANIFEST": "Unable to obtain the manifest required for download.",
                         "VERIFY_INTEGRITY_FAILED": "An error occurred during file verification.",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "Some files failed to download.",
-                        "OCULUS_LOGIN_TIMED_OUT": "The login token took too long to retrieve.",
-                        "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER": "The Meta login window was closed.",
+                        "META_LOGIN_TIMED_OUT": "The login token took too long to retrieve.",
+                        "META_LOGIN_WINDOW_CLOSED_BY_USER": "The Meta login window was closed.",
                         "NO_META_AUTH_TOKEN": "Unable to retrieve the Meta login token required for download.",
                         "UNKNOWN_ERROR": "An unknown error occurred."
                     }

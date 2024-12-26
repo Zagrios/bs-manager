@@ -364,8 +364,8 @@
                         "UNABLE_TO_GET_MANIFEST": "Imposible obtener el manifiesto necesario para la descarga.",
                         "VERIFY_INTEGRITY_FAILED": "Se produjo un error durante la verificación de archivos.",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "Algunos archivos no pudieron ser descargados.",
-                        "OCULUS_LOGIN_TIMED_OUT": "El token de inicio de sesión tardó demasiado en recuperarse.",
-                        "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER": "La ventana de inicio de sesión de Meta fue cerrada.",
+                        "META_LOGIN_TIMED_OUT": "El token de inicio de sesión tardó demasiado en recuperarse.",
+                        "META_LOGIN_WINDOW_CLOSED_BY_USER": "La ventana de inicio de sesión de Meta fue cerrada.",
                         "NO_META_AUTH_TOKEN": "Imposible recuperar el token de inicio de sesión de Meta necesario para la descarga.",
                         "UNKNOWN_ERROR": "Se produjo un error desconocido."
                     }

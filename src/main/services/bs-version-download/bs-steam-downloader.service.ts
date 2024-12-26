@@ -147,7 +147,6 @@ export interface DownloadInfo {
     bsVersion: BSVersion;
     isVerification?: boolean;
     stay?: boolean;
-    token?: string;
 }
 
 export interface DownloadSteamInfo extends DownloadInfo {

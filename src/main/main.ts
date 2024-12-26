@@ -264,3 +264,11 @@ function deleteOlestLogs(): void{
         }
     });
 }
+
+export function addFilterStringLog(filter: string): void {
+    filterStrings.add(filter);
+}
+
+export function addFilterPatternLog(filter: RegExp): void {
+    filterPatterns.add(filter);
+}

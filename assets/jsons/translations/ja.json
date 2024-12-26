@@ -364,8 +364,8 @@
                         "UNABLE_TO_GET_MANIFEST": "ダウンロードに必要なマニフェストを取得できません。",
                         "VERIFY_INTEGRITY_FAILED": "ファイルの検証中にエラーが発生しました。",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "一部のファイルのダウンロードに失敗しました。",
-                        "OCULUS_LOGIN_TIMED_OUT": "ログイントークンの取得に時間がかかりすぎました。",
-                        "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER": "メタ・ログイン・ウィンドウが閉じられた。",
+                        "META_LOGIN_TIMED_OUT": "ログイントークンの取得に時間がかかりすぎました。",
+                        "META_LOGIN_WINDOW_CLOSED_BY_USER": "メタ・ログイン・ウィンドウが閉じられた。",
                         "NO_META_AUTH_TOKEN": "ダウンロードに必要な Meta ログイン トークンを取得できません。",
                         "UNKNOWN_ERROR": "不明なエラーが発生しました。"
                     }

@@ -364,8 +364,8 @@
                         "UNABLE_TO_GET_MANIFEST": "Impossible d'obtenir le manifest nécessaire au téléchargement.",
                         "VERIFY_INTEGRITY_FAILED": "Une erreur c'est produite lors de la vérification des fichiers.",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "Certains fichiers n'ont pas pu être téléchargés.",
-                        "OCULUS_LOGIN_TIMED_OUT": "Le Token de connexion à mis trop de temps à être récupéré.",
-                        "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER": "La fenêtre de connexion à Meta a été fermée.",
+                        "META_LOGIN_TIMED_OUT": "Le Token de connexion à mis trop de temps à être récupéré.",
+                        "META_LOGIN_WINDOW_CLOSED_BY_USER": "La fenêtre de connexion à Meta a été fermée.",
                         "NO_META_AUTH_TOKEN": "Impossible de récupérer le token de connexion à Meta nécessaire au téléchargement.",
                         "UNKNOWN_ERROR": "Une erreur inconnue s'est produite."
                     }
