@@ -279,6 +279,13 @@
                     "error-notification": {
                         "message": "Une erreur s'est produite, impossible de changer les paramètres des liens symboliques."
                     }
+                },
+                "use-system-proxy": {
+                    "title": "Utiliser le proxy du système",
+                    "description": "BSManager effectuera des requêtes réseau via votre proxy système.",
+                    "error-notification": {
+                        "message": "Une erreur est survenue, impossible de modifier les paramètres du proxy système."
+                    }
                 }
             }
         }

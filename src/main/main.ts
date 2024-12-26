@@ -25,6 +25,7 @@ import { FileAssociationService } from "./services/file-association.service";
 import { SongDetailsCacheService } from "./services/additional-content/maps/song-details-cache.service";
 import { readdirSync, statSync, unlinkSync } from "fs-extra";
 import { StaticConfigurationService } from "./services/static-configuration.service";
+import { configureProxy } from './helpers/proxy.helpers';
 
 const isDebug = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true";
 const staticConfig = StaticConfigurationService.getInstance();
@@ -46,6 +47,7 @@ staticConfig.take("disable-hadware-acceleration", disabled => {
     }
 });
 
+configureProxy();
 
 if (process.env.NODE_ENV === "production") {
     const sourceMapSupport = require("source-map-support");

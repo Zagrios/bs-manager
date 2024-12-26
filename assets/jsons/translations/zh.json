@@ -279,6 +279,13 @@
                     "error-notification": {
                         "message": "发生错误，无法更改符号链接设置。"
                     }
+                },
+                "use-system-proxy": {
+                    "title": "使用系统代理",
+                    "description": "BSMansger将通过系统代理发起网络请求。",
+                    "error-notification": {
+                        "message": "发生错误，无法启用系统代理。"
+                    }
                 }
             }
         }

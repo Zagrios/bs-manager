@@ -279,6 +279,13 @@
                     "error-notification": {
                         "message": "오류가 발생했습니다. 심볼릭 링크 설정을 변경할 수 없습니다."
                     }
+                },
+                "use-system-proxy": {
+                    "title": "시스템 프록시 사용",
+                    "description": "BSManager는 시스템 프록시를 통해 네트워크 요청을 수행합니다.",
+                    "error-notification": {
+                        "message": "오류가 발생했습니다. 시스템 프록시 설정을 변경할 수 없습니다."
+                    }
                 }
             }
         }

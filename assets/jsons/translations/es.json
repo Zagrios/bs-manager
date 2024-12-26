@@ -279,6 +279,13 @@
                     "error-notification": {
                         "message": "Ocurrió un error, no se pueden cambiar los ajustes de los enlaces simbólicos."
                     }
+                },
+                "use-system-proxy": {
+                    "title": "Usar proxy del sistema",
+                    "description": "BSManager realizará solicitudes de red a través de su proxy del sistema.",
+                    "error-notification": {
+                        "message": "Ocurrió un error, no se pueden cambiar los ajustes del proxy del sistema."
+                    }
                 }
             }
         }
