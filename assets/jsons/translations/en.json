@@ -149,6 +149,7 @@
                         "description": "Description",
                         "dropdown": {
                             "import-mods": "Import mods",
+                            "compare-mods": "Compare mods",
                             "uninstall-all": "Uninstall all",
                             "unselect-all": "Unselect all"
                         }
@@ -951,6 +952,15 @@
         },
         "bs-version-outdated": {
             "body": "The version {outdatedVersion} is outdated, and some mods or features may no longer work as expected. Please download the latest recommended version ({recommendedVersion}) of Beat Saber to enjoy the latest features and bugfixes."
+        },
+        "mods-version-compare": {
+            "title": "Mods Version Comparison",
+            "select-version": "Select a Version",
+            "mod-types": {
+                "all": "All",
+                "installed": "Installed",
+                "not-installed": "Not Installed"
+            }
         }
     },
     "maps": {
