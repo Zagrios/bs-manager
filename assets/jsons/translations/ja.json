@@ -915,7 +915,8 @@
             "tags": "タグ",
             "specificities": "一般",
             "requirements": "要Mod",
-            "exclude": "除外する"
+            "exclude": "除外する",
+            "leaderboard": "ランキング"
         },
         "map-types": {
             "accuracy": "正確",
@@ -966,10 +967,15 @@
         },
         "map-specificities": {
             "automapper": "AI",
-            "ranked": "ランク入賞",
             "curated": "厳選済み",
             "verified": "認証済み",
             "fullSpread": "フルスプレッド"
+        },
+        "map-leaderboard": {
+            "All": "すべて",
+            "Ranked": "ランク入賞",
+            "BeatLeader": "BeatLeader",
+            "ScoreSaber": "ScoreSaber"
         },
         "map-excludes": {
             "installed": "インストール済み"

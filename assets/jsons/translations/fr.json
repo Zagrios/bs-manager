@@ -916,7 +916,8 @@
             "tags": "tags",
             "specificities": "général",
             "requirements": "requis",
-            "exclude": "exclure"
+            "exclude": "exclure",
+            "leaderboard": "tableau des leaders"
         },
         "map-types": {
             "accuracy": "précision",
@@ -967,10 +968,15 @@
         },
         "map-specificities": {
             "automapper": "IA",
-            "ranked": "classée",
             "curated": "recommandée",
             "verified": "vérifiée",
             "fullSpread": "panel complet"
+        },
+        "map-leaderboard": {
+            "All": "Tout",
+            "Ranked": "Classée",
+            "BeatLeader": "BeatLeader",
+            "ScoreSaber": "ScoreSaber"
         },
         "map-excludes": {
             "installed": "installé"

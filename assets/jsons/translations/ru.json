@@ -914,7 +914,8 @@
             "tags": "тэги",
             "specificities": "основное",
             "requirements": "требуемые моды",
-            "exclude": "исключить"
+            "exclude": "исключить",
+            "leaderboard": "Таблица лидеров"
         },
         "map-types": {
             "accuracy": "точность",
@@ -965,10 +966,15 @@
         },
         "map-specificities": {
             "automapper": "ИИ",
-            "ranked": "с рейтингом",
             "curated": "оценённые куратором",
             "verified": "проверенные авторы",
             "fullSpread": "полный набор"
+        },
+        "map-leaderboard": {
+            "All": "все",
+            "Ranked": "с рейтингом",
+            "BeatLeader": "BeatLeader",
+            "ScoreSaber": "ScoreSaber"
         },
         "map-excludes": {
             "installed": "установленный"
