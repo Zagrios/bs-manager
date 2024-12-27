@@ -190,6 +190,7 @@ export function FilterPanel({ className, ref, playlist = false, filter, localDat
 
                     <h2 className="mb-1 uppercase text-sm">{t("maps.map-filter-panel.leaderboard")}</h2>
                     <BsmSelect
+                        className="rounded-md bg-theme-1"
                         options={leaderboardOptions}
                         selected={filter.leaderboard || MapLeaderboard.All}
                         onChange={handleLeaderboardChange}
