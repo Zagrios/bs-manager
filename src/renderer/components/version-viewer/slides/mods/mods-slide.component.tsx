@@ -14,7 +14,7 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { useInView } from "framer-motion";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
-import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods-disclaimer-modal.component";
+import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods/mods-disclaimer-modal.component";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { lt } from "semver";
 import { useService } from "renderer/hooks/use-service.hook";
@@ -22,6 +22,7 @@ import { NotificationService } from "renderer/services/notification.service";
 import { noop } from "shared/helpers/function.helpers";
 import { UninstallAllModsModal } from "renderer/components/modal/modal-types/uninstall-all-mods-modal.component";
 import { Dropzone } from "renderer/components/shared/dropzone.component";
+import { ModsVersionCompareModal } from "renderer/components/modal/modal-types/mods/mods-version-compare-modal.component";
 
 export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion; onDisclamerDecline: () => void }) {
     const ACCEPTED_DISCLAIMER_KEY = "accepted-mods-disclaimer";
@@ -260,6 +261,14 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         }
     }, [modsAvailable]);
 
+    const openModsVersionCompare = async () => {
+        modals.openModal(ModsVersionCompareModal, { data: {
+            version,
+            availableModsMap: modsAvailable,
+            installedModsMap: modsInstalled,
+        }});
+    };
+
     const renderContent = () => {
         if (!isOnline) {
             return <ModStatus text="pages.version-viewer.mods.no-internet" image={BeatConflictImg} />;
@@ -290,6 +299,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
                         uninstallAllMods={uninstallAllMods}
                         unselectAllMods={unselectAllMods}
                         openModsDropZone={() => setModsDropZoneOpen(true)}
+                        openModsVersionCompare={openModsVersionCompare}
                     />
                 </div>
                 <div className="shrink-0 flex items-center justify-between px-3 py-2">
