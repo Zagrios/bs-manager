@@ -1,6 +1,6 @@
 import log from 'electron-log';
 import { RegDwordValue, RegSzValue } from "regedit-rs"
-import { execOnOs } from "../helpers/env.helpers";
+import { execOnOs } from "./env.helpers";
 import { bootstrap } from 'global-agent';
 import { StaticConfigurationService } from "../services/static-configuration.service";
 
@@ -14,7 +14,7 @@ async function isProxyEnabled(): Promise<boolean>{
     if(!key.exists){ throw new Error("Key \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\" not exist"); }
     const registryValue = key.values.ProxyEnable as RegDwordValue;
     if(!registryValue){ throw new Error("Value \"ProxyEnable\" not exist"); }
-    return (1 === registryValue.value);
+    return registryValue.value === 1;
 }
 
 async function getProxyServer(): Promise<string>{
