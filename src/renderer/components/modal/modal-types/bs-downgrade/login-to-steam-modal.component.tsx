@@ -4,7 +4,7 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { ModalComponent, ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { WhySteamCredentialsModal } from "./why-steam-credentials-modal.component";
 import { useService } from "renderer/hooks/use-service.hook";
-import { Observable } from "rxjs";
+import { catchError, Observable, of } from "rxjs";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { QRCodeSVG } from "qrcode.react";
 import { BsmCheckbox } from "renderer/components/shared/bsm-checkbox.component";
@@ -21,7 +21,7 @@ export const LoginToSteamModal: ModalComponent<
     const [password, setPassword] = useState("");
     const [stay, setStay] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const qrCodeUrl = useObservable(() => data.qrCode$);
+    const qrCodeUrl = useObservable(() => data.qrCode$.pipe(catchError(() => of(null))));
     const t = useTranslation();
 
     useEffect(() => {

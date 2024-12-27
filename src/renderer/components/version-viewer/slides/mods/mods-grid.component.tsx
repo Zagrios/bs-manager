@@ -16,9 +16,11 @@ type Props = {
     disabled?: boolean;
     uninstallMod?: (mods: Mod) => void;
     uninstallAllMods?: () => void;
+    unselectAllMods?: () => void;
+    openModsDropZone?: () => void;
 };
 
-export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreInfoMod, onWantInfos, disabled, uninstallMod, uninstallAllMods }: Props) {
+export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreInfoMod, onWantInfos, disabled, uninstallMod, uninstallAllMods, unselectAllMods, openModsDropZone }: Props) {
 
     const [filter, setFilter] = useState("");
     const [filterEnabled, setFilterEnabled] = useState(false);
@@ -61,12 +63,16 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
                 <span className="z-10 sticky flex items-center justify-end top-0 bg-inherit border-b-2 border-main-color-1 rounded-tl-md">
                     <BsmButton className="rounded-full h-6 w-6 p-[2px]" withBar={false} icon="search" onClick={handleToogleFilter} />
                 </span>
-                <span className="z-10 sticky top-0 flex items-center bg-inherit border-main-color-1 border-b-2 h-8 px-1 whitespace-nowrap">{filterEnabled ? <motion.input autoFocus className="bg-main-color-1 rounded-md h-6 px-2" initial={{ width: 0 }} animate={{ width: "250px" }} transition={{ ease: "easeInOut", duration: 0.15 }} onChange={e => handleInput(e.target.value)} /> : <span className="w-full text-center">{t("pages.version-viewer.mods.mods-grid.header-bar.name")}</span>}</span>
+                <span className="z-10 sticky top-0 flex items-center bg-inherit border-main-color-1 border-b-2 h-8 px-1 whitespace-nowrap">{filterEnabled ? <motion.input autoFocus className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md h-6 px-2" initial={{ width: 0 }} animate={{ width: "250px" }} transition={{ ease: "easeInOut", duration: 0.15 }} onChange={e => handleInput(e.target.value)} /> : <span className="w-full text-center">{t("pages.version-viewer.mods.mods-grid.header-bar.name")}</span>}</span>
                 <span className="z-10 sticky flex items-center justify-center top-0 bg-inherit border-b-2 border-main-color-1 h-8 px-2 whitespace-nowrap">{t("pages.version-viewer.mods.mods-grid.header-bar.installed")}</span>
                 <span className="z-10 sticky flex items-center justify-center top-0 bg-inherit border-b-2 border-main-color-1 h-8 px-2 whitespace-nowrap">{t("pages.version-viewer.mods.mods-grid.header-bar.latest")}</span>
                 <span className="z-10 sticky flex items-center justify-center top-0 bg-inherit border-b-2 border-main-color-1 h-8 whitespace-nowrap">{t("pages.version-viewer.mods.mods-grid.header-bar.description")}</span>
                 <span className="z-10 sticky top-0 bg-inherit border-b-2 border-main-color-1 h-8 flex justify-start items-center py-1 pl-[3px] min-w-[50px]">
-                    <BsmDropdownButton className="h-full aspect-square relative rounded-full bg-light-main-color-1 dark:bg-main-color-3" withBar={false} icon="three-dots" buttonClassName="!rounded-full !p-[2px] !bg-light-main-color-2 dark:!bg-main-color-2 hover:!bg-light-main-color-1 dark:hover:!bg-main-color-3" menuTranslationY="5px" items={[{ text: "pages.version-viewer.mods.mods-grid.header-bar.dropdown.uninstall-all", icon: "trash", onClick: () => uninstallAllMods?.() }]} />
+                    <BsmDropdownButton className="h-full aspect-square relative rounded-full bg-light-main-color-1 dark:bg-main-color-3" withBar={false} icon="three-dots" buttonClassName="!rounded-full !p-[2px] !bg-light-main-color-2 dark:!bg-main-color-2 hover:!bg-light-main-color-1 dark:hover:!bg-main-color-3" menuTranslationY="5px" items={[
+                        { text: "pages.version-viewer.mods.mods-grid.header-bar.dropdown.import-mods", icon: "download", onClick: () => openModsDropZone?.() },
+                        { text: "pages.version-viewer.mods.mods-grid.header-bar.dropdown.unselect-all", icon: "cancel", onClick: () => unselectAllMods?.() },
+                        { text: "pages.version-viewer.mods.mods-grid.header-bar.dropdown.uninstall-all", icon: "trash", onClick: () => uninstallAllMods?.() }
+                    ]} />
                 </span>
 
                 {Array.from(modsMap.keys()).map(

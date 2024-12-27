@@ -8,6 +8,10 @@
         "maps": "谱面",
         "playlists": "歌单",
         "models": "模型",
+        "avatars": "头像",
+        "sabers": "光剑",
+        "platforms": "平台",
+        "blocks": "方块",
         "cancel": "取消",
         "delete": "删除",
         "accept": "接受",
@@ -15,7 +19,17 @@
         "apply": "应用",
         "copy": "复制",
         "copied": "已复制!",
-        "confirm": "确认"
+        "confirm": "确认",
+        "choose-folder": "选择文件夹",
+        "Unknown": "发生了一个错误 ¯\\_(ツ)_/¯",
+        "warning": "警告",
+        "continue": "继续",
+        "shared": "共享",
+        "pin": "固定",
+        "unpin": "取消固定"
+    },
+    "title-bar": {
+        "outdated": "过时"
     },
     "nav-bar": {
         "add-version": "添加版本",
@@ -34,10 +48,17 @@
                 "desktop-description": "第一人称飞控模式允许你使用键盘 WASD 和鼠标在游戏中进行导航。你无需带上头显即可进行测试!",
                 "debug": "Debug 模式",
                 "debug-description": "为 IPA 启用输出日志窗口。 会显示所用 Mod 的 debug 输出",
+                "outdated-tippy": "此版本已过时，某些模组或功能可能无法按预期运行。建议使用推荐版本的 Beat Saber ({recommendedVersion})，以享受最新功能和修复。",
                 "advanced-launch": {
-                    "button": "高级启动",
+                    "button": "启动选项",
                     "placeholder": "额外启动参数，例如: --revert; --nowait"
-                }
+                },
+                "skipsteam": "跳过 Steam",
+                "skipsteam-description": "防止 Steam 与 Beat Saber 自动打开，如果您使用的是其他 VR 运行时，如 WiVRn 或 Monado，SteamVR 可能会干扰，请启用此选项。",
+                "map-editor": "地图编辑器",
+                "map-editor-description": "启动官方的 Beat Saber 地图编辑器，而不是游戏。",
+                "proton-logs": "Proton日志",
+                "proton-logs-description": "启用此 Beat Saber 安装的质子日志，路径为\"{versionPath}\"。"
             },
             "maps": {
                 "search-bar": {
@@ -101,7 +122,9 @@
                         "latest": "最新",
                         "description": "描述",
                         "dropdown": {
-                            "uninstall-all": "全部卸载"
+                            "import-mods": "导入模组",
+                            "uninstall-all": "全部卸载",
+                            "unselect-all": "取消全选"
                         }
                     }
                 },
@@ -110,6 +133,10 @@
                         "title": "模组已安装",
                         "description": "所有选中的模组已经安装"
                     }
+                },
+                "drop-zone": {
+                    "text": "导入你的模组",
+                    "subtext": "将你的 \"zip\" 或 \"dll\" 文件拖放到这里进行导入"
                 }
             },
             "dropdown": {
@@ -157,8 +184,15 @@
             },
             "installation-folder": {
                 "title": "安装文件夹",
-                "description": "更改将包含 BSManager 下载的所有内容的文件夹。",
-                "choose-folder": "选择文件夹"
+                "description": "更改将包含 BSManager 下载的所有内容的文件夹。"
+            },
+            "proton-folder": {
+                "title": "Proton文件夹",
+                "description": "将文件夹更改为Proton路径。（例如：Proton - Experimental）",
+                "errors": {
+                    "title": "设置Proton文件夹失败",
+                    "invalid-folder": "无效的Proton文件夹路径"
+                }
             },
             "additional-content": {
                 "title": "附加内容",
@@ -180,6 +214,7 @@
                     "zh-CN": "简体中文",
                     "zh-TW": "正體中文",
                     "ja-JP": "日本語",
+                    "ko-KR": "한국어",
                     "translated": {
                         "en-EN": "英式英语",
                         "en-US": "美式英语",
@@ -189,7 +224,8 @@
                         "ru-RU": "俄语",
                         "zh-CN": "简体中文",
                         "zh-TW": "正体中文",
-                        "ja-JP": "日语"
+                        "ja-JP": "日语",
+                        "ko-KR": "韩语"
                     }
                 }
             },
@@ -217,10 +253,6 @@
                     "open-logs": "打开日志"
                 }
             },
-            "changelogs": {
-                "open" : "🚀 探索更新日志！",
-                "not-founds": "😕 哎呀，找不到更新日志！"
-            },
             "advanced": {
                 "title": "高级设置",
                 "description": "BSManager的高级设置。",
@@ -246,6 +278,13 @@
                     },
                     "error-notification": {
                         "message": "发生错误，无法更改符号链接设置。"
+                    }
+                },
+                "use-system-proxy": {
+                    "title": "使用系统代理",
+                    "description": "BSMansger将通过系统代理发起网络请求。",
+                    "error-notification": {
+                        "message": "发生错误，无法启用系统代理。"
                     }
                 }
             }
@@ -297,6 +336,8 @@
                     "msg": {
                         "401": "Steam 似乎不想让我们下载 Beat Saber😢",
                         "404": "无法联系 Steam 服务器。",
+                        "ExeNotFoundWindows": "\"DepotDownloader.exe\" 缺失。请检查执行文件是否被您的防病毒软件隔离。",
+                        "ExeNotFoundLinux": "\"DepotDownloader\" 的可执行文件缺失。",
                         "Password": "密码无效",
                         "InvalidCredentials": "登录凭据无效、连接未经批准或登录尝试次数过多。",
                         "NoManifest": "未找到清单",
@@ -330,8 +371,8 @@
                         "UNABLE_TO_GET_MANIFEST": "无法获取下载所需的清单。",
                         "VERIFY_INTEGRITY_FAILED": "文件验证过程中发生错误。",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "一些文件下载失败。",
-                        "OCULUS_LOGIN_TIMED_OUT": "获取登录令牌用时过长。",
-                        "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER": "Meta 登录窗口被关闭。",
+                        "META_LOGIN_TIMED_OUT": "获取登录令牌用时过长。",
+                        "META_LOGIN_WINDOW_CLOSED_BY_USER": "Meta 登录窗口被关闭。",
                         "NO_META_AUTH_TOKEN": "无法获取下载所需的 Meta 登录令牌。",
                         "UNKNOWN_ERROR": "发生未知错误。"
                     }
@@ -418,11 +459,13 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "启动中...🚀",
-                    "STEAM_LAUNCHING": "Steam 正在启动！"
+                    "STEAM_LAUNCHING": "Steam 正在启动！",
+                    "SKIPPING_STEAM_LAUNCH": "跳过 Steam 启动"
                 },
                 "msg": {
                     "BS_LAUNCHING": "别忘了热身哦 😉",
-                    "STEAM_LAUNCHING": "Beat Saber 会在 Steam 启动后自动启动。"
+                    "STEAM_LAUNCHING": "Beat Saber 会在 Steam 启动后自动启动。",
+                    "SKIPPING_STEAM_LAUNCH": "希望你知道自己在做什么 :)"
                 }
             },
             "errors": {
@@ -432,8 +475,11 @@
                     "OCULUS_NOT_RUNNING": "Oculus 未运行",
                     "BS_ALREADY_RUNNING": "Beat Saber 已在运行",
                     "EXE_NOT_FINDED": "缺少文件",
+                    "PROTON_NOT_SET": "Proton文件夹未设置",
+                    "PROTON_NOT_FOUND": "未找到Proton二进制文件",
                     "EXIT": "突然停止",
-                    "OCULUS_LIB_NOT_FOUND": "未找到 Oculus 库"
+                    "OCULUS_LIB_NOT_FOUND": "未找到 Oculus 库",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "未找到原始Oculus版本"
                 },
                 "msg": {
                     "UNKNOWN_ERROR": "发生未知错误。",
@@ -442,7 +488,10 @@
                     "BS_ALREADY_RUNNING": "再次启动前请关闭 BeatSaber。",
                     "EXE_NOT_FINDED": "某些文件似乎丢失了，尝试验证文件。",
                     "EXIT": "BeatSaber 突然停止，请检查文件。",
-                    "OCULUS_LIB_NOT_FOUND": "检查 Oculus 应用是否正确安装，以及库是否在 Oculus 中正确定义。"
+                    "OCULUS_LIB_NOT_FOUND": "检查 Oculus 应用是否正确安装，以及库是否在 Oculus 中正确定义。",
+                    "PROTON_NOT_SET": "在设置中设置Proton路径。",
+                    "PROTON_NOT_FOUND": "在设置中设置Proton路径。",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "在打开之前，必须从Oculus应用程序安装Beat Saber。"
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "启动 Steam"
@@ -509,6 +558,17 @@
                         "no-mods": "该版本中没有安装 Mod 😑"
                     }
                 }
+            },
+            "import-mod": {
+                "titles": {
+                    "success": "模组导入完成",
+                    "error": "模组导入过程中发生错误"
+                },
+                "msgs": {
+                    "success": "模组成功导入。",
+                    "some-success": "一些模组已成功导入。",
+                    "no-dlls": "文件中不包含任何 \"dll\" 文件。"
+                }
             }
         },
         "maps": {
@@ -565,6 +625,10 @@
                     "ENOSPC": "磁盘已满，请腾出空间后再试。",
                     "UNKNOWN_ERROR": "链接文件夹时发生未知错误。"
                 }
+            },
+            "adding-error": {
+                "title": "添加共享文件夹失败",
+                "msg": "您无法将\"{folder}\"添加到共享文件夹。"
             }
         },
         "create-launch-shortcut": {
@@ -574,6 +638,14 @@
             },
             "error": {
                 "msg": "创建快捷方式时发生错误"
+            }
+        },
+        "bs-version-oudated": {
+            "title": "版本过时",
+            "msg": "此 Beat Saber 版本已过时，请使用推荐版本以享受最新功能和修复。",
+            "actions": {
+                "do-not-remind": "不再提醒",
+                "ok": "确定"
             }
         }
     },
@@ -712,30 +784,28 @@
                     }
                 }
             },
-            "link-maps": {
-                "title": "关联谱面",
-                "desc": "关联谱面可以在所有启用此功能的版本之间共享谱面。一旦关联，该版本将受益于共享谱面。",
-                "info": "添加和删除的谱面也将被共享",
-                "keep-maps": {
-                    "label": "保留谱面",
-                    "title": "保留谱面将会把当前版本的所有谱面复制到共享谱面文件夹。否则，该版本的谱面将不会被保留，它们将丢失。"
-                },
-                "valid-btn": "关联谱面"
-            },
-            "unlink-maps": {
-                "title": "取消关联谱面",
-                "desc": "请注意，取消关联谱面后该版本将无法使用共享谱面，直到重新启用。",
-                "keep-maps": {
-                    "label": "保留谱面",
-                    "title": "保留谱面将会在取消关联后把共享文件夹的所有谱面复制到当前版本。如果此项被禁用，谱面也不会丢失。"
-                },
-                "valid-btn": "取消关联谱面"
-            },
             "delete-duplicate-maps": {
                 "title": "删除地图",
                 "desc": "只有地图 \"{map}\" 是重复的。你确定要删除它吗？",
                 "desc-plural": "发现了 {nb} 个重复的地图。你确定要删除它们吗？"
             }
+        },
+        "link-contents": {
+            "title": "链接{contentType}",
+            "p-1": "链接{contentType}允许在启用此功能的所有版本之间共享{contentType}。链接后，该版本将受益于共享的{contentType}。",
+            "p-2": "为了使用链接功能，所有的{itemsHtml}将被移动到{sharedHtml}文件夹中。之后，一个指向共享{contentType}文件夹的符号链接将取代您原来的{contentType}文件夹。",
+            "warning": "请注意，任何影响{contentType}的更改也会影响所有启用此功能的版本。",
+            "what-is-a-symbolic-link": "什么是符号链接？",
+            "i-need-help": "我需要帮助",
+            "valid-btn": "链接{contentType}"
+        },
+        "unlink-contents": {
+            "title": "取消链接{contentType}",
+            "p-1": "注意：取消链接{contentType}将禁用此版本中共享的{contentType}功能，直到该功能再次启用。",
+            "p-2": "为了取消链接您的{contentType}，指向{sharedHtml}的符号链接将被删除。之后，共享文件夹中的所有{contentType}将被复制到您Beat Saber版本的{itemsHtml}文件夹中。",
+            "do-not-copy-contents": "不复制{contentType}",
+            "do-not-copy-contents-tip": "如果启用，共享文件夹中的{contentType}不会被复制到您的Beat Saber版本中。结果是，取消链接后，您的Beat Saber版本中将不再保留任何{contentType}。",
+            "valid-btn": "取消链接{contentType}"
         },
         "download-maps": {
             "search-btn": "搜索",
@@ -758,8 +828,13 @@
                 "add-folder": "添加文件夹",
                 "link-folder": "关联文件夹",
                 "unlink-folder": "取消关联文件夹",
-                "link-all": "关联所有"
+                "link-all": "关联所有",
+                "remove-from-the-list": "从列表中移除"
             }
+        },
+        "adding-shared-folder": {
+            "title": "添加共享文件夹",
+            "description": "链接\"{folder}\"文件夹时可能会遇到问题。您确定要添加它吗？"
         },
         "create-launch-shortcut": {
             "title": "创建快捷方式",
@@ -782,7 +857,7 @@
         "original-version-backup-oculus": {
             "title": "警告",
             "body": {
-                "must-be-installed-once": "你必须至少从 Oculus 商店安装过一次 BeatSaber，否则 BeatSaber 可能会在启动后自动关闭。",
+                "must-be-installed-once": "您必须在此设备上从Oculus商店安装Beat Saber，否则Beat Saber将在启动后自动关闭。",
                 "will-backup": "为了启动这个版本，位于您的Oculus库中的Beat Saber的原始安装文件夹将被重命名，并且在Beat Saber关闭时会自动恢复。"
             },
             "not-remind-me": "不再提醒我",
@@ -819,9 +894,17 @@
         "ask-install-path": {
             "title": "安装文件夹",
             "choose-folder-description": "选择将包含 BSManager 下载的所有内容的文件夹。(版本、mod、地图、播放列表等)",
-            "choose-folder": "选择文件夹",
             "default": "默认",
             "default-tooltip": "默认为您的主文件夹"
+        },
+        "choose-proton-folder": {
+            "title": "Proton文件夹",
+            "proton-folder-description": "在Linux上，BSManager需要Proton才能运行。请选择Proton的安装文件夹以继续。",
+            "proton-folder-placeholder": "Proton安装文件夹",
+            "where-is-proton-installed": "Proton安装在哪里？"
+        },
+        "bs-version-outdated": {
+            "body": "版本 {outdatedVersion} 已过时，某些模组或功能可能无法正常工作。请下载最新推荐的 Beat Saber 版本 ({recommendedVersion})，以享受最新功能和修复。"
         }
     },
     "maps": {
@@ -981,86 +1064,6 @@
                 "no-models": "未找到模型",
                 "no-internet": "无网络连接",
                 "error-occured": "发生了一个错误，稍后重试。"
-            },
-            "link-models": {
-                "avatar": {
-                    "title": "关联 Avatar",
-                    "desc": "关联 Avatar 允许在所有启用此功能的版本之间共享 Avatar。一旦关联，该版本将受益于共享 Avatar。",
-                    "info": "对 Avatar 的添加和删除也将被共享",
-                    "keep-models": {
-                        "label": "保留 Avatar",
-                        "title": "保留 Avatar 将会把当前版本的所有 Avatar复制到共享 Avatar文件夹。否则，该版本的 Avatar将不会被保留，它们将丢失。"
-                    },
-                    "valid-btn": "关联 Avatar "
-                },
-                "saber": {
-                    "title": "关联光剑",
-                    "desc": "关联光剑允许在所有启用此功能的版本之间共享光剑。一旦关联，该版本将受益于共享光剑。",
-                    "info": "对光剑的添加和删除也将被共享",
-                    "keep-models": {
-                        "label": "保留光剑",
-                        "title": "保留光剑将会把当前版本的所有光剑复制到共享光剑文件夹。否则，该版本的光剑将不会被保留，它们将丢失。"
-                    },
-                    "valid-btn": "关联光剑"
-                },
-                "platform": {
-                    "title": "关联平台",
-                    "desc": "关联平台允许在所有启用此功能的版本之间共享平台。一旦关联，该版本将受益于共享平台。",
-                    "info": "对平台的添加和删除也将被共享",
-                    "keep-models": {
-                        "label": "保留平台",
-                        "title": "保留平台将会把当前版本的所有平台复制到共享平台文件夹。否则，该版本的平台将不会被保留，它们将丢失。"
-                    },
-                    "valid-btn": "关联平台"
-                },
-                "bloq": {
-                    "title": "关联方块",
-                    "desc": "关联方块允许在所有启用此功能的版本之间共享方块。一旦关联，该版本将受益于共享方块。",
-                    "info": "对方块的添加和删除也将被共享",
-                    "keep-models": {
-                        "label": "保留方块",
-                        "title": "保留方块将会把当前版本的所有方块复制到共享方块文件夹。否则，该版本的方块将不会被保留，它们将丢失。"
-                    },
-                    "valid-btn": "关联方块"
-                }
-            },
-            "unlink-models": {
-                "avatar": {
-                    "title": "取消关联 Avatar",
-                    "desc": "请注意，取消关联 Avatar 将禁用该版本的共享 Avatar 使用，直到重新启用。",
-                    "keep-models": {
-                        "label": "保留 Avatar",
-                        "title": "保留 Avatar 将会在取消关联后把共享文件夹的所有 Avatar 复制到当前版本。如果此项被禁用，Avatar 将不会丢失。"
-                    },
-                    "valid-btn": "取消关联 Avatar"
-                },
-                "saber": {
-                    "title": "取消关联光剑",
-                    "desc": "请注意，取消关联光剑将禁用该版本的共享光剑使用，直到重新启用。",
-                    "keep-models": {
-                        "label": "保留光剑",
-                        "title": "保留光剑将会在取消关联后把共享文件夹的所有光剑复制到当前版本。如果此项被禁用，光剑将不会丢失。"
-                    },
-                    "valid-btn": "取消关联光剑"
-                },
-                "platform": {
-                    "title": "取消关联平台",
-                    "desc": "请注意，取消关联平台将禁用该版本的共享平台使用，直到重新启用。",
-                    "keep-models": {
-                        "label": "保留平台",
-                        "title": "保留平台将会在取消关联后把共享文件夹的所有平台复制到当前版本。如果此项被禁用，平台将不会丢失。"
-                    },
-                    "valid-btn": "取消关联平台"
-                },
-                "bloq": {
-                    "title": "取消关联方块",
-                    "desc": "请注意，取消关联方块将禁用该版本的共享方块使用，直到重新启用。",
-                    "keep-models": {
-                        "label": "保留方块",
-                        "title": "保留方块将会在取消关联后把共享文件夹的所有方块复制到当前版本。如果此项被禁用，方块将不会丢失。"
-                    },
-                    "valid-btn": "取消关联方块"
-                }
             }
         },
         "notifications": {
@@ -1069,10 +1072,6 @@
                 "desc": "确保你已经安装了在 BeatSaber 中使用模型所需的 Mod",
                 "go-to-mods": "前往 Mod 页",
                 "not-remind": "不再提醒我"
-            },
-            "prevent-for-models-breaks": {
-                "title": "已损坏的模型",
-                "desc": "自从Beat Saber引擎更新以来，所有自定义模型的MOD都已损坏，需要更新。它们还没有被更新。"
             },
             "export-success": {
                 "title": "导出成功 🎉"
@@ -1141,14 +1140,6 @@
         "stop-download": "停止下载",
         "cancel-download": "取消下载",
         "open-file": "打开文件",
-        "link-playlists": "链接播放列表",
-        "link-playlist-desc": "链接播放列表允许在所有版本之间共享播放列表。一旦链接，此版本将受益于共享播放列表",
-        "link-playlist-info": "添加和删除播放列表也将被共享",
-        "keep-playlists": "保留播放列表",
-        "keep-playlists-tip": "保留播放列表将把当前版本的播放列表移动到共享播放列表文件夹。否则，它们将丢失",
-        "unlink-playlists": "取消链接播放列表",
-        "unlink-playlist-desc": "警告，取消链接播放列表将不再允许此版本使用共享播放列表。",
-        "unlink-keep-playlists-tip": "保留播放列表将为当前版本创建共享播放列表的副本。否则，此版本将不保留任何播放列表。",
         "delete-playlist-ask": "删除播放列表？",
         "delete-playlists-ask": "删除播放列表？",
         "delete-playlist-desc": "您确定要删除播放列表 \"{playlistTitle}\" 吗？",

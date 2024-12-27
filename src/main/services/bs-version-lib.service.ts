@@ -5,6 +5,8 @@ import { BSVersion } from "shared/bs-version.interface";
 import { RequestService } from "./request.service";
 import { readJSON } from "fs-extra";
 import { allSettled } from "../../shared/helpers/promise.helpers";
+import { LinuxService } from "./linux.service";
+import { IS_FLATPAK } from "main/constants";
 import { StaticConfigurationService } from "./static-configuration.service";
 
 export class BSVersionLibService {
@@ -13,16 +15,18 @@ export class BSVersionLibService {
 
     private static instance: BSVersionLibService;
 
-    private utilsService: UtilsService;
-    private requestService: RequestService;
-    private staticConfigurationService: StaticConfigurationService;
+    private readonly linuxService: LinuxService;
+    private readonly utilsService: UtilsService;
+    private readonly requestService: RequestService;
+    private readonly configService: StaticConfigurationService;
 
     private bsVersions: BSVersion[];
 
     private constructor() {
+        this.linuxService = LinuxService.getInstance();
         this.utilsService = UtilsService.getInstance();
         this.requestService = RequestService.getInstance();
-        this.staticConfigurationService = StaticConfigurationService.getInstance();
+        this.configService = StaticConfigurationService.getInstance();
     }
 
     public static getInstance(): BSVersionLibService {
@@ -32,34 +36,37 @@ export class BSVersionLibService {
         return BSVersionLibService.instance;
     }
 
-    private getRemoteVersions(): Promise<BSVersion[]> {
-        return this.requestService.getJSON<BSVersion[]>(this.REMOTE_BS_VERSIONS_URL);
+    private async getRemoteVersions(): Promise<BSVersion[]> {
+        return this.requestService.getJSON<BSVersion[]>(this.REMOTE_BS_VERSIONS_URL).then(res => res.data);
+    }
+
+    private async shouldLoadFromConfig(): Promise<boolean> {
+        // Some special cases of readonly memory installations
+        return process.platform === "linux" && (IS_FLATPAK || this.linuxService.isNixOS());
     }
 
     private async getLocalVersions(): Promise<BSVersion[]> {
         const localVersionsPath = path.join(this.utilsService.getAssestsJsonsPath(), this.VERSIONS_FILE);
 
-        if (process.platform === "linux") {
-            let versions = this.staticConfigurationService.get("versions");
-            if (!versions) {
-                versions = (await readJSON(localVersionsPath)) as BSVersion[];
-                this.staticConfigurationService.set("versions", versions);
-            }
-            return versions;
+        if (!(await this.shouldLoadFromConfig())) {
+            return readJSON(localVersionsPath);
         }
 
-        return readJSON(localVersionsPath);
+        let versions = this.configService.get("versions");
+        if (!versions) {
+            versions = await readJSON(localVersionsPath)
+        }
+        return versions;
     }
 
     private async updateLocalVersions(versions: BSVersion[]): Promise<void> {
-        const localVersionsPath = path.join(this.utilsService.getAssestsJsonsPath(), this.VERSIONS_FILE);
-
-        // Do not write on readonly memory in linux when running on AppImage
-        if (process.platform === "linux") {
-            this.staticConfigurationService.set("versions", versions);
-        } else {
-            writeFileSync(localVersionsPath, JSON.stringify(versions, null, "\t"), { encoding: "utf-8", flag: "w" });
+        if (await this.shouldLoadFromConfig()) {
+            this.configService.set("versions", versions);
+            return;
         }
+
+        const localVersionsPath = path.join(this.utilsService.getAssestsJsonsPath(), this.VERSIONS_FILE);
+        writeFileSync(localVersionsPath, JSON.stringify(versions, null, "\t"), { encoding: "utf-8", flag: "w" });
     }
 
     private async loadBsVersions(): Promise<BSVersion[]> {

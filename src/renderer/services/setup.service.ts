@@ -6,7 +6,8 @@ import { InstallationLocationService } from "./installation-location.service";
 import { IpcService } from "./ipc.service";
 import { ModalService } from "./modale.service";
 
-import { AskInstallPathModal } from "renderer/components/modal/modal-types/ask-install-path.component";
+import { AskInstallPathModal } from "renderer/components/modal/modal-types/setup/ask-install-path.component";
+import { ChooseProtonFolderModal } from "renderer/components/modal/modal-types/setup/choose-proton-folder-modal.component";
 
 // Handle setup modals/prompts, ordering of the modals/prompts may be done here
 export class SetupService {
@@ -35,6 +36,10 @@ export class SetupService {
         try {
             // NOTE: for modal sequencing
             await this.checkInstallationPath();
+
+            if (window.electron.platform === "linux") {
+                await this.checkProtonFolder();
+            }
         } catch (error) {
             logRenderError(error);
         }
@@ -56,6 +61,22 @@ export class SetupService {
 
             // Refresh the versions tab
             await this.versionManagerService.askInstalledVersions();
+        } catch (error) {
+            logRenderError(error);
+        }
+    }
+
+    private async checkProtonFolder(): Promise<void> {
+        try {
+            const valid = await lastValueFrom(this.ipcService.sendV2("linux.verify-proton-folder"));
+            if (valid) {
+                return;
+            }
+
+            await this.modalService.openModal(
+                ChooseProtonFolderModal,
+                { closable: false }
+            );
         } catch (error) {
             logRenderError(error);
         }

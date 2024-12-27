@@ -1,11 +1,12 @@
-import { Observable, BehaviorSubject, throwError, of } from "rxjs";
-import { catchError, tap } from "rxjs/operators";
+import { Observable, BehaviorSubject, throwError, of, lastValueFrom } from "rxjs";
+import { catchError, map, tap } from "rxjs/operators";
 import { BSVersion } from "shared/bs-version.interface";
 import { Mod } from "shared/models/mods";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
 import { NotificationService } from "./notification.service";
 import { Progression } from "main/helpers/fs.helpers";
+import { ProgressionInterface } from "shared/models/progress-bar";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -32,11 +33,11 @@ export class BsModsManagerService {
     }
 
     public getAvailableMods(version: BSVersion): Observable<Mod[]> {
-        return this.ipcService.sendV2("get-available-mods", version);
+        return this.ipcService.sendV2("bs-mods.get-available-mods", version);
     }
 
     public getInstalledMods(version: BSVersion): Observable<Mod[]> {
-        return this.ipcService.sendV2("get-installed-mods", version);
+        return this.ipcService.sendV2("bs-mods.get-installed-mods", version);
     }
 
     public installMods(mods: Mod[], version: BSVersion): Observable<Progression> {
@@ -46,7 +47,7 @@ export class BsModsManagerService {
         }
 
         return new Observable<Progression>(obs => {
-            const install$ = this.ipcService.sendV2("install-mods", { mods, version });
+            const install$ = this.ipcService.sendV2("bs-mods.install-mods", { mods, version });
             this.progressBar.show(install$.pipe(catchError(() => of({ current: 0, total: 0} as Progression))), { paddingLeft: "190px", paddingRight: "190px", bottom: "20px" });
 
             const sub = install$.pipe(
@@ -77,7 +78,7 @@ export class BsModsManagerService {
         }
 
         return new Observable<Progression>(obs => {
-            const uninstall$ = this.ipcService.sendV2("uninstall-mods", { mods: [mod], version });
+            const uninstall$ = this.ipcService.sendV2("bs-mods.uninstall-mods", { mods: [mod], version });
             this.progressBar.show(uninstall$.pipe(catchError(() => of({ current: 0, total: 0} as Progression))), { paddingLeft: "190px", paddingRight: "190px", bottom: "20px" });
 
             const sub = uninstall$.pipe(
@@ -102,13 +103,57 @@ export class BsModsManagerService {
         });
     }
 
+    public async importMods(paths: string[], version: BSVersion): Promise<void> {
+        if (!this.progressBar.require()) {
+            throw new Error("Action already in progress");
+        }
+
+        // TODO: Check for conflicting mod files, and ask the user if they want to overwrite the files
+
+        const import$ = this.ipcService.sendV2("bs-mods.import-mods", {
+            paths, version
+        });
+
+        this.progressBar.show(import$.pipe(
+            catchError(() => of()),
+            map(progress => ({
+                progression: (progress.current / progress.total) * 100,
+                label: progress.data?.name
+            }) as ProgressionInterface)
+        ));
+
+        return lastValueFrom(import$)
+            .then(progress => {
+                if (progress.current === 0) {
+                    return;
+                }
+                this.notifications.notifySuccess({
+                    title: "notifications.mods.import-mod.titles.success",
+                    desc: progress.current === progress.total
+                        ? "notifications.mods.import-mod.msgs.success"
+                        : "notifications.mods.import-mod.msgs.some-success",
+                });
+            })
+            .catch(error => {
+                this.notifications.notifyError({
+                    title: "notifications.mods.import-mod.titles.error",
+                    desc: ["no-dlls"].includes(error?.code)
+                        ? `notifications.mods.import-mod.msgs.${error.code}`
+                        : "misc.unknown",
+                });
+            })
+            .finally(() => {
+                this.progressBar.hide();
+            });
+    }
+
     public uninstallAllMods(version: BSVersion): Observable<Progression> {
         if (!this.progressBar.require()) {
             return throwError(() => new Error("Action already in progress"));
         }
 
         return new Observable<Progression>(obs => {
-            const uninstall$ = this.ipcService.sendV2("uninstall-all-mods", version);
+            const uninstall$ = this.ipcService.sendV2("bs-mods.uninstall-all-mods", version);
             this.progressBar.show(uninstall$.pipe(catchError(() => of({ current: 0, total: 0} as Progression))), { paddingLeft: "190px", paddingRight: "190px", bottom: "20px" });
 
             const sub = uninstall$.pipe(
@@ -133,4 +178,5 @@ export class BsModsManagerService {
 
         });
     }
+
 }

@@ -4,6 +4,8 @@ import { Observable } from "rxjs";
 import { ConfigurationService } from "./configuration.service";
 import { getProperty } from "dot-prop";
 import { i18n } from "dateformat";
+import { createElement, Fragment } from "react";
+import { logRenderError } from "renderer";
 
 export class I18nService {
     private static instance: I18nService;
@@ -78,7 +80,13 @@ export class I18nService {
     public translate(translationKey: string, args?: Record<string, string>): string {
         let translated = this.cache.get(translationKey);
         if (!translated) {
-            translated = getProperty(this.dictionary, translationKey) ?? translationKey;
+            try {
+                translated = getProperty(this.dictionary, translationKey) ?? translationKey;
+            } catch (error) {
+                // Invalid translationKey like strings containing "[]"
+                logRenderError(`Could not get property of ${translationKey}`, error);
+                translated = translationKey;
+            }
             this.cache.set(translationKey, translated);
         }
 
@@ -89,5 +97,31 @@ export class I18nService {
         }
 
         return translated;
+    }
+
+    public translateElement(translationKey: string, args?: Record<string, JSX.Element>): JSX.Element {
+        let translated = this.cache.get(translationKey);
+        if (!translated) {
+            translated = getProperty(this.dictionary, translationKey) ?? translationKey;
+            this.cache.set(translationKey, translated);
+        }
+
+        if (!args) {
+            return createElement(Fragment, null, translated);
+        }
+
+        // Sort keys by length in descending order to avoid partial matches within keys
+        const sortedKeys = Object.keys(args).sort((a, b) => b.length - a.length);
+
+        const pattern = sortedKeys.map(key => `\\{${key}\\}`).join('|');
+        const regex = new RegExp(`(${pattern})`, 'g');
+        const segments = translated.split(regex);
+
+        const children = segments.map((segment) => {
+            const key = segment.slice(1, -1); // Remove surrounding {}
+            return args[key] || segment;
+        });
+
+        return createElement(Fragment, null, ...children);
     }
 }

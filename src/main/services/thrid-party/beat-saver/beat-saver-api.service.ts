@@ -15,7 +15,7 @@ export class BeatSaverApiService {
 
     private readonly request: RequestService;
 
-    private readonly bsaverApiUrl = "https://beatsaver.com/api";
+    private readonly bsaverApiUrl = "https://api.beatsaver.com";
 
     private constructor() {
         this.request = RequestService.getInstance();
@@ -75,7 +75,7 @@ export class BeatSaverApiService {
         }
 
         const paramsHashs = hashs.join(",");
-        const data = await this.request.getJSON<Record<Lowercase<T>, BsvMapDetail> | BsvMapDetail>(`${this.bsaverApiUrl}/maps/hash/${paramsHashs}`);
+        const { data } = (await this.request.getJSON<Record<Lowercase<T>, BsvMapDetail> | BsvMapDetail>(`${this.bsaverApiUrl}/maps/hash/${paramsHashs}`));
 
         if ((data as BsvMapDetail).id) {
             const key = (data as BsvMapDetail).versions.at(0).hash.toLowerCase();
@@ -90,22 +90,22 @@ export class BeatSaverApiService {
     }
 
     public async getMapDetailsById(id: string): Promise<BsvMapDetail> {
-        return this.request.getJSON<BsvMapDetail>(`${this.bsaverApiUrl}/maps/id/${id}`);
+        return (await this.request.getJSON<BsvMapDetail>(`${this.bsaverApiUrl}/maps/id/${id}`)).data;
     }
 
     public searchMaps(search: SearchParams): Promise<SearchResponse> {
         const url = new URL(`${this.bsaverApiUrl}/search/text/${search?.page ?? 0}`);
         url.search = this.searchParamsToUrlParams(search).toString();
-        return this.request.getJSON<SearchResponse>(url.toString());
+        return this.request.getJSON<SearchResponse>(url.toString()).then(res => res.data);
     }
 
     public searchPlaylists(search: PlaylistSearchParams): Promise<PlaylistSearchResponse> {
         const url = new URL(`${this.bsaverApiUrl}/playlists/search/${search?.page ?? 0}`);
         url.search = new URLSearchParams(this.objectToStringRecord(search)).toString();
-        return this.request.getJSON<PlaylistSearchResponse>(url.toString());
+        return this.request.getJSON<PlaylistSearchResponse>(url.toString()).then(res => res.data);
     }
 
     public getPlaylistDetailsById(id: string, page = 0): Promise<BsvPlaylistPage> {
-        return this.request.getJSON<BsvPlaylistPage>(`${this.bsaverApiUrl}/playlists/id/${id}/${page}`);
+        return this.request.getJSON<BsvPlaylistPage>(`${this.bsaverApiUrl}/playlists/id/${id}/${page}`).then(res => res.data);
     }
 }

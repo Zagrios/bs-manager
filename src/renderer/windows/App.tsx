@@ -18,16 +18,14 @@ import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
 import { NotificationService } from "renderer/services/notification.service";
-import { lastValueFrom, timer } from "rxjs";
+import { timer } from "rxjs";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { useService } from "renderer/hooks/use-service.hook";
-import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 import { SetupService } from "renderer/services/setup.service";
-import { gt, parse } from "semver"
-import { logRenderError } from "renderer";
 
 export default function App() {
+
     useService(OsDiagnosticService);
     const pageState = useService(PageStateService);
     const maps = useService(MapsManagerService);
@@ -35,42 +33,17 @@ export default function App() {
     const models = useService(ModelsManagerService);
     const notification = useService(NotificationService);
     const config = useService(ConfigurationService);
-    const autoUpdater = useService(AutoUpdaterService);
     const setup = useService(SetupService);
 
     const location = useLocation();
     const navigate = useNavigate();
 
     useEffect(() => {
-        checkIsUpdated();
         setup.check()
             .then(() => {
                 checkOneClicks();
             })
     }, []);
-
-    const checkIsUpdated = async () => {
-        const appVersion = await lastValueFrom(autoUpdater.getAppVersion());
-        const lastAppVersion = autoUpdater.getLastAppVersion();
-
-        if(!lastAppVersion) {
-            return;
-        }
-
-        if (lastAppVersion.toLowerCase().includes("alpha")) {
-            autoUpdater.setLastAppVersion("0"); // Reset last app version if it's an alpha version for users with alpha versions in the var stored.
-        }
-
-        if (appVersion.toLowerCase().includes("alpha")) {
-            return;
-        }
-
-        autoUpdater.setLastAppVersion(appVersion);
-
-        if (parse(lastAppVersion) && gt(appVersion, lastAppVersion)) {
-            await autoUpdater.showChangelog(appVersion).catch(logRenderError);
-        }
-    };
 
     const checkOneClicks = async () => {
 

@@ -59,7 +59,8 @@ module.exports = {
         "react/function-component-definition": "off",
         "jsx-a11y/control-has-associated-label": "off",
         "react/button-has-type": "off",
-        "no-labels": ["error", { "allowLoop": true }]
+        "max-classes-per-file": "off",
+        "jest/no-standalone-expect": "off",
     },
     parserOptions: {
         ecmaVersion: 2020,

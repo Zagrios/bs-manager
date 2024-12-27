@@ -5,24 +5,28 @@ import { BSLocalVersionService } from "../bs-local-version.service";
 import path from "path";
 import md5File from "md5-file";
 import { RequestService } from "../request.service";
-import { spawn } from "child_process";
 import { BS_EXECUTABLE } from "../../constants";
 import log from "electron-log";
 import { deleteFolder, pathExist, Progression, unlinkPath } from "../../helpers/fs.helpers";
 import { lastValueFrom, Observable } from "rxjs";
-import JSZip from "jszip";
-import { extractZip } from "../../helpers/zip.helpers";
 import recursiveReadDir from "recursive-readdir";
 import { sToMs } from "../../../shared/helpers/time.helpers";
-import { ensureDir, pathExistsSync } from "fs-extra";
+import { copyFile, ensureDir, pathExistsSync } from "fs-extra";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { popElement } from "shared/helpers/array.helpers";
+import { LinuxService } from "../linux.service";
+import { tryit } from "shared/helpers/error.helpers";
+import crypto from "crypto";
+import { BsmZipExtractor } from "main/models/bsm-zip-extractor.class";
+import { bsmSpawn } from "main/helpers/os.helpers";
+import { ExternalMod } from "shared/models/mods/mod.interface";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
 
     private readonly beatModsApi: BeatModsApiService;
     private readonly bsLocalService: BSLocalVersionService;
+    private readonly linuxService: LinuxService;
     private readonly requestService: RequestService;
 
     private manifestMatches: Mod[];
@@ -37,6 +41,7 @@ export class BsModsManagerService {
     private constructor() {
         this.beatModsApi = BeatModsApiService.getInstance();
         this.bsLocalService = BSLocalVersionService.getInstance();
+        this.linuxService = LinuxService.getInstance();
         this.requestService = RequestService.getInstance();
     }
 
@@ -106,7 +111,7 @@ export class BsModsManagerService {
         return this.beatModsApi.getModByHash(injectorMd5);
     }
 
-    private async downloadZip(zipUrl: string): Promise<JSZip> {
+    private async downloadZip(zipUrl: string): Promise<BsmZipExtractor> {
         zipUrl = path.join(this.beatModsApi.BEAT_MODS_URL, zipUrl);
 
         log.info("Download mod zip", zipUrl);
@@ -122,10 +127,7 @@ export class BsModsManagerService {
             return null;
         }
 
-        return JSZip.loadAsync(buffer).catch(e => {
-            log.error("ZIP", "Error while loading zip", e);
-            return null;
-        });
+        return BsmZipExtractor.fromBuffer(buffer);
     }
 
     private async executeBSIPA(version: BSVersion, args: string[]): Promise<boolean> {
@@ -140,25 +142,43 @@ export class BsModsManagerService {
             return false;
         }
 
+        const cmd = `"${ipaPath}" "${bsExePath}" ${args.join(" ")}`;
+        let winePath: string = "";
+        if (process.platform === "linux") {
+            const { error, result } = tryit(() => this.linuxService.getWinePath());
+            if (error) {
+                log.error(error);
+                return false;
+            }
+            winePath = `"${result}"`;
+        }
+
         return new Promise<boolean>(resolve => {
-            const cmd = process.platform === 'linux'
-                ? `screen -dmS "BSIPA" dotnet "${ipaPath}" ${args.join(" ")}` // Must run through screen, otherwise BSIPA tries to move console cursor and crashes.
-                : `"${ipaPath}" ${args.join(" ")}`;
-
             log.info("START IPA PROCESS", cmd);
-            const processIPA = spawn(cmd, { cwd: versionPath, detached: true, shell: true });
+            const processIPA = bsmSpawn(cmd, {
+                log: true,
+                options: {
+                    cwd: versionPath,
+                    detached: true,
+                    shell: true
+                },
+                linux: { prefix: winePath },
+            });
 
-            const timemout = setTimeout(() => {
+            const timeout = setTimeout(() => {
                 log.info("Ipa process timeout");
                 resolve(false)
             }, sToMs(30));
 
+            processIPA.stdout.on("data", data => {
+                log.info("IPA process stdout", data.toString());
+            });
             processIPA.stderr.on("data", data => {
                 log.error("IPA process stderr", data.toString());
             })
 
             processIPA.once("exit", code => {
-                clearTimeout(timemout);
+                clearTimeout(timeout);
                 if (code === 0) {
                     log.info("Ipa process exist with code 0");
                     return resolve(true);
@@ -188,43 +208,38 @@ export class BsModsManagerService {
 
         log.info("Start download mod zip", mod.name, download.url);
         const zip = await this.downloadZip(download.url);
-        log.info("Mod zip download end", mod.name, download.url, !!zip);
+        log.info("Mod zip download end", mod.name, download.url);
 
         if (!zip) {
             return false;
         }
 
-        const crypto = require("crypto");
-        const files = await zip.files;
+        let hashCount = 0;
+        for await (const entry of zip.entries()) {
+            const buffer = await entry.read();
+            const md5Hash = crypto.createHash("md5")
+                .update(buffer)
+                .digest("hex");
+            hashCount += +download.hashMd5.some(md5 => md5.hash === md5Hash);
+        }
 
-        const checkedEntries = (
-            await Promise.all(
-                Object.values(files).map(async entry => {
-                    const data = await entry.async("nodebuffer");
-                    const entryMd5 = crypto.createHash("md5").update(data).digest("hex");
-                    return download.hashMd5.some(md5 => md5.hash === entryMd5) ? entry : undefined;
-                })
-            ).catch(e => {
-                log.error("Error while checking mod zip entries", mod.name, e);
-                throw e;
-            })
-        ).filter(entry => !!entry);
-
-        if (checkedEntries.length !== download.hashMd5.length) {
+        if (hashCount !== download.hashMd5.length) {
             return false;
         }
 
-        const verionPath = await this.bsLocalService.getVersionPath(version);
+        const versionPath = await this.bsLocalService.getVersionPath(version);
         const isBSIPA = mod.name.toLowerCase() === "bsipa";
-        const destDir = isBSIPA ? verionPath : path.join(verionPath, ModsInstallFolder.PENDING);
+        const destDir = isBSIPA ? versionPath : path.join(versionPath, ModsInstallFolder.PENDING);
 
-        await ensureDir(destDir);
         log.info("Start extracting mod zip", mod.name, "to", destDir);
-        const extracted = await extractZip(zip, destDir)
+        const extracted = await zip.extract(destDir)
             .then(() => true)
             .catch(e => {
                 log.error("Error while extracting mod zip", e);
                 return false;
+            })
+            .finally(() => {
+                zip.close();
             });
 
         log.info("Mod zip extraction end", mod.name, "to", destDir, "success:", extracted);
@@ -304,6 +319,108 @@ export class BsModsManagerService {
         }
 
         return Array.from(modsDict.values());
+    }
+
+    private async importMod(modPath: string, destination: string): Promise<string[]> {
+        const extensionName = path.extname(modPath).toLowerCase();
+
+        if (extensionName === ".dll") {
+            const filename = path.basename(modPath);
+            // Defaultly copy the ".dll" to the "IPA/Pending/Plugins" folder
+            const fileFolder = path.join(destination, ModsInstallFolder.PLUGINS);
+
+            log.info("Copying", `${modPath}`, "to", `"${fileFolder}"`);
+            await ensureDir(fileFolder);
+            const copied = await copyFile(modPath, path.join(fileFolder, filename))
+                .then(() => true)
+                .catch(error => {
+                    log.warn("Could not copy", `"${modPath}"`, error);
+                    return false;
+                });
+            return copied ? [ filename ] : [];
+        }
+
+        if (extensionName !== ".zip") {
+            log.warn("Mod file is not a dll or zip file");
+            return [];
+        }
+
+        log.info("Extracting", `"${modPath}"`, "to", `"${destination}"`);
+        const zip = await BsmZipExtractor.fromPath(modPath);
+
+        try {
+            const dll = await zip.findEntry(entry => entry.fileName.endsWith(".dll"));
+
+            if (!dll) {
+                log.warn("No \"dll\" found in zip", modPath);
+                return [];
+            }
+
+            return await zip.extract(destination);
+        } catch (error) {
+            log.warn("Could not extract", `"${modPath}"`, error);
+            return [];
+        } finally {
+            zip.close();
+        }
+    }
+
+    public importMods(paths: string[], version: BSVersion): Observable<Progression<ExternalMod>> {
+        return new Observable<Progression<ExternalMod>>(obs => {
+            const progress: Progression<ExternalMod> = { total: 0, current: 0 };
+            const externalMod: ExternalMod = {
+                name: "",
+                files: [],
+            };
+            let modsInstalledCount = 0;
+            let modFilesCount = 0;
+            const abortController = new AbortController();
+
+            (async () => {
+                const versionPath = await this.bsLocalService.getVersionPath(version);
+                const modsPendingFolder = path.join(versionPath, ModsInstallFolder.PENDING);
+
+                for (const modPath of paths) {
+                    if (abortController.signal?.aborted) {
+                        log.info("Mods import has been cancelled");
+                        return;
+                    }
+
+                    progress.total = paths.length;
+                    obs.next(progress);
+
+                    if (!pathExistsSync(modPath)) { continue; }
+
+                    const modFiles = await this.importMod(modPath, modsPendingFolder);
+                    if (modFiles.length > 0) {
+                        ++modsInstalledCount;
+                        modFilesCount += modFiles.length;
+
+                        externalMod.name = path.basename(modPath, path.extname(modPath));
+                        externalMod.files = modFiles;
+                        progress.data = externalMod;
+                    } else {
+                        progress.data = undefined;
+                    }
+                    ++progress.current;
+                    obs.next(progress);
+                }
+            })()
+              .then(() => {
+                  if (modsInstalledCount === 0) {
+                      throw new CustomError("No \"dll\" found in any of the files dropped", "no-dlls");
+                  }
+                  log.info("Successfully imported", modsInstalledCount, "mods from", paths.length, "files paths. Total files/folders added", modFilesCount);
+              })
+              .catch(error => {
+                  obs.error(error);
+              })
+              .finally(() => obs.complete());
+
+            return () => {
+                abortController.abort();
+            }
+        });
     }
 
     public installMods(mods: Mod[], version: BSVersion): Observable<Progression> {

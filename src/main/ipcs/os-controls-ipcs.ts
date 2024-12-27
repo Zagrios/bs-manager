@@ -1,9 +1,10 @@
-import { shell, dialog, app, BrowserWindow } from "electron";
+import { shell, dialog, app, BrowserWindow, OpenDialogOptions } from "electron";
 import { NotificationService } from "../services/notification.service";
 import { IpcService } from "../services/ipc.service";
 import { from, of } from "rxjs";
 import { readFileSync } from "fs-extra";
 import log from "electron-log";
+import path from "path";
 
 // TODO IMPROVE WINDOW CONTROL BY USING WINDOW SERVICE
 
@@ -19,7 +20,20 @@ ipc.on("open-dialog", (args, reply) => {
 })
 
 ipc.on("choose-folder", (args, reply) => {
-    reply(from(dialog.showOpenDialog({ properties: ["openDirectory"], defaultPath: args ?? "" })));
+    const options: OpenDialogOptions = {
+        properties: ["openDirectory"],
+        defaultPath: args?.defaultPath ?? ""
+    };
+
+    if (args?.showHidden) {
+        options.properties.push("showHiddenFiles");
+    }
+
+    if (args?.parent) {
+        options.defaultPath = path.join(app.getPath(args.parent), options.defaultPath);
+    }
+
+    reply(from(dialog.showOpenDialog(options)));
 });
 
 ipc.on("choose-file", async (args, reply) => {

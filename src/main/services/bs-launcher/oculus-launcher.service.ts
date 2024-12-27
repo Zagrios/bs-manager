@@ -8,7 +8,7 @@ import log from "electron-log";
 import { sToMs } from "../../../shared/helpers/time.helpers";
 import { lstat, pathExists, readdir, readlink, rename, symlink, unlink } from "fs-extra";
 import { AbstractLauncherService } from "./abstract-launcher.service";
-import { taskRunning } from "../../helpers/os.helpers";
+import { isProcessRunning } from "../../helpers/os.helpers";
 import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
 import { InstallationLocationService } from "../installation-location.service";
 import { ensurePathNotAlreadyExist } from "../../helpers/fs.helpers";
@@ -127,6 +127,11 @@ export class OculusLauncherService extends AbstractLauncherService implements St
 
         const prepareDowngradedVersion: () => Promise<string> = async () => {
 
+            const originalVersionPath = await prepareOriginalVersion().catch(() => null);
+            if (!originalVersionPath) {
+                throw CustomError.fromError(new Error("Original Oculus Beat Saber not installed"), BSLaunchError.ORIGINAL_OCULUS_NOT_INSTALLED);
+            }
+
             const oculusLib = await lastValueFrom(this.oculusLib$.pipe(take(1), timeout(sToMs(30)), catchError(() => of(null))));
 
             if(!oculusLib){
@@ -149,7 +154,7 @@ export class OculusLauncherService extends AbstractLauncherService implements St
             (async () => {
 
                 // Cannot start multiple instances of Beat Saber with Oculus
-                const bsRunning = await taskRunning(BS_EXECUTABLE).catch(() => false);
+                const bsRunning = await isProcessRunning(BS_EXECUTABLE).catch(() => false);
                 if(bsRunning){
                     throw CustomError.fromError(new Error("Cannot start two instance of Beat Saber for Oculus"), BSLaunchError.BS_ALREADY_RUNNING);
                 }

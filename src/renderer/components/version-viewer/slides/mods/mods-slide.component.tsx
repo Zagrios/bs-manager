@@ -21,9 +21,12 @@ import { useService } from "renderer/hooks/use-service.hook";
 import { NotificationService } from "renderer/services/notification.service";
 import { noop } from "shared/helpers/function.helpers";
 import { UninstallAllModsModal } from "renderer/components/modal/modal-types/uninstall-all-mods-modal.component";
+import { Dropzone } from "renderer/components/shared/dropzone.component";
 
 export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion; onDisclamerDecline: () => void }) {
     const ACCEPTED_DISCLAIMER_KEY = "accepted-mods-disclaimer";
+
+    const t = useTranslation();
 
     const modsManager = useService(BsModsManagerService);
     const configService = useService(ConfigurationService);
@@ -42,6 +45,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
     const isOnline = useObservable(() => os.isOnline$);
     const [installing, setInstalling] = useState(false);
     const [uninstalling, setUninstalling] = useState(false);
+    const [modsDropZoneOpen, setModsDropZoneOpen] = useState(false);
 
     const downloadRef = useRef(null);
     const [downloadWith, setDownloadWidth] = useState(0);
@@ -82,22 +86,77 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         }
         linkOpener.open(moreInfoMod.link);
     };
+    // private isDependency(mod: Mod, selectedMods: Mod[], availableMods: Mod[]) {
+    //     return selectedMods.some(m => {
+    //         const deps = m.dependencies.map(dep => Array.from(availableMods.values()).find(m => dep.name === m.name));
+    //         if (deps.some(depMod => depMod.name === mod.name)) {
+    //             return true;
+    //         }
+    //         return deps.some(depMod => depMod.dependencies.some(depModDep => depModDep.name === mod.name));
+    //     });
+    // }
+
+    // private async resolveDependencies(mods: Mod[], version: BSVersion): Promise<Mod[]> {
+    //     const availableMods = await this.beatModsApi.getVersionMods(version);
+    //     return Array.from(
+    //         new Map<string, Mod>(
+    //             availableMods.reduce((res, mod) => {
+    //                 if (mod.required || this.isDependency(mod, mods, availableMods)) {
+    //                     res.push([mod.name, mod]);
+    //                 }
+    //                 return res;
+    //             }, [])
+    //         ).values()
+    //     );
+    // }
+    const getAllDependencies = (mods: Mod[], availableMods: Mod[]): Mod[] => {
+        const collectedDependencies = new Set<Mod>();
+
+        const collectDependencies = (mod: Mod) => {
+            if (!mod.dependencies) { return; }
+            for (const dependency of mod.dependencies) {
+                const dependencyMod = availableMods.find(avMod => avMod.name === dependency.name);
+                if (dependencyMod && !collectedDependencies.has(dependencyMod)) {
+                    collectedDependencies.add(dependencyMod);
+                    collectDependencies(dependencyMod);
+                }
+            }
+        };
+
+        mods.forEach(collectDependencies);
+
+        availableMods.forEach(mod => {
+            if(mod.required){
+                collectedDependencies.add(mod);
+            }
+        });
+
+        return Array.from(collectedDependencies);
+    };
 
     const installMods = (reinstallAll: boolean): void => {
 
-        setReinstallAllMods(() => false);
+        setReinstallAllMods(false);
 
         if (installing) {
             return;
         }
 
-        const modsToInstall = modsSelected.filter(mod => {
-            const installedMod = modsInstalled.get(mod.category)?.find(installedMod => installedMod.name === mod.name);
+        let modsToInstall = [
+            ...modsSelected,
+            ...getAllDependencies(modsSelected, Array.from(modsAvailable.values()).flat())
+        ]
 
-            if(reinstallAll || !installedMod){ return true; }
+        modsToInstall = reinstallAll ? (
+            modsToInstall // If reinstalling all, we install all selected mods
+        ) : (
+            modsToInstall.filter(mod => { // Else we only install the mods that are not installed or have a newer version
+                const installedMod = modsInstalled.get(mod.category)?.find(installedMod => installedMod.name === mod.name);
+                return !installedMod || lt(installedMod.version, mod.version);
+            })
+        );
 
-            return lt(installedMod.version, mod.version);
-        });
+        modsToInstall = Array.from(new Set(modsToInstall)); // Remove duplicates
 
         if (!modsToInstall.length) {
             notification.notifyInfo({ title: "pages.version-viewer.mods.notifications.all-mods-already-installed.title", desc: "pages.version-viewer.mods.notifications.all-mods-already-installed.description" });
@@ -109,6 +168,11 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         lastValueFrom(modsManager.installMods(modsToInstall, version)).then(() => {
             loadMods();
         }).catch(noop).finally(() => setInstalling(() => false));
+    };
+
+    const importMods = (files: string[]): void => {
+        setModsDropZoneOpen(false);
+        modsManager.importMods(files, version);
     };
 
     const uninstallMod = (mod: Mod): void => {
@@ -133,7 +197,11 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         })
     };
 
-    const loadMods = (): Promise<void> => {
+    const unselectAllMods = () => {
+        setModsSelected(() => []);
+    }
+
+    const loadMods = async (): Promise<void> => {
         if (os.isOffline) {
             return Promise.resolve();
         }
@@ -206,10 +274,23 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
                 </ModStatus>
             );
         }
+
         return (
             <>
                 <div className="grow overflow-y-scroll w-full min-h-0 scrollbar-default p-0 m-0">
-                    <ModsGrid modsMap={modsAvailable} installed={modsInstalled} modsSelected={modsSelected} onModChange={handleModChange} moreInfoMod={moreInfoMod} onWantInfos={handleMoreInfo} disabled={uninstalling || installing} uninstallMod={uninstallMod} uninstallAllMods={uninstallAllMods}/>
+                    <ModsGrid
+                        modsMap={modsAvailable}
+                        installed={modsInstalled}
+                        modsSelected={modsSelected}
+                        onModChange={handleModChange}
+                        moreInfoMod={moreInfoMod}
+                        onWantInfos={handleMoreInfo}
+                        disabled={uninstalling || installing}
+                        uninstallMod={uninstallMod}
+                        uninstallAllMods={uninstallAllMods}
+                        unselectAllMods={unselectAllMods}
+                        openModsDropZone={() => setModsDropZoneOpen(true)}
+                    />
                 </div>
                 <div className="shrink-0 flex items-center justify-between px-3 py-2">
                     <BsmButton className="flex items-center justify-center rounded-md px-1 h-8" text="pages.version-viewer.mods.buttons.more-infos" typeColor="cancel" withBar={false} disabled={!moreInfoMod} onClick={handleOpenMoreInfo} style={{ width: downloadWith }}/>
@@ -227,7 +308,23 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
 
     return (
         <div ref={ref} className="shrink-0 w-full h-full px-8 pb-7 flex justify-center">
-            <div className="relative flex flex-col grow-0 bg-light-main-color-2 dark:bg-main-color-2 size-full rounded-md shadow-black shadow-center overflow-hidden">{renderContent()}</div>
+            <Dropzone
+                className="w-full h-full shrink-0"
+                onFiles={importMods}
+                text={t("pages.version-viewer.mods.drop-zone.text")}
+                subtext={t("pages.version-viewer.mods.drop-zone.subtext")}
+                open={modsDropZoneOpen}
+                onClose={modsDropZoneOpen ? () => setModsDropZoneOpen(false) : undefined}
+                filters={[
+                    { name: ".zip", extensions: ["zip"] },
+                    { name: ".dll", extensions: ["dll"] }
+                ]}
+                dialogOptions={{ dialog: {
+                    properties: ["openFile", "multiSelections"],
+                }}}
+            >
+                <div className="relative flex flex-col grow-0 bg-light-main-color-2 dark:bg-main-color-2 size-full rounded-md shadow-black shadow-center overflow-hidden">{renderContent()}</div>
+            </Dropzone>
         </div>
     );
 }

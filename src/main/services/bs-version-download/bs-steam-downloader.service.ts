@@ -1,7 +1,6 @@
 import { BS_APP_ID, BS_DEPOT } from "../../constants";
 import path from "path";
 import { BSVersion } from "shared/bs-version.interface";
-import { UtilsService } from "../utils.service";
 import log from "electron-log";
 import { InstallationLocationService } from "../installation-location.service";
 import { BSLocalVersionService } from "../bs-local-version.service";
@@ -12,18 +11,17 @@ import { DepotDownloaderArgsOptions, DepotDownloaderErrorEvent, DepotDownloaderE
 import { DepotDownloader } from "../../models/depot-downloader.class";
 import { app } from "electron";
 import { BsStore } from "../../../shared/models/bs-store.enum";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
 
 export class BsSteamDownloaderService {
     private static instance: BsSteamDownloaderService;
 
-    private readonly utils: UtilsService;
     private readonly installLocationService: InstallationLocationService;
     private readonly localVersionService: BSLocalVersionService;
 
     private depotDownloader: DepotDownloader;
 
     private constructor() {
-        this.utils = UtilsService.getInstance();
         this.installLocationService = InstallationLocationService.getInstance();
         this.localVersionService = BSLocalVersionService.getInstance();
 
@@ -37,10 +35,6 @@ export class BsSteamDownloaderService {
             BsSteamDownloaderService.instance = new BsSteamDownloaderService();
         }
         return BsSteamDownloaderService.instance;
-    }
-
-    private getDepotDownloaderExePath(): string {
-        return path.join(this.utils.getAssetsScriptsPath(), process.platform === 'linux' ? "DepotDownloader" : "DepotDownloader.exe");
     }
 
     private async buildDepotDownloaderInstance(downloadInfos: DownloadSteamInfo, qr?: boolean): Promise<{depotDownloader: DepotDownloader, depotDownloaderOptions: DepotDownloaderArgsOptions, version: BSVersion}> {
@@ -67,11 +61,9 @@ export class BsSteamDownloaderService {
 
         await ensureDir(this.installLocationService.versionsDirectory());
 
-        const exePath = this.getDepotDownloaderExePath();
         const args = DepotDownloader.buildArgs(depotDownloaderOptions);
 
         const depotDownloader = new DepotDownloader({
-            command: exePath,
             args,
             options: { cwd: this.installLocationService.versionsDirectory() },
             echoStartData: downloadVersion
@@ -96,18 +88,28 @@ export class BsSteamDownloaderService {
                 depotDownloader.$events().pipe(
                     map(event => {
                         if(event.type === DepotDownloaderEventType.Error){
-                            throw event;
+                            throw new CustomError(JSON.stringify(event.data) ?? "An error occur in the DepotDownloader process", event?.subType ?? DepotDownloaderErrorEvent.Unknown, event)
                         }
                         return event;
                     }),
                     finalize(() => this.localVersionService.initVersionMetadata(version, { store: BsStore.STEAM }))
                 ).subscribe(sub);
 
-            }).catch(err => sub.error({
-                type: DepotDownloaderEventType.Error,
-                subType: DepotDownloaderErrorEvent.Unknown,
-                data: err
-            } as DepotDownloaderEvent));
+            }).catch(err => {
+                if (err instanceof CustomError
+                    && Object.values(DepotDownloaderErrorEvent).includes(
+                        err.code as DepotDownloaderErrorEvent
+                    )
+                ) {
+                    return sub.error(err);
+                }
+
+                return sub.error({
+                    type: DepotDownloaderEventType.Error,
+                    subType: DepotDownloaderErrorEvent.Unknown,
+                    data: err
+                } as DepotDownloaderEvent)
+            });
 
             return () => {
                 depotDownloaderBuildPromise.then(({ depotDownloader }) => depotDownloader.stop());
@@ -145,7 +147,6 @@ export interface DownloadInfo {
     bsVersion: BSVersion;
     isVerification?: boolean;
     stay?: boolean;
-    token?: string;
 }
 
 export interface DownloadSteamInfo extends DownloadInfo {

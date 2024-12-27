@@ -29,7 +29,7 @@ import Tippy from "@tippyjs/react";
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
-import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { useTranslation, useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { VersionFolderLinkerService } from "renderer/services/version-folder-linker.service";
 import { useService } from "renderer/hooks/use-service.hook";
 import { lastValueFrom } from "rxjs";
@@ -39,16 +39,14 @@ import { BsStore } from "shared/models/bs-store.enum";
 import { SteamIcon } from "renderer/components/svgs/icons/steam-icon.component";
 import { OculusIcon } from "renderer/components/svgs/icons/oculus-icon.component";
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
-import { AutoUpdaterService } from "renderer/services/auto-updater.service";
-import BeatWaitingImg from "../../../assets/images/apngs/beat-waiting.png";
 import BeatConflict from "../../../assets/images/apngs/beat-conflict.png";
-import { logRenderError } from "renderer";
-import { BSLauncherService } from "renderer/services/bs-launcher.service";
-import { SettingToogleSwitchGrid } from "renderer/components/settings/setting-toogle-switch-grid.component";
+import { Item, SettingToogleSwitchGrid } from "renderer/components/settings/setting-toogle-switch-grid.component";
 import { BasicModal } from "renderer/components/modal/basic-modal.component";
 import { StaticConfigurationService } from "renderer/services/static-configuration.service";
 import { tryit } from "shared/helpers/error.helpers";
 import { InstallationLocationService } from "renderer/services/installation-location.service";
+import { AutoUpdaterService } from "renderer/services/auto-updater.service";
+import { OculusDownloaderService } from "renderer/services/bs-version-download/oculus-downloader.service";
 
 export function SettingsPage() {
 
@@ -57,8 +55,8 @@ export function SettingsPage() {
     const ipcService = useService(IpcService);
     const modalService = useService(ModalService);
     const bsDownloader = useService(BsDownloaderService);
-    const bsLauncher = useService(BSLauncherService);
     const steamDownloader = useService(SteamDownloaderService);
+    const oculusDownloader = useService(OculusDownloaderService);
     const progressBarService = useService(ProgressBarService);
     const notificationService = useService(NotificationService);
     const i18nService = useService(I18nService);
@@ -67,9 +65,9 @@ export function SettingsPage() {
     const playlistsManager = useService(PlaylistsManagerService);
     const modelsManager = useService(ModelsManagerService);
     const versionLinker = useService(VersionFolderLinkerService);
-    const autoUpdater = useService(AutoUpdaterService);
     const staticConfig = useService(StaticConfigurationService);
     const installationLocationService = useService(InstallationLocationService);
+    const autoUpdater = useService(AutoUpdaterService);
 
     const { firstColor, secondColor } = useThemeColor();
 
@@ -94,18 +92,13 @@ export function SettingsPage() {
     const downloadStore = useObservable(() => bsDownloader.defaultStore$);
 
     const [installationFolder, setInstallationFolder] = useState(null);
-    const [protonPath, setProtonPath] = useState(bsLauncher.getProtonPath());
+    const [protonFolder, setProtonFolder] = useState("");
     const [showSupporters, setShowSupporters] = useState(false);
     const [mapDeepLinksEnabled, setMapDeepLinksEnabled] = useState(false);
     const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
     const [modelsDeepLinkEnabled, setModelsDeepLinkEnabled] = useState(false);
     const [hasDownloaderSession, setHasDownloaderSession] = useState(false);
-    const [hardwareAccelerationEnabled, setHardwareAccelerationEnabled] = useState(true);
-    const [useSymlink, setUseSymlink] = useState(false);
-    const appVersion = useObservable(() => ipcService.sendV2("current-version"));
-
-    const [isChangelogAvailable, setIsChangelogAvailable] = useState(true);
-    const [changlogsLoading, setChanglogsLoading] = useState(false);
+    const appVersion = useObservable(() => autoUpdater.getAppVersion());
 
     useEffect(() => {
         loadInstallationFolder();
@@ -114,8 +107,7 @@ export function SettingsPage() {
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
 
-        staticConfig.get("disable-hadware-acceleration").then(disabled =>setHardwareAccelerationEnabled(() => disabled !== true));
-        staticConfig.get("use-symlinks").then(useSymlinks => setUseSymlink(() => useSymlinks));
+        staticConfig.get("proton-folder").then(setProtonFolder);
     }, []);
 
     const allDeepLinkEnabled = mapDeepLinksEnabled && playlistsDeepLinkEnabled && modelsDeepLinkEnabled;
@@ -131,16 +123,17 @@ export function SettingsPage() {
         });
     };
 
-    const loadDownloadersSession = () => {
-        setHasDownloaderSession(steamDownloader.sessionExist());
+    const loadDownloadersSession = async () => {
+        setHasDownloaderSession(steamDownloader.sessionExist() || await oculusDownloader.metaSessionExists());
     }
 
-    const clearDownloadersSession = () => {
+    const clearDownloadersSession = async () => {
         if (!hasDownloaderSession) {
             return;
         }
 
         steamDownloader.deleteSteamSession();
+        await oculusDownloader.deleteMetaSession()
         notificationService.notifyInfo({
             title: "pages.settings.steam-and-oculus.logout-success",
         });
@@ -162,36 +155,36 @@ export function SettingsPage() {
         i18nService.setLanguage(item.value);
     };
 
-    const handleVersionClick = async () => {
-        let isChangelogResolved = false;
-        const timeoutId = setTimeout(() => setChanglogsLoading(() => !isChangelogResolved), 100);
-
-        await autoUpdater.showChangelog(await lastValueFrom(autoUpdater.getAppVersion()))
-            .then(() => {
-                setIsChangelogAvailable(() => true);
-            })
-            .catch(err => {
-                logRenderError(err);
-                setIsChangelogAvailable(() => false);
-            })
-            .finally(() => { isChangelogResolved = true; });
-
-        setChanglogsLoading(() => false);
-        clearTimeout(timeoutId);
-    };
-
-    const setDefaultProtonPath = () => {
+    const setDefaultProtonFolder = async () => {
         if (!progressBarService.require()) {
             return;
         }
 
-        lastValueFrom(ipcService.sendV2("choose-file")).then(res => {
-            if (!res.canceled && res.filePaths?.length) {
-                const protonPath = res.filePaths[0];
-                setProtonPath(protonPath);
-                bsLauncher.setProtonPath(protonPath);
+        try {
+            const pathResponse = await lastValueFrom(ipcService.sendV2("choose-folder", {
+                parent: "home",
+                defaultPath: ".steam/steam/steamapps/common",
+                showHidden: true,
+        }));
+            if (
+                pathResponse.canceled
+                || !pathResponse.filePaths
+                || pathResponse.filePaths.length === 0
+            ) {
+                return;
             }
-        });
+
+            const folder = pathResponse.filePaths[0];
+            await staticConfig.set("proton-folder", folder);
+            setProtonFolder(folder);
+        } catch (error: any) {
+            notificationService.notifyError({
+                title: "pages.settings.proton-folder.errors.title",
+                desc: ["invalid-folder"].includes(error?.code)
+                    ? `pages.settings.proton-folder.errors.${error.code}`
+                    : "misc.unknown",
+            });
+        }
     };
 
     const setDefaultInstallationFolder = () => {
@@ -238,66 +231,6 @@ export function SettingsPage() {
             }
         });
     };
-
-    const onChangeHardwareAcceleration = async (newHardwareAccelerationEnabled: boolean) => {
-        if(newHardwareAccelerationEnabled === hardwareAccelerationEnabled){ return; }
-
-        const res = await modalService.openModal(BasicModal, { data: {
-            title: "pages.settings.advanced.hardware-acceleration.modal.title",
-            body: "pages.settings.advanced.hardware-acceleration.modal.body",
-            image: BeatConflict,
-            buttons: [
-                { id: "cancel", text: "misc.cancel", type: "cancel", isCancel: true },
-                { id: "confirm", text: "pages.settings.advanced.hardware-acceleration.modal.confirm-btn", type: "error" }
-            ]
-        }});
-
-        if(res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm"){ return; }
-
-        const { error } = await tryit(() => staticConfig.set("disable-hadware-acceleration", !newHardwareAccelerationEnabled));
-
-        if(error){
-            notificationService.notifyError({ title: "notifications.types.error", desc: "pages.settings.advanced.hardware-acceleration.error-notification.message" });
-            setHardwareAccelerationEnabled(() => !newHardwareAccelerationEnabled);
-                return;
-        }
-
-        setHardwareAccelerationEnabled(() => newHardwareAccelerationEnabled);
-
-        if(!progressBarService.require()){
-            return;
-        }
-
-        await lastValueFrom(ipcService.sendV2("restart-app"));
-    };
-
-    const onChangeUseSymlinks = async (newUseSymlink: boolean) => {
-
-        if(newUseSymlink === useSymlink){ return; }
-
-        if(newUseSymlink){
-            const res = await modalService.openModal(BasicModal, { data: {
-                title: "pages.settings.advanced.use-symlinks.modal.title",
-                body: "pages.settings.advanced.use-symlinks.modal.body",
-                image: BeatConflict,
-                buttons: [
-                    { id: "cancel", text: "misc.cancel", type: "cancel", isCancel: true },
-                    { id: "confirm", text: "pages.settings.advanced.use-symlinks.modal.confirm-btn", type: "error" }
-                ]
-            }});
-
-            if(res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm"){ return; }
-        }
-
-        const { error } = await tryit(() => staticConfig.set("use-symlinks", newUseSymlink));
-
-        if(error){
-            notificationService.notifyError({ title: "notifications.types.error", desc: "pages.settings.advanced.use-symlinks.error-notification.message" });
-            return;
-        }
-
-        setUseSymlink(() => newUseSymlink);
-    }
 
     const toogleShowSupporters = () => {
         setShowSupporters(show => !show);
@@ -390,16 +323,16 @@ export function SettingsPage() {
                         <span className="block text-ellipsis overflow-hidden min-w-0" title={installationFolder}>
                             {installationFolder}
                         </span>
-                        <BsmButton onClick={setDefaultInstallationFolder} className="shrink-1 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="pages.settings.installation-folder.choose-folder" withBar={false} />
+                        <BsmButton onClick={setDefaultInstallationFolder} className="shrink-1 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="misc.choose-folder" withBar={false} />
                     </div>
                 </SettingContainer>
 
-                <SettingContainer os="linux" title="pages.settings.proton-path.title" description="pages.settings.proton-path.description">
+                <SettingContainer os="linux" title="pages.settings.proton-folder.title" description="pages.settings.proton-folder.description">
                     <div className="relative flex items-center justify-between w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 rounded-md pl-2 py-1">
-                        <span className="block text-ellipsis overflow-hidden min-w-0 whitespace-nowrap" title={protonPath}>
-                            {protonPath}
+                        <span className="block text-ellipsis overflow-hidden min-w-0 whitespace-nowrap" title={protonFolder}>
+                            {protonFolder}
                         </span>
-                        <BsmButton onClick={setDefaultProtonPath} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="pages.settings.proton-path.choose-file" withBar={false} />
+                        <BsmButton onClick={setDefaultProtonFolder} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="misc.choose-folder" withBar={false} />
                     </div>
                 </SettingContainer>
 
@@ -411,7 +344,7 @@ export function SettingsPage() {
                                 <span className="font-extrabold">{t("notifications.settings.additional-content.deep-link.select-all")}</span>
                             </div>
                             <div className="flex h-full gap-2">
-                                <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                     <BsmImage
                                         className="h-8 cursor-pointer"
                                         image={beatSaverIcon}
@@ -421,7 +354,7 @@ export function SettingsPage() {
                                         }}
                                     />
                                 </Tippy>
-                                <Tippy content="BeastSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                <Tippy content="BeastSaber" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                     <BsmImage
                                         className="h-8 rounded-md cursor-pointer"
                                         image={beastSaberIcon}
@@ -431,7 +364,7 @@ export function SettingsPage() {
                                         }}
                                     />
                                 </Tippy>
-                                <Tippy content="ScoreSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                <Tippy content="ScoreSaber" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                     <BsmImage
                                         className="h-8 cursor-pointer"
                                         image={scoreSaberIcon}
@@ -441,7 +374,7 @@ export function SettingsPage() {
                                         }}
                                     />
                                 </Tippy>
-                                <Tippy content="BeatLeader" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                <Tippy content="BeatLeader" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                     <BsmImage
                                         className="h-8 cursor-pointer"
                                         image={beatleaderIcon}
@@ -451,7 +384,7 @@ export function SettingsPage() {
                                         }}
                                     />
                                 </Tippy>
-                                <Tippy content="ModelSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                <Tippy content="ModelSaber" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                     <BsmImage
                                         className="h-8 cursor-pointer"
                                         image={modelSaberIcon}
@@ -470,7 +403,7 @@ export function SettingsPage() {
                                     <span className="font-extrabold">{t("misc.maps")}</span>
                                 </div>
                                 <div className="flex h-full gap-2">
-                                    <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                         <BsmImage
                                             className="h-8 cursor-pointer"
                                             image={beatSaverIcon}
@@ -480,7 +413,7 @@ export function SettingsPage() {
                                             }}
                                         />
                                     </Tippy>
-                                    <Tippy content="BeastSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <Tippy content="BeastSaber" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                         <BsmImage
                                             className="h-8 rounded-md cursor-pointer"
                                             image={beastSaberIcon}
@@ -490,7 +423,7 @@ export function SettingsPage() {
                                             }}
                                         />
                                     </Tippy>
-                                    <Tippy content="ScoreSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <Tippy content="ScoreSaber" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                         <BsmImage
                                             className="h-8 cursor-pointer"
                                             image={scoreSaberIcon}
@@ -500,7 +433,7 @@ export function SettingsPage() {
                                             }}
                                         />
                                     </Tippy>
-                                    <Tippy content="BeatLeader" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <Tippy content="BeatLeader" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                         <BsmImage
                                             className="h-8 cursor-pointer"
                                             image={beatleaderIcon}
@@ -517,14 +450,24 @@ export function SettingsPage() {
                                     <BsmCheckbox className="relative z-[1] h-5 w-5" onChange={() => tooglePlaylistsDeepLinks()} checked={playlistsDeepLinkEnabled} />
                                     <span className="font-extrabold">{t("misc.playlists")}</span>
                                 </div>
-                                <div className="flex h-full">
-                                    <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                <div className="flex h-full gap-2">
+                                    <Tippy content="BeatSaver" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                         <BsmImage
                                             className="h-8 cursor-pointer"
                                             image={beatSaverIcon}
                                             onClick={e => {
                                                 e.stopPropagation();
                                                 linkOpener.open("https://beatsaver.com/");
+                                            }}
+                                        />
+                                    </Tippy>
+                                    <Tippy content="BeatLeader" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
+                                        <BsmImage
+                                            className="h-8 cursor-pointer"
+                                            image={beatleaderIcon}
+                                            onClick={e => {
+                                                e.stopPropagation();
+                                                linkOpener.open("https://www.beatleader.xyz/");
                                             }}
                                         />
                                     </Tippy>
@@ -536,7 +479,7 @@ export function SettingsPage() {
                                     <span className="font-extrabold">{t("misc.models")}</span>
                                 </div>
                                 <div className="flex h-full">
-                                    <Tippy content="ModelSaber" placement="top" className="font-bold bg-main-color-3" arrow={false} duration={[200, 0]}>
+                                    <Tippy content="ModelSaber" placement="top" className="font-bold bg-main-color-3" theme="default" arrow={false} duration={[200, 0]}>
                                         <BsmImage
                                             className="h-8 cursor-pointer"
                                             image={modelSaberIcon}
@@ -581,21 +524,136 @@ export function SettingsPage() {
                     </SettingContainer>
                 </SettingContainer>
 
-                <SettingContainer title="pages.settings.advanced.title" description="pages.settings.advanced.description">
-                    <SettingToogleSwitchGrid items={[
-                        { checked: hardwareAccelerationEnabled, text: t("pages.settings.advanced.hardware-acceleration.title"), desc: t("pages.settings.advanced.hardware-acceleration.description"), onChange: onChangeHardwareAcceleration },
-                        { checked: useSymlink, text: t("pages.settings.advanced.use-symlinks.title"), desc: t("pages.settings.advanced.use-symlinks.description"), onChange: onChangeUseSymlinks },
-                    ]}/>
-                </SettingContainer>
+                <AdvancedSettings />
 
-                <Tippy content={isChangelogAvailable ? t("pages.settings.changelogs.open") : t("pages.settings.changelogs.not-founds")} placement="left" className="font-bold bg-main-color-3">
-                    <div className="!bg-light-main-color-1 dark:!bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5 hover:brightness-125 h-auto w-auto">
-                        <BsmButton onClick={handleVersionClick} text={`v${appVersion}`} withBar={false} typeColor="none"/>
-                    </div>
-                </Tippy>
-                <BsmImage className={`h-7 my-auto spin-loading float-right ${changlogsLoading ? "" : "hidden"}`} image={BeatWaitingImg} loading="eager" />
+                <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5">v{appVersion}</span>
             </div>
             <SupportersView isVisible={showSupporters} setVisible={setShowSupporters} />
         </div>
     );
 }
+
+function AdvancedSettings() {
+    const ipc = useService(IpcService);
+    const modal = useService(ModalService);
+    const notification = useService(NotificationService);
+    const progressBar = useService(ProgressBarService);
+    const staticConfig = useService(StaticConfigurationService);
+
+    const t = useTranslationV2();
+
+    const [hardwareAccelerationEnabled, setHardwareAccelerationEnabled] = useState(true);
+    const [useSymlink, setUseSymlink] = useState(false);
+    const [useSystemProxy, setUseSystemProxy] = useState(false);
+
+    useEffect(() => {
+        staticConfig.get("disable-hadware-acceleration").then(disabled =>setHardwareAccelerationEnabled(() => disabled !== true));
+        staticConfig.get("use-symlinks").then(useSymlinks => setUseSymlink(() => useSymlinks));
+        staticConfig.get("use-system-proxy").then(useSystemProxy => setUseSystemProxy(() => useSystemProxy));
+    }, []);
+
+    const onChangeHardwareAcceleration = async (newHardwareAccelerationEnabled: boolean) => {
+        if(newHardwareAccelerationEnabled === hardwareAccelerationEnabled){ return; }
+
+        const res = await modal.openModal(BasicModal, { data: {
+            title: "pages.settings.advanced.hardware-acceleration.modal.title",
+            body: "pages.settings.advanced.hardware-acceleration.modal.body",
+            image: BeatConflict,
+            buttons: [
+                { id: "cancel", text: "misc.cancel", type: "cancel" },
+                { id: "confirm", text: "pages.settings.advanced.hardware-acceleration.modal.confirm-btn", type: "error", onClick: () => true },
+            ]
+        }});
+
+        if(res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm"){ return; }
+
+        const { error } = await tryit(() => staticConfig.set("disable-hadware-acceleration", !newHardwareAccelerationEnabled));
+
+        if(error){
+            notification.notifyError({ title: "notifications.types.error", desc: "pages.settings.advanced.hardware-acceleration.error-notification.message" });
+            setHardwareAccelerationEnabled(() => !newHardwareAccelerationEnabled);
+                return;
+        }
+
+        setHardwareAccelerationEnabled(() => newHardwareAccelerationEnabled);
+
+        if(!progressBar.require()){
+            return;
+        }
+
+        await lastValueFrom(ipc.sendV2("restart-app"));
+    };
+
+    const onChangeUseSymlinks = async (newUseSymlink: boolean) => {
+
+        if (window.electron.platform !== "win32" || newUseSymlink === useSymlink) {
+            return;
+        }
+
+        if(newUseSymlink){
+            const res = await modal.openModal(BasicModal, { data: {
+                title: "pages.settings.advanced.use-symlinks.modal.title",
+                body: "pages.settings.advanced.use-symlinks.modal.body",
+                image: BeatConflict,
+                buttons: [
+                    { id: "cancel", text: "misc.cancel", type: "cancel" },
+                    { id: "confirm", text: "pages.settings.advanced.use-symlinks.modal.confirm-btn", type: "error", onClick: () => true }
+                ]
+            }});
+
+            if(res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm"){ return; }
+        }
+
+        const { error } = await tryit(() => staticConfig.set("use-symlinks", newUseSymlink));
+
+        if(error){
+            notification.notifyError({ title: "notifications.types.error", desc: "pages.settings.advanced.use-symlinks.error-notification.message" });
+            return;
+        }
+
+        setUseSymlink(() => newUseSymlink);
+    }
+
+    const onChangeUseSystemProxy = async (newUseSystemProxy: boolean) => {
+
+        if (window.electron.platform !== "win32" || newUseSystemProxy === useSystemProxy) {
+            return;
+        }
+
+        const { error } = await tryit(() => staticConfig.set("use-system-proxy", newUseSystemProxy));
+
+        if(error){
+            notification.notifyError({ title: "notifications.types.error", desc: "pages.settings.advanced.use-system-proxy.error-notification.message" });
+            return;
+        }
+
+        setUseSystemProxy(() => newUseSystemProxy);
+    }
+
+    const advancedItems: Item[] = [{
+        checked: hardwareAccelerationEnabled,
+        text: t.text("pages.settings.advanced.hardware-acceleration.title"),
+        desc: t.text("pages.settings.advanced.hardware-acceleration.description"),
+        onChange: onChangeHardwareAcceleration
+    }];
+    if (window.electron.platform === "win32") {
+        advancedItems.push({
+            checked: useSymlink,
+            text: t.text("pages.settings.advanced.use-symlinks.title"),
+            desc: t.text("pages.settings.advanced.use-symlinks.description"),
+            onChange: onChangeUseSymlinks
+        });
+        advancedItems.push({
+            checked: useSystemProxy,
+            text: t.text("pages.settings.advanced.use-system-proxy.title"),
+            desc: t.text("pages.settings.advanced.use-system-proxy.description"),
+            onChange: onChangeUseSystemProxy
+        });
+    }
+
+    return <SettingContainer title="pages.settings.advanced.title" description="pages.settings.advanced.description">
+        <SettingToogleSwitchGrid items={advancedItems}/>
+    </SettingContainer>
+
+}
+

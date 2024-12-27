@@ -11,3 +11,8 @@ export function findHashInString(str: string, algorithm: keyof typeof HashAlgori
     const match = regex.exec(str);
     return match ? match[0] : undefined;
 }
+
+export function escapeRegExp(str: string): string {
+    // Regex taken from lodash escapeRegExp function
+    return str.replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
+}

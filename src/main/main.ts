@@ -25,6 +25,7 @@ import { FileAssociationService } from "./services/file-association.service";
 import { SongDetailsCacheService } from "./services/additional-content/maps/song-details-cache.service";
 import { readdirSync, statSync, unlinkSync } from "fs-extra";
 import { StaticConfigurationService } from "./services/static-configuration.service";
+import { configureProxy } from './helpers/proxy.helpers';
 
 const isDebug = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true";
 const staticConfig = StaticConfigurationService.getInstance();
@@ -46,6 +47,7 @@ staticConfig.take("disable-hadware-acceleration", disabled => {
     }
 });
 
+configureProxy();
 
 if (process.env.NODE_ENV === "production") {
     const sourceMapSupport = require("source-map-support");
@@ -69,7 +71,7 @@ const installExtensions = async () => {
         .catch(log.error);
 };
 
-const createWindow = async (window: AppWindow = "launcher.html") => {
+const createWindow = async (window: AppWindow) => {
     if (isDebug) {
         await installExtensions();
     }
@@ -131,7 +133,9 @@ if (!gotTheLock) {
         } else if (associatedFile) {
             FileAssociationService.getInstance().handleFileAssociation(associatedFile);
         } else {
-            createWindow();
+            createWindow(process.platform === "linux"
+                ? "index.html" : "launcher.html"
+            );
         }
 
         SteamLauncherService.getInstance().restoreSteamVR();
@@ -261,4 +265,12 @@ function deleteOlestLogs(): void{
             log.error(`Error deleting file ${file.path}:`, err);
         }
     });
+}
+
+export function addFilterStringLog(filter: string): void {
+    filterStrings.add(filter);
+}
+
+export function addFilterPatternLog(filter: RegExp): void {
+    filterPatterns.add(filter);
 }

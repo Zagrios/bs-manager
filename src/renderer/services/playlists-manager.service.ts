@@ -5,14 +5,14 @@ import { FolderLinkState, VersionFolderLinkerService } from "./version-folder-li
 import { Progression } from "main/helpers/fs.helpers";
 import { LocalBPList, LocalBPListsDetails } from "shared/models/playlists/local-playlist.models";
 import { ModalExitCode, ModalService } from "./modale.service";
-import { UnlinkPlaylistModal } from "renderer/components/modal/modal-types/unlink-playlist-modal.component";
-import { LinkPlaylistModal } from "renderer/components/modal/modal-types/link-playlist-modal.component";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { ProgressBarService } from "./progress-bar.service";
 import equal from "fast-deep-equal";
 import { noop } from "shared/helpers/function.helpers";
 import { NotificationService } from "./notification.service";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
+import { LinkContentModal } from "renderer/components/modal/modal-types/link-contents-modal.component";
+import { UnlinkContentsModal } from "renderer/components/modal/modal-types/unlink-contents-modal.component";
 
 export class PlaylistsManagerService {
     private static instance: PlaylistsManagerService;
@@ -123,7 +123,7 @@ export class PlaylistsManagerService {
     }
 
     public async linkVersion(version: BSVersion): Promise<boolean> {
-        const modalRes = await this.modal.openModal(LinkPlaylistModal);
+        const modalRes = await this.modal.openModal(LinkContentModal, { data: { version, contentType: "playlists" } });
 
         if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
             return Promise.resolve(false);
@@ -137,7 +137,7 @@ export class PlaylistsManagerService {
     }
 
     public async unlinkVersion(version: BSVersion): Promise<boolean> {
-        const modalRes = await this.modal.openModal(UnlinkPlaylistModal);
+        const modalRes = await this.modal.openModal(UnlinkContentsModal, { data: { version, contentType: "playlists" } });
 
         if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
             return Promise.resolve(false);

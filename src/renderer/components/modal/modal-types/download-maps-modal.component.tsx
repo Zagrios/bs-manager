@@ -22,9 +22,11 @@ import { useConstant } from "renderer/hooks/use-constant.hook";
 import { getLocalTimeZone, parseAbsolute, toCalendarDateTime } from "@internationalized/date";
 import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual-scroll.component";
 import { MapItemComponentPropsMapper } from "shared/mappers/map/map-item-component-props.mapper";
+import { ConfigurationService } from "renderer/services/configuration.service";
 
 export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; ownedMaps: BsmLocalMap[] }> = ({ options: {data : { ownedMaps, version }} }) => {
     const beatSaver = useService(BeatSaverService);
+    const config = useService(ConfigurationService);
     const mapsDownloader = useService(MapsDownloaderService);
     const progressBar = useService(ProgressBarService);
     const os = useService(OsDiagnosticService);
@@ -37,12 +39,11 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
     const [query, setQuery] = useState("");
     const [maps, setMaps] = useState<BsvMapDetail[]>([]);
     const [downloadbleMaps, setDownloadbleMaps] = useState<DownloadableMap[]>([]);
-    const [sortOrder, setSortOrder] = useState<BsvSearchOrder>(BsvSearchOrder.Latest);
     const [ownedMapHashs, setOwnedMapHashs] = useState<string[]>(ownedMaps?.map(map => map.hash) ?? []);
     const [loading, setLoading] = useState(false);
     const isOnline = useObservable(() => os.isOnline$);
     const [searchParams, setSearchParams] = useState<SearchParams>({
-        sortOrder,
+        sortOrder: config.get("map-sort-order"),
         filter,
         page: 0,
         q: query,
@@ -170,21 +171,21 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
     }, []);
 
     const handleSortChange = (newSort: BsvSearchOrder) => {
-        setSortOrder(() => newSort);
+        config.set("map-sort-order", newSort);
         setMaps(() => []);
         setSearchParams(() => ({ ...searchParams, sortOrder: newSort }));
     };
 
     const handleSearch = () => {
-        const searchParams: SearchParams = {
-            sortOrder,
+        const searchParamsLocal: SearchParams = {
+            sortOrder: searchParams.sortOrder,
             filter,
             q: query.trim(),
             page: 0,
         };
 
         setMaps(() => []);
-        setSearchParams(() => searchParams);
+        setSearchParams(() => searchParamsLocal);
     };
 
     const handleLoadMore = () => {
@@ -205,7 +206,7 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
             }}
         >
             <div className="flex h-9 gap-2 shrink-0">
-                <BsmDropdownButton ref={filterContainerRef} className="shrink-0 h-full relative z-[1] flex justify-start" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1 !bg-light-main-color-1 dark:!bg-main-color-1" icon="filter" text="pages.version-viewer.maps.search-bar.filters-btn" withBar={false}>
+                <BsmDropdownButton ref={filterContainerRef} className="shrink-0 h-full relative z-[1] flex justify-start" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1 !bg-light-main-color-1 dark:!bg-main-color-1" icon="filter" text="pages.version-viewer.maps.search-bar.filters-btn" textClassName="whitespace-nowrap" withBar={false}>
                     <FilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[450px] h-fit p-2 rounded-md shadow-md shadow-black" localData={false} filter={filter} onChange={setFilter} onApply={handleSearch} onClose={() => filterContainerRef.current.close()} />
                 </BsmDropdownButton>
                 <input className="h-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2 grow pb-0.5" type="text" placeholder={t("pages.version-viewer.maps.search-bar.search-placeholder")} value={query} onChange={e => setQuery(e.target.value)} />
@@ -213,13 +214,14 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
                     className="shrink-0 rounded-full py-1 px-3 !bg-light-main-color-1 dark:!bg-main-color-1 flex justify-center items-center capitalize"
                     icon="search"
                     text="modals.download-maps.search-btn"
+                    textClassName="whitespace-nowrap"
                     withBar={false}
                     onClick={e => {
                         e.preventDefault();
                         handleSearch();
                     }}
                 />
-                <BsmSelect className="bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-1 pb-0.5 text-center" options={sortOptions} onChange={sort => handleSortChange(sort)} />
+                <BsmSelect className="bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-1 pb-0.5 text-center" options={sortOptions} selected={searchParams.sortOrder} onChange={sort => handleSortChange(sort)} />
             </div>
 
             {(() => {

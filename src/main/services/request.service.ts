@@ -1,18 +1,20 @@
-import { Agent, RequestOptions } from "https";
-import { createWriteStream } from "fs";
-import { Progression } from "main/helpers/fs.helpers";
-import { Observable, shareReplay, tap } from "rxjs";
-import log from "electron-log";
-import fetch, { RequestInfo, RequestInit } from "node-fetch";
-import got, { Options } from "got";
-import { IncomingMessage } from "http";
-import { app } from "electron";
-import os from "os";
-import { unlinkSync } from "fs-extra";
-import { tryit } from "shared/helpers/error.helpers";
+import { createWriteStream, WriteStream } from 'fs';
+import { Progression } from 'main/helpers/fs.helpers';
+import { Observable } from 'rxjs';
+import { shareReplay, tap } from 'rxjs/operators';
+import log from 'electron-log';
+import got from 'got';
+import { IncomingHttpHeaders, IncomingMessage } from 'http';
+import { unlinkSync } from 'fs-extra';
+import { tryit } from 'shared/helpers/error.helpers';
+import path from 'path';
+import { pipeline } from 'stream/promises';
+import sanitize from 'sanitize-filename';
+import internal from 'stream';
 
 export class RequestService {
     private static instance: RequestService;
+    private preferredFamily: number | undefined = undefined;
 
     public static getInstance(): RequestService {
         if (!RequestService.instance) {
@@ -21,121 +23,194 @@ export class RequestService {
         return RequestService.instance;
     }
 
-    private readonly defaultRequestInit: RequestInit;
+    private constructor() {}
 
-    private constructor() {
+    public async getJSON<T = unknown>(url: string): Promise<{ data: T; headers: IncomingHttpHeaders }> {
 
-        this.defaultRequestInit = {
-            headers: {
-                "User-Agent": `BSManager/${app.getVersion()} (${os.type()} ${os.release()})`
-            },
-            agent: new Agent({ family: 4 }),
-        };
-    }
+        const familiesToTry = this.preferredFamily ? [this.preferredFamily, this.preferredFamily === 4 ? 6 : 4] : [4, 6];
 
-    private getInitWithOptions(options?: RequestInit): RequestInit {
-        return { ...this.defaultRequestInit, ...(options || {}) };
-    }
+        for (const family of familiesToTry) {
+            try {
 
-    private requestOptionsFromDefaultInit(): RequestOptions {
-        return {
-            headers: this.defaultRequestInit.headers as Record<string, string>,
-            agent: this.defaultRequestInit.agent as Agent,
-        };
-    }
-
-    public async getJSON<T = unknown>(url: RequestInfo, options?: RequestInit): Promise<T> {
-
-        try {
-            const response = await fetch(url, this.getInitWithOptions(options));
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status} ${url}`);
+                // @ts-ignore (ESM is not well supported in this project, We need to move out electron-react-boilerplate, and use Vite)
+                const res = await got(url, { dnsLookupIpVersion: family, responseType: 'json' });
+                this.preferredFamily = family;
+                return { data: res.body as T, headers: res.headers };
+            } catch (err) {
+                log.warn(`IPv${family} request failed, trying next one... URL: ${url}`, err);
             }
-
-            return await response.json() as T;
-        } catch (err) {
-            log.error(err);
-            throw err;
         }
+
+        log.error(`IPv4 and IPv6 requests failed for URL: ${url}`);
+        this.preferredFamily = undefined;
+        throw new Error(`IPv4 and IPv6 requests failed for URL: ${url}`);
     }
 
-    public downloadFile(url: string, dest: string): Observable<Progression<string>> {
-        return new Observable<Progression<string>>(subscriber => {
-            const progress: Progression<string> = { current: 0, total: 0, data: dest };
+    public downloadFile(
+        url: string,
+        dest: string,
+        opt?: { preferContentDisposition?: boolean }
+    ): Observable<Progression<string>> {
+        return new Observable<Progression<string>>((subscriber) => {
+            const progress: Progression<string> = { current: 0, total: 0 };
+            const familiesToTry = this.preferredFamily ? [this.preferredFamily, this.preferredFamily === 4 ? 6 : 4] : [4, 6];
 
-            const stream = got.stream(url)
-            const file = createWriteStream(dest);
+            let attempt = 0;
+            let stream: got.GotEmitter & internal.Duplex;
 
-            stream.on("downloadProgress", ({ transferred, total }) => {
-                progress.current = transferred;
-                progress.total = total;
-                subscriber.next(progress);
-            });
+            const tryNextFamily = () => {
+                if (attempt >= familiesToTry.length) {
+                    subscriber.error(new Error(`Download failed over IPv4 and IPv6 for URL: ${url}`));
+                    return;
+                }
 
-            stream.on("error", err => {
-                tryit(() => unlinkSync(dest));
-                subscriber.error(err);
-            });
+                const family = familiesToTry[attempt++];
+                let file: WriteStream | undefined;
 
-            stream.on("end", () => {
-                subscriber.next(progress);
-                subscriber.complete();
-            });
+                // @ts-ignore (ESM is not well supported in this project, We need to move out electron-react-boilerplate, and use Vite)
+                stream = got.stream(url, { dnsLookupIpVersion: family });
 
-            stream.pipe(file);
+                stream.on('response', (response) => {
+                    this.preferredFamily = family;
+
+                    const filename = opt?.preferContentDisposition ? this.getFilenameFromContentDisposition(response.headers['content-disposition']) : null;
+
+                    if (filename) {
+                        dest = path.join(path.dirname(dest), sanitize(filename));
+                    }
+
+                    progress.data = dest;
+                    file = createWriteStream(dest);
+
+                    pipeline(stream, file).catch(err => {
+                        file?.destroy();
+                        tryit(() => unlinkSync(dest));
+                        subscriber.error(err);
+                    });
+                });
+
+                stream.on('downloadProgress', ({ transferred, total }) => {
+                    progress.current = transferred;
+                    progress.total = total;
+                    subscriber.next(progress);
+                });
+
+                stream.on('error', err => {
+                    log.warn(`Download failed over IPv${family} for URL: ${url}`, err);
+                    stream.destroy();
+                    file?.destroy();
+                    tryNextFamily();
+                });
+
+                stream.on('end', () => {
+                    file?.end();
+                    subscriber.next(progress);
+                    subscriber.complete();
+                });
+            };
+
+            tryNextFamily();
 
             return () => {
-                stream.destroy();
-            }
-
-        }).pipe(tap({ error: e => log.error(e, url, dest) }), shareReplay(1));
+                stream?.destroy();
+            };
+        }).pipe(
+            tap({ error: (e) => log.error(e, url, dest) }),
+            shareReplay(1)
+        );
     }
 
-    public downloadBuffer(url: string, options?: Options & { isStream?: true }): Observable<Progression<Buffer, IncomingMessage>> {
-        return new Observable<Progression<Buffer, IncomingMessage>>(subscriber => {
+    public downloadBuffer(
+        url: string,
+        options?: got.GotOptions<null>
+    ): Observable<Progression<Buffer, IncomingMessage>> {
+        return new Observable<Progression<Buffer, IncomingMessage>>((subscriber) => {
             const progress: Progression<Buffer, IncomingMessage> = {
                 current: 0,
                 total: 0,
                 data: null,
             };
 
-            const req = got.stream(url, options);
+            const familiesToTry = this.preferredFamily ? [this.preferredFamily, this.preferredFamily === 4 ? 6 : 4] : [4, 6];
 
-            let data = Buffer.alloc(0);
-            let response: IncomingMessage;
+            let attempt = 0;
+            let stream: got.GotEmitter & internal.Duplex;
 
-            req.once("response", res => {
-                response = res;
-            });
+            const tryNextFamily = () => {
+                if (attempt >= familiesToTry.length) {
+                    subscriber.error(new Error(`Download failed over IPv4 and IPv6 for URL: ${url}`));
+                    return;
+                }
 
-            req.on("data", (chunk: Buffer) => {
-                data = Buffer.concat([data, chunk]);
-            })
+                const family = familiesToTry[attempt++];
 
-            req.on("downloadProgress", ({ transferred, total }) => {
-                progress.current = transferred;
-                progress.total = total;
-                subscriber.next(progress);
-            });
+                // @ts-ignore (ESM is not well supported in this project, We need to move out electron-react-boilerplate, and use Vite)
+                stream = got.stream(url, { dnsLookupIpVersion: family, ...(options ?? {}) });
 
-            req.once("error", err => {
-                subscriber.error(err);
-            });
+                let data = Buffer.alloc(0);
+                let response: IncomingMessage;
 
-            req.once("end", () => {
-                progress.data = data;
-                progress.extra = response;
-                subscriber.next(progress);
-                subscriber.complete();
-            });
+                stream.once('response', (res) => {
+                    this.preferredFamily = family;
+                    response = res;
+                });
 
-            req.resume();
+                stream.on('data', (chunk: Buffer) => {
+                    data = Buffer.concat([data, chunk]);
+                });
+
+                stream.on('downloadProgress', ({ transferred, total }) => {
+                    progress.current = transferred;
+                    progress.total = total;
+                    subscriber.next(progress);
+                });
+
+                stream.on('error', err => {
+                    log.warn(`Download failed over IPv${family} for URL: ${url}`, err);
+                    stream.destroy();
+                    tryNextFamily();
+                });
+
+                stream.on('end', () => {
+                    progress.data = data;
+                    progress.extra = response;
+                    subscriber.next(progress);
+                    subscriber.complete();
+                });
+            };
+
+            tryNextFamily();
 
             return () => {
-                req.destroy();
-            }
+                stream?.destroy();
+            };
+        }).pipe(
+            tap({ error: (e) => log.error(e, url) }),
+            shareReplay(1)
+        );
+    }
 
-        }).pipe(tap({ error: log.error }), shareReplay(1))
+    public getFilenameFromContentDisposition(disposition: string): string | undefined {
+
+        if(!disposition) {
+            return undefined;
+        }
+
+        const utf8FilenameRegex = /filename\*=UTF-8''([\w%\-\.]+)(?:; ?|$)/i;
+        const asciiFilenameRegex = /^filename=(["']?)(.*?[^\\])\1(?:; ?|$)/i;
+
+        const utf8Match = utf8FilenameRegex.exec(disposition);
+        if (utf8Match?.[1]) {
+            return decodeURIComponent(utf8Match[1]);
+        }
+
+        const filenameStart = disposition.toLowerCase().indexOf('filename=');
+
+        if (filenameStart < 0) {
+            return undefined;
+        }
+
+        const partialDisposition = disposition.slice(filenameStart);
+        return asciiFilenameRegex.exec(partialDisposition)?.[2];
     }
 }

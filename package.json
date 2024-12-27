@@ -2,7 +2,7 @@
     "name": "bs-manager",
     "description": "Manage maps, mods and more for Beat Saber",
     "main": "./.erb/dll/main.bundle.dev.js",
-    "version": "1.5.0-alpha.4",
+    "version": "1.5.0-alpha.6",
     "scripts": {
         "build-rust-scripts": "ts-node ./.erb/scripts/build-rust-scripts.js",
         "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
@@ -13,14 +13,15 @@
         "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
         "prestart": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.dev.ts",
         "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx",
-        "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never && npm run build:dll",
+        "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never --config electron-builder.config.js && npm run build:dll",
         "start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run prestart && npm run start:renderer",
         "start:main": "concurrently -k \"cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --watch --config ./.erb/configs/webpack.config.main.dev.ts\" \"electronmon .\"",
         "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
         "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
         "test": "jest",
-        "publish": "npm run build && electron-builder -c.win.certificateSha1=2164d6a7d641ecf6ad57852f665a518ca2bf960f --publish always --win --x64",
-        "publish:linux": "npm run build && electron-builder --publish always --linux --x64"
+        "test:unit": "jest ./src/__tests__/unit",
+        "publish": "npm run build && electron-builder -c.win.certificateSha1=206941d969c4fa8a0e04d9427def361e13b02fd0 --config electron-builder.config.js --publish always --win --x64",
+        "publish:linux": "npm run build && electron-builder --config electron-builder.config.js --publish never --linux --x64"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx}": [
@@ -37,61 +38,11 @@
         ]
     },
     "build": {
-        "extraResources": [
-            "./assets/jsons/bs-versions.json",
-            "./assets/jsons/patreons.json",
-            "./assets/proto/song_details_cache_v1.proto"
-        ],
-        "productName": "BSManager",
-        "appId": "org.erb.BSManager",
-        "asarUnpack": "**\\*.{node,dll}",
-        "files": [
-            "dist/**/*",
-            "node_modules",
-            "package.json"
-        ],
-        "afterSign": ".erb/scripts/notarize.js",
-        "afterPack": ".erb/scripts/after-pack.js",
-        "win": {
-            "signingHashAlgorithms": ["sha256"],
-            "target": [
-                "nsis",
-                "nsis-web"
-            ],
-            "icon": "./build/icons/win/favicon.ico",
-            "extraResources": [
-                "./build/icons/win",
-                "./assets/scripts/*.exe"
-            ]
-        },
-        "linux": {
-            "target": [
-                "AppImage"
-            ],
-            "icon": "./build/icons/png",
-            "category": "Utility;Game;",
-            "extraResources": [
-                "./build/icons/png",
-                "./assets/scripts/DepotDownloader"
-            ]
-        },
         "directories": {
             "app": "release/app",
             "buildResources": "assets",
             "output": "release/build"
-        },
-        "publish": {
-            "provider": "github",
-            "owner": "Zagrios"
-        },
-        "fileAssociations": [
-            {
-                "ext": "bplist",
-                "description": "Beat Saber Playlist (BSManager)",
-                "icon": "./assets/bsm_file.ico",
-                "role": "Viewer"
-            }
-        ]
+        }
     },
     "repository": {
         "type": "git",
@@ -114,34 +65,6 @@
         "beat-saber"
     ],
     "homepage": "https://github.com/Zagrios/bs-manager#readme",
-    "jest": {
-        "testURL": "http://localhost/",
-        "testEnvironment": "jsdom",
-        "transform": {
-            "\\.(ts|tsx|js|jsx)$": "ts-jest"
-        },
-        "moduleNameMapper": {
-            "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/.erb/mocks/fileMock.js",
-            "\\.(css|less|sass|scss)$": "identity-obj-proxy"
-        },
-        "moduleFileExtensions": [
-            "js",
-            "jsx",
-            "ts",
-            "tsx",
-            "json"
-        ],
-        "moduleDirectories": [
-            "node_modules",
-            "src"
-        ],
-        "testPathIgnorePatterns": [
-            "release/app/dist"
-        ],
-        "setupFiles": [
-            "./.erb/scripts/check-build-exists.ts"
-        ]
-    },
     "devDependencies": {
         "@electron/fuses": "^1.7.0",
         "@electron/notarize": "^2.3.0",
@@ -154,10 +77,10 @@
         "@types/color": "^3.0.3",
         "@types/crypto-js": "^4.2.1",
         "@types/dateformat": "^5.0.0",
-        "@types/dompurify": "^3.0.5",
+        "@types/global-agent": "^2.1.3",
         "@types/got": "^9.6.12",
         "@types/jest": "^29.5.11",
-        "@types/node": "20.11.15",
+        "@types/node": "22.8.6",
         "@types/node-fetch": "^2.6.3",
         "@types/pako": "^2.0.1",
         "@types/react": "^18.0.33",
@@ -239,7 +162,6 @@
         "color": "^4.2.3",
         "crypto-js": "^4.2.0",
         "dateformat": "^5.0.3",
-        "dompurify": "^3.0.9",
         "dot-prop": "^8.0.2",
         "electron-debug": "^3.2.0",
         "electron-log": "^4.4.8",
@@ -249,14 +171,13 @@
         "format-duration": "^3.0.2",
         "framer-motion": "^11.2.6",
         "fs-extra": "^11.2.0",
-        "got": "^14.4.2",
+        "global-agent": "^3.0.0",
+        "got": "^14.4.4",
         "history": "^5.3.0",
         "is-elevated": "^4.0.0",
-        "jszip": "^3.10.1",
         "md5-file": "^5.0.0",
         "node-abi": "^3.65.0",
         "node-fetch": "^3.3.2",
-        "node-stream-zip": "^1.15.0",
         "pako": "^2.1.0",
         "protobufjs": "^7.4.0",
         "qrcode.react": "^4.0.1",
@@ -281,7 +202,8 @@
         "tippy.js": "^6.3.7",
         "to-ico": "^1.1.5",
         "use-double-click": "^1.0.5",
-        "use-fit-text": "^2.4.0"
+        "use-fit-text": "^2.4.0",
+        "yauzl": "^3.2.0"
     },
     "engines": {
         "node": ">=20.0.0"
@@ -321,6 +243,6 @@
         "logLevel": "quiet"
     },
     "volta": {
-        "node": "20.17.0"
+        "node": "22.11.0"
     }
 }

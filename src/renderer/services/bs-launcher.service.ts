@@ -23,8 +23,6 @@ export class BSLauncherService {
 
     public readonly versionRunning$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
 
-    private readonly PROTON_PATH_KEY = "protonPath";
-
     public static getInstance(){
         if(!BSLauncherService.instance){ BSLauncherService.instance = new BSLauncherService(); }
         return BSLauncherService.instance;
@@ -38,14 +36,6 @@ export class BSLauncherService {
         this.modals = ModalService.getInstance();
     }
 
-    public setProtonPath(protonPath: string|undefined): void {
-        this.config.set(this.PROTON_PATH_KEY, protonPath);
-    }
-
-    public getProtonPath(): string|undefined {
-        return this.config.get<string>(this.PROTON_PATH_KEY);
-    }
-
     private notRewindBackupOculus(): boolean{
         return this.config.get<boolean>("not-rewind-backup-oculus");
     }
@@ -57,10 +47,8 @@ export class BSLauncherService {
     public getLaunchOptions(version: BSVersion): LaunchOption{
         return {
             version,
-            oculus: this.config.get(LaunchMods.OCULUS_MOD),
-            desktop: this.config.get(LaunchMods.DESKTOP_MOD),
-            debug: this.config.get(LaunchMods.DEBUG_MOD),
-            additionalArgs: (this.config.get<string>("additionnal-args") || "").split(";").map(arg => arg.trim()).filter(arg => arg.length > 0)
+            launchMods: this.config.get("launch-mods") ?? [],
+            additionalArgs: (this.config.get<string>("additionnal-args") || "").split(";").map(arg => arg.trim()).filter(arg => arg.length > 0),
         }
     }
 
@@ -93,7 +81,6 @@ export class BSLauncherService {
     }
 
     public doLaunch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
-        launchOptions.protonPath = this.getProtonPath();
         return this.ipcService.sendV2("bs-launch.launch", launchOptions);
     }
 
@@ -133,10 +120,4 @@ export class BSLauncherService {
     public restoreSteamVR(): Promise<void>{
         return lastValueFrom(this.ipcService.sendV2("bs-launch.restore-steamvr"));
     }
-}
-
-export enum LaunchMods {
-    OCULUS_MOD = "LAUNCH_OCULUS_MOD",
-    DESKTOP_MOD = "LAUNCH_DESKTOP_MOD",
-    DEBUG_MOD = "LAUNCH_DEBUG_MOD",
 }
