@@ -7,14 +7,11 @@ export class BeatModsApiService {
 
     private readonly requestService: RequestService;
 
-    private readonly BEAT_MODS_VERSIONS = "https://versions.beatmods.com/versions.json";
-    private readonly BEAT_MODS_ALIAS = "https://alias.beatmods.com/aliases.json";
+    public readonly MODS_REPO_URL = "https://bbm.saera.gay";
+    private readonly BEAT_MODS_API_URL = `${this.MODS_REPO_URL}/api`;
 
-    private readonly BEAT_MODS_API_URL = "https://beatmods.com/api/v1/";
-    public readonly BEAT_MODS_URL = "https://beatmods.com";
-
-    private readonly aliasesCache = new Map<string, BSVersion[]>();
     private readonly versionModsCache = new Map<string, Mod[]>();
+    private readonly modsHashCache = new Map<string, Mod>();
 
     private allModsCache: Mod[];
 
@@ -29,37 +26,12 @@ export class BeatModsApiService {
         this.requestService = RequestService.getInstance();
     }
 
+    private convertToBeatModsMod(mod: Mod): Mod {
+
+    }
+
     private getVersionModsUrl(version: BSVersion): string {
-        return `${this.BEAT_MODS_API_URL}mod?status=approved&gameVersion=${version.BSVersion}&sort=&sortDirection=1`;
-    }
-
-    private getAllModsUrl(): string {
-        return `${this.BEAT_MODS_API_URL}mod`;
-    }
-
-    private async getVersionAlias(): Promise<Map<string, BSVersion[]>> {
-        if (this.aliasesCache.size) {
-            return this.aliasesCache;
-        }
-        return this.requestService.getJSON<Record<string, string[]>>(this.BEAT_MODS_ALIAS).then(rawAliases => {
-            Object.entries(rawAliases).forEach(([key, value]) => {
-                this.aliasesCache.set(
-                    key,
-                    value.map(s => ({ BSVersion: s } as BSVersion))
-                );
-            });
-            return this.aliasesCache;
-        });
-    }
-
-    private async getAliasOfVersion(version: BSVersion): Promise<BSVersion> {
-        return this.getVersionAlias().then(aliases => {
-            if (Array.from(aliases.keys()).some(k => k === version.BSVersion)) {
-                return version;
-            }
-            const alias = Array.from(aliases.entries()).find(([key, value]) => value.find(v => v.BSVersion === version.BSVersion))?.[0];
-            return { BSVersion: alias } as BSVersion;
-        });
+        return `${this.BEAT_MODS_API_URL}/mods?status=verified&gameVersion=${version.BSVersion}`;
     }
 
     private asignDependencies(mod: Mod, mods: Mod[]): Mod {
@@ -67,27 +39,52 @@ export class BeatModsApiService {
         return mod;
     }
 
+    private updateModsHashCache(mods: Mod[]): void {
+
+        if(!Array.isArray(mods)){
+            return;
+        }
+
+        for (const mod of mods) {
+            for (const downloads of (mod.downloads ?? [])) {
+                for (const hashMd5 of (downloads.hashMd5 ?? [])) {
+                    this.modsHashCache.set(hashMd5.hash, mod);
+                }
+            }
+
+            for (const dep of (mod.dependencies ?? [])) {
+                for (const downloads of (dep.downloads ?? [])) {
+                    for (const hashMd5 of (downloads.hashMd5 ?? [])) {
+                        this.modsHashCache.set(hashMd5.hash, dep);
+                    }
+                }
+            }
+        }
+    }
+
     public async getVersionMods(version: BSVersion): Promise<Mod[]> {
         if (this.versionModsCache.has(version.BSVersion)) {
             return this.versionModsCache.get(version.BSVersion);
         }
 
-        const alias = await this.getAliasOfVersion(version);
-
-        return this.requestService.getJSON<Mod[]>(this.getVersionModsUrl(alias)).then(mods => {
+        return this.requestService.getJSON<Mod[]>(this.getVersionModsUrl(version)).then(mods => {
             mods = mods.map(mod => this.asignDependencies(mod, mods));
             this.versionModsCache.set(version.BSVersion, mods);
+
+            this.updateModsHashCache(mods);
+
             return mods;
         });
     }
 
-    public async getAllMods(): Promise<Mod[]> {
-        if (this.allModsCache) {
-            return this.allModsCache;
+    public getModByHash(hash: string): Promise<Mod> {
+        if (this.modsHashCache.has(hash)) {
+            return Promise.resolve(this.modsHashCache.get(hash));
         }
-        return this.requestService.getJSON<Mod[]>(this.getAllModsUrl()).then(mods => {
-            this.allModsCache = mods;
-            return this.allModsCache;
+
+        return this.requestService.getJSON<Mod[]>(`${this.BEAT_MODS_API_URL}/hashlookup?hash=${hash}`).then(mods => {
+            this.updateModsHashCache(mods);
+            return mods.at(0);
         });
     }
 }
