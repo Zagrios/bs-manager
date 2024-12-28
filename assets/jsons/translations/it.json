@@ -1,209 +1,209 @@
 {
     "misc": {
-        "download": "Download",
-        "add": "Add",
-        "verify": "Verify",
-        "launch": "Launch",
-        "mods": "Mods",
-        "maps": "Maps",
-        "playlists": "Playlists",
-        "models": "Models",
-        "avatars": "Avatars",
-        "sabers": "Sabers",
-        "platforms": "Platforms",
-        "blocks": "Blocks",
-        "cancel": "Cancel",
-        "delete": "Delete",
-        "accept": "Accept",
-        "refuse": "Refuse",
-        "apply": "Apply",
-        "copy": "Copy",
-        "copied": "Copied!",
-        "confirm": "Confirm",
-        "choose-folder": "Choose folder",
-        "unknown": "An unknown error occurred ¯\\_(ツ)_/¯",
-        "warning": "Warning",
-        "continue": "Continue",
-        "shared": "Shared",
-        "pin": "Pin",
-        "unpin": "Unpin"
+        "download": "Scarica",
+        "add": "Aggiungi",
+        "verify": "Verifica",
+        "launch": "Avvia",
+        "mods": "Mod",
+        "maps": "Mappe",
+        "playlists": "Playlist",
+        "models": "Modelli",
+        "avatars": "Avatar",
+        "sabers": "Spade",
+        "platforms": "Piattaforme",
+        "blocks": "Blocchi",
+        "cancel": "Cancella",
+        "delete": "Elimina",
+        "accept": "Accetta",
+        "refuse": "Rifiuta",
+        "apply": "Applica",
+        "copy": "Copia",
+        "copied": "Copiato!",
+        "confirm": "Conferma",
+        "choose-folder": "Scegli cartella",
+        "unknown": "È accaduto un errore sconosciuto ¯\\_(ツ)_/¯",
+        "warning": "Attenzione",
+        "continue": "Continua",
+        "shared": "Condivisi",
+        "pin": "Fissa",
+        "unpin": "Rimuovi Fissaggio"
     },
     "title-bar": {
-        "outdated": "outdated"
+        "outdated": "obsoleta"
     },
     "nav-bar": {
-        "add-version": "Add a version",
-        "settings": "Settings",
+        "add-version": "Aggiungi una versione",
+        "settings": "Impostazioni",
         "shared": {
-            "text": "Shared",
-            "tooltip": "Shared contents"
+            "text": "Condiviso",
+            "tooltip": "Contenuto condiviso"
         }
     },
     "pages": {
         "version-viewer": {
             "launch-mods": {
-                "oculus": "Oculus Mode",
-                "oculus-description": "If you are using Beat Saber via Steam, this allows you to use Oculus's VR composer while bypassing SteamVR, for potential performance gain. This is not required to use Oculus headsets.",
-                "desktop": "FPFC Mode",
-                "desktop-description": "First Person Flying Controller mode allows you to use WASD and the mouse to navigate around the menu in game. This makes testing much easier, because you don't have to put on your headset!",
-                "debug": "Debug Mode",
-                "debug-description": "Enables the output log window for IPA. This will show the debug console that mods use.",
-                "outdated-tippy": "This version is outdated, and some mods or features may no longer work as expected. Prefer using the recommended version ({recommendedVersion}) of Beat Saber to enjoy the latest features and bugfixes.",
+                "oculus": "Modalità Oculus",
+                "oculus-description": "Se stai usando Beat Saber via Steam, questa opzione ti consente di usare il composer VR di Oculus mentre bypassi SteamVR, per un potenziale aumento di performance. Questo non è richiesto per usare i visori Oculus.",
+                "desktop": "Modalità FPFC",
+                "desktop-description": "La modalità FPFC (First Person Flying Controller) consente di usare i pulsanti WASD e il mouse per navigare nel menu del gioco. Questo rende i test molto più facili, perchè non devi indossare il tuo visore!",
+                "debug": "Modalità Debug",
+                "debug-description": "Abilita la finestra di uscita del log per IPA. Questo mostrerà la console di debug che lo mod usano.",
+                "outdated-tippy": "Questa versione è obsoleta, e alcune mod o funzioni non potrebbero più funzionare correttamente. Consigliamo di usare la versione raccomandata ({recommendedVersion}) di Beat Saber per godere delle ultime funzioni e bugfix.",
                 "advanced-launch": {
-                    "button": "Launch options",
-                    "placeholder": "Additional arguments ex: --revert; --nowait"
+                    "button": "Opzioni di Lancio",
+                    "placeholder": "Argomenti aggiuntivi es: --revert; --nowait"
                 },
-                "skipsteam": "Skip Steam",
-                "skipsteam-description": "Stops Steam from opening automatically with Beat Saber, enable if you are using a different VR runtime like WiVRn or Monado that SteamVR may interfere with.",
+                "skipsteam": "Salta Steam",
+                "skipsteam-description": "Ferma Steam da aprirsi automaticamente con Beat Saber, abilitalo se stai usando un VR runtime differente come WiVRn o Monado con cui SteamVR potrebbe interferire.",
                 "map-editor": "Map Editor",
-                "map-editor-description": "Start the official Beat Saber map editor instead of the game.",
-                "proton-logs": "Proton Logs",
-                "proton-logs-description": "Enables the recording of proton logs for this Beat Saber install to \"{versionPath}\"."
+                "map-editor-description": "Avvia il map editor di Beat Saber ufficiale invece del gioco.",
+                "proton-logs": "Log di Proton",
+                "proton-logs-description": "Abilita la registrazione dei log di proton per questa installazione di Beat Saber su \"{versionPath}\"."
             },
             "maps": {
                 "search-bar": {
-                    "search-placeholder": "Search a map",
-                    "filters-btn": "Filters",
+                    "search-placeholder": "Cerca una mappa",
+                    "filters-btn": "Filtri",
                     "dropdown": {
-                        "export-maps": "Export maps",
-                        "delete-maps": "Delete maps",
-                        "delete-duplicate-maps": "Delete duplicates"
+                        "export-maps": "Esporta mappe",
+                        "delete-maps": "Elimina mappe",
+                        "delete-duplicate-maps": "Elimina le mappe duplicate"
                     }
                 },
                 "tabs": {
                     "maps": {
                         "actions": {
                             "drop-down": {
-                                "browse-maps": "Browse maps",
-                                "import-maps": "Import maps"
+                                "browse-maps": "Sfoglia mappe",
+                                "import-maps": "Importa mappe"
                             },
                             "link-maps": {
                                 "tooltips": {
-                                    "link": "Link maps",
-                                    "unlink": "Unlink maps"
+                                    "link": "Linka mappe",
+                                    "unlink": "Unlinka mappe"
                                 }
                             }
                         },
                         "empty-maps": {
-                            "text": "No maps",
-                            "button": "Download maps"
+                            "text": "Non ci sono mappe",
+                            "button": "Scarica mappe"
                         },
                         "drop-zone": {
-                            "text": "Import your maps",
-                            "subtext": "Drop your zip files here to import your maps"
+                            "text": "Importa le tue mappe",
+                            "subtext": "Rilascia qui i tuoi file zip per importare le tue mappe"
                         }
                     },
                     "playlists": {
                         "drop-down": {
-                            "browse-playlists": "Browse playlists",
-                            "create-a-playlist": "Create a playlist",
-                            "import-playlists": "Import playlists"
+                            "browse-playlists": "Sfoglia le playlist",
+                            "create-a-playlist": "Crea una playlist",
+                            "import-playlists": "Importa playlist"
                         },
                         "drop-zone": {
-                            "text": "Import your playlists",
-                            "subtext": "Drop your \".bplist\" or \".json\" files here to import them"
+                            "text": "Importa le tue playlist",
+                            "subtext": "Rilascia qui i file \".bplist\" o \".json\" per importarli"
                         }
                     }
                 }
             },
             "mods": {
-                "loading-mods": "Loading mods...",
-                "no-internet": "No internet",
-                "mods-not-available": "No mods are available yet for this version of Beat Saber",
+                "loading-mods": "Caricamento delle mod in corso...",
+                "no-internet": "Internet non disponibile",
+                "mods-not-available": "Nessuna mod è ancora disponibile per questa versione di Beat Saber",
                 "buttons": {
-                    "more-infos": "More info",
-                    "install-or-update": "Install or update",
-                    "reinstall-all": "Reinstall all"
+                    "more-infos": "Più info",
+                    "install-or-update": "Installa o aggiorna",
+                    "reinstall-all": "Reinstalla tutto"
                 },
                 "mods-grid": {
                     "header-bar": {
-                        "name": "Name",
-                        "installed": "Installed",
-                        "latest": "Latest",
-                        "description": "Description",
+                        "name": "Nome",
+                        "installed": "Installata",
+                        "latest": "Ultima Versione",
+                        "description": "Descrizione",
                         "dropdown": {
-                            "import-mods": "Import mods",
-                            "uninstall-all": "Uninstall all",
-                            "unselect-all": "Unselect all"
+                            "import-mods": "Importa mod",
+                            "uninstall-all": "Disinstalla tutto",
+                            "unselect-all": "Deseleziona tutto"
                         }
                     }
                 },
                 "notifications": {
                     "all-mods-already-installed": {
-                        "title": "Mods already installed",
-                        "description": "All selected mods are already installed"
+                        "title": "Mod già installata",
+                        "description": "Tutte le mod selezionate sono già installate"
                     }
                 },
                 "drop-zone": {
-                    "text": "Import your mods",
-                    "subtext": "Drop your \"zip\" or \"dll\" files here to import them"
+                    "text": "Importa le tue mod",
+                    "subtext": "Rilascia qui i tuoi \"zip\" o \"dll\" per importarli."
                 }
             },
             "dropdown": {
-                "open-folder": "Open folder",
-                "verify-files": "Verify files",
-                "clone": "Clone",
-                "edit": "Edit",
-                "uninstall": "Uninstall",
-                "create-shortcut": "Create a shortcut",
-                "shared-folders": "Shared Folders"
+                "open-folder": "Apri Cartella",
+                "verify-files": "Verifica i file",
+                "clone": "Clona",
+                "edit": "Modifica",
+                "uninstall": "Disinstalla",
+                "create-shortcut": "Crea una scorciatoia",
+                "shared-folders": "Cartelle Condivise"
             }
         },
         "available-versions": {
-            "title": "Select a version",
-            "steam-release": "Release page",
+            "title": "Seleziona una versione",
+            "steam-release": "Pagina di rilascio",
             "dropdown": {
-                "refresh": "Refresh versions",
-                "import-version": "Import a version"
+                "refresh": "Aggiorna versioni",
+                "import-version": "Importa una versione"
             },
-            "recommended": "recommended",
-            "recommended-tooltip": "Most modable version"
+            "recommended": "raccomandata",
+            "recommended-tooltip": "Versione più moddabile raccomandata"
         },
         "settings": {
             "steam-and-oculus": {
-                "title": "Steam & Oculus",
-                "description": "Logging out will allow you to switch accounts on the next Beat Saber download.",
-                "logout": "Log out",
-                "logout-success": "Logout Successful",
+                "title": "Steam e Oculus",
+                "description": "La disconnessione ti consentirà di cambiare account nel prossimo download di Beat Saber.",
+                "logout": "Disconnettiti",
+                "logout-success": "Disconnesso con successo",
                 "download-platform": {
-                    "title": "Default Platform",
-                    "desc": "Choose the default platform that will be used to download versions of Beat Saber.",
-                    "always-ask": "Always ask"
+                    "title": "Piattaforma di default",
+                    "desc": "Scegli la piattaforma di default che verrà usata per scaricare le versioni di Beat Saber.",
+                    "always-ask": "Chiedi sempre"
                 }
             },
             "appearance": {
-                "title": "Appearance",
-                "description": "Choose the two main colours of BSManager.",
-                "reset": "Reset",
-                "sub-title": "Theme",
+                "title": "Aspetto",
+                "description": "Scegli i due colori principali di BSManager.",
+                "reset": "Resetta",
+                "sub-title": "Tema",
                 "themes": {
-                    "dark": "Dark",
-                    "light": "Light",
-                    "os": "Sync with computer"
+                    "dark": "Scuro",
+                    "light": "Bianco",
+                    "os": "Sincronizza col computer"
                 }
             },
             "installation-folder": {
-                "title": "Installation folder",
-                "description": "Change the folder that will contain all the content downloaded by BSManager."
+                "title": "Cartella di installazione",
+                "description": "Cambia la cartella che contiene tutti i contenuti scaricati da BSManager."
             },
             "proton-folder": {
-                "title": "Proton folder",
-                "description": "Change the folder to the Proton path. (eg. Proton - Experimental)",
+                "title": "Cartella di Proton",
+                "description": "Cambia la cartella al percorso di Proton. (es. Proton - Sperimentale)",
                 "errors": {
-                    "title": "Setting the Proton folder failed",
-                    "invalid-folder": "Invalid Proton folder path"
+                    "title": "Impostare la cartella di Proton ha fallito",
+                    "invalid-folder": "Cartella di Proton invalida"
                 }
             },
             "additional-content": {
-                "title": "Additional content",
-                "description": "Additional content that allows you to customize Beat Saber!",
+                "title": "Contenuto aggiuntivo",
+                "description": "Contenuto aggiuntivo che ti consente di personalizzare Beat Saber!",
                 "deep-links": {
-                    "sub-title": "OneClick installations"
+                    "sub-title": "Installazione OneClick"
                 }
             },
             "language": {
-                "title": "Language",
-                "description": "Select a language.",
+                "title": "Lingua",
+                "description": "Seleziona una lingua.",
                 "languages": {
                     "en-EN": "English, UK",
                     "en-US": "English, US",
@@ -216,75 +216,75 @@
                     "ja-JP": "日本語",
                     "ko-KR": "한국어",
                     "translated": {
-                        "en-EN": "English, United Kingdom",
-                        "en-US": "English, USA",
-                        "fr-FR": "French",
-                        "es-ES": "Spanish",
-                        "de-DE": "German",
-                        "ru-RU": "Russian",
-                        "zh-CN": "Chinese (Simplified)",
-                        "zh-TW": "Chinese (Traditional)",
-                        "ja-JP": "Japanese",
-                        "ko-KR": "Korean"
+                        "en-EN": "Inglese, Regno Unito",
+                        "en-US": "English, Stati Uniti d'America",
+                        "fr-FR": "Francese",
+                        "es-ES": "Spagnolo",
+                        "de-DE": "Tedesco",
+                        "ru-RU": "Russo",
+                        "zh-CN": "Cinese (Semplificato)",
+                        "zh-TW": "Cinese (Tradizionale)",
+                        "ja-JP": "Giapponese",
+                        "ko-KR": "Coreano"
                     }
                 }
             },
             "patreon": {
-                "title": "Support BSManager 💖",
-                "description": "Support the project and help us to provide continuous improvements to BSManager.",
+                "title": "Sostieni BSManager 💖",
+                "description": "Supporta il progetto e aiutaci a provvedere continui miglioramenti a BSManager.",
                 "buttons": {
-                    "support": "Support BSManager 🥰",
-                    "supporters": "Supporters 👀"
+                    "support": "Sostieni BSManager 🥰",
+                    "supporters": "Sostenitori 👀"
                 },
                 "view": {
-                    "no-supporters": "No supporter yet",
-                    "sponsors": "Sponsors",
-                    "supporters": "Supporters"
+                    "no-supporters": "Ancora nessun sostenitore",
+                    "sponsors": "Sponsor",
+                    "supporters": "Sostenitori"
                 }
             },
             "discord": {
-                "description": "Join the BSManager community by following us on our social media!"
+                "description": "Unisciti alla community di BSManager seguendoci sui nostri scoial media!"
             },
             "contribution": {
-                "description": "Suggest new features or report a bug to help improve BSManager!",
+                "description": "Suggerisci nuove funzioni o segnala un bug per aiutare a migliorare BSManager!",
                 "buttons": {
-                    "request-features": "Request a feature",
-                    "report-bug": "Report a bug",
-                    "open-logs": "Open logs"
+                    "request-features": "Richiedi una funzione",
+                    "report-bug": "Segnala un bug",
+                    "open-logs": "Apri Log"
                 }
             },
             "advanced": {
-                "title": "Advanced",
-                "description": "Advanced settings for BSManager.",
+                "title": "Avanzate",
+                "description": "Impostazioni avanzate per BSManager.",
                 "hardware-acceleration": {
-                    "title": "Hardware Acceleration",
-                    "description": "Enable Hardware Acceleration to use your GPU and improve BSManager's performance. Turn this off if you're experiencing frame drops.",
+                    "title": "Accelerazione Hardware",
+                    "description": "Abilita l'accelerazione hardware per usare la tua GPU ed aumentare le prestazioni di BSManager. Disattivalo se stai riscontrando un calo in frame.",
                     "modal": {
-                        "title": "Restart Needed",
-                        "body": "Changing hardware acceleration setting will quit and re-launch BSManager. Are you sure you want to do this?",
-                        "confirm-btn": "Yes I'm sure"
+                        "title": "Riavvio Necessario",
+                        "body": "Cambiare l'impostazione dell'accelerazione hardware causerà un riavvio di BSManager. Sei sicuro di voler procedere?",
+                        "confirm-btn": "Si, sono sicuro"
                     },
                     "error-notification": {
-                        "message": "An error occurred, unable to disable hardware acceleration."
+                        "message": "C'è stato un errore, impossibile disattivare l'accelerazione hardware."
                     }
                 },
                 "use-symlinks": {
-                    "title": "Use Symlinks",
-                    "description": "Use Symlinks instead of Junctions to link folders. Turn this on only if you really need it.",
+                    "title": "Usa Symlinks",
+                    "description": "Usa Symlinks invece di Junction per unire le cartelle. Attivalo solo se ti serve veramente.",
                     "modal": {
-                        "title": "Symlink Permissions",
-                        "body": "When creating symlinks, BSManager will require administrator privileges or developer mode enabled on your system. Are you sure you want to continue?",
-                        "confirm-btn": "Yes I'm sure"
+                        "title": "Permesso Symlink",
+                        "body": "Quando crei dei Symlink, BSManager richiederà accesso amministrativo o la modalità sviluppatore sul tuo sistema. Sei sicuro di voler continuare?",
+                        "confirm-btn": "Si, sono sicuro"
                     },
                     "error-notification": {
-                        "message": "An error occurred, unable to change symlinks settings."
+                        "message": "C'è stato un errore, impossibile cambiare le impostazioni di Symlinks."
                     }
                 },
                 "use-system-proxy": {
-                    "title": "Use system proxy",
-                    "description": "BSManager will make network requests through your system proxy.",
+                    "title": "Usa il sistema proxy",
+                    "description": "BSManager fara richieste di rete tramite il tuo sistema proxy.",
                     "error-notification": {
-                        "message": "An error occurred, unable to change system proxy settings."
+                        "message": "C'è stato un errore, impossibile cambiare le impostazioni del proxy di sistema."
                     }
                 }
             }
@@ -292,89 +292,89 @@
     },
     "notifications": {
         "types": {
-            "error": "🚨 Error",
-            "warning": "⚠️ Warning",
-            "success": "🎉 Success"
+            "error": "🚨 Errore",
+            "warning": "⚠️ Attenzione",
+            "success": "🎉 Successo"
         },
         "common": {
             "msg": {
-                "error-occurred": "An error has occurred"
+                "error-occurred": "C'è stato un errore"
             }
         },
         "shared": {
             "errors": {
                 "titles": {
-                    "operation-running": "Operation running",
-                    "no-internet": "No internet",
-                    "file-not-supported": "File not supported"
+                    "operation-running": "Operazione in corso",
+                    "no-internet": "Nessuna connessione",
+                    "file-not-supported": "File non supportato"
                 },
                 "msg": {
-                    "operation-running": "Wait for the current operation to finish, then try again.",
-                    "no-internet": "Check your connection and try again.",
-                    "file-not-supported": "Only {types} files are supported."
+                    "operation-running": "Attendi che l'operazione corrente finisca, poi, prova di nuovo.",
+                    "no-internet": "Controlla la tua connessione e riprova.",
+                    "file-not-supported": "Solo i file {types} sono supportati."
                 }
             }
         },
         "bs-download": {
             "success": {
                 "titles": {
-                    "download-success": "Download complete",
-                    "verification-finished": "Verification complete"
+                    "download-success": "Download completato",
+                    "verification-finished": "Verifica completata"
                 }
             },
             "steam-download": {
                 "warnings": {
                     "msg": {
-                        "ManifestChecksum": "The previously downloaded manifest does not match the new 🤔",
-                        "ConnectionTimeout": "Your internet connection seems unstable 🥶",
-                        "ConnectionLost": "The connection has been lost, try again...",
-                        "ConnectionError": "Unable to connect to Steam, try again...",
-                        "Unknown": "Something strange has happened 🤔 Your connection is probably unstable."
+                        "ManifestChecksum": "Il manifest scaricato precedentemente non combacia con quello nuovo 🤔",
+                        "ConnectionTimeout": "La tua connessione internet sembra essere instabile 🥶",
+                        "ConnectionLost": "La connessione è stata persa, riprova di nuovo...",
+                        "ConnectionError": "Impossibile connettersi a Steam, riprova di nuovo...",
+                        "Unknown": "Qualcosa di strano è successo 🤔 La tua connessione è probabilmente instabile."
                     }
                 },
                 "errors": {
                     "msg": {
-                        "401": "Steam doesn't seem to want to let us download Beat Saber 😢",
-                        "404": "Unable to contact Steam servers.",
-                        "ExeNotFoundWindows": "\"DepotDownloader.exe\" is missing. Please check if the executable is quarantined by your anti-virus.",
-                        "ExeNotFoundLinux": "\"DepotDownloader\" executable is missing.",
-                        "Password": "Password is invalid.",
-                        "InvalidCredentials": "Invalid login credentials, unapproved connection, or too many login attempts.",
-                        "NoManifest": "No manifest was found",
-                        "DirectoryCreate": "Unable to install the necessary folders.",
-                        "NotAvailableApp": "Are you trying to download Beat Saber when you don't have it? 🤣",
-                        "DepotNotFound": "Unable to download Beat Saber 😥 try again later 😕",
-                        "NotCompleted": "The download could not complete ¯\\_(ツ)_/¯",
-                        "InvalidManifest": "Unable to download Beat Saber 😥 try again later 😕",
-                        "NoValidKey": "Unable to download Beat Saber 😥 try again later 😕",
-                        "NoManifestCode": "Unable to download Beat Saber 😥 try again later 😕",
-                        "Unknown": "An unknown error occurred ¯\\_(ツ)_/¯",
-                        "NoServer": "Unable to contact Steam servers.",
-                        "NotAllowed": "Apparently you are not allowed to download Beat Saber 🥱",
-                        "ConnectionTimeout": "Cannot connect to Steam 😕",
-                        "SteamLib": "If you have this error, report the bug on GitHub with the logs pls.",
-                        "ConnectionError": "Unable to connect to Steam after 10 tries 🤯",
-                        "LicenceError": "Unable to get the list of licenses.",
-                        "RateLimitExceeded": "You've tried too many times, wait a while and try again later.",
-                        "TokenRejected": "Your login token has been rejected 😕 Please try again.",
-                        "AccessDenied": "Access to Steam has been denied."
+                        "401": "Sembra che Steam non vuole lasciarci scaricare Beat Saber 😢",
+                        "404": "Impossibile contattare i server di Steam.",
+                        "ExeNotFoundWindows": "\"DepotDownloader.exe\" è mancante. Controlla se l'eseguibile è in quarantena dal tuo anti-virus.",
+                        "ExeNotFoundLinux": "L'eseguibile \"DepotDownloader\" è mancante.",
+                        "Password": "La password è invalida.",
+                        "InvalidCredentials": "Credenziali d'accesso non valide, connessione non approvata o troppi tentativi d'accesso.",
+                        "NoManifest": "Nessun manifest è stato trovato",
+                        "DirectoryCreate": "Impossibile installare le cartelle necessarie.",
+                        "NotAvailableApp": "Stai cercando di installare Beat Saber quando non ce l'hai? 🤣",
+                        "DepotNotFound": "Impossibile scaricare Beat Saber 😥 riprova più tardi 😕",
+                        "NotCompleted": "Il download non è stato completato ¯\\_(ツ)_/¯",
+                        "InvalidManifest": "Impossibile scaricare Beat Saber 😥 riprova più tardi 😕",
+                        "NoValidKey": "Impossibile scaricare Beat Saber 😥 riprova più tardi 😕",
+                        "NoManifestCode": "Impossibile scaricare Beat Saber 😥 riprova più tardi 😕",
+                        "Unknown": "Si è verificato un errore sconosciuto ¯\\_(ツ)_/¯",
+                        "NoServer": "Impossibile contattare i server di Steam.",
+                        "NotAllowed": "Apparentemente non sei autorizzato a scaricare Beat Saber 🥱",
+                        "ConnectionTimeout": "Impossibile connettersi a Steam 😕",
+                        "SteamLib": "Se hai questo errore, segnala il bug su GitHub con i log pls.",
+                        "ConnectionError": "Impossibile connettersi a Steam dopo 10 tentativi 🤯",
+                        "LicenceError": "Impossibile ottenere la lista delle licenze.",
+                        "RateLimitExceeded": "Hai provato troppe volte, aspetta un po' e riprova più tardi.",
+                        "TokenRejected": "Il tuo token di accesso è stato rifiutato 😕 Per favore riprova.",
+                        "AccessDenied": "Accesso a Steam negato."
                     }
                 }
             },
             "oculus-download": {
                 "errors": {
                     "msg": {
-                        "DOWNLOAD_MANIFEST_FAILED": "Unable to download the manifest for this version; your login token may be invalid.",
-                        "MANIFEST_FILE_NOT_FOUND": "Unable to find the manifest for this version.",
-                        "PARSE_MANIFEST_FILE_FAILED": "An error occurred while reading the manifest.",
-                        "ALREADY_DOWNLOADING": "A version is already being downloaded.",
-                        "UNABLE_TO_GET_MANIFEST": "Unable to obtain the manifest required for download.",
-                        "VERIFY_INTEGRITY_FAILED": "An error occurred during file verification.",
-                        "SOME_FILES_FAILED_TO_DOWNLOAD": "Some files failed to download.",
-                        "META_LOGIN_TIMED_OUT": "The login token took too long to retrieve.",
-                        "META_LOGIN_WINDOW_CLOSED_BY_USER": "The Meta login window was closed.",
-                        "NO_META_AUTH_TOKEN": "Unable to retrieve the Meta login token required for download.",
-                        "UNKNOWN_ERROR": "An unknown error occurred."
+                        "DOWNLOAD_MANIFEST_FAILED": "Impossibile scaricare il manifest per questa versione; il tuo token di accesso potrebbe essere invalido.",
+                        "MANIFEST_FILE_NOT_FOUND": "Impossibile trovare il manifest per questa versione.",
+                        "PARSE_MANIFEST_FILE_FAILED": "C'è stato un errore durante la lettura del manifest.",
+                        "ALREADY_DOWNLOADING": "Una versione sta già venendo scaricata.",
+                        "UNABLE_TO_GET_MANIFEST": "Impossibile ottenere il manifest richiesto per il download.",
+                        "VERIFY_INTEGRITY_FAILED": "C'è stato un errore durante la verifica dei file.",
+                        "SOME_FILES_FAILED_TO_DOWNLOAD": "Alcuni file non sono stati scaricati con successo.",
+                        "META_LOGIN_TIMED_OUT": "Il token di accesso ha impiegato troppo tempo per essere recuperato.",
+                        "META_LOGIN_WINDOW_CLOSED_BY_USER": "La finestra di login di Meta è stata chiusa.",
+                        "NO_META_AUTH_TOKEN": "Impossibile recuperare il token di accesso Meta necessario per il download.",
+                        "UNKNOWN_ERROR": "C'è stato un errore sconosciuto."
                     }
                 }
             }
@@ -382,16 +382,16 @@
         "bs-import-version": {
             "success": {
                 "start-import": {
-                    "title": "Import in progress 👌",
-                    "desc": "The import may take several minutes depending on your configuration."
+                    "title": "Importazione in corso 👌",
+                    "desc": "L'importazione potrebbe richiedere diversi minuti a seconda della tua configurazione."
                 },
                 "imported": {
-                    "title": "Imported version 🎉"
+                    "title": "Versione importata 🎉"
                 }
             },
             "errors": {
                 "import-error": {
-                    "desc": "Check that the selected folder is a Beat Saber installation."
+                    "desc": "Controlla che la cartella selezionata sia una installazione di Beat Saber valida."
                 }
             }
         },
@@ -399,57 +399,57 @@
             "move-folder": {
                 "success": {
                     "titles": {
-                        "transfer-started": "Transfer in progress",
-                        "transfer-finished": "Transfer complete"
+                        "transfer-started": "Trasferimento in corso",
+                        "transfer-finished": "Trasferimento completato"
                     },
                     "descs": {
-                        "transfer-started": "The transfer has started and may take several minutes depending on your configuration."
+                        "transfer-started": "Il trasferimento è iniziato e potrebbe richiedere diversi minuti a seconda della tua configurazione."
                     }
                 },
                 "errors": {
                     "titles": {
-                        "transfer-failed": "Transfer failed 😕"
+                        "transfer-failed": "Trasferimento fallito 😕"
                     },
                     "descs": {
-                        "COPY_TO_SUBPATH": "The destination folder cannot be a subfolder of the source folder.",
-                        "restore-linked-folders": "An error occurred while restoring shared folders. You can still manually restore them via the 'Shared Folders' menu on the versions page."
+                        "COPY_TO_SUBPATH": "La cartella di destinazione non puo essere una sotto cartella della cartella di origine.",
+                        "restore-linked-folders": "C'è stato un errore durante il ripristino delle cartelle condivise. Puoi sempre ripristinarle manualmente via il menu 'Cartelle Condivise' nella pagina delle versioni."
                     }
                 }
             },
             "steam": {
                 "success": {
                     "titles": {
-                        "logout": "Disconnected from Steam."
+                        "logout": "Disconnesso da Steam."
                     }
                 }
             },
             "additional-content": {
                 "deep-link": {
-                    "select-all": "Select all",
+                    "select-all": "Seleziona tutto",
                     "activation": {
                         "success": {
-                            "title": "OneClick activated!",
-                            "description": "OneClick installations have been activated."
+                            "title": "OneClick attivato!",
+                            "description": "Le installazioni OneClick sono state attivate."
                         },
                         "error": {
-                            "description": "Unable to activate OneClick installations."
+                            "description": "Impossibile attivare le installazioni OneClick."
                         }
                     },
                     "deactivation": {
                         "success": {
-                            "title": "OneClick deactivated!",
-                            "description": "OneClick installations have been deactivated."
+                            "title": "OneClick disattivato!",
+                            "description": "Le installazioni OneClick sono state disattivate."
                         },
                         "error": {
-                            "description": "An unknown error occurred."
+                            "description": "C'è stato un errore sconosciuto."
                         }
                     },
                     "check-all-enabled": {
-                        "title": "OneClick Disabled",
-                        "description": "One or more OneClick installations are disabled. Go to settings to enable them.",
+                        "title": "OneClick Disabilitato",
+                        "description": "Uno o più installazioni OneClick sono disabilitate. Vai alle impostazioni per abilitarle.",
                         "actions": {
-                            "settings": "Settings",
-                            "not-remind": "Don't remind me"
+                            "settings": "Impostazioni",
+                            "not-remind": "Non ricordarmelo più"
                         }
                     }
                 }
@@ -458,32 +458,32 @@
         "bs-launch": {
             "success": {
                 "titles": {
-                    "BS_LAUNCHING": "Launching...🚀",
-                    "STEAM_LAUNCHING": "Steam is launching!",
-                    "SKIPPING_STEAM_LAUNCH": "Skipping Steam launch"
+                    "BS_LAUNCHING": "Avvio in corso...🚀",
+                    "STEAM_LAUNCHING": "Steam si sta avviando!",
+                    "SKIPPING_STEAM_LAUNCH": "Saltando l'avvio di Steam..."
                 },
                 "msg": {
-                    "BS_LAUNCHING": "Don't forget to warm up 😉",
-                    "STEAM_LAUNCHING": "Beat Saber will automatically launch after Steam.",
-                    "SKIPPING_STEAM_LAUNCH": "I hope you know what you're doing :)"
+                    "BS_LAUNCHING": "Non scordardi ti riscaldarti 😉",
+                    "STEAM_LAUNCHING": "Beat Saber si avvierà automaticamente dopo Steam.",
+                    "SKIPPING_STEAM_LAUNCH": "Spero che sai cosa stai facendo :)"
                 }
             },
             "errors": {
                 "titles": {
-                    "UNKNOWN_ERROR": "Unable to launch",
-                    "STEAM_NOT_RUNNING": "Steam is not running",
-                    "OCULUS_NOT_RUNNING": "Oculus is not running",
-                    "BS_ALREADY_RUNNING": "Beat Saber already running",
-                    "EXE_NOT_FINDED": "Missing files",
-                    "PROTON_NOT_SET": "Proton folder not set",
-                    "PROTON_NOT_FOUND": "Proton binary not found",
-                    "EXIT": "Abrupt stop",
-                    "OCULUS_LIB_NOT_FOUND": "Oculus library not found",
-                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Original Oculus version not found"
+                    "UNKNOWN_ERROR": "Impossibile avviare",
+                    "STEAM_NOT_RUNNING": "Steam non è in esecuzione",
+                    "OCULUS_NOT_RUNNING": "Oculus non è in esecuzione",
+                    "BS_ALREADY_RUNNING": "Beat Saber già in esecuzione",
+                    "EXE_NOT_FINDED": "File mancanti",
+                    "PROTON_NOT_SET": "Cartella di Proton non impostata",
+                    "PROTON_NOT_FOUND": "Esegiubile di Proton non trovato",
+                    "EXIT": "Arresto improvviso",
+                    "OCULUS_LIB_NOT_FOUND": "Librerie Oculus non trovate",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Versione Oculus originale non installata"
                 },
                 "msg": {
-                    "UNKNOWN_ERROR": "An unknown error has occurred.",
-                    "STEAM_NOT_RUNNING": "Steam must be running to launch BeatSaber.",
+                    "UNKNOWN_ERROR": "C'è stato un errore sconosciuto.",
+                    "STEAM_NOT_RUNNING": "Steam deve essere in esecuzione per avviare BeatSaber.",
                     "OCULUS_NOT_RUNNING": "Oculus must be running to launch BeatSaber.",
                     "BS_ALREADY_RUNNING": "Close BeatSaber before launching it again.",
                     "EXE_NOT_FINDED": "Some files seem to be missing, try to verify the files.",
