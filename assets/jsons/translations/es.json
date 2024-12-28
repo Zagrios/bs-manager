@@ -150,7 +150,7 @@
             }
         },
         "available-versions": {
-            "title": "Selecciona una versión",
+            "title": "Descargar una versión",
             "steam-release": "Anuncio en Steam",
             "dropdown": {
                 "refresh": "Actualizar las versiones",
