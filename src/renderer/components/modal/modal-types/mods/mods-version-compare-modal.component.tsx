@@ -32,6 +32,10 @@ function useHeader({
     const [otherVersion, setOtherVersion] = useState(null as BSVersion | null);
     const [otherAvailableModsMap, setOtherAvailableModsMap] = useState(new Map<string, Mod[]>());
     const [otherInstalledModsMap, setOtherInstalledModsMap] = useState(new Map<string, Mod[]>());
+    const [modsMapCache, setModsMapCache] = useState(new Map<BSVersion, Readonly<{
+        availableModsMap: Map<string, Mod[]>;
+        installedModsMap: Map<string, Mod[]>;
+    }>>());
 
     const modeOptions: BsmSelectOption<Mode>[] = useConstant(() =>
         Object.values(Mode).map(val => ({
@@ -68,7 +72,7 @@ function useHeader({
                             return safeLt(v1.BSVersion, v2.BSVersion) ? 1 : -1;
                         })
                         .map(v => {
-                            let {name} = v;
+                            let { name } = v;
                             if (v.steam) {
                                 name = "Steam";
                             } else if (v.oculus) {
@@ -89,13 +93,18 @@ function useHeader({
             .catch(error => logRenderError("Could not load versions dict", error));
     }, []);
 
-    // NOTE: Can be memoized/cached
     useEffect(() => {
-        const availableMap = new Map<string, Mod[]>();
-        const installedMap = new Map<string, Mod[]>();
         if (!otherVersion) {
-            setOtherAvailableModsMap(availableMap);
-            setOtherInstalledModsMap(installedMap);
+            const empty = new Map<string, Mod[]>();
+            setOtherAvailableModsMap(empty);
+            setOtherInstalledModsMap(empty);
+            return;
+        }
+
+        const cached = modsMapCache.get(otherVersion);
+        if (cached) {
+            setOtherAvailableModsMap(cached.availableModsMap);
+            setOtherInstalledModsMap(cached.installedModsMap);
             return;
         }
 
@@ -107,20 +116,28 @@ function useHeader({
         }
 
         Promise.all(promises).then(([availableMods, installedMods]) => {
-            if (availableMap) {
-                availableMods.forEach(mod => availableMap.set(
-                    mod.category,
-                    [...(availableMap.get(mod.category) ?? []), mod]
-                ));
-            }
+            const availableModsMap = new Map<string, Mod[]>();
+            const installedModsMap = new Map<string, Mod[]>();
+
+            availableMods.forEach(mod => availableModsMap.set(
+                mod.category,
+                [...(availableModsMap.get(mod.category) ?? []), mod]
+            ));
             if (installedMods) {
-                installedMods.forEach(mod => installedMap.set(
+                installedMods.forEach(mod => installedModsMap.set(
                     mod.category,
-                    [...(installedMap.get(mod.category) ?? []), mod]
+                    [...(installedModsMap.get(mod.category) ?? []), mod]
                 ));
             }
-            setOtherAvailableModsMap(availableMap);
-            setOtherInstalledModsMap(installedMap);
+
+            // Manual in-memory caching
+            modsMapCache.set(otherVersion, {
+                availableModsMap, installedModsMap,
+            });
+            setModsMapCache(modsMapCache);
+
+            setOtherAvailableModsMap(availableModsMap);
+            setOtherInstalledModsMap(installedModsMap);
             setLoading(false);
         });
     }, [otherVersion]);
@@ -323,6 +340,7 @@ export const ModsVersionCompareModal: ModalComponent<void, Readonly<{
                 <div className="h-[500px] overflow-y-auto">
                     {categories.map(category =>
                         <ModCategory
+                            key={category}
                             mode={mode}
                             category={category}
                             availableMods={availableModsMap.get(category) || []}
