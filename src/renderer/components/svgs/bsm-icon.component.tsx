@@ -114,6 +114,9 @@ export const BsmIcon = memo(({ className, icon, style }: { className?: string; i
         if (icon === "es-ES-flag") {
             return <SpainIcon className={className} style={style} />;
         }
+        if (icon === "it-IT-flag") {
+            return <ItalyIcon className={className} style={style} />;
+        }
         if (icon === "en-US-flag") {
             return <UsaIcon className={className} style={style} />;
         }
