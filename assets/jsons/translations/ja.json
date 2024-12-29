@@ -854,14 +854,13 @@
             "stay": "記憶する",
             "connect-to-meta": "Metaに接続する"
         },
-        "original-version-backup-oculus": {
-            "title": "注意",
-            "body": {
-                "must-be-installed-once": "このデバイスにOculusストアからBeat Saberをインストールしておく必要があります。そうしないと、Beat Saberは起動後に自動的に閉じます。",
-                "will-backup": "このバージョンを起動するために、OculusライブラリにあるBeat Saberの元のインストールフォルダは名前が変更され、Beat Saberの終了時に自動的に復元されます。"
-            },
-            "not-remind-me": "二度と表示しないでください",
-            "understood": "分かった"
+        "enable-oculus-sideloaded-apps": {
+            "title": "サイドローディングを有効化",
+            "info-1": "Beat Saberを起動するには、サイドローディングアプリを実行する機能を有効にする必要があります。BSManagerは、この機能を自動的に有効にするために管理者権限を要求します。",
+            "info-2": "サイドローディング機能により、Oculusライブラリフォルダ外にあるゲームを起動できます。",
+            "info-3": "サイドローディングを有効化すると、この機能はアクティブなままとなり、再度有効化を求められることはありません。",
+            "i-want-to-do-it-myself": "自分でやりたい",
+            "understood": "了解しました"
         },
         "enter-meta-token": {
             "title": "Oculusトークン",

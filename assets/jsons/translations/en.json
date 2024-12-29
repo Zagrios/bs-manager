@@ -849,13 +849,12 @@
             "stay": "Remember me",
             "connect-to-meta": "Connect to Meta"
         },
-        "original-version-backup-oculus": {
-            "title": "Warning",
-            "body": {
-                "must-be-installed-once": "You must have Beat Saber installed from the Oculus Store on this device, otherwise Beat Saber might automatically close after launching.",
-                "will-backup": "To launch this version, the original installation folder of Beat Saber located in your Oculus library will be renamed and will be automatically restored when Beat Saber is closed."
-            },
-            "not-remind-me": "Do not remind me",
+        "enable-oculus-sideloaded-apps": {
+            "title": "Enable Sideloading",
+            "info-1": "In order to launch Beat Saber, the ability to run sideloaded apps must be enabled. BSManager will request administrator rights to enable this feature automatically.",
+            "info-2": "The sideloaded apps feature allows launching games located outside your Oculus library folder.",
+            "info-3": "After sideloading is activated, the feature will remain active, and you will no longer be prompted to enable it.",
+            "i-want-to-do-it-myself": "I want to do it myself",
             "understood": "Understood"
         },
         "enter-meta-token": {

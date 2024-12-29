@@ -854,14 +854,13 @@
             "stay": "記住我",
             "connect-to-meta": "連接到 Meta"
         },
-        "original-version-backup-oculus": {
-            "title": "警告",
-            "body": {
-                "must-be-installed-once": "您必須在此設備上從Oculus商店安裝Beat Saber，否則Beat Saber將在啟動後自動關閉。",
-                "will-backup": "為了啟動這個版本，位於您的Oculus庫中的Beat Saber的原始安裝文件夾將被重新命名，並且在Beat Saber關閉時會自動恢復。"
-            },
-            "not-remind-me": "不再提醒我",
-            "understood": "明白了"
+        "enable-oculus-sideloaded-apps": {
+            "title": "啟用旁載",
+            "info-1": "為了啟動 Beat Saber，必須啟用執行旁載應用程式的功能。BSManager 將請求管理員權限以自動啟用此功能。",
+            "info-2": "旁載功能允許啟動位於 Oculus 資料庫資料夾之外的遊戲。",
+            "info-3": "啟用 sideloading 後，此功能將保持啟用狀態，您將不再被提示啟用它。",
+            "i-want-to-do-it-myself": "我想自己完成",
+            "understood": "了解"
         },
         "enter-meta-token": {
             "title": "Oculus令牌",
