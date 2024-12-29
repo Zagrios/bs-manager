@@ -42,11 +42,11 @@
     "pages": {
         "version-viewer": {
             "launch-mods": {
-                "oculus": "Modalità Oculus",
+                "oculus": "Modalita Oculus",
                 "oculus-description": "Se stai usando Beat Saber via Steam, questa opzione ti consente di usare il composer VR di Oculus mentre bypassi SteamVR, per un potenziale aumento di performance. Questo non è richiesto per usare i visori Oculus.",
-                "desktop": "Modalità FPFC",
+                "desktop": "Modalita FPFC",
                 "desktop-description": "La modalità FPFC (First Person Flying Controller) consente di usare i pulsanti WASD e il mouse per navigare nel menu del gioco. Questo rende i test molto più facili, perchè non devi indossare il tuo visore!",
-                "debug": "Modalità Debug",
+                "debug": "Modalita Debug",
                 "debug-description": "Abilita la finestra di uscita del log per IPA. Questo mostrerà la console di debug che lo mod usano.",
                 "outdated-tippy": "Questa versione è obsoleta, e alcune mod o funzioni non potrebbero più funzionare correttamente. Consigliamo di usare la versione raccomandata ({recommendedVersion}) di Beat Saber per godere delle ultime funzioni e bugfix.",
                 "advanced-launch": {
