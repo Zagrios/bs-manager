@@ -150,7 +150,7 @@
             }
         },
         "available-versions": {
-            "title": "選擇版本",
+            "title": "下載一個版本",
             "steam-release": "發布頁面",
             "dropdown": {
                 "refresh": "刷新版本",
@@ -917,7 +917,8 @@
             "tags": "標籤",
             "specificities": "general",
             "requirements": "要求",
-            "exclude": "排除"
+            "exclude": "排除",
+            "leaderboard": "排行榜"
         },
         "map-types": {
             "accuracy": "精確度",
@@ -968,10 +969,15 @@
         },
         "map-specificities": {
             "automapper": "AI",
-            "ranked": "Ranked",
             "curated": "Curated",
             "verified": "Verified",
             "fullSpread": "Full spread"
+        },
+        "map-leaderboard": {
+            "All": "所有",
+            "Ranked": "排名的",
+            "BeatLeader": "BeatLeader",
+            "ScoreSaber": "ScoreSaber"
         },
         "map-excludes": {
             "installed": "已安裝"

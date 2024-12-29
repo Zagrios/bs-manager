@@ -21,6 +21,7 @@ import { OculusLauncherService } from "./oculus-launcher.service";
 import { BSVersion } from "shared/bs-version.interface";
 import { BsStore } from "../../../shared/models/bs-store.enum";
 import { LaunchMod, LaunchMods } from "shared/models/bs-launch/launch-option.interface";
+import { StaticConfigurationService } from "../static-configuration.service";
 
 export class BSLauncherService {
     private static instance: BSLauncherService;
@@ -32,6 +33,7 @@ export class BSLauncherService {
     private readonly remoteVersion: BSVersionLibService;
     private readonly steamLauncher: SteamLauncherService;
     private readonly oculusLauncher: OculusLauncherService;
+    private readonly staticConfig: StaticConfigurationService;
 
     public static getInstance(): BSLauncherService {
         if (!BSLauncherService.instance) {
@@ -48,6 +50,7 @@ export class BSLauncherService {
         this.remoteVersion = BSVersionLibService.getInstance();
         this.steamLauncher = SteamLauncherService.getInstance();
         this.oculusLauncher = OculusLauncherService.getInstance();
+        this.staticConfig = StaticConfigurationService.getInstance();
 
         this.bsmProtocolService.on("launch", link => {
             log.info("Launch from bsm protocol", link.toString());
@@ -72,6 +75,8 @@ export class BSLauncherService {
         if(!launcher){
             return throwError(() => new Error("Unable to get launcher for the provided version"));
         }
+
+        this.staticConfig.set("last-version-launched", launchOptions.version);
 
         return launcher.launch(launchOptions);
     }

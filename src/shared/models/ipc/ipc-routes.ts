@@ -156,6 +156,7 @@ export interface IpcChannelMapping {
     /* ** static-configuration.ipcs ** */
     "static-configuration.get": StaticConfigGetIpcRequestResponse<StaticConfigKeys>;
     "static-configuration.set": StaticConfigSetIpcRequest<StaticConfigKeys>;
+    "static-configuration.delete": { request: StaticConfigKeys; response: void };
 
     /* ** linux.ipcs ** */
     "linux.verify-proton-folder": { request: void, response: boolean };

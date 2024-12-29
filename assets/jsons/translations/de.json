@@ -150,7 +150,7 @@
             }
         },
         "available-versions": {
-            "title": "Wähle eine Version",
+            "title": "Eine Version herunterladen",
             "steam-release": "Versionsseite",
             "dropdown": {
                 "refresh": "Aktualisiere die Versionen",
@@ -917,7 +917,8 @@
             "tags": "Stichwörter",
             "specificities": "Allgemein",
             "requirements": "Anforderungen",
-            "exclude": "Ausschließen"
+            "exclude": "Ausschließen",
+            "leaderboard": "Rangliste"
         },
         "map-types": {
             "accuracy": "Präzision",
@@ -968,10 +969,15 @@
         },
         "map-specificities": {
             "automapper": "KI",
-            "ranked": "Ranked",
             "curated": "Curated",
             "verified": "Verifiziert",
             "fullSpread": "Full Spread"
+        },
+        "map-leaderboard": {
+            "All": "Alle",
+            "Ranked": "Ranked",
+            "BeatLeader": "BeatLeader",
+            "ScoreSaber": "ScoreSaber"
         },
         "map-excludes": {
             "installed": "Installiert"
