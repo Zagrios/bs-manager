@@ -10,6 +10,7 @@ import { AddIcon } from "./icons/add-icon.component";
 import { CrossIcon } from "./icons/cross-icon.component";
 import { FranceIcon } from "./flags/france-icon.component";
 import { SpainIcon } from "./flags/spain-icon.component";
+import { ItalyIcon } from "./flags/italy-icon.component";
 import { UsaIcon } from "./flags/usa-icon.component";
 import { UkIcon } from "./flags/uk-icon.component";
 import { TaskIcon } from "./icons/task-icon.component";
