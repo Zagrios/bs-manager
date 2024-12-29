@@ -123,6 +123,7 @@
                         "description": "Описание",
                         "dropdown": {
                             "import-mods": "Импортировать моды",
+                            "compare-mods": "равнить моды",
                             "uninstall-all": "Удалить всё",
                             "unselect-all": "Снять все выделения"
                         }
@@ -646,6 +647,15 @@
             "actions": {
                 "do-not-remind": "Больше не напоминать",
                 "ok": "Ок"
+            }
+        },
+        "mods-version-compare": {
+            "title": "Сравнение версий модов",
+            "select-version": "Выберите версию",
+            "mod-types": {
+                "all": "Все",
+                "installed": "Установлено",
+                "not-installed": "Не установлено"
             }
         }
     },
