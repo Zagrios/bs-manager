@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import { logRenderError } from "renderer";
 import { BsmSelect, BsmSelectOption } from "renderer/components/shared/bsm-select.component";
+import { AddIcon } from "renderer/components/svgs/icons/add-icon.component";
+import { DownIcon } from "renderer/components/svgs/icons/down-icon.component";
+import { EqualIcon } from "renderer/components/svgs/icons/equals-icon.component";
+import { RemoveIcon } from "renderer/components/svgs/icons/remove-icon.component";
+import { UpIcon } from "renderer/components/svgs/icons/up-icon.component";
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import { useService } from "renderer/hooks/use-service.hook";
 import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
@@ -131,10 +136,11 @@ function useHeader({
             }
 
             // Manual in-memory caching
-            modsMapCache.set(otherVersion, {
+            const newCache = new Map(modsMapCache);
+            newCache.set(otherVersion, {
                 availableModsMap, installedModsMap,
             });
-            setModsMapCache(modsMapCache);
+            setModsMapCache(newCache);
 
             setOtherAvailableModsMap(availableModsMap);
             setOtherInstalledModsMap(installedModsMap);
@@ -144,7 +150,8 @@ function useHeader({
 
 
     return {
-        mode, otherAvailableModsMap, otherInstalledModsMap,
+        mode,
+        otherVersion, otherAvailableModsMap, otherInstalledModsMap,
 
         renderHeader: () => <div className="grid grid-cols-2 text-large mb-2">
             <div className="flex justify-center gap-x-2">
@@ -165,7 +172,6 @@ function useHeader({
                 onChange={setOtherVersion}
             />
         </div>
-
     };
 }
 
@@ -174,65 +180,101 @@ function ModCompare({
     installed,
     otherMod,
     otherInstalled,
+    otherInstalledLocal,
     loading,
 }: Readonly<{
     mod: Mod | null;
     installed: boolean;
     otherMod: Mod | null;
     otherInstalled: boolean;
+    // Check if the other version is installed locally
+    otherInstalledLocal: boolean;
     loading: boolean;
 }>) {
     const name = mod?.name || otherMod?.name;
 
-    const render = (renderMod: Mod | null, installed_: boolean, loading_: boolean = false) => {
-        if (loading_) {
-            return <div className="bg-black">TODO: Rainbow Lazy Loading</div>
-        }
-
-        if (!renderMod) {
+    const renderMod = () => {
+        if (!mod) {
             return <div className="bg-black py-1 px-2">{name}</div>
         }
 
         let modClass = "flex justify-between py-1 px-2 gap-x-2";
-        if (installed_) {
+        if (installed) {
             modClass += " bg-green-700";
         } else {
             modClass += " bg-red-700";
         }
 
-        return <div key={renderMod._id} className={modClass}>
+        return <div className={modClass}>
             <div className="text-ellipsis overflow-hidden">{name}</div>
-            <div>{renderMod.version}</div>
+            <div>{mod.version}</div>
         </div>
     }
 
-    const renderSymbol = () => {
-        let symbol = "";
-        if (mod && !otherMod) {
-            symbol = "-"; // Removed / Not Submitted Yet
-        } else if (!mod && otherMod) {
-            symbol = "+"; // Added
-        } else if (mod.version === otherMod.version) {
-            symbol = "="; // Equals
-        } else if (safeLt(mod.version, otherMod.version)) {
-            symbol = "^"; // Upgraded
-        } else {
-            symbol = "v"; // Downgraded
+    const renderOtherMod = () => {
+        if (loading) {
+            return <div className="bg-black">TODO: Rainbow Lazy Loading</div>
         }
 
-        return <div className="text-center font-extrabold">{symbol}</div>
+        if (!otherMod) {
+            return <div className="bg-black py-1 px-2">{name}</div>
+        }
+
+        let modClass = "flex justify-between py-1 px-2 gap-x-2";
+        if (!otherInstalledLocal) {
+            modClass += " bg-blue-700"; // Change, just for visual prototyping
+        } else if (otherInstalled) {
+            modClass += " bg-green-700";
+        } else {
+            modClass += " bg-red-700";
+        }
+
+        return <div className={modClass}>
+            <div className="text-ellipsis overflow-hidden">{name}</div>
+            <div>{otherMod.version}</div>
+        </div>
+    }
+
+    const renderIcon = () => {
+        if (loading) {
+            return <div />
+        }
+
+        if (mod && !otherMod) {
+            // Removed / Not Submitted Yet
+            return <RemoveIcon className="text-center w-6 h-6" />
+        }
+
+        if (!mod && otherMod) {
+            // Added
+            return <AddIcon className="text-center w-6 h-6" />
+        }
+
+        if (mod.version === otherMod.version) {
+            // Equals
+            return <EqualIcon className="text-center w-6 h-6" />
+        }
+
+        if (safeLt(mod.version, otherMod.version)) {
+            // Upgraded
+            return <UpIcon className="text-center w-6 h-6" />
+        }
+
+        // Downgraded
+        return <DownIcon className="text-center w-6 h-6" />
     }
 
     return <>
-        {render(mod, installed)}
-        {renderSymbol()}
-        {render(otherMod, otherInstalled, loading)}
+        {renderMod()}
+        {renderIcon()}
+        {renderOtherMod()}
     </>
 }
 
 function ModCategory({
     mode,
     category,
+    otherVersion,
     availableMods,
     installedMods,
     otherAvailableMods,
@@ -241,12 +283,15 @@ function ModCategory({
 }: Readonly<{
     mode: Mode;
     category: string;
+    otherVersion: BSVersion;
     availableMods: Mod[];
     installedMods: Mod[];
     otherAvailableMods: Mod[];
     otherInstalledMods: Mod[];
     loading: boolean;
 }>) {
+    const otherInstalledLocal = !!otherVersion?.path;
+
     let combinedMods: Mod[] = [];
     switch (mode) {
         case Mode.All:
@@ -255,7 +300,7 @@ function ModCategory({
                 break;
             }
 
-            availableMods.forEach(mod => {
+            otherAvailableMods.forEach(mod => {
                 if (combinedMods.findIndex(cm => cm.name === mod.name) === -1) {
                     combinedMods.push(mod);
                 }
@@ -286,7 +331,7 @@ function ModCategory({
         </h2>
 
         <div className="grid" style={{
-            gridTemplateColumns: "350px 25px 350px"
+            gridTemplateColumns: "350px 24px 350px"
         }}>
             {combinedMods.map(mod =>
                 <ModCompare
@@ -295,6 +340,7 @@ function ModCategory({
                     installed={installedMods.findIndex(im => im.name === mod.name) > -1}
                     otherMod={otherAvailableMods.find(oam => oam.name === mod.name)}
                     otherInstalled={otherInstalledMods.findIndex(oim => oim.name === mod.name) > -1}
+                    otherInstalledLocal={otherInstalledLocal}
                     loading={loading}
                 />
             )}
@@ -315,7 +361,8 @@ export const ModsVersionCompareModal: ModalComponent<void, Readonly<{
 
         const [loading, setLoading] = useState(false);
         const {
-            mode, otherAvailableModsMap, otherInstalledModsMap,
+            mode,
+            otherVersion, otherAvailableModsMap, otherInstalledModsMap,
             renderHeader,
         } = useHeader({ version, loading, setLoading });
 
@@ -343,6 +390,7 @@ export const ModsVersionCompareModal: ModalComponent<void, Readonly<{
                             key={category}
                             mode={mode}
                             category={category}
+                            otherVersion={otherVersion}
                             availableMods={availableModsMap.get(category) || []}
                             installedMods={installedModsMap.get(category) || []}
                             otherAvailableMods={otherAvailableModsMap.get(category) || []}
