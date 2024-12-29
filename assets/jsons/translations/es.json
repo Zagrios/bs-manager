@@ -123,6 +123,7 @@
                         "description": "Descripción",
                         "dropdown": {
                             "import-mods": "Importar mods",
+                            "compare-mods": "Comparar mods",
                             "uninstall-all": "Desinstalar todos",
                             "unselect-all": "Deseleccionar todo"
                         }
@@ -648,6 +649,15 @@
             "actions": {
                 "do-not-remind": "No volver a recordármelo",
                 "ok": "Ok"
+            }
+        },
+        "mods-version-compare": {
+            "title": "Comparación de versiones de mods",
+            "select-version": "Seleccione una versión",
+            "mod-types": {
+                "all": "Todo",
+                "installed": "Instalado",
+                "not-installed": "No instalado"
             }
         }
     },
