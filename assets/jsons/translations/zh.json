@@ -149,6 +149,7 @@
                         "description": "描述",
                         "dropdown": {
                             "import-mods": "导入模组",
+                            "compare-mods": "比较模组",
                             "uninstall-all": "全部卸载",
                             "unselect-all": "取消全选"
                         }
@@ -691,6 +692,15 @@
             "actions": {
                 "do-not-remind": "不再提醒",
                 "ok": "确定"
+            }
+        },
+        "mods-version-compare": {
+            "title": "Mod 版本比较",
+            "select-version": "选择版本",
+            "mod-types": {
+                "all": "全部",
+                "installed": "已安装",
+                "not-installed": "未安装"
             }
         }
     },

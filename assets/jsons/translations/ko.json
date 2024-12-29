@@ -149,6 +149,7 @@
                         "description": "설명",
                         "dropdown": {
                             "import-mods": "모드 가져오기",
+                            "compare-mods": "모드 비교",
                             "uninstall-all": "모두 제거",
                             "unselect-all": "모두 선택 해제"
                         }
@@ -691,6 +692,15 @@
             "actions": {
                 "do-not-remind": "다시 알리지 않기",
                 "ok": "확인"
+            }
+        },
+        "mods-version-compare": {
+            "title": "Mods 버전 비교",
+            "select-version": "버전 선택",
+            "mod-types": {
+                "all": "모두",
+                "installed": "설치됨",
+                "not-installed": "설치되지 않음"
             }
         }
     },

@@ -149,6 +149,7 @@
                         "description": "說明",
                         "dropdown": {
                             "import-mods": "モッドをインポート",
+                            "compare-mods": "モッドを比較する",
                             "uninstall-all": "全てアンインストールする",
                             "unselect-all": "すべて選択解除"
                         }
@@ -691,6 +692,15 @@
             "actions": {
                 "do-not-remind": "再度通知しない",
                 "ok": "OK"
+            }
+        },
+        "mods-version-compare": {
+            "title": "MODのバージョン比較",
+            "select-version": "バージョンを選択",
+            "mod-types": {
+                "all": "全て",
+                "installed": "インストール済み",
+                "not-installed": "インストールされていません"
             }
         }
     },
