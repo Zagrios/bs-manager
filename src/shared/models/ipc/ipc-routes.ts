@@ -161,6 +161,10 @@ export interface IpcChannelMapping {
     /* ** linux.ipcs ** */
     "linux.verify-proton-folder": { request: void, response: boolean };
 
+    /* ** oculus.ipcs ** */
+    "is-oculus-sideloaded-apps-enabled": { request: void, response: boolean };
+    "enable-oculus-sideloaded-apps": { request: void, response: void };
+
     /* ** OTHERS (if your IPC channel is not in a "-ipcs" file, put it here) ** */
     "shortcut-launch-options": { request: void, response: LaunchOption };
 }

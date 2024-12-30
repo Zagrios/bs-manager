@@ -856,13 +856,12 @@
             "stay": "Recuérdame",
             "connect-to-meta": "Conectarse a Meta"
         },
-        "original-version-backup-oculus": {
-            "title": "Atención",
-            "body": {
-                "must-be-installed-once": "Debes tener Beat Saber instalado desde la tienda de Oculus en este dispositivo, de lo contrario, Beat Saber se cerrará automáticamente después de iniciarse.",
-                "will-backup": "Para lanzar esta versión, la carpeta de instalación original de Beat Saber ubicada en tu biblioteca de Oculus será renombrada y se restaurará automáticamente al cerrar Beat Saber."
-            },
-            "not-remind-me": "No volver a recordármelo",
+        "enable-oculus-sideloaded-apps": {
+            "title": "Habilitar Sideloading",
+            "info-1": "Para poder iniciar Beat Saber, se debe habilitar la capacidad de ejecutar aplicaciones en sideloading. BSManager solicitará permisos de administrador para habilitar esta función automáticamente.",
+            "info-2": "La función de sideloading permite iniciar juegos ubicados fuera de la carpeta de la biblioteca de Oculus.",
+            "info-3": "Una vez que se active el sideloading, la función permanecerá activa y ya no se le pedirá que la habilite.",
+            "i-want-to-do-it-myself": "Quiero hacerlo yo mismo",
             "understood": "Entendido"
         },
         "enter-meta-token": {

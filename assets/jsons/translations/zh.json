@@ -856,13 +856,12 @@
             "stay": "记住我",
             "connect-to-meta": "连接到 Meta"
         },
-        "original-version-backup-oculus": {
-            "title": "警告",
-            "body": {
-                "must-be-installed-once": "您必须在此设备上从Oculus商店安装Beat Saber，否则Beat Saber将在启动后自动关闭。",
-                "will-backup": "为了启动这个版本，位于您的Oculus库中的Beat Saber的原始安装文件夹将被重命名，并且在Beat Saber关闭时会自动恢复。"
-            },
-            "not-remind-me": "不再提醒我",
+        "enable-oculus-sideloaded-apps": {
+            "title": "启用旁加载",
+            "info-1": "为了启动 Beat Saber，必须启用运行旁加载应用程序的功能。BSManager 将请求管理员权限以自动启用此功能。",
+            "info-2": "旁加载功能允许启动位于 Oculus 库文件夹之外的游戏。",
+            "info-3": "激活 sideloading 后，该功能将保持激活状态，您将不再被提示启用它。",
+            "i-want-to-do-it-myself": "我想自己完成",
             "understood": "明白了"
         },
         "enter-meta-token": {

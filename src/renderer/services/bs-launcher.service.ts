@@ -7,7 +7,7 @@ import { ConfigurationService } from "./configuration.service";
 import { ThemeService } from "./theme.service";
 import { BsStore } from "shared/models/bs-store.enum";
 import { ModalExitCode, ModalService } from "./modale.service";
-import { OriginalOculusVersionBackupModal } from "renderer/components/modal/modal-types/original-oculus-version-backup.modal";
+import { EnableOculusSideloadedApps } from "renderer/components/modal/modal-types/enable-oculus-sideloaded-apps";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { sToMs } from "shared/helpers/time.helpers";
 import { NeedLaunchAdminModal } from "renderer/components/modal/modal-types/need-launch-admin-modal.component";
@@ -80,6 +80,20 @@ export class BSLauncherService {
         return true;
     }
 
+    private async enableSideloadedAppsIfNeeded(): Promise<void> {
+        if(window.electron.platform !== "win32"){ return; }
+        const isSideloadedAppsEnabled = await lastValueFrom(this.ipcService.sendV2("is-oculus-sideloaded-apps-enabled"));
+        if(isSideloadedAppsEnabled){ return; }
+
+        const modalRes = await this.modals.openModal(EnableOculusSideloadedApps);
+
+        if(modalRes.exitCode !== ModalExitCode.COMPLETED){
+            throw new Error("Enable sideloaded apps canceled");
+        }
+
+        await lastValueFrom(this.ipcService.sendV2("enable-oculus-sideloaded-apps"));
+    }
+
     public doLaunch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
         return this.ipcService.sendV2("bs-launch.launch", launchOptions);
     }
@@ -89,10 +103,9 @@ export class BSLauncherService {
         return new Observable<BSLaunchEventData>(obs => {
             (async () => {
 
-                if(launchOptions.version.metadata?.store === BsStore.OCULUS && !this.notRewindBackupOculus()){
-                    const { exitCode, data: notRewind } = await this.modals.openModal(OriginalOculusVersionBackupModal);
-                    if(exitCode !== ModalExitCode.COMPLETED){ return; }
-                    this.setNotRewindBackupOculus(notRewind);
+                // If downgraded from oculus and its not the official version
+                if(launchOptions.version.metadata?.store === BsStore.OCULUS && !launchOptions.version.oculus){
+                    await this.enableSideloadedAppsIfNeeded();
                 }
 
                 if(launchOptions.version.metadata?.store !== BsStore.OCULUS){
