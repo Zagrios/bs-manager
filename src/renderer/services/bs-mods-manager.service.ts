@@ -3,7 +3,7 @@ import { UninstallModModal } from "renderer/components/modal/modal-types/uninsta
 import { Observable, BehaviorSubject } from "rxjs";
 import { map } from "rxjs/operators";
 import { BSVersion } from "shared/bs-version.interface";
-import { InstallModsResult, UninstallModsResult, Mod, ModInstallProgression } from "shared/models/mods";
+import { InstallModsResult, UninstallModsResult, ModInstallProgression } from "shared/models/mods";
 import { ProgressionInterface } from "shared/models/progress-bar";
 import { IpcService } from "./ipc.service";
 import { ModalExitCode, ModalService } from "./modale.service";
@@ -11,6 +11,7 @@ import { NotificationType } from "../../shared/models/notification/notification.
 import { OsDiagnosticService } from "./os-diagnostic.service";
 import { ProgressBarService } from "./progress-bar.service";
 import { NotificationService } from "./notification.service";
+import { BbmFullMod, BbmModVersion } from "shared/models/mods/mod.interface";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -41,15 +42,15 @@ export class BsModsManagerService {
         this.os = OsDiagnosticService.getInstance();
     }
 
-    public getAvailableMods(version: BSVersion): Observable<Mod[]> {
-        return this.ipcService.sendV2<Mod[], BSVersion>("get-available-mods", { args: version });
+    public getAvailableMods(version: BSVersion): Observable<BbmFullMod[]> {
+        return this.ipcService.sendV2<BbmFullMod[], BSVersion>("get-available-mods", { args: version });
     }
 
-    public getInstalledMods(version: BSVersion): Observable<Mod[]> {
-        return this.ipcService.sendV2<Mod[], BSVersion>("get-installed-mods", { args: version });
+    public getInstalledMods(version: BSVersion): Observable<BbmModVersion[]> {
+        return this.ipcService.sendV2<BbmModVersion[], BSVersion>("get-installed-mods", { args: version });
     }
 
-    public installMods(mods: Mod[], version: BSVersion): Promise<void> {
+    public installMods(mods: BbmFullMod[], version: BSVersion): Promise<void> {
         if (this.os.isOffline) {
             this.notifications.notifyError({
                 title: "notifications.shared.errors.titles.no-internet",
@@ -71,7 +72,7 @@ export class BsModsManagerService {
         this.progressBar.show(progress$, true, { paddingLeft: "190px", paddingRight: "190px", bottom: "20px" });
 
         this.isInstalling$.next(true);
-        return this.ipcService.send<InstallModsResult, { mods: Mod[]; version: BSVersion }>("install-mods", { args: { mods, version } }).then(res => {
+        return this.ipcService.send<InstallModsResult, { mods: BbmFullMod[]; version: BSVersion }>("install-mods", { args: { mods, version } }).then(res => {
             if (res.success && res.data) {
                 const isFullyInstalled = res.data.nbInstalledMods === res.data.nbModsToInstall;
                 const title = `notifications.mods.install-mods.titles.${isFullyInstalled ? "success" : "warning"}`;
@@ -85,12 +86,12 @@ export class BsModsManagerService {
             this.progressBar.hide();
         });
     }
-    public async uninstallMod(mod: Mod, version: BSVersion): Promise<void> {
+    public async uninstallMod(mod: BbmFullMod, version: BSVersion): Promise<void> {
         if (!this.progressBar.require()) {
             return;
         }
 
-        const modalRes = await this.modals.openModal(UninstallModModal, mod);
+        const modalRes = await this.modals.openModal(UninstallModModal, mod.mod);
 
         if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
             return;

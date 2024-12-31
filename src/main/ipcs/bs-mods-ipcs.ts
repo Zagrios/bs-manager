@@ -3,7 +3,7 @@ import { BsModsManagerService } from "../services/mods/bs-mods-manager.service";
 import { UtilsService } from "../services/utils.service";
 import { BSVersion } from "shared/bs-version.interface";
 import { IpcRequest } from "shared/models/ipc";
-import { Mod } from "shared/models/mods/mod.interface";
+import { BbmFullMod } from "shared/models/mods/mod.interface";
 import { InstallModsResult } from "shared/models/mods";
 import log from "electron-log";
 import { IpcService } from "../services/ipc.service";
@@ -21,7 +21,7 @@ ipc.on<BSVersion>("get-installed-mods", (req, reply) => {
     reply(from(modsManager.getInstalledMods(req.args)));
 });
 
-ipcMain.on("install-mods", (event, request: IpcRequest<{ mods: Mod[]; version: BSVersion }>) => {
+ipcMain.on("install-mods", (event, request: IpcRequest<{ mods: BbmFullMod[]; version: BSVersion }>) => {
     const utils = UtilsService.getInstance();
     const modsManager = BsModsManagerService.getInstance();
 
@@ -36,7 +36,7 @@ ipcMain.on("install-mods", (event, request: IpcRequest<{ mods: Mod[]; version: B
         });
 });
 
-ipcMain.on("uninstall-mods", (event, request: IpcRequest<{ mods: Mod[]; version: BSVersion }>) => {
+ipcMain.on("uninstall-mods", (event, request: IpcRequest<{ mods: BbmFullMod[]; version: BSVersion }>) => {
     const utils = UtilsService.getInstance();
     const modsManager = BsModsManagerService.getInstance();
 

@@ -37,6 +37,28 @@ export interface FileHashes {
 
 // BBM MOD
 
+export interface BbmFullMod {
+    mod: BbmMod;
+    version: BbmModVersion;
+}
+
+export interface BbmMod {
+    id: number;
+    name: string;
+    summary: string;
+    description: string;
+    gameName: "BeatSaber";
+    category: BbmCategories;
+    authors: BbmUserAPIResponse[];
+    status: BbmStatus;
+    iconFileName: string;
+    gitUrl: string;
+    lastApprovedById: number;
+    lastUpdatedById: number;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 export interface BbmModVersion {
     id: number;
     modId: number;

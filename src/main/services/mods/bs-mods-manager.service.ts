@@ -1,5 +1,5 @@
 import { BSVersion } from "shared/bs-version.interface";
-import { DownloadLink, InstallModsResult, Mod, ModInstallProgression, UninstallModsResult } from "shared/models/mods";
+import { InstallModsResult, ModInstallProgression, UninstallModsResult } from "shared/models/mods";
 import { BeatModsApiService } from "./beat-mods-api.service";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import path from "path";
@@ -16,6 +16,7 @@ import { sToMs } from "../../../shared/helpers/time.helpers";
 import { pathExistsSync } from "fs-extra";
 import { BsmZipExtractor } from "../../models/bsm-zip-extractor.class";
 import crypto from "crypto";
+import { BbmCategories, BbmFullMod, BbmModVersion } from "../../../shared/models/mods/mod.interface";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -25,7 +26,7 @@ export class BsModsManagerService {
     private readonly utilsService: UtilsService;
     private readonly requestService: RequestService;
 
-    private manifestMatches: Mod[];
+    private manifestMatches: BbmModVersion[];
 
     private nbModsToInstall = 0;
     private nbInstalledMods = 0;
@@ -48,18 +49,18 @@ export class BsModsManagerService {
         this.utilsService = UtilsService.getInstance();
     }
 
-    private async getModFromHash(hash: string): Promise<Mod> {
+    private async getModFromHash(hash: string): Promise<BbmModVersion> {
 
         const mod = await this.beatModsApi.getModByHash(hash);
 
-        if(mod?.name?.toLowerCase() === "bsipa"){
+        if(mod?.contentHashes?.some(content => content.path.includes("IPA.exe"))){
             return undefined;
         }
 
         return mod;
     }
 
-    private async getModsInDir(version: BSVersion, modsDir: ModsInstallFolder): Promise<Mod[]> {
+    private async getModsInDir(version: BSVersion, modsDir: ModsInstallFolder): Promise<BbmModVersion[]> {
         const bsPath = await this.bsLocalService.getVersionPath(version);
         const modsPath = path.join(bsPath, modsDir);
 
@@ -88,7 +89,7 @@ export class BsModsManagerService {
                 }
 
                 if (filePath.toLowerCase().includes("libs")) {
-                    const manifestIndex = this.manifestMatches.findIndex(m => m.name === mod.name);
+                    const manifestIndex = this.manifestMatches.findIndex(m => m.id === mod.id);
 
                     if (manifestIndex < 0) {
                         return undefined;
@@ -104,7 +105,7 @@ export class BsModsManagerService {
         return  mods.filter(Boolean);
     }
 
-    private async getBsipaInstalled(version: BSVersion): Promise<Mod> {
+    private async getBsipaInstalled(version: BSVersion): Promise<BbmModVersion> {
         const bsPath = await this.bsLocalService.getVersionPath(version);
         const injectorPath = path.join(bsPath, "Beat Saber_Data", "Managed", "IPA.Injector.dll");
         if (!(await pathExist(injectorPath))) {
@@ -177,26 +178,23 @@ export class BsModsManagerService {
         });
     }
 
-    private getModDownload(mod: Mod, version: BSVersion): DownloadLink {
-        return mod.downloads.find(download => {
-            const type = download.type.toLowerCase();
-            return type === "universal" || type === this.bsLocalService.getVersionType(version);
-        });
+    private getModDownload(modVersion: BbmModVersion): string {
+        return `/cdn/mod/${modVersion.zipHash}.zip`
     }
 
-    private async installMod(mod: Mod, version: BSVersion): Promise<boolean> {
-        log.info("INSTALL MOD", mod.name, "for version", `${version.BSVersion} - ${version.name}`);
-        this.utilsService.ipcSend<ModInstallProgression>("mod-installed", { success: true, data: { name: mod.name, progression: ((this.nbInstalledMods + 1) / this.nbModsToInstall) * 100 } });
+    private async installMod(mod: BbmFullMod, version: BSVersion): Promise<boolean> {
+        log.info("INSTALL MOD", mod.mod.name, "for version", `${version.BSVersion} - ${version.name}`);
+        this.utilsService.ipcSend<ModInstallProgression>("mod-installed", { success: true, data: { name: mod.mod.name, progression: ((this.nbInstalledMods + 1) / this.nbModsToInstall) * 100 } });
 
-        const download = this.getModDownload(mod, version);
+        const downloadUrl = this.getModDownload(mod.version);
 
-        if (!download) {
+        if (!downloadUrl) {
             return false;
         }
 
-        log.info("Start download mod zip", mod.name, download.url);
-        const zip = await this.downloadZip(download.url);
-        log.info("Mod zip download end", mod.name, download.url);
+        log.info("Start download mod zip", mod.mod.name, downloadUrl);
+        const zip = await this.downloadZip(downloadUrl);
+        log.info("Mod zip download end", mod.mod.name, downloadUrl);
 
         if (!zip) {
             return false;
@@ -208,18 +206,18 @@ export class BsModsManagerService {
             const md5Hash = crypto.createHash("md5")
                 .update(buffer)
                 .digest("hex");
-            hashCount += +download.hashMd5.some(md5 => md5.hash === md5Hash);
+            hashCount += +mod.version.contentHashes.some(content => content.hash === md5Hash);
         }
 
-        if (hashCount !== download.hashMd5.length) {
+        if (hashCount !== mod.version.contentHashes.length) {
             return false;
         }
 
         const versionPath = await this.bsLocalService.getVersionPath(version);
-        const isBSIPA = mod.name.toLowerCase() === "bsipa";
+        const isBSIPA = mod.mod.name.toLowerCase() === "bsipa";
         const destDir = isBSIPA ? versionPath : path.join(versionPath, ModsInstallFolder.PENDING);
 
-        log.info("Start extracting mod zip", mod.name, "to", destDir);
+        log.info("Start extracting mod zip", mod.mod.name, "to", destDir);
         const extracted = await zip.extract(destDir)
             .then(() => true)
             .catch(e => {
@@ -230,7 +228,7 @@ export class BsModsManagerService {
                 zip.close();
             });
 
-        log.info("Mod zip extraction end", mod.name, "to", destDir, "success:", extracted);
+        log.info("Mod zip extraction end", mod.mod.name, "to", destDir, "success:", extracted);
 
         const res = isBSIPA
             ? extracted &&
@@ -245,23 +243,20 @@ export class BsModsManagerService {
         return res;
     }
 
-    private isDependency(mod: Mod, selectedMods: Mod[], availableMods: Mod[]) {
-        return selectedMods.some(m => {
-            const deps = m.dependencies.map(dep => Array.from(availableMods.values()).find(m => dep.name === m.name));
-            if (deps.some(depMod => depMod.name === mod.name)) {
-                return true;
-            }
-            return deps.some(depMod => depMod.dependencies.some(depModDep => depModDep.name === mod.name));
-        });
+    private isDependency(mod: BbmFullMod, selectedMods: BbmFullMod[], availableMods: BbmFullMod[]): boolean {
+        const selectedDepsIds = selectedMods.flatMap(mod => mod.version.dependencies);
+        const modsDeps = availableMods.filter(m => selectedDepsIds.includes(m.version.id));
+        const modsDepsDepsIds = modsDeps.flatMap(m => m.version.dependencies);
+        return selectedDepsIds.includes(mod.version.id) || modsDepsDepsIds.includes(mod.version.id);
     }
 
-    private async resolveDependencies(mods: Mod[], version: BSVersion): Promise<Mod[]> {
+    private async resolveDependencies(mods: BbmFullMod[], version: BSVersion): Promise<BbmFullMod[]> {
         const availableMods = await this.beatModsApi.getVersionMods(version);
         return Array.from(
-            new Map<string, Mod>(
+            new Map<number, BbmFullMod>(
                 availableMods.reduce((res, mod) => {
-                    if (mod.required || this.isDependency(mod, mods, availableMods)) {
-                        res.push([mod.name, mod]);
+                    if (mod.mod.category === BbmCategories.Core || this.isDependency(mod, mods, availableMods)) {
+                        res.push([mod.mod.id, mod]);
                     }
                     return res;
                 }, [])
@@ -269,9 +264,7 @@ export class BsModsManagerService {
         );
     }
 
-    private async uninstallBSIPA(mod: Mod, version: BSVersion): Promise<void> {
-        const download = this.getModDownload(mod, version);
-
+    private async uninstallBSIPA(mod: BbmFullMod, version: BSVersion): Promise<void> {
         const verionPath = await this.bsLocalService.getVersionPath(version);
         const hasIPAExe = await pathExist(path.join(verionPath, "IPA.exe"));
         const hasIPADir = await pathExist(path.join(verionPath, "IPA"));
@@ -282,37 +275,38 @@ export class BsModsManagerService {
 
         await this.executeBSIPA(version, ["--revert", "-n"]);
 
-        const promises = download.hashMd5.map(files => {
-            const file = files.file.replaceAll("IPA/", "").replaceAll("Data", "Beat Saber_Data");
+        const promises = mod.version.contentHashes.map(content => {
+            const file = content.path.replaceAll("IPA/", "").replaceAll("Data", "Beat Saber_Data");
             return unlinkPath(path.join(verionPath, file));
         });
 
         await Promise.all(promises);
     }
 
-    private async uninstallMod(mod: Mod, version: BSVersion): Promise<void> {
+    private async uninstallMod(mod: BbmFullMod, version: BSVersion): Promise<void> {
         this.nbUninstalledMods++;
-        this.utilsService.ipcSend<ModInstallProgression>("mod-uninstalled", { success: true, data: { name: mod.name, progression: (this.nbUninstalledMods / this.nbModsToUninstall) * 100 } });
+        this.utilsService.ipcSend<ModInstallProgression>("mod-uninstalled", { success: true, data: { name: mod.mod.name, progression: (this.nbUninstalledMods / this.nbModsToUninstall) * 100 } });
 
-        if (mod.name.toLowerCase() === "bsipa") {
+        if (mod.mod.name.toLowerCase() === "bsipa") {
             return this.uninstallBSIPA(mod, version);
         }
 
-        const download = this.getModDownload(mod, version);
         const versionPath = await this.bsLocalService.getVersionPath(version);
 
-        const promises = download.hashMd5.map(async files => {
-            return Promise.all([unlinkPath(path.join(versionPath, files.file)), unlinkPath(path.join(versionPath, "IPA", "Pending", files.file))]);
+        const promises = mod.version.contentHashes.map(async content => {
+            return Promise.all([unlinkPath(path.join(versionPath, content.path)), unlinkPath(path.join(versionPath, "IPA", "Pending", content.path))]);
         });
 
         await Promise.all(promises);
     }
 
-    public getAvailableMods(version: BSVersion): Promise<Mod[]> {
-        return this.beatModsApi.getVersionMods(version);
+    public getAvailableMods(version: BSVersion): Promise<BbmFullMod[]> {
+        return this.beatModsApi.getVersionMods(version).catch(() => {
+            return [] as BbmFullMod[];
+        });
     }
 
-    public async getInstalledMods(version: BSVersion): Promise<Mod[]> {
+    public async getInstalledMods(version: BSVersion): Promise<BbmModVersion[]> {
         this.manifestMatches = [];
 
         const bsipa = await this.getBsipaInstalled(version);
@@ -322,23 +316,23 @@ export class BsModsManagerService {
 
         const dirMods = pluginsMods.flat().concat(libsMods.flat());
 
-        const modsDict = new Map<string, Mod>();
+        const modsDict = new Map<number, BbmModVersion>();
 
         if (bsipa) {
-            modsDict.set(bsipa.name, bsipa);
+            modsDict.set(bsipa.id, bsipa);
         }
 
         for (const mod of dirMods.flat()) {
-            if (modsDict.has(mod.name)) {
+            if (modsDict.has(mod.id)) {
                 continue;
             }
-            modsDict.set(mod.name, mod);
+            modsDict.set(mod.id, mod);
         }
 
         return Array.from(modsDict.values());
     }
 
-    public async installMods(mods: Mod[], version: BSVersion): Promise<InstallModsResult> {
+    public async installMods(mods: BbmFullMod[], version: BSVersion): Promise<InstallModsResult> {
         const deps = await this.resolveDependencies(mods, version);
         mods.push(...deps);
 
@@ -346,9 +340,9 @@ export class BsModsManagerService {
             throw "no-mods";
         }
 
-        const bsipa = mods.find(mod => mod.name.toLowerCase() === "bsipa");
+        const bsipa = mods.find(mod => mod.mod.name.toLowerCase() === "bsipa");
         if (bsipa) {
-            mods = mods.filter(mod => mod.name.toLowerCase() !== "bsipa");
+            mods = mods.filter(mod => mod.mod.name.toLowerCase() !== "bsipa");
         }
 
         this.nbModsToInstall = mods.length + (bsipa && 1);
@@ -374,7 +368,7 @@ export class BsModsManagerService {
         };
     }
 
-    public async uninstallMods(mods: Mod[], version: BSVersion): Promise<UninstallModsResult> {
+    public async uninstallMods(mods: BbmFullMod[], version: BSVersion): Promise<UninstallModsResult> {
         if (!mods?.length) {
             throw "no-mods";
         }
@@ -393,16 +387,21 @@ export class BsModsManagerService {
     }
 
     public async uninstallAllMods(version: BSVersion): Promise<UninstallModsResult> {
-        const mods = await this.getInstalledMods(version);
+        const versionMods = await this.getAvailableMods(version);
+        const installedMods = await this.getInstalledMods(version);
 
-        if (!mods?.length) {
+        const fullInstalledMods: BbmFullMod[] = installedMods?.map(version => {
+            return { version, mod: versionMods.find(mod => version.modId === mod.mod.id)?.mod };
+        }) ?? [];
+
+        if (!fullInstalledMods?.length) {
             throw "no-mods";
         }
 
-        this.nbModsToUninstall = mods.length;
+        this.nbModsToUninstall = fullInstalledMods.length;
         this.nbUninstalledMods = 0;
 
-        for (const mod of mods) {
+        for (const mod of fullInstalledMods) {
             await this.uninstallMod(mod, version);
         }
 

@@ -49,7 +49,7 @@ export class RequestService {
             const response = await fetch(url, this.getInitWithOptions(options));
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status} ${url}`);
+                throw new Error(`HTTP error! status: ${response.status} response: ${await response.text().catch(() => "No response")} url: ${url}`);
             }
 
             return await response.json();

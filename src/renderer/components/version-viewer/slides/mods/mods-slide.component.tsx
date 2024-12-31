@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BsModsManagerService } from "renderer/services/bs-mods-manager.service";
 import { BSVersion } from "shared/bs-version.interface";
-import { Mod } from "shared/models/mods/mod.interface";
+import { BbmCategories, BbmFullMod } from "shared/models/mods/mod.interface";
 import { ModsGrid } from "./mods-grid.component";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { DefaultConfigKey } from "renderer/config/default-configuration.config";
@@ -31,49 +31,46 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
 
     const ref = useRef(null);
     const isVisible = useInView(ref, { amount: 0.5 });
-    const [modsAvailable, setModsAvailable] = useState(null as Map<string, Mod[]>);
-    const [modsInstalled, setModsInstalled] = useState(null as Map<string, Mod[]>);
-    const [modsSelected, setModsSelected] = useState([] as Mod[]);
-    const [moreInfoMod, setMoreInfoMod] = useState(null as Mod);
+    const [modsAvailable, setModsAvailable] = useState(null as Map<BbmCategories, BbmFullMod[]>);
+    const [modsInstalled, setModsInstalled] = useState(null as Map<BbmCategories, BbmFullMod[]>);
+    const [modsSelected, setModsSelected] = useState([] as BbmFullMod[]);
+    const [moreInfoMod, setMoreInfoMod] = useState(null as BbmFullMod);
     const isOnline = useObservable(() => os.isOnline$);
     const installing = useObservable(() => modsManager.isInstalling$);
 
     const downloadRef = useRef(null);
     const [downloadWith, setDownloadWidth] = useState(0);
 
-    const modsToCategoryMap = (mods: Mod[]): Map<string, Mod[]> => {
+    const modsToCategoryMap = (mods: BbmFullMod[]): Map<BbmCategories, BbmFullMod[]> => {
         if (!mods) {
-            return new Map<string, Mod[]>();
+            return new Map<BbmCategories, BbmFullMod[]>();
         }
-        const map = new Map<string, Mod[]>();
-        mods.forEach(mod => map.set(mod.category, [...(map.get(mod.category) ?? []), mod]));
+        const map = new Map<BbmCategories, BbmFullMod[]>();
+        mods.forEach(mod => map.set(mod.mod.category, [...(map.get(mod.mod.category) ?? []), mod]));
         return map;
     };
 
-    const handleModChange = (selected: boolean, mod: Mod) => {
+    const handleModChange = (selected: boolean, mod: BbmFullMod) => {
         if (selected) {
             return setModsSelected([...modsSelected, mod]);
         }
         const mods = [...modsSelected];
-        mods.splice(
-            mods.findIndex(m => m.name === mod.name),
-            1
-        );
+        mods.splice(mods.findIndex(m => m.mod.id === mod.mod.id), 1);
         setModsSelected(mods);
     };
 
-    const handleMoreInfo = (mod: Mod) => {
-        if (mod.name === moreInfoMod?.name) {
+    const handleMoreInfo = (mod: BbmFullMod) => {
+        if (mod.mod.id === moreInfoMod?.mod.id) {
             return setMoreInfoMod(null);
         }
         setMoreInfoMod(mod);
     };
 
     const handleOpenMoreInfo = () => {
-        if (!moreInfoMod?.link) {
+        if (!moreInfoMod?.mod?.gitUrl) {
             return;
         }
-        linkOpener.open(moreInfoMod.link);
+        linkOpener.open(moreInfoMod.mod.gitUrl);
     };
 
     const installMods = () => {
@@ -81,14 +78,14 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
             return;
         }
         const modsToInstall = modsSelected.filter(mod => {
-            const corespondingMod = modsAvailable.get(mod.category).find(availabeMod => availabeMod._id === mod._id);
-            const installedMod = modsInstalled.get(mod.category)?.find(installedMod => installedMod.name === mod.name);
+            const corespondingMod = modsAvailable.get(mod.mod.category).find(availabeMod => availabeMod.mod.id === mod.mod.id);
+            const installedMod = modsInstalled.get(mod.mod.category)?.find(installedMod => installedMod.mod.id === mod.mod.id);
 
-            if (corespondingMod?.version && lt(corespondingMod.version, mod.version)) {
+            if (corespondingMod?.version && lt(corespondingMod.version.modVersion, mod.version.modVersion)) {
                 return false;
             }
 
-            if(installedMod?.version && lt(mod.version, installedMod?.version)){
+            if(installedMod?.version && lt(mod.version.modVersion, installedMod?.version.modVersion)){
                 return false;
             }
 
@@ -111,8 +108,12 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         ]).then(([available, installed]) => {
             const defaultMods = installed?.length ? [] : configService.get<string[]>("default_mods" as DefaultConfigKey);
             setModsAvailable(modsToCategoryMap(available));
-            setModsSelected(available.filter(m => m.required || defaultMods.some(d => m.name.toLowerCase() === d.toLowerCase()) || installed.some(i => m.name === i.name)));
-            setModsInstalled(modsToCategoryMap(installed));
+            const installedMods: BbmFullMod[] = installed.map(version => {
+                const mod = available.find(m => m.mod.id === version.modId);
+                return mod ? { ...mod, version } : null;
+            });
+            setModsSelected(available.filter(m => m.mod.category === BbmCategories.Core || defaultMods.some(d => m.mod.name.toLowerCase() === d.toLowerCase()) || installedMods.some(i => m.mod.id === i.mod.id)));
+            setModsInstalled(modsToCategoryMap(installedMods));
         });
     };
 
