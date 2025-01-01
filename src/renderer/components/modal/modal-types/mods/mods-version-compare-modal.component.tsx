@@ -300,11 +300,9 @@ function ModCategory({
                 break;
             }
 
-            otherAvailableMods.forEach(mod => {
-                if (combinedMods.findIndex(cm => cm.name === mod.name) === -1) {
-                    combinedMods.push(mod);
-                }
-            });
+            combinedMods.push(...otherAvailableMods.filter(
+                mod => combinedMods.findIndex(cm => cm.name === mod.name) === -1
+            ));
             combinedMods.sort((m1, m2) => m1.name.localeCompare(m2.name));
             break;
 
@@ -335,7 +333,7 @@ function ModCategory({
         }}>
             {combinedMods.map(mod =>
                 <ModCompare
-                    key={mod._id}
+                    key={mod.name}
                     mod={availableMods.find(am => am.name === mod.name)}
                     installed={installedMods.findIndex(im => im.name === mod.name) > -1}
                     otherMod={otherAvailableMods.find(oam => oam.name === mod.name)}
