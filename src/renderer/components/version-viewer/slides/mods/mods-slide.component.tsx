@@ -4,7 +4,6 @@ import { BSVersion } from "shared/bs-version.interface";
 import { BbmCategories, BbmFullMod } from "shared/models/mods/mod.interface";
 import { ModsGrid } from "./mods-grid.component";
 import { ConfigurationService } from "renderer/services/configuration.service";
-import { DefaultConfigKey } from "renderer/config/default-configuration.config";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import BeatWaitingImg from "../../../../../../assets/images/apngs/beat-waiting.png";
 import BeatConflictImg from "../../../../../../assets/images/apngs/beat-conflict.png";
@@ -106,13 +105,13 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
             lastValueFrom(modsManager.getAvailableMods(version)),
             lastValueFrom(modsManager.getInstalledMods(version))
         ]).then(([available, installed]) => {
-            const defaultMods = installed?.length ? [] : configService.get<string[]>("default_mods" as DefaultConfigKey);
+            const defaultMods = installed?.length ? [] : available.filter(m => m.mod.category === BbmCategories.Core || m.mod.category === BbmCategories.Essential);
             setModsAvailable(modsToCategoryMap(available));
             const installedMods: BbmFullMod[] = installed.map(version => {
                 const mod = available.find(m => m.mod.id === version.modId);
                 return mod ? { ...mod, version } : null;
             });
-            setModsSelected(available.filter(m => m.mod.category === BbmCategories.Core || defaultMods.some(d => m.mod.name.toLowerCase() === d.toLowerCase()) || installedMods.some(i => m.mod.id === i.mod.id)));
+            setModsSelected(available.filter(m => m.mod.category === BbmCategories.Core || defaultMods.some(d => m.mod.name.toLowerCase() === d.mod.name.toLowerCase()) || installedMods.some(i => m.mod.id === i.mod.id)));
             setModsInstalled(modsToCategoryMap(installedMods));
         });
     };
