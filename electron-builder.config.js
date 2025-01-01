@@ -51,6 +51,10 @@ const config = {
         fpm: ["--after-install=build/after-install.sh"],
     },
     flatpak: {
+        // Version of org.electronjs.Electron2.BaseApp
+        baseVersion: "24.08",
+        // Version of org.freedesktop.Platform
+        runtimeVersion: "24.08",
         finishArgs: [
             // Wayland/X11 Rendering
             "--socket=wayland",
