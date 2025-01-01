@@ -19,9 +19,13 @@ type Props = {
     unselectAllMods?: () => void;
     openModsDropZone?: () => void;
     openModsVersionCompare?: () => void;
+    openModsTransfer?: () => void;
 };
 
-export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreInfoMod, onWantInfos, disabled, uninstallMod, uninstallAllMods, unselectAllMods, openModsDropZone, openModsVersionCompare }: Props) {
+export function ModsGrid({
+    modsMap, installed, modsSelected, onModChange, moreInfoMod, onWantInfos, disabled, uninstallMod, uninstallAllMods, unselectAllMods,
+    openModsDropZone, openModsVersionCompare, openModsTransfer
+}: Props) {
 
     const [filter, setFilter] = useState("");
     const [filterEnabled, setFilterEnabled] = useState(false);
@@ -71,6 +75,7 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
                 <span className="z-10 sticky top-0 bg-inherit border-b-2 border-main-color-1 h-8 flex justify-start items-center py-1 pl-[3px] min-w-[50px]">
                     <BsmDropdownButton className="h-full aspect-square relative rounded-full bg-light-main-color-1 dark:bg-main-color-3" withBar={false} icon="three-dots" buttonClassName="!rounded-full !p-[2px] !bg-light-main-color-2 dark:!bg-main-color-2 hover:!bg-light-main-color-1 dark:hover:!bg-main-color-3" menuTranslationY="5px" items={[
                         { text: "pages.version-viewer.mods.mods-grid.header-bar.dropdown.import-mods", icon: "download", onClick: () => openModsDropZone?.() },
+                        { text: "pages.version-viewer.mods.mods-grid.header-bar.dropdown.transfer-mods", icon: "transfer", onClick: () => openModsTransfer?.() },
                         { text: "pages.version-viewer.mods.mods-grid.header-bar.dropdown.compare-mods", icon: "compare", onClick: () => openModsVersionCompare?.() },
                         { text: "pages.version-viewer.mods.mods-grid.header-bar.dropdown.unselect-all", icon: "cancel", onClick: () => unselectAllMods?.() },
                         { text: "pages.version-viewer.mods.mods-grid.header-bar.dropdown.uninstall-all", icon: "trash", onClick: () => uninstallAllMods?.() }

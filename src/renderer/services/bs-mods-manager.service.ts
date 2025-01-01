@@ -1,4 +1,4 @@
-import { Observable, BehaviorSubject, throwError, of, lastValueFrom } from "rxjs";
+import { Observable, BehaviorSubject, throwError, of, lastValueFrom, concat } from "rxjs";
 import { catchError, map, tap } from "rxjs/operators";
 import { BSVersion } from "shared/bs-version.interface";
 import { Mod } from "shared/models/mods";
@@ -145,6 +145,61 @@ export class BsModsManagerService {
             .finally(() => {
                 this.progressBar.hide();
             });
+    }
+
+    // addMods or removeMods should contain atleast 1 mod
+    public updateMods(addMods: Mod[], removeMods: Mod[], version: BSVersion): Observable<Progression> {
+        if (!this.progressBar.require()) {
+            return throwError(() => new Error("Action already in progress"));
+        }
+
+        return new Observable<Progression>(obs => {
+            const observers: Observable<Progression>[] = [];
+
+            if (addMods.length > 0) {
+                const install$ = this.ipcService.sendV2("bs-mods.install-mods", {
+                    mods: addMods,
+                    version,
+                });
+                observers.push(install$);
+            }
+
+            if (removeMods.length > 0) {
+                const uninstall$ = this.ipcService.sendV2("bs-mods.uninstall-mods", {
+                    mods: removeMods,
+                    version,
+                });
+                observers.push(uninstall$);
+            }
+
+            const singleObs = concat(...observers);
+            this.progressBar.show(singleObs.pipe(
+                catchError(() => of({ current: 0, total: 0 } as Progression))
+            ), {
+               paddingLeft: "190px",
+               paddingRight: "190px",
+               bottom: "20px"
+            });
+            const sub = singleObs.pipe(tap({
+                error: err => this.notifications.notifyError({
+                    title: "notifications.types.error",
+                    desc: err?.code
+                        ? `notifications.mods.transfer-mods.msg.errors.${err?.code}`
+                        : (err?.message || err),
+                    duration: this.NOTIFICATION_DURATION
+                }),
+                complete: () => this.notifications.notifySuccess({
+                    title: "notifications.mods.transfer-mods.titles.success",
+                    desc: "notifications.mods.transfer-mods.msg.success",
+                    duration: this.NOTIFICATION_DURATION
+                }),
+            })).subscribe(obs);
+
+            return () => {
+                sub.unsubscribe();
+                this.progressBar.hide();
+            };
+        });
     }
 
     public uninstallAllMods(version: BSVersion): Observable<Progression> {
