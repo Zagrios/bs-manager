@@ -49,15 +49,19 @@ export class BsModsManagerService {
         this.utilsService = UtilsService.getInstance();
     }
 
-    private async getModFromHash(hash: string): Promise<BbmModVersion> {
+    private async getModFromHash(hash: string): Promise<BbmModVersion | null> {
+        try {
+            const mod = await this.beatModsApi.getModByHash(hash);
 
-        const mod = await this.beatModsApi.getModByHash(hash);
+            if(mod?.contentHashes?.some(content => content.path.includes("IPA.exe"))){
+                return null;
+            }
 
-        if(mod?.contentHashes?.some(content => content.path.includes("IPA.exe"))){
-            return undefined;
+            return mod;
+        } catch (error) {
+            log.error("Could not get mod from hash", error);
+            return null;
         }
-
-        return mod;
     }
 
     private async getModsInDir(version: BSVersion, modsDir: ModsInstallFolder): Promise<BbmModVersion[]> {
@@ -300,7 +304,7 @@ export class BsModsManagerService {
         await Promise.all(promises);
     }
 
-    public getAvailableMods(version: BSVersion): Promise<BbmFullMod[]> {
+    public async getAvailableMods(version: BSVersion): Promise<BbmFullMod[]> {
         return this.beatModsApi.getVersionMods(version).catch(() => {
             return [] as BbmFullMod[];
         });
