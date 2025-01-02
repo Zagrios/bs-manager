@@ -29,7 +29,7 @@ export const filterPatterns = new Set<RegExp>();
 const isDebug = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true";
 
 // Filter all occulus tokens
-filterPatterns.add(/FRL\S{10,}/g);
+filterPatterns.add(/(FRL|OC)\S{10,}/g);
 
 initLogger();
 deleteOlestLogs();
