@@ -112,9 +112,10 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
             const defaultMods = installed?.length ? [] : available.filter(m => m.mod.category === BbmCategories.Core || m.mod.category === BbmCategories.Essential);
             setModsAvailable(modsToCategoryMap(available));
             const installedMods: BbmFullMod[] = installed.map(version => {
-                const mod = available.find(m => m.mod.id === version.modId);
-                return mod ? { ...mod, version } : null;
-            });
+                    const mod = available.find(m => m.mod.id === version.modId);
+                    return mod ? { ...mod, version } : null;
+                }).filter(mod => mod);
+
             setModsSelected(available.filter(m => m.mod.category === BbmCategories.Core || defaultMods.some(d => m.mod.name.toLowerCase() === d.mod.name.toLowerCase()) || installedMods.some(i => m.mod.id === i.mod.id)));
             setModsInstalled(modsToCategoryMap(installedMods));
         }).catch(e => {
