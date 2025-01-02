@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BsModsManagerService } from "renderer/services/bs-mods-manager.service";
 import { BSVersion } from "shared/bs-version.interface";
-import { BbmCategories, BbmFullMod } from "shared/models/mods/mod.interface";
+import { BbmCategories, BbmFullMod, BbmModVersion } from "shared/models/mods/mod.interface";
 import { ModsGrid } from "./mods-grid.component";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
@@ -18,6 +18,7 @@ import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods-
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { lt } from "semver";
 import { useService } from "renderer/hooks/use-service.hook";
+import { logRenderError } from "renderer";
 
 export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion; onDisclamerDecline: () => void }) {
     const ACCEPTED_DISCLAIMER_KEY = "accepted-mods-disclaimer";
@@ -101,10 +102,13 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
             return;
         }
 
-        Promise.all([
-            lastValueFrom(modsManager.getAvailableMods(version)),
-            lastValueFrom(modsManager.getInstalledMods(version))
-        ]).then(([available, installed]) => {
+        const promise = async (): Promise<[BbmFullMod[], BbmModVersion[]]> => {
+            const available = await lastValueFrom(modsManager.getAvailableMods(version));
+            const installed = await lastValueFrom(modsManager.getInstalledMods(version));
+            return [available, installed];
+        }
+
+        promise().then(([available, installed]) => {
             const defaultMods = installed?.length ? [] : available.filter(m => m.mod.category === BbmCategories.Core || m.mod.category === BbmCategories.Essential);
             setModsAvailable(modsToCategoryMap(available));
             const installedMods: BbmFullMod[] = installed.map(version => {
@@ -113,6 +117,8 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
             });
             setModsSelected(available.filter(m => m.mod.category === BbmCategories.Core || defaultMods.some(d => m.mod.name.toLowerCase() === d.mod.name.toLowerCase()) || installedMods.some(i => m.mod.id === i.mod.id)));
             setModsInstalled(modsToCategoryMap(installedMods));
+        }).catch(e => {
+            logRenderError("Error occur while loading mods", e);
         });
     };
 
