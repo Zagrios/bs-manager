@@ -1,6 +1,6 @@
 import { BSVersion } from "shared/bs-version.interface";
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { TabNavBar } from "renderer/components/shared/tab-nav-bar.component";
 import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-button.component";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
@@ -24,6 +24,7 @@ import { BsDownloaderService } from "renderer/services/bs-version-download/bs-do
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { safeLt } from "shared/helpers/semver.helpers";
 import { ConfigurationService } from "renderer/services/configuration.service";
+import { logRenderError } from "renderer";
 
 export function VersionViewer() {
 
@@ -36,7 +37,7 @@ export function VersionViewer() {
     const notification = useService(NotificationService);
     const config = useService(ConfigurationService);
 
-    const { state } = useLocation() as { state: BSVersion };
+    const { state, pathname: url } = useLocation() as { state: BSVersion; pathname: string };
     const navigate = useNavigate();
     const [currentTabIndex, setCurrentTabIndex] = useState(0);
 
@@ -130,6 +131,13 @@ export function VersionViewer() {
                 desc: "notifications.create-launch-shortcut.error.msg"
             });
         });
+    }
+
+    // If state/version is not properly set, or becomes null for some reason
+    //   redirect user to the available-versions page
+    if (!state) {
+        logRenderError(`Missing state/version for "${url}"`);
+        return <Navigate to="/available-versions" replace />;
     }
 
     return (
