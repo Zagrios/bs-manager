@@ -911,7 +911,7 @@
             "tags": "tag",
             "specificities": "generale",
             "requirements": "requisiti",
-            "exclude": "escludi"
+            "exclude": "escludi",
             "leaderboard": "classifica"
         },
         "map-types": {
