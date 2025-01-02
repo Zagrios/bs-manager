@@ -9,6 +9,7 @@ import useDoubleClick from "use-double-click";
 import { gt } from "semver";
 import { useService } from "renderer/hooks/use-service.hook";
 import { BbmCategories, BbmFullMod } from "shared/models/mods/mod.interface";
+import striptags from "striptags";
 
 type Props = { className?: string; mod: BbmFullMod; installedVersion: string; isDependency?: boolean; isSelected?: boolean; onChange?: (val: boolean) => void; wantInfo?: boolean; onWantInfo?: (mod: BbmFullMod) => void };
 
@@ -59,8 +60,8 @@ export function ModItem({ className, mod, installedVersion, isDependency, isSele
             <span className="min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover:brightness-90" style={wantInfoStyle}>
                 {mod.version.modVersion}
             </span>
-            <span title={mod.mod.description} className="px-3 bg-inherit whitespace-nowrap text-ellipsis overflow-hidden py-2 text-sm border-t-2 border-b-2 group-hover:brightness-90" style={wantInfoStyle}>
-                {mod.mod.summary}
+            <span title={striptags(mod.mod?.description ?? "", { tagReplacementText: " " })} className="px-3 bg-inherit whitespace-nowrap text-ellipsis overflow-hidden py-2 text-sm border-t-2 border-b-2 group-hover:brightness-90" style={wantInfoStyle}>
+                {striptags(mod.mod?.summary ?? "", { tagReplacementText: " " })}
             </span>
             <div className="h-full bg-inherit flex items-center justify-center mr-3 rounded-r-md pr-2 border-t-2 border-b-2 border-r-2 group-hover:brightness-90" style={wantInfoStyle}>
                 {installedVersion && (
