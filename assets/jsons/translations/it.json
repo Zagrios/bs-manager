@@ -912,6 +912,7 @@
             "specificities": "generale",
             "requirements": "requisiti",
             "exclude": "escludi"
+            "leaderboard": "classifica"
         },
         "map-types": {
             "accuracy": "precisione",
@@ -966,6 +967,12 @@
             "curated": "curata",
             "verified": "verificata",
             "fullSpread": "completa"
+        },
+        "map-leaderboard": {
+            "All": "Tutte",
+            "Ranked": "Classificate",
+            "BeatLeader": "BeatLeader",
+            "ScoreSaber": "ScoreSaber"
         },
         "map-excludes": {
             "installed": "installata"
