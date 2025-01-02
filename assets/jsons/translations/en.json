@@ -123,6 +123,8 @@
                         "description": "Description",
                         "dropdown": {
                             "import-mods": "Import mods",
+                            "transfer-mods": "Transfer mods",
+                            "compare-mods": "Compare mods",
                             "uninstall-all": "Uninstall all",
                             "unselect-all": "Unselect all"
                         }
@@ -569,6 +571,22 @@
                     "some-success": "Some mods were successfully imported.",
                     "no-dlls": "The file(s) do not contain any \"dll\" files."
                 }
+            },
+            "transfer-mods": {
+                "titles": {
+                    "default": "Mods transfer",
+                    "success": "Mods transfer completed"
+                },
+                "msg": {
+                    "default": {
+                        "no-mods": "\"{versionName}\" version does not contain any mods.",
+                        "no-mods-change": "\"{versionName}\" contains the same mod with \"{otherVersionName}\""
+                    },
+                    "success": "Mods successfully transfered to \"{versionName}\".",
+                    "errors": {
+                        "cannot-install-bsipa": "BSIPA installation failed 😨"
+                    }
+                }
             }
         },
         "maps": {
@@ -899,6 +917,27 @@
         },
         "bs-version-outdated": {
             "body": "The version {outdatedVersion} is outdated, and some mods or features may no longer work as expected. Please download the latest recommended version ({recommendedVersion}) of Beat Saber to enjoy the latest features and bugfixes."
+        },
+        "mods-version-compare": {
+            "title": "Mods Version Comparison",
+            "select-version": "Select a Version",
+            "mod-types": {
+                "all": "All",
+                "installed": "Installed",
+                "not-installed": "Not Installed"
+            }
+        },
+        "mods-transfer": {
+            "title": "Mods Transfer",
+            "buttons": {
+                "transfer": "Transfer",
+                "exact-transfer": "Exact Transfer"
+            },
+            "descriptions": {
+                "missing-mods": "Some mods are not available on \"{versionName}\" version",
+                "transfer": "Adds the mods from the \"{versionName}\" version",
+                "exact-transfer": "Fully copies the list of mods from \"{versionName}\" version"
+            }
         }
     },
     "maps": {

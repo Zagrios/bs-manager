@@ -1,11 +1,11 @@
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
-import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { ModalComponent, ModalExitCode } from "renderer/services/modale.service";
-import BeatConflict from "../../../../../assets/images/apngs/beat-conflict.png";
+import BeatConflict from "../../../../../../assets/images/apngs/beat-conflict.png";
 
 export const ModsDisclaimerModal: ModalComponent<void, void> = ({ resolver }) => {
-    const t = useTranslation();
+    const { text: t } = useTranslationV2();
 
     return (
         <form className="max-w-[800px] text-gray-800 dark:text-gray-200">

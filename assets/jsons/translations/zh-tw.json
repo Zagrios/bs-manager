@@ -123,6 +123,7 @@
                         "description": "描述",
                         "dropdown": {
                             "import-mods": "導入模組",
+                            "compare-mods": "比較模組",
                             "uninstall-all": "全部移除",
                             "unselect-all": "取消全選"
                         }
@@ -646,6 +647,15 @@
             "actions": {
                 "do-not-remind": "不要再提醒我",
                 "ok": "確定"
+            }
+        },
+        "mods-version-compare": {
+            "title": "Mod 版本比較",
+            "select-version": "選擇版本",
+            "mod-types": {
+                "all": "全部",
+                "installed": "已安裝",
+                "not-installed": "未安裝"
             }
         }
     },

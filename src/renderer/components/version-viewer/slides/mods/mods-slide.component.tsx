@@ -10,11 +10,11 @@ import BeatWaitingImg from "../../../../../../assets/images/apngs/beat-waiting.p
 import BeatConflictImg from "../../../../../../assets/images/apngs/beat-conflict.png";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { lastValueFrom } from "rxjs";
-import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { useInView } from "framer-motion";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
-import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods-disclaimer-modal.component";
+import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods/mods-disclaimer-modal.component";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { lt } from "semver";
 import { useService } from "renderer/hooks/use-service.hook";
@@ -22,11 +22,16 @@ import { NotificationService } from "renderer/services/notification.service";
 import { noop } from "shared/helpers/function.helpers";
 import { UninstallAllModsModal } from "renderer/components/modal/modal-types/uninstall-all-mods-modal.component";
 import { Dropzone } from "renderer/components/shared/dropzone.component";
+import { ModsVersionCompareModal } from "renderer/components/modal/modal-types/mods/mods-version-compare-modal.component";
+import { ModsTransferModal } from "renderer/components/modal/modal-types/mods/mods-transfer-modal.component";
+import { getVersionName } from "renderer/helpers/bs-version.helpers";
+import { useNavigate } from "react-router-dom";
 
 export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion; onDisclamerDecline: () => void }) {
     const ACCEPTED_DISCLAIMER_KEY = "accepted-mods-disclaimer";
 
-    const t = useTranslation();
+    const { text: t } = useTranslationV2();
+    const navigate = useNavigate();
 
     const modsManager = useService(BsModsManagerService);
     const configService = useService(ConfigurationService);
@@ -260,6 +265,57 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
         }
     }, [modsAvailable]);
 
+    const openModsVersionCompare = async () => {
+        modals.openModal(ModsVersionCompareModal, { data: {
+            version,
+            availableModsMap: modsAvailable,
+            installedModsMap: modsInstalled,
+        }});
+
+    };
+
+    const openModsTransfer = async () => {
+        if ([...modsInstalled.values()].findIndex(mods => mods.length > 0) === -1) {
+            notification.notifyInfo({
+                title: "notifications.mods.transfer-mods.titles.default",
+                desc: t("notifications.mods.transfer-mods.msg.default.no-mods", {
+                    versionName: getVersionName(version)
+                }),
+            });
+            return;
+        }
+
+        const modalResponse = await modals.openModal(ModsTransferModal, { data: {
+            version,
+            availableModsMap: modsAvailable,
+            installedModsMap: modsInstalled
+        }});
+        if (modalResponse.exitCode !== ModalExitCode.COMPLETED) {
+            return;
+        }
+
+        const { data } = modalResponse;
+        if (data.addMods.length === 0 && data.removeMods.length === 0) {
+            notification.notifyInfo({
+                title: "notifications.mods.transfer-mods.titles.default",
+                desc: t("notifications.mods.transfer-mods.msg.default.no-mods-change", {
+                    versionName: getVersionName(version),
+                    otherVersionName: getVersionName(data.toVersion)
+                }),
+            });
+            return;
+        }
+
+        setInstalling(true);
+        await lastValueFrom(modsManager.updateMods(data.addMods, data.removeMods, data.toVersion));
+        setInstalling(false);
+
+        // Navigate to the toVersion when transfer mods is done
+        navigate(`/bs-version/${data.toVersion.BSVersion}`, {
+            state: data.toVersion,
+        });
+    };
+
     const renderContent = () => {
         if (!isOnline) {
             return <ModStatus text="pages.version-viewer.mods.no-internet" image={BeatConflictImg} />;
@@ -290,6 +346,8 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
                         uninstallAllMods={uninstallAllMods}
                         unselectAllMods={unselectAllMods}
                         openModsDropZone={() => setModsDropZoneOpen(true)}
+                        openModsVersionCompare={openModsVersionCompare}
+                        openModsTransfer={openModsTransfer}
                     />
                 </div>
                 <div className="shrink-0 flex items-center justify-between px-3 py-2">
@@ -330,7 +388,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
 }
 
 function ModStatus({ text, image, spin = false, children }: { text: string; image: string; spin?: boolean, children?: ReactNode}) {
-    const t = useTranslation();
+    const { text: t } = useTranslationV2();
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center text-gray-800 dark:text-gray-200">
