@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 
 type Props = {
     id?: string;
@@ -8,11 +8,11 @@ type Props = {
     minorTitle?: string;
     description?: string;
     children?: ReactNode;
-    os?: string;
+    os?: "win32" | "linux";
 };
 
 export function SettingContainer({ id, className, title, minorTitle, description, children, os }: Props) {
-    const t = useTranslation();
+    const t = useTranslationV2();
 
     if (os && os !== window.electron.platform) {
         return undefined;
@@ -20,9 +20,9 @@ export function SettingContainer({ id, className, title, minorTitle, description
 
     return (
         <div id={id} className={className || "relative mb-5"}>
-            {title && <h1 className="mb-1 text-2xl font-bold tracking-wide">{t(title)}</h1>}
-            {minorTitle && <h2 className="mb-1 font-bold tracking-wide text-gray-600 dark:text-gray-300">{t(minorTitle)}</h2>}
-            {description && <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">{t(description)}</p>}
+            {title && <h1 className="mb-1 text-2xl font-bold tracking-wide">{t.text(title)}</h1>}
+            {minorTitle && <h2 className="mb-1 font-bold tracking-wide text-gray-600 dark:text-gray-300">{t.text(minorTitle)}</h2>}
+            {description && <p className="mb-3 text-sm text-gray-600 dark:text-gray-400">{t.text(description)}</p>}
             {children}
         </div>
     );

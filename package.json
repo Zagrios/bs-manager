@@ -2,7 +2,7 @@
     "name": "bs-manager",
     "description": "Manage maps, mods and more for Beat Saber",
     "main": "./.erb/dll/main.bundle.dev.js",
-    "version": "1.5.0-alpha.4",
+    "version": "1.5.0-alpha.6",
     "scripts": {
         "build-rust-scripts": "ts-node ./.erb/scripts/build-rust-scripts.js",
         "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
@@ -13,15 +13,16 @@
         "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
         "prestart": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.dev.ts",
         "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx",
-        "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never && npm run build:dll",
+        "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never --config electron-builder.config.js && npm run build:dll",
         "start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run prestart && npm run start:renderer",
         "start:main": "concurrently -k \"cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --watch --config ./.erb/configs/webpack.config.main.dev.ts\" \"electronmon .\"",
         "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
         "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
         "test": "jest",
         "test:unit": "jest ./src/__tests__/unit",
-        "publish": "npm run build && electron-builder -c.win.certificateSha1=2164d6a7d641ecf6ad57852f665a518ca2bf960f --publish always --win --x64",
-        "publish:linux": "npm run build && electron-builder --publish always --linux --x64"
+        "publish": "npm run build && electron-builder -c.win.certificateSha1=206941d969c4fa8a0e04d9427def361e13b02fd0 --config electron-builder.config.js --publish always --win --x64",
+        "publish:linux": "npm run build && electron-builder --config electron-builder.config.js --publish never --linux --x64",
+        "publish:flatpak": "npm run build && env DEBUG='@malept/flatpak-bundler' npx electron-builder --config electron-builder.config.js --publish never --linux flatpak"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx}": [
@@ -38,63 +39,11 @@
         ]
     },
     "build": {
-        "extraResources": [
-            "./assets/jsons/bs-versions.json",
-            "./assets/jsons/patreons.json",
-            "./assets/proto/song_details_cache_v1.proto"
-        ],
-        "productName": "BSManager",
-        "appId": "org.erb.BSManager",
-        "asarUnpack": "**\\*.{node,dll}",
-        "files": [
-            "dist/**/*",
-            "node_modules",
-            "package.json"
-        ],
-        "afterSign": ".erb/scripts/notarize.js",
-        "afterPack": ".erb/scripts/after-pack.js",
-        "win": {
-            "signingHashAlgorithms": [
-                "sha256"
-            ],
-            "target": [
-                "nsis",
-                "nsis-web"
-            ],
-            "icon": "./build/icons/win/favicon.ico",
-            "extraResources": [
-                "./build/icons/win",
-                "./assets/scripts/*.exe"
-            ]
-        },
-        "linux": {
-            "target": [
-                "AppImage"
-            ],
-            "icon": "./build/icons/png",
-            "category": "Utility;Game;",
-            "extraResources": [
-                "./build/icons/png",
-                "./assets/scripts/DepotDownloader"
-            ]
-        },
         "directories": {
             "app": "release/app",
             "buildResources": "assets",
             "output": "release/build"
-        },
-        "publish": {
-            "provider": "github",
-            "owner": "Zagrios"
-        },
-        "fileAssociations": [
-            {
-                "ext": "bplist",
-                "description": "Beat Saber Playlist (BSManager)",
-                "icon": "./assets/bsm_file.ico",
-                "role": "Viewer"
-            }
-        ]
+        }
     },
     "repository": {
         "type": "git",
@@ -129,6 +78,7 @@
         "@types/color": "^3.0.3",
         "@types/crypto-js": "^4.2.1",
         "@types/dateformat": "^5.0.0",
+        "@types/global-agent": "^2.1.3",
         "@types/got": "^9.6.12",
         "@types/jest": "^29.5.11",
         "@types/node": "22.8.6",
@@ -222,6 +172,7 @@
         "format-duration": "^3.0.2",
         "framer-motion": "^11.2.6",
         "fs-extra": "^11.2.0",
+        "global-agent": "^3.0.0",
         "got": "^14.4.4",
         "history": "^5.3.0",
         "is-elevated": "^4.0.0",

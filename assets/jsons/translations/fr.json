@@ -8,6 +8,10 @@
         "maps": "Maps",
         "playlists": "Playlists",
         "models": "Modèles",
+        "avatars": "Avatars",
+        "sabers": "Sabres",
+        "platforms": "Plateformes",
+        "blocks": "Blocs",
         "cancel": "Annuler",
         "delete": "Supprimer",
         "accept": "Accepter",
@@ -19,7 +23,13 @@
         "choose-folder": "Choisir un dossier",
         "unknown": "Une erreur inconnue s'est produite ¯\\_(ツ)_/¯",
         "warning": "Attention",
-        "continue": "Continuer"
+        "continue": "Continuer",
+        "shared": "Partagé",
+        "pin": "Épingler",
+        "unpin": "Désépingler"
+    },
+    "title-bar": {
+        "outdated": "obsolète"
     },
     "nav-bar": {
         "add-version": "Ajouter une version",
@@ -40,9 +50,15 @@
                 "debug-description": "Active la fenêtre de log pour IPA. Cela affichera la console de débogage utilisée par les mods.",
                 "outdated-tippy": "Cette version est obsolète et certains mods ou fonctionnalités peuvent ne plus fonctionner comme prévu. Préférez utiliser la version recommandée ({recommendedVersion}) de Beat Saber pour profiter des dernières fonctionnalités et correctifs.",
                 "advanced-launch": {
-                    "button": "Lancement avancé",
+                    "button": "Options de lancement",
                     "placeholder": "Arguments supplémentaires ex: --revert; --nowait"
-                }
+                },
+                "skipsteam": "Ignorer Steam",
+                "skipsteam-description": "Empêche Steam de s'ouvrir automatiquement avec Beat Saber, activez-le si vous utilisez un autre runtime VR comme WiVRn ou Monado avec lequel SteamVR pourrait interférer.",
+                "map-editor": "Éditeur de map",
+                "map-editor-description": "Lance l'éditeur officiel de map de Beat Saber au lieu du jeu.",
+                "proton-logs": "Journaux de Proton",
+                "proton-logs-description": "Active l'enregistrement des journaux Proton pour cette installation de Beat Saber sur \"{versionPath}\"."
             },
             "maps": {
                 "search-bar": {
@@ -106,6 +122,7 @@
                         "latest": "Récent",
                         "description": "Description",
                         "dropdown": {
+                            "import-mods": "Importer des mods",
                             "uninstall-all": "Tout désinstaller",
                             "unselect-all": "Tout désélectionner"
                         }
@@ -116,6 +133,10 @@
                         "title": "Mods déjà installées",
                         "description": "Tous les mods séléctionnées sont déjà installées"
                     }
+                },
+                "drop-zone": {
+                    "text": "Importez vos mods",
+                    "subtext": "Déposez vos fichiers \"zip\" ou \"dll\" ici pour les importer"
                 }
             },
             "dropdown": {
@@ -129,7 +150,7 @@
             }
         },
         "available-versions": {
-            "title": "Choisis une version",
+            "title": "Télécharger une version",
             "steam-release": "Notes de version",
             "dropdown": {
                 "refresh": "Actualiser les versions",
@@ -188,6 +209,7 @@
                     "en-US": "English, US",
                     "fr-FR": "Français",
                     "es-ES": "Español",
+                    "it-IT": "Italiano",
                     "de-DE": "Deutsch",
                     "ru-RU": "Русский",
                     "zh-CN": "简体中文",
@@ -199,6 +221,7 @@
                         "en-US": "Anglais, États-Unis",
                         "fr-FR": "Français",
                         "es-ES": "Espagnol",
+                        "it-IT": "Italien",
                         "de-DE": "Allemand",
                         "ru-RU": "Russe",
                         "zh-CN": "Chinois simplifié",
@@ -258,6 +281,13 @@
                     "error-notification": {
                         "message": "Une erreur s'est produite, impossible de changer les paramètres des liens symboliques."
                     }
+                },
+                "use-system-proxy": {
+                    "title": "Utiliser le proxy du système",
+                    "description": "BSManager effectuera des requêtes réseau via votre proxy système.",
+                    "error-notification": {
+                        "message": "Une erreur est survenue, impossible de modifier les paramètres du proxy système."
+                    }
                 }
             }
         }
@@ -308,6 +338,8 @@
                     "msg": {
                         "401": "Steam ne semble pas vouloir nous laisser télécharger Beat Saber 😢",
                         "404": "Impossible de contacter les serveurs de Steam.",
+                        "ExeNotFoundWindows": "\"DepotDownloader.exe\" est manquant. Veuillez vérifier si l'exécutable est mis en quarantaine par votre antivirus.",
+                        "ExeNotFoundLinux": "L'exécutable \"DepotDownloader\" est manquanto.",
                         "Password": "Le mot de passe est invalide.",
                         "InvalidCredentials": "Identifiants de connexion invalides, connexion non approuvée, ou trop de tentatives de connexion.",
                         "NoManifest": "Aucun manifest n'a été trouvé.",
@@ -341,8 +373,8 @@
                         "UNABLE_TO_GET_MANIFEST": "Impossible d'obtenir le manifest nécessaire au téléchargement.",
                         "VERIFY_INTEGRITY_FAILED": "Une erreur c'est produite lors de la vérification des fichiers.",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "Certains fichiers n'ont pas pu être téléchargés.",
-                        "OCULUS_LOGIN_TIMED_OUT": "Le Token de connexion à mis trop de temps à être récupéré.",
-                        "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER": "La fenêtre de connexion à Meta a été fermée.",
+                        "META_LOGIN_TIMED_OUT": "Le Token de connexion à mis trop de temps à être récupéré.",
+                        "META_LOGIN_WINDOW_CLOSED_BY_USER": "La fenêtre de connexion à Meta a été fermée.",
                         "NO_META_AUTH_TOKEN": "Impossible de récupérer le token de connexion à Meta nécessaire au téléchargement.",
                         "UNKNOWN_ERROR": "Une erreur inconnue s'est produite."
                     }
@@ -429,11 +461,13 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "Lancement...🚀",
-                    "STEAM_LAUNCHING": "Steam se lance !"
+                    "STEAM_LAUNCHING": "Steam se lance !",
+                    "SKIPPING_STEAM_LAUNCH": "Sauter le lancement de Steam"
                 },
                 "msg": {
                     "BS_LAUNCHING": "N'oublie pas de t'échauffer 😉",
-                    "STEAM_LAUNCHING": "Beat Saber se lancera automatiquement après Steam."
+                    "STEAM_LAUNCHING": "Beat Saber se lancera automatiquement après Steam.",
+                    "SKIPPING_STEAM_LAUNCH": "J'espère que vous savez ce que vous faites :)"
                 }
             },
             "errors": {
@@ -526,6 +560,17 @@
                         "no-mods": "Aucun mod n'est installé dans dans cette version 😑"
                     }
                 }
+            },
+            "import-mod": {
+                "titles": {
+                    "success": "Importation des mods terminée",
+                    "error": "Une erreur est survenue lors de l'importation des mods"
+                },
+                "msgs": {
+                    "success": "Mods importés avec succès.",
+                    "some-success": "Certains mods ont été importés avec succès.",
+                    "no-dlls": "Le(s) fichier(s) ne contient(ent) aucun fichier \"dll\"."
+                }
             }
         },
         "maps": {
@@ -582,6 +627,10 @@
                     "ENOSPC": "Le disque est plein, faites de la place et réessayez.",
                     "UNKNOWN_ERROR": "Une erreur inconnue est survenue lors de la liaison du dossier."
                 }
+            },
+            "adding-error": {
+                "title": "L'ajout du dossier partagé a échoué",
+                "msg": "Vous ne pouvez pas ajouter \"{folder}\" aux dossiers partagés."
             }
 
         },
@@ -738,30 +787,28 @@
                     }
                 }
             },
-            "link-maps": {
-                "title": "Lier les maps",
-                "desc": "La liaison des maps permet de partager les maps entre toute les version. Une fois liée, cette version profitera des maps partagées",
-                "info": "L'ajout et la suppression de maps sera également partagé",
-                "keep-maps": {
-                    "label": "Conserver les maps",
-                    "title": "Conserver les maps déplacera les maps de la version actuelle dans le dossier des maps partagées. Dans le cas contraire elles seront perdues"
-                },
-                "valid-btn": "Lier les maps"
-            },
-            "unlink-maps": {
-                "title": "Délier les maps",
-                "desc": "Attention, délier les maps ne permettra plus l'utilisation des maps paratagées pour cette version.",
-                "keep-maps": {
-                    "label": "Conserver les maps",
-                    "title": "Conserver les maps créera une copie des maps partagées pour la version actuelle. Dans le cas contraire, aucune map ne sera conservée pour cette version."
-                },
-                "valid-btn": "Délier les maps"
-            },
             "delete-duplicate-maps": {
                 "title": "Supprimer les maps ?",
                 "desc": "Seule la map \"{map}\" est en double. Es-tu sûr de vouloir la supprimer ?",
                 "desc-plural": "{nb} maps en double ont été trouvées. Es-tu sûr de vouloir les supprimer ?"
             }
+        },
+        "link-contents": {
+            "title": "Lier les {contentType}",
+            "p-1": "Lier les {contentType} permet de partager les {contentType} entre toutes les versions ayant cette fonctionnalité activée. Une fois liés, cette version bénéficiera des {contentType} partagés.",
+            "p-2": "Pour profiter de la fonctionnalité de liaison, les {itemsHtml} seront déplacés dans le dossier {sharedHtml}. Ensuite, un lien symbolique pointant vers le dossier partagé des {contentType} remplacera votre dossier original des {contentType}.",
+            "warning": "Veuillez noter que toute modification affectant les {contentType} affectera également toutes les versions ayant cette fonctionnalité activée.",
+            "what-is-a-symbolic-link": "Qu'est-ce qu'un lien symbolique ?",
+            "i-need-help": "J'ai besoin d'aide",
+            "valid-btn": "Lier les {contentType}"
+        },
+        "unlink-contents": {
+            "title": "Délier les {contentType}",
+            "p-1": "Attention, délier les {contentType} désactivera l'utilisation des {contentType} partagés pour cette version, jusqu'à ce qu'elle soit réactivée.",
+            "p-2": "Pour délier vos {contentType}, le lien symbolique pointant vers le dossier {sharedHtml} sera supprimé. Ensuite, les {contentType} dans le dossier partagé seront copiés dans le dossier {itemsHtml} de votre version de Beat Saber.",
+            "do-not-copy-contents": "Ne pas copier les {contentType}",
+            "do-not-copy-contents-tip": "Si activé, les {contentType} dans le dossier partagé ne seront pas copiés dans votre version de Beat Saber. En conséquence, aucun(e)s {contentType} ne restera dans votre version de Beat Saber après la suppression de la liaison.",
+            "valid-btn": "Délier les {contentType}"
         },
         "download-maps": {
             "search-btn": "Rechercher",
@@ -784,8 +831,13 @@
                 "add-folder": "Ajouter un dossier",
                 "link-folder": "Lier le dossier",
                 "unlink-folder": "Délier le dossier",
-                "link-all": "Tout lier"
+                "link-all": "Tout lier",
+                "remove-from-the-list": "Retirer de la liste"
             }
+        },
+        "adding-shared-folder": {
+            "title": "Ajout d'un dossier partagé",
+            "description": "Vous pourriez rencontrer des problèmes lors de la liaison du dossier \"{folder}\". Êtes-vous sûr de vouloir l'ajouter ?"
         },
         "create-launch-shortcut": {
             "title": "Créer un raccourci",
@@ -805,13 +857,12 @@
             "stay": "Se souvenir de moi",
             "connect-to-meta": "Se connecter à Meta"
         },
-        "original-version-backup-oculus": {
-            "title": "Attention",
-            "body": {
-                "must-be-installed-once": "Vous devez avoir Beat Saber installé depuis le Oculus Store sur cet appareil, sinon Beat Saber se fermera automatiquement après le lancement.",
-                "will-backup": "Afin de lancer cette version, le dossier d'installation original de Beat Saber se trouvant dans votre bibliothèque Oculus va être renommé et sera automatiquement restauré à l'arrêt de Beat Saber."
-            },
-            "not-remind-me": "Ne plus me rappeler",
+        "enable-oculus-sideloaded-apps": {
+            "title": "Activer le sideloading",
+            "info-1": "Pour lancer Beat Saber, la possibilité d'exécuter des applications en sideloading doit être activée. BSManager demandera les droits administrateur pour activer cette fonctionnalité automatiquement.",
+            "info-2": "La fonctionnalité de sideloading permet de lancer des jeux situés en dehors de votre dossier de bibliothèque Oculus.",
+            "info-3": "Une fois le sideloading activé, la fonctionnalité restera active et vous ne serez plus invité à l’activer.",
+            "i-want-to-do-it-myself": "Je veux le faire moi-même",
             "understood": "J'ai compris"
         },
         "enter-meta-token": {
@@ -866,7 +917,8 @@
             "tags": "tags",
             "specificities": "général",
             "requirements": "requis",
-            "exclude": "exclure"
+            "exclude": "exclure",
+            "leaderboard": "tableau des leaders"
         },
         "map-types": {
             "accuracy": "précision",
@@ -917,10 +969,15 @@
         },
         "map-specificities": {
             "automapper": "IA",
-            "ranked": "classée",
             "curated": "recommandée",
             "verified": "vérifiée",
             "fullSpread": "panel complet"
+        },
+        "map-leaderboard": {
+            "All": "Tout",
+            "Ranked": "Classée",
+            "BeatLeader": "BeatLeader",
+            "ScoreSaber": "ScoreSaber"
         },
         "map-excludes": {
             "installed": "installé"
@@ -1009,86 +1066,6 @@
                 "no-models": "Aucun modèles trouvés.",
                 "no-internet": "Pas de connexion internet.",
                 "error-occured": "Une erreur est survenue, réessaye plus tard."
-            },
-            "link-models": {
-                "avatar": {
-                    "title": "Lier les avatars",
-                    "desc": "La liaison des avatars permet de partager les avatars entre toutes les version. Une fois liée, cette version profitera des avatars partagés",
-                    "info": "L'ajout et la suppression d'avatars seront également partagés",
-                    "keep-models": {
-                        "label": "Conserver les avatars",
-                        "title": "Conserver les avatars déplacera les avatars de la version actuelle dans le dossier des avatars partagés. Dans le cas contraire ils seront perdus"
-                    },
-                    "valid-btn": "Lier les avatars"
-                },
-                "saber": {
-                    "title": "Lier les sabres",
-                    "desc": "La liaison des sabres permet de partager les sabres entre toutes les version. Une fois liée, cette version profitera des sabres partagés",
-                    "info": "L'ajout et la suppression de sabres seront également partagés",
-                    "keep-models": {
-                        "label": "Conserver les sabres",
-                        "title": "Conserver les sabres déplacera les sabres de la version actuelle dans le dossier des sabres partagés. Dans le cas contraire ils seront perdus"
-                    },
-                    "valid-btn": "Lier les sabres"
-                },
-                "platform": {
-                    "title": "Lier les plateformes",
-                    "desc": "La liaison des plateformes permet de partager les plateformes entre toutes les version. Une fois liée, cette version profitera des plateformes partagées",
-                    "info": "L'ajout et la suppression de plateformes seront également partagés",
-                    "keep-models": {
-                        "label": "Conserver les plateformes",
-                        "title": "Conserver les plateformes déplacera les plateformes de la version actuelle dans le dossier des plateformes partagées. Dans le cas contraire ils seront perdus"
-                    },
-                    "valid-btn": "Lier les plateformes"
-                },
-                "bloq": {
-                    "title": "Lier les bloqs",
-                    "desc": "La liaison des bloqs permet de partager les bloqs entre toutes les version. Une fois liée, cette version profitera des bloqs partagés",
-                    "info": "L'ajout et la suppression de bloqs seront également partagés",
-                    "keep-models": {
-                        "label": "Conserver les bloqs",
-                        "title": "Conserver les bloqs déplacera les bloqs de la version actuelle dans le dossier des bloqs partagés. Dans le cas contraire ils seront perdus"
-                    },
-                    "valid-btn": "Lier les bloqs"
-                }
-            },
-            "unlink-models": {
-                "avatar": {
-                    "title": "Délier les avatars",
-                    "desc": "Attention, délier les avatars ne permettra plus l'utilisation des avatars paratagés pour cette version.",
-                    "keep-models": {
-                        "label": "Conserver les avatars",
-                        "title": "Conserver les avatars créera une copie des avatars partagés pour la version actuelle. Dans le cas contraire, aucun avatar ne sera conservé pour cette version."
-                    },
-                    "valid-btn": "Délier les avatars"
-                },
-                "saber": {
-                    "title": "Délier les sabres",
-                    "desc": "Attention, délier les sabres ne permettra plus l'utilisation des sabres paratagés pour cette version.",
-                    "keep-models": {
-                        "label": "Conserver les sabres",
-                        "title": "Conserver les sabres créera une copie des sabres partagés pour la version actuelle. Dans le cas contraire, aucun sabre ne sera conservé pour cette version."
-                    },
-                    "valid-btn": "Délier les sabres"
-                },
-                "platform": {
-                    "title": "Délier les plateformes",
-                    "desc": "Attention, délier les plateformes ne permettra plus l'utilisation des plateformes paratagées pour cette version.",
-                    "keep-models": {
-                        "label": "Conserver les plateformes",
-                        "title": "Conserver les plateformes créera une copie des plateformes partagées pour la version actuelle. Dans le cas contraire, aucune plateforme ne sera conservée pour cette version."
-                    },
-                    "valid-btn": "Délier les plateformes"
-                },
-                "bloq": {
-                    "title": "Délier les bloqs",
-                    "desc": "Attention, délier les bloqs ne permettra plus l'utilisation des bloqs paratagés pour cette version.",
-                    "keep-models": {
-                        "label": "Conserver les bloqs",
-                        "title": "Conserver les bloqs créera une copie des bloqs partagés pour la version actuelle. Dans le cas contraire, aucun bloq ne sera conservé pour cette version."
-                    },
-                    "valid-btn": "Délier les bloqs"
-                }
             }
         },
         "notifications": {
@@ -1165,14 +1142,6 @@
         "stop-download": "Arrêter le téléchargement",
         "cancel-download": "Annuler le téléchargement",
         "open-file": "Ouvrir le fichier",
-        "link-playlists": "Lier les playlists",
-        "link-playlist-desc": "La liaison des playlists permet de partager les playlists entre toute les version. Une fois liée, cette version profitera des playlists partagées",
-        "link-playlist-info": "L'ajout et la suppression de playlists sera également partagé",
-        "keep-playlists": "Conserver les playlists",
-        "keep-playlists-tip": "Conserver les playlists déplacera les playlists de la version actuelle dans le dossier des playlists partagées. Dans le cas contraire elles seront perdues",
-        "unlink-playlists": "Délier les playlists",
-        "unlink-playlist-desc": "Attention, délier les playlists ne permettra plus l'utilisation des playlists paratagées pour cette version.",
-        "unlink-keep-playlists-tip": "Conserver les playlists créera une copie des playlists partagées pour la version actuelle. Dans le cas contraire, aucune playlist ne sera conservée pour cette version.",
         "delete-playlist-ask": "Supprimer la playlist ?",
         "delete-playlists-ask": "Supprimer les playlists ?",
         "delete-playlist-desc": "Es-tu sur de vouloir supprimer la playlist \"{playlistTitle}\" ?",

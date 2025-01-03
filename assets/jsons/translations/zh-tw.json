@@ -8,6 +8,10 @@
         "maps": "譜面",
         "playlists": "歌單",
         "models": "模型",
+        "avatars": "頭像",
+        "sabers": "光劍",
+        "platforms": "平台",
+        "blocks": "方塊",
         "cancel": "取消",
         "delete": "刪除",
         "accept": "接受",
@@ -19,7 +23,13 @@
         "choose-folder": "選擇文件夾",
         "unknown": "發生了一個錯誤 ¯\\_(ツ)_/¯",
         "warning": "警告",
-        "continue": "繼續"
+        "continue": "繼續",
+        "shared": "共享",
+        "pin": "固定",
+        "unpin": "取消固定"
+    },
+    "title-bar": {
+        "outdated": "過時"
     },
     "nav-bar": {
         "add-version": "新增版本",
@@ -40,9 +50,15 @@
                 "debug-description": "為 IPA 啟用輸出日誌窗口。 會顯示所用 Mod 的 debug 輸出",
                 "outdated-tippy": "此版本已過時，某些模組或功能可能無法按預期運作。建議使用推薦版本的 Beat Saber ({recommendedVersion})，以享受最新功能和修復。",
                 "advanced-launch": {
-                    "button": "高級啟動",
+                    "button": "啟動選項",
                     "placeholder": "額外啟動參數，例如: --revert; --nowait"
-                }
+                },
+                "skipsteam": "跳過 Steam",
+                "skipsteam-description": "防止 Steam 與 Beat Saber 自動打開，如果您使用的是其他 VR 執行時，如 WiVRn 或 Monado，SteamVR 可能會干擾，請啟用此選項。",
+                "map-editor": "地圖編輯器",
+                "map-editor-description": "啟動官方的 Beat Saber 地圖編輯器，而不是遊戲。",
+                "proton-logs": "Proton紀錄",
+                "proton-logs-description": "啟用此 Beat Saber 安裝的質子紀錄，路徑為\"{versionPath}\"。"
             },
             "maps": {
                 "search-bar": {
@@ -106,6 +122,7 @@
                         "latest": "最新",
                         "description": "描述",
                         "dropdown": {
+                            "import-mods": "導入模組",
                             "uninstall-all": "全部移除",
                             "unselect-all": "取消全選"
                         }
@@ -116,6 +133,10 @@
                         "title": "模組已安裝",
                         "description": "所有選中的模組已經安裝"
                     }
+                },
+                "drop-zone": {
+                    "text": "匯入你的模組",
+                    "subtext": "將你的 \"zip\" 或 \"dll\" 檔案拖放到這裡以進行匯入"
                 }
             },
             "dropdown": {
@@ -129,7 +150,7 @@
             }
         },
         "available-versions": {
-            "title": "選擇版本",
+            "title": "下載一個版本",
             "steam-release": "發布頁面",
             "dropdown": {
                 "refresh": "刷新版本",
@@ -188,6 +209,7 @@
                     "en-US": "English, US",
                     "fr-FR": "Français",
                     "es-ES": "Español",
+                    "it-IT": "Italiano",
                     "de-DE": "Deutsch",
                     "ru-RU": "Русский",
                     "zh-CN": "簡體中文",
@@ -199,6 +221,7 @@
                         "en-US": "美式英語",
                         "fr-FR": "法語",
                         "es-ES": "西班牙語",
+                        "it-IT": "義大利語",
                         "de-DE": "德語",
                         "ru-RU": "俄語",
                         "zh-CN": "簡體中文",
@@ -258,6 +281,13 @@
                     "error-notification": {
                         "message": "發生錯誤，無法更改符號鏈接設置。"
                     }
+                },
+                "use-system-proxy": {
+                    "title": "使用系統代理",
+                    "description": "BSManager將通過您的系統代理發送網絡請求。",
+                    "error-notification": {
+                        "message": "發生錯誤，無法更改系統代理設置。"
+                    }
                 }
             }
         }
@@ -308,6 +338,8 @@
                     "msg": {
                         "401": "Steam 似乎不想讓我們下載 Beat Saber😢",
                         "404": "無法聯繫 Steam 伺服器。",
+                        "ExeNotFoundWindows": "\"DepotDownloader.exe\" 缺失。請檢查執行檔是否被您的防毒軟體隔離。",
+                        "ExeNotFoundLinux": "\"DepotDownloader\" 的可執行檔缺失。",
                         "Password": "密碼無效",
                         "InvalidCredentials": "登錄憑據無效、連接未經批准或登錄嘗試次數過多。",
                         "NoManifest": "未找到清單",
@@ -341,8 +373,8 @@
                         "UNABLE_TO_GET_MANIFEST": "無法獲取下載所需的清單。",
                         "VERIFY_INTEGRITY_FAILED": "文件驗證過程中發生錯誤。",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "一些文件下載失敗。",
-                        "OCULUS_LOGIN_TIMED_OUT": "獲取登錄令牌用時過長。",
-                        "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER": "Meta 登錄窗口被關閉。",
+                        "META_LOGIN_TIMED_OUT": "獲取登錄令牌用時過長。",
+                        "META_LOGIN_WINDOW_CLOSED_BY_USER": "Meta 登錄窗口被關閉。",
                         "NO_META_AUTH_TOKEN": "無法獲取下載所需的 Meta 登錄令牌。",
                         "UNKNOWN_ERROR": "發生未知錯誤。"
                     }
@@ -429,11 +461,13 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "啟動中...🚀",
-                    "STEAM_LAUNCHING": "Steam 正在啟動！"
+                    "STEAM_LAUNCHING": "Steam 正在啟動！",
+                    "SKIPPING_STEAM_LAUNCH": "跳過 Steam 啟動"
                 },
                 "msg": {
                     "BS_LAUNCHING": "別忘了熱身哦 😉",
-                    "STEAM_LAUNCHING": "Beat Saber 會在 Steam 啟動後自動啟動。"
+                    "STEAM_LAUNCHING": "Beat Saber 會在 Steam 啟動後自動啟動。",
+                    "SKIPPING_STEAM_LAUNCH": "希望你知道自己在做什麼 :)"
                 }
             },
             "errors": {
@@ -526,6 +560,17 @@
                         "no-mods": "該版本中沒有安裝 Mod 😑"
                     }
                 }
+            },
+            "import-mod": {
+                "titles": {
+                    "success": "模組匯入完成",
+                    "error": "模組匯入過程中發生錯誤"
+                },
+                "msgs": {
+                    "success": "模組成功匯入。",
+                    "some-success": "一些模組已成功匯入。",
+                    "no-dlls": "檔案中不包含任何 \"dll\" 檔案。"
+                }
             }
         },
         "maps": {
@@ -582,6 +627,10 @@
                     "ENOSPC": "磁碟已滿，請騰出空間後再試。",
                     "UNKNOWN_ERROR": "連結文件夾時發生未知錯誤。"
                 }
+            },
+            "adding-error": {
+                "title": "添加共享文件夹失败",
+                "msg": "您无法将\"{folder}\"添加到共享文件夹。"
             }
         },
         "create-launch-shortcut": {
@@ -737,30 +786,28 @@
                     }
                 }
             },
-            "link-maps": {
-                "title": "關聯譜面",
-                "desc": "關聯譜面可以在所有啟用此功能的版本之間共享譜面。一旦關聯，該版本將受益於共享譜面。",
-                "info": "新增和刪除的譜面也將被共享",
-                "keep-maps": {
-                    "label": "保留譜面",
-                    "title": "保留譜面將會把當前版本的所有譜面複製到共享譜面文件夾。否則，該版本的譜面將不會被保留，它們將遺失。"
-                },
-                "valid-btn": "關聯譜面"
-            },
-            "unlink-maps": {
-                "title": "取消關聯譜面",
-                "desc": "請注意，取消關聯譜面後該版本將無法使用共享譜面，直到重新啟用。",
-                "keep-maps": {
-                    "label": "保留譜面",
-                    "title": "保留譜面將會在取消關聯後把共享文件夾的所有譜面複製到當前版本。如果此項被禁用，譜面也不會遺失。"
-                },
-                "valid-btn": "取消關聯譜面"
-            },
             "delete-duplicate-maps": {
                 "title": "刪除地圖",
                 "desc": "只有地圖「{map}」是重複的。你確定要刪除它嗎？",
                 "desc-plural": "發現了 {nb} 個重複的地圖。你確定要刪除它們嗎？"
             }
+        },
+        "link-contents": {
+            "title": "連結{contentType}",
+            "p-1": "連結{contentType}允許在啟用此功能的所有版本之間共享{contentType}。連結後，該版本將受益於共享的{contentType}。",
+            "p-2": "為了使用連結功能，您的所有{itemsHtml}將被移動到{sharedHtml}資料夾。之後，一個指向共享{contentType}資料夾的符號連結將取代您原本的{contentType}資料夾。",
+            "warning": "請注意，任何影響{contentType}的更改也會影響所有啟用此功能的版本。",
+            "what-is-a-symbolic-link": "什麼是符號連結？",
+            "i-need-help": "我需要幫助",
+            "valid-btn": "連結{contentType}"
+        },
+        "unlink-contents": {
+            "title": "取消連結{contentType}",
+            "p-1": "注意：取消連結{contentType}將會停用此版本中共享的{contentType}功能，直到該功能再次啟用。",
+            "p-2": "為了取消連結您的{contentType}，指向{sharedHtml}的符號連結將被移除。之後，共享資料夾中的所有{contentType}將被複製到您Beat Saber版本的{itemsHtml}資料夾中。",
+            "do-not-copy-contents": "不要複製{contentType}",
+            "do-not-copy-contents-tip": "如果啟用，共享資料夾中的{contentType}將不會被複製到您的Beat Saber版本中。結果是，在取消連結後，您的Beat Saber版本中將不再保留任何{contentType}。",
+            "valid-btn": "取消連結{contentType}"
         },
         "download-maps": {
             "search-btn": "搜尋",
@@ -783,8 +830,13 @@
                 "add-folder": "新增文件夾",
                 "link-folder": "關聯文件夾",
                 "unlink-folder": "取消關聯文件夾",
-                "link-all": "關聯所有"
+                "link-all": "關聯所有",
+                "remove-from-the-list": "從列表中移除"
             }
+        },
+        "adding-shared-folder": {
+            "title": "添加共享文件夹",
+            "description": "链接\"{folder}\"文件夹时可能会遇到问题。您确定要添加它吗？"
         },
         "create-launch-shortcut": {
             "title": "創建捷徑",
@@ -804,14 +856,13 @@
             "stay": "記住我",
             "connect-to-meta": "連接到 Meta"
         },
-        "original-version-backup-oculus": {
-            "title": "警告",
-            "body": {
-                "must-be-installed-once": "您必須在此設備上從Oculus商店安裝Beat Saber，否則Beat Saber將在啟動後自動關閉。",
-                "will-backup": "為了啟動這個版本，位於您的Oculus庫中的Beat Saber的原始安裝文件夾將被重新命名，並且在Beat Saber關閉時會自動恢復。"
-            },
-            "not-remind-me": "不再提醒我",
-            "understood": "明白了"
+        "enable-oculus-sideloaded-apps": {
+            "title": "啟用旁載",
+            "info-1": "為了啟動 Beat Saber，必須啟用執行旁載應用程式的功能。BSManager 將請求管理員權限以自動啟用此功能。",
+            "info-2": "旁載功能允許啟動位於 Oculus 資料庫資料夾之外的遊戲。",
+            "info-3": "啟用 sideloading 後，此功能將保持啟用狀態，您將不再被提示啟用它。",
+            "i-want-to-do-it-myself": "我想自己完成",
+            "understood": "了解"
         },
         "enter-meta-token": {
             "title": "Oculus令牌",
@@ -865,7 +916,8 @@
             "tags": "標籤",
             "specificities": "general",
             "requirements": "要求",
-            "exclude": "排除"
+            "exclude": "排除",
+            "leaderboard": "排行榜"
         },
         "map-types": {
             "accuracy": "精確度",
@@ -916,10 +968,15 @@
         },
         "map-specificities": {
             "automapper": "AI",
-            "ranked": "Ranked",
             "curated": "Curated",
             "verified": "Verified",
             "fullSpread": "Full spread"
+        },
+        "map-leaderboard": {
+            "All": "所有",
+            "Ranked": "排名的",
+            "BeatLeader": "BeatLeader",
+            "ScoreSaber": "ScoreSaber"
         },
         "map-excludes": {
             "installed": "已安裝"
@@ -1008,86 +1065,6 @@
                 "no-models": "未找到模型",
                 "no-internet": "無網路連接",
                 "error-occured": "發生了一個錯誤，稍後重試。"
-            },
-            "link-models": {
-                "avatar": {
-                    "title": "關聯 Avatar",
-                    "desc": "關聯 Avatar 允許在所有啟用此功能的版本之間共享 Avatar。一旦關聯，該版本將受益於共享 Avatar。",
-                    "info": "對 Avatar 的新增和刪除也將被共享",
-                    "keep-models": {
-                        "label": "保留 Avatar",
-                        "title": "保留 Avatar 將會把當前版本的所有 Avatar 複製到共享 Avatar文件夾。否則，該版本的 Avatar將不會被保留，它們將遺失。"
-                    },
-                    "valid-btn": "關聯 Avatar "
-                },
-                "saber": {
-                    "title": "關聯光劍",
-                    "desc": "關聯光劍允許在所有啟用此功能的版本之間共享光劍。一旦關聯，該版本將受益於共享光劍。",
-                    "info": "對光劍的新增和刪除也將被共享",
-                    "keep-models": {
-                        "label": "保留光劍",
-                        "title": "保留光劍將會把當前版本的所有光劍複製到共享光劍文件夾。否則，該版本的光劍將不會被保留，它們將遺失。"
-                    },
-                    "valid-btn": "關聯光劍"
-                },
-                "platform": {
-                    "title": "關聯平台",
-                    "desc": "關聯平台允許在所有啟用此功能的版本之間共享平台。一旦關聯，該版本將受益於共享平台。",
-                    "info": "對平台的新增和刪除也將被共享",
-                    "keep-models": {
-                        "label": "保留平台",
-                        "title": "保留平台將會把當前版本的所有平台複製到共享平台文件夾。否則，該版本的平台將不會被保留，它們將遺失。"
-                    },
-                    "valid-btn": "關聯平台"
-                },
-                "bloq": {
-                    "title": "關聯方塊",
-                    "desc": "關聯方塊允許在所有啟用此功能的版本之間共享方塊。一旦關聯，該版本將受益於共享方塊。",
-                    "info": "對方塊的新增和刪除也將被共享",
-                    "keep-models": {
-                        "label": "保留方塊",
-                        "title": "保留方塊將會把當前版本的所有方塊複製到共享方塊文件夾。否則，該版本的方塊將不會被保留，它們將遺失。"
-                    },
-                    "valid-btn": "關聯方塊"
-                }
-            },
-            "unlink-models": {
-                "avatar": {
-                    "title": "取消關聯 Avatar",
-                    "desc": "請注意，取消關聯 Avatar 將禁用該版本的共享 Avatar 使用，直到重新啟用。",
-                    "keep-models": {
-                        "label": "保留 Avatar",
-                        "title": "保留 Avatar 將會在取消關聯後把共享文件夾的所有 Avatar 複製到當前版本。如果此項被禁用，Avatar 將不會遺失。"
-                    },
-                    "valid-btn": "取消關聯 Avatar"
-                },
-                "saber": {
-                    "title": "取消關聯光劍",
-                    "desc": "請注意，取消關聯光劍將禁用該版本的共享光劍使用，直到重新啟用。",
-                    "keep-models": {
-                        "label": "保留光劍",
-                        "title": "保留光劍將會在取消關聯後把共享文件夾的所有光劍複製到當前版本。如果此項被禁用，光劍將不會遺失。"
-                    },
-                    "valid-btn": "取消關聯光劍"
-                },
-                "platform": {
-                    "title": "取消關聯平台",
-                    "desc": "請注意，取消關聯平台將禁用該版本的共享平台使用，直到重新啟用。",
-                    "keep-models": {
-                        "label": "保留平台",
-                        "title": "保留平台將會在取消關聯後把共享文件夾的所有平台複製到當前版本。如果此項被禁用，平台將不會遺失。"
-                    },
-                    "valid-btn": "取消關聯平台"
-                },
-                "bloq": {
-                    "title": "取消關聯方塊",
-                    "desc": "請注意，取消關聯方塊將禁用該版本的共享方塊使用，直到重新啟用。",
-                    "keep-models": {
-                        "label": "保留方塊",
-                        "title": "保留方塊將會在取消關聯後把共享文件夾的所有方塊複製到當前版本。如果此項被禁用，方塊將不會遺失。"
-                    },
-                    "valid-btn": "取消關聯方塊"
-                }
             }
         },
         "notifications": {
@@ -1164,14 +1141,6 @@
         "stop-download": "停止下載",
         "cancel-download": "取消下載",
         "open-file": "開啟檔案",
-        "link-playlists": "連結播放清單",
-        "link-playlist-desc": "連結播放清單允許在所有版本之間共享播放清單。一旦連結，此版本將受益於共享播放清單",
-        "link-playlist-info": "新增和刪除播放清單也將被共享",
-        "keep-playlists": "保留播放清單",
-        "keep-playlists-tip": "保留播放清單將把當前版本的播放清單移動到共享播放清單資料夾。否則，它們將遺失",
-        "unlink-playlists": "取消連結播放清單",
-        "unlink-playlist-desc": "警告，取消連結播放清單將不再允許此版本使用共享播放清單。",
-        "unlink-keep-playlists-tip": "保留播放清單將為當前版本建立共享播放清單的副本。否則，此版本將不保留任何播放清單。",
         "delete-playlist-ask": "刪除播放清單？",
         "delete-playlists-ask": "刪除播放清單？",
         "delete-playlist-desc": "您確定要刪除播放清單 \"{playlistTitle}\" 嗎？",

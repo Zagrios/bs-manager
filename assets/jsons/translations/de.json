@@ -8,6 +8,10 @@
         "maps": "Maps",
         "playlists": "Playlists",
         "models": "Modelle",
+        "avatars": "Avatare",
+        "sabers": "Säbel",
+        "platforms": "Plattformen",
+        "blocks": "Blöcke",
         "cancel": "Abbrechen",
         "delete": "Löschen",
         "accept": "Akzeptieren",
@@ -19,7 +23,13 @@
         "choose-folder": "Ordner Wählen",
         "unknown": "Ein unbekannter Fehler ist aufgetreten ¯\\_(ツ)_/¯",
         "warning": "Achtung",
-        "continue": "Weiter"
+        "continue": "Weiter",
+        "shared": "Geteilt",
+        "pin": "Anheften",
+        "unpin": "Lösen"
+    },
+    "title-bar": {
+        "outdated": "veraltet"
     },
     "nav-bar": {
         "add-version": "Version hinzufügen",
@@ -40,9 +50,15 @@
                 "debug-description": "Aktiviert das Ausgabeprotokollfenster für IPA. Dies zeigt die Debug-Konsole, welche die Mods verwenden.",
                 "outdated-tippy": "Diese Version ist veraltet, und einige Mods oder Funktionen funktionieren möglicherweise nicht wie erwartet. Es wird empfohlen, die empfohlene Version ({recommendedVersion}) von Beat Saber zu verwenden, um die neuesten Funktionen und Fehlerbehebungen zu genießen.",
                 "advanced-launch": {
-                    "button": "Erweiterter Start",
+                    "button": "Startoptionen",
                     "placeholder": "Weitere Argumente, bspw: --revert; --nowait"
-                }
+                },
+                "skipsteam": "Steam überspringen",
+                "skipsteam-description": "Verhindert, dass Steam automatisch mit Beat Saber geöffnet wird. Aktivieren Sie dies, wenn Sie eine andere VR-Laufzeit wie WiVRn oder Monado verwenden, mit der SteamVR interferieren könnte.",
+                "map-editor": "Karteneditor",
+                "map-editor-description": "Starte den offiziellen Beat Saber-Karteneditor anstelle des Spiels.",
+                "proton-logs": "Proton-Logs",
+                "proton-logs-description": "Aktiviert die Aufzeichnung von Proton-Logs für diese Beat Saber-Installation auf \"{versionPath}\"."
             },
             "maps": {
                 "search-bar": {
@@ -106,6 +122,7 @@
                         "latest": "Neueste",
                         "description": "Beschreibung",
                         "dropdown": {
+                            "import-mods": "Mods importieren",
                             "uninstall-all": "Alle deinstallieren",
                             "unselect-all": "Alle abwählen"
                         }
@@ -116,6 +133,10 @@
                         "title": "Mods bereits installiert",
                         "description": "Alle ausgewählten Mods sind bereits installiert"
                     }
+                },
+                "drop-zone": {
+                    "text": "Importiere deine Mods",
+                    "subtext": "Ziehe deine \"zip\"- oder \"dll\"-Dateien hierher, um sie zu importieren"
                 }
             },
             "dropdown": {
@@ -129,7 +150,7 @@
             }
         },
         "available-versions": {
-            "title": "Wähle eine Version",
+            "title": "Eine Version herunterladen",
             "steam-release": "Versionsseite",
             "dropdown": {
                 "refresh": "Aktualisiere die Versionen",
@@ -188,6 +209,7 @@
                     "en-US": "English, US",
                     "fr-FR": "Français",
                     "es-ES": "Español",
+                    "it-IT": "Italiano",
                     "de-DE": "Deutsch",
                     "ru-RU": "Русский",
                     "zh-CN": "简体中文",
@@ -199,6 +221,7 @@
                         "en-US": "Englisch, USA",
                         "fr-FR": "Französisch",
                         "es-ES": "Spanisch",
+                        "it-IT": "Italienisch",
                         "de-DE": "Deutsch",
                         "ru-RU": "Russisch",
                         "zh-CN": "Vereinfachtes Chinesisch",
@@ -258,6 +281,13 @@
                     "error-notification": {
                         "message": "Ein Fehler ist aufgetreten, die Einstellungen für symbolische Links können nicht geändert werden."
                     }
+                },
+                "use-system-proxy": {
+                    "title": "System-Proxy verwenden",
+                    "description": "BSManager wird Netzwerkrequests über Ihren Systemproxy durchführen.",
+                    "error-notification": {
+                        "message": "Es ist ein Fehler aufgetreten, die Systemproxyeinstellungen können nicht geändert werden."
+                    }
                 }
             }
         }
@@ -308,6 +338,8 @@
                     "msg": {
                         "401": "Steam scheint uns Beat Saber nicht herunterladen zu lassen 😢",
                         "404": "Steam-Server können nicht kontaktiert werden.",
+                        "ExeNotFoundWindows": "\"DepotDownloader.exe\" fehlt. Bitte überprüfen Sie, ob die ausführbare Datei von Ihrer Antivirensoftware quarantäneiert wurde.",
+                        "ExeNotFoundLinux": "Die ausführbare Datei \"DepotDownloader\" fehlt.",
                         "Password": "Passwort ist ungültig.",
                         "InvalidCredentials": "Ungültige Anmeldedaten, nicht genehmigte Verbindung oder zu viele Anmeldeversuche.",
                         "NoManifest": "Es wurde kein Manifest gefunden.",
@@ -341,8 +373,8 @@
                         "UNABLE_TO_GET_MANIFEST": "Unmöglich, das für den Download erforderliche Manifest zu erhalten.",
                         "VERIFY_INTEGRITY_FAILED": "Beim Überprüfen der Dateien ist ein Fehler aufgetreten.",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "Einige Dateien konnten nicht heruntergeladen werden.",
-                        "OCULUS_LOGIN_TIMED_OUT": "Es hat zu lange gedauert, das Anmelde-Token abzurufen.",
-                        "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER": "Das Meta-Anmeldefenster wurde geschlossen.",
+                        "META_LOGIN_TIMED_OUT": "Es hat zu lange gedauert, das Anmelde-Token abzurufen.",
+                        "META_LOGIN_WINDOW_CLOSED_BY_USER": "Das Meta-Anmeldefenster wurde geschlossen.",
                         "NO_META_AUTH_TOKEN": "Unmöglich, das für den Download erforderliche Meta-Anmelde-Token zu erhalten.",
                         "UNKNOWN_ERROR": "Ein unbekannter Fehler ist aufgetreten."
                     }
@@ -429,11 +461,13 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "Starte... 🚀",
-                    "STEAM_LAUNCHING": "Steam startet!"
+                    "STEAM_LAUNCHING": "Steam startet!",
+                    "SKIPPING_STEAM_LAUNCH": "Steam-Start überspringen"
                 },
                 "msg": {
                     "BS_LAUNCHING": "Vergiss nicht, dich aufzuwärmen 😉",
-                    "STEAM_LAUNCHING": "Beat Saber wird automatisch nach Steam gestartet."
+                    "STEAM_LAUNCHING": "Beat Saber wird automatisch nach Steam gestartet.",
+                    "SKIPPING_STEAM_LAUNCH": "Ich hoffe, du weißt, was du tust :)"
                 }
             },
             "errors": {
@@ -526,6 +560,17 @@
                         "no-mods": "Keine Mods sind in dieser Version installiert 😑"
                     }
                 }
+            },
+            "import-mod": {
+                "titles": {
+                    "success": "Mod-Import abgeschlossen",
+                    "error": "Es ist ein Fehler beim Importieren der Mods aufgetreten"
+                },
+                "msgs": {
+                    "success": "Mods erfolgreich importiert.",
+                    "some-success": "Einige Mods wurden erfolgreich importiert.",
+                    "no-dlls": "Die Datei(en) enthalten keine \"dll\"-Dateien."
+                }
             }
         },
         "maps": {
@@ -582,6 +627,10 @@
                     "ENOSPC": "Die Festplatte ist voll, machen Sie Platz und versuchen Sie es erneut.",
                     "UNKNOWN_ERROR": "Ein unbekannter Fehler ist beim Verknüpfen des Ordners aufgetreten."
                 }
+            },
+            "adding-error": {
+                "title": "Das Hinzufügen des freigegebenen Ordners ist fehlgeschlagen",
+                "msg": "Sie können \"{folder}\" nicht zu freigegebenen Ordnern hinzufügen."
             }
         },
         "create-launch-shortcut": {
@@ -737,30 +786,28 @@
                     }
                 }
             },
-            "link-maps": {
-                "title": "Maps verknüpfen",
-                "desc": "Das Verknüpfen von Maps ermöglicht es, Maps zwischen allen Versionen zu teilen. Nach der Verknüpfung profitiert diese Version von den geteilten Maps.",
-                "info": "Das Hinzufügen und Löschen von Maps wird ebenfalls geteilt.",
-                "keep-maps": {
-                    "label": "Maps behalten",
-                    "title": "\"Maps behalten\" verschiebt die Maps der aktuellen Version in den geteilten Maps-Ordner. Andernfalls gehen sie verloren."
-                },
-                "valid-btn": "Maps verknüpfen"
-            },
-            "unlink-maps": {
-                "title": "Maps-Verknüpfung aufheben",
-                "desc": "Bitte beachte, dass das Aufheben der Verknüpfung von Maps die Verwendung von geteilten Maps für diese Version nicht zulässt.",
-                "keep-maps": {
-                    "label": "Maps behalten",
-                    "title": "\"Maps behalten\" kopiert die Maps aus dem geteilten Maps-Ordner in den Ordner der ausgewählten Version. Andernfalls gehen sie verloren."
-                },
-                "valid-btn": "Verknüpfung aufheben"
-            },
             "delete-duplicate-maps": {
                 "title": "Map entfernen?",
                 "desc": "Nur die Karte \"{map}\" ist ein Duplikat. Bist du sicher, dass du sie löschen möchtest?",
                 "desc-plural": "Es wurden {nb} doppelte Karten gefunden. Bist du sicher, dass du sie löschen möchtest?"
             }
+        },
+        "link-contents": {
+            "title": "Die {contentType} verknüpfen",
+            "p-1": "Das Verknüpfen der {contentType} ermöglicht das Teilen der {contentType} zwischen allen Versionen mit dieser Funktion. Sobald verknüpft, profitiert diese Version von geteilten {contentType}.",
+            "p-2": "Um die Verknüpfungsfunktion zu nutzen, werden alle deine {itemsHtml} in den {sharedHtml}-Ordner verschoben. Danach wird ein symbolischer Link, der auf den gemeinsamen {contentType}-Ordner verweist, deinen ursprünglichen {contentType}-Ordner ersetzen.",
+            "warning": "Bitte beachten Sie, dass alle Änderungen an den {contentType} auch alle Versionen mit dieser Funktion beeinflussen.",
+            "what-is-a-symbolic-link": "Was ist ein symbolischer Link?",
+            "i-need-help": "Ich brauche Hilfe",
+            "valid-btn": "Die {contentType} verknüpfen"
+        },
+        "unlink-contents": {
+            "title": "Die {contentType} entknüpfen",
+            "p-1": "Achtung, das Entknüpfen der {contentType} deaktiviert die Nutzung von geteilten {contentType} für diese Version, bis es wieder aktiviert wird.",
+            "p-2": "Um die Verknüpfung deiner {contentType} aufzuheben, wird der symbolische Link, der auf den {sharedHtml}-Ordner verweist, entfernt. Danach werden alle {contentType} aus dem geteilten Ordner in den {itemsHtml}-Ordner deiner Beat Saber-Version kopiert.",
+            "do-not-copy-contents": "Die {contentType} nicht kopieren",
+            "do-not-copy-contents-tip": "Wenn aktiviert, werden die {contentType} im geteilten Ordner nicht in deine Beat Saber-Version kopiert. Infolgedessen werden keine {contentType} in deiner Version verbleiben, nachdem die Verknüpfung aufgehoben wurde.",
+            "valid-btn": "Die {contentType} entknüpfen"
         },
         "download-maps": {
             "search-btn": "Suchen",
@@ -783,8 +830,13 @@
                 "add-folder": "Ordner hinzufügen",
                 "link-folder": "Ordner verknüpfen",
                 "unlink-folder": "Ordner-Verknüpfung aufheben",
-                "link-all": "Alle verlinken"
+                "link-all": "Alle verlinken",
+                "remove-from-the-list": "Aus der Liste entfernen"
             }
+        },
+        "adding-shared-folder": {
+            "title": "Freigegebenen Ordner hinzufügen",
+            "description": "Beim Verknüpfen des Ordners \"{folder}\" können Probleme auftreten. Möchten Sie ihn wirklich hinzufügen?"
         },
         "create-launch-shortcut": {
             "title": "Verknüpfung erstellen",
@@ -804,13 +856,12 @@
             "stay": "Angemeldet bleiben",
             "connect-to-meta": "Mit Meta verbinden"
         },
-        "original-version-backup-oculus": {
-            "title": "Achtung",
-            "body": {
-                "must-be-installed-once": "Sie müssen Beat Saber aus dem Oculus Store auf diesem Gerät installiert haben, andernfalls wird Beat Saber nach dem Start automatisch geschlossen.",
-                "will-backup": "Um diese Version zu starten, wird der ursprüngliche Installationsordner von Beat Saber in deiner Oculus-Bibliothek umbenannt und beim Schließen von Beat Saber automatisch wiederhergestellt."
-            },
-            "not-remind-me": "Nicht mehr erinnern",
+        "enable-oculus-sideloaded-apps": {
+            "title": "Sideloading aktivieren",
+            "info-1": "Um Beat Saber starten zu können, muss die Möglichkeit aktiviert werden, Sideloading-Apps auszuführen. BSManager wird Administratorrechte anfordern, um diese Funktion automatisch zu aktivieren.",
+            "info-2": "Die Sideloading-Funktion ermöglicht das Starten von Spielen, die sich außerhalb Ihres Oculus-Bibliotheksordners befinden.",
+            "info-3": "Nachdem das Sideloading aktiviert wurde, bleibt die Funktion aktiv, und Sie werden nicht mehr aufgefordert, sie zu aktivieren.",
+            "i-want-to-do-it-myself": "Ich möchte es selbst machen",
             "understood": "Verstanden"
         },
         "enter-meta-token": {
@@ -865,7 +916,8 @@
             "tags": "Stichwörter",
             "specificities": "Allgemein",
             "requirements": "Anforderungen",
-            "exclude": "Ausschließen"
+            "exclude": "Ausschließen",
+            "leaderboard": "Rangliste"
         },
         "map-types": {
             "accuracy": "Präzision",
@@ -916,10 +968,15 @@
         },
         "map-specificities": {
             "automapper": "KI",
-            "ranked": "Ranked",
             "curated": "Curated",
             "verified": "Verifiziert",
             "fullSpread": "Full Spread"
+        },
+        "map-leaderboard": {
+            "All": "Alle",
+            "Ranked": "Ranked",
+            "BeatLeader": "BeatLeader",
+            "ScoreSaber": "ScoreSaber"
         },
         "map-excludes": {
             "installed": "Installiert"
@@ -1008,86 +1065,6 @@
                 "no-models": "Keine Modelle gefunden.",
                 "no-internet": "Keine Internetverbindung.",
                 "error-occured": "Ein Fehler ist aufgetreten, versuche es später erneut."
-            },
-            "link-models": {
-                "avatar": {
-                    "title": "Avatare verbinden",
-                    "desc": "Das Verbinden von Avataren ermöglicht das Teilen von Avataren zwischen allen Versionen. Sobald verbunden, wird diese Version von den geteilten Avataren profitieren.",
-                    "info": "Das Hinzufügen und Entfernen von Avataren wird ebenfalls geteilt.",
-                    "keep-models": {
-                        "label": "Avatare behalten",
-                        "title": "Das Behalten der Avatare wird die Avatare der aktuellen Version in den Ordner der geteilten Avatare verschieben. Andernfalls gehen sie verloren."
-                    },
-                    "valid-btn": "Avatare verbinden"
-                },
-                "saber": {
-                    "title": "Säbel verbinden",
-                    "desc": "Das Verbinden von Säbeln ermöglicht das Teilen von Säbeln zwischen allen Versionen. Sobald verbunden, wird diese Version von den geteilten Säbeln profitieren.",
-                    "info": "Das Hinzufügen und Entfernen von Säbeln wird ebenfalls geteilt.",
-                    "keep-models": {
-                        "label": "Säbel behalten",
-                        "title": "Das Behalten der Säbel wird die Säbel der aktuellen Version in den Ordner der geteilten Säbel verschieben. Andernfalls gehen sie verloren."
-                    },
-                    "valid-btn": "Säbel verbinden"
-                },
-                "platform": {
-                    "title": "Plattformen verbinden",
-                    "desc": "Das Verbinden von Plattformen ermöglicht das Teilen von Plattformen zwischen allen Versionen. Sobald verbunden, wird diese Version von den geteilten Plattformen profitieren.",
-                    "info": "Das Hinzufügen und Entfernen von Plattformen wird ebenfalls geteilt.",
-                    "keep-models": {
-                        "label": "Plattformen behalten",
-                        "title": "Das Behalten der Plattformen wird die Plattformen der aktuellen Version in den Ordner der geteilten Plattformen verschieben. Andernfalls gehen sie verloren."
-                    },
-                    "valid-btn": "Plattformen verbinden"
-                },
-                "bloq": {
-                    "title": "Bloqs verbinden",
-                    "desc": "Das Verbinden von Bloqs ermöglicht das Teilen von Bloqs zwischen allen Versionen. Sobald verbunden, wird diese Version von den geteilten Bloqs profitieren.",
-                    "info": "Das Hinzufügen und Entfernen von Bloqs wird ebenfalls geteilt.",
-                    "keep-models": {
-                        "label": "Bloqs behalten",
-                        "title": "Das Behalten der Bloqs wird die Bloqs der aktuellen Version in den Ordner der geteilten Bloqs verschieben. Andernfalls gehen sie verloren."
-                    },
-                    "valid-btn": "Bloqs verbinden"
-                }
-            },
-            "unlink-models": {
-                "avatar": {
-                    "title": "Avatare trennen",
-                    "desc": "Achtung, das Trennen der Avatare wird die Nutzung der geteilten Avatare für diese Version nicht mehr ermöglichen.",
-                    "keep-models": {
-                        "label": "Avatare behalten",
-                        "title": "Das Behalten der Avatare wird eine Kopie der geteilten Avatare für die aktuelle Version erstellen. Andernfalls wird kein Avatar für diese Version aufbewahrt."
-                    },
-                    "valid-btn": "Avatare trennen"
-                },
-                "saber": {
-                    "title": "Säbel trennen",
-                    "desc": "Achtung, das Trennen der Säbel wird die Nutzung der geteilten Säbel für diese Version nicht mehr ermöglichen.",
-                    "keep-models": {
-                        "label": "Säbel behalten",
-                        "title": "Das Behalten der Säbel wird eine Kopie der geteilten Säbel für die aktuelle Version erstellen. Andernfalls wird kein Säbel für diese Version aufbewahrt."
-                    },
-                    "valid-btn": "Säbel trennen"
-                },
-                "platform": {
-                    "title": "Plattformen trennen",
-                    "desc": "Achtung, das Trennen der Plattformen wird die Nutzung der geteilten Plattformen für diese Version nicht mehr ermöglichen.",
-                    "keep-models": {
-                        "label": "Plattformen behalten",
-                        "title": "Das Behalten der Plattformen wird eine Kopie der geteilten Plattformen für die aktuelle Version erstellen. Andernfalls wird keine Plattform für diese Version aufbewahrt."
-                    },
-                    "valid-btn": "Plattformen trennen"
-                },
-                "bloq": {
-                    "title": "Bloqs trennen",
-                    "desc": "Achtung, das Trennen der Bloqs wird die Nutzung der geteilten Bloqs für diese Version nicht mehr ermöglichen.",
-                    "keep-models": {
-                        "label": "Bloqs behalten",
-                        "title": "Das Behalten der Bloqs wird eine Kopie der geteilten Bloqs für die aktuelle Version erstellen. Andernfalls wird kein Bloq für diese Version aufbewahrt."
-                    },
-                    "valid-btn": "Bloqs trennen"
-                }
             }
         },
         "notifications": {
@@ -1164,14 +1141,6 @@
         "stop-download": "Download stoppen",
         "cancel-download": "Download abbrechen",
         "open-file": "Datei öffnen",
-        "link-playlists": "Playlists verknüpfen",
-        "link-playlist-desc": "Das Verknüpfen von Playlists ermöglicht das Teilen von Playlists zwischen allen Versionen. Nach der Verknüpfung profitiert diese Version von geteilten Playlists.",
-        "link-playlist-info": "Das Hinzufügen und Löschen von Playlists wird ebenfalls geteilt.",
-        "keep-playlists": "Playlists behalten",
-        "keep-playlists-tip": "Wenn du Playlists behältst, werden die Playlists von der aktuellen Version in den Ordner für geteilte Playlists verschoben. Andernfalls gehen sie verloren.",
-        "unlink-playlists": "Playlists trennen",
-        "unlink-playlist-desc": "Achtung, das Trennen von Playlists verhindert die Nutzung geteilter Playlists für diese Version.",
-        "unlink-keep-playlists-tip": "Wenn du Playlists behältst, wird eine Kopie der geteilten Playlists für die aktuelle Version erstellt. Andernfalls werden keine Playlists für diese Version behalten.",
         "delete-playlist-ask": "Playlist löschen?",
         "delete-playlists-ask": "Playlists löschen?",
         "delete-playlist-desc": "Bist du dir sicher, dass du die Playlist \"{playlistTitle}\" löschen möchtest?",

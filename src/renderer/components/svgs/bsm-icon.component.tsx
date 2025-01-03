@@ -10,13 +10,14 @@ import { AddIcon } from "./icons/add-icon.component";
 import { CrossIcon } from "./icons/cross-icon.component";
 import { FranceIcon } from "./flags/france-icon.component";
 import { SpainIcon } from "./flags/spain-icon.component";
+import { ItalyIcon } from "./flags/italy-icon.component";
 import { UsaIcon } from "./flags/usa-icon.component";
 import { UkIcon } from "./flags/uk-icon.component";
 import { TaskIcon } from "./icons/task-icon.component";
 import { CopyIcon } from "./icons/copy-icon.component";
 import { SteamIcon } from "./icons/steam-icon.component";
 import { CSSProperties, memo } from "react";
-import EditIcon from "./icons/edit-icon.component";
+import { EditIcon } from "./icons/edit-icon.component";
 import { ExportIcon } from "./icons/export-icon.component";
 import PatreonIcon from "./icons/patreon-icon.component";
 import { SearchIcon } from "./icons/search-icon.component";
@@ -69,7 +70,8 @@ import { CancelIcon } from "./icons/cancel-icon.component";
 import { WarningIcon } from "./icons/warning-icon.component";
 
 
-export type BsmIconType = SongDetailDiffCharactertistic | ("settings" | "trash" | "favorite" | "folder" | "bsNote" | "check" | "three-dots" | "twitch" | "eye" | "play" | "checkCircleIcon" | "discord" | "info" | "eye-cross" | "terminal" | "desktop" | "oculus" | "add" | "cross" | "task" | "github" | "close" | "thumbUpFill" | "timerFill" | "pause" | "twitter" | "sync" | "chevron-top" | "copy" | "steam" | "edit" | "export" | "patreon" | "search" | "bsMapDifficulty" | "link" | "unlink" | "download" | "filter" | "mee6" | "volume-up" | "volume-off" | "volume-down" | "shortcut" | "backup-restore" | "web-site" | "clean" | "browse" | "add-file" | "cancel" | "warning" | "fr-FR-flag" | "es-ES-flag" | "en-US-flag" | "en-EN-flag" | "de-DE-flag" | "ru-RU-flag" | "zh-CN-flag" | "zh-TW-flag" | "ja-JP-flag" | "ko-KR-flag");
+
+export type BsmIconType = SongDetailDiffCharactertistic | ("settings" | "trash" | "favorite" | "folder" | "bsNote" | "check" | "three-dots" | "twitch" | "eye" | "play" | "checkCircleIcon" | "discord" | "info" | "eye-cross" | "terminal" | "desktop" | "oculus" | "add" | "cross" | "task" | "github" | "close" | "thumbUpFill" | "timerFill" | "pause" | "twitter" | "sync" | "chevron-top" | "copy" | "steam" | "edit" | "export" | "patreon" | "search" | "bsMapDifficulty" | "link" | "unlink" | "download" | "filter" | "mee6" | "volume-up" | "volume-off" | "volume-down" | "shortcut" | "backup-restore" | "web-site" | "clean" | "browse" | "add-file" | "cancel" | "warning" | "fr-FR-flag" | "es-ES-flag" | "it-IT-flag" | "en-US-flag" | "en-EN-flag" | "de-DE-flag" | "ru-RU-flag" | "zh-CN-flag" | "zh-TW-flag" | "ja-JP-flag" | "ko-KR-flag" | "null" );
 
 export const BsmIcon = memo(({ className, icon, style }: { className?: string; icon: BsmIconType; style?: CSSProperties }) => {
     // TODO : Very ugly very messy, need to find a better way to do this
@@ -111,6 +113,9 @@ export const BsmIcon = memo(({ className, icon, style }: { className?: string; i
         }
         if (icon === "es-ES-flag") {
             return <SpainIcon className={className} style={style} />;
+        }
+        if (icon === "it-IT-flag") {
+            return <ItalyIcon className={className} style={style} />;
         }
         if (icon === "en-US-flag") {
             return <UsaIcon className={className} style={style} />;
@@ -277,13 +282,14 @@ export const BsmIcon = memo(({ className, icon, style }: { className?: string; i
         if(icon === "add-file") {
             return <AddFileIcon className={className} style={style} />;
         }
-
-        if(icon === "cancel"){
+        if(icon === "null") {
+            return null;
+        }
+        if(icon === "cancel") {
             return <CancelIcon className={className} style={style} />;
         }
-
-        if(icon === "warning"){
-            return <WarningIcon className={className} style={style} />;
+        if(icon === "warning") {
+            return <WarningIcon className={className} style={style} />
         }
 
         return <TrashIcon className={className} style={style} />;

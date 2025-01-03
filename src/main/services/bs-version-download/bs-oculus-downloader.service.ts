@@ -8,6 +8,12 @@ import path from "path";
 import { DownloadInfo } from "./bs-steam-downloader.service";
 import { BsStore } from "../../../shared/models/bs-store.enum";
 import { isOculusTokenValid } from "../../../shared/helpers/oculus.helpers";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
+import { minToMs } from "shared/helpers/time.helpers";
+import { session } from "electron";
+import { WindowManagerService } from "../window-manager.service";
+import { addFilterStringLog } from "../../main";
+import { MetaAuthErrorCodes } from "shared/models/bs-version-download/oculus-download.model";
 
 export class BsOculusDownloaderService {
 
@@ -23,11 +29,61 @@ export class BsOculusDownloaderService {
 
     private readonly oculusDownloader: OculusDownloader;
     private readonly versions: BSLocalVersionService;
+    private readonly windows: WindowManagerService;
 
     private constructor() {
         this.versions = BSLocalVersionService.getInstance();
-
+        this.windows = WindowManagerService.getInstance();
         this.oculusDownloader = new OculusDownloader();
+    }
+
+    public async getUserTokenFromMetaAuth(keepToken: boolean): Promise<string>{
+
+        const loginUrl = "https://secure.oculus.com";
+        const redirectUrl = `${loginUrl}/my/profile`;
+        const window = await this.windows.openWindow(loginUrl, { frame: true, width: 650, height: 800 });
+
+        let timout: NodeJS.Timeout;
+
+        return new Promise<string>((resolve, reject) => {
+            timout = setTimeout(() => {
+                reject(new CustomError("Trying to get Oculus user token timed out", MetaAuthErrorCodes.META_LOGIN_TIMED_OUT));
+                window.close();
+            }, minToMs(10));
+
+            const tryExtractToken = async () => {
+                log.info("Meta auth window navigated to", new URL(window.webContents.getURL()).origin + new URL(window.webContents.getURL()).pathname); // Dot not log full url for privacy reasons
+                if(!window.webContents.getURL()?.startsWith(redirectUrl)){ return; }
+
+                const token = (await window.webContents.session.cookies.get({ name: "oc_ac_at" })).at(0)?.value;
+
+                if(!isOculusTokenValid(token, log.info)){
+                    return;
+                }
+
+                addFilterStringLog(token);
+                resolve(token);
+            }
+
+            window.webContents.on("did-stop-loading", tryExtractToken);
+            window.webContents.on("did-navigate", tryExtractToken);
+            window.webContents.on("did-navigate-in-page", tryExtractToken);
+
+            window.on("closed", () => {
+                reject(new CustomError("Oculus login window closed by user", MetaAuthErrorCodes.META_LOGIN_WINDOW_CLOSED_BY_USER));
+            });
+        }).finally(() => {
+
+            clearTimeout(timout);
+
+            if(!keepToken){
+                this.clearAuthToken();
+            }
+
+            if(!window.isDestroyed() && window.isClosable()){
+                window.close();
+            }
+        });
     }
 
     private async createDownloadVersion(version: BSVersion): Promise<{version: BSVersion, dest: string}>{
@@ -46,7 +102,7 @@ export class BsOculusDownloaderService {
         this.oculusDownloader.stopDownload();
     }
 
-    public downloadVersion(downloadInfo: DownloadInfo): Observable<Progression<BSVersion>>{
+    public downloadVersion(downloadInfo: OculusDownloadInfo): Observable<Progression<BSVersion>>{
 
         let downloadVersion: BSVersion
 
@@ -69,9 +125,16 @@ export class BsOculusDownloaderService {
         );
     }
 
+    public clearAuthToken(): Promise<void>{
+        return session.defaultSession.clearStorageData({ storages: ["cookies"], origin: ".oculus.com" })
+    }
+
+    public metaSessionExists(): Promise<boolean>{
+        return session.defaultSession.cookies.get({ domain: ".oculus.com" }).then(cookies => cookies.length > 0);
+    }
+
 }
 
-export interface OculusDownloadInfo {
-    version: BSVersion;
-    stay?: boolean;
+export interface OculusDownloadInfo extends DownloadInfo {
+    token: string;
 }

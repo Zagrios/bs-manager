@@ -8,6 +8,10 @@
         "maps": "マップ",
         "playlists": "プレイリスト",
         "models": "モデル",
+        "avatars": "アバター",
+        "sabers": "セイバー",
+        "platforms": "プラットフォーム",
+        "blocks": "ブロック",
         "cancel": "キャンセル",
         "delete": "削除",
         "accept": "同意する",
@@ -19,7 +23,13 @@
         "choose-folder": "フォルダーを選択",
         "unknown": "不明なエラーが発生しました (´・ω・`)",
         "warning": "警告",
-        "continue": "続ける"
+        "continue": "続ける",
+        "shared": "共有",
+        "pin": "固定",
+        "unpin": "固定解除"
+    },
+    "title-bar": {
+        "outdated": "時代遅れ"
     },
     "nav-bar": {
         "add-version": "バージョンを追加",
@@ -40,9 +50,15 @@
                 "debug-description": "IPAの出力ログウィンドウを有効にします。これはMODのデバッグコンソールを表示します。",
                 "outdated-tippy": "このバージョンは古いため、一部のMODや機能が期待通りに動作しない可能性があります。最新の機能やバグ修正を楽しむには、推奨バージョン ({recommendedVersion}) のBeat Saberを使用することをお勧めします。",
                 "advanced-launch": {
-                    "button": "高度な起動",
+                    "button": "起動オプション",
                     "placeholder": "追加引数 例：--revert; --nowait"
-                }
+                },
+                "skipsteam": "Steamをスキップ",
+                "skipsteam-description": "Beat Saberと一緒にSteamが自動的に開くのを防ぎます。SteamVRが干渉する可能性のあるWiVRnやMonadoなど、別のVRランタイムを使用している場合は有効にしてください。",
+                "map-editor": "マップエディタ",
+                "map-editor-description": "ゲームの代わりに公式のBeat Saberマップエディタを起動する。",
+                "proton-logs": "プロトンログ",
+                "proton-logs-description": "このBeat Saberインストールのプロトンログの記録を「{versionPath}」に有効にします。"
             },
             "maps": {
                 "search-bar": {
@@ -106,6 +122,7 @@
                         "latest": "最新",
                         "description": "說明",
                         "dropdown": {
+                            "import-mods": "モッドをインポート",
                             "uninstall-all": "全てアンインストールする",
                             "unselect-all": "すべて選択解除"
                         }
@@ -116,6 +133,10 @@
                         "title": "すでにインストール済みのMOD",
                         "description": "選択したすべてのMODはすでにインストールされています"
                     }
+                },
+                "drop-zone": {
+                    "text": "モッドをインポートする",
+                    "subtext": "「zip」または「dll」ファイルをここにドロップしてインポートする"
                 }
             },
             "dropdown": {
@@ -129,7 +150,7 @@
             }
         },
         "available-versions": {
-            "title": "バージョンを選択",
+            "title": "バージョンをダウンロード",
             "steam-release": "リリースページ",
             "dropdown": {
                 "refresh": "バージョンの更新",
@@ -188,6 +209,7 @@
                     "en-US": "English, US",
                     "fr-FR": "Français",
                     "es-ES": "Español",
+                    "it-IT": "Italiano",
                     "de-DE": "Deutsch",
                     "ru-RU": "Русский",
                     "zh-CN": "简体中文",
@@ -199,6 +221,7 @@
                         "en-US": "アメリカ英語",
                         "fr-FR": "フランス語",
                         "es-ES": "スペイン語",
+                        "it-IT": "イタリア語",
                         "de-DE": "ドイツ語",
                         "ru-RU": "ロシア語",
                         "zh-CN": "簡体字中国",
@@ -258,6 +281,13 @@
                     "error-notification": {
                         "message": "エラーが発生しました。シンボリックリンク設定を変更できません。"
                     }
+                },
+                "use-system-proxy": {
+                    "title": "システムプロキシを使用",
+                    "description": "BSManagerはシステムプロキシを通じてネットワークリクエストを行います。",
+                    "error-notification": {
+                        "message": "エラーが発生しました。システムプロキシ設定を変更できません。"
+                    }
                 }
             }
         }
@@ -308,6 +338,8 @@
                     "msg": {
                         "401": "SteamがBeat Saberのダウンロードを許可してくれないようだ。😢",
                         "404": "Steamサーバーに接続できません。",
+                        "ExeNotFoundWindows": "「DepotDownloader.exe」が見つかりません。実行ファイルがアンチウイルスソフトによって隔離されていないか確認してください。",
+                        "ExeNotFoundLinux": "「DepotDownloader」の実行ファイルが見つかりません。",
                         "Password": "パスワードが不正です。",
                         "InvalidCredentials": "無効なログイン認証情報、許可されていない接続、またはログイン試行回数が多すぎます。",
                         "NoManifest": "マニフェストは見つかりませんでした",
@@ -341,8 +373,8 @@
                         "UNABLE_TO_GET_MANIFEST": "ダウンロードに必要なマニフェストを取得できません。",
                         "VERIFY_INTEGRITY_FAILED": "ファイルの検証中にエラーが発生しました。",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "一部のファイルのダウンロードに失敗しました。",
-                        "OCULUS_LOGIN_TIMED_OUT": "ログイントークンの取得に時間がかかりすぎました。",
-                        "OCULUS_LOGIN_WINDOW_CLOSED_BY_USER": "メタ・ログイン・ウィンドウが閉じられた。",
+                        "META_LOGIN_TIMED_OUT": "ログイントークンの取得に時間がかかりすぎました。",
+                        "META_LOGIN_WINDOW_CLOSED_BY_USER": "メタ・ログイン・ウィンドウが閉じられた。",
                         "NO_META_AUTH_TOKEN": "ダウンロードに必要な Meta ログイン トークンを取得できません。",
                         "UNKNOWN_ERROR": "不明なエラーが発生しました。"
                     }
@@ -429,11 +461,13 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "起動中...🚀",
-                    "STEAM_LAUNCHING": "Steamの起動を確認しました!"
+                    "STEAM_LAUNCHING": "Steamの起動を確認しました!",
+                    "SKIPPING_STEAM_LAUNCH": "Steamの起動をスキップ"
                 },
                 "msg": {
                     "BS_LAUNCHING": "ウォームアップを忘れずに 😉",
-                    "STEAM_LAUNCHING": "Beat SaberはSteamの起動後に自動的に起動します。"
+                    "STEAM_LAUNCHING": "Beat SaberはSteamの起動後に自動的に起動します。",
+                    "SKIPPING_STEAM_LAUNCH": "あなたが何をしているのか分かっていることを願っています :)"
                 }
             },
             "errors": {
@@ -526,6 +560,17 @@
                         "no-mods": "このバージョンのModはインストールされていません 😑"
                     }
                 }
+            },
+            "import-mod": {
+                "titles": {
+                    "success": "モッドのインポートが完了しました",
+                    "error": "モッドのインポート中にエラーが発生しました"
+                },
+                "msgs": {
+                    "success": "モッドが正常にインポートされました。",
+                    "some-success": "一部のモッドが正常にインポートされました。",
+                    "no-dlls": "ファイルに \"dll\" ファイルが含まれていません。"
+                }
             }
         },
         "maps": {
@@ -582,6 +627,10 @@
                     "ENOSPC": "ディスクがいっぱいです。空き容量を作ってもう一度試してください。",
                     "UNKNOWN_ERROR": "フォルダをリンク中に不明なエラーが発生しました。"
                 }
+            },
+            "adding-error": {
+                "title": "共有フォルダの追加に失敗しました",
+                "msg": "「{folder}」を共有フォルダに追加することはできません。"
             }
         },
         "create-launch-shortcut": {
@@ -737,30 +786,28 @@
                     }
                 }
             },
-            "link-maps": {
-                "title": "マップをリンク",
-                "desc": "マップをリンクすると、この機能が有効になっているすべてのバージョン間でマップを共有できます。リンクされると、このバージョンは共有マップの恩恵を受けることができます。",
-                "info": "マップの追加と削除も共有されます。",
-                "keep-maps": {
-                    "label": "マップを保持",
-                    "title": "マップを保持すると現在のバージョンのすべてのマップを共有マップフォルダーにコピーします。有効していない場合はこのバージョンのマップは保持されず、失われます。"
-                },
-                "valid-btn": "マップをリンク"
-            },
-            "unlink-maps": {
-                "title": "マップのリンクを解除",
-                "desc": "マップのリンクを解除すると、このバージョンでは共有マップを使用できなくなります。",
-                "keep-maps": {
-                    "label": "マップを保持",
-                    "title": "マップを保持は、リンクを解除した後、共有フォルダから現在のバージョンにすべてのマップをコピーします。これを無効をしても共有マップは失われません。"
-                },
-                "valid-btn": "マップのリンクを解除"
-            },
             "delete-duplicate-maps": {
                 "title": "マップを削除しますか?",
                 "desc": "マップ「{map}」のみが重複しています。削除してもよろしいですか？",
                 "desc-plural": "{nb}個の重複したマップが見つかりました。削除してもよろしいですか？"
             }
+        },
+        "link-contents": {
+            "title": "{contentType}をリンクする",
+            "p-1": "{contentType}をリンクすると、この機能が有効なすべてのバージョン間で{contentType}を共有できます。リンクされると、このバージョンは共有された{contentType}を利用できます。",
+            "p-2": "リンク機能を利用するには、すべての{itemsHtml}を{sharedHtml}フォルダに移動します。その後、共有された{contentType}フォルダを指すシンボリックリンクが元の{contentType}フォルダの代わりになります。",
+            "warning": "ご注意ください：{contentType}に影響を与える変更は、この機能が有効なすべてのバージョンにも影響を与えます。",
+            "what-is-a-symbolic-link": "シンボリックリンクとは何ですか？",
+            "i-need-help": "助けが必要です",
+            "valid-btn": "{contentType}をリンクする"
+        },
+        "unlink-contents": {
+            "title": "{contentType}のリンクを解除する",
+            "p-1": "注意してください：{contentType}のリンクを解除すると、この機能が再度有効化されるまで、このバージョンで共有された{contentType}を使用できなくなります。",
+            "p-2": "{contentType}のリンクを解除するには、{sharedHtml}を指すシンボリックリンクが削除されます。その後、共有フォルダ内のすべての{contentType}がBeat Saberのバージョン内の{itemsHtml}フォルダにコピーされます。",
+            "do-not-copy-contents": "{contentType}をコピーしない",
+            "do-not-copy-contents-tip": "有効にすると、共有フォルダ内の{contentType}はBeat Saberのバージョンにコピーされません。その結果、リンク解除後にBeat Saberバージョン内に{contentType}は残りません。",
+            "valid-btn": "{contentType}のリンクを解除する"
         },
         "download-maps": {
             "search-btn": "検索　",
@@ -783,8 +830,13 @@
                 "add-folder": "フォルダーを追加",
                 "link-folder": "フォルダーをリンク",
                 "unlink-folder": "フォルダーのリンクを解除",
-                "link-all": "すべてリンク"
+                "link-all": "すべてリンク",
+                "remove-from-the-list": "リストから削除"
             }
+        },
+        "adding-shared-folder": {
+            "title": "共有フォルダの追加",
+            "description": "「{folder}」フォルダをリンクするときに問題が発生する可能性があります。追加してもよろしいですか?"
         },
         "create-launch-shortcut": {
             "title": "ショートカットを作成",
@@ -804,14 +856,13 @@
             "stay": "記憶する",
             "connect-to-meta": "Metaに接続する"
         },
-        "original-version-backup-oculus": {
-            "title": "注意",
-            "body": {
-                "must-be-installed-once": "このデバイスにOculusストアからBeat Saberをインストールしておく必要があります。そうしないと、Beat Saberは起動後に自動的に閉じます。",
-                "will-backup": "このバージョンを起動するために、OculusライブラリにあるBeat Saberの元のインストールフォルダは名前が変更され、Beat Saberの終了時に自動的に復元されます。"
-            },
-            "not-remind-me": "二度と表示しないでください",
-            "understood": "分かった"
+        "enable-oculus-sideloaded-apps": {
+            "title": "サイドローディングを有効化",
+            "info-1": "Beat Saberを起動するには、サイドローディングアプリを実行する機能を有効にする必要があります。BSManagerは、この機能を自動的に有効にするために管理者権限を要求します。",
+            "info-2": "サイドローディング機能により、Oculusライブラリフォルダ外にあるゲームを起動できます。",
+            "info-3": "サイドローディングを有効化すると、この機能はアクティブなままとなり、再度有効化を求められることはありません。",
+            "i-want-to-do-it-myself": "自分でやりたい",
+            "understood": "了解しました"
         },
         "enter-meta-token": {
             "title": "Oculusトークン",
@@ -865,7 +916,8 @@
             "tags": "タグ",
             "specificities": "一般",
             "requirements": "要Mod",
-            "exclude": "除外する"
+            "exclude": "除外する",
+            "leaderboard": "ランキング"
         },
         "map-types": {
             "accuracy": "正確",
@@ -916,10 +968,15 @@
         },
         "map-specificities": {
             "automapper": "AI",
-            "ranked": "ランク入賞",
             "curated": "厳選済み",
             "verified": "認証済み",
             "fullSpread": "フルスプレッド"
+        },
+        "map-leaderboard": {
+            "All": "すべて",
+            "Ranked": "ランク入賞",
+            "BeatLeader": "BeatLeader",
+            "ScoreSaber": "ScoreSaber"
         },
         "map-excludes": {
             "installed": "インストール済み"
@@ -1008,86 +1065,6 @@
                 "no-models": "モデルは見つかりませんでした。",
                 "no-internet": "インターネットに接続できませんでした。",
                 "error-occured": "エラーが発生しました。もう一度お試しください."
-            },
-            "link-models": {
-                "avatar": {
-                    "title": "アバターをリンク",
-                    "desc": "アバターをリンクすると、この機能が有効になっているすべてのバージョン間でアバターを共有できます。また、リンクすることでこのバージョンは共有アバターの恩恵を受けることができます。",
-                    "info": "アバターの追加と削除も共有されます",
-                    "keep-models": {
-                        "label": "アバターを保持",
-                        "title": "アバターを保持すると、現在のバージョンからすべてのアバターが共有アバターフォルダーにコピーされます。有効していない場合はこのバージョンのアバターは保持されず、それらは失われます。"
-                    },
-                    "valid-btn": "アバターをリンク"
-                },
-                "saber": {
-                    "title": "セーバーをリンク",
-                    "desc": "セーバーをリンクすると、この機能が有効になっているすべてのバージョン間でセーバーを共有できます。また、リンクすることでこのバージョンは共有セーバーの恩恵を受けることができます。",
-                    "info": "セーバーの追加と削除も共有されます",
-                    "keep-models": {
-                        "label": "セーバーを保持",
-                        "title": "セーバーを保持すると、現在のバージョンからすべてのセーバーが共有vフォルダーにコピーされます。有効していない場合はこのバージョンのセーバーは保持されず、それらは失われます。"
-                    },
-                    "valid-btn": "セーバーをリンク"
-                },
-                "platform": {
-                    "title": "プラットフォームをリンク",
-                    "desc": "プラットフォームをリンクすると、この機能が有効になっているすべてのバージョン間でプラットフォームを共有できます。また、リンクすることでこのバージョンは共有プラットフォームの恩恵を受けることができます。",
-                    "info": "プラットフォームの追加と削除も共有されます",
-                    "keep-models": {
-                        "label": "プラットフォームを保持",
-                        "title": "プラットフォームを保持すると、現在のバージョンからすべてのプラットフォームが共有プラットフォームフォルダーにコピーされます。有効していない場合はこのバージョンのプラットフォームは保持されず、それらは失われます。"
-                    },
-                    "valid-btn": "プラットフォームをリンク"
-                },
-                "bloq": {
-                    "title": "ノーツをリンク",
-                    "desc": "ノーツをリンクすると、この機能が有効になっているすべてのバージョン間でノーツを共有できます。また、リンクすることでこのバージョンは共有ノーツの恩恵を受けることができます。",
-                    "info": "ノーツの追加と削除も共有されます",
-                    "keep-models": {
-                        "label": "ノーツを保持",
-                        "title": "ノーツを保持すると、現在のバージョンからすべてのノーツが共有ノーツフォルダーにコピーされます。有効していない場合はこのバージョンのノーツは保持されず、それらは失われます。"
-                    },
-                    "valid-btn": "ノーツをリンク"
-                }
-            },
-            "unlink-models": {
-                "avatar": {
-                    "title": "アバターのリンクを解除",
-                    "desc": "アバターのリンクを解除すると、このバージョンでは共有アバターが使用できなくなります。",
-                    "keep-models": {
-                        "label": "アバターを保持する",
-                        "title": "アバターを保持すると、リンクを解除した後、共有フォルダにあるすべてのアバターが現在のバージョンにコピーされます。これが無効にしても共有アバターは失われません。"
-                    },
-                    "valid-btn": "アバターのリンクを解除"
-                },
-                "saber": {
-                    "title": "セーバーのリンクを解除",
-                    "desc": "セーバーのリンクを解除すると、このバージョンでは共有セーバーが使用できなくなります。",
-                    "keep-models": {
-                        "label": "セーバーを保持する",
-                        "title": "セーバーを保持すると、リンクを解除した後、共有フォルダにあるすべてのセーバーが現在のバージョンにコピーされます。これが無効にしても共有セーバーは失われません。"
-                    },
-                    "valid-btn": "セーバーのリンクを解除"
-                },
-                "platform": {
-                    "title": "プラットフォームのリンクを解除",
-                    "desc": "プラットフォームのリンクを解除すると、このバージョンでは共有プラットフォームが使用できなくなります。",
-                    "keep-models": {
-                        "label": "プラットフォームを保持する",
-                        "title": "プラットフォームを保持すると、リンクを解除した後、共有フォルダにあるすべてのプラットフォームが現在のバージョンにコピーされます。これが無効にしても共有プラットフォームは失われません。"
-                    },
-                    "valid-btn": "プラットフォームのリンクを解除"
-                },
-                "bloq": {
-                    "title": "ノーツのリンクを解除",
-                    "desc": "ノーツのリンクを解除すると、このバージョンでは共有ノーツが使用できなくなります。",
-                    "keep-models": {
-                        "label": "ノーツを保持する",
-                        "title": "ノーツを保持すると、リンクを解除した後、共有フォルダにあるすべてのノーツが現在のバージョンにコピーされます。これが無効にしても共有ノーツは失われません。"
-                    },
-                    "valid-btn": "ノーツのリンクを解除"
-                }
             }
         },
         "notifications": {
@@ -1164,14 +1141,6 @@
         "stop-download": "ダウンロードを停止",
         "cancel-download": "ダウンロードをキャンセル",
         "open-file": "ファイルを開く",
-        "link-playlists": "プレイリストをリンク",
-        "link-playlist-desc": "プレイリストをリンクすると、すべてのバージョン間でプレイリストを共有できます。リンクすると、このバージョンは共有プレイリストの恩恵を受けます",
-        "link-playlist-info": "プレイリストの追加と削除も共有されます",
-        "keep-playlists": "プレイリストを保持",
-        "keep-playlists-tip": "プレイリストを保持すると、現在のバージョンのプレイリストが共有プレイリストフォルダに移動されます。そうしない場合、それらは失われます",
-        "unlink-playlists": "プレイリストのリンクを解除",
-        "unlink-playlist-desc": "警告：プレイリストのリンクを解除すると、このバージョンでは共有プレイリストを使用できなくなります。",
-        "unlink-keep-playlists-tip": "プレイリストを保持すると、現在のバージョン用に共有プレイリストのコピーが作成されます。そうしない場合、このバージョンのプレイリストは保持されません。",
         "delete-playlist-ask": "プレイリストを削除しますか？",
         "delete-playlists-ask": "プレイリストを削除しますか？",
         "delete-playlist-desc": "プレイリスト「{playlistTitle}」を削除してもよろしいですか？",

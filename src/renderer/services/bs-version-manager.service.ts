@@ -1,5 +1,5 @@
 import { BSVersion } from "shared/bs-version.interface";
-import { BehaviorSubject, Observable, Subscription, lastValueFrom, shareReplay, throwError } from "rxjs";
+import { BehaviorSubject, Observable, Subscription, lastValueFrom, map, share, shareReplay, throwError } from "rxjs";
 import { IpcService } from "./ipc.service";
 import { ModalExitCode, ModalService } from "./modale.service";
 import { NotificationService } from "./notification.service";
@@ -19,6 +19,7 @@ export class BSVersionManagerService {
     private readonly progressBar: ProgressBarService;
     private readonly modals: ModalService;
 
+    private askInstalledVersionsObserver$: Observable<BSVersion[]> | null = null;
     public readonly installedVersions$: BehaviorSubject<BSVersion[]> = new BehaviorSubject([]);
     public readonly availableVersions$: BehaviorSubject<BSVersion[]> = new BehaviorSubject([]);
 
@@ -28,7 +29,9 @@ export class BSVersionManagerService {
         this.notification = NotificationService.getInstance();
         this.progressBar = ProgressBarService.getInstance();
         this.modals = ModalService.getInstance();
-        this.askAvailableVersions().then(() => this.askInstalledVersions());
+
+        this.askAvailableVersions();
+        this.askInstalledVersions();
     }
 
     public static getInstance() {
@@ -54,15 +57,47 @@ export class BSVersionManagerService {
         });
     }
 
-    public askInstalledVersions(): Promise<BSVersion[]> {
-        return lastValueFrom(this.ipcService.sendV2("bs-version.installed-versions")).then(res => {
-            this.setInstalledVersions(res);
-            return res;
-        });
+    public async askInstalledVersions(): Promise<BSVersion[]> {
+        if (this.askInstalledVersionsObserver$) {
+            return lastValueFrom(this.askInstalledVersionsObserver$);
+        }
+
+        this.askInstalledVersionsObserver$ = this.ipcService
+            .sendV2("bs-version.installed-versions")
+            .pipe(
+                map(versions => {
+                    let processed = BSVersionManagerService.sortVersions(versions);
+                    processed = BSVersionManagerService.removeDuplicateVersions(processed);
+                    return processed;
+                }),
+                share(),
+            );
+
+        return lastValueFrom(this.askInstalledVersionsObserver$)
+            .then(versions => {
+                this.setInstalledVersions(versions);
+                return versions;
+            })
+            .finally(() => {
+                this.askInstalledVersionsObserver$ = null;
+            });
     }
 
-    public isVersionInstalled(version: BSVersion): boolean {
-        return !!this.getInstalledVersions().find(v => v.BSVersion === version.BSVersion && v.steam === version.steam && v.oculus === version.oculus);
+    public async isVersionInstalled(version: BSVersion): Promise<boolean> {
+        try {
+            const versions: BSVersion[] = this.askInstalledVersionsObserver$
+                ? await lastValueFrom(this.askInstalledVersionsObserver$)
+                : this.getInstalledVersions();
+
+            return !!versions.find(v =>
+                v.BSVersion === version.BSVersion
+                && v.name === version.name
+                && v.steam === version.steam
+                && v.oculus === version.oculus
+            );
+        } catch (error) {
+            return false;
+        }
     }
 
     public async editVersion(version: BSVersion): Promise<BSVersion> {

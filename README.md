@@ -226,6 +226,10 @@
 -->
 <div>
   <h2><b>How to install?</b></h2>
+</div>
+
+<div>
+  <h3><b>Windows Installation</b></h3>
   <ul>
     <li>Download the <a href="https://github.com/Zagrios/bs-manager/releases/latest">latest release</a> from <a
         href="https://github.com/Zagrios/bs-manager/releases">Releases</a>.</li>
@@ -239,6 +243,10 @@
   <video src="https://github.com/Zagrios/bs-manager/assets/40648115/4215384e-eb68-40da-884c-f21df491ef75" />
 </div>
 
+<div>
+  <h3><b>Linux installation</b></h3>
+  <p>Refer to <a href="https://github.com/Zagrios/bs-manager/wiki/Linux">Linux wiki</a></p>
+</div>
 
 <!--
 ----------------------------------------
@@ -550,6 +558,8 @@
     <li><a href="https://github.com/Iluhadesu">Iluhadesu</a> - Co-Developer & Co-Founder, Discord Bot Developer.</li>
     <li><a href="https://github.com/GaetanGrd">GaetanGrd</a> - Co-Developer & Co-Founder, Documentation Lead.</li>
     <li><a href="https://github.com/cheddZy">cheddZy</a> - Icon Creator.</li>
+    <li><a href="https://github.com/Insprill">Insprill</a> - Co-Developer, Linux Developer, AUR Maintainer.</li>
+    <li><a href="https://github.com/silentrald">silentrald</a> - Co-Developer, Linux Developer, deb and flatpak Maintainer.</li>
   </ul>
 </div>
 
