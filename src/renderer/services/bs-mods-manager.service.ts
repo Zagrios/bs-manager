@@ -1,12 +1,12 @@
 import { Observable, BehaviorSubject, throwError, of, lastValueFrom } from "rxjs";
 import { catchError, map, tap } from "rxjs/operators";
 import { BSVersion } from "shared/bs-version.interface";
-import { Mod } from "shared/models/mods";
 import { IpcService } from "./ipc.service";
 import { ProgressBarService } from "./progress-bar.service";
 import { NotificationService } from "./notification.service";
 import { Progression } from "main/helpers/fs.helpers";
 import { ProgressionInterface } from "shared/models/progress-bar";
+import { BbmFullMod, BbmModVersion } from "shared/models/mods/mod.interface";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -32,15 +32,15 @@ export class BsModsManagerService {
         this.notifications = NotificationService.getInstance();
     }
 
-    public getAvailableMods(version: BSVersion): Observable<Mod[]> {
+    public getAvailableMods(version: BSVersion): Observable<BbmFullMod[]> {
         return this.ipcService.sendV2("bs-mods.get-available-mods", version);
     }
 
-    public getInstalledMods(version: BSVersion): Observable<Mod[]> {
+    public getInstalledMods(version: BSVersion): Observable<BbmModVersion[]> {
         return this.ipcService.sendV2("bs-mods.get-installed-mods", version);
     }
 
-    public installMods(mods: Mod[], version: BSVersion): Observable<Progression> {
+    public installMods(mods: BbmFullMod[], version: BSVersion): Observable<Progression> {
 
         if (!this.progressBar.require()) {
             return throwError(() => new Error("Action already in progress"));
@@ -72,7 +72,7 @@ export class BsModsManagerService {
         });
     }
 
-    public uninstallMod(mod: Mod, version: BSVersion): Observable<Progression> {
+    public uninstallMod(mod: BbmFullMod, version: BSVersion): Observable<Progression> {
         if (!this.progressBar.require()) {
             return throwError(() => new Error("Action already in progress"));
         }

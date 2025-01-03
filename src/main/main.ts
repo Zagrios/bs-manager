@@ -34,7 +34,7 @@ export const filterStrings = new Set<string>();
 export const filterPatterns = new Set<RegExp>();
 
 // Filter all occulus tokens
-filterPatterns.add(/FRL\S{10,}/g);
+filterPatterns.add(/(FRL|OC)\S{10,}/g);
 
 initLogger();
 deleteOlestLogs();

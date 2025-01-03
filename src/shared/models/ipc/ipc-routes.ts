@@ -11,7 +11,6 @@ import { DepotDownloaderEvent } from "../bs-version-download/depot-downloader.mo
 import { MSGetQuery, MSModel, MSModelType } from "../models/model-saber.model";
 import { ModelDownload } from "renderer/services/models-management/models-downloader.service";
 import { BsmLocalModel } from "../models/bsm-local-model.interface";
-import { Mod } from "../mods";
 import { BPList, DownloadPlaylistProgressionData } from "../playlists/playlist.interface";
 import { VersionLinkerAction } from "renderer/services/version-folder-linker.service";
 import { FileFilter, OpenDialogOptions, OpenDialogReturnValue } from "electron";
@@ -20,7 +19,7 @@ import { Supporter } from "../supporters";
 import { AppWindow } from "../window-manager/app-window.model";
 import { LocalBPList, LocalBPListsDetails } from "../playlists/local-playlist.models";
 import { StaticConfigGetIpcRequestResponse, StaticConfigKeys, StaticConfigSetIpcRequest } from "main/services/static-configuration.service";
-import { ExternalMod } from "../mods/mod.interface";
+import { BbmFullMod, BbmModVersion, ExternalMod } from "../mods/mod.interface";
 import { OculusDownloadInfo } from "main/services/bs-version-download/bs-oculus-downloader.service";
 
 export type IpcReplier<T> = (data: Observable<T>) => void;
@@ -83,11 +82,11 @@ export interface IpcChannelMapping {
     "delete-models": { request: BsmLocalModel[], response: Progression<BsmLocalModel[]> };
 
     /* ** bs-mods-ipcs ** */
-    "bs-mods.get-available-mods": { request: BSVersion, response: Mod[] };
-    "bs-mods.get-installed-mods": { request: BSVersion, response: Mod[] };
+    "bs-mods.get-available-mods": { request: BSVersion, response: BbmFullMod[] };
+    "bs-mods.get-installed-mods": { request: BSVersion, response: BbmModVersion[] };
     "bs-mods.import-mods": { request: { paths: string[]; version: BSVersion; }, response: Progression<ExternalMod> };
-    "bs-mods.install-mods": { request: { mods: Mod[]; version: BSVersion }, response: Progression };
-    "bs-mods.uninstall-mods": { request: { mods: Mod[]; version: BSVersion }, response: Progression };
+    "bs-mods.install-mods": { request: { mods: BbmFullMod[]; version: BSVersion }, response: Progression };
+    "bs-mods.uninstall-mods": { request: { mods: BbmFullMod[]; version: BSVersion }, response: Progression };
     "bs-mods.uninstall-all-mods": { request: BSVersion, response: Progression };
 
     /* ** bs-playlist-ipcs ** */
