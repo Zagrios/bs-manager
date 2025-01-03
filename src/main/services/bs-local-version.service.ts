@@ -8,7 +8,6 @@ import { ConfigurationService } from "./configuration.service";
 import { lstat, rename } from "fs/promises";
 import log from "electron-log";
 import { OculusService } from "./oculus.service";
-import { DownloadLinkType } from "shared/models/mods";
 import sanitize from "sanitize-filename";
 import { Progression, copyDirectoryWithJunctions, deleteFolder, ensurePathNotAlreadyExist, getFoldersInFolder, rxCopy } from "../helpers/fs.helpers";
 import { FolderLinkerService } from "./folder-linker.service";
@@ -240,16 +239,6 @@ export class BSLocalVersionService {
 
     public getVersionFolder(version: BSVersion): string{
         return version.name ?? version.BSVersion;
-    }
-
-    public getVersionType(version: BSVersion): DownloadLinkType {
-        if (version.steam) {
-            return "steam";
-        }
-        if (version.oculus) {
-            return "oculus";
-        }
-        return "universal";
     }
 
     private async getSteamVersion(): Promise<BSVersion> {
