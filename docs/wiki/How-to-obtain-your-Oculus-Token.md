@@ -28,9 +28,6 @@ In the developer tools :
 
 ![image](https://raw.githubusercontent.com/Zagrios/bs-manager/refs/heads/master/docs/assets/oculus-token.png)
 
-# Known bugs
-- ⁠[Nothing opens when I press `Ctrl`+`Shift`+`i`.](https://github.com/Zagrios/bs-manager/wiki/Nothing-opens-when-I-press-%60Ctrl%60%E2%80%90%60Shift%60%E2%80%90%60i%60.)﻿﻿
-
 # Solution 2 - Using the Oculus website
 
 ## Steps
@@ -47,5 +44,7 @@ In the developer tools :
 
 <img width="500" src="https://github.com/user-attachments/assets/8499035c-4e7c-423d-914d-f35b6a3d77af">
 
-
 Paste the token into BSManager or other trusted apps to manage your Beat Saber game and mods. Keep it confidential.
+
+# Known bugs
+- ⁠[Nothing opens when I press `Ctrl`+`Shift`+`i`.](https://github.com/Zagrios/bs-manager/wiki/Nothing-opens-when-I-press-%60Ctrl%60%E2%80%90%60Shift%60%E2%80%90%60i%60.)﻿﻿
