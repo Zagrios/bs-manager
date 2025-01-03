@@ -143,7 +143,9 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
 
     const importMods = (files: string[]): void => {
         setModsDropZoneOpen(false);
-        modsManager.importMods(files, version);
+        modsManager.importMods(files, version).then(() => {
+            loadMods();
+        });
     };
 
     const uninstallMod = (mod: BbmFullMod): void => {
