@@ -2,19 +2,19 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-button.component";
-import { useTranslation } from "renderer/hooks/use-translation.hook";
-import { Mod } from "shared/models/mods/mod.interface";
+import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
+import { BbmCategories, BbmFullMod } from "shared/models/mods/mod.interface";
 import { ModItem } from "./mod-item.component";
 
 type Props = {
-    modsMap: Map<string, Mod[]>;
-    installed: Map<string, Mod[]>;
-    modsSelected: Mod[];
-    onModChange: (selected: boolean, mod: Mod) => void;
-    moreInfoMod?: Mod;
-    onWantInfos: (mod: Mod) => void
+    modsMap: Map<BbmCategories, BbmFullMod[]>;
+    installed: Map<BbmCategories, BbmFullMod[]>;
+    modsSelected: BbmFullMod[];
+    onModChange: (selected: boolean, mod: BbmFullMod) => void;
+    moreInfoMod?: BbmFullMod;
+    onWantInfos: (mod: BbmFullMod) => void
     disabled?: boolean;
-    uninstallMod?: (mods: Mod) => void;
+    uninstallMod?: (mods: BbmFullMod) => void;
     uninstallAllMods?: () => void;
     unselectAllMods?: () => void;
     openModsDropZone?: () => void;
@@ -24,30 +24,31 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
 
     const [filter, setFilter] = useState("");
     const [filterEnabled, setFilterEnabled] = useState(false);
-    const t = useTranslation();
+    const { text: t } = useTranslationV2();
 
-    const installedModVersion = (key: string, mod: Mod): string => {
+    const installedModVersion = (key: BbmCategories, mod: BbmFullMod): string => {
         if (!installed?.get(key)) {
             return undefined;
         }
-        const installedMod = installed.get(key).find(m => m.name === mod.name);
+        const installedMod = installed.get(key).find(m => m.mod.id === mod.mod.id);
         if (!installedMod) {
             return undefined;
         }
-        return installedMod.version;
+        return installedMod.version.modVersion;
     };
 
-    const isDependency = (mod: Mod): boolean => {
-        return modsSelected.some(m => {
-            const deps = m.dependencies?.map(dep => Array.from(modsMap.values()).flat().find(m => dep.name === m.name)) ?? [];
-            if (deps.some(depMod => depMod.name === mod.name)) {
-                return true;
-            }
-            return deps.some(depMod => depMod.dependencies?.some(depModDep => depModDep.name === mod.name));
-        });
+    const getAvailableMods = (): BbmFullMod[] => {
+        return Array.from(modsMap.values()).flat();
+    }
+
+    const isDependency = (mod: BbmFullMod): boolean => {
+        const selectedModsDepsIds = modsSelected.flatMap(m => m.version.dependencies);
+        const modsDeps = getAvailableMods().filter(m => selectedModsDepsIds.includes(m.version.id));
+        const modsDepsDepsIds = modsDeps.flatMap(m => m.version.dependencies);
+        return selectedModsDepsIds.includes(mod.version.id) || modsDepsDepsIds.includes(mod.version.id);
     };
 
-    const isSelected = (mod: Mod): boolean => modsSelected.some(m => m.name === mod.name);
+    const isSelected = (mod: BbmFullMod): boolean => modsSelected.some(m => m.mod.id === mod.mod.id);
 
     const handleInput = (val: string) => setFilter(val.toLowerCase());
 
@@ -75,21 +76,20 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
                     ]} />
                 </span>
 
-                {Array.from(modsMap.keys()).map(
-                    key =>
-                        modsMap.get(key).some(mod => mod.name.toLowerCase().includes(filter)) && (
+                {Array.from(modsMap.keys()).map(key => modsMap.get(key).some(mod => mod.mod.name.toLowerCase().includes(filter)) && (
                             <ul key={key} className="contents">
                                 <h2 className="col-span-full py-1 font-bold pl-3">{key}</h2>
-                                {modsMap.get(key).map(mod => mod.name?.toLowerCase().includes(filter) && (
+                                {modsMap.get(key).map(mod => mod.mod.name.toLowerCase().includes(filter) && (
                                     <ModItem
-                                        key={mod.name}
+                                        key={mod.mod.id}
                                         className="contents bg-light-main-color-3 dark:bg-main-color-1 text-main-color-1 dark:text-light-main-color-1 hover:cursor-pointer"
-                                        mod={mod} installedVersion={installedModVersion(key, mod)}
+                                        mod={mod}
+                                        installedVersion={installedModVersion(key, mod)}
                                         isDependency={isDependency(mod)}
                                         isSelected={isSelected(mod)}
                                         onChange={val => onModChange(val, mod)}
                                         onWantInfo={onWantInfos}
-                                        wantInfo={mod.name === moreInfoMod?.name}
+                                        wantInfo={mod.mod.id === moreInfoMod?.mod.id}
                                         disabled={disabled}
                                         onUninstall={() => uninstallMod?.(mod)} />
                                 ))}
