@@ -1,14 +1,16 @@
 > [!WARNING]  
 >
-> Your token is a confidential piece of information. Possession of this token allows individuals to download applications, send messages, and perform other actions under your identity.
+> Your token is a confidential piece of information. Possession of this token allows individuals to download applications, send messages, among other actions, under your identity.
 >
-> You might wonder why it is necessary to provide this token to [BSManager](https://www.bsmanager.io). The reason is that [BSManager](https://www.bsmanager.io) requires the token to continue the download with Oculus. Once you've input the token, it is used exclusively to communicate with Oculus servers to verify that you are the rightful owner of the game.
+>However, you might wonder why it is necessary to provide this token to BSManager. The reason is that BSManager requires the token to continue the download with Oculus. Once you've input the token, it is used exclusively to communicate with Oculus servers to verify that you are the rightful owner of the game.
 
 ## Table of Contents
 
 - [Step 1 - Install and log into the Oculus Rift app](#step-1---install-and-log-into-the-oculus-rift-app)
 - [Step 2 - Open developer tools](#step-2---open-developer-tools)
 - [Step 3 - Copy your Token](#step-3---copy-your-token)
+
+# Solution 1 - Using the Oculus app
 
 ## Step 1 - Install and log into the Oculus Rift app
 
@@ -37,3 +39,23 @@ In the developer tools:
 <div align="center">
     <img src="../wiki/Guides/Login/Get-your-oculus-token/GetYourOculusToken.png" alt="GetYourOculusToken.png" />
 </div>
+
+# Solution 2 - Using the Oculus website
+
+## Steps
+
+1. Log in to your Meta account at https://secure.oculus.com 
+2. Open the developer tools in your web browser:
+   - Chrome/Edge/Firefox: Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> or <kbd>F12</kbd>
+   - Safari: Press <kbd>Option</kbd>+<kbd>Command</kbd>+<kbd>I</kbd>
+3. Go to the "Application" tab
+4. Expand "Cookies" in the left sidebar 
+5. Click on `https://secure.oculus.com`
+6. Find the cookie named `oc_ac_at` (value starts with `OC`)
+7. Copy the entire `oc_ac_at` cookie value - this is your token
+
+<div align="center">
+    <img src="../wiki/Guides/Login/Get-your-oculus-token/GetYourOculusToken.png" alt="GetYourOculusTokenBrowser.png" />
+</div>
+
+Paste the token into BSManager or other trusted apps to manage your Beat Saber game and mods. Keep it confidential.
