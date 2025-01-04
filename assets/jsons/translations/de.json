@@ -693,15 +693,6 @@
                 "do-not-remind": "Nicht mehr daran erinnern",
                 "ok": "Ok"
             }
-        },
-        "mods-version-compare": {
-            "title": "Vergleich der Mod-Versionen",
-            "select-version": "Wählen Sie eine Version",
-            "mod-types": {
-                "all": "Alle",
-                "installed": "Installiert",
-                "not-installed": "Nicht installiert"
-            }
         }
     },
     "modals": {
@@ -961,6 +952,16 @@
         },
         "bs-version-outdated": {
             "body": "Die Version {outdatedVersion} ist veraltet, und einige Mods oder Funktionen funktionieren möglicherweise nicht mehr wie erwartet. Bitte lade die neueste empfohlene Version ({recommendedVersion}) von Beat Saber herunter, um die neuesten Funktionen und Fehlerbehebungen zu nutzen."
+        },
+        "mods-version-compare": {
+            "title": "Mods Versionsvergleich",
+            "select-version": "Wählen Sie eine Version",
+            "mod-types": {
+                "all": "Alle",
+                "installed": "Installiert",
+                "not-installed": "Nicht installiert",
+                "missing": "Fehlend"
+            }
         }
     },
     "maps": {

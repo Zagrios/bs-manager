@@ -693,15 +693,6 @@
                 "do-not-remind": "No volver a recordármelo",
                 "ok": "Ok"
             }
-        },
-        "mods-version-compare": {
-            "title": "Comparación de versiones de mods",
-            "select-version": "Seleccione una versión",
-            "mod-types": {
-                "all": "Todo",
-                "installed": "Instalado",
-                "not-installed": "No instalado"
-            }
         }
     },
     "modals": {
@@ -961,6 +952,16 @@
         },
         "bs-version-outdated": {
             "body": "La versión {outdatedVersion} está obsoleta, y algunos mods o funciones pueden no funcionar como se espera. Por favor, descarga la última versión recomendada ({recommendedVersion}) de Beat Saber para disfrutar de las últimas funciones y correcciones de errores."
+        },
+        "mods-version-compare": {
+            "title": "Comparación de versiones de mods",
+            "select-version": "Seleccionar una versión",
+            "mod-types": {
+                "all": "Todos",
+                "installed": "Instalado",
+                "not-installed": "No instalado",
+                "missing": "Faltante"
+            }
         }
     },
     "maps": {
