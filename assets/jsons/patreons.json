@@ -127,5 +127,9 @@
 	},
     {
 		"username": "Paul Smith"
+	},
+    {
+		"username": "MunityVR",
+		"type": "gold"
 	}
 ]
