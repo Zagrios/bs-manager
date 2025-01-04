@@ -8,12 +8,10 @@
 - [Windows Installation](#windows-installation)
     - [Install a Version with Steam](#install-a-version-with-steam)
     - [Install a Version with Oculus Store (PCVR)](#install-a-version-with-oculus-store-pcvr)
-
 - [Linux Installation](#linux-installation)
     - [Using Ubuntu, Debian (deb)](#using-ubuntu-debian-deb)
     - [Using Arch (AUR)](#using-arch-aur)
     - [Using Flatpak (Universal)](#using-flatpak-universal)
-
 - [How to Import a Version](#how-to-import-a-version)
 
 ## Windows Installation
