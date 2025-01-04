@@ -10,7 +10,7 @@ Our comprehensive guides are crafted to assist you in maximizing BSManager's cap
 
 Step-by-step instructions to install BSManager on your system and keep it up to date
 
-- [install BSManager on linux](install-bsmanager-on-linux)
+- [Install BSManager on linux](install-bsmanager-on-linux)
 - [Install or import a version](install-or-import-a-version)
 - [Create a shortcut](create-a-shortcut)
 
