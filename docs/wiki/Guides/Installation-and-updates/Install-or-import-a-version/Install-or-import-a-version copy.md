@@ -53,7 +53,7 @@
 
 ### Using Ubuntu, Debian (deb)
 
-### PPA Repository
+#### PPA Repository
 
 Refer to [bs-manager-deb](https://github.com/silentrald/bs-manager-deb).
 
@@ -71,7 +71,7 @@ Install the `bs-manager` package using `apt`:
 sudo apt install bs-manager
 ```
 
-### dpkg Install
+#### dpkg Install
 
 Download the `.deb` file from the releases page and run the following command:
 
@@ -85,7 +85,7 @@ dpkg -i ./bsmanager.deb
 > - Download the latest `.deb` file from the releases page; or
 > - Install through the PPA repository to enable automatic updates with `sudo apt update && sudo apt upgrade`.
 
-### Using Arch (AUR)
+#### Using Arch (AUR)
 
 Refer to [bs-manager-git](https://aur.archlinux.org/packages/bs-manager-git).
 
