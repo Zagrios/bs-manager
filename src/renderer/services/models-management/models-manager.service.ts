@@ -5,8 +5,6 @@ import { MODEL_TYPE_FOLDERS } from "shared/models/models/constants";
 import { Observable, lastValueFrom, map } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { ModalExitCode, ModalService } from "../modale.service";
-import { LinkModelsModal } from "renderer/components/modal/modal-types/models/link-models-modal.component";
-import { UnlinkModelsModal } from "renderer/components/modal/modal-types/models/unlink-models-modal.component";
 import { Progression } from "main/helpers/fs.helpers";
 import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 import { ProgressBarService } from "../progress-bar.service";
@@ -14,6 +12,8 @@ import { ProgressionInterface } from "shared/models/progress-bar";
 import { NotificationService } from "../notification.service";
 import { ConfigurationService } from "../configuration.service";
 import { DeleteModelsModal } from "renderer/components/modal/modal-types/models/delete-models-modal.component";
+import { LinkContentModal } from "renderer/components/modal/modal-types/link-contents-modal.component";
+import { UnlinkContentsModal } from "renderer/components/modal/modal-types/unlink-contents-modal.component";
 
 export class ModelsManagerService {
     private static instance: ModelsManagerService;
@@ -72,7 +72,7 @@ export class ModelsManagerService {
     }
 
     public async linkModels(type: MSModelType, version?: BSVersion): Promise<boolean> {
-        const res = await this.modalService.openModal(LinkModelsModal, {data: type});
+        const res = await this.modalService.openModal(LinkContentModal, {data: { version, contentType: `${type}s` as any }});
 
         if (res.exitCode !== ModalExitCode.COMPLETED) {
             return null;
@@ -86,7 +86,7 @@ export class ModelsManagerService {
     }
 
     public async unlinkModels(type: MSModelType, version?: BSVersion): Promise<boolean> {
-        const res = await this.modalService.openModal(UnlinkModelsModal, {data: type});
+        const res = await this.modalService.openModal(UnlinkContentsModal, {data: { version, contentType: `${type}s` as any }});
 
         if (res.exitCode !== ModalExitCode.COMPLETED) {
             return null;

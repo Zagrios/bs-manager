@@ -3,8 +3,8 @@ import { pathExistsSync } from "fs-extra";
 import path from "path";
 import { PROTON_BINARY_PREFIX, WINE_BINARY_PREFIX } from "main/constants";
 import { Observable, Subject } from "rxjs";
-import { BSVersion } from "shared/bs-version.interface";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
+import { BSVersion } from "shared/bs-version.interface";
 
 export class StaticConfigurationService {
     private static instance: StaticConfigurationService;
@@ -88,10 +88,12 @@ export interface StaticConfigKeyValues {
     "song-details-cache-etag": string;
     "disable-hadware-acceleration": boolean;
     "use-symlinks": boolean;
+    "use-system-proxy": boolean;
+    "last-version-launched": BSVersion;
 
     // Linux Specific static configs
-    "versions": BSVersion[];
     "proton-folder": string;
+    "versions": BSVersion[];
 };
 
 export type StaticConfigKeys = keyof StaticConfigKeyValues;

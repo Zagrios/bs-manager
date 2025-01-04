@@ -182,6 +182,10 @@ export class VersionFolderLinkerService {
     public relinkAllVersionsFolders(): Observable<void> {
         return this.ipcService.sendV2("relink-all-versions-folders");
     }
+
+    public getSharedFolder(): Observable<string> {
+        return this.ipcService.sendV2("get-shared-folder");
+    }
 }
 
 export const enum VersionLinkerActionType {

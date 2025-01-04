@@ -31,7 +31,7 @@ export class AutoUpdaterService {
         this.ipcService = IpcService.getInstance();
     }
 
-    public isUpdateAvailable(): Promise<boolean> {
+    public async isUpdateAvailable(): Promise<boolean> {
         return lastValueFrom(this.ipcService.sendV2("check-update")).catch(() => false);
     }
 

@@ -2,7 +2,6 @@ export enum DepotDownloaderEventType {
     Error = "Error",
     Warning = "Warning",
     Info = "Info",
-    
 }
 
 export interface DepotDownloaderEvent<T = unknown> {
@@ -27,6 +26,8 @@ export enum DepotDownloaderInfoEvent {
 }
 
 export enum DepotDownloaderErrorEvent {
+    ExeNotFoundWindows = "ExeNotFoundWindows",
+    ExeNotFoundLinux = "ExeNotFoundLinux",
     Password = "Password",
     InvalidCredentials = "InvalidCredentials",
     NoManifest = "NoManifest",
