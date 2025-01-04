@@ -959,7 +959,8 @@
             "mod-types": {
                 "all": "All",
                 "installed": "Installed",
-                "not-installed": "Not Installed"
+                "not-installed": "Not Installed",
+                "missing": "Missing"
             }
         }
     },
