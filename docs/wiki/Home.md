@@ -46,7 +46,7 @@ Our troubleshooting section is here to help you resolve common issues quickly an
 
 ### 💾 Installation Problems: Guidance on fixing errors during setup or version updates
 
-- Linux
+- __🐧Linux__:
     - [Missing Icons in Game]([Linux]-Missing-Icons-in-Game)
     - [Permission Denied on "bs-versions.json"]([Linux]-Permission-Denied-on-bs-version.json)
     - [[deb] The SUID Sandbox Helper Binary Was Found]([Linux]-[deb]-The-SUID-Sandbox-Helper-Binary-Was-Found)
