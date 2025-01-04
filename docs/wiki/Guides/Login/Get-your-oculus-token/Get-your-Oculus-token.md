@@ -15,7 +15,7 @@
 1. Download the Oculus Rift app setup from the [Meta website](https://www.oculus.com/rift/setup/).
 2. Install the Oculus Rift app on your computer.
 
-> 📍 **If you bought Beat Saber from the Quest store, it won't appear in your Rift library by default. To download it with [BSManager](https://www.bsmanager.io), first claim it from its store page.**
+> 📍 __If you bought Beat Saber from the Quest store, it won't appear in your Rift library by default. To download it with [BSManager](https://www.bsmanager.io), first claim it from its store page.__
 
 ## Step 2 - Open developer tools
 
@@ -26,11 +26,11 @@
 
 In the developer tools:
 
-1. Open the **`Network`** tab.
-2. Filter for **`graph`**.
+1. Open the __`Network`__ tab.
+2. Filter for __`graph`__.
 3. Click on the first request that appears.
-4. Open the **`Payload`** tab.
-5. Scroll to the bottom to locate your token. It should start with **`FRL`**.
+4. Open the __`Payload`__ tab.
+5. Scroll to the bottom to locate your token. It should start with __`FRL`__.
 6. Select the token using your mouse and press `Ctrl` + `C` to copy it.
 
 <div align="center">

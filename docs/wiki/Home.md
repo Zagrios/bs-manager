@@ -21,12 +21,12 @@ Guidance on logging into BSManager to access all features
 
 ### 🎮 Content Management
 
-- **🗺️ Maps**: Learn how to download and organize custom maps for endless entertainment.
+- __🗺️ Maps__: Learn how to download and organize custom maps for endless entertainment.
     - [Install any map](install-any-map)
     - [Install all playlists you want](install-all-playlists-you-want)
-- **🧩 Mods**: Discover how to install, update, and manage mods to enhance your gameplay.
+- __🧩 Mods__: Discover how to install, update, and manage mods to enhance your gameplay.
     - [Install mods on your version](install-mods-on-your-version)
-- **🖼️ Models**: Find out how to integrate custom models into your Beat Saber experience.
+- __🖼️ Models__: Find out how to integrate custom models into your Beat Saber experience.
     - [Modify models in your Beat Saber](modify-models-in-your-beat-saber)
 
 ### 🤝 Contribution
