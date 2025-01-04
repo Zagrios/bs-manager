@@ -53,5 +53,5 @@
 5. Wait a few moments. The imported version should appear alongside the others in the version list.
 
 <div align="center">
-  <video src="../wiki/Guides/Installation-and-updates/Install-or-import-a-version/wiki/Guides/Installation-and-updates/Install-or-import-a-version/ImportVersion.mov" alt="ImportVersion.mov"/>
+  <video src="../wiki/Guides/Installation-and-updates/Install-or-import-a-version/ImportVersion2.mov" alt="ImportVersion.mov"/>
 </div>
