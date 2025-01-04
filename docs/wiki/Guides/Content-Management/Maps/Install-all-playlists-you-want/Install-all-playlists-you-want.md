@@ -17,7 +17,8 @@
 5. Copy and paste the downloaded __`.bplist`__ files of your custom playlists into this folder.
 6. Launch the game with BSM, navigate to your playlist, click on it, and download it.
 
-> ⚠️ __Caution:__ Exercise caution when downloading custom playlists for Beat Saber. Only use reliable sources to avoid any risks to your computer.
+> [!WARNING]  
+> Exercise caution when downloading custom playlists for Beat Saber. Only use reliable sources to avoid any risks to your computer.
 
 ## One-Click Installation
 

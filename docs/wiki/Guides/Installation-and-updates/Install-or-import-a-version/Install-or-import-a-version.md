@@ -1,4 +1,4 @@
-> ## ⚠️ Important ⚠️
+> [!WARNING]  
 >
 > [BSManager](https://www.bsmanager.io) does not store your login information. It uses the open-source tool [`DepotDownloader`](https://github.com/SteamRE/DepotDownloader) to download versions of Beat Saber.
 
@@ -23,7 +23,7 @@
 
 ## Install a Version with Oculus Store (PCVR)
 
-> ## 📍 Important
+> [!IMPORTANT]  
 >
 > - Ensure that Beat Saber is in your __Oculus PCVR__ library to enable downgrading.
 > - You must run Beat Saber at least once on your computer before attempting to launch retrograde Oculus versions from [BSManager](https://www.bsmanager.io).
@@ -41,7 +41,7 @@
 
 ## How to Import a Version
 
-> ## 📍 Important
+> [!IMPORTANT]  
 >
 > - You will need to download a version of Beat Saber yourself before you can import it.
 > - The [BSManager](https://www.bsmanager.io) team provides tutorials like [this one](https://steamcommunity.com/sharedfiles/filedetails/?id=1805934840) to help you download official versions of Beat Saber. However, no team member will offer assistance for cracked versions.

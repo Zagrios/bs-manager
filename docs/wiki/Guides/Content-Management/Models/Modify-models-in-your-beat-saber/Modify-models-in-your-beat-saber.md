@@ -1,4 +1,4 @@
-> ## ⚠️ Important ⚠️
+> [!WARNING]  
 >
 > __The models require mods to work properly! Don’t forget to download them!__
 >

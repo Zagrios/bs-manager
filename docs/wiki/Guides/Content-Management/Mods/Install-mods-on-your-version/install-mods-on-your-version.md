@@ -15,7 +15,8 @@
 
 ## Manual Installation
 
-> ## 📍 This guide assumes your game already has core mods installed
+> [!IMPORTANT]
+> This guide assumes your game already has core mods installed
 >
 > If it doesn't: open [BSManager](https://www.bsmanager.io), select the game version you want to mod, go to the Mods tab, and click __`Install or Update`__. Then, run your game once, go to the main menu, and close it. ℹ️*
 
@@ -25,7 +26,7 @@
 4. Installing Different Types of Mods:
     - __For mods that come as a single `.dll` file:__ If the mod consists of a single __`.dll`__ file, copy this file into the __`Plugins`__ folder in the directory you opened in step 2.
 
-        > ### 📍 Note
+        > [!NOTE]
         >
         > Do __not__ place files in __`Beat Saber_Data\Plugins`__. If you do not see a __`Plugins`__ folder directly in the folder you opened in step 2, make sure you have core mods installed and have run your game at least once after installing mods.
 

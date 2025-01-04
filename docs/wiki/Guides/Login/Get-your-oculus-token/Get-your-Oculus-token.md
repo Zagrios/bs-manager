@@ -1,4 +1,4 @@
-> ## ⚠️ Important ⚠️
+> [!WARNING]  
 >
 > Your token is a confidential piece of information. Possession of this token allows individuals to download applications, send messages, and perform other actions under your identity.
 >
@@ -15,7 +15,8 @@
 1. Download the Oculus Rift app setup from the [Meta website](https://www.oculus.com/rift/setup/).
 2. Install the Oculus Rift app on your computer.
 
-> 📍 __If you bought Beat Saber from the Quest store, it won't appear in your Rift library by default. To download it with [BSManager](https://www.bsmanager.io), first claim it from its store page.__
+> [!NOTE]  
+>__If you bought Beat Saber from the Quest store, it won't appear in your Rift library by default. To download it with [BSManager](https://www.bsmanager.io), first claim it from its store page.__
 
 ## Step 2 - Open developer tools
 
