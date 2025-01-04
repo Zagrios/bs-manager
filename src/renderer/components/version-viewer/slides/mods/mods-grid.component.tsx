@@ -78,7 +78,7 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
 
                 {Array.from(modsMap.keys()).map(key => modsMap.get(key).some(mod => mod.mod.name.toLowerCase().includes(filter)) && (
                             <ul key={key} className="contents">
-                                <h2 className="col-span-full py-1 font-bold pl-3">{key}</h2>
+                                <h2 className="col-span-full py-1 font-bold pl-3 capitalize">{key}</h2>
                                 {modsMap.get(key).map(mod => mod.mod.name.toLowerCase().includes(filter) && (
                                     <ModItem
                                         key={mod.mod.id}
