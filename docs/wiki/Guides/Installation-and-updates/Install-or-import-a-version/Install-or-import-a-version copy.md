@@ -85,7 +85,7 @@ dpkg -i ./bsmanager.deb
 > - Download the latest `.deb` file from the releases page; or
 > - Install through the PPA repository to enable automatic updates with `sudo apt update && sudo apt upgrade`.
 
-#### Using Arch (AUR)
+### Using Arch (AUR)
 
 Refer to [bs-manager-git](https://aur.archlinux.org/packages/bs-manager-git).
 
