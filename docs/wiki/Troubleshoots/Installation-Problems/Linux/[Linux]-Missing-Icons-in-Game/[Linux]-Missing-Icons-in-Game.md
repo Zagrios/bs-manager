@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="../wiki/Troubleshoots/Installation-Problems/Linux/[Linux]-Missing-Icons-in-Game/linux-missing-icons.png" alt="Linux Missing Icons" width="300"/>
+    <img src="../wiki/Troubleshoots/Installation-Problems/Linux/%5BLinux%5D-Missing-Icons-in-Game/linux-missing-icons.png" alt="Linux Missing Icons" width="300"/>
     <br>
     NOTE: "?" are missing unicode icons
 </p>
