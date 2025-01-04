@@ -20,6 +20,8 @@ import { SteamLauncherService } from "./steam-launcher.service";
 import { OculusLauncherService } from "./oculus-launcher.service";
 import { BSVersion } from "shared/bs-version.interface";
 import { BsStore } from "../../../shared/models/bs-store.enum";
+import { LaunchMod, LaunchMods } from "shared/models/bs-launch/launch-option.interface";
+import { StaticConfigurationService } from "../static-configuration.service";
 
 export class BSLauncherService {
     private static instance: BSLauncherService;
@@ -31,6 +33,7 @@ export class BSLauncherService {
     private readonly remoteVersion: BSVersionLibService;
     private readonly steamLauncher: SteamLauncherService;
     private readonly oculusLauncher: OculusLauncherService;
+    private readonly staticConfig: StaticConfigurationService;
 
     public static getInstance(): BSLauncherService {
         if (!BSLauncherService.instance) {
@@ -47,6 +50,7 @@ export class BSLauncherService {
         this.remoteVersion = BSVersionLibService.getInstance();
         this.steamLauncher = SteamLauncherService.getInstance();
         this.oculusLauncher = OculusLauncherService.getInstance();
+        this.staticConfig = StaticConfigurationService.getInstance();
 
         this.bsmProtocolService.on("launch", link => {
             log.info("Launch from bsm protocol", link.toString());
@@ -72,6 +76,8 @@ export class BSLauncherService {
             return throwError(() => new Error("Unable to get launcher for the provided version"));
         }
 
+        this.staticConfig.set("last-version-launched", launchOptions.version);
+
         return launcher.launch(launchOptions);
     }
 
@@ -94,6 +100,14 @@ export class BSLauncherService {
     }
 
     private shortcutParamsToLaunchOption(params: ShortcutParams): LaunchOption{
+
+        const launchMods: LaunchMod[] = [];
+
+        if(params.oculusMode === "true"){ launchMods.push(LaunchMods.OCULUS); }
+        if(params.desktopMode === "true"){ launchMods.push(LaunchMods.FPFC); }
+        if(params.debug === "true"){ launchMods.push(LaunchMods.DEBUG); }
+        if(params.skipSteam === "true"){ launchMods.push(LaunchMods.SKIP_STEAM); }
+
         const res: LaunchOption = {
             version: {
                 BSVersion: params.version,
@@ -102,10 +116,8 @@ export class BSLauncherService {
                 oculus: params.versionOculus === "true",
                 ino: +params.versionIno
             },
-            oculus: params.oculusMode === "true",
-            desktop: params.desktopMode === "true",
-            debug: params.debug === "true",
-            additionalArgs: params.additionalArgs
+            additionalArgs: params.additionalArgs,
+            launchMods,
         };
 
         return res;
@@ -119,10 +131,12 @@ export class BSLauncherService {
         if(launchOptions.version.oculus){ res.versionOculus = `${launchOptions.version.oculus}`; }
         if(launchOptions.version.ino){ res.versionIno = `${launchOptions.version.ino}`; }
 
-        if(launchOptions.oculus){ res.oculusMode = "true"; }
-        if(launchOptions.desktop){ res.desktopMode = "true"; }
-        if(launchOptions.debug){ res.debug = "true"; }
+        if(launchOptions.launchMods?.includes(LaunchMods.OCULUS)){ res.oculusMode = "true"; }
+        if(launchOptions.launchMods?.includes(LaunchMods.FPFC)){ res.desktopMode = "true"; }
+        if(launchOptions.launchMods?.includes(LaunchMods.DEBUG)){ res.debug = "true"; }
         if(launchOptions.additionalArgs){ res.additionalArgs = launchOptions.additionalArgs; }
+        if(launchOptions.launchMods?.includes(LaunchMods.SKIP_STEAM)){ res.skipSteam = "true"; }
+        if(launchOptions.launchMods?.includes(LaunchMods.PROTON_LOGS)){ res.protonLogs = "true"; }
 
         return res;
     }
@@ -239,6 +253,8 @@ type ShortcutParams = {
     desktopMode?: string;
     debug?: string;
     additionalArgs?: string[];
+    skipSteam?: string;
+    protonLogs?: string;
     version: string;
     versionName?: string;
     versionIno?: string;

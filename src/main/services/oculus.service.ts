@@ -4,16 +4,16 @@ import log from "electron-log";
 import { lstat } from "fs-extra";
 import { tryit } from "../../shared/helpers/error.helpers";
 import { shell } from "electron";
-import { taskRunning } from "../helpers/os.helpers";
+import { isProcessRunning } from "../helpers/os.helpers";
 import { sToMs } from "../../shared/helpers/time.helpers";
 import { execOnOs } from "../helpers/env.helpers";
+import { UtilsService } from "./utils.service";
+import { exec } from "child_process";
 
 const { list } = (execOnOs({ win32: () => require("regedit-rs") }, true) ?? {}) as typeof import("regedit-rs");
 
 export class OculusService {
     private static instance: OculusService;
-
-    private oculusLibraries: OculusLibrary[];
 
     public static getInstance(): OculusService {
         if (!OculusService.instance) {
@@ -22,7 +22,14 @@ export class OculusService {
         return OculusService.instance;
     }
 
-    private constructor() {}
+
+    private readonly utils: UtilsService;
+
+    private oculusLibraries: OculusLibrary[];
+
+    private constructor() {
+        this.utils = UtilsService.getInstance();
+    }
 
     public async getOculusLibs(): Promise<OculusLibrary[]> {
         if (process.platform !== "win32") {
@@ -99,7 +106,7 @@ export class OculusService {
     }
 
     public oculusRunning(): Promise<boolean> {
-        return taskRunning("OculusClient");
+        return isProcessRunning("OculusClient");
     }
 
     public async startOculus(): Promise<void>{
@@ -119,6 +126,67 @@ export class OculusService {
                 reject(new Error("Unable to open Oculus"));
             }, sToMs(30));
         });
+    }
+
+    public async isSideLoadedAppsEnabled(): Promise<boolean> {
+        if(process.platform !== "win32"){
+            log.info("Cannot check sideloaded apps on non-windows platforms");
+            throw new Error("Cannot check sideloaded apps on non-windows platforms");
+        }
+
+        const regPath = "HKLM\\SOFTWARE\\Wow6432Node\\Oculus VR, LLC\\Oculus";
+        const res = await list(regPath).then(res => res[regPath]);
+
+        if(!res.exists){
+            log.info("Registry key not found", regPath);
+            return false;
+        }
+
+        const value = res.values?.AllowDevSideloaded;
+
+        if(!value){
+            log.info("Registry value not found", "AllowDevSideloaded");
+            return false;
+        }
+
+        return value.value === 1;
+    }
+
+    public async enableSideloadedApps(): Promise<void> {
+        if(process.platform !== "win32"){
+            log.info("Cannot enable sideloaded apps on non-windows platforms");
+            return;
+        }
+
+        const enabled = await this.isSideLoadedAppsEnabled();
+
+        if(enabled){
+            log.info("Sideloaded apps already enabled");
+            return;
+        }
+
+        const exePath = path.join(this.utils.getAssetsScriptsPath(), "oculus-allow-dev-sideloaded.exe");
+
+        return new Promise((resolve, reject) => {
+            log.info("Enabling sideloaded apps");
+            const process = exec(exePath);
+            process.on("exit", code => {
+                if(code === 0){
+                    resolve();
+                } else {
+                    reject(new Error(`Failed to enable sideloaded apps, exit code: ${code}`));
+                }
+            });
+
+            process.on("error", err => {
+                log.error("Error while enabling sideloaded apps", err);
+                reject(err);
+            });
+
+            process.stdout.on("data", data => {
+                log.info(data.toString?.() ?? data);
+            });
+        })
     }
 }
 

@@ -1,7 +1,7 @@
 import { BsOculusDownloaderService } from "../../services/bs-version-download/bs-oculus-downloader.service";
 import { BsSteamDownloaderService } from "../../services/bs-version-download/bs-steam-downloader.service";
 import { IpcService } from "../../services/ipc.service";
-import { of } from "rxjs";
+import { from, of } from "rxjs";
 import { BSLocalVersionService } from "../../services/bs-local-version.service";
 
 const ipc = IpcService.getInstance();
@@ -42,14 +42,29 @@ ipc.on("send-input-bs-download", (args, reply) => {
 
 // #region Oculus
 
-ipc.on("bs-oculus-download", async (args, reply) => {
+ipc.on("bs-oculus-download", (args, reply) => {
     const oculusDownloader = BsOculusDownloaderService.getInstance();
     reply(oculusDownloader.downloadVersion(args));
 });
 
-ipc.on("bs-oculus-stop-download", async (_, reply) => {
+ipc.on("bs-oculus-stop-download", (_, reply) => {
     const oculusDownloader = BsOculusDownloaderService.getInstance();
     reply(of(oculusDownloader.stopDownload()));
+});
+
+ipc.on("login-with-meta", (stay, reply) => {
+    const oculusDownloader = BsOculusDownloaderService.getInstance();
+    reply(from(oculusDownloader.getUserTokenFromMetaAuth(stay)));
+});
+
+ipc.on("delete-meta-session", (_, reply) => {
+    const oculusDownloader = BsOculusDownloaderService.getInstance();
+    reply(from(oculusDownloader.clearAuthToken()));
+});
+
+ipc.on("meta-session-exists", (_, reply) => {
+    const oculusDownloader = BsOculusDownloaderService.getInstance();
+    reply(from(oculusDownloader.metaSessionExists()));
 });
 
 // #endregion

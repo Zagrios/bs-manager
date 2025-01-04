@@ -69,8 +69,8 @@ export class LocalPlaylistsManagerService {
         this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.BeatSaver, link => {
             log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.BeatSaver, link);
             const url = new URL(link);
-            const bplistUrl = url.host === "playlist" ? url.pathname.replace("/", "") : "";
-            this.windows.openWindow(`oneclick-download-playlist.html?playlistUrl=${bplistUrl}`);
+            const bplistUrl = url.host === "playlist" ? url.pathname.replace("/", "") + url.search : "";
+            this.windows.openWindow(`oneclick-download-playlist.html?playlistUrl=${encodeURIComponent(bplistUrl)}`);
         });
 
         this.fileAssociation.registerFileAssociation(".bplist", filePath => {

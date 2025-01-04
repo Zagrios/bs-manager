@@ -1,6 +1,6 @@
 import { BSVersion } from "shared/bs-version.interface";
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { TabNavBar } from "renderer/components/shared/tab-nav-bar.component";
 import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-button.component";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
@@ -21,6 +21,10 @@ import { CreateLaunchShortcutModal } from "renderer/components/modal/modal-types
 import { lastValueFrom } from "rxjs";
 import { NotificationService } from "renderer/services/notification.service";
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
+import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
+import { safeLt } from "shared/helpers/semver.helpers";
+import { ConfigurationService } from "renderer/services/configuration.service";
+import { logRenderError } from "renderer";
 
 export function VersionViewer() {
 
@@ -31,10 +35,40 @@ export function VersionViewer() {
     const ipcService = useService(IpcService);
     const bsLauncher = useService(BSLauncherService);
     const notification = useService(NotificationService);
+    const config = useService(ConfigurationService);
 
-    const { state } = useLocation() as { state: BSVersion };
+    const { state, pathname: url } = useLocation() as { state: BSVersion; pathname: string };
     const navigate = useNavigate();
     const [currentTabIndex, setCurrentTabIndex] = useState(0);
+
+    useOnUpdate(() => {
+
+        checkIsVersionOutaded();
+
+    }, [state]);
+
+    const checkIsVersionOutaded = async () => {
+
+        if(config.get("not-show-bs-version-outdated-notification")){
+            return;
+        }
+
+        const recommended = bsVersionManagerService.getRecommendedVersion();
+        const isOutdated = safeLt(state.BSVersion, recommended?.BSVersion);
+
+        if(!isOutdated){
+            return;
+        }
+
+        const res = await notification.notifyWarning({ title: "notifications.bs-version-oudated.title", desc: "notifications.bs-version-oudated.msg", duration: 9000, actions: [
+            { id: "0", title: "notifications.bs-version-oudated.actions.do-not-remind" },
+            { id: "1", title: "notifications.bs-version-oudated.actions.ok", cancel: true }
+        ] });
+
+        if(res === "0"){
+            config.set("not-show-bs-version-outdated-notification", true);
+        }
+    }
 
     const navigateToVersion = (version?: BSVersion) => {
         if (!version) {
@@ -97,6 +131,13 @@ export function VersionViewer() {
                 desc: "notifications.create-launch-shortcut.error.msg"
             });
         });
+    }
+
+    // If state/version is not properly set, or becomes null for some reason
+    //   redirect user to the available-versions page
+    if (!state) {
+        logRenderError(`Missing state/version for "${url}"`);
+        return <Navigate to="/available-versions" replace />;
     }
 
     return (

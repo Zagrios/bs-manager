@@ -8,7 +8,6 @@ import { ConfigurationService } from "./configuration.service";
 import { lstat, rename } from "fs/promises";
 import log from "electron-log";
 import { OculusService } from "./oculus.service";
-import { DownloadLinkType } from "shared/models/mods";
 import sanitize from "sanitize-filename";
 import { Progression, copyDirectoryWithJunctions, deleteFolder, ensurePathNotAlreadyExist, getFoldersInFolder, rxCopy } from "../helpers/fs.helpers";
 import { FolderLinkerService } from "./folder-linker.service";
@@ -18,6 +17,7 @@ import { Observable, Subject, catchError, finalize, from, map, switchMap, throwE
 import { BsStore } from "../../shared/models/bs-store.enum";
 import { CustomError } from "../../shared/models/exceptions/custom-error.class";
 import crypto from "crypto";
+import { StaticConfigurationService } from "./static-configuration.service";
 
 
 export class BSLocalVersionService {
@@ -32,6 +32,7 @@ export class BSLocalVersionService {
     private readonly remoteVersionService: BSVersionLibService;
     private readonly configService: ConfigurationService;
     private readonly linker: FolderLinkerService;
+    private readonly staticConfig: StaticConfigurationService;
     private readonly _loadedVersions$: Subject<BSVersion[]>;
 
     public static getInstance(): BSLocalVersionService {
@@ -48,6 +49,7 @@ export class BSLocalVersionService {
         this.remoteVersionService = BSVersionLibService.getInstance();
         this.configService = ConfigurationService.getInstance();
         this.linker = FolderLinkerService.getInstance();
+        this.staticConfig = StaticConfigurationService.getInstance();
 
         this._loadedVersions$ = new Subject<BSVersion[]>();
     }
@@ -104,6 +106,7 @@ export class BSLocalVersionService {
 
         const versionFilePath = path.join(bsPath, 'Beat Saber_Data', 'globalgamemanagers');
         const folderVersion = await this.getVersionFromGlobalGameManagerFile(versionFilePath);
+        folderVersion.path = bsPath;
 
         if(!folderVersion){ return null; }
 
@@ -170,6 +173,24 @@ export class BSLocalVersionService {
         this.setCustomVersions([...this.getCustomVersions() ?? [], version]);
     }
 
+    private updateLastVersionLaunched(version: BSVersion, editedVersion: BSVersion): void {
+        const lastVersion = this.staticConfig.get("last-version-launched");
+        if (!lastVersion) {
+            return;
+        }
+
+        if (
+            version.BSVersion !== lastVersion.BSVersion
+            || version.name !== lastVersion.name
+            || version.steam !== lastVersion.steam
+            || version.oculus !== lastVersion.oculus
+        ) {
+            return;
+        }
+
+        this.staticConfig.set("last-version-launched", editedVersion);
+    }
+
     private getCustomVersions(): BSVersion[]{
         return this.configService.get<BSVersion[]>(this.CUSTOM_VERSIONS_KEY) || [];
     }
@@ -218,16 +239,6 @@ export class BSLocalVersionService {
 
     public getVersionFolder(version: BSVersion): string{
         return version.name ?? version.BSVersion;
-    }
-
-    public getVersionType(version: BSVersion): DownloadLinkType {
-        if (version.steam) {
-            return "steam";
-        }
-        if (version.oculus) {
-            return "oculus";
-        }
-        return "universal";
     }
 
     private async getSteamVersion(): Promise<BSVersion> {
@@ -316,6 +327,7 @@ export class BSLocalVersionService {
         if(oldPath === newPath){
             this.deleteCustomVersion(version);
             this.addCustomVersion(editedVersion);
+            this.updateLastVersionLaunched(version, editedVersion);
             return editedVersion;
         }
 
@@ -326,6 +338,7 @@ export class BSLocalVersionService {
         return rename(oldPath, newPath).then(() => {
             this.deleteCustomVersion(version);
             this.addCustomVersion(editedVersion);
+            this.updateLastVersionLaunched(version, editedVersion);
             return editedVersion;
         }).catch((err: Error) => {
             log.error("edit version error", err, version, name, color);
