@@ -104,6 +104,25 @@
                             "subtext": "Перетащите сюда файлы \".bplist\" или \".json\" для их импорта"
                         }
                     }
+                },
+                "sort": {
+                    "name": "Имя",
+                    "song-author": "Автор песни",
+                    "map-author": "Автор карты",
+                    "bpm": "BPM",
+                    "duration": "Длительность",
+                    "likes": "Лайки",
+                    "date-uploaded": "Дата загрузки"
+                }
+            },
+            "playlists": {
+                "sort": {
+                    "title": "Заголовок",
+                    "author": "Автор",
+                    "number-of-maps": "Количество карт",
+                    "duration": "Длительность",
+                    "min-notes-per-second": "Минимальное количество нот в секунду",
+                    "max-notes-per-second": "Максимальное количество нот в секунду"
                 }
             },
             "mods": {

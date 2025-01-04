@@ -24,7 +24,7 @@ import { DeletePlaylistModal } from "renderer/components/modal/modal-types/playl
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { PlaylistItemComponentPropsMapper } from "shared/mappers/playlist/playlist-item-component-props.mapper";
 import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual-scroll.component";
-import { LocalPlaylistFilter } from "./local-playlist-filter-panel.component";
+import { LocalPlaylistFilter, LocalPlaylistSort } from "./local-playlist-filter-panel.component";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import BeatConflict from "../../../../../assets/images/apngs/beat-conflict.png";
@@ -48,6 +48,7 @@ type Props = {
     search?: string;
     linkedState?: FolderLinkState;
     isActive?: boolean;
+    sort: LocalPlaylistSort;
 };
 
 export type LocalPlaylistsListRef = {
@@ -57,7 +58,15 @@ export type LocalPlaylistsListRef = {
     exportPlaylists: () => Promise<void>;
 }
 
-export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(({ version, className, filter: playlistFiler, search, isActive, linkedState }, forwardedRef) => {
+export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(({
+    version,
+    className,
+    filter: playlistFilter,
+    search,
+    isActive,
+    linkedState,
+    sort: playlistSort,
+}, forwardedRef) => {
 
     const t = useTranslation();
 
@@ -397,27 +406,31 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
             if(!p.playlistTitle?.toLowerCase().includes(search.toLowerCase())){ return false; }
             if(!p.playlistAuthor?.toLowerCase().includes(search.toLowerCase())){ return false; }
 
-            if(typeof p.nbMaps === "number" && (typeof playlistFiler?.minNbMaps === "number" || typeof playlistFiler?.maxNbMaps === "number")){
-                if(playlistFiler?.minNbMaps && p.nbMaps < playlistFiler.minNbMaps){ return false; }
-                if(playlistFiler?.maxNbMaps && p.nbMaps > playlistFiler.maxNbMaps){ return false; }
+            if(typeof p.nbMaps === "number" && (typeof playlistFilter?.minNbMaps === "number" || typeof playlistFilter?.maxNbMaps === "number")){
+                if(playlistFilter?.minNbMaps && p.nbMaps < playlistFilter.minNbMaps){ return false; }
+                if(playlistFilter?.maxNbMaps && p.nbMaps > playlistFilter.maxNbMaps){ return false; }
             }
 
-            if(typeof p.nbMappers === "number" && (typeof playlistFiler?.minNbMappers === "number" || typeof playlistFiler?.maxNbMappers === "number")){
-                if(playlistFiler?.minNbMappers && p.nbMappers < playlistFiler.minNbMappers){ return false; }
-                if(playlistFiler?.maxNbMappers && p.nbMappers > playlistFiler.maxNbMappers){ return false; }
+            if(typeof p.nbMappers === "number" && (typeof playlistFilter?.minNbMappers === "number" || typeof playlistFilter?.maxNbMappers === "number")){
+                if(playlistFilter?.minNbMappers && p.nbMappers < playlistFilter.minNbMappers){ return false; }
+                if(playlistFilter?.maxNbMappers && p.nbMappers > playlistFilter.maxNbMappers){ return false; }
             }
 
-            if(typeof p.duration === "number" && (typeof playlistFiler?.minDuration === "number" || typeof playlistFiler?.maxDuration === "number")){
-                if(playlistFiler?.minDuration && p.duration < playlistFiler.minDuration){ return false; }
-                if(playlistFiler?.maxDuration && p.duration > playlistFiler.maxDuration){ return false; }
+            if(typeof p.duration === "number" && (typeof playlistFilter?.minDuration === "number" || typeof playlistFilter?.maxDuration === "number")){
+                if(playlistFilter?.minDuration && p.duration < playlistFilter.minDuration){ return false; }
+                if(playlistFilter?.maxDuration && p.duration > playlistFilter.maxDuration){ return false; }
             }
 
-            if(typeof p.minNps === "number" && typeof playlistFiler.minNps === "number" && p.minNps < playlistFiler.minNps){ return false; }
-            if(typeof p.maxNps === "number" && typeof playlistFiler.maxNps === "number" && p.maxNps > playlistFiler.maxNps){ return false; }
+            if(typeof p.minNps === "number" && typeof playlistFilter.minNps === "number" && p.minNps < playlistFilter.minNps){ return false; }
+            if(typeof p.maxNps === "number" && typeof playlistFilter.maxNps === "number" && p.maxNps > playlistFilter.maxNps){ return false; }
 
             return true;
-        });
-    }, [playlists, search, playlistFiler]);
+        })
+        .sort((playlist1, playlist2) =>
+              playlistSort.compare(playlist1, playlist2)
+              * (playlistSort.ascending ? 1 : -1)
+        );
+    }, [playlists, search, playlistFilter, playlistSort]);
 
     return (
         <div className={className}>
