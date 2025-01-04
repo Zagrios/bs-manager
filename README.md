@@ -289,7 +289,7 @@
 <div>
   <ul>
     <li><strong>via Oculus</strong>: For Oculus users, <a href="https://github.com/Zagrios/bs-manager">BSManager</a>
-      requires you to retrieve a connection token by following the instructions in this guide: <a href="https://github.com/Zagrios/bs-manager/wiki/How-to-obtain-your-Oculus-Token">How to obtain your Oculus Token</a>. Once obtained, please insert it into the form.</li>
+      requires you to retrieve a connection token by following the instructions in this guide: <a href="https://github.com/Zagrios/bs-manager/wiki/get-your-oculus-token">How to obtain your Oculus Token</a>. Once obtained, please insert it into the form.</li>
   </ul>
 </div>
 

@@ -137,7 +137,7 @@ const EnterOculusTokenView = ({onValid, onCancel, alreadyHaveToken}: {onValid: (
     return (
         <>
             <p>{t("modals.enter-meta-token.body.info-enter-token")}</p>
-            <a href="https://github.com/Zagrios/bs-manager/wiki/How-to-obtain-your-Oculus-Token" target="_blank" className="underline">{t("modals.enter-meta-token.body.how-obtain-token")}</a>
+            <a href="https://github.com/Zagrios/bs-manager/wiki/get-your-oculus-token" target="_blank" className="underline">{t("modals.enter-meta-token.body.how-obtain-token")}</a>
 
             <div className="flex flex-col gap-2">
                 <div>
