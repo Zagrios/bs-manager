@@ -27,4 +27,4 @@
 1. Launch [BSManager](https://www.bsmanager.io) and make sure that the One-Click installation feature is enabled for models.
 2. Go to one of the supported websites and search for the models you want to install.
 3. Once you've found the models, click on the __`One-Click`__ or __`Install`__ button on the website.
-4. A pop-up window will appear, asking for confirmation. Click on **`Yes`** to proceed with the installation.
+4. A pop-up window will appear, asking for confirmation. Click on __`Yes`__ to proceed with the installation.
