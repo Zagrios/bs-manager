@@ -1,6 +1,18 @@
+
+## Table of Contents
+
+- [Windows Installation](#windows-installation)
+    - [Install a Version with Steam](#install-a-version-with-steam)
+    - [Install a Version with Oculus Store (PCVR)](#install-a-version-with-oculus-store-pcvr)
+- [Linux Installation](#linux-installation)
+    - [Using Ubuntu, Debian (deb)](#using-ubuntu-debian-deb)
+    - [Using Arch (AUR)](#using-arch-aur)
+    - [Using Flatpak (Universal)](#using-flatpak-universal)
+- [How to Import a Version](#how-to-import-a-version)
+
 # Windows Installation
 
-<details><summary><h5>Install a Version with Steam</h5></summary>
+## Install a Version with Steam
 
 1. Download and install [BSManager](https://www.bsmanager.io) from [GitHub](https://github.com/Zagrios/bs-manager/releases/latest), [Nexus Mods](https://www.nexusmods.com/beatsaber/mods/18?tab=images), or the [official website](https://www.bsmanager.io).
 2. Open the **`Add Versions`** interface and select the version you wish to download.
@@ -12,9 +24,8 @@
 <div align="center">
     <img src="../wiki/Guides/Installation-and-updates/Install-or-import-a-version/SteamLogin.png" alt="SteamLogin.png" />
 </div>
-</details>
 
-<details><summary><h5>Install a Version with Oculus Store (PCVR)</h5></summary>
+## Install a Version with Oculus Store (PCVR)
 
 > [!IMPORTANT]
 >
@@ -31,13 +42,12 @@
 <div align="center">
     <img src="../wiki/Guides/Installation-and-updates/Install-or-import-a-version/OculusLogin.png" alt="OculusLogin.png" />
 </div>
-</details>
 
 # Linux Installation
 
-<details><summary><h5>Using Ubuntu, Debian (deb)</h5></summary>
+## Using Ubuntu, Debian (deb)
 
-<details><summary><h4>PPA Repository</h4></summary>
+## PPA Repository
 
 Refer to [bs-manager-deb](https://github.com/silentrald/bs-manager-deb).
 
@@ -55,9 +65,7 @@ Install the `bs-manager` package using `apt`:
 sudo apt install bs-manager
 ```
 
-</details>
-
-<details><summary><h4>dpkg Install</h4></summary>
+## dpkg Install
 
 Download the `.deb` file from the releases page and run the following command:
 
@@ -71,17 +79,13 @@ dpkg -i ./bsmanager.deb
 > - Download the latest `.deb` file from the releases page; or
 > - Install through the PPA repository to enable automatic updates with `sudo apt update && sudo apt upgrade`.
 
-</details>
-</details>
-
-<details><summary><h5>Using Arch (AUR)</h5></summary>
+## Using Arch (AUR)
 
 Refer to [bs-manager-git](https://aur.archlinux.org/packages/bs-manager-git).
 
 To install AUR packages, you need to install [yay](https://github.com/Jguer/yay).
-</details>
 
-<details><summary><h5>Using Flatpak (Universal)</h5></summary>
+## Using Flatpak (Universal)
 
 This method works on any Linux distribution. Ensure `flatpak` is installed on your system. If not, visit [Flatpak](https://flatpak.org/setup/) for a setup guide tailored to your distro.
 
@@ -101,12 +105,10 @@ sudo flatpak remote-add --if-not-exists --system flathub https://flathub.org/rep
 flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
 ```
 
-</details>
-
 # How to Import a Version
 
-> [!IMPORTANT]  
->
+> [!IMPORTANT]
+> 
 > - You will need to download a version of Beat Saber yourself before you can import it.
 > - The [BSManager](https://www.bsmanager.io) team provides tutorials like [this one](https://steamcommunity.com/sharedfiles/filedetails/?id=1805934840) to help you download official versions of Beat Saber. However, no team member will offer assistance for cracked versions.
 
