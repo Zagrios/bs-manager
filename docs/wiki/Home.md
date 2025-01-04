@@ -8,7 +8,7 @@ Our comprehensive guides are crafted to assist you in maximizing BSManager's cap
 
 ### 🛠️ Installation and Updates
 
-Step-by-step instructions to install BSManager on your system and keep it up-to-date
+Step-by-step instructions to install BSManager on your system and keep it up to date
 
 - [Install or import a version](install-or-import-a-version)
 - [Create a shortcut](create-a-shortcut)
@@ -22,18 +22,18 @@ Guidance on logging into BSManager to access all features
 ### 🎮 Content Management
 
 - **🗺️ Maps**: Learn how to download and organize custom maps for endless entertainment.
-    - [Install any maps](install-any-maps)
+    - [Install any map](install-any-map)
     - [Install all playlists you want](install-all-playlists-you-want)
 - **🧩 Mods**: Discover how to install, update, and manage mods to enhance your gameplay.
     - [Install mods on your version](install-mods-on-your-version)
 - **🖼️ Models**: Find out how to integrate custom models into your Beat Saber experience.
-    - [Modify models in your beat Saber](modify-models-in-your-beat-saber)
+    - [Modify models in your Beat Saber](modify-models-in-your-beat-saber)
 
 ### 🤝 Contribution
 
 Information on how to contribute to the development and improvement of BSManager
 
-- [Help us to update the wiki](help-us-to-update-the-wiki)
+- [Help us update the wiki](help-us-update-the-wiki)
 - [Contribute to the project](https://github.com/Zagrios/bs-manager/blob/master/CONTRIBUTING.md)
 
 ## 🐞 Troubleshooting
@@ -52,10 +52,10 @@ Steps to gather logs and identify specific issues
 
 - [How to find your logs](how-to-find-your-logs)
 - [Submitting a bug report](https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&projects=&template=1-bug-report.yaml&title=%5BBUG%5D+%3A+)
-  
+
 ***
 
-We are committed to keeping this wiki up-to-date with the latest information and best practices. Your contributions are welcome; please refer to our [Help us to update the wiki](help-us-to-update-the-wiki) to get started.
+We are committed to keeping this wiki up to date with the latest information and best practices. Your contributions are welcome; please refer to our [Help us update the wiki](help-us-update-the-wiki) to get started.
 
 For additional support and community interaction, join our [Discord server](https://discord.gg/uSqbHVpKdV).
 
