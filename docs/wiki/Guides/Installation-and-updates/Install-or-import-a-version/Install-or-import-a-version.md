@@ -10,7 +10,7 @@
 
 ## Install a Version with Steam
 
-1. Download and install [BSManager](https://www.bsmanager.io) from [GitHub](https://github.com/Zagrios/bs-manager/releases/latest), [Nexus Mods](https://www.nexusmods.com/beatsaber/mods/18?tab=images), or the [official website](https://www.bsmanager.io).
+1. Download and install [BSManager](https://www.bsmanager.io) from [GitHub](https://github.com/Zagrios/bs-manager/releases/latest), [Nexus Mods](https://www.nexusmods.com/beatsaber/mods/18?tab=files), or the [official website](https://www.bsmanager.io).
 2. Open the __`Add Versions`__ interface and select the version you wish to download.
 3. Choose __`Steam`__ as your platform.
 4. Enter your Steam credentials (ID and password) or scan the QR code using the Steam app on your phone.
@@ -28,7 +28,7 @@
 > - Ensure that Beat Saber is in your __Oculus PCVR__ library to enable downgrading.
 > - You must run Beat Saber at least once on your computer before attempting to launch retrograde Oculus versions from [BSManager](https://www.bsmanager.io).
 
-1. Download and install [BSManager](https://www.bsmanager.io) from [GitHub](https://github.com/Zagrios/bs-manager/releases/latest), [Nexus Mods](https://www.nexusmods.com/beatsaber/mods/18?tab=images), or the [official website](https://www.bsmanager.io).
+1. Download and install [BSManager](https://www.bsmanager.io) from [GitHub](https://github.com/Zagrios/bs-manager/releases/latest), [Nexus Mods](https://www.nexusmods.com/beatsaber/mods/18?tab=files), or the [official website](https://www.bsmanager.io).
 2. Open the __`Add Versions`__ interface and select the version you wish to download.
 3. Choose __`Oculus Store`__ as your platform.
 4. Follow [this guide](Get-your-Oculus-token) to obtain your Oculus token.
