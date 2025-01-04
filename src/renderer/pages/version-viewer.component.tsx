@@ -120,7 +120,7 @@ export function VersionViewer() {
         const { exitCode, data } = await modalService.openModal(CreateLaunchShortcutModal, {data: state});
         if(exitCode !== ModalExitCode.COMPLETED){ return; }
 
-        lastValueFrom(bsLauncher.createLaunchShortcut(data)).then(() => {
+        lastValueFrom(bsLauncher.createLaunchShortcut(data.launchOption)).then(() => {
             notification.notifySuccess({
                 title: "notifications.create-launch-shortcut.success.title",
                 desc: "notifications.create-launch-shortcut.success.msg"
