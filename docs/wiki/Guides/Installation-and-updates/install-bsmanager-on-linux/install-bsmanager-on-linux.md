@@ -78,25 +78,3 @@ Flatpak also supports sandboxing which gives the minimal access to your machine.
 [Proton](https://github.com/ValveSoftware/Proton) is needed to run the Beat Saber executable under Linux. You need to download this from either from Steam or building it from their GitHub repo.
 
 Once Proton is installed, when you open your BSManager application for the first time, it will ask you to link the _Proton Folder_. The _Proton Folder_ also verifies if the `proton` and `files/bin/wine64` binaries exists. Once set, you should be able to launch the Beat Saber (using `proton`) and install mods (using `files/bin/wine64`). You can still change the _Proton Folder_ in the **settings page** if any new version of Steam Proton is downloaded.
-
-# Troubleshooting
-
-## Missing Icons in game
-
-
-
-## Permission denied on "bs-versions.json"
-
-
-
-## [deb] The SUID sandbox helper binary was found
-
-
-
-## [Flatpak] Steam Beat Saber version not showing / Proton not detected
-
-
-
-## [Flatpak] Changing installation folder
-
-
