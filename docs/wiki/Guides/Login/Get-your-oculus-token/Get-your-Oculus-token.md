@@ -55,7 +55,7 @@ In the developer tools:
 7. Copy the entire `oc_ac_at` cookie value - this is your token
 
 <div align="center">
-    <img src="../wiki/Guides/Login/Get-your-oculus-token/GetYourOculusToken.png" alt="GetYourOculusTokenBrowser.png" />
+    <img src="../wiki/Guides/Login/Get-your-oculus-token/GetYourOculusTokenBrowser.png" alt="GetYourOculusTokenBrowser.png" />
 </div>
 
 Paste the token into BSManager or other trusted apps to manage your Beat Saber game and mods. Keep it confidential.
