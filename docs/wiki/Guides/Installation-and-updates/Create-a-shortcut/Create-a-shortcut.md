@@ -15,10 +15,6 @@
 4. Choose your launch options.
 5. Click on __`Create a Shortcut`__. It should now appear on your desktop.
 
-<div align="center">
-  <video src="https://github.com/Zagrios/bs-manager/assets/40648115/bfa1e97d-6392-4dec-a1fc-bb05048cf6d2" />
-</div>
-
 ### On Taskbar
 
 1. Open Notepad and drag & drop the version shortcut you need.

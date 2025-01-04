@@ -51,7 +51,3 @@
 3. Select the __`Import a Version`__ option.
 4. Choose the file containing the version to be imported.
 5. Wait a few moments. The imported version should appear alongside the others in the version list.
-
-<div align="center">
-  <video src="../wiki/Guides/Installation-and-updates/Install-or-import-a-version/ImportVersion2.mov" alt="ImportVersion.mov"/>
-</div>
