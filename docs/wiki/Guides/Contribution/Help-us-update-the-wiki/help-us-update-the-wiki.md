@@ -53,6 +53,6 @@ git push origin master
 Once your changes are ready:
 
 1. Go to the __[original repository](https://github.com/Zagrios/bs-manager)__ on GitHub.
-2. Click the __Pull Requests__ tab, then __New Pull Request__.
+2. Click the __`Pull Requests`__ tab, then __`New Pull Request`__.
 3. Compare changes between your fork and the original repository.
 4. Add a clear description of your changes and submit the pull request.
