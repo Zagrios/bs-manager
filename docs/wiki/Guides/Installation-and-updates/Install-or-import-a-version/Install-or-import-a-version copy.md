@@ -1,4 +1,8 @@
 
+> [!WARNING]  
+>
+> [BSManager](https://www.bsmanager.io) does not store your login information. It uses the open-source tool [`DepotDownloader`](https://github.com/SteamRE/DepotDownloader) to download versions of Beat Saber.
+
 ## Table of Contents
 
 - [Windows Installation](#windows-installation)
