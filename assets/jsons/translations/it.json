@@ -123,6 +123,7 @@
                         "description": "Descrizione",
                         "dropdown": {
                             "import-mods": "Importa mod",
+                            "compare-mods": "Confronta i mod",
                             "uninstall-all": "Disinstalla tutto",
                             "unselect-all": "Deseleziona tutto"
                         }
@@ -878,30 +879,40 @@
         "valid-btn": "Valida"
     },
     "launch-as-admin": {
-        "title": "Permessi di Amministratore",
-        "body": {
-            "info": "Steam è stato rilevato come in esecuzione con permessi di amministratore. Per comunicare con Steam, Beat Saber deve essere avviato anche come amministratore. Altrimenti, Beat Saber potrebbe riscontrare problemi e chiudersi dopo l'avvio.",
-            "info-2": "Avviare Beat Saber in modalità amministratore darà anche diritti di amministratore alle mod installate. Pertanto, è consigliato riavviare Steam senza permessi di amministratore.",
-            "info-3": "Si sconsiglia di dare diritti di amministratore a Steam, poiché questo influisce sui giochi e le mod installate, presentando un rischio per la sicurezza."
+            "title": "Permessi di Amministratore",
+            "body": {
+                "info": "Steam è stato rilevato come in esecuzione con permessi di amministratore. Per comunicare con Steam, Beat Saber deve essere avviato anche come amministratore. Altrimenti, Beat Saber potrebbe riscontrare problemi e chiudersi dopo l'avvio.",
+                "info-2": "Avviare Beat Saber in modalità amministratore darà anche diritti di amministratore alle mod installate. Pertanto, è consigliato riavviare Steam senza permessi di amministratore.",
+                "info-3": "Si sconsiglia di dare diritti di amministratore a Steam, poiché questo influisce sui giochi e le mod installate, presentando un rischio per la sicurezza."
+            },
+            "launch-as-admin": "Avvia come Amministratore",
+            "not-remind-me": "Non ricordarmelo"
         },
-        "launch-as-admin": "Avvia come Amministratore",
-        "not-remind-me": "Non ricordarmelo"
-    },
-    "ask-install-path": {
-        "title": "Cartella di installazione",
-        "choose-folder-description": "Scegli la cartella che conterrà tutti i contenuti scaricati da BSManager. (versioni, mod, mappe, playlist, ecc.)",
-        "default": "Predefinito",
-        "default-tooltip": "Predefinito nella tua cartella home"
-    },
-    "choose-proton-folder": {
-        "title": "Cartella di Proton",
-        "proton-folder-description": "Su Linux, BSManager richiede Proton per funzionare. Scegli la cartella di installazione di Proton per continuare.",
-        "proton-folder-placeholder": "Cartella di installazione di Proton",
-        "where-is-proton-installed": "Dove è installato Proton?"
-    },
-    "bs-version-outdated": {
-        "body": "La versione {outdatedVersion} è obsoleta, e alcune mod o funzioni potrebbero non funzionare più come previsto. Per favore scarica l'ultima versione raccomandata ({recommendedVersion}) di Beat Saber per godere delle ultime funzioni e bugfix."
-    }
+        "ask-install-path": {
+            "title": "Cartella di installazione",
+            "choose-folder-description": "Scegli la cartella che conterrà tutti i contenuti scaricati da BSManager. (versioni, mod, mappe, playlist, ecc.)",
+            "default": "Predefinito",
+            "default-tooltip": "Predefinito nella tua cartella home"
+        },
+        "choose-proton-folder": {
+            "title": "Cartella di Proton",
+            "proton-folder-description": "Su Linux, BSManager richiede Proton per funzionare. Scegli la cartella di installazione di Proton per continuare.",
+            "proton-folder-placeholder": "Cartella di installazione di Proton",
+            "where-is-proton-installed": "Dove è installato Proton?"
+        },
+        "bs-version-outdated": {
+            "body": "La versione {outdatedVersion} è obsoleta, e alcune mod o funzioni potrebbero non funzionare più come previsto. Per favore scarica l'ultima versione raccomandata ({recommendedVersion}) di Beat Saber per godere delle ultime funzioni e bugfix."
+        },
+        "mods-version-compare": {
+            "title": "Confronto delle versioni dei mod",
+            "select-version": "Seleziona una versione",
+            "mod-types": {
+                "all": "Tutti",
+                "installed": "Installato",
+                "not-installed": "Non installato",
+                "missing": "Mancante"
+            }
+        }
     },
     "maps": {
         "map-filter-panel": {
