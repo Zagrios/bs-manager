@@ -1,10 +1,14 @@
 import { BSVersion } from "shared/bs-version.interface";
 
 export function getVersionName(version: BSVersion) {
-    let { name } = version;
-    if (!name) {
-        name = version.steam
-            ? "Steam" : "Oculus";
+    if (version.steam) {
+        return `${version.BSVersion} - Steam`;
     }
-    return `${version.BSVersion} - ${name}`;
+
+    if (version.oculus) {
+        return `${version.BSVersion} - Oculus`;
+    }
+
+    const { name } = version;
+    return name ? `${version.BSVersion} - ${name}` : version.BSVersion;
 }
