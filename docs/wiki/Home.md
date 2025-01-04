@@ -44,7 +44,9 @@ Our troubleshooting section is here to help you resolve common issues quickly an
 
 <!-- ### ⚙️ Connection Issues: Solutions for problems related to connecting BSManager to required services. -->
 
-### 💾 Installation Problems: Guidance on fixing errors during setup or version updates
+### 💾 Installation Problems
+
+Guidance on fixing errors during setup or version updates
 
 - __🐧Linux__:
     - [Missing Icons in Game]([Linux]-Missing-Icons-in-Game)
