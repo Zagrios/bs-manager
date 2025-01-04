@@ -1,6 +1,6 @@
 # Windows Installation
 
-<details><summary><h2>Install a Version with Steam</h2></summary>
+<details><summary><h3>Install a Version with Steam</h3></summary>
 
 1. Download and install [BSManager](https://www.bsmanager.io) from [GitHub](https://github.com/Zagrios/bs-manager/releases/latest), [Nexus Mods](https://www.nexusmods.com/beatsaber/mods/18?tab=images), or the [official website](https://www.bsmanager.io).
 2. Open the **`Add Versions`** interface and select the version you wish to download.
@@ -14,7 +14,7 @@
 </div>
 </details>
 
-<details><summary><h2>Install a Version with Oculus Store (PCVR)</h2></summary>
+<details><summary><h3>Install a Version with Oculus Store (PCVR)</h3></summary>
 
 > [!IMPORTANT] 
 >
@@ -35,9 +35,9 @@
 
 # Linux Installation
 
-<details><summary><h2>Using Ubuntu, Debian (deb)</h2></summary>
+<details><summary><h3>Using Ubuntu, Debian (deb)</h3></summary>
 
-<details><summary><h3>PPA Repository</h3></summary>
+<details><summary><h4>PPA Repository</h4></summary>
 
 Refer to [bs-manager-deb](https://github.com/silentrald/bs-manager-deb).
 
@@ -57,7 +57,7 @@ sudo apt install bs-manager
 
 </details>
 
-<details><summary><h3>dpkg Install</h3></summary>
+<details><summary><h4>dpkg Install</h4></summary>
 
 Download the `.deb` file from the releases page and run the following command:
 
@@ -74,14 +74,14 @@ dpkg -i ./bsmanager.deb
 </details>
 </details>
 
-<details><summary><h2>Using Arch (AUR)</h2></summary>
+<details><summary><h3>Using Arch (AUR)</h3></summary>
 
 Refer to [bs-manager-git](https://aur.archlinux.org/packages/bs-manager-git).
 
 To install AUR packages, you need to install [yay](https://github.com/Jguer/yay).
 </details>
 
-<details><summary><h2>Using Flatpak (Universal)</h2></summary>
+<details><summary><h3>Using Flatpak (Universal)</h3></summary>
 
 This method works on any Linux distribution. Ensure `flatpak` is installed on your system. If not, visit [Flatpak](https://flatpak.org/setup/) for a setup guide tailored to your distro.
 
