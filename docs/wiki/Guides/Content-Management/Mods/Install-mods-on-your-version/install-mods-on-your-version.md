@@ -15,7 +15,7 @@
 
 ## Manual Installation
 
-> ## 📍 This guide assumes your game already has core mods installed.
+> ## 📍 This guide assumes your game already has core mods installed
 >
 > If it doesn't: open [BSManager](https://www.bsmanager.io), select the game version you want to mod, go to the Mods tab, and click __`Install or Update`__. Then, run your game once, go to the main menu, and close it. ℹ️*
 
