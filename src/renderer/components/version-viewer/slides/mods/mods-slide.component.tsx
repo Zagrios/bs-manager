@@ -9,7 +9,7 @@ import BeatWaitingImg from "../../../../../../assets/images/apngs/beat-waiting.p
 import BeatConflictImg from "../../../../../../assets/images/apngs/beat-conflict.png";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { lastValueFrom } from "rxjs";
-import { useTranslation, useTranslationV2 } from "renderer/hooks/use-translation.hook";
+import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { useInView } from "framer-motion";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
@@ -319,7 +319,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
 }
 
 function ModStatus({ text, image, spin = false, children }: { text: string; image: string; spin?: boolean, children?: ReactNode}) {
-    const t = useTranslation();
+    const { text: t } = useTranslationV2();
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center text-gray-800 dark:text-gray-200">
