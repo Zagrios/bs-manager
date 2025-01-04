@@ -10,6 +10,7 @@ Our comprehensive guides are crafted to assist you in maximizing BSManager's cap
 
 Step-by-step instructions to install BSManager on your system and keep it up to date
 
+- [install BSManager on linux](install-bsmanager-on-linux)
 - [Install or import a version](install-or-import-a-version)
 - [Create a shortcut](create-a-shortcut)
 
@@ -43,7 +44,14 @@ Our troubleshooting section is here to help you resolve common issues quickly an
 
 <!-- ### ⚙️ Connection Issues: Solutions for problems related to connecting BSManager to required services. -->
 
-<!-- ### 💾 Installation Problems: Guidance on fixing errors during setup or version updates. -->
+### 💾 Installation Problems: Guidance on fixing errors during setup or version updates
+
+- Linux
+    - [Missing Icons in Game]([Linux]-Missing-Icons-in-Game)
+    - [Permission Denied on "bs-versions.json"]([Linux]-Permission-Denied-on-bs-version.json)
+    - [[deb] The SUID Sandbox Helper Binary Was Found]([Linux]-[deb]-The-SUID-Sandbox-Helper-Binary-Was-Found)
+    - [[Flatpak] Steam Beat Saber Version Not Showing / Proton Not Detected]([Linux]-[Flatpak]-Steam-Beat-Saber-Version-Not-Showing-Proton-Not-Detected)
+    - [[Flatpak] Changing Installation Folder]([Linux]-[Flatpak]-Changing-Installation-Folder)
 
 <!-- ### 🎮 Gameplay Issues: Fixes for issues impacting Beat Saber performance. -->
 

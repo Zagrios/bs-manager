@@ -1,4 +1,12 @@
-# Linux Guide
+## Table of Contents
+
+- [Installation](#installation)
+    - [Ubuntu, Debian (deb)](#ubuntu-debian-deb)
+        - [PPA Repository](#ppa-repository)
+        - [dpkg Install](#dpkg-install)
+    - [Arch (AUR)](#arch-aur)
+    - [Universal (flatpak)](#universal-flatpak)
+- [Proton Setup](#proton-setup)
 
 ## Installation
 
@@ -19,6 +27,7 @@ sudo apt update
 ```
 
 Install the `bs-manager` package using `apt`.
+
 ```bash
 sudo apt install bs-manager
 ```
@@ -26,13 +35,15 @@ sudo apt install bs-manager
 #### dpkg install
 
 Download the `.deb` file in the releases and run the following command:
+
 ```bash
 dpkg -i ./bsmanager.deb
 ```
 
 **NOTE:** When installed using dpkg, BSManager will not automatically update to the latest version. You have to either:
-* Download the latest `.deb` file on the Releases page; or
-* Install thru PPA repository to automatically update with `sudo apt update & sudo apt upgrade`.
+
+- Download the latest `.deb` file on the Releases page; or
+- Install thru PPA repository to automatically update with `sudo apt update & sudo apt upgrade`.
 
 ### Arch (AUR)
 
@@ -72,50 +83,20 @@ Once Proton is installed, when you open your BSManager application for the first
 
 ## Missing Icons in game
 
-<p align="center">
-    <img src="../assets/linux-missing-icons.png" alt="Linux Missing Icons" width="300"/>
-    <br>
-    NOTE: "?" are missing unicode icons
-</p>
 
-This is due to [BSML](https://github.com/monkeymanboy/BeatSaberMarkupLanguage) using a missing font (`Segoe UI Symbols`) for unicode emojis.
-
-To fix the issue, you need to get a copy of `seguisym.ttf` from the fonts folder an official copy Windows. Once you have a copy, add the font file to `~/.steam/steam/steamapps/compatdata/620980/pfx/drive_c/windows/Fonts`.
 
 ## Permission denied on "bs-versions.json"
 
-<pre>
-Unhandled Exception UnhandledRejection Error: EACCES: permission denied, open '/opt/BSManager/resources/assets/jsons/bs-versions.json'
-</pre>
 
-To fix this issue, the current user must have write permissions to the "bs-versions.json". To correct the permissions do command below:
 
-```bash
-chmod +002 /opt/BSManager/resources/assets/jsons/bs-versions.json
+## [deb] The SUID sandbox helper binary was found
 
-# or
 
-chown $(whoami) /opt/BSManager/resources/assets/jsons/bs-versions.json
-```
-
-## [deb] The SUID sandbox helper binary was found.
-
-This is encountered when running the app file or executing the app in the terminal. This is due to a change to Ubuntu 24.04. In order to fix the issue, take a look into the path of "chrome-sandbox" described in the error log and give the correct permissions within the terminal, for example:
-
-```bash
-chmod 4755 /opt/BSManager/chrome-sandbox
-```
-
-ref: https://github.com/electron/electron/issues/42510
 
 ## [Flatpak] Steam Beat Saber version not showing / Proton not detected
 
-Flatpak should have permissions with the steam games folder. By default, the minimum permissions are `~/.steam/steam/steamapps/common:ro` and `~/.steam/steam/steamapps/common:ro`. If you changed the steam installation path, add that path instead into the permissions.
+
 
 ## [Flatpak] Changing installation folder
 
-To change the installation path of the **BSManager** folder, you have to edit the flatpak permissions to destination folder.
-- In flatpak or Flatseal, add the destination folder with `:create` permissions.
-- In BSM, move the folder to the destination folder.
-- [Optional] In flatpak or Flatseal, remove the original folder permissions.
 
