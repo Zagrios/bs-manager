@@ -35,6 +35,7 @@ Information on how to contribute to the development and improvement of BSManager
 
 - [Help us update the wiki](help-us-update-the-wiki)
 - [Contribute to the project](https://github.com/Zagrios/bs-manager/blob/master/CONTRIBUTING.md)
+- [Activate Oculus Sideloading](Activate-Oculus-sideloading)
 
 ## 🐞 Troubleshooting
 
