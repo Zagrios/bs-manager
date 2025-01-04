@@ -4,7 +4,7 @@
 
 <summary>toc</summary>
 
--[With BSManager](#with-bsmanager)
+- [With BSManager](#with-bsmanager)
 - [Manual Installation](#manual-installation)
 - [One-Click Installation](#one-click-installation)
 
