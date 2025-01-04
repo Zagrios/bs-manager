@@ -1,8 +1,14 @@
+<detail open>
+
 ## Table of Contents
 
-- [With BSManager](#with-bsmanager)
+<summary>toc</summary>
+
+-[With BSManager](#with-bsmanager)
 - [Manual Installation](#manual-installation)
 - [One-Click Installation](#one-click-installation)
+
+</details>
 
 ## With BSManager
 
