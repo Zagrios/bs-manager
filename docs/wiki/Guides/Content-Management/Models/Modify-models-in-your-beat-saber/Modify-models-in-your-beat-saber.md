@@ -14,7 +14,10 @@
 
 # With BSManager
 
-1. Download and install [BSManager](https://www.bsmanager.io) from [GitHub](https://github.com/Zagrios/bs-manager/releases/latest), [Nexus Mods](https://www.nexusmods.com/beatsaber/mods/18?tab=files), or [Website](https://www.bsmanager.io).
+1. Download and install [BSManager](https://www.bsmanager.io) from one of the following sources:  
+   - [GitHub](https://github.com/Zagrios/bs-manager/releases/latest)  
+   - [Nexus Mods](https://www.nexusmods.com/beatsaber/mods/18?tab=files)  
+   - [Official Website](https://www.bsmanager.io)  
 2. Launch [BSManager](https://www.bsmanager.io) and select the Beat Saber version where you want to install models from the list on the left of the interface.
 3. Go to models by clicking on the __`Models`__ tab.
 4. Click on the __`Add`__ button to access the list of online models.
