@@ -31,7 +31,7 @@
 1. Download and install [BSManager](https://www.bsmanager.io) from [GitHub](https://github.com/Zagrios/bs-manager/releases/latest), [Nexus Mods](https://www.nexusmods.com/beatsaber/mods/18?tab=files), or the [official website](https://www.bsmanager.io).
 2. Open the __`Add Versions`__ interface and select the version you wish to download.
 3. Choose __`Oculus Store`__ as your platform.
-4. Follow [this guide](Get-your-Oculus-token) to obtain your Oculus token.
+4. Follow [this guide](How-to-obtain-your-Oculus-Token) to obtain your Oculus token.
 5. Once logged into Oculus, the download will start automatically. Please wait for it to complete.
 6. When the download is finished, select the downloaded version and click the __`Launch`__ button to verify that the game launches correctly.
 

@@ -18,7 +18,7 @@ Step-by-step instructions to install BSManager on your system and keep it up to 
 
 Guidance on logging into BSManager to access all features
 
-- [Get your Oculus token](get-your-oculus-token)
+- [Get your Oculus token](How-to-obtain-your-Oculus-Token)
 
 ### 🎮 Content Management
 
