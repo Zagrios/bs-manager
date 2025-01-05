@@ -18,7 +18,7 @@
 <details>
     <summary>🔑 Login</summary>
     <ul>
-        <li><a href="How-to-obtain-your-Oculus-Token">Get your Oculus Token</a></li>
+        <li><a href="How-to-obtain-your-Oculus-Token">How to obtain your Oculus Token</a></li>
     </ul>
 </details>
 
