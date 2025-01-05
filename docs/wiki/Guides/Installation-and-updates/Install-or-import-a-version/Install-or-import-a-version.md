@@ -35,7 +35,6 @@
    - [GitHub](https://github.com/Zagrios/bs-manager/releases/latest)  
    - [Nexus Mods](https://www.nexusmods.com/beatsaber/mods/18?tab=files)  
    - [Official Website](https://www.bsmanager.io)  
-
 2. Open the __`Add Versions`__ interface and select the version you wish to download.
 3. Choose __`Oculus Store`__ as your platform.
 4. Click on __`Connect to Meta`__ or __`Enter my login token manually`__ based on your preferred login method.
