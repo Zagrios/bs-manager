@@ -125,9 +125,9 @@ export class BSLauncherService {
 
     }
 
-    public createLaunchShortcut(launchOptions: LaunchOption): Observable<boolean>{
+    public createLaunchShortcut(launchOptions: LaunchOption, steamShortcut: boolean): Observable<boolean>{
         const options: LaunchOption = {...launchOptions, version: {...launchOptions.version, color: launchOptions.version.color || this.theme.getBsmColors()[1]}};
-        return this.ipcService.sendV2("create-launch-shortcut", options);
+        return this.ipcService.sendV2("create-launch-shortcut", { options, steamShortcut });
     }
 
     public restoreSteamVR(): Promise<void>{

@@ -22,6 +22,9 @@ import { BSVersion } from "shared/bs-version.interface";
 import { BsStore } from "../../../shared/models/bs-store.enum";
 import { LaunchMod, LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { StaticConfigurationService } from "../static-configuration.service";
+import { SteamService } from "../steam.service";
+import { tryit } from "shared/helpers/error.helpers";
+import { SteamShortcut } from "shared/models/steam/shortcut.model";
 
 export class BSLauncherService {
     private static instance: BSLauncherService;
@@ -32,6 +35,7 @@ export class BSLauncherService {
     private readonly ipc: IpcService;
     private readonly remoteVersion: BSVersionLibService;
     private readonly steamLauncher: SteamLauncherService;
+    private readonly steam: SteamService;
     private readonly oculusLauncher: OculusLauncherService;
     private readonly staticConfig: StaticConfigurationService;
 
@@ -51,6 +55,7 @@ export class BSLauncherService {
         this.steamLauncher = SteamLauncherService.getInstance();
         this.oculusLauncher = OculusLauncherService.getInstance();
         this.staticConfig = StaticConfigurationService.getInstance();
+        this.steam = SteamService.getInstance();
 
         this.bsmProtocolService.on("launch", link => {
             log.info("Launch from bsm protocol", link.toString());
@@ -195,11 +200,41 @@ export class BSLauncherService {
         return this.bsmProtocolService.buildLink("launch", shortcutParams).toString();
     }
 
-    public async createLaunchShortcut(launchOptions: LaunchOption): Promise<boolean>{
+    private async getSteamShortcutData(launchOptions: LaunchOption): Promise<SteamShortcut>{
+        const shortcutName = ["Beat Saber", launchOptions.version.BSVersion, launchOptions.version.name].join(" ");
+        const shortcutIconColor = new Color(launchOptions.version.color, "hex");
+
+        const exePath = app.getPath("exe");
+
+        return {
+            appid: "\u0000\u0000\u0000",
+            AppName: shortcutName,
+            Exe: exePath,
+            StartDir: path.dirname(exePath),
+            LaunchOptions: this.createLaunchLink(launchOptions),
+            icon: await this.createShortcutPng(shortcutIconColor),
+            tags: [
+                "BSManager",
+                "Beat Saber",
+                "VR",
+            ]
+        } as SteamShortcut;
+    }
+
+    public async createLaunchShortcut(launchOptions: LaunchOption, steamShortcut?: boolean): Promise<boolean>{
         const shortcutUrl =  this.createLaunchLink(launchOptions);
 
         const shortcutName = ["Beat Saber", launchOptions.version.BSVersion, launchOptions.version.name].join(" ");
         const shortcutIconColor = new Color(launchOptions.version.color, "hex");
+
+        if(steamShortcut){
+            const userId = await tryit(() => this.steam.getActiveUser());
+            return this.steam.createShortcut(await this.getSteamShortcutData(launchOptions), userId.result).then(() => true).catch(e => {
+                log.error(e);
+                return false;
+            });
+        }
+
 
         return execOnOs({
             win32: async () => (

@@ -6,12 +6,13 @@ import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { LaunchOption } from "shared/models/bs-launch";
 import { useService } from "renderer/hooks/use-service.hook";
 import { BSLauncherService } from "renderer/services/bs-launcher.service";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { BsNoteFill } from "renderer/components/svgs/icons/bs-note-fill.component";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { ChevronTopIcon } from "renderer/components/svgs/icons/chevron-top-icon.component";
 import Tippy from "@tippyjs/react";
 import { LaunchMod } from "shared/models/bs-launch/launch-option.interface";
+import { BsStore } from "shared/models/bs-store.enum";
 
 export const CreateLaunchShortcutModal: ModalComponent<{ steamShortcut: boolean, launchOption: LaunchOption }, BSVersion> = ({resolver, options: {data}}) => {
 
@@ -24,6 +25,10 @@ export const CreateLaunchShortcutModal: ModalComponent<{ steamShortcut: boolean,
     const [advanced, setAdvanced] = useState(!!launchOption.additionalArgs?.length);
     const [additionalArgsString, setAdditionalArgsString] = useState(launchOption.additionalArgs?.join("; ") ?? "");
     const [steamShortcut, setSteamShortcut] = useState(false);
+
+    const isSteamVersion = useMemo(() => {
+        return data.steam || data.metadata?.store === BsStore.STEAM;
+    }, [data]);
 
     const completeModal = () => {
 
@@ -97,12 +102,14 @@ export const CreateLaunchShortcutModal: ModalComponent<{ steamShortcut: boolean,
                     </div>
                 </div>
             </div>
-            <Tippy placement="right" theme="default" content={"Si activé, au lieu de créer un raccourci sur le bureau, celui-ci sera créé dans Steam."}>
-                <div className="h-full flex items-center gap-1.5 mt-3 mb-4 w-fit pr-1">
-                    <BsmCheckbox className="h-5 aspect-square relative z-[1]" checked={steamShortcut} onChange={e => setSteamShortcut(() => e)} />
-                    <span>Créer un raccourci Steam</span>
-                </div>
-            </Tippy>
+            {isSteamVersion && (
+                <Tippy placement="right" theme="default" content={"Si activé, au lieu de créer un raccourci sur le bureau, celui-ci sera créé dans Steam."}>
+                    <div className="h-full flex items-center gap-1.5 mt-3 mb-4 w-fit pr-1">
+                        <BsmCheckbox className="h-5 aspect-square relative z-[1]" checked={steamShortcut} onChange={e => setSteamShortcut(() => e)} />
+                        <span>Créer un raccourci Steam</span>
+                    </div>
+                </Tippy>
+            )}
             <div className="grid grid-flow-col grid-cols-2 gap-4 mt-2">
                 <BsmButton typeColor="cancel" className="rounded-md text-center transition-all" onClick={() => resolver({ exitCode: ModalExitCode.CANCELED })} withBar={false} text="misc.cancel" />
                 <BsmButton typeColor="primary" className="rounded-md text-center transition-all" onClick={completeModal} withBar={false} text="modals.create-launch-shortcut.valid-btn" />
