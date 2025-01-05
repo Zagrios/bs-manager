@@ -54,7 +54,7 @@
 
 <div align="center">
     <img src="../wiki/Guides/Installation-and-updates/Install-or-import-a-version/OculusLogin.png" alt="OculusLogin.png" />
-    <img src="../wiki/Guides/Installation-and-updates/Install-or-import-a-version/OculusLogin.png" alt="OculusLoginToken.png" />
+    <img src="../wiki/Guides/Installation-and-updates/Install-or-import-a-version/OculusLoginToken.png" alt="OculusLoginToken.png" />
 </div>
 
 ## How to Import a Version
