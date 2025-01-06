@@ -253,7 +253,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
 
     return (
         <>
-            <nav className="w-full shrink-0 flex h-9 justify-center px-40 gap-2 text-main-color-1 dark:text-white mb-4">
+            <nav className="w-full shrink-0 flex h-9 justify-center gap-2 text-main-color-1 dark:text-white mb-4">
                 <BsmDropdownButton
                     classNames={{
                         mainContainer: "h-full relative z-[1] flex justify-center w-fit",
@@ -264,7 +264,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                     icon="add"
                     buttonColor="primary"
                     text="misc.add"
-                    align="center"
+                    align="left"
                     menuTranslationY="6px"
                     withBar={false}
                     items={addDropDownItems}
@@ -282,30 +282,34 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                 <BsmDropdownButton className="h-full relative z-[1] flex justify-center" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1 whitespace-nowrap" icon="filter" text="pages.version-viewer.maps.search-bar.filters-btn" textClassName="whitespace-nowrap" withBar={false}>
                     {(
                         tabIndex === 0 ? (
-                            <FilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[500px] h-fit p-2 rounded-md shadow-md shadow-black" filter={mapFilter} onChange={setMapFilter} />
+                            <FilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[500px] h-fit p-2 rounded-full shadow-md shadow-black" filter={mapFilter} onChange={setMapFilter} />
                         ) : (
-                            <LocalPlaylistFilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[300px] h-fit p-2 rounded-md shadow-md shadow-black" filter={playlistFilter} onChange={setPlaylistFilter} />
+                            <LocalPlaylistFilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[300px] h-fit p-2 rounded-full shadow-md shadow-black" filter={playlistFilter} onChange={setPlaylistFilter} />
                         )
                     )}
                 </BsmDropdownButton>
-                <BsmSelect
-                    className="bg-theme-1 rounded-full px-1 pb-0.5 text-center cursor-pointer"
-                    options={sortOptions}
-                    selected={selectedSort}
-                    onChange={handleSortChange}
-                />
-                <BsmButton
-                    className="h-full flex aspect-square relative rounded-full z-[1] bg-light-main-color-1 dark:bg-main-color-3"
-                    iconClassName="transition-transform size-full ease-in-out duration-200 bg-light-main-color-1 dark:bg-main-color-3"
-                    iconStyle={{ transform: (tabIndex === MAP_TAB && mapSort.ascending)
-                                            || (tabIndex === PLAYLIST_TAB && playlistSort.ascending)
-                                                ? "rotate(360deg)" : "rotate(180deg)"}}
-                    icon="chevron-top"
-                    typeColor="primary"
-                    withBar={false}
-                    onClick={handleAscendingClick}
-                />
-                <BsmDropdownButton className="h-full flex aspect-square relative rounded-full z-[1] bg-light-main-color-1 dark:bg-main-color-3" buttonClassName="rounded-full h-full w-full p-[6px]" icon="three-dots" withBar={false} items={dropDownItems} menuTranslationY="6px" align="center" />
+
+                <div className="h-full relative">
+                    <BsmButton
+                        className="h-full absolute top-0 aspect-square rounded-l-full z-[1]"
+                        iconClassName="transition-transform size-full ease-in-out duration-200 bg-light-main-color-2 dark:bg-main-color-2"
+                        iconStyle={{ transform: (tabIndex === MAP_TAB && mapSort.ascending)
+                                                || (tabIndex === PLAYLIST_TAB && playlistSort.ascending)
+                                                    ? "rotate(0deg)" : "rotate(180deg)"}}
+                        icon="arrow-upward"
+                        withBar={false}
+                        onClick={handleAscendingClick}
+                    />
+
+                    <BsmSelect
+                        className="h-full bg-theme-2 rounded-full pl-9 cursor-pointer outline-none"
+                        options={sortOptions}
+                        selected={selectedSort}
+                        onChange={handleSortChange}
+                    />
+                </div>
+
+                <BsmDropdownButton className="h-full flex aspect-square relative rounded-full z-[1] bg-light-main-color-1 dark:bg-main-color-3" buttonClassName="rounded-full h-full w-full p-[6px]" icon="three-dots" withBar={false} items={dropDownItems} menuTranslationY="6px" align="right" />
             </nav>
             <BsContentTabPanel
                 tabIndex={tabIndex}
