@@ -70,11 +70,11 @@
             <details>
             <summary>🐧 Linux</summary>
                 <ul>
-                    <li><a href="[Linux]-Missing-Icons-in-Game">Missing Icons in Game</a></li>
-                    <li><a href="[Linux]-Permission-Denied-on-bs-version.json">Permission Denied on "bs-versions.json"</a></li>
-                    <li><a href="[Linux]-[deb]-The-SUID-Sandbox-Helper-Binary-Was-Found">[Deb] The SUID Sandbox Helper Binary Was Found</a></li>
-                    <li><a href="[Linux]-[Flatpak]-Steam-Beat-Saber-Version-Not-Showing-Proton-Not-Detected">[Flatpak] Steam Beat Saber Version Not Showing / Proton Not Detected</a></li>
-                    <li><a href="[Linux]-[Flatpak]-Changing-Installation-Folder">[Flatpak] Changing Installation Folder</a></li>
+                    <li><a href="%5BLinux%5D-Missing-Icons-in-Game">Missing Icons in Game</a></li>
+                    <li><a href="%5BLinux%5D-Permission-Denied-on-bs-version.json">Permission Denied on "bs-versions.json"</a></li>
+                    <li><a href="%5BLinux%5D-%5Bdeb%5D-The-SUID-Sandbox-Helper-Binary-Was-Found">[Deb] The SUID Sandbox Helper Binary Was Found</a></li>
+                    <li><a href="%5BLinux%5D-%5BFlatpak%5D-Steam-Beat-Saber-Version-Not-Showing-Proton-Not-Detected">[Flatpak] Steam Beat Saber Version Not Showing / Proton Not Detected</a></li>
+                    <li><a href="%5BLinux%5D-%5BFlatpak%5D-Changing-Installation-Folder">[Flatpak] Changing Installation Folder</a></li>
                 </ul>
             </details>
         </li>
