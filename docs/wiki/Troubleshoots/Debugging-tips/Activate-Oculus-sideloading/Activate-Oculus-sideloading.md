@@ -6,6 +6,9 @@ Enabling Oculus sideloading allows games located outside if your Oculus library 
 - **Step 4:** Name the new value `AllowDevSideloaded` and set the value to `1`.
 
 You should end up with something like this:
-![image](https://raw.githubusercontent.com/Zagrios/bs-manager/refs/heads/master/docs/assets/enable-oculus-sideloading.png)
+
+<div align="center">
+    <img src="../wiki/Troubleshoots/Debugging-tips/Activate-Oculus-sideloading/enable-oculus-sideloading.png" alt="enable-oculus-sideloading.png" />
+</div>
 
 After completing these steps, you should be able to start Beat Saber from BSManager and play it on your Oculus Quest. If you are still having issues, please join our [Discord](https://discord.gg/uSqbHVpKdV) server for further assistance.
