@@ -636,7 +636,8 @@
         "create-launch-shortcut": {
             "success": {
                 "title": "ショートカットを作成しました",
-                "msg": "デスクトップにショートカットを作成されました。"
+                "msg": "デスクトップにショートカットを作成されました。",
+                "msg-steam": "ショートカットがSteamライブラリに作成されました。"
             },
             "error": {
                 "msg": "ショートカットの作成中にエラーが発生しました。"
@@ -843,7 +844,9 @@
             "desc": "ショートカットを作成すると、BSManagerを起動せずに、直接Beat Saberを起動できます。",
             "launch-options": "起動オプション",
             "advanced-launch": "高度な起動",
-            "valid-btn": "ショートカットを作成"
+            "valid-btn": "ショートカットを作成",
+            "create-steam-shortcut": "Steamショートカットを作成",
+            "steam-shortcut-tippy": "有効にすると、デスクトップにショートカットを作成する代わりに、Steam内に作成されます。"
         },
         "connect-to-meta": {
             "title": "Metaに接続する",

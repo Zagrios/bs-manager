@@ -636,7 +636,8 @@
         "create-launch-shortcut": {
             "success": {
                 "title": "Verknüpfung erstellt",
-                "msg": "Die Verknüpfung wurde auf dem Desktop erstellt."
+                "msg": "Die Verknüpfung wurde auf dem Desktop erstellt.",
+                "msg-steam": "Die Verknüpfung wurde in der Steam-Bibliothek erstellt."
             },
             "error": {
                 "msg": "Beim Erstellen der Verknüpfung ist ein Fehler aufgetreten."
@@ -843,7 +844,9 @@
             "desc": "Das Erstellen einer Verknüpfung ermöglicht es dir, Beat Saber mit den ausgewählten Optionen zu starten, ohne durch BSManager zu gehen.",
             "launch-options": "Startoptionen",
             "advanced-launch": "Erweiterter Start",
-            "valid-btn": "Verknüpfung erstellen"
+            "valid-btn": "Verknüpfung erstellen",
+            "create-steam-shortcut": "Steam-Verknüpfung erstellen",
+            "steam-shortcut-tippy": "Wenn aktiviert, wird anstelle einer Verknüpfung auf dem Desktop eine Verknüpfung in Steam erstellt."
         },
         "connect-to-meta": {
             "title": "Mit Meta verbinden",

@@ -636,7 +636,8 @@
         "create-launch-shortcut": {
             "success": {
                 "title": "바로 가기 생성 완료",
-                "msg": "바탕 화면에 바로 가기가 생성되었습니다."
+                "msg": "바탕 화면에 바로 가기가 생성되었습니다.",
+                "msg-steam": "바로 가기가 Steam 라이브러리에 생성되었습니다."
             },
             "error": {
                 "msg": "바로 가기 생성 중 오류가 발생했습니다."
@@ -838,12 +839,14 @@
             "title": "공유 폴더 추가",
             "description": "「{folder}」폴더를 연결할 때 문제가 발생할 수 있습니다. 정말 추가하시겠습니까?"
         },
-        "create-launcher-shortcut": {
-            "title": "런처 바로가기 만들기",
-            "description": "바탕화면에 실행 파일의 바로가기를 만들어 BSManager를 손쉽게 실행하세요.",
-            "buttons": {
-                "submit": "바로가기 만들기"
-            }
+        "create-launch-shortcut": {
+            "title": "바로가기를 생성",
+            "desc": "바로가기를 생성하면 BSManager를 거치지 않고 선택한 옵션으로 Beat Saber를 시작할 수 있습니다.",
+            "launch-options": "실행 옵션",
+            "advanced-launch": "고급 실행",
+            "valid-btn": "바로가기 생성",
+            "create-steam-shortcut": "Steam 바로가기를 생성",
+            "steam-shortcut-tippy": "활성화하면 바탕 화면에 바로가기를 생성하는 대신 Steam에 생성됩니다."
         },
         "connect-to-meta": {
             "title": "Meta에 연결하기",

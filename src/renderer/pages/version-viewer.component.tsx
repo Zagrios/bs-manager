@@ -123,7 +123,7 @@ export function VersionViewer() {
         lastValueFrom(bsLauncher.createLaunchShortcut(data.launchOption, data.steamShortcut)).then(() => {
             notification.notifySuccess({
                 title: "notifications.create-launch-shortcut.success.title",
-                desc: "notifications.create-launch-shortcut.success.msg"
+                desc: `notifications.create-launch-shortcut.success.${data.steamShortcut ? "msg-steam" : "msg"}`
             });
         }).catch(() => {
             notification.notifyError({

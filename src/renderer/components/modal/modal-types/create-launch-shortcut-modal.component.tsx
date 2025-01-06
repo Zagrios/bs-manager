@@ -103,10 +103,10 @@ export const CreateLaunchShortcutModal: ModalComponent<{ steamShortcut: boolean,
                 </div>
             </div>
             {isSteamVersion && (
-                <Tippy placement="right" theme="default" content={"Si activé, au lieu de créer un raccourci sur le bureau, celui-ci sera créé dans Steam."}>
+                <Tippy placement="right" theme="default" content={t("modals.create-launch-shortcut.steam-shortcut-tippy")}>
                     <div className="h-full flex items-center gap-1.5 mt-3 mb-4 w-fit pr-1">
                         <BsmCheckbox className="h-5 aspect-square relative z-[1]" checked={steamShortcut} onChange={e => setSteamShortcut(() => e)} />
-                        <span>Créer un raccourci Steam</span>
+                        <span>{t("modals.create-launch-shortcut.create-steam-shortcut")}</span>
                     </div>
                 </Tippy>
             )}

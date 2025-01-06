@@ -636,7 +636,8 @@
         "create-launch-shortcut": {
             "success": {
                 "title": "捷徑已創建",
-                "msg": "捷徑已在桌面上創建"
+                "msg": "捷徑已在桌面上創建",
+                "msg-steam": "捷徑已在 Steam 庫中建立。"
             },
             "error": {
                 "msg": "創建捷徑時發生錯誤"
@@ -843,7 +844,9 @@
             "desc": "創建捷徑使得你可以在不通過 BSManager 的情況下以特定選項啟動 BeatSaber",
             "launch-options": "啟動選項",
             "advanced-launch": "高級啟動",
-            "valid-btn": "創建捷徑"
+            "valid-btn": "創建捷徑",
+            "create-steam-shortcut": "建立 Steam 快捷方式",
+            "steam-shortcut-tippy": "如果啟用，將不會在桌面建立捷徑，而是在 Steam 中建立。"
         },
         "connect-to-meta": {
             "title": "連接到 Meta",

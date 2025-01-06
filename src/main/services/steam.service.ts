@@ -8,7 +8,7 @@ import { getProcessId, isProcessRunning } from "main/helpers/os.helpers";
 import { isElevated } from "query-process";
 import { execOnOs } from "../helpers/env.helpers";
 import { pathExists, pathExistsSync, readdir, writeFile } from "fs-extra";
-import { SteamShortcut, SteamShortcutKey } from "../../shared/models/steam/shortcut.model";
+import { SteamShortcut, SteamShortcutData } from "../../shared/models/steam/shortcut.model";
 
 const { list } = (execOnOs({ win32: () => require("regedit-rs") }, true) ?? {}) as typeof import("regedit-rs");
 
@@ -174,9 +174,9 @@ export class SteamService {
                         acc.push(path.join(configPath, entry.name));
                     }
                     return acc;
-                }, []);
+                }, [] as string[]);
             })
-            .catch(err => {
+            .catch((err): string[] => {
                 log.error("Error while reading steam user data folders", err);
                 return [];
             });
@@ -188,136 +188,20 @@ export class SteamService {
         return path.join(await this.getSteamPath(), "userdata", userId.toString(), "config", "shortcuts.vdf");
     }
 
-    private async readShortcutsFile(shortcutsPath: string): Promise<SteamShortcut[]> {
-        // Code taken from: https://developer.valvesoftware.com/wiki/Steam_Library_Shortcuts#Reading_the_shortcuts.vdf
-
-        const rawData: string = await readFile(shortcutsPath, "utf-8");
-        const startIndex = rawData.indexOf("\u0000shortcuts\u0000");
-        if (startIndex < 0) {
-            console.error("Could not find shortcuts in shortcuts.vdf");
-            return [];
-        }
-        const start = startIndex + "\u0000shortcuts\u0000".length;
-        const end = rawData.lastIndexOf("\u0008\u0008");
-        if (end < 0 || end <= start) {
-            console.error("Could not find end of shortcuts in shortcuts.vdf");
-            return [];
-        }
-
-        const shortcutsString = rawData.substring(start, end - start);
-
-        const result: SteamShortcut[] = [];
-        let currentShortcut: SteamShortcut | null = null;
-        let word = "";
-        let key = "";
-        let readingTags = false;
-        let tagId = -1;
-
-        const shortcutKeysRegex = new RegExp(`(\u0001|\u0002)(${Object.values(SteamShortcutKey).join("|")})`, "i");
-
-        for (const c of shortcutsString) {
-
-            if (c === "\u0000") {
-                if (word.endsWith(`\u0001${SteamShortcutKey.AppName}`)) {
-                    if (currentShortcut) {
-                        result.push(currentShortcut);
-                    }
-                    currentShortcut = {
-                        AppName: "",
-                        Exe: "",
-                        StartDir: "",
-                        icon: "",
-                        LaunchOptions: "",
-                        IsHidden: null,
-                        tags: [],
-                    };
-                    key = `\u0001${SteamShortcutKey.AppName}`;
-                } else if (shortcutKeysRegex.test(word)) {
-                    key = word;
-                } else if (word === SteamShortcutKey.tags) {
-                    readingTags = true;
-                } else if (key !== "") {
-                    const currentKey = shortcutKeysRegex.exec(key).pop().replaceAll("\u0001", "").replaceAll("\u0002", "") as SteamShortcutKey;
-                    if (currentShortcut && currentKey && currentKey !== SteamShortcutKey.tags) {
-                        currentShortcut[currentKey] = (word as string & string[]);
-                    }
-                    key = "";
-                } else if (readingTags) {
-                    if (word.startsWith("\u0001")) {
-                        tagId = parseInt(word.substring(1), 10);
-                    } else if (tagId >= 0 && currentShortcut) {
-                        currentShortcut.tags.push(word);
-                        tagId = -1;
-                    } else {
-                        readingTags = false;
-                    }
-                }
-                word = "";
-            } else {
-                word += c;
-            }
-        }
-
-        if (currentShortcut) {
-            result.push(currentShortcut);
-        }
-
-        return result;
-    }
-
     private async getShortcuts(userId: number): Promise<SteamShortcut[]> {
         const shortcutsPath = await this.getShortcutsPath(userId);
-        return this.readShortcutsFile(shortcutsPath);
-    }
+        const shortcutsString = await readFile(shortcutsPath, { encoding: "utf-8" });
 
-    private buildShortcutTagsString(tags: string[]): string {
-        let tagString = "\u0000tags\u0000";
-        for (let i = 0; i < tags.length; i++) {
-            tagString += `\u0001${i}\u0000${tags[i]}\u0000`;
-        }
-        tagString += "\u0008";
-        return tagString;
-    }
-
-    private buildShortcutString(shortcut: SteamShortcut): string {
-        const getSeparator = (key: SteamShortcutKey): string => {
-            return key === SteamShortcutKey.IsHidden || key === SteamShortcutKey.appid ? "\u0002" : "\u0001";
-        };
-
-        const getQuote = (key: SteamShortcutKey): string => {
-            return key === SteamShortcutKey.Exe || key === SteamShortcutKey.StartDir || key === SteamShortcutKey.icon ? "\"" : "";
-        }
-
-        let shortcutString = "";
-        for (const key of Object.keys(shortcut)) {
-            console.log("KEY", key);
-            if(key === SteamShortcutKey.tags) {
-                continue;
-            }
-
-            const value = shortcut[key as SteamShortcutKey];
-            shortcutString += `${getSeparator(key as SteamShortcutKey)}${key}\u0000\"${value}\"\u0000`;
-        }
-
-        shortcutString += `\u0000\u0000${this.buildShortcutTagsString(shortcut.tags)}`;
-        return shortcutString;
+       return SteamShortcut.parseShortcutsRawData(shortcutsString);
     }
 
     private async writeShortcuts(shortcuts: SteamShortcut[], userId: number): Promise<void> {
-        let shortcutsString = "\u0000shortcuts\u0000";
-        for (let i = 0; i < shortcuts.length; i++) {
-            shortcutsString += `\u0000${i}\u0000`;
-            shortcutsString += this.buildShortcutString(shortcuts[i]);
-            shortcutsString += "\u0008";
-        }
-        shortcutsString += "\u0008\u0008";
-
         const shortcutsPath = await this.getShortcutsPath(userId);
-        await writeFile(shortcutsPath, shortcutsString, { encoding: "utf-8" });
-
+        const stringData = SteamShortcut.getShortcutsString(shortcuts);
+        await writeFile(shortcutsPath, stringData, { encoding: "utf-8" });
     }
 
-    public async createShortcut(shortcutData: SteamShortcut, userId?: number): Promise<void> {
+    public async createShortcut(shortcutData: SteamShortcutData, userId?: number): Promise<void> {
         const userIds = userId ? [userId] : await (async (): Promise<number[]> => {
             const folders = await this.getUserDataFolders();
             return folders.map(folder => parseInt(path.basename(folder)));
@@ -328,7 +212,8 @@ export class SteamService {
                 log.warn("Error while reading shortcuts", e);
                 return [];
             });
-            shortcuts.push(shortcutData);
+            shortcuts.push(new SteamShortcut(shortcutData));
+
             await this.writeShortcuts(shortcuts, userId);
         }
 
