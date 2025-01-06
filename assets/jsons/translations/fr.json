@@ -637,7 +637,8 @@
         "create-launch-shortcut": {
             "success": {
                 "title": "Raccourci créé",
-                "msg": "Le raccourci a été créé sur le bureau."
+                "msg": "Le raccourci a été créé sur le bureau.",
+                "msg-steam": "Le raccourci a été créé dans la bibliothèque Steam."
             },
             "error": {
                 "msg": "Une erreur s'est produite lors de la création du raccourci."
@@ -844,7 +845,9 @@
             "desc": "Créer un raccourci te permettra de démarrer Beat Saber avec les options choisies sans passer par BSManager.",
             "launch-options": "Options de lancement",
             "advanced-launch": "Lancement avancé",
-            "valid-btn": "Créer le raccourci"
+            "valid-btn": "Créer le raccourci",
+            "create-steam-shortcut": "Créer un raccourci Steam",
+            "steam-shortcut-tippy": "Si activé, au lieu de créer un raccourci sur le bureau, celui-ci sera créé dans Steam."
         },
         "connect-to-meta": {
             "title": "Connexion à Meta",

@@ -120,10 +120,10 @@ export function VersionViewer() {
         const { exitCode, data } = await modalService.openModal(CreateLaunchShortcutModal, {data: state});
         if(exitCode !== ModalExitCode.COMPLETED){ return; }
 
-        lastValueFrom(bsLauncher.createLaunchShortcut(data)).then(() => {
+        lastValueFrom(bsLauncher.createLaunchShortcut(data.launchOption, data.steamShortcut)).then(() => {
             notification.notifySuccess({
                 title: "notifications.create-launch-shortcut.success.title",
-                desc: "notifications.create-launch-shortcut.success.msg"
+                desc: `notifications.create-launch-shortcut.success.${data.steamShortcut ? "msg-steam" : "msg"}`
             });
         }).catch(() => {
             notification.notifyError({

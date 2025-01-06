@@ -636,7 +636,8 @@
         "create-launch-shortcut": {
             "success": {
                 "title": "Acceso directo creado",
-                "msg": "El acceso directo se ha creado en el escritorio."
+                "msg": "El acceso directo se ha creado en el escritorio.",
+                "msg-steam": "El acceso directo se ha creado en la biblioteca de Steam."
             },
             "error": {
                 "msg": "Se produjo un error al crear el acceso directo."
@@ -843,7 +844,9 @@
             "desc": "Crear un atajo te permitirá iniciar Beat Saber con las opciones seleccionadas sin pasar por BSManager.",
             "launch-options": "Opciones de lanzamiento",
             "advanced-launch": "Lanzamiento avanzado",
-            "valid-btn": "Crear el atajo"
+            "valid-btn": "Crear el atajo",
+            "create-steam-shortcut": "Crear un atajo directo de Steam",
+            "steam-shortcut-tippy": "Si está activado, en lugar de crear un atajo directo en el escritorio, se creará en Steam."
         },
         "connect-to-meta": {
             "title": "Conexión a Meta",

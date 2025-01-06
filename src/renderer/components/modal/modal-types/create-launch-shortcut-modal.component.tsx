@@ -1,37 +1,52 @@
 import { ModalComponent, ModalExitCode } from "renderer/services/modale.service"
 import { BSVersion } from "shared/bs-version.interface"
 import { BsmCheckbox } from "renderer/components/shared/bsm-checkbox.component";
-import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { LaunchOption } from "shared/models/bs-launch";
 import { useService } from "renderer/hooks/use-service.hook";
 import { BSLauncherService } from "renderer/services/bs-launcher.service";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { BsNoteFill } from "renderer/components/svgs/icons/bs-note-fill.component";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { ChevronTopIcon } from "renderer/components/svgs/icons/chevron-top-icon.component";
 import Tippy from "@tippyjs/react";
+import { LaunchMod } from "shared/models/bs-launch/launch-option.interface";
+import { BsStore } from "shared/models/bs-store.enum";
 
-export const CreateLaunchShortcutModal: ModalComponent<LaunchOption, BSVersion> = ({resolver, options: {data}}) => {
+export const CreateLaunchShortcutModal: ModalComponent<{ steamShortcut: boolean, launchOption: LaunchOption }, BSVersion> = ({resolver, options: {data}}) => {
 
     const bsLauncher = useService(BSLauncherService);
 
-    const t = useTranslation();
+    const { text: t } = useTranslationV2();
     const color = useThemeColor("second-color");
 
-    const [launchOptions, setLaunchOptions] = useState(bsLauncher.getLaunchOptions(data));
-    const [advanced, setAdvanced] = useState(!!launchOptions.additionalArgs?.length);
-    const [additionalArgsString, setAdditionalArgsString] = useState(launchOptions.additionalArgs?.join("; ") ?? "");
+    const [launchOption, setLaunchOptions] = useState(bsLauncher.getLaunchOptions(data));
+    const [advanced, setAdvanced] = useState(!!launchOption.additionalArgs?.length);
+    const [additionalArgsString, setAdditionalArgsString] = useState(launchOption.additionalArgs?.join("; ") ?? "");
+    const [steamShortcut, setSteamShortcut] = useState(false);
+
+    const isSteamVersion = useMemo(() => {
+        return data.steam || data.metadata?.store === BsStore.STEAM;
+    }, [data]);
 
     const completeModal = () => {
 
         if(advanced) {
-            launchOptions.additionalArgs = additionalArgsString.split(";").map(arg => arg.trim()).filter(arg => arg.length);
+            launchOption.additionalArgs = additionalArgsString.split(";").map(arg => arg.trim()).filter(arg => arg.length);
         } else {
-            launchOptions.additionalArgs = undefined;
+            launchOption.additionalArgs = undefined;
         }
 
-        resolver({exitCode: ModalExitCode.COMPLETED, data: launchOptions});
+        resolver({exitCode: ModalExitCode.COMPLETED, data: { launchOption, steamShortcut }});
+    }
+
+    const toogleLaunchMod = (mod: LaunchMod, enabled: boolean) => {
+        if(enabled) {
+            setLaunchOptions(prev => ({...prev, launchMods: [...prev.launchMods, mod]}));
+        } else {
+            setLaunchOptions(prev => ({...prev, launchMods: prev.launchMods.filter(m => m !== mod)}));
+        }
     }
 
     return (
@@ -49,20 +64,20 @@ export const CreateLaunchShortcutModal: ModalComponent<LaunchOption, BSVersion> 
             <div className="mb-1 grid grid-flow-col gap-3 w-full rounded-md py-2 bg-light-main-color-1 dark:bg-main-color-1">
                 {data.oculus !== true && (
                     <div className="h-full flex justify-center items-center gap-2">
-                        <BsmCheckbox className="h-5 aspect-square relative z-[1]" checked={launchOptions.oculus} onChange={e => setLaunchOptions({...launchOptions, oculus: e})} />
+                        <BsmCheckbox className="h-5 aspect-square relative z-[1]" checked={launchOption.launchMods.includes("oculus")} onChange={e => toogleLaunchMod("oculus", e)} />
                         <Tippy className="!bg-main-color-1" content={t("pages.version-viewer.launch-mods.oculus-description")} delay={[300, 0]} arrow={false}>
                             <span className="font-bold cursor-help">{t("pages.version-viewer.launch-mods.oculus")}</span>
                         </Tippy>
                     </div>
                 )}
                 <div className="h-full flex justify-center items-center gap-2">
-                    <BsmCheckbox className="h-5 aspect-square relative z-[1]" checked={launchOptions.desktop} onChange={e => setLaunchOptions({...launchOptions, desktop: e})} />
+                    <BsmCheckbox className="h-5 aspect-square relative z-[1]" checked={launchOption.launchMods.includes("fpfc")} onChange={e => toogleLaunchMod("fpfc", e)} />
                     <Tippy className="!bg-main-color-1" content={t("pages.version-viewer.launch-mods.desktop-description")} delay={[300, 0]} arrow={false}>
                         <span className="font-bold cursor-help">{t("pages.version-viewer.launch-mods.desktop")}</span>
                     </Tippy>
                 </div>
                 <div className="h-full flex justify-center items-center gap-2">
-                    <BsmCheckbox className="h-5 aspect-square relative z-[1]" checked={launchOptions.debug} onChange={e => setLaunchOptions({...launchOptions, debug: e})} />
+                    <BsmCheckbox className="h-5 aspect-square relative z-[1]" checked={launchOption.launchMods.includes("debug")} onChange={e => toogleLaunchMod("debug", e)} />
                     <Tippy className="!bg-main-color-1" content={t("pages.version-viewer.launch-mods.debug-description")} delay={[300, 0]} arrow={false}>
                         <span className="font-bold cursor-help">{t("pages.version-viewer.launch-mods.debug")}</span>
                     </Tippy>
@@ -87,6 +102,14 @@ export const CreateLaunchShortcutModal: ModalComponent<LaunchOption, BSVersion> 
                     </div>
                 </div>
             </div>
+            {isSteamVersion && (
+                <Tippy placement="right" theme="default" content={t("modals.create-launch-shortcut.steam-shortcut-tippy")}>
+                    <div className="h-full flex items-center gap-1.5 mt-3 mb-4 w-fit pr-1">
+                        <BsmCheckbox className="h-5 aspect-square relative z-[1]" checked={steamShortcut} onChange={e => setSteamShortcut(() => e)} />
+                        <span>{t("modals.create-launch-shortcut.create-steam-shortcut")}</span>
+                    </div>
+                </Tippy>
+            )}
             <div className="grid grid-flow-col grid-cols-2 gap-4 mt-2">
                 <BsmButton typeColor="cancel" className="rounded-md text-center transition-all" onClick={() => resolver({ exitCode: ModalExitCode.CANCELED })} withBar={false} text="misc.cancel" />
                 <BsmButton typeColor="primary" className="rounded-md text-center transition-all" onClick={completeModal} withBar={false} text="modals.create-launch-shortcut.valid-btn" />

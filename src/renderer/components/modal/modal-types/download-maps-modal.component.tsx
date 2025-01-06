@@ -221,7 +221,7 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
                         handleSearch();
                     }}
                 />
-                <BsmSelect className="bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-1 pb-0.5 text-center" options={sortOptions} selected={searchParams.sortOrder} onChange={sort => handleSortChange(sort)} />
+                <BsmSelect className="bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-1 pb-0.5 text-center w-min" options={sortOptions} selected={searchParams.sortOrder} onChange={sort => handleSortChange(sort)} />
             </div>
 
             {(() => {

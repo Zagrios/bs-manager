@@ -636,7 +636,8 @@
         "create-launch-shortcut": {
             "success": {
                 "title": "Ярлык создан",
-                "msg": "Ярлык находится на рабочем столе."
+                "msg": "Ярлык находится на рабочем столе.",
+                "msg-steam": "Ярлык был создан в библиотеке Steam."
             },
             "error": {
                 "msg": "Ошибка создания ярлыка."
@@ -843,7 +844,9 @@
             "desc": "Ярлык позволит вам запустить Beat Saber без помощи BSManager.",
             "launch-options": "Параметры запуска",
             "advanced-launch": "Расширенный запуск",
-            "valid-btn": "Создать ярлык"
+            "valid-btn": "Создать ярлык",
+            "create-steam-shortcut": "Создать ярлык для Steam",
+            "steam-shortcut-tippy": "Если включено, вместо создания ярлыка на рабочем столе, он будет создан в Steam."
         },
         "connect-to-meta": {
             "title": "Подключение к Meta",

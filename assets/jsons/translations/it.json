@@ -636,7 +636,8 @@
         "create-launch-shortcut": {
             "success": {
                 "title": "Scorciatoia creata",
-                "msg": "La scorciatoia è già stat creata sul desktop."
+                "msg": "La scorciatoia è già stat creata sul desktop.",
+                "msg-steam": "Il collegamento è stato creato nella libreria di Steam."
             },
             "error": {
                 "msg": "C'è stato un errore durante la creazione della scorciatoia."
@@ -838,7 +839,9 @@
             "desc": "Creare una scorciatoia ti permetterà di avviare Beat Saber con le opzioni scelte senza passare per BSManager.",
             "launch-options": "Opzioni di lancio",
             "advanced-launch": "Lancio avanzato",
-            "valid-btn": "Crea la scorciatoia"
+            "valid-btn": "Crea la scorciatoia",
+            "create-steam-shortcut": "Crea un scorciatoia Steam",
+            "steam-shortcut-tippy": "Se abilitato, invece di creare un scorciatoia sul desktop, verrà creato in Steam."
         },
         "connect-to-meta": {
             "title": "Connettiti a Meta",
