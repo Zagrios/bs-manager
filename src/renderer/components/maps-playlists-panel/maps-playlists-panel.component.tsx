@@ -289,10 +289,10 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                     )}
                 </BsmDropdownButton>
 
-                <div className="h-full relative">
+                <div className="h-full flex bg-theme-2 rounded-full">
                     <BsmButton
-                        className="h-full absolute top-0 aspect-square rounded-l-full z-[1]"
-                        iconClassName="transition-transform size-full ease-in-out duration-200 bg-light-main-color-2 dark:bg-main-color-2"
+                        className="h-full aspect-square rounded-l-full z-[1]"
+                        iconClassName="transition-transform size-full ease-in-out duration-200 bg-theme-2"
                         iconStyle={{ transform: (tabIndex === MAP_TAB && mapSort.ascending)
                                                 || (tabIndex === PLAYLIST_TAB && playlistSort.ascending)
                                                     ? "rotate(0deg)" : "rotate(180deg)"}}
@@ -302,7 +302,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                     />
 
                     <BsmSelect
-                        className="h-full bg-theme-2 rounded-full pl-9 cursor-pointer outline-none"
+                        className="h-full bg-theme-2 rounded-r-full cursor-pointer outline-none pb-1 text-center"
                         options={sortOptions}
                         selected={selectedSort}
                         onChange={handleSortChange}
