@@ -24,14 +24,7 @@ export class PlaylistsSorterService {
 
             return !playlist2.duration ? Comparison.GREATER : playlist1.duration - playlist2.duration;
         },
-        "min-notes-per-second": (playlist1, playlist2) => {
-            if (!playlist1.minNps) {
-                return playlist2.minNps ? Comparison.LESSER : Comparison.EQUAL;
-            }
-
-            return !playlist2.minNps ? Comparison.GREATER : playlist1.minNps - playlist2.minNps;
-        },
-        "max-notes-per-second": (playlist1, playlist2) => {
+        "notes-per-second": (playlist1, playlist2) => {
             if (!playlist1.maxNps) {
                 return playlist2.maxNps ? Comparison.LESSER : Comparison.EQUAL;
             }

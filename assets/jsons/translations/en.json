@@ -91,6 +91,15 @@
                         "drop-zone": {
                             "text": "Import your maps",
                             "subtext": "Drop your zip files here to import your maps"
+                        },
+                        "sort": {
+                            "name": "Name",
+                            "song-author": "Song Author",
+                            "map-author": "Map Author",
+                            "bpm": "BPM",
+                            "duration": "Duration",
+                            "likes": "Likes",
+                            "date-uploaded": "Date Uploaded"
                         }
                     },
                     "playlists": {
@@ -102,27 +111,15 @@
                         "drop-zone": {
                             "text": "Import your playlists",
                             "subtext": "Drop your \".bplist\" or \".json\" files here to import them"
+                        },
+                        "sort": {
+                            "title": "Title",
+                            "author": "Author",
+                            "number-of-maps": "Number of Maps",
+                            "duration": "Duration",
+                            "notes-per-second": "NPS"
                         }
                     }
-                },
-                "sort": {
-                    "name": "Name",
-                    "song-author": "Song Author",
-                    "map-author": "Map Author",
-                    "bpm": "BPM",
-                    "duration": "Duration",
-                    "likes": "Likes",
-                    "date-uploaded": "Date Uploaded"
-                }
-            },
-            "playlists": {
-                "sort": {
-                    "title": "Title",
-                    "author": "Author",
-                    "number-of-maps": "Number of Maps",
-                    "duration": "Duration",
-                    "min-notes-per-second": "Min Notes per Second",
-                    "max-notes-per-second": "Max Notes per Second"
                 }
             },
             "mods": {

@@ -91,6 +91,15 @@
                         "drop-zone": {
                             "text": "导入您的地图",
                             "subtext": "将ZIP文件拖放到此处以导入您的地图"
+                        },
+                        "sort": {
+                            "name": "名字",
+                            "song-author": "歌曲作者",
+                            "map-author": "地图作者",
+                            "bpm": "BPM",
+                            "duration": "持续时间",
+                            "likes": "喜欢",
+                            "date-uploaded": "上传日期"
                         }
                     },
                     "playlists": {
@@ -102,27 +111,15 @@
                         "drop-zone": {
                             "text": "导入您的播放列表",
                             "subtext": "将您的 \".bplist\" 或 \".json\" 文件拖放到这里进行导入"
+                        },
+                        "sort": {
+                            "title": "标题",
+                            "author": "作者",
+                            "number-of-maps": "地图数量",
+                            "duration": "持续时间",
+                            "notes-per-second": "NPS"
                         }
                     }
-                },
-                "sort": {
-                    "name": "名字",
-                    "song-author": "歌曲作者",
-                    "map-author": "地图作者",
-                    "bpm": "BPM",
-                    "duration": "持续时间",
-                    "likes": "喜欢",
-                    "date-uploaded": "上传日期"
-                }
-            },
-            "playlists": {
-                "sort": {
-                    "title": "标题",
-                    "author": "作者",
-                    "number-of-maps": "地图数量",
-                    "duration": "持续时间",
-                    "min-notes-per-second": "每秒最少音符数",
-                    "max-notes-per-second": "每秒最多音符数"
                 }
             },
             "mods": {

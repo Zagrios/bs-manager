@@ -91,6 +91,15 @@
                         "drop-zone": {
                             "text": "マップをインポート",
                             "subtext": "ZIPファイルをここにドロップしてマップをインポート"
+                        },
+                        "sort": {
+                            "name": "名前",
+                            "song-author": "曲の作者",
+                            "map-author": "地図の作者",
+                            "bpm": "BPM",
+                            "duration": "持続時間",
+                            "likes": "いいね",
+                            "date-uploaded": "アップロード日"
                         }
                     },
                     "playlists": {
@@ -102,27 +111,15 @@
                         "drop-zone": {
                             "text": "プレイリストをインポート",
                             "subtext": "\".bplist\" または \".json\" ファイルをここにドロップしてインポート"
+                        },
+                        "sort": {
+                            "title": "タイトル",
+                            "author": "著者",
+                            "number-of-maps": "地図の数",
+                            "duration": "持続時間",
+                            "notes-per-second": "NPS"
                         }
                     }
-                },
-                "sort": {
-                    "name": "名前",
-                    "song-author": "曲の作者",
-                    "map-author": "地図の作者",
-                    "bpm": "BPM",
-                    "duration": "持続時間",
-                    "likes": "いいね",
-                    "date-uploaded": "アップロード日"
-                }
-            },
-            "playlists": {
-                "sort": {
-                    "title": "タイトル",
-                    "author": "著者",
-                    "number-of-maps": "地図の数",
-                    "duration": "持続時間",
-                    "min-notes-per-second": "秒あたりの最小ノート数",
-                    "max-notes-per-second": "秒あたりの最大ノート数"
                 }
             },
             "mods": {

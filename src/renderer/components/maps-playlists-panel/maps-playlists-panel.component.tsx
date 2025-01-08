@@ -86,7 +86,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
 
     const [sortOptions, setSortOptions] = useState<BsmSelectOption<string>[]>(
         () => mapsSorter.getComparatorKeys().map(key => ({
-            text: `pages.version-viewer.maps.sort.${key}`,
+            text: `pages.version-viewer.maps.tabs.maps.sort.${key}`,
             value: key,
         }))
     );
@@ -131,7 +131,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         switch (index) {
         case MAP_TAB:
             setSortOptions(() => mapsSorter.getComparatorKeys().map(key => ({
-                text: `pages.version-viewer.maps.sort.${key}`,
+                text: `pages.version-viewer.maps.tabs.maps.sort.${key}`,
                 value: key,
             })));
             setSelectedSort(mapsSorter.getDefaultComparatorKey());
@@ -143,7 +143,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
 
         case PLAYLIST_TAB:
             setSortOptions(() => playlistsSorter.getComparatorKeys().map(key => ({
-                text: `pages.version-viewer.playlists.sort.${key}`,
+                text: `pages.version-viewer.maps.tabs.playlists.sort.${key}`,
                 value: key,
             })));
             setSelectedSort(playlistsSorter.getDefaultComparatorKey());
@@ -282,9 +282,9 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                 <BsmDropdownButton className="h-full relative z-[1] flex justify-center" buttonClassName="flex items-center justify-center h-full rounded-full px-2 py-1 whitespace-nowrap" icon="filter" text="pages.version-viewer.maps.search-bar.filters-btn" textClassName="whitespace-nowrap" withBar={false}>
                     {(
                         tabIndex === 0 ? (
-                            <FilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[500px] h-fit p-2 rounded-full shadow-md shadow-black" filter={mapFilter} onChange={setMapFilter} />
+                            <FilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[500px] h-fit p-2 rounded-md shadow-md shadow-black" filter={mapFilter} onChange={setMapFilter} />
                         ) : (
-                            <LocalPlaylistFilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[300px] h-fit p-2 rounded-full shadow-md shadow-black" filter={playlistFilter} onChange={setPlaylistFilter} />
+                            <LocalPlaylistFilterPanel className="absolute top-[calc(100%+3px)] origin-top w-[300px] h-fit p-2 rounded-md shadow-md shadow-black" filter={playlistFilter} onChange={setPlaylistFilter} />
                         )
                     )}
                 </BsmDropdownButton>
