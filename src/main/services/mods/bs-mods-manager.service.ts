@@ -17,7 +17,7 @@ import { LinuxService } from "../linux.service";
 import { tryit } from "shared/helpers/error.helpers";
 import crypto from "crypto";
 import { BsmZipExtractor } from "main/models/bsm-zip-extractor.class";
-import { bsmSpawn } from "main/helpers/os.helpers";
+import { BsmShellLog, bsmSpawn } from "main/helpers/os.helpers";
 import { BbmFullMod, BbmModVersion, ExternalMod } from "../../../shared/models/mods/mod.interface";
 
 export class BsModsManagerService {
@@ -139,25 +139,35 @@ export class BsModsManagerService {
             return false;
         }
 
+        const env: Record<string, string> = {};
         const cmd = `"${ipaPath}" "${bsExePath}" ${args.join(" ")}`;
         let winePath: string = "";
         if (process.platform === "linux") {
-            const { error, result } = tryit(() => this.linuxService.getWinePath());
-            if (error) {
-                log.error(error);
+            const { error: winePathError, result: winePathResult } =
+                tryit(() => this.linuxService.getWinePath());
+            if (winePathError) {
+                log.error(winePathError);
                 return false;
             }
-            winePath = `"${result}"`;
+            winePath = `"${winePathResult}"`;
+
+            const { error: winePrefixError, result: winePrefixResult } =
+                await tryit(async () => this.linuxService.getWinePrefixPath());
+            if (winePrefixError) {
+                log.warn("Could not get WINEPREFIX value", winePrefixError);
+            } else {
+                env.WINEPREFIX = winePrefixResult;
+            }
         }
 
         return new Promise<boolean>(resolve => {
-            log.info("START IPA PROCESS", cmd);
             const processIPA = bsmSpawn(cmd, {
-                log: true,
+                log: BsmShellLog.Command | BsmShellLog.EnvVariables,
                 options: {
                     cwd: versionPath,
                     detached: true,
-                    shell: true
+                    shell: true,
+                    env
                 },
                 linux: { prefix: winePath },
             });

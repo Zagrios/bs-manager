@@ -61,6 +61,7 @@ module.exports = {
         "react/button-has-type": "off",
         "max-classes-per-file": "off",
         "jest/no-standalone-expect": "off",
+        "no-bitwise": "off",
     },
     parserOptions: {
         ecmaVersion: 2020,
