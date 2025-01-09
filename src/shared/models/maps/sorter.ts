@@ -1,20 +1,12 @@
-import { Comparator, Comparison } from "shared/models/comparator.type";
-import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
+import { Comparison } from "../comparator.type";
+import { Sorter } from "../sorter.model";
+import { BsmLocalMap } from "./bsm-local-map.interface";
 
-export class MapsSorterService {
-    private static instance: MapsSorterService;
+const sortName = (map1: BsmLocalMap, map2: BsmLocalMap) => map1.mapInfo.songName.localeCompare(map2.mapInfo.songName);
 
-    public static getInstance() {
-        if (!MapsSorterService.instance) {
-            MapsSorterService.instance = new MapsSorterService();
-        }
-        return MapsSorterService.instance;
-    }
-
-    private readonly comparators: {
-        [key: string]: Comparator<BsmLocalMap>;
-    } = {
-        name: (map1, map2) => map1.mapInfo.songName.localeCompare(map2.mapInfo.songName),
+export const mapSorter = new Sorter<BsmLocalMap>({
+    comparators: {
+        name: sortName,
         "song-author": (map1, map2) => map1.mapInfo.songAuthorName.localeCompare(map2.mapInfo.songAuthorName),
         "map-author": (map1, map2) => {
             // Compare the number of mappers, else compare the first mapper
@@ -43,26 +35,8 @@ export class MapsSorterService {
 
             return !map2.songDetails ? Comparison.GREATER : map1.songDetails.uploadedAt - map2.songDetails.uploadedAt;
         },
-    };
+    },
+    tiebreak: sortName,
+    defaultKey: "name"
+});
 
-    private addTiebreak(comparator: Comparator<BsmLocalMap>): Comparator<BsmLocalMap> {
-        return (map1, map2) => comparator(map1, map2) || this.getDefaultComparator()(map1, map2);
-    }
-
-    public getComparatorKeys(): string[] {
-        return Object.keys(this.comparators);
-    }
-
-    public getDefaultComparatorKey(): string {
-        return "name";
-    }
-
-    public getDefaultComparator(): Comparator<BsmLocalMap> {
-        return this.comparators.name;
-    }
-
-    public getComparator(key: string): Comparator<BsmLocalMap> {
-        const comparator = this.comparators[key];
-        return comparator ? this.addTiebreak(comparator) : this.getDefaultComparator();
-    }
-}

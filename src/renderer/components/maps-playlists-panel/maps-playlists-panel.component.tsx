@@ -6,7 +6,7 @@ import { FilterPanel } from "./maps/filter-panel.component";
 import { MapFilter, MapSort } from "shared/models/maps/beat-saver.model";
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
-import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { FolderLinkState } from "renderer/services/version-folder-linker.service";
 import { useService } from "renderer/hooks/use-service.hook";
 import { BsContentTabPanel } from "../shared/bs-content-tab-panel/bs-content-tab-panel.component";
@@ -25,9 +25,9 @@ import { noop } from "shared/helpers/function.helpers";
 import { Dropzone } from "../shared/dropzone.component";
 import { logRenderError } from "renderer";
 import { BsmSelect, BsmSelectOption } from "../shared/bsm-select.component";
-import { MapsSorterService } from "renderer/services/maps/sorter.service";
 import { BsmButton } from "../shared/bsm-button.component";
-import { PlaylistsSorterService } from "renderer/services/playlists/sorter.service";
+import { mapSorter } from "shared/models/maps/sorter";
+import { playlistSorter } from "shared/models/playlists/sorter";
 
 type Props = {
     readonly version?: BSVersion;
@@ -48,12 +48,10 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
 
     const mapsManager = useService(MapsManagerService);
     const mapsDownloader = useService(MapsDownloaderService);
-    const mapsSorter = useService(MapsSorterService);
     const playlistsManager = useService(PlaylistsManagerService);
     const playlistsDownloader = useService(PlaylistDownloaderService);
-    const playlistsSorter = useService(PlaylistsSorterService);
 
-    const t = useTranslation();
+    const { text: t } = useTranslationV2();
     const [tabIndex, setTabIndex] = useState(0);
 
     const [mapsDropZoneOpen, setMapsDropZoneOpen] = useState(false);
@@ -74,18 +72,18 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
 
     const [mapFilter, setMapFilter] = useState<MapFilter>({});
     const [mapSort, setMapSort] = useState<MapSort>({
-        compare: mapsSorter.getDefaultComparator(),
+        compare: mapSorter.getDefaultComparator(),
         ascending: true,
     });
     const [playlistFilter, setPlaylistFilter] = useState<LocalPlaylistFilter>({});
     const [playlistSort, setPlaylistSort] = useState<LocalPlaylistSort>({
-        compare: playlistsSorter.getDefaultComparator(),
+        compare: playlistSorter.getDefaultComparator(),
         ascending: true,
     });
     const [selectedSort, setSelectedSort] = useState<string>("name");
 
     const [sortOptions, setSortOptions] = useState<BsmSelectOption<string>[]>(
-        () => mapsSorter.getComparatorKeys().map(key => ({
+        () => mapSorter.getComparatorKeys().map(key => ({
             text: `pages.version-viewer.maps.tabs.maps.sort.${key}`,
             value: key,
         }))
@@ -126,29 +124,32 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
     };
 
     const handleTabChange = (index: number) => {
+        if (tabIndex === index) {
+            return;
+        }
         setTabIndex(index);
 
         switch (index) {
         case MAP_TAB:
-            setSortOptions(() => mapsSorter.getComparatorKeys().map(key => ({
+            setSortOptions(() => mapSorter.getComparatorKeys().map(key => ({
                 text: `pages.version-viewer.maps.tabs.maps.sort.${key}`,
                 value: key,
             })));
-            setSelectedSort(mapsSorter.getDefaultComparatorKey());
+            setSelectedSort(mapSorter.defaultKey);
             setMapSort({
-                compare: mapsSorter.getDefaultComparator(),
+                compare: mapSorter.getDefaultComparator(),
                 ascending: playlistSort.ascending,
             });
             break;
 
         case PLAYLIST_TAB:
-            setSortOptions(() => playlistsSorter.getComparatorKeys().map(key => ({
+            setSortOptions(() => playlistSorter.getComparatorKeys().map(key => ({
                 text: `pages.version-viewer.maps.tabs.playlists.sort.${key}`,
                 value: key,
             })));
-            setSelectedSort(playlistsSorter.getDefaultComparatorKey());
+            setSelectedSort(playlistSorter.defaultKey);
             setPlaylistSort({
-                compare: playlistsSorter.getDefaultComparator(),
+                compare: playlistSorter.getDefaultComparator(),
                 ascending: mapSort.ascending,
             });
             break;
@@ -197,14 +198,14 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         switch (tabIndex) {
         case MAP_TAB:
             setMapSort({
-                compare: mapsSorter.getComparator(key),
+                compare: mapSorter.getComparator(key),
                 ascending: mapSort.ascending,
             });
             break;
 
         case PLAYLIST_TAB:
             setPlaylistSort({
-                compare: playlistsSorter.getComparator(key),
+                compare: playlistSorter.getComparator(key),
                 ascending: playlistSort.ascending,
             });
             break;
