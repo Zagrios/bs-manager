@@ -32,12 +32,13 @@ export class LinuxService {
 
     // === Launching === //
 
-    private getCompatDataPath(steamPath: string) {
+    private async getCompatDataPath() {
         // Create the compat data path if it doesn't exist.
         // If the user never ran Beat Saber through steam before
         // using bsmanager, it won't exist, and proton will fail
         // to launch the game.
-        const compatDataPath = path.join(steamPath, "steamapps", "compatdata", BS_APP_ID);
+        const commonFolder = await this.steamService.getGameFolder(BS_APP_ID);
+        const compatDataPath = path.resolve(commonFolder, "..", "compatdata", BS_APP_ID);
         if (!fs.existsSync(compatDataPath)) {
             log.info(`Proton compat data path not found at '${compatDataPath}', creating directory`);
             fs.mkdirSync(compatDataPath);
@@ -56,7 +57,7 @@ export class LinuxService {
             launchOptions.admin = false;
         }
 
-        const compatDataPath = this.getCompatDataPath(steamPath);
+        const compatDataPath = this.getCompatDataPath();
 
         if (!this.staticConfig.has("proton-folder")) {
             throw CustomError.fromError(
@@ -129,8 +130,7 @@ export class LinuxService {
     }
 
     public async getWinePrefixPath(): Promise<string> {
-        const compatDataPath = this.getCompatDataPath(await this.steamService.getSteamPath());
-        return path.join(compatDataPath, "pfx");
+        return path.join(await this.getCompatDataPath(), "pfx");
     }
 
     public getProtonPrefix(): string {

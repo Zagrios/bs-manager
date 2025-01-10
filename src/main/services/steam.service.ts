@@ -119,7 +119,8 @@ export class SteamService {
                 }
 
                 if (libraryFolders[libKey].apps[gameId] != null) {
-                    return path.join(libraryFolders[libKey].path, "steamapps", "common", gameFolder);
+                    const commonFolder = path.join(libraryFolders[libKey].path, "steamapps", "common");
+                    return gameFolder ? path.join(commonFolder, gameFolder) : commonFolder;
                 }
             }
 
