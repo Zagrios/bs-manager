@@ -1,4 +1,5 @@
 import {
+    BsmShellLog,
     bsmSpawn,
     // bsmExec,
     isProcessRunning,
@@ -23,6 +24,7 @@ jest.mock("electron-log", () => ({
     info: jest.fn(),
     error: jest.fn(),
 }));
+
 jest.mock("ps-list", () => (): unknown[] => []);
 
 const IS_WINDOWS = process.platform === "win32";
@@ -76,7 +78,7 @@ describe("Test os.helpers bsmSpawn", () => {
     it("Simple spawn command with logging", () => {
         bsmSpawn("mkdir", {
             args: ["new_folder"],
-            log: true,
+            log: BsmShellLog.Command,
         });
         expect(spawnSpy).toHaveBeenCalledTimes(1);
         expect(spawnSpy).toHaveBeenCalledWith("mkdir new_folder", expect.anything());
@@ -86,7 +88,7 @@ describe("Test os.helpers bsmSpawn", () => {
 
     it("Complex spawn command call (Mods install)", () => {
         bsmSpawn(`"./BSIPA.exe" "./Beat Saber.exe" -n`, {
-            log: true,
+            log: BsmShellLog.Command,
             linux: { prefix: `"./wine64"` },
         });
 
@@ -109,7 +111,7 @@ describe("Test os.helpers bsmSpawn", () => {
                 detached: true,
                 env: BS_ENV,
             },
-            log: true,
+            log: BsmShellLog.Command,
             linux: { prefix: `"./proton" run` },
         });
 
@@ -152,7 +154,7 @@ describe("Test os.helpers bsmSpawn", () => {
                 detached: true,
                 env: newEnv,
             },
-            log: true,
+            log: BsmShellLog.Command,
             linux: { prefix: `"./proton" run` },
             flatpak: {
                 host: true,

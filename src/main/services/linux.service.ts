@@ -3,9 +3,10 @@ import log from "electron-log";
 import path from "path";
 import { BS_APP_ID, IS_FLATPAK, PROTON_BINARY_PREFIX, WINE_BINARY_PREFIX } from "main/constants";
 import { StaticConfigurationService } from "./static-configuration.service";
+import { SteamService } from "./steam.service";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { BSLaunchError, LaunchOption } from "shared/models/bs-launch";
-import { bsmExec } from "main/helpers/os.helpers";
+import { BsmShellLog, bsmExec } from "main/helpers/os.helpers";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 
 export class LinuxService {
@@ -19,15 +20,31 @@ export class LinuxService {
     }
 
     private readonly staticConfig: StaticConfigurationService;
+    private readonly steamService: SteamService;
     private protonPrefix = "";
 
     private nixOS: boolean | undefined;
 
     private constructor() {
         this.staticConfig = StaticConfigurationService.getInstance();
+        this.steamService = SteamService.getInstance();
     }
 
     // === Launching === //
+
+    private async getCompatDataPath() {
+        // Create the compat data path if it doesn't exist.
+        // If the user never ran Beat Saber through steam before
+        // using bsmanager, it won't exist, and proton will fail
+        // to launch the game.
+        const commonFolder = await this.steamService.getGameFolder(BS_APP_ID);
+        const compatDataPath = path.resolve(commonFolder, "..", "compatdata", BS_APP_ID);
+        if (!fs.existsSync(compatDataPath)) {
+            log.info(`Proton compat data path not found at '${compatDataPath}', creating directory`);
+            fs.mkdirSync(compatDataPath);
+        }
+        return compatDataPath;
+    }
 
     public async setupLaunch(
         launchOptions: LaunchOption,
@@ -40,15 +57,7 @@ export class LinuxService {
             launchOptions.admin = false;
         }
 
-        // Create the compat data path if it doesn't exist.
-        // If the user never ran Beat Saber through steam before
-        // using bsmanager, it won't exist, and proton will fail
-        // to launch the game.
-        const compatDataPath = `${steamPath}/steamapps/compatdata/${BS_APP_ID}`;
-        if (!fs.existsSync(compatDataPath)) {
-            log.info(`Proton compat data path not found at '${compatDataPath}', creating directory`);
-            fs.mkdirSync(compatDataPath);
-        }
+        const compatDataPath = this.getCompatDataPath();
 
         if (!this.staticConfig.has("proton-folder")) {
             throw CustomError.fromError(
@@ -120,6 +129,10 @@ export class LinuxService {
         return winePath;
     }
 
+    public async getWinePrefixPath(): Promise<string> {
+        return path.join(await this.getCompatDataPath(), "pfx");
+    }
+
     public getProtonPrefix(): string {
         // Set in setupLaunch
         return this.protonPrefix;
@@ -134,7 +147,7 @@ export class LinuxService {
 
         try {
             await bsmExec("nixos-version", {
-                log: true,
+                log: BsmShellLog.Command,
                 flatpak: { host: IS_FLATPAK },
             });
             this.nixOS = true;
