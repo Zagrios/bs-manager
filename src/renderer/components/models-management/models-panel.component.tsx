@@ -133,7 +133,7 @@ export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersi
 
     return (
         <div ref={ref} className="w-full h-full flex flex-col items-center justify-center gap-4">
-            <div className="w-full shrink-0 flex h-9 justify-center px-40 gap-2 text-main-color-1 dark:text-white">
+            <div className="w-full shrink-0 flex h-9 justify-center gap-2 text-main-color-1 dark:text-white">
                 <BsmButton
                     className="flex items-center justify-center w-fit rounded-full px-2 py-1 font-bold"
                     icon="add"
@@ -149,7 +149,7 @@ export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersi
                 <div className="h-full rounded-full bg-light-main-color-2 dark:bg-main-color-2 grow p-[6px]">
                     <input type="text" className="h-full w-full bg-light-main-color-1 dark:bg-main-color-1 rounded-full px-2" placeholder={t("models.panel.actions.search")} onChange={e => setSearch(e.target.value)} tabIndex={-1} />
                 </div>
-                <BsmDropdownButton items={threeDotsItems} className="h-full flex aspect-square relative rounded-full z-[1] bg-light-main-color-1 dark:bg-main-color-3" buttonClassName="rounded-full h-full w-full p-[6px]" icon="three-dots" withBar={false} menuTranslationY="6px" align="center" />
+                <BsmDropdownButton items={threeDotsItems} className="h-full flex aspect-square relative rounded-full z-[1] bg-light-main-color-1 dark:bg-main-color-3" buttonClassName="rounded-full h-full w-full p-[6px]" icon="three-dots" withBar={false} menuTranslationY="6px" align="right" />
             </div>
             <BsContentTabPanel
                 tabIndex={currentTabIndex}

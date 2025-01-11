@@ -91,6 +91,15 @@
                         "drop-zone": {
                             "text": "導入您的地圖",
                             "subtext": "將ZIP文件拖放到此處以導入您的地圖"
+                        },
+                        "sort": {
+                            "name": "名字",
+                            "song-author": "歌曲作者",
+                            "map-author": "地圖作者",
+                            "bpm": "BPM",
+                            "duration": "持續時間",
+                            "likes": "喜歡",
+                            "date-uploaded": "上傳日期"
                         }
                     },
                     "playlists": {
@@ -102,6 +111,13 @@
                         "drop-zone": {
                             "text": "匯入您的播放列表",
                             "subtext": "將您的 \".bplist\" 或 \".json\" 檔案拖曳到這裡進行匯入"
+                        },
+                        "sort": {
+                            "title": "標題",
+                            "author": "作者",
+                            "number-of-maps": "地圖數量",
+                            "duration": "持續時間",
+                            "notes-per-second": "NPS"
                         }
                     }
                 }
