@@ -1,5 +1,7 @@
 import { ObjectValues } from "shared/helpers/type.helpers";
 import { SongDetailDiffCharactertistic, SongDiffName } from "./song-details-cache/song-details-cache.model";
+import { BsmLocalMap } from "./bsm-local-map.interface";
+import { Comparator } from "../comparator.type";
 
 export interface BsvMapDetail {
     automapper: boolean;
@@ -248,6 +250,11 @@ export interface MapFilter {
     maxNps?: number;
     enabledTags?: Set<MapTag>;
     excludedTags?: Set<MapTag>;
+}
+
+export interface MapSort {
+    compare: Comparator<BsmLocalMap>;
+    ascending: boolean;
 }
 
 export interface SearchResponse {

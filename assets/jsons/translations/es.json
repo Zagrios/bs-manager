@@ -91,6 +91,15 @@
                         "drop-zone": {
                             "text": "Importar tus mapas",
                             "subtext": "Suelta tus archivos zip aquí para importar tus mapas"
+                        },
+                        "sort": {
+                            "name": "Nombre",
+                            "song-author": "Autor de la canción",
+                            "map-author": "Autor del mapa",
+                            "bpm": "BPM",
+                            "duration": "Duración",
+                            "likes": "Me gusta",
+                            "date-uploaded": "Fecha de subida"
                         }
                     },
                     "playlists": {
@@ -102,6 +111,13 @@
                         "drop-zone": {
                             "text": "Importa tus listas de reproducción",
                             "subtext": "Suelta tus archivos \".bplist\" o \".json\" aquí para importarlos"
+                        },
+                        "sort": {
+                            "title": "Título",
+                            "author": "Autor",
+                            "number-of-maps": "Número de mapas",
+                            "duration": "Duración",
+                            "notes-per-second": "NPS"
                         }
                     }
                 }
