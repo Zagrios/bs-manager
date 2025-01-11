@@ -23,7 +23,7 @@ jest.mock("electron-log", () => ({
     info: jest.fn(),
     error: jest.fn(),
 }));
-jest.mock("ps-list", () => () => []);
+jest.mock("ps-list", () => (): unknown[] => []);
 
 const IS_WINDOWS = process.platform === "win32";
 const IS_LINUX = process.platform === "linux";
