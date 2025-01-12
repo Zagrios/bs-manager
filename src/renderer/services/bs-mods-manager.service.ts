@@ -48,7 +48,8 @@ export class BsModsManagerService {
 
         return new Observable<Progression>(obs => {
             const install$ = this.ipcService.sendV2("bs-mods.install-mods", { mods, version });
-            this.progressBar.show(install$.pipe(catchError(() => of({ current: 0, total: 0} as Progression))), { paddingLeft: "190px", paddingRight: "190px", bottom: "20px" });
+            this.progressBar.show(install$.pipe(catchError(() => of({ current: 0, total: 0} as Progression))));
+
 
             const sub = install$.pipe(
                 tap({

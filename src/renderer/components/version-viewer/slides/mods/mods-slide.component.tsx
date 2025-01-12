@@ -11,7 +11,6 @@ import { useObservable } from "renderer/hooks/use-observable.hook";
 import { lastValueFrom } from "rxjs";
 import { useTranslation, useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
-import { useInView } from "framer-motion";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods-disclaimer-modal.component";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
@@ -22,8 +21,9 @@ import { noop } from "shared/helpers/function.helpers";
 import { UninstallAllModsModal } from "renderer/components/modal/modal-types/uninstall-all-mods-modal.component";
 import { Dropzone } from "renderer/components/shared/dropzone.component";
 import Tippy from "@tippyjs/react";
+import { ProgressBarService } from "renderer/services/progress-bar.service";
 
-export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion; onDisclamerDecline: () => void }) {
+export function ModsSlide({ version, isActive, onDisclamerDecline }: { version: BSVersion; isActive?: boolean, onDisclamerDecline: () => void }) {
     const ACCEPTED_DISCLAIMER_KEY = "accepted-mods-disclaimer";
 
     const { text: t } = useTranslationV2();
@@ -34,9 +34,8 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
     const linkOpener = useService(LinkOpenerService);
     const modals = useService(ModalService);
     const os = useService(OsDiagnosticService);
+    const progress = useService(ProgressBarService);
 
-    const ref = useRef(null);
-    const isVisible = useInView(ref, { amount: 0.5 });
     const [modsAvailable, setModsAvailable] = useState(null as Map<BbmCategories, BbmFullMod[]>);
     const [modsInstalled, setModsInstalled] = useState(null as Map<BbmCategories, BbmFullMod[]>);
     const [modsSelected, setModsSelected] = useState([] as BbmFullMod[]);
@@ -202,7 +201,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
 
     useEffect(() => {
 
-        if(!isVisible || !isOnline){
+        if(!isActive || !isOnline){
             return noop();
         }
 
@@ -232,7 +231,22 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
             setModsAvailable(null);
             setModsInstalled(null);
         };
-    }, [isVisible, isOnline, version]);
+    }, [isActive, isOnline, version]);
+
+    useEffect(() => {
+        // Center the progress bar between buttons
+        if(isActive){
+            progress.setStyle({ paddingLeft: "150px", paddingRight: "190px", bottom: "24px" });
+
+        } else {
+            progress.setStyle(null);
+        }
+
+
+        return () => {
+            progress.setStyle(null);
+        }
+    }, [isActive])
 
     useLayoutEffect(() => {
         if (modsAvailable) {
@@ -291,7 +305,7 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
     };
 
     return (
-        <div ref={ref} className="shrink-0 w-full h-full px-8 pb-7 flex justify-center">
+        <div className="shrink-0 w-full h-full px-8 pb-7 flex justify-center">
             <Dropzone
                 className="w-full h-full shrink-0"
                 onFiles={importMods}

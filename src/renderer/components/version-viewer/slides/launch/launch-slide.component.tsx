@@ -183,6 +183,7 @@ export function LaunchSlide({ version }: Props) {
                     if(launchMod?.visible === false || !launchMod?.pinned) { return undefined; }
                     return (
                         <LaunchModToogle
+                            key={launchMod.id}
                             icon={launchMod.icon}
                             infoText={launchMod.description}
                             text={launchMod.label}
