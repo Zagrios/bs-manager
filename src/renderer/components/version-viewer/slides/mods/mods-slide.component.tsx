@@ -21,6 +21,7 @@ import { NotificationService } from "renderer/services/notification.service";
 import { noop } from "shared/helpers/function.helpers";
 import { UninstallAllModsModal } from "renderer/components/modal/modal-types/uninstall-all-mods-modal.component";
 import { Dropzone } from "renderer/components/shared/dropzone.component";
+import Tippy from "@tippyjs/react";
 
 export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion; onDisclamerDecline: () => void }) {
     const ACCEPTED_DISCLAIMER_KEY = "accepted-mods-disclaimer";
@@ -268,17 +269,21 @@ export function ModsSlide({ version, onDisclamerDecline }: { version: BSVersion;
                         uninstallMod={uninstallMod}
                         uninstallAllMods={uninstallAllMods}
                         unselectAllMods={unselectAllMods}
-                        openModsDropZone={() => setModsDropZoneOpen(true)}
                     />
                 </div>
                 <div className="shrink-0 flex items-center justify-between px-3 py-2">
                     <BsmButton className="flex items-center justify-center rounded-md px-1 h-8" text="pages.version-viewer.mods.buttons.more-infos" typeColor="cancel" withBar={false} disabled={!moreInfoMod} onClick={handleOpenMoreInfo} style={{ width: downloadWith }}/>
-                    <div ref={downloadRef} className="flex h-8 justify-center items-center gap-px overflow-hidden rounded-md">
-                        <div className="grow h-full relative">
-                            <BsmButton className="relative left-0 flex items-center justify-center px-2 size-full transition-[top] duration-200 ease-in-out" text="pages.version-viewer.mods.buttons.install-or-update" typeColor="primary" withBar={false} onClick={() => installMods(false)} style={{ top: reinstallAllMods ? "-100%" : "0" }} />
-                            <BsmButton className="relative left-0 flex items-center justify-center px-2 size-full transition-[top] duration-200 ease-in-out " text="pages.version-viewer.mods.buttons.reinstall-all" typeColor="primary" withBar={false} onClick={() => installMods(true)} style={{ top: reinstallAllMods ? "-100%" : "0" }}/>
+                    <div className="flex gap-2">
+                        <div ref={downloadRef} className="flex h-8 justify-center items-center gap-px overflow-hidden rounded-md">
+                            <div className="grow h-full relative">
+                                <BsmButton className="relative left-0 flex items-center justify-center px-2 size-full transition-[top] duration-200 ease-in-out" text="pages.version-viewer.mods.buttons.install-or-update" typeColor="primary" withBar={false} onClick={() => installMods(false)} style={{ top: reinstallAllMods ? "-100%" : "0" }} />
+                                <BsmButton className="relative left-0 flex items-center justify-center px-2 size-full transition-[top] duration-200 ease-in-out " text="pages.version-viewer.mods.buttons.reinstall-all" typeColor="primary" withBar={false} onClick={() => installMods(true)} style={{ top: reinstallAllMods ? "-100%" : "0" }}/>
+                            </div>
+                            <BsmButton className="flex items-center justify-center shrink-0 h-full" iconClassName="transition-transform size-full ease-in-out duration-200" iconStyle={{ transform: reinstallAllMods ? "rotate(360deg)" : "rotate(180deg)" }} icon="chevron-top" typeColor="primary" withBar={false} onClick={() => setReinstallAllMods(prev => !prev)}/>
                         </div>
-                        <BsmButton className="flex items-center justify-center shrink-0 h-full" iconClassName="transition-transform size-full ease-in-out duration-200" iconStyle={{ transform: reinstallAllMods ? "rotate(360deg)" : "rotate(180deg)" }} icon="chevron-top" typeColor="primary" withBar={false} onClick={() => setReinstallAllMods(prev => !prev)}/>
+                        <Tippy content={t("pages.version-viewer.mods.mods-grid.header-bar.dropdown.import-mods")} theme="default">
+                            <BsmButton className="flex items-center justify-center rounded-md px-1 h-8 aspect-square" icon="download" typeColor="cancel" withBar={false} onClick={() => setModsDropZoneOpen(true)}/>
+                        </Tippy>
                     </div>
                 </div>
             </>
