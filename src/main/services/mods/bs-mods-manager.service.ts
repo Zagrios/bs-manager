@@ -151,12 +151,11 @@ export class BsModsManagerService {
             }
             winePath = `"${winePathResult}"`;
 
-            const { error: winePrefixError, result: winePrefixResult } =
-                await tryit(async () => this.linuxService.getWinePrefixPath());
-            if (winePrefixError) {
-                log.warn("Could not get WINEPREFIX value", winePrefixError);
+            const winePrefix = this.linuxService.getWinePrefixPath();
+            if (winePrefix) {
+                env.WINEPREFIX = winePrefix;
             } else {
-                env.WINEPREFIX = winePrefixResult;
+                log.warn("Could not find BSManager WINEPREFIX path, using system's default value instead");
             }
         }
 
