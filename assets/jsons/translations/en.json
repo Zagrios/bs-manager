@@ -641,6 +641,7 @@
                     "EPERM": "BSManager does not have the necessary permissions to link the folder.",
                     "EACCES": "BSManager does not have the necessary permissions to link the folder.",
                     "ENOSPC": "The disk is full, make some space and try again.",
+                    "LinkingNotSupported": "Folder linking is not supported on this file system.",
                     "UNKNOWN_ERROR": "An unknown error has occurred while linking the folder."
                 }
             },
