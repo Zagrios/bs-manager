@@ -641,6 +641,7 @@
                     "EPERM": "BSManager no tiene los permisos necesarios para enlazar la carpeta.",
                     "EACCES": "BSManager no tiene los permisos necesarios para enlazar la carpeta.",
                     "ENOSPC": "El disco está lleno, libera espacio e inténtalo de nuevo.",
+                    "LinkingNotSupported": "El enlace de carpetas no es compatible con este sistema de archivos.",
                     "UNKNOWN_ERROR": "Se ha producido un error desconocido al enlazar la carpeta."
                 }
             },
