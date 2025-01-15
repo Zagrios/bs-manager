@@ -46,7 +46,7 @@ export abstract class AbstractLauncherService {
         return Array.from(new Set(launchArgs).values());
     }
 
-    protected launchBSProcess(bsExePath: string, args: string[], options?: SpawnOptionsWithoutStdio): ChildProcessWithoutNullStreams {
+    protected launchBSProcess(bsExePath: string, args: string[], options?: SpawnBsProcessOptions): ChildProcessWithoutNullStreams {
 
         const spawnOptions: SpawnOptionsWithoutStdio = { detached: true, cwd: path.dirname(bsExePath), ...(options || {}) };
 
@@ -57,7 +57,7 @@ export abstract class AbstractLauncherService {
         spawnOptions.shell = true; // For windows to spawn properly
         return bsmSpawn(`"${bsExePath}"`, {
             args, options: spawnOptions, log: BsmShellLog.Command,
-            linux: { prefix: this.linux.getProtonPrefix() },
+            linux: { prefix: options?.protonPrefix || "" },
             flatpak: {
                 host: IS_FLATPAK,
                 env: [
@@ -80,7 +80,7 @@ export abstract class AbstractLauncherService {
     protected launchBs(bsExePath: string, args: string[], options?: SpawnBsProcessOptions): {process: ChildProcessWithoutNullStreams, exit: Promise<number>} {
         const process = this.launchBSProcess(bsExePath, args, options);
 
-        let timoutId: NodeJS.Timeout;
+        let timeoutId: NodeJS.Timeout;
 
         const exit = new Promise<number>((resolve, reject) => {
             // Don't remove, useful for debugging!
@@ -103,7 +103,7 @@ export abstract class AbstractLauncherService {
 
             const unrefAfter = options?.unrefAfter ?? sToMs(10);
 
-            timoutId = setTimeout(() => {
+            timeoutId = setTimeout(() => {
                 log.error("BS process unref after timeout", unrefAfter);
                 process.unref();
                 process.removeAllListeners();
@@ -111,7 +111,7 @@ export abstract class AbstractLauncherService {
             }, unrefAfter);
 
         }).finally(() => {
-            clearTimeout(timoutId);
+            clearTimeout(timeoutId);
         });
 
         return { process, exit };
@@ -119,5 +119,6 @@ export abstract class AbstractLauncherService {
 }
 
 export type SpawnBsProcessOptions = {
+    protonPrefix?: string;
     unrefAfter?: number;
 } & SpawnOptionsWithoutStdio;

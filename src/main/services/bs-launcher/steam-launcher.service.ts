@@ -112,9 +112,14 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 "SteamGameId": BS_APP_ID,
             };
 
+            let protonPrefix = "";
             // Linux setup
             if (process.platform === "linux") {
-                await this.linux.setupLaunch(launchOptions, steamPath, bsFolderPath, env);
+                const linuxSetup = await this.linux.setupLaunch(
+                    launchOptions, steamPath, bsFolderPath
+                );
+                protonPrefix = linuxSetup.protonPrefix;
+                Object.assign(env, linuxSetup.env);
             }
 
             obs.next({type: BSLaunchEvent.BS_LAUNCHING});
@@ -122,7 +127,10 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
             const spawnOpts = { env, cwd: bsFolderPath };
 
             const launchPromise = !launchOptions.admin ? (
-                this.launchBs(bsExePath, launchArgs, spawnOpts).exit
+                this.launchBs(bsExePath, launchArgs, {
+                    ...spawnOpts,
+                    protonPrefix
+                }).exit
             ) : (
                 new Promise<number>(resolve => {
                     const adminProcess = exec(`"${this.getStartBsAsAdminExePath()}" "${bsExePath}" ${launchArgs.join(" ")} --log-path "${path.join(app.getPath("logs"), "bs-admin-start.log")}"`, spawnOpts);

@@ -24,6 +24,7 @@ import { LaunchMod, LaunchMods } from "shared/models/bs-launch/launch-option.int
 import { StaticConfigurationService } from "../static-configuration.service";
 import { SteamService } from "../steam.service";
 import { tryit } from "shared/helpers/error.helpers";
+import { LinuxService } from "../linux.service";
 
 export class BSLauncherService {
     private static instance: BSLauncherService;
@@ -37,6 +38,7 @@ export class BSLauncherService {
     private readonly steam: SteamService;
     private readonly oculusLauncher: OculusLauncherService;
     private readonly staticConfig: StaticConfigurationService;
+    private readonly linux: LinuxService;
 
     public static getInstance(): BSLauncherService {
         if (!BSLauncherService.instance) {
@@ -55,6 +57,7 @@ export class BSLauncherService {
         this.oculusLauncher = OculusLauncherService.getInstance();
         this.staticConfig = StaticConfigurationService.getInstance();
         this.steam = SteamService.getInstance();
+        this.linux = LinuxService.getInstance();
 
         this.bsmProtocolService.on("launch", link => {
             log.info("Launch from bsm protocol", link.toString());
@@ -230,12 +233,13 @@ export class BSLauncherService {
                     description: [shortcutName, launchOptions.version.color].join(" "), // <= Need color in description to help windows know that the shortcut is different
                 })
             ),
-            linux: async () => (
-                createDesktopUrlShortcut(path.join(app.getPath("desktop"), `${shortcutName}.desktop`), {
-                    name: shortcutName,
-                    url: shortcutUrl,
-                    icon: await this.createShortcutPng(shortcutIconColor),
-                })
+            linux: async () => this.linux.createDesktopShortcut(
+                path.join(app.getPath("desktop"), `${shortcutName}.desktop`),
+                shortcutName,
+                await this.createShortcutPng(shortcutIconColor),
+                launchOptions,
+                await this.steam.getSteamPath(),
+                await this.localVersionService.getVersionPath(launchOptions.version)
             )
         })
 
@@ -282,26 +286,3 @@ type ShortcutParams = {
     versionOculus?: string;
 }
 
-/**
- * Create .desktop file for url shortcut (only for linux)
- * @param {string} shortcutPath
- * @param options
- * @returns
- */
-function createDesktopUrlShortcut(shortcutPath: string, options?: {
-    url: string
-    name: string,
-    icon: string
-}): Promise<boolean> {
-    const { url, name, icon } = options || {};
-
-    const data = [
-        "[Desktop Entry]",
-        "Type=Link",
-        `Name=${name}`,
-        `Icon=${icon}`,
-        `URL=${url}`
-    ].join("\n");
-
-    return writeFile(shortcutPath, data).then(() => true);
-}

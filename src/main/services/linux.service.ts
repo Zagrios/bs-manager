@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import log from "electron-log";
 import path from "path";
-import { BS_APP_ID, IS_FLATPAK, PROTON_BINARY_PREFIX, WINE_BINARY_PREFIX } from "main/constants";
+import { BS_APP_ID, BS_EXECUTABLE, IS_FLATPAK, PROTON_BINARY_PREFIX, WINE_BINARY_PREFIX } from "main/constants";
 import { InstallationLocationService } from "./installation-location.service";
 import { StaticConfigurationService } from "./static-configuration.service";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
@@ -21,7 +21,6 @@ export class LinuxService {
 
     private readonly installLocationService: InstallationLocationService;
     private readonly staticConfig: StaticConfigurationService;
-    private protonPrefix = "";
 
     private nixOS: boolean | undefined;
 
@@ -40,22 +39,14 @@ export class LinuxService {
     public async setupLaunch(
         launchOptions: LaunchOption,
         steamPath: string,
-        bsFolderPath: string,
-        env: Record<string, string>
-    ) {
+        bsFolderPath: string
+    ): Promise<{
+        protonPrefix: string;
+        env: Record<string, string>;
+    }> {
         if (launchOptions.admin) {
             log.warn("Launching as admin is not supported on Linux! Starting the game as a normal user.");
             launchOptions.admin = false;
-        }
-
-        // Create the compat data path if it doesn't exist.
-        // If the user never ran Beat Saber through steam before
-        // using bsmanager, it won't exist, and proton will fail
-        // to launch the game.
-        const compatDataPath = this.getCompatDataPath();
-        if (!fs.existsSync(compatDataPath)) {
-            log.info(`Proton compat data path not found at '${compatDataPath}', creating directory`);
-            fs.mkdirSync(compatDataPath);
         }
 
         if (!this.staticConfig.has("proton-folder")) {
@@ -75,27 +66,46 @@ export class LinuxService {
             );
         }
 
-        this.protonPrefix = await this.isNixOS()
-            ? `steam-run "${protonPath}" run`
-            : `"${protonPath}" run`;
+        return {
+            protonPrefix: await this.isNixOS()
+                ? `steam-run "${protonPath}" run`
+                : `"${protonPath}" run`,
+            env: await this.prepareEnvVariables(launchOptions, steamPath, bsFolderPath)
+        };
+    }
+
+    private async prepareEnvVariables(
+        launchOptions: LaunchOption,
+        steamPath: string,
+        bsFolderPath: string
+    ): Promise<Record<string, string>> {
+        // Create the compat data path if it doesn't exist.
+        // If the user never ran Beat Saber through steam before
+        // using bsmanager, it won't exist, and proton will fail
+        // to launch the game.
+        const compatDataPath = this.getCompatDataPath();
+        if (!fs.existsSync(compatDataPath)) {
+            log.info(`Proton compat data path not found at '${compatDataPath}', creating directory`);
+            fs.mkdirSync(compatDataPath);
+        }
 
         // Setup Proton environment variables
-        Object.assign(env, {
+        const envVars: Record<string, string> = {
             "WINEDLLOVERRIDES": "winhttp=n,b", // Required for mods to work
             "STEAM_COMPAT_DATA_PATH": compatDataPath,
             "STEAM_COMPAT_INSTALL_PATH": bsFolderPath,
             "STEAM_COMPAT_CLIENT_INSTALL_PATH": steamPath,
             "STEAM_COMPAT_APP_ID": BS_APP_ID,
             // Run game in steam environment; fixes #585 for unicode song titles
-            "SteamEnv": 1,
-        });
+            "SteamEnv": "1",
+        };
 
         if (launchOptions.launchMods?.includes(LaunchMods.PROTON_LOGS)) {
-            Object.assign(env, {
-                "PROTON_LOG": 1,
-                "PROTON_LOG_DIR": path.join(bsFolderPath, "Logs"),
-            });
+            envVars.PROTON_LOG = "1";
+            envVars.PROTON_LOG_DIR = path.join(bsFolderPath, "Logs");
         }
+
+        return envVars;
     }
 
     public verifyProtonPath(protonFolder: string = ""): boolean {
@@ -134,11 +144,6 @@ export class LinuxService {
             ? path.join(compatDataPath, "pfx") : "";
     }
 
-    public getProtonPrefix(): string {
-        // Set in setupLaunch
-        return this.protonPrefix;
-    }
-
     // === NixOS Specific === //
 
     public async isNixOS(): Promise<boolean> {
@@ -158,5 +163,51 @@ export class LinuxService {
         }
 
         return this.nixOS;
+    }
+
+    // === Shortcuts === //
+
+    public async createDesktopShortcut(
+        shortcutPath: string,
+        name: string,
+        icon: string,
+        launchOptions: LaunchOption,
+        steamPath: string,
+        bsFolderPath: string
+    ): Promise<boolean> {
+        try {
+            const {
+                protonPrefix, env
+            } = await this.setupLaunch(launchOptions, steamPath, bsFolderPath);
+
+            Object.assign(env, {
+                "SteamAppId": BS_APP_ID,
+                "SteamOverlayGameId": BS_APP_ID,
+                "SteamGameId": BS_APP_ID,
+            });
+
+            const envString = Object.entries(env)
+                .map(([ key, value ]) => `${key}="${value}"`)
+                .join(" ");
+            const command = `${envString} ${protonPrefix} "${
+                path.join(bsFolderPath, BS_EXECUTABLE)
+            }"`;
+
+            const desktopEntry = [
+                "[Desktop Entry]",
+                "Type=Application",
+                `Name=${name}`,
+                `Icon=${icon}`,
+                `Path=${bsFolderPath}`,
+                `Exec=${command}`
+            ].join("\n");
+
+            await fs.writeFile(shortcutPath, desktopEntry);
+            log.info("Created shorcut at ", `"${shortcutPath}/${name}"`);
+            return true;
+        } catch (error) {
+            log.error("Could not create shortcut", error);
+            return false;
+        }
     }
 }
