@@ -65,6 +65,7 @@ const config = {
             // Audio output
             "--socket=pulseaudio",
             // Read/write home directory access
+            "--filesystem=~/Desktop:rw", // allow writing shortcuts to desktop
             "--filesystem=~/BSManager:create", // Default BSManager installation folder
             "--filesystem=~/.steam/steam/steamapps:ro", // for the libraryfolders.vdf
             "--filesystem=~/.steam/steam/steamapps/common:create", // Steam game folder
