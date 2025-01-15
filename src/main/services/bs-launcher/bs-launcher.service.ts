@@ -185,7 +185,7 @@ export class BSLauncherService {
      * @returns {Promise<string>} Path of the icon
      */
     private async createShortcutIco(color: Color): Promise<string>{
-        const pngBuffer = await this.createShortcutPngBuffer(color);
+        const pngBuffer = this.createShortcutPngBuffer(color);
         const icoBuffer = await toIco([pngBuffer]);
 
         await ensureDir(IMAGE_CACHE_PATH);
@@ -211,17 +211,28 @@ export class BSLauncherService {
         if(steamShortcut){
             const userId = await tryit(() => this.steam.getActiveUser());
             const exePath = app.getPath("exe");
-            return this.steam.createShortcut({
-                AppName: shortcutName,
-                Exe: exePath,
-                StartDir: path.dirname(exePath),
-                LaunchOptions: this.createLaunchLink(launchOptions),
-                icon: await this.createShortcutPng(shortcutIconColor),
-                OpenVR: "\u0001"
-            }, userId.result).then(() => true).catch(e => {
-                log.error(e);
-                return false;
-            });
+            const icon = await this.createShortcutPng(shortcutIconColor)
+            return this.steam.createShortcut(
+                process.platform === "win32"
+                    ? {
+                        AppName: shortcutName,
+                        Exe: exePath,
+                        StartDir: path.dirname(exePath),
+                        LaunchOptions: this.createLaunchLink(launchOptions),
+                        OpenVR: "\u0001", icon,
+                    }
+                    : await this.linux.getSteamShortcutData(
+                        shortcutName, icon, launchOptions,
+                        await this.steam.getSteamPath(),
+                        await this.localVersionService.getVersionPath(launchOptions.version)
+                    ),
+                userId.result
+            )
+                .then(() => true)
+                .catch(e => {
+                    log.error(e);
+                    return false;
+                });
         }
 
         return execOnOs({

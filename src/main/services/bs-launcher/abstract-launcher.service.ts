@@ -9,6 +9,33 @@ import { BsmShellLog, bsmSpawn } from "main/helpers/os.helpers";
 import { IS_FLATPAK } from "main/constants";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 
+export function buildBsLaunchArgs(launchOptions: LaunchOption): string[] {
+    const launchArgs = [];
+
+    if(!launchOptions.version.steam && !launchOptions.version.oculus){
+        launchArgs.push("--no-yeet")
+    }
+    if(launchOptions.launchMods?.includes(LaunchMods.OCULUS)) {
+        launchArgs.push("-vrmode");
+        launchArgs.push("oculus");
+    }
+    if(launchOptions.launchMods?.includes(LaunchMods.FPFC)) {
+        launchArgs.push("fpfc");
+    }
+    if(launchOptions.launchMods?.includes(LaunchMods.DEBUG)) {
+        launchArgs.push("--verbose");
+    }
+    if(launchOptions.launchMods?.includes(LaunchMods.EDITOR)) {
+        launchArgs.push("editor");
+    }
+
+    if (launchOptions.additionalArgs) {
+        launchArgs.push(...launchOptions.additionalArgs);
+    }
+
+    return Array.from(new Set(launchArgs).values());
+}
+
 export abstract class AbstractLauncherService {
 
     protected readonly linux = LinuxService.getInstance();
@@ -17,33 +44,6 @@ export abstract class AbstractLauncherService {
     constructor(){
         this.linux = LinuxService.getInstance();
         this.localVersions = BSLocalVersionService.getInstance();
-    }
-
-    protected buildBsLaunchArgs(launchOptions: LaunchOption): string[]{
-        const launchArgs = [];
-
-        if(!launchOptions.version.steam && !launchOptions.version.oculus){
-            launchArgs.push("--no-yeet")
-        }
-        if(launchOptions.launchMods?.includes(LaunchMods.OCULUS)) {
-            launchArgs.push("-vrmode");
-            launchArgs.push("oculus");
-        }
-        if(launchOptions.launchMods?.includes(LaunchMods.FPFC)) {
-            launchArgs.push("fpfc");
-        }
-        if(launchOptions.launchMods?.includes(LaunchMods.DEBUG)) {
-            launchArgs.push("--verbose");
-        }
-        if(launchOptions.launchMods?.includes(LaunchMods.EDITOR)) {
-            launchArgs.push("editor");
-        }
-
-        if (launchOptions.additionalArgs) {
-            launchArgs.push(...launchOptions.additionalArgs);
-        }
-
-        return Array.from(new Set(launchArgs).values());
     }
 
     protected launchBSProcess(bsExePath: string, args: string[], options?: SpawnBsProcessOptions): ChildProcessWithoutNullStreams {

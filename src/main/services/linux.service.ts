@@ -8,6 +8,8 @@ import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { BSLaunchError, LaunchOption } from "shared/models/bs-launch";
 import { BsmShellLog, bsmExec } from "main/helpers/os.helpers";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
+import { SteamShortcutData } from "shared/models/steam/shortcut.model";
+import { buildBsLaunchArgs } from "./bs-launcher/abstract-launcher.service";
 
 export class LinuxService {
     private static instance: LinuxService;
@@ -49,6 +51,16 @@ export class LinuxService {
             launchOptions.admin = false;
         }
 
+        const protonPath = await this.getProtonPath();
+        return {
+            protonPrefix: await this.isNixOS()
+                ? `steam-run "${protonPath}" run`
+                : `"${protonPath}" run`,
+            env: await this.buildEnvVariables(launchOptions, steamPath, bsFolderPath)
+        };
+    }
+
+    private async getProtonPath(): Promise<string> {
         if (!this.staticConfig.has("proton-folder")) {
             throw CustomError.fromError(
                 new Error("Proton folder not set"),
@@ -66,15 +78,10 @@ export class LinuxService {
             );
         }
 
-        return {
-            protonPrefix: await this.isNixOS()
-                ? `steam-run "${protonPath}" run`
-                : `"${protonPath}" run`,
-            env: await this.prepareEnvVariables(launchOptions, steamPath, bsFolderPath)
-        };
+        return protonPath;
     }
 
-    private async prepareEnvVariables(
+    private async buildEnvVariables(
         launchOptions: LaunchOption,
         steamPath: string,
         bsFolderPath: string
@@ -167,6 +174,20 @@ export class LinuxService {
 
     // === Shortcuts === //
 
+    private getCommand(
+        protonPrefix: string,
+        bsFolderPath: string,
+        env: Record<string, string>,
+        launchOptions: LaunchOption
+    ): string {
+        const envString = Object.entries(env)
+            .map(([ key, value ]) => `${key}="${value}"`)
+            .join(" ");
+        const bsExe = path.join(bsFolderPath, BS_EXECUTABLE);
+        const args = buildBsLaunchArgs(launchOptions).join(" ");
+        return `${envString} ${protonPrefix} "${bsExe}" ${args}`;
+    }
+
     public async createDesktopShortcut(
         shortcutPath: string,
         name: string,
@@ -186,12 +207,10 @@ export class LinuxService {
                 "SteamGameId": BS_APP_ID,
             });
 
-            const envString = Object.entries(env)
-                .map(([ key, value ]) => `${key}="${value}"`)
-                .join(" ");
-            const command = `${envString} ${protonPrefix} "${
-                path.join(bsFolderPath, BS_EXECUTABLE)
-            }"`;
+            const command = this.getCommand(
+                protonPrefix, bsFolderPath,
+                env, launchOptions
+            );
 
             const desktopEntry = [
                 "[Desktop Entry]",
@@ -210,4 +229,38 @@ export class LinuxService {
             return false;
         }
     }
+
+    public async getSteamShortcutData(
+        shortcutName: string,
+        icon: string,
+        launchOptions: LaunchOption,
+        steamPath: string,
+        bsFolderPath: string
+    ): Promise<SteamShortcutData> {
+        const env = await this.buildEnvVariables(
+            launchOptions, steamPath, bsFolderPath
+        );
+        Object.assign(env, {
+            "SteamAppId": BS_APP_ID,
+            "SteamOverlayGameId": BS_APP_ID,
+            "SteamGameId": BS_APP_ID,
+        });
+
+        const protonPrefix = await this.isNixOS()
+            ? "steam-run %command% run"
+            : "%command% run";
+
+        return {
+            AppName: shortcutName,
+            Exe: await this.getProtonPath(),
+            StartDir: bsFolderPath,
+            icon,
+            OpenVR: "\x01",
+            LaunchOptions: this.getCommand(
+                protonPrefix, bsFolderPath,
+                env, launchOptions
+            )
+        };
+    }
+
 }
