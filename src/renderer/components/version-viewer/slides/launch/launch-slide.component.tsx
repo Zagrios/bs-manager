@@ -212,7 +212,7 @@ export function LaunchSlide({ version }: Props) {
                 <BsmButton
                     onClick={launch}
                     active={JSON.stringify(version) === JSON.stringify(versionRunning)}
-                    className='relative text-5xl text-gray-800 dark:text-gray-200 font-bold tracking-wide pt-1 pb-3 px-7 rounded-lg shadow-md italic shadow-black active:scale-90 transition-transform'
+                    className="relative text-5xl text-gray-800 dark:text-gray-200 font-bold tracking-wide pt-1 pb-3 px-7 rounded-lg shadow-md italic shadow-black active:scale-90 transition-transform"
                     text="misc.launch"
                     disabled={equal(version, versionDownloading)}
                 />
