@@ -70,6 +70,8 @@ export abstract class AbstractLauncherService {
                     "STEAM_COMPAT_CLIENT_INSTALL_PATH",
                     "STEAM_COMPAT_APP_ID",
                     "SteamEnv",
+                    "PROTON_LOG",
+                    "PROTON_LOG_DIR",
                 ],
             },
         });
