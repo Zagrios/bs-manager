@@ -49,7 +49,6 @@ Guidance on fixing errors during setup or version updates
 
 - __🐧Linux__:
     - [Missing Icons in Game]([Linux]-Missing-Icons-in-Game)
-    - [Permission Denied on "bs-versions.json"]([Linux]-Permission-Denied-on-bs-version.json)
     - [[Deb] The SUID Sandbox Helper Binary Was Found]([Linux]-[deb]-The-SUID-Sandbox-Helper-Binary-Was-Found)
     - [[Flatpak] Steam Beat Saber Version Not Showing / Proton Not Detected]([Linux]-[Flatpak]-Steam-Beat-Saber-Version-Not-Showing-Proton-Not-Detected)
     - [[Flatpak] Changing Installation Folder]([Linux]-[Flatpak]-Changing-Installation-Folder)

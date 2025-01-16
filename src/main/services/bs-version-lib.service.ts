@@ -5,8 +5,6 @@ import { BSVersion } from "shared/bs-version.interface";
 import { RequestService } from "./request.service";
 import { readJSON } from "fs-extra";
 import { allSettled } from "../../shared/helpers/promise.helpers";
-import { LinuxService } from "./linux.service";
-import { IS_FLATPAK } from "main/constants";
 import { StaticConfigurationService } from "./static-configuration.service";
 
 export class BSVersionLibService {
@@ -15,7 +13,6 @@ export class BSVersionLibService {
 
     private static instance: BSVersionLibService;
 
-    private readonly linuxService: LinuxService;
     private readonly utilsService: UtilsService;
     private readonly requestService: RequestService;
     private readonly configService: StaticConfigurationService;
@@ -23,7 +20,6 @@ export class BSVersionLibService {
     private bsVersions: BSVersion[];
 
     private constructor() {
-        this.linuxService = LinuxService.getInstance();
         this.utilsService = UtilsService.getInstance();
         this.requestService = RequestService.getInstance();
         this.configService = StaticConfigurationService.getInstance();
@@ -40,15 +36,10 @@ export class BSVersionLibService {
         return this.requestService.getJSON<BSVersion[]>(this.REMOTE_BS_VERSIONS_URL).then(res => res.data);
     }
 
-    private async shouldLoadFromConfig(): Promise<boolean> {
-        // Some special cases of readonly memory installations
-        return process.platform === "linux" && (IS_FLATPAK || this.linuxService.isNixOS());
-    }
-
     private async getLocalVersions(): Promise<BSVersion[]> {
         const localVersionsPath = path.join(this.utilsService.getAssestsJsonsPath(), this.VERSIONS_FILE);
 
-        if (!(await this.shouldLoadFromConfig())) {
+        if (process.platform !== "linux") {
             return readJSON(localVersionsPath);
         }
 
@@ -60,7 +51,7 @@ export class BSVersionLibService {
     }
 
     private async updateLocalVersions(versions: BSVersion[]): Promise<void> {
-        if (await this.shouldLoadFromConfig()) {
+        if (process.platform === "linux") {
             this.configService.set("versions", versions);
             return;
         }
