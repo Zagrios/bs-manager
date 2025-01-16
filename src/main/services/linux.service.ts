@@ -93,7 +93,7 @@ export class LinuxService {
         const compatDataPath = this.getCompatDataPath();
         if (!fs.existsSync(compatDataPath)) {
             log.info(`Proton compat data path not found at '${compatDataPath}', creating directory`);
-            fs.mkdirSync(compatDataPath);
+            await fs.ensureDir(compatDataPath);
         }
 
         // Setup Proton environment variables
