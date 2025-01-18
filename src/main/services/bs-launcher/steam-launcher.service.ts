@@ -11,6 +11,7 @@ import { CustomError } from "../../../shared/models/exceptions/custom-error.clas
 import isElevated from "is-elevated";
 import { UtilsService } from "../utils.service";
 import { exec } from "child_process";
+import { app } from "electron";
 
 export class SteamLauncherService extends AbstractLauncherService implements StoreLauncherInterface{
 
@@ -106,11 +107,20 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
 
             obs.next({type: BSLaunchEvent.BS_LAUNCHING});
 
+            const env = {
+                ...process.env,
+                "SteamAppId": BS_APP_ID,
+                "SteamOverlayGameId": BS_APP_ID,
+                "SteamGameId": BS_APP_ID,
+            };
+
+            const spawnOpts = { env, cwd: bsFolderPath };
+
             const launchPromise = !launchOptions.admin ? (
                 this.launchBs(exePath, launchArgs, { env: {...process.env, "SteamAppId": BS_APP_ID} }).exit
             ) : (
                 new Promise<number>(resolve => {
-                    const adminProcess = exec(`"${this.getStartBsAsAdminExePath()}" "${exePath}" ${launchArgs.join(" ")}`, { env: {...process.env, "SteamAppId": BS_APP_ID} });
+                    const adminProcess = exec(`"${this.getStartBsAsAdminExePath()}" "${exePath}" ${launchArgs.join(" ")} --log-path "${path.join(app.getPath("logs"), "bs-admin-start.log")}"`, spawnOpts);
                     adminProcess.on("error", err => {
                         log.error("Error while starting BS as Admin", err);
                         resolve(-1)

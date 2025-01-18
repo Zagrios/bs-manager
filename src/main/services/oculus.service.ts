@@ -3,7 +3,7 @@ import { pathExist, resolveGUIDPath } from "../helpers/fs.helpers";
 import log from "electron-log";
 import { lstat } from "fs-extra";
 import { tryit } from "../../shared/helpers/error.helpers";
-import { shell } from "electron";
+import { app, shell } from "electron";
 import { taskRunning } from "../helpers/os.helpers";
 import { sToMs } from "../../shared/helpers/time.helpers";
 import { execOnOs } from "../helpers/env.helpers";
@@ -169,7 +169,7 @@ export class OculusService {
 
         return new Promise((resolve, reject) => {
             log.info("Enabling sideloaded apps");
-            const process = exec(exePath);
+            const process = exec(`"${exePath}" --log-path "${path.join(app.getPath("logs"), "oculus-allow-dev-sideloaded.log")}"`);
             process.on("exit", code => {
                 if(code === 0){
                     resolve();
