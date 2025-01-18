@@ -499,6 +499,7 @@
                     "EPERM": "BSManager n'a pas les autorisations nécessaires pour lier le dossier.",
                     "EACCES": "BSManager n'a pas les autorisations nécessaires pour lier le dossier.",
                     "ENOSPC": "Le disque est plein, faites de la place et réessayez.",
+                    "LinkingNotSupported": "La liaison de dossier n'est pas supportée sur ce système de fichiers.",
                     "UNKNOWN_ERROR": "Une erreur inconnue est survenue lors de la liaison du dossier."
                 }
             }

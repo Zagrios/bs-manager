@@ -499,6 +499,7 @@
                     "EPERM": "BSManager hat nicht die erforderlichen Berechtigungen, um den Ordner zu verknüpfen.",
                     "EACCES": "BSManager hat nicht die erforderlichen Berechtigungen, um den Ordner zu verknüpfen.",
                     "ENOSPC": "Die Festplatte ist voll, machen Sie Platz und versuchen Sie es erneut.",
+                    "LinkingNotSupported": "Ordnerverknüpfung wird auf diesem Dateisystem nicht unterstützt.",
                     "UNKNOWN_ERROR": "Ein unbekannter Fehler ist beim Verknüpfen des Ordners aufgetreten."
                 }
             }

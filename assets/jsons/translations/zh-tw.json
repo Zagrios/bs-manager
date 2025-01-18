@@ -499,6 +499,7 @@
                     "EPERM": "BSManager沒有必要的權限來連結文件夾。",
                     "EACCES": "BSManager沒有必要的權限來連結文件夾。",
                     "ENOSPC": "磁碟已滿，請騰出空間後再試。",
+                    "LinkingNotSupported": "該檔案系統不支援資料夾連結。",
                     "UNKNOWN_ERROR": "連結文件夾時發生未知錯誤。"
                 }
             }

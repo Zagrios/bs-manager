@@ -3,9 +3,12 @@ import log from "electron-log";
 import { deleteFolder, ensureFolderExist, moveFolderContent, pathExist, unlinkPath } from "../helpers/fs.helpers";
 import { lstat, symlink } from "fs/promises";
 import path from "path";
-import { copy, readlink } from "fs-extra";
+import { copy, mkdirSync, readlink, rmSync, symlinkSync, unlinkSync } from "fs-extra";
 import { lastValueFrom } from "rxjs";
 import { noop } from "../../shared/helpers/function.helpers";
+import { randomUUID } from "crypto";
+import { tryit } from "shared/helpers/error.helpers";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
 
 export class FolderLinkerService {
     private static instance: FolderLinkerService;
@@ -51,7 +54,34 @@ export class FolderLinkerService {
         });
     }
 
+    public async isLinkingSupported(): Promise<boolean> {
+        const uuid = randomUUID();
+        const installationPath = await this.installLocationService.installationDirectory();
+        const testFolder = path.join(installationPath, uuid);
+        const testLink = path.join(installationPath, `${uuid}_link`);
+
+        const resLink = tryit(() => {
+            mkdirSync(testFolder);
+            symlinkSync(testFolder, testLink, "junction");
+        });
+
+        tryit(() => {
+            rmSync(testFolder, { force: true, recursive: true });
+            unlinkSync(testLink);
+        });
+
+        if(resLink.error){
+            log.error("Unable to create symlink", resLink.error);
+        }
+
+        return !resLink.error;
+    }
+
     public async linkFolder(folderPath: string, options?: LinkOptions): Promise<void> {
+        if(!(await this.isLinkingSupported())){
+            throw new CustomError("Linking is not supported on this platform", "LinkingNotSupported");
+        }
+
         const sharedPath = await this.getSharedFolder(folderPath, options?.intermediateFolder);
 
         if (await this.isFolderSymlink(folderPath)) {

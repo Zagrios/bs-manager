@@ -21,7 +21,7 @@ export class VersionFolderLinkerService {
         return VersionFolderLinkerService.instance;
     }
 
-    private readonly KNOWN_ERROR_CODES = ["EPERM", "EACCES", "ENOSPC"];
+    private readonly KNOWN_ERROR_CODES = ["EPERM", "EACCES", "ENOSPC", "LinkingNotSupported"];
 
     private readonly ipcService: IpcService;
     private readonly progress: ProgressBarService;
