@@ -1,6 +1,6 @@
 {
   "name": "bs-manager",
-  "version": "1.4.17",
+  "version": "1.4.18",
   "description": "BSManager",
   "main": "./dist/main/main.js",
   "author": {
