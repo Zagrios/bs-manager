@@ -60,7 +60,9 @@ export function LaunchModItem({ id, icon: Icon, label, description, active, visi
                 {onPinChange && (
                     <Tippy theme="default" placement="right" content={pinned ? t("misc.unpin") : t("misc.pin")} hideOnClick>
                         <button className="h-full py-2 px-1.5" onClick={e => { e.preventDefault(); e.stopPropagation(); onPinChange?.(!pinned) }}>
-                            {pinned ? <UnpinIcon className="size-full"/> : <PinIcon className="size-full"/>}
+                            {pinned
+                                ? <UnpinIcon className="size-full text-gray-800 dark:text-gray-200"/>
+                                : <PinIcon className="size-full text-gray-800 dark:text-gray-200"/>}
                         </button>
                     </Tippy>
                 )}
