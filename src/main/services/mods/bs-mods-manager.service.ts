@@ -15,7 +15,7 @@ import recursiveReadDir from "recursive-readdir";
 import { sToMs } from "../../../shared/helpers/time.helpers";
 import { BsmZipExtractor } from "../../models/bsm-zip-extractor.class";
 import { pathExistsSync, readdirSync, rm, unlink } from "fs-extra";
-import { tryit } from "shared/helpers/error.helpers";
+import { tryit } from "../../../shared/helpers/error.helpers";
 import crypto from "crypto";
 import { BbmCategories, BbmFullMod, BbmModVersion } from "../../../shared/models/mods/mod.interface";
 

@@ -7,8 +7,8 @@ import { copy, mkdirSync, readlink, rmSync, symlinkSync, unlinkSync } from "fs-e
 import { lastValueFrom } from "rxjs";
 import { noop } from "../../shared/helpers/function.helpers";
 import { randomUUID } from "crypto";
-import { tryit } from "shared/helpers/error.helpers";
-import { CustomError } from "shared/models/exceptions/custom-error.class";
+import { tryit } from "../../shared/helpers/error.helpers";
+import { CustomError } from "../../shared/models/exceptions/custom-error.class";
 
 export class FolderLinkerService {
     private static instance: FolderLinkerService;
