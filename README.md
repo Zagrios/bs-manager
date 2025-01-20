@@ -559,7 +559,7 @@
     <li><a href="https://github.com/GaetanGrd">GaetanGrd</a> - Co-Developer & Co-Founder, Documentation Lead.</li>
     <li><a href="https://github.com/cheddZy">cheddZy</a> - Icon Creator.</li>
     <li><a href="https://github.com/Insprill">Insprill</a> - Co-Developer, Linux Developer, AUR Maintainer.</li>
-    <li><a href="https://github.com/silentrald">silentrald</a> - Co-Developer, Linux Developer, deb and flatpak Maintainer.</li>
+    <li><a href="https://github.com/silentrald">silentrald</a> - Co-Developer, Linux Developer, deb/rpm/flatpak Maintainer.</li>
   </ul>
 </div>
 
