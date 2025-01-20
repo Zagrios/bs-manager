@@ -91,6 +91,15 @@
                         "drop-zone": {
                             "text": "Importar tus mapas",
                             "subtext": "Suelta tus archivos zip aquí para importar tus mapas"
+                        },
+                        "sort": {
+                            "name": "Nombre",
+                            "song-author": "Autor de la canción",
+                            "map-author": "Autor del mapa",
+                            "bpm": "BPM",
+                            "duration": "Duración",
+                            "likes": "Me gusta",
+                            "date-uploaded": "Fecha de subida"
                         }
                     },
                     "playlists": {
@@ -102,6 +111,13 @@
                         "drop-zone": {
                             "text": "Importa tus listas de reproducción",
                             "subtext": "Suelta tus archivos \".bplist\" o \".json\" aquí para importarlos"
+                        },
+                        "sort": {
+                            "title": "Título",
+                            "author": "Autor",
+                            "number-of-maps": "Número de mapas",
+                            "duration": "Duración",
+                            "notes-per-second": "NPS"
                         }
                     }
                 }
@@ -625,6 +641,7 @@
                     "EPERM": "BSManager no tiene los permisos necesarios para enlazar la carpeta.",
                     "EACCES": "BSManager no tiene los permisos necesarios para enlazar la carpeta.",
                     "ENOSPC": "El disco está lleno, libera espacio e inténtalo de nuevo.",
+                    "LinkingNotSupported": "El enlace de carpetas no es compatible con este sistema de archivos.",
                     "UNKNOWN_ERROR": "Se ha producido un error desconocido al enlazar la carpeta."
                 }
             },
@@ -636,7 +653,8 @@
         "create-launch-shortcut": {
             "success": {
                 "title": "Acceso directo creado",
-                "msg": "El acceso directo se ha creado en el escritorio."
+                "msg": "El acceso directo se ha creado en el escritorio.",
+                "msg-steam": "El acceso directo se ha creado en la biblioteca de Steam."
             },
             "error": {
                 "msg": "Se produjo un error al crear el acceso directo."
@@ -843,7 +861,9 @@
             "desc": "Crear un atajo te permitirá iniciar Beat Saber con las opciones seleccionadas sin pasar por BSManager.",
             "launch-options": "Opciones de lanzamiento",
             "advanced-launch": "Lanzamiento avanzado",
-            "valid-btn": "Crear el atajo"
+            "valid-btn": "Crear el atajo",
+            "create-steam-shortcut": "Crear un atajo directo de Steam",
+            "steam-shortcut-tippy": "Si está activado, en lugar de crear un atajo directo en el escritorio, se creará en Steam."
         },
         "connect-to-meta": {
             "title": "Conexión a Meta",

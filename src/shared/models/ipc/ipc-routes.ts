@@ -53,7 +53,7 @@ export interface IpcChannelMapping {
     "bs-installer.set-install-path": { request: { path: string, move: boolean }, response: string};
 
     /* ** bs-launcher-ipcs ** */
-    "create-launch-shortcut": { request: LaunchOption, response: boolean };
+    "create-launch-shortcut": { request: { options: LaunchOption, steamShortcut?: boolean }, response: boolean };
     "bs-launch.need-start-as-admin": { request: void, response: boolean };
     "bs-launch.launch": { request: LaunchOption, response: BSLaunchEventData };
     "bs-launch.restore-steamvr": { request: void, response: void };

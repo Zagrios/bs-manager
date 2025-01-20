@@ -11,6 +11,7 @@ import { CustomError } from "../../../shared/models/exceptions/custom-error.clas
 import { UtilsService } from "../utils.service";
 import { exec } from "child_process";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
+import { app } from "electron";
 
 export class SteamLauncherService extends AbstractLauncherService implements StoreLauncherInterface{
 
@@ -124,7 +125,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 this.launchBs(bsExePath, launchArgs, spawnOpts).exit
             ) : (
                 new Promise<number>(resolve => {
-                    const adminProcess = exec(`"${this.getStartBsAsAdminExePath()}" "${bsExePath}" ${launchArgs.join(" ")}`, spawnOpts);
+                    const adminProcess = exec(`"${this.getStartBsAsAdminExePath()}" "${bsExePath}" ${launchArgs.join(" ")} --log-path "${path.join(app.getPath("logs"), "bs-admin-start.log")}"`, spawnOpts);
                     adminProcess.on("error", err => {
                         log.error("Error while starting BS as Admin", err);
                         resolve(-1)

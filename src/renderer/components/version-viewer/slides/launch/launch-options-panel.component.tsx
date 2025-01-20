@@ -55,8 +55,8 @@ export function LaunchModItem({ id, icon: Icon, label, description, active, visi
         <Tippy theme="default" className="break-words" placement="top" content={description}>
             <button id={id} className={cn("grow rounded-md bg-theme-1 relative flex justify-center items-center h-10 py-1 px-3", visible === false && "hidden")} onClick={e => { e.preventDefault(); e.stopPropagation(); onChange?.(!active) }}>
                 <BsmCheckbox className="h-4 aspect-square z-[1] relative mr-1.5" checked={active} onChange={onChange}/>
-                {Icon && <Icon className="h-full w-fit py-0.5 mr-1.5"/>}
-                <span className="font-bold">{label}</span>
+                {Icon && <Icon className="h-full w-fit py-0.5 mr-1.5 text-gray-800 dark:text-gray-200"/>}
+                <span className="font-bold text-gray-800 dark:text-gray-200">{label}</span>
                 {onPinChange && (
                     <Tippy theme="default" placement="right" content={pinned ? t("misc.unpin") : t("misc.pin")} hideOnClick>
                         <button className="h-full py-2 px-1.5" onClick={e => { e.preventDefault(); e.stopPropagation(); onPinChange?.(!pinned) }}>

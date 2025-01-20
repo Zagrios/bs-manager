@@ -5,7 +5,7 @@ import path from "path";
 import log from "electron-log";
 import { sToMs } from "../../../shared/helpers/time.helpers";
 import { LinuxService } from "../linux.service";
-import { bsmSpawn } from "main/helpers/os.helpers";
+import { BsmShellLog, bsmSpawn } from "main/helpers/os.helpers";
 import { IS_FLATPAK } from "main/constants";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 
@@ -56,7 +56,7 @@ export abstract class AbstractLauncherService {
 
         spawnOptions.shell = true; // For windows to spawn properly
         return bsmSpawn(`"${bsExePath}"`, {
-            args, options: spawnOptions, log: true,
+            args, options: spawnOptions, log: BsmShellLog.Command,
             linux: { prefix: this.linux.getProtonPrefix() },
             flatpak: {
                 host: IS_FLATPAK,

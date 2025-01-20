@@ -56,14 +56,14 @@ export function NavBar() {
             <NavBarSpliter />
             <NavBarItem isActive={["/blah","/"].includes(route)}>
                 <Tippy placement="right" content={t("nav-bar.add-version")} className="!bg-neutral-900" arrow={false}>
-                    <Link className="rounded-md w-9 h-9 flex justify-center items-center hover:bg-light-main-color-3 dark:hover:bg-main-color-3" to="blah">
+                    <Link className="rounded-md w-9 h-9 flex justify-center items-center hover:bg-theme-3" to="blah">
                         <BsmIcon icon="add" className="text-blue-500 h-[34px]" style={{ color }} />
                     </Link>
                 </Tippy>
             </NavBarItem>
             <NavBarItem isActive={route === "/settings"}>
             <Tippy placement="right" content={t("nav-bar.settings")} className="!bg-neutral-900" arrow={false}>
-                    <Link className="rounded-md w-9 h-9 flex justify-center items-center hover:bg-light-main-color-3 dark:hover:bg-main-color-3" to="settings">
+                    <Link className="rounded-md w-9 h-9 flex justify-center items-center hover:bg-theme-3" to="settings">
                         <BsmIcon icon="settings" className="text-blue-500 h-7" style={{ color }} />
                     </Link>
                 </Tippy>

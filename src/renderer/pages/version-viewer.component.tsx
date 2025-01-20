@@ -120,10 +120,10 @@ export function VersionViewer() {
         const { exitCode, data } = await modalService.openModal(CreateLaunchShortcutModal, {data: state});
         if(exitCode !== ModalExitCode.COMPLETED){ return; }
 
-        lastValueFrom(bsLauncher.createLaunchShortcut(data)).then(() => {
+        lastValueFrom(bsLauncher.createLaunchShortcut(data.launchOption, data.steamShortcut)).then(() => {
             notification.notifySuccess({
                 title: "notifications.create-launch-shortcut.success.title",
-                desc: "notifications.create-launch-shortcut.success.msg"
+                desc: `notifications.create-launch-shortcut.success.${data.steamShortcut ? "msg-steam" : "msg"}`
             });
         }).catch(() => {
             notification.notifyError({
@@ -153,7 +153,7 @@ export function VersionViewer() {
                     <div className="w-full shrink-0 px-3 pb-3 flex flex-col items-center">
                         <ModelsPanel version={state} isActive={currentTabIndex === 2} goToMods={() => setCurrentTabIndex(() => 3)} />
                     </div>
-                    <ModsSlide version={state} onDisclamerDecline={handleModsDisclaimerDecline} />
+                    <ModsSlide version={state} isActive={currentTabIndex === 3} onDisclamerDecline={handleModsDisclaimerDecline} />
                 </div>
             </div>
             <BsmDropdownButton className="absolute top-3 right-4 h-9 w-9 bg-light-main-color-2 dark:bg-main-color-2 rounded-md" items={[

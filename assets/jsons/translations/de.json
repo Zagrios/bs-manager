@@ -91,6 +91,15 @@
                         "drop-zone": {
                             "text": "Deine Karten importieren",
                             "subtext": "Lasse deine ZIP-Dateien hier fallen, um deine Karten zu importieren"
+                        },
+                        "sort": {
+                            "name": "Name",
+                            "song-author": "Liedautor",
+                            "map-author": "Kartenautor",
+                            "bpm": "BPM",
+                            "duration": "Dauer",
+                            "likes": "Likes",
+                            "date-uploaded": "Hochladedatum"
                         }
                     },
                     "playlists": {
@@ -102,6 +111,13 @@
                         "drop-zone": {
                             "text": "Importiere deine Wiedergabelisten",
                             "subtext": "Ziehe deine \".bplist\" oder \".json\" Dateien hierhin, um sie zu importieren"
+                        },
+                        "sort": {
+                            "title": "Titel",
+                            "author": "Autor",
+                            "number-of-maps": "Anzahl der Karten",
+                            "duration": "Dauer",
+                            "notes-per-second": "NPS"
                         }
                     }
                 }
@@ -625,6 +641,7 @@
                     "EPERM": "BSManager hat nicht die erforderlichen Berechtigungen, um den Ordner zu verknüpfen.",
                     "EACCES": "BSManager hat nicht die erforderlichen Berechtigungen, um den Ordner zu verknüpfen.",
                     "ENOSPC": "Die Festplatte ist voll, machen Sie Platz und versuchen Sie es erneut.",
+                    "LinkingNotSupported": "Ordnerverknüpfung wird auf diesem Dateisystem nicht unterstützt.",
                     "UNKNOWN_ERROR": "Ein unbekannter Fehler ist beim Verknüpfen des Ordners aufgetreten."
                 }
             },
@@ -636,7 +653,8 @@
         "create-launch-shortcut": {
             "success": {
                 "title": "Verknüpfung erstellt",
-                "msg": "Die Verknüpfung wurde auf dem Desktop erstellt."
+                "msg": "Die Verknüpfung wurde auf dem Desktop erstellt.",
+                "msg-steam": "Die Verknüpfung wurde in der Steam-Bibliothek erstellt."
             },
             "error": {
                 "msg": "Beim Erstellen der Verknüpfung ist ein Fehler aufgetreten."
@@ -843,7 +861,9 @@
             "desc": "Das Erstellen einer Verknüpfung ermöglicht es dir, Beat Saber mit den ausgewählten Optionen zu starten, ohne durch BSManager zu gehen.",
             "launch-options": "Startoptionen",
             "advanced-launch": "Erweiterter Start",
-            "valid-btn": "Verknüpfung erstellen"
+            "valid-btn": "Verknüpfung erstellen",
+            "create-steam-shortcut": "Steam-Verknüpfung erstellen",
+            "steam-shortcut-tippy": "Wenn aktiviert, wird anstelle einer Verknüpfung auf dem Desktop eine Verknüpfung in Steam erstellt."
         },
         "connect-to-meta": {
             "title": "Mit Meta verbinden",

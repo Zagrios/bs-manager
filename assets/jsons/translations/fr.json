@@ -91,6 +91,15 @@
                         "drop-zone": {
                             "text": "Importer vos maps",
                             "subtext": "Déposez vos fichiers zip ici pour importer vos maps"
+                        },
+                        "sort": {
+                            "name": "Nom",
+                            "song-author": "Auteur de la chanson",
+                            "map-author": "Auteur de la carte",
+                            "bpm": "BPM",
+                            "duration": "Durée",
+                            "likes": "J'aime",
+                            "date-uploaded": "Date de téléchargement"
                         }
                     },
                     "playlists": {
@@ -102,6 +111,13 @@
                         "drop-zone": {
                             "text": "Importer vos playlists",
                             "subtext": "Déposez vos fichiers \".bplist\" ou \".json\" ici pour les importer"
+                        },
+                        "sort": {
+                            "title": "Titre",
+                            "author": "Auteur",
+                            "number-of-maps": "Nombre de cartes",
+                            "duration": "Durée",
+                            "notes-per-second": "NPS"
                         }
                     }
                 }
@@ -625,6 +641,7 @@
                     "EPERM": "BSManager n'a pas les autorisations nécessaires pour lier le dossier.",
                     "EACCES": "BSManager n'a pas les autorisations nécessaires pour lier le dossier.",
                     "ENOSPC": "Le disque est plein, faites de la place et réessayez.",
+                    "LinkingNotSupported": "La liaison de dossier n'est pas supportée sur ce système de fichiers.",
                     "UNKNOWN_ERROR": "Une erreur inconnue est survenue lors de la liaison du dossier."
                 }
             },
@@ -637,7 +654,8 @@
         "create-launch-shortcut": {
             "success": {
                 "title": "Raccourci créé",
-                "msg": "Le raccourci a été créé sur le bureau."
+                "msg": "Le raccourci a été créé sur le bureau.",
+                "msg-steam": "Le raccourci a été créé dans la bibliothèque Steam."
             },
             "error": {
                 "msg": "Une erreur s'est produite lors de la création du raccourci."
@@ -844,7 +862,9 @@
             "desc": "Créer un raccourci te permettra de démarrer Beat Saber avec les options choisies sans passer par BSManager.",
             "launch-options": "Options de lancement",
             "advanced-launch": "Lancement avancé",
-            "valid-btn": "Créer le raccourci"
+            "valid-btn": "Créer le raccourci",
+            "create-steam-shortcut": "Créer un raccourci Steam",
+            "steam-shortcut-tippy": "Si activé, au lieu de créer un raccourci sur le bureau, celui-ci sera créé dans Steam."
         },
         "connect-to-meta": {
             "title": "Connexion à Meta",

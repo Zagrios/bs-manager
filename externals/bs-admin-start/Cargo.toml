@@ -4,6 +4,10 @@ version = "0.1.0"
 edition = "2021"
 build = "build.rs"
 
+[dependencies]
+simplelog = { version = "0.12.2", default-features = false }
+log = "0.4.24"
+
 [build-dependencies]
 winres = "0.1.12"
 
@@ -11,6 +15,7 @@ winres = "0.1.12"
 codegen-units = 1
 lto = true
 opt-level = "z"
+panic = "abort"
 
 [package.metadata.winres]
 FileDescription = "Start Beat Saber as Admin"

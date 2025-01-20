@@ -91,6 +91,15 @@
                         "drop-zone": {
                             "text": "Import your maps",
                             "subtext": "Drop your zip files here to import your maps"
+                        },
+                        "sort": {
+                            "name": "Name",
+                            "song-author": "Song Author",
+                            "map-author": "Map Author",
+                            "bpm": "BPM",
+                            "duration": "Duration",
+                            "likes": "Likes",
+                            "date-uploaded": "Date Uploaded"
                         }
                     },
                     "playlists": {
@@ -102,6 +111,13 @@
                         "drop-zone": {
                             "text": "Import your playlists",
                             "subtext": "Drop your \".bplist\" or \".json\" files here to import them"
+                        },
+                        "sort": {
+                            "title": "Title",
+                            "author": "Author",
+                            "number-of-maps": "Number of Maps",
+                            "duration": "Duration",
+                            "notes-per-second": "NPS"
                         }
                     }
                 }
@@ -625,6 +641,7 @@
                     "EPERM": "BSManager does not have the necessary permissions to link the folder.",
                     "EACCES": "BSManager does not have the necessary permissions to link the folder.",
                     "ENOSPC": "The disk is full, make some space and try again.",
+                    "LinkingNotSupported": "Folder linking is not supported on this file system.",
                     "UNKNOWN_ERROR": "An unknown error has occurred while linking the folder."
                 }
             },
@@ -636,7 +653,8 @@
         "create-launch-shortcut": {
             "success": {
                 "title": "Shortcut created",
-                "msg": "The shortcut has been created on the desktop."
+                "msg": "The shortcut has been created on the desktop.",
+                "msg-steam": "The shortcut has been created in the Steam library."
             },
             "error": {
                 "msg": "An error occurred while creating the shortcut."
@@ -838,7 +856,9 @@
             "desc": "Creating a shortcut will allow you to start Beat Saber with the chosen options without going through BSManager.",
             "launch-options": "Launch options",
             "advanced-launch": "Advanced launch",
-            "valid-btn": "Create the shortcut"
+            "valid-btn": "Create the shortcut",
+            "create-steam-shortcut": "Create a Steam shortcut",
+            "steam-shortcut-tippy": "If enabled, instead of creating a shortcut on the desktop, it will be created in Steam."
         },
         "connect-to-meta": {
             "title": "Connect to Meta",

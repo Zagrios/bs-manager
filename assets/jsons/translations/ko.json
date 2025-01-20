@@ -91,6 +91,15 @@
                         "drop-zone": {
                             "text": "맵 가져오기",
                             "subtext": "ZIP 파일을 여기에 드롭하여 맵 가져오기"
+                        },
+                        "sort": {
+                            "name": "이름",
+                            "song-author": "작곡가",
+                            "map-author": "지도 제작자",
+                            "bpm": "BPM",
+                            "duration": "지속 시간",
+                            "likes": "좋아요",
+                            "date-uploaded": "업로드 날짜"
                         }
                     },
                     "playlists": {
@@ -102,6 +111,13 @@
                         "drop-zone": {
                             "text": "재생 목록 가져오기",
                             "subtext": "\".bplist\" 또는 \".json\" 파일을 여기에 드롭하여 가져오기"
+                        },
+                        "sort": {
+                            "title": "제목",
+                            "author": "저자",
+                            "number-of-maps": "지도 수",
+                            "duration": "지속 시간",
+                            "notes-per-second": "NPS"
                         }
                     }
                 }
@@ -625,6 +641,7 @@
                     "EPERM": "BSManager에 폴더를 연결하기 위한 권한이 부족합니다.",
                     "EACCES": "BSManager에 폴더를 연결하기 위한 권한이 부족합니다.",
                     "ENOSPC": "디스크가 가득 찼습니다. 공간을 확보하고 다시 시도하세요.",
+                    "LinkingNotSupported": "이 파일 시스템에서는 폴더 연결이 지원되지 않습니다.",
                     "UNKNOWN_ERROR": "폴더를 연결하는 중 알 수 없는 오류가 발생했습니다."
                 }
             },
@@ -636,7 +653,8 @@
         "create-launch-shortcut": {
             "success": {
                 "title": "바로 가기 생성 완료",
-                "msg": "바탕 화면에 바로 가기가 생성되었습니다."
+                "msg": "바탕 화면에 바로 가기가 생성되었습니다.",
+                "msg-steam": "바로 가기가 Steam 라이브러리에 생성되었습니다."
             },
             "error": {
                 "msg": "바로 가기 생성 중 오류가 발생했습니다."
@@ -838,12 +856,14 @@
             "title": "공유 폴더 추가",
             "description": "「{folder}」폴더를 연결할 때 문제가 발생할 수 있습니다. 정말 추가하시겠습니까?"
         },
-        "create-launcher-shortcut": {
-            "title": "런처 바로가기 만들기",
-            "description": "바탕화면에 실행 파일의 바로가기를 만들어 BSManager를 손쉽게 실행하세요.",
-            "buttons": {
-                "submit": "바로가기 만들기"
-            }
+        "create-launch-shortcut": {
+            "title": "바로가기를 생성",
+            "desc": "바로가기를 생성하면 BSManager를 거치지 않고 선택한 옵션으로 Beat Saber를 시작할 수 있습니다.",
+            "launch-options": "실행 옵션",
+            "advanced-launch": "고급 실행",
+            "valid-btn": "바로가기 생성",
+            "create-steam-shortcut": "Steam 바로가기를 생성",
+            "steam-shortcut-tippy": "활성화하면 바탕 화면에 바로가기를 생성하는 대신 Steam에 생성됩니다."
         },
         "connect-to-meta": {
             "title": "Meta에 연결하기",

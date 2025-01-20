@@ -18,21 +18,22 @@ type FlatpakOptions = {
     env?: string[];
 };
 
-export type BsmSpawnOptions = {
+export enum BsmShellLog {
+    Command = 0x0000_0001,
+    EnvVariables = 0x0000_0002,
+};
+
+interface BsmShellOptions<OptionsType> {
     args?: string[];
-    options?: cp.SpawnOptions;
-    log?: boolean;
+    options?: OptionsType;
+    // Look into BsmShellLog values
+    log?: number;
     linux?: LinuxOptions;
     flatpak?: FlatpakOptions;
 };
 
-export type BsmExecOptions = {
-    args?: string[];
-    options?: cp.ExecOptions;
-    log?: boolean;
-    linux?: LinuxOptions;
-    flatpak?: FlatpakOptions;
-};
+export type BsmSpawnOptions = BsmShellOptions<cp.SpawnOptions>;
+export type BsmExecOptions = BsmShellOptions<cp.ExecOptions>;
 
 function updateCommand(command: string, options: BsmSpawnOptions) {
     if (options?.args) {
@@ -63,14 +64,25 @@ function updateCommand(command: string, options: BsmSpawnOptions) {
     return command;
 }
 
+function logValues(shell: "spawn" | "exec", command: string, options?: BsmShellOptions<cp.SpawnOptions | cp.ExecOptions>) {
+    const platform = process.platform === "win32" ? "Windows" : "Linux";
+    const optionsLog = options?.log || 0;
+
+    if ((optionsLog & BsmShellLog.EnvVariables) > 0) {
+        log.info(platform, shell, "env", options?.options?.env);
+    }
+
+    if ((optionsLog & BsmShellLog.Command) > 0) {
+        log.info(platform, shell, "command\n>", command);
+    }
+}
+
 export function bsmSpawn(command: string, options?: BsmSpawnOptions) {
     options = options || {};
     options.options = options.options || {};
     command = updateCommand(command, options);
 
-    if (options?.log) {
-        log.info(process.platform === "win32" ? "Windows" : "Linux", "spawn command\n>", command);
-    }
+    logValues("spawn", command, options);
 
     return cp.spawn(command, options.options);
 }
@@ -83,12 +95,7 @@ export function bsmExec(command: string, options?: BsmExecOptions): Promise<{
     options.options = options.options || {};
     command = updateCommand(command, options);
 
-    if (options?.log) {
-        log.info(
-            process.platform === "win32" ? "Windows" : "Linux",
-            "exec command\n>", command
-        );
-    }
+    logValues("exec", command, options);
 
     return new Promise((resolve, reject) => {
         cp.exec(command, options?.options || {}, (error: Error, stdout: string, stderr: string) => {
@@ -111,7 +118,7 @@ async function isProcessRunningLinux(name: string): Promise<boolean> {
     try {
         const processName = transformProcessNameForPS(name);
         const { stdout: count } = await bsmExec(`ps awwxo args | grep -c "${processName}"`, {
-            log: true,
+            log: BsmShellLog.Command,
             flatpak: { host: IS_FLATPAK },
         });
 
@@ -157,7 +164,7 @@ async function getProcessIdLinux(name: string): Promise<number | null> {
     try {
         const processName = transformProcessNameForPS(name);
         const { stdout } = await bsmExec(`ps awwxo pid,args | grep "${processName}"`, {
-            log: true,
+            log: BsmShellLog.Command,
             flatpak: { host: IS_FLATPAK },
         });
 

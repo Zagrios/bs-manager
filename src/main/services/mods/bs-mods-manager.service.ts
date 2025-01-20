@@ -10,14 +10,14 @@ import { deleteFolder, pathExist, Progression, unlinkPath } from "../../helpers/
 import { lastValueFrom, Observable } from "rxjs";
 import recursiveReadDir from "recursive-readdir";
 import { sToMs } from "../../../shared/helpers/time.helpers";
-import { copyFile, ensureDir, pathExistsSync } from "fs-extra";
+import { copyFile, ensureDir, pathExistsSync, readdirSync, rm, unlink } from "fs-extra";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { popElement } from "shared/helpers/array.helpers";
 import { LinuxService } from "../linux.service";
 import { tryit } from "shared/helpers/error.helpers";
 import crypto from "crypto";
 import { BsmZipExtractor } from "main/models/bsm-zip-extractor.class";
-import { bsmSpawn } from "main/helpers/os.helpers";
+import { BsmShellLog, bsmSpawn } from "main/helpers/os.helpers";
 import { BbmFullMod, BbmModVersion, ExternalMod } from "../../../shared/models/mods/mod.interface";
 
 export class BsModsManagerService {
@@ -139,25 +139,34 @@ export class BsModsManagerService {
             return false;
         }
 
+        const env: Record<string, string> = {};
         const cmd = `"${ipaPath}" "${bsExePath}" ${args.join(" ")}`;
         let winePath: string = "";
         if (process.platform === "linux") {
-            const { error, result } = tryit(() => this.linuxService.getWinePath());
-            if (error) {
-                log.error(error);
+            const { error: winePathError, result: winePathResult } =
+                tryit(() => this.linuxService.getWinePath());
+            if (winePathError) {
+                log.error(winePathError);
                 return false;
             }
-            winePath = `"${result}"`;
+            winePath = `"${winePathResult}"`;
+
+            const winePrefix = this.linuxService.getWinePrefixPath();
+            if (winePrefix) {
+                env.WINEPREFIX = winePrefix;
+            } else {
+                log.warn("Could not find BSManager WINEPREFIX path, using system's default value instead");
+            }
         }
 
         return new Promise<boolean>(resolve => {
-            log.info("START IPA PROCESS", cmd);
             const processIPA = bsmSpawn(cmd, {
-                log: true,
+                log: BsmShellLog.Command | BsmShellLog.EnvVariables,
                 options: {
                     cwd: versionPath,
                     detached: true,
-                    shell: true
+                    shell: true,
+                    env
                 },
                 linux: { prefix: winePath },
             });
@@ -194,6 +203,12 @@ export class BsModsManagerService {
     private async installMod(mod: BbmFullMod, version: BSVersion): Promise<boolean> {
         log.info("INSTALL MOD", mod.mod.name, "for version", `${version.BSVersion} - ${version.name}`);
 
+        const isBSIPA = mod.mod.name.toLowerCase() === "bsipa";
+
+        if(isBSIPA){
+            await this.clearIpaFolder(version).catch(e => log.error("Error while clearing IPA folder", e));
+        }
+
         const downloadUrl = this.getModDownload(mod.version);
 
         if (!downloadUrl) {
@@ -222,7 +237,6 @@ export class BsModsManagerService {
         }
 
         const versionPath = await this.bsLocalService.getVersionPath(version);
-        const isBSIPA = mod.mod.name.toLowerCase() === "bsipa";
         const destDir = isBSIPA ? versionPath : path.join(versionPath, ModsInstallFolder.PENDING);
 
         log.info("Start extracting mod zip", mod.mod.name, "to", destDir);
@@ -247,6 +261,42 @@ export class BsModsManagerService {
             : extracted;
 
         return res;
+    }
+
+    private async clearIpaFolder(version: BSVersion): Promise<void> {
+        log.info("Clearing IPA folder");
+
+        const versionPath = await this.bsLocalService.getVersionPath(version);
+        const ipaPath = path.join(versionPath, ModsInstallFolder.IPA);
+
+        if(!pathExistsSync(ipaPath)){
+            log.info("IPA folder does not exist, skipping");
+            return;
+        }
+
+        const contents = readdirSync(ipaPath, { withFileTypes: true });
+
+        for(const content of contents){
+
+            if (content.name === 'Backups' || content.name === 'Pending') {
+                continue;
+            }
+
+            const contentPath = path.join(ipaPath, content.name);
+
+            const res = await tryit(() => content.isDirectory() ? (
+                rm(contentPath, { force: true, recursive: true })
+            ) : (
+                unlink(contentPath)
+            ));
+
+            if(res.error){
+                log.error("Error while clearing IPA folder content", content.name, res.error);
+            }
+        }
+
+        log.info("IPA folder cleared successfully");
+
     }
 
     private async uninstallBSIPA(mod: BbmFullMod, version: BSVersion): Promise<void> {

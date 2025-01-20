@@ -91,6 +91,15 @@
                         "drop-zone": {
                             "text": "导入您的地图",
                             "subtext": "将ZIP文件拖放到此处以导入您的地图"
+                        },
+                        "sort": {
+                            "name": "名字",
+                            "song-author": "歌曲作者",
+                            "map-author": "地图作者",
+                            "bpm": "BPM",
+                            "duration": "持续时间",
+                            "likes": "喜欢",
+                            "date-uploaded": "上传日期"
                         }
                     },
                     "playlists": {
@@ -102,6 +111,13 @@
                         "drop-zone": {
                             "text": "导入您的播放列表",
                             "subtext": "将您的 \".bplist\" 或 \".json\" 文件拖放到这里进行导入"
+                        },
+                        "sort": {
+                            "title": "标题",
+                            "author": "作者",
+                            "number-of-maps": "地图数量",
+                            "duration": "持续时间",
+                            "notes-per-second": "NPS"
                         }
                     }
                 }
@@ -625,6 +641,7 @@
                     "EPERM": "BSManager没有必要的权限来链接文件夹。",
                     "EACCES": "BSManager没有必要的权限来链接文件夹。",
                     "ENOSPC": "磁盘已满，请腾出空间后再试。",
+                    "LinkingNotSupported": "该文件系统不支持文件夹链接。",
                     "UNKNOWN_ERROR": "链接文件夹时发生未知错误。"
                 }
             },
@@ -636,7 +653,8 @@
         "create-launch-shortcut": {
             "success": {
                 "title": "快捷方式已创建",
-                "msg": "快捷方式已在桌面上创建"
+                "msg": "快捷方式已在桌面上创建",
+                "msg-steam": "快捷方式已在 Steam 库中创建。"
             },
             "error": {
                 "msg": "创建快捷方式时发生错误"
@@ -843,7 +861,9 @@
             "desc": "创建快捷方式使得你可以在不通过 BSManager 的情况下以特定选项启动 BeatSaber",
             "launch-options": "启动选项",
             "advanced-launch": "高级启动",
-            "valid-btn": "创建快捷方式"
+            "valid-btn": "创建快捷方式",
+            "create-steam-shortcut": "创建 Steam 快捷方式",
+            "steam-shortcut-tippy": "如果启用，将不会在桌面创建快捷方式，而是在 Steam 中创建。"
         },
         "connect-to-meta": {
             "title": "连接到 Meta",

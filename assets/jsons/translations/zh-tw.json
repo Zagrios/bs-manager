@@ -91,6 +91,15 @@
                         "drop-zone": {
                             "text": "導入您的地圖",
                             "subtext": "將ZIP文件拖放到此處以導入您的地圖"
+                        },
+                        "sort": {
+                            "name": "名字",
+                            "song-author": "歌曲作者",
+                            "map-author": "地圖作者",
+                            "bpm": "BPM",
+                            "duration": "持續時間",
+                            "likes": "喜歡",
+                            "date-uploaded": "上傳日期"
                         }
                     },
                     "playlists": {
@@ -102,6 +111,13 @@
                         "drop-zone": {
                             "text": "匯入您的播放列表",
                             "subtext": "將您的 \".bplist\" 或 \".json\" 檔案拖曳到這裡進行匯入"
+                        },
+                        "sort": {
+                            "title": "標題",
+                            "author": "作者",
+                            "number-of-maps": "地圖數量",
+                            "duration": "持續時間",
+                            "notes-per-second": "NPS"
                         }
                     }
                 }
@@ -625,6 +641,7 @@
                     "EPERM": "BSManager沒有必要的權限來連結文件夾。",
                     "EACCES": "BSManager沒有必要的權限來連結文件夾。",
                     "ENOSPC": "磁碟已滿，請騰出空間後再試。",
+                    "LinkingNotSupported": "該檔案系統不支援資料夾連結。",
                     "UNKNOWN_ERROR": "連結文件夾時發生未知錯誤。"
                 }
             },
@@ -636,7 +653,8 @@
         "create-launch-shortcut": {
             "success": {
                 "title": "捷徑已創建",
-                "msg": "捷徑已在桌面上創建"
+                "msg": "捷徑已在桌面上創建",
+                "msg-steam": "捷徑已在 Steam 庫中建立。"
             },
             "error": {
                 "msg": "創建捷徑時發生錯誤"
@@ -843,7 +861,9 @@
             "desc": "創建捷徑使得你可以在不通過 BSManager 的情況下以特定選項啟動 BeatSaber",
             "launch-options": "啟動選項",
             "advanced-launch": "高級啟動",
-            "valid-btn": "創建捷徑"
+            "valid-btn": "創建捷徑",
+            "create-steam-shortcut": "建立 Steam 快捷方式",
+            "steam-shortcut-tippy": "如果啟用，將不會在桌面建立捷徑，而是在 Steam 中建立。"
         },
         "connect-to-meta": {
             "title": "連接到 Meta",

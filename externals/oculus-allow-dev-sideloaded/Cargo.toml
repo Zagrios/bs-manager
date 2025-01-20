@@ -6,8 +6,11 @@ edition = "2021"
 [build-dependencies]
 winres = "0.1.12"
 
+
 [dependencies]
 winreg = "0.52.0"
+simplelog = { version = "0.12.2", default-features = false }
+log = "0.4.24"
 
 [package.metadata.winres]
 FileDescription = "Enable Sideloaded Apps"
@@ -18,3 +21,4 @@ CompanyName = "Zagrios"
 codegen-units = 1
 lto = true
 opt-level = "z"
+panic = "abort"
