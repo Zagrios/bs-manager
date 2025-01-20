@@ -18,7 +18,8 @@
 5. Search for and choose a playlist:  
    - Use the search bar at the top of the interface to filter playlists or sort the list.  
    - Double-click a playlist or click the download button to install it.
-6. Wait for the installation to complete. Once it's finished, you can launch Beat Saber directly from [BSManager](https://www.bsmanager.io) and enjoy your new playlists!  
+6. Wait for the installation to complete. Once it's finished, you can launch Beat Saber directly from [BSManager](https://www.bsmanager.io) and enjoy your new playlists!
+
 > [!NOTE]  
 > You can click on a playlist's image to view the maps it contains and download only the maps you want.  
 
