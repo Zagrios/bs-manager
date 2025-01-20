@@ -2,7 +2,7 @@
 
 - [With BSManager](#with-bsmanager)
     - [Install playlists](#how-to-install-playlists-with-bsmanager)
-    - [Import PLaylists]()
+    - [Import PLaylists](#how-to-import-playlist-with-bsmanager)
 - [Manual Installation](#manual-installation)
 - [One-Click Installation](#one-click-installation)
 
