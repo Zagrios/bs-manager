@@ -61,7 +61,12 @@ export class BSLauncherService {
                 this.notificationService.notifySuccess({title: `notifications.bs-launch.success.titles.${event.type}`, desc: `notifications.bs-launch.success.msg.${event.type}`});
             },
             error: (err: CustomError) => {
-                if(!err?.code || !Object.values(BSLaunchError).includes(err.code as BSLaunchError)){
+                if (err?.code?.startsWith("generic.")) {
+                    this.notificationService.notifyError({
+                        title: "notifications.bs-launch.errors.titles.UNKNOWN_ERROR",
+                        desc: err.code,
+                    });
+                } else if(!err?.code || !Object.values(BSLaunchError).includes(err.code as BSLaunchError)){
                     this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.UNKNOWN_ERROR", desc: "notifications.bs-launch.errors.msg.UNKNOWN_ERROR"});
                 } else {
                     this.notificationService.notifyError({title: `notifications.bs-launch.errors.titles.${err.code}`, desc: `notifications.bs-launch.errors.msg.${err.code}`, duration: sToMs(9)})

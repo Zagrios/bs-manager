@@ -28,6 +28,11 @@
         "pin": "Pin",
         "unpin": "Unpin"
     },
+    "generic": {
+        "env": {
+            "parse": "Could not properly parse the env var string."
+        }
+    },
     "title-bar": {
         "outdated": "outdated"
     },

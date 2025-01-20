@@ -10,6 +10,7 @@ import { BsmShellLog, bsmExec } from "main/helpers/os.helpers";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { SteamShortcutData } from "shared/models/steam/shortcut.model";
 import { buildBsLaunchArgs } from "./bs-launcher/abstract-launcher.service";
+import { parseEnvString } from "main/helpers/env.helpers";
 
 export class LinuxService {
     private static instance: LinuxService;
@@ -24,6 +25,7 @@ export class LinuxService {
     private readonly installLocationService: InstallationLocationService;
     private readonly staticConfig: StaticConfigurationService;
 
+    private readonly COMMAND_FORMAT = "%command%";
     private nixOS: boolean | undefined;
 
     private constructor() {
@@ -110,6 +112,24 @@ export class LinuxService {
         if (launchOptions.launchMods?.includes(LaunchMods.PROTON_LOGS)) {
             envVars.PROTON_LOG = "1";
             envVars.PROTON_LOG_DIR = path.join(bsFolderPath, "Logs");
+        }
+
+        if (launchOptions.additionalArgs) {
+            const additionalArgs = launchOptions.additionalArgs.join(" ");
+            const index = additionalArgs.indexOf(this.COMMAND_FORMAT);
+            if (index > -1) {
+                const envString = additionalArgs.substring(0, index);
+                log.info("Parsing env string ", `"${envString}"`)
+                for (const [ key, value ] of Object.entries(parseEnvString(envString))) {
+                    if (key in envVars) {
+                        log.warn("Ignoring", `${key}=${value}`, "already set env launch command");
+                    } else {
+                        log.info("Injecting", `${key}="${value}"`, "to the env launch command");
+                    }
+                }
+            }
+
+            launchOptions.additionalArgs = [ additionalArgs.substring(index + this.COMMAND_FORMAT.length) ];
         }
 
         return envVars;

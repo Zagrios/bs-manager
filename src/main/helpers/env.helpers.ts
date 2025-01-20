@@ -107,7 +107,7 @@ export function parseEnvString(envString: string): Record<string, string> {
         if (state === EnvParserState.ERROR) {
             throw new CustomError(
                 `parseEnvString failed: invalid character at position ${pos}`,
-                "env.parse"
+                "generic.env.parse"
             );
         }
     }
@@ -123,6 +123,6 @@ export function parseEnvString(envString: string): Record<string, string> {
 
     throw new CustomError(
         "parseEnvString failed: invalid ending state",
-        "env.parse"
+        "generic.env.parse"
     );
 }
