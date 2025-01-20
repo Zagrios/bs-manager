@@ -1,5 +1,5 @@
 import { BSVersion } from "shared/bs-version.interface";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { TabNavBar } from "renderer/components/shared/tab-nav-bar.component";
 import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-button.component";
@@ -10,7 +10,7 @@ import { ModalExitCode, ModalService } from "../services/modale.service";
 import DefautVersionImage from "../../../assets/images/default-version-img.jpg";
 import { IpcService } from "renderer/services/ipc.service";
 import { LaunchSlide } from "renderer/components/version-viewer/slides/launch/launch-slide.component";
-import { ModsSlide } from "renderer/components/version-viewer/slides/mods/mods-slide.component";
+import { ModsSlide, ModsSlideRef } from "renderer/components/version-viewer/slides/mods/mods-slide.component";
 import { UninstallModal } from "renderer/components/modal/modal-types/uninstall-modal.component";
 import { MapsPlaylistsPanel } from "renderer/components/maps-playlists-panel/maps-playlists-panel.component";
 import { ShareFoldersModal } from "renderer/components/modal/modal-types/share-folders-modal.component";
@@ -25,12 +25,18 @@ import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { safeLt } from "shared/helpers/semver.helpers";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { logRenderError } from "renderer";
+import { BsModsManagerService } from "renderer/services/bs-mods-manager.service";
+import { noop } from "shared/helpers/function.helpers";
+import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 
 export function VersionViewer() {
+
+    const { text: t } = useTranslationV2();
 
     const bsUninstallerService = useService(BSUninstallerService);
     const bsVersionManagerService = useService(BSVersionManagerService);
     const modalService = useService(ModalService);
+    const modsService = useService(BsModsManagerService);
     const bsDownloader = useService(BsDownloaderService);
     const ipcService = useService(IpcService);
     const bsLauncher = useService(BSLauncherService);
@@ -40,10 +46,12 @@ export function VersionViewer() {
     const { state, pathname: url } = useLocation() as { state: BSVersion; pathname: string };
     const navigate = useNavigate();
     const [currentTabIndex, setCurrentTabIndex] = useState(0);
+    const modsSlideRef = useRef<ModsSlideRef>(null);
 
     useOnUpdate(() => {
 
         checkIsVersionOutaded();
+        checkOutdatedMods();
 
     }, [state]);
 
@@ -67,6 +75,42 @@ export function VersionViewer() {
 
         if(res === "0"){
             config.set("not-show-bs-version-outdated-notification", true);
+        }
+    }
+
+    const checkOutdatedMods = async () => {
+
+        if(config.get("not-show-outdated-mods-notification")){
+            return;
+        }
+
+        const { available: availableMods, installed: installedMods } = await modsService.getVersionModsState(state);
+
+        const modsToUpdate = availableMods.filter(availableMod => {
+            const installedMod = installedMods.find(installedMod => installedMod.mod.id === availableMod.mod.id);
+            return installedMod && safeLt(installedMod.version.modVersion, availableMod.version.modVersion);
+        });
+
+        if(!modsToUpdate.length){
+            return;
+        }
+
+        const choice = await notification.notifyInfo({
+            title: modsToUpdate.length > 1 ?  t("pages.version-viewer.mods.notifications.outdated-mods.title-plural") : t("pages.version-viewer.mods.notifications.outdated-mods.title"),
+            desc: modsToUpdate.length > 1 ? t("pages.version-viewer.mods.notifications.outdated-mods.description-plural", { nb: `${modsToUpdate.length}` }) : t("pages.version-viewer.mods.notifications.outdated-mods.description", { name: `${modsToUpdate[0].mod.name}` }),
+            duration: 9000,
+            actions: [
+                { id: "0", title: "pages.version-viewer.mods.notifications.outdated-mods.dont-remind-me", cancel: true },
+                { id: "1", title: "pages.version-viewer.mods.notifications.outdated-mods.update" }
+            ]
+        });
+
+        if(choice === "1"){
+            lastValueFrom(modsService.installMods(modsToUpdate, state)).then(() => {
+                modsSlideRef?.current?.loadMods?.();
+            }).catch(noop);
+        } else if(choice === "0"){
+            config.set("not-show-outdated-mods-notification", true);
         }
     }
 
@@ -153,7 +197,7 @@ export function VersionViewer() {
                     <div className="w-full shrink-0 px-3 pb-3 flex flex-col items-center">
                         <ModelsPanel version={state} isActive={currentTabIndex === 2} goToMods={() => setCurrentTabIndex(() => 3)} />
                     </div>
-                    <ModsSlide version={state} isActive={currentTabIndex === 3} onDisclamerDecline={handleModsDisclaimerDecline} />
+                    <ModsSlide ref={modsSlideRef} version={state} isActive={currentTabIndex === 3} onDisclamerDecline={handleModsDisclaimerDecline} />
                 </div>
             </div>
             <BsmDropdownButton className="absolute top-3 right-4 h-9 w-9 bg-light-main-color-2 dark:bg-main-color-2 rounded-md" items={[

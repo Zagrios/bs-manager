@@ -148,6 +148,14 @@
                     "all-mods-already-installed": {
                         "title": "Моды уже установлены",
                         "description": "Все выбранные моды уже установлены"
+                    },
+                    "outdated-mods": {
+                        "title": "Устаревший мод",
+                        "title-plural": "Устаревшие моды",
+                        "description": "Мод {name} устарел. Хотите его обновить?",
+                        "description-plural": "В этой версии есть {nb} устаревших модов. Хотите их обновить?",
+                        "dont-remind-me": "Не напоминать мне",
+                        "update": "Обновить"
                     }
                 },
                 "drop-zone": {

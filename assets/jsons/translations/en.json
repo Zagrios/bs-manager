@@ -148,6 +148,14 @@
                     "all-mods-already-installed": {
                         "title": "Mods already installed",
                         "description": "All selected mods are already installed"
+                    },
+                    "outdated-mods": {
+                        "title": "Outdated Mod",
+                        "title-plural": "Outdated Mods",
+                        "description": "{name} mod is outdated. Do you want to update it?",
+                        "description-plural": "This version has {nb} outdated mods. Do you want to update them?",
+                        "dont-remind-me": "Don't remind me",
+                        "update": "Update"
                     }
                 },
                 "drop-zone": {

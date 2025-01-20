@@ -148,7 +148,16 @@
                     "all-mods-already-installed": {
                         "title": "이미 설치된 모드",
                         "description": "선택한 모든 모드가 이미 설치되었습니다."
+                    },
+                    "outdated-mods": {
+                        "title": "구식 모드",
+                        "title-plural": "구식 모드",
+                        "description": "{name} 모드가 오래되었습니다. 업데이트하시겠습니까?",
+                        "description-plural": "이 버전에는 {nb}개의 구식 모드가 있습니다. 업데이트하시겠습니까?",
+                        "dont-remind-me": "다시는 알리지 않기",
+                        "update": "업데이트"
                     }
+
                 },
                 "drop-zone": {
                     "text": "모드를 가져오기",

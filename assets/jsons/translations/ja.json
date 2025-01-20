@@ -148,6 +148,14 @@
                     "all-mods-already-installed": {
                         "title": "すでにインストール済みのMOD",
                         "description": "選択したすべてのMODはすでにインストールされています"
+                    },
+                    "outdated-mods": {
+                        "title": "古いMod",
+                        "title-plural": "古いMod",
+                        "description": "{name} Modが古くなっています。更新しますか？",
+                        "description-plural": "このバージョンには古いModが{nb}個あります。更新しますか？",
+                        "dont-remind-me": "もう知らせない",
+                        "update": "更新する"
                     }
                 },
                 "drop-zone": {
