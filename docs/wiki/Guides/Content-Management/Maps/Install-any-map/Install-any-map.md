@@ -11,9 +11,9 @@
 ### How to Install Maps with BSManager
 
 1. Download and install [BSManager](https://www.bsmanager.io) from one of the following sources:  
-   - [GitHub](https://github.com/Zagrios/bs-manager/releases/latest)  
-   - [Nexus Mods](https://www.nexusmods.com/beatsaber/mods/18?tab=files)  
-   - [Official Website](https://www.bsmanager.io)  
+    - [GitHub](https://github.com/Zagrios/bs-manager/releases/latest)
+    - [Official Website](https://www.bsmanager.io)  
+    - [Nexus Mods](https://www.nexusmods.com/beatsaber/mods/18?tab=files)
 2. Launch BSManager and select the version of *Beat Saber* where you want to install maps from the list on the left side of the interface.  
 3. Go to the `Maps` section by clicking on the __`Maps`__ tab.  
 4. Click the __`Add`__ button to access the list of online maps.  
@@ -24,9 +24,9 @@
 ### How to Import Maps with BSManager
 
 1. Download and install [BSManager](https://www.bsmanager.io) from one of the following sources:  
-   - [GitHub](https://github.com/Zagrios/bs-manager/releases/latest)  
-   - [Nexus Mods](https://www.nexusmods.com/beatsaber/mods/18?tab=files)  
-   - [Official Website](https://www.bsmanager.io)  
+    - [GitHub](https://github.com/Zagrios/bs-manager/releases/latest)
+    - [Official Website](https://www.bsmanager.io)  
+    - [Nexus Mods](https://www.nexusmods.com/beatsaber/mods/18?tab=files)
 2. Launch BSManager and select the version of *Beat Saber* where you want to install maps from the list on the left side of the interface.  
 3. Go to the `Maps` section by clicking on the __`Maps`__ tab.  
 4. From here, there are two possible methods:  
