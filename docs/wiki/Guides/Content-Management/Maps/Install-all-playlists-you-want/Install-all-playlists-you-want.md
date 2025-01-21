@@ -18,7 +18,7 @@
 3. Go to the `Playlist` section by clicking on the __`Maps`__ tab.
 4. Click the __`Add`__ button, then select __`Browse playlist`__ to open the list of online playlists.  
 5. Use the search bar at the top of the interface to filter playlists or sort the list.  
-6. Double-click a playlist or click the download button to install it.
+6. Download to install it.
 7. Wait for the installation to complete. Once it's finished, you can launch Beat Saber directly from [BSManager](https://www.bsmanager.io) and enjoy your new playlists!
 
 > [!NOTE]  

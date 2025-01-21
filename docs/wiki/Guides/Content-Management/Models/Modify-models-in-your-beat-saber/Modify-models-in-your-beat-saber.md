@@ -22,7 +22,7 @@
 3. Go to models by clicking on the __`Models`__ tab.
 4. Click on the __`Add`__ button to access the list of online models.
 5. Find the models that you want to install from the provided list. You can use the search bar at the top of the interface to filter models by __`name`__, __`type`__, and order the list by __`date`__, __`name`__, or __`author`__.
-6. Double-click on the model or simply click on the download button to install the model.
+6. Download to install the model.
 7. Wait for the installation to complete. Once it's finished, you can launch Beat Saber directly from [BSManager](https://www.bsmanager.io) to enjoy your new models!
 
 # One-Click Installation

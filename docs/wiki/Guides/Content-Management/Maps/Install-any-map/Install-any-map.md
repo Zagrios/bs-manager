@@ -18,7 +18,7 @@
 3. Go to the `Maps` section by clicking on the __`Maps`__ tab.  
 4. Click the __`Add`__ button to access the list of online maps.  
 5. Use the search bar at the top of the interface to filter maps by __`name`__, __`type`__, __`mods`__, __`tags`__, __`notes per second`__, or __`duration`__, and order the list by __`latest`__, __`relevance`__, __`rating`__, or __`curated`__.  
-6. Double-click on a map or click the download button to install it.  
+6. Download to install it.  
 7. Wait for the installation to complete. Once it's finished, you can launch Beat Saber directly from [BSManager](https://www.bsmanager.io) to enjoy your new maps!  
 
 ### How to Import Maps with BSManager
