@@ -23,7 +23,7 @@ import { LivShortcut } from "./services/liv/liv-shortcut.service";
 import { SteamLauncherService } from "./services/bs-launcher/steam-launcher.service";
 import { FileAssociationService } from "./services/file-association.service";
 import { SongDetailsCacheService } from "./services/additional-content/maps/song-details-cache.service";
-import { readdirSync, statSync, unlinkSync } from "fs-extra";
+import { Dirent, readdirSync, rmSync, statSync, unlinkSync } from "fs-extra";
 import { StaticConfigurationService } from "./services/static-configuration.service";
 import { configureProxy } from './helpers/proxy.helpers';
 
@@ -37,7 +37,7 @@ export const filterPatterns = new Set<RegExp>();
 filterPatterns.add(/(FRL|OC)\S{10,}/g);
 
 initLogger();
-deleteOlestLogs();
+deleteOldestLogs();
 deleteOldLogs();
 
 staticConfig.take("disable-hadware-acceleration", disabled => {
@@ -156,11 +156,30 @@ if (!gotTheLock) {
     }).catch(log.error);
 }
 
+function convertDateToDateString(date: Date): string {
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    return `${date.getFullYear()}-${month}-${day}`;
+}
+
 function initLogger(){
     log.transports.file.level = "info";
+
+    let filepath = "";
+    let currentDateString = convertDateToDateString(new Date());
     log.transports.file.resolvePath = () => {
         const now = new Date();
-        return path.join(app.getPath("logs"), `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}-v${app.getVersion()}.log`);
+        const nowString = convertDateToDateString(now);
+        if (filepath && nowString === currentDateString) {
+            return filepath;
+        }
+
+        filepath = path.join(
+            app.getPath("logs"), nowString,
+            `${now.getTime()}-v${app.getVersion()}.log`
+        );
+        currentDateString = nowString;
+        return filepath;
     };
 
     log.hooks.push((message) => {
@@ -206,18 +225,19 @@ function initLogger(){
 function getLogFilesEntries() {
     try {
         const logsFolder = app.getPath("logs");
-        let logs = readdirSync(logsFolder, { withFileTypes: true });
-
+        let logs = readdirSync(logsFolder, {
+            withFileTypes: true,
+            recursive: true
+        });
         logs = logs.filter(file => file.isFile() && path.extname(file.name) === ".log");
 
         logs.sort((a, b) => {
-            const aStat = statSync(path.join(logsFolder, a.name));
-            const bStat = statSync(path.join(logsFolder, b.name));
-            return bStat.mtime.getTime() - aStat.mtime.getTime();
+            return path.basename(b.parentPath).localeCompare(path.basename(a.parentPath))
+                || b.name.localeCompare(a.name);
         });
 
         return logs.map(file => {
-            const filePath = path.join(logsFolder, file.name);
+            const filePath = path.join(file.parentPath, file.name);
             const stat = statSync(filePath);
             return {
                 path: filePath,
@@ -231,28 +251,36 @@ function getLogFilesEntries() {
     }
 }
 
-// keep only the last 5 logs
-function deleteOldLogs(): void{
+// Keep only the past week (7 days) of logs
+function deleteOldLogs(): void {
+    const deleteLogFolders: Dirent[] = [];
     try {
-        let logs = getLogFilesEntries();
+        const filterDate = convertDateToDateString(
+            new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // 7 days
+        );
+        deleteLogFolders.push.apply([],
+            readdirSync(app.getPath("logs"), { withFileTypes: true })
+                .filter(folder => folder.isDirectory() && folder.name <= filterDate)
+        );
+    } catch (error) {
+        log.error("Error while deleting old logs:", error);
+        return;
+    }
 
-        logs = logs.slice(5);
-
-        logs.forEach(file => {
-            try {
-                unlinkSync(file.path);
-                log.info(`Deleted log file: ${file.path}`);
-            } catch (err) {
-                log.error(`Error deleting file ${file.path}:`, err);
-            }
-        });
-    } catch (err) {
-        log.error("Error while deleting old logs:", err);
+    for (const folder of deleteLogFolders) {
+        const folderPath = path.join(folder.parentPath, folder.name);
+        try {
+            rmSync(folderPath, { recursive: true, force: true });
+            log.info("Deleted log folder:", folderPath);
+        } catch (error) {
+            log.error("Error deleting folder", folderPath, error);
+        }
     }
 }
 
+// NOTE: Change this date to when the PR is merged
 // Temporary function to delete logs before 2024-07-31
-function deleteOlestLogs(): void{
+function deleteOldestLogs(): void {
     // delete all logs before 2024-07-31
     const date = new Date(2024, 6, 31); // month is 0-based
     const logs = getLogFilesEntries().filter(file => file.stats.mtime.getTime() < date.getTime());
