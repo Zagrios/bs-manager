@@ -224,15 +224,13 @@ function initLogger(){
 
 // Keep only the past week (7 days) of logs
 function deleteOldLogs(): void {
-    const deleteLogFolders: Dirent[] = [];
+    let deleteLogFolders: Dirent[] = [];
     try {
         const filterDate = convertDateToDateString(
             new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // 7 days
         );
-        deleteLogFolders.push.apply([],
-            readdirSync(app.getPath("logs"), { withFileTypes: true })
-                .filter(folder => folder.isDirectory() && folder.name <= filterDate)
-        );
+        deleteLogFolders = readdirSync(app.getPath("logs"), { withFileTypes: true })
+            .filter(folder => folder.isDirectory() && folder.name <= filterDate);
     } catch (error) {
         log.error("Error while deleting old logs:", error);
         return;
