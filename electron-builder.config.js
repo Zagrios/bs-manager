@@ -29,6 +29,7 @@ const config = {
     linux: {
         target: [
             "deb",
+            "rpm",
         ],
         icon: "./build/icons/png",
         category: "Utility;Game;",
