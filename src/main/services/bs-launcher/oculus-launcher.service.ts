@@ -6,7 +6,7 @@ import { BS_EXECUTABLE } from "../../constants";
 import path from "path";
 import log from "electron-log";
 import { pathExists } from "fs-extra";
-import { AbstractLauncherService } from "./abstract-launcher.service";
+import { AbstractLauncherService, buildBsLaunchArgs } from "./abstract-launcher.service";
 import { isProcessRunning } from "../../helpers/os.helpers";
 import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
 import { UtilsService } from "../utils.service";
@@ -57,7 +57,7 @@ export class OculusLauncherService extends AbstractLauncherService implements St
                 obs.next({type: BSLaunchEvent.BS_LAUNCHING});
 
                 // Launch Beat Saber
-                const process = this.launchBs(exePath, this.buildBsLaunchArgs(launchOptions));
+                const process = this.launchBs(exePath, buildBsLaunchArgs(launchOptions));
 
                 return process.exit.catch(err => {
                     throw CustomError.fromError(err, BSLaunchError.BS_EXIT_ERROR);
