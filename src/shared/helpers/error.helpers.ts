@@ -8,8 +8,8 @@ export function tryit<Return>(func: () => Return): TryitReturn<Return> {
 
         if(isPromise(result)){
             return result
-                .then((value) => ({ error: null, result: value }))
-                .catch((err) => ({ error: err instanceof Error ? err : new Error(`${err}`), result: null })) as Return extends Promise<any>
+                .then((value) => ({ error: null as null, result: value }))
+                .catch((err) => ({ error: err instanceof Error ? err : new Error(`${err}`), result: null as null })) as Return extends Promise<any>
                 ? Promise<{error: Error, result: undefined} | {error: undefined, result: Awaited<Return>}>
                 : {error: Error, result: undefined} | {error: undefined, result: Return};
         }
