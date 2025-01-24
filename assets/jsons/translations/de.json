@@ -28,6 +28,11 @@
         "pin": "Anheften",
         "unpin": "Lösen"
     },
+    "generic": {
+        "env": {
+            "parse": "Konnte den Umgebungsvariablen-String nicht richtig parsen."
+        }
+    },
     "title-bar": {
         "outdated": "veraltet"
     },

@@ -28,6 +28,11 @@
         "pin": "Fissa",
         "unpin": "Rimuovi Fissaggio"
     },
+    "generic": {
+        "env": {
+            "parse": "Impossibile analizzare correttamente la stringa della variabile d'ambiente."
+        }
+    },
     "title-bar": {
         "outdated": "obsoleta"
     },

@@ -28,6 +28,11 @@
         "pin": "固定",
         "unpin": "取消固定"
     },
+    "generic": {
+        "env": {
+            "parse": "無法正確解析環境變數字串。"
+        }
+    },
     "title-bar": {
         "outdated": "過時"
     },

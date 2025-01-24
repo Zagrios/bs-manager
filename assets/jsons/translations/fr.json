@@ -28,6 +28,11 @@
         "pin": "Épingler",
         "unpin": "Désépingler"
     },
+    "generic": {
+        "env": {
+            "parse": "Impossible d'analyser correctement la chaîne de variable d'environnement."
+        }
+    },
     "title-bar": {
         "outdated": "obsolète"
     },

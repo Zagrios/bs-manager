@@ -28,6 +28,11 @@
         "pin": "Fijar",
         "unpin": "Desfijar"
     },
+    "generic": {
+        "env": {
+            "parse": "No se pudo analizar correctamente la cadena de la variable de entorno."
+        }
+    },
     "title-bar": {
         "outdated": "obsoleto"
     },

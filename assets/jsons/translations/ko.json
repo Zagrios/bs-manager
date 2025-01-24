@@ -28,6 +28,11 @@
         "pin": "고정",
         "unpin": "고정 해제"
     },
+    "generic": {
+        "env": {
+            "parse": "환경 변수 문자열을 제대로 파싱할 수 없습니다."
+        }
+    },
     "title-bar": {
         "outdated": "구식"
     },
