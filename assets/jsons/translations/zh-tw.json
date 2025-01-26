@@ -148,6 +148,14 @@
                     "all-mods-already-installed": {
                         "title": "模組已安裝",
                         "description": "所有選中的模組已經安裝"
+                    },
+                    "outdated-mods": {
+                        "title": "過時的模組",
+                        "title-plural": "過時的模組",
+                        "description": "{name} 模組已過時。您想更新嗎？",
+                        "description-plural": "此版本有 {nb} 個過時的模組。您想更新它們嗎？",
+                        "dont-remind-me": "不要提醒我",
+                        "update": "更新"
                     }
                 },
                 "drop-zone": {

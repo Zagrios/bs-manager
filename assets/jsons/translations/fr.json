@@ -148,6 +148,14 @@
                     "all-mods-already-installed": {
                         "title": "Mods déjà installées",
                         "description": "Tous les mods séléctionnées sont déjà installées"
+                    },
+                    "outdated-mods": {
+                        "title": "Mod obsolète",
+                        "title-plural": "Mods obsolètes",
+                        "description": "Le mod {name} est obsolète. Voulez-vous le mettre à jour ?",
+                        "description-plural": "Cette version contient {nb} mods obsolètes. Voulez-vous les mettre à jour ?",
+                        "dont-remind-me": "Ne plus me rappeler",
+                        "update": "Mettre à jour"
                     }
                 },
                 "drop-zone": {
