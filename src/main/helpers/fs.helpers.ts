@@ -81,6 +81,7 @@ export async function getFilesInFolder(folderPath: string): Promise<string[]> {
 }
 
 export function moveFolderContent(src: string, dest: string, option?: MoveOptions): Observable<Progression> {
+    log.info(`(moveFolderContent) Moving ${src} to ${dest}`);
     const progress: Progression = { current: 0, total: 0 };
     return new Observable<Progression>(subscriber => {
         subscriber.next(progress);
@@ -104,7 +105,17 @@ export function moveFolderContent(src: string, dest: string, option?: MoveOption
                 const allChildsAlreadyExist = srcChilds.every(child => pathExistsSync(path.join(destFullPath, child)));
 
                 if(file.isFile() || !allChildsAlreadyExist){
+                    const prevSize = await getSize(srcFullPath);
                     await move(srcFullPath, destFullPath, option);
+                    const afterSize = await getSize(destFullPath);
+
+                    // The size after moving should be the same or greater than the size before moving but never less
+                    if(afterSize < prevSize){
+                        throw new CustomError(`File size mismath. before: ${prevSize}, after: ${afterSize} (${srcFullPath})`, "FILE_SIZE_MISMATCH");
+                    }
+
+                } else {
+                    log.info(`Skipping ${srcFullPath} to ${destFullPath}, all child already exist in destination`);
                 }
 
                 progress.current++;
@@ -272,6 +283,39 @@ export function getUniqueFileNamePath(filePath: string): string {
     }
 
     return path.join(dir, newFileName);
+}
+
+/**
+ * @throws {Error} Can throw file system errors
+ */
+export async function getSize(targetPath: string, maxDepth = 5): Promise<number> {
+    const visited = new Set<string>();
+
+    const computeSize = async (currentPath: string, depth: number): Promise<number> => {
+        if (visited.has(currentPath)){
+            return 0;
+        }
+
+        visited.add(currentPath);
+
+        const stats = await stat(currentPath);
+
+        if (stats.isFile()) {
+            return stats.size;
+        }
+
+        if (!stats.isDirectory() || depth >= maxDepth) {
+            return 0;
+        }
+
+        const entries = await readdir(currentPath);
+        const sizes = await Promise.all(
+            entries.map((entry) => computeSize(path.join(currentPath, entry), depth + 1))
+        );
+        return sizes.reduce((acc, cur) => acc + cur, 0);
+    };
+
+    return computeSize(targetPath, 0);
 }
 
 export interface Progression<T = unknown, D = unknown> {
