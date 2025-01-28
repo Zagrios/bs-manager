@@ -28,6 +28,11 @@
         "pin": "Pin",
         "unpin": "Unpin"
     },
+    "generic": {
+        "env": {
+            "parse": "Could not properly parse the env var string."
+        }
+    },
     "title-bar": {
         "outdated": "outdated"
     },
@@ -51,7 +56,7 @@
                 "outdated-tippy": "This version is outdated, and some mods or features may no longer work as expected. Prefer using the recommended version ({recommendedVersion}) of Beat Saber to enjoy the latest features and bugfixes.",
                 "advanced-launch": {
                     "button": "Launch options",
-                    "placeholder": "Additional arguments ex: --revert; --nowait"
+                    "placeholder": "Launch options ex: KEY=VALUE %command% fpfc"
                 },
                 "skipsteam": "Skip Steam",
                 "skipsteam-description": "Stops Steam from opening automatically with Beat Saber, enable if you are using a different VR runtime like WiVRn or Monado that SteamVR may interfere with.",
@@ -148,6 +153,14 @@
                     "all-mods-already-installed": {
                         "title": "Mods already installed",
                         "description": "All selected mods are already installed"
+                    },
+                    "outdated-mods": {
+                        "title": "Outdated Mod",
+                        "title-plural": "Outdated Mods",
+                        "description": "{name} mod is outdated. Do you want to update it?",
+                        "description-plural": "This version has {nb} outdated mods. Do you want to update them?",
+                        "dont-remind-me": "Don't remind me",
+                        "update": "Update"
                     }
                 },
                 "drop-zone": {

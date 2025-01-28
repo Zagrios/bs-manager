@@ -211,7 +211,7 @@ export class SteamService {
         for (const userId of userIds) {
             const shortcuts = await this.getShortcuts(userId).catch(e => {
                 log.warn("Error while reading shortcuts", e);
-                return [];
+                return [] as SteamShortcut[];
             });
             shortcuts.push(new SteamShortcut(shortcutData));
 

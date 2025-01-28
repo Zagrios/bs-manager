@@ -20,8 +20,8 @@ jobs:
             - name: Check out Git repository
               uses: actions/checkout@v4
 
-            - name: Install flatpak packages
-              run: sudo apt-get install -y flatpak flatpak-builder
+            - name: Install rpm/flatpak packages
+              run: sudo apt-get install -y flatpak flatpak-builder rpm libarchive-tools
 
             - name: Setup flatpak repo
               run: |
@@ -38,6 +38,9 @@ jobs:
 
             - name: Build deb
               run: npx electron-builder --config electron-builder.config.js --publish always --linux deb --x64
+
+            - name: Build rpm
+              run: npx electron-builder --config electron-builder.config.js --publish always --linux rpm --x64
 
             - name: Build flatpak
               run: env DEBUG="@malept/flatpak-bundler" npx electron-builder --config electron-builder.config.js --publish always --linux flatpak

@@ -24,13 +24,14 @@ jobs:
               with:
                   node-version: 22.11.0
                   cache: "npm"
+
+            # Install and setup rpm/Flatpak for Ubuntu
+            - name: Install rpm/flatpak packages (Ubuntu only)
+              if: matrix.os == 'ubuntu-latest'
+              run: sudo apt-get install -y flatpak flatpak-builder rpm libarchive-tools
+
             - run: npm ci
             - run: npm run package
-
-             # Install and setup Flatpak for Ubuntu
-            - name: Install flatpak packages (Ubuntu only)
-              if: matrix.os == 'ubuntu-latest'
-              run: sudo apt-get install -y flatpak flatpak-builder
 
             - name: Setup flatpak repo (Ubuntu only)
               if: matrix.os == 'ubuntu-latest'

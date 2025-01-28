@@ -28,6 +28,11 @@
         "pin": "固定",
         "unpin": "固定解除"
     },
+    "generic": {
+        "env": {
+            "parse": "環境変数の文字列を正しく解析できませんでした。"
+        }
+    },
     "title-bar": {
         "outdated": "時代遅れ"
     },
@@ -51,7 +56,7 @@
                 "outdated-tippy": "このバージョンは古いため、一部のMODや機能が期待通りに動作しない可能性があります。最新の機能やバグ修正を楽しむには、推奨バージョン ({recommendedVersion}) のBeat Saberを使用することをお勧めします。",
                 "advanced-launch": {
                     "button": "起動オプション",
-                    "placeholder": "追加引数 例：--revert; --nowait"
+                    "placeholder": "起動オプション 例：KEY=VALUE %command% fpfc"
                 },
                 "skipsteam": "Steamをスキップ",
                 "skipsteam-description": "Beat Saberと一緒にSteamが自動的に開くのを防ぎます。SteamVRが干渉する可能性のあるWiVRnやMonadoなど、別のVRランタイムを使用している場合は有効にしてください。",
@@ -148,6 +153,14 @@
                     "all-mods-already-installed": {
                         "title": "すでにインストール済みのMOD",
                         "description": "選択したすべてのMODはすでにインストールされています"
+                    },
+                    "outdated-mods": {
+                        "title": "古いMod",
+                        "title-plural": "古いMod",
+                        "description": "{name} Modが古くなっています。更新しますか？",
+                        "description-plural": "このバージョンには古いModが{nb}個あります。更新しますか？",
+                        "dont-remind-me": "もう知らせない",
+                        "update": "更新する"
                     }
                 },
                 "drop-zone": {

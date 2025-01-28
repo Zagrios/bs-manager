@@ -28,6 +28,11 @@
         "pin": "固定",
         "unpin": "取消固定"
     },
+    "generic": {
+        "env": {
+            "parse": "无法正确解析环境变量字符串。"
+        }
+    },
     "title-bar": {
         "outdated": "过时"
     },
@@ -51,7 +56,7 @@
                 "outdated-tippy": "此版本已过时，某些模组或功能可能无法按预期运行。建议使用推荐版本的 Beat Saber ({recommendedVersion})，以享受最新功能和修复。",
                 "advanced-launch": {
                     "button": "启动选项",
-                    "placeholder": "额外启动参数，例如: --revert; --nowait"
+                    "placeholder": "启动选项，例如: KEY=VALUE %command% fpfc"
                 },
                 "skipsteam": "跳过 Steam",
                 "skipsteam-description": "防止 Steam 与 Beat Saber 自动打开，如果您使用的是其他 VR 运行时，如 WiVRn 或 Monado，SteamVR 可能会干扰，请启用此选项。",
@@ -148,6 +153,14 @@
                     "all-mods-already-installed": {
                         "title": "模组已安装",
                         "description": "所有选中的模组已经安装"
+                    },
+                    "outdated-mods": {
+                        "title": "过时的模组",
+                        "title-plural": "过时的模组",
+                        "description": "{name} 模组已过时。您想更新吗？",
+                        "description-plural": "此版本有 {nb} 个过时的模组。您想更新它们吗？",
+                        "dont-remind-me": "不要提醒我",
+                        "update": "更新"
                     }
                 },
                 "drop-zone": {

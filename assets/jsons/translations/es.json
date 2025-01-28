@@ -28,6 +28,11 @@
         "pin": "Fijar",
         "unpin": "Desfijar"
     },
+    "generic": {
+        "env": {
+            "parse": "No se pudo analizar correctamente la cadena de la variable de entorno."
+        }
+    },
     "title-bar": {
         "outdated": "obsoleto"
     },
@@ -51,7 +56,7 @@
                 "outdated-tippy": "Esta versión está desactualizada, y algunos mods o funciones pueden no funcionar como se espera. Es mejor usar la versión recomendada ({recommendedVersion}) de Beat Saber para disfrutar de las últimas características y correcciones.",
                 "advanced-launch": {
                     "button": "Opciones de lanzamiento",
-                    "placeholder": "Argumentos adicionales ej: --revert; --no-wait"
+                    "placeholder": "Opciones de lanzamiento ej: KEY=VALUE %command% fpfc"
                 },
                 "skipsteam": "Saltar Steam",
                 "skipsteam-description": "Evita que Steam se abra automáticamente con Beat Saber, habilita esto si estás usando un runtime de VR diferente como WiVRn o Monado que SteamVR podría interferir.",
@@ -148,6 +153,14 @@
                     "all-mods-already-installed": {
                         "title": "Mods ya instalados",
                         "description": "Todos los mods seleccionados ya están instalados"
+                    },
+                    "outdated-mods": {
+                        "title": "Mod desactualizado",
+                        "title-plural": "Mods desactualizados",
+                        "description": "El mod {name} está desactualizado. ¿Quieres actualizarlo?",
+                        "description-plural": "Esta versión tiene {nb} mods desactualizados. ¿Quieres actualizarlos?",
+                        "dont-remind-me": "No me lo recuerdes",
+                        "update": "Actualizar"
                     }
                 },
                 "drop-zone": {

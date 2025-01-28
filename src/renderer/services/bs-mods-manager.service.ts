@@ -7,6 +7,7 @@ import { NotificationService } from "./notification.service";
 import { Progression } from "main/helpers/fs.helpers";
 import { ProgressionInterface } from "shared/models/progress-bar";
 import { BbmFullMod, BbmModVersion } from "shared/models/mods/mod.interface";
+import { logRenderError } from "renderer";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -178,6 +179,29 @@ export class BsModsManagerService {
             }
 
         });
+    }
+
+    public async getVersionModsState(version: BSVersion): Promise<{available: BbmFullMod[], installed: BbmFullMod[]}> {
+        const [available, installed]: [BbmFullMod[], BbmModVersion[]] = await (async () => {
+            const available = await lastValueFrom(this.getAvailableMods(version));
+            const installed = await lastValueFrom(this.getInstalledMods(version));
+            return [available ?? [], installed ?? []] as [BbmFullMod[], BbmModVersion[]]; // Make TS happy
+        })().catch(e => {
+            logRenderError(e);
+            return [[], []] as [BbmFullMod[], BbmModVersion[]]; // Make TS happy
+        })
+
+        const installedMods: BbmFullMod[] = installed.reduce((acc, installedMod) => {
+            const mod = available.find(m => m.mod.id === installedMod.modId);
+
+            if(mod){
+                acc.push({ ...mod, version: installedMod } as BbmFullMod);
+            }
+
+            return acc;
+        }, []);
+
+        return { available: (available ?? []), installed: (installedMods ?? []) };
     }
 
 }

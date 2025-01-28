@@ -38,7 +38,7 @@ export function LaunchSlide({ version }: Props) {
     const versions = useService(BSVersionManagerService);
 
     const [advancedLaunch, setAdvancedLaunch] = useState(false);
-    const [additionalArgsString, setAdditionalArgsString] = useState<string>(configService.get<string>("additionnal-args") || "");
+    const [command, setCommand] = useState<string>(configService.get<string>("launch-command") || "");
     const versionDownloading = useObservable(() => bsDownloader.downloadingVersion$);
     const [activeLaunchMods, setActiveLaunchMods] = useState<LaunchMod[]>(configService.get("launch-mods") ?? []);
     const [pinnedLaunchMods, setPinnedLaunchMods] = useState<LaunchMod[]>(configService.get("pinned-launch-mods" as DefaultConfigKey) ?? []);
@@ -46,8 +46,8 @@ export function LaunchSlide({ version }: Props) {
     const versionRunning = useObservable(() => bsLauncherService.versionRunning$);
 
     useEffect(() => {
-        configService.set("additionnal-args", additionalArgsString);
-    }, [additionalArgsString]);
+        configService.set("launch-command", command);
+    }, [command]);
 
     useEffect(() => {
         configService.set("pinned-launch-mods", pinnedLaunchMods);
@@ -146,12 +146,10 @@ export function LaunchSlide({ version }: Props) {
     }, [activeLaunchMods, pinnedLaunchMods, version]);
 
     const launch = async () => {
-        const additionalArgs = additionalArgsString?.split(";").map(arg => arg.trim()).filter(arg => arg.length > 0);
-
         const launch$ = bsLauncherService.launch({
             version,
             launchMods: activeLaunchMods,
-            additionalArgs: advancedLaunch ? additionalArgs : [],
+            command,
         });
 
         return lastValueFrom(launch$).catch(() => {});
@@ -195,9 +193,9 @@ export function LaunchSlide({ version }: Props) {
             </div>
             <div className="mt-4 flex flex-col items-center justify-center gap-3">
                 <div className="relative">
-                    <GlowEffect className="!rounded-full" visible={!!(activeLaunchMods?.length || additionalArgsString)}/>
+                    <GlowEffect className="!rounded-full" visible={!!(activeLaunchMods?.length || command)}/>
                     <BsmButton
-                        className={cn("rounded-full w-fit text-lg py-1 px-7 bg-theme-2 text-gray-800 dark:text-white", (advancedLaunch && additionalArgsString) ? "" : "shadow-md shadow-black")}
+                        className={cn("rounded-full w-fit text-lg py-1 px-7 bg-theme-2 text-gray-800 dark:text-white", (advancedLaunch && command) ? "" : "shadow-md shadow-black")}
                         text="pages.version-viewer.launch-mods.advanced-launch.button"
                         withBar={false}
                         onClick={e => {
@@ -207,7 +205,7 @@ export function LaunchSlide({ version }: Props) {
                     />
                 </div>
             </div>
-            <LaunchOptionsPanel open={advancedLaunch} launchMods={launchModItems} launchArgs={additionalArgsString} className="w-full max-w-3xl mt-3" onLaunchArgsChange={setAdditionalArgsString}/>
+            <LaunchOptionsPanel open={advancedLaunch} launchMods={launchModItems} launchArgs={command} className="w-full max-w-3xl mt-3" onLaunchArgsChange={setCommand}/>
             <div className='grow flex justify-center items-center p-2'>
                 <BsmButton
                     onClick={launch}
