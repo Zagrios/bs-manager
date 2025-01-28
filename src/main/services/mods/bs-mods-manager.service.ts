@@ -19,7 +19,6 @@ import crypto from "crypto";
 import { BsmZipExtractor } from "main/models/bsm-zip-extractor.class";
 import { BsmShellLog, bsmSpawn } from "main/helpers/os.helpers";
 import { BbmFullMod, BbmModVersion, ExternalMod } from "../../../shared/models/mods/mod.interface";
-import { Stats } from "fs";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -28,6 +27,8 @@ export class BsModsManagerService {
     private readonly bsLocalService: BSLocalVersionService;
     private readonly linuxService: LinuxService;
     private readonly requestService: RequestService;
+
+    private manifestMatches: BbmModVersion[];
 
     public static getInstance(): BsModsManagerService {
         if (!BsModsManagerService.instance) {
@@ -43,9 +44,14 @@ export class BsModsManagerService {
         this.requestService = RequestService.getInstance();
     }
 
-    private async getModsFromHashes(hashes: string[]): Promise<BbmModVersion[] | undefined> {
-        const mods = await this.beatModsApi.getModByHash(hashes)
-        return Object.values(mods).filter(mod => !mod.contentHashes.some(content => content.path.includes("IPA")));
+    private async getModFromHash(hash: string): Promise<BbmModVersion | undefined> {
+        const mod = await this.beatModsApi.getModByHash(hash);
+
+        if(mod?.contentHashes?.some(content => content.path.includes("IPA.exe"))){
+            return undefined;
+        }
+
+        return mod;
 
     }
 
@@ -57,16 +63,40 @@ export class BsModsManagerService {
             return [];
         }
 
-        const ignoreFunc = (file: string, stats: Stats): boolean => {
-            if(!stats.isFile()) { return true; }
-            const ext = path.extname(file);
-            return !(ext === ".dll" || ext === ".exe" || ext === ".manifest");
-        }
+        const files = await recursiveReadDir(modsPath);
 
-        const files = await recursiveReadDir(modsPath, [ignoreFunc]);
-        const hashes = await Promise.all(files.map(file => md5File(file)));
+        const promises = files.map(async filePath => {
+                const ext = path.extname(filePath);
 
-        const mods = await this.getModsFromHashes(hashes);
+                if (ext !== ".dll" && ext !== ".exe" && ext !== ".manifest") {
+                    return undefined;
+                }
+                const hash = await md5File(filePath);
+                const mod = await this.getModFromHash(hash);
+
+                if (!mod) {
+                    return undefined;
+                }
+
+                if (ext === ".manifest") {
+                    this.manifestMatches.push(mod);
+                    return undefined;
+                }
+
+                if (filePath.toLowerCase().includes("libs")) {
+                    const manifestIndex = this.manifestMatches.findIndex(m => m.id === mod.id);
+
+                    if (manifestIndex < 0) {
+                        return undefined;
+                    }
+
+                    this.manifestMatches.splice(manifestIndex, 1);
+                }
+
+                return mod;
+        });
+
+        const mods = await Promise.all(promises);
         return  mods.filter(Boolean);
     }
 
@@ -77,7 +107,7 @@ export class BsModsManagerService {
             return undefined;
         }
         const injectorMd5 = await md5File(injectorPath);
-        return (await this.beatModsApi.getModByHash([injectorMd5]))[injectorMd5];
+        return this.beatModsApi.getModByHash(injectorMd5);
     }
 
     private async downloadZip(zipUrl: string): Promise<BsmZipExtractor> {
@@ -308,10 +338,12 @@ export class BsModsManagerService {
     }
 
     public async getInstalledMods(version: BSVersion): Promise<BbmModVersion[]> {
+        this.manifestMatches = [];
+
         const bsipa = await this.getBsipaInstalled(version);
 
-        const pluginsMods = await Promise.all([this.getModsInDir(version, ModsInstallFolder.PLUGINS_PENDING), this.getModsInDir(version, ModsInstallFolder.PLUGINS)]);
-        const libsMods = await Promise.all([this.getModsInDir(version, ModsInstallFolder.LIBS_PENDING), this.getModsInDir(version, ModsInstallFolder.LIBS)]);
+        const pluginsMods = await Promise.all([this.getModsInDir(version, ModsInstallFolder.PLUGINS), this.getModsInDir(version, ModsInstallFolder.PLUGINS_PENDING)]);
+        const libsMods = await Promise.all([this.getModsInDir(version, ModsInstallFolder.LIBS), this.getModsInDir(version, ModsInstallFolder.LIBS_PENDING)]);
 
         const dirMods = pluginsMods.flat().concat(libsMods.flat());
 

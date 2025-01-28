@@ -3,7 +3,6 @@ import { BbmFullMod, BbmMod, BbmModVersion, BbmPlatform } from "../../../shared/
 import { RequestService } from "../request.service";
 import { BsStore } from "../../../shared/models/bs-store.enum";
 import log from "electron-log"
-import { tryit } from "shared/helpers/error.helpers";
 
 export class BeatModsApiService {
     private static instance: BeatModsApiService;
@@ -60,42 +59,17 @@ export class BeatModsApiService {
         });
     }
 
-    public async getModByHash<T extends string>(hashs: T[]): Promise<Record<T, BbmModVersion>> {
-
-        const getModsFromCache = (hashs: T[]): Record<T, BbmModVersion> => {
-            const mods = {} as Record<T, BbmModVersion>;
-
-            for (const hash of hashs) {
-                const mod = this.modsHashCache.get(hash);
-                if(mod){
-                    mods[hash] = mod;
-                }
-            }
-
-            return mods;
+    public getModByHash(hash: string): Promise<BbmModVersion|undefined> {
+        if (this.modsHashCache.has(hash)) {
+            return Promise.resolve(this.modsHashCache.get(hash));
         }
 
-        const mods = getModsFromCache(hashs);
-        const missingHashs = hashs.filter(hash => !mods[hash]);
-
-        if(!missingHashs.length){
-            return mods;
-        }
-
-        const url = new URL(`${this.MODS_REPO_API_URL}/hashlookup`);
-        missingHashs.forEach(hash => url.searchParams.append("hash", hash));
-
-        const res = await tryit(() => this.requestService.getJSON<{ modVersions: BbmModVersion[] }>(url.toString()));
-
-        if(res.error){
-            log.error(`Failed to get mod by hashes`, res.error);
+        return this.requestService.getJSON<{ modVersions: BbmModVersion[] }>(`${this.MODS_REPO_API_URL}/hashlookup?hash=${hash}`).then(({ data }) => {
+            this.updateModsHashCache(data?.modVersions ?? []);
+            return data?.modVersions?.at(0);
+        }).catch((e): undefined => {
+            log.error(`Failed to get mod by hash: ${hash}`, e);
             return undefined;
-        }
-
-        this.updateModsHashCache(res.result?.data?.modVersions ?? []);
-
-        const missingMods = getModsFromCache(missingHashs);
-
-        return {...mods, ...missingMods};
+        });
     }
 }
