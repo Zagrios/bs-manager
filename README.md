@@ -330,7 +330,7 @@
 </div>
 
 <div align="center">
-  <img src="https://github.com/Zagrios/bs-manager/assets/40648115/1244d49f-20e1-400c-9818-528f05cfadf5" alt="" />
+  <img src="https://github.com/user-attachments/assets/c247b237-9c49-4e7b-9366-aeb1dd3b7b9a" alt="" />
 </div>
 
 <!--
