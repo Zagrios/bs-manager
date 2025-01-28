@@ -1,8 +1,8 @@
 ## Table of Contents
 
 - [With BSManager](#with-bsmanager)
-    - [Install playlists](#how-to-install-maps-with-bsmanager)
-    - [Import PLaylists](#how-to-import-maps-with-bsmanager)
+    - [Install maps](#how-to-install-maps-with-bsmanager)
+    - [Import maps](#how-to-import-maps-with-bsmanager)
 - [Manual Installation](#manual-installation)
 - [One-Click Installation](#one-click-installation)
 

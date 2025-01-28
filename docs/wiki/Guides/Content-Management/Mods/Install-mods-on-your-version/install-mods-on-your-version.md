@@ -1,10 +1,13 @@
 ## Table of Contents
 
 - [With BSManager](#with-bsmanager)
-- [How to Import Mods with BSManager](#how-to-import-mods-with-bsmanager)
+    - [Install mods](#how-to-install-mods-with-bsmanager)
+    - [Import mods](#how-to-import-mods-with-bsmanager)
 - [Manual Installation](#manual-installation)
 
 ## With BSManager
+
+### How to Install Mods with BSManager
 
 1. Download and install [BSManager](https://www.bsmanager.io) from one of the following sources:  
    - [GitHub](https://github.com/Zagrios/bs-manager/releases/latest)  
