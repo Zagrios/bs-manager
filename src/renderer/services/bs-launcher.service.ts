@@ -36,19 +36,11 @@ export class BSLauncherService {
         this.modals = ModalService.getInstance();
     }
 
-    private notRewindBackupOculus(): boolean{
-        return this.config.get<boolean>("not-rewind-backup-oculus");
-    }
-
-    private setNotRewindBackupOculus(value: boolean): void{
-        this.config.set("not-rewind-backup-oculus", value);
-    }
-
-    public getLaunchOptions(version: BSVersion): LaunchOption{
+    public getLaunchOptions(version: BSVersion): LaunchOption {
         return {
             version,
             launchMods: this.config.get("launch-mods") ?? [],
-            additionalArgs: (this.config.get<string>("additionnal-args") || "").split(";").map(arg => arg.trim()).filter(arg => arg.length > 0),
+            command: this.config.get<string>("launch-command") || "",
         }
     }
 
@@ -61,7 +53,12 @@ export class BSLauncherService {
                 this.notificationService.notifySuccess({title: `notifications.bs-launch.success.titles.${event.type}`, desc: `notifications.bs-launch.success.msg.${event.type}`});
             },
             error: (err: CustomError) => {
-                if(!err?.code || !Object.values(BSLaunchError).includes(err.code as BSLaunchError)){
+                if (err?.code?.startsWith("generic.")) {
+                    this.notificationService.notifyError({
+                        title: "notifications.bs-launch.errors.titles.UNKNOWN_ERROR",
+                        desc: err.code,
+                    });
+                } else if(!err?.code || !Object.values(BSLaunchError).includes(err.code as BSLaunchError)){
                     this.notificationService.notifyError({title: "notifications.bs-launch.errors.titles.UNKNOWN_ERROR", desc: "notifications.bs-launch.errors.msg.UNKNOWN_ERROR"});
                 } else {
                     this.notificationService.notifyError({title: `notifications.bs-launch.errors.titles.${err.code}`, desc: `notifications.bs-launch.errors.msg.${err.code}`, duration: sToMs(9)})

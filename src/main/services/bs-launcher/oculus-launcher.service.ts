@@ -1,4 +1,4 @@
-import { Observable, ReplaySubject } from "rxjs";
+import { Observable } from "rxjs";
 import { StoreLauncherInterface } from "./store-launcher.interface";
 import { BSLaunchError, BSLaunchEvent, BSLaunchEventData, LaunchOption } from "../../../shared/models/bs-launch";
 import { OculusService } from "../oculus.service";
@@ -6,10 +6,9 @@ import { BS_EXECUTABLE } from "../../constants";
 import path from "path";
 import log from "electron-log";
 import { pathExists } from "fs-extra";
-import { AbstractLauncherService } from "./abstract-launcher.service";
+import { AbstractLauncherService, buildBsLaunchArgs } from "./abstract-launcher.service";
 import { isProcessRunning } from "../../helpers/os.helpers";
 import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
-import { UtilsService } from "../utils.service";
 
 export class OculusLauncherService extends AbstractLauncherService implements StoreLauncherInterface {
 
@@ -23,14 +22,10 @@ export class OculusLauncherService extends AbstractLauncherService implements St
     }
 
     private readonly oculus: OculusService;
-    private readonly util: UtilsService;
-
-    private readonly oculusLib$ = new ReplaySubject<string>();
 
     private constructor() {
         super();
         this.oculus = OculusService.getInstance();
-        this.util = UtilsService.getInstance();
     }
 
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData> {
@@ -54,10 +49,17 @@ export class OculusLauncherService extends AbstractLauncherService implements St
                 // Make sure Oculus is running
                 await this.oculus.startOculus().catch(err => log.error("Error while starting Oculus", err));
 
+                const env: Record<string, string> = {};
+                this.injectAdditionalArgsEnvs(launchOptions, env);
+
                 obs.next({type: BSLaunchEvent.BS_LAUNCHING});
 
                 // Launch Beat Saber
-                const process = this.launchBs(exePath, this.buildBsLaunchArgs(launchOptions));
+                const process = this.launchBs(
+                    exePath,
+                    buildBsLaunchArgs(launchOptions),
+                    { env }
+                );
 
                 return process.exit.catch(err => {
                     throw CustomError.fromError(err, BSLaunchError.BS_EXIT_ERROR);

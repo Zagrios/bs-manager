@@ -28,6 +28,11 @@
         "pin": "固定",
         "unpin": "取消固定"
     },
+    "generic": {
+        "env": {
+            "parse": "無法正確解析環境變數字串。"
+        }
+    },
     "title-bar": {
         "outdated": "過時"
     },
@@ -51,7 +56,7 @@
                 "outdated-tippy": "此版本已過時，某些模組或功能可能無法按預期運作。建議使用推薦版本的 Beat Saber ({recommendedVersion})，以享受最新功能和修復。",
                 "advanced-launch": {
                     "button": "啟動選項",
-                    "placeholder": "額外啟動參數，例如: --revert; --nowait"
+                    "placeholder": "啟動選項，例如: KEY=VALUE %command% fpfc"
                 },
                 "skipsteam": "跳過 Steam",
                 "skipsteam-description": "防止 Steam 與 Beat Saber 自動打開，如果您使用的是其他 VR 執行時，如 WiVRn 或 Monado，SteamVR 可能會干擾，請啟用此選項。",
@@ -148,6 +153,14 @@
                     "all-mods-already-installed": {
                         "title": "模組已安裝",
                         "description": "所有選中的模組已經安裝"
+                    },
+                    "outdated-mods": {
+                        "title": "過時的模組",
+                        "title-plural": "過時的模組",
+                        "description": "{name} 模組已過時。您想更新嗎？",
+                        "description-plural": "此版本有 {nb} 個過時的模組。您想更新它們嗎？",
+                        "dont-remind-me": "不要提醒我",
+                        "update": "更新"
                     }
                 },
                 "drop-zone": {
@@ -227,6 +240,7 @@
                     "es-ES": "Español",
                     "it-IT": "Italiano",
                     "de-DE": "Deutsch",
+                    "pt-BR": "Português (Brasil)",
                     "ru-RU": "Русский",
                     "zh-CN": "簡體中文",
                     "zh-TW": "正體中文",
@@ -239,6 +253,7 @@
                         "es-ES": "西班牙語",
                         "it-IT": "義大利語",
                         "de-DE": "德語",
+                        "pt-BR": "葡萄牙語 (巴西)",
                         "ru-RU": "俄語",
                         "zh-CN": "簡體中文",
                         "zh-TW": "正體中文",

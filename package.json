@@ -2,7 +2,7 @@
     "name": "bs-manager",
     "description": "Manage maps, mods and more for Beat Saber",
     "main": "./.erb/dll/main.bundle.dev.js",
-    "version": "1.5.0-alpha.8",
+    "version": "1.5.0-alpha.9",
     "scripts": {
         "build-rust-scripts": "ts-node ./.erb/scripts/build-rust-scripts.js",
         "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
@@ -55,7 +55,7 @@
         "url": "https://github.com/Zagrios"
     },
     "contributors": [],
-    "license": "MIT",
+    "license": "GPL-3.0-only",
     "bugs": {
         "url": "https://github.com/Zagrios/bs-manager/issues"
     },

@@ -14,6 +14,6 @@ export type LaunchMod = typeof LaunchMods[keyof typeof LaunchMods];
 export interface LaunchOption {
     version: BSVersion,
     launchMods?: LaunchMod[],
-    additionalArgs?: string[],
+    command?: string,
     admin?: boolean
 }

@@ -48,7 +48,7 @@ export function PlaylistDetailsTemplate({title, imagebase64, imageUrl, author, d
     return (
         <div className="flex flex-col w-screen max-w-2xl h-screen max-h-[calc(100vh-1.25rem)] translate-y-2.5 bg-theme-1 rounded-t-lg overflow-hidden">
             <header className="shrink-0 relative h-36 overflow-hidden flex flex-row p-3">
-                <button className="absolute top-2 right-2 z-[1]" onClickCapture={onClose}>
+                <button className="absolute top-2 right-2 z-[2]" onClickCapture={onClose}>
                     <CrossIcon className="size-3.5 text-gray-200"/>
                 </button>
                 <BsmImage className="absolute top-0 left-0 size-full object-cover blur-xl scale-150 brightness-75 saturate-200" base64={imagebase64} image={imageUrl}/>

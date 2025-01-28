@@ -1,4 +1,148 @@
 ## Not released yet ~
+[PR Merged since the last release](https://github.com/Zagrios/bs-manager/pulls?q=is%3Apr+is%3Amerged+merged%3A%3E2025-01-18)\
+[PR Merged since the last alpha](https://github.com/Zagrios/bs-manager/pulls?q=is%3Apr+is%3Amerged+merged%3A%3E2025-01-11+)
+
+## [1.4.18](https://github.com/Zagrios/bs-manager/releases/edit/v1.4.18) (Jan 18, 2025)
+
+### Fixes
+- Fixed an issue where enabling Oculus sideloading was not working if BSManager installation path contained spaces #735 
+- The IPA folder is now cleared each time BSIPA is installed to prevent potential crashes caused by conflicts with old BSIPA files #746 
+- Added a check to ensure the file system supports symlinks before moving contents to the shared folder #739 
+
+### Other changes
+- Events occurring in `bs-admin-start.exe` and `oculus-allow-dev-sideloaded.exe` are now logged #735
+
+## [1.4.17](https://github.com/Zagrios/bs-manager/releases/edit/v1.4.17) (Jan 2, 2025)
+
+### Fixes
+- Fixed an issue where original Steam installations of Beat Saber did not have any mods available
+- Mod descriptions should no longer contain HTML tags
+
+## [1.4.16](https://github.com/Zagrios/bs-manager/releases/edit/v1.4.16) (Jan 2, 2025)
+
+### Fixes
+- Fixed infinite mod loading when a mod file could not be found on BeatMods #725 (Thanks to @silentrald)
+- Fixed an issue where no mods were shown as installed when a mod dependency could not be found #726 (Thanks to @silentrald)
+- Fixed minor UI issues
+
+## [1.4.15](https://github.com/Zagrios/bs-manager/releases/edit/v1.4.15) (Jan 2, 2025)
+
+### Fixes
+- Use the sideloading feature of Oculus to prevent errors when launching Oculus versions of Beat Saber #720
+- Oculus token starting with `OC` are now accepted
+
+### Other changes
+- Mods now load faster #508 
+- Switched to the new BeatMods API for loading mods
+
+
+## [1.4.14](https://github.com/Zagrios/bs-manager/releases/edit/v1.4.14) (Dec 2, 2024)
+
+### Fixes
+- Fixed an issue where downloading private playlists through OneClick was always resulting in an error #679 (Thanks to @Top-Cat)
+- Beat Saber file verification was broken due to an error in DepotDownloader #677
+
+
+## [1.4.13](https://github.com/Zagrios/bs-manager/releases/edit/v1.4.13) (Nov 26, 2024)
+
+### Features
+- Added the possibility to unselect all mods from the mods panel #666
+
+### Fixes
+- Fixed an issue where downloading maps with subfolders was not possible #649 (Thanks to @silentrald)
+- Corrected the mods search bar color in the light theme #660 (Thanks to @chk1)
+
+### Other changes
+- Added the BeatLeader icon to the OneClick playlist settings #653
+- A warning now appears before downloading an outdated BeatSaber version #654
+- Oculus BeatSaber versions no longer launch if the Oculus library is not found #657 (Thanks to @LiamillionSS)
+- Maps from BeatSaver are now sorted by relevance by default #662 (Thanks to @Top-Cat)
+- Removed the `--no-yeet` argument when launching original copies of BeatSaber #667
+- Added warnings for outdated versions in the versions view #673 
+
+
+## [1.4.12](https://github.com/Zagrios/bs-manager/releases/edit/v1.4.12) (Nov 6, 2024)
+
+### Fixes
+- Fixed OneClick playlist download that has been broken in the previous release #645 
+- Fixed an issue where downloading playlists could fail if the playlist's file contained special characters #645 
+
+## [1.4.11](https://github.com/Zagrios/bs-manager/releases/edit/v1.4.11) (Nov 4, 2024)
+
+### Fixes
+- BSManager was not working if the path to BSM's installation folder contained URL special characters #636 
+- Linking folders was no longer working if the folders contained files
+- Under certain conditions, loading maps could result in a black screen
+
+### Other changes
+- The "Broken Models" notification has been removed #640 
+
+
+## [1.4.10](https://github.com/Zagrios/bs-manager/releases/edit/v1.4.10) (Oct 27, 2024)
+
+### Fixes
+- Mods using a manifest file were sometimes not detected as installed #564
+- BSIPA installation was always considered as successfull even if an error occured #511
+- Some map filter tags were no longer working #619 (Thanks to @silentrald)
+- Fixed an issue where, under certain conditions, linking a folder could result in the loss of its contents #568 
+
+### Other changes
+- Default mods are no longer reselected when mods are already installed #535 
+- The `DLC` folder has been removed from the default list of folders that can be linked #628 
+- The naming scheme for downloaded maps and playlists has been updated to prevent duplicates when downloading maps or playlists from Beat Saber or other tools
+
+
+## [1.4.9](https://github.com/Zagrios/bs-manager/releases/edit/v1.4.9) (Oct 15, 2024)
+
+### Fixes
+- Updated DepotDownloader dependency to fix connection errors with Steam
+
+### Other changes
+- Added support for `info.dat` v4
+
+
+## [1.4.8](https://github.com/Zagrios/bs-manager/releases/edit/v1.4.8) (Aug 1, 2024)
+
+### Other changes
+- Added checks to avoid logging sensitive data in log files
+- The oldest log files are deleted to retain a maximum of 5 log files
+
+
+## [1.4.7](https://github.com/Zagrios/bs-manager/releases/edit/v1.4.7) (Mar 13, 2024)
+
+### Fixes
+- Fixed being unable to download models with BSManager #436 
+
+### Other changes
+- Fixed a typo in german translation (Thanks to @fllppi)
+
+## [1.4.6](https://github.com/Zagrios/bs-manager/releases/edit/v1.4.6) (Mar 6, 2024)
+
+### Features
+- It's now possible to exclude already installed maps when downloading maps from BSManager #426 (Thanks to @Liborsaf)
+
+### Fixes
+- Fixed an issue where BSManager couldn't get path to user's documents under certain conditions, preventing any action from the user #431
+- To prevent the last launched Beat Saber version getting wiped by Oculus auto-updates, the symlink  created to launch the version is now deleted after the game stops #432
+
+## [1.4.5](https://github.com/Zagrios/bs-manager/releases/edit/v1.4.5) (Feb 12, 2024)
+
+### Fixes
+- Fixed an issue preventing launching downgraded Steam versions under certain conditions #415 
+- Fixed an issue preventing launching downgraded Oculus versions under certain conditions #421
+- Fixed an issue where SteamVR was not properly restored after launching Beat Saber from a shortcut with FPFC mode #417 (Thanks to @slinkstr)
+
+## [1.4.4](https://github.com/Zagrios/bs-manager/releases/edit/v1.4.4) (Feb 1, 2024)
+
+### Fixes
+- When launching an Oculus Beat Saber version, the Oculus app is also started if needed to avoid crashes #405 
+- If Steam is running as admin, Beat Saber is now also started as admin to avoid crashes #404 
+- Fixed the issue where BSManager could fail to start due to a missing DLL #400 
+- Fixed the issue where BSManager could not locate the Oculus library #398 
+
+### Other changes
+- Added some tooltips to the maps UIs #397 
+- Updated the maps panel UI for consistency with the rest of BSManager UIs #399 
 
 ## [1.4.3](https://github.com/Zagrios/bs-manager/releases/tag/v1.4.3) (Dec 27, 2023)
 

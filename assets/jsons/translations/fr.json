@@ -28,6 +28,11 @@
         "pin": "Épingler",
         "unpin": "Désépingler"
     },
+    "generic": {
+        "env": {
+            "parse": "Impossible d'analyser correctement la chaîne de variable d'environnement."
+        }
+    },
     "title-bar": {
         "outdated": "obsolète"
     },
@@ -51,7 +56,7 @@
                 "outdated-tippy": "Cette version est obsolète et certains mods ou fonctionnalités peuvent ne plus fonctionner comme prévu. Préférez utiliser la version recommandée ({recommendedVersion}) de Beat Saber pour profiter des dernières fonctionnalités et correctifs.",
                 "advanced-launch": {
                     "button": "Options de lancement",
-                    "placeholder": "Arguments supplémentaires ex: --revert; --nowait"
+                    "placeholder": "Options de lancement ex: KEY=VALUE %command% fpfc"
                 },
                 "skipsteam": "Ignorer Steam",
                 "skipsteam-description": "Empêche Steam de s'ouvrir automatiquement avec Beat Saber, activez-le si vous utilisez un autre runtime VR comme WiVRn ou Monado avec lequel SteamVR pourrait interférer.",
@@ -148,6 +153,14 @@
                     "all-mods-already-installed": {
                         "title": "Mods déjà installées",
                         "description": "Tous les mods séléctionnées sont déjà installées"
+                    },
+                    "outdated-mods": {
+                        "title": "Mod obsolète",
+                        "title-plural": "Mods obsolètes",
+                        "description": "Le mod {name} est obsolète. Voulez-vous le mettre à jour ?",
+                        "description-plural": "Cette version contient {nb} mods obsolètes. Voulez-vous les mettre à jour ?",
+                        "dont-remind-me": "Ne plus me rappeler",
+                        "update": "Mettre à jour"
                     }
                 },
                 "drop-zone": {
@@ -227,6 +240,7 @@
                     "es-ES": "Español",
                     "it-IT": "Italiano",
                     "de-DE": "Deutsch",
+                    "pt-BR": "Português (Brasil)",
                     "ru-RU": "Русский",
                     "zh-CN": "简体中文",
                     "zh-TW": "正體中文",
@@ -237,6 +251,7 @@
                         "en-US": "Anglais, États-Unis",
                         "fr-FR": "Français",
                         "es-ES": "Espagnol",
+                        "pt-BR": "Portugais (Brésil)",
                         "it-IT": "Italien",
                         "de-DE": "Allemand",
                         "ru-RU": "Russe",
