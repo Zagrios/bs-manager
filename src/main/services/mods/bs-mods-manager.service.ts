@@ -342,8 +342,8 @@ export class BsModsManagerService {
 
         const bsipa = await this.getBsipaInstalled(version);
 
-        const pluginsMods = await Promise.all([this.getModsInDir(version, ModsInstallFolder.PLUGINS), this.getModsInDir(version, ModsInstallFolder.PLUGINS_PENDING)]);
-        const libsMods = await Promise.all([this.getModsInDir(version, ModsInstallFolder.LIBS), this.getModsInDir(version, ModsInstallFolder.LIBS_PENDING)]);
+        const pluginsMods = await Promise.all([this.getModsInDir(version, ModsInstallFolder.PLUGINS_PENDING), this.getModsInDir(version, ModsInstallFolder.PLUGINS)]);
+        const libsMods = await Promise.all([this.getModsInDir(version, ModsInstallFolder.LIBS_PENDING), this.getModsInDir(version, ModsInstallFolder.LIBS)]);
 
         const dirMods = pluginsMods.flat().concat(libsMods.flat());
 
