@@ -10,7 +10,6 @@
 ## Table of Contents
 
 - [With BSManager](#with-bsmanager)
-- [Manual Installation](#manual-installation)
 - [One-Click Installation](#one-click-installation)
 
 ## With BSManager
