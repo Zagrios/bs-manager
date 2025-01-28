@@ -242,7 +242,9 @@ export class LocalPlaylistsManagerService {
             ...localBPList,
             duration: 0,
             nbMaps: localBPList.songs?.length ?? 0,
-            id: localBPList.customData?.syncURL ? tryExtractPlaylistId(localBPList.customData.syncURL) : undefined
+            id: localBPList.customData?.syncURL ? tryExtractPlaylistId(localBPList.customData.syncURL) : undefined,
+            minNps: Infinity,
+            maxNps: -Infinity,
         }
 
         const mappers = new Set<number>();
@@ -254,10 +256,23 @@ export class LocalPlaylistsManagerService {
 
             bpListDetails.duration += songDetails?.duration ? +songDetails.duration : 0;
             mappers.add(songDetails.uploader?.id);
-            bpListDetails.minNps = Math.min(bpListDetails?.minNps ?? 0, Math.min(...songDetails.difficulties?.map(d => d?.nps || 0) ?? [0]));
-            bpListDetails.maxNps = Math.max(bpListDetails?.maxNps ?? 0, Math.max(...songDetails.difficulties?.map(d => d?.nps || 0) ?? [0]));
+
+            const mapNps = songDetails.difficulties?.map(d => d?.nps).filter(nps => typeof nps === "number" && !Number.isNaN(nps));
+
+            if(mapNps?.length){
+                bpListDetails.minNps = Math.min(bpListDetails.minNps, ...mapNps);
+                bpListDetails.maxNps = Math.max(bpListDetails.maxNps, ...mapNps);
+            }
 
             song.songDetails = songDetails;
+        }
+
+        if(!Number.isFinite(bpListDetails.minNps)){
+            bpListDetails.minNps = 0;
+        }
+
+        if(!Number.isFinite(bpListDetails.maxNps)){
+            bpListDetails.maxNps = 0;
         }
 
         bpListDetails.nbMappers = mappers.size;
