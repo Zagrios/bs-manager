@@ -8,6 +8,7 @@ import { LinuxService } from "../linux.service";
 import { BsmShellLog, bsmSpawn } from "main/helpers/os.helpers";
 import { IS_FLATPAK } from "main/constants";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
+import { parseEnvString } from "main/helpers/env.helpers";
 
 export function buildBsLaunchArgs(launchOptions: LaunchOption): string[] {
     const launchArgs = [];
@@ -29,8 +30,8 @@ export function buildBsLaunchArgs(launchOptions: LaunchOption): string[] {
         launchArgs.push("editor");
     }
 
-    if (launchOptions.additionalArgs) {
-        launchArgs.push(...launchOptions.additionalArgs);
+    if (launchOptions.command) {
+        launchArgs.push(launchOptions.command);
     }
 
     return Array.from(new Set(launchArgs).values());
@@ -45,6 +46,8 @@ export abstract class AbstractLauncherService {
         this.linux = LinuxService.getInstance();
         this.localVersions = BSLocalVersionService.getInstance();
     }
+
+    private readonly COMMAND_FORMAT = "%command%";
 
     protected launchBSProcess(bsExePath: string, args: string[], options?: SpawnBsProcessOptions): ChildProcessWithoutNullStreams {
 
@@ -116,6 +119,34 @@ export abstract class AbstractLauncherService {
 
         return { process, exit };
     }
+
+    protected injectAdditionalArgsEnvs(
+        launchOptions: LaunchOption,
+        env: Record<string, string>
+    ) {
+        if (!launchOptions.command) {
+            return;
+        }
+
+        const { command } = launchOptions;
+        const index = command.indexOf(this.COMMAND_FORMAT);
+        if (index === -1) {
+            return;
+        }
+
+        const envString = command.substring(0, index);
+        log.info("Parsing env string ", `"${envString}"`)
+        for (const [ key, value ] of Object.entries(parseEnvString(envString))) {
+            if (key in env) {
+                log.warn("Ignoring", `${key}=${value}`, "already set env launch command");
+            } else {
+                log.info("Injecting", `${key}="${value}"`, "to the env launch command");
+            }
+        }
+
+        launchOptions.command = command.substring(index + this.COMMAND_FORMAT.length);
+    }
+
 }
 
 export type SpawnBsProcessOptions = {

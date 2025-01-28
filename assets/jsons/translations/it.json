@@ -56,7 +56,7 @@
                 "outdated-tippy": "Questa versione è obsoleta, e alcune mod o funzioni non potrebbero più funzionare correttamente. Consigliamo di usare la versione raccomandata ({recommendedVersion}) di Beat Saber per godere delle ultime funzioni e bugfix.",
                 "advanced-launch": {
                     "button": "Opzioni di Lancio",
-                    "placeholder": "Argomenti aggiuntivi es: --revert; --nowait"
+                    "placeholder": "Opzioni di Lancio es: KEY=VALUE %command% fpfc"
                 },
                 "skipsteam": "Salta Steam",
                 "skipsteam-description": "Ferma Steam da aprirsi automaticamente con Beat Saber, abilitalo se stai usando un VR runtime differente come WiVRn o Monado con cui SteamVR potrebbe interferire.",

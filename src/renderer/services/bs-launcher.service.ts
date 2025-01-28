@@ -36,19 +36,11 @@ export class BSLauncherService {
         this.modals = ModalService.getInstance();
     }
 
-    private notRewindBackupOculus(): boolean{
-        return this.config.get<boolean>("not-rewind-backup-oculus");
-    }
-
-    private setNotRewindBackupOculus(value: boolean): void{
-        this.config.set("not-rewind-backup-oculus", value);
-    }
-
-    public getLaunchOptions(version: BSVersion): LaunchOption{
+    public getLaunchOptions(version: BSVersion): LaunchOption {
         return {
             version,
             launchMods: this.config.get("launch-mods") ?? [],
-            additionalArgs: (this.config.get<string>("additionnal-args") || "").split(";").map(arg => arg.trim()).filter(arg => arg.length > 0),
+            command: this.config.get<string>("additionnal-args") || "",
         }
     }
 

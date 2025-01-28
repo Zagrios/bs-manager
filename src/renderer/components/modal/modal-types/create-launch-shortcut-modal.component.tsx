@@ -22,8 +22,8 @@ export const CreateLaunchShortcutModal: ModalComponent<{ steamShortcut: boolean,
     const color = useThemeColor("second-color");
 
     const [launchOption, setLaunchOptions] = useState(bsLauncher.getLaunchOptions(data));
-    const [advanced, setAdvanced] = useState(!!launchOption.additionalArgs?.length);
-    const [additionalArgsString, setAdditionalArgsString] = useState(launchOption.additionalArgs?.join("; ") ?? "");
+    const [advanced, setAdvanced] = useState(!!launchOption.command?.length);
+    const [command, setCommand] = useState(launchOption.command || "");
     const [steamShortcut, setSteamShortcut] = useState(false);
 
     const isSteamVersion = useMemo(() => {
@@ -33,9 +33,9 @@ export const CreateLaunchShortcutModal: ModalComponent<{ steamShortcut: boolean,
     const completeModal = () => {
 
         if(advanced) {
-            launchOption.additionalArgs = additionalArgsString.split(";").map(arg => arg.trim()).filter(arg => arg.length);
+            launchOption.command = command.trim();
         } else {
-            launchOption.additionalArgs = undefined;
+            launchOption.command = "";
         }
 
         resolver({exitCode: ModalExitCode.COMPLETED, data: { launchOption, steamShortcut }});
@@ -95,8 +95,8 @@ export const CreateLaunchShortcutModal: ModalComponent<{ steamShortcut: boolean,
                                 type="text"
                                 className="w-full rounded-md text-center outline-none bg-light-main-color-3 dark:bg-main-color-3"
                                 placeholder={t("pages.version-viewer.launch-mods.advanced-launch.placeholder")}
-                                value={additionalArgsString}
-                                onChange={e => setAdditionalArgsString(e.target.value)}
+                                value={command}
+                                onChange={e => setCommand(e.target.value)}
                             />
                         </div>
                     </div>
