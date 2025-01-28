@@ -10,9 +10,10 @@
 ## Table of Contents
 
 - [With BSManager](#with-bsmanager)
+- [Manual Installation](#manual-installation)
 - [One-Click Installation](#one-click-installation)
 
-# With BSManager
+## With BSManager
 
 1. Download and install [BSManager](https://www.bsmanager.io) from one of the following sources:  
     - [GitHub](https://github.com/Zagrios/bs-manager/releases/latest)
@@ -25,7 +26,7 @@
 6. Download to install the model.
 7. Wait for the installation to complete. Once it's finished, you can launch Beat Saber directly from [BSManager](https://www.bsmanager.io) to enjoy your new models!
 
-# One-Click Installation
+## One-Click Installation
 
 1. Launch [BSManager](https://www.bsmanager.io) and make sure that the One-Click installation feature is enabled for models.
 2. Go to one of the supported websites and search for the models you want to install.
