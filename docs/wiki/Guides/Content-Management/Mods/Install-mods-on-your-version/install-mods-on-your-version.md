@@ -17,7 +17,7 @@
 6. Click __`Install or Update`__ at the bottom-right corner of the interface.
 7. Wait for the installation to complete. Once it's finished, you can launch Beat Saber directly from [BSManager](https://www.bsmanager.io) to enjoy your new mods!
 
-### How to Import Maps with BSManager
+### How to Import Mods with BSManager
 
 1. Download and install [BSManager](https://www.bsmanager.io) from one of the following sources:  
     - [GitHub](https://github.com/Zagrios/bs-manager/releases/latest)
