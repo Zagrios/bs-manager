@@ -31,13 +31,7 @@ export const CreateLaunchShortcutModal: ModalComponent<{ steamShortcut: boolean,
     }, [data]);
 
     const completeModal = () => {
-
-        if(advanced) {
-            launchOption.command = command.trim();
-        } else {
-            launchOption.command = "";
-        }
-
+        launchOption.command = command.trim();
         resolver({exitCode: ModalExitCode.COMPLETED, data: { launchOption, steamShortcut }});
     }
 

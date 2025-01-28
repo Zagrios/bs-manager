@@ -38,7 +38,7 @@ export function LaunchSlide({ version }: Props) {
     const versions = useService(BSVersionManagerService);
 
     const [advancedLaunch, setAdvancedLaunch] = useState(false);
-    const [command, setCommand] = useState<string>(configService.get<string>("additionnal-args") || "");
+    const [command, setCommand] = useState<string>(configService.get<string>("launch-command") || "");
     const versionDownloading = useObservable(() => bsDownloader.downloadingVersion$);
     const [activeLaunchMods, setActiveLaunchMods] = useState<LaunchMod[]>(configService.get("launch-mods") ?? []);
     const [pinnedLaunchMods, setPinnedLaunchMods] = useState<LaunchMod[]>(configService.get("pinned-launch-mods" as DefaultConfigKey) ?? []);
@@ -46,7 +46,7 @@ export function LaunchSlide({ version }: Props) {
     const versionRunning = useObservable(() => bsLauncherService.versionRunning$);
 
     useEffect(() => {
-        configService.set("additionnal-args", command);
+        configService.set("launch-command", command);
     }, [command]);
 
     useEffect(() => {
@@ -149,7 +149,7 @@ export function LaunchSlide({ version }: Props) {
         const launch$ = bsLauncherService.launch({
             version,
             launchMods: activeLaunchMods,
-            command: advancedLaunch ? command : "",
+            command,
         });
 
         return lastValueFrom(launch$).catch(() => {});

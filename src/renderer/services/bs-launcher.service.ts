@@ -40,7 +40,7 @@ export class BSLauncherService {
         return {
             version,
             launchMods: this.config.get("launch-mods") ?? [],
-            command: this.config.get<string>("additionnal-args") || "",
+            command: this.config.get<string>("launch-command") || "",
         }
     }
 
