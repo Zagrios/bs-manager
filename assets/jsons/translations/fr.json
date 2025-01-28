@@ -28,6 +28,11 @@
         "pin": "Épingler",
         "unpin": "Désépingler"
     },
+    "generic": {
+        "env": {
+            "parse": "Impossible d'analyser correctement la chaîne de variable d'environnement."
+        }
+    },
     "title-bar": {
         "outdated": "obsolète"
     },
@@ -51,7 +56,7 @@
                 "outdated-tippy": "Cette version est obsolète et certains mods ou fonctionnalités peuvent ne plus fonctionner comme prévu. Préférez utiliser la version recommandée ({recommendedVersion}) de Beat Saber pour profiter des dernières fonctionnalités et correctifs.",
                 "advanced-launch": {
                     "button": "Options de lancement",
-                    "placeholder": "Arguments supplémentaires ex: --revert; --nowait"
+                    "placeholder": "Options de lancement ex: KEY=VALUE %command% fpfc"
                 },
                 "skipsteam": "Ignorer Steam",
                 "skipsteam-description": "Empêche Steam de s'ouvrir automatiquement avec Beat Saber, activez-le si vous utilisez un autre runtime VR comme WiVRn ou Monado avec lequel SteamVR pourrait interférer.",

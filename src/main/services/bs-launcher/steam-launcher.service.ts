@@ -102,7 +102,6 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 await this.restoreSteamVR().catch(log.error);
             }
 
-            const launchArgs = buildBsLaunchArgs(launchOptions);
             const steamPath = await this.steam.getSteamPath();
 
             const env = {
@@ -121,6 +120,9 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 protonPrefix = linuxSetup.protonPrefix;
                 Object.assign(env, linuxSetup.env);
             }
+
+            this.injectAdditionalArgsEnvs(launchOptions, env);
+            const launchArgs = buildBsLaunchArgs(launchOptions);
 
             obs.next({type: BSLaunchEvent.BS_LAUNCHING});
 
