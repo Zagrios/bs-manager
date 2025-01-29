@@ -280,6 +280,8 @@ export class LocalMapsManagerService {
         return new Observable<Progression>(observer => {
             const progress: Progression = { total: hashs.length, current: 0 };
 
+            observer.next(progress);
+
             (async () => {
                 const versionMapsPath = await this.getMapsFolderPath(version);
                 const mapsPaths = await getFoldersInFolder(versionMapsPath);
@@ -295,7 +297,7 @@ export class LocalMapsManagerService {
                     observer.next(progress);
                 }
             })()
-            .catch(e => observer.error(e))
+            .catch(e => {observer.error(e); console.log("AAAA", e)})
             .finally(() => observer.complete());
         });
     }
