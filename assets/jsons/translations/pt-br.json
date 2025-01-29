@@ -571,7 +571,7 @@
                     }
                 }
             },
-            "desinstalar-mod": {
+            "uninstall-mod": {
                 "titles": {
                     "success": "Mod desinstalado 🎉"
                 },
@@ -581,7 +581,7 @@
                     }
                 }
             },
-            "desinstalar-all-mods": {
+            "uninstall-all-mods": {
                 "titles": {
                     "success": "Mods desinstalados 🎉"
                 },
