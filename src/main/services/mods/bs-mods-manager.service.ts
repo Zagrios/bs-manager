@@ -531,9 +531,11 @@ export class BsModsManagerService {
                 const versionMods = await this.getAvailableMods(version);
                 const installedMods = await this.getInstalledMods(version);
 
-                const fullInstalledMods: BbmFullMod[] = installedMods?.map(version => {
-                    return { version, mod: versionMods.find(mod => version.modId === mod.mod.id)?.mod };
-                }) ?? [];
+                const fullInstalledMods = (installedMods || []).reduce((mods, version) => {
+                    const mod = versionMods.find(mod => version.modId === mod.mod.id)?.mod;
+                    if (mod) { mods.push({ version, mod }); }
+                    return mods;
+                }, [] as BbmFullMod[]);
 
                 const progress = { current: 0, total: fullInstalledMods.length };
 
