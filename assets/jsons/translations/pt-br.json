@@ -144,7 +144,7 @@
                         "description": "Descrição",
                         "dropdown": {
                             "import-mods": "Importar mods",
-                            "desinstalar-all": "Desinstalar todos",
+                            "uninstall-all": "Desinstalar todos",
                             "unselect-all": "Desmarcar todos"
                         }
                     }
@@ -173,7 +173,7 @@
                 "verify-files": "Verificar arquivos",
                 "clone": "Clonar",
                 "edit": "Editar",
-                "desinstalar": "Desintalar",
+                "uninstall": "Desintalar",
                 "create-shortcut": "Criar um atalho",
                 "shared-folders": "Pastas compartilhadas"
             }
@@ -753,7 +753,7 @@
                 "submit": "Importar uma versão"
             }
         },
-        "bs-desinstalar": {
+        "bs-uninstall": {
             "title": "Desinstalar",
             "description": "Você tem certeza que quer desinstalar Beat Saber {version}? Você vai ter que baixar ela novamente se quiser jogá-la.",
             "buttons": {
@@ -789,12 +789,12 @@
                 "submit": "Clonar"
             }
         },
-        "desinstalar-mod": {
+        "uninstall-mod": {
             "title": "Desinstalar",
             "description": "Você tem certeza que quer desinstalar Beat Saber {mod}? Pode fazer com que outros mods parem de funcionar.",
             "description-bsipa": "Você tem certeza que quer desinstalar BSIPA? Depois, nenhum mod irá funcionar."
         },
-        "desinstalar-all-mods": {
+        "uninstall-all-mods": {
             "title": "Desinstalando mods",
             "description": "Você tem certeza que quer desinstalar todos os mods da versão {version}? Essa operação não pode ser desfeita."
         },
