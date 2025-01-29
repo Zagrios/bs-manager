@@ -89,7 +89,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                     obs.next({type: BSLaunchWarning.UNABLE_TO_LAUNCH_STEAM});
                 });
             }
-            else {
+            else if(skipSteam) {
                 obs.next({ type: BSLaunchEvent.SKIPPING_STEAM_LAUNCH});
             }
 
