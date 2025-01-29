@@ -67,8 +67,8 @@ export class BeatModsApiService {
         return this.requestService.getJSON<{ modVersions: BbmModVersion[] }>(`${this.MODS_REPO_API_URL}/hashlookup?hash=${hash}`).then(({ data }) => {
             this.updateModsHashCache(data?.modVersions ?? []);
             return data?.modVersions?.at(0);
-        }).catch((e): undefined => {
-            log.error(`Failed to get mod by hash: ${hash}`, e);
+        }).catch(() => {
+            log.error(`Failed to get mod by hash: ${hash}`);
             return undefined;
         });
     }
