@@ -139,9 +139,11 @@ export abstract class AbstractLauncherService {
         for (const [ key, value ] of Object.entries(parseEnvString(envString))) {
             if (key in env) {
                 log.warn("Ignoring", `${key}=${value}`, "already set env launch command");
-            } else {
-                log.info("Injecting", `${key}="${value}"`, "to the env launch command");
+                continue;
             }
+
+            log.info("Injecting", `${key}="${value}"`, "to the env launch command");
+            env[key] = value;
         }
 
         launchOptions.command = command.substring(index + this.COMMAND_FORMAT.length);
