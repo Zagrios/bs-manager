@@ -96,8 +96,14 @@ export class BsModsManagerService {
                 return mod;
         });
 
-        const mods = await Promise.all(promises);
-        return  mods.filter(Boolean);
+        const results = await Promise.allSettled(promises);
+
+        return results.reduce((mods, mod) => {
+            if (mod?.status === "fulfilled" && mod?.value) {
+                mods.push(mod.value);
+            }
+            return mods;
+        }, [] as BbmModVersion[]);
     }
 
     private async getBsipaInstalled(version: BSVersion): Promise<BbmModVersion> {
