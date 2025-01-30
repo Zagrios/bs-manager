@@ -1,12 +1,44 @@
 ## Table of Contents
 
 - [With BSManager](#with-bsmanager)
+    - [Install playlists](#how-to-install-playlists-with-bsmanager)
+    - [Import playlists](#how-to-import-playlist-with-bsmanager)
 - [Manual Installation](#manual-installation)
 - [One-Click Installation](#one-click-installation)
 
 ## With BSManager
 
-(Coming with version 1.5.0)
+### How to Install Playlists with BSManager  
+
+1. Download and install [BSManager](https://www.bsmanager.io) from one of the following sources:  
+    - [GitHub](https://github.com/Zagrios/bs-manager/releases/latest)
+    - [Official Website](https://www.bsmanager.io)  
+    - [Nexus Mods](https://www.nexusmods.com/beatsaber/mods/18?tab=files)
+2. Launch BSManager and select the version of *Beat Saber* where you want to install playlists from the list on the left side of the interface.  
+3. Go to the `Playlist` section by clicking on the __`Maps`__ tab.
+4. Click the __`Add`__ button, then select __`Browse playlist`__ to open the list of online playlists.  
+5. Use the search bar at the top of the interface to filter playlists or sort the list.  
+6. Download to install it.
+7. Wait for the installation to complete. Once it's finished, you can launch Beat Saber directly from [BSManager](https://www.bsmanager.io) and enjoy your new playlists!
+
+> [!NOTE]  
+> You can click on a playlist's image to view the maps it contains and download only the maps you want.
+
+### How to Import Playlist with BSManager
+
+1. Download and install [BSManager](https://www.bsmanager.io) from one of the following sources:  
+    - [GitHub](https://github.com/Zagrios/bs-manager/releases/latest)
+    - [Official Website](https://www.bsmanager.io)  
+    - [Nexus Mods](https://www.nexusmods.com/beatsaber/mods/18?tab=files)
+2. Launch BSManager and select the version of *Beat Saber* where you want to install playlists from the list on the left side of the interface.  
+3. Go to the `playlist` section by clicking on the __`Maps`__ tab.  
+4. From here, there are two possible methods:  
+   1. Click the __`Add`__ button, then select __`Import a playlist`__ and choose the file to import.  
+   2. Drag and drop your file directly onto the playlist interface in BSManager.  
+5. Wait for the import to complete. Once finished, you can launch Beat Saber directly from [BSManager](https://www.bsmanager.io) and enjoy your new playlists!  
+
+> [!Important]
+> The file must be in `.bplist` or `.json` format to be imported.  
 
 ## Manual Installation
 
