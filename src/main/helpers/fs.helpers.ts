@@ -1,4 +1,4 @@
-import { CopyOptions, MoveOptions, copy, createReadStream, ensureDir, move, pathExists, pathExistsSync, realpath, stat, symlink } from "fs-extra";
+import fs, { CopyOptions, MoveOptions, copy, createReadStream, ensureDir, move, pathExists, pathExistsSync, realpath, stat, symlink } from "fs-extra";
 import { access, mkdir, rm, readdir, unlink, lstat, readlink } from "fs/promises";
 import path from "path";
 import { Observable, concatMap, from } from "rxjs";
@@ -9,6 +9,9 @@ import { execSync } from "child_process";
 import { tryit } from "../../shared/helpers/error.helpers";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { ErrorObject } from "serialize-error";
+import { IS_FLATPAK } from "main/constants";
+
+// NOTE: For future fs errors, add generic.fs.<name> to properly show them as notification to the user
 
 export async function pathExist(path: string): Promise<boolean> {
     try {
@@ -317,6 +320,21 @@ export async function getSize(targetPath: string, maxDepth = 5): Promise<number>
 
     return computeSize(targetPath, 0);
 }
+
+// fs errors in flatpak may be a result of sandbox permissions, a separate error message is needed.
+const createResourceKey = (prefix: string, name: string) => IS_FLATPAK
+    ? `${prefix}.flatpak.${name}`
+    : `${prefix}.${name}`;
+
+export const writeFile = async (
+    filepath: number | fs.PathLike,
+    data: any,
+    options?: string | fs.WriteFileOptions
+) => fs.writeFile(filepath, data, options).catch((error: Error) => {
+    throw CustomError.fromError(error, createResourceKey("generic.fs", "write-file"), {
+        params: { filepath }
+    });
+});
 
 export interface Progression<T = unknown, D = unknown> {
     total: number;

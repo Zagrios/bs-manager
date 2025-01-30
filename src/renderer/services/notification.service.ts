@@ -33,13 +33,16 @@ export class NotificationService {
 
         promise.then(() => {
             this.notifications$.next(this.notifications$.value.filter(n => n.id !== resovableNotification.id));
-        });
+       });
 
         return promise;
     }
 
-    public notifyError(notification: Notification): Promise<NotificationResult | string> {
+    public notifyError(notification: Notification, error?: Error): Promise<NotificationResult | string> {
         notification.type = NotificationType.ERROR;
+        if ((error as any)?.code) {
+            notification.desc = (error as any).code;
+        }
         return this.notify(notification);
     }
 
