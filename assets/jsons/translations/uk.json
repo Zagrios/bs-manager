@@ -1,238 +1,238 @@
 {
     "misc": {
-        "download": "Download",
-        "add": "Add",
-        "verify": "Verify",
-        "launch": "Launch",
-        "mods": "Mods",
-        "maps": "Maps",
-        "playlists": "Playlists",
-        "models": "Models",
-        "avatars": "Avatars",
-        "sabers": "Sabers",
-        "platforms": "Platforms",
-        "blocks": "Blocks",
-        "cancel": "Cancel",
-        "delete": "Delete",
-        "accept": "Accept",
-        "refuse": "Refuse",
-        "apply": "Apply",
-        "copy": "Copy",
-        "copied": "Copied!",
-        "confirm": "Confirm",
-        "choose-folder": "Choose folder",
-        "unknown": "An unknown error occurred ¯\\_(ツ)_/¯",
-        "warning": "Warning",
-        "continue": "Continue",
-        "shared": "Shared",
-        "pin": "Pin",
-        "unpin": "Unpin"
+        "download": "Завантажити",
+        "add": "Додати",
+        "verify": "Перевірити",
+        "launch": "Запустити",
+        "mods": "Моди",
+        "maps": "Карти",
+        "playlists": "Прейлисти",
+        "models": "Моделі",
+        "avatars": "Аватари",
+        "sabers": "Шпаги",
+        "platforms": "Платформи",
+        "blocks": "Блоки",
+        "cancel": "Скасувати",
+        "delete": "Видалити",
+        "accept": "Прийняти",
+        "refuse": "Відмовитись",
+        "apply": "Застосувати",
+        "copy": "Скопіювати",
+        "copied": "Скопійовано!",
+        "confirm": "Підтвердити",
+        "choose-folder": "Змінити папку",
+        "unknown": "Невідома помилка ¯\\_(ツ)_/¯",
+        "warning": "Увага",
+        "continue": "Продовжити",
+        "shared": "Спільне",
+        "pin": "Закріпти",
+        "unpin": "Відкріпити"
     },
     "generic": {
         "env": {
-            "parse": "Could not properly parse the env var string."
+            "parse": "Не вдалось розібрати рядок змінної оточення"
         }
     },
     "title-bar": {
-        "outdated": "outdated"
+        "outdated": "застарілий"
     },
     "nav-bar": {
-        "add-version": "Add a version",
-        "settings": "Settings",
+        "add-version": "Додати версію",
+        "settings": "Налаштування",
         "shared": {
-            "text": "Shared",
-            "tooltip": "Shared contents"
+            "text": "Спільне",
+            "tooltip": "Спільний контент"
         }
     },
     "pages": {
         "version-viewer": {
             "launch-mods": {
-                "oculus": "Oculus Mode",
-                "oculus-description": "If you are using Beat Saber via Steam, this allows you to use Oculus's VR composer while bypassing SteamVR, for potential performance gain. This is not required to use Oculus headsets.",
-                "desktop": "FPFC Mode",
-                "desktop-description": "First Person Flying Controller mode allows you to use WASD and the mouse to navigate around the menu in game. This makes testing much easier, because you don't have to put on your headset!",
-                "debug": "Debug Mode",
-                "debug-description": "Enables the output log window for IPA. This will show the debug console that mods use.",
-                "outdated-tippy": "This version is outdated, and some mods or features may no longer work as expected. Prefer using the recommended version ({recommendedVersion}) of Beat Saber to enjoy the latest features and bugfixes.",
+                "oculus": "Режим Oculus",
+                "oculus-description": "Якщо ви використовуєте Beat Saber через Steam, це дозволяє використовувати Oculus VR в обхід SteamVR, для потенційного приросту продуктивності. Це не обов'язково для Oculus.",
+                "desktop": "Режим FPFC",
+                "desktop-description": "Режим літаючих контроллерів від першого лиця дозволяє використовувати меню за допомогою WASD і мишки. Це облегшує тестування модів, так як гра запускається без використання шолому VR!",
+                "debug": "Режим відладки",
+                "debug-description": "Включає вікно логів для IPA. В вікні будуть відображатись логи модів.",
+                "outdated-tippy": "Ця версія застаріла і деякі моди і/або функції можуть працювати некоректно. Рекомендуємо використовувати версію ({recommendedVersion}), щоб скористатись останніми функціями і виправленнями.",
                 "advanced-launch": {
-                    "button": "Launch options",
-                    "placeholder": "Launch options ex: KEY=VALUE %command% fpfc"
+                    "button": "Параметри запуску",
+                    "placeholder": "Параметри запуску, наприклад: KEY=VALUE %command% fpfc"
                 },
-                "skipsteam": "Skip Steam",
-                "skipsteam-description": "Stops Steam from opening automatically with Beat Saber, enable if you are using a different VR runtime like WiVRn or Monado that SteamVR may interfere with.",
-                "map-editor": "Map Editor",
-                "map-editor-description": "Start the official Beat Saber map editor instead of the game.",
-                "proton-logs": "Proton Logs",
-                "proton-logs-description": "Enables the recording of proton logs for this Beat Saber install to \"{versionPath}\"."
+                "skipsteam": "Пропустити Steam",
+                "skipsteam-description": "Запобігає автоматичному відкриттю Steam. Включіть це, якщо ви використовуєте інше серидовище VR (WiVRn/Monado), з яким Steam праює некоректно.",
+                "map-editor": "Редактор карт",
+                "map-editor-description": "Запускає офіційний редактор карт Beat Saber замість гри.",
+                "proton-logs": "Протонний журнал",
+                "proton-logs-description": "Увімкнути запис журналів протонів для цієї установки Beat Saber до \"{versionPath}\"."
             },
             "maps": {
                 "search-bar": {
-                    "search-placeholder": "Search a map",
-                    "filters-btn": "Filters",
+                    "search-placeholder": "Пошук серед карт",
+                    "filters-btn": "Фільтри",
                     "dropdown": {
-                        "export-maps": "Export maps",
-                        "delete-maps": "Delete maps",
-                        "delete-duplicate-maps": "Delete duplicates"
+                        "export-maps": "Експорт карт",
+                        "delete-maps": "Видалити карти",
+                        "delete-duplicate-maps": "Видалити дублікати"
                     }
                 },
                 "tabs": {
                     "maps": {
                         "actions": {
                             "drop-down": {
-                                "browse-maps": "Browse maps",
-                                "import-maps": "Import maps"
+                                "browse-maps": "Перегляд карт",
+                                "import-maps": "Імпорт карт"
                             },
                             "link-maps": {
                                 "tooltips": {
-                                    "link": "Link maps",
-                                    "unlink": "Unlink maps"
+                                    "link": "З'єднати карти",
+                                    "unlink": "Роз'єднати карти"
                                 }
                             }
                         },
                         "empty-maps": {
-                            "text": "No maps",
-                            "button": "Download maps"
+                            "text": "Карт немає",
+                            "button": "Завантажити карти"
                         },
                         "drop-zone": {
-                            "text": "Import your maps",
-                            "subtext": "Drop your zip files here to import your maps"
+                            "text": "Імпортувати свої карти",
+                            "subtext": "Пересуньте свої zip-файли сюди, щоб імпортувати карти"
                         },
                         "sort": {
-                            "name": "Name",
-                            "song-author": "Song Author",
-                            "map-author": "Map Author",
+                            "name": "Назва",
+                            "song-author": "Автор пісні",
+                            "map-author": "Авто карти",
                             "bpm": "BPM",
-                            "duration": "Duration",
-                            "likes": "Likes",
-                            "date-uploaded": "Date Uploaded"
+                            "duration": "Довжина",
+                            "likes": "Лайки",
+                            "date-uploaded": "Дата завантаження"
                         }
                     },
                     "playlists": {
                         "drop-down": {
-                            "browse-playlists": "Browse playlists",
-                            "create-a-playlist": "Create a playlist",
-                            "import-playlists": "Import playlists"
+                            "browse-playlists": "Переглнянути плейлист",
+                            "create-a-playlist": "Створити плейлист",
+                            "import-playlists": "Імпортувати плейлист"
                         },
                         "drop-zone": {
-                            "text": "Import your playlists",
-                            "subtext": "Drop your \".bplist\" or \".json\" files here to import them"
+                            "text": "Імпортуйте свої плейлисти",
+                            "subtext": "Скиньте свої \".bplist\" або \".json\" файли сюди, щоб імпортувати їх"
                         },
                         "sort": {
-                            "title": "Title",
-                            "author": "Author",
-                            "number-of-maps": "Number of Maps",
-                            "duration": "Duration",
+                            "title": "Назва",
+                            "author": "Автор",
+                            "number-of-maps": "Кількість карт",
+                            "duration": "Довжина",
                             "notes-per-second": "NPS"
                         }
                     }
                 }
             },
             "mods": {
-                "loading-mods": "Loading mods...",
-                "no-internet": "No internet",
-                "mods-not-available": "No mods are available yet for this version of Beat Saber",
+                "loading-mods": "Завантаження модів...",
+                "no-internet": "Немає інтернету",
+                "mods-not-available": "Для цієї версії Beat Saber поки що немає модів",
                 "buttons": {
-                    "more-infos": "More info",
-                    "install-or-update": "Install or update",
-                    "reinstall-all": "Reinstall all"
+                    "more-infos": "Більше інформації",
+                    "install-or-update": "Встановити або оновити",
+                    "reinstall-all": "Перевстановити всі"
                 },
                 "mods-grid": {
                     "header-bar": {
-                        "name": "Name",
-                        "installed": "Installed",
-                        "latest": "Latest",
-                        "description": "Description",
+                        "name": "Назва",
+                        "installed": "Встановлено",
+                        "latest": "Остання",
+                        "description": "Опис",
                         "dropdown": {
-                            "import-mods": "Import mods",
-                            "uninstall-all": "Uninstall all",
-                            "unselect-all": "Unselect all"
+                            "import-mods": "Імпортувати моди",
+                            "uninstall-all": "Видалити всі",
+                            "unselect-all": "Зняти виділення з всіх"
                         }
                     }
                 },
                 "notifications": {
                     "all-mods-already-installed": {
-                        "title": "Mods already installed",
-                        "description": "All selected mods are already installed"
+                        "title": "Моди вже встановлені",
+                        "description": "Всі вибрані моди вже встановлені"
                     },
                     "outdated-mods": {
-                        "title": "Outdated Mod",
-                        "title-plural": "Outdated Mods",
-                        "description": "{name} mod is outdated. Do you want to update it?",
-                        "description-plural": "This version has {nb} outdated mods. Do you want to update them?",
-                        "dont-remind-me": "Don't remind me",
-                        "update": "Update"
+                        "title": "Застарілий мод",
+                        "title-plural": "Застарілі моди",
+                        "description": "{name} застарілий. Хочете оновити його?",
+                        "description-plural": "Ця версія має {nb} застаріл(-ий/-і/-их) мод(-и/-ів). Ви хочете оновити їх?",
+                        "dont-remind-me": "Не нагадувати",
+                        "update": "Оновити"
                     }
                 },
                 "drop-zone": {
-                    "text": "Import your mods",
-                    "subtext": "Drop your \"zip\" or \"dll\" files here to import them"
+                    "text": "Імпортувати свої моди",
+                    "subtext": "Завантажте свої \".zip\" або \".dll\" файли сюди, щоб імпортувати їх"
                 }
             },
             "dropdown": {
-                "open-folder": "Open folder",
-                "verify-files": "Verify files",
-                "clone": "Clone",
-                "edit": "Edit",
-                "uninstall": "Uninstall",
-                "create-shortcut": "Create a shortcut",
-                "shared-folders": "Shared Folders"
+                "open-folder": "Відкрийте папку",
+                "verify-files": "Перевірити файли",
+                "clone": "Клонувати",
+                "edit": "Змінити",
+                "uninstall": "Видалити",
+                "create-shortcut": "Створити ярлик",
+                "shared-folders": "Спільні папки"
             }
         },
         "available-versions": {
-            "title": "Download a version",
-            "steam-release": "Release page",
+            "title": "Завантажити версію",
+            "steam-release": "Сторінка релізу",
             "dropdown": {
-                "refresh": "Refresh versions",
-                "import-version": "Import a version"
+                "refresh": "Оновити версії",
+                "import-version": "Іспортувати версію"
             },
-            "recommended": "recommended",
-            "recommended-tooltip": "Most modable version"
+            "recommended": "рекомендована",
+            "recommended-tooltip": "Найбільш модифікована версія"
         },
         "settings": {
             "steam-and-oculus": {
                 "title": "Steam & Oculus",
-                "description": "Logging out will allow you to switch accounts on the next Beat Saber download.",
-                "logout": "Log out",
-                "logout-success": "Logout Successful",
+                "description": "Вийшовши з системи, ви зможете змінити обліковий запис під час наступного завантаження Beat Saber.",
+                "logout": "Вийти",
+                "logout-success": "Успішний вихід з системи",
                 "download-platform": {
-                    "title": "Default Platform",
-                    "desc": "Choose the default platform that will be used to download versions of Beat Saber.",
-                    "always-ask": "Always ask"
+                    "title": "Платформа за замовчуванням",
+                    "desc": "Виберіть платформу за замовчуванням, яку ви хочете використовувати для завантаження версій Beat Saber.",
+                    "always-ask": "Завжди запитувати"
                 }
             },
             "appearance": {
-                "title": "Appearance",
-                "description": "Choose the two main colours of BSManager.",
-                "reset": "Reset",
-                "sub-title": "Theme",
+                "title": "Зовнішній вигляд",
+                "description": "Виберіть два основні кольори BSManager.",
+                "reset": "Скинути",
+                "sub-title": "Тема",
                 "themes": {
-                    "dark": "Dark",
-                    "light": "Light",
-                    "os": "Sync with computer"
+                    "dark": "Темна",
+                    "light": "Світла",
+                    "os": "Синхронізувати з комп'ютером"
                 }
             },
             "installation-folder": {
-                "title": "Installation folder",
-                "description": "Change the folder that will contain all the content downloaded by BSManager."
+                "title": "Тека встановлення",
+                "description": "Змініть теку, яка міститиме весь контент, завантажений BSManager."
             },
             "proton-folder": {
-                "title": "Proton folder",
-                "description": "Change the folder to the Proton path. (eg. Proton - Experimental)",
+                "title": "Тека Proton",
+                "description": "Змініть теку на шлях до Proton. (напр. Proton - Experimental)",
                 "errors": {
-                    "title": "Setting the Proton folder failed",
-                    "invalid-folder": "Invalid Proton folder path"
+                    "title": "Не вдалося встановити теку Proton",
+                    "invalid-folder": "Некоректний шлях до Proton"
                 }
             },
             "additional-content": {
-                "title": "Additional content",
-                "description": "Additional content that allows you to customize Beat Saber!",
+                "title": "Додатковий контент",
+                "description": "Додатковий контент, що дозволяє налаштувати Beat Saber!",
                 "deep-links": {
-                    "sub-title": "OneClick installations"
+                    "sub-title": "OneClick-встановлення"
                 }
             },
             "language": {
-                "title": "Language",
-                "description": "Select a language.",
+                "title": "Мова",
+                "description": "Виберіть мову.",
                 "languages": {
                     "en-EN": "English, UK",
                     "en-US": "English, US",
@@ -248,78 +248,78 @@
                     "ko-KR": "한국어",
                     "uk-UA": "Українська",
                     "translated": {
-                        "en-EN": "English, United Kingdom",
-                        "en-US": "English, USA",
-                        "fr-FR": "French",
-                        "es-ES": "Spanish",
-                        "it-IT": "Italian",
-                        "de-DE": "German",
-                        "pt-BR": "Portuguese (Brazil)",
-                        "ru-RU": "Russian",
-                        "zh-CN": "Chinese (Simplified)",
-                        "zh-TW": "Chinese (Traditional)",
-                        "ja-JP": "Japanese",
-                        "ko-KR": "Korean",
-                        "uk-UA": "Ukrainian"
+                        "en-EN": "Англійська, Велика Британія",
+                        "en-US": "Англійська, США",
+                        "fr-FR": "Французька",
+                        "es-ES": "Іспанська",
+                        "it-IT": "Італійська",
+                        "de-DE": "Німецька",
+                        "pt-BR": "Португальська (Бразилія)",
+                        "ru-RU": "Російська",
+                        "zh-CN": "Китайська (спрощена)",
+                        "zh-TW": "Китайська (традиційна)",
+                        "ja-JP": "Японська",
+                        "ko-KR": "Корейська",
+                        "uk-UA": "Українська"
                     }
                 }
             },
             "patreon": {
-                "title": "Support BSManager 💖",
-                "description": "Support the project and help us to provide continuous improvements to BSManager.",
+                "title": "Підтримайте BSManager 💖",
+                "description": "Підтримайте проєкт і допоможіть нам продовжувати вдосконалювати BSManager.",
                 "buttons": {
-                    "support": "Support BSManager 🥰",
-                    "supporters": "Supporters 👀"
+                    "support": "Підтримати BSManager 🥰",
+                    "supporters": "Підписники 👀"
                 },
                 "view": {
-                    "no-supporters": "No supporter yet",
-                    "sponsors": "Sponsors",
-                    "supporters": "Supporters"
+                    "no-supporters": "Ще немає підписників",
+                    "sponsors": "Спонсори",
+                    "supporters": "Підписники"
                 }
             },
             "discord": {
-                "description": "Join the BSManager community by following us on our social media!"
+                "description": "Приєднуйтесь до спільноти BSManager, підписавшись на наші соціальні мережі!"
             },
             "contribution": {
-                "description": "Suggest new features or report a bug to help improve BSManager!",
+                "description": "Запропонуйте нові функції або повідомте про помилку, щоб допомогти покращити BSManager!",
                 "buttons": {
-                    "request-features": "Request a feature",
-                    "report-bug": "Report a bug",
-                    "open-logs": "Open logs"
+                    "request-features": "Запропонувати нову функцію",
+                    "report-bug": "Повідомити про помилку",
+                    "open-logs": "Відкрити логи"
                 }
             },
             "advanced": {
-                "title": "Advanced",
-                "description": "Advanced settings for BSManager.",
+                "title": "Додатково",
+                "description": "Додаткові налаштування для BSManager.",
                 "hardware-acceleration": {
-                    "title": "Hardware Acceleration",
-                    "description": "Enable Hardware Acceleration to use your GPU and improve BSManager's performance. Turn this off if you're experiencing frame drops.",
+                    "title": "Апаратне прискорення",
+                    "description": "Увімкніть апаратне прискорення, щоб використовувати ваш GPU та покращити продуктивність BSManager. Вимкніть цю опцію, якщо у вас спостерігаються просідання кадрів.",
                     "modal": {
-                        "title": "Restart Needed",
-                        "body": "Changing hardware acceleration setting will quit and re-launch BSManager. Are you sure you want to do this?",
-                        "confirm-btn": "Yes I'm sure"
+                        "title": "Потрібен перезапуск",
+                        "body": "Зміна налаштувань апаратного прискорення призведе до виходу та повторного запуску BSManager. Ви впевнені, що хочете це зробити?",
+                        "confirm-btn": "Так, я впевнений"
                     },
                     "error-notification": {
-                        "message": "An error occurred, unable to disable hardware acceleration."
+                        "message": "Сталася помилка, неможливо вимкнути апаратне прискорення."
                     }
                 },
                 "use-symlinks": {
-                    "title": "Use Symlinks",
-                    "description": "Use Symlinks instead of Junctions to link folders. Turn this on only if you really need it.",
+                    "title": "Використовувати символьні посилання",
+                    "description": "Використовувати символьні посилання замість з'єднань для прив’язки папок. Увімкніть цю опцію лише за необхідності.",
                     "modal": {
-                        "title": "Symlink Permissions",
-                        "body": "When creating symlinks, BSManager will require administrator privileges or developer mode enabled on your system. Are you sure you want to continue?",
-                        "confirm-btn": "Yes I'm sure"
+                        "title": "Дозволи для символьних посилань",
+                        "body": "Для створення символьних посилань BSManager потребуватиме прав адміністратора або увімкненого режиму розробника у вашій системі. Ви впевнені, що хочете продовжити?",
+                        "confirm-btn": "Так, я впевнений"
                     },
                     "error-notification": {
-                        "message": "An error occurred, unable to change symlinks settings."
+                        "message": "Сталася помилка, неможливо змінити налаштування символьних посилань."
                     }
                 },
                 "use-system-proxy": {
-                    "title": "Use system proxy",
-                    "description": "BSManager will make network requests through your system proxy.",
+                    "title": "Використовувати системний проксі",
+                    "description": "BSManager виконуватиме мережеві запити через ваш системний проксі.",
                     "error-notification": {
-                        "message": "An error occurred, unable to change system proxy settings."
+                        "message": "Сталася помилка, неможливо змінити налаштування системного проксі."
                     }
                 }
             }

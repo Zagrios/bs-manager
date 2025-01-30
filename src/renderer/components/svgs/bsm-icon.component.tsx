@@ -12,6 +12,7 @@ import { FranceIcon } from "./flags/france-icon.component";
 import { SpainIcon } from "./flags/spain-icon.component";
 import { ItalyIcon } from "./flags/italy-icon.component";
 import { UsaIcon } from "./flags/usa-icon.component";
+import { UkraineIcon } from "./flags/ukraine-icon.component copy";
 import { UkIcon } from "./flags/uk-icon.component";
 import { TaskIcon } from "./icons/task-icon.component";
 import { CopyIcon } from "./icons/copy-icon.component";
@@ -73,7 +74,7 @@ import { ArrowUpwardIcon } from "./icons/arrow-upward-icon.component";
 
 
 
-export type BsmIconType = SongDetailDiffCharactertistic | ("settings" | "trash" | "favorite" | "folder" | "bsNote" | "check" | "three-dots" | "twitch" | "eye" | "play" | "checkCircleIcon" | "discord" | "info" | "eye-cross" | "terminal" | "desktop" | "oculus" | "add" | "cross" | "task" | "github" | "close" | "thumbUpFill" | "timerFill" | "pause" | "twitter" | "sync" | "chevron-top" | "copy" | "steam" | "edit" | "export" | "patreon" | "search" | "bsMapDifficulty" | "link" | "unlink" | "download" | "filter" | "mee6" | "volume-up" | "volume-off" | "volume-down" | "shortcut" | "backup-restore" | "web-site" | "clean" | "browse" | "add-file" | "arrow-upward" | "cancel" | "warning" | "fr-FR-flag" | "es-ES-flag" | "it-IT-flag" | "en-US-flag" | "en-EN-flag" | "de-DE-flag" | "ru-RU-flag" | "zh-CN-flag" | "zh-TW-flag" | "ja-JP-flag" | "ko-KR-flag" | "pt-BR-flag" | "null" );
+export type BsmIconType = SongDetailDiffCharactertistic | ("settings" | "trash" | "favorite" | "folder" | "bsNote" | "check" | "three-dots" | "twitch" | "eye" | "play" | "checkCircleIcon" | "discord" | "info" | "eye-cross" | "terminal" | "desktop" | "oculus" | "add" | "cross" | "task" | "github" | "close" | "thumbUpFill" | "timerFill" | "pause" | "twitter" | "sync" | "chevron-top" | "copy" | "steam" | "edit" | "export" | "patreon" | "search" | "bsMapDifficulty" | "link" | "unlink" | "download" | "filter" | "mee6" | "volume-up" | "volume-off" | "volume-down" | "shortcut" | "backup-restore" | "web-site" | "clean" | "browse" | "add-file" | "arrow-upward" | "cancel" | "warning" | "fr-FR-flag" | "es-ES-flag" | "it-IT-flag" | "en-US-flag" | "en-EN-flag" | "de-DE-flag" | "ru-RU-flag" | "zh-CN-flag" | "zh-TW-flag" | "ja-JP-flag" | "ko-KR-flag" | "pt-BR-flag" | "uk-UA-flag"| "null" );
 
 export const BsmIcon = memo(({ className, icon, style }: { className?: string; icon: BsmIconType; style?: CSSProperties }) => {
     // TODO : Very ugly very messy, need to find a better way to do this
@@ -145,6 +146,9 @@ export const BsmIcon = memo(({ className, icon, style }: { className?: string; i
         }
         if (icon === "pt-BR-flag"){
             return <BrazilIcon className={className} style={style} />;
+        }
+        if (icon === "uk-UA-flag"){
+            return <UkraineIcon className={className} style={style} />;
         }
 
         if (icon === "task") {
