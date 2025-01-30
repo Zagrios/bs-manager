@@ -1,4 +1,4 @@
-import { writeFileSync } from "fs";
+import { writeFile } from "../helpers/fs.helpers";
 import { readJSON } from "fs-extra";
 import path from "path";
 import { Supporter } from "shared/models/supporters/supporter.interface";
@@ -31,10 +31,10 @@ export class SupportersService {
 
     private async updateLocalSupporters(supporters: Supporter[]): Promise<void> {
         const patreonsPath = path.join(this.utilsService.getAssestsJsonsPath(), this.PATREONS_FILE);
-        writeFileSync(patreonsPath, JSON.stringify(supporters, null, "\t"), { encoding: "utf-8", flag: "w" });
+        await writeFile(patreonsPath, JSON.stringify(supporters, null, "\t"), { encoding: "utf-8", flag: "w" });
     }
 
-    private getRemoteSupporters(): Promise<Supporter[]> {
+    private async getRemoteSupporters(): Promise<Supporter[]> {
         return this.requestService.getJSON<Supporter[]>(this.PATREONS_URL).then(res => res.data);
     }
 

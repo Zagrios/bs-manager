@@ -336,6 +336,20 @@ export const writeFile = async (
     });
 });
 
+export function writeFileSync(
+    filepath: number | fs.PathLike,
+    data: any,
+    options?: string | fs.WriteFileOptions
+) {
+    try {
+        fs.writeFile(filepath, data, options)
+    } catch (error: any) {
+        throw CustomError.fromError(error, createResourceKey("generic.fs", "write-file"), {
+            params: { filepath }
+        });
+    }
+}
+
 export interface Progression<T = unknown, D = unknown> {
     total: number;
     current: number;

@@ -1,4 +1,5 @@
-import { pathExistsSync, readFileSync, writeFileSync } from "fs-extra";
+import { pathExistsSync, readFileSync } from "fs-extra";
+import { writeFileSync } from "../helpers/fs.helpers";
 import { tryit } from "shared/helpers/error.helpers";
 import log from "electron-log";
 import { Subject, debounceTime } from "rxjs";

@@ -1,5 +1,5 @@
 import fsExtra from "fs-extra";
-import * as fs from "../helpers/fs.helpers";
+import { writeFile } from "../helpers/fs.helpers";
 import log from "electron-log";
 import path from "path";
 import { BS_APP_ID, BS_EXECUTABLE, IS_FLATPAK, PROTON_BINARY_PREFIX, WINE_BINARY_PREFIX } from "main/constants";
@@ -222,7 +222,7 @@ export class LinuxService {
                 `Exec=${command}`
             ].join("\n");
 
-            await fs.writeFile(shortcutPath, desktopEntry);
+            await writeFile(shortcutPath, desktopEntry);
             log.info("Created shorcut at ", `"${shortcutPath}/${name}"`);
             return true;
         } catch (error: any) {
