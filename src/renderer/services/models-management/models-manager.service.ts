@@ -81,7 +81,7 @@ export class ModelsManagerService {
         return this.versionFolderLinked.linkVersionFolder({
             version,
             relativeFolder: MODEL_TYPE_FOLDERS[type],
-            options: { keepContents: res.data !== false },
+            options: { keepContents: true },
         });
     }
 
