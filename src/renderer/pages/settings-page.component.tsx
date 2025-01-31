@@ -555,7 +555,7 @@ function AdvancedSettings() {
         if (window.electron.platform === "win32") {
             staticConfig.get("use-symlinks").then(useSymlinks => setUseSymlink(() => useSymlinks));
             staticConfig.get("use-system-proxy").then(useSystemProxy => setUseSystemProxy(() => useSystemProxy));
-            staticConfig.get("auto-update").then(value => setAutoUpdate(() => value));
+            staticConfig.get("auto-update").then(value => setAutoUpdate(() => value !== false));
         }
     }, []);
 

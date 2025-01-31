@@ -135,9 +135,9 @@ if (!gotTheLock) {
         } else if (process.platform === "linux") {
             createWindow("index.html");
         } else {
-            const autoUpdate = StaticConfigurationService.getInstance().get("auto-update");
-            createWindow(autoUpdate === undefined || autoUpdate === true
-                ? "launcher.html" : "index.html");
+            const autoUpdate = StaticConfigurationService.getInstance().get("auto-update", true);
+            // Skip launcher only if autoUpdate is strictly false
+            createWindow(autoUpdate !== false ? "launcher.html" : "index.html");
         }
 
         SteamLauncherService.getInstance().restoreSteamVR();

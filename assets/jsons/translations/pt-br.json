@@ -337,6 +337,13 @@
                     "error-notification": {
                         "message": "Um erro aconteceu, não foi possível alterar a configuração de proxy de sistema."
                     }
+                },
+                "auto-update": {
+                    "title": "Atualização automática",
+                    "description": "O BSManager será atualizado automaticamente ao iniciar o aplicativo.",
+                    "error-notification": {
+                        "message": "Ocorreu um erro, não foi possível alterar as configurações de atualização automática."
+                    }
                 }
             }
         }
