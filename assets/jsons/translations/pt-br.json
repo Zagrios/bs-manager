@@ -818,6 +818,11 @@
                         "multiple": "Esses mapas também serão removidos de suas versões utilizando mapas compartilhados"
                     }
                 }
+            },
+            "delete-duplicate-maps": {
+                "title": "Excluir mapas?",
+                "desc": "Apenas o mapa \"{map}\" é um duplicado. Tem certeza de que deseja excluí-lo?",
+                "desc-plural": "{nb} mapas duplicados foram encontrados. Tem certeza de que deseja excluí-los?"
             }
         },
         "link-contents":{
