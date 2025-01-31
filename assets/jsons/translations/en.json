@@ -337,6 +337,13 @@
                     "error-notification": {
                         "message": "An error occurred, unable to change system proxy settings."
                     }
+                },
+                "auto-update": {
+                    "title": "Auto Update",
+                    "description": "BSManager will automatically update when you launch the application.",
+                    "error-notification": {
+                        "message": "An error occurred, unable to change auto update settings."
+                    }
                 }
             }
         }

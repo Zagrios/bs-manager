@@ -30,8 +30,8 @@ export class StaticConfigurationService {
         return this.store.has(key);
     }
 
-    public get<K extends StaticConfigKeys>(key: K): StaticConfigKeyValues[K] {
-        return this.store.get<K>(key) as StaticConfigKeyValues[K];
+    public get<K extends StaticConfigKeys>(key: K, defaultValue?: StaticConfigKeyValues[K]): StaticConfigKeyValues[K] {
+        return this.store.get<K>(key, defaultValue) as StaticConfigKeyValues[K];
     }
 
     public take<K extends StaticConfigKeys>(key: K, cb: (val: StaticConfigKeyValues[K]) => void): void {
@@ -90,6 +90,7 @@ export interface StaticConfigKeyValues {
     "use-symlinks": boolean;
     "use-system-proxy": boolean;
     "last-version-launched": BSVersion;
+    "auto-update": boolean;
 
     // Linux Specific static configs
     "proton-folder": string;

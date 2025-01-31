@@ -121,8 +121,6 @@ if (!gotTheLock) {
 
     app.whenReady().then(() => {
 
-
-
         app.setAppUserModelId(APP_NAME);
 
         initServicesMustBeInitialized();
@@ -134,10 +132,12 @@ if (!gotTheLock) {
             DeepLinkService.getInstance().dispatchLinkOpened(deepLink);
         } else if (associatedFile) {
             FileAssociationService.getInstance().handleFileAssociation(associatedFile);
+        } else if (process.platform === "linux") {
+            createWindow("index.html");
         } else {
-            createWindow(process.platform === "linux"
-                ? "index.html" : "launcher.html"
-            );
+            const autoUpdate = StaticConfigurationService.getInstance().get("auto-update");
+            createWindow(autoUpdate === undefined || autoUpdate === true
+                ? "launcher.html" : "index.html");
         }
 
         SteamLauncherService.getInstance().restoreSteamVR();
