@@ -11,7 +11,7 @@ import { BPList, DownloadPlaylistProgressionData, PlaylistSong } from "shared/mo
 import { readFileSync, Stats } from "fs";
 import { BeatSaverService } from "../thrid-party/beat-saver/beat-saver.service";
 import { copy, ensureDir, pathExists, pathExistsSync, realpath, writeFileSync } from "fs-extra";
-import { Progression, getUniqueFileNamePath, unlinkPath } from "../../helpers/fs.helpers";
+import { Progression, deleteFile, getUniqueFileNamePath } from "../../helpers/fs.helpers";
 import { FileAssociationService } from "../file-association.service";
 import { SongDetailsCacheService } from "./maps/song-details-cache.service";
 import { sToMs } from "shared/helpers/time.helpers";
@@ -409,7 +409,7 @@ export class LocalPlaylistsManagerService {
     }
 
     public deletePlaylistFile(bpList: LocalBPList): Observable<void>{
-        return from(unlinkPath(bpList.path));
+        return from(deleteFile(bpList.path));
     }
 
     public exportPlaylists(opt: {version?: BSVersion, bpLists: LocalBPList[], dest: string, playlistsMaps?: BsmLocalMap[]}): Observable<Progression<string>> {

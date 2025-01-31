@@ -1,11 +1,10 @@
 import { createWriteStream, WriteStream } from 'fs';
-import { Progression } from 'main/helpers/fs.helpers';
+import { deleteFileSync, Progression } from 'main/helpers/fs.helpers';
 import { Observable } from 'rxjs';
 import { shareReplay, tap } from 'rxjs/operators';
 import log from 'electron-log';
 import got from 'got';
 import { IncomingHttpHeaders, IncomingMessage } from 'http';
-import { unlinkSync } from 'fs-extra';
 import { tryit } from 'shared/helpers/error.helpers';
 import path from 'path';
 import { pipeline } from 'stream/promises';
@@ -84,7 +83,7 @@ export class RequestService {
 
                     pipeline(stream, file).catch(err => {
                         file?.destroy();
-                        tryit(() => unlinkSync(dest));
+                        tryit(() => deleteFileSync(dest));
                         subscriber.error(err);
                     });
                 });

@@ -23,9 +23,11 @@ import { LivShortcut } from "./services/liv/liv-shortcut.service";
 import { SteamLauncherService } from "./services/bs-launcher/steam-launcher.service";
 import { FileAssociationService } from "./services/file-association.service";
 import { SongDetailsCacheService } from "./services/additional-content/maps/song-details-cache.service";
-import { Dirent, readdirSync, rmSync, unlinkSync } from "fs-extra";
+import { Dirent, readdirSync } from "fs-extra";
 import { StaticConfigurationService } from "./services/static-configuration.service";
 import { configureProxy } from './helpers/proxy.helpers';
+import { deleteFileSync, deleteFolderSync } from "./helpers/fs.helpers";
+import { tryit } from "shared/helpers/error.helpers";
 
 const isDebug = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true";
 const staticConfig = StaticConfigurationService.getInstance();
@@ -238,12 +240,7 @@ function deleteOldLogs(): void {
 
     for (const folder of deleteLogFolders) {
         const folderPath = path.join(folder.parentPath, folder.name);
-        try {
-            rmSync(folderPath, { recursive: true, force: true });
-            log.info("Deleted log folder:", folderPath);
-        } catch (error) {
-            log.error("Error deleting folder:", folderPath, error);
-        }
+        tryit(() => deleteFolderSync(folderPath));
     }
 }
 
@@ -255,12 +252,7 @@ function deleteOldestLogs(): void {
 
     for (const file of logs) {
         const filepath = path.join(file.parentPath, file.name);
-        try {
-            unlinkSync(filepath);
-            log.info("Deleted log file:", filepath);
-        } catch (error) {
-            log.error("Error deleting file:", filepath, error);
-        }
+        tryit(() => deleteFileSync(filepath));
     }
 }
 

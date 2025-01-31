@@ -1,5 +1,5 @@
-import { CopyOptions, MoveOptions, copy, createReadStream, ensureDir, move, pathExists, pathExistsSync, realpath, stat, symlink } from "fs-extra";
-import { access, mkdir, rm, readdir, unlink, lstat, readlink } from "fs/promises";
+import { CopyOptions, MoveOptions, RmOptions, copy, createReadStream, ensureDir, move, pathExists, pathExistsSync, realpath, rm, stat, symlink, unlink, unlinkSync } from "fs-extra";
+import { access, mkdir, readdir, lstat, readlink } from "fs/promises";
 import path from "path";
 import { Observable, concatMap, from } from "rxjs";
 import log from "electron-log";
@@ -28,18 +28,53 @@ export async function ensureFolderExist(path: string): Promise<void> {
         .then(() => {});
 }
 
-export async function deleteFolder(folderPath: string): Promise<void> {
+export async function deleteFile(filepath: string) {
+    try {
+        log.info("Deleting file", `"${filepath}"`);
+        await unlink(filepath);
+    } catch (error: any) {
+        log.error("Could not delete file", `"${filepath}"`);
+        throw CustomError.fromError(error, "generic.fs.delete-file");
+    }
+}
+
+export function deleteFileSync(filepath: string) {
+    try {
+        log.info("Deleting file", `"${filepath}"`);
+        unlinkSync(filepath);
+    } catch (error: any) {
+        log.error("Could not delete file", `"${filepath}"`);
+        throw CustomError.fromError(error, "generic.fs.delete-file");
+    }
+}
+
+export async function deleteFolder(folderPath: string, options?: RmOptions) {
     if (!(await pathExist(folderPath))) {
         return;
     }
-    return rm(folderPath, { recursive: true, force: true });
+
+    try {
+        options = options || { recursive: true, force: true };
+        log.info("Deleting folder", `"${folderPath}"`, options);
+        await rm(folderPath, options);
+    } catch (error: any) {
+        log.error("Could not delete folder", `"${folderPath}"`);
+        throw CustomError.fromError(error, "generic.fs.delete-folder");
+    }
 }
 
-export async function unlinkPath(path: string): Promise<void> {
-    if (!(await pathExist(path))) {
+export function deleteFolderSync(folderPath: string, options?: RmOptions) {
+    if (!pathExistsSync(folderPath)) {
         return;
     }
-    return unlink(path);
+
+    try {
+        options = options || { recursive: true, force: true };
+        log.info("Deleting folder", `"${folderPath}"`, options);
+    } catch (error: any) {
+        log.error("Could not delete folder", `"${folderPath}"`);
+        throw CustomError.fromError(error, "generic.fs.delete-folder");
+    }
 }
 
 export async function getFoldersInFolder(folderPath: string, opts?: { ignoreSymlinkTargetError?: boolean }): Promise<string[]> {
@@ -97,23 +132,22 @@ export function moveFolderContent(src: string, dest: string, option?: MoveOption
             const files = await readdir(src, { encoding: "utf-8", withFileTypes: true });
             progress.total = files.length;
 
-            for(const file of files){
+            for (const file of files) {
                 const srcFullPath = path.join(src, file.name);
                 const destFullPath = path.join(dest, file.name);
 
                 const srcChilds = file.isDirectory() ? await readdir(srcFullPath, { encoding: "utf-8", recursive: true }) : [];
                 const allChildsAlreadyExist = srcChilds.every(child => pathExistsSync(path.join(destFullPath, child)));
 
-                if(file.isFile() || !allChildsAlreadyExist){
+                if (file.isFile() || !allChildsAlreadyExist) {
                     const prevSize = await getSize(srcFullPath);
                     await move(srcFullPath, destFullPath, option);
                     const afterSize = await getSize(destFullPath);
 
                     // The size after moving should be the same or greater than the size before moving but never less
-                    if(afterSize < prevSize){
+                    if (afterSize < prevSize) {
                         throw new CustomError(`File size mismath. before: ${prevSize}, after: ${afterSize} (${srcFullPath})`, "FILE_SIZE_MISMATCH");
                     }
-
                 } else {
                     log.info(`Skipping ${srcFullPath} to ${destFullPath}, all child already exist in destination`);
                 }
@@ -121,7 +155,9 @@ export function moveFolderContent(src: string, dest: string, option?: MoveOption
                 progress.current++;
                 subscriber.next(progress);
             }
-        })().catch(err => subscriber.error(CustomError.fromError(err, err?.code))).finally(() => subscriber.complete());
+        })()
+            .catch(err => subscriber.error(CustomError.fromError(err, err?.code)))
+            .finally(() => subscriber.complete());
     });
 }
 
@@ -160,7 +196,7 @@ export async function copyDirectoryWithJunctions(src: string, dest: string, opti
             await copy(sourcePath, destinationPath, options);
         } else if (item.isSymbolicLink()) {
             if (options?.overwrite) {
-                await unlinkPath(destinationPath);
+                await deleteFile(destinationPath);
             }
             const symlinkTarget = await readlink(sourcePath);
             const relativePath = path.relative(src, symlinkTarget);
@@ -180,8 +216,7 @@ export function hashFile(filePath: string, algorithm = "sha256"): Promise<string
     });
 }
 
-export async function dirSize(dirPath: string): Promise<number>{
-
+export async function dirSize(dirPath: string): Promise<number> {
     const entries = await readdir(dirPath);
 
     const paths = entries.map(async entry => {
@@ -200,11 +235,10 @@ export async function dirSize(dirPath: string): Promise<number>{
         return 0;
     });
 
-    return (await Promise.all(paths)).flat(Infinity).reduce((acc, size ) => acc + size, 0);
+    return (await Promise.all(paths)).flat(Infinity).reduce((acc, size) => acc + size, 0);
 }
 
 export function rxCopy(src: string, dest: string, option?: CopyOptions): Observable<Progression> {
-
     const dirSizePromise = dirSize(src).catch(err => {
         log.error("dirSizePromise", err);
         return 0;
@@ -216,15 +250,19 @@ export function rxCopy(src: string, dest: string, option?: CopyOptions): Observa
 
             return new Observable<Progression>(sub => {
                 sub.next(progress);
-                copy(src, dest, {...option, filter: (src) => {
-                    stat(src).then(stats => {
-                        progress.current += stats.size;
-                        sub.next(progress);
-                    });
-                    return true;
-                }})
-                .then(() => sub.complete()).catch(err => sub.error(err))
-            })
+                copy(src, dest, {
+                    ...option,
+                    filter: src => {
+                        stat(src).then(stats => {
+                            progress.current += stats.size;
+                            sub.next(progress);
+                        });
+                        return true;
+                    },
+                })
+                    .then(() => sub.complete())
+                    .catch(err => sub.error(err));
+            });
         })
     );
 }
@@ -257,7 +295,7 @@ export function ensurePathNotAlreadyExistSync(path: string): string {
     return destPath;
 }
 
-export async function isJunction(path: string): Promise<boolean>{
+export async function isJunction(path: string): Promise<boolean> {
     const [stats, lstats] = await Promise.all([stat(path), lstat(path)]);
     return lstats.isSymbolicLink() && stats.isDirectory();
 }
@@ -265,7 +303,7 @@ export async function isJunction(path: string): Promise<boolean>{
 export function resolveGUIDPath(guidPath: string): string {
     const guidVolume = path.parse(guidPath).root;
     const command = `powershell -command "(Get-WmiObject -Class Win32_Volume | Where-Object { $_.DeviceID -like '${guidVolume}' }).DriveLetter"`;
-    const {result: driveLetter, error} = tryit(() => execSync(command).toString().trim());
+    const { result: driveLetter, error } = tryit(() => execSync(command).toString().trim());
     if (!driveLetter || error) {
         throw new Error("Unable to resolve GUID path", error);
     }
@@ -292,7 +330,7 @@ export async function getSize(targetPath: string, maxDepth = 5): Promise<number>
     const visited = new Set<string>();
 
     const computeSize = async (currentPath: string, depth: number): Promise<number> => {
-        if (visited.has(currentPath)){
+        if (visited.has(currentPath)) {
             return 0;
         }
 
@@ -309,9 +347,7 @@ export async function getSize(targetPath: string, maxDepth = 5): Promise<number>
         }
 
         const entries = await readdir(currentPath);
-        const sizes = await Promise.all(
-            entries.map((entry) => computeSize(path.join(currentPath, entry), depth + 1))
-        );
+        const sizes = await Promise.all(entries.map(entry => computeSize(path.join(currentPath, entry), depth + 1)));
         return sizes.reduce((acc, cur) => acc + cur, 0);
     };
 
