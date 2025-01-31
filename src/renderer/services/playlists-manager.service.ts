@@ -132,7 +132,7 @@ export class PlaylistsManagerService {
         return this.linker.linkVersionFolder({
             version,
             relativeFolder: PlaylistsManagerService.RELATIVE_PLAYLISTS_FOLDER,
-            options: { keepContents: !!modalRes.data },
+            options: { keepContents: true },
         });
     }
 
