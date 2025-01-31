@@ -6,11 +6,11 @@ import md5File from "md5-file";
 import { RequestService } from "../request.service";
 import { BS_EXECUTABLE } from "../../constants";
 import log from "electron-log";
-import { deleteFolder, pathExist, Progression, unlinkPath } from "../../helpers/fs.helpers";
+import { deleteFile, deleteFolder, pathExist, Progression } from "../../helpers/fs.helpers";
 import { lastValueFrom, Observable } from "rxjs";
 import recursiveReadDir from "recursive-readdir";
 import { sToMs } from "../../../shared/helpers/time.helpers";
-import { copyFile, ensureDir, pathExistsSync, readdirSync, rm, unlink } from "fs-extra";
+import { copyFile, ensureDir, pathExistsSync, readdirSync } from "fs-extra";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { popElement } from "shared/helpers/array.helpers";
 import { LinuxService } from "../linux.service";
@@ -290,11 +290,10 @@ export class BsModsManagerService {
 
             const contentPath = path.join(ipaPath, content.name);
 
-            const res = await tryit(() => content.isDirectory() ? (
-                rm(contentPath, { force: true, recursive: true })
-            ) : (
-                unlink(contentPath)
-            ));
+            const res = await tryit(() => content.isDirectory()
+                ? deleteFolder(contentPath)
+                : deleteFile(contentPath)
+            );
 
             if(res.error){
                 log.error("Error while clearing IPA folder content", content.name, res.error);
@@ -318,7 +317,7 @@ export class BsModsManagerService {
 
         const promises = mod.version.contentHashes.map(content => {
             const file = content.path.replaceAll("IPA/", "").replaceAll("Data", "Beat Saber_Data");
-            return unlinkPath(path.join(verionPath, file));
+            return deleteFile(path.join(verionPath, file));
         });
 
         await Promise.all(promises);
@@ -331,7 +330,10 @@ export class BsModsManagerService {
         const versionPath = await this.bsLocalService.getVersionPath(version);
 
         const promises = mod.version.contentHashes.map(async content => {
-            return Promise.all([unlinkPath(path.join(versionPath, content.path)), unlinkPath(path.join(versionPath, "IPA", "Pending", content.path))]);
+            return Promise.all([
+                deleteFile(path.join(versionPath, content.path)),
+                deleteFile(path.join(versionPath, "IPA", "Pending", content.path))
+            ]);
         });
 
         await Promise.all(promises);

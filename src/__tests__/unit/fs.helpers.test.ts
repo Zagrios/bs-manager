@@ -2,6 +2,15 @@ import { mkdir, pathExistsSync, rm, writeFile } from "fs-extra";
 import { getSize } from "main/helpers/fs.helpers";
 import path from "path";
 
+jest.mock("electron", () => ({ app: {
+    getPath: () => "",
+    getName: () => "",
+}}));
+jest.mock("electron-log", () => ({
+    info: jest.fn(),
+    error: jest.fn(),
+}));
+
 const TEST_FOLDER = path.resolve(__dirname, "..", "assets", "fs");
 
 describe("Test fs.helpers getSize", () => {
