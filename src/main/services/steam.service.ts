@@ -1,13 +1,13 @@
 import { RegDwordValue } from "regedit-rs"
 import path from "path";
 import { parse } from "@node-steam/vdf";
-import { readFile } from "fs/promises";
 import log from "electron-log";
 import { app, shell } from "electron";
 import { getProcessId, isProcessRunning } from "main/helpers/os.helpers";
 import { isElevated } from "query-process";
 import { execOnOs } from "../helpers/env.helpers";
-import { pathExists, pathExistsSync, readdir, writeFile } from "fs-extra";
+import { pathExists, pathExistsSync, readdir, readFile } from "fs-extra";
+import { writeFile } from "../helpers/fs.helpers";
 import { SteamShortcut, SteamShortcutData } from "../../shared/models/steam/shortcut.model";
 
 const { list } = (execOnOs({ win32: () => require("regedit-rs") }, true) ?? {}) as typeof import("regedit-rs");

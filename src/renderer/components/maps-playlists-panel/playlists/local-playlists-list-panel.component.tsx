@@ -105,7 +105,10 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
 
             if(error){
                 logRenderError("Error occured while creating playlist", error);
-                notification.notifyError({ title: "playlist.error-playlist-creation-title", desc: "playlist.error-playlist-creation-desc" });
+                notification.notifyError({
+                    title: "playlist.error-playlist-creation-title",
+                    desc: "playlist.error-playlist-creation-desc",
+                }, error);
                 return;
             }
 
@@ -346,7 +349,10 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
 
         if(error){
             logRenderError("Error occured while editing playlist", error);
-            notification.notifyError({ title: "playlist.playlist-edit-error-title", desc: "playlist.playlist-edit-error-desc" });
+            notification.notifyError({
+                title: "playlist.playlist-edit-error-title",
+                desc: "playlist.playlist-edit-error-desc"
+            }, error);
             return;
         }
 

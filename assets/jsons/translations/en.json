@@ -31,6 +31,12 @@
     "generic": {
         "env": {
             "parse": "Could not properly parse the env var string."
+        },
+        "fs": {
+            "write-file": "Could not write file \"{filepath}\".",
+            "flatpak": {
+                "write-file": "Could not write file \"{filepath}\". Check if the parent folder is writable in your flatpak permissions."
+            }
         }
     },
     "title-bar": {

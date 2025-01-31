@@ -1,4 +1,5 @@
-import fs from "fs-extra";
+import fsExtra from "fs-extra";
+import { writeFile } from "../helpers/fs.helpers";
 import log from "electron-log";
 import path from "path";
 import { BS_APP_ID, BS_EXECUTABLE, IS_FLATPAK, PROTON_BINARY_PREFIX, WINE_BINARY_PREFIX } from "main/constants";
@@ -71,7 +72,7 @@ export class LinuxService {
             this.staticConfig.get("proton-folder"),
             PROTON_BINARY_PREFIX
         );
-        if (!fs.pathExistsSync(protonPath)) {
+        if (!fsExtra.pathExistsSync(protonPath)) {
             throw CustomError.fromError(
                 new Error("Could not locate proton binary"),
                 BSLaunchError.PROTON_NOT_FOUND
@@ -91,9 +92,9 @@ export class LinuxService {
         // using bsmanager, it won't exist, and proton will fail
         // to launch the game.
         const compatDataPath = this.getCompatDataPath();
-        if (!fs.existsSync(compatDataPath)) {
+        if (!fsExtra.existsSync(compatDataPath)) {
             log.info(`Proton compat data path not found at '${compatDataPath}', creating directory`);
-            await fs.ensureDir(compatDataPath);
+            await fsExtra.ensureDir(compatDataPath);
         }
 
         // Setup Proton environment variables
@@ -126,7 +127,7 @@ export class LinuxService {
 
         const protonPath = path.join(protonFolder, PROTON_BINARY_PREFIX);
         const winePath = path.join(protonFolder, WINE_BINARY_PREFIX);
-        return fs.pathExistsSync(protonPath) && fs.pathExistsSync(winePath);
+        return fsExtra.pathExistsSync(protonPath) && fsExtra.pathExistsSync(winePath);
     }
 
     public getWinePath(): string {
@@ -138,7 +139,7 @@ export class LinuxService {
             this.staticConfig.get("proton-folder"),
             WINE_BINARY_PREFIX
         );
-        if (!fs.pathExistsSync(winePath)) {
+        if (!fsExtra.pathExistsSync(winePath)) {
             throw new Error(`"${winePath}" binary file not found`);
         }
 
@@ -147,7 +148,7 @@ export class LinuxService {
 
     public getWinePrefixPath(): string {
         const compatDataPath = this.getCompatDataPath();
-        return fs.existsSync(compatDataPath)
+        return fsExtra.existsSync(compatDataPath)
             ? path.join(compatDataPath, "pfx") : "";
     }
 
@@ -221,12 +222,12 @@ export class LinuxService {
                 `Exec=${command}`
             ].join("\n");
 
-            await fs.writeFile(shortcutPath, desktopEntry);
+            await writeFile(shortcutPath, desktopEntry);
             log.info("Created shorcut at ", `"${shortcutPath}/${name}"`);
             return true;
-        } catch (error) {
+        } catch (error: any) {
             log.error("Could not create shortcut", error);
-            return false;
+            throw CustomError.fromError(error);
         }
     }
 

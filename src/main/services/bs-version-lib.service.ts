@@ -1,6 +1,6 @@
 import { UtilsService } from "./utils.service";
 import path from "path";
-import { writeFileSync } from "fs";
+import { writeFileSync } from "../helpers/fs.helpers";
 import { BSVersion } from "shared/bs-version.interface";
 import { RequestService } from "./request.service";
 import { readJSON } from "fs-extra";

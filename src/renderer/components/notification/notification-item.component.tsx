@@ -6,11 +6,11 @@ import BeatConflictImg from "../../../../assets/images/apngs/beat-conflict.png";
 import BeatWaitingImg from "../../../../assets/images/apngs/beat-waiting.png";
 import BeatImpatientImg from "../../../../assets/images/apngs/beat-impatient.png";
 import { BsmButton } from "../shared/bsm-button.component";
-import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { ForwardedRef, forwardRef } from "react";
 
 export const NotificationItem = forwardRef(({ resolver, notification }: { resolver?: (value: NotificationResult | string) => void; notification: Notification }, fwdRef: ForwardedRef<HTMLLIElement>) => {
-    const t = useTranslation();
+    const { text: t } = useTranslationV2();
 
     const renderImage = (() => {
         if (notification.type === NotificationType.SUCCESS) {
@@ -44,7 +44,7 @@ export const NotificationItem = forwardRef(({ resolver, notification }: { resolv
         return "bg-gray-800 shadow-gray-800 dark:bg-white dark:shadow-white";
     })();
 
-    const handleDragEnd = (e: MouseEvent, info: PanInfo) => {
+    const handleDragEnd = (_e: MouseEvent, info: PanInfo) => {
         const offset = info.offset.x;
         const velocity = info.velocity.x;
 

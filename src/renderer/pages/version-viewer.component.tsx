@@ -169,11 +169,11 @@ export function VersionViewer() {
                 title: "notifications.create-launch-shortcut.success.title",
                 desc: `notifications.create-launch-shortcut.success.${data.steamShortcut ? "msg-steam" : "msg"}`
             });
-        }).catch(() => {
+        }).catch(error => {
             notification.notifyError({
                 title: "notifications.types.error",
-                desc: "notifications.create-launch-shortcut.error.msg"
-            });
+                desc: "notifications.create-launch-shortcut.error.msg",
+            }, error);
         });
     }
 
