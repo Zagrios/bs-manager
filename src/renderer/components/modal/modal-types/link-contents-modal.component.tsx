@@ -17,7 +17,7 @@ import { PlaylistsManagerService } from "renderer/services/playlists-manager.ser
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { map } from "rxjs";
 
-export const LinkContentModal: ModalComponent<undefined, {version: BSVersion, contentType: "maps"|"playlists"|"avatars"|"sabers"|"platforms"|"blocks"}> = ({options: { data: { version, contentType } }, resolver }) => {
+export const LinkContentModal: ModalComponent<void, {version: BSVersion, contentType: "maps"|"playlists"|"avatars"|"sabers"|"platforms"|"blocks"}> = ({options: { data: { version, contentType } }, resolver }) => {
     const { text: t, element: te } = useTranslationV2();
 
     const versionLinker = useService(VersionFolderLinkerService);
