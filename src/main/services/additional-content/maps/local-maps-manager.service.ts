@@ -7,7 +7,7 @@ import { InstallationLocationService } from "../../installation-location.service
 import { UtilsService } from "../../utils.service";
 import crypto, { BinaryLike } from "crypto";
 import { lstatSync } from "fs";
-import { copy, createReadStream, ensureDir, pathExists, pathExistsSync, realpath, unlink } from "fs-extra";
+import { copy, createReadStream, ensureDir, pathExists, pathExistsSync, realpath } from "fs-extra";
 import { RequestService } from "../../request.service";
 import sanitize from "sanitize-filename";
 import { DeepLinkService } from "../../deep-link.service";
@@ -15,7 +15,7 @@ import log from "electron-log";
 import { WindowManagerService } from "../../window-manager.service";
 import { Observable, Subject, lastValueFrom } from "rxjs";
 import { Archive } from "../../../models/archive.class";
-import { Progression, deleteFolder, ensureFolderExist, getFilesInFolder, getFoldersInFolder, pathExist } from "../../../helpers/fs.helpers";
+import { Progression, deleteFile, deleteFolder, ensureFolderExist, getFilesInFolder, getFoldersInFolder, pathExist } from "../../../helpers/fs.helpers";
 import { readFile } from "fs/promises";
 import { FolderLinkerService } from "../../folder-linker.service";
 import { allSettled } from "../../../../shared/helpers/promise.helpers";
@@ -297,7 +297,7 @@ export class LocalMapsManagerService {
                     observer.next(progress);
                 }
             })()
-            .catch(e => {observer.error(e); console.log("AAAA", e)})
+            .catch(e => observer.error(e))
             .finally(() => observer.complete());
         });
     }
@@ -449,7 +449,7 @@ export class LocalMapsManagerService {
         const zip = await BsmZipExtractor.fromPath(zipPath);
         await zip.extract(mapPath);
         zip.close();
-        await unlink(zipPath);
+        await deleteFile(zipPath);
 
         const localMap = await this.loadMapInfoFromPath(mapPath);
         localMap.songDetails = this.songDetailsCache.getSongDetails(localMap.hash);

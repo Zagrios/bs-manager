@@ -820,6 +820,11 @@
                         "multiple": "Queste mappe saranno rimosse anche dalle versioni che usano mappe condivise"
                     }
                 }
+            },
+            "delete-duplicate-maps": {
+                "title": "Eliminare le mappe?",
+                "desc": "Solo la mappa \"{map}\" è un duplicato. Sei sicuro di volerla eliminare?",
+                "desc-plural": "Sono state trovate {nb} mappe duplicate. Sei sicuro di volerle eliminare?"
             }
         },
         "link-contents": {
