@@ -10,16 +10,22 @@ import path from 'path';
 import { pipeline } from 'stream/promises';
 import sanitize from 'sanitize-filename';
 import internal from 'stream';
+import { app } from 'electron';
 
 export class RequestService {
     private static instance: RequestService;
     private preferredFamily: number | undefined = undefined;
+    private readonly baseHeaders = {
+        'User-Agent': `BSManager/${app.getVersion()} (Electron/${process.versions.electron} Chrome/${process.versions.chrome} Node/${process.versions.node})`,
+    }
+
 
     public static getInstance(): RequestService {
         if (!RequestService.instance) {
             RequestService.instance = new RequestService();
         }
         return RequestService.instance;
+
     }
 
     private constructor() {}
@@ -32,7 +38,7 @@ export class RequestService {
             try {
 
                 // @ts-ignore (ESM is not well supported in this project, We need to move out electron-react-boilerplate, and use Vite)
-                const res = await got(url, { dnsLookupIpVersion: family, responseType: 'json' });
+                const res = await got(url, { dnsLookupIpVersion: family, responseType: 'json', headers: this.baseHeaders });
                 this.preferredFamily = family;
                 return { data: res.body as T, headers: res.headers };
             } catch (err) {
@@ -67,7 +73,7 @@ export class RequestService {
                 let file: WriteStream | undefined;
 
                 // @ts-ignore (ESM is not well supported in this project, We need to move out electron-react-boilerplate, and use Vite)
-                stream = got.stream(url, { dnsLookupIpVersion: family });
+                stream = got.stream(url, { dnsLookupIpVersion: family, headers: this.baseHeaders });
 
                 stream.on('response', (response) => {
                     this.preferredFamily = family;
@@ -130,6 +136,7 @@ export class RequestService {
                 data: null,
             };
 
+            const headers = { ...this.baseHeaders, ...(options?.headers ?? {}) };
             const familiesToTry = this.preferredFamily ? [this.preferredFamily, this.preferredFamily === 4 ? 6 : 4] : [4, 6];
 
             let attempt = 0;
@@ -142,9 +149,8 @@ export class RequestService {
                 }
 
                 const family = familiesToTry[attempt++];
-
                 // @ts-ignore (ESM is not well supported in this project, We need to move out electron-react-boilerplate, and use Vite)
-                stream = got.stream(url, { dnsLookupIpVersion: family, ...(options ?? {}) });
+                stream = got.stream(url, { dnsLookupIpVersion: family, ...(options ?? {}), headers });
 
                 let data = Buffer.alloc(0);
                 let response: IncomingMessage;
