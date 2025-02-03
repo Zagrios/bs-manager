@@ -20,8 +20,11 @@ jobs:
             - name: Check out Git repository
               uses: actions/checkout@v4
 
+            - name: update apt-get
+              run: sudo apt-get update
+
             - name: Install rpm/flatpak packages
-              run: sudo apt-get install -y --fix-missing flatpak flatpak-builder rpm libarchive-tools
+              run: sudo apt-get install -y flatpak flatpak-builder rpm libarchive-tools
 
             - name: Setup flatpak repo
               run: |
