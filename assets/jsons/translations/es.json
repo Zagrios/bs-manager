@@ -246,6 +246,7 @@
                     "zh-TW": "正體中文",
                     "ja-JP": "日本語",
                     "ko-KR": "한국어",
+                    "tl-PH": "Filipino",
                     "translated": {
                         "en-EN": "Inglés, Reino Unido",
                         "en-US": "Inglés, Estados Unidos",
@@ -258,7 +259,8 @@
                         "zh-CN": "Chino simplificado",
                         "zh-TW": "Chino tradicional",
                         "ja-JP": "Japonés",
-                        "ko-KR": "Coreano"
+                        "ko-KR": "Coreano",
+                        "tl-PH": "Filipino"
                     }
                 }
             },
