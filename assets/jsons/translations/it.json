@@ -246,6 +246,7 @@
                     "zh-TW": "正體中文",
                     "ja-JP": "日本語",
                     "ko-KR": "한국어",
+                    "uk-UA": "Українська",
                     "translated": {
                         "en-EN": "Inglese, Regno Unito",
                         "en-US": "Inglese, Stati Uniti d'America",
@@ -258,7 +259,8 @@
                         "zh-CN": "Cinese (Semplificato)",
                         "zh-TW": "Cinese (Tradizionale)",
                         "ja-JP": "Giapponese",
-                        "ko-KR": "Coreano"
+                        "ko-KR": "Coreano",
+                        "uk-UA": "Ucraino"
                     }
                 }
             },
@@ -825,7 +827,7 @@
                 "desc-plural": "Sono state trovate {nb} mappe duplicate. Sei sicuro di volerle eliminare?"
             }
         },
-        "link-contents":{
+        "link-contents": {
             "title": "Collega {contentType}",
             "p-1": "Collegare {contentType} consente di condividere {contentType} tra tutte le versioni con questa funzione attiva. Quando collegate, questa versione avrà il beneficio della condivisione di {contentType}.",
             "p-2": "Per usufruire della funzione di collegamento, tutti i tuoi {itemsHtml} saranno spostati nella cartella {sharedHtml}. Successivamente, un collegamento simbolico che punta alla cartella condivisa {contentType} sostituirà la tua cartella originale {contentType}.",
@@ -834,7 +836,7 @@
             "i-need-help": "Mi serve aiuto",
             "valid-btn": "Collega {contentType}"
         },
-        "unlink-contents":{
+        "unlink-contents": {
             "title": "Scollega {contentType}",
             "p-1": "Attenzione, scollegare {contentType} disabiliterà l'uso di {contentType} condivisi per questa versione, fino a quando non verrà riabilitato.",
             "p-2": "Per scollegare le tue mappe, il collegamento simbolico che punta alla {sharedHtml} verrà rimosso. Dopodiché, tutte le mappe nella cartella condivisa verranno copiate nella cartella {itemsHtml} della tua versione di Beat Saber.",
@@ -883,65 +885,65 @@
         "connect-to-meta": {
             "title": "Connettiti a Meta",
             "body": {
-            "token-needed": "Il tuo token di connessione Meta è necessario per scaricare Beat Saber.",
-            "need-cookie-enabled": "Accedendo a Meta, si aprirà una finestra di login e potrai quindi avviare il processo di login. Assicurati di accettare i cookie, altrimenti potremmo non essere in grado di recuperare il tuo token per avviare il download.",
-            "enter-token-manually": "Inserisci manualmente il mio token di login",
-            "enter-token-manually-tooltip": "Questo ti permetterà di inserire il tuo token di accesso senza passare per il login di Meta."
+                "token-needed": "Il tuo token di connessione Meta è necessario per scaricare Beat Saber.",
+                "need-cookie-enabled": "Accedendo a Meta, si aprirà una finestra di login e potrai quindi avviare il processo di login. Assicurati di accettare i cookie, altrimenti potremmo non essere in grado di recuperare il tuo token per avviare il download.",
+                "enter-token-manually": "Inserisci manualmente il mio token di login",
+                "enter-token-manually-tooltip": "Questo ti permetterà di inserire il tuo token di accesso senza passare per il login di Meta."
+            },
+            "stay": "Ricordami",
+            "connect-to-meta": "Connettiti a Meta"
         },
-        "stay": "Ricordami",
-        "connect-to-meta": "Connettiti a Meta"
-    },
         "enable-oculus-sideloaded-apps": {
-        "title": "Abilita Sideloading",
-        "info-1": "Per avviare Beat Saber, è necessario abilitare la possibilità di eseguire app sideloaded. BSManager richiederà i diritti di amministratore per abilitare automaticamente questa funzione.",
-        "info-2": "La funzione di sideloading consente di avviare giochi situati al di fuori della cartella della libreria Oculus.",
-        "info-3": "Dopo che il sideloading è stato attivato, la funzione rimarrà attiva e non ti verrà più chiesto di abilitarla.",
-        "i-want-to-do-it-myself": "Voglio farlo da solo",
-        "understood": "Ho capito"
-    },
-    "enter-meta-token": {
-        "title": "Token Oculus",
-        "body": {
-            "info-enter-token": "Per scaricare Beat Saber, è richiesto il tuo token di accesso Oculus.",
-            "how-obtain-token": "Come posso ottenere il mio token Oculus?",
-            "oculus-token": "Token Oculus",
-            "token-is-invalid": "Il token non è valido.",
-            "save-my-token": "Salva il mio token",
-            "have-token-saved": "Ho già un token salvato",
-            "save-token-info": "Questo salverà il tuo token per un uso più facile. Dovrai creare una password per criptare il tuo token a scopo di archiviazione. Se dimentichi la tua password, dovrai semplicemente fornire di nuovo il tuo token.",
-            "password": "Password",
-            "password-too-short": "Password troppo corta",
-            "info-enter-password": "Per scaricare Beat Saber, è richiesto il tuo token di accesso Oculus. Inserisci la password usata per salvare il tuo token Oculus.",
-            "info-disabled-btn-password": "Il token decriptato con la password fornita non è valido. Assicurati che la password sia la stessa usata per salvare il token.",
-            "enter-oculus-token": "Inserisci un token Oculus"
+            "title": "Abilita Sideloading",
+            "info-1": "Per avviare Beat Saber, è necessario abilitare la possibilità di eseguire app sideloaded. BSManager richiederà i diritti di amministratore per abilitare automaticamente questa funzione.",
+            "info-2": "La funzione di sideloading consente di avviare giochi situati al di fuori della cartella della libreria Oculus.",
+            "info-3": "Dopo che il sideloading è stato attivato, la funzione rimarrà attiva e non ti verrà più chiesto di abilitarla.",
+            "i-want-to-do-it-myself": "Voglio farlo da solo",
+            "understood": "Ho capito"
         },
-        "valid-btn": "Valida"
-    },
-    "launch-as-admin": {
-        "title": "Permessi di Amministratore",
-        "body": {
-            "info": "Steam è stato rilevato come in esecuzione con permessi di amministratore. Per comunicare con Steam, Beat Saber deve essere avviato anche come amministratore. Altrimenti, Beat Saber potrebbe riscontrare problemi e chiudersi dopo l'avvio.",
-            "info-2": "Avviare Beat Saber in modalità amministratore darà anche diritti di amministratore alle mod installate. Pertanto, è consigliato riavviare Steam senza permessi di amministratore.",
-            "info-3": "Si sconsiglia di dare diritti di amministratore a Steam, poiché questo influisce sui giochi e le mod installate, presentando un rischio per la sicurezza."
+        "enter-meta-token": {
+            "title": "Token Oculus",
+            "body": {
+                "info-enter-token": "Per scaricare Beat Saber, è richiesto il tuo token di accesso Oculus.",
+                "how-obtain-token": "Come posso ottenere il mio token Oculus?",
+                "oculus-token": "Token Oculus",
+                "token-is-invalid": "Il token non è valido.",
+                "save-my-token": "Salva il mio token",
+                "have-token-saved": "Ho già un token salvato",
+                "save-token-info": "Questo salverà il tuo token per un uso più facile. Dovrai creare una password per criptare il tuo token a scopo di archiviazione. Se dimentichi la tua password, dovrai semplicemente fornire di nuovo il tuo token.",
+                "password": "Password",
+                "password-too-short": "Password troppo corta",
+                "info-enter-password": "Per scaricare Beat Saber, è richiesto il tuo token di accesso Oculus. Inserisci la password usata per salvare il tuo token Oculus.",
+                "info-disabled-btn-password": "Il token decriptato con la password fornita non è valido. Assicurati che la password sia la stessa usata per salvare il token.",
+                "enter-oculus-token": "Inserisci un token Oculus"
+            },
+            "valid-btn": "Valida"
         },
-        "launch-as-admin": "Avvia come Amministratore",
-        "not-remind-me": "Non ricordarmelo"
-    },
-    "ask-install-path": {
-        "title": "Cartella di installazione",
-        "choose-folder-description": "Scegli la cartella che conterrà tutti i contenuti scaricati da BSManager. (versioni, mod, mappe, playlist, ecc.)",
-        "default": "Predefinito",
-        "default-tooltip": "Predefinito nella tua cartella home"
-    },
-    "choose-proton-folder": {
-        "title": "Cartella di Proton",
-        "proton-folder-description": "Su Linux, BSManager richiede Proton per funzionare. Scegli la cartella di installazione di Proton per continuare.",
-        "proton-folder-placeholder": "Cartella di installazione di Proton",
-        "where-is-proton-installed": "Dove è installato Proton?"
-    },
-    "bs-version-outdated": {
-        "body": "La versione {outdatedVersion} è obsoleta, e alcune mod o funzioni potrebbero non funzionare più come previsto. Per favore scarica l'ultima versione raccomandata ({recommendedVersion}) di Beat Saber per godere delle ultime funzioni e bugfix."
-    }
+        "launch-as-admin": {
+            "title": "Permessi di Amministratore",
+            "body": {
+                "info": "Steam è stato rilevato come in esecuzione con permessi di amministratore. Per comunicare con Steam, Beat Saber deve essere avviato anche come amministratore. Altrimenti, Beat Saber potrebbe riscontrare problemi e chiudersi dopo l'avvio.",
+                "info-2": "Avviare Beat Saber in modalità amministratore darà anche diritti di amministratore alle mod installate. Pertanto, è consigliato riavviare Steam senza permessi di amministratore.",
+                "info-3": "Si sconsiglia di dare diritti di amministratore a Steam, poiché questo influisce sui giochi e le mod installate, presentando un rischio per la sicurezza."
+            },
+            "launch-as-admin": "Avvia come Amministratore",
+            "not-remind-me": "Non ricordarmelo"
+        },
+        "ask-install-path": {
+            "title": "Cartella di installazione",
+            "choose-folder-description": "Scegli la cartella che conterrà tutti i contenuti scaricati da BSManager. (versioni, mod, mappe, playlist, ecc.)",
+            "default": "Predefinito",
+            "default-tooltip": "Predefinito nella tua cartella home"
+        },
+        "choose-proton-folder": {
+            "title": "Cartella di Proton",
+            "proton-folder-description": "Su Linux, BSManager richiede Proton per funzionare. Scegli la cartella di installazione di Proton per continuare.",
+            "proton-folder-placeholder": "Cartella di installazione di Proton",
+            "where-is-proton-installed": "Dove è installato Proton?"
+        },
+        "bs-version-outdated": {
+            "body": "La versione {outdatedVersion} è obsoleta, e alcune mod o funzioni potrebbero non funzionare più come previsto. Per favore scarica l'ultima versione raccomandata ({recommendedVersion}) di Beat Saber per godere delle ultime funzioni e bugfix."
+        }
     },
     "maps": {
         "map-filter-panel": {
@@ -1271,57 +1273,8 @@
         }
     },
     "dateformat": {
-        "dayNames": [
-            "Dom",
-            "Lun",
-            "Mar",
-            "Mer",
-            "Gio",
-            "Ven",
-            "Sab",
-            "Domenica",
-            "Lunedì",
-            "Martedì",
-            "Mercoledì",
-            "Giovedì",
-            "Venerdì",
-            "Sabato"
-        ],
-        "monthNames": [
-            "Gen",
-            "Feb",
-            "Mar",
-            "Apr",
-            "Mag",
-            "Giu",
-            "Lug",
-            "Ago",
-            "Set",
-            "Ott",
-            "Nov",
-            "Dic",
-            "Gennaio",
-            "Febbraio",
-            "Marzo",
-            "Aprile",
-            "Maggio",
-            "Giugno",
-            "Luglio",
-            "Augosto",
-            "Settembre",
-            "Ottobre",
-            "Novembre",
-            "Dicembre"
-        ],
-        "timeNames": [
-            "a",
-            "p",
-            "am",
-            "pm",
-            "A",
-            "P",
-            "AM",
-            "PM"
-        ]
+        "dayNames": ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"],
+        "monthNames": ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic", "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Augosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
+        "timeNames": ["a", "p", "am", "pm", "A", "P", "AM", "PM"]
     }
 }
