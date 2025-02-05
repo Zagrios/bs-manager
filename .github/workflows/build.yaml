@@ -25,6 +25,11 @@ jobs:
                   node-version: 22.11.0
                   cache: "npm"
 
+            # Update package lists
+            - name: update apt-get
+              if: matrix.os == 'ubuntu-latest'
+              run: sudo apt-get update
+
             # Install and setup rpm/Flatpak for Ubuntu
             - name: Install rpm/flatpak packages (Ubuntu only)
               if: matrix.os == 'ubuntu-latest'
