@@ -1,6 +1,6 @@
 import { CSSProperties } from "react";
 
-// Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools
+// Uploaded from: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools
 
 export function UkraineIcon(props: { className?: string; style?: CSSProperties }) {
     return (

@@ -12,7 +12,7 @@ import { FranceIcon } from "./flags/france-icon.component";
 import { SpainIcon } from "./flags/spain-icon.component";
 import { ItalyIcon } from "./flags/italy-icon.component";
 import { UsaIcon } from "./flags/usa-icon.component";
-import { UkraineIcon } from "./flags/ukraine-icon.component copy";
+import { UkraineIcon } from "./flags/ukraine-icon.component";
 import { UkIcon } from "./flags/uk-icon.component";
 import { TaskIcon } from "./icons/task-icon.component";
 import { CopyIcon } from "./icons/copy-icon.component";
