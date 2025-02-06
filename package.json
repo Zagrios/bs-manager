@@ -4,6 +4,7 @@
     "main": "./.erb/dll/main.bundle.dev.js",
     "version": "1.5.2",
     "scripts": {
+        "build_start": "npm run build && npm run start",
         "build-rust-scripts": "ts-node ./.erb/scripts/build-rust-scripts.js",
         "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
         "build:dll": "cross-env NODE_ENV=development webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts",
