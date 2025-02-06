@@ -65,6 +65,12 @@ export function ModItem({ className, mod, installedVersion, isDependency, isSele
             <span className="min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover:brightness-90" style={wantInfoStyle}>
                 {mod.version.modVersion}
             </span>
+            <span className={`min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover:brightness-90 ${(mod.version.fileSize/1024/1024 > 100 ? "text-red-400 tooltip" : (mod.version.fileSize/1024/1024 > 50 ? "text-yellow-400 tooltip" : "") || "")}`} style={wantInfoStyle}>
+                {(mod.version.fileSize/1024 > 1024 ? `${Math.round(mod.version.fileSize/1024/1024)}MB` : (`${Math.round(mod.version.fileSize/1024)}KB` === `NaNKB` ? `-` : `${Math.round(mod.version.fileSize/1024)}KB`) || "-")}
+                <span className={(mod.version.fileSize/1024/1024 > 100 ? `tooltiptext w-[160px] bg-black text-red-400` : (mod.version.fileSize/1024/1024 > 50 ? `tooltiptext w-[140px] bg-black text-yellow-400` : "") || "")}>
+                    {(mod.version.fileSize/1024/1024 > 100 ? `This is a very large mod!` : (mod.version.fileSize/1024/1024 > 50 ? `This is a large mod!` : "") || "")}
+                </span>
+            </span>
             <span title={striptags(mod.mod?.description ?? "", { tagReplacementText: " " })} className="px-3 bg-inherit whitespace-nowrap text-ellipsis overflow-hidden py-2 text-sm border-t-2 border-b-2 group-hover:brightness-90" style={wantInfoStyle}>
                 {striptags(mod.mod?.summary ?? "", { tagReplacementText: " " })}
             </span>

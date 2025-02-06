@@ -150,3 +150,38 @@
         background-position: 0 0%;
     }
 }
+
+/* Tooltip container */
+.tooltip {
+  }
+
+  /* Tooltip text */
+  .tooltip .tooltiptext {
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    top: 7%;
+    right: 105%;
+
+    opacity: 0;
+    transition: opacity .5s;
+
+    /* Position the tooltip text */
+    position: absolute;
+  }
+
+  .tooltip .tooltiptext::after {
+    content: " ";
+    position: absolute;
+    top: 50%;
+    left: 100%; /* To the left of the tooltip */
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent transparent black;
+  }
+
+  /* Show the tooltip text when you mouse over the tooltip container */
+  .tooltip:hover .tooltiptext {
+    opacity: 1;
+  }
