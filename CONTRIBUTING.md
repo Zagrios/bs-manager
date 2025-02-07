@@ -1,11 +1,11 @@
-# Contributing to BS-Manager
+# Contributing to BSManager
 
 [code-of-conduct]: CODE_OF_CONDUCT.md
 [fork]: https://github.com/Zagrios/bs-manager/fork
 [pr]: https://github.com/Zagrios/bs-manager/compare
 [style]: https://github.com/basarat/typescript-book/blob/master/docs/styleguide/styleguide.md
 
-Hello! We’re delighted that you’re interested in contributing to **BS-Manager**. Your help is essential to maintaining and improving this project.
+Hello! We’re delighted that you’re interested in contributing to **BSManager**. Your help is essential to maintaining and improving this project.
 
 > [!NOTE]  
 > This project is released with a [Contributor Code of Conduct][code-of-conduct]. By participating, you agree to abide by its terms.
@@ -17,7 +17,7 @@ Hello! We’re delighted that you’re interested in contributing to **BS-Manage
 - **Reporting Bugs**  
   If you find a bug or any unexpected behavior, feel free to open an issue. Be sure to include steps to reproduce it, relevant logs, versions, and any other pertinent details.
 - **Suggesting Enhancements**  
-  Have an idea for improving BS-Manager? We welcome all suggestions—open an issue to discuss your proposal.
+  Have an idea for improving BSManager? We welcome all suggestions—open an issue to discuss your proposal.
 
 > [!TIP] 
 > Before opening a new issue, please check if there’s already an existing one for the same topic to avoid duplicates.
@@ -48,20 +48,24 @@ git checkout -b (feature|bugfix|hotfix|chore)/(short-description)(/issue-id)
 
 ### Develop and Test
 
+> [!TIP] 
+> - Follow the [style guide][style] which is using standard.
+> - Keep your changes as focused as possible. If there are multiple changes you would like to make that are not dependent upon each other, consider submitting them as separate pull requests.
+
 - Make the necessary changes on your new branch.
 - Test your changes manually to ensure everything is working correctly.
 - Verify that your updates do not introduce regressions or break existing functionality.
 
-### 2.4 Open a Pull Request
+### Open a Pull Request
 
 1. **Push** your branch to your fork.  
-2. Visit the main **BS-Manager** repository and click “Compare & pull request” or use [this link][pr].  
+2. Visit the main **BSManager** repository and click “Compare & pull request” or use [this link][pr].  
 3. Provide a **clear description** of your changes (the context, what problem it solves, etc.).  
 4. **Submit** your pull request. A maintainer will review it and may ask for adjustments or clarifications.
 
 ---
 
-## 3. Useful Commands
+## Useful Commands
 
 ### Development
 
@@ -99,6 +103,6 @@ npm run publish:flatpak
 
 ## Need Help?
 
-If you have any questions or need further assistance, feel free to **open an issue** or reach out via the project’s communication channels. We appreciate any and all contributions you make to BS-Manager!
+If you have any questions or need further assistance, feel free to **open an issue** or reach out via the project’s communication channels. We appreciate any and all contributions you make to BSManager!
 
-Thank you for your interest in making BS-Manager better!
+Thank you for your interest in making BSManager better!
