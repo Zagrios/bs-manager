@@ -9,7 +9,7 @@ export class BeatModsApiService {
 
     private readonly requestService: RequestService;
 
-    public readonly MODS_REPO_URL = "http://localhost:5001";
+    public readonly MODS_REPO_URL = "https://beatmods.com";
     private readonly MODS_REPO_API_URL = `${this.MODS_REPO_URL}/api`;
 
     private readonly versionModsCache = new Map<string, BbmFullMod[]>();
@@ -28,7 +28,7 @@ export class BeatModsApiService {
 
     private getVersionModsUrl(version: BSVersion): string {
         const platform: BbmPlatform = version.oculus || version.metadata?.store === BsStore.OCULUS ? BbmPlatform.OculusPC : BbmPlatform.SteamPC;
-        return `${this.MODS_REPO_API_URL}/mods?status=verified&gameVersion=${version.BSVersion}&gameName=BeatSaber`;
+        return `${this.MODS_REPO_API_URL}/mods?status=verified&gameVersion=${version.BSVersion}&gameName=BeatSaber&platform=${platform}`;
     }
 
     private updateModsHashCache(mods: BbmModVersion[]): void {
