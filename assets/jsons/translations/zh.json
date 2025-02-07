@@ -139,6 +139,7 @@
                 "mods-grid": {
                     "header-bar": {
                         "name": "名称",
+                        "size": "大小",
                         "installed": "已安装",
                         "latest": "最新",
                         "description": "描述",
