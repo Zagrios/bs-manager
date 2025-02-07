@@ -1,8 +1,9 @@
 # Contributing to BS-Manager
 
-[code-of-conduct]: CODE_OF_CONDUCT.md  
-[fork]: https://github.com/Zagrios/bs-manager/fork  
-[pr]: https://github.com/Zagrios/bs-manager/compare  
+[code-of-conduct]: CODE_OF_CONDUCT.md
+[fork]: https://github.com/Zagrios/bs-manager/fork
+[pr]: https://github.com/Zagrios/bs-manager/compare
+[style]: https://github.com/basarat/typescript-book/blob/master/docs/styleguide/styleguide.md
 
 Hello! We’re delighted that you’re interested in contributing to **BS-Manager**. Your help is essential to maintaining and improving this project.
 
