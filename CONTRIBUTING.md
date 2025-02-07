@@ -103,6 +103,6 @@ npm run publish:flatpak
 
 ## Need Help?
 
-If you have any questions or need further assistance, feel free to **open an issue** or reach out via the project’s communication channels. We appreciate any and all contributions you make to BSManager!
+If you have any questions or need further assistance, feel free to **open an issue** or reach out via our [discord](https://discord.gg/uSqbHVpKdV). We appreciate any and all contributions you make to BSManager!
 
 Thank you for your interest in making BSManager better!
