@@ -566,7 +566,7 @@ export class BsModsManagerService {
         });
     }
 
-    public getModsGridStatus(): ModsGridStatus {
+    public async getModsGridStatus(): Promise<ModsGridStatus> {
         if (process.platform === "linux") {
             const wineprefix = this.linuxService.getWinePrefixPath();
             if (!wineprefix) {
@@ -574,6 +574,12 @@ export class BsModsManagerService {
                 return ModsGridStatus.NO_WINEPREFIX;
             }
         }
+
+        const beatModsUp = await this.beatModsApi.isUp();
+        if (!beatModsUp) {
+            return ModsGridStatus.BEATMODS_DOWN;
+        }
+
 
         return ModsGridStatus.OK;
     }

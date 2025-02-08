@@ -9,7 +9,7 @@ import BeatWaitingImg from "../../../../../../assets/images/apngs/beat-waiting.p
 import BeatConflictImg from "../../../../../../assets/images/apngs/beat-conflict.png";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { lastValueFrom } from "rxjs";
-import { useTranslation, useTranslationV2 } from "renderer/hooks/use-translation.hook";
+import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods-disclaimer-modal.component";
@@ -232,10 +232,7 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
                     return onDisclamerDecline?.();
                 }
 
-                let status = ModsGridStatus.OK;
-                if (window.electron.platform === "linux") {
-                    status = await modsManager.getModsGridStatus();
-                }
+                const status = await modsManager.getModsGridStatus();
                 setGridStatus(status);
 
                 loadMods();
@@ -347,12 +344,12 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
 });
 
 function ModStatus({ text, image, spin = false, children }: { text: string; image: string; spin?: boolean, children?: ReactNode}) {
-    const t = useTranslation();
+    const { text: t } = useTranslationV2();
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center text-gray-800 dark:text-gray-200">
             <img className={`w-32 h-32 ${spin ? "spin-loading" : ""}`} src={image} alt=" " />
-            <span className="text-xl mt-3 italic">{t(text)}</span>
+            <span className="text-xl text-center px-2 mt-3 italic">{t(text)}</span>
             {children}
         </div>
     );
