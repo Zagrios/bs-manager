@@ -42,7 +42,7 @@ export interface BbmModVersion {
     downloadCount: number;
     lastApprovedById?: number;
     lastUpdatedById?: number;
-    fileSize: number;
+    fileSize?: number;
     createdAt?: Date;
     updatedAt?: Date;
 }

@@ -7,6 +7,7 @@ import useDoubleClick from "use-double-click";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import striptags from "striptags";
 import { safeGt } from "shared/helpers/semver.helpers";
+import { FileSizeText } from "renderer/components/shared/file-size-text";
 
 type Props = {
     className?: string;
@@ -51,22 +52,6 @@ export function ModItem({ className, mod, installedVersion, isDependency, isSele
         onChange(!isChecked);
     };
 
-    const {fileSize} = mod.version;
-
-    const verifyFileSize = fileSize !== undefined;
-
-    const isMediumMod = verifyFileSize && fileSize/1024/1024 > 50;
-
-    const isLargeMod = verifyFileSize && fileSize/1024/1024 > 100;
-
-    const getFormattedSize = () : string => {
-        if (!verifyFileSize)
-            return `-`;
-        if (fileSize/1024 > 1024)
-            return `${Math.round(mod.version.fileSize/1024/1024)}MB`;
-        return `${Math.round(mod.version.fileSize/1024)}KB`;
-    };
-
     return (
         <li ref={clickRef} className={`${className} group/mod`}>
             <div className="h-full aspect-square flex items-center justify-center p-[7px] rounded-l-md bg-inherit ml-3 border-2 border-r-0 z-[1] group-hover/mod:brightness-90" style={wantInfoStyle}>
@@ -81,12 +66,7 @@ export function ModItem({ className, mod, installedVersion, isDependency, isSele
             <span className="min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover/mod:brightness-90" style={wantInfoStyle}>
                 {mod.version.modVersion}
             </span>
-            <span className={`min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover/mod:brightness-90 ${(isLargeMod ? "text-red-400 group/tooltip" : (isMediumMod ? "text-yellow-400 group/tooltip" : "") || "")}`} style={wantInfoStyle}>
-                {getFormattedSize()}
-                <span className={`opacity-0 group-hover/tooltip:opacity-100 text-center py-[5px] px-0 rounded-[6px] top-[7%] right-[105%] transition-opacity duration-500 absolute bg-black after:absolute after:top-[50%] after:left-full after:-mt-[5px] after:border-5 after:border-solid after:border-t-transparent after:border-r-transparent after:border-b-transparent after:border-l-black ${(isLargeMod ? `w-[160px] text-red-400` : (isMediumMod ? `w-[140px] text-yellow-400` : "") || "")}`}>
-                    {(isLargeMod ? `This is a very large mod!` : (isMediumMod ? `This is a large mod!` : "") || "")}
-                </span>
-            </span>
+            <FileSizeText fileSize={mod.version.fileSize} wantInfoStyle={wantInfoStyle} />
             <span title={striptags(mod.mod?.description ?? "", { tagReplacementText: " " })} className="px-3 bg-inherit whitespace-nowrap text-ellipsis overflow-hidden py-2 text-sm border-t-2 border-b-2 group-hover/mod:brightness-90" style={wantInfoStyle}>
                 {striptags(mod.mod?.summary ?? "", { tagReplacementText: " " })}
             </span>
