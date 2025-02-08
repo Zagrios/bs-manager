@@ -158,11 +158,10 @@ export class BsModsManagerService {
             winePath = `"${winePathResult}"`;
 
             const winePrefix = this.linuxService.getWinePrefixPath();
-            if (winePrefix) {
-                env.WINEPREFIX = winePrefix;
-            } else {
-                log.warn("Could not find BSManager WINEPREFIX path, using system's default value instead");
+            if (!winePrefix) {
+                throw new CustomError("Could not find BSManager WINEPREFIX path", "no-wineprefix");
             }
+            env.WINEPREFIX = winePrefix;
         }
 
         return new Promise<boolean>(resolve => {
