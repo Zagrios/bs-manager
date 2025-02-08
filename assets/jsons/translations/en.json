@@ -246,6 +246,7 @@
                     "zh-TW": "正體中文",
                     "ja-JP": "日本語",
                     "ko-KR": "한국어",
+                    "uk-UA": "Українська",
                     "translated": {
                         "en-EN": "English, United Kingdom",
                         "en-US": "English, USA",
@@ -258,7 +259,8 @@
                         "zh-CN": "Chinese (Simplified)",
                         "zh-TW": "Chinese (Traditional)",
                         "ja-JP": "Japanese",
-                        "ko-KR": "Korean"
+                        "ko-KR": "Korean",
+                        "uk-UA": "Ukrainian"
                     }
                 }
             },
@@ -825,7 +827,7 @@
                 "desc-plural": "{nb} duplicate maps have been found. Are you sure you want to delete them?"
             }
         },
-        "link-contents":{
+        "link-contents": {
             "title": "Link {contentType}",
             "p-1": "Linking {contentType} allows sharing {contentType} between all versions with this feature enabled. Once linked, this version will benefit from shared {contentType}.",
             "p-2": "In order to enjoy the linking feature, all your {itemsHtml} will be moved to the {sharedHtml} folder. After that, a symbolic link pointing to the shared {contentType} folder will replace your original {contentType} folder.",
@@ -834,7 +836,7 @@
             "i-need-help": "I need help",
             "valid-btn": "Link {contentType}"
         },
-        "unlink-contents":{
+        "unlink-contents": {
             "title": "Unlink {contentType}",
             "p-1": "Be careful, unlinking {contentType} will disable the use of shared {contentType} for this version, until it is reenabled.",
             "p-2": "In order to unlink your maps, the symbolic link pointing to the {sharedHtml} will be removed. After that, all maps in the shared folder will be copied to the {itemsHtml} folder of your Beat Saber version.",
@@ -1270,57 +1272,8 @@
         }
     },
     "dateformat": {
-        "dayNames": [
-            "Sun",
-            "Mon",
-            "Tue",
-            "Wed",
-            "Thu",
-            "Fri",
-            "Sat",
-            "Sunday",
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday"
-        ],
-        "monthNames": [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "June",
-            "Jul",
-            "Aug",
-            "Sept",
-            "Oct",
-            "Nov",
-            "Dec",
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December"
-        ],
-        "timeNames": [
-            "a",
-            "p",
-            "am",
-            "pm",
-            "A",
-            "P",
-            "AM",
-            "PM"
-        ]
+        "dayNames": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        "monthNames": ["Jan", "Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+        "timeNames": ["a", "p", "am", "pm", "A", "P", "AM", "PM"]
     }
 }
