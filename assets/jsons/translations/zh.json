@@ -131,6 +131,9 @@
                 "loading-mods": "Mod 加载中...",
                 "no-internet": "无网络",
                 "mods-not-available": "该版本 BeatSaber 暂无可用 Mod",
+                "status": {
+                    "no-wineprefix": "找不到 BSManager WINEPREFIX 路径。请先在 BSManager 中启动 Beat Saber。"
+                },
                 "buttons": {
                     "more-infos": "更多信息",
                     "install-or-update": "安装或更新",
@@ -587,7 +590,8 @@
                 "msg": {
                     "success": "所有 Mod 已被卸载。",
                     "errors": {
-                        "no-mods": "该版本中没有安装 Mod 😑"
+                        "no-mods": "该版本中没有安装 Mod 😑",
+                        "no-wineprefix": "找不到 BSManager WINEPREFIX 路径。请先在 BSManager 中启动 Beat Saber。"
                     }
                 }
             },

@@ -131,6 +131,9 @@
                 "loading-mods": "Modを読み込み中...",
                 "no-internet": "インターネット接続がありません!",
                 "mods-not-available": "このバージョンで使用できるMODはまだありません。",
+                "status": {
+                    "no-wineprefix": "BSManager WINEPREFIXのパスが見つかりませんでした。まずBSManagerでBeat Saberを起動してください。"
+                },
                 "buttons": {
                     "more-infos": "詳細情報",
                     "install-or-update": "インストールとアップデート",
@@ -588,7 +591,8 @@
                 "msg": {
                     "success": "すべてのModをアンインストールしました。",
                     "errors": {
-                        "no-mods": "このバージョンのModはインストールされていません 😑"
+                        "no-mods": "このバージョンのModはインストールされていません 😑",
+                        "no-wineprefix": "BSManager WINEPREFIXのパスが見つかりませんでした。まずBSManagerでBeat Saberを起動してください。"
                     }
                 }
             },
