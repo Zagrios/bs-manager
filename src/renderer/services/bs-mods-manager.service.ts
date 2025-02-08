@@ -8,6 +8,7 @@ import { Progression } from "main/helpers/fs.helpers";
 import { ProgressionInterface } from "shared/models/progress-bar";
 import { BbmFullMod, BbmModVersion } from "shared/models/mods/mod.interface";
 import { logRenderError } from "renderer";
+import { ModsGridStatus } from "shared/models/mods/mod-ipc.model";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -202,6 +203,14 @@ export class BsModsManagerService {
         }, []);
 
         return { available: (available ?? []), installed: (installedMods ?? []) };
+    }
+
+    public async getModsGridStatus(): Promise<ModsGridStatus> {
+        return lastValueFrom(this.ipcService.sendV2("bs-mods.get-mods-grid-status"))
+            .catch(error => {
+                logRenderError(error);
+                return ModsGridStatus.UNKNOWN;
+            });
     }
 
 }

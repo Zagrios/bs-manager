@@ -1,6 +1,6 @@
 import { BsModsManagerService } from "../services/mods/bs-mods-manager.service";
 import { IpcService } from "../services/ipc.service";
-import { from } from "rxjs";
+import { from, of } from "rxjs";
 
 const ipc = IpcService.getInstance();
 
@@ -33,3 +33,9 @@ ipc.on("bs-mods.uninstall-all-mods", (args, reply) => {
     const modsManager = BsModsManagerService.getInstance();
     reply(modsManager.uninstallAllMods(args));
 });
+
+ipc.on("bs-mods.get-mods-grid-status", (_, reply) => {
+    const modsManager = BsModsManagerService.getInstance();
+    reply(of(modsManager.getModsGridStatus()));
+})
+

@@ -22,6 +22,7 @@ import { UninstallAllModsModal } from "renderer/components/modal/modal-types/uni
 import Tippy from "@tippyjs/react";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { Dropzone } from "renderer/components/shared/dropzone.component";
+import { ModsGridStatus } from "shared/models/mods/mod-ipc.model";
 
 export type ModsSlideRef = {
     loadMods: () => Promise<void>;
@@ -42,6 +43,7 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
     const os = useService(OsDiagnosticService);
     const progress = useService(ProgressBarService);
 
+    const [gridStatus, setGridStatus] = useState(ModsGridStatus.OK);
     const [modsAvailable, setModsAvailable] = useState(null as Map<BbmCategories, BbmFullMod[]>);
     const [modsInstalled, setModsInstalled] = useState(null as Map<BbmCategories, BbmFullMod[]>);
     const [modsSelected, setModsSelected] = useState([] as BbmFullMod[]);
@@ -185,8 +187,23 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
         setModsSelected(() => []);
     }
 
+    const getAcceptDisclaimerKey = async () => {
+        if (configService.get<boolean>(ACCEPTED_DISCLAIMER_KEY)) {
+            return true;
+        }
+
+        const res = await modals.openModal(ModsDisclaimerModal);
+        const haveAccepted = res.exitCode === ModalExitCode.COMPLETED;
+
+        if (haveAccepted) {
+            configService.set(ACCEPTED_DISCLAIMER_KEY, true);
+        }
+
+        return haveAccepted;
+    }
+
     const loadMods = async (): Promise<void> => {
-        if (os.isOffline) {
+        if (os.isOffline || gridStatus !== ModsGridStatus.OK) {
             return Promise.resolve();
         }
 
@@ -209,31 +226,26 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
             return noop();
         }
 
-        (async () => {
-                if (configService.get<boolean>(ACCEPTED_DISCLAIMER_KEY)) {
-                    return true;
+        getAcceptDisclaimerKey()
+            .then(async (canLoad) => {
+                if (!canLoad) {
+                    return onDisclamerDecline?.();
                 }
 
-                const res = await modals.openModal(ModsDisclaimerModal);
-                const haveAccepted = res.exitCode === ModalExitCode.COMPLETED;
-
-                if (haveAccepted) {
-                    configService.set(ACCEPTED_DISCLAIMER_KEY, true);
+                let status = ModsGridStatus.OK;
+                if (window.electron.platform === "linux") {
+                    status = await modsManager.getModsGridStatus();
                 }
+                setGridStatus(status);
 
-                return haveAccepted;
-        })().then(canLoad => {
-            if (!canLoad) {
-                return onDisclamerDecline?.();
-            }
-
-            loadMods();
-        });
+                loadMods();
+            });
 
         return () => {
             setMoreInfoMod(null);
             setModsAvailable(null);
             setModsInstalled(null);
+            setGridStatus(ModsGridStatus.OK);
         };
     }, [isActive, isOnline, version]);
 
@@ -261,6 +273,9 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
     const renderContent = () => {
         if (!isOnline) {
             return <ModStatus text="pages.version-viewer.mods.no-internet" image={BeatConflictImg} />;
+        }
+        if (gridStatus !== ModsGridStatus.OK) {
+            return <ModStatus text={gridStatus} image={BeatConflictImg} />;
         }
         if (!modsAvailable) {
             return <ModStatus text="pages.version-viewer.mods.loading-mods" image={BeatWaitingImg} spin />;

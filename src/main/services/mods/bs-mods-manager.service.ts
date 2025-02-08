@@ -19,6 +19,7 @@ import crypto from "crypto";
 import { BsmZipExtractor } from "main/models/bsm-zip-extractor.class";
 import { BsmShellLog, bsmSpawn } from "main/helpers/os.helpers";
 import { BbmFullMod, BbmModVersion, ExternalMod } from "../../../shared/models/mods/mod.interface";
+import { ModsGridStatus } from "shared/models/mods/mod-ipc.model";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -563,6 +564,18 @@ export class BsModsManagerService {
             .catch(err => obs.error(err))
             .finally(() => obs.complete());
         });
+    }
+
+    public getModsGridStatus(): ModsGridStatus {
+        if (process.platform === "linux") {
+            const wineprefix = this.linuxService.getWinePrefixPath();
+            if (!wineprefix) {
+                log.error("Could not find BSManager WINEPREFIX path");
+                return ModsGridStatus.NO_WINEPREFIX;
+            }
+        }
+
+        return ModsGridStatus.OK;
     }
 }
 
