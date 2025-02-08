@@ -7,11 +7,12 @@ type Props<T> = {
     items: RadioItem<T>[];
     selectedItemId?: number;
     selectedItemValue?: T;
-    direction?: CSSProperties["flexDirection"],
-    onItemSelected?: (item: RadioItem<T>) => void
+    direction?: CSSProperties["flexDirection"];
+    onItemSelected?: (item: RadioItem<T>) => void;
+    SplitColumns?: boolean;
 };
 
-export function SettingRadioArray<T>({ id, items, selectedItemId, selectedItemValue, onItemSelected, direction = "column" }: Props<T>) {
+export function SettingRadioArray<T>({ id, items, selectedItemId, selectedItemValue, onItemSelected, direction = "column", SplitColumns }: Props<T>) {
     const t = useTranslation();
 
     const isSelected = (item: RadioItem<T>) => {
@@ -42,14 +43,19 @@ export function SettingRadioArray<T>({ id, items, selectedItemId, selectedItemVa
     };
 
     return (
-        <div id={id} className="w-full flex gap-1.5">
-            <div className="w-full flex flex-col gap-1.5">
-                {firstHalf.map(renderItem)}
+        SplitColumns ?
+            <div id={id} className="w-full flex gap-1.5" style={{flexDirection: direction}}>
+                <div className="w-full flex flex-col gap-1.5">
+                    {firstHalf.map(renderItem)}
+                </div>
+                <div className="w-full flex flex-col gap-1.5">
+                    {secondHalf.map(renderItem)}
+                </div>
             </div>
-            <div className="w-full flex flex-col gap-1.5">
-                {secondHalf.map(renderItem)}
+            :
+            <div id={id} className="w-full flex flex-col gap-1.5" style={{flexDirection: direction}}>
+                {items.map(renderItem)}
             </div>
-        </div>
     );
 }
 
