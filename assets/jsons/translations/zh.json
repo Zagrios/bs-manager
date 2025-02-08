@@ -133,6 +133,7 @@
                 "mods-not-available": "该版本 BeatSaber 暂无可用 Mod",
                 "status": {
                     "no-wineprefix": "找不到 BSManager WINEPREFIX 路径。请先在 BSManager 中启动 Beat Saber。",
+                    "beatmods-down": "Beatmods 目前无法访问。请稍后再试。如果问题持续，请在 Discord/GitHub 上告知我们。",
                     "unknown": "发生了一个错误 ¯\\_(ツ)_/¯"
                 },
                 "buttons": {
