@@ -21,7 +21,7 @@
         "copied": "已复制!",
         "confirm": "确认",
         "choose-folder": "选择文件夹",
-        "Unknown": "发生了一个错误 ¯\\_(ツ)_/¯",
+        "unknown": "发生了一个错误 ¯\\_(ツ)_/¯",
         "warning": "警告",
         "continue": "继续",
         "shared": "共享",
@@ -132,7 +132,8 @@
                 "no-internet": "无网络",
                 "mods-not-available": "该版本 BeatSaber 暂无可用 Mod",
                 "status": {
-                    "no-wineprefix": "找不到 BSManager WINEPREFIX 路径。请先在 BSManager 中启动 Beat Saber。"
+                    "no-wineprefix": "找不到 BSManager WINEPREFIX 路径。请先在 BSManager 中启动 Beat Saber。",
+                    "unknown": "发生了一个错误 ¯\\_(ツ)_/¯"
                 },
                 "buttons": {
                     "more-infos": "更多信息",

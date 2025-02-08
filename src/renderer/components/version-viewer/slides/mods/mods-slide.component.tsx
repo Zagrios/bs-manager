@@ -275,7 +275,7 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
             return <ModStatus text="pages.version-viewer.mods.no-internet" image={BeatConflictImg} />;
         }
         if (gridStatus !== ModsGridStatus.OK) {
-            return <ModStatus text={gridStatus} image={BeatConflictImg} />;
+            return <ModStatus text={`pages.version-viewer.mods.status.${gridStatus}`} image={BeatConflictImg} />;
         }
         if (!modsAvailable) {
             return <ModStatus text="pages.version-viewer.mods.loading-mods" image={BeatWaitingImg} spin />;

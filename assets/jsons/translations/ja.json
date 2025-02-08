@@ -132,7 +132,8 @@
                 "no-internet": "インターネット接続がありません!",
                 "mods-not-available": "このバージョンで使用できるMODはまだありません。",
                 "status": {
-                    "no-wineprefix": "BSManager WINEPREFIXのパスが見つかりませんでした。まずBSManagerでBeat Saberを起動してください。"
+                    "no-wineprefix": "BSManager WINEPREFIXのパスが見つかりませんでした。まずBSManagerでBeat Saberを起動してください。",
+                    "unknown": "不明なエラーが発生しました (´・ω・`)"
                 },
                 "buttons": {
                     "more-infos": "詳細情報",

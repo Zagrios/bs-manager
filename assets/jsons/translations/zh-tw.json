@@ -132,7 +132,8 @@
                 "no-internet": "無網路",
                 "mods-not-available": "該版本 BeatSaber 暫無可用 Mod",
                 "status": {
-                    "no-wineprefix": "找不到 BSManager WINEPREFIX 路徑。請先在 BSManager 中啟動 Beat Saber。"
+                    "no-wineprefix": "找不到 BSManager WINEPREFIX 路徑。請先在 BSManager 中啟動 Beat Saber。",
+                    "unknown": "發生了一個錯誤 ¯\\_(ツ)_/¯"
                 },
                 "buttons": {
                     "more-infos": "更多資訊",

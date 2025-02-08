@@ -15,7 +15,7 @@ export interface UninstallModsResult {
 
 export enum ModsGridStatus {
     OK = "",
-    NO_WINEPREFIX = "pages.version-viewer.mods.status.no-wineprefix",
-    UNKNOWN = "misc.unknown"
+    NO_WINEPREFIX = "no-wineprefix",
+    UNKNOWN = "unknown"
 }
 
