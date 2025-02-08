@@ -51,33 +51,49 @@ export function ModItem({ className, mod, installedVersion, isDependency, isSele
         onChange(!isChecked);
     };
 
+    const {fileSize} = mod.version;
+
+    const verifyFileSize = fileSize !== undefined;
+
+    const isMediumMod = verifyFileSize && fileSize/1024/1024 > 50;
+
+    const isLargeMod = verifyFileSize && fileSize/1024/1024 > 100;
+
+    const getFormattedSize = () : string => {
+        if (!verifyFileSize)
+            return `-`;
+        if (fileSize/1024 > 1024)
+            return `${Math.round(mod.version.fileSize/1024/1024)}MB`;
+        return `${Math.round(mod.version.fileSize/1024)}KB`;
+    };
+
     return (
-        <li ref={clickRef} className={`${className} group`}>
-            <div className="h-full aspect-square flex items-center justify-center p-[7px] rounded-l-md bg-inherit ml-3 border-2 border-r-0 z-[1] group-hover:brightness-90" style={wantInfoStyle}>
+        <li ref={clickRef} className={`${className} group/mod`}>
+            <div className="h-full aspect-square flex items-center justify-center p-[7px] rounded-l-md bg-inherit ml-3 border-2 border-r-0 z-[1] group-hover/mod:brightness-90" style={wantInfoStyle}>
                 <BsmCheckbox className="h-full aspect-square z-[1] relative bg-inherit" onChange={() => onChange(!isChecked)} disabled={mod.mod.category === BbmCategories.Core || isDependency || disabled} checked={isChecked} />
             </div>
-            <span className="bg-inherit py-2 pl-3 font-bold text-sm whitespace-nowrap border-t-2 border-b-2 blur-none group-hover:brightness-90" style={wantInfoStyle}>
+            <span className="bg-inherit py-2 pl-3 font-bold text-sm whitespace-nowrap border-t-2 border-b-2 blur-none group-hover/mod:brightness-90" style={wantInfoStyle}>
                 {mod.mod.name}
             </span>
-            <span className={`min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover:brightness-90 ${installedVersion && isOutDated && "text-red-400 line-through"} ${installedVersion && !isOutDated && "text-green-400"}`} style={wantInfoStyle}>
+            <span className={`min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover/mod:brightness-90 ${installedVersion && isOutDated && "text-red-400 line-through"} ${installedVersion && !isOutDated && "text-green-400"}`} style={wantInfoStyle}>
                 {installedVersion || "-"}
             </span>
-            <span className="min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover:brightness-90" style={wantInfoStyle}>
+            <span className="min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover/mod:brightness-90" style={wantInfoStyle}>
                 {mod.version.modVersion}
             </span>
-            <span className={`min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover:brightness-90 ${(mod.version.fileSize/1024/1024 > 100 ? "text-red-400 tooltip" : (mod.version.fileSize/1024/1024 > 50 ? "text-yellow-400 tooltip" : "") || "")}`} style={wantInfoStyle}>
-                {(mod.version.fileSize/1024 > 1024 ? `${Math.round(mod.version.fileSize/1024/1024)}MB` : (`${Math.round(mod.version.fileSize/1024)}KB` === `NaNKB` ? `-` : `${Math.round(mod.version.fileSize/1024)}KB`) || "-")}
-                <span className={(mod.version.fileSize/1024/1024 > 100 ? `tooltiptext w-[160px] bg-black text-red-400` : (mod.version.fileSize/1024/1024 > 50 ? `tooltiptext w-[140px] bg-black text-yellow-400` : "") || "")}>
-                    {(mod.version.fileSize/1024/1024 > 100 ? `This is a very large mod!` : (mod.version.fileSize/1024/1024 > 50 ? `This is a large mod!` : "") || "")}
+            <span className={`min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover/mod:brightness-90 ${(isLargeMod ? "text-red-400 group/tooltip" : (isMediumMod ? "text-yellow-400 group/tooltip" : "") || "")}`} style={wantInfoStyle}>
+                {getFormattedSize()}
+                <span className={`opacity-0 group-hover/tooltip:opacity-100 text-center py-[5px] px-0 rounded-[6px] top-[7%] right-[105%] transition-opacity duration-500 absolute bg-black after:absolute after:top-[50%] after:left-full after:-mt-[5px] after:border-5 after:border-solid after:border-t-transparent after:border-r-transparent after:border-b-transparent after:border-l-black ${(isLargeMod ? `w-[160px] text-red-400` : (isMediumMod ? `w-[140px] text-yellow-400` : "") || "")}`}>
+                    {(isLargeMod ? `This is a very large mod!` : (isMediumMod ? `This is a large mod!` : "") || "")}
                 </span>
             </span>
-            <span title={striptags(mod.mod?.description ?? "", { tagReplacementText: " " })} className="px-3 bg-inherit whitespace-nowrap text-ellipsis overflow-hidden py-2 text-sm border-t-2 border-b-2 group-hover:brightness-90" style={wantInfoStyle}>
+            <span title={striptags(mod.mod?.description ?? "", { tagReplacementText: " " })} className="px-3 bg-inherit whitespace-nowrap text-ellipsis overflow-hidden py-2 text-sm border-t-2 border-b-2 group-hover/mod:brightness-90" style={wantInfoStyle}>
                 {striptags(mod.mod?.summary ?? "", { tagReplacementText: " " })}
             </span>
-            <div className="h-full bg-inherit flex items-center justify-center mr-3 rounded-r-md pr-2 border-t-2 border-b-2 border-r-2 group-hover:brightness-90" style={wantInfoStyle}>
+            <div className="h-full bg-inherit flex items-center justify-center mr-3 rounded-r-md pr-2 border-t-2 border-b-2 border-r-2 group-hover/mod:brightness-90" style={wantInfoStyle}>
                 {installedVersion && (
                     <BsmButton
-                        className="z-[1] h-7 w-7 p-[5px] rounded-full group-hover:brightness-90"
+                        className="z-[1] h-7 w-7 p-[5px] rounded-full group-hover/mod:brightness-90"
                         icon="trash"
                         disabled={disabled}
                         withBar={false}
