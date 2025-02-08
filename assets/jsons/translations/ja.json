@@ -133,7 +133,7 @@
                 "mods-not-available": "このバージョンで使用できるMODはまだありません。",
                 "status": {
                     "no-wineprefix": "BSManager WINEPREFIXのパスが見つかりませんでした。まずBSManagerでBeat Saberを起動してください。",
-                    "beatmods-down": "現在、Beatmodsにアクセスできません。後でもう一度お試しください。問題が解決しない場合は、Discord/GitHubでお知らせください。",
+                    "beatmods-down": "現在、Beatmodsにアクセスできません。後でもう一度お試しください。問題が解決しない場合は、{links}でお知らせください。",
                     "unknown": "不明なエラーが発生しました (´・ω・`)"
                 },
                 "buttons": {

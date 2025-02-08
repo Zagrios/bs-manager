@@ -16,6 +16,7 @@ import { MODEL_TYPE_FOLDERS } from "shared/models/models/constants";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { map } from "rxjs";
+import { DISCORD_URL } from "shared/constants";
 
 export const LinkContentModal: ModalComponent<void, {version: BSVersion, contentType: "maps"|"playlists"|"avatars"|"sabers"|"platforms"|"blocks"}> = ({options: { data: { version, contentType } }, resolver }) => {
     const { text: t, element: te } = useTranslationV2();
@@ -97,7 +98,7 @@ export const LinkContentModal: ModalComponent<void, {version: BSVersion, content
             <p className="max-w-sm w-full italic my-2 text-warning-400">{t("modals.link-contents.warning", {contentType: t(`misc.${contentType}`).toLowerCase()})}</p>
             <div className="flex justify-center items-center gap-3 *:underline *:text-sm *:text-neutral-200">
                 <BsmLink href="https://en.qrwp.org/Symbolic_link">{t("modals.link-contents.what-is-a-symbolic-link")}</BsmLink>
-                <BsmLink href="https://discord.gg/uSqbHVpKdV">{t("modals.link-contents.i-need-help")}</BsmLink>
+                <BsmLink href={DISCORD_URL}>{t("modals.link-contents.i-need-help")}</BsmLink>
             </div>
             <div className="grid grid-flow-col grid-cols-2 gap-2 mt-4 h-8">
                 <BsmButton typeColor="cancel" className="rounded-md text-center transition-all flex justify-center items-center" onClick={() => resolver({ exitCode: ModalExitCode.CANCELED })} withBar={false} text="misc.cancel" />

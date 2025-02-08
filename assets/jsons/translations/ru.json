@@ -133,7 +133,7 @@
                 "mods-not-available": "Не найдены моды для этой версии Beat Saber",
                 "status": {
                     "no-wineprefix": "Не удалось найти путь WINEPREFIX BSManager. Пожалуйста, сначала запустите Beat Saber в BSManager.",
-                    "beatmods-down": "Сейчас Beatmods недоступен. Пожалуйста, попробуйте позже. Если проблема сохраняется, сообщите нам в Discord/GitHub.",
+                    "beatmods-down": "Сейчас Beatmods недоступен. Пожалуйста, попробуйте позже. Если проблема сохраняется, сообщите нам в {links}.",
                     "unknown": "Неизвестная ошибка ¯\\_(ツ)_/¯"
                 },
                 "buttons": {
