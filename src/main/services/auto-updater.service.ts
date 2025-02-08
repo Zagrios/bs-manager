@@ -1,4 +1,5 @@
 import { autoUpdater, CancellationToken, ProgressInfo } from "electron-updater";
+import { StaticConfigurationService } from "main/services/static-configuration.service";
 import log from "electron-log";
 import { gt } from "semver";
 import { Progression } from "main/helpers/fs.helpers";
@@ -6,6 +7,8 @@ import { Observable } from "rxjs";
 
 export class AutoUpdaterService {
     private static instance: AutoUpdaterService;
+
+    private static readonly staticConfig = StaticConfigurationService.getInstance();
 
     public static getInstance(): AutoUpdaterService {
         if (!AutoUpdaterService.instance) {
@@ -20,6 +23,10 @@ export class AutoUpdaterService {
     }
 
     public async isUpdateAvailable(): Promise<boolean> {
+        AutoUpdaterService.staticConfig.take("use-alpha", useAlpha => {
+            autoUpdater.allowPrerelease = useAlpha;
+        });
+
         return autoUpdater.checkForUpdates()
             .then(info => {
                 return !!info?.updateInfo && gt(
@@ -46,6 +53,7 @@ export class AutoUpdaterService {
 
             autoUpdater.addListener("download-progress", progressListener);
             autoUpdater.addListener("update-downloaded", downloadedListener);
+
 
             const cancelToken = new CancellationToken();
 

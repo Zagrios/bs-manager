@@ -545,11 +545,13 @@ function AdvancedSettings() {
     const [hardwareAccelerationEnabled, setHardwareAccelerationEnabled] = useState(true);
     const [useSymlink, setUseSymlink] = useState(false);
     const [useSystemProxy, setUseSystemProxy] = useState(false);
+    const [useAlpha, setUseAlpha] = useState(false);
 
     useEffect(() => {
         staticConfig.get("disable-hadware-acceleration").then(disabled =>setHardwareAccelerationEnabled(() => disabled !== true));
         staticConfig.get("use-symlinks").then(useSymlinks => setUseSymlink(() => useSymlinks));
         staticConfig.get("use-system-proxy").then(useSystemProxy => setUseSystemProxy(() => useSystemProxy));
+        staticConfig.get("use-alpha").then(useAlpha => setUseAlpha(() => useAlpha));
     }, []);
 
     const onChangeHardwareAcceleration = async (newHardwareAccelerationEnabled: boolean) => {
@@ -630,6 +632,36 @@ function AdvancedSettings() {
         setUseSystemProxy(() => newUseSystemProxy);
     }
 
+    const onChangeUseAlpha = async (newUseAlpha: boolean) => {
+
+        if (window.electron.platform !== "win32" || newUseAlpha === useAlpha) {
+            return;
+        }
+
+        const res = await modal.openModal(BasicModal, { data: {
+            title: "pages.settings.advanced.use-alpha.modal.title",
+            body: "pages.settings.advanced.use-alpha.modal.body",
+            image: BeatConflict,
+            buttons: [
+                { id: "cancel", text: "misc.cancel", type: "cancel" },
+                { id: "confirm", text: "pages.settings.advanced.use-alpha.modal.confirm-btn", type: "error", onClick: () => true}
+            ]
+        }});
+
+        if(res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm"){ return; }
+
+        const { error } = await tryit(() => staticConfig.set("use-alpha", newUseAlpha));
+
+        if(error){
+            notification.notifyError({ title: "notifications.types.error", desc: "pages.settings.advanced.use-alpha.error-notification.message" });
+            return;
+        }
+
+        setUseAlpha(() => newUseAlpha);
+
+        await lastValueFrom(ipc.sendV2("restart-app"));
+    }
+
     const advancedItems: Item[] = [{
         checked: hardwareAccelerationEnabled,
         text: t.text("pages.settings.advanced.hardware-acceleration.title"),
@@ -648,6 +680,12 @@ function AdvancedSettings() {
             text: t.text("pages.settings.advanced.use-system-proxy.title"),
             desc: t.text("pages.settings.advanced.use-system-proxy.description"),
             onChange: onChangeUseSystemProxy
+        });
+        advancedItems.push({
+            checked: useAlpha,
+            text: t.text("pages.settings.advanced.use-alpha.title"),
+            desc: t.text("pages.settings.advanced.use-alpha.description"),
+            onChange: onChangeUseAlpha
         });
     }
 

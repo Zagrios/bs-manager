@@ -90,6 +90,7 @@ export interface StaticConfigKeyValues {
     "use-symlinks": boolean;
     "use-system-proxy": boolean;
     "last-version-launched": BSVersion;
+    "use-alpha": boolean;
 
     // Linux Specific static configs
     "proton-folder": string;
