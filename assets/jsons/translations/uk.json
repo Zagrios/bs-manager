@@ -938,98 +938,98 @@
         },
         "bs-version-outdated": {
             "body": "Версія {outdatedVersion} застаріла, і деякі моди чи функції можуть більше не працювати належним чином. Будь ласка, завантажте останню рекомендовану версію ({recommendedVersion}) Beat Saber, щоб насолоджуватися останніми функціями та виправленнями помилок."
+        }
+    },
+    "maps": {
+        "map-filter-panel": {
+            "duration": "Тривалість",
+            "nps": "Нот за секунду",
+            "njs": "Швидкість стрибка нот",
+            "tags": "теги",
+            "specificities": "загальне",
+            "requirements": "вимоги",
+            "exclude": "виключити",
+            "leaderboard": "таблиця лідерів"
         },
-        "maps": {
-            "map-filter-panel": {
-                "duration": "Тривалість",
-                "nps": "Нот за секунду",
-                "njs": "Швидкість стрибка нот",
-                "tags": "теги",
-                "specificities": "загальне",
-                "requirements": "вимоги",
-                "exclude": "виключити",
-                "leaderboard": "таблиця лідерів"
-            },
-            "map-types": {
-                "accuracy": "точність",
-                "balanced": "збалансовані",
-                "challenge": "виклик",
-                "dance-style": "танець",
-                "fitness": "фітнес",
-                "speed": "швидкість",
-                "tech": "техніка"
-            },
-            "map-styles": {
-                "dance": "танцювальні",
-                "swing": "свінг",
-                "nightcore": "найткор",
-                "folk-acoustic": "фолк і акустика",
-                "kids-family": "для дітей і сім'ї",
-                "ambient": "ембієнт",
-                "funk-disco": "фанк і диско",
-                "jazz": "джаз",
-                "soul": "соул",
-                "speedcore": "спідкор",
-                "punk": "панк",
-                "rb": "r&b",
-                "holiday": "святкові",
-                "vocaloid": "вокалоїд",
-                "j-rock": "j-rock",
-                "trance": "транс",
-                "drum-and-bass": "драм-н-бейс",
-                "comedy-meme": "комедія і меми",
-                "instrumental": "інструментальні",
-                "hardcore": "хардкор",
-                "k-pop": "k-pop",
-                "indie": "інді",
-                "techno": "техно",
-                "house": "хаус",
-                "video-game-soundtrack": "відеоігри",
-                "tv-movie-soundtrack": "ТБ і фільми",
-                "alternative": "альтернатива",
-                "dubstep": "дабстеп",
-                "metal": "метал",
-                "anime": "аніме",
-                "hip-hop-rap": "хіп-хоп і реп",
-                "j-pop": "j-pop",
-                "rock": "рок",
-                "pop": "поп",
-                "electronic": "електронна",
-                "classical-orchestral": "Класична і оркестрова"
-            },
-            "map-specificities": {
-                "automapper": "ШІ",
-                "curated": "куровані",
-                "verified": "перевірені",
-                "fullSpread": "повний набір"
-            },
-            "map-leaderboard": {
-                "All": "Всі",
-                "Ranked": "Ранговані",
-                "BeatLeader": "BeatLeader",
-                "ScoreSaber": "ScoreSaber"
-            },
-            "map-excludes": {
-                "installed": "встановлені"
-            },
-            "difficulties": {
-                "Easy": "легкий",
-                "Normal": "нормальний",
-                "Hard": "складний",
-                "Expert": "експерт",
-                "ExpertPlus": "експерт+"
-            },
-            "map-item": {
-                "by": "Від {songAutor}",
-                "mapped-by": "автор карти",
-                "delete": "Видалити",
-                "preview": "Попередній перегляд карти",
-                "bsr-code": "BSR код",
-                "download": "Завантажити карту",
-                "downloading": "Завантаження карти",
-                "cancel-download": "Скасувати завантаження",
-                "hightlight-difficulty": "Виділити складність"
-            }
+        "map-types": {
+            "accuracy": "точність",
+            "balanced": "збалансовані",
+            "challenge": "виклик",
+            "dance-style": "танець",
+            "fitness": "фітнес",
+            "speed": "швидкість",
+            "tech": "техніка"
+        },
+        "map-styles": {
+            "dance": "танцювальні",
+            "swing": "свінг",
+            "nightcore": "найткор",
+            "folk-acoustic": "фолк і акустика",
+            "kids-family": "для дітей і сім'ї",
+            "ambient": "ембієнт",
+            "funk-disco": "фанк і диско",
+            "jazz": "джаз",
+            "soul": "соул",
+            "speedcore": "спідкор",
+            "punk": "панк",
+            "rb": "r&b",
+            "holiday": "святкові",
+            "vocaloid": "вокалоїд",
+            "j-rock": "j-rock",
+            "trance": "транс",
+            "drum-and-bass": "драм-н-бейс",
+            "comedy-meme": "комедія і меми",
+            "instrumental": "інструментальні",
+            "hardcore": "хардкор",
+            "k-pop": "k-pop",
+            "indie": "інді",
+            "techno": "техно",
+            "house": "хаус",
+            "video-game-soundtrack": "відеоігри",
+            "tv-movie-soundtrack": "ТБ і фільми",
+            "alternative": "альтернатива",
+            "dubstep": "дабстеп",
+            "metal": "метал",
+            "anime": "аніме",
+            "hip-hop-rap": "хіп-хоп і реп",
+            "j-pop": "j-pop",
+            "rock": "рок",
+            "pop": "поп",
+            "electronic": "електронна",
+            "classical-orchestral": "Класична і оркестрова"
+        },
+        "map-specificities": {
+            "automapper": "ШІ",
+            "curated": "куровані",
+            "verified": "перевірені",
+            "fullSpread": "повний набір"
+        },
+        "map-leaderboard": {
+            "All": "Всі",
+            "Ranked": "Ранговані",
+            "BeatLeader": "BeatLeader",
+            "ScoreSaber": "ScoreSaber"
+        },
+        "map-excludes": {
+            "installed": "встановлені"
+        },
+        "difficulties": {
+            "Easy": "легкий",
+            "Normal": "нормальний",
+            "Hard": "складний",
+            "Expert": "експерт",
+            "ExpertPlus": "експерт+"
+        },
+        "map-item": {
+            "by": "Від {songAutor}",
+            "mapped-by": "автор карти",
+            "delete": "Видалити",
+            "preview": "Попередній перегляд карти",
+            "bsr-code": "BSR код",
+            "download": "Завантажити карту",
+            "downloading": "Завантаження карти",
+            "cancel-download": "Скасувати завантаження",
+            "hightlight-difficulty": "Виділити складність"
         }
     },
     "models": {

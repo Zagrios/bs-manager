@@ -13,7 +13,6 @@ import { SpainIcon } from "./flags/spain-icon.component";
 import { ItalyIcon } from "./flags/italy-icon.component";
 import { UsaIcon } from "./flags/usa-icon.component";
 import { UkraineIcon } from "./flags/ukraine-icon.component";
-import { UkIcon } from "./flags/uk-icon.component";
 import { TaskIcon } from "./icons/task-icon.component";
 import { CopyIcon } from "./icons/copy-icon.component";
 import { SteamIcon } from "./icons/steam-icon.component";
@@ -71,6 +70,7 @@ import { AddFileIcon } from "./icons/add-file-icon.component";
 import { CancelIcon } from "./icons/cancel-icon.component";
 import { WarningIcon } from "./icons/warning-icon.component";
 import { ArrowUpwardIcon } from "./icons/arrow-upward-icon.component";
+import { UkIcon } from "./flags/uk-icon.component";
 
 
 
