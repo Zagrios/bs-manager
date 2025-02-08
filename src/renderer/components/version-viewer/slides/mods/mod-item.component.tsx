@@ -53,27 +53,27 @@ export function ModItem({ className, mod, installedVersion, isDependency, isSele
     };
 
     return (
-        <li ref={clickRef} className={`${className} group/mod`}>
-            <div className="h-full aspect-square flex items-center justify-center p-[7px] rounded-l-md bg-inherit ml-3 border-2 border-r-0 z-[1] group-hover/mod:brightness-90" style={wantInfoStyle}>
+        <li ref={clickRef} className={`${className} group`}>
+            <div className="h-full aspect-square flex items-center justify-center p-[7px] rounded-l-md bg-inherit ml-3 border-2 border-r-0 z-[1] group-hover:brightness-90" style={wantInfoStyle}>
                 <BsmCheckbox className="h-full aspect-square z-[1] relative bg-inherit" onChange={() => onChange(!isChecked)} disabled={mod.mod.category === BbmCategories.Core || isDependency || disabled} checked={isChecked} />
             </div>
-            <span className="bg-inherit py-2 pl-3 font-bold text-sm whitespace-nowrap border-t-2 border-b-2 blur-none group-hover/mod:brightness-90" style={wantInfoStyle}>
+            <span className="bg-inherit py-2 pl-3 font-bold text-sm whitespace-nowrap border-t-2 border-b-2 blur-none group-hover:brightness-90" style={wantInfoStyle}>
                 {mod.mod.name}
             </span>
-            <span className={`min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover/mod:brightness-90 ${installedVersion && isOutDated && "text-red-400 line-through"} ${installedVersion && !isOutDated && "text-green-400"}`} style={wantInfoStyle}>
+            <span className={`min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover:brightness-90 ${installedVersion && isOutDated && "text-red-400 line-through"} ${installedVersion && !isOutDated && "text-green-400"}`} style={wantInfoStyle}>
                 {installedVersion || "-"}
             </span>
-            <span className="min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover/mod:brightness-90" style={wantInfoStyle}>
+            <span className="min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover:brightness-90" style={wantInfoStyle}>
                 {mod.version.modVersion}
             </span>
             <FileSizeText fileSize={mod.version.fileSize} wantInfoStyle={wantInfoStyle} />
-            <span title={striptags(mod.mod?.description ?? "", { tagReplacementText: " " })} className="px-3 bg-inherit whitespace-nowrap text-ellipsis overflow-hidden py-2 text-sm border-t-2 border-b-2 group-hover/mod:brightness-90" style={wantInfoStyle}>
+            <span title={striptags(mod.mod?.description ?? "", { tagReplacementText: " " })} className="px-3 bg-inherit whitespace-nowrap text-ellipsis overflow-hidden py-2 text-sm border-t-2 border-b-2 group-hover:brightness-90" style={wantInfoStyle}>
                 {striptags(mod.mod?.summary ?? "", { tagReplacementText: " " })}
             </span>
-            <div className="h-full bg-inherit flex items-center justify-center mr-3 rounded-r-md pr-2 border-t-2 border-b-2 border-r-2 group-hover/mod:brightness-90" style={wantInfoStyle}>
+            <div className="h-full bg-inherit flex items-center justify-center mr-3 rounded-r-md pr-2 border-t-2 border-b-2 border-r-2 group-hover:brightness-90" style={wantInfoStyle}>
                 {installedVersion && (
                     <BsmButton
-                        className="z-[1] h-7 w-7 p-[5px] rounded-full group-hover/mod:brightness-90"
+                        className="z-[1] h-7 w-7 p-[5px] rounded-full group-hover:brightness-90"
                         icon="trash"
                         disabled={disabled}
                         withBar={false}

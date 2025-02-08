@@ -1,3 +1,4 @@
+import Tippy from "@tippyjs/react";
 import { CSSProperties } from "react";
 
 type Props = {
@@ -22,11 +23,16 @@ export function FileSizeText({ fileSize, wantInfoStyle }: Props) {
     };
 
     return (
-        <span className={`min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover/mod:brightness-90 ${(isLargeMod ? "text-red-400 group/tooltip" : (isMediumMod ? "text-yellow-400 group/tooltip" : "") || "")}`} style={wantInfoStyle}>
-                {getFormattedSize()}
-                <span className={`opacity-0 group-hover/tooltip:opacity-100 text-center py-[5px] px-0 rounded-[6px] top-[7%] right-[105%] transition-opacity duration-500 absolute bg-black after:absolute after:top-[50%] after:left-full after:-mt-[5px] after:border-5 after:border-solid after:border-t-transparent after:border-r-transparent after:border-b-transparent after:border-l-black ${(isLargeMod ? `w-[160px] text-red-400` : (isMediumMod ? `w-[140px] text-yellow-400` : "") || "")}`}>
-                    {(isLargeMod ? `This is a very large mod!` : (isMediumMod ? `This is a large mod!` : "") || "")}
+
+        <Tippy
+            content={(isLargeMod ? `This is a very large mod!` : (isMediumMod ? `This is a large mod!` : "") || "")}
+            placement="left"
+            theme={`${(isLargeMod ? `red` : (isMediumMod ? `yellow` : "") || "")}`}
+            className={`${isLargeMod || isMediumMod ? `` : `opacity-0`}`}
+            delay={[50, 0]} >
+                <span className={`min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover:brightness-90 ${(isLargeMod ? "text-red-400" : (isMediumMod ? "text-yellow-400" : "") || "")}`} style={wantInfoStyle}>
+                    {getFormattedSize()}
                 </span>
-            </span>
+        </Tippy>
     );
 }
