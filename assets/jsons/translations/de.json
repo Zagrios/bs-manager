@@ -247,6 +247,7 @@
                     "ja-JP": "日本語",
                     "ko-KR": "한국어",
                     "uk-UA": "Українська",
+                    "tl-PH": "Filipino",
                     "translated": {
                         "en-EN": "Englisch, Vereinigtes Königreich",
                         "en-US": "Englisch, USA",
@@ -260,7 +261,8 @@
                         "zh-TW": "Traditionelles Chinesisch",
                         "ja-JP": "Japanisch",
                         "ko-KR": "Koreanisch",
-                        "uk-UA": "Ukrainisch"
+                        "uk-UA": "Ukrainisch",
+                        "tl-PH": "Filipino"
                     }
                 }
             },
