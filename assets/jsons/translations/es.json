@@ -139,6 +139,7 @@
                 "mods-grid": {
                     "header-bar": {
                         "name": "Nombre",
+                        "size": "Tamaño",
                         "installed": "Instalado",
                         "latest": "Último",
                         "description": "Descripción",

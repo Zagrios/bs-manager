@@ -139,6 +139,7 @@
                 "mods-grid": {
                     "header-bar": {
                         "name": "이름",
+                        "size": "크기",
                         "installed": "설치됨",
                         "latest": "최신",
                         "description": "설명",
