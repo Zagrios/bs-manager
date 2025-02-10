@@ -226,20 +226,16 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
             return noop();
         }
 
-        getAcceptDisclaimerKey()
-            .then(async (canLoad) => {
-                if (!canLoad) {
-                    return onDisclamerDecline?.();
-                }
+        getAcceptDisclaimerKey().then(async canLoad => {
+            if (!canLoad) {
+                return onDisclamerDecline?.();
+            }
 
-                let status = ModsGridStatus.OK;
-                if (window.electron.platform === "linux") {
-                    status = await modsManager.getModsGridStatus();
-                }
-                setGridStatus(status);
+            const status = await modsManager.getModsGridStatus();
+            setGridStatus(() => status);
 
-                loadMods();
-            });
+            loadMods();
+        });
 
         return () => {
             setMoreInfoMod(null);
@@ -352,7 +348,7 @@ function ModStatus({ text, image, spin = false, children }: { text: string; imag
     return (
         <div className="w-full h-full flex flex-col items-center justify-center text-gray-800 dark:text-gray-200">
             <img className={`w-32 h-32 ${spin ? "spin-loading" : ""}`} src={image} alt=" " />
-            <span className="text-xl mt-3 italic">{t(text)}</span>
+            <span className="text-xl mt-3 italic text-center">{t(text)}</span>
             {children}
         </div>
     );

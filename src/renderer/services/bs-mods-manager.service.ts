@@ -9,6 +9,7 @@ import { ProgressionInterface } from "shared/models/progress-bar";
 import { BbmFullMod, BbmModVersion } from "shared/models/mods/mod.interface";
 import { logRenderError } from "renderer";
 import { ModsGridStatus } from "shared/models/mods/mod-ipc.model";
+import { LinuxService } from "./linux.service";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -18,6 +19,7 @@ export class BsModsManagerService {
     private readonly ipcService: IpcService;
     private readonly progressBar: ProgressBarService;
     private readonly notifications: NotificationService;
+    private readonly linux: LinuxService
 
     public readonly isUninstalling$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
@@ -32,6 +34,7 @@ export class BsModsManagerService {
         this.ipcService = IpcService.getInstance();
         this.progressBar = ProgressBarService.getInstance();
         this.notifications = NotificationService.getInstance();
+        this.linux = LinuxService.getInstance();
     }
 
     public getAvailableMods(version: BSVersion): Observable<BbmFullMod[]> {
@@ -206,11 +209,16 @@ export class BsModsManagerService {
     }
 
     public async getModsGridStatus(): Promise<ModsGridStatus> {
-        return lastValueFrom(this.ipcService.sendV2("bs-mods.get-mods-grid-status"))
-            .catch(error => {
-                logRenderError(error);
-                return ModsGridStatus.UNKNOWN;
-            });
+
+        if(window.electron.platform === "linux"){
+            const winePrefix = await lastValueFrom(this.linux.getWinePrefixPath());
+            if(!winePrefix){
+                logRenderError("Could not find BSManager WINEPREFIX path");
+                return ModsGridStatus.NO_WINEPREFIX;
+            }
+        }
+
+        return ModsGridStatus.OK;
     }
 
 }
