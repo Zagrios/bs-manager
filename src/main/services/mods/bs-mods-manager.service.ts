@@ -19,6 +19,7 @@ import crypto from "crypto";
 import { BsmZipExtractor } from "main/models/bsm-zip-extractor.class";
 import { BsmShellLog, bsmSpawn } from "main/helpers/os.helpers";
 import { BbmFullMod, BbmModVersion, ExternalMod } from "../../../shared/models/mods/mod.interface";
+import { ModsGridStatus } from "shared/models/mods/mod-ipc.model";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -158,11 +159,10 @@ export class BsModsManagerService {
             winePath = `"${winePathResult}"`;
 
             const winePrefix = this.linuxService.getWinePrefixPath();
-            if (winePrefix) {
-                env.WINEPREFIX = winePrefix;
-            } else {
-                log.warn("Could not find BSManager WINEPREFIX path, using system's default value instead");
+            if (!winePrefix) {
+                throw new CustomError("Could not find BSManager WINEPREFIX path", "no-wineprefix");
             }
+            env.WINEPREFIX = winePrefix;
         }
 
         return new Promise<boolean>(resolve => {
@@ -564,6 +564,24 @@ export class BsModsManagerService {
             .catch(err => obs.error(err))
             .finally(() => obs.complete());
         });
+    }
+
+    public async getModsGridStatus(): Promise<ModsGridStatus> {
+        if (process.platform === "linux") {
+            const wineprefix = this.linuxService.getWinePrefixPath();
+            if (!wineprefix) {
+                log.error("Could not find BSManager WINEPREFIX path");
+                return ModsGridStatus.NO_WINEPREFIX;
+            }
+        }
+
+        const beatModsUp = await this.beatModsApi.isUp();
+        if (!beatModsUp) {
+            return ModsGridStatus.BEATMODS_DOWN;
+        }
+
+
+        return ModsGridStatus.OK;
     }
 }
 

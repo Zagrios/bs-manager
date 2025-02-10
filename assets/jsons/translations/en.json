@@ -131,6 +131,11 @@
                 "loading-mods": "Loading mods...",
                 "no-internet": "No internet",
                 "mods-not-available": "No mods are available yet for this version of Beat Saber",
+                "status": {
+                    "no-wineprefix": "Could not find BSManager WINEPREFIX path. Please launch Beat Saber in BSManager first.",
+                    "beatmods-down": "Beatmods is currently unreachable. Please retry later. If the issue persists, inform us on {links}.",
+                    "unknown": "An unknown error occurred ¯\\_(ツ)_/¯"
+                },
                 "buttons": {
                     "more-infos": "More info",
                     "install-or-update": "Install or update",
@@ -592,7 +597,8 @@
                 "msg": {
                     "success": "All mods have been uninstalled.",
                     "errors": {
-                        "no-mods": "No mods are installed in this version 😑"
+                        "no-mods": "No mods are installed in this version 😑",
+                        "no-wineprefix": "Could not find BSManager WINEPREFIX path. Please launch Beat Saber in BSManager first."
                     }
                 }
             },

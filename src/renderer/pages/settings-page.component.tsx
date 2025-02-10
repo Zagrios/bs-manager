@@ -47,6 +47,7 @@ import { tryit } from "shared/helpers/error.helpers";
 import { InstallationLocationService } from "renderer/services/installation-location.service";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 import { OculusDownloaderService } from "renderer/services/bs-version-download/oculus-downloader.service";
+import { DISCORD_URL } from "shared/constants";
 
 export function SettingsPage() {
 
@@ -240,7 +241,7 @@ export function SettingsPage() {
     const openGithub = () => linkOpener.open("https://github.com/Zagrios/bs-manager");
     const openReportBug = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&template=-bug--bug-report.md&title=%5BBUG%5D+%3A+");
     const openRequestFeatures = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=enhancement&template=-feat---feature-request.md&title=%5BFEAT.%5D+%3A+");
-    const openDiscord = () => linkOpener.open("https://discord.gg/uSqbHVpKdV");
+    const openDiscord = () => linkOpener.open(DISCORD_URL);
     const openTwitter = () => linkOpener.open("https://twitter.com/BSManager_");
 
     const openLogs = () => lastValueFrom(ipcService.sendV2("open-logs"));

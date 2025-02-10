@@ -33,3 +33,9 @@ ipc.on("bs-mods.uninstall-all-mods", (args, reply) => {
     const modsManager = BsModsManagerService.getInstance();
     reply(modsManager.uninstallAllMods(args));
 });
+
+ipc.on("bs-mods.get-mods-grid-status", (_, reply) => {
+    const modsManager = BsModsManagerService.getInstance();
+    reply(from(modsManager.getModsGridStatus()));
+});
+

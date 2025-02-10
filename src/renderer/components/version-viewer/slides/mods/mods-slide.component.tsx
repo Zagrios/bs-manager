@@ -9,7 +9,7 @@ import BeatWaitingImg from "../../../../../../assets/images/apngs/beat-waiting.p
 import BeatConflictImg from "../../../../../../assets/images/apngs/beat-conflict.png";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { lastValueFrom } from "rxjs";
-import { useTranslation, useTranslationV2 } from "renderer/hooks/use-translation.hook";
+import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods-disclaimer-modal.component";
@@ -22,6 +22,9 @@ import { UninstallAllModsModal } from "renderer/components/modal/modal-types/uni
 import Tippy from "@tippyjs/react";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { Dropzone } from "renderer/components/shared/dropzone.component";
+import { ModsGridStatus } from "shared/models/mods/mod-ipc.model";
+import { BsmLink } from "renderer/components/shared/bsm-link.component";
+import { DISCORD_URL, GITHUB_URL } from "shared/constants";
 
 export type ModsSlideRef = {
     loadMods: () => Promise<void>;
@@ -42,6 +45,7 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
     const os = useService(OsDiagnosticService);
     const progress = useService(ProgressBarService);
 
+    const [gridStatus, setGridStatus] = useState(ModsGridStatus.OK);
     const [modsAvailable, setModsAvailable] = useState(null as Map<BbmCategories, BbmFullMod[]>);
     const [modsInstalled, setModsInstalled] = useState(null as Map<BbmCategories, BbmFullMod[]>);
     const [modsSelected, setModsSelected] = useState([] as BbmFullMod[]);
@@ -185,8 +189,23 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
         setModsSelected(() => []);
     }
 
+    const getAcceptDisclaimerKey = async () => {
+        if (configService.get<boolean>(ACCEPTED_DISCLAIMER_KEY)) {
+            return true;
+        }
+
+        const res = await modals.openModal(ModsDisclaimerModal);
+        const haveAccepted = res.exitCode === ModalExitCode.COMPLETED;
+
+        if (haveAccepted) {
+            configService.set(ACCEPTED_DISCLAIMER_KEY, true);
+        }
+
+        return haveAccepted;
+    }
+
     const loadMods = async (): Promise<void> => {
-        if (os.isOffline) {
+        if (os.isOffline || gridStatus !== ModsGridStatus.OK) {
             return Promise.resolve();
         }
 
@@ -209,31 +228,23 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
             return noop();
         }
 
-        (async () => {
-                if (configService.get<boolean>(ACCEPTED_DISCLAIMER_KEY)) {
-                    return true;
+        getAcceptDisclaimerKey()
+            .then(async (canLoad) => {
+                if (!canLoad) {
+                    return onDisclamerDecline?.();
                 }
 
-                const res = await modals.openModal(ModsDisclaimerModal);
-                const haveAccepted = res.exitCode === ModalExitCode.COMPLETED;
+                const status = await modsManager.getModsGridStatus();
+                setGridStatus(status);
 
-                if (haveAccepted) {
-                    configService.set(ACCEPTED_DISCLAIMER_KEY, true);
-                }
-
-                return haveAccepted;
-        })().then(canLoad => {
-            if (!canLoad) {
-                return onDisclamerDecline?.();
-            }
-
-            loadMods();
-        });
+                loadMods();
+            });
 
         return () => {
             setMoreInfoMod(null);
             setModsAvailable(null);
             setModsInstalled(null);
+            setGridStatus(ModsGridStatus.OK);
         };
     }, [isActive, isOnline, version]);
 
@@ -258,9 +269,34 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
         }
     }, [modsAvailable]);
 
+    const renderStatus = () => {
+        if (gridStatus === ModsGridStatus.BEATMODS_DOWN) {
+            const [ textStart, textEnd ] = t("pages.version-viewer.mods.status.beatmods-down")
+                .split("{links}");
+            return <ModStatus image={BeatConflictImg}>
+                <span className="text-xl text-center px-2 mt-3 italic">
+                    {textStart}
+                    <BsmLink className="text-blue-500 underline" href={DISCORD_URL}>
+                        Discord
+                    </BsmLink>
+                    /
+                    <BsmLink className="text-blue-500 underline" href={GITHUB_URL}>
+                        GitHub
+                    </BsmLink>
+                    {textEnd}
+                </span>
+            </ModStatus>
+        }
+
+        return <ModStatus text={`pages.version-viewer.mods.status.${gridStatus}`} image={BeatConflictImg} />;
+    }
+
     const renderContent = () => {
         if (!isOnline) {
             return <ModStatus text="pages.version-viewer.mods.no-internet" image={BeatConflictImg} />;
+        }
+        if (gridStatus !== ModsGridStatus.OK) {
+            return renderStatus();
         }
         if (!modsAvailable) {
             return <ModStatus text="pages.version-viewer.mods.loading-mods" image={BeatWaitingImg} spin />;
@@ -331,13 +367,13 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
     );
 });
 
-function ModStatus({ text, image, spin = false, children }: { text: string; image: string; spin?: boolean, children?: ReactNode}) {
-    const t = useTranslation();
+function ModStatus({ text, image, spin = false, children }: { text?: string; image: string; spin?: boolean, children?: ReactNode}) {
+    const { text: t } = useTranslationV2();
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center text-gray-800 dark:text-gray-200">
             <img className={`w-32 h-32 ${spin ? "spin-loading" : ""}`} src={image} alt=" " />
-            <span className="text-xl mt-3 italic">{t(text)}</span>
+            {text && <span className="text-xl text-center px-2 mt-3 italic">{t(text)}</span>}
             {children}
         </div>
     );
