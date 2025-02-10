@@ -9,3 +9,8 @@ ipc.on("linux.verify-proton-folder", (_, reply) => {
     reply(of(linuxService.verifyProtonPath()));
 });
 
+ipc.on("linux.get-wine-prefix-path", (_, reply) => {
+    const linuxService = LinuxService.getInstance();
+    reply(of(linuxService.getWinePrefixPath()));
+});
+

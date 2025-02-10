@@ -33,3 +33,4 @@ ipc.on("bs-mods.uninstall-all-mods", (args, reply) => {
     const modsManager = BsModsManagerService.getInstance();
     reply(modsManager.uninstallAllMods(args));
 });
+

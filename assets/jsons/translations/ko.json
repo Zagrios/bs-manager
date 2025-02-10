@@ -131,6 +131,10 @@
                 "loading-mods": "모드를 불러오는 중...",
                 "no-internet": "인터넷 연결이 없습니다!",
                 "mods-not-available": "이 버전에서 사용할 수 있는 모드가 아직 없습니다.",
+                "status": {
+                    "no-wineprefix": "BSManager WINEPREFIX 경로를 찾을 수 없습니다. 먼저 BSManager에서 Beat Saber를 실행하세요.",
+                    "unknown": "알 수 없는 오류가 발생했습니다 (´・ω・`)"
+                },
                 "buttons": {
                     "more-infos": "자세히 보기",
                     "install-or-update": "설치 및 업데이트",
@@ -592,7 +596,8 @@
                 "msg": {
                     "success": "모든 Mod가 제거되었습니다.",
                     "errors": {
-                        "no-mods": "이 버전에 설치된 Mod가 없습니다 😑"
+                        "no-mods": "이 버전에 설치된 Mod가 없습니다 😑",
+                        "no-wineprefix": "BSManager WINEPREFIX 경로를 찾을 수 없습니다. 먼저 BSManager에서 Beat Saber를 실행하세요."
                     }
                 }
             },
