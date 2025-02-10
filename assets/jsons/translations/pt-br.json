@@ -250,6 +250,8 @@
                     "zh-TW": "正體中文",
                     "ja-JP": "日本語",
                     "ko-KR": "한국어",
+                    "uk-UA": "Українська",
+                    "tl-PH": "Filipino",
                     "translated": {
                         "en-EN": "Inglês, Reino Unido",
                         "en-US": "Inglês, Estados Unidos",
@@ -262,7 +264,9 @@
                         "zh-CN": "Chinês (Simplificado)",
                         "zh-TW": "Chinês (Tradicional)",
                         "ja-JP": "Japonês",
-                        "ko-KR": "Coreano"
+                        "ko-KR": "Coreano",
+                        "uk-UA": "Ucraniano",
+                        "tl-PH": "Filipino"
                     }
                 }
             },
@@ -830,7 +834,7 @@
                 "desc-plural": "{nb} mapas duplicados foram encontrados. Tem certeza de que deseja excluí-los?"
             }
         },
-        "link-contents":{
+        "link-contents": {
             "title": "Vincular {contentType}",
             "p-1": "Vincular {contentType} permite compartilhar {contentType} entre todas as suas versões que possuam essa função habilitada. Uma vez vinculados, essa versão irá se beneficiar dos {contentType} compartilhados.",
             "p-2": "Para que possa aproveitar a função de vinculação, todos os seus {itemsHtml} serão movidos para a pasta {sharedHtml}. Depois disso, um link simbólico apontando para a pasta compartilhada {contentType} irá substituir sua pasta original {contentType}.",
@@ -839,7 +843,7 @@
             "i-need-help": "Eu preciso de ajuda",
             "valid-btn": "Link {contentType}"
         },
-        "unlink-contents":{
+        "unlink-contents": {
             "title": "Desvincular {contentType}",
             "p-1": "Cuidado! Desvincular {contentType} irá desabilitar o compartilhamento de {contentType} para essa versão, até que seja habilitado novamente.",
             "p-2": "Para que possa desvincular seus mapas, o link simbólico criado anteriomente para {sharedHtml} será removido. Depois disso, todos os mapas na pasta compartilhada serão copiados para a pasta {itemsHtml} da sua versão do Beat Saber.",
@@ -1275,57 +1279,8 @@
         }
     },
     "dateformat": {
-        "dayNames": [
-            "Dom",
-            "Seg",
-            "Ter",
-            "Qua",
-            "Qui",
-            "Sex",
-            "Sab",
-            "Domingo",
-            "Segunda",
-            "Terça",
-            "Quarta",
-            "Quinta",
-            "Sexta",
-            "Sábado"
-        ],
-        "monthNames": [
-            "Jan",
-            "Fev",
-            "Mar",
-            "Abr",
-            "Maio",
-            "Jun",
-            "Jul",
-            "Ago",
-            "Set",
-            "Out",
-            "Nov",
-            "Dez",
-            "Janeiro",
-            "Fevereiro",
-            "Março",
-            "Abril",
-            "Maio",
-            "Junho",
-            "Julho",
-            "Agosto",
-            "Setembro",
-            "Outubro",
-            "Novembro",
-            "Dezembro"
-        ],
-        "timeNames": [
-            "a",
-            "p",
-            "am",
-            "pm",
-            "A",
-            "P",
-            "AM",
-            "PM"
-        ]
+        "dayNames": ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab", "Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"],
+        "monthNames": ["Jan", "Fev", "Mar", "Abr", "Maio", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez", "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"],
+        "timeNames": ["a", "p", "am", "pm", "A", "P", "AM", "PM"]
     }
 }

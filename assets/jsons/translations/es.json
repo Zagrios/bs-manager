@@ -250,6 +250,8 @@
                     "zh-TW": "正體中文",
                     "ja-JP": "日本語",
                     "ko-KR": "한국어",
+                    "uk-UA": "Українська",
+                    "tl-PH": "Filipino",
                     "translated": {
                         "en-EN": "Inglés, Reino Unido",
                         "en-US": "Inglés, Estados Unidos",
@@ -262,7 +264,9 @@
                         "zh-CN": "Chino simplificado",
                         "zh-TW": "Chino tradicional",
                         "ja-JP": "Japonés",
-                        "ko-KR": "Coreano"
+                        "ko-KR": "Coreano",
+                        "uk-UA": "Ucraniano",
+                        "tl-PH": "Filipino"
                     }
                 }
             },
@@ -1275,57 +1279,8 @@
         }
     },
     "dateformat": {
-        "dayNames": [
-            "Dom",
-            "Lun",
-            "Mar",
-            "Mié",
-            "Jue",
-            "Vie",
-            "Sáb",
-            "Domingo",
-            "Lunes",
-            "Martes",
-            "Miércoles",
-            "Jueves",
-            "Viernes",
-            "Sábado"
-        ],
-        "monthNames": [
-            "Ene",
-            "Feb",
-            "Mar",
-            "Abr",
-            "May",
-            "Jun",
-            "Jul",
-            "Ago",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dic",
-            "Enero",
-            "Febrero",
-            "Marzo",
-            "Abril",
-            "Mayo",
-            "Junio",
-            "Julio",
-            "Agosto",
-            "Septiembre",
-            "Octubre",
-            "Noviembre",
-            "Diciembre"
-        ],
-        "timeNames": [
-            "a",
-            "p",
-            "am",
-            "pm",
-            "A",
-            "P",
-            "AM",
-            "PM"
-        ]
+        "dayNames": ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+        "monthNames": ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+        "timeNames": ["a", "p", "am", "pm", "A", "P", "AM", "PM"]
     }
 }
