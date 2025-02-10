@@ -187,7 +187,7 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
         setModsSelected(() => []);
     }
 
-    const getAcceptDisclaimerKey = async () => {
+    const ensureDisclaimerAccepted = async (): Promise<boolean> => {
         if (configService.get<boolean>(ACCEPTED_DISCLAIMER_KEY)) {
             return true;
         }
@@ -226,7 +226,7 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
             return noop();
         }
 
-        getAcceptDisclaimerKey().then(async canLoad => {
+        ensureDisclaimerAccepted().then(async canLoad => {
             if (!canLoad) {
                 return onDisclamerDecline?.();
             }
