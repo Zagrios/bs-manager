@@ -159,6 +159,7 @@ export interface IpcChannelMapping {
 
     /* ** linux.ipcs ** */
     "linux.verify-proton-folder": { request: void, response: boolean };
+    "linux.get-wine-prefix-path": { request: void, response: string };
 
     /* ** oculus.ipcs ** */
     "is-oculus-sideloaded-apps-enabled": { request: void, response: boolean };

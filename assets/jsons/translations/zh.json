@@ -21,7 +21,7 @@
         "copied": "已复制!",
         "confirm": "确认",
         "choose-folder": "选择文件夹",
-        "Unknown": "发生了一个错误 ¯\\_(ツ)_/¯",
+        "unknown": "发生了一个错误 ¯\\_(ツ)_/¯",
         "warning": "警告",
         "continue": "继续",
         "shared": "共享",
@@ -131,6 +131,10 @@
                 "loading-mods": "Mod 加载中...",
                 "no-internet": "无网络",
                 "mods-not-available": "该版本 BeatSaber 暂无可用 Mod",
+                "status": {
+                    "no-wineprefix": "找不到 BSManager WINEPREFIX 路径。请先在 BSManager 中启动 Beat Saber。",
+                    "unknown": "发生了一个错误 ¯\\_(ツ)_/¯"
+                },
                 "buttons": {
                     "more-infos": "更多信息",
                     "install-or-update": "安装或更新",
@@ -241,11 +245,14 @@
                     "es-ES": "Español",
                     "it-IT": "Italiano",
                     "de-DE": "Deutsch",
+                    "pt-BR": "Português (Brasil)",
                     "ru-RU": "Русский",
                     "zh-CN": "简体中文",
                     "zh-TW": "正體中文",
                     "ja-JP": "日本語",
                     "ko-KR": "한국어",
+                    "uk-UA": "Українська",
+                    "tl-PH": "Filipino",
                     "translated": {
                         "en-EN": "英式英语",
                         "en-US": "美式英语",
@@ -258,7 +265,9 @@
                         "zh-CN": "简体中文",
                         "zh-TW": "正体中文",
                         "ja-JP": "日语",
-                        "ko-KR": "韩语"
+                        "ko-KR": "韩语",
+                        "uk-UA": "烏克蘭",
+                        "tl-PH": "菲律宾人"
                     }
                 }
             },
@@ -588,7 +597,8 @@
                 "msg": {
                     "success": "所有 Mod 已被卸载。",
                     "errors": {
-                        "no-mods": "该版本中没有安装 Mod 😑"
+                        "no-mods": "该版本中没有安装 Mod 😑",
+                        "no-wineprefix": "找不到 BSManager WINEPREFIX 路径。请先在 BSManager 中启动 Beat Saber。"
                     }
                 }
             },
@@ -946,7 +956,7 @@
     "maps": {
         "map-filter-panel": {
             "duration": "时长",
-            "nps" : "每秒音符数",
+            "nps": "每秒音符数",
             "njs": "音符跳跃速度",
             "tags": "标签",
             "specificities": "general",
@@ -1027,11 +1037,11 @@
             "by": "By {songAutor}",
             "mapped-by": "mapped by",
             "delete": "删除",
-            "preview" : "预览地图",
-            "bsr-code" : "BSR代码",
-            "download" : "下载地图",
-            "downloading" :"正在下载地图",
-            "cancel-download" : "取消下载",
+            "preview": "预览地图",
+            "bsr-code": "BSR代码",
+            "download": "下载地图",
+            "downloading": "正在下载地图",
+            "cancel-download": "取消下载",
             "hightlight-difficulty": "突出显示难度"
         }
     },

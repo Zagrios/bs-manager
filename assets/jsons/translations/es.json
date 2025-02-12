@@ -131,6 +131,10 @@
                 "loading-mods": "Cargando mods...",
                 "no-internet": "Sin internet",
                 "mods-not-available": "Aún no hay mods disponibles para esta versión de Beat Saber",
+                "status": {
+                    "no-wineprefix": "No se pudo encontrar la ruta del WINEPREFIX de BSManager. Por favor, inicia Beat Saber en BSManager primero.",
+                    "unknown": "Se ha producido un error desconocido ¯\\_(ツ)_/¯"
+                },
                 "buttons": {
                     "more-infos": "Más información",
                     "install-or-update": "Instalar o actualizar",
@@ -247,6 +251,8 @@
                     "zh-TW": "正體中文",
                     "ja-JP": "日本語",
                     "ko-KR": "한국어",
+                    "uk-UA": "Українська",
+                    "tl-PH": "Filipino",
                     "translated": {
                         "en-EN": "Inglés, Reino Unido",
                         "en-US": "Inglés, Estados Unidos",
@@ -259,7 +265,9 @@
                         "zh-CN": "Chino simplificado",
                         "zh-TW": "Chino tradicional",
                         "ja-JP": "Japonés",
-                        "ko-KR": "Coreano"
+                        "ko-KR": "Coreano",
+                        "uk-UA": "Ucraniano",
+                        "tl-PH": "Filipino"
                     }
                 }
             },
@@ -589,7 +597,8 @@
                 "msg": {
                     "success": "Todos los mods han sido desinstalados.",
                     "errors": {
-                        "no-mods": "No hay mods instalados en esta versión 😑"
+                        "no-mods": "No hay mods instalados en esta versión 😑",
+                        "no-wineprefix": "No se pudo encontrar la ruta del WINEPREFIX de BSManager. Por favor, inicia Beat Saber en BSManager primero."
                     }
                 }
             },
@@ -1271,57 +1280,8 @@
         }
     },
     "dateformat": {
-        "dayNames": [
-            "Dom",
-            "Lun",
-            "Mar",
-            "Mié",
-            "Jue",
-            "Vie",
-            "Sáb",
-            "Domingo",
-            "Lunes",
-            "Martes",
-            "Miércoles",
-            "Jueves",
-            "Viernes",
-            "Sábado"
-        ],
-        "monthNames": [
-            "Ene",
-            "Feb",
-            "Mar",
-            "Abr",
-            "May",
-            "Jun",
-            "Jul",
-            "Ago",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dic",
-            "Enero",
-            "Febrero",
-            "Marzo",
-            "Abril",
-            "Mayo",
-            "Junio",
-            "Julio",
-            "Agosto",
-            "Septiembre",
-            "Octubre",
-            "Noviembre",
-            "Diciembre"
-        ],
-        "timeNames": [
-            "a",
-            "p",
-            "am",
-            "pm",
-            "A",
-            "P",
-            "AM",
-            "PM"
-        ]
+        "dayNames": ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"],
+        "monthNames": ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+        "timeNames": ["a", "p", "am", "pm", "A", "P", "AM", "PM"]
     }
 }

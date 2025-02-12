@@ -131,6 +131,10 @@
                 "loading-mods": "Modを読み込み中...",
                 "no-internet": "インターネット接続がありません!",
                 "mods-not-available": "このバージョンで使用できるMODはまだありません。",
+                "status": {
+                    "no-wineprefix": "BSManager WINEPREFIXのパスが見つかりませんでした。まずBSManagerでBeat Saberを起動してください。",
+                    "unknown": "不明なエラーが発生しました (´・ω・`)"
+                },
                 "buttons": {
                     "more-infos": "詳細情報",
                     "install-or-update": "インストールとアップデート",
@@ -247,6 +251,8 @@
                     "zh-TW": "正體中文",
                     "ja-JP": "日本語",
                     "ko-KR": "한국어",
+                    "uk-UA": "Українська",
+                    "tl-PH": "Filipino",
                     "translated": {
                         "en-EN": "イギリス英語",
                         "en-US": "アメリカ英語",
@@ -259,7 +265,9 @@
                         "zh-CN": "簡体字中国",
                         "zh-TW": "繁体字中国",
                         "ja-JP": "日本語",
-                        "ko-KR": "韓国語"
+                        "ko-KR": "韓国語",
+                        "uk-UA": "ウクライナ語",
+                        "tl-PH": "フィリピン人"
                     }
                 }
             },
@@ -589,7 +597,8 @@
                 "msg": {
                     "success": "すべてのModをアンインストールしました。",
                     "errors": {
-                        "no-mods": "このバージョンのModはインストールされていません 😑"
+                        "no-mods": "このバージョンのModはインストールされていません 😑",
+                        "no-wineprefix": "BSManager WINEPREFIXのパスが見つかりませんでした。まずBSManagerでBeat Saberを起動してください。"
                     }
                 }
             },
@@ -947,7 +956,7 @@
     "maps": {
         "map-filter-panel": {
             "duration": "尺",
-            "nps" : "秒間ノート数",
+            "nps": "秒間ノート数",
             "njs": "ノートジャンプ速度",
             "tags": "タグ",
             "specificities": "一般",
@@ -1028,11 +1037,11 @@
             "by": "By {songAutor}",
             "mapped-by": "作成者 ",
             "delete": "削除",
-            "preview" : "マッププレビュー",
-            "bsr-code" : "BSRコード",
-            "download" : "マップをダウンロード",
-            "downloading" :"マップをダウンロード中",
-            "cancel-download" : "ダウンロードをキャンセル",
+            "preview": "マッププレビュー",
+            "bsr-code": "BSRコード",
+            "download": "マップをダウンロード",
+            "downloading": "マップをダウンロード中",
+            "cancel-download": "ダウンロードをキャンセル",
             "hightlight-difficulty": "難易度をハイライト"
         }
     },
