@@ -88,6 +88,7 @@ export interface IpcChannelMapping {
     "bs-mods.install-mods": { request: { mods: BbmFullMod[]; version: BSVersion }, response: Progression };
     "bs-mods.uninstall-mods": { request: { mods: BbmFullMod[]; version: BSVersion }, response: Progression };
     "bs-mods.uninstall-all-mods": { request: BSVersion, response: Progression };
+    "bs-mods.beatmods-up": { request: void, response: boolean };
 
     /* ** bs-playlist-ipcs ** */
     "one-click-install-playlist": { request: string, response: Progression<DownloadPlaylistProgressionData> };

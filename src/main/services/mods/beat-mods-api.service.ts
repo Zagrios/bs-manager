@@ -26,6 +26,17 @@ export class BeatModsApiService {
         this.requestService = RequestService.getInstance();
     }
 
+    public async isUp(): Promise<boolean> {
+        try {
+            // The data in status can be dropped
+            await this.requestService.getJSON<{}>(`${this.MODS_REPO_API_URL}/status`);
+            return true;
+        } catch (error) {
+            log.error("Could not connect to beatmods", error);
+            return false;
+        }
+    }
+
     private getVersionModsUrl(version: BSVersion): string {
         const platform: BbmPlatform = version.oculus || version.metadata?.store === BsStore.OCULUS ? BbmPlatform.OculusPC : BbmPlatform.SteamPC;
         return `${this.MODS_REPO_API_URL}/mods?status=verified&gameVersion=${version.BSVersion}&gameName=BeatSaber&platform=${platform}`;

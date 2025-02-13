@@ -16,6 +16,7 @@ export interface UninstallModsResult {
 export enum ModsGridStatus {
     OK = "",
     NO_WINEPREFIX = "no-wineprefix",
+    BEATMODS_DOWN = "beatmods-down",
     UNKNOWN = "unknown"
 }
 
