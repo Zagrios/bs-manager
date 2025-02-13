@@ -245,11 +245,14 @@
                     "es-ES": "Español",
                     "it-IT": "Italiano",
                     "de-DE": "Deutsch",
+                    "pt-BR": "Português (Brasil)",
                     "ru-RU": "Русский",
                     "zh-CN": "简体中文",
                     "zh-TW": "正體中文",
                     "ja-JP": "日本語",
                     "ko-KR": "한국어",
+                    "uk-UA": "Українська",
+                    "tl-PH": "Filipino",
                     "translated": {
                         "en-EN": "英式英语",
                         "en-US": "美式英语",
@@ -262,7 +265,9 @@
                         "zh-CN": "简体中文",
                         "zh-TW": "正体中文",
                         "ja-JP": "日语",
-                        "ko-KR": "韩语"
+                        "ko-KR": "韩语",
+                        "uk-UA": "烏克蘭",
+                        "tl-PH": "菲律宾人"
                     }
                 }
             },
@@ -951,7 +956,7 @@
     "maps": {
         "map-filter-panel": {
             "duration": "时长",
-            "nps" : "每秒音符数",
+            "nps": "每秒音符数",
             "njs": "音符跳跃速度",
             "tags": "标签",
             "specificities": "general",
@@ -1032,11 +1037,11 @@
             "by": "By {songAutor}",
             "mapped-by": "mapped by",
             "delete": "删除",
-            "preview" : "预览地图",
-            "bsr-code" : "BSR代码",
-            "download" : "下载地图",
-            "downloading" :"正在下载地图",
-            "cancel-download" : "取消下载",
+            "preview": "预览地图",
+            "bsr-code": "BSR代码",
+            "download": "下载地图",
+            "downloading": "正在下载地图",
+            "cancel-download": "取消下载",
             "hightlight-difficulty": "突出显示难度"
         }
     },

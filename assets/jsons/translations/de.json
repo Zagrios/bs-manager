@@ -251,6 +251,8 @@
                     "zh-TW": "正體中文",
                     "ja-JP": "日本語",
                     "ko-KR": "한국어",
+                    "uk-UA": "Українська",
+                    "tl-PH": "Filipino",
                     "translated": {
                         "en-EN": "Englisch, Vereinigtes Königreich",
                         "en-US": "Englisch, USA",
@@ -263,7 +265,9 @@
                         "zh-CN": "Vereinfachtes Chinesisch",
                         "zh-TW": "Traditionelles Chinesisch",
                         "ja-JP": "Japanisch",
-                        "ko-KR": "Koreanisch"
+                        "ko-KR": "Koreanisch",
+                        "uk-UA": "Ukrainisch",
+                        "tl-PH": "Filipino"
                     }
                 }
             },
@@ -952,7 +956,7 @@
     "maps": {
         "map-filter-panel": {
             "duration": "Länge",
-            "nps" : "Noten pro Sekunde",
+            "nps": "Noten pro Sekunde",
             "njs": "Notensprunggeschwindigkeit",
             "tags": "Stichwörter",
             "specificities": "Allgemein",
@@ -1033,11 +1037,11 @@
             "by": "Von {songAutor}",
             "mapped-by": "Gemapped von",
             "delete": "Löschen",
-            "preview" : "Kartenvorschau",
-            "bsr-code" : "BSR Code",
-            "download" : "Karte herunterladen",
-            "downloading" :"Karte wird heruntergeladen",
-            "cancel-download" : "Download abbrechen",
+            "preview": "Kartenvorschau",
+            "bsr-code": "BSR Code",
+            "download": "Karte herunterladen",
+            "downloading": "Karte wird heruntergeladen",
+            "cancel-download": "Download abbrechen",
             "hightlight-difficulty": "Schwierigkeit hervorheben"
         }
     },

@@ -35,7 +35,7 @@ type Props = { version: BSVersion; isActive?: boolean, onDisclamerDecline: () =>
 export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, onDisclamerDecline }, forwaredRef) => {
     const ACCEPTED_DISCLAIMER_KEY = "accepted-mods-disclaimer";
 
-    const { text: t } = useTranslationV2();
+    const { text: t, element: te } = useTranslationV2();
 
     const modsManager = useService(BsModsManagerService);
     const configService = useService(ConfigurationService);
@@ -189,7 +189,7 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
         setModsSelected(() => []);
     }
 
-    const getAcceptDisclaimerKey = async () => {
+    const ensureDisclaimerAccepted = async (): Promise<boolean> => {
         if (configService.get<boolean>(ACCEPTED_DISCLAIMER_KEY)) {
             return true;
         }
@@ -228,17 +228,16 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
             return noop();
         }
 
-        getAcceptDisclaimerKey()
-            .then(async (canLoad) => {
-                if (!canLoad) {
-                    return onDisclamerDecline?.();
-                }
+        ensureDisclaimerAccepted().then(async canLoad => {
+            if (!canLoad) {
+                return onDisclamerDecline?.();
+            }
 
-                const status = await modsManager.getModsGridStatus();
-                setGridStatus(status);
+            const status = await modsManager.getModsGridStatus();
+            setGridStatus(() => status);
 
-                loadMods();
-            });
+            loadMods();
+        });
 
         return () => {
             setMoreInfoMod(null);
@@ -271,11 +270,9 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
 
     const renderStatus = () => {
         if (gridStatus === ModsGridStatus.BEATMODS_DOWN) {
-            const [ textStart, textEnd ] = t("pages.version-viewer.mods.status.beatmods-down")
-                .split("{links}");
             return <ModStatus image={BeatConflictImg}>
                 <span className="text-xl text-center px-2 mt-3 italic">
-                    {textStart}
+                {te("pages.version-viewer.mods.status.beatmods-down", {links: (<>
                     <BsmLink className="text-blue-500 underline" href={DISCORD_URL}>
                         Discord
                     </BsmLink>
@@ -283,7 +280,7 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
                     <BsmLink className="text-blue-500 underline" href={GITHUB_URL}>
                         GitHub
                     </BsmLink>
-                    {textEnd}
+                </>)})}
                 </span>
             </ModStatus>
         }

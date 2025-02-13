@@ -1,0 +1,1335 @@
+{
+    "misc": {
+        "download": "I-download",
+        "add": "Magdagdag",
+        "verify": "I-verify",
+        "launch": "I-launch",
+        "mods": "Mods",
+        "maps": "Maps",
+        "playlists": "Playlists",
+        "models": "Models",
+        "avatars": "Avatars",
+        "sabers": "Sabers",
+        "platforms": "Platforms",
+        "blocks": "Blocks",
+        "cancel": "Kanselahin",
+        "delete": "Tanggalin",
+        "accept": "Tanggapin",
+        "refuse": "Tanggihan",
+        "apply": "I-apply",
+        "copy": "Kopyahin",
+        "copied": "Nakopya na!",
+        "confirm": "Kumpirmahin",
+        "choose-folder": "Pumili ng folder",
+        "unknown": "May hindi alam na error na nangyari ¯\\_(ツ)_/¯",
+        "warning": "Babala",
+        "continue": "Magpatuloy",
+        "shared": "Ibinahagi",
+        "pin": "I-pin",
+        "unpin": "I-unpin"
+    },
+    "generic": {
+        "env": {
+            "parse": "Hindi maayos na na-parse ang string ng env var."
+        }
+    },
+    "title-bar": {
+        "outdated": "lipas na"
+    },
+    "nav-bar": {
+        "add-version": "Magdagdag ng bersyon",
+        "settings": "Settings",
+        "shared": {
+            "text": "Shared",
+            "tooltip": "Shared contents"
+        }
+    },
+    "pages": {
+        "version-viewer": {
+            "launch-mods": {
+                "oculus": "Oculus Mode",
+                "oculus-description": "Kung ginagamit mo ang Beat Saber via Steam, pinapayagan mo itong gamitin ang VR composer ng Oculus upang iwasan ang pagbukas ng SteamVR, para sa posibleng pagbuti ng performance. Hindi ito kinakailangan upang gamitin ang Oculus headsets.",
+                "desktop": "FPFC Mode",
+                "desktop-description": "Ang First Person Flying Controller mode ay pwede mong gamitin ang WASD at mouse upang mag-navigate sa menu ng laro. Pinapadali nito ang pagsusuri, dahil hindi mo na kailangang isuot ang headset!",
+                "debug": "Debug Mode",
+                "debug-description": "I-enable ang output log window para sa IPA. Ipapakita nito ang debug console na ginagamit ng mga mod.",
+                "outdated-tippy": "Ang bersyon na ito ay lipas na, at maaaring hindi na gumana ang ilang mods o features tulad ng inaasahan. Mas mainam na gumamit ng inirerekomendang bersyon ({recommendedVersion}) ng Beat Saber upang magamit ang mga pinakabagong features at pag-aayos ng bug.",
+                "advanced-launch": {
+                    "button": "Launch options",
+                    "placeholder": "Launch options hal: KEY=VALUE %command% fpfc"
+                },
+                "skipsteam": "I-skip ang Steam",
+                "skipsteam-description": "Pinipigilan mo ang Steam na awtomatikong magbukas kasama ng Beat Saber, i-enable ito kung gumagamit ka ng ibang VR runtime tulad ng WiVRn o Monado na maaaring magdulot ng problema sa SteamVR.",
+                "map-editor": "Map Editor",
+                "map-editor-description": "Simulan ang opisyal na Beat Saber map editor imbis na ang laro.",
+                "proton-logs": "Proton Logs",
+                "proton-logs-description": "I-enable ang pag-record ng proton logs para sa Beat Saber install na ito sa \"{versionPath}\"."
+            },
+            "maps": {
+                "search-bar": {
+                    "search-placeholder": "Maghanap ng mapa",
+                    "filters-btn": "Filters",
+                    "dropdown": {
+                        "export-maps": "I-export ang mga maps",
+                        "delete-maps": "Tanggalin ang mga mapa",
+                        "delete-duplicate-maps": "Tanggalin ang mga na-double"
+                    }
+                },
+                "tabs": {
+                    "maps": {
+                        "actions": {
+                            "drop-down": {
+                                "browse-maps": "Mag-browse ng mga mapa",
+                                "import-maps": "Mag-import ng mga map"
+                            },
+                            "link-maps": {
+                                "tooltips": {
+                                    "link": "I-link ang mga mapa",
+                                    "unlink": "I-unlink ang mga mapa"
+                                }
+                            }
+                        },
+                        "empty-maps": {
+                            "text": "Walang mapa",
+                            "button": "I-download ang mga mapa"
+                        },
+                        "drop-zone": {
+                            "text": "I-import ang iyong mga mapa",
+                            "subtext": "I-drop ang iyong mga zip file dito upang i-import ang iyong mga mapa"
+                        },
+                        "sort": {
+                            "name": "Pangalan",
+                            "song-author": "Awtor ng Kanta",
+                            "map-author": "Awtor ng Mapa",
+                            "bpm": "BPM",
+                            "duration": "Haba",
+                            "likes": "Likes",
+                            "date-uploaded": "Petsa ng Pagka-upload"
+                        }
+                    },
+                    "playlists": {
+                        "drop-down": {
+                            "browse-playlists": "Mag-browse ng mga playlist",
+                            "create-a-playlist": "Gumawa ng playlist",
+                            "import-playlists": "Mag-import ng mga playlist"
+                        },
+                        "drop-zone": {
+                            "text": "I-import ang iyong mga playlist",
+                            "subtext": "I-drop ang iyong mga \".bplist\" o \".json\" na mga file dito upang i-import ang mga ito"
+                        },
+                        "sort": {
+                            "title": "Pamagat",
+                            "author": "Awtor",
+                            "number-of-maps": "Bilang ng mga Mapa",
+                            "duration": "Haba",
+                            "notes-per-second": "NPS"
+                        }
+                    }
+                }
+            },
+            "mods": {
+                "loading-mods": "Naglo-load ng mga mod...",
+                "no-internet": "Walang internet",
+                "mods-not-available": "Walang mod na available pa para sa bersyon na ito ng Beat Saber",
+                "status": {
+                    "no-wineprefix": "Hindi mahanap ang WINEPREFIX path ng BSManager. Pakilunsad muna ang Beat Saber sa BSManager.",
+                    "unknown": "May naganap na hindi kilalang error ¯\\_(ツ)_/¯"
+                },
+                "buttons": {
+                    "more-infos": "Higit pang impormasyon",
+                    "install-or-update": "I-install o i-update",
+                    "reinstall-all": "I-reinstall ang lahat"
+                },
+                "mods-grid": {
+                    "header-bar": {
+                        "name": "Pangalan",
+                        "installed": "Naka-install",
+                        "latest": "Pinakabago",
+                        "description": "Deskripsyon",
+                        "dropdown": {
+                            "import-mods": "I-import ang mga mod",
+                            "uninstall-all": "I-uninstall ang lahat",
+                            "unselect-all": "I-unselect and lahat"
+                        }
+                    }
+                },
+                "notifications": {
+                    "all-mods-already-installed": {
+                        "title": "Naka-install na ang mga mod",
+                        "description": "Ang lahat ng napiling mod ay naka-install na"
+                    },
+                    "outdated-mods": {
+                        "title": "Lipas na Mod",
+                        "title-plural": "Lipas ng mga Mod",
+                        "description": "Ang {name} mod ay lipas na. Gusto mo bang i-update ito?",
+                        "description-plural": "Ang bersyon na ito ay may {nb} lipas na mga mod. Gusto mo bang i-update ang mga ito?",
+                        "dont-remind-me": "Huwag akong paalalahanan",
+                        "update": "I-update"
+                    }
+                },
+                "drop-zone": {
+                    "text": "I-import ang iyong mga mod",
+                    "subtext": "I-drop ang iyong mga \"zip\" or \"dll\" na mga file dito upang i-import ang mga ito"
+                }
+            },
+            "dropdown": {
+                "open-folder": "Buksan ang folder",
+                "verify-files": "I-verify ang mga file",
+                "clone": "I-clone",
+                "edit": "I-edit",
+                "uninstall": "I-uninstall",
+                "create-shortcut": "Gumawa ng shortcut",
+                "shared-folders": "Shared Folders"
+            }
+        },
+        "available-versions": {
+            "title": "Mag-download ng bersyon",
+            "steam-release": "Release page",
+            "dropdown": {
+                "refresh": "I-refresh ang mga bersyon",
+                "import-version": "Mag-import ng bersyon"
+            },
+            "recommended": "inirerekomenda",
+            "recommended-tooltip": "Pinakamaayos na bersyon para i-mod"
+        },
+        "settings": {
+            "steam-and-oculus": {
+                "title": "Steam & Oculus",
+                "description": "Ang pag-log out ay magpapahintulot sa iyong magpalit ng account sa susunod na pag-download ng Beat Saber.",
+                "logout": "Mag-log out",
+                "logout-success": "Nakapag-logout na sa app",
+                "download-platform": {
+                    "title": "Default na Platform",
+                    "desc": "Pumili ng default na platform na gagamitin upang mag-download ng mga bersyon ng Beat Saber.",
+                    "always-ask": "Laging magtanong"
+                }
+            },
+            "appearance": {
+                "title": "Itsura",
+                "description": "Pumili ng dalawang pangunahing kulay ng BSManager.",
+                "reset": "I-reset",
+                "sub-title": "Tema",
+                "themes": {
+                    "dark": "Dark",
+                    "light": "Light",
+                    "os": "I-sync sa computer"
+                }
+            },
+            "installation-folder": {
+                "title": "Installation folder",
+                "description": "Palitan ang folder na maglalaman ng lahat ng nilalamang ida-download ng BSManager."
+            },
+            "proton-folder": {
+                "title": "Proton folder",
+                "description": "Palitan ang folder sa Proton path. (hal. Proton - Experimental)",
+                "errors": {
+                    "title": "Hindi na-set ang proton folder ng maayos",
+                    "invalid-folder": "Mali ang value ng Proton folder path"
+                }
+            },
+            "additional-content": {
+                "title": "Additional content",
+                "description": "Additional content na nagpapahintulot sa iyong i-customize ang Beat Saber!",
+                "deep-links": {
+                    "sub-title": "OneClick installations"
+                }
+            },
+            "language": {
+                "title": "Lengguwahe",
+                "description": "Pumili ng lengguwahe.",
+                "languages": {
+                    "en-EN": "English, UK",
+                    "en-US": "English, US",
+                    "fr-FR": "Français",
+                    "es-ES": "Español",
+                    "it-IT": "Italiano",
+                    "de-DE": "Deutsch",
+                    "pt-BR": "Português (Brasil)",
+                    "ru-RU": "Русский",
+                    "zh-CN": "简体中文",
+                    "zh-TW": "正體中文",
+                    "ja-JP": "日本語",
+                    "ko-KR": "한국어",
+                    "uk-UA": "Українська",
+                    "tl-PH": "Filipino",
+                    "translated": {
+                        "en-EN": "Ingles, Inglatera",
+                        "en-US": "Ingles, USA",
+                        "fr-FR": "Pranses",
+                        "es-ES": "Espanyol",
+                        "it-IT": "Italyano",
+                        "de-DE": "Aleman",
+                        "pt-BR": "Portuges (Brazil)",
+                        "ru-RU": "Ruso",
+                        "zh-CN": "Intsik (Simple)",
+                        "zh-TW": "Intsik (Trandisyunal)",
+                        "ja-JP": "Hapon",
+                        "ko-KR": "Koreano",
+                        "uk-UA": "Ukranyano",
+                        "tl-PH": "Filipino"
+                    }
+                }
+            },
+            "patreon": {
+                "title": "Supportahan ang BSManager 💖",
+                "description": "Suportahan ang proyekto at tulungan kami na magbigay ng patuloy na mga pagdagdag ng feature sa BSManager.",
+                "buttons": {
+                    "support": "Supportahan ang BSManager 🥰",
+                    "supporters": "Mga Supporters 👀"
+                },
+                "view": {
+                    "no-supporters": "Walang pang supporter",
+                    "sponsors": "Mga Sponsors",
+                    "supporters": "Mga Supporters"
+                }
+            },
+            "discord": {
+                "description": "Sumali sa komunidad ng BSManager sa pamamagitan ng pagsunod sa amin sa aming mga social media!"
+            },
+            "contribution": {
+                "description": "Magmungkahi ng mga bagong feature o mag-ulat ng bug upang matulungan ang pagpapabuti ng BSManager!",
+                "buttons": {
+                    "request-features": "Mag-request ng feature",
+                    "report-bug": "Mag-ulat ng bug",
+                    "open-logs": "Buksan ang mga logs"
+                }
+            },
+            "advanced": {
+                "title": "Advanced",
+                "description": "Mga advanced na setting para sa BSManager.",
+                "hardware-acceleration": {
+                    "title": "Hardware Acceleration",
+                    "description": "I-enable ang Hardware Acceleration upang gamitin ang iyong GPU at mapabuti ang performance ng BSManager. I-off ito kung nagiging mabagal ang app.",
+                    "modal": {
+                        "title": "Kailangang i-restart",
+                        "body": "Ang pagbabago ng setting ng hardware acceleration ay isasara at ire-relaunch ang BSManager. Sigurado ka bang gusto mong gawin ito?",
+                        "confirm-btn": "Oo, sigurado ako"
+                    },
+                    "error-notification": {
+                        "message": "Nagkaroon ng error, hindi ma-disable ang hardware acceleration."
+                    }
+                },
+                "use-symlinks": {
+                    "title": "Gumamit ng Symlinks",
+                    "description": "Gumamit ng Symlinks sa halip na Junctions upang mag-link ng mga folder. I-on lamang ito kung talagang kailangan mo ito.",
+                    "modal": {
+                        "title": "Symlink Permissions",
+                        "body": "Kapag gumagawa ng symlinks, kakailanganin ng BSManager ng mga pribilehiyo ng administrator o naka-enable na developer mode sa iyong sistema. Sigurado ka bang gusto mong magpatuloy?",
+                        "confirm-btn": "Oo, sigurado ako"
+                    },
+                    "error-notification": {
+                        "message": "Nagkaroon ng error, hindi ma-bago ang setting ng symlink."
+                    }
+                },
+                "use-system-proxy": {
+                    "title": "Gumamit ng system proxy",
+                    "description": "Gagawin ng BSManager ang mga network request sa pamamagitan ng iyong system proxy.",
+                    "error-notification": {
+                        "message": "Nagkaroon ng error, hindi ma-bago ang setting ng system proxy."
+                    }
+                }
+            }
+        }
+    },
+    "notifications": {
+        "types": {
+            "error": "🚨 Error",
+            "warning": "⚠️ Babala",
+            "success": "🎉 Success"
+        },
+        "common": {
+            "msg": {
+                "error-occurred": "Nagkaroon ng error"
+            }
+        },
+        "shared": {
+            "errors": {
+                "titles": {
+                    "operation-running": "Tumatakbo ang operasyon",
+                    "no-internet": "Walang internet",
+                    "file-not-supported": "Hindi suportado ang file"
+                },
+                "msg": {
+                    "operation-running": "Maghintay na matapos ang kasalukuyang operasyon, pagkatapos ay subukan muli.",
+                    "no-internet": "I-check ang iyong koneksyon at subukan muli..",
+                    "file-not-supported": "Tanging {types} na mga file lamang ang suportado."
+                }
+            }
+        },
+        "bs-download": {
+            "success": {
+                "titles": {
+                    "download-success": "Kumpleto and pag-download",
+                    "verification-finished": "Kumpleto and beripikasyon"
+                }
+            },
+            "steam-download": {
+                "warnings": {
+                    "msg": {
+                        "ManifestChecksum": "Ang naunang na-download na manifest ay hindi tumutugma sa bago 🤔",
+                        "ConnectionTimeout": "Mukhang mabagal ang iyong koneksyon sa internet 🥶",
+                        "ConnectionLost": "Nawala ang koneksyon, subukan muli...",
+                        "ConnectionError": "Hindi makakonekta sa Steam, subukan muli...",
+                        "Unknown": "May nangyaring kakaiba 🤔 Mukhang mabagal ang iyong koneksyon."
+                    }
+                },
+                "errors": {
+                    "msg": {
+                        "401": "Mukhang hindi tayo pinapayagan ng Steam na mag-download ng Beat Saber 😢",
+                        "404": "Hindi makakonek sa mga server ng Steam.",
+                        "ExeNotFoundWindows": "Nawawala ang \"DepotDownloader.exe\". Pakisuri kung ang executable na ito ay naka-quarantine ng iyong anti-virus.",
+                        "ExeNotFoundLinux": "\"Nawawala ang \"DepotDownloader\" na executable.",
+                        "Password": "Maling password.",
+                        "InvalidCredentials": "Maling login credentials, hindi aprubadong koneksyon, o sobrang daming pag-subok mag-login.",
+                        "NoManifest": "Walang manifest na natagpuan",
+                        "DirectoryCreate": "Hindi magawang mag-install ng mga kinakailangang folder.",
+                        "NotAvailableApp": "Sinusubukan mo bang mag-download ng Beat Saber kahit wala ka nito? 🤣",
+                        "DepotNotFound": "Hindi magawang i-download ang Beat Saber 😥 subukan muli maya-maya 😕",
+                        "NotCompleted": "Hindi nakumpleto ang pag-download ¯\\_(ツ)_/¯",
+                        "InvalidManifest": "Hindi magawang i-download ang Beat Saber 😥 subukan muli maya-maya 😕",
+                        "NoValidKey": "Hindi magawang i-download ang Beat Saber 😥 subukan muli maya-maya 😕",
+                        "NoManifestCode": "Hindi magawang i-download ang Beat Saber 😥 subukan muli maya-maya 😕",
+                        "Unknown": "May error na nangyari ¯\\_(ツ)_/¯",
+                        "NoServer": "Hindi makakonek sa mga server ng Steam.",
+                        "NotAllowed": "Mukhang hindi ka pinapayagang i-download ang Beat Saber 🥱",
+                        "ConnectionTimeout": "Hindi makakonekta sa Steam 😕",
+                        "SteamLib": "Kung nakakaranas ka ng error na ito, i-report ang bug sa GitHub kasama ang mga logs, pls.",
+                        "ConnectionError": "Hindi makakonekta sa Steam matapos ang 10 tries 🤯",
+                        "LicenceError": "Hindi makuha ang listahan ng mga lisensya.",
+                        "RateLimitExceeded": "Masyado ka nang maraming beses kumonek, maghintay ng kaunti at subukan muli mamaya.",
+                        "TokenRejected": "Ang iyong login token ay tinanggihan 😕 Paki subukan muli.",
+                        "AccessDenied": "Ang pag-access sa Steam ay tinanggihan."
+                    }
+                }
+            },
+            "oculus-download": {
+                "errors": {
+                    "msg": {
+                        "DOWNLOAD_MANIFEST_FAILED": "Hindi magawang i-download ang manifest para sa bersyong ito; maaaring hindi wasto ang iyong login token.",
+                        "MANIFEST_FILE_NOT_FOUND": "Hindi mahanap ang manifest para sa bersyong ito.",
+                        "PARSE_MANIFEST_FILE_FAILED": "Nagkaroon ng error habang binabasa ang manifest.",
+                        "ALREADY_DOWNLOADING": "May kasalukuyang dina-download na bersyon.",
+                        "UNABLE_TO_GET_MANIFEST": "Hindi magawang makuha ang manifest na kailangan para sa pag-download.",
+                        "VERIFY_INTEGRITY_FAILED": "Nagkaroon ng error habang nirere-verify ang file.",
+                        "SOME_FILES_FAILED_TO_DOWNLOAD": "May mga file na hindi nagawang i-download.",
+                        "META_LOGIN_TIMED_OUT": "Matagal ang pagkuha ng login token.",
+                        "META_LOGIN_WINDOW_CLOSED_BY_USER": "Isinara ng user ang Meta login window.",
+                        "NO_META_AUTH_TOKEN": "Hindi magawang kunin ang Meta login token na kailangan para sa pag-download.",
+                        "UNKNOWN_ERROR": "May error na nangyari."
+                    }
+                }
+            }
+        },
+        "bs-import-version": {
+            "success": {
+                "start-import": {
+                    "title": "Nagsimula ang import 👌",
+                    "desc": "Maaaring tumagal ng ilang minuto ang import depende sa iyong configuration."
+                },
+                "imported": {
+                    "title": "Na-import ang bersyon 🎉"
+                }
+            },
+            "errors": {
+                "import-error": {
+                    "desc": "Suriin kung ang napiling folder ay installation ng Beat Saber."
+                }
+            }
+        },
+        "settings": {
+            "move-folder": {
+                "success": {
+                    "titles": {
+                        "transfer-started": "Nagsimula ang transfer",
+                        "transfer-finished": "Kumpleto ang transfer"
+                    },
+                    "descs": {
+                        "transfer-started": "Nagsimula na ang transfer at maaaring tumagal ng ilang minuto depende sa iyong configuration."
+                    }
+                },
+                "errors": {
+                    "titles": {
+                        "transfer-failed": "Hindi natapos ang transfer 😕"
+                    },
+                    "descs": {
+                        "COPY_TO_SUBPATH": "Ang destination folder ay hindi maaaring maging subfolder ng source folder.",
+                        "restore-linked-folders": "Nagkaroon ng error habang nire-restore ang mga shared folders. Maaari mo pa ring mano-manong i-restore ang mga ito sa pamamagitan ng 'Shared Folders' na menu sa versions page."
+                    }
+                }
+            },
+            "steam": {
+                "success": {
+                    "titles": {
+                        "logout": "Naka-disconnect mula sa Steam."
+                    }
+                }
+            },
+            "additional-content": {
+                "deep-link": {
+                    "select-all": "Piliin lahat",
+                    "activation": {
+                        "success": {
+                            "title": "Na-activate ang OneClick!",
+                            "description": "Na-activate na ang OneClick na installation."
+                        },
+                        "error": {
+                            "description": "Hindi magawang i-activate ang OneClick na installation."
+                        }
+                    },
+                    "deactivation": {
+                        "success": {
+                            "title": "Na-deactivate ang OneClick!",
+                            "description": "Na-deactivate na ang OneClick na installation."
+                        },
+                        "error": {
+                            "description": "May error na nangyari."
+                        }
+                    },
+                    "check-all-enabled": {
+                        "title": "I-disable ang OneClick",
+                        "description": "Isa o higit pang mga OneClick na installation ang naka-disable. Pumunta sa settings upang i-enable ito.",
+                        "actions": {
+                            "settings": "Settings",
+                            "not-remind": "Huwag akong paalalahanan"
+                        }
+                    }
+                }
+            }
+        },
+        "bs-launch": {
+            "success": {
+                "titles": {
+                    "BS_LAUNCHING": "Nila-launch...🚀",
+                    "STEAM_LAUNCHING": "Nila-launch ang Steam!",
+                    "SKIPPING_STEAM_LAUNCH": "Iniwasang i-launch ang Steam"
+                },
+                "msg": {
+                    "BS_LAUNCHING": "Huwag kalimutan mag-warm up 😉",
+                    "STEAM_LAUNCHING": "Awtomatikong ni-launch ang Beat Saber pagkatapos ng Steam.",
+                    "SKIPPING_STEAM_LAUNCH": "Sana alam mo ang ginagawa mo :)"
+                }
+            },
+            "errors": {
+                "titles": {
+                    "UNKNOWN_ERROR": "Hindi magawang i-launch",
+                    "STEAM_NOT_RUNNING": "Hindi tumatakbo ang Steam",
+                    "OCULUS_NOT_RUNNING": "Hindi tumatakbo ang Oculus",
+                    "BS_ALREADY_RUNNING": "Ang Beat Saber ay tumatakbo na",
+                    "EXE_NOT_FINDED": "Nawawalang mga file",
+                    "PROTON_NOT_SET": "Walang naka-set na Proton folder",
+                    "PROTON_NOT_FOUND": "Hindi nahanap ang Proton binary",
+                    "EXIT": "Biglaang paghinto",
+                    "OCULUS_LIB_NOT_FOUND": "Hindi nahanap ang Oculus library",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Hindi nahanap ang orihinal na bersyon ng Oculus"
+                },
+                "msg": {
+                    "UNKNOWN_ERROR": "May error na nangyari.",
+                    "STEAM_NOT_RUNNING": "Dapat tumakbo ang Steam upang i-launch ng BeatSaber.",
+                    "OCULUS_NOT_RUNNING": "Dapat tumakbo ang Oculus upang i-launch ng BeatSaber.",
+                    "BS_ALREADY_RUNNING": "Isara ang BeatSaber bago ito muling i-launch.",
+                    "EXE_NOT_FINDED": "Mukhang nawawala ang ilang mga file, subukang i-verify ang mga file.",
+                    "EXIT": "Biglaang huminto ang BeatSaber, subukang i-check ang mga file.",
+                    "OCULUS_LIB_NOT_FOUND": "Suriin kung ang Oculus application ay tamang naka-install, at na ang mga libraries ay tamang naka-define sa Oculus.",
+                    "PROTON_NOT_SET": "I-set ang Proton path sa settings.",
+                    "PROTON_NOT_FOUND": "I-set ang Proton path sa settings.",
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Dapat naka-install ang Beat Saber mula sa Oculus app bago ito buksan."
+                },
+                "actions": {
+                    "STEAM_NOT_RUNNING": "I-launch ang Steam"
+                }
+            }
+        },
+        "steam": {
+            "steam-launching": {
+                "title": "Nila-launch ang Steam!",
+                "description": "Awtomatikong i-launch ang Beat Saber pagkatapos ng Steam."
+            }
+        },
+        "custom-version": {
+            "errors": {
+                "titles": {
+                    "CantEditSteam": "Hindi magawang i-edit",
+                    "CantRename": "Imposible ang pagpapalit ng pangalan",
+                    "VersionAlreadExist": "Nakuha na ang pangalan na ito ng ibang bersyon",
+                    "CantClone": "Imposible ang pag-clone",
+                    "UnknownError": "May error na nangyari"
+                },
+                "msg": {
+                    "CantEditSteam": "Hindi mo maaaring i-edit ang Steam version. Maaari mo itong i-clone."
+                }
+            },
+            "success": {
+                "titles": {
+                    "CloningFinished": "Tapos na ang pag-clone 🎉"
+                }
+            }
+        },
+        "mods": {
+            "install-mods": {
+                "titles": {
+                    "success": "Na-install ang mga Mod 🎉",
+                    "warning": "Na-install ang mga Mod 🤔"
+                },
+                "msg": {
+                    "success": "Lahat ng mod ay na-install na.",
+                    "warning": "Isa o higit pang mga mod ang hindi na-install.",
+                    "errors": {
+                        "no-mods": "Walang mod na i-install.",
+                        "cannot-install-bsipa": "Hindi na-install ang BSIPA 😨"
+                    }
+                }
+            },
+            "uninstall-mod": {
+                "titles": {
+                    "success": "Na-uninstall ang mod 🎉"
+                },
+                "msg": {
+                    "errors": {
+                        "no-mods": "Walang mod na naka-install 😑"
+                    }
+                }
+            },
+            "uninstall-all-mods": {
+                "titles": {
+                    "success": "Na-uninstall ang mga mod 🎉"
+                },
+                "msg": {
+                    "success": "Lahat ng mod ay na-uninstall na.",
+                    "errors": {
+                        "no-mods": "Walang mod na naka-install sa bersyong ito 😑",
+                        "no-wineprefix": "Hindi mahanap ang WINEPREFIX path ng BSManager. Pakilunsad muna ang Beat Saber sa BSManager."
+                    }
+                }
+            },
+            "import-mod": {
+                "titles": {
+                    "success": "Natapos ang pag-import ng mga mod",
+                    "error": "Nagkaroon ng error habang ini-import ang mga mod"
+                },
+                "msgs": {
+                    "success": "Matagumpay na na-import ang mga mod.",
+                    "some-success": "Ang ilang mod ay na-import ng maayos.",
+                    "no-dlls": "Ang mga file ay walang \"dll\" na mga file."
+                }
+            }
+        },
+        "maps": {
+            "one-click-install": {
+                "success": "Tapos na ang pag-install ng mapa",
+                "error": "Nagkaroon ng error habang ini-install ang mapa"
+            },
+            "no-duplicates-maps": {
+                "title": "Walang Na-dobleng Mapa",
+                "msg": "Walang mapang tinanggal"
+            },
+            "duplicates-maps-deleted": {
+                "title": "Tinanggal ang mga na-dobleng Mapa",
+                "msg": "Tinanggal ang mga na-dobleng mapa"
+            },
+            "import-map": {
+                "titles": {
+                    "success": "Natapos ang pag-import ng mga mapa",
+                    "error": "Nagkaroon ng error habang ini-import ang mga mapa"
+                },
+                "msgs": {
+                    "success": "Na-import ng maayos ang mga mapa.",
+                    "some-success": "Ang ilang mapa ay na-import ng maayos.",
+                    "only-accept-zip": "zip files lang ang sinusuportahan.",
+                    "invalid-zip": "Ang zip file(s) ay walang laman na mga mapa.",
+                    "unknown": "May error na nangyari."
+                }
+            }
+        },
+        "playlists": {
+            "one-click-install": {
+                "success": "Tapos na ang pag-install ng playlist",
+                "error": "Nagkaroon ng error habang ini-install ang playlist"
+            }
+        },
+        "models": {
+            "one-click-install": {
+                "success": "Tapos na ang pag-install ng model",
+                "error": "Nagkaroon ng error habang ini-install ang model"
+            }
+        },
+        "shared-folder": {
+            "info": {
+                "userdata-backup-created": {
+                    "title": "Nagawa ang backup",
+                    "msg": "Ang pag-share ng 'UserData' folder ay maaaring magdulot ng mga error, kung magkaroon ng problema, alisin ang pagkakabit ng folder upang maibalik ang backup."
+                }
+            },
+            "linking-error": {
+                "title": "Nag-error habang nili-link ang folder",
+                "msg": {
+                    "EPERM": "Walang permiso ang BSManager upang i-link ang folder.",
+                    "EACCES": "Walang permiso ang BSManager upang i-link ang folder.",
+                    "ENOSPC": "Puno na ang disk, magtanggal ng ilang files at subukang muli.",
+                    "LinkingNotSupported": "Hindi sinusuportahan ang folder linking sa file system na ito.",
+                    "UNKNOWN_ERROR": "May error na nangyari habang nili-link ang folder."
+                }
+            },
+            "adding-error": {
+                "title": "Hindi idagdag ang shared folder",
+                "msg": "Hindi mo maaaring idagdag ang \"{folder}\" sa shared folders."
+            }
+        },
+        "create-launch-shortcut": {
+            "success": {
+                "title": "Nagawa ang Shortcut",
+                "msg": "Ang shortcut ay nagawa na sa desktop.",
+                "msg-steam": "Ang shortcut ay nagawa na sa Steam library."
+            },
+            "error": {
+                "msg": "Nagkaroon ng error habang ginagawa ang shortcut."
+            }
+        },
+        "bs-version-oudated": {
+            "title": "Bersyon Lipas na",
+            "msg": "Ang bersyon ng Beat Saber na ito ay lipas na, gamitin ang inirerekomendang bersyon upang tamasahin ang mga pinakabagong features at bug fixes.",
+            "actions": {
+                "do-not-remind": "Huwag akong paalalahanan",
+                "ok": "Ok"
+            }
+        }
+    },
+    "modals": {
+        "misc": {
+            "remember-my-choice": "Tandaan ang aking pinili"
+        },
+        "choose-store": {
+            "title": "Anong platform?",
+            "body": "Piliin ang platform na nais mong pagkunan ng Beat Saber.",
+            "set-in-settings": "I-set ang default platform sa settings"
+        },
+        "guard": {
+            "title": "Steam Guard",
+            "inputs": {
+                "guard-code": {
+                    "label": "Guard Code",
+                    "placeholder": "Ilagay ang iyong Guard code"
+                }
+            },
+            "buttons": {
+                "submit": "Mag-login"
+            }
+        },
+        "steam-login": {
+            "title": "Steam Login",
+            "inputs": {
+                "username": {
+                    "label": "Mag-sign in gamit ang account name",
+                    "placeholder": "Ilagay ang iyong account name"
+                },
+                "password": {
+                    "label": "Password",
+                    "placeholder": "Ilagay ang iyong password",
+                    "max-length-warning": "Ang password ay lumampas sa 64 na karakter! Kung ang password ay hindi wasto, subukang ilagay lamang ang unang 64 na karakter nito."
+                },
+                "qr": {
+                    "label": "O gamit ang QR code",
+                    "note": {
+                        "use-the": "Gamitin ang ",
+                        "steam-mobile-app": "Steam Mobile App",
+                        "to-connect-with-qr": "para mag-sign in gamit ang QR code."
+                    }
+                },
+                "stay": "Tandaan ako"
+            },
+            "why-credentials": "Bakit kinakailangan ang aking mga kredensyal?",
+            "need-help-to-connect": "Kailangan ko ng tulong para ma-access ang aking account!",
+            "buttons": {
+                "submit": "Mag-sign in"
+            }
+        },
+        "steam-auth-approve": {
+            "title": "Naghihintay ng kumpirmasyon",
+            "protected-by-mobile-auth": "Ang account ay protektado ng mobile authenticator.",
+            "use-steam-app-to-approve": "Gamitin ang Steam mobile app upang kumpirmahin ang koneksyon...",
+            "not-access-to-steam-app": "Wala akong access sa Steam mobile app"
+        },
+        "steam-credentials": {
+            "title": "Steam Credentials",
+            "p-1": "Ang iyong Steam credentials ay kinakailangan lamang upang i-download ang mga bersyon ng Beat Saber, ginagamit namin ang DepotDownloader para gawin ito na nangangailangan ng iyong Steam credentials upang tiyakin na ikaw ay may-ari ng laro sa iyong library bago ka payagang kunin ang mga game files, ang iyong credentials ay hindi iniimbak o sine-save at ipinapasa nang direkta sa DepotDownloader. Gayunpaman, kung ayaw mong gawin ito, maaari mong sundan ang tutorial na ito: ",
+            "p-2": "Pagkatapos, maaari mong i-click ang gear icon sa kanang itaas na sulok at piliin ang \"Import a version\", saka mo maaaring piliin ang folder kung saan na-download ang Beat Saber. (Kung sinundan mo ang tutorial, mayroon kang tamang lokasyon)"
+        },
+        "bs-import-version": {
+            "title": "Mag-import ng bersyon",
+            "description": "Mag-i-import ng bersyon ng Beat Saber para gamitin sa BSManager. Kokopyahin nito ang napiling Beat Saber installation folder sa BSManager versions folder.",
+            "oculus-version": "Oculus Version",
+            "oculus-version-tooltip": "Tiyakin kung ito ay isang Oculus version",
+            "buttons": {
+                "submit": "Mag-import ng bersyon"
+            }
+        },
+        "bs-uninstall": {
+            "title": "I-uninstall",
+            "description": "Sigurado ka bang nais mong i-uninstall ang Beat Saber {version}? Kailangan mo itong i-download muli upang laruin ito.",
+            "buttons": {
+                "submit": "I-uninstall"
+            }
+        },
+        "install-folder": {
+            "title": "Installation folder",
+            "description": "Ang pagpapalit ng default na installation folder ay magreresulta sa paglilipat ng lahat ng naka-install na data sa bagong folder.",
+            "buttons": {
+                "submit": "Piliin ang folder"
+            }
+        },
+        "edit-version": {
+            "title": "I-edit ang bersyon",
+            "buttons": {
+                "submit": "I-edit"
+            }
+        },
+        "clone-version": {
+            "title": "I-clone ang bersyon",
+            "description": "Ang pag-clone ng bersyon ay nagpapahintulot sa iyo na paghiwalayin ang mga karagdagang nilalaman ng Beat Saber sa pagitan ng dalawang bersyon.",
+            "inputs": {
+                "name": {
+                    "label": "Pangalan",
+                    "placeholder": "Pangalan ng bersyon"
+                },
+                "color": {
+                    "label": "Kulay"
+                }
+            },
+            "buttons": {
+                "submit": "I-clone"
+            }
+        },
+        "uninstall-mod": {
+            "title": "I-uninstall",
+            "description": "Sigurado ka bang nais mong i-uninstall ang {mod}? Maaaring magdulot ito ng mga problema sa iba pang naka-install na mods.",
+            "description-bsipa": "Sigurado ka bang nais mong i-uninstall ang BSIPA? Pagkatapos nito, hindi na gagana ang lahat ng naka-install na mods."
+        },
+        "uninstall-all-mods": {
+            "title": "I-uninstall ang mga mods",
+            "description": "Sigurado ka bang nais mong i-uninstall ang lahat ng mods mula sa bersyon {version}? Hindi na ito maaaring ibalik."
+        },
+        "maps-actions": {
+            "delete-maps": {
+                "title": {
+                    "single": "Tanggalin ang map na ito?",
+                    "multiple": "Tanggalin ang mga map?"
+                },
+                "desc": {
+                    "single": "Sigurado ka bang nais mong tanggalin ang map na {name}?",
+                    "multiple": "Sigurado ka bang nais mong tanggalin ang lahat ng {nb} na map?"
+                },
+                "info": {
+                    "desc": {
+                        "single": "Ang map na ito ay bahagi ng mga shared maps",
+                        "multiple": "Ang mga map na ito ay bahagi ng mga shared maps"
+                    },
+                    "title": {
+                        "single": "Ang map na ito ay tatanggalin din mula sa mga bersyon na gumagamit ng shared maps",
+                        "multiple": "Ang mga map na ito ay tatanggalin din mula sa mga bersyon na gumagamit ng shared maps"
+                    }
+                }
+            },
+            "delete-duplicate-maps": {
+                "title": "Tanggalin ang mga map?",
+                "desc": "Ang map na \"{map}\" lamang ang duplicate. Sigurado ka bang nais mong tanggalin ito?",
+                "desc-plural": "{nb} duplicate na map ang natagpuan. Sigurado ka bang nais mong tanggalin ang mga ito?"
+            }
+        },
+        "link-contents": {
+            "title": "I-link ang {contentType}",
+            "p-1": "Ang pag-link ng {contentType} ay nagpapahintulot sa pagbabahagi ng {contentType} sa lahat ng bersyon na may naka-enable na feature na ito. Kapag naka-link, ang bersyon na ito ay makikinabang mula sa shared na {contentType}.",
+            "p-2": "Upang magamit ang linking feature, ang lahat ng iyong {itemsHtml} ay ililipat sa {sharedHtml} na folder. Pagkatapos nito, ang isang symbolic link na tumuturo sa shared na {contentType} folder ay papalit sa iyong orihinal na {contentType} folder.",
+            "warning": "Pakitandaan na anumang pagbabago na makakaapekto sa {contentType} ay makakaapekto rin sa lahat ng bersyon na may naka-enable na feature na ito.",
+            "what-is-a-symbolic-link": "Ano ang symbolic link?",
+            "i-need-help": "Kailangan ko ng tulong",
+            "valid-btn": "I-link ang {contentType}"
+        },
+        "unlink-contents": {
+            "title": "I-unlink ang {contentType}",
+            "p-1": "Mag-ingat, ang pag-unlink ng {contentType} ay magdi-disable ng paggamit ng shared {contentType} para sa bersyon na ito, hanggang ito ay muling ma-enable.",
+            "p-2": "Upang i-unlink ang iyong mga maps, aalisin ang symbolic link na tumuturo sa {sharedHtml}. Pagkatapos nito, ang lahat ng maps sa shared folder ay kokopyahin sa {itemsHtml} folder ng iyong Beat Saber version.",
+            "do-not-copy-contents": "Huwag i-copy ang {contentType}",
+            "do-not-copy-contents-tip": "Kung naka-enable, ang {contentType} sa shared folder ay hindi kokopyahin sa iyong Beat Saber version. Bilang resulta, walang {contentType} ang matitira sa iyong Beat Saber version pagkatapos ng unlink.",
+            "valid-btn": "I-unlink ang {contentType}"
+        },
+        "download-maps": {
+            "search-btn": "Maghanap",
+            "loading-maps": "Naglo-load ng mga map...",
+            "no-maps-found": "Walang nahanap na map",
+            "no-internet": "Walang internet"
+        },
+        "mods-disclaimer": {
+            "title": "Paunawa",
+            "p-1": "Sa pagpili na gumamit ng mods, nauunawaan mo na:",
+            "li-1": "Maaaring makaranas ka ng mga problema na hindi umiiral sa vanilla na laro. 99.9% ng mga bug, crash, at lag ay dulot ng mga mods.",
+            "li-2": "Ang mga mods ay maaaring masira ng mga update at ito ay normal - maging matiisin at magalang kapag ito ay nangyari, dahil ang mga modder ay mga boluntaryo na may totoong buhay.",
+            "li-3": "Hindi layunin ng Beat Games na sirain ang mga mods. Nais nilang magtrabaho sa codebase at minsan ito ay nakakabasag ng mga mods, ngunit hindi nila layunin na puksain ang mga mods.",
+            "p-2": "Huwag atakihin ang mga developer ng laro para sa mga isyu na may kinalaman sa mods, at ganoon din ang mga modder at developer ng laro ay dalawang magkahiwalay na grupo. Huwag maging bastos, ok?"
+        },
+        "shared-folders": {
+            "title": "Mga Shared Folder",
+            "description": "I-link ang mga Beat Saber folder upang i-synchronize ang kanilang nilalaman sa mga shared folder sa iba pang bersyon. Tandaan na ang pagtanggal ng nilalaman ay ibabahagi rin.",
+            "buttons": {
+                "add-folder": "Magdagdag ng Folder",
+                "link-folder": "I-link ang Folder",
+                "unlink-folder": "I-unlink ang Folder",
+                "link-all": "I-link lahat",
+                "remove-from-the-list": "Alisin mula sa listahan"
+            }
+        },
+        "adding-shared-folder": {
+            "title": "Pagdaragdag ng Shared Folder",
+            "description": "Maaaring makaranas ka ng mga isyu kapag nililink ang \"{folder}\" na folder. Sigurado ka bang nais mong idagdag ito?"
+        },
+        "create-launch-shortcut": {
+            "title": "Gumawa ng Shortcut",
+            "desc": "Ang paggawa ng shortcut ay magpapahintulot sa iyo na simulan ang Beat Saber gamit ang mga napiling opsyon nang hindi dumadaan sa BSManager.",
+            "launch-options": "Mga Opsyon sa Pag-launch",
+            "advanced-launch": "Advanced na Pag-launch",
+            "valid-btn": "Gumawa ng shortcut",
+            "create-steam-shortcut": "Gumawa ng Steam shortcut",
+            "steam-shortcut-tippy": "Kung naka-enable, sa halip na gumawa ng shortcut sa desktop, ito ay gagawin sa Steam."
+        },
+        "connect-to-meta": {
+            "title": "Mag-connect sa Meta",
+            "body": {
+                "token-needed": "Kinakailangan ang iyong Meta connection token upang ma-download ang Beat Saber.",
+                "need-cookie-enabled": "Sa pag-login sa Meta, isang login window ang magbubukas at maaari mong simulan ang proseso ng pag-login. Siguraduhin na tanggapin ang cookies, kung hindi, maaaring hindi namin makuha ang iyong token upang simulan ang pag-download.",
+                "enter-token-manually": "I-enter ang aking login token manu-mano",
+                "enter-token-manually-tooltip": "Papayagan ka nitong i-enter ang iyong login token nang hindi dumadaan sa Meta login."
+            },
+            "stay": "Tandaan ako",
+            "connect-to-meta": "Mag-connect sa Meta"
+        },
+        "enable-oculus-sideloaded-apps": {
+            "title": "I-enable ang Sideloading",
+            "info-1": "Upang ilunsad ang Beat Saber, ang kakayahang magpatakbo ng sideloaded apps ay kailangang ma-enable. Hihilingin ng BSManager ang administrator rights upang awtomatikong i-enable ang feature na ito.",
+            "info-2": "Ang sideloaded apps feature ay nagpapahintulot sa paglulunsad ng mga laro na nasa labas ng iyong Oculus library folder.",
+            "info-3": "Matapos i-activate ang sideloading, mananatili ang feature na ito at hindi ka na hihilingin na i-enable ito muli.",
+            "i-want-to-do-it-myself": "Nais kong gawin ito mag-isa",
+            "understood": "Naiintindihan"
+        },
+        "enter-meta-token": {
+            "title": "Oculus Token",
+            "body": {
+                "info-enter-token": "Upang ma-download ang Beat Saber, kinakailangan ang iyong Oculus login token.",
+                "how-obtain-token": "Paano ko makukuha ang aking Oculus Token?",
+                "oculus-token": "Oculus Token",
+                "token-is-invalid": "Ang Token ay hindi wasto.",
+                "save-my-token": "I-save ang aking token",
+                "have-token-saved": "Mayroon na akong na-save na token",
+                "save-token-info": "Ise-save nito ang iyong token para sa mas madaliang paggamit muli. Kakailanganin mong gumawa ng password upang i-encrypt ang iyong token para sa storage purposes. Kung makalimutan mo ang iyong password, kailangan mo lang ibigay muli ang iyong token.",
+                "password": "Password",
+                "password-too-short": "Masyadong maikli ang password",
+                "info-enter-password": "Upang ma-download ang Beat Saber, kinakailangan ang iyong Oculus login token. I-enter ang password na ginamit upang i-save ang iyong Oculus token.",
+                "info-disabled-btn-password": "Ang token na de-crypt gamit ang ibinigay na password ay hindi wasto. Siguraduhin na ang password ay pareho ng ginamit upang i-save ang token.",
+                "enter-oculus-token": "I-enter ang Oculus token"
+            },
+            "valid-btn": "I-validate"
+        },
+        "launch-as-admin": {
+            "title": "Mga Pahintulot ng Administrator",
+            "body": {
+                "info": "Nadetect na ang Steam ay tumatakbo gamit ang administrator permissions. Upang makipag-ugnayan sa Steam, kailangang ilunsad ang Beat Saber bilang administrator. Kung hindi, maaaring makaranas ng mga problema ang Beat Saber at magsara pagkatapos ilunsad.",
+                "info-2": "Ang paglulunsad ng Beat Saber sa administrator mode ay magbibigay din ng administrator rights sa mga naka-install na mods. Kaya't inirerekomenda na i-restart ang Steam nang walang administrator permissions.",
+                "info-3": "Tandaan na hindi inirerekomenda na bigyan ng administrator rights ang Steam, dahil nakakaapekto ito sa mga naka-install na laro at mods, na nagdudulot ng panganib sa seguridad."
+            },
+            "launch-as-admin": "I-launch bilang Administrator",
+            "not-remind-me": "Huwag na akong paalalahanan"
+        },
+        "ask-install-path": {
+            "title": "Installation Folder",
+            "choose-folder-description": "Piliin ang folder na maglalaman ng lahat ng content na ida-download ng BSManager. (mga bersyon, mods, maps, playlists, atbp.)",
+            "default": "Default",
+            "default-tooltip": "Naka-default sa iyong home folder"
+        },
+        "choose-proton-folder": {
+            "title": "Proton Folder",
+            "proton-folder-description": "Sa Linux, kailangan ng BSManager ang Proton upang gumana. Piliin ang folder ng Proton installation upang magpatuloy.",
+            "proton-folder-placeholder": "Proton installation folder",
+            "where-is-proton-installed": "Saan naka-install ang Proton?"
+        },
+        "bs-version-outdated": {
+            "body": "Ang bersyon na {outdatedVersion} ay lipas na, at ang ilang mods o features ay maaaring hindi na gumana ng tama. Mangyaring i-download ang pinakabagong inirerekomendang bersyon ({recommendedVersion}) ng Beat Saber upang tamasahin ang mga pinakabagong tampok at mga pag-aayos ng bug."
+        }
+    },
+    "maps": {
+        "map-filter-panel": {
+            "duration": "Haba",
+            "nps": "Notes Per Second",
+            "njs": "Note Jump Speed",
+            "tags": "tags",
+            "specificities": "general",
+            "requirements": "requirements",
+            "exclude": "exclude",
+            "leaderboard": "leaderboard"
+        },
+        "map-types": {
+            "accuracy": "accuracy",
+            "balanced": "balanced",
+            "challenge": "challenge",
+            "dance-style": "dance",
+            "fitness": "fitness",
+            "speed": "speed",
+            "tech": "tech"
+        },
+        "map-styles": {
+            "dance": "dance",
+            "swing": "swing",
+            "nightcore": "nightcore",
+            "folk-acoustic": "folk & acoustic",
+            "kids-family": "kids & family",
+            "ambient": "ambient",
+            "funk-disco": "funk & disco",
+            "jazz": "jazz",
+            "soul": "soul",
+            "speedcore": "speedcore",
+            "punk": "punk",
+            "rb": "r&b",
+            "holiday": "holiday",
+            "vocaloid": "vocaloid",
+            "j-rock": "j-rock",
+            "trance": "trance",
+            "drum-and-bass": "drum & bass",
+            "comedy-meme": "comedy & meme",
+            "instrumental": "instrumental",
+            "hardcore": "hardcore",
+            "k-pop": "k-pop",
+            "indie": "indie",
+            "techno": "techno",
+            "house": "house",
+            "video-game-soundtrack": "video game",
+            "tv-movie-soundtrack": "TV & film",
+            "alternative": "alternative",
+            "dubstep": "dubstep",
+            "metal": "metal",
+            "anime": "anime",
+            "hip-hop-rap": "hip hop & rap",
+            "j-pop": "j-pop",
+            "rock": "rock",
+            "pop": "pop",
+            "electronic": "electronic",
+            "classical-orchestral": "Classical & Orchestral"
+        },
+        "map-specificities": {
+            "automapper": "AI",
+            "curated": "curated",
+            "verified": "verified",
+            "fullSpread": "full spread"
+        },
+        "map-leaderboard": {
+            "All": "All",
+            "Ranked": "Ranked",
+            "BeatLeader": "BeatLeader",
+            "ScoreSaber": "ScoreSaber"
+        },
+        "map-excludes": {
+            "installed": "installed"
+        },
+        "difficulties": {
+            "Easy": "easy",
+            "Normal": "normal",
+            "Hard": "hard",
+            "Expert": "expert",
+            "ExpertPlus": "expert+"
+        },
+        "map-item": {
+            "by": "Ni {songAutor}",
+            "mapped-by": "minap ni",
+            "delete": "Tanggalin",
+            "preview": "I-preview ang mapa",
+            "bsr-code": "BSR code",
+            "download": "I-download ang mapa",
+            "downloading": "I-download ang mapa",
+            "cancel-download": "Kanselahin ang pag-download",
+            "hightlight-difficulty": "I-highlight ang hirap"
+        }
+    },
+    "models": {
+        "types": {
+            "singular": {
+                "avatar": "avatar",
+                "saber": "saber",
+                "platform": "platform",
+                "bloq": "block"
+            },
+            "plural": {
+                "avatar": "avatars",
+                "saber": "sabers",
+                "platform": "platforms",
+                "bloq": "blocks"
+            }
+        },
+        "sorts": {
+            "name": "Pangalan",
+            "date": "Petsa",
+            "author": "Awtor"
+        },
+        "panel": {
+            "actions": {
+                "search": "Maghanap ng modelo",
+                "drop-down": {
+                    "delete": "Tanggalin ang mga modelo",
+                    "export": "I-export ang mga modelo"
+                },
+                "link-models": "I-link ang mga modelo",
+                "unlink-models": "I-unlink ang mga modelo"
+            },
+            "grid": {
+                "loading": "Naglo-load ng mga modelo...",
+                "no-models": "Walang mga modelo",
+                "download-models": "I-download ang mga modelo"
+            }
+        },
+        "modals": {
+            "delete-model": {
+                "title": "Tanggalin ang modelo",
+                "desc": "Sigurado ka bang nais mong tanggalin ang modelo na {modelName}?",
+                "linked-annotation": "Ang modelong ito ay aalisin mula sa lahat ng naka-link na bersyon."
+            },
+            "delete-models": {
+                "title": "Tanggalin ang mga modelo",
+                "desc": "Sigurado ka bang nais mong tanggalin ang {nb} mga modelo?",
+                "linked-annotation": "Ang mga modelong ito ay aalisin mula sa lahat ng naka-link na bersyon."
+            },
+            "download-models": {
+                "search-btn": "Maghanap",
+                "search-placeholder": "Maghanap ng modelo",
+                "search-tips": {
+                    "header": {
+                        "tag": "Tag",
+                        "desc": "Deskripsyon"
+                    },
+                    "author-desc": "Ipakita lamang ang mga modelo mula sa tinukoy na may-akda.",
+                    "hash-desc": "Ipakita lamang ang mga modelo na may tinukoy na hash.",
+                    "tag-desc": "Ipakita lamang ang mga modelo na may tinukoy na tag.",
+                    "name-desc": "Ipakita lamang ang mga modelo na may tinukoy na pangalan.",
+                    "discordid-desc": "Ipakita lamang ang mga modelo mula sa tinukoy na Discord na user.",
+                    "status-desc": "Ipakita lamang ang mga modelo na may tinukoy na status. (profile lamang, at para lamang sa may-akda)"
+                },
+                "no-models": "Walang mga modelo na natagpuan.",
+                "no-internet": "Walang koneksyon sa internet.",
+                "error-occurred": "Nagkaroon ng error, subukang muli mamaya."
+            }
+        },
+        "notifications": {
+            "prevent-for-mods": {
+                "title": "Kinakailangang mga mod",
+                "desc": "Siguraduhin na na-install mo ang kinakailangang mga mod upang magamit ang mga modelo sa Beat Saber",
+                "go-to-mods": "Pumunta sa mga mod",
+                "not-remind": "Huwag ako paalalahanan"
+            },
+            "export-success": {
+                "title": "Matagumpay na pag-export 🎉"
+            }
+        }
+    },
+    "beat-saver": {
+        "maps-sorts": {
+            "Latest": "Latest",
+            "Relevance": "Relevance",
+            "Rating": "Rating",
+            "Curated": "Curated"
+        }
+    },
+    "auto-update": {
+        "checking": "Nagre-refresh ng mga update",
+        "downloading": "Nagi-download ng mga update"
+    },
+    "bs-shortcut-launch": {
+        "beat-saber-launching": "Ipinapalabas ang Beat Saber",
+        "launching": "Pinapalabas",
+        "open-bsmanager": "Buksan ang BSManager",
+        "status-text": {
+            "init": "Ini-initialize...",
+            "success": {
+                "BS_LAUNCHING": "Ipinapalabas ang Beat Saber...",
+                "STEAM_LAUNCHING": "Ipinapalabas ang Steam...",
+                "STEAM_LAUNCHED": "Matagumpay na na-launch ang Steam!",
+                "UNABLE_TO_LAUNCH_STEAM": "Hindi ma-launch ang Steam, pinipilit na mag-launch ng Beat Saber..."
+            }
+        }
+    },
+    "drop-zone": {
+        "or-browse-files": "O mag-browse ng mga file"
+    },
+    "playlist": {
+        "error-playlist-creation-title": "Error sa paggawa ng Playlist",
+        "error-playlist-creation-desc": "Nagkaroon ng error habang ginagawa ang playlist.",
+        "playlist-created-title": "Nagawa ang playlist",
+        "playlist-created-desc": "Nagawa ang playlist. Maaari mo nang isynchronize ang mga mapa nito!",
+        "download-playlist": "I-download ang Playlist",
+        "synchronize-playlist": "I-synchronize ang Playlist",
+        "synchronize-maps": "I-synchronize ang mga Mapa",
+        "error-playlists-synchronization-title": "Error sa Pag-synchronize ng Playlist",
+        "error-playlists-synchronization-desc": "Nagkaroon ng error habang nagsasynchronize ng mga playlist.",
+        "playlists-synchronized-title": "Matagumpay na na-synchronize ang Playlist!",
+        "playlists-synchronized-desc": "Ang mga playlist at kanilang mga mapa ay na-download.",
+        "playlists-export-error-title": "Error sa Pag-export ng Playlist",
+        "playlists-export-error-desc": "Nagkaroon ng error habang ine-export ang mga playlist.",
+        "playlists-exported-title": "Matagumpay na na-export ang Playlist!",
+        "playlists-exported-desc": "Ang mga playlist ay matagumpay na na-export.",
+        "playlists-with-maps-exported-desc": "Ang mga playlist at kanilang mga mapa ay matagumpay na na-export.",
+        "playlist-delete-error-title": "Error sa Pag-delete ng Playlist",
+        "playlist-delete-error-desc": "Nagkaroon ng error habang dinidelete ang playlist.",
+        "playlists-deleted-title": "Matagumpay na na-delete ang Playlist!",
+        "playlists-deleted-desc": "Ang mga playlist ay matagumpay na na-delete.",
+        "edit-playlist": "I-edit ang Playlist",
+        "playlist-edit-error-title": "Error sa Pag-edit ng Playlist",
+        "playlist-edit-error-desc": "Nagkaroon ng error habang ine-edit ang playlist.",
+        "playlist-edited-title": "Matagumpay na na-edit ang Playlist!",
+        "playlist-edited-desc": "Ang playlist ay matagumpay na na-edit. Maaari mo nang isynchronize ang mga mapa nito!",
+        "playlists-loading": "Naglo-load ng mga Playlist...",
+        "no-playlists": "Walang Playlist",
+        "download-playlists": "I-download ang mga Playlist",
+        "created-by": "Nilika ni",
+        "stop-download": "Itigil ang Pag-download",
+        "cancel-download": "I-cancel ang Pag-download",
+        "open-file": "Buksan ang File",
+        "delete-playlist-ask": "I-delete ang Playlist?",
+        "delete-playlists-ask": "I-delete ang mga Playlist?",
+        "delete-playlist-desc": "Sigurado ka bang gusto mong i-delete ang playlist na \"{playlistTitle}\"?",
+        "delete-playlists-desc": "Sigurado ka bang gusto mong i-delete ang {nb} mga playlist?",
+        "delete-maps": "I-delete ang mga Mapa",
+        "delete-playlist-maps-tip": "Kung pinili, ang lahat ng mapa sa playlist ay madi-delete",
+        "delete-playlists-maps-tip": "Kung pinili, ang lahat ng mapa sa mga playlist ay madi-delete",
+        "export-playlist-ask": "I-export ang Playlist?",
+        "export-playlists-ask": "I-export ang mga Playlist?",
+        "export-playlist-desc": "Sigurado ka bang gusto mong i-export ang playlist na \"{playlistTitle}\"?",
+        "export-playlists-desc": "Sigurado ka bang gusto mong i-export ang {nb} mga playlist?",
+        "export-maps": "I-export ang mga Mapa",
+        "export-playlist-maps-tip": "Kung pinili, ang lahat ng mapa sa playlist ay ie-export din",
+        "export-playlists-maps-tip": "Kung pinili, ang lahat ng mapa sa mga playlist ay ie-export din",
+        "export": "I-export",
+        "need-clone-title": "Babala",
+        "need-clone-desc-1": "Ang playlist na ito ay na-download mula sa isang panlabas na site at naglalaman ng isang synchronization link.",
+        "need-clone-desc-2": "Upang maiwasan ang pagkawala ng mga pagbabago mo sa synchronization, ang playlist ay ika-duplicate at aalisin ang synchronization link.",
+        "need-clone-desc-3": "Maaari mong, kung nais mo, i-delete ang orihinal na playlist.",
+        "understood": "Naiintindihan ko",
+        "synchronize-playlist-ask": "I-synchronize ang Playlist?",
+        "synchronize-playlists-ask": "I-synchronize ang mga Playlist?",
+        "synchronize-playlist-desc": "Sigurado ka bang gusto mong i-synchronize ang playlist na \"{playlistTitle}\"?",
+        "synchronize-playlists-desc": "Sigurado ka bang gusto mong i-synchronize ang {nb} mga playlist?",
+        "synchronize-playlist-tip": "Ang aksyon na ito ay nag-a-update ng mga playlist at nagda-download ng nawawalang mga mapa; maaaring tumagal ng ilang minuto.",
+        "synchronize": "I-synchronize",
+        "curated": "Inirerekomenda",
+        "verified-mapper": "Verified na Mapa",
+        "empty-playlists": "Walang laman na mga Playlist",
+        "search-playlist": "Maghanap ng Playlist",
+        "no-playlists-found": "Walang nahanap na Playlist",
+        "error-occur-while-loading-playlists": "Nagkaroon ng error habang naglo-load ng mga Playlist",
+        "error-occur-while-loading-playlist": "Nagkaroon ng error habang naglo-load ng Playlist",
+        "loading-maps": "Naglo-load ng mga Mapa...",
+        "no-maps-found-for-playlist": "Walang nahanap na mapa para sa playlist na ito",
+        "playlist-contain-no-maps": "Walang laman ang playlist ng mapa",
+        "no-map-installed-for-playlist": "Walang naka-install na mapa para sa playlist na ito",
+        "playlist-is-waiting-to-download": "Ang playlist ay naghihintay upang i-download",
+        "download-maps": "I-download ang mga Mapa",
+        "download-missing-maps": "I-download ang nawawalang mga Mapa",
+        "playlist-is-downloading": "Ang playlist ay ine-download",
+        "some-playlist-maps-are-missing": "May ilang mapa sa playlist na nawawala",
+        "create-a-playlist": "Lumikha ng Playlist",
+        "synchronize-playlists": "I-synchronize ang mga Playlist",
+        "export-playlists": "I-export ang mga Playlist",
+        "delete-playlists": "I-delete ang mga Playlist",
+        "choose-image": "Pumili ng Imahe",
+        "title": "Pamagat",
+        "playlist-title": "Pamagat ng Playlist",
+        "description": "Paglalarawan",
+        "playlist-description": "Paglalarawan ng Playlist",
+        "author": "May-akda",
+        "playlist-author": "May-akda ng Playlist",
+        "save": "I-save",
+        "loading": "Naglo-load...",
+        "installed": "Naka-install",
+        "no-map-found": "Walang nahanap na mapa",
+        "edit-playlist-shortcuts": "Hold Shift o Ctrl upang pumili ng maraming mapa",
+        "add-to-playlist": "Idagdag sa Playlist",
+        "remove-from-playlist": "Alisin mula sa Playlist",
+        "playlist-is-empty": "Ang playlist ay walang laman",
+        "continue": "Magpatuloy",
+        "nb-maps": "Bilang ng mga mapa",
+        "nb-mappers": "Bilang ng mga mappers",
+        "duration": "Tagal",
+        "nps": "Mga Tala bawat Segundo",
+        "date-picker": {
+            "start-date-end-date": "Petsa ng Simula — Petsa ng Pagtatapos",
+            "all": "Lahat",
+            "last-24h": "Huling 24 Oras",
+            "last-week": "Huling Linggo",
+            "last-month": "Huling Buwan",
+            "3-last-month": "Huling 3 Buwan"
+        },
+        "playlists-imported": "Matagumpay na na-import ang mga Playlist",
+        "all-playlists-have-been-successfully-imported": "Lahat ng playlist ay matagumpay na na-import",
+        "no-playlist-found": "Walang nahanap na Playlist",
+        "no-playlist-found-in-selected-files": "Walang nahanap na Playlist sa mga napiling file",
+        "some-playlists-not-imported": "May ilang playlist na hindi na-import",
+        "some-playlists-have-been-imported": {
+            "INVALID_SOURCE": "May ilang playlist na hindi natagpuan",
+            "INVALID_PLAYLIST_FILE": "May ilang playlist na hindi wasto",
+            "CANNOT_PARSE_PLAYLIST": "May ilang playlist na hindi mabasa",
+            "unknown": "May ilang playlist na hindi na-import"
+        },
+        "no-playlists-imported": "Walang na-import na Playlist",
+        "no-playlists-imported-errors": {
+            "INVALID_SOURCE": "Hindi natagpuan ang mga Playlist",
+            "INVALID_PLAYLIST_FILE": "Hindi wasto ang mga Playlist",
+            "CANNOT_PARSE_PLAYLIST": "Hindi mabasa ang mga Playlist",
+            "unknown": "Walang na-import na Playlist"
+        }
+    },
+    "dateformat": {
+        "dayNames": [
+            "Lin",
+            "Lun",
+            "Mar",
+            "Miy",
+            "Huw",
+            "Biy",
+            "Sab",
+            "Linggo",
+            "Lunes",
+            "Martes",
+            "Miyerkules",
+            "Huwebes",
+            "Biyernes",
+            "Sabado"
+        ],
+        "monthNames": [
+            "Ene",
+            "Peb",
+            "Mar",
+            "Abr",
+            "May",
+            "Hun",
+            "Hul",
+            "Ago",
+            "Set",
+            "Okt",
+            "Nob",
+            "Dis",
+            "Enero",
+            "Pebrero",
+            "Marso",
+            "Abril",
+            "Mayo",
+            "Hunyo",
+            "Hulyo",
+            "Agosto",
+            "Setyembre",
+            "Oktubre",
+            "Nobyembre",
+            "Disyembre"
+        ],
+        "timeNames": [
+            "a",
+            "p",
+            "am",
+            "pm",
+            "A",
+            "P",
+            "AM",
+            "PM"
+        ]
+    }
+}

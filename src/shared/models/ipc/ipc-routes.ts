@@ -21,7 +21,6 @@ import { LocalBPList, LocalBPListsDetails } from "../playlists/local-playlist.mo
 import { StaticConfigGetIpcRequestResponse, StaticConfigKeys, StaticConfigSetIpcRequest } from "main/services/static-configuration.service";
 import { BbmFullMod, BbmModVersion, ExternalMod } from "../mods/mod.interface";
 import { OculusDownloadInfo } from "main/services/bs-version-download/bs-oculus-downloader.service";
-import { ModsGridStatus } from "../mods/mod-ipc.model";
 
 export type IpcReplier<T> = (data: Observable<T>) => void;
 
@@ -89,7 +88,7 @@ export interface IpcChannelMapping {
     "bs-mods.install-mods": { request: { mods: BbmFullMod[]; version: BSVersion }, response: Progression };
     "bs-mods.uninstall-mods": { request: { mods: BbmFullMod[]; version: BSVersion }, response: Progression };
     "bs-mods.uninstall-all-mods": { request: BSVersion, response: Progression };
-    "bs-mods.get-mods-grid-status": { request: BSVersion, response: ModsGridStatus };
+    "bs-mods.beatmods-up": { request: void, response: boolean };
 
     /* ** bs-playlist-ipcs ** */
     "one-click-install-playlist": { request: string, response: Progression<DownloadPlaylistProgressionData> };
@@ -161,6 +160,7 @@ export interface IpcChannelMapping {
 
     /* ** linux.ipcs ** */
     "linux.verify-proton-folder": { request: void, response: boolean };
+    "linux.get-wine-prefix-path": { request: void, response: string };
 
     /* ** oculus.ipcs ** */
     "is-oculus-sideloaded-apps-enabled": { request: void, response: boolean };

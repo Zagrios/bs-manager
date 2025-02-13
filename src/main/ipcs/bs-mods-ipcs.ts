@@ -1,6 +1,7 @@
 import { BsModsManagerService } from "../services/mods/bs-mods-manager.service";
 import { IpcService } from "../services/ipc.service";
 import { from } from "rxjs";
+import { BeatModsApiService } from "main/services/mods/beat-mods-api.service";
 
 const ipc = IpcService.getInstance();
 
@@ -34,8 +35,7 @@ ipc.on("bs-mods.uninstall-all-mods", (args, reply) => {
     reply(modsManager.uninstallAllMods(args));
 });
 
-ipc.on("bs-mods.get-mods-grid-status", (_, reply) => {
-    const modsManager = BsModsManagerService.getInstance();
-    reply(from(modsManager.getModsGridStatus()));
-});
-
+ipc.on("bs-mods.beatmods-up", (_, reply) => {
+    const beatMods = BeatModsApiService.getInstance();
+    reply(from(beatMods.isUp()));
+})

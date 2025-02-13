@@ -251,6 +251,8 @@
                     "zh-TW": "正體中文",
                     "ja-JP": "日本語",
                     "ko-KR": "한국어",
+                    "uk-UA": "Українська",
+                    "tl-PH": "Filipino",
                     "translated": {
                         "en-EN": "Anglais, Royaume-Uni",
                         "en-US": "Anglais, États-Unis",
@@ -263,7 +265,9 @@
                         "zh-CN": "Chinois simplifié",
                         "zh-TW": "Chinois traditionnel",
                         "ja-JP": "Japonais",
-                        "ko-KR": "Coréen"
+                        "ko-KR": "Coréen",
+                        "uk-UA": "Ukrainien",
+                        "tl-PH": "Philippin"
                     }
                 }
             },
@@ -670,7 +674,6 @@
                 "title": "L'ajout du dossier partagé a échoué",
                 "msg": "Vous ne pouvez pas ajouter \"{folder}\" aux dossiers partagés."
             }
-
         },
         "create-launch-shortcut": {
             "success": {
@@ -953,7 +956,7 @@
     "maps": {
         "map-filter-panel": {
             "duration": "Durée",
-            "nps" : "Notes Par Seconde",
+            "nps": "Notes Par Seconde",
             "njs": "Vitesse de saut des notes",
             "tags": "tags",
             "specificities": "général",
@@ -1034,12 +1037,12 @@
             "by": "Par {songAutor}",
             "mapped-by": "mappée par",
             "delete": "Supprimer",
-            "preview" : "Aperçu de la carte",
-            "bsr-code" : "Code BSR",
-            "download" : "Télécharger la carte",
-            "downloading" :"Téléchargement de la carte",
-            "cancel-download" : "Annuler le téléchargement",
-            "hightlight-difficulty" : "Surligner la difficulté"
+            "preview": "Aperçu de la carte",
+            "bsr-code": "Code BSR",
+            "download": "Télécharger la carte",
+            "downloading": "Téléchargement de la carte",
+            "cancel-download": "Annuler le téléchargement",
+            "hightlight-difficulty": "Surligner la difficulté"
         }
     },
     "models": {
@@ -1216,15 +1219,15 @@
         "no-playlists-found": "Aucune playlists trouvées",
         "error-occur-while-loading-playlists": "Une erreur est survenue lors du chargement des playlists",
         "error-occur-while-loading-playlist": "Une erreur est survenue lors du chargement de la playlist",
-        "loading-maps":"Chargement des maps...",
-        "no-maps-found-for-playlist":"Aucune map trouvée pour cette playlist",
-        "playlist-contain-no-maps":"La playlist ne contient aucune map",
-        "no-map-installed-for-playlist":"Aucune map installée pour cette playlist",
-        "playlist-is-waiting-to-download":"La playlist est en attente de téléchargment",
+        "loading-maps": "Chargement des maps...",
+        "no-maps-found-for-playlist": "Aucune map trouvée pour cette playlist",
+        "playlist-contain-no-maps": "La playlist ne contient aucune map",
+        "no-map-installed-for-playlist": "Aucune map installée pour cette playlist",
+        "playlist-is-waiting-to-download": "La playlist est en attente de téléchargment",
         "download-maps": "Télécharger les maps",
         "download-missing-maps": "Télécharger les maps manquantes",
-        "playlist-is-downloading":"La playlist est en cours de téléchargement",
-        "some-playlist-maps-are-missing":"Certaines maps de cette playlist sont manquantes",
+        "playlist-is-downloading": "La playlist est en cours de téléchargement",
+        "some-playlist-maps-are-missing": "Certaines maps de cette playlist sont manquantes",
         "create-a-playlist": "Créer une playlist",
         "synchronize-playlists": "Synchroniser les playlists",
         "export-playlists": "Exporter les playlists",
@@ -1275,7 +1278,6 @@
             "CANNOT_PARSE_PLAYLIST": "Les playlists ne sont pas lisibles",
             "unknown": "Aucune playlist n'a pu être importée"
         }
-
     },
     "dateformat": {
         "dayNames": ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
