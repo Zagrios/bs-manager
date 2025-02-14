@@ -369,10 +369,12 @@ export class LocalMapsManagerService {
                     for (const folder of mapsFolders) {
                         log.info(">", folder);
 
-                        const regex = new RegExp(`^${escapeRegExp(folder)}\\/`);
+                        const entriesNames = isRoot
+                            ? null
+                            : [ new RegExp(`^${escapeRegExp(folder)}\\/`) ];
 
                         const exported = await zip.extract(destination, {
-                            entriesNames: [regex],
+                            entriesNames,
                             abortToken: abortController
                         });
 
