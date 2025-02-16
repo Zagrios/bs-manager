@@ -1,3 +1,4 @@
+import log from "electron-log";
 import fetch from "node-fetch";
 import { CustomError } from "../../shared/models/exceptions/custom-error.class";
 import { mkdirs, createWriteStream, pathExists, WriteStream } from "fs-extra";
@@ -100,8 +101,13 @@ export class OculusDownloader {
     }
 
     private async isFileIntegrityValid(file: OculusFileWithName, folder: string): Promise<boolean> {
-        const [fileName, fileData] = file;
-        const destination = path.join(folder, fileName);
+        const [filename, fileData] = file;
+        const destination = path.join(
+            folder,
+            process.platform === "win32"
+                ? filename
+                : filename.replaceAll("\\", "/")
+        );
 
         return pathExists(destination).then(exists => {
             if(!exists){ return false; }
@@ -176,7 +182,14 @@ export class OculusDownloader {
                             return from([res])
                         }
 
-                        const target = path.join(options.destination, filename);
+                        const target = path.join(
+                            options.destination,
+                            process.platform === "win32"
+                                ? filename
+                                : filename.replaceAll("\\", "/")
+                        );
+                        log.info("Downloaded file", `"${filename}"`, "to", `"${target}"`);
+
                         return this.downloadManifestFile(file, target).pipe(
                             catchError(err => {
                                 this.options.logger?.error(err);
