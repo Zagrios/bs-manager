@@ -12,7 +12,7 @@ import { lastValueFrom } from "rxjs";
 import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
-import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods-disclaimer-modal.component";
+import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods/mods-disclaimer-modal.component";
 import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { lt } from "semver";
 import { useService } from "renderer/hooks/use-service.hook";
@@ -25,6 +25,7 @@ import { Dropzone } from "renderer/components/shared/dropzone.component";
 import { ModsGridStatus } from "shared/models/mods/mod-ipc.model";
 import { BsmLink } from "renderer/components/shared/bsm-link.component";
 import { DISCORD_URL, GITHUB_URL } from "shared/constants";
+import { ModsVersionCompareModal } from "renderer/components/modal/modal-types/mods/mods-version-compare-modal.component";
 
 export type ModsSlideRef = {
     loadMods: () => Promise<void>;
@@ -268,6 +269,14 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
         }
     }, [modsAvailable]);
 
+    const openModsVersionCompare = async () => {
+        modals.openModal(ModsVersionCompareModal, { data: {
+            version,
+            availableModsMap: modsAvailable,
+            installedModsMap: modsInstalled,
+        }});
+    };
+
     const renderStatus = () => {
         if (gridStatus === ModsGridStatus.BEATMODS_DOWN) {
             return <ModStatus image={BeatConflictImg}>
@@ -320,6 +329,8 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
                         uninstallMod={uninstallMod}
                         uninstallAllMods={uninstallAllMods}
                         unselectAllMods={unselectAllMods}
+                        openModsDropZone={() => setModsDropZoneOpen(true)}
+                        openModsVersionCompare={openModsVersionCompare}
                     />
                 </div>
                 <div className="shrink-0 flex items-center justify-between px-3 py-2">
