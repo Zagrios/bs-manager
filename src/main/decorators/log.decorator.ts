@@ -27,10 +27,10 @@ export function Log(options?: LogOptions){
     const logOutput = options?.logOutput ?? true;
     const logArgs = options?.logArgs ?? true;
 
-    return (target: unknown, propertyKey: string, descriptor: PropertyDescriptor) => {
+    return (_target: unknown, propertyKey: string, descriptor: PropertyDescriptor) => {
         const originalMethod = descriptor.value;
 
-        descriptor.value = function(...args: unknown[]) {
+        descriptor.value = function func(...args: unknown[]) {
 
             if (logInput) {
                 logInfo('INPUT', propertyKey, args, logArgs, null);
