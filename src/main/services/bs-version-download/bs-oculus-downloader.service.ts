@@ -107,7 +107,7 @@ export class BsOculusDownloaderService {
         let downloadVersion: BSVersion
 
         return of(downloadInfo.token).pipe(
-            switchMap(token => {
+            switchMap(async token => {
                 isOculusTokenValid(token, log.info); // Log token validity
                 if(!downloadInfo.isVerification){
                     return this.createDownloadVersion(downloadInfo.bsVersion).then(({version, dest}) => ({token, version, dest}))
