@@ -1,3 +1,4 @@
+import { ASSETS_FOLDER } from "__tests__/consts";
 import { mkdir, pathExistsSync, rm, writeFile } from "fs-extra";
 import { getSize } from "main/helpers/fs.helpers";
 import path from "path";
@@ -11,7 +12,7 @@ jest.mock("electron-log", () => ({
     error: jest.fn(),
 }));
 
-const TEST_FOLDER = path.resolve(__dirname, "..", "assets", "fs");
+const TEST_FOLDER = path.resolve(ASSETS_FOLDER, "fs");
 
 describe("Test fs.helpers getSize", () => {
 
