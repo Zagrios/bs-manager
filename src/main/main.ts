@@ -164,6 +164,16 @@ function convertDateToDateString(date: Date): string {
     return `${date.getFullYear()}-${month}-${day}`;
 }
 
+function getReadableTime(date: Date): string {
+    return `${
+        date.getHours().toString().padStart(2, "0")
+    }-${
+        date.getMinutes().toString().padStart(2, "0")
+    }-${
+        date.getSeconds().toString().padStart(2, "0")
+    }`;
+}
+
 function initLogger(){
     log.transports.file.level = "info";
 
@@ -178,7 +188,7 @@ function initLogger(){
 
         filepath = path.join(
             app.getPath("logs"), nowString,
-            `${now.getTime()}-v${app.getVersion()}.log`
+            `${nowString}_${getReadableTime(now)}_v${app.getVersion()}.log`
         );
         currentDateString = nowString;
         return filepath;
