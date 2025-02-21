@@ -144,6 +144,7 @@
                 "mods-grid": {
                     "header-bar": {
                         "name": "Назва",
+                        "size": "розмір",
                         "installed": "Встановлено",
                         "latest": "Остання",
                         "description": "Опис",

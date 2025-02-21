@@ -144,6 +144,7 @@
                 "mods-grid": {
                     "header-bar": {
                         "name": "Pangalan",
+                        "size": "laki",
                         "installed": "Naka-install",
                         "latest": "Pinakabago",
                         "description": "Deskripsyon",
