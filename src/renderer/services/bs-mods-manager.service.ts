@@ -218,6 +218,11 @@ export class BsModsManagerService {
             }
         }
 
+        const beatModsUp = await lastValueFrom(this.ipcService.sendV2("bs-mods.beatmods-up")).catch(() => false);
+        if (!beatModsUp) {
+            return ModsGridStatus.BEATMODS_DOWN;
+        }
+
         return ModsGridStatus.OK;
     }
 

@@ -16,6 +16,7 @@ import { MODEL_TYPE_FOLDERS } from "shared/models/models/constants";
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { BsmLink } from "renderer/components/shared/bsm-link.component";
+import { DISCORD_URL } from "shared/constants";
 
 export const UnlinkContentsModal: ModalComponent<boolean, {version: BSVersion, contentType: "maps"|"playlists"|"avatars"|"sabers"|"platforms"|"blocks"}> = ({options: { data: { version, contentType } }, resolver }) => {
     const { text: t, element: te } = useTranslationV2();
@@ -86,7 +87,7 @@ export const UnlinkContentsModal: ModalComponent<boolean, {version: BSVersion, c
             </p>
             <div className="flex justify-center items-center gap-3 *:underline *:text-sm *:text-neutral-200">
                 <BsmLink href="https://en.qrwp.org/Symbolic_link">{t("modals.link-contents.what-is-a-symbolic-link")}</BsmLink>
-                <BsmLink href="https://discord.gg/uSqbHVpKdV">{t("modals.link-contents.i-need-help")}</BsmLink>
+                <BsmLink href={DISCORD_URL}>{t("modals.link-contents.i-need-help")}</BsmLink>
             </div>
             <Tippy content={t("modals.unlink-contents.do-not-copy-contents-tip", { contentType: t(`misc.${contentType}`).toLowerCase() })} theme="default">
                 <div className="relative h-5 flex my-3 items-center w-fit">

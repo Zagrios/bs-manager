@@ -9,7 +9,7 @@ import BeatWaitingImg from "../../../../../../assets/images/apngs/beat-waiting.p
 import BeatConflictImg from "../../../../../../assets/images/apngs/beat-conflict.png";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { lastValueFrom } from "rxjs";
-import { useTranslation, useTranslationV2 } from "renderer/hooks/use-translation.hook";
+import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods-disclaimer-modal.component";
@@ -23,6 +23,8 @@ import Tippy from "@tippyjs/react";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { Dropzone } from "renderer/components/shared/dropzone.component";
 import { ModsGridStatus } from "shared/models/mods/mod-ipc.model";
+import { BsmLink } from "renderer/components/shared/bsm-link.component";
+import { DISCORD_URL, GITHUB_URL } from "shared/constants";
 
 export type ModsSlideRef = {
     loadMods: () => Promise<void>;
@@ -33,7 +35,7 @@ type Props = { version: BSVersion; isActive?: boolean, onDisclamerDecline: () =>
 export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, onDisclamerDecline }, forwaredRef) => {
     const ACCEPTED_DISCLAIMER_KEY = "accepted-mods-disclaimer";
 
-    const { text: t } = useTranslationV2();
+    const { text: t, element: te } = useTranslationV2();
 
     const modsManager = useService(BsModsManagerService);
     const configService = useService(ConfigurationService);
@@ -266,12 +268,32 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
         }
     }, [modsAvailable]);
 
+    const renderStatus = () => {
+        if (gridStatus === ModsGridStatus.BEATMODS_DOWN) {
+            return <ModStatus image={BeatConflictImg}>
+                <span className="text-xl text-center px-2 mt-3 italic">
+                {te("pages.version-viewer.mods.status.beatmods-down", {links: (<>
+                    <BsmLink className="text-blue-500 underline" href={DISCORD_URL}>
+                        Discord
+                    </BsmLink>
+                    /
+                    <BsmLink className="text-blue-500 underline" href={GITHUB_URL}>
+                        GitHub
+                    </BsmLink>
+                </>)})}
+                </span>
+            </ModStatus>
+        }
+
+        return <ModStatus text={`pages.version-viewer.mods.status.${gridStatus}`} image={BeatConflictImg} />;
+    }
+
     const renderContent = () => {
         if (!isOnline) {
             return <ModStatus text="pages.version-viewer.mods.no-internet" image={BeatConflictImg} />;
         }
         if (gridStatus !== ModsGridStatus.OK) {
-            return <ModStatus text={`pages.version-viewer.mods.status.${gridStatus}`} image={BeatConflictImg} />;
+            return renderStatus();
         }
         if (!modsAvailable) {
             return <ModStatus text="pages.version-viewer.mods.loading-mods" image={BeatWaitingImg} spin />;
@@ -342,13 +364,13 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
     );
 });
 
-function ModStatus({ text, image, spin = false, children }: { text: string; image: string; spin?: boolean, children?: ReactNode}) {
-    const t = useTranslation();
+function ModStatus({ text, image, spin = false, children }: { text?: string; image: string; spin?: boolean, children?: ReactNode}) {
+    const { text: t } = useTranslationV2();
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center text-gray-800 dark:text-gray-200">
             <img className={`w-32 h-32 ${spin ? "spin-loading" : ""}`} src={image} alt=" " />
-            <span className="text-xl mt-3 italic text-center">{t(text)}</span>
+            {text && <span className="text-xl text-center px-2 mt-3 italic">{t(text)}</span>}
             {children}
         </div>
     );

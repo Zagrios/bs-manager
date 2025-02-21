@@ -47,6 +47,7 @@ import { tryit } from "shared/helpers/error.helpers";
 import { InstallationLocationService } from "renderer/services/installation-location.service";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 import { OculusDownloaderService } from "renderer/services/bs-version-download/oculus-downloader.service";
+import { DISCORD_URL } from "shared/constants";
 
 export function SettingsPage() {
 
@@ -240,7 +241,7 @@ export function SettingsPage() {
     const openGithub = () => linkOpener.open("https://github.com/Zagrios/bs-manager");
     const openReportBug = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&template=-bug--bug-report.md&title=%5BBUG%5D+%3A+");
     const openRequestFeatures = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=enhancement&template=-feat---feature-request.md&title=%5BFEAT.%5D+%3A+");
-    const openDiscord = () => linkOpener.open("https://discord.gg/uSqbHVpKdV");
+    const openDiscord = () => linkOpener.open(DISCORD_URL);
     const openTwitter = () => linkOpener.open("https://twitter.com/BSManager_");
 
     const openLogs = () => lastValueFrom(ipcService.sendV2("open-logs"));
@@ -507,7 +508,8 @@ export function SettingsPage() {
                     <SettingContainer className="mt-3" description="pages.settings.discord.description">
                         <div className="flex gap-2">
                             <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="Discord" icon="discord" iconClassName="p-0.5 mr-1" color="#5865f2" onClick={openDiscord} />
-                            <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="Twitter" icon="twitter" iconClassName="p-0.5 mr-1" color="#000" onClick={openTwitter} />
+                            <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="Twitter" icon="twitter" iconClassName="p-0.5 mr-1" color="#171717" onClick={openTwitter} />
+                            <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="GitHub" icon="github" iconClassName="p-0.5 mr-1 h-full w-full" color="#171717" onClick={openGithub} />
                         </div>
                     </SettingContainer>
                     <SettingContainer className="pt-3" description="pages.settings.contribution.description">
@@ -518,7 +520,6 @@ export function SettingsPage() {
                             </div>
                             <div className="flex px-2 gap-2">
                                 <BsmButton onClick={openLogs} className="shrink-0 whitespace-nowrap px-2 font-bold italic text-sm rounded-md" text="pages.settings.contribution.buttons.open-logs" withBar={false} />
-                                <BsmButton onClick={openGithub} className="shrink-0 px-2 rounded-md" icon="github" title="GitHub" withBar={false} />
                             </div>
                         </div>
                     </SettingContainer>

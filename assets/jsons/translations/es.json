@@ -133,6 +133,7 @@
                 "mods-not-available": "Aún no hay mods disponibles para esta versión de Beat Saber",
                 "status": {
                     "no-wineprefix": "No se pudo encontrar la ruta del WINEPREFIX de BSManager. Por favor, inicia Beat Saber en BSManager primero.",
+                    "beatmods-down": "Beatmods no está disponible en este momento. Por favor, inténtalo más tarde. Si el problema persiste, infórmanos en {links}.",
                     "unknown": "Se ha producido un error desconocido ¯\\_(ツ)_/¯"
                 },
                 "buttons": {

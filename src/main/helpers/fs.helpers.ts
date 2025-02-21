@@ -1,4 +1,4 @@
-import { CopyOptions, MoveOptions, RmOptions, copy, createReadStream, ensureDir, move, pathExists, pathExistsSync, realpath, rm, stat, symlink, unlink, unlinkSync } from "fs-extra";
+import { CopyOptions, MoveOptions, RmOptions, copy, createReadStream, ensureDir, move, pathExists, pathExistsSync, realpath, rm, stat, symlink, unlink, unlinkSync, rmSync } from "fs-extra";
 import { access, mkdir, readdir, lstat, readlink } from "fs/promises";
 import path from "path";
 import { Observable, concatMap, from } from "rxjs";
@@ -71,6 +71,7 @@ export function deleteFolderSync(folderPath: string, options?: RmOptions) {
     try {
         options = options || { recursive: true, force: true };
         log.info("Deleting folder", `"${folderPath}"`, options);
+        rmSync(folderPath, options);
     } catch (error: any) {
         log.error("Could not delete folder", `"${folderPath}"`);
         throw CustomError.fromError(error, "generic.fs.delete-folder");
