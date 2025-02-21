@@ -23,11 +23,11 @@ type Props = {
 };
 
 type FileSizeProps = {
-    readonly fileSize?: number;
-    readonly wantInfoStyle: CSSProperties;
+    fileSize?: number;
+    wantInfoStyle: CSSProperties;
 };
 
-function FileSizeText({ fileSize, wantInfoStyle }: FileSizeProps) {
+function FileSizeText({ fileSize, wantInfoStyle }: Readonly<FileSizeProps>) {
 
     const verifyFileSize = fileSize !== undefined;
 
