@@ -23,8 +23,8 @@ type Props = {
 };
 
 type FileSizeProps = {
-    fileSize?: number;
-    wantInfoStyle: CSSProperties;
+    readonly fileSize?: number;
+    readonly wantInfoStyle: CSSProperties;
 };
 
 function FileSizeText({ fileSize, wantInfoStyle }: FileSizeProps) {
