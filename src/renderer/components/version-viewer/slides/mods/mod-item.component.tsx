@@ -43,15 +43,39 @@ function FileSizeText({ fileSize, wantInfoStyle }: FileSizeProps) {
         return `${(fileSize/1024/1024).toFixed(2)}MB`;
     };
 
+    const getWarningText = () : string => {
+        if (isLargeMod)
+            return `This is a very large mod!`;
+        if (isMediumMod)
+            return `This is a large mod!`;
+        return "";
+    };
+
+    const getTheme = () : string => {
+        if (isLargeMod)
+            return 'red';
+        if (isMediumMod)
+            return 'yellow';
+        return "";
+    };
+
+    const getTextColor = () : string => {
+        if (isLargeMod)
+            return "text-red-400";
+        if (isMediumMod)
+            return "text-yellow-400";
+        return "";
+    };
+
     return (
 
         <Tippy
-            content={(isLargeMod ? `This is a very large mod!` : (isMediumMod ? `This is a large mod!` : "") || "")}
+            content={getWarningText()}
             placement="left"
-            theme={`${(isLargeMod ? `red` : (isMediumMod ? `yellow` : "") || "")}`}
-            className={`${isLargeMod || isMediumMod ? `` : `opacity-0`}`}
+            theme={getTheme()}
+            className={`${isLargeMod || isMediumMod ? "" : "opacity-0"}`}
             delay={[50, 0]} >
-                <span className={`min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover:brightness-90 ${(isLargeMod ? "text-red-400" : (isMediumMod ? "text-yellow-400" : "") || "")}`} style={wantInfoStyle}>
+                <span className={`min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover:brightness-90 ${getTextColor()}`} style={wantInfoStyle}>
                     {getFormattedSize()}
                 </span>
         </Tippy>
