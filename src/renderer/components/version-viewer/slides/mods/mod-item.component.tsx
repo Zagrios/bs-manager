@@ -36,7 +36,7 @@ function FileSizeText({ fileSize, wantInfoStyle }: Readonly<FileSizeProps>) {
     const isLargeMod = verifyFileSize && fileSize > 1024 * 1024 * 100; // 100MB
 
     const getFormattedSize = () : string => {
-        if (!verifyFileSize)
+        if (!verifyFileSize || fileSize === 0)
             return `-`;
         if (fileSize < 1024 * 1024)
             return `${(fileSize/1024).toFixed(2)}KB`;
