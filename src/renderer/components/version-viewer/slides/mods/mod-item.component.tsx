@@ -7,6 +7,8 @@ import useDoubleClick from "use-double-click";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import striptags from "striptags";
 import { safeGt } from "shared/helpers/semver.helpers";
+import Tippy from "@tippyjs/react";
+import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 
 type Props = {
     className?: string;
@@ -20,6 +22,68 @@ type Props = {
     disabled?: boolean;
     onUninstall?: () => void;
 };
+
+type FileSizeProps = {
+    fileSize?: number;
+    wantInfoStyle: CSSProperties;
+};
+
+function FileSizeText({ fileSize, wantInfoStyle }: Readonly<FileSizeProps>) {
+
+    const { text: t } = useTranslationV2();
+
+    const verifyFileSize = fileSize !== undefined;
+
+    const isMediumMod = verifyFileSize && fileSize > 1024 * 1024 * 50; // 50MB
+
+    const isLargeMod = verifyFileSize && fileSize > 1024 * 1024 * 100; // 100MB
+
+    const getFormattedSize = () : string => {
+        if (!verifyFileSize || fileSize === 0)
+            return `-`;
+        if (fileSize < 1024 * 1024)
+            return `${(fileSize/1024).toFixed(2)}KB`;
+        return `${(fileSize/1024/1024).toFixed(2)}MB`;
+    };
+
+    const getWarningText = () : string => {
+        if (isLargeMod)
+            return `pages.version-viewer.mods.mods-grid.mod-item.this-is-a-very-large-mod`;
+        if (isMediumMod)
+            return `pages.version-viewer.mods.mods-grid.mod-item.this-is-a-large-mod`;
+        return "";
+    };
+
+    const getTheme = () : string => {
+        if (isLargeMod)
+            return 'red';
+        if (isMediumMod)
+            return 'yellow';
+        return "";
+    };
+
+    const getTextColor = () : string => {
+        if (isLargeMod)
+            return "text-red-400";
+        if (isMediumMod)
+            return "text-yellow-400";
+        return "";
+    };
+
+    return (
+
+        <Tippy
+            content={t(getWarningText())}
+            placement="left"
+            theme={getTheme()}
+            disabled={!(isLargeMod || isMediumMod)}
+            delay={[50, 0]} >
+                <span className={`min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover:brightness-90 ${getTextColor()}`} style={wantInfoStyle}>
+                    {getFormattedSize()}
+                </span>
+        </Tippy>
+    );
+}
 
 export function ModItem({ className, mod, installedVersion, isDependency, isSelected, onChange, wantInfo, onWantInfo, disabled, onUninstall }: Props) {
 
@@ -65,6 +129,7 @@ export function ModItem({ className, mod, installedVersion, isDependency, isSele
             <span className="min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover:brightness-90" style={wantInfoStyle}>
                 {mod.version.modVersion}
             </span>
+            <FileSizeText fileSize={mod.version.fileSize} wantInfoStyle={wantInfoStyle} />
             <span title={striptags(mod.mod?.description ?? "", { tagReplacementText: " " })} className="px-3 bg-inherit whitespace-nowrap text-ellipsis overflow-hidden py-2 text-sm border-t-2 border-b-2 group-hover:brightness-90" style={wantInfoStyle}>
                 {striptags(mod.mod?.summary ?? "", { tagReplacementText: " " })}
             </span>

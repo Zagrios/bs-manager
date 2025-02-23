@@ -144,6 +144,7 @@
                 "mods-grid": {
                     "header-bar": {
                         "name": "Nome",
+                        "size": "tamanho",
                         "installed": "Instalado",
                         "latest": "Mais recente",
                         "description": "Descrição",
@@ -152,6 +153,10 @@
                             "uninstall-all": "Desinstalar todos",
                             "unselect-all": "Desmarcar todos"
                         }
+                    },
+                    "mod-item": {
+                        "this-is-a-large-mod": "Este é um mod grande!",
+                        "this-is-a-very-large-mod": "Este é um mod muito grande!"
                     }
                 },
                 "notifications": {
