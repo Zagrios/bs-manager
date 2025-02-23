@@ -153,6 +153,10 @@
                             "uninstall-all": "Видалити всі",
                             "unselect-all": "Зняти виділення з всіх"
                         }
+                    },
+                    "mod-item": {
+                        "this-is-a-large-mod": "Це великий мод!",
+                        "this-is-a-very-large-mod": "Це дуже великий мод!"
                     }
                 },
                 "notifications": {

@@ -153,6 +153,10 @@
                             "uninstall-all": "全部卸载",
                             "unselect-all": "取消全选"
                         }
+                    },
+                    "mod-item": {
+                        "this-is-a-large-mod": "这是一个大型Mod！",
+                        "this-is-a-very-large-mod": "这是一个非常大型的Mod！"
                     }
                 },
                 "notifications": {

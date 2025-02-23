@@ -153,6 +153,10 @@
                             "uninstall-all": "Tout désinstaller",
                             "unselect-all": "Tout désélectionner"
                         }
+                    },
+                    "mod-item": {
+                        "this-is-a-large-mod": "C'est un mod volumineux !",
+                        "this-is-a-very-large-mod": "C'est un mod très volumineux !"
                     }
                 },
                 "notifications": {

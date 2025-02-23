@@ -8,6 +8,7 @@ import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import striptags from "striptags";
 import { safeGt } from "shared/helpers/semver.helpers";
 import Tippy from "@tippyjs/react";
+import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 
 type Props = {
     className?: string;
@@ -29,6 +30,8 @@ type FileSizeProps = {
 
 function FileSizeText({ fileSize, wantInfoStyle }: Readonly<FileSizeProps>) {
 
+    const { text: t } = useTranslationV2();
+
     const verifyFileSize = fileSize !== undefined;
 
     const isMediumMod = verifyFileSize && fileSize > 1024 * 1024 * 50; // 50MB
@@ -45,9 +48,9 @@ function FileSizeText({ fileSize, wantInfoStyle }: Readonly<FileSizeProps>) {
 
     const getWarningText = () : string => {
         if (isLargeMod)
-            return `This is a very large mod!`;
+            return `pages.version-viewer.mods.mods-grid.mod-item.this-is-a-very-large-mod`;
         if (isMediumMod)
-            return `This is a large mod!`;
+            return `pages.version-viewer.mods.mods-grid.mod-item.this-is-a-large-mod`;
         return "";
     };
 
@@ -70,10 +73,10 @@ function FileSizeText({ fileSize, wantInfoStyle }: Readonly<FileSizeProps>) {
     return (
 
         <Tippy
-            content={getWarningText()}
+            content={t(getWarningText())}
             placement="left"
             theme={getTheme()}
-            className={`${isLargeMod || isMediumMod ? "" : "opacity-0"}`}
+            disabled={!(isLargeMod || isMediumMod)}
             delay={[50, 0]} >
                 <span className={`min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover:brightness-90 ${getTextColor()}`} style={wantInfoStyle}>
                     {getFormattedSize()}

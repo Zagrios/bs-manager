@@ -153,6 +153,10 @@
                             "uninstall-all": "全てアンインストールする",
                             "unselect-all": "すべて選択解除"
                         }
+                    },
+                    "mod-item": {
+                        "this-is-a-large-mod": "これは大きなModです！",
+                        "this-is-a-very-large-mod": "これは非常に大きなModです！"
                     }
                 },
                 "notifications": {
