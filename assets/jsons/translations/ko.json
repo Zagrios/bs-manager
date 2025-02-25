@@ -26,7 +26,8 @@
         "continue": "계속",
         "shared": "공유",
         "pin": "고정",
-        "unpin": "고정 해제"
+        "unpin": "고정 해제",
+        "this-guide": "이 가이드"
     },
     "generic": {
         "env": {
@@ -411,17 +412,20 @@
             "oculus-download": {
                 "errors": {
                     "msg": {
-                        "DOWNLOAD_MANIFEST_FAILED": "이 버전의 매니페스트를 다운로드할 수 없습니다. 로그인 토큰이 무효일 수 있습니다.",
+                        "DOWNLOAD_MANIFEST_FAILED": "매니페스트를 다운로드할 수 없습니다. 로그인 토큰이 유효하지 않거나 Beat Saber 데스크톱 버전을 소유하고 있지 않을 수 있습니다.",
                         "MANIFEST_FILE_NOT_FOUND": "이 버전의 매니페스트를 찾을 수 없습니다.",
                         "PARSE_MANIFEST_FILE_FAILED": "매니페스트를 읽는 중 오류가 발생했습니다.",
                         "ALREADY_DOWNLOADING": "버전이 이미 다운로드 중입니다.",
-                        "UNABLE_TO_GET_MANIFEST": "다운로드에 필요한 매니페스트를 가져올 수 없습니다.",
+                        "UNABLE_TO_GET_MANIFEST": "다운로드에 필요한 매니페스트를 가져올 수 없습니다. 로그인 토큰이 유효하지 않거나 Beat Saber 데스크톱 버전을 소유하고 있지 않을 수 있습니다.",
                         "VERIFY_INTEGRITY_FAILED": "파일 검증 중 오류가 발생했습니다.",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "일부 파일을 다운로드하지 못했습니다.",
                         "META_LOGIN_TIMED_OUT": "로그인 토큰을 얻는 데 시간이 너무 오래 걸렸습니다.",
                         "META_LOGIN_WINDOW_CLOSED_BY_USER": "Meta 로그인 창이 닫혔습니다.",
                         "NO_META_AUTH_TOKEN": "다운로드에 필요한 Meta 로그인 토큰을 얻을 수 없습니다.",
                         "UNKNOWN_ERROR": "알 수 없는 오류가 발생했습니다."
+                    },
+                    "actions": {
+                        "claim-your-desktop-version": "데스크톱 버전 받기"
                     }
                 }
             }
@@ -901,7 +905,8 @@
                 "token-needed": "Beat Saber를 다운로드하려면 Meta 로그인 토큰이 필요합니다.",
                 "need-cookie-enabled": "Meta에 로그인하면 로그인 창이 열리며 로그인 프로세스를 시작할 수 있습니다. 쿠키를 허용해 주세요. 그렇지 않으면 다운로드를 시작하기 위한 토큰을 얻지 못할 수 있습니다.",
                 "enter-token-manually": "로그인 토큰을 수동으로 입력하기",
-                "enter-token-manually-tooltip": "이를 통해 Meta 로그인을 거치지 않고 로그인 토큰을 입력할 수 있습니다."
+                "enter-token-manually-tooltip": "이를 통해 Meta 로그인을 거치지 않고 로그인 토큰을 입력할 수 있습니다.",
+                "must-own-desktop-version": "Beat Saber의 데스크톱 버전을 보유해야 합니다. 독립형 버전을 구매했다면 {link}를 따라가서 받으세요."
             },
             "stay": "기억하기",
             "connect-to-meta": "Meta에 연결하기"

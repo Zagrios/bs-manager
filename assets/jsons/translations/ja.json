@@ -26,7 +26,8 @@
         "continue": "続ける",
         "shared": "共有",
         "pin": "固定",
-        "unpin": "固定解除"
+        "unpin": "固定解除",
+        "this-guide": "このガイド"
     },
     "generic": {
         "env": {
@@ -411,17 +412,20 @@
             "oculus-download": {
                 "errors": {
                     "msg": {
-                        "DOWNLOAD_MANIFEST_FAILED": "このバージョンのマニフェストをダウンロードできません。ログイントークンが無効な可能性があります。",
+                        "DOWNLOAD_MANIFEST_FAILED": "このバージョンのマニフェストをダウンロードできません。ログイントークンが無効であるか、Beat Saberのデスクトップ版を所有していない可能性があります。",
                         "MANIFEST_FILE_NOT_FOUND": "このバージョンのマニフェストが見つかりません。",
                         "PARSE_MANIFEST_FILE_FAILED": "マニフェストの読み取り中にエラーが発生しました。",
                         "ALREADY_DOWNLOADING": "バージョンはすでにダウンロードされています。",
-                        "UNABLE_TO_GET_MANIFEST": "ダウンロードに必要なマニフェストを取得できません。",
+                        "UNABLE_TO_GET_MANIFEST": "ダウンロードに必要なマニフェストを取得できません。ログイントークンが無効であるか、Beat Saberのデスクトップ版を所有していない可能性があります。",
                         "VERIFY_INTEGRITY_FAILED": "ファイルの検証中にエラーが発生しました。",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "一部のファイルのダウンロードに失敗しました。",
                         "META_LOGIN_TIMED_OUT": "ログイントークンの取得に時間がかかりすぎました。",
                         "META_LOGIN_WINDOW_CLOSED_BY_USER": "メタ・ログイン・ウィンドウが閉じられた。",
                         "NO_META_AUTH_TOKEN": "ダウンロードに必要な Meta ログイン トークンを取得できません。",
                         "UNKNOWN_ERROR": "不明なエラーが発生しました。"
+                    },
+                    "actions": {
+                        "claim-your-desktop-version": "デスクトップ版を取得"
                     }
                 }
             }
@@ -901,7 +905,8 @@
                 "token-needed": "Beat SaberのダウンロードにはMetaのログイントークンが必要です。",
                 "need-cookie-enabled": "Metaにログインするとログインウィンドウが開き、ログインプロセスを開始することができます。Cookieを受け入れるようにしてください。そうしないとダウンロードを開始するためのトークンを取得できない場合があります。",
                 "enter-token-manually": "ログイントークンを手動で入力する",
-                "enter-token-manually-tooltip": "これにより、Metaログインを経由せずにログイントークンを入力できるようになります。"
+                "enter-token-manually-tooltip": "これにより、Metaログインを経由せずにログイントークンを入力できるようになります。",
+                "must-own-desktop-version": "Beat Saberのデスクトップ版を所有している必要があります。スタンドアロン版を購入した場合は、{link} を確認して取得してください。"
             },
             "stay": "記憶する",
             "connect-to-meta": "Metaに接続する"
