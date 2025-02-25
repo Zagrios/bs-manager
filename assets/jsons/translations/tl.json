@@ -26,7 +26,8 @@
         "continue": "Magpatuloy",
         "shared": "Ibinahagi",
         "pin": "I-pin",
-        "unpin": "I-unpin"
+        "unpin": "I-unpin",
+        "this-guide": "ang gabay na ito"
     },
     "generic": {
         "env": {
@@ -411,17 +412,20 @@
             "oculus-download": {
                 "errors": {
                     "msg": {
-                        "DOWNLOAD_MANIFEST_FAILED": "Hindi magawang i-download ang manifest para sa bersyong ito; maaaring hindi wasto ang iyong login token.",
+                        "DOWNLOAD_MANIFEST_FAILED": "Hindi ma-download ang manifesto. Maaaring hindi wasto ang iyong login token, o maaaring wala kang desktop na bersyon ng Beat Saber.",
                         "MANIFEST_FILE_NOT_FOUND": "Hindi mahanap ang manifest para sa bersyong ito.",
                         "PARSE_MANIFEST_FILE_FAILED": "Nagkaroon ng error habang binabasa ang manifest.",
                         "ALREADY_DOWNLOADING": "May kasalukuyang dina-download na bersyon.",
-                        "UNABLE_TO_GET_MANIFEST": "Hindi magawang makuha ang manifest na kailangan para sa pag-download.",
+                        "UNABLE_TO_GET_MANIFEST": "Hindi makuha ang manifesto na kinakailangan para sa pag-download. Maaaring hindi wasto ang iyong login token, o maaaring wala kang desktop na bersyon ng Beat Saber.",
                         "VERIFY_INTEGRITY_FAILED": "Nagkaroon ng error habang nirere-verify ang file.",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "May mga file na hindi nagawang i-download.",
                         "META_LOGIN_TIMED_OUT": "Matagal ang pagkuha ng login token.",
                         "META_LOGIN_WINDOW_CLOSED_BY_USER": "Isinara ng user ang Meta login window.",
                         "NO_META_AUTH_TOKEN": "Hindi magawang kunin ang Meta login token na kailangan para sa pag-download.",
                         "UNKNOWN_ERROR": "May error na nangyari."
+                    },
+                    "actions": {
+                        "claim-your-desktop-version": "Kunin ang iyong desktop na bersyon"
                     }
                 }
             }
@@ -901,7 +905,8 @@
                 "token-needed": "Kinakailangan ang iyong Meta connection token upang ma-download ang Beat Saber.",
                 "need-cookie-enabled": "Sa pag-login sa Meta, isang login window ang magbubukas at maaari mong simulan ang proseso ng pag-login. Siguraduhin na tanggapin ang cookies, kung hindi, maaaring hindi namin makuha ang iyong token upang simulan ang pag-download.",
                 "enter-token-manually": "I-enter ang aking login token manu-mano",
-                "enter-token-manually-tooltip": "Papayagan ka nitong i-enter ang iyong login token nang hindi dumadaan sa Meta login."
+                "enter-token-manually-tooltip": "Papayagan ka nitong i-enter ang iyong login token nang hindi dumadaan sa Meta login.",
+                "must-own-desktop-version": "Dapat ay mayroon kang desktop na bersyon ng Beat Saber. Kung binili mo ang standalone na bersyon, sundan ang {link} upang makuha ito."
             },
             "stay": "Tandaan ako",
             "connect-to-meta": "Mag-connect sa Meta"

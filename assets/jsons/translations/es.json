@@ -26,7 +26,8 @@
         "continue": "Continuar",
         "shared": "Compartido",
         "pin": "Fijar",
-        "unpin": "Desfijar"
+        "unpin": "Desfijar",
+        "this-guide": "esta guía"
     },
     "generic": {
         "env": {
@@ -411,17 +412,20 @@
             "oculus-download": {
                 "errors": {
                     "msg": {
-                        "DOWNLOAD_MANIFEST_FAILED": "No se puede descargar el manifiesto de esta versión; su token de inicio de sesión podría ser inválido.",
+                        "DOWNLOAD_MANIFEST_FAILED": "No se puede descargar el manifiesto de esta versión. Su token de inicio de sesión podría ser inválido o que no poseas la versión de escritorio de Beat Saber.",
                         "MANIFEST_FILE_NOT_FOUND": "Imposible encontrar el manifiesto de esta versión.",
                         "PARSE_MANIFEST_FILE_FAILED": "Se produjo un error al leer el manifiesto.",
                         "ALREADY_DOWNLOADING": "Ya se está descargando una versión.",
-                        "UNABLE_TO_GET_MANIFEST": "Imposible obtener el manifiesto necesario para la descarga.",
+                        "UNABLE_TO_GET_MANIFEST": "Imposible obtener el manifiesto necesario para la descarga. Su token de inicio de sesión podría ser inválido o que no poseas la versión de escritorio de Beat Saber.",
                         "VERIFY_INTEGRITY_FAILED": "Se produjo un error durante la verificación de archivos.",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "Algunos archivos no pudieron ser descargados.",
                         "META_LOGIN_TIMED_OUT": "El token de inicio de sesión tardó demasiado en recuperarse.",
                         "META_LOGIN_WINDOW_CLOSED_BY_USER": "La ventana de inicio de sesión de Meta fue cerrada.",
                         "NO_META_AUTH_TOKEN": "Imposible recuperar el token de inicio de sesión de Meta necesario para la descarga.",
                         "UNKNOWN_ERROR": "Se produjo un error desconocido."
+                    },
+                    "actions": {
+                        "claim-your-desktop-version": "Reclama tu versión de escritorio"
                     }
                 }
             }
@@ -901,7 +905,8 @@
                 "token-needed": "Tu token de conexión a Meta es necesario para descargar Beat Saber.",
                 "need-cookie-enabled": "Al conectarte a Meta, se abrirá una ventana de inicio de sesión y entonces podrás empezar el proceso de conexión. Asegúrate de aceptar las cookies, de lo contrario, podríamos no poder recuperar tu token para iniciar la descarga.",
                 "enter-token-manually": "Ingresar mi token de inicio de sesión manualmente",
-                "enter-token-manually-tooltip": "Esto te permitirá ingresar tu token de inicio de sesión sin pasar por el inicio de sesión de Meta."
+                "enter-token-manually-tooltip": "Esto te permitirá ingresar tu token de inicio de sesión sin pasar por el inicio de sesión de Meta.",
+                "must-own-desktop-version": "Debes poseer la versión de escritorio de Beat Saber. Si compraste la versión autónoma, sigue {link} para reclamarla."
             },
             "stay": "Recuérdame",
             "connect-to-meta": "Conectarse a Meta"

@@ -26,7 +26,8 @@
         "continue": "继续",
         "shared": "共享",
         "pin": "固定",
-        "unpin": "取消固定"
+        "unpin": "取消固定",
+        "this-guide": "本指南"
     },
     "generic": {
         "env": {
@@ -411,17 +412,20 @@
             "oculus-download": {
                 "errors": {
                     "msg": {
-                        "DOWNLOAD_MANIFEST_FAILED": "无法下载此版本的清单；你的登录令牌可能无效。",
+                        "DOWNLOAD_MANIFEST_FAILED": "无法下载清单。您的登录令牌可能无效，或者您未拥有 Beat Saber 的桌面版本。",
                         "MANIFEST_FILE_NOT_FOUND": "找不到此版本的清单。",
                         "PARSE_MANIFEST_FILE_FAILED": "读取清单时发生错误。",
                         "ALREADY_DOWNLOADING": "已经有一个版本在下载中。",
-                        "UNABLE_TO_GET_MANIFEST": "无法获取下载所需的清单。",
+                        "UNABLE_TO_GET_MANIFEST": "无法获取下载所需的清单。您的登录令牌可能无效，或者您未拥有 Beat Saber 的桌面版本。",
                         "VERIFY_INTEGRITY_FAILED": "文件验证过程中发生错误。",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "一些文件下载失败。",
                         "META_LOGIN_TIMED_OUT": "获取登录令牌用时过长。",
                         "META_LOGIN_WINDOW_CLOSED_BY_USER": "Meta 登录窗口被关闭。",
                         "NO_META_AUTH_TOKEN": "无法获取下载所需的 Meta 登录令牌。",
                         "UNKNOWN_ERROR": "发生未知错误。"
+                    },
+                    "actions": {
+                        "claim-your-desktop-version": "领取您的桌面版本"
                     }
                 }
             }
@@ -901,7 +905,8 @@
                 "token-needed": "需要 Meta 登录令牌用于下载 Beat Saber。",
                 "need-cookie-enabled": "通过登录 Meta，将打开一个登录窗口，然后你可以开始登录过程。请确保接受 cookie，否则我们可能无法检索你的令牌以开始下载。",
                 "enter-token-manually": "手动输入我的登录令牌",
-                "enter-token-manually-tooltip": "这将允许你在不通过 Meta 登录的情况下输入你的登录令牌。"
+                "enter-token-manually-tooltip": "这将允许你在不通过 Meta 登录的情况下输入你的登录令牌。",
+                "must-own-desktop-version": "您必须拥有 Beat Saber 的桌面版本。如果您购买了独立版本，请按照 {link} 领取。"
             },
             "stay": "记住我",
             "connect-to-meta": "连接到 Meta"

@@ -26,7 +26,8 @@
         "continue": "Continua",
         "shared": "Condivisi",
         "pin": "Fissa",
-        "unpin": "Rimuovi Fissaggio"
+        "unpin": "Rimuovi Fissaggio",
+        "this-guide": "questa guida"
     },
     "generic": {
         "env": {
@@ -411,17 +412,20 @@
             "oculus-download": {
                 "errors": {
                     "msg": {
-                        "DOWNLOAD_MANIFEST_FAILED": "Impossibile scaricare il manifest per questa versione; il tuo token di accesso potrebbe essere invalido.",
+                        "DOWNLOAD_MANIFEST_FAILED": "Impossibile scaricare il manifesto. Il tuo token di accesso potrebbe non essere valido o potresti non possedere la versione desktop di Beat Saber.",
                         "MANIFEST_FILE_NOT_FOUND": "Impossibile trovare il manifest per questa versione.",
                         "PARSE_MANIFEST_FILE_FAILED": "C'è stato un errore durante la lettura del manifest.",
                         "ALREADY_DOWNLOADING": "Una versione sta già venendo scaricata.",
-                        "UNABLE_TO_GET_MANIFEST": "Impossibile ottenere il manifest richiesto per il download.",
+                        "UNABLE_TO_GET_MANIFEST": "Impossibile ottenere il manifesto necessario per il download. Il tuo token di accesso potrebbe non essere valido o potresti non possedere la versione desktop di Beat Saber.",
                         "VERIFY_INTEGRITY_FAILED": "C'è stato un errore durante la verifica dei file.",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "Alcuni file non sono stati scaricati con successo.",
                         "META_LOGIN_TIMED_OUT": "Il token di accesso ha impiegato troppo tempo per essere recuperato.",
                         "META_LOGIN_WINDOW_CLOSED_BY_USER": "La finestra di login di Meta è stata chiusa.",
                         "NO_META_AUTH_TOKEN": "Impossibile recuperare il token di accesso Meta necessario per il download.",
                         "UNKNOWN_ERROR": "C'è stato un errore sconosciuto."
+                    },
+                    "actions": {
+                        "claim-your-desktop-version": "Richiedi la tua versione desktop"
                     }
                 }
             }
@@ -901,7 +905,8 @@
                 "token-needed": "Il tuo token di connessione Meta è necessario per scaricare Beat Saber.",
                 "need-cookie-enabled": "Accedendo a Meta, si aprirà una finestra di login e potrai quindi avviare il processo di login. Assicurati di accettare i cookie, altrimenti potremmo non essere in grado di recuperare il tuo token per avviare il download.",
                 "enter-token-manually": "Inserisci manualmente il mio token di login",
-                "enter-token-manually-tooltip": "Questo ti permetterà di inserire il tuo token di accesso senza passare per il login di Meta."
+                "enter-token-manually-tooltip": "Questo ti permetterà di inserire il tuo token di accesso senza passare per il login di Meta.",
+                "must-own-desktop-version": "Devi possedere la versione desktop di Beat Saber. Se hai acquistato la versione autonoma, segui {link} per richiederla."
             },
             "stay": "Ricordami",
             "connect-to-meta": "Connettiti a Meta"
