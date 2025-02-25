@@ -60,7 +60,7 @@ export const LoginToMetaModal: ModalComponent<string> = ({ resolver }) => {
             <p className="font-bold">{t("modals.connect-to-meta.body.token-needed")}</p>
             <p>{t("modals.connect-to-meta.body.need-cookie-enabled")}</p>
 
-            <p className="text-warning-400">You must own the desktop version of Beat Saber. If you bought it on the standalone store, follow <a className="underline cursor-pointer">this guide</a> to claim it.</p>
+            <p className="text-warning-400">You must own the desktop version of Beat Saber. If you bought it on the standalone store, follow <a className="underline cursor-pointer" href="https://github.com/Zagrios/bs-manager/wiki/how-to-claim-oculus-desktop-version" target="_blank">this guide</a> to claim it.</p>
 
             <div className="w-full flex flex-row justify-start items-center gap-1.5">
                 <BsmCheckbox className="relative z-[1] w-6 aspect-square" checked={stay} onChange={enable => setStay(() => enable)}/>

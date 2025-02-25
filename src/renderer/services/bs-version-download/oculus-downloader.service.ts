@@ -51,7 +51,9 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
         const notificationData: Notification = {title: "notifications.types.error", desc: `notifications.bs-download.oculus-download.errors.msg.${err.code}`, duration: 9000};
         if(err.code === OculusDownloaderErrorCodes.DOWNLOAD_MANIFEST_FAILED){
             notificationData.actions = [{ id: "0", title: "Claim your desktop version" }]
-            return this.notifications.notifyError(notificationData).then(action => action === "0" && this.linkOpener.open(""))
+            return this.notifications.notifyError(notificationData).then(action => (
+                action === "0" && this.linkOpener.open("https://github.com/Zagrios/bs-manager/wiki/how-to-claim-oculus-desktop-version")
+            ));
         }
 
         return this.notifications.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.oculus-download.errors.msg.${err.code}`}).then(noop);

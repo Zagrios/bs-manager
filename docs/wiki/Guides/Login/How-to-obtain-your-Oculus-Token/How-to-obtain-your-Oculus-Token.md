@@ -18,7 +18,7 @@
 2. Install the Oculus Rift app on your computer.
 
 > [!NOTE]  
->__If you bought Beat Saber from the Quest store, it won't appear in your Rift library by default. To download it with [BSManager](https://www.bsmanager.io), first claim it from its store page.__
+>__If you bought Beat Saber from the Quest store, it won't appear in your Rift library by default. To download it with [BSManager](https://www.bsmanager.io), first follow [this guide](https://github.com/Zagrios/bs-manager/wiki/how-to-claim-oculus-desktop-version) claim it from its store page.__
 
 ## Step 2 - Open developer tools
 
