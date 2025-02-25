@@ -3,7 +3,6 @@ import { access, mkdir, readdir, lstat, readlink } from "fs/promises";
 import path from "path";
 import { Observable, concatMap, from } from "rxjs";
 import log from "electron-log";
-import { BsmException } from "shared/models/bsm-exception.model";
 import crypto from "crypto";
 import { execSync } from "child_process";
 import { tryit } from "../../shared/helpers/error.helpers";
@@ -181,7 +180,7 @@ export function isSubdirectory(parent: string, child: string): boolean {
 
 export async function copyDirectoryWithJunctions(src: string, dest: string, options?: CopyOptions): Promise<void> {
     if (isSubdirectory(src, dest)) {
-        throw { message: `Cannot copy directory '${src}' into itself '${dest}'.`, code: "COPY_TO_SUBPATH" } as BsmException;
+        throw new CustomError(`Cannot copy directory '${src}' into itself '${dest}'.`, "COPY_TO_SUBPATH");
     }
 
     await ensureDir(dest);

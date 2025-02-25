@@ -144,6 +144,7 @@
                 "mods-grid": {
                     "header-bar": {
                         "name": "名前",
+                        "size": "サイズ",
                         "installed": "インストール済み",
                         "latest": "最新",
                         "description": "說明",
@@ -152,6 +153,10 @@
                             "uninstall-all": "全てアンインストールする",
                             "unselect-all": "すべて選択解除"
                         }
+                    },
+                    "mod-item": {
+                        "this-is-a-large-mod": "これは大きなModです！",
+                        "this-is-a-very-large-mod": "これは非常に大きなModです！"
                     }
                 },
                 "notifications": {

@@ -19,7 +19,6 @@ export class SongCacheService {
     private readonly mapsInfoCache: JsonCache<CachedMapInfoWithHash>;
 
     private constructor(){
-        console.log(this.MAPS_INFO_CACHE_PATH);
         this.mapsInfoCache = new JsonCache(this.MAPS_INFO_CACHE_PATH);
     }
 

@@ -144,6 +144,7 @@
                 "mods-grid": {
                     "header-bar": {
                         "name": "Pangalan",
+                        "size": "laki",
                         "installed": "Naka-install",
                         "latest": "Pinakabago",
                         "description": "Deskripsyon",
@@ -152,6 +153,10 @@
                             "uninstall-all": "I-uninstall ang lahat",
                             "unselect-all": "I-unselect and lahat"
                         }
+                    },
+                    "mod-item": {
+                        "this-is-a-large-mod": "Ito ay isang malaking mod!",
+                        "this-is-a-very-large-mod": "Ito ay isang napakalaking mod!"
                     }
                 },
                 "notifications": {

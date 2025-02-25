@@ -144,6 +144,7 @@
                 "mods-grid": {
                     "header-bar": {
                         "name": "名稱",
+                        "size": "大小",
                         "installed": "已安裝",
                         "latest": "最新",
                         "description": "描述",
@@ -152,6 +153,10 @@
                             "uninstall-all": "全部移除",
                             "unselect-all": "取消全選"
                         }
+                    },
+                    "mod-item": {
+                        "this-is-a-large-mod": "這是一個大型Mod！",
+                        "this-is-a-very-large-mod": "這是一個非常大型的Mod！"
                     }
                 },
                 "notifications": {

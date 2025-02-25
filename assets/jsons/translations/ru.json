@@ -144,6 +144,7 @@
                 "mods-grid": {
                     "header-bar": {
                         "name": "Имя",
+                        "size": "Размер",
                         "installed": "Установлено",
                         "latest": "Latest",
                         "description": "Описание",
@@ -152,6 +153,10 @@
                             "uninstall-all": "Удалить всё",
                             "unselect-all": "Снять все выделения"
                         }
+                    },
+                    "mod-item": {
+                        "this-is-a-large-mod": "Это большой мод!",
+                        "this-is-a-very-large-mod": "Это очень большой мод!"
                     }
                 },
                 "notifications": {
