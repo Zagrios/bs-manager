@@ -18,7 +18,7 @@ import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { map } from "rxjs";
 import { DISCORD_URL } from "shared/constants";
 
-export const LinkContentModal: ModalComponent<void, {version: BSVersion, contentType: "maps"|"playlists"|"avatars"|"sabers"|"platforms"|"blocks"}> = ({options: { data: { version, contentType } }, resolver }) => {
+export const LinkContentModal: ModalComponent<void, {version: BSVersion, contentType: "maps"|"playlists"|"avatars"|"sabers"|"platforms"|"bloqs"}> = ({options: { data: { version, contentType } }, resolver }) => {
     const { text: t, element: te } = useTranslationV2();
 
     const versionLinker = useService(VersionFolderLinkerService);
@@ -35,7 +35,7 @@ export const LinkContentModal: ModalComponent<void, {version: BSVersion, content
                 return window.electron.path.join(sharedPath, MODEL_TYPE_FOLDERS.saber);
             case "platforms":
                 return window.electron.path.join(sharedPath, MODEL_TYPE_FOLDERS.platform);
-            case "blocks":
+            case "bloqs":
                 return window.electron.path.join(sharedPath, MODEL_TYPE_FOLDERS.bloq);
             default:
                 return "";
@@ -54,7 +54,7 @@ export const LinkContentModal: ModalComponent<void, {version: BSVersion, content
                 return window.electron.path.join(version.path, MODEL_TYPE_FOLDERS.saber);
             case "platforms":
                 return window.electron.path.join(version.path, MODEL_TYPE_FOLDERS.platform);
-            case "blocks":
+            case "bloqs":
                 return window.electron.path.join(version.path, MODEL_TYPE_FOLDERS.bloq);
             default:
                 return "";
