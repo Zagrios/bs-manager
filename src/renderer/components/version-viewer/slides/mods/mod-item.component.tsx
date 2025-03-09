@@ -117,10 +117,10 @@ export function ModItem({ className, mod, installedVersion, isDependency, isSele
 
     return (
         <li ref={clickRef} className={`${className} group`}>
-            <div className="h-full aspect-square flex items-center justify-center p-[7px] rounded-l-md bg-inherit ml-3 border-2 border-r-0 z-[1] group-hover:brightness-90" style={wantInfoStyle}>
-                <BsmCheckbox className="h-full aspect-square z-[1] relative bg-inherit" onChange={() => onChange(!isChecked)} disabled={mod.mod.category === BbmCategories.Core || isDependency || disabled} checked={isChecked} />
+            <div className="h-full flex items-center justify-center p-1.5 px-4 rounded-l-md bg-inherit ml-3 border-2 border-r-0 z-[1] group-hover:brightness-90" style={wantInfoStyle}>
+                <BsmCheckbox className="size-[18px] aspect-square z-[1] relative bg-inherit" onChange={() => onChange(!isChecked)} disabled={mod.mod.category === BbmCategories.Core || isDependency || disabled} checked={isChecked} />
             </div>
-            <span className="bg-inherit py-2 pl-3 font-bold text-sm whitespace-nowrap border-t-2 border-b-2 blur-none group-hover:brightness-90" style={wantInfoStyle}>
+            <span className="bg-inherit py-2 pl-3 font-bold text-sm whitespace-nowrap border-t-2 border-b-2 blur-none group-hover:brightness-90 flex items-center" style={wantInfoStyle}>
                 {mod.mod.name}
             </span>
             <span className={`min-w-0 text-center bg-inherit py-2 px-1 text-sm border-t-2 border-b-2 group-hover:brightness-90 ${installedVersion && isOutDated && "text-red-400 line-through"} ${installedVersion && !isOutDated && "text-green-400"}`} style={wantInfoStyle}>
