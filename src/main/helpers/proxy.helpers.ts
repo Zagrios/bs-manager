@@ -1,7 +1,7 @@
 import log from 'electron-log';
 import { RegDwordValue, RegSzValue } from "regedit-rs"
 import { execOnOs } from "./env.helpers";
-import { bootstrap } from 'global-agent';
+import { bootstrap } from "global-agent";
 import { StaticConfigurationService } from "../services/static-configuration.service";
 
 const staticConfig = StaticConfigurationService.getInstance();
