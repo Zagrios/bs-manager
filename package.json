@@ -244,6 +244,6 @@
         "logLevel": "quiet"
     },
     "volta": {
-        "node": "22.11.0"
+        "node": "22.14.0"
     }
 }
