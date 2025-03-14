@@ -19,6 +19,7 @@
     <summary>🔑 Login</summary>
     <ul>
         <li><a href="How-to-obtain-your-Oculus-Token">How to obtain your Oculus Token</a></li>
+        <li><a href="how-to-claim-oculus-desktop-version">How to claim your Oculus Desktop version of Beat Saber</a></li>
     </ul>
 </details>
 
