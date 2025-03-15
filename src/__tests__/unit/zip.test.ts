@@ -1,8 +1,9 @@
 import path from "path";
 import { mkdir, pathExistsSync, readFile, rm } from "fs-extra";
 import { BsmZipExtractor } from "main/models/bsm-zip-extractor.class";
+import { ASSETS_FOLDER } from "__tests__/consts";
 
-const TEST_FOLDER = path.resolve(__dirname, "..", "assets", "zip");
+const TEST_FOLDER = path.resolve(ASSETS_FOLDER, "zip");
 const STANDARD_ZIP = path.join(TEST_FOLDER, "standard.zip");
 const WINDOWS_LEGACY_MAP_ZIP = path.join(TEST_FOLDER, "windows_legacy.zip");
 const SUBFOLDERS_ZIP = path.join(TEST_FOLDER, "subfolders.zip");
