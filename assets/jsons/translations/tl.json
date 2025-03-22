@@ -701,6 +701,16 @@
                 "do-not-remind": "Huwag akong paalalahanan",
                 "ok": "Ok"
             }
+        },
+        "bs-uninstall": {
+            "errors": {
+                "title": "Hindi maalis ang bersyon",
+                "desc": {
+                    "CantDeleteOfficialVersion": "Hindi maalis ng BSManager ang orihinal na bersyon ng Beat Saber",
+                    "VersionNotFound": "Hindi nahanap ang bersyon.",
+                    "delete-folder": "Hindi maalis ang bersyon. Tiyakin na ang Beat Saber ay hindi naka-run."
+                }
+            }
         }
     },
     "modals": {

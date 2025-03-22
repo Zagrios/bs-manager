@@ -306,14 +306,12 @@ export class BSLocalVersionService {
         return versions;
     }
 
-    public async deleteVersion(version: BSVersion): Promise<boolean>{
-        if(version.steam || version.oculus){ return false; }
+    public async deleteVersion(version: BSVersion): Promise<void>{
+        if(version.steam || version.oculus){ throw new CustomError("BSManager is not able to delete official Beat Saber versions", "CantDeleteOfficialVersion"); }
         const versionFolder = await this.getVersionPath(version);
-        if(!(await pathExists(versionFolder))){ return true; }
+        if(!(await pathExists(versionFolder))){ throw new CustomError("Version not found", "VersionNotFound"); }
 
-        return deleteFolder(versionFolder)
-            .then(() => { return true; })
-            .catch(() => { return false; })
+        return deleteFolder(versionFolder);
     }
 
     public async editVersion(version: BSVersion, name: string, color: string): Promise<BSVersion>{
