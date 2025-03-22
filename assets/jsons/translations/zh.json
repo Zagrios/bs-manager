@@ -701,6 +701,16 @@
                 "do-not-remind": "不再提醒",
                 "ok": "确定"
             }
+        },
+        "bs-uninstall": {
+            "errors": {
+                "title": "无法卸载版本",
+                "desc": {
+                    "CantDeleteOfficialVersion": "BSManager无法卸载Beat Saber的原始版本",
+                    "VersionNotFound": "未找到版本。",
+                    "delete-folder": "无法删除版本。确保Beat Saber未运行。"
+                }
+            }
         }
     },
     "modals": {

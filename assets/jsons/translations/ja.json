@@ -701,6 +701,16 @@
                 "do-not-remind": "再度通知しない",
                 "ok": "OK"
             }
+        },
+        "bs-uninstall": {
+            "errors": {
+                "title": "バージョンをアンインストールできません",
+                "desc": {
+                    "CantDeleteOfficialVersion": "BSManagerはBeat Saberのオリジナルバージョンをアンインストールできません",
+                    "VersionNotFound": "バージョンが見つかりません。",
+                    "delete-folder": "バージョンを削除できません。Beat Saberが実行中でないことを確認してください。"
+                }
+            }
         }
     },
     "modals": {

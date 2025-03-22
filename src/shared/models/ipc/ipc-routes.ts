@@ -103,7 +103,7 @@ export interface IpcChannelMapping {
     "install-playlist-file": {request: {bplist: BPList, version?: BSVersion, dest?: string}, response: LocalBPListsDetails};
 
     /* ** bs-uninstall-ipcs ** */
-    "bs.uninstall": { request: BSVersion, response: boolean };
+    "bs.uninstall": { request: BSVersion, response: void };
 
     /* ** bs-version-ipcs ** */
     "bs-version.get-version-dict": { request: void, response: BSVersion[] };

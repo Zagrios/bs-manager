@@ -701,6 +701,16 @@
                 "do-not-remind": "No volver a recordármelo",
                 "ok": "Ok"
             }
+        },
+        "bs-uninstall": {
+            "errors": {
+                "title": "No se puede desinstalar la versión",
+                "desc": {
+                    "CantDeleteOfficialVersion": "BSManager no puede desinstalar la versión original de Beat Saber",
+                    "VersionNotFound": "Versión no encontrada.",
+                    "delete-folder": "No se puede eliminar la versión. Asegúrate de que Beat Saber no esté en marcha."
+                }
+            }
         }
     },
     "modals": {

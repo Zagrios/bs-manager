@@ -16,6 +16,7 @@ import equal from "fast-deep-equal";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
+import { noop } from "shared/helpers/function.helpers";
 
 export function BsVersionItem(props: { version: BSVersion }) {
 
@@ -70,7 +71,7 @@ export function BsVersionItem(props: { version: BSVersion }) {
         const wasVerification = bsDownloader.isVerifying;
         bsDownloader.stopDownload().then(() => {
             if(wasVerification){ return; }
-            bsUninstallerService.uninstall(versionDownload).then(res => res && verionManagerService.askInstalledVersions());
+            bsUninstallerService.uninstall(versionDownload).then(() => verionManagerService.askInstalledVersions()).catch(noop);
         });
     };
 

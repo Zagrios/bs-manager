@@ -701,6 +701,16 @@
                 "do-not-remind": "Больше не напоминать",
                 "ok": "Ок"
             }
+        },
+        "bs-uninstall": {
+            "errors": {
+                "title": "Невозможно удалить версию",
+                "desc": {
+                    "CantDeleteOfficialVersion": "BSManager не может удалить оригинальную версию Beat Saber",
+                    "VersionNotFound": "Версия не найдена.",
+                    "delete-folder": "Не удалось удалить версию. Убедитесь, что Beat Saber не запущен."
+                }
+            }
         }
     },
     "modals": {
