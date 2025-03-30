@@ -150,7 +150,7 @@ export class BsModsManagerService {
         let winePath: string = "";
         if (process.platform === "linux") {
             const { error: winePathError, result: winePathResult } =
-                tryit(() => this.linuxService.getWinePath());
+                await tryit(async () => this.linuxService.getWinePath());
             if (winePathError) {
                 log.error(winePathError);
                 return false;
