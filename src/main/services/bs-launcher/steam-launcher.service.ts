@@ -12,6 +12,8 @@ import { UtilsService } from "../utils.service";
 import { exec } from "child_process";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { app } from "electron";
+import { ChildProcessWithoutNullStreams } from "child_process";
+import { SpawnBsProcessOptions } from "./abstract-launcher.service";
 
 export class SteamLauncherService extends AbstractLauncherService implements StoreLauncherInterface{
 
@@ -62,6 +64,48 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         return rename(steamVrBackup, steamVrFolder).catch(err => {
             log.error("Error while restoring SteamVR", err);
         });
+    }
+
+    protected launchBs(bsExePath: string, args: string[], options?: SpawnBsProcessOptions): {process: ChildProcessWithoutNullStreams, exit: Promise<number>} {
+        const process = this.launchBSProcess(bsExePath, args, options);
+
+        const exit = new Promise<number>((resolve, reject) => {
+            // Don't remove, useful for debugging!
+            //process.stdout.on("data", (data) => {
+            //    log.info(`BS stdout: ${data}`);
+            //});
+            //process.stderr.on("data", (data) => {
+            //    log.error(`BS stderr: ${data}`);
+            //});
+
+            const onWillQuitHandler = async (event: Electron.Event) => {
+                app.removeListener('will-quit', onWillQuitHandler);
+                if (!process.killed) {
+                    event.preventDefault();
+                    log.info(`Unref'ing BS process ${process.pid} on app will-quit`);
+                    process.unref();
+                    await this.restoreSteamVR().catch(log.error);
+                    resolve(-1);
+                    app.quit();
+                }
+            };
+
+            process.on("error", (err) => {
+                log.error(`Error while launching BS`, err);
+                reject(err);
+                app.removeListener('will-quit', onWillQuitHandler);
+            });
+
+            process.on("exit", (code) => {
+                log.info(`BS process exit with code ${code}`);
+                resolve(code);
+                app.removeListener('will-quit', onWillQuitHandler);
+            });
+
+            app.on('will-quit', onWillQuitHandler);
+        });
+
+        return { process, exit };
     }
 
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
