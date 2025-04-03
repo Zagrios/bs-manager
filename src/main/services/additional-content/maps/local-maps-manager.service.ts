@@ -428,9 +428,10 @@ export class LocalMapsManagerService {
             throw new Error("Cannot download map, no hash found");
         }
 
-        log.info("Downloading map", map.name, map.id);
-
         const zipUrl = map.versions.at(0).downloadURL;
+
+        log.info("Downloading map", map.name, map.id, zipUrl);
+
         const mapFolderName = sanitize(`${map.id} (${map.metadata.songName} - ${map.metadata.levelAuthorName})`);
         const mapsFolder = await this.getMapsFolderPath(version);
 
