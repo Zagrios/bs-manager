@@ -129,7 +129,12 @@ export class LinuxService {
         return fs.pathExistsSync(protonPath) && fs.pathExistsSync(winePath);
     }
 
-    public getWinePath(): string {
+    public async getWinePath(): Promise<string> {
+        if (await this.isNixOS()) {
+            // Use system wine for nixos
+            return "wine";
+        }
+
         if (!this.staticConfig.has("proton-folder")) {
             throw new Error("proton-folder variable not set");
         }
