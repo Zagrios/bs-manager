@@ -151,6 +151,7 @@
                         "description": "說明",
                         "dropdown": {
                             "import-mods": "モッドをインポート",
+                            "compare-mods": "モッドを比較する",
                             "uninstall-all": "全てアンインストールする",
                             "unselect-all": "すべて選択解除"
                         }
@@ -971,6 +972,16 @@
         },
         "bs-version-outdated": {
             "body": "バージョン {outdatedVersion} は古いため、一部のモッドや機能が期待通りに動作しない場合があります。最新の機能やバグ修正を楽しむために、推奨される最新バージョンの Beat Saber ({recommendedVersion}) をダウンロードしてください。"
+        },
+        "mods-version-compare": {
+            "title": "MODのバージョン比較",
+            "select-version": "バージョンを選択する",
+            "mod-types": {
+                "all": "すべて",
+                "installed": "インストール済み",
+                "not-installed": "未インストール",
+                "missing": "欠落している"
+            }
         }
     },
     "maps": {

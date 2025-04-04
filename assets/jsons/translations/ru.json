@@ -151,6 +151,7 @@
                         "description": "Описание",
                         "dropdown": {
                             "import-mods": "Импортировать моды",
+                            "compare-mods": "Сравнить моды",
                             "uninstall-all": "Удалить всё",
                             "unselect-all": "Снять все выделения"
                         }
@@ -970,6 +971,16 @@
         },
         "bs-version-outdated": {
             "body": "Версия {outdatedVersion} устарела, и некоторые моды или функции могут работать некорректно. Пожалуйста, скачайте последнюю рекомендуемую версию ({recommendedVersion}) Beat Saber, чтобы воспользоваться новейшими функциями и исправлениями ошибок."
+        },
+        "mods-version-compare": {
+            "title": "Сравнение версий модов",
+            "select-version": "Выберите версию",
+            "mod-types": {
+                "all": "Все",
+                "installed": "Установлено",
+                "not-installed": "Не установлено",
+                "missing": "Отсутствует"
+            }
         }
     },
     "maps": {
