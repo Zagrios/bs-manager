@@ -117,7 +117,7 @@ export class BsModsManagerService {
     }
 
     private async downloadZip(zipUrl: string): Promise<BsmZipExtractor> {
-        zipUrl = path.join(this.beatModsApi.MODS_REPO_URL, zipUrl);
+        zipUrl = new URL(zipUrl, this.beatModsApi.MODS_REPO_URL).href;
 
         log.info("Download mod zip", zipUrl);
 

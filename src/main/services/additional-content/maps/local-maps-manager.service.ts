@@ -369,10 +369,12 @@ export class LocalMapsManagerService {
                     for (const folder of mapsFolders) {
                         log.info(">", folder);
 
-                        const regex = new RegExp(`^${escapeRegExp(folder)}\\/`);
+                        const entriesNames = isRoot
+                            ? null
+                            : [ new RegExp(`^${escapeRegExp(folder)}\\/`) ];
 
                         const exported = await zip.extract(destination, {
-                            entriesNames: [regex],
+                            entriesNames,
                             abortToken: abortController
                         });
 
@@ -428,9 +430,10 @@ export class LocalMapsManagerService {
             throw new Error("Cannot download map, no hash found");
         }
 
-        log.info("Downloading map", map.name, map.id);
-
         const zipUrl = map.versions.at(0).downloadURL;
+
+        log.info("Downloading map", map.name, map.id, zipUrl);
+
         const mapFolderName = sanitize(`${map.id} (${map.metadata.songName} - ${map.metadata.levelAuthorName})`);
         const mapsFolder = await this.getMapsFolderPath(version);
 
