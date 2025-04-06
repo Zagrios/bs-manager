@@ -72,9 +72,6 @@ export function VirtualScroll<T = unknown>({ className, classNames, minItemWidth
 
         const { scrollDirection, scrollOffset, scrollUpdateWasRequested } = e;
         const { scrollHeight } = listRef.current;
-
-        if(!scrollHeight || !listHeight){ return; }
-
         const margin = scrollEnd.margin ?? 0;
 
         if (scrollDirection === "forward" && !scrollUpdateWasRequested && scrollOffset + listHeight + margin >= scrollHeight) {
