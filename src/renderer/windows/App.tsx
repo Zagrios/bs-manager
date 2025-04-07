@@ -20,7 +20,6 @@ import { ModelsManagerService } from "renderer/services/models-management/models
 import { NotificationService } from "renderer/services/notification.service";
 import { timer } from "rxjs";
 import { ConfigurationService } from "renderer/services/configuration.service";
-import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { useService } from "renderer/hooks/use-service.hook";
 import { SetupService } from "renderer/services/setup.service";
 import { StaticConfigurationService } from "renderer/services/static-configuration.service";
@@ -28,7 +27,6 @@ import { BSVersionManagerService } from "renderer/services/bs-version-manager.se
 
 export default function App() {
 
-    useService(OsDiagnosticService);
     const pageState = useService(PageStateService);
     const maps = useService(MapsManagerService);
     const playlists = useService(PlaylistsManagerService);

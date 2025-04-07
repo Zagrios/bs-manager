@@ -21,7 +21,6 @@ import { useObservable } from "renderer/hooks/use-observable.hook";
 import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service";
 import { NotificationService } from "renderer/services/notification.service";
 import { DeletePlaylistModal } from "renderer/components/modal/modal-types/playlist/delete-playlist-modal.component";
-import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { PlaylistItemComponentPropsMapper } from "shared/mappers/playlist/playlist-item-component-props.mapper";
 import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual-scroll.component";
 import { LocalPlaylistFilter, LocalPlaylistSort } from "./local-playlist-filter-panel.component";
@@ -75,10 +74,8 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
     const playlistDownloader = useService(PlaylistDownloaderService);
     const modals = useService(ModalService);
     const ipc = useService(IpcService);
-    const osDiagnostic = useService(OsDiagnosticService);
     const notification = useService(NotificationService);
 
-    const isOnline = useObservable(() => osDiagnostic.isOnline$, false);
     const isActiveOnce = useChangeUntilEqual(isActive, { untilEqual: true });
 
     const { maps$, playlists$, setPlaylists, setMaps } = useContext(InstalledMapsContext);
@@ -121,7 +118,6 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
 
         },
         syncPlaylists: async (playlists?: LocalBPList[]) => {
-            if(!isOnline){ return; }
             const toSync = playlists ?? (selectedPlaylists$.value?.length ? selectedPlaylists$.value : playlists$.value);
             if(!toSync.length){ return; }
 
@@ -391,13 +387,13 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
                 }}
                 onClickOpen={() => openPlaylistDetails(playlist.path)}
                 onClickDelete={() => deletePlaylists([playlist])}
-                onClickSync={(playlist?.songs?.length && isOnline) && (() => handleClickSync(playlist))}
+                onClickSync={!!playlist?.songs?.length && (() => handleClickSync(playlist))}
                 onClickOpenFile={() => viewPlaylistFile(playlist.path)}
                 onClickCancelDownload={() => playlistDownloader.cancelDownload(playlist.customData?.syncURL ?? playlist.path, version)}
                 onClickEdit={() => editPlaylist(playlist)}
             />
         );
-    }, [isOnline, version]);
+    }, [version]);
 
     const filteredPlaylists = useMemo(() => {
         if(!playlists){ return []; }
