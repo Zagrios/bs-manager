@@ -6,14 +6,12 @@ import { SteamService } from "../steam.service";
 import path from "path";
 import { BS_APP_ID, BS_EXECUTABLE, STEAMVR_APP_ID } from "../../constants";
 import log from "electron-log";
-import { AbstractLauncherService, buildBsLaunchArgs } from "./abstract-launcher.service";
+import { AbstractLauncherService, buildBsLaunchArgs, SpawnBsProcessOptions } from "./abstract-launcher.service";
 import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
 import { UtilsService } from "../utils.service";
-import { exec } from "child_process";
+import { exec, ChildProcessWithoutNullStreams } from "child_process";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
-import { app } from "electron";
-import { ChildProcessWithoutNullStreams } from "child_process";
-import { SpawnBsProcessOptions } from "./abstract-launcher.service";
+import { app, Event } from "electron";
 
 export class SteamLauncherService extends AbstractLauncherService implements StoreLauncherInterface{
 
@@ -71,14 +69,14 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
 
         const exit = new Promise<number>((resolve, reject) => {
             // Don't remove, useful for debugging!
-            //process.stdout.on("data", (data) => {
+            // process.stdout.on("data", (data) => {
             //    log.info(`BS stdout: ${data}`);
-            //});
-            //process.stderr.on("data", (data) => {
+            // });
+            // process.stderr.on("data", (data) => {
             //    log.error(`BS stderr: ${data}`);
-            //});
+            // });
 
-            const onWillQuitHandler = async (event: Electron.Event) => {
+            const onWillQuitHandler = async (event: Event) => {
                 app.removeListener('will-quit', onWillQuitHandler);
                 if (!process.killed) {
                     event.preventDefault();
