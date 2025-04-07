@@ -7,13 +7,11 @@ import { ConfigurationService } from "renderer/services/configuration.service";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import BeatWaitingImg from "../../../../../../assets/images/apngs/beat-waiting.png";
 import BeatConflictImg from "../../../../../../assets/images/apngs/beat-conflict.png";
-import { useObservable } from "renderer/hooks/use-observable.hook";
 import { lastValueFrom } from "rxjs";
 import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods-disclaimer-modal.component";
-import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { lt } from "semver";
 import { useService } from "renderer/hooks/use-service.hook";
 import { NotificationService } from "renderer/services/notification.service";
@@ -42,7 +40,6 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
     const notification = useService(NotificationService);
     const linkOpener = useService(LinkOpenerService);
     const modals = useService(ModalService);
-    const os = useService(OsDiagnosticService);
     const progress = useService(ProgressBarService);
 
     const [gridStatus, setGridStatus] = useState(ModsGridStatus.OK);
@@ -51,7 +48,6 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
     const [modsSelected, setModsSelected] = useState([] as BbmFullMod[]);
     const [moreInfoMod, setMoreInfoMod] = useState(null as BbmFullMod);
     const [reinstallAllMods, setReinstallAllMods] = useState(false);
-    const isOnline = useObservable(() => os.isOnline$);
     const [installing, setInstalling] = useState(false);
     const [uninstalling, setUninstalling] = useState(false);
     const [modsDropZoneOpen, setModsDropZoneOpen] = useState(false);
@@ -205,7 +201,7 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
     }
 
     const loadMods = async (): Promise<void> => {
-        if (os.isOffline || gridStatus !== ModsGridStatus.OK) {
+        if (gridStatus !== ModsGridStatus.OK) {
             return Promise.resolve();
         }
 
@@ -224,7 +220,7 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
 
     useEffect(() => {
 
-        if(!isActive || !isOnline){
+        if(!isActive){
             return noop();
         }
 
@@ -245,7 +241,7 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
             setModsInstalled(null);
             setGridStatus(ModsGridStatus.OK);
         };
-    }, [isActive, isOnline, version]);
+    }, [isActive, version]);
 
     useEffect(() => {
         // Center the progress bar between buttons
@@ -289,9 +285,6 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
     }
 
     const renderContent = () => {
-        if (!isOnline) {
-            return <ModStatus text="pages.version-viewer.mods.no-internet" image={BeatConflictImg} />;
-        }
         if (gridStatus !== ModsGridStatus.OK) {
             return renderStatus();
         }

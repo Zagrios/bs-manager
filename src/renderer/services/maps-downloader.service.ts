@@ -7,7 +7,6 @@ import { ProgressBarService } from "./progress-bar.service";
 import { ProgressionInterface } from "shared/models/progress-bar";
 import { BsvMapDetail } from "shared/models/maps";
 import { IpcService } from "./ipc.service";
-import { OsDiagnosticService } from "./os-diagnostic.service";
 import equal from "fast-deep-equal/es6";
 import { CSSProperties } from "react";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
@@ -25,7 +24,6 @@ export class MapsDownloaderService {
     private readonly modals: ModalService;
     private readonly progressBar: ProgressBarService;
     private readonly ipc: IpcService;
-    private readonly os: OsDiagnosticService;
 
     private readonly mapsQueue$: BehaviorSubject<MapDownload[]> = new BehaviorSubject([]);
     private readonly currentDownload$: BehaviorSubject<MapDownload> = new BehaviorSubject(null);
@@ -38,7 +36,6 @@ export class MapsDownloaderService {
         this.modals = ModalService.getInstance();
         this.progressBar = ProgressBarService.getInstance();
         this.ipc = IpcService.getInstance();
-        this.os = OsDiagnosticService.getInstance();
 
         this.mapsQueue$.pipe(filter(queue => queue.length === 1 && !this.isDownloading)).subscribe(() => this.startDownloadMaps());
         this.mapsQueue$.pipe(filter(queue => queue.length === 0)).subscribe(() => {
@@ -68,9 +65,6 @@ export class MapsDownloaderService {
     }
 
     private downloadMap(map: BsvMapDetail, version: BSVersion): Observable<BsmLocalMap> {
-        if (this.os.isOffline) {
-            return null;
-        }
         return this.ipc.sendV2("bs-maps.download-map", { map, version });
     }
 
