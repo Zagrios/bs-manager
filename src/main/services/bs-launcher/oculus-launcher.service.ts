@@ -49,19 +49,21 @@ export class OculusLauncherService extends AbstractLauncherService implements St
                 // Make sure Oculus is running
                 await this.oculus.startOculus().catch(err => log.error("Error while starting Oculus", err));
 
-                const env: Record<string, string> = {};
+                const env: Record<string, string> = {
+                    ...process.env,
+                };
                 this.injectAdditionalArgsEnvs(launchOptions, env);
 
                 obs.next({type: BSLaunchEvent.BS_LAUNCHING});
 
                 // Launch Beat Saber
-                const process = this.launchBs(
+                const bsProcess = this.launchBs(
                     exePath,
                     buildBsLaunchArgs(launchOptions),
                     { env }
                 );
 
-                return process.exit.catch(err => {
+                return bsProcess.exit.catch(err => {
                     throw CustomError.fromError(err, BSLaunchError.BS_EXIT_ERROR);
                 });
 
