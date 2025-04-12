@@ -27,7 +27,9 @@
         "shared": "共有",
         "pin": "固定",
         "unpin": "固定解除",
-        "this-guide": "このガイド"
+        "this-guide": "このガイド",
+        "create": "作成",
+        "edit": "編集"
     },
     "generic": {
         "env": {
@@ -57,7 +59,8 @@
                 "outdated-tippy": "このバージョンは古いため、一部のMODや機能が期待通りに動作しない可能性があります。最新の機能やバグ修正を楽しむには、推奨バージョン ({recommendedVersion}) のBeat Saberを使用することをお勧めします。",
                 "advanced-launch": {
                     "button": "起動オプション",
-                    "placeholder": "起動オプション 例：KEY=VALUE %command% fpfc"
+                    "placeholder": "起動オプション 例：KEY=VALUE %command% fpfc",
+                    "create-launch-option": "起動オプションを作成"
                 },
                 "skipsteam": "Steamをスキップ",
                 "skipsteam-description": "Beat Saberと一緒にSteamが自動的に開くのを防ぎます。SteamVRが干渉する可能性のあるWiVRnやMonadoなど、別のVRランタイムを使用している場合は有効にしてください。",
@@ -971,6 +974,14 @@
         },
         "bs-version-outdated": {
             "body": "バージョン {outdatedVersion} は古いため、一部のモッドや機能が期待通りに動作しない場合があります。最新の機能やバグ修正を楽しむために、推奨される最新バージョンの Beat Saber ({recommendedVersion}) をダウンロードしてください。"
+        },
+        "custom-launch-option": {
+            "title": "カスタム起動オプション",
+            "title-placeholder": "私のオプション",
+            "desc": "特定のコマンドでBeat Saberを起動するための再利用可能な起動オプションを作成します。",
+            "name": "名前",
+            "launch-option": "起動オプション",
+            "create": "作成"
         }
     },
     "maps": {

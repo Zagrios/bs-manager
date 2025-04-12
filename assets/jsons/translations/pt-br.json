@@ -27,7 +27,9 @@
         "shared": "Compartilhados",
         "pin": "Fixar",
         "unpin": "Desafixar",
-        "this-guide": "este guia"
+        "this-guide": "este guia",
+        "create": "Criar",
+        "edit": "Editar"
     },
     "generic": {
         "env": {
@@ -57,7 +59,8 @@
                 "outdated-tippy": "Essa versão está desatualizada, e alguns mods ou funções podem não funcionar mais como esperado. Prefira utilizar a versão recomendada ({recommendedVersion}) de Beat Saber para aproveitar todas as últimas novidades e correções de erros.",
                 "advanced-launch": {
                     "button": "Opções de Inicialização",
-                    "placeholder": "Opções de lançamento, ex: KEY=VALUE %command% fpfc"
+                    "placeholder": "Opções de lançamento, ex: KEY=VALUE %command% fpfc",
+                    "create-launch-option": "Criar uma opção de lançamento"
                 },
                 "skipsteam": "Pular Steam",
                 "skipsteam-description": "Faz com que a Steam pare de abrir automaticamente com Beat Saber, ative se você está utilizando algum outro executável de VR como WiVRn ou Monado, que pode interferir com o SteamVR.",
@@ -971,6 +974,14 @@
         },
         "bs-version-outdated": {
             "body": "Essa versão {outdatedVersion} está desatualizada, e alguns mods ou funções podem não funcionar como esperado. Por favor baixe a versão mais recente ({recommendedVersion}) de Beat Saber para aproveitar as últimas novidades e correções."
+        },
+        "custom-launch-option": {
+            "title": "Opção de lançamento personalizada",
+            "title-placeholder": "Minha opção",
+            "desc": "Crie uma opção de lançamento reutilizável para lançar Beat Saber com um comando específico.",
+            "name": "Nome",
+            "launch-option": "Opção de lançamento",
+            "create": "Criar"
         }
     },
     "maps": {

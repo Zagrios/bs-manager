@@ -27,7 +27,9 @@
         "shared": "Shared",
         "pin": "Pin",
         "unpin": "Unpin",
-        "this-guide": "this guide"
+        "this-guide": "this guide",
+        "create": "Create",
+        "edit": "Edit"
     },
     "generic": {
         "env": {
@@ -57,7 +59,8 @@
                 "outdated-tippy": "This version is outdated, and some mods or features may no longer work as expected. Prefer using the recommended version ({recommendedVersion}) of Beat Saber to enjoy the latest features and bugfixes.",
                 "advanced-launch": {
                     "button": "Launch options",
-                    "placeholder": "Launch options ex: KEY=VALUE %command% fpfc"
+                    "placeholder": "Launch options ex: KEY=VALUE %command% fpfc",
+                    "create-launch-option": "Create a launch option"
                 },
                 "skipsteam": "Skip Steam",
                 "skipsteam-description": "Stops Steam from opening automatically with Beat Saber, enable if you are using a different VR runtime like WiVRn or Monado that SteamVR may interfere with.",
@@ -971,6 +974,14 @@
         },
         "bs-version-outdated": {
             "body": "The version {outdatedVersion} is outdated, and some mods or features may no longer work as expected. Please download the latest recommended version ({recommendedVersion}) of Beat Saber to enjoy the latest features and bugfixes."
+        },
+        "custom-launch-option": {
+            "title": "Custom launch option",
+            "title-placeholder": "My option",
+            "desc": "Create a re-usable launch option to launch Beat Saber with a specific command.",
+            "name": "Name",
+            "launch-option": "Launch option",
+            "create": "Create"
         }
     },
     "maps": {
