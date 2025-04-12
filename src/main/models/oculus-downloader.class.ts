@@ -88,7 +88,10 @@ export class OculusDownloader {
                         sub.next(progress);
                     }
 
-                })().catch(err => sub.error(err)).finally(() => {
+                })()
+                .then(() => {
+                    log.info("Downloaded file to", `"${destination}"`);
+                }).catch(err => sub.error(err)).finally(() => {
                     sub.complete();
                     writeStream?.end();
                 });
@@ -101,6 +104,7 @@ export class OculusDownloader {
     }
 
     private async isFileIntegrityValid(file: OculusFileWithName, folder: string): Promise<boolean> {
+
         const [filename, fileData] = file;
         const destination = path.join(
             folder,
@@ -110,8 +114,15 @@ export class OculusDownloader {
         );
 
         return pathExists(destination).then(exists => {
-            if(!exists){ return false; }
-            return hashFile(destination, "sha256").then(hash => hash === fileData.sha256);
+            if(!exists){
+                log.info("File not found", `"${destination}"`);
+                return false;
+            }
+            return hashFile(destination, "sha256").then(hash => {
+                const isValid = hash === fileData.sha256;
+                log.info("File integrity", isValid ? "VALID" : "INVALID", `"${destination}"`);
+                return isValid;
+            });
         });
     }
 
@@ -130,6 +141,7 @@ export class OculusDownloader {
                     if(canceled){ return; }
 
                     if(!(await this.isFileIntegrityValid(oculusFile, folder))){
+                        log.info("File integrity invalid", `"${oculusFile[0]}"`);
                         wrongFiles.push(oculusFile);
                     }
 
@@ -188,7 +200,6 @@ export class OculusDownloader {
                                 ? filename
                                 : filename.replaceAll("\\", "/")
                         );
-                        log.info("Downloaded file", `"${filename}"`, "to", `"${target}"`);
 
                         return this.downloadManifestFile(file, target).pipe(
                             catchError(err => {
