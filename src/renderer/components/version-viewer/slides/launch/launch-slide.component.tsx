@@ -14,7 +14,6 @@ import { lastValueFrom } from "rxjs";
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
 import equal from "fast-deep-equal";
 import { GlowEffect } from "renderer/components/shared/glow-effect.component";
-import { cn } from "renderer/helpers/css-class.helpers";
 import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
 import { safeLt } from "shared/helpers/semver.helpers";
 import { WarningIcon } from "renderer/components/svgs/icons/warning-icon.component";
@@ -193,9 +192,9 @@ export function LaunchSlide({ version }: Props) {
             </div>
             <div className="mt-4 flex flex-col items-center justify-center gap-3">
                 <div className="relative">
-                    <GlowEffect className="!rounded-full" visible={!!(activeLaunchMods?.length || command)}/>
+                    <GlowEffect className="!rounded-full" visible={!!((activeLaunchMods?.filter(mod => !pinnedLaunchMods.includes(mod)))?.length || command)}/>
                     <BsmButton
-                        className={cn("rounded-full w-fit text-lg py-1 px-7 bg-theme-2 text-gray-800 dark:text-white", (advancedLaunch && command) ? "" : "shadow-md shadow-black")}
+                        className="rounded-full w-fit text-lg py-1 px-7 bg-theme-2 text-gray-800 dark:text-white shadow-md shadow-black"
                         text="pages.version-viewer.launch-mods.advanced-launch.button"
                         withBar={false}
                         onClick={e => {
