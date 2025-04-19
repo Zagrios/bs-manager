@@ -100,3 +100,27 @@ export interface BbmUserAPIResponse {
     createdAt?: Date;
     updatedAt?: Date;
 }
+
+// https://raw.githubusercontent.com/bsmg/BSIPA-MetadataFileSchema/master/Schema.json
+export interface ModMetadata {
+    name: string;
+    id: string | null;
+    version: string;
+    gameVersion: string;
+    description: string;
+    author: string;
+    dependsOn?: Record<string, string>;
+    conflictsWith?: Record<string, string>;
+    loadAfter?: string[];
+    loadBefore?: string[];
+    feature?: Record<string, string>;
+    icon?: string;
+    files?: string[];
+    links?: {
+        "project-home"?: string;
+        "project-source"?: string;
+        donate?: string;
+    };
+    misc?: Record<string, string>;
+}
+
