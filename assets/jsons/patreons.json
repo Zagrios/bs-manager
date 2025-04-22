@@ -151,5 +151,16 @@
 	},
     {
         "username": "Marcus Hamm"
+    },
+    {
+		"username": "jxkelol"
+	},
+    {
+        "username": "paperwasp",
+        "type": "gold"
+    },
+    {
+        "username": "KingCrocman",
+        "type": "diamond"
     }
 ]
