@@ -70,17 +70,17 @@ export class BeatModsApiService {
         });
     }
 
-    public getModByHash(hash: string): Promise<BbmModVersion|undefined> {
+    public async getModByHash(hash: string): Promise<BbmModVersion> {
         if (this.modsHashCache.has(hash)) {
             return Promise.resolve(this.modsHashCache.get(hash));
         }
 
-        return this.requestService.getJSON<{ modVersions: BbmModVersion[] }>(`${this.MODS_REPO_API_URL}/hashlookup?hash=${hash}`).then(({ data }) => {
+        return this.requestService.getJSON<{ modVersions: BbmModVersion[] }>(
+            `${this.MODS_REPO_API_URL}/hashlookup?hash=${hash}`,
+            { silentError: true }
+        ).then(({ data }) => {
             this.updateModsHashCache(data?.modVersions ?? []);
             return data?.modVersions?.at(0);
-        }).catch((): undefined => {
-            log.error(`Failed to get mod by hash: ${hash}`);
-            return undefined;
         });
     }
 }

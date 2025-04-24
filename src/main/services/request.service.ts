@@ -28,14 +28,18 @@ export class RequestService {
 
     private constructor() {}
 
-    public async getJSON<T = unknown>(url: string): Promise<{ data: T; headers: IncomingHttpHeaders }> {
+    public async getJSON<T = unknown>(url: string, options?: {
+        silentError?: boolean
+    }): Promise<{ data: T; headers: IncomingHttpHeaders }> {
 
         try {
             // @ts-ignore (ESM is not well supported in this project, We need to move out electron-react-boilerplate, and use Vite)
             const res = await got(url, { responseType: 'json', headers: this.baseHeaders });
             return { data: res.body as T, headers: res.headers };
         } catch (err) {
-            log.error(`Failed to get JSON from URL: ${url}`, err);
+            if (options?.silentError !== true) {
+                log.error(`Failed to get JSON from URL: ${url}`, err);
+            }
             throw err;
         }
     }
