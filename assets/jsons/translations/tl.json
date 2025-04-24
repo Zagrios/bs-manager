@@ -27,7 +27,9 @@
         "shared": "Ibinahagi",
         "pin": "I-pin",
         "unpin": "I-unpin",
-        "this-guide": "ang gabay na ito"
+        "this-guide": "ang gabay na ito",
+        "create": "Lumikha",
+        "edit": "I-edit"
     },
     "generic": {
         "env": {
@@ -57,7 +59,8 @@
                 "outdated-tippy": "Ang bersyon na ito ay lipas na, at maaaring hindi na gumana ang ilang mods o features tulad ng inaasahan. Mas mainam na gumamit ng inirerekomendang bersyon ({recommendedVersion}) ng Beat Saber upang magamit ang mga pinakabagong features at pag-aayos ng bug.",
                 "advanced-launch": {
                     "button": "Launch options",
-                    "placeholder": "Launch options hal: KEY=VALUE %command% fpfc"
+                    "placeholder": "Launch options hal: KEY=VALUE %command% fpfc",
+                    "create-launch-option": "Lumikha ng launch option"
                 },
                 "skipsteam": "I-skip ang Steam",
                 "skipsteam-description": "Pinipigilan mo ang Steam na awtomatikong magbukas kasama ng Beat Saber, i-enable ito kung gumagamit ka ng ibang VR runtime tulad ng WiVRn o Monado na maaaring magdulot ng problema sa SteamVR.",
@@ -971,6 +974,14 @@
         },
         "bs-version-outdated": {
             "body": "Ang bersyon na {outdatedVersion} ay lipas na, at ang ilang mods o features ay maaaring hindi na gumana ng tama. Mangyaring i-download ang pinakabagong inirerekomendang bersyon ({recommendedVersion}) ng Beat Saber upang tamasahin ang mga pinakabagong tampok at mga pag-aayos ng bug."
+        },
+        "custom-launch-option": {
+            "title": "Custom na opsyon sa paglulunsad",
+            "title-placeholder": "Aking opsyon",
+            "desc": "Gumawa ng muling magagamit na opsyon sa paglulunsad upang ilunsad ang Beat Saber gamit ang isang partikular na command.",
+            "name": "Pangalan",
+            "launch-option": "Opsyon sa paglulunsad",
+            "create": "Lumikha"
         }
     },
     "maps": {

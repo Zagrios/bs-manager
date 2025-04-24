@@ -27,7 +27,9 @@
         "shared": "공유",
         "pin": "고정",
         "unpin": "고정 해제",
-        "this-guide": "이 가이드"
+        "this-guide": "이 가이드",
+        "create": "만들기",
+        "edit": "수정"
     },
     "generic": {
         "env": {
@@ -57,7 +59,8 @@
                 "outdated-tippy": "이 버전은 오래되어 일부 모드나 기능이 예상대로 작동하지 않을 수 있습니다. 최신 기능과 버그 수정을 사용하려면 권장 버전({recommendedVersion})의 Beat Saber를 사용하는 것이 좋습니다.",
                 "advanced-launch": {
                     "button": "실행 옵션",
-                    "placeholder": "실행 옵션 예: KEY=VALUE %command% fpfc"
+                    "placeholder": "실행 옵션 예: KEY=VALUE %command% fpfc",
+                    "create-launch-option": "실행 옵션 만들기"
                 },
                 "skipsteam": "Steam 실행 건너뛰기",
                 "skipsteam-description": "Beat Saber와 함께 Steam이 자동으로 열리는 것을 방지합니다. SteamVR이 간섭할 수 있는 WiVRn 또는 Monado와 같은 다른 VR 런타임을 사용하는 경우 활성화하세요.",
@@ -971,6 +974,14 @@
         },
         "bs-version-outdated": {
             "body": "버전 {outdatedVersion}은(는) 오래되어 일부 모드나 기능이 예상대로 작동하지 않을 수 있습니다. 최신 기능과 버그 수정 사항을 즐기기 위해 Beat Saber의 최신 권장 버전 ({recommendedVersion})을 다운로드하십시오."
+        },
+        "custom-launch-option": {
+            "title": "사용자 정의 실행 옵션",
+            "title-placeholder": "내 옵션",
+            "desc": "특정 명령으로 Beat Saber를 실행하기 위한 재사용 가능한 실행 옵션을 만듭니다.",
+            "name": "이름",
+            "launch-option": "실행 옵션",
+            "create": "만들기"
         }
     },
     "maps": {

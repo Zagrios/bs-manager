@@ -18,13 +18,15 @@ import { BSVersionManagerService } from "renderer/services/bs-version-manager.se
 import { safeLt } from "shared/helpers/semver.helpers";
 import { WarningIcon } from "renderer/components/svgs/icons/warning-icon.component";
 import Tippy from "@tippyjs/react";
-import { LaunchModItemProps, LaunchOptionsPanel } from "./launch-options-panel.component";
-import { LaunchMod, LaunchMods } from "shared/models/bs-launch/launch-option.interface";
+import { CustomLaunchOption, LaunchModItemProps, LaunchOptionsPanel } from "./launch-options-panel.component";
+import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { OculusIcon } from "renderer/components/svgs/icons/oculus-icon.component";
 import { DesktopIcon } from "renderer/components/svgs/icons/desktop-icon.component";
 import { TerminalIcon } from "renderer/components/svgs/icons/terminal-icon.component";
 import { DefaultConfigKey } from "renderer/config/default-configuration.config";
 import { EditIcon } from "renderer/components/svgs/icons/edit-icon.component";
+import { ModalExitCode, ModalService } from "renderer/services/modale.service";
+import { CreateCustomLaunchOptionModal } from "renderer/components/modal/modal-types/create-custom-launch-option.component";
 
 type Props = { version: BSVersion };
 
@@ -35,12 +37,15 @@ export function LaunchSlide({ version }: Props) {
     const bsLauncherService = useService(BSLauncherService);
     const bsDownloader = useService(BsDownloaderService);
     const versions = useService(BSVersionManagerService);
+    const modal = useService(ModalService);
 
     const [advancedLaunch, setAdvancedLaunch] = useState(false);
     const [command, setCommand] = useState<string>(configService.get<string>("launch-command") || "");
+    const customLaunchOptions = useObservable<CustomLaunchOption[]>(() => configService.watch<CustomLaunchOption[]>("custom-launch-options"), []);
+    const [customLaunchModsArgs, setCustomLaunchModsArgs] = useState<string[]>([]);
     const versionDownloading = useObservable(() => bsDownloader.downloadingVersion$);
-    const [activeLaunchMods, setActiveLaunchMods] = useState<LaunchMod[]>(configService.get("launch-mods") ?? []);
-    const [pinnedLaunchMods, setPinnedLaunchMods] = useState<LaunchMod[]>(configService.get("pinned-launch-mods" as DefaultConfigKey) ?? []);
+    const [activeLaunchMods, setActiveLaunchMods] = useState<string[]>(configService.get("launch-mods") ?? []);
+    const [pinnedLaunchMods, setPinnedLaunchMods] = useState<string[]>(configService.get("pinned-launch-mods" as DefaultConfigKey) ?? []);
 
     const versionRunning = useObservable(() => bsLauncherService.versionRunning$);
 
@@ -60,11 +65,11 @@ export function LaunchSlide({ version }: Props) {
         }
     }, [activeLaunchMods]);
 
-    const toggleActiveLaunchMod = (checked: boolean, launchMod: LaunchMod) => checked
+    const toggleActiveLaunchMod = (checked: boolean, launchMod: string) => checked
         ? setActiveLaunchMods(prev => [...prev, launchMod])
         : setActiveLaunchMods(prev => prev.filter(mod => mod !== launchMod));
 
-    const togglePinnedLaunchMod = (pinned: boolean, launchMod: LaunchMod) => pinned
+    const togglePinnedLaunchMod = (pinned: boolean, launchMod: string) => pinned
         ? setPinnedLaunchMods(prev => [...prev, launchMod])
         : setPinnedLaunchMods(prev => prev.filter(mod => mod !== launchMod));
 
@@ -76,6 +81,29 @@ export function LaunchSlide({ version }: Props) {
                 ? [version.path, "Logs"]
                 : ["BSInstances", version.name, "Logs"];
         }
+
+        const customOptions = customLaunchOptions?.map<LaunchModItemProps>(option => ({
+            id: option.id,
+            label: option.label,
+            active: activeLaunchMods.includes(option.id),
+            pinned: pinnedLaunchMods.includes(option.id),
+            onChange: (checked) => {
+                toggleActiveLaunchMod(checked, option.id)
+                setCustomLaunchModsArgs(prev => {
+                    if(checked){
+                        return [...prev, option.data.command];
+                    }
+                    return prev.filter(arg => arg !== option.data.command);
+                });
+            },
+            onPinChange: (pinned) => togglePinnedLaunchMod(pinned, option.id),
+            onEdit: () => {
+                saveCustomLaunchOption(option);
+            },
+            onDelete: () => {
+                deleteCustomLaunchOption(option.id);
+            },
+        })) ?? [];
 
         return [
             {
@@ -141,14 +169,15 @@ export function LaunchSlide({ version }: Props) {
                 onChange: (checked) => toggleActiveLaunchMod(checked, LaunchMods.PROTON_LOGS),
                 onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.PROTON_LOGS),
             },
+            ...customOptions,
         ]
-    }, [activeLaunchMods, pinnedLaunchMods, version]);
+    }, [activeLaunchMods, pinnedLaunchMods, customLaunchOptions, version]);
 
     const launch = async () => {
         const launch$ = bsLauncherService.launch({
             version,
-            launchMods: activeLaunchMods,
-            command,
+            launchMods: activeLaunchMods.map(mod => LaunchMods[mod as keyof typeof LaunchMods]).filter(Boolean),
+            command: [command, ...customLaunchModsArgs].filter(Boolean).join(" ").trim(),
         });
 
         return lastValueFrom(launch$).catch(() => {});
@@ -157,6 +186,19 @@ export function LaunchSlide({ version }: Props) {
     const isOutdated = useMemo(() => {
         return safeLt(version?.BSVersion, versions.getRecommendedVersion()?.BSVersion);
     }, [version]);
+
+    const saveCustomLaunchOption = async (option: Partial<CustomLaunchOption>) => {
+        const result = await modal.openModal(CreateCustomLaunchOptionModal, { data: option });
+        if(result.exitCode !== ModalExitCode.COMPLETED) { return; }
+        const newCustomLaunchOptions = (customLaunchOptions ?? []).filter(mode => mode.id !== result.data.id);
+        newCustomLaunchOptions.push(result.data);
+        configService.set("custom-launch-options", newCustomLaunchOptions);
+    }
+
+    const deleteCustomLaunchOption = (id: string) => {
+        const newCustomLaunchOptions = (customLaunchOptions ?? []).filter(mode => mode.id !== id);
+        configService.set("custom-launch-options", newCustomLaunchOptions);
+    }
 
     return (
         <div className="w-full shrink-0 items-center relative flex flex-col justify-start overflow-hidden">
@@ -204,7 +246,7 @@ export function LaunchSlide({ version }: Props) {
                     />
                 </div>
             </div>
-            <LaunchOptionsPanel open={advancedLaunch} launchMods={launchModItems} launchArgs={command} className="w-full max-w-3xl mt-3" onLaunchArgsChange={setCommand}/>
+            <LaunchOptionsPanel open={advancedLaunch} launchMods={launchModItems} launchArgs={command} className="w-full max-w-3xl mt-3" onLaunchArgsChange={setCommand} onAddLaunchMod={command => saveCustomLaunchOption({ data: { command } })}/>
             <div className='grow flex justify-center items-center p-2'>
                 <BsmButton
                     onClick={launch}

@@ -27,7 +27,9 @@
         "shared": "Condivisi",
         "pin": "Fissa",
         "unpin": "Rimuovi Fissaggio",
-        "this-guide": "questa guida"
+        "this-guide": "questa guida",
+        "create": "Crea",
+        "edit": "Modifica"
     },
     "generic": {
         "env": {
@@ -57,7 +59,8 @@
                 "outdated-tippy": "Questa versione è obsoleta, e alcune mod o funzioni non potrebbero più funzionare correttamente. Consigliamo di usare la versione raccomandata ({recommendedVersion}) di Beat Saber per godere delle ultime funzioni e bugfix.",
                 "advanced-launch": {
                     "button": "Opzioni di Lancio",
-                    "placeholder": "Opzioni di Lancio es: KEY=VALUE %command% fpfc"
+                    "placeholder": "Opzioni di Lancio es: KEY=VALUE %command% fpfc",
+                    "create-launch-option": "Crea un'opzione di lancio"
                 },
                 "skipsteam": "Salta Steam",
                 "skipsteam-description": "Ferma Steam da aprirsi automaticamente con Beat Saber, abilitalo se stai usando un VR runtime differente come WiVRn o Monado con cui SteamVR potrebbe interferire.",
@@ -971,6 +974,14 @@
         },
         "bs-version-outdated": {
             "body": "La versione {outdatedVersion} è obsoleta, e alcune mod o funzioni potrebbero non funzionare più come previsto. Per favore scarica l'ultima versione raccomandata ({recommendedVersion}) di Beat Saber per godere delle ultime funzioni e bugfix."
+        },
+        "custom-launch-option": {
+            "title": "Opzione di lancio personalizzata",
+            "title-placeholder": "La mia opzione",
+            "desc": "Crea un'opzione di lancio rilocabile per lanciare Beat Saber con un comando specifico.",
+            "name": "Nome",
+            "launch-option": "Opzione di lancio",
+            "create": "Crea"
         }
     },
     "maps": {

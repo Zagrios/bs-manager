@@ -27,7 +27,9 @@
         "shared": "共享",
         "pin": "固定",
         "unpin": "取消固定",
-        "this-guide": "本指南"
+        "this-guide": "本指南",
+        "create": "新增",
+        "edit": "編輯"
     },
     "generic": {
         "env": {
@@ -57,7 +59,8 @@
                 "outdated-tippy": "此版本已過時，某些模組或功能可能無法按預期運作。建議使用推薦版本的 Beat Saber ({recommendedVersion})，以享受最新功能和修復。",
                 "advanced-launch": {
                     "button": "啟動選項",
-                    "placeholder": "啟動選項，例如: KEY=VALUE %command% fpfc"
+                    "placeholder": "啟動選項，例如: KEY=VALUE %command% fpfc",
+                    "create-launch-option": "新增啟動選項"
                 },
                 "skipsteam": "跳過 Steam",
                 "skipsteam-description": "防止 Steam 與 Beat Saber 自動打開，如果您使用的是其他 VR 執行時，如 WiVRn 或 Monado，SteamVR 可能會干擾，請啟用此選項。",
@@ -971,6 +974,14 @@
         },
         "bs-version-outdated": {
             "body": "版本 {outdatedVersion} 已過時，某些模組或功能可能無法正常運作。請下載最新推薦的 Beat Saber 版本 ({recommendedVersion})，以享受最新功能和修正。"
+        },
+        "custom-launch-option": {
+            "title": "自訂啟動選項",
+            "title-placeholder": "我的選項",
+            "desc": "建立一個可重用的啟動選項，以特定命令啟動 Beat Saber。",
+            "name": "名稱",
+            "launch-option": "啟動選項",
+            "create": "建立"
         }
     },
     "maps": {

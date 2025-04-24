@@ -27,7 +27,9 @@
         "shared": "Geteilt",
         "pin": "Anheften",
         "unpin": "Lösen",
-        "this-guide": "dieser Leitfaden"
+        "this-guide": "dieser Leitfaden",
+        "create": "Erstellen",
+        "edit": "Bearbeiten"
     },
     "generic": {
         "env": {
@@ -57,7 +59,8 @@
                 "outdated-tippy": "Diese Version ist veraltet, und einige Mods oder Funktionen funktionieren möglicherweise nicht wie erwartet. Es wird empfohlen, die empfohlene Version ({recommendedVersion}) von Beat Saber zu verwenden, um die neuesten Funktionen und Fehlerbehebungen zu genießen.",
                 "advanced-launch": {
                     "button": "Startoptionen",
-                    "placeholder": "Startoptionen, bspw: KEY=VALUE %command% fpfc"
+                    "placeholder": "Startoptionen, bspw: KEY=VALUE %command% fpfc",
+                    "create-launch-option": "Eine Startoption erstellen"
                 },
                 "skipsteam": "Steam überspringen",
                 "skipsteam-description": "Verhindert, dass Steam automatisch mit Beat Saber geöffnet wird. Aktivieren Sie dies, wenn Sie eine andere VR-Laufzeit wie WiVRn oder Monado verwenden, mit der SteamVR interferieren könnte.",
@@ -971,6 +974,14 @@
         },
         "bs-version-outdated": {
             "body": "Die Version {outdatedVersion} ist veraltet, und einige Mods oder Funktionen funktionieren möglicherweise nicht mehr wie erwartet. Bitte lade die neueste empfohlene Version ({recommendedVersion}) von Beat Saber herunter, um die neuesten Funktionen und Fehlerbehebungen zu nutzen."
+        },
+        "custom-launch-option": {
+            "title": "Benutzerdefinierte Startoption",
+            "title-placeholder": "Meine Option",
+            "desc": "Erstellen Sie eine wiederverwendbare Startoption, um Beat Saber mit einem bestimmten Befehl zu starten.",
+            "name": "Name",
+            "launch-option": "Startoption",
+            "create": "Erstellen"
         }
     },
     "maps": {
