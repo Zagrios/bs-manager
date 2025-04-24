@@ -28,8 +28,6 @@ export class BsModsManagerService {
     private readonly linuxService: LinuxService;
     private readonly requestService: RequestService;
 
-    private manifestMatches: BbmModVersion[];
-
     public static getInstance(): BsModsManagerService {
         if (!BsModsManagerService.instance) {
             BsModsManagerService.instance = new BsModsManagerService();
@@ -45,7 +43,11 @@ export class BsModsManagerService {
     }
 
     private async getModFromHash(hash: string): Promise<BbmModVersion | undefined> {
-        const mod = await this.beatModsApi.getModByHash(hash);
+        const mod: BbmModVersion | undefined = await this.beatModsApi.getModByHash(hash)
+            .catch((error) => {
+                log.warn("Could not get mod with hash", hash, "cause", error?.message);
+                return undefined;
+            });
 
         if(mod?.contentHashes?.some(content => content.path.includes("IPA.exe"))){
             return undefined;
@@ -55,7 +57,11 @@ export class BsModsManagerService {
 
     }
 
-    private async getModsInDir(version: BSVersion, modsDir: ModsInstallFolder): Promise<BbmModVersion[]> {
+    private async getModsInDir(
+        version: BSVersion,
+        modsDir: ModsInstallFolder,
+        manifestMatches: BbmModVersion[]
+    ): Promise<BbmModVersion[]> {
         const bsPath = await this.bsLocalService.getVersionPath(version);
         const modsPath = path.join(bsPath, modsDir);
 
@@ -66,34 +72,35 @@ export class BsModsManagerService {
         const files = await recursiveReadDir(modsPath);
 
         const promises = files.map(async filePath => {
-                const ext = path.extname(filePath);
+            const ext = path.extname(filePath);
+            if (ext !== ".dll" && ext !== ".exe" && ext !== ".manifest") {
+                return undefined;
+            }
 
-                if (ext !== ".dll" && ext !== ".exe" && ext !== ".manifest") {
+            log.info("Getting mod manifest", filePath);
+            const hash = await md5File(filePath);
+            const mod = await this.getModFromHash(hash);
+
+            if (!mod) {
+                return undefined;
+            }
+
+            if (ext === ".manifest") {
+                manifestMatches.push(mod);
+                return undefined;
+            }
+
+            if (modsDir === ModsInstallFolder.LIBS || modsDir === ModsInstallFolder.LIBS_PENDING) {
+                const manifestIndex = manifestMatches.findIndex(m => m.id === mod.id);
+                if (manifestIndex < 0) {
+                    log.warn("No matching manifest for", `"${filePath}"`, "with hash:", hash);
                     return undefined;
                 }
-                const hash = await md5File(filePath);
-                const mod = await this.getModFromHash(hash);
 
-                if (!mod) {
-                    return undefined;
-                }
+                manifestMatches.splice(manifestIndex, 1);
+            }
 
-                if (ext === ".manifest") {
-                    this.manifestMatches.push(mod);
-                    return undefined;
-                }
-
-                if (filePath.toLowerCase().includes("libs")) {
-                    const manifestIndex = this.manifestMatches.findIndex(m => m.id === mod.id);
-
-                    if (manifestIndex < 0) {
-                        return undefined;
-                    }
-
-                    this.manifestMatches.splice(manifestIndex, 1);
-                }
-
-                return mod;
+            return mod;
         });
 
         const results = await Promise.allSettled(promises);
@@ -101,6 +108,8 @@ export class BsModsManagerService {
         return results.reduce((mods, mod) => {
             if (mod?.status === "fulfilled" && mod?.value) {
                 mods.push(mod.value);
+            } else if (mod?.status === "rejected") {
+                log.error("MOD FAILED", mod);
             }
             return mods;
         }, [] as BbmModVersion[]);
@@ -113,7 +122,10 @@ export class BsModsManagerService {
             return undefined;
         }
         const injectorMd5 = await md5File(injectorPath);
-        return this.beatModsApi.getModByHash(injectorMd5);
+        return this.beatModsApi.getModByHash(injectorMd5).catch((error) => {
+            log.error("Could not get bsipa mod", error?.message);
+            return undefined;
+        });
     }
 
     private async downloadZip(zipUrl: string): Promise<BsmZipExtractor> {
@@ -345,12 +357,17 @@ export class BsModsManagerService {
     }
 
     public async getInstalledMods(version: BSVersion): Promise<BbmModVersion[]> {
-        this.manifestMatches = [];
-
         const bsipa = await this.getBsipaInstalled(version);
 
-        const pluginsMods = await Promise.all([this.getModsInDir(version, ModsInstallFolder.PLUGINS_PENDING), this.getModsInDir(version, ModsInstallFolder.PLUGINS)]);
-        const libsMods = await Promise.all([this.getModsInDir(version, ModsInstallFolder.LIBS_PENDING), this.getModsInDir(version, ModsInstallFolder.LIBS)]);
+        const manifestMatches: BbmModVersion[] = [];
+        const pluginsMods = await Promise.all([
+            this.getModsInDir(version, ModsInstallFolder.PLUGINS_PENDING, manifestMatches),
+            this.getModsInDir(version, ModsInstallFolder.PLUGINS, manifestMatches)
+        ]);
+        const libsMods = await Promise.all([
+            this.getModsInDir(version, ModsInstallFolder.LIBS_PENDING, manifestMatches),
+            this.getModsInDir(version, ModsInstallFolder.LIBS, manifestMatches)
+        ]);
 
         const dirMods = pluginsMods.flat().concat(libsMods.flat());
 
