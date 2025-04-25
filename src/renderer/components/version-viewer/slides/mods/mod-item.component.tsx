@@ -1,9 +1,8 @@
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmCheckbox } from "renderer/components/shared/bsm-checkbox.component";
 import { BbmCategories, BbmFullMod } from "shared/models/mods/mod.interface";
-import { CSSProperties, MouseEvent, useMemo, useRef } from "react";
+import { CSSProperties, MouseEvent, useMemo } from "react";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
-import useDoubleClick from "use-double-click";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import striptags from "striptags";
 import { safeGt } from "shared/helpers/semver.helpers";
@@ -88,16 +87,8 @@ function FileSizeText({ fileSize, wantInfoStyle }: Readonly<FileSizeProps>) {
 export function ModItem({ className, mod, installedVersion, isDependency, isSelected, onChange, wantInfo, onWantInfo, disabled, onUninstall }: Props) {
 
     const themeColor = useThemeColor("second-color");
-    const clickRef = useRef();
 
     const isChecked = useMemo(() => isDependency || isSelected || mod.mod.category === BbmCategories.Core, [isDependency, isSelected, mod.mod.category]);
-
-    useDoubleClick({
-        onSingleClick: e => handleWantInfo(e),
-        onDoubleClick: e => handleOnChange(e),
-        ref: clickRef,
-        latency: 175,
-    });
 
     useOnUpdate(() => {
         onChange(isChecked);
@@ -110,13 +101,9 @@ export function ModItem({ className, mod, installedVersion, isDependency, isSele
         e.preventDefault();
         onWantInfo(mod);
     };
-    const handleOnChange = (e: MouseEvent) => {
-        e.preventDefault();
-        onChange(!isChecked);
-    };
 
     return (
-        <li ref={clickRef} className={`${className} group`}>
+        <li className={`${className} group`} onClick={handleWantInfo}>
             <div className="h-full flex items-center justify-center p-1.5 px-4 rounded-l-md bg-inherit ml-3 border-2 border-r-0 z-[1] group-hover:brightness-90" style={wantInfoStyle}>
                 <BsmCheckbox className="size-[18px] aspect-square z-[1] relative bg-inherit" onChange={() => onChange(!isChecked)} disabled={mod.mod.category === BbmCategories.Core || isDependency || disabled} checked={isChecked} />
             </div>

@@ -44,7 +44,7 @@ export class BsModsManagerService {
 
     private async getModFromHash(hash: string): Promise<BbmModVersion | undefined> {
         const mod: BbmModVersion | undefined = await this.beatModsApi.getModByHash(hash)
-            .catch((error) => {
+            .catch((error): undefined => {
                 log.warn("Could not get mod with hash", hash, "cause", error?.message);
                 return undefined;
             });
@@ -122,7 +122,7 @@ export class BsModsManagerService {
             return undefined;
         }
         const injectorMd5 = await md5File(injectorPath);
-        return this.beatModsApi.getModByHash(injectorMd5).catch((error) => {
+        return this.beatModsApi.getModByHash(injectorMd5).catch((error): undefined => {
             log.error("Could not get bsipa mod", error?.message);
             return undefined;
         });
@@ -340,11 +340,22 @@ export class BsModsManagerService {
 
         const versionPath = await this.bsLocalService.getVersionPath(version);
 
-        const promises = mod.version.contentHashes.map(async content => {
-            return Promise.all([
-                deleteFile(path.join(versionPath, content.path)),
-                deleteFile(path.join(versionPath, "IPA", "Pending", content.path))
-            ]);
+        const promises: Promise<void>[] = mod.version.contentHashes.map(async content => {
+            return (async () => {
+                const modPath = path.join(versionPath, content.path);
+                if(pathExistsSync(modPath)){
+                    log.info("Deleting mod", modPath);
+                    await deleteFile(modPath);
+                }
+
+                const pendingPath = path.join(versionPath, "IPA", "Pending", content.path);
+                if(pathExistsSync(pendingPath)){
+                    log.info("Deleting pending mod", pendingPath);
+                    return deleteFile(pendingPath);
+                }
+
+                log.warn("Mod file not found in", versionPath, "or pending folder", pendingPath);
+            })() ;
         });
 
         await Promise.all(promises);
