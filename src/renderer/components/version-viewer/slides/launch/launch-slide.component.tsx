@@ -19,7 +19,7 @@ import { safeLt } from "shared/helpers/semver.helpers";
 import { WarningIcon } from "renderer/components/svgs/icons/warning-icon.component";
 import Tippy from "@tippyjs/react";
 import { CustomLaunchOption, LaunchModItemProps, LaunchOptionsPanel } from "./launch-options-panel.component";
-import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
+import { LaunchMod, LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { OculusIcon } from "renderer/components/svgs/icons/oculus-icon.component";
 import { DesktopIcon } from "renderer/components/svgs/icons/desktop-icon.component";
 import { TerminalIcon } from "renderer/components/svgs/icons/terminal-icon.component";
@@ -176,7 +176,7 @@ export function LaunchSlide({ version }: Props) {
     const launch = async () => {
         const launch$ = bsLauncherService.launch({
             version,
-            launchMods: activeLaunchMods.map(mod => LaunchMods[mod as keyof typeof LaunchMods]).filter(Boolean),
+            launchMods: activeLaunchMods.filter(mod => Object.values(LaunchMods).includes(mod as LaunchMod)) as LaunchMod[],
             command: [command, ...customLaunchModsArgs].filter(Boolean).join(" ").trim(),
         });
 
