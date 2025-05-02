@@ -337,6 +337,13 @@
                     "error-notification": {
                         "message": "エラーが発生しました。システムプロキシ設定を変更できません。"
                     }
+                },
+                "auto-update": {
+                    "title": "自動更新",
+                    "description": "アプリケーション起動時にBSManagerが自動的に更新されます。",
+                    "error-notification": {
+                        "message": "エラーが発生し、自動更新の設定を変更できませんでした。"
+                    }
                 }
             }
         }

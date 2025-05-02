@@ -337,6 +337,13 @@
                     "error-notification": {
                         "message": "发生错误，无法启用系统代理。"
                     }
+                },
+                "auto-update": {
+                    "title": "自动更新",
+                    "description": "启动应用程序时，BSManager 将自动更新。",
+                    "error-notification": {
+                        "message": "发生错误，无法更改自动更新设置。"
+                    }
                 }
             }
         }

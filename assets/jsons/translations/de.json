@@ -337,6 +337,13 @@
                     "error-notification": {
                         "message": "Es ist ein Fehler aufgetreten, die Systemproxyeinstellungen können nicht geändert werden."
                     }
+                },
+                "auto-update": {
+                    "title": "Automatische Aktualisierung",
+                    "description": "BSManager wird beim Start der Anwendung automatisch aktualisiert.",
+                    "error-notification": {
+                        "message": "Ein Fehler ist aufgetreten, die Einstellungen für die automatische Aktualisierung können nicht geändert werden."
+                    }
                 }
             }
         }

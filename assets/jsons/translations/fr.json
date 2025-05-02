@@ -337,6 +337,13 @@
                     "error-notification": {
                         "message": "Une erreur est survenue, impossible de modifier les paramètres du proxy système."
                     }
+                },
+                "auto-update": {
+                    "title": "Mise à jour automatique",
+                    "description": "BSManager se mettra automatiquement à jour au lancement de l'application.",
+                    "error-notification": {
+                        "message": "Une erreur est survenue, impossible de modifier les paramètres de mise à jour automatique."
+                    }
                 }
             }
         }
