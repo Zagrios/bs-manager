@@ -27,6 +27,8 @@ import { DefaultConfigKey } from "renderer/config/default-configuration.config";
 import { EditIcon } from "renderer/components/svgs/icons/edit-icon.component";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { CreateCustomLaunchOptionModal } from "renderer/components/modal/modal-types/create-custom-launch-option.component";
+import { BsModsManagerService } from "renderer/services/bs-mods-manager.service";
+
 
 type Props = { version: BSVersion };
 
@@ -38,6 +40,7 @@ export function LaunchSlide({ version }: Props) {
     const bsDownloader = useService(BsDownloaderService);
     const versions = useService(BSVersionManagerService);
     const modal = useService(ModalService);
+    const modsManager = useService(BsModsManagerService);
 
     const [advancedLaunch, setAdvancedLaunch] = useState(false);
     const [command, setCommand] = useState<string>(configService.get<string>("launch-command") || "");
@@ -168,6 +171,16 @@ export function LaunchSlide({ version }: Props) {
                 visible: window.electron.platform === "linux",
                 onChange: (checked) => toggleActiveLaunchMod(checked, LaunchMods.PROTON_LOGS),
                 onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.PROTON_LOGS),
+            },
+            {
+                id: LaunchMods.BSM_HOOK,
+                label: t("pages.version-viewer.launch-mods.bsm-hook"),
+                description: t("pages.version-viewer.launch-mods.bsm-hook-description"),
+                active: activeLaunchMods.includes(LaunchMods.BSM_HOOK),
+                pinned: pinnedLaunchMods.includes(LaunchMods.BSM_HOOK),
+                //visible: modsManager.getVersionModsState(version).then((mods) => mods.installed.find((mod) => mod.mod.name.includes("BSIPA") !== undefined), (err) => console.log(err)),
+                onChange: (checked) => toggleActiveLaunchMod(checked, LaunchMods.BSM_HOOK),
+                onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.BSM_HOOK),
             },
             ...customOptions,
         ]
