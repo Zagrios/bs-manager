@@ -12,6 +12,7 @@ import { UtilsService } from "../utils.service";
 import { exec, ChildProcessWithoutNullStreams } from "child_process";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { app, Event } from "electron";
+import { sToMs } from "shared/helpers/time.helpers";
 
 export class SteamLauncherService extends AbstractLauncherService implements StoreLauncherInterface{
 
@@ -67,6 +68,8 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
     protected launchBs(bsExePath: string, args: string[], options?: SpawnBsProcessOptions): {process: ChildProcessWithoutNullStreams, exit: Promise<number>} {
         const process = this.launchBSProcess(bsExePath, args, options);
 
+        let timeoutId: NodeJS.Timeout;
+
         const exit = new Promise<number>((resolve, reject) => {
             // Don't remove, useful for debugging!
             // process.stdout.on("data", (data) => {
@@ -101,6 +104,16 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
             });
 
             app.on('will-quit', onWillQuitHandler);
+
+            const unrefAfter = options?.unrefAfter ?? sToMs(10);
+            timeoutId = setTimeout(() => {
+                log.error("BS process unref after timeout", unrefAfter);
+                process.unref();
+                process.removeAllListeners();
+                resolve(-1);
+            }, unrefAfter);
+        }).finally(() => {
+            clearTimeout(timeoutId);
         });
 
         return { process, exit };
