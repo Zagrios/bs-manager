@@ -174,6 +174,7 @@ export class BsModsManagerService {
                 throw new CustomError("Could not find BSManager WINEPREFIX path", "no-wineprefix");
             }
             env.WINEPREFIX = winePrefix;
+            Object.assign(env, process.env);
         }
 
         return new Promise<boolean>(resolve => {
