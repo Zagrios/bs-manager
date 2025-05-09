@@ -32,6 +32,23 @@ import { BsModsManagerService } from "renderer/services/bs-mods-manager.service"
 
 type Props = { version: BSVersion };
 
+function useModded({ version }: {
+    version: BSVersion;
+}) {
+    const modsManager = useService(BsModsManagerService);
+    const [isModded, setModded] = useState<boolean>(false);
+
+    useEffect(() => {
+        modsManager.isModded(version)
+            .then(modded => setModded(modded))
+            .catch(() => setModded(false));
+    }, [version]);
+
+    return {
+        isModded,
+    }
+}
+
 export function LaunchSlide({ version }: Props) {
     const { text: t, element: te } = useTranslationV2();
 
@@ -40,7 +57,6 @@ export function LaunchSlide({ version }: Props) {
     const bsDownloader = useService(BsDownloaderService);
     const versions = useService(BSVersionManagerService);
     const modal = useService(ModalService);
-    const modsManager = useService(BsModsManagerService);
 
     const [advancedLaunch, setAdvancedLaunch] = useState(false);
     const [command, setCommand] = useState<string>(configService.get<string>("launch-command") || "");
@@ -49,7 +65,8 @@ export function LaunchSlide({ version }: Props) {
     const versionDownloading = useObservable(() => bsDownloader.downloadingVersion$);
     const [activeLaunchMods, setActiveLaunchMods] = useState<string[]>(configService.get("launch-mods") ?? []);
     const [pinnedLaunchMods, setPinnedLaunchMods] = useState<string[]>(configService.get("pinned-launch-mods" as DefaultConfigKey) ?? []);
-    const [isVersionModded, setIsVersionModded] = useState<boolean>(false);
+
+    const { isModded } = useModded({ version });
 
     const versionRunning = useObservable(() => bsLauncherService.versionRunning$);
 
@@ -68,28 +85,6 @@ export function LaunchSlide({ version }: Props) {
             bsLauncherService.restoreSteamVR();
         }
     }, [activeLaunchMods]);
-    //useEffect(() => {
-    //    let isMounted = true;
-//
-    //    async function checkBsipa() {
-    //        try {
-    //            const sub = modsManager.getInstalledMods(version).subscribe((mods) => {
-    //                setIsVersionModded(mods.some((mod) => mod.id === 1));
-    //                sub.unsubscribe();
-    //            });
-    //        } catch (err) {
-    //            setIsVersionModded(false);
-    //        }
-    //    };
-//
-    //    if (isMounted) {
-    //        checkBsipa();
-    //    }
-//
-    //    return () => {
-    //        isMounted = false;
-    //    };
-    //}, [version, modsManager]);
 
     const toggleActiveLaunchMod = (checked: boolean, launchMod: string) => checked
         ? setActiveLaunchMods(prev => [...prev, launchMod])
@@ -201,13 +196,16 @@ export function LaunchSlide({ version }: Props) {
                 description: t("pages.version-viewer.launch-mods.bsm-hook-description"),
                 active: activeLaunchMods.includes(LaunchMods.BSM_HOOK),
                 pinned: pinnedLaunchMods.includes(LaunchMods.BSM_HOOK),
-                //visible: isVersionModded,
+                visible: isModded,
                 onChange: (checked) => toggleActiveLaunchMod(checked, LaunchMods.BSM_HOOK),
                 onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.BSM_HOOK),
             },
             ...customOptions,
         ]
-    }, [activeLaunchMods, pinnedLaunchMods, customLaunchOptions, version]);
+    }, [
+        activeLaunchMods, pinnedLaunchMods, customLaunchOptions,
+        version, isModded,
+    ]);
 
     const launch = async () => {
         const launch$ = bsLauncherService.launch({

@@ -84,6 +84,7 @@ export interface IpcChannelMapping {
     /* ** bs-mods-ipcs ** */
     "bs-mods.get-available-mods": { request: BSVersion, response: BbmFullMod[] };
     "bs-mods.get-installed-mods": { request: BSVersion, response: BbmModVersion[] };
+    "bs-mods.is-modded": { request: BSVersion, response: boolean },
     "bs-mods.import-mods": { request: { paths: string[]; version: BSVersion; }, response: Progression<ExternalMod> };
     "bs-mods.install-mods": { request: { mods: BbmFullMod[]; version: BSVersion }, response: Progression };
     "bs-mods.uninstall-mods": { request: { mods: BbmFullMod[]; version: BSVersion }, response: Progression };

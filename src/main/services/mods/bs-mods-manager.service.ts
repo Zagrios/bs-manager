@@ -398,6 +398,10 @@ export class BsModsManagerService {
         return Array.from(modsDict.values());
     }
 
+    public async isModded(version: BSVersion): Promise<boolean> {
+        return Boolean(await this.getBsipaInstalled(version));
+    }
+
     private async importMod(modPath: string, destination: string): Promise<string[]> {
         const extensionName = path.extname(modPath).toLowerCase();
 
