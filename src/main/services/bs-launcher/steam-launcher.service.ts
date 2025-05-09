@@ -13,8 +13,8 @@ import { exec } from "child_process";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { app, Event } from "electron";
 import { sToMs } from "shared/helpers/time.helpers";
-import net from 'net';
 import fs from 'fs/promises';
+import { BSMHookService } from "./bsm-hook.service";
 
 export class SteamLauncherService extends AbstractLauncherService implements StoreLauncherInterface{
 
@@ -29,11 +29,13 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
 
     private readonly steam: SteamService;
     private readonly util: UtilsService;
+    private readonly bsmhook: BSMHookService;
 
     private constructor(){
         super();
         this.steam = SteamService.getInstance();
         this.util = UtilsService.getInstance();
+        this.bsmhook = BSMHookService.getInstance();
     }
 
     private getSteamVRPath(): Promise<string> {
@@ -113,14 +115,14 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                     if (!response.ok) {
                         throw new Error(`Failed to download BSMHook.dll: ${response.statusText}`);
                     }
-                    
+
                     const dllPath = path.join(bsFolderPath, 'Plugins', 'BSMHook.dll');
                     const buffer = await response.arrayBuffer();
                     await fs.writeFile(dllPath, Buffer.from(buffer));
-                    
-                    console.log('BSMHook.dll downloaded successfully');
+
+                    log.info('BSMHook.dll downloaded successfully');
                 } catch (error) {
-                    console.error('Failed to download BSMHook.dll:', error);
+                    log.error('Failed to download BSMHook.dll:', error);
                 }
             }
 
@@ -128,10 +130,10 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 try {
                     const dllPath = path.join(bsFolderPath, 'Plugins', 'BSMHook.dll');
                     await fs.unlink(dllPath);
-                    
-                    console.log('BSMHook.dll deleted successfully');
+
+                    log.info('BSMHook.dll deleted successfully');
                 } catch (error) {
-                    console.error('Failed to delete BSMHook.dll:', error);
+                    log.error('Failed to delete BSMHook.dll:', error);
                 }
             }
 
@@ -164,42 +166,32 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
             const launchPromise = !launchOptions.admin ? (
                 new Promise<number>(async (resolve, reject) => {
                     const process = this.launchBSProcess(bsExePath, launchArgs, { ...spawnOpts, protonPrefix });
-                    //let promiseTimeoutId: NodeJS.Timeout;
-                    let server: net.Server;
 
-                    // Cant figure out why pipes dont work so a socket it is
+                    const unrefAndResolve = (code: number) => {
+                        app.removeListener('will-quit', onWillQuitHandler);
+                        resolve(code);
+                    }
+
                     if (await pathExists(path.join(bsFolderPath, 'Plugins', 'BSMHook.dll'))) {
                         log.info('BSMHook.dll installed, waiting for game reports...');
-                        server = net.createServer((socket) => {
-                            socket.on('data', (data) => {
-                                log.info(`Received scene info: ${data}`);
-                                if (data.includes('BillieEnvironment')) {
-                                    process.unref();
-                                    server?.close();
-                                    resolve(-1);
-                                }
-                            });
-                            
-                            socket.on('error', (err) => {
-                                log.error(`Socket error: ${err.message}`);
-                                server?.close();
-                                reject(err);
-                            });
-                            
-                            socket.on('close', () => {
-                                log.info('Scene info socket closed');
-                                resolve(-1);
-                            });
-                        });
-    
-                        server.listen(58127, '127.0.0.1', () => {
-                            log.info('Scene info socket server listening on 127.0.0.1:58127');
+                        this.bsmhook.start((d) => {
+                            if (d.includes('MainMenu')) {
+                                this.bsmhook.close();
+                                unrefAndResolve(-1);
+                            }
+                        }, (err) => {
+                            this.bsmhook.close();
+                            log.warn(`Failed while running BSMHook: ${err.message}`);
+                            setTimeout(() => {
+                                log.info("Resolved promise after timeout (BSMHook fail)");
+                                unrefAndResolve(-1);
+                            }, sToMs(10));
                         });
                     }
                     else {
                         setTimeout(() => {
                             log.info("Resolved promise after timeout (10s)");
-                            resolve(-1); // Put this in a timeout for visual effect (game window may take a bit to open, lets trick users into thinking stuffs happening...)
+                            unrefAndResolve(-1); // Put this in a timeout for visual effect (game window may take a bit to open, lets trick users into thinking stuffs happening...)
                         }, sToMs(10));
                     }
 
@@ -208,27 +200,22 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                         if (!process.killed) {
                             event.preventDefault();
                             log.info(`Unref'ing BS process ${process.pid} on app will-quit`);
-                            process.unref();
-                            server?.close();
-                            resolve(-1);
+                            unrefAndResolve(-1);
                             app.quit();
                         }
                     };
-        
+
                     process.on("error", async (err) => {
                         log.error(`Error while launching BS`, err);
                         reject(err);
                         app.removeListener('will-quit', onWillQuitHandler);
-                        server?.close();
                     });
-        
+
                     process.on("exit", async (code) => {
                         log.info(`BS process exit with code ${code}`);
-                        resolve(code);
-                        app.removeListener('will-quit', onWillQuitHandler);
-                        server?.close();
+                        unrefAndResolve(code);
                     });
-        
+
                     app.on('will-quit', onWillQuitHandler);
                 })
             ) : (

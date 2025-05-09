@@ -49,6 +49,7 @@ export function LaunchSlide({ version }: Props) {
     const versionDownloading = useObservable(() => bsDownloader.downloadingVersion$);
     const [activeLaunchMods, setActiveLaunchMods] = useState<string[]>(configService.get("launch-mods") ?? []);
     const [pinnedLaunchMods, setPinnedLaunchMods] = useState<string[]>(configService.get("pinned-launch-mods" as DefaultConfigKey) ?? []);
+    const [isVersionModded, setIsVersionModded] = useState<boolean>(false);
 
     const versionRunning = useObservable(() => bsLauncherService.versionRunning$);
 
@@ -67,6 +68,28 @@ export function LaunchSlide({ version }: Props) {
             bsLauncherService.restoreSteamVR();
         }
     }, [activeLaunchMods]);
+    //useEffect(() => {
+    //    let isMounted = true;
+//
+    //    async function checkBsipa() {
+    //        try {
+    //            const sub = modsManager.getInstalledMods(version).subscribe((mods) => {
+    //                setIsVersionModded(mods.some((mod) => mod.id === 1));
+    //                sub.unsubscribe();
+    //            });
+    //        } catch (err) {
+    //            setIsVersionModded(false);
+    //        }
+    //    };
+//
+    //    if (isMounted) {
+    //        checkBsipa();
+    //    }
+//
+    //    return () => {
+    //        isMounted = false;
+    //    };
+    //}, [version, modsManager]);
 
     const toggleActiveLaunchMod = (checked: boolean, launchMod: string) => checked
         ? setActiveLaunchMods(prev => [...prev, launchMod])
@@ -178,7 +201,7 @@ export function LaunchSlide({ version }: Props) {
                 description: t("pages.version-viewer.launch-mods.bsm-hook-description"),
                 active: activeLaunchMods.includes(LaunchMods.BSM_HOOK),
                 pinned: pinnedLaunchMods.includes(LaunchMods.BSM_HOOK),
-                //visible: modsManager.getVersionModsState(version).then((mods) => mods.installed.find((mod) => mod.mod.name.includes("BSIPA") !== undefined), (err) => console.log(err)),
+                //visible: isVersionModded,
                 onChange: (checked) => toggleActiveLaunchMod(checked, LaunchMods.BSM_HOOK),
                 onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.BSM_HOOK),
             },
