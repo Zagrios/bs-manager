@@ -5,6 +5,7 @@ import { PROTON_BINARY_PREFIX, WINE_BINARY_PREFIX } from "main/constants";
 import { Observable, Subject } from "rxjs";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { BSVersion } from "shared/bs-version.interface";
+import { AutoUpdate } from "shared/models/config";
 
 export class StaticConfigurationService {
     private static instance: StaticConfigurationService;
@@ -90,7 +91,7 @@ export interface StaticConfigKeyValues {
     "use-symlinks": boolean;
     "use-system-proxy": boolean;
     "last-version-launched": BSVersion;
-    "auto-update": boolean;
+    "auto-update": AutoUpdate;
 
     // Linux Specific static configs
     "proton-folder": string;

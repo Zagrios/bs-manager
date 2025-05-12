@@ -48,6 +48,7 @@ import { InstallationLocationService } from "renderer/services/installation-loca
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 import { OculusDownloaderService } from "renderer/services/bs-version-download/oculus-downloader.service";
 import { DISCORD_URL } from "shared/constants";
+import { AutoUpdate } from "shared/models/config";
 
 export function SettingsPage() {
 
@@ -546,7 +547,7 @@ function AdvancedSettings() {
     const [hardwareAccelerationEnabled, setHardwareAccelerationEnabled] = useState(true);
     const [useSymlink, setUseSymlink] = useState(false);
     const [useSystemProxy, setUseSystemProxy] = useState(false);
-    const [autoUpdate, setAutoUpdate] = useState(true);
+    const [autoUpdate, setAutoUpdate] = useState<AutoUpdate>(AutoUpdate.NEVER);
 
 
     useEffect(() => {
@@ -555,7 +556,7 @@ function AdvancedSettings() {
         if (window.electron.platform === "win32") {
             staticConfig.get("use-symlinks").then(useSymlinks => setUseSymlink(() => useSymlinks));
             staticConfig.get("use-system-proxy").then(useSystemProxy => setUseSystemProxy(() => useSystemProxy));
-            staticConfig.get("auto-update").then(value => setAutoUpdate(() => value !== false));
+            staticConfig.get("auto-update").then(setAutoUpdate);
         }
     }, []);
 
@@ -637,11 +638,13 @@ function AdvancedSettings() {
         setUseSystemProxy(() => newUseSystemProxy);
     }
 
-    const onChangeAutoUpdate = async (newAutoUpdate: boolean) => {
+    const onChangeAutoUpdate = async (value: boolean) => {
         if (window.electron.platform !== "win32") {
             return;
         }
 
+        const newAutoUpdate = value
+            ? AutoUpdate.ALWAYS : AutoUpdate.NEVER;
         const { error } = await tryit(() => staticConfig.set("auto-update", newAutoUpdate));
         if (error) {
             notification.notifyError({
@@ -658,7 +661,7 @@ function AdvancedSettings() {
 
     if (window.electron.platform === "win32") {
         advancedItems.push({
-            checked: autoUpdate,
+            checked: autoUpdate === AutoUpdate.ALWAYS,
             text: t.text("pages.settings.advanced.auto-update.title"),
             desc: t.text("pages.settings.advanced.auto-update.description"),
             onChange: onChangeAutoUpdate

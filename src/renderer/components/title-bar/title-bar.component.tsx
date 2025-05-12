@@ -13,6 +13,8 @@ import { lastValueFrom } from "rxjs";
 import { useWindowControls } from "renderer/hooks/use-window-controls.hook";
 import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import Tippy from "@tippyjs/react";
+import { StaticConfigurationService } from "renderer/services/static-configuration.service";
+import { AutoUpdate } from "shared/models/config";
 
 function useVersion() {
     const ipcService = useService(IpcService);
@@ -73,10 +75,18 @@ function AutoUpdateButton({ version, outdated }: {
     version: string;
     outdated: boolean;
 }) {
-    const [show, setShow] = useState<boolean>(outdated);
+    const configService = useService(StaticConfigurationService);
+    const ipcService = useService(IpcService);
+
+    const [ show, setShow ] = useState<boolean>(outdated);
     const { text: t } = useTranslationV2();
 
     const isLinux = window.electron.platform === "linux";
+
+    async function updateAndRestart() {
+        await configService.set("auto-update", AutoUpdate.ONCE);
+        await lastValueFrom(ipcService.sendV2("restart-app"));
+    }
 
     function renderTippyContent() {
         return <div className="p-2">
@@ -86,7 +96,7 @@ function AutoUpdateButton({ version, outdated }: {
                     className="text-center font-bold rounded-md px-2 py-1 mt-2"
                     text={t("title-bar.update-button")}
                     withBar={false}
-                    onClick={() => console.debug("TODO")}
+                    onClick={() => updateAndRestart()}
                 />
             }
         </div>
