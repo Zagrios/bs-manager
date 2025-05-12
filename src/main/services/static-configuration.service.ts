@@ -5,6 +5,7 @@ import { PROTON_BINARY_PREFIX, WINE_BINARY_PREFIX } from "main/constants";
 import { Observable, Subject } from "rxjs";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { BSVersion } from "shared/bs-version.interface";
+import { AutoUpdate } from "shared/models/config";
 
 export class StaticConfigurationService {
     private static instance: StaticConfigurationService;
@@ -30,8 +31,8 @@ export class StaticConfigurationService {
         return this.store.has(key);
     }
 
-    public get<K extends StaticConfigKeys>(key: K): StaticConfigKeyValues[K] {
-        return this.store.get<K>(key) as StaticConfigKeyValues[K];
+    public get<K extends StaticConfigKeys>(key: K, defaultValue?: StaticConfigKeyValues[K]): StaticConfigKeyValues[K] {
+        return this.store.get<K>(key, defaultValue) as StaticConfigKeyValues[K];
     }
 
     public take<K extends StaticConfigKeys>(key: K, cb: (val: StaticConfigKeyValues[K]) => void): void {
@@ -90,6 +91,7 @@ export interface StaticConfigKeyValues {
     "use-symlinks": boolean;
     "use-system-proxy": boolean;
     "last-version-launched": BSVersion;
+    "auto-update": AutoUpdate;
 
     // Linux Specific static configs
     "proton-folder": string;
