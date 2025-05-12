@@ -37,7 +37,9 @@
         }
     },
     "title-bar": {
-        "outdated": "구식"
+        "outdated": "구식",
+        "update-text": "BSManager {version} 가 사용 가능합니다!",
+        "update-button": "업데이트 후 재시작"
     },
     "nav-bar": {
         "add-version": "버전 추가",

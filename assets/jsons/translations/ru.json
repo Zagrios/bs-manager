@@ -37,7 +37,9 @@
         }
     },
     "title-bar": {
-        "outdated": "устаревший"
+        "outdated": "устаревший",
+        "update-text": "BSManager {version} доступен!",
+        "update-button": "Обновить и перезапустить"
     },
     "nav-bar": {
         "add-version": "Добавить версию игры",

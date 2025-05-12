@@ -37,7 +37,9 @@
         }
     },
     "title-bar": {
-        "outdated": "过时"
+        "outdated": "过时",
+        "update-text": "BSManager {version} 可用！",
+        "update-button": "更新并重新启动"
     },
     "nav-bar": {
         "add-version": "添加版本",

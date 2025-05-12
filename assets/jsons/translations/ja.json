@@ -37,7 +37,9 @@
         }
     },
     "title-bar": {
-        "outdated": "時代遅れ"
+        "outdated": "時代遅れ",
+        "update-text": "BSManager {version} が利用可能です！",
+        "update-button": "更新して再起動"
     },
     "nav-bar": {
         "add-version": "バージョンを追加",

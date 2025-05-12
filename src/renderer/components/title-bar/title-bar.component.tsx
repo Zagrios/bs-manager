@@ -12,12 +12,12 @@ import { useService } from "renderer/hooks/use-service.hook";
 import { lastValueFrom } from "rxjs";
 import { useWindowControls } from "renderer/hooks/use-window-controls.hook";
 import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
+import Tippy from "@tippyjs/react";
 
-function TitleBarTags() {
+function useVersion() {
     const ipcService = useService(IpcService);
-    const t = useTranslationV2();
 
-    const [previewVersion, setPreviewVersion] = useState("");
+    const [version, setVersion] = useState("");
     const [outdated, setOutdated] = useState(false);
 
     useEffect(() => {
@@ -28,20 +28,32 @@ function TitleBarTags() {
             requests.push(lastValueFrom(ipcService.sendV2("check-update")));
         }
 
-        Promise.all(requests).then(([ currentVersion, outdated ]) => {
-            handlePrerelease(currentVersion);
+        Promise.all(requests).then(([ version, outdated ]) => {
+            setVersion(version);
             setOutdated(outdated);
         });
     }, []);
 
-    const handlePrerelease = (version: string) => {
+    return { version, outdated };
+}
+
+function TitleBarTags({ version, outdated }: {
+    version: string;
+    outdated: boolean;
+}) {
+    const t = useTranslationV2();
+
+    const previewVersion = (() => {
         if (version.toLowerCase().includes("alpha")) {
-            return setPreviewVersion("ALPHA");
+            return "ALPHA";
         }
+
         if (version.toLowerCase().includes("beta")) {
-            return setPreviewVersion("BETA");
+            return "BETA";
         }
-    }
+
+        return "";
+    })();
 
     return <>
         {previewVersion &&
@@ -57,12 +69,52 @@ function TitleBarTags() {
     </>;
 }
 
+function AutoUpdateButton({ version, outdated }: {
+    version: string;
+    outdated: boolean;
+}) {
+    const [show, setShow] = useState<boolean>(outdated);
+    const { text: t } = useTranslationV2();
+
+    const isLinux = window.electron.platform === "linux";
+
+    function renderTippyContent() {
+        return <div className="p-2">
+            <div>{t("title-bar.update-text", { version })}</div>
+            {!isLinux &&
+                <BsmButton typeColor="primary"
+                    className="text-center font-bold rounded-md px-2 py-1 mt-2"
+                    text={t("title-bar.update-button")}
+                    withBar={false}
+                    onClick={() => console.debug("TODO")}
+                />
+            }
+        </div>
+    }
+
+    return outdated && (
+        <Tippy zIndex={1000}
+            visible={show}
+            content={renderTippyContent()}
+            onClickOutside={() => setShow(false)}
+        >
+            <BsmButton
+                className="shrink-0 h-[23px] w-[23px] aspect-square !bg-transparent flex items-start"
+                icon="download"
+                withBar={false}
+                onClick={() => setShow(!show)}
+            />
+        </Tippy>
+    );
+}
+
 export default function TitleBar({ template = "index.html" }: { template: AppWindow }) {
     const audio = useService(AudioPlayerService);
     const windowControls = useWindowControls();
 
     const volume = useObservable(() => audio.volume$, audio.volume);
     const color = useThemeColor("first-color");
+    const { version, outdated } = useVersion();
 
     const [maximized, setMaximized] = useState(false);
 
@@ -107,7 +159,7 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
                 <div id="drag-region" className="grow basis-0 h-full">
                     <div id="window-title" className="pl-1">
                         <span className="text-gray-800 dark:text-gray-100 font-bold text-xs italic">BSManager</span>
-                        <TitleBarTags />
+                        <TitleBarTags version={version} outdated={outdated} />
                     </div>
                 </div>
                 <div id="window-controls" className="h-full flex shrink-0 items-center">
@@ -117,6 +169,7 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
                         </div>
                         <BsmButton className="shrink-0 h-[23px] w-[23px] aspect-square !bg-transparent flex items-start" iconClassName={volumeIcon === "volume-down" ? "-translate-x-[1.8px]" : null} icon={volumeIcon} withBar={false} onClick={() => audio.toggleMute()} />
                     </div>
+                    <AutoUpdateButton version={version} outdated={outdated} />
                     <button onClick={minimizeWindow} className="text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#4F545C] cursor-pointer w-11 h-full shrink-0 flex justify-center items-center" id="min-button">
                         <svg aria-hidden="false" width="12" height="12" viewBox="0 0 12 12">
                             <rect fill="currentColor" width="10" height="1" x="1" y="6" />

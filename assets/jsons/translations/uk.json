@@ -37,7 +37,9 @@
         }
     },
     "title-bar": {
-        "outdated": "застарілий"
+        "outdated": "застарілий",
+        "update-text": "BSManager {version} доступний!",
+        "update-button": "Оновити та перезапустити"
     },
     "nav-bar": {
         "add-version": "Додати версію",

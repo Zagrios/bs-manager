@@ -37,7 +37,9 @@
         }
     },
     "title-bar": {
-        "outdated": "obsoleta"
+        "outdated": "obsoleta",
+        "update-text": "BSManager {version} è disponibile!",
+        "update-button": "Aggiorna e riavvia"
     },
     "nav-bar": {
         "add-version": "Aggiungi una versione",
