@@ -339,6 +339,13 @@
                     "error-notification": {
                         "message": "Nagkaroon ng error, hindi ma-bago ang setting ng system proxy."
                     }
+                },
+                "auto-update": {
+                    "title": "Awtomatikong Pag-update",
+                    "description": "Ang BSManager ay awtomatikong mag-uupdate kapag binuksan mo ang aplikasyon.",
+                    "error-notification": {
+                        "message": "Nagkaroon ng error, hindi mababago ang mga setting ng awtomatikong pag-update."
+                    }
                 }
             }
         }

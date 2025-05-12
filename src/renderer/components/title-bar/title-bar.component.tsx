@@ -39,10 +39,10 @@ function useVersion() {
     return { version, outdated };
 }
 
-function TitleBarTags({ version, outdated }: {
+function TitleBarTags({ version, outdated }: Readonly<{
     version: string;
     outdated: boolean;
-}) {
+}>) {
     const t = useTranslationV2();
 
     const previewVersion = (() => {
@@ -71,10 +71,10 @@ function TitleBarTags({ version, outdated }: {
     </>;
 }
 
-function AutoUpdateButton({ version, outdated }: {
+function AutoUpdateButton({ version, outdated }: Readonly<{
     version: string;
     outdated: boolean;
-}) {
+}>) {
     const configService = useService(StaticConfigurationService);
     const ipcService = useService(IpcService);
 
