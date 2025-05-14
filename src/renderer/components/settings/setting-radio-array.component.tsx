@@ -8,30 +8,32 @@ type Props<T> = {
     selectedItemId?: number;
     selectedItemValue?: T;
     direction?: CSSProperties["flexDirection"],
+    columnCount?: number;
     onItemSelected?: (item: RadioItem<T>) => void
 };
 
-export function SettingRadioArray<T>({ id, items, selectedItemId, selectedItemValue, onItemSelected, direction = "column" }: Props<T>) {
+export function SettingRadioArray<T>({ id, items, selectedItemId, selectedItemValue, onItemSelected, direction = "column",columnCount = 1, }: Props<T>) {
     const t = useTranslation();
 
     const isSelected = (item: RadioItem<T>) => {
         return item.id === selectedItemId || item.value === selectedItemValue;
     }
 
+
     return (
-        <div id={id} className="w-full flex gap-1.5" style={{flexDirection: direction}}>
+        <div id={id} className={`w-full grid grid-cols-${columnCount} gap-1.5`} style={{flexDirection: direction}}>
             {items.map(i => (
-                <div onClick={() => onItemSelected(i)} key={i.id} className={`py-3 w-full flex cursor-pointer justify-between items-center rounded-md px-2 transition-colors duration-300 ${isSelected(i) ? "bg-light-main-color-3 dark:bg-main-color-3" : "bg-light-main-color-1 dark:bg-main-color-1"} ${i.className}`}>
+                <div onClick={() => onItemSelected(i)} key={i.id} className={`h-12 py-3 w-full flex cursor-pointer justify-between rounded-md px-2 transition-colors duration-300 ${isSelected(i) ? "bg-light-main-color-3 dark:bg-main-color-3" : "bg-light-main-color-1 dark:bg-main-color-1"} ${i.className}`}>
                     <div className="flex items-center">
-                        <div className="h-5 rounded-full aspect-square border-2 border-gray-800 dark:border-white p-[3px] mr-2">
+                        <div className="h-5 rounded-full aspect-square border-2 border-gray-800 dark:border-white p-[3px] mr-2 ">
                             <motion.span initial={{ scale: 0 }} animate={{ scale: isSelected(i) ? 1 : 0 }} className="h-full w-full block bg-gray-800 dark:bg-white rounded-full" />
                         </div>
-                        <h2 className="font-extrabold">{t(i.text)}</h2>
+                        <h2 className="font-extrabold text-nowrap">{t(i.text)}</h2>
                     </div>
                     {i.icon && (
-                        <div className="flex items-center">
+                        <div className="flex items-center text-right">
                             {i.textIcon && <span className="text-sm">{t(i.textIcon)}</span>}
-                            {i.icon}
+                            <span>{i.icon}</span>
                         </div>
                     )}
                 </div>

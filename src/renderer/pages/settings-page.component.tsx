@@ -496,7 +496,7 @@ export function SettingsPage() {
                 </SettingContainer>
 
                 <SettingContainer title="pages.settings.language.title" description="pages.settings.language.description">
-                    <SettingRadioArray items={languagesItems} selectedItemValue={languageSelected} onItemSelected={handleChangeLanguage} />
+                    <SettingRadioArray items={languagesItems} selectedItemValue={languageSelected} onItemSelected={handleChangeLanguage} columnCount={2} />
                 </SettingContainer>
 
                 <SettingContainer title="pages.settings.patreon.title" description="pages.settings.patreon.description">
