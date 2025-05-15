@@ -20,7 +20,7 @@ export function SettingRadioArray<T>({ id, items, selectedItemId, selectedItemVa
     }
 
     return (
-        <div id={id} className={`w-full grid grid-cols-${columnCount} gap-1.5`} style={{flexDirection: direction}}>
+        <div id={id} className="w-full grid gap-1.5" style={{flexDirection: direction, gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`}}>
             {items.map(i => (
                 <div onClick={() => onItemSelected(i)} key={i.id} className={`h-12 py-3 w-full flex cursor-pointer justify-between rounded-md px-2 transition-colors duration-300 ${isSelected(i) ? "bg-light-main-color-3 dark:bg-main-color-3" : "bg-light-main-color-1 dark:bg-main-color-1"} ${i.className}`}>
                     <div className="flex items-center">
