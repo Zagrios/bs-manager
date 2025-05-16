@@ -321,7 +321,7 @@
                 },
                 "force-ipv4": {
                     "title": "Force Ipv4",
-                    "description": "Prefer Ipv4 over Ipv6 if you are having problems connecting to websites within BSManager"
+                    "description": "Prefer Ipv4 over Ipv6 if you are having problems connecting to websites within BSManager."
                 },
                 "use-symlinks": {
                     "title": "Use Symlinks",

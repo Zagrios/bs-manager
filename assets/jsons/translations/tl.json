@@ -319,6 +319,10 @@
                         "message": "Nagkaroon ng error, hindi ma-disable ang hardware acceleration."
                     }
                 },
+                "force-ipv4": {
+                    "title": "Piliting gamitin ang IPv4",
+                    "description": "Mas piliin ang IPv4 kaysa IPv6 kung nagkakaroon ka ng problema sa pagkonekta sa mga website sa loob ng BSManager."
+                },
                 "use-symlinks": {
                     "title": "Gumamit ng Symlinks",
                     "description": "Gumamit ng Symlinks sa halip na Junctions upang mag-link ng mga folder. I-on lamang ito kung talagang kailangan mo ito.",

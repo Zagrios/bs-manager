@@ -319,6 +319,10 @@
                         "message": "오류가 발생했습니다. 하드웨어 가속을 비활성화할 수 없습니다."
                     }
                 },
+                "force-ipv4": {
+                    "title": "IPv4 강제 사용",
+                    "description": "BSManager 내 웹사이트에 연결하는 데 문제가 있는 경우, IPv6보다 IPv4를 우선 사용하세요."
+                },
                 "use-symlinks": {
                     "title": "심볼릭 링크 사용",
                     "description": "폴더를 연결할 때 정션 대신 심볼릭 링크를 사용합니다. 필요할 때만 이 옵션을 활성화하세요.",

@@ -319,6 +319,10 @@
                         "message": "Une erreur s'est produite, impossible de désactiver l'accélération matérielle."
                     }
                 },
+                "force-ipv4": {
+                    "title": "Forcer IPv4",
+                    "description": "Préférez IPv4 à IPv6 si vous rencontrez des problèmes de connexion aux sites web dans BSManager."
+                },
                 "use-symlinks": {
                     "title": "Utiliser des liens symboliques",
                     "description": "Utilisez des liens symboliques au lieu de jonctions pour lier des dossiers. Activez cette option uniquement si vous en avez besoin.",
