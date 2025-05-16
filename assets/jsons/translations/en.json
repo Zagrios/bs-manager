@@ -319,6 +319,10 @@
                         "message": "An error occurred, unable to disable hardware acceleration."
                     }
                 },
+                "force-ipv4": {
+                    "title": "Force Ipv4",
+                    "description": "Prefer Ipv4 over Ipv6 if you are having problems connecting to websites within BSManager"
+                },
                 "use-symlinks": {
                     "title": "Use Symlinks",
                     "description": "Use Symlinks instead of Junctions to link folders. Turn this on only if you really need it.",
