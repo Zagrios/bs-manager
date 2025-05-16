@@ -448,18 +448,26 @@ export class LocalMapsManagerService {
             return installedMap;
         }
 
-        const zipPath = await this.downloadMapZip(zipUrl);
-        const zip = await BsmZipExtractor.fromPath(zipPath);
-        await zip.extract(mapPath);
-        zip.close();
-        await deleteFile(zipPath);
+        try {
+            const zipPath = await this.downloadMapZip(zipUrl);
+            const zip = await BsmZipExtractor.fromPath(zipPath)
 
-        const localMap = await this.loadMapInfoFromPath(mapPath);
-        localMap.songDetails = this.songDetailsCache.getSongDetails(localMap.hash);
+            await zip.extract(mapPath);
+            zip.close();
+            await deleteFile(zipPath);
 
-        this._lastDownloadedMap.next({ map: localMap, version });
+            const localMap = await this.loadMapInfoFromPath(mapPath);
+            localMap.songDetails = this.songDetailsCache.getSongDetails(localMap.hash);
 
-        return localMap;
+            this._lastDownloadedMap.next({ map: localMap, version });
+
+            return localMap;
+        } catch (error: any) {
+            if (error instanceof CustomError) {
+                throw error;
+            }
+            return null;
+        }
     }
 
     public async exportMaps(version: BSVersion, maps: BsmLocalMap[], outPath: string): Promise<Observable<Progression>> {
