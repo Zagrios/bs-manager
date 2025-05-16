@@ -319,6 +319,10 @@
                         "message": "Ein Fehler ist aufgetreten, die Hardware-Beschleunigung kann nicht deaktiviert werden."
                     }
                 },
+                "force-ipv4": {
+                    "title": "IPv4 erzwingen",
+                    "description": "Bevorzugen Sie IPv4 gegenüber IPv6, wenn Sie Probleme beim Herstellen einer Verbindung zu Websites innerhalb von BSManager haben."
+                },
                 "use-symlinks": {
                     "title": "Symbolische Links verwenden",
                     "description": "Verwenden Sie symbolische Links anstelle von Verknüpfungen, um Ordner zu verknüpfen. Aktivieren Sie dies nur, wenn Sie es wirklich benötigen.",
