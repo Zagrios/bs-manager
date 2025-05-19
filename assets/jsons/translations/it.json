@@ -319,6 +319,10 @@
                         "message": "C'è stato un errore, impossibile disattivare l'accelerazione hardware."
                     }
                 },
+                "force-ipv4": {
+                    "title": "Forzare IPv4",
+                    "description": "Preferisci IPv4 rispetto a IPv6 se riscontri problemi di connessione ai siti web all'interno di BSManager."
+                },
                 "use-symlinks": {
                     "title": "Usa Symlinks",
                     "description": "Usa Symlinks invece di Junction per unire le cartelle. Attivalo solo se ti serve veramente.",

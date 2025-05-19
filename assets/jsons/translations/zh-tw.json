@@ -319,6 +319,10 @@
                         "message": "發生錯誤，無法禁用硬體加速。"
                     }
                 },
+                "force-ipv4": {
+                    "title": "強制使用 IPv4",
+                    "description": "如果您在 BSManager 中連接網站時遇到問題，請優先使用 IPv4 而非 IPv6。"
+                },
                 "use-symlinks": {
                     "title": "使用符號鏈接",
                     "description": "使用符號鏈接而不是連接來鏈接文件夾。僅在確實需要時才啟用此功能。",
