@@ -15,6 +15,11 @@ ipc.on("bs-mods.get-installed-mods", (args, reply) => {
     reply(from(modsManager.getInstalledMods(args)));
 });
 
+ipc.on("bs-mods.is-modded", (args, reply) => {
+    const modsManager = BsModsManagerService.getInstance();
+    reply(from(modsManager.isModded(args)));
+});
+
 ipc.on("bs-mods.import-mods", (args, reply) => {
     const modsManager = BsModsManagerService.getInstance();
     reply(modsManager.importMods(args.paths, args.version));
@@ -38,4 +43,5 @@ ipc.on("bs-mods.uninstall-all-mods", (args, reply) => {
 ipc.on("bs-mods.beatmods-up", (_, reply) => {
     const beatMods = BeatModsApiService.getInstance();
     reply(from(beatMods.isUp()));
-})
+});
+

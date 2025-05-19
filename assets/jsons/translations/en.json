@@ -64,6 +64,8 @@
                 },
                 "skipsteam": "Skip Steam",
                 "skipsteam-description": "Stops Steam from opening automatically with Beat Saber, enable if you are using a different VR runtime like WiVRn or Monado that SteamVR may interfere with.",
+                "bsm-hook": "BSMHook",
+                "bsm-hook-description": "Install and use the BSMHook mod. Enable this if you are having problems with SteamVR opening while starting in FPFC. This works only in modded instances",
                 "map-editor": "Map Editor",
                 "map-editor-description": "Start the official Beat Saber map editor instead of the game.",
                 "proton-logs": "Proton Logs",
