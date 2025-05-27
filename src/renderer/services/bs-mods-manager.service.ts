@@ -45,6 +45,10 @@ export class BsModsManagerService {
         return this.ipcService.sendV2("bs-mods.get-installed-mods", version);
     }
 
+    public isModded(version: BSVersion): Promise<boolean> {
+        return lastValueFrom(this.ipcService.sendV2("bs-mods.is-modded", version));
+    }
+
     public installMods(mods: BbmFullMod[], version: BSVersion): Observable<Progression> {
 
         if (!this.progressBar.require()) {
