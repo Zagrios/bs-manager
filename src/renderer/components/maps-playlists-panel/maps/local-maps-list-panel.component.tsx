@@ -250,7 +250,7 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({
     return (
             <VirtualScroll
                 classNames={{ mainDiv: className, rows: "gap-x-2 px-2 py-2" }}
-                itemHeight={108}
+                itemHeight={116}
                 maxColumns={3}
                 minItemWidth={400}
                 items={preppedMaps}
