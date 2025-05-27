@@ -544,11 +544,13 @@ function AdvancedSettings() {
     const t = useTranslationV2();
 
     const [hardwareAccelerationEnabled, setHardwareAccelerationEnabled] = useState(true);
+    const [forceIpv4, setForceIpv4] = useState(false);
     const [useSymlink, setUseSymlink] = useState(false);
     const [useSystemProxy, setUseSystemProxy] = useState(false);
 
     useEffect(() => {
         staticConfig.get("disable-hadware-acceleration").then(disabled =>setHardwareAccelerationEnabled(() => disabled !== true));
+        staticConfig.get("force-ipv4").then(value => setForceIpv4(value));
         staticConfig.get("use-symlinks").then(useSymlinks => setUseSymlink(() => useSymlinks));
         staticConfig.get("use-system-proxy").then(useSystemProxy => setUseSystemProxy(() => useSystemProxy));
     }, []);
@@ -584,6 +586,18 @@ function AdvancedSettings() {
 
         await lastValueFrom(ipc.sendV2("restart-app"));
     };
+
+    const onChangeForceIpv4 = async (newForceIpv4: boolean) => {
+        if (forceIpv4 === newForceIpv4) return;
+
+        const { error } = await tryit(() => staticConfig.set("force-ipv4", newForceIpv4));
+        if (error) {
+            notification.notifyError({ title: "notifications.types.error", desc: "pages.settings.advanced.use-system-proxy.error-notification.message" });
+            return;
+        }
+
+        setForceIpv4(() => newForceIpv4);
+    }
 
     const onChangeUseSymlinks = async (newUseSymlink: boolean) => {
 
@@ -636,6 +650,11 @@ function AdvancedSettings() {
         text: t.text("pages.settings.advanced.hardware-acceleration.title"),
         desc: t.text("pages.settings.advanced.hardware-acceleration.description"),
         onChange: onChangeHardwareAcceleration
+    }, {
+        checked: forceIpv4,
+        text: t.text("pages.settings.advanced.force-ipv4.title"),
+        desc: t.text("pages.settings.advanced.force-ipv4.description"),
+        onChange: onChangeForceIpv4
     }];
     if (window.electron.platform === "win32") {
         advancedItems.push({

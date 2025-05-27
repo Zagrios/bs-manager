@@ -10,6 +10,7 @@ import path from 'path';
 import { pipeline } from 'stream/promises';
 import sanitize from 'sanitize-filename';
 import { app } from 'electron';
+import { StaticConfigurationService } from './static-configuration.service';
 
 export class RequestService {
     private static instance: RequestService;
@@ -17,6 +18,7 @@ export class RequestService {
         'User-Agent': `BSManager/${app.getVersion()} (Electron/${process.versions.electron} Chrome/${process.versions.chrome} Node/${process.versions.node})`,
     }
 
+    private readonly config: StaticConfigurationService;
 
     public static getInstance(): RequestService {
         if (!RequestService.instance) {
@@ -26,15 +28,22 @@ export class RequestService {
 
     }
 
-    private constructor() {}
+    private constructor() {
+        this.config = StaticConfigurationService.getInstance();
+    }
 
     public async getJSON<T = unknown>(url: string, options?: {
         silentError?: boolean
     }): Promise<{ data: T; headers: IncomingHttpHeaders }> {
 
         try {
-            // @ts-ignore (ESM is not well supported in this project, We need to move out electron-react-boilerplate, and use Vite)
-            const res = await got(url, { responseType: 'json', headers: this.baseHeaders });
+            const family = this.config.get("force-ipv4") ? 4 : 6;
+            const res = await got(url, {
+                // @ts-ignore (ESM is not well supported in this project, We need to move out electron-react-boilerplate, and use Vite)
+                dnsLookupIpVersion: family,
+                responseType: 'json',
+                headers: this.baseHeaders,
+            });
             return { data: res.body as T, headers: res.headers };
         } catch (err) {
             if (options?.silentError !== true) {

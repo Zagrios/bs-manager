@@ -319,6 +319,10 @@
                         "message": "Ocurrió un error, no se puede desactivar la aceleración de hardware."
                     }
                 },
+                "force-ipv4": {
+                    "title": "Forzar IPv4",
+                    "description": "Prefiera IPv4 sobre IPv6 si tiene problemas para conectarse a sitios web dentro de BSManager."
+                },
                 "use-symlinks": {
                     "title": "Usar enlaces simbólicos",
                     "description": "Utilice enlaces simbólicos en lugar de uniones para enlazar carpetas. Actívelo solo si realmente lo necesita.",
