@@ -30,11 +30,12 @@
 In the developer tools:
 
 1. Open the __`Network`__ tab.
-2. Filter for __`graph`__.
-3. Click on the first request that appears.
-4. Open the __`Payload`__ tab.
-5. Scroll to the bottom to locate your token. It should start with __`FRL`__.
-6. Select the token using your mouse and press `Ctrl` + `C` to copy it.
+2. Press CTRL+R.
+3. Filter for __`graph`__.
+4. Click on the first request that appears.
+5. Open the __`Payload`__ tab.
+6. Scroll to the bottom to locate your token. It should start with __`FRL`__.
+7. Select the token using your mouse and press `Ctrl` + `C` to copy it.
 
 <div align="center">
     <img src="../wiki/Guides/Login/How-to-obtain-your-Oculus-Token/GetYourOculusToken.png" alt="GetYourOculusToken.png" />
