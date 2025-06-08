@@ -162,18 +162,22 @@ export class BsModsManagerService {
         let winePath: string = "";
         if (process.platform === "linux") {
             const { error: winePathError, result: winePathResult } =
-                await tryit(async () => this.linuxService.getWinePath());
+                tryit(() => this.linuxService.getWinePath());
             if (winePathError) {
                 log.error(winePathError);
                 return false;
             }
-            winePath = `"${winePathResult}"`;
+
+            winePath = await this.linuxService.isNixOS()
+                ? `steam-run "${winePathResult}"`
+                : `"${winePathResult}"`;
 
             const winePrefix = this.linuxService.getWinePrefixPath();
             if (!winePrefix) {
                 throw new CustomError("Could not find BSManager WINEPREFIX path", "no-wineprefix");
             }
             env.WINEPREFIX = winePrefix;
+            Object.assign(env, process.env);
         }
 
         return new Promise<boolean>(resolve => {
