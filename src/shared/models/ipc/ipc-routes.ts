@@ -21,6 +21,7 @@ import { LocalBPList, LocalBPListsDetails } from "../playlists/local-playlist.mo
 import { StaticConfigGetIpcRequestResponse, StaticConfigKeys, StaticConfigSetIpcRequest } from "main/services/static-configuration.service";
 import { BbmFullMod, BbmModVersion, ExternalMod } from "../mods/mod.interface";
 import { OculusDownloadInfo } from "main/services/bs-version-download/bs-oculus-downloader.service";
+import { UpdateInfo } from "electron-updater";
 
 export type IpcReplier<T> = (data: Observable<T>) => void;
 
@@ -122,6 +123,7 @@ export interface IpcChannelMapping {
     /* ** launcher-ipcs ** */
     "download-update": { request: void, response: Progression };
     "check-update": { request: void, response: boolean };
+    "get-available-update": { request: void, response: UpdateInfo | null };
     "install-update": { request: void, response: void };
 
     /* ** model-saber.ipcs ** */
