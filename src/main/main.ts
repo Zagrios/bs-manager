@@ -137,7 +137,7 @@ if (!gotTheLock) {
             createWindow("index.html");
         } else {
             const configService =  StaticConfigurationService.getInstance();
-            const autoUpdate = configService.get("auto-update", AutoUpdate.NEVER);
+            const autoUpdate = configService.get("auto-update", AutoUpdate.ALWAYS);
             const update = autoUpdate !== AutoUpdate.NEVER;
             if (autoUpdate === AutoUpdate.ONCE) {
                 configService.set("auto-update", AutoUpdate.NEVER);

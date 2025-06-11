@@ -556,7 +556,7 @@ function AdvancedSettings() {
         if (window.electron.platform === "win32") {
             staticConfig.get("use-symlinks").then(useSymlinks => setUseSymlink(() => useSymlinks));
             staticConfig.get("use-system-proxy").then(useSystemProxy => setUseSystemProxy(() => useSystemProxy));
-            staticConfig.get("auto-update").then(setAutoUpdate);
+            staticConfig.get("auto-update").then(res => setAutoUpdate(() => res ?? AutoUpdate.ALWAYS));
         }
     }, []);
 
@@ -643,9 +643,9 @@ function AdvancedSettings() {
             return;
         }
 
-        const newAutoUpdate = value
-            ? AutoUpdate.ALWAYS : AutoUpdate.NEVER;
+        const newAutoUpdate = value ? AutoUpdate.ALWAYS : AutoUpdate.NEVER;
         const { error } = await tryit(() => staticConfig.set("auto-update", newAutoUpdate));
+
         if (error) {
             notification.notifyError({
                 title: "notifications.types.error",
