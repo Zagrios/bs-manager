@@ -39,7 +39,8 @@
     "title-bar": {
         "outdated": "obsoleta",
         "update-text": "BSManager {version} è disponibile!",
-        "update-button": "Aggiorna e riavvia"
+        "update-button": "Aggiorna e riavvia",
+        "see-changelog": "Vedi i cambiamenti"
     },
     "nav-bar": {
         "add-version": "Aggiungi una versione",

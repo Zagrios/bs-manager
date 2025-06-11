@@ -39,7 +39,8 @@
     "title-bar": {
         "outdated": "устаревший",
         "update-text": "BSManager {version} доступен!",
-        "update-button": "Обновить и перезапустить"
+        "update-button": "Обновить и перезапустить",
+        "see-changelog": "Смотреть изменения"
     },
     "nav-bar": {
         "add-version": "Добавить версию игры",

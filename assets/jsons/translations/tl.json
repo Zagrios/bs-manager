@@ -39,7 +39,8 @@
     "title-bar": {
         "outdated": "lipas na",
         "update-text": "Ang BSManager {version} ay available!",
-        "update-button": "I-update at i-restart"
+        "update-button": "I-update at i-restart",
+        "see-changelog": "Tingnan ang mga pagbabago"
     },
     "nav-bar": {
         "add-version": "Magdagdag ng bersyon",

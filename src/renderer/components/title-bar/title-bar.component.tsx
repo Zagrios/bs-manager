@@ -73,21 +73,23 @@ function AutoUpdateButton({ latestVersion }: Readonly<{
 }>) {
     const configService = useService(StaticConfigurationService);
     const ipcService = useService(IpcService);
-
-    const [ show, setShow ] = useState<boolean>(latestVersion !== null);
     const { text: t } = useTranslationV2();
 
     const isLinux = window.electron.platform === "linux";
 
-    async function updateAndRestart() {
+    const updateAndRestart = async () => {
         await configService.set("auto-update", AutoUpdate.ONCE);
         await lastValueFrom(ipcService.sendV2("restart-app"));
-    }
+    };
 
-    function renderTippyContent() {
+
+    const renderTippyContent = () => {
         return (
             <div className="p-2">
                 <div>{t("title-bar.update-text", { version: latestVersion.version })}</div>
+                {latestVersion?.version ? (
+                    <a href={`https://github.com/Zagrios/bs-manager/releases/tag/v${latestVersion.version}`} target="_blank" className="cursor-pointer underline text-sm hover:text-gray-300">{t("title-bar.see-changelog")}</a>
+                ) : null}
                 {!isLinux &&
                     <BsmButton typeColor="primary"
                         className="text-center rounded-md px-2 py-1 mt-2"
@@ -104,17 +106,15 @@ function AutoUpdateButton({ latestVersion }: Readonly<{
         <Tippy
             zIndex={1000}
             placement="bottom"
-            visible={show}
             content={renderTippyContent()}
-            onClickOutside={() => setShow(false)}
             theme="default"
+            hideOnClick
             interactive
         >
             <BsmButton
                 className="shrink-0 w-11 h-full aspect-square !bg-transparent flex items-start p-0.5"
                 icon="download"
                 withBar={false}
-                onClick={() => setShow(!show)}
             />
         </Tippy>
     );

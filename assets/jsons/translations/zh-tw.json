@@ -39,7 +39,8 @@
     "title-bar": {
         "outdated": "過時",
         "update-text": "BSManager {version} 可用！",
-        "update-button": "更新並重新啟動"
+        "update-button": "更新並重新啟動",
+        "see-changelog": "查看變更"
     },
     "nav-bar": {
         "add-version": "新增版本",
