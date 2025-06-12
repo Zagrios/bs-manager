@@ -48,6 +48,7 @@ import { InstallationLocationService } from "renderer/services/installation-loca
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 import { OculusDownloaderService } from "renderer/services/bs-version-download/oculus-downloader.service";
 import { DISCORD_URL } from "shared/constants";
+import { AutoUpdate } from "shared/models/config";
 
 export function SettingsPage() {
 
@@ -546,11 +547,17 @@ function AdvancedSettings() {
     const [hardwareAccelerationEnabled, setHardwareAccelerationEnabled] = useState(true);
     const [useSymlink, setUseSymlink] = useState(false);
     const [useSystemProxy, setUseSystemProxy] = useState(false);
+    const [autoUpdate, setAutoUpdate] = useState<AutoUpdate>(AutoUpdate.NEVER);
+
 
     useEffect(() => {
         staticConfig.get("disable-hadware-acceleration").then(disabled =>setHardwareAccelerationEnabled(() => disabled !== true));
-        staticConfig.get("use-symlinks").then(useSymlinks => setUseSymlink(() => useSymlinks));
-        staticConfig.get("use-system-proxy").then(useSystemProxy => setUseSystemProxy(() => useSystemProxy));
+
+        if (window.electron.platform === "win32") {
+            staticConfig.get("use-symlinks").then(useSymlinks => setUseSymlink(() => useSymlinks));
+            staticConfig.get("use-system-proxy").then(useSystemProxy => setUseSystemProxy(() => useSystemProxy));
+            staticConfig.get("auto-update").then(res => setAutoUpdate(() => res ?? AutoUpdate.ALWAYS));
+        }
     }, []);
 
     const onChangeHardwareAcceleration = async (newHardwareAccelerationEnabled: boolean) => {
@@ -631,12 +638,43 @@ function AdvancedSettings() {
         setUseSystemProxy(() => newUseSystemProxy);
     }
 
-    const advancedItems: Item[] = [{
+    const onChangeAutoUpdate = async (value: boolean) => {
+        if (window.electron.platform !== "win32") {
+            return;
+        }
+
+        const newAutoUpdate = value ? AutoUpdate.ALWAYS : AutoUpdate.NEVER;
+        const { error } = await tryit(() => staticConfig.set("auto-update", newAutoUpdate));
+
+        if (error) {
+            notification.notifyError({
+                title: "notifications.types.error",
+                desc: "pages.settings.advanced.auto-update.error-notification.message",
+            });
+            return;
+        }
+
+        setAutoUpdate(() => newAutoUpdate);
+    }
+
+    const advancedItems: Item[] = [];
+
+    if (window.electron.platform === "win32") {
+        advancedItems.push({
+            checked: autoUpdate === AutoUpdate.ALWAYS,
+            text: t.text("pages.settings.advanced.auto-update.title"),
+            desc: t.text("pages.settings.advanced.auto-update.description"),
+            onChange: onChangeAutoUpdate
+        });
+    }
+
+    advancedItems.push({
         checked: hardwareAccelerationEnabled,
         text: t.text("pages.settings.advanced.hardware-acceleration.title"),
         desc: t.text("pages.settings.advanced.hardware-acceleration.description"),
         onChange: onChangeHardwareAcceleration
-    }];
+    });
+
     if (window.electron.platform === "win32") {
         advancedItems.push({
             checked: useSymlink,

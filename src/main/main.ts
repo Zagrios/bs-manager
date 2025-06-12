@@ -28,6 +28,7 @@ import { StaticConfigurationService } from "./services/static-configuration.serv
 import { configureProxy } from './helpers/proxy.helpers';
 import { deleteFileSync, deleteFolderSync } from "./helpers/fs.helpers";
 import { tryit } from "shared/helpers/error.helpers";
+import { AutoUpdate } from "shared/models/config";
 
 const isDebug = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true";
 const staticConfig = StaticConfigurationService.getInstance();
@@ -121,8 +122,6 @@ if (!gotTheLock) {
 
     app.whenReady().then(() => {
 
-
-
         app.setAppUserModelId(APP_NAME);
 
         initServicesMustBeInitialized();
@@ -134,10 +133,18 @@ if (!gotTheLock) {
             DeepLinkService.getInstance().dispatchLinkOpened(deepLink);
         } else if (associatedFile) {
             FileAssociationService.getInstance().handleFileAssociation(associatedFile);
+        } else if (process.platform === "linux") {
+            createWindow("index.html");
         } else {
-            createWindow(process.platform === "linux"
-                ? "index.html" : "launcher.html"
-            );
+            const configService =  StaticConfigurationService.getInstance();
+            const autoUpdate = configService.get("auto-update", AutoUpdate.ALWAYS);
+            const update = autoUpdate !== AutoUpdate.NEVER;
+            if (autoUpdate === AutoUpdate.ONCE) {
+                configService.set("auto-update", AutoUpdate.NEVER);
+            }
+
+            // Skip launcher only if autoUpdate is strictly false
+            createWindow(update ? "launcher.html" : "index.html");
         }
 
         SteamLauncherService.getInstance().restoreSteamVR();

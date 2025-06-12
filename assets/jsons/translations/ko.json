@@ -37,7 +37,10 @@
         }
     },
     "title-bar": {
-        "outdated": "구식"
+        "outdated": "구식",
+        "update-text": "BSManager {version} 가 사용 가능합니다!",
+        "update-button": "업데이트 후 재시작",
+        "see-changelog": "변경 사항 보기"
     },
     "nav-bar": {
         "add-version": "버전 추가",
@@ -336,6 +339,13 @@
                     "description": "BSManager는 시스템 프록시를 통해 네트워크 요청을 수행합니다.",
                     "error-notification": {
                         "message": "오류가 발생했습니다. 시스템 프록시 설정을 변경할 수 없습니다."
+                    }
+                },
+                "auto-update": {
+                    "title": "자동 업데이트",
+                    "description": "애플리케이션을 실행할 때 BSManager가 자동으로 업데이트됩니다.",
+                    "error-notification": {
+                        "message": "오류가 발생하여 자동 업데이트 설정을 변경할 수 없습니다."
                     }
                 }
             }

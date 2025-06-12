@@ -14,6 +14,11 @@ ipc.on("check-update", (_, reply) => {
     reply(from(updaterService.isUpdateAvailable()));
 });
 
+ipc.on("get-available-update", (_, reply) => {
+    const updaterService = AutoUpdaterService.getInstance();
+    reply(from(updaterService.getAvailableUpdate()));
+});
+
 ipc.on("install-update", (_, reply) => {
     const updaterService = AutoUpdaterService.getInstance();
     reply(of(updaterService.quitAndInstall()));
