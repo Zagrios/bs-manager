@@ -37,7 +37,10 @@
         }
     },
     "title-bar": {
-        "outdated": "obsoleto"
+        "outdated": "obsoleto",
+        "update-text": "¡BSManager {version} está disponible!",
+        "update-button": "Actualizar y reiniciar",
+        "see-changelog": "Ver los cambios"
     },
     "nav-bar": {
         "add-version": "Agregar una versión",
@@ -336,6 +339,13 @@
                     "description": "BSManager realizará solicitudes de red a través de su proxy del sistema.",
                     "error-notification": {
                         "message": "Ocurrió un error, no se pueden cambiar los ajustes del proxy del sistema."
+                    }
+                },
+                "auto-update": {
+                    "title": "Actualización automática",
+                    "description": "BSManager se actualizará automáticamente al iniciar la aplicación.",
+                    "error-notification": {
+                        "message": "Ocurrió un error, no se pudo cambiar la configuración de actualización automática."
                     }
                 }
             }

@@ -37,7 +37,10 @@
         }
     },
     "title-bar": {
-        "outdated": "lipas na"
+        "outdated": "lipas na",
+        "update-text": "Ang BSManager {version} ay available!",
+        "update-button": "I-update at i-restart",
+        "see-changelog": "Tingnan ang mga pagbabago"
     },
     "nav-bar": {
         "add-version": "Magdagdag ng bersyon",
@@ -336,6 +339,13 @@
                     "description": "Gagawin ng BSManager ang mga network request sa pamamagitan ng iyong system proxy.",
                     "error-notification": {
                         "message": "Nagkaroon ng error, hindi ma-bago ang setting ng system proxy."
+                    }
+                },
+                "auto-update": {
+                    "title": "Awtomatikong Pag-update",
+                    "description": "Ang BSManager ay awtomatikong mag-uupdate kapag binuksan mo ang aplikasyon.",
+                    "error-notification": {
+                        "message": "Nagkaroon ng error, hindi mababago ang mga setting ng awtomatikong pag-update."
                     }
                 }
             }

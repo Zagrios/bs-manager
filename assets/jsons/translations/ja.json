@@ -37,7 +37,10 @@
         }
     },
     "title-bar": {
-        "outdated": "時代遅れ"
+        "outdated": "時代遅れ",
+        "update-text": "BSManager {version} が利用可能です！",
+        "update-button": "更新して再起動",
+        "see-changelog": "変更点を確認"
     },
     "nav-bar": {
         "add-version": "バージョンを追加",
@@ -336,6 +339,13 @@
                     "description": "BSManagerはシステムプロキシを通じてネットワークリクエストを行います。",
                     "error-notification": {
                         "message": "エラーが発生しました。システムプロキシ設定を変更できません。"
+                    }
+                },
+                "auto-update": {
+                    "title": "自動更新",
+                    "description": "アプリケーション起動時にBSManagerが自動的に更新されます。",
+                    "error-notification": {
+                        "message": "エラーが発生し、自動更新の設定を変更できませんでした。"
                     }
                 }
             }

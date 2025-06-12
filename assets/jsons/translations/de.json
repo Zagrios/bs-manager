@@ -37,7 +37,10 @@
         }
     },
     "title-bar": {
-        "outdated": "veraltet"
+        "outdated": "veraltet",
+        "update-text": "BSManager {version} ist verfügbar!",
+        "update-button": "Aktualisieren und neu starten",
+        "see-changelog": "Änderungen ansehen"
     },
     "nav-bar": {
         "add-version": "Version hinzufügen",
@@ -336,6 +339,13 @@
                     "description": "BSManager wird Netzwerkrequests über Ihren Systemproxy durchführen.",
                     "error-notification": {
                         "message": "Es ist ein Fehler aufgetreten, die Systemproxyeinstellungen können nicht geändert werden."
+                    }
+                },
+                "auto-update": {
+                    "title": "Automatische Aktualisierung",
+                    "description": "BSManager wird beim Start der Anwendung automatisch aktualisiert.",
+                    "error-notification": {
+                        "message": "Ein Fehler ist aufgetreten, die Einstellungen für die automatische Aktualisierung können nicht geändert werden."
                     }
                 }
             }

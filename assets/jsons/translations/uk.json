@@ -37,7 +37,10 @@
         }
     },
     "title-bar": {
-        "outdated": "застарілий"
+        "outdated": "застарілий",
+        "update-text": "BSManager {version} доступний!",
+        "update-button": "Оновити та перезапустити",
+        "see-changelog": "Переглянути зміни"
     },
     "nav-bar": {
         "add-version": "Додати версію",
@@ -336,6 +339,13 @@
                     "description": "BSManager виконуватиме мережеві запити через ваш системний проксі.",
                     "error-notification": {
                         "message": "Сталася помилка, неможливо змінити налаштування системного проксі."
+                    }
+                },
+                "auto-update": {
+                    "title": "Автоматичне оновлення (Avtomatychne onovlennya)",
+                    "description": "BSManager автоматично оновлюватиметься, коли ви запустите програму.",
+                    "error-notification": {
+                        "message": "Сталася помилка, неможливо змінити налаштування автоматичного оновлення."
                     }
                 }
             }
