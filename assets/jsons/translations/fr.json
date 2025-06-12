@@ -33,7 +33,7 @@
     },
     "generic": {
         "env": {
-            "parse": "Impossible d'analyser correctement la chaîne de variable d'environnement."
+            "parse": "Impossible de lire les variables d'environnement."
         }
     },
     "title-bar": {
@@ -54,23 +54,23 @@
         "version-viewer": {
             "launch-mods": {
                 "oculus": "Mode Oculus",
-                "oculus-description": "Si vous utilisez Beat Saber via Steam, cela vous permet d'utiliser le compositeur VR d'Oculus (sans passer par SteamVR pour gagner en performances). Ceci n'est pas nécessaire pour utiliser les casques Oculus.",
+                "oculus-description": "Si vous utilisez Beat Saber via Steam, cela permet d'utiliser l'environnement Oculus sans passer par SteamVR, pour un gain en performances potentiel. Ceci n'est pas obligatoire pour utiliser les casques Oculus.",
                 "desktop": "Mode FPFC",
-                "desktop-description": "Cela vous permet d'utiliser WASD et la souris pour naviguer dans le menu en jeu. Cela rend les tests beaucoup plus faciles, car vous n'avez pas à mettre votre casque!",
+                "desktop-description": "Ce mode vous permet d'utiliser votre PC (WASD et la souris) pour vous déplacer dans le jeu. Cela rend les tests beaucoup plus faciles, car vous n'avez pas à mettre de casque VR!",
                 "debug": "Mode Debug",
                 "debug-description": "Active la fenêtre de log pour IPA. Cela affichera la console de débogage utilisée par les mods.",
                 "outdated-tippy": "Cette version est obsolète et certains mods ou fonctionnalités peuvent ne plus fonctionner comme prévu. Préférez utiliser la version recommandée ({recommendedVersion}) de Beat Saber pour profiter des dernières fonctionnalités et correctifs.",
                 "advanced-launch": {
                     "button": "Options de lancement",
-                    "placeholder": "Options de lancement ex: KEY=VALUE %command% fpfc",
+                    "placeholder": "Options de lancement. Exemple : KEY=VALUE %command% fpfc",
                     "create-launch-option": "Créer une option de lancement"
                 },
                 "skipsteam": "Ignorer Steam",
-                "skipsteam-description": "Empêche Steam de s'ouvrir automatiquement avec Beat Saber, activez-le si vous utilisez un autre runtime VR comme WiVRn ou Monado avec lequel SteamVR pourrait interférer.",
+                "skipsteam-description": "Empêche Steam de s'ouvrir automatiquement avec Beat Saber, activez-le si vous utilisez un autre environnement VR comme WiVRn ou Monado avec lequel SteamVR pourrait interférer.",
                 "map-editor": "Éditeur de map",
                 "map-editor-description": "Lance l'éditeur officiel de map de Beat Saber au lieu du jeu.",
-                "proton-logs": "Journaux de Proton",
-                "proton-logs-description": "Active l'enregistrement des journaux Proton pour cette installation de Beat Saber sur \"{versionPath}\"."
+                "proton-logs": "Logs de Proton",
+                "proton-logs-description": "Active l'enregistrement des logs Proton pour cette installation de Beat Saber sur \"{versionPath}\"."
             },
             "maps": {
                 "search-bar": {
@@ -107,11 +107,11 @@
                         "sort": {
                             "name": "Nom",
                             "song-author": "Auteur de la chanson",
-                            "map-author": "Auteur de la carte",
+                            "map-author": "Auteur de la map",
                             "bpm": "BPM",
                             "duration": "Durée",
                             "likes": "J'aime",
-                            "date-uploaded": "Date de téléchargement"
+                            "date-uploaded": "Date de publication"
                         }
                     },
                     "playlists": {
@@ -127,7 +127,7 @@
                         "sort": {
                             "title": "Titre",
                             "author": "Auteur",
-                            "number-of-maps": "Nombre de cartes",
+                            "number-of-maps": "Nombre de maps",
                             "duration": "Durée",
                             "notes-per-second": "NPS"
                         }
@@ -139,8 +139,8 @@
                 "no-internet": "Pas d'accès Internet",
                 "mods-not-available": "Aucun mod n'est encore disponible pour cette version de Beat Saber",
                 "status": {
-                    "no-wineprefix": "Impossible de trouver le chemin WINEPREFIX de BSManager. Veuillez d'abord lancer Beat Saber dans BSManager.",
-                    "beatmods-down": "Beatmods est actuellement inaccessible. Veuillez réessayer plus tard. Si le problème persiste, informez-nous sur {links}.",
+                    "no-wineprefix": "Impossible de trouver le chemin WINEPREFIX de BSManager. Veuillez d'abord lancer Beat Saber depuis BSManager.",
+                    "beatmods-down": "BeatMods est actuellement inaccessible. Veuillez réessayer plus tard. Si le problème persiste, informez-nous sur {links}.",
                     "unknown": "Une erreur inconnue s'est produite ¯\\_(ツ)_/¯"
                 },
                 "buttons": {
@@ -152,8 +152,8 @@
                     "header-bar": {
                         "name": "Nom",
                         "size": "Taille",
-                        "installed": "Installé",
-                        "latest": "Récent",
+                        "installed": "Installée",
+                        "latest": "Dernière",
                         "description": "Description",
                         "dropdown": {
                             "import-mods": "Importer des mods",
@@ -168,8 +168,8 @@
                 },
                 "notifications": {
                     "all-mods-already-installed": {
-                        "title": "Mods déjà installées",
-                        "description": "Tous les mods séléctionnées sont déjà installées"
+                        "title": "Mods déjà installés",
+                        "description": "Tous les mods séléctionnés sont déjà installés"
                     },
                     "outdated-mods": {
                         "title": "Mod obsolète",
@@ -209,17 +209,17 @@
             "steam-and-oculus": {
                 "title": "Steam & Oculus",
                 "description": "Te déconnecter te permettra de changer de compte au prochain téléchargement de Beat Saber.",
-                "logout": "Déconnexion",
+                "logout": "Se déconnecter",
                 "logout-success": "Déconnexion réussie",
                 "download-platform": {
                     "title": "Plateforme par défaut",
-                    "desc": "Choisi la plateforme par défaut qui sera utilisée pour télécharger les versions de Beat Saber.",
+                    "desc": "Choisissez la plateforme par défaut qui sera utilisée pour télécharger les versions de Beat Saber.",
                     "always-ask": "Toujours demander"
                 }
             },
             "appearance": {
                 "title": "Apparence",
-                "description": "Choisis les deux couleurs principales de BSManager.",
+                "description": "Choisissez les deux couleurs principales de BSManager.",
                 "reset": "Réinitialiser",
                 "sub-title": "Thème",
                 "themes": {
@@ -230,7 +230,7 @@
             },
             "installation-folder": {
                 "title": "Dossier d'installation",
-                "description": "Changer le dossier qui contiendra tout le contenu téléchargé par BSManager."
+                "description": "Changez le dossier qui contiendra tout le contenu téléchargé par BSManager."
             },
             "proton-folder": {
                 "title": "Dossier Proton",
@@ -248,8 +248,8 @@
                 }
             },
             "language": {
-                "title": "Langage",
-                "description": "Sélectionne un langage.",
+                "title": "Langue",
+                "description": "Sélectionnez une langue.",
                 "languages": {
                     "en-EN": "English, UK",
                     "en-US": "English, US",
@@ -312,7 +312,7 @@
                 "description": "Paramètres avancés pour BSManager.",
                 "hardware-acceleration": {
                     "title": "Accélération matérielle",
-                    "description": "Activez l'accélération matérielle pour utiliser votre GPU et améliorer les performances de BSManager. Désactivez cette option si vous rencontrez des chutes d'IPS.",
+                    "description": "Activez l'accélération matérielle pour utiliser votre carte graphique et améliorer les performances de BSManager. Désactivez cette option si vous rencontrez des problèmes de performance dans d'autres applications.",
                     "modal": {
                         "title": "Redémarrage nécessaire",
                         "body": "Changer le paramètre d'accélération matérielle va quitter et relancer BSManager. Êtes-vous sûr de vouloir continuer ?",
@@ -370,8 +370,8 @@
                     "file-not-supported": "Fichier non supporté"
                 },
                 "msg": {
-                    "operation-running": "Attends la fin de l'opération en cours puis recommence.",
-                    "no-internet": "Vérifie ta connexion internet et ressaye.",
+                    "operation-running": "Veuillez attendre la fin de l'opération en cours puis recommencez.",
+                    "no-internet": "Vérifiez votre connexion Internet et réessayez.",
                     "file-not-supported": "Seuls les fichiers {types} sont pris en charge."
                 }
             }
@@ -387,9 +387,9 @@
                 "warnings": {
                     "msg": {
                         "ManifestChecksum": "Le manifeste précédemment téléchargé ne correspond pas au nouveau 🤔",
-                        "ConnectionTimeout": "Ta connexion internet semble instable 🥶",
-                        "ConnectionLost": "La connexion a été perdue, essayez à nouveau...",
-                        "ConnectionError": "Impossible de se connecter à Steam, essayez à nouveau...",
+                        "ConnectionTimeout": "Votre connexion internet semble instable 🥶",
+                        "ConnectionLost": "La connexion a été perdue, réessayez...",
+                        "ConnectionError": "Impossible de se connecter à Steam, réessayez...",
                         "Unknown": "Quelque chose d'étrange s'est produit 🤔 Votre connexion est probablement instable."
                     }
                 },
@@ -397,26 +397,26 @@
                     "msg": {
                         "401": "Steam ne semble pas vouloir nous laisser télécharger Beat Saber 😢",
                         "404": "Impossible de contacter les serveurs de Steam.",
-                        "ExeNotFoundWindows": "\"DepotDownloader.exe\" est manquant. Veuillez vérifier si l'exécutable est mis en quarantaine par votre antivirus.",
-                        "ExeNotFoundLinux": "L'exécutable \"DepotDownloader\" est manquanto.",
+                        "ExeNotFoundWindows": "\"DepotDownloader.exe\" est manquant. Vérifiez si votre antivirus n'a pas mis en quarantaine le fichier.",
+                        "ExeNotFoundLinux": "L'exécutable \"DepotDownloader\" est manquant.",
                         "Password": "Le mot de passe est invalide.",
                         "InvalidCredentials": "Identifiants de connexion invalides, connexion non approuvée, ou trop de tentatives de connexion.",
-                        "NoManifest": "Aucun manifest n'a été trouvé.",
+                        "NoManifest": "Aucun manifeste n'a été trouvé.",
                         "DirectoryCreate": "Impossible d'installer les dossiers nécessaires.",
                         "NotAvailableApp": "Tu essayes de télécharger Beat Saber alors que tu ne l'as pas ? 🤣",
-                        "DepotNotFound": "Impossible de télécharger Beat Saber 😥 réessaye plus tard 😕",
+                        "DepotNotFound": "Impossible de télécharger Beat Saber 😥 réessayez plus tard 😕",
                         "NotCompleted": "Le téléchargement n'a pas pu se terminer ¯\\_(ツ)_/¯",
-                        "InvalidManifest": "Impossible de télécharger Beat Saber 😥 réessaye plus tard 😕",
-                        "NoValidKey": "Impossible de télécharger Beat Saber 😥 réessaye plus tard 😕",
-                        "NoManifestCode": "Impossible de télécharger Beat Saber 😥 réessaye plus tard 😕",
+                        "InvalidManifest": "Impossible de télécharger Beat Saber 😥 réessayez plus tard 😕",
+                        "NoValidKey": "Impossible de télécharger Beat Saber 😥 réessayez plus tard 😕",
+                        "NoManifestCode": "Impossible de télécharger Beat Saber 😥 réessayez plus tard 😕",
                         "Unknown": "Une erreur inconnue s'est produite ¯\\_(ツ)_/¯",
                         "NoServer": "Impossible de contacter les serveurs de Steam.",
                         "NotAllowed": "Apparemment tu n'es pas autorisé à télécharger Beat Saber 🥱",
                         "ConnectionTimeout": "Impossible de se connecter à Steam 😕",
-                        "SteamLib": "Si tu as cette erreur, signale le bug sur GitHub avec les logs stp.",
+                        "SteamLib": "Si tu vois cette erreur, signale le bug sur GitHub avec les logs de BSManager.",
                         "ConnectionError": "Impossible de se connecter à Steam après 10 essais 🤯",
                         "LicenceError": "Impossible d'obtenir la liste des licences.",
-                        "RateLimitExceeded": "Tu as essayé trop de fois attends un peu et recommence plus tard.",
+                        "RateLimitExceeded": "Tu as essayé trop de fois, attends un peu et réessaye plus tard.",
                         "TokenRejected": "Votre token de connexion a été rejeté 😕 Veuillez réessayer.",
                         "AccessDenied": "L'accès à Steam a été refusé."
                     }
@@ -426,13 +426,13 @@
                 "errors": {
                     "msg": {
                         "DOWNLOAD_MANIFEST_FAILED": "Impossible de télécharger le manifest de cette version. Votre token de connexion est peut-être invalide, ou vous ne possédez pas la version PC de Beat Saber.",
-                        "MANIFEST_FILE_NOT_FOUND": "Impossible de trouver le manifest de cette version.",
-                        "PARSE_MANIFEST_FILE_FAILED": "Une erreur c'est produite lors de la lecture du manifest.",
+                        "MANIFEST_FILE_NOT_FOUND": "Impossible de trouver le manifeste de cette version.",
+                        "PARSE_MANIFEST_FILE_FAILED": "Une erreur s'est produite lors de la lecture du manifest.",
                         "ALREADY_DOWNLOADING": "Une version est déjà en cours de téléchargement.",
-                        "UNABLE_TO_GET_MANIFEST": "Impossible d'obtenir le manifest nécessaire au téléchargement. Votre token de connexion est peut-être invalide, ou vous ne possédez pas la version PC de Beat Saber.",
-                        "VERIFY_INTEGRITY_FAILED": "Une erreur c'est produite lors de la vérification des fichiers.",
+                        "UNABLE_TO_GET_MANIFEST": "Impossible d'obtenir le manifeste nécessaire au téléchargement. Votre token de connexion est peut-être invalide, ou vous ne possédez pas la version PC de Beat Saber.",
+                        "VERIFY_INTEGRITY_FAILED": "Une erreur s'est produite lors de la vérification des fichiers.",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "Certains fichiers n'ont pas pu être téléchargés.",
-                        "META_LOGIN_TIMED_OUT": "Le Token de connexion à mis trop de temps à être récupéré.",
+                        "META_LOGIN_TIMED_OUT": "Le token de connexion à mis trop de temps à être récupéré.",
                         "META_LOGIN_WINDOW_CLOSED_BY_USER": "La fenêtre de connexion à Meta a été fermée.",
                         "NO_META_AUTH_TOKEN": "Impossible de récupérer le token de connexion à Meta nécessaire au téléchargement.",
                         "UNKNOWN_ERROR": "Une erreur inconnue s'est produite."
@@ -455,7 +455,7 @@
             },
             "errors": {
                 "import-error": {
-                    "desc": "Vérifier que le dossier sélectionné est une installation de Beat Saber."
+                    "desc": "Vérifie que le dossier sélectionné est une installation de Beat Saber."
                 }
             }
         },
@@ -509,7 +509,7 @@
                         }
                     },
                     "check-all-enabled": {
-                        "title": "OneClick désactivée(s)",
+                        "title": "OneClick désactivé",
                         "description": "Une ou plusieurs installations OneClick sont désactivées. Rendez-vous dans les paramètres pour les activer.",
                         "actions": {
                             "settings": "Paramètres",
@@ -524,12 +524,12 @@
                 "titles": {
                     "BS_LAUNCHING": "Lancement...🚀",
                     "STEAM_LAUNCHING": "Steam se lance !",
-                    "SKIPPING_STEAM_LAUNCH": "Sauter le lancement de Steam"
+                    "SKIPPING_STEAM_LAUNCH": "Ignorer le lancement de Steam"
                 },
                 "msg": {
                     "BS_LAUNCHING": "N'oublie pas de t'échauffer 😉",
                     "STEAM_LAUNCHING": "Beat Saber se lancera automatiquement après Steam.",
-                    "SKIPPING_STEAM_LAUNCH": "J'espère que vous savez ce que vous faites :)"
+                    "SKIPPING_STEAM_LAUNCH": "J'espère que tu sais ce que tu fais :)"
                 }
             },
             "errors": {
@@ -642,8 +642,8 @@
                 "error": "Une erreur s'est produite lors de l'installation de la map"
             },
             "no-duplicates-maps": {
-                "title": "Pas de doublons",
-                "msg": "Aucune carte n'a été supprimée"
+                "title": "Aucun doublon",
+                "msg": "Aucune map n'a été supprimée"
             },
             "duplicates-maps-deleted": {
                 "title": "Doublons supprimés",
@@ -679,7 +679,7 @@
             "info": {
                 "userdata-backup-created": {
                     "title": "Sauvegarde créée",
-                    "msg": "Le partage du dossier 'UserData' peut générer des erreurs, en cas de soucis déliez le dossier pour restaurer la sauvegarde"
+                    "msg": "Le partage du dossier 'UserData' peut générer des erreurs. En cas de soucis, déliez le dossier pour restaurer la sauvegarde"
                 }
             },
             "linking-error": {
@@ -711,7 +711,7 @@
             "title": "Version obsolète",
             "msg": "Cette version de Beat Saber est obsolète. Utilisez la version recommandée pour profiter des dernières fonctionnalités et correctifs.",
             "actions": {
-                "do-not-remind": "Ne plus me rappeler",
+                "do-not-remind": "Ne plus me le rappeler",
                 "ok": "Ok"
             }
         },
@@ -764,7 +764,7 @@
                     "note": {
                         "use-the": "Utilisez l'",
                         "steam-mobile-app": "application mobile Steam",
-                        "to-connect-with-qr": "pour vous connecter avec un QR code."
+                        "to-connect-with-qr": "pour vous connecter avec un code QR."
                     }
                 },
                 "stay": "Se souvenir de moi"
@@ -784,13 +784,13 @@
         "steam-credentials": {
             "title": "Steam Credentials",
             "p-1": "Les informations d'identification ne sont utilisées que pour télécharger le jeu, car Steam doit vérifier que vous avez payé le jeu afin d'être autorisé à le télécharger. Ils ne sont pas sauvegardés et transmis directement à DepotDownloader. Si vous ne voulez pas entrer vos informations d'identification, vous pouvez suivre ce tutoriel :",
-            "p-2": "puis cliquez sur l'icône de l'engrenage dans le coin supérieur droit et sélectionnez \"Importer une version\", sélectionnez le dossier où beat saber a été téléchargé (Si vous suivez le tutoriel ci-dessus, vous devriez avoir le bon emplacement)."
+            "p-2": "puis cliquez sur l'icône de l'engrenage dans le coin supérieur droit et sélectionnez \"Importer une version\", vous pouvez ensuite sélectionner le dossier où Beat Saber a été téléchargé (Si vous suivez le tutoriel ci-dessus, vous devriez avoir le bon emplacement)."
         },
         "bs-import-version": {
             "title": "Importer une version",
             "description": "Importe une version de Beat Saber pour profiter des fonctionnalités de BSManager. L'importation copiera le dossier d'installation de Beat Saber sélectionné dans le dossier de versions de BSManager.",
             "oculus-version": "Version Oculus",
-            "oculus-version-tooltip": "Cocher si c'est une version Oculus",
+            "oculus-version-tooltip": "Cochez si l'installation provient du magasin Oculus",
             "buttons": {
                 "submit": "Importer une version"
             }
@@ -847,8 +847,8 @@
                     "multiple": "Supprimer les maps ?"
                 },
                 "desc": {
-                    "single": "Es-tu sur de vouloir supprimer la map {name} ?",
-                    "multiple": "Es-tu sur de vouloir supprimer {nb} maps ?"
+                    "single": "Es-tu sûr de vouloir supprimer la map {name} ?",
+                    "multiple": "Es-tu sûr de vouloir supprimer {nb} maps ?"
                 },
                 "info": {
                     "desc": {
@@ -888,7 +888,7 @@
             "search-btn": "Rechercher",
             "loading-maps": "Chargement des maps...",
             "no-maps-found": "Aucune map trouvée",
-            "no-internet": "Pas d'internet"
+            "no-internet": "Pas d'accès Internet"
         },
         "mods-disclaimer": {
             "title": "avis de non-responsabilité",
@@ -951,7 +951,7 @@
                 "token-is-invalid": "Le Token est invalide.",
                 "save-my-token": "Sauvegarder mon token",
                 "have-token-saved": "J'ai déjà un token sauvegardé",
-                "save-token-info": "Ceci enregistrera votre token pour le réutiliser plus facilement. Vous devrez créer un mot de passe pour crypter votre token à des fins de stockage. Si jamais vous oubliez votre mot de passe, il vous suffit de fournir à nouveau votre token.",
+                "save-token-info": "Ceci enregistrera votre token pour le réutiliser plus facilement. Vous devrez créer un mot de passe pour crypter votre token à des fins de stockage. Si jamais vous oubliez votre mot de passe, il vous suffira de fournir à nouveau votre token.",
                 "password": "Mot de passe",
                 "password-too-short": "Mot de passe trop court",
                 "info-enter-password": "Pour télécharger Beat Saber, votre token de connexion à Oculus est nécessaire. Entrez le mot de passe utilisé pour sauvegarder votre token Oculus.",
@@ -972,7 +972,7 @@
         },
         "ask-install-path": {
             "title": "Dossier d'installation",
-            "choose-folder-description": "Choisissez le dossier qui contiendra tout le contenu téléchargé par BSManager. (versions, mods, cartes, playlists, etc.)",
+            "choose-folder-description": "Choisissez le dossier qui contiendra tout le contenu téléchargé par BSManager. (versions, mods, maps, playlists, etc.)",
             "default": "Par défaut",
             "default-tooltip": "Par défaut, dans votre dossier personnel"
         },
@@ -997,13 +997,13 @@
     "maps": {
         "map-filter-panel": {
             "duration": "Durée",
-            "nps": "Notes Par Seconde",
+            "nps": "Notes par seconde",
             "njs": "Vitesse de saut des notes",
             "tags": "tags",
             "specificities": "général",
             "requirements": "requis",
             "exclude": "exclure",
-            "leaderboard": "tableau des leaders"
+            "leaderboard": "status classé"
         },
         "map-types": {
             "accuracy": "précision",
@@ -1056,11 +1056,11 @@
             "automapper": "IA",
             "curated": "recommandée",
             "verified": "vérifiée",
-            "fullSpread": "panel complet"
+            "fullSpread": "toutes difficultés"
         },
         "map-leaderboard": {
             "All": "Tout",
-            "Ranked": "Classée",
+            "Ranked": "Classé",
             "BeatLeader": "BeatLeader",
             "ScoreSaber": "ScoreSaber"
         },
@@ -1078,10 +1078,10 @@
             "by": "Par {songAutor}",
             "mapped-by": "mappée par",
             "delete": "Supprimer",
-            "preview": "Aperçu de la carte",
+            "preview": "Aperçu de la map",
             "bsr-code": "Code BSR",
-            "download": "Télécharger la carte",
-            "downloading": "Téléchargement de la carte",
+            "download": "Télécharger la map",
+            "downloading": "Téléchargement de la map",
             "cancel-download": "Annuler le téléchargement",
             "hightlight-difficulty": "Surligner la difficulté"
         }
@@ -1148,7 +1148,7 @@
                     "discordid-desc": "Afficher seulement les modèles de l'utilisateur discord spécifié.",
                     "status-desc": "Afficher seulement les modèles avec le status spécifié. (profil seulement, et seulement pour l'auteur)"
                 },
-                "no-models": "Aucun modèles trouvés.",
+                "no-models": "Aucun modèle trouvé.",
                 "no-internet": "Pas de connexion internet.",
                 "error-occured": "Une erreur est survenue, réessaye plus tard."
             }
@@ -1161,16 +1161,16 @@
                 "not-remind": "Ne plus me rappeler"
             },
             "export-success": {
-                "title": "Export terminé 🎉"
+                "title": "Exportation terminée 🎉"
             }
         }
     },
     "beat-saver": {
         "maps-sorts": {
-            "Latest": "Dernière",
+            "Latest": "Récent",
             "Relevance": "Pertinence",
-            "Rating": "Notes",
-            "Curated": "Recommandée"
+            "Rating": "Évaluation",
+            "Curated": "Recommandé"
         }
     },
     "auto-update": {
@@ -1198,7 +1198,7 @@
         "error-playlist-creation-title": "Erreur lors de la création de la playlist",
         "error-playlist-creation-desc": "Une erreur est survenue lors de la création de la playlist.",
         "playlist-created-title": "Playlist créée",
-        "playlist-created-desc": "La playlist a été créée avec succès. Tu peut maintenant synchroniser ses maps !",
+        "playlist-created-desc": "La playlist a été créée avec succès. Tu peux maintenant synchroniser ses maps !",
         "download-playlist": "Télécharger la playlist",
         "synchronize-playlist": "Synchroniser la playlist",
         "synchronize-maps": "Synchroniser les maps",
@@ -1219,8 +1219,8 @@
         "playlist-edit-error-title": "Erreur lors de l'édition de la playlist",
         "playlist-edit-error-desc": "Une erreur est survenue lors de l'édition de la playlist.",
         "playlist-edited-title": "Playlist éditée !",
-        "playlist-edited-desc": "La playlist a été modifiée avec succès. Tu peut maintenant synchroniser ses maps !",
-        "playlists-loading": "Chargement des playlist...",
+        "playlist-edited-desc": "La playlist a été modifiée avec succès. Tu peux maintenant synchroniser ses maps !",
+        "playlists-loading": "Chargement des playlists...",
         "no-playlists": "Aucune playlist",
         "download-playlists": "Télécharger des playlists",
         "created-by": "Créée par",
@@ -1229,15 +1229,15 @@
         "open-file": "Ouvrir le fichier",
         "delete-playlist-ask": "Supprimer la playlist ?",
         "delete-playlists-ask": "Supprimer les playlists ?",
-        "delete-playlist-desc": "Es-tu sur de vouloir supprimer la playlist \"{playlistTitle}\" ?",
-        "delete-playlists-desc": "Es-tu sur de vouloir supprimer {nb} playlists ?",
+        "delete-playlist-desc": "Es-tu sûr de vouloir supprimer la playlist \"{playlistTitle}\" ?",
+        "delete-playlists-desc": "Es-tu sûr de vouloir supprimer {nb} playlists ?",
         "delete-maps": "Supprimer les maps",
         "delete-playlist-maps-tip": "Si activé, toutes les maps de la playlist seront supprimées",
         "delete-playlists-maps-tip": "Si activé, toutes les maps des playlists seront supprimées",
         "export-playlist-ask": "Exporter la playlist ?",
         "export-playlists-ask": "Exporter les playlists ?",
-        "export-playlist-desc": "Es-tu sur de vouloir exporter la playlist \"{playlistTitle}\" ?",
-        "export-playlists-desc": "Es-tu sur de vouloir exporter les {nb} playlists ?",
+        "export-playlist-desc": "Es-tu sûr de vouloir exporter la playlist \"{playlistTitle}\" ?",
+        "export-playlists-desc": "Es-tu sûr de vouloir exporter {nb} playlists ?",
         "export-maps": "Exporter les maps",
         "export-playlist-maps-tip": "Si activé, toutes les maps de la playlist seront également exportées",
         "export-playlists-maps-tip": "Si activé, toutes les maps des playlists seront également exportées",
@@ -1249,15 +1249,15 @@
         "understood": "J'ai compris",
         "synchronize-playlist-ask": "Synchroniser la playlist ?",
         "synchronize-playlists-ask": "Synchroniser les playlists ?",
-        "synchronize-playlist-desc": "Es-tu sur de vouloir synchroniser la playlist \"{playlistTitle}\" ?",
-        "synchronize-playlists-desc": "Es-tu sur de vouloir synchroniser les {nb} playlists ?",
+        "synchronize-playlist-desc": "Es-tu sûr de vouloir synchroniser la playlist \"{playlistTitle}\" ?",
+        "synchronize-playlists-desc": "Es-tu sûr de vouloir synchroniser {nb} playlists ?",
         "synchronize-playlist-tip": "Cette action met à jour les playlists et télécharge les maps manquantes; cela peut durer plusieurs minutes.",
         "synchronize": "Synchroniser",
         "curated": "Recommandée",
         "verified-mapper": "Mapper vérifié",
         "empty-playlists": "Playlists vides",
         "search-playlist": "Rechercher une playlist",
-        "no-playlists-found": "Aucune playlists trouvées",
+        "no-playlists-found": "Aucune playlist trouvée",
         "error-occur-while-loading-playlists": "Une erreur est survenue lors du chargement des playlists",
         "error-occur-while-loading-playlist": "Une erreur est survenue lors du chargement de la playlist",
         "loading-maps": "Chargement des maps...",
@@ -1284,7 +1284,7 @@
         "loading": "Chargement...",
         "installed": "Installée",
         "no-map-found": "Aucune map trouvée",
-        "edit-playlist-shortcuts": "Maintenez Maj ou Ctrl pour sélectionner plusieurs maps",
+        "edit-playlist-shortcuts": "Maintiens Maj ou Ctrl pour sélectionner plusieurs maps",
         "add-to-playlist": "Ajouter à la playlist",
         "remove-from-playlist": "Retirer de la playlist",
         "playlist-is-empty": "La playlist est vide",
@@ -1294,7 +1294,7 @@
         "duration": "Durée",
         "nps": "Notes par secondes",
         "date-picker": {
-            "start-date-end-date": "Date début — Date fin",
+            "start-date-end-date": "Date de début — Date de fin",
             "all": "Tout",
             "last-24h": "Dernières 24h",
             "last-week": "Dernière semaine",
@@ -1305,18 +1305,18 @@
         "all-playlists-have-been-successfully-imported": "Toutes les playlists ont été importées avec succès",
         "no-playlist-found": "Aucune playlist trouvée",
         "no-playlist-found-in-selected-files": "Aucune playlist trouvée dans les fichiers sélectionnés",
-        "some-playlists-not-imported": "Certaines playlists non importées",
+        "some-playlists-not-imported": "Certaines playlists n'ont pas été importées",
         "some-playlists-have-been-imported": {
             "INVALID_SOURCE": "Certaines playlists n'ont pas pu être trouvées",
-            "INVALID_PLAYLIST_FILE": "Certaines playlists ne sont pas valides",
-            "CANNOT_PARSE_PLAYLIST": "Certaines playlists ne sont pas lisibles",
+            "INVALID_PLAYLIST_FILE": "Certaines playlists sont invalides",
+            "CANNOT_PARSE_PLAYLIST": "Certaines playlists sont illisibles",
             "unknown": "Certaines playlists n'ont pas pu être importées"
         },
         "no-playlists-imported": "Aucune playlist importée",
         "no-playlists-imported-errors": {
             "INVALID_SOURCE": "Les playlists n'ont pas été trouvées",
-            "INVALID_PLAYLIST_FILE": "Les playlists ne sont pas valides",
-            "CANNOT_PARSE_PLAYLIST": "Les playlists ne sont pas lisibles",
+            "INVALID_PLAYLIST_FILE": "Les playlists sont invalides",
+            "CANNOT_PARSE_PLAYLIST": "Les playlists sont illisibles",
             "unknown": "Aucune playlist n'a pu être importée"
         }
     },
