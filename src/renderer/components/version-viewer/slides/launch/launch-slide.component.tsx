@@ -27,8 +27,27 @@ import { DefaultConfigKey } from "renderer/config/default-configuration.config";
 import { EditIcon } from "renderer/components/svgs/icons/edit-icon.component";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { CreateCustomLaunchOptionModal } from "renderer/components/modal/modal-types/create-custom-launch-option.component";
+import { BsModsManagerService } from "renderer/services/bs-mods-manager.service";
+
 
 type Props = { version: BSVersion };
+
+function useModded({ version }: {
+    version: BSVersion;
+}) {
+    const modsManager = useService(BsModsManagerService);
+    const [isModded, setModded] = useState<boolean>(false);
+
+    useEffect(() => {
+        modsManager.isModded(version)
+            .then(modded => setModded(modded))
+            .catch(() => setModded(false));
+    }, [version]);
+
+    return {
+        isModded,
+    }
+}
 
 export function LaunchSlide({ version }: Props) {
     const { text: t, element: te } = useTranslationV2();
@@ -46,6 +65,8 @@ export function LaunchSlide({ version }: Props) {
     const versionDownloading = useObservable(() => bsDownloader.downloadingVersion$);
     const [activeLaunchMods, setActiveLaunchMods] = useState<string[]>(configService.get("launch-mods") ?? []);
     const [pinnedLaunchMods, setPinnedLaunchMods] = useState<string[]>(configService.get("pinned-launch-mods" as DefaultConfigKey) ?? []);
+
+    const { isModded } = useModded({ version });
 
     const versionRunning = useObservable(() => bsLauncherService.versionRunning$);
 
@@ -169,9 +190,22 @@ export function LaunchSlide({ version }: Props) {
                 onChange: (checked) => toggleActiveLaunchMod(checked, LaunchMods.PROTON_LOGS),
                 onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.PROTON_LOGS),
             },
+            {
+                id: LaunchMods.BSM_HOOK,
+                label: t("pages.version-viewer.launch-mods.bsm-hook"),
+                description: t("pages.version-viewer.launch-mods.bsm-hook-description"),
+                active: activeLaunchMods.includes(LaunchMods.BSM_HOOK),
+                pinned: pinnedLaunchMods.includes(LaunchMods.BSM_HOOK),
+                visible: isModded,
+                onChange: (checked) => toggleActiveLaunchMod(checked, LaunchMods.BSM_HOOK),
+                onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.BSM_HOOK),
+            },
             ...customOptions,
         ]
-    }, [activeLaunchMods, pinnedLaunchMods, customLaunchOptions, version]);
+    }, [
+        activeLaunchMods, pinnedLaunchMods, customLaunchOptions,
+        version, isModded,
+    ]);
 
     const launch = async () => {
         const launch$ = bsLauncherService.launch({

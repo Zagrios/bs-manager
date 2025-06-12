@@ -6,12 +6,15 @@ import { SteamService } from "../steam.service";
 import path from "path";
 import { BS_APP_ID, BS_EXECUTABLE, STEAMVR_APP_ID } from "../../constants";
 import log from "electron-log";
-import { AbstractLauncherService, buildBsLaunchArgs, SpawnBsProcessOptions } from "./abstract-launcher.service";
+import { AbstractLauncherService, buildBsLaunchArgs } from "./abstract-launcher.service";
 import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
 import { UtilsService } from "../utils.service";
-import { exec, ChildProcessWithoutNullStreams } from "child_process";
+import { exec } from "child_process";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { app, Event } from "electron";
+import { sToMs } from "shared/helpers/time.helpers";
+import fs from 'fs/promises';
+import { BSMHookService } from "./bsm-hook.service";
 
 export class SteamLauncherService extends AbstractLauncherService implements StoreLauncherInterface{
 
@@ -26,11 +29,13 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
 
     private readonly steam: SteamService;
     private readonly util: UtilsService;
+    private readonly bsmhook: BSMHookService;
 
     private constructor(){
         super();
         this.steam = SteamService.getInstance();
         this.util = UtilsService.getInstance();
+        this.bsmhook = BSMHookService.getInstance();
     }
 
     private getSteamVRPath(): Promise<string> {
@@ -62,48 +67,6 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         return rename(steamVrBackup, steamVrFolder).catch(err => {
             log.error("Error while restoring SteamVR", err);
         });
-    }
-
-    protected launchBs(bsExePath: string, args: string[], options?: SpawnBsProcessOptions): {process: ChildProcessWithoutNullStreams, exit: Promise<number>} {
-        const process = this.launchBSProcess(bsExePath, args, options);
-
-        const exit = new Promise<number>((resolve, reject) => {
-            // Don't remove, useful for debugging!
-            // process.stdout.on("data", (data) => {
-            //    log.info(`BS stdout: ${data}`);
-            // });
-            // process.stderr.on("data", (data) => {
-            //    log.error(`BS stderr: ${data}`);
-            // });
-
-            const onWillQuitHandler = async (event: Event) => {
-                app.removeListener('will-quit', onWillQuitHandler);
-                if (!process.killed) {
-                    event.preventDefault();
-                    log.info(`Unref'ing BS process ${process.pid} on app will-quit`);
-                    process.unref();
-                    await this.restoreSteamVR().catch(log.error);
-                    resolve(-1);
-                    app.quit();
-                }
-            };
-
-            process.on("error", (err) => {
-                log.error(`Error while launching BS`, err);
-                reject(err);
-                app.removeListener('will-quit', onWillQuitHandler);
-            });
-
-            process.on("exit", (code) => {
-                log.info(`BS process exit with code ${code}`);
-                resolve(code);
-                app.removeListener('will-quit', onWillQuitHandler);
-            });
-
-            app.on('will-quit', onWillQuitHandler);
-        });
-
-        return { process, exit };
     }
 
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
@@ -144,6 +107,36 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 await this.restoreSteamVR().catch(log.error);
             }
 
+            if (launchOptions.launchMods?.includes(LaunchMods.BSM_HOOK) && !(await pathExists(path.join(bsFolderPath, 'Plugins', 'BSMHook.dll')))) {
+                const DLL_URL = 'https://arimodu.dev/BSMHook.dll';
+
+                try {
+                    const response = await fetch(DLL_URL);
+                    if (!response.ok) {
+                        throw new Error(`Failed to download BSMHook.dll: ${response.statusText}`);
+                    }
+
+                    const dllPath = path.join(bsFolderPath, 'Plugins', 'BSMHook.dll');
+                    const buffer = await response.arrayBuffer();
+                    await fs.writeFile(dllPath, Buffer.from(buffer));
+
+                    log.info('BSMHook.dll downloaded successfully');
+                } catch (error) {
+                    log.error('Failed to download BSMHook.dll:', error);
+                }
+            }
+
+            if (!launchOptions.launchMods?.includes(LaunchMods.BSM_HOOK) && await pathExists(path.join(bsFolderPath, 'Plugins', 'BSMHook.dll'))) {
+                try {
+                    const dllPath = path.join(bsFolderPath, 'Plugins', 'BSMHook.dll');
+                    await fs.unlink(dllPath);
+
+                    log.info('BSMHook.dll deleted successfully');
+                } catch (error) {
+                    log.error('Failed to delete BSMHook.dll:', error);
+                }
+            }
+
             const steamPath = await this.steam.getSteamPath();
 
             const env = {
@@ -171,10 +164,60 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
             const spawnOpts = { env, cwd: bsFolderPath };
 
             const launchPromise = !launchOptions.admin ? (
-                this.launchBs(bsExePath, launchArgs, {
-                    ...spawnOpts,
-                    protonPrefix
-                }).exit
+                new Promise<number>(async (resolve, reject) => {
+                    const process = this.launchBSProcess(bsExePath, launchArgs, { ...spawnOpts, protonPrefix });
+
+                    const unrefAndResolve = (code: number) => {
+                        app.removeListener('will-quit', onWillQuitHandler);
+                        resolve(code);
+                    }
+
+                    if (await pathExists(path.join(bsFolderPath, 'Plugins', 'BSMHook.dll'))) {
+                        log.info('BSMHook.dll installed, waiting for game reports...');
+                        this.bsmhook.start((d) => {
+                            if (d.includes('MainMenu')) {
+                                this.bsmhook.close();
+                                unrefAndResolve(-1);
+                            }
+                        }, (err) => {
+                            this.bsmhook.close();
+                            log.warn(`Failed while running BSMHook: ${err.message}`);
+                            setTimeout(() => {
+                                log.info("Resolved promise after timeout (BSMHook fail)");
+                                unrefAndResolve(-1);
+                            }, sToMs(10));
+                        });
+                    }
+                    else {
+                        setTimeout(() => {
+                            log.info("Resolved promise after timeout (10s)");
+                            unrefAndResolve(-1); // Put this in a timeout for visual effect (game window may take a bit to open, lets trick users into thinking stuffs happening...)
+                        }, sToMs(10));
+                    }
+
+                    const onWillQuitHandler = async (event: Event) => {
+                        app.removeListener('will-quit', onWillQuitHandler);
+                        if (!process.killed) {
+                            event.preventDefault();
+                            log.info(`Unref'ing BS process ${process.pid} on app will-quit`);
+                            unrefAndResolve(-1);
+                            app.quit();
+                        }
+                    };
+
+                    process.on("error", async (err) => {
+                        log.error(`Error while launching BS`, err);
+                        reject(err);
+                        app.removeListener('will-quit', onWillQuitHandler);
+                    });
+
+                    process.on("exit", async (code) => {
+                        log.info(`BS process exit with code ${code}`);
+                        unrefAndResolve(code);
+                    });
+
+                    app.on('will-quit', onWillQuitHandler);
+                })
             ) : (
                 new Promise<number>(resolve => {
                     const adminProcess = exec(`"${this.getStartBsAsAdminExePath()}" "${bsExePath}" ${launchArgs.join(" ")} --log-path "${path.join(app.getPath("logs"), "bs-admin-start.log")}"`, spawnOpts);
