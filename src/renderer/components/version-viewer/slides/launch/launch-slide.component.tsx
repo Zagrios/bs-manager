@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
@@ -49,17 +49,21 @@ function useLaunchMods() {
         }
     }, [activeLaunchMods]);
 
+    const toggleActiveLaunchMod = useCallback((checked: boolean, launchMod: string) => checked
+        ? setActiveLaunchMods(prev => [...prev, launchMod])
+        : setActiveLaunchMods(prev => prev.filter(mod => mod !== launchMod)),
+    []);
+
+    const togglePinnedLaunchMod = useCallback((pinned: boolean, launchMod: string) => pinned
+        ? setPinnedLaunchMods(prev => [...prev, launchMod])
+        : setPinnedLaunchMods(prev => prev.filter(mod => mod !== launchMod)),
+    []);
+
     return {
         activeLaunchMods,
         pinnedLaunchMods,
-
-        toggleActiveLaunchMod: (checked: boolean, launchMod: string) => checked
-            ? setActiveLaunchMods(prev => [...prev, launchMod])
-            : setActiveLaunchMods(prev => prev.filter(mod => mod !== launchMod)),
-
-        togglePinnedLaunchMod: (pinned: boolean, launchMod: string) => pinned
-            ? setPinnedLaunchMods(prev => [...prev, launchMod])
-            : setPinnedLaunchMods(prev => prev.filter(mod => mod !== launchMod)),
+        toggleActiveLaunchMod,
+        togglePinnedLaunchMod,
     }
 }
 
@@ -77,62 +81,62 @@ function useCustomLaunchMods({
     const configService = useService(ConfigurationService);
     const modalService = useService(ModalService);
 
-    const customLaunchOptions = useObservable<CustomLaunchOption[]>(
-        () => configService.watch<CustomLaunchOption[]>("custom-launch-options"),
-        []
-    );
+    const customLaunchOptions = useObservable<CustomLaunchOption[]>(() => (
+        configService.watch<CustomLaunchOption[]>("custom-launch-options")
+    ), []);
+
     const [customLaunchModsArgs, setCustomLaunchModsArgs] = useState<string[]>([]);
 
     useEffect(() => {
         const command = customLaunchOptions
             ?.map(option => option.data.command || "")
             .filter(Boolean);
-        setCustomLaunchModsArgs(command ?? []);
+        setCustomLaunchModsArgs(() => command ?? []);
     }, [customLaunchOptions]);
 
-    function deleteCustomLaunchOption(id: string) {
+    const deleteCustomLaunchOption = useCallback((id: string) => {
         const newCustomLaunchOptions = (customLaunchOptions ?? []).filter(mode => mode.id !== id);
         configService.set("custom-launch-options", newCustomLaunchOptions);
-    }
+    }, [customLaunchOptions]);
 
+    const saveCustomLaunchOption = useCallback(async (option: Partial<CustomLaunchOption>) => {
+        const result = await modalService.openModal(CreateCustomLaunchOptionModal, { data: option });
+        if(result.exitCode !== ModalExitCode.COMPLETED) { return; }
+        const newCustomLaunchOptions = (customLaunchOptions ?? []).filter(mode => mode.id !== result.data.id);
+        newCustomLaunchOptions.push(result.data);
+        configService.set("custom-launch-options", newCustomLaunchOptions);
+    }, [customLaunchOptions]);
+
+    const getCustomLaunch = useCallback(() => {
+        return customLaunchOptions?.map<LaunchModItemProps>(option => ({
+            id: option.id,
+            label: option.label,
+            active: activeLaunchMods.includes(option.id),
+            pinned: pinnedLaunchMods.includes(option.id),
+            onChange: (checked) => {
+                toggleActiveLaunchMod(checked, option.id)
+                setCustomLaunchModsArgs(prev => {
+                    if(checked){
+                        return [...prev, option.data.command];
+                    }
+                    return prev.filter(arg => arg !== option.data.command);
+                });
+            },
+            onPinChange: (pinned) => togglePinnedLaunchMod(pinned, option.id),
+            onEdit: () => {
+                saveCustomLaunchOption(option);
+            },
+            onDelete: () => {
+                deleteCustomLaunchOption(option.id);
+            },
+        })) ?? [];
+    }, [customLaunchOptions, activeLaunchMods, pinnedLaunchMods])
 
     return {
         customLaunchOptions,
         customLaunchModsArgs,
-
-        getCustomLaunch() {
-            return customLaunchOptions?.map<LaunchModItemProps>(option => ({
-                id: option.id,
-                label: option.label,
-                active: activeLaunchMods.includes(option.id),
-                pinned: pinnedLaunchMods.includes(option.id),
-                onChange: (checked) => {
-                    toggleActiveLaunchMod(checked, option.id)
-                    setCustomLaunchModsArgs(prev => {
-                        if(checked){
-                            return [...prev, option.data.command];
-                        }
-                        return prev.filter(arg => arg !== option.data.command);
-                    });
-                },
-                onPinChange: (pinned) => togglePinnedLaunchMod(pinned, option.id),
-                onEdit: () => {
-                    this.saveCustomLaunchOption(option);
-                },
-                onDelete: () => {
-                    deleteCustomLaunchOption(option.id);
-                },
-            })) ?? [];
-        },
-
-        saveCustomLaunchOption: async (option: Partial<CustomLaunchOption>) => {
-            const result = await modalService.openModal(CreateCustomLaunchOptionModal, { data: option });
-            if(result.exitCode !== ModalExitCode.COMPLETED) { return; }
-            const newCustomLaunchOptions = (customLaunchOptions ?? []).filter(mode => mode.id !== result.data.id);
-            newCustomLaunchOptions.push(result.data);
-            configService.set("custom-launch-options", newCustomLaunchOptions);
-        },
-
+        getCustomLaunch,
+        saveCustomLaunchOption
     };
 }
 
