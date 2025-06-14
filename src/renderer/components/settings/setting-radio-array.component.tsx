@@ -32,7 +32,7 @@ export function SettingRadioArray<T>({ id, items, selectedItemId, selectedItemVa
                     {i.icon && (
                         <div className="flex items-center text-right">
                             {i.textIcon && <span className="text-sm">{t(i.textIcon)}</span>}
-                            <span>{i.icon}</span>
+                            {i.icon}
                         </div>
                     )}
                 </div>
