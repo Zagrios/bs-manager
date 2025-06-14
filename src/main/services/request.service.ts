@@ -14,39 +14,59 @@ import { app } from 'electron';
 
 export class RequestService {
     private static instance: RequestService;
-    private preferredFamily: number | undefined = undefined;
     private readonly baseHeaders = {
         'User-Agent': `BSManager/${app.getVersion()} (Electron/${process.versions.electron} Chrome/${process.versions.chrome} Node/${process.versions.node})`,
     }
 
+    private readonly PREFERRED_FAMILY_TESTS = [6, 4];
+    private preferredFamilyCache: Record<string, number> = {};
 
     public static getInstance(): RequestService {
         if (!RequestService.instance) {
             RequestService.instance = new RequestService();
         }
         return RequestService.instance;
-
     }
 
     private constructor() {}
 
     public async getJSON<T = unknown>(url: string): Promise<{ data: T; headers: IncomingHttpHeaders }> {
-        const familiesToTry = this.preferredFamily ? [this.preferredFamily, this.preferredFamily === 4 ? 6 : 4] : [4, 6];
-
-        for (const family of familiesToTry) {
+        const domain = (new URL(url)).hostname;
+        const cachedFamily = this.preferredFamilyCache[domain];
+        if (cachedFamily) {
             try {
-                // @ts-ignore (ESM is not well supported in this project, We need to move out electron-react-boilerplate, and use Vite)
-                const res = await got(url, { dnsLookupIpVersion: family, responseType: 'json', headers: this.baseHeaders });
-                this.preferredFamily = family;
-                return { data: res.body as T, headers: res.headers };
+                return await this.requestData<T>(url, cachedFamily);
+            } catch (error: any) {
+                throw new Error(`Request failed: ${url}`, error);
+            }
+        }
+
+        // Try on each IPv4/6 families on first request to a domain/website
+        for (const family of this.PREFERRED_FAMILY_TESTS) {
+            try {
+                const response = await this.requestData<T>(url, family);
+                log.info(`Caching "${domain}" with IPv${family}`);
+                this.preferredFamilyCache[domain] = family;
+                return response;
             } catch (err) {
                 log.warn(`IPv${family} request failed, trying next one... URL: ${url}`, err);
             }
         }
 
-        log.error(`IPv4 and IPv6 requests failed for URL: ${url}`);
-        this.preferredFamily = undefined;
         throw new Error(`IPv4 and IPv6 requests failed for URL: ${url}`);
+    }
+
+    private async requestData<T>(url: string, family: number): Promise<{ data: T; headers: IncomingHttpHeaders }> {
+        const response = await got(url, {
+            // @ts-ignore (ESM is not well supported in this project, We need to move out electron-react-boilerplate, and use Vite)
+            dnsLookupIpVersion: family,
+            responseType: "json",
+            headers: this.baseHeaders
+        });
+        return {
+            data: response.body as T,
+            headers: response.headers
+        };
     }
 
     public downloadFile(
@@ -56,10 +76,14 @@ export class RequestService {
     ): Observable<Progression<string>> {
         return new Observable<Progression<string>>((subscriber) => {
             const progress: Progression<string> = { current: 0, total: 0 };
-            const familiesToTry = this.preferredFamily ? [this.preferredFamily, this.preferredFamily === 4 ? 6 : 4] : [4, 6];
 
             let attempt = 0;
             let stream: got.GotEmitter & internal.Duplex;
+
+            const domain = (new URL(url)).hostname;
+            const cachedFamily = this.preferredFamilyCache[domain];
+            const familiesToTry = cachedFamily
+                ? [ cachedFamily ] : this.PREFERRED_FAMILY_TESTS;
 
             const tryNextFamily = () => {
                 if (attempt >= familiesToTry.length) {
@@ -74,7 +98,9 @@ export class RequestService {
                 stream = got.stream(url, { dnsLookupIpVersion: family, headers: this.baseHeaders });
 
                 stream.on('response', (response) => {
-                    this.preferredFamily = family;
+                    if (!cachedFamily) {
+                        this.preferredFamilyCache[domain] = family;
+                    }
 
                     const filename = opt?.preferContentDisposition ? this.getFilenameFromContentDisposition(response.headers['content-disposition']) : null;
 
@@ -135,10 +161,14 @@ export class RequestService {
             };
 
             const headers = { ...this.baseHeaders, ...(options?.headers ?? {}) };
-            const familiesToTry = this.preferredFamily ? [this.preferredFamily, this.preferredFamily === 4 ? 6 : 4] : [4, 6];
 
             let attempt = 0;
             let stream: got.GotEmitter & internal.Duplex;
+
+            const domain = (new URL(url)).hostname;
+            const cachedFamily = this.preferredFamilyCache[domain];
+            const familiesToTry = cachedFamily
+                ? [ cachedFamily ] : this.PREFERRED_FAMILY_TESTS;
 
             const tryNextFamily = () => {
                 if (attempt >= familiesToTry.length) {
@@ -154,7 +184,9 @@ export class RequestService {
                 let response: IncomingMessage;
 
                 stream.once('response', (res) => {
-                    this.preferredFamily = family;
+                    if (!cachedFamily) {
+                        this.preferredFamilyCache[domain] = family;
+                    }
                     response = res;
                 });
 
