@@ -18,7 +18,7 @@ export class RequestService {
         'User-Agent': `BSManager/${app.getVersion()} (Electron/${process.versions.electron} Chrome/${process.versions.chrome} Node/${process.versions.node})`,
     }
 
-    private readonly PREFERRED_FAMILY_TESTS = [6, 4];
+    private readonly PREFERRED_FAMILY_TESTS = [4, 6];
     private preferredFamilyCache: Record<string, number> = {};
 
     public static getInstance(): RequestService {
@@ -99,6 +99,7 @@ export class RequestService {
 
                 stream.on('response', (response) => {
                     if (!cachedFamily) {
+                        log.info(`Caching "${domain}" with IPv${family}`);
                         this.preferredFamilyCache[domain] = family;
                     }
 
@@ -185,6 +186,7 @@ export class RequestService {
 
                 stream.once('response', (res) => {
                     if (!cachedFamily) {
+                        log.info(`Caching "${domain}" with IPv${family}`);
                         this.preferredFamilyCache[domain] = family;
                     }
                     response = res;
