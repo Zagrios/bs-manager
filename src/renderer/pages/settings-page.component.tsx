@@ -202,11 +202,18 @@ export function SettingsPage() {
             const fileChooserRes = await lastValueFrom(ipcService.sendV2("choose-folder"));
 
             if (!fileChooserRes.canceled && fileChooserRes.filePaths?.length) {
+
+                const newInstallationPath = fileChooserRes.filePaths[0];
+
+                if(newInstallationPath === installationFolder){
+                    return;
+                }
+
                 progressBarService.showFake(0.008);
 
                 notificationService.notifySuccess({ title: "notifications.settings.move-folder.success.titles.transfer-started", desc: "notifications.settings.move-folder.success.descs.transfer-started" });
 
-                lastValueFrom(installationLocationService.setInstallationFolder(fileChooserRes.filePaths[0], true)).then(res => {
+                lastValueFrom(installationLocationService.setInstallationFolder(newInstallationPath, true)).then(res => {
 
                     progressBarService.complete();
                     progressBarService.hide();
