@@ -425,9 +425,9 @@
             "oculus-download": {
                 "errors": {
                     "msg": {
-                        "DOWNLOAD_MANIFEST_FAILED": "Impossible de télécharger le manifest de cette version. Votre token de connexion est peut-être invalide, ou vous ne possédez pas la version PC de Beat Saber.",
+                        "DOWNLOAD_MANIFEST_FAILED": "Impossible de télécharger le manifeste de cette version. Votre token de connexion est peut-être invalide, ou vous ne possédez pas la version PC de Beat Saber.",
                         "MANIFEST_FILE_NOT_FOUND": "Impossible de trouver le manifeste de cette version.",
-                        "PARSE_MANIFEST_FILE_FAILED": "Une erreur s'est produite lors de la lecture du manifest.",
+                        "PARSE_MANIFEST_FILE_FAILED": "Une erreur s'est produite lors de la lecture du manifeste.",
                         "ALREADY_DOWNLOADING": "Une version est déjà en cours de téléchargement.",
                         "UNABLE_TO_GET_MANIFEST": "Impossible d'obtenir le manifeste nécessaire au téléchargement. Votre token de connexion est peut-être invalide, ou vous ne possédez pas la version PC de Beat Saber.",
                         "VERIFY_INTEGRITY_FAILED": "Une erreur s'est produite lors de la vérification des fichiers.",
@@ -578,7 +578,7 @@
                     "UnknownError": "Une erreur inconnue s'est produite"
                 },
                 "msg": {
-                    "CantEditSteam": "Tu ne peux pas modifier la version Steam, cependant tu peux la cloner."
+                    "CantEditSteam": "Vous ne pouvez pas modifier la version Steam, vous pouvez cependant la cloner."
                 }
             },
             "success": {
@@ -797,7 +797,7 @@
         },
         "bs-uninstall": {
             "title": "Désinstaller",
-            "description": "Es-tu sûr de vouloir désinstaller Beat Saber {version} ? Tu vas devoir la retélécharger pour y jouer.",
+            "description": "Êtes-vous sûr de vouloir désinstaller Beat Saber {version} ? Vous allez devoir la retélécharger pour y jouer.",
             "buttons": {
                 "submit": "Désinstaller"
             }
@@ -833,12 +833,12 @@
         },
         "uninstall-mod": {
             "title": "Désinstaller",
-            "description": "Es-tu sûr de vouloir désinstaller {mod} ? Cela pourrait faire dysfonctionner d'autres mods installés.",
-            "description-bsipa": "Es-tu sûr de vouloir désinstaller BSIPA ? Après cela, tous les mods installés ne fonctionneront plus."
+            "description": "Êtes-vous sûr de vouloir désinstaller {mod} ? Cela pourrait faire dysfonctionner d'autres mods installés.",
+            "description-bsipa": "Êtes-vous sûr de vouloir désinstaller BSIPA ? Après cela, tous les mods installés ne fonctionneront plus."
         },
         "uninstall-all-mods": {
             "title": "Désinstaller les mods",
-            "description": "Es-tu sûr de vouloir désinstaller tous les mods de la version {version} ? Cette opération ne pourra pas être annulée."
+            "description": "Êtes-vous sûr de vouloir désinstaller tous les mods de la version {version} ? Cette opération ne pourra pas être annulée."
         },
         "maps-actions": {
             "delete-maps": {
@@ -847,8 +847,8 @@
                     "multiple": "Supprimer les maps ?"
                 },
                 "desc": {
-                    "single": "Es-tu sûr de vouloir supprimer la map {name} ?",
-                    "multiple": "Es-tu sûr de vouloir supprimer {nb} maps ?"
+                    "single": "Êtes-vous sûr de vouloir supprimer la map {name} ?",
+                    "multiple": "Êtes-vous sûr de vouloir supprimer {nb} maps ?"
                 },
                 "info": {
                     "desc": {
@@ -863,8 +863,8 @@
             },
             "delete-duplicate-maps": {
                 "title": "Supprimer les maps ?",
-                "desc": "Seule la map \"{map}\" est en double. Es-tu sûr de vouloir la supprimer ?",
-                "desc-plural": "{nb} maps en double ont été trouvées. Es-tu sûr de vouloir les supprimer ?"
+                "desc": "Seule la map \"{map}\" est un doublon. Êtes-vous sûr de vouloir la supprimer ?",
+                "desc-plural": "{nb} maps en double ont été trouvées. Êtes-vous sûr de vouloir les supprimer ?"
             }
         },
         "link-contents": {
@@ -1003,7 +1003,7 @@
             "specificities": "général",
             "requirements": "requis",
             "exclude": "exclure",
-            "leaderboard": "statut classé"
+            "leaderboard": "classement"
         },
         "map-types": {
             "accuracy": "précision",
@@ -1125,12 +1125,12 @@
         "modals": {
             "delete-model": {
                 "title": "Supprimer le modèle",
-                "desc": "Es-tu sûr de vouloir supprimer le modèle {modelName} ?",
+                "desc": "Êtes-vous sûr de vouloir supprimer le modèle {modelName} ?",
                 "linked-annotation": "Ce modèle sera supprimé de toutes les versions liées."
             },
             "delete-models": {
                 "title": "Supprimer les modèles",
-                "desc": "Es-tu sûr de vouloir supprimer {nb} modèles ?",
+                "desc": "Êtes-vous sûr de vouloir supprimer {nb} modèles ?",
                 "linked-annotation": "Ces modèles seront supprimés de toutes les versions liées."
             },
             "download-models": {
@@ -1146,11 +1146,11 @@
                     "tag-desc": "Afficher seulement les modèles avec le tag spécifié.",
                     "name-desc": "Afficher seulement les modèles avec le nom spécifié.",
                     "discordid-desc": "Afficher seulement les modèles de l'utilisateur discord spécifié.",
-                    "status-desc": "Afficher seulement les modèles avec le status spécifié. (profil seulement, et seulement pour l'auteur)"
+                    "status-desc": "Afficher seulement les modèles avec le statut spécifié. (profil seulement, et seulement pour l'auteur)"
                 },
                 "no-models": "Aucun modèle trouvé.",
                 "no-internet": "Pas de connexion internet.",
-                "error-occured": "Une erreur est survenue, réessaye plus tard."
+                "error-occured": "Une erreur est survenue, réessayez plus tard."
             }
         },
         "notifications": {
@@ -1198,7 +1198,7 @@
         "error-playlist-creation-title": "Erreur lors de la création de la playlist",
         "error-playlist-creation-desc": "Une erreur est survenue lors de la création de la playlist.",
         "playlist-created-title": "Playlist créée",
-        "playlist-created-desc": "La playlist a été créée avec succès. Tu peux maintenant synchroniser ses maps !",
+        "playlist-created-desc": "La playlist a été créée avec succès. Vous pouvez maintenant synchroniser ses maps !",
         "download-playlist": "Télécharger la playlist",
         "synchronize-playlist": "Synchroniser la playlist",
         "synchronize-maps": "Synchroniser les maps",
@@ -1219,7 +1219,7 @@
         "playlist-edit-error-title": "Erreur lors de l'édition de la playlist",
         "playlist-edit-error-desc": "Une erreur est survenue lors de l'édition de la playlist.",
         "playlist-edited-title": "Playlist éditée !",
-        "playlist-edited-desc": "La playlist a été modifiée avec succès. Tu peux maintenant synchroniser ses maps !",
+        "playlist-edited-desc": "La playlist a été modifiée avec succès. Vous pouvez maintenant synchroniser ses maps !",
         "playlists-loading": "Chargement des playlists...",
         "no-playlists": "Aucune playlist",
         "download-playlists": "Télécharger des playlists",
@@ -1229,15 +1229,15 @@
         "open-file": "Ouvrir le fichier",
         "delete-playlist-ask": "Supprimer la playlist ?",
         "delete-playlists-ask": "Supprimer les playlists ?",
-        "delete-playlist-desc": "Es-tu sûr de vouloir supprimer la playlist \"{playlistTitle}\" ?",
-        "delete-playlists-desc": "Es-tu sûr de vouloir supprimer {nb} playlists ?",
+        "delete-playlist-desc": "Êtes-vous sûr de vouloir supprimer la playlist \"{playlistTitle}\" ?",
+        "delete-playlists-desc": "Êtes-vous sûr de vouloir supprimer {nb} playlists ?",
         "delete-maps": "Supprimer les maps",
         "delete-playlist-maps-tip": "Si activé, toutes les maps de la playlist seront supprimées",
         "delete-playlists-maps-tip": "Si activé, toutes les maps des playlists seront supprimées",
         "export-playlist-ask": "Exporter la playlist ?",
         "export-playlists-ask": "Exporter les playlists ?",
-        "export-playlist-desc": "Es-tu sûr de vouloir exporter la playlist \"{playlistTitle}\" ?",
-        "export-playlists-desc": "Es-tu sûr de vouloir exporter {nb} playlists ?",
+        "export-playlist-desc": "Êtes-vous sûr de vouloir exporter la playlist \"{playlistTitle}\" ?",
+        "export-playlists-desc": "Êtes-vous sûr de vouloir exporter {nb} playlists ?",
         "export-maps": "Exporter les maps",
         "export-playlist-maps-tip": "Si activé, toutes les maps de la playlist seront également exportées",
         "export-playlists-maps-tip": "Si activé, toutes les maps des playlists seront également exportées",
@@ -1249,8 +1249,8 @@
         "understood": "J'ai compris",
         "synchronize-playlist-ask": "Synchroniser la playlist ?",
         "synchronize-playlists-ask": "Synchroniser les playlists ?",
-        "synchronize-playlist-desc": "Es-tu sûr de vouloir synchroniser la playlist \"{playlistTitle}\" ?",
-        "synchronize-playlists-desc": "Es-tu sûr de vouloir synchroniser {nb} playlists ?",
+        "synchronize-playlist-desc": "Êtes-vous sûr de vouloir synchroniser la playlist \"{playlistTitle}\" ?",
+        "synchronize-playlists-desc": "Êtes-vous sûr de vouloir synchroniser {nb} playlists ?",
         "synchronize-playlist-tip": "Cette action met à jour les playlists et télécharge les maps manquantes; cela peut durer plusieurs minutes.",
         "synchronize": "Synchroniser",
         "curated": "Recommandée",
