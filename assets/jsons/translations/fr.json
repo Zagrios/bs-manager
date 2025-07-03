@@ -56,7 +56,7 @@
                 "oculus": "Mode Oculus",
                 "oculus-description": "Si vous utilisez Beat Saber via Steam, cela permet d'utiliser l'environnement Oculus sans passer par SteamVR, pour un gain en performances potentiel. Ceci n'est pas obligatoire pour utiliser les casques Oculus.",
                 "desktop": "Mode FPFC",
-                "desktop-description": "Ce mode vous permet d'utiliser votre PC (WASD et la souris) pour vous déplacer dans le jeu. Cela rend les tests beaucoup plus faciles, car vous n'avez pas à mettre de casque VR!",
+                "desktop-description": "Ce mode vous permet d'utiliser votre clavier (WASD) et votre souris pour naviguer en jeu. Cela rend les tests beaucoup plus faciles, car vous n'avez pas à mettre de casque VR !",
                 "debug": "Mode Debug",
                 "debug-description": "Active la fenêtre de log pour IPA. Cela affichera la console de débogage utilisée par les mods.",
                 "outdated-tippy": "Cette version est obsolète et certains mods ou fonctionnalités peuvent ne plus fonctionner comme prévu. Préférez utiliser la version recommandée ({recommendedVersion}) de Beat Saber pour profiter des dernières fonctionnalités et correctifs.",
@@ -169,7 +169,7 @@
                 "notifications": {
                     "all-mods-already-installed": {
                         "title": "Mods déjà installés",
-                        "description": "Tous les mods séléctionnés sont déjà installés"
+                        "description": "Tous les mods sélectionnés sont déjà installés"
                     },
                     "outdated-mods": {
                         "title": "Mod obsolète",
@@ -312,7 +312,7 @@
                 "description": "Paramètres avancés pour BSManager.",
                 "hardware-acceleration": {
                     "title": "Accélération matérielle",
-                    "description": "Activez l'accélération matérielle pour utiliser votre carte graphique et améliorer les performances de BSManager. Désactivez cette option si vous rencontrez des problèmes de performance dans d'autres applications.",
+                    "description": "Activez l'accélération matérielle pour utiliser votre carte graphique et améliorer les performances de BSManager. Désactivez cette option si vous rencontrez des problèmes de performance.",
                     "modal": {
                         "title": "Redémarrage nécessaire",
                         "body": "Changer le paramètre d'accélération matérielle va quitter et relancer BSManager. Êtes-vous sûr de vouloir continuer ?",
@@ -397,7 +397,7 @@
                     "msg": {
                         "401": "Steam ne semble pas vouloir nous laisser télécharger Beat Saber 😢",
                         "404": "Impossible de contacter les serveurs de Steam.",
-                        "ExeNotFoundWindows": "\"DepotDownloader.exe\" est manquant. Vérifiez si votre antivirus n'a pas mis en quarantaine le fichier.",
+                        "ExeNotFoundWindows": "\"DepotDownloader.exe\" est manquant. Vérifiez que votre antivirus n'a pas mis le fichier en quarantaine.",
                         "ExeNotFoundLinux": "L'exécutable \"DepotDownloader\" est manquant.",
                         "Password": "Le mot de passe est invalide.",
                         "InvalidCredentials": "Identifiants de connexion invalides, connexion non approuvée, ou trop de tentatives de connexion.",
@@ -524,7 +524,7 @@
                 "titles": {
                     "BS_LAUNCHING": "Lancement...🚀",
                     "STEAM_LAUNCHING": "Steam se lance !",
-                    "SKIPPING_STEAM_LAUNCH": "Ignorer le lancement de Steam"
+                    "SKIPPING_STEAM_LAUNCH": "Contourner le lancement de Steam"
                 },
                 "msg": {
                     "BS_LAUNCHING": "N'oublie pas de t'échauffer 😉",
@@ -951,7 +951,7 @@
                 "token-is-invalid": "Le Token est invalide.",
                 "save-my-token": "Sauvegarder mon token",
                 "have-token-saved": "J'ai déjà un token sauvegardé",
-                "save-token-info": "Ceci enregistrera votre token pour le réutiliser plus facilement. Vous devrez créer un mot de passe pour crypter votre token à des fins de stockage. Si jamais vous oubliez votre mot de passe, il vous suffira de fournir à nouveau votre token.",
+                "save-token-info": "Ceci enregistrera votre token pour le réutiliser plus facilement. Vous devrez créer un mot de passe pour chiffrer votre token à des fins de stockage. Si jamais vous oubliez votre mot de passe, il vous suffira de fournir à nouveau votre token.",
                 "password": "Mot de passe",
                 "password-too-short": "Mot de passe trop court",
                 "info-enter-password": "Pour télécharger Beat Saber, votre token de connexion à Oculus est nécessaire. Entrez le mot de passe utilisé pour sauvegarder votre token Oculus.",
@@ -1003,7 +1003,7 @@
             "specificities": "général",
             "requirements": "requis",
             "exclude": "exclure",
-            "leaderboard": "status classé"
+            "leaderboard": "statut classé"
         },
         "map-types": {
             "accuracy": "précision",
@@ -1284,7 +1284,7 @@
         "loading": "Chargement...",
         "installed": "Installée",
         "no-map-found": "Aucune map trouvée",
-        "edit-playlist-shortcuts": "Maintiens Maj ou Ctrl pour sélectionner plusieurs maps",
+        "edit-playlist-shortcuts": "Maintenir Maj ou Ctrl pour sélectionner plusieurs maps",
         "add-to-playlist": "Ajouter à la playlist",
         "remove-from-playlist": "Retirer de la playlist",
         "playlist-is-empty": "La playlist est vide",
