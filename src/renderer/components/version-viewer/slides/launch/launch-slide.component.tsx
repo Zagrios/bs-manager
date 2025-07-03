@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
@@ -30,28 +30,12 @@ import { CreateCustomLaunchOptionModal } from "renderer/components/modal/modal-t
 
 type Props = { version: BSVersion };
 
-export function LaunchSlide({ version }: Props) {
-    const { text: t, element: te } = useTranslationV2();
-
-    const configService = useService(ConfigurationService);
+function useLaunchMods() {
     const bsLauncherService = useService(BSLauncherService);
-    const bsDownloader = useService(BsDownloaderService);
-    const versions = useService(BSVersionManagerService);
-    const modal = useService(ModalService);
+    const configService = useService(ConfigurationService);
 
-    const [advancedLaunch, setAdvancedLaunch] = useState(false);
-    const [command, setCommand] = useState<string>(configService.get<string>("launch-command") || "");
-    const customLaunchOptions = useObservable<CustomLaunchOption[]>(() => configService.watch<CustomLaunchOption[]>("custom-launch-options"), []);
-    const [customLaunchModsArgs, setCustomLaunchModsArgs] = useState<string[]>([]);
-    const versionDownloading = useObservable(() => bsDownloader.downloadingVersion$);
     const [activeLaunchMods, setActiveLaunchMods] = useState<string[]>(configService.get("launch-mods") ?? []);
     const [pinnedLaunchMods, setPinnedLaunchMods] = useState<string[]>(configService.get("pinned-launch-mods" as DefaultConfigKey) ?? []);
-
-    const versionRunning = useObservable(() => bsLauncherService.versionRunning$);
-
-    useEffect(() => {
-        configService.set("launch-command", command);
-    }, [command]);
 
     useEffect(() => {
         configService.set("pinned-launch-mods", pinnedLaunchMods);
@@ -65,24 +49,66 @@ export function LaunchSlide({ version }: Props) {
         }
     }, [activeLaunchMods]);
 
-    const toggleActiveLaunchMod = (checked: boolean, launchMod: string) => checked
+    const toggleActiveLaunchMod = useCallback((checked: boolean, launchMod: string) => checked
         ? setActiveLaunchMods(prev => [...prev, launchMod])
-        : setActiveLaunchMods(prev => prev.filter(mod => mod !== launchMod));
+        : setActiveLaunchMods(prev => prev.filter(mod => mod !== launchMod)),
+    []);
 
-    const togglePinnedLaunchMod = (pinned: boolean, launchMod: string) => pinned
+    const togglePinnedLaunchMod = useCallback((pinned: boolean, launchMod: string) => pinned
         ? setPinnedLaunchMods(prev => [...prev, launchMod])
-        : setPinnedLaunchMods(prev => prev.filter(mod => mod !== launchMod));
+        : setPinnedLaunchMods(prev => prev.filter(mod => mod !== launchMod)),
+    []);
 
-    const launchModItems = useMemo<LaunchModItemProps[]>(() => {
+    return {
+        activeLaunchMods,
+        pinnedLaunchMods,
+        toggleActiveLaunchMod,
+        togglePinnedLaunchMod,
+    }
+}
 
-        let protonLogsPath: string[] = [];
-        if (window.electron.platform === "linux") {
-            protonLogsPath = version.steam
-                ? [version.path, "Logs"]
-                : ["BSInstances", version.name, "Logs"];
-        }
+function useCustomLaunchMods({
+    activeLaunchMods, pinnedLaunchMods,
+    toggleActiveLaunchMod,
+    togglePinnedLaunchMod,
+}: {
+    activeLaunchMods: string[];
+    pinnedLaunchMods: string[];
 
-        const customOptions = customLaunchOptions?.map<LaunchModItemProps>(option => ({
+    toggleActiveLaunchMod: (checked: boolean, launchMod: string) => void;
+    togglePinnedLaunchMod: (checked: boolean, launchMod: string) => void;
+}) {
+    const configService = useService(ConfigurationService);
+    const modalService = useService(ModalService);
+
+    const customLaunchOptions = useObservable<CustomLaunchOption[]>(() => (
+        configService.watch<CustomLaunchOption[]>("custom-launch-options")
+    ), []);
+
+    const [customLaunchModsArgs, setCustomLaunchModsArgs] = useState<string[]>([]);
+
+    useEffect(() => {
+        const command = customLaunchOptions
+            ?.map(option => option.data.command || "")
+            .filter(Boolean);
+        setCustomLaunchModsArgs(() => command ?? []);
+    }, [customLaunchOptions]);
+
+    const deleteCustomLaunchOption = useCallback((id: string) => {
+        const newCustomLaunchOptions = (customLaunchOptions ?? []).filter(mode => mode.id !== id);
+        configService.set("custom-launch-options", newCustomLaunchOptions);
+    }, [customLaunchOptions]);
+
+    const saveCustomLaunchOption = useCallback(async (option: Partial<CustomLaunchOption>) => {
+        const result = await modalService.openModal(CreateCustomLaunchOptionModal, { data: option });
+        if(result.exitCode !== ModalExitCode.COMPLETED) { return; }
+        const newCustomLaunchOptions = (customLaunchOptions ?? []).filter(mode => mode.id !== result.data.id);
+        newCustomLaunchOptions.push(result.data);
+        configService.set("custom-launch-options", newCustomLaunchOptions);
+    }, [customLaunchOptions]);
+
+    const getCustomLaunch = useCallback(() => {
+        return customLaunchOptions?.map<LaunchModItemProps>(option => ({
             id: option.id,
             label: option.label,
             active: activeLaunchMods.includes(option.id),
@@ -104,6 +130,57 @@ export function LaunchSlide({ version }: Props) {
                 deleteCustomLaunchOption(option.id);
             },
         })) ?? [];
+    }, [customLaunchOptions, activeLaunchMods, pinnedLaunchMods])
+
+    return {
+        customLaunchOptions,
+        customLaunchModsArgs,
+        getCustomLaunch,
+        saveCustomLaunchOption
+    };
+}
+
+export function LaunchSlide({ version }: Props) {
+    const { text: t, element: te } = useTranslationV2();
+
+    const configService = useService(ConfigurationService);
+    const bsLauncherService = useService(BSLauncherService);
+    const bsDownloader = useService(BsDownloaderService);
+    const versions = useService(BSVersionManagerService);
+
+    const [advancedLaunch, setAdvancedLaunch] = useState(false);
+    const [command, setCommand] = useState<string>(configService.get<string>("launch-command") || "");
+    const versionDownloading = useObservable(() => bsDownloader.downloadingVersion$);
+    const versionRunning = useObservable(() => bsLauncherService.versionRunning$);
+
+    const {
+        activeLaunchMods, pinnedLaunchMods,
+        toggleActiveLaunchMod, togglePinnedLaunchMod,
+    } = useLaunchMods();
+
+    const {
+        customLaunchOptions, customLaunchModsArgs,
+        getCustomLaunch, saveCustomLaunchOption,
+    } = useCustomLaunchMods({
+        activeLaunchMods, pinnedLaunchMods,
+        toggleActiveLaunchMod,
+        togglePinnedLaunchMod,
+    });
+
+    useEffect(() => {
+        configService.set("launch-command", command);
+    }, [command]);
+
+    const launchModItems = useMemo<LaunchModItemProps[]>(() => {
+
+        let protonLogsPath: string[] = [];
+        if (window.electron.platform === "linux") {
+            protonLogsPath = version.steam
+                ? [version.path, "Logs"]
+                : ["BSInstances", version.name, "Logs"];
+        }
+
+        const customOptions = getCustomLaunch();
 
         return [
             {
@@ -186,19 +263,6 @@ export function LaunchSlide({ version }: Props) {
     const isOutdated = useMemo(() => {
         return safeLt(version?.BSVersion, versions.getRecommendedVersion()?.BSVersion);
     }, [version]);
-
-    const saveCustomLaunchOption = async (option: Partial<CustomLaunchOption>) => {
-        const result = await modal.openModal(CreateCustomLaunchOptionModal, { data: option });
-        if(result.exitCode !== ModalExitCode.COMPLETED) { return; }
-        const newCustomLaunchOptions = (customLaunchOptions ?? []).filter(mode => mode.id !== result.data.id);
-        newCustomLaunchOptions.push(result.data);
-        configService.set("custom-launch-options", newCustomLaunchOptions);
-    }
-
-    const deleteCustomLaunchOption = (id: string) => {
-        const newCustomLaunchOptions = (customLaunchOptions ?? []).filter(mode => mode.id !== id);
-        configService.set("custom-launch-options", newCustomLaunchOptions);
-    }
 
     return (
         <div className="w-full shrink-0 items-center relative flex flex-col justify-start overflow-hidden">

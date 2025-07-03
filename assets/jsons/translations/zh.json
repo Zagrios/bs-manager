@@ -37,7 +37,10 @@
         }
     },
     "title-bar": {
-        "outdated": "过时"
+        "outdated": "过时",
+        "update-text": "BSManager {version} 可用！",
+        "update-button": "更新并重新启动",
+        "see-changelog": "查看变更"
     },
     "nav-bar": {
         "add-version": "添加版本",
@@ -336,6 +339,13 @@
                     "description": "BSMansger将通过系统代理发起网络请求。",
                     "error-notification": {
                         "message": "发生错误，无法启用系统代理。"
+                    }
+                },
+                "auto-update": {
+                    "title": "自动更新",
+                    "description": "启动应用程序时，BSManager 将自动更新。",
+                    "error-notification": {
+                        "message": "发生错误，无法更改自动更新设置。"
                     }
                 }
             }
