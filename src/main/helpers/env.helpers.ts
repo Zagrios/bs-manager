@@ -28,7 +28,19 @@ const isAlphaCharacter = (c: string) =>
     (c >= "a" && c <= "z") || (c >= "A" && c <= "Z");
 const isNumber = (c: string) => c >= "0" && c <= "9";
 
-export function parseEnvString(envString: string): Record<string, string> {
+/**
+ * Parses the env values from an envString command
+ *
+ * @params envString
+ * @returns ({
+ *   env - parsed environment variables
+ *   command - part of the env string which is the command
+ * })
+ */
+export function parseEnvString(envString: string): {
+    env: Record<string, string>;
+    command: string;
+} {
     const envVars: Record<string, string> = {};
 
     let state: EnvParserState = EnvParserState.NAME_START;
@@ -104,6 +116,7 @@ export function parseEnvString(envString: string): Record<string, string> {
             default:
         }
 
+        // TODO: Change to an early exit instead
         if (state === EnvParserState.ERROR) {
             throw new CustomError(
                 `parseEnvString failed: invalid character at position ${pos}`,
@@ -114,11 +127,14 @@ export function parseEnvString(envString: string): Record<string, string> {
 
     if (state === EnvParserState.VALUE_START || state === EnvParserState.VALUE) {
         envVars[newName] = envString.substring(index);
-        return envVars;
+        return { env: envVars, command: "" };
     }
 
     if (state === EnvParserState.NAME_START || state === EnvParserState.SPACE) {
-        return envVars;
+        return {
+            env: envVars,
+            command: envString.substring(index + 1, envString.length)
+        };
     }
 
     throw new CustomError(
