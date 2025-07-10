@@ -21,6 +21,7 @@ enum EnvParserState {
     QUOTE_VALUE,
     DQUOTE_VALUE,
     SPACE,
+    EXIT,
     ERROR,
 };
 
@@ -51,13 +52,13 @@ export function parseEnvString(envString: string): {
 
         switch (state) {
             case EnvParserState.NAME_START:
+                index = pos;
                 if (isAlphaCharacter(c) || c === "_") {
                     state = EnvParserState.NAME;
-                    index = pos;
                 } else if (c !== " ") {
-                    state = EnvParserState.ERROR;
+                    state = EnvParserState.EXIT;
                 }
-                break;
+            break;
 
             case EnvParserState.NAME:
                 if (c === "=") {
@@ -65,58 +66,65 @@ export function parseEnvString(envString: string): {
                     newName = envString.substring(index, pos);
                     index = pos + 1;
                 } else if (!isAlphaCharacter(c) && !isNumber(c) && c !== "_") {
-                    state = EnvParserState.ERROR;
+                    state = EnvParserState.EXIT;
                 }
-                break;
+            break;
 
             case EnvParserState.VALUE_START:
                 if (c === "'") {
-                    ++index;
-                    state = EnvParserState.QUOTE_VALUE;
-                } else if (c === '"') {
-                    ++index;
-                    state = EnvParserState.DQUOTE_VALUE;
-                } else if (c === " ") {
-                    state = EnvParserState.NAME_START;
-                    envVars[newName] = "";
-                } else {
-                    state = EnvParserState.VALUE;
-                }
-                break;
+                ++index;
+                state = EnvParserState.QUOTE_VALUE;
+            } else if (c === '"') {
+                ++index;
+                state = EnvParserState.DQUOTE_VALUE;
+            } else if (c === " ") {
+                state = EnvParserState.NAME_START;
+                envVars[newName] = "";
+            } else {
+                state = EnvParserState.VALUE;
+            }
+            break;
 
             case EnvParserState.VALUE:
                 if (c === " ") {
-                    state = EnvParserState.NAME_START;
-                    envVars[newName] = envString.substring(index, pos);
-                }
-                break;
+                state = EnvParserState.NAME_START;
+                envVars[newName] = envString.substring(index, pos);
+            }
+            break;
 
             case EnvParserState.QUOTE_VALUE:
                 if (c === "'") {
-                    state = EnvParserState.SPACE;
-                    envVars[newName] = envString.substring(index, pos);
-                }
-                break;
+                state = EnvParserState.SPACE;
+                envVars[newName] = envString.substring(index, pos);
+            }
+            break;
 
             case EnvParserState.DQUOTE_VALUE:
                 if (c === '"') {
-                    state = EnvParserState.SPACE;
-                    envVars[newName] = envString.substring(index, pos);
-                }
-                break;
+                state = EnvParserState.SPACE;
+                envVars[newName] = envString.substring(index, pos);
+            }
+            break;
 
             case EnvParserState.SPACE:
                 if (c === " ") {
-                    state = EnvParserState.NAME_START;
-                } else {
-                    state = EnvParserState.ERROR;
-                }
-                break;
+                state = EnvParserState.NAME_START;
+            } else {
+                state = EnvParserState.ERROR;
+            }
+            break;
 
             default:
         }
 
-        // TODO: Change to an early exit instead
+        // Early exit
+        if (state === EnvParserState.EXIT) {
+            return {
+                env: envVars,
+                command: envString.substring(index).trim()
+            };
+        }
+
         if (state === EnvParserState.ERROR) {
             throw new CustomError(
                 `parseEnvString failed: invalid character at position ${pos}`,
@@ -131,14 +139,11 @@ export function parseEnvString(envString: string): {
     }
 
     if (state === EnvParserState.NAME_START || state === EnvParserState.SPACE) {
-        return {
-            env: envVars,
-            command: envString.substring(index + 1, envString.length)
-        };
+        return { env: envVars, command: "" };
     }
 
-    throw new CustomError(
-        "parseEnvString failed: invalid ending state",
-        "generic.env.parse"
-    );
+    return {
+        env: envVars,
+        command: envString.substring(index + 1).trim(),
+    }
 }

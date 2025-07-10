@@ -65,4 +65,27 @@ describe("Test parseEnvString", () => {
         expect(command).toEqual("");
     });
 
+    it("Simple command", () => {
+        const { env, command } = parseEnvString("some-command");
+        expect(env).toEqual({});
+        expect(command).toBe("some-command");
+    });
+
+    it("Env with command", () => {
+        const { env, command } = parseEnvString("SAMPLE=value some-command");
+        expect(env).toEqual(expect.objectContaining({
+            SAMPLE: "value"
+        }));
+        expect(command).toBe("some-command");
+    });
+
+    it("Complex with %command%", () => {
+        const envString = "KEY=value  gamescope -h 720 -H 1440 -S integer -- %command% ";
+        const { env, command } = parseEnvString(envString);
+        expect(env).toEqual(expect.objectContaining({
+            KEY: "value"
+        }));
+        expect(command).toBe("gamescope -h 720 -H 1440 -S integer -- %command%");
+    })
+
 });
