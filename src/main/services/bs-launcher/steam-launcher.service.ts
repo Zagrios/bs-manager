@@ -169,7 +169,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 cmdlet, args
             } = parseLaunchOptions(launchOptions.command, {
                 beatSaberExe: bsExePath
-            })
+            });
             env = this.mergeEnvVariables(env, parsedEnv);
 
             const launchArgs = buildBsLaunchArgs(launchOptions);
@@ -181,7 +181,9 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
             const launchPromise = !launchOptions.admin ? (
                 this.launchBeatSaber({
                     env, cmdlet,
-                    args: [ args, ...launchArgs ],
+                    args: args
+                        ? [ args, ...launchArgs ]
+                        : launchArgs,
                     beatSaberFolderPath: bsFolderPath,
                     protonPrefix
                 }).exit

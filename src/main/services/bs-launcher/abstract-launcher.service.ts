@@ -46,10 +46,10 @@ export abstract class AbstractLauncherService {
     }
 
     protected launchBeatSaberProcess(options: LaunchBeatSaberOptions): ChildProcessWithoutNullStreams {
-
         const spawnOptions: SpawnOptionsWithoutStdio = {
             detached: true,
             cwd: options.beatSaberFolderPath,
+            env: options.env,
         };
 
         if(options.args && options.args.includes("--verbose")){
@@ -57,8 +57,7 @@ export abstract class AbstractLauncherService {
         }
 
         spawnOptions.shell = true; // For windows to spawn properly
-        // TODO: bsExePath can be another executable here
-        return bsmSpawn(`"${options.cmdlet}"`, {
+        return bsmSpawn(options.cmdlet, {
             args: options.args, options: spawnOptions, log: BsmShellLog.Command,
             linux: { prefix: options.protonPrefix ?? "" },
             flatpak: {
@@ -126,7 +125,7 @@ export abstract class AbstractLauncherService {
         newEnv: Record<string, string>
     ): Record<string, string> {
         const env = { ...originalEnv };
-        for (const [ key, value ] of Object.values(newEnv)) {
+        for (const [ key, value ] of Object.entries(newEnv)) {
             log.info(
                 key in env ? "Overriding" : "Injecting",
                 `${key}="${value}"`,

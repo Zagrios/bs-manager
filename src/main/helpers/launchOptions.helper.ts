@@ -18,28 +18,37 @@ export function parseLaunchOptions(launchOption: string, options: {
     cmdlet: string;
     args: string;
 } {
+    const wrappedExe = `"${options.beatSaberExe}"`;
     if (!launchOption) {
-        return { env: {}, cmdlet: "", args: "" };
+        return { env: {}, cmdlet: wrappedExe, args: "" };
     }
 
-    // Get the env variables first
-    const {
-        env, command
-    } = parseEnvString(launchOption);
+    const parsed = parseEnvString(launchOption);
+    const { env } = parsed;
 
-    // Replace the %command%
-    if (options.beatSaberExe) {
-        launchOption.replace("%command%", `"${options.beatSaberExe}"`);
+    // If launch options only contains env strings
+    if (!parsed.command) {
+        return { env, cmdlet: wrappedExe, args: "" };
+    }
+
+    const command = parsed.command.replace("%command%", wrappedExe);
+
+    // Offset if it starts with a " or '
+    let offset = 0;
+    if (command.startsWith('"')) {
+        offset = command.indexOf('"', 1);
+    } else if (command.startsWith("'")) {
+        offset = command.indexOf("'", 1);
     }
 
     // First word/token is the cmdlet, the rest are the arguments
-    const index = command.indexOf(" ");
+    const index = command.indexOf(" ", offset);
     if (index === -1) {
-        return { env, cmdlet: command, args: "" }
+        return { env, cmdlet: command.trim(), args: "" };
     }
 
     return {
-        env, cmdlet: command.substring(index),
+        env, cmdlet: command.substring(0, index),
         args: command.substring(index + 1, command.length).trim(),
     }
 }
