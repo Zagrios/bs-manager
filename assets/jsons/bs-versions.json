@@ -865,8 +865,7 @@
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/510708375093248769",
 		"ReleaseImg": "https://clan.fastly.steamstatic.com/images/32055887/0f658ed39f480446e0dc5807b1591e8a18aef2f5.png",
 		"ReleaseDate": "1749135144",
-		"year": "2025",
-		"recommended": true
+		"year": "2025"
 	},
 	{
 		"BSVersion": "1.40.7",
@@ -875,6 +874,7 @@
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/510710285788516821",
 		"ReleaseImg": "https://clan.akamai.steamstatic.com/images//32055887/c34cf1f62f18898280e2bf905518ba71cce0cffd.png",
 		"ReleaseDate": "1752159922",
-		"year": "2025"
+		"year": "2025",
+                "recommended": true
 	}
 ]
