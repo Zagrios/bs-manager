@@ -49,12 +49,11 @@ export class BsModsManagerService {
                 return undefined;
             });
 
-        if(mod?.contentHashes?.some(content => content.path.includes("IPA.exe"))){
+        if (mod?.contentHashes?.some(content => content.path.includes("IPA.exe"))) {
             return undefined;
         }
 
         return mod;
-
     }
 
     private async getModsInDir(
@@ -145,9 +144,9 @@ export class BsModsManagerService {
 
         return BsmZipExtractor.fromBuffer(buffer);
     }
-    private async executeBSIPA(version: BSVersion, args: string[]): Promise<boolean> {
 
-        log.info("executeBSIPA", version?.BSVersion, args);
+    private async executeIPA(version: BSVersion, args: string[]): Promise<boolean> {
+        log.info("executeIPA", version?.BSVersion, args);
 
         const versionPath = await this.bsLocalService.getVersionPath(version);
         const ipaPath = path.join(versionPath, "IPA.exe");
@@ -193,7 +192,7 @@ export class BsModsManagerService {
             });
 
             const timeout = setTimeout(() => {
-                log.info("Ipa process timeout");
+                log.info("IPA process timed out");
                 resolve(false)
             }, sToMs(30));
 
@@ -207,13 +206,11 @@ export class BsModsManagerService {
             processIPA.once("exit", code => {
                 clearTimeout(timeout);
                 if (code === 0) {
-                    log.info("Ipa process exist with code 0");
                     return resolve(true);
                 }
-                log.error("Ipa process exist with non 0 code", code);
+                log.error("IPA process exited with non-zero code", code);
                 resolve(false);
             });
-
         });
     }
 
@@ -226,7 +223,7 @@ export class BsModsManagerService {
 
         const isBSIPA = mod.mod.name.toLowerCase() === "bsipa";
 
-        if(isBSIPA){
+        if (isBSIPA) {
             await this.clearIpaFolder(version).catch(e => log.error("Error while clearing IPA folder", e));
         }
 
@@ -273,9 +270,11 @@ export class BsModsManagerService {
 
         log.info("Mod zip extraction end", mod.mod.name, "to", destDir, "success:", extracted);
 
-        const res = isBSIPA
+        // Executing IPA.exe when BSIPA is already installed could potentially corrupt the game.
+        const shouldRunIPA = isBSIPA && !pathExistsSync(path.join(versionPath, "winhttp.dll"));
+        const res = shouldRunIPA
             ? extracted &&
-              (await this.executeBSIPA(version, ["-n"]).catch(e => {
+              (await this.executeIPA(version, ["-n"]).catch(e => {
                   log.error(e);
                   return false;
               }))
@@ -290,14 +289,14 @@ export class BsModsManagerService {
         const versionPath = await this.bsLocalService.getVersionPath(version);
         const ipaPath = path.join(versionPath, ModsInstallFolder.IPA);
 
-        if(!pathExistsSync(ipaPath)){
+        if (!pathExistsSync(ipaPath)) {
             log.info("IPA folder does not exist, skipping");
             return;
         }
 
         const contents = readdirSync(ipaPath, { withFileTypes: true });
 
-        for(const content of contents){
+        for (const content of contents) {
 
             if (content.name === 'Backups' || content.name === 'Pending') {
                 continue;
@@ -310,13 +309,12 @@ export class BsModsManagerService {
                 : deleteFile(contentPath)
             );
 
-            if(res.error){
+            if (res.error) {
                 log.error("Error while clearing IPA folder content", content.name, res.error);
             }
         }
 
         log.info("IPA folder cleared successfully");
-
     }
 
     private async uninstallBSIPA(mod: BbmFullMod, version: BSVersion): Promise<void> {
@@ -328,7 +326,7 @@ export class BsModsManagerService {
             return;
         }
 
-        await this.executeBSIPA(version, ["--revert", "-n"]);
+        await this.executeIPA(version, ["--revert", "-n"]);
 
         const promises = mod.version.contentHashes.map(content => {
             const file = content.path.replaceAll("IPA/", "").replaceAll("Data", "Beat Saber_Data");
@@ -337,6 +335,7 @@ export class BsModsManagerService {
 
         await Promise.all(promises);
     }
+
     private async uninstallMod(mod: BbmFullMod, version: BSVersion): Promise<void> {
         if (mod.mod.name.toLowerCase() === "bsipa") {
             return this.uninstallBSIPA(mod, version);
@@ -347,13 +346,13 @@ export class BsModsManagerService {
         const promises: Promise<void>[] = mod.version.contentHashes.map(async content => {
             return (async () => {
                 const modPath = path.join(versionPath, content.path);
-                if(pathExistsSync(modPath)){
+                if (pathExistsSync(modPath)) {
                     log.info("Deleting mod", modPath);
                     await deleteFile(modPath);
                 }
 
                 const pendingPath = path.join(versionPath, "IPA", "Pending", content.path);
-                if(pathExistsSync(pendingPath)){
+                if (pathExistsSync(pendingPath)) {
                     log.info("Deleting pending mod", pendingPath);
                     return deleteFile(pendingPath);
                 }
@@ -517,12 +516,12 @@ export class BsModsManagerService {
 
                 const bsipa = popElement(mod => mod.mod.name.toLowerCase() === "bsipa", mods);
 
-                if(bsipa){
+                if (bsipa) {
                     const bsipaInstalled = await this.installMod(bsipa, version).catch(err => {
                         log.error("Error while installing BSIPA", err);
                     });
 
-                    if(!bsipaInstalled){
+                    if (!bsipaInstalled) {
                         throw CustomError.throw(new Error("BSIPA failed to install"), "cannot-install-bsipa");
                     }
 
