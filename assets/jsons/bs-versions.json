@@ -884,6 +884,15 @@
 		"ReleaseImg": "https://clan.fastly.steamstatic.com/images//32055887/5e32755428ba8f737bf7e9cb7cfc58465b72818c.png",
 		"ReleaseDate": "1753369967",
 		"year": "2025",
-                "recommended": true
+		"recommended": true
+	},
+	{
+		"BSVersion": "6000.0.40",
+		"BSManifest": "8323807873233904302",
+		"OculusBinaryId": "9637940462972313",
+		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/510712822654566875",
+		"ReleaseImg": "https://clan.fastly.steamstatic.com/images/32055887/4b03c1fffe80c018ffbe80bd243d88d0fb1805ef.png",
+		"ReleaseDate": "1753707864",
+		"year": "2025"
 	}
 ]
