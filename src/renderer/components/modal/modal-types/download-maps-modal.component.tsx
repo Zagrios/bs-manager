@@ -119,7 +119,7 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
                 setMaps(prev => [...prev, ...maps])
 
                 if (maps.length < tryToLoad) {
-                    handleLoadMore();
+                    handleLoadMore(false);
 
                     return;
                 }
@@ -185,9 +185,9 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
         setSearchParams(() => searchParamsLocal);
     };
 
-    const handleLoadMore = () => {
+    const handleLoadMore = (skipLoading: boolean = true) => {
 
-        if(loading){ return; }
+        if(skipLoading && loading){ return; }
 
         setSearchParams(prev => {
             return { ...prev, page: prev.page + 1 };
