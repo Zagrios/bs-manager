@@ -100,6 +100,16 @@ const findAssociatedFileInArgs = (args: string[]): string => {
 
 const gotTheLock = app.requestSingleInstanceLock();
 
+const init = () => {
+    initServicesMustBeInitialized();
+
+    if (process.platform === "linux") {
+        // Properly set up the home path for linux
+        const homePath = process.env.XDG_DATA_HOME || path.join(process.env.HOME, ".local", "share");
+        app.setPath("home", homePath);
+    }
+}
+
 if (!gotTheLock) {
     app.quit();
 } else {
@@ -123,8 +133,7 @@ if (!gotTheLock) {
     app.whenReady().then(() => {
 
         app.setAppUserModelId(APP_NAME);
-
-        initServicesMustBeInitialized();
+        init();
 
         const deepLink = findDeepLinkInArgs(process.argv);
         const associatedFile = findAssociatedFileInArgs(process.argv);
