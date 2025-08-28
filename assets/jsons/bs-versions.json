@@ -894,5 +894,12 @@
 		"ReleaseImg": "https://clan.fastly.steamstatic.com/images/32055887/2c6d12b6791daf434c74a5b7ab94a236789c6836.png",
 		"ReleaseDate": "1755776928",
 		"year": "2025"
-	}
+	},
+	{
+		"BSVersion": "1.40.10",
+		"BSManifest": "6631675572109548834",
+		"OculusBinaryId": "10067683139998041",
+		"ReleaseDate": "1756386614",
+		"year": "2025"
+        }
 ]
