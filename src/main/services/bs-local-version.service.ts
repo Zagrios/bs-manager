@@ -61,7 +61,7 @@ export class BSLocalVersionService {
             return null;
         }
 
-        const versionsDict = await this.remoteVersionService.getAvailableVersions();
+        const versionsDict = (await this.remoteVersionService.getAvailableVersions()).reverse();
 
         let stream: ReadStream;
 
