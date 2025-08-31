@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
   update-patreons:
@@ -34,17 +33,18 @@ jobs:
           PATREON_USER_AGENT: BSManager - Patreon Sync (GitHub Action)
         run: npx ts-node ./.erb/scripts/update-patreon.js
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-          commit-message: "[chore] update patreons.json"
-          title: "[chore] update patreons.json"
-          body: |
-            Automated daily update of Patreon supporters.
-          branch: chore/patreon-update
-          delete-branch: true
-          add-paths: |
-            assets/jsons/patreons.json
+      - name: Commit and push changes if any
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          if [[ -n $(git status --porcelain assets/jsons/patreons.json) ]]; then
+            git config user.name "GitHub Action"
+            git config user.email "action@github.com"
+            git add assets/jsons/patreons.json
+            git commit -m "chore(patreon): update patreons.json [skip ci]"
+            git push https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git HEAD:master
+          else
+            echo "No changes to commit."
+          fi
 
 
