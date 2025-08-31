@@ -1,0 +1,48 @@
+name: Update Patreon supporters
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # Every day at 00:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-patreons:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Patreon update script
+        env:
+          PATREON_ACCESS_TOKEN: ${{ secrets.PATREON_ACCESS_TOKEN }}
+          PATREON_CAMPAIGN_ID: ${{ secrets.PATREON_CAMPAIGN_ID }}
+          PATREON_USER_AGENT: BSManager - Patreon Sync (GitHub Action)
+        run: npx ts-node ./.erb/scripts/update-patreon.js
+
+      - name: Commit and push changes if any
+        run: |
+          if [[ -n $(git status --porcelain assets/jsons/patreons.json) ]]; then
+            git config user.name "GitHub Action"
+            git config user.email "action@github.com"
+            git add assets/jsons/patreons.json
+            git commit -m "chore(patreon): update patreons.json [skip ci]"
+            git push
+          else
+            echo "No changes to commit."
+          fi
+
+
