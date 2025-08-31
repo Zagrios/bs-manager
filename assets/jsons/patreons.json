@@ -1,104 +1,44 @@
 [
 	{
-		"username": "Shidorien"
+		"username": "Shido S&S"
 	},
 	{
 		"username": "iPixelGalaxy"
 	},
 	{
-		"username": "Emyte",
-		"type": "gold"
-	},
-	{
 		"username": "GoodOldNervy"
 	},
 	{
-		"username": "Naysy"
+		"username": "naysy"
 	},
 	{
 		"username": "Falmil"
 	},
 	{
-		"username": "Anonymously42",
-		"type": "diamond",
-		"link": "https://www.twitch.tv/anonymously42tv"
-	},
-	{
-		"username": "Burt",
-		"type": "gold"
-	},
-	{
-		"username": "Phil",
-		"type": "gold"
-	},
-	{
-		"username": "Protocrush",
-		"type": "gold"
-	},
-	{
-		"username": "Karlito",
-		"type": "gold"
-	},
-	{
-		"username": ".sharkey"
-	},
-	{
 		"username": "Z3t4"
-	},
-	{
-		"username": "blot455",
-		"type": "diamond"
-	},
-	{
-		"username": "Lumberjack462",
-		"type": "diamond",
-		"link": "https://www.youtube.com/@lumberjack462"
 	},
 	{
 		"username": "Xero"
 	},
 	{
-		"username": "Minescence"
-	},
-	{
-		"username": "mereknom"
-	},
-	{
 		"username": "Jascha"
 	},
 	{
-		"username": "Celldweller",
-		"type": "gold"
-	},
-	{
-		"username": "rhythmshade"
-	},
-	{
-		"username": "liborsaf"
+		"username": "Rhythm Shade"
 	},
 	{
 		"username": "aatame3",
 		"type": "gold"
 	},
 	{
-		"username": "Joshua"
+		"username": "Joshua Knick"
 	},
 	{
 		"username": "Stuijvi",
 		"type": "gold"
 	},
 	{
-		"username": "_ monaka"
-	},
-	{
-		"username": "Better_Axel"
-	},
-	{
-		"username": "Riley",
-		"type": "gold"
-	},
-	{
-		"username": "Austin"
+		"username": "Austin Bauman"
 	},
 	{
 		"username": "Fatalution",
@@ -106,69 +46,58 @@
 		"link": "https://x.com/fatalution"
 	},
 	{
-		"username": "Taurus Arcade",
+		"username": "Caveman",
 		"type": "gold"
 	},
 	{
 		"username": "Mozz_Zm"
 	},
 	{
-		"username": "clapxz"
+		"username": "clapxz live"
 	},
-    {
+	{
 		"username": "Reflected Chop",
 		"type": "gold"
 	},
-    {
+	{
 		"username": "Furiouspupa"
 	},
-    {
-		"username": "Maximilian"
-	},
-    {
-		"username": "Paul Smith"
-	},
-    {
-		"username": "MunityVR",
-		"type": "gold"
-	},
-    {
+	{
 		"username": "Sk4venger"
 	},
-    {
-		"username": "Alexander Herman",
-		"type": "gold"
-	},
-    {
-		"username": "Arts Rimuro Suraimu",
-		"type": "gold"
-	},
-    {
-		"username": "Ricardo Boss"
-	},
-    {
+	{
 		"username": "Jesper Norsted"
 	},
-    {
-        "username": "Marcus Hamm"
-    },
-    {
-		"username": "jxkelol"
+	{
+		"username": "Marcus Hamm"
 	},
-    {
-        "username": "paperwasp",
-        "type": "gold"
-    },
-    {
-        "username": "KingCrocman",
-        "type": "diamond",
-        "link": "https://www.youtube.com/KingCrocman"
-    },
-    {
-        "username": "bosspie",
-        "type": "diamond"
-    },
-    {
-        "username": "Camryn Jackson"
-    }
+	{
+		"username": "KingCrocman",
+		"type": "diamond",
+		"link": "https://www.youtube.com/KingCrocman"
+	},
+	{
+		"username": "bosspie",
+		"type": "diamond"
+	},
+	{
+		"username": "Camryn Jackson"
+	},
+	{
+		"username": "bones",
+		"type": "gold"
+	},
+	{
+		"username": "Weed"
+	},
+	{
+		"username": "minefox54"
+	},
+	{
+		"username": "Elysee Buthidi",
+		"type": "diamond"
+	},
+	{
+		"username": "TalkyPup"
+	}
 ]
