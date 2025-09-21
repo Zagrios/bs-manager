@@ -35,6 +35,13 @@ export const mapSorter = new Sorter<BsmLocalMap>({
 
             return !map2.songDetails ? Comparison.GREATER : map1.songDetails.uploadedAt - map2.songDetails.uploadedAt;
         },
+        "added-date": (map1, map2) => {
+            if (!map1.metadata) {
+                return map2.metadata ? Comparison.LESSER : Comparison.EQUAL;
+            }
+
+            return !map2.metadata ? Comparison.GREATER : map1.metadata.addedDate.localeCompare(map2.metadata.addedDate);
+        }
     },
     tiebreak: sortName,
     defaultKey: "name"
