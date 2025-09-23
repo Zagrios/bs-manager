@@ -901,5 +901,14 @@
 		"OculusBinaryId": "10067683139998041",
 		"ReleaseDate": "1756386614",
 		"year": "2025"
+	},
+	{
+		"BSVersion": "1.40.11",
+		"BSManifest": "2631032361926028583",
+		"OculusBinaryId": "23961660520173735",
+		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/539991294395549709",
+		"ReleaseImg": "https://clan.fastly.steamstatic.com/images/32055887/a626005dae1a96ad8aafa4e65941e26b7918e073.png",
+		"ReleaseDate": "1758552138",
+		"year": "2025"
 	}
 ]
