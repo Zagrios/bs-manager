@@ -76,7 +76,7 @@ export class SteamService {
 
         switch (process.platform) {
             case "linux":
-                this.steamPath = path.join(app.getPath("home"), ".steam", "steam");
+                this.steamPath = path.join(app.getPath("home"), "Steam");
                 return this.steamPath;
             case "win32": {
                 const res = await list(["HKLM\\SOFTWARE\\Valve\\Steam", "HKLM\\SOFTWARE\\WOW6432Node\\Valve\\Steam"]);
