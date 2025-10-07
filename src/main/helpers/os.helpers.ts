@@ -24,7 +24,7 @@ export enum BsmShellLog {
 };
 
 interface BsmShellOptions<OptionsType> {
-    args?: string[];
+    args?: string[] | string;
     options?: OptionsType;
     // Look into BsmShellLog values
     log?: number;
@@ -37,7 +37,9 @@ export type BsmExecOptions = BsmShellOptions<cp.ExecOptions>;
 
 function updateCommand(command: string, options: BsmSpawnOptions) {
     if (options?.args) {
-        command += ` ${options.args.join(" ")}`;
+        command += typeof(options.args) === "string"
+            ? ` ${options.args}`
+            : ` ${options.args.join(" ")}`;
     }
 
     if (process.platform === "linux") {
