@@ -247,8 +247,8 @@ export function SettingsPage() {
 
     const openSupportPage = () => linkOpener.open("https://www.patreon.com/bsmanager");
     const openGithub = () => linkOpener.open("https://github.com/Zagrios/bs-manager");
-    const openReportBug = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&template=-bug--bug-report.md&title=%5BBUG%5D+%3A+");
-    const openRequestFeatures = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=enhancement&template=-feat---feature-request.md&title=%5BFEAT.%5D+%3A+");
+    const openReportBug = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?template=1-bug-report.yaml");
+    const openRequestFeatures = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?template=2-feature-request.yaml");
     const openDiscord = () => linkOpener.open(DISCORD_URL);
     const openTwitter = () => linkOpener.open("https://twitter.com/BSManager_");
 
