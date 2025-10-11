@@ -24,7 +24,7 @@
   </p>
   <p>
     <a
-      href="hhttps://github.com/Zagrios/bs-manager/issues/new?template=1-bug-report.yaml">Report
+      href="https://github.com/Zagrios/bs-manager/issues/new?template=1-bug-report.yaml">Report
       Bug</a>
     ·
     <a
