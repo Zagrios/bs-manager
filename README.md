@@ -24,11 +24,11 @@
   </p>
   <p>
     <a
-      href="https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&template=-bug--bug-report.md&title=%5BBUG%5D+%3A+">Report
+      href="hhttps://github.com/Zagrios/bs-manager/issues/new?template=1-bug-report.yaml">Report
       Bug</a>
     ·
     <a
-      href="https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=enhancement&template=-feat---feature-request.md&title=%5BFEAT.%5D+%3A+">Request
+      href="https://github.com/Zagrios/bs-manager/issues/new?template=2-feature-request.yaml">Request
       Feature</a>
     ·
     <a href="https://github.com/Zagrios/bs-manager/security/policy">Report a security vulnerability</a>
