@@ -154,21 +154,25 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 "SteamGameId": BS_APP_ID,
             };
 
-            let protonPrefix = "";
             // Linux setup
             if (process.platform === "linux") {
-                const linuxSetup = await this.linux.setupLaunch(
+                if (launchOptions.admin) {
+                    log.warn("Launching as admin is not supported on Linux! Starting the game as a normal user.");
+                    launchOptions.admin = false;
+                }
+
+                Object.assign(env, await this.linux.buildEnvVariables(
                     launchOptions, steamPath, bsFolderPath
-                );
-                protonPrefix = linuxSetup.protonPrefix;
-                Object.assign(env, linuxSetup.env);
+                ));
             }
 
             const {
                 env: parsedEnv,
                 cmdlet, args
             } = parseLaunchOptions(launchOptions.command, {
-                beatSaberExe: bsExePath
+                commandReplacement: process.platform === "win32"
+                    ? bsExePath
+                    : `${await this.linux.getProtonPrefix()} "${bsExePath}"`,
             });
             env = this.mergeEnvVariables(env, parsedEnv);
 
@@ -185,7 +189,6 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                         ? [ args, ...launchArgs ]
                         : launchArgs,
                     beatSaberFolderPath: bsFolderPath,
-                    protonPrefix
                 }).exit
             ) : (
                 new Promise<number>(resolve => {

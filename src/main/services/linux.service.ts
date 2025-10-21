@@ -38,26 +38,11 @@ export class LinuxService {
         return path.resolve(sharedFolder, "compatdata");
     }
 
-    public async setupLaunch(
-        launchOptions: LaunchOption,
-        steamPath: string,
-        bsFolderPath: string
-    ): Promise<{
-        protonPrefix: string;
-        env: Record<string, string>;
-    }> {
-        if (launchOptions.admin) {
-            log.warn("Launching as admin is not supported on Linux! Starting the game as a normal user.");
-            launchOptions.admin = false;
-        }
-
+    public async getProtonPrefix() {
         const protonPath = await this.getProtonPath();
-        return {
-            protonPrefix: await this.isNixOS()
-                ? `steam-run "${protonPath}" run`
-                : `"${protonPath}" run`,
-            env: await this.buildEnvVariables(launchOptions, steamPath, bsFolderPath)
-        };
+        return await this.isNixOS()
+            ? `steam-run "${protonPath}" run`
+            : `"${protonPath}" run`;
     }
 
     private async getProtonPath(): Promise<string> {
@@ -81,7 +66,7 @@ export class LinuxService {
         return protonPath;
     }
 
-    private async buildEnvVariables(
+    public async buildEnvVariables(
         launchOptions: LaunchOption,
         steamPath: string,
         bsFolderPath: string
@@ -197,9 +182,10 @@ export class LinuxService {
         bsFolderPath: string
     ): Promise<boolean> {
         try {
-            const {
-                protonPrefix, env
-            } = await this.setupLaunch(launchOptions, steamPath, bsFolderPath);
+            const protonPrefix = await this.getProtonPrefix();
+            const env = await this.buildEnvVariables(
+                launchOptions, steamPath, bsFolderPath
+            );
 
             Object.assign(env, {
                 "SteamAppId": BS_APP_ID,

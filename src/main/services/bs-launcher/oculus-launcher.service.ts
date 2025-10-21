@@ -57,7 +57,7 @@ export class OculusLauncherService extends AbstractLauncherService implements St
                     env: parsedEnv,
                     cmdlet, args,
                 } = parseLaunchOptions(launchOptions.command, {
-                    beatSaberExe: exePath
+                    commandReplacement: exePath,
                 });
                 env = this.mergeEnvVariables(env, parsedEnv);
 

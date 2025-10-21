@@ -4,7 +4,8 @@ import { parseEnvString } from "./env.helpers";
  * Parses the launch options command into parts to be used for bsmSpawn
  *
  * @params command
- * @params options.beatSaberExe - Replaces the %command% string
+ * @params options.commandReplacement - Replaces the %command% string
+ * @params options.linux - If the application is running under linux. Can be toggled in testing to check if the logic works.
  * @returns {
  *   env - environment variables
  *   cmdlet - BS.exe or a binary executable like gamemoderun and gamescope
@@ -12,15 +13,14 @@ import { parseEnvString } from "./env.helpers";
  * }
  */
 export function parseLaunchOptions(launchOption: string, options: {
-    beatSaberExe: string;
+    commandReplacement: string;
 }): {
     env: Record<string, string>;
     cmdlet: string;
     args: string;
 } {
-    const wrappedExe = `"${options.beatSaberExe}"`;
     if (!launchOption) {
-        return { env: {}, cmdlet: wrappedExe, args: "" };
+        return { env: {}, cmdlet: options.commandReplacement, args: "" };
     }
 
     const parsed = parseEnvString(launchOption);
@@ -28,10 +28,10 @@ export function parseLaunchOptions(launchOption: string, options: {
 
     // If launch options only contains env strings
     if (!parsed.command) {
-        return { env, cmdlet: wrappedExe, args: "" };
+        return { env, cmdlet: options.commandReplacement, args: "" };
     }
 
-    const command = parsed.command.replace("%command%", wrappedExe);
+    const command = parsed.command.replace("%command%", options.commandReplacement);
 
     // Offset if it starts with a " or '
     let offset = 0;

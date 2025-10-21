@@ -29,7 +29,15 @@ export function buildBsLaunchArgs(launchOptions: LaunchOption): string[] {
     }
 
     if (launchOptions.command) {
-        launchArgs.push(launchOptions.command);
+        // Only get arguments after the %command% keyword
+        //   ie. hello --something %command% get-this = get-this
+        const index = launchOptions.command.indexOf("%command%");
+        const commandArguments = index > -1
+            ? launchOptions.command.substring(index + "%command%".length)
+            : launchOptions.command;
+        if (commandArguments) {
+            launchArgs.push(commandArguments);
+        }
     }
 
     return Array.from(new Set(launchArgs).values());
@@ -59,7 +67,6 @@ export abstract class AbstractLauncherService {
         spawnOptions.shell = true; // For windows to spawn properly
         return bsmSpawn(options.cmdlet, {
             args: options.args, options: spawnOptions, log: BsmShellLog.Command,
-            linux: { prefix: options.protonPrefix ?? "" },
             flatpak: {
                 host: IS_FLATPAK,
                 env: [
@@ -149,8 +156,5 @@ export type LaunchBeatSaberOptions = {
 
     // Timeout value (in ms) to unref the Beat Saber process to BSM
     unrefAfter?: number;
-
-    // For linux
-    protonPrefix?: string;
 }
 
