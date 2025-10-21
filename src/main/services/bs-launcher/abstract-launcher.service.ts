@@ -60,7 +60,7 @@ export abstract class AbstractLauncherService {
             env: options.env,
         };
 
-        if(options.args && options.args.includes("--verbose")){
+        if (options.args?.includes("--verbose")){
             spawnOptions.windowsVerbatimArguments = true;
         }
 
