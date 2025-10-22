@@ -1,5 +1,7 @@
 import { parseEnvString } from "./env.helpers";
 
+const COMMAND_KEYWORD = "%command%";
+
 /**
  * Parses the launch options command into parts to be used for bsmSpawn
  *
@@ -31,7 +33,9 @@ export function parseLaunchOptions(launchOption: string, options: {
         return { env, cmdlet: options.commandReplacement, args: "" };
     }
 
-    const command = parsed.command.replace("%command%", options.commandReplacement);
+    const command = parsed.command.indexOf(COMMAND_KEYWORD) === -1
+        ? `${options.commandReplacement} ${parsed.command}`
+        : parsed.command.replace(COMMAND_KEYWORD, options.commandReplacement);
 
     // Offset if it starts with a " or '
     let offset = 0;
@@ -49,7 +53,7 @@ export function parseLaunchOptions(launchOption: string, options: {
 
     return {
         env, cmdlet: command.substring(0, index),
-        args: command.substring(index + 1, command.length).trim(),
+        args: command.substring(index + 1).trim(),
     }
 }
 

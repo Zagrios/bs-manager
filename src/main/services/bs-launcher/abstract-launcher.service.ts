@@ -28,18 +28,6 @@ export function buildBsLaunchArgs(launchOptions: LaunchOption): string[] {
         launchArgs.push("editor");
     }
 
-    if (launchOptions.command) {
-        // Only get arguments after the %command% keyword
-        //   ie. hello --something %command% get-this = get-this
-        const index = launchOptions.command.indexOf("%command%");
-        const commandArguments = index > -1
-            ? launchOptions.command.substring(index + "%command%".length)
-            : launchOptions.command;
-        if (commandArguments) {
-            launchArgs.push(commandArguments);
-        }
-    }
-
     return Array.from(new Set(launchArgs).values());
 }
 
