@@ -111,7 +111,8 @@
                             "bpm": "BPM",
                             "duration": "Длительность",
                             "likes": "Лайки",
-                            "date-uploaded": "Дата загрузки"
+                            "date-uploaded": "Дата загрузки",
+                            "added-date": "Дата добавления"
                         }
                     },
                     "playlists": {

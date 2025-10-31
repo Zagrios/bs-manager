@@ -111,7 +111,8 @@
                             "bpm": "BPM",
                             "duration": "지속 시간",
                             "likes": "좋아요",
-                            "date-uploaded": "업로드 날짜"
+                            "date-uploaded": "업로드 날짜",
+                            "added-date": "추가 날짜"
                         }
                     },
                     "playlists": {

@@ -111,7 +111,8 @@
                             "bpm": "BPM",
                             "duration": "Довжина",
                             "likes": "Лайки",
-                            "date-uploaded": "Дата завантаження"
+                            "date-uploaded": "Дата завантаження",
+                            "added-date": "Дата додавання"
                         }
                     },
                     "playlists": {

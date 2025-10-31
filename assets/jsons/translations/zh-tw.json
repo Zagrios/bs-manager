@@ -111,7 +111,8 @@
                             "bpm": "BPM",
                             "duration": "持續時間",
                             "likes": "喜歡",
-                            "date-uploaded": "上傳日期"
+                            "date-uploaded": "上傳日期",
+                            "added-date": "新增日期"
                         }
                     },
                     "playlists": {
