@@ -478,7 +478,7 @@ export class LocalMapsManagerService {
 
         // Create the metadata then return it to the user
         const metadata: BsmLocalMapMetadata = {
-            addedDate: dateFormat(new Date(), "yyyy-mm-dd'T'hh:MM:ss.l"),
+            addedDate: dateFormat(new Date(), "yyyy-mm-dd'T'HH:MM:ss.l"),
         };
 
         await writeJson(metadataPath, metadata);
