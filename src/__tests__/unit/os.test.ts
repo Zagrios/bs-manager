@@ -27,7 +27,6 @@ jest.mock("electron-log", () => ({
 
 jest.mock("ps-list", () => (): unknown[] => []);
 
-const IS_WINDOWS = process.platform === "win32";
 const IS_LINUX = process.platform === "linux";
 
 describe("Test os.helpers bsmSpawn", () => {
@@ -89,14 +88,11 @@ describe("Test os.helpers bsmSpawn", () => {
     it("Complex spawn command call (Mods install)", () => {
         bsmSpawn(`"./BSIPA.exe" "./Beat Saber.exe" -n`, {
             log: BsmShellLog.Command,
-            linux: { prefix: `"./wine64"` },
         });
 
         expect(spawnSpy).toHaveBeenCalledTimes(1);
         expect(spawnSpy).toHaveBeenCalledWith(
-            process.platform === "win32"
-                ? `"./BSIPA.exe" "./Beat Saber.exe" -n`
-                : `"./wine64" "./BSIPA.exe" "./Beat Saber.exe" -n`,
+            `"./BSIPA.exe" "./Beat Saber.exe" -n`,
             expect.anything()
         );
 
@@ -112,14 +108,11 @@ describe("Test os.helpers bsmSpawn", () => {
                 env: BS_ENV,
             },
             log: BsmShellLog.Command,
-            linux: { prefix: `"./proton" run` },
         });
 
         expect(spawnSpy).toHaveBeenCalledTimes(1);
         expect(spawnSpy).toHaveBeenCalledWith(
-            IS_WINDOWS
-                ? `"./Beat Saber.exe" --no-yeet fpfc`
-                : `"./proton" run "./Beat Saber.exe" --no-yeet fpfc`,
+            `"./Beat Saber.exe" --no-yeet fpfc`,
             expect.objectContaining({
                 cwd: "/",
                 detached: true,
@@ -147,7 +140,7 @@ describe("Test os.helpers bsmSpawn", () => {
             something: "else",
             more: "tests",
         };
-        bsmSpawn(`"./Beat Saber.exe"`, {
+        bsmSpawn(`"./proton" run "./Beat Saber.exe"`, {
             args: ["--no-yeet", "fpfc"],
             options: {
                 cwd: "/",
@@ -155,7 +148,6 @@ describe("Test os.helpers bsmSpawn", () => {
                 env: newEnv,
             },
             log: BsmShellLog.Command,
-            linux: { prefix: `"./proton" run` },
             flatpak: {
                 host: true,
                 env: flatpakEnv,

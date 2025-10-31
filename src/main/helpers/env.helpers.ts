@@ -21,6 +21,7 @@ enum EnvParserState {
     QUOTE_VALUE,
     DQUOTE_VALUE,
     SPACE,
+    EXIT,
     ERROR,
 };
 
@@ -28,7 +29,19 @@ const isAlphaCharacter = (c: string) =>
     (c >= "a" && c <= "z") || (c >= "A" && c <= "Z");
 const isNumber = (c: string) => c >= "0" && c <= "9";
 
-export function parseEnvString(envString: string): Record<string, string> {
+/**
+ * Parses the env values from an envString command
+ *
+ * @params envString
+ * @returns ({
+ *   env - parsed environment variables
+ *   command - part of the env string which is the command
+ * })
+ */
+export function parseEnvString(envString: string): {
+    env: Record<string, string>;
+    command: string;
+} {
     const envVars: Record<string, string> = {};
 
     let state: EnvParserState = EnvParserState.NAME_START;
@@ -39,13 +52,13 @@ export function parseEnvString(envString: string): Record<string, string> {
 
         switch (state) {
             case EnvParserState.NAME_START:
+                index = pos;
                 if (isAlphaCharacter(c) || c === "_") {
                     state = EnvParserState.NAME;
-                    index = pos;
                 } else if (c !== " ") {
-                    state = EnvParserState.ERROR;
+                    state = EnvParserState.EXIT;
                 }
-                break;
+            break;
 
             case EnvParserState.NAME:
                 if (c === "=") {
@@ -53,55 +66,63 @@ export function parseEnvString(envString: string): Record<string, string> {
                     newName = envString.substring(index, pos);
                     index = pos + 1;
                 } else if (!isAlphaCharacter(c) && !isNumber(c) && c !== "_") {
-                    state = EnvParserState.ERROR;
+                    state = EnvParserState.EXIT;
                 }
-                break;
+            break;
 
             case EnvParserState.VALUE_START:
                 if (c === "'") {
-                    ++index;
-                    state = EnvParserState.QUOTE_VALUE;
-                } else if (c === '"') {
-                    ++index;
-                    state = EnvParserState.DQUOTE_VALUE;
-                } else if (c === " ") {
-                    state = EnvParserState.NAME_START;
-                    envVars[newName] = "";
-                } else {
-                    state = EnvParserState.VALUE;
-                }
-                break;
+                ++index;
+                state = EnvParserState.QUOTE_VALUE;
+            } else if (c === '"') {
+                ++index;
+                state = EnvParserState.DQUOTE_VALUE;
+            } else if (c === " ") {
+                state = EnvParserState.NAME_START;
+                envVars[newName] = "";
+            } else {
+                state = EnvParserState.VALUE;
+            }
+            break;
 
             case EnvParserState.VALUE:
                 if (c === " ") {
-                    state = EnvParserState.NAME_START;
-                    envVars[newName] = envString.substring(index, pos);
-                }
-                break;
+                state = EnvParserState.NAME_START;
+                envVars[newName] = envString.substring(index, pos);
+            }
+            break;
 
             case EnvParserState.QUOTE_VALUE:
                 if (c === "'") {
-                    state = EnvParserState.SPACE;
-                    envVars[newName] = envString.substring(index, pos);
-                }
-                break;
+                state = EnvParserState.SPACE;
+                envVars[newName] = envString.substring(index, pos);
+            }
+            break;
 
             case EnvParserState.DQUOTE_VALUE:
                 if (c === '"') {
-                    state = EnvParserState.SPACE;
-                    envVars[newName] = envString.substring(index, pos);
-                }
-                break;
+                state = EnvParserState.SPACE;
+                envVars[newName] = envString.substring(index, pos);
+            }
+            break;
 
             case EnvParserState.SPACE:
                 if (c === " ") {
-                    state = EnvParserState.NAME_START;
-                } else {
-                    state = EnvParserState.ERROR;
-                }
-                break;
+                state = EnvParserState.NAME_START;
+            } else {
+                state = EnvParserState.ERROR;
+            }
+            break;
 
             default:
+        }
+
+        // Early exit
+        if (state === EnvParserState.EXIT) {
+            return {
+                env: envVars,
+                command: envString.substring(index).trim()
+            };
         }
 
         if (state === EnvParserState.ERROR) {
@@ -114,15 +135,15 @@ export function parseEnvString(envString: string): Record<string, string> {
 
     if (state === EnvParserState.VALUE_START || state === EnvParserState.VALUE) {
         envVars[newName] = envString.substring(index);
-        return envVars;
+        return { env: envVars, command: "" };
     }
 
     if (state === EnvParserState.NAME_START || state === EnvParserState.SPACE) {
-        return envVars;
+        return { env: envVars, command: "" };
     }
 
-    throw new CustomError(
-        "parseEnvString failed: invalid ending state",
-        "generic.env.parse"
-    );
+    return {
+        env: envVars,
+        command: envString.substring(index + 1).trim(),
+    }
 }
