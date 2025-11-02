@@ -111,7 +111,8 @@
                             "bpm": "BPM",
                             "duration": "Haba",
                             "likes": "Likes",
-                            "date-uploaded": "Petsa ng Pagka-upload"
+                            "date-uploaded": "Petsa ng Pagka-upload",
+                            "added-date": "Petsa ng Pagdaragdag"
                         }
                     },
                     "playlists": {
