@@ -156,7 +156,7 @@ export class BsModsManagerService {
             return false;
         }
 
-        const env: Record<string, string> = {};
+        const env: Record<string, string> = { ...process.env };
         const cmd = `"${ipaPath}" "${bsExePath}" ${args.join(" ")}`;
         let winePath: string = "";
         if (process.platform === "linux") {
@@ -176,7 +176,6 @@ export class BsModsManagerService {
                 throw new CustomError("Could not find BSManager WINEPREFIX path", "no-wineprefix");
             }
             env.WINEPREFIX = winePrefix;
-            Object.assign(env, process.env);
         }
 
         return new Promise<boolean>(resolve => {
