@@ -51,6 +51,7 @@ describe("Test os.helpers bsmSpawn", () => {
                 STEAM_COMPAT_CLIENT_INSTALL_PATH: "/steam",
                 STEAM_COMPAT_APP_ID: BS_APP_ID,
                 SteamEnv: "1",
+                OXR_PARALLEL_VIEWS: "1",
             });
         }
     });
@@ -140,7 +141,8 @@ describe("Test os.helpers bsmSpawn", () => {
             "STEAM_COMPAT_INSTALL_PATH",
             "STEAM_COMPAT_CLIENT_INSTALL_PATH",
             "STEAM_COMPAT_APP_ID",
-            "SteamEnv"
+            "SteamEnv",
+            "OXR_PARALLEL_VIEWS"
         ];
         const newEnv = {
             ...BS_ENV,
