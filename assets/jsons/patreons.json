@@ -1,8 +1,5 @@
 [
 	{
-		"username": "Shido S&S"
-	},
-	{
 		"username": "iPixelGalaxy"
 	},
 	{
@@ -16,6 +13,9 @@
 	},
 	{
 		"username": "Z3t4"
+	},
+	{
+		"username": "Xero"
 	},
 	{
 		"username": "Rhythm Shade"
@@ -36,9 +36,6 @@
 	},
 	{
 		"username": "Mozz_Zm"
-	},
-	{
-		"username": "clapxz live"
 	},
 	{
 		"username": "Reflected Chop",
@@ -63,6 +60,9 @@
 		"type": "diamond"
 	},
 	{
+		"username": "Camryn Jackson"
+	},
+	{
 		"username": "bones",
 		"type": "gold"
 	},
@@ -73,7 +73,15 @@
 		"username": "minefox54"
 	},
 	{
+		"username": "Elysee Buthidi",
+		"type": "gold"
+	},
+	{
 		"username": "Tindux",
+		"type": "diamond"
+	},
+	{
+		"username": "Einherjar",
 		"type": "diamond"
 	}
 ]
