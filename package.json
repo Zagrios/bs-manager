@@ -4,17 +4,17 @@
     "main": "./.erb/dll/main.bundle.dev.js",
     "version": "1.5.4",
     "scripts": {
-        "build-rust-scripts": "ts-node ./.erb/scripts/build-rust-scripts.js",
+        "build-rust-scripts": "tsx ./.erb/scripts/build-rust-scripts.js",
         "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
         "build:dll": "cross-env NODE_ENV=development webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts",
         "build:main": "cross-env NODE_ENV=production webpack --config ./.erb/configs/webpack.config.main.prod.ts",
         "build:renderer": "cross-env NODE_ENV=production webpack --config ./.erb/configs/webpack.config.renderer.prod.ts",
-        "postinstall": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && npm run build:dll",
+        "postinstall": "tsx .erb/scripts/check-native-dep.js && electron-builder install-app-deps && npm run build:dll",
         "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
         "prestart": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.dev.ts",
         "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx",
-        "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never --config electron-builder.config.js && npm run build:dll",
-        "start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run prestart && npm run start:renderer",
+        "package": "tsx ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never --config electron-builder.config.js && npm run build:dll",
+        "start": "tsx ./.erb/scripts/check-port-in-use.js && npm run prestart && npm run start:renderer",
         "start:main": "concurrently -k \"cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --watch --config ./.erb/configs/webpack.config.main.dev.ts\" \"electronmon .\"",
         "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
         "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
@@ -23,7 +23,7 @@
         "publish": "npm run build && electron-builder -c.win.certificateSha1=206941d969c4fa8a0e04d9427def361e13b02fd0 --config electron-builder.config.js --publish always --win --x64",
         "publish:linux": "npm run build && electron-builder --config electron-builder.config.js --publish never --linux --x64",
         "publish:flatpak": "npm run build && env DEBUG='@malept/flatpak-bundler' npx electron-builder --config electron-builder.config.js --publish never --linux flatpak",
-        "update:patreon": "ts-node ./.erb/scripts/update-patreon.js"
+        "update:patreon": "tsx ./.erb/scripts/update-patreon.js"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx}": [
@@ -69,6 +69,7 @@
     "homepage": "https://github.com/Zagrios/bs-manager#readme",
     "devDependencies": {
         "@electron/fuses": "^1.7.0",
+        "tsx": "^4.19.2",
         "@electron/notarize": "^2.3.0",
         "@electron/rebuild": "^3.6.0",
         "@pmmmwh/react-refresh-webpack-plugin": "0.5.5",
@@ -154,6 +155,7 @@
         "webpack-merge": "^5.10.0"
     },
     "dependencies": {
+        "@emotion/is-prop-valid": "^1.2.2",
         "@internationalized/date": "^3.5.4",
         "@nextui-org/date-picker": "^2.0.7",
         "@nextui-org/react": "^2.3.6",
@@ -245,6 +247,6 @@
         "logLevel": "quiet"
     },
     "volta": {
-        "node": "22.14.0"
+        "node": "24.11.1"
     }
 }
