@@ -69,6 +69,7 @@
     "homepage": "https://github.com/Zagrios/bs-manager#readme",
     "devDependencies": {
         "@electron/fuses": "^1.7.0",
+        "ts-node": "^10.9.2",
         "tsx": "^4.19.2",
         "@electron/notarize": "^2.3.0",
         "@electron/rebuild": "^3.6.0",
