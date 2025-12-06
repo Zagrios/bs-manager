@@ -219,9 +219,10 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
     }), [version]);
 
     useEffect(() => {
+        let isCancelled = false;
 
         if(!isActive){
-            return noop();
+            return noop;
         }
 
         ensureDisclaimerAccepted().then(async canLoad => {
@@ -229,13 +230,30 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
                 return onDisclamerDecline?.();
             }
 
+            if (isCancelled) return;
+
             const status = await modsManager.getModsGridStatus();
+
+            if (isCancelled) return;
+
             setGridStatus(() => status);
 
-            loadMods();
+            if (status !== ModsGridStatus.OK) {
+                return;
+            }
+
+            modsManager.getVersionModsState(version).then(({ available, installed }) => {
+                if (isCancelled) return;
+
+                const defaultMods = installed?.length ? [] : available.filter(m => m.mod.category === BbmCategories.Core || m.mod.category === BbmCategories.Essential);
+                setModsAvailable(() => modsToCategoryMap(available));
+                setModsSelected(available.filter(m => m.mod.category === BbmCategories.Core || defaultMods.some(d => m.mod.name.toLowerCase() === d.mod.name.toLowerCase()) || installed.some(i => m.mod.id === i.mod.id)));
+                setModsInstalled(modsToCategoryMap(installed));
+            });
         });
 
         return () => {
+            isCancelled = true;
             setMoreInfoMod(null);
             setModsAvailable(null);
             setModsInstalled(null);
