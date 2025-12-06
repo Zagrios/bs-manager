@@ -32,7 +32,7 @@ export async function deleteFile(filepath: string) {
         log.info("Deleting file", `"${filepath}"`);
         await unlink(filepath);
     } catch (error: any) {
-        log.error("Could not delete file", `"${filepath}"`);
+        log.error("Could not delete file", `"${filepath}"`, error);
         throw CustomError.fromError(error, "generic.fs.delete-file");
     }
 }
@@ -42,7 +42,7 @@ export function deleteFileSync(filepath: string) {
         log.info("Deleting file", `"${filepath}"`);
         unlinkSync(filepath);
     } catch (error: any) {
-        log.error("Could not delete file", `"${filepath}"`);
+        log.error("Could not delete file", `"${filepath}"`, error);
         throw CustomError.fromError(error, "generic.fs.delete-file");
     }
 }

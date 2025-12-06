@@ -329,7 +329,9 @@ export class BsModsManagerService {
 
         const promises = mod.version.contentHashes.map(content => {
             const file = content.path.replaceAll("IPA/", "").replaceAll("Data", "Beat Saber_Data");
-            return deleteFile(path.join(verionPath, file));
+            return deleteFile(path.join(verionPath, file)).catch(err => {
+                log.info("Unable to delete IPA file, likely because it has been removed by the --revert command. Here is the error:", err);
+            });
         });
 
         await Promise.all(promises);
