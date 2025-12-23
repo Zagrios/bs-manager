@@ -11,7 +11,9 @@ permissions:
 
 jobs:
   update-patreons:
+    if: github.repository == 'Zagrios/bs-manager' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -46,5 +48,3 @@ jobs:
           delete-branch: true
           add-paths: |
             assets/jsons/patreons.json
-
-
