@@ -181,7 +181,7 @@ export class LinuxService {
         });
 
         const args = buildBsLaunchArgs(launchOptions);
-        log.debug("UwU args:", args, parsedArgs);
+        log.debug("Launch arguments:", args, "Parsed arguments:", parsedArgs);
         if (parsedArgs) {
             args.unshift(parsedArgs);
         }
