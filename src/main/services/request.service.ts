@@ -11,6 +11,7 @@ import { pipeline } from 'stream/promises';
 import sanitize from 'sanitize-filename';
 import internal from 'stream';
 import { app } from 'electron';
+import { CookieJar } from 'tough-cookie';
 
 export class RequestService {
     private static instance: RequestService;
@@ -57,15 +58,51 @@ export class RequestService {
     }
 
     private async requestData<T>(url: string, family: number): Promise<{ data: T; headers: IncomingHttpHeaders }> {
-        const response = await got(url, {
+
+        const cookieJar = new CookieJar();
+
+        const first = await got(url, {
             // @ts-ignore (ESM is not well supported in this project, We need to move out electron-react-boilerplate, and use Vite)
             dnsLookupIpVersion: family,
-            responseType: "json",
+            cookieJar,
             headers: this.baseHeaders
         });
+
+        // Follow script redirect to get the JSON
+        if (first.headers['content-type']?.includes('text/html')) {
+
+            const cookieMatch = first.body.match(/document\.cookie="([^"]+)"/);
+            if (!cookieMatch) {
+                throw new Error("Cookie not found in JS");
+            }
+
+            const cookieString = cookieMatch[1];
+
+            const redirectMatch = first.body.match(/location\.href="([^"]+)"/);
+            if (!redirectMatch) {
+                throw new Error("Redirect URL not found");
+            }
+
+            const jsonUrl = redirectMatch[1];
+            await cookieJar.setCookie(cookieString, jsonUrl);
+
+            const second = await got(jsonUrl, {
+                // @ts-ignore (ESM is not well supported in this project, We need to move out electron-react-boilerplate, and use Vite)
+                dnsLookupIpVersion: family,
+                responseType: "json",
+                cookieJar,
+                headers: this.baseHeaders
+            });
+
+            return {
+                data: second.body as T,
+                headers: second.headers
+            };
+        }
+
         return {
-            data: response.body as T,
-            headers: response.headers
+            data: JSON.parse(first.body) as T,
+            headers: first.headers
         };
     }
 
