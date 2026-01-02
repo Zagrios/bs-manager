@@ -111,7 +111,8 @@
                             "bpm": "BPM",
                             "duration": "Duration",
                             "likes": "Likes",
-                            "date-uploaded": "Date Uploaded"
+                            "date-uploaded": "Date Uploaded",
+                            "added-date": "Added Date"
                         }
                     },
                     "playlists": {

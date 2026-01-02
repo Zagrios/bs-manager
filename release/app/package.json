@@ -9,8 +9,8 @@
     "url": "https://github.com/Zagrios/bs-manager"
   },
   "scripts": {
-    "rebuild": "node -r ts-node/register ../../.erb/scripts/electron-rebuild.js",
-    "link-modules": "node -r ts-node/register ../../.erb/scripts/link-modules.ts",
+    "rebuild": "tsx ../../.erb/scripts/electron-rebuild.js",
+    "link-modules": "tsx ../../.erb/scripts/link-modules.ts",
     "postinstall": "npm run rebuild && npm run link-modules"
   },
   "dependencies": {
@@ -21,6 +21,6 @@
   },
   "license": "MIT",
   "volta": {
-    "node": "20.11.0"
+    "node": "24.11.1"
   }
 }

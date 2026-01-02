@@ -156,7 +156,6 @@ export class BsModsManagerService {
             return false;
         }
 
-
         const command = await this.getCommand(ipaPath, bsExePath, args);
         if (!command) {
             return false;
@@ -207,7 +206,7 @@ export class BsModsManagerService {
         const command = `"${ipaPath}" "${beatSaberExePath}" ${args.join(" ")}`;
         if (process.platform === "win32") {
             return {
-                env: {},
+                env: { ...process.env },
                 command,
             };
         }
