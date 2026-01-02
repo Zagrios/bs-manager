@@ -171,7 +171,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 cmdlet, args
             } = parseLaunchOptions(launchOptions.command, {
                 commandReplacement: process.platform === "win32"
-                    ? bsExePath
+                    ? `"${bsExePath}"`
                     : `${await this.linux.getProtonPrefix()} "${bsExePath}"`,
             });
             env = this.mergeEnvVariables(env, parsedEnv);
