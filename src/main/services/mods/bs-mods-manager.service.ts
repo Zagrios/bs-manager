@@ -156,38 +156,20 @@ export class BsModsManagerService {
             return false;
         }
 
-        const env: Record<string, string> = { ...process.env };
-        const cmd = `"${ipaPath}" "${bsExePath}" ${args.join(" ")}`;
-        let winePath: string = "";
-        if (process.platform === "linux") {
-            const { error: winePathError, result: winePathResult } =
-                tryit(() => this.linuxService.getWinePath());
-            if (winePathError) {
-                log.error(winePathError);
-                return false;
-            }
-
-            winePath = await this.linuxService.isNixOS()
-                ? `steam-run "${winePathResult}"`
-                : `"${winePathResult}"`;
-
-            const winePrefix = this.linuxService.getWinePrefixPath();
-            if (!winePrefix) {
-                throw new CustomError("Could not find BSManager WINEPREFIX path", "no-wineprefix");
-            }
-            env.WINEPREFIX = winePrefix;
+        const command = await this.getCommand(ipaPath, bsExePath, args);
+        if (!command) {
+            return false;
         }
 
         return new Promise<boolean>(resolve => {
-            const processIPA = bsmSpawn(cmd, {
+            const processIPA = bsmSpawn(command.command, {
                 log: BsmShellLog.Command | BsmShellLog.EnvVariables,
                 options: {
                     cwd: versionPath,
                     detached: true,
                     shell: true,
-                    env
+                    env: command.env
                 },
-                linux: { prefix: winePath },
             });
 
             const timeout = setTimeout(() => {
@@ -211,6 +193,47 @@ export class BsModsManagerService {
                 resolve(false);
             });
         });
+    }
+
+    private async getCommand(
+        ipaPath: string,
+        beatSaberExePath: string,
+        args: string[]
+    ): Promise<{
+        env: Record<string, string>;
+        command: string;
+    } | null> {
+        const command = `"${ipaPath}" "${beatSaberExePath}" ${args.join(" ")}`;
+        if (process.platform === "win32") {
+            return {
+                env: { ...process.env },
+                command,
+            };
+        }
+
+        const { error: winePathError, result: winePathResult } =
+            tryit(() => this.linuxService.getWinePath());
+        if (winePathError) {
+            log.error(winePathError);
+            return null;
+        }
+
+        const winePath = await this.linuxService.isNixOS()
+            ? `steam-run "${winePathResult}"`
+            : `"${winePathResult}"`;
+
+        const winePrefix = this.linuxService.getWinePrefixPath();
+        if (!winePrefix) {
+            throw new CustomError("Could not find BSManager WINEPREFIX path", "no-wineprefix");
+        }
+
+        return {
+            env: {
+                ...process.env,
+                WINEPREFIX: winePrefix
+            },
+            command: `${winePath} ${command}`,
+        };
     }
 
     private getModDownload(modVersion: BbmModVersion): string {

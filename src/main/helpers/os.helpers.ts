@@ -3,13 +3,6 @@ import log from "electron-log";
 import psList from "ps-list";
 import { IS_FLATPAK } from "main/constants";
 
-type LinuxOptions = {
-    // Add the prefix to the command
-    //   eg. command - "./Beat Saber.exe" --no-yeet, prefix - "path/to/proton" run
-    //     = "path/to/proton" run "./Beat Saber.exe" --no-yeet
-    prefix: string;
-};
-
 // Only applied if package as flatpak
 type FlatpakOptions = {
     // Force to use "flatpak-spawn --host" to run commands outside of the sandbox
@@ -24,11 +17,10 @@ export enum BsmShellLog {
 };
 
 interface BsmShellOptions<OptionsType> {
-    args?: string[];
+    args?: string[] | string;
     options?: OptionsType;
     // Look into BsmShellLog values
     log?: number;
-    linux?: LinuxOptions;
     flatpak?: FlatpakOptions;
 };
 
@@ -37,17 +29,15 @@ export type BsmExecOptions = BsmShellOptions<cp.ExecOptions>;
 
 function updateCommand(command: string, options: BsmSpawnOptions) {
     if (options?.args) {
-        command += ` ${options.args.join(" ")}`;
+        command += typeof(options.args) === "string"
+            ? ` ${options.args}`
+            : ` ${options.args.join(" ")}`;
     }
 
     if (process.platform === "linux") {
         // "/bin/sh" does not see flatpak-spawn
         // All distros should support "bash" by default
         options.options.shell = "bash";
-
-        if (options.linux?.prefix) {
-            command = `${options.linux.prefix} ${command}`;
-        }
 
         if (options?.flatpak?.host) {
             const envArgs = (options?.flatpak?.env && options?.options?.env)

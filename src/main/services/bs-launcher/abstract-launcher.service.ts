@@ -1,14 +1,12 @@
 import { LaunchOption } from "shared/models/bs-launch";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio } from "child_process";
-import path from "path";
 import log from "electron-log";
 import { sToMs } from "../../../shared/helpers/time.helpers";
 import { LinuxService } from "../linux.service";
 import { BsmShellLog, bsmSpawn } from "main/helpers/os.helpers";
 import { IS_FLATPAK } from "main/constants";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
-import { parseEnvString } from "main/helpers/env.helpers";
 
 export function buildBsLaunchArgs(launchOptions: LaunchOption): string[] {
     const launchArgs = [];
@@ -30,10 +28,6 @@ export function buildBsLaunchArgs(launchOptions: LaunchOption): string[] {
         launchArgs.push("editor");
     }
 
-    if (launchOptions.command) {
-        launchArgs.push(launchOptions.command);
-    }
-
     return Array.from(new Set(launchArgs).values());
 }
 
@@ -47,20 +41,20 @@ export abstract class AbstractLauncherService {
         this.localVersions = BSLocalVersionService.getInstance();
     }
 
-    private readonly COMMAND_FORMAT = "%command%";
+    protected launchBeatSaberProcess(options: LaunchBeatSaberOptions): ChildProcessWithoutNullStreams {
+        const spawnOptions: SpawnOptionsWithoutStdio = {
+            detached: true,
+            cwd: options.beatSaberFolderPath,
+            env: options.env,
+        };
 
-    protected launchBSProcess(bsExePath: string, args: string[], options?: SpawnBsProcessOptions): ChildProcessWithoutNullStreams {
-
-        const spawnOptions: SpawnOptionsWithoutStdio = { detached: true, cwd: path.dirname(bsExePath), ...(options || {}) };
-
-        if(args.includes("--verbose")){
+        if (options.args?.includes("--verbose")){
             spawnOptions.windowsVerbatimArguments = true;
         }
 
         spawnOptions.shell = true; // For windows to spawn properly
-        return bsmSpawn(`"${bsExePath}"`, {
-            args, options: spawnOptions, log: BsmShellLog.Command,
-            linux: { prefix: options?.protonPrefix || "" },
+        return bsmSpawn(options.cmdlet, {
+            args: options.args, options: spawnOptions, log: BsmShellLog.Command,
             flatpak: {
                 host: IS_FLATPAK,
                 env: [
@@ -81,8 +75,8 @@ export abstract class AbstractLauncherService {
         });
     }
 
-    protected launchBs(bsExePath: string, args: string[], options?: SpawnBsProcessOptions): {process: ChildProcessWithoutNullStreams, exit: Promise<number>} {
-        const process = this.launchBSProcess(bsExePath, args, options);
+    protected launchBeatSaber(options: LaunchBeatSaberOptions): {process: ChildProcessWithoutNullStreams, exit: Promise<number>} {
+        const process = this.launchBeatSaberProcess(options);
 
         let timeoutId: NodeJS.Timeout;
 
@@ -121,23 +115,13 @@ export abstract class AbstractLauncherService {
         return { process, exit };
     }
 
-    protected injectAdditionalArgsEnvs(
-        launchOptions: LaunchOption,
-        env: Record<string, string>
-    ) {
-        if (!launchOptions.command) {
-            return;
-        }
-
-        const { command } = launchOptions;
-        const index = command.indexOf(this.COMMAND_FORMAT);
-        if (index === -1) {
-            return;
-        }
-
-        const envString = command.substring(0, index);
-        log.info("Parsing env string ", `"${envString}"`)
-        for (const [ key, value ] of Object.entries(parseEnvString(envString))) {
+    // Launch option helper function
+    protected mergeEnvVariables(
+        originalEnv: Record<string, string>,
+        newEnv: Record<string, string>
+    ): Record<string, string> {
+        const env = { ...originalEnv };
+        for (const [ key, value ] of Object.entries(newEnv)) {
             log.info(
                 key in env ? "Overriding" : "Injecting",
                 `${key}="${value}"`,
@@ -145,13 +129,21 @@ export abstract class AbstractLauncherService {
             );
             env[key] = value;
         }
-
-        launchOptions.command = command.substring(index + this.COMMAND_FORMAT.length);
+        return env;
     }
 
 }
 
-export type SpawnBsProcessOptions = {
-    protonPrefix?: string;
+export type LaunchBeatSaberOptions = {
+    // To be passed to the bsmSpawn helper function
+    // Can be the Beat Saber exe or wrapper exe (for linux)
+    cmdlet: string;
+    env: Record<string, string>;
+    beatSaberFolderPath: string;
+
+    args?: string[]; // Appended to the cmdlet string
+
+    // Timeout value (in ms) to unref the Beat Saber process to BSM
     unrefAfter?: number;
-} & SpawnOptionsWithoutStdio;
+}
+

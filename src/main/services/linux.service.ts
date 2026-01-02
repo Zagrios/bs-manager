@@ -10,6 +10,7 @@ import { BsmShellLog, bsmExec } from "main/helpers/os.helpers";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { SteamShortcutData } from "shared/models/steam/shortcut.model";
 import { buildBsLaunchArgs } from "./bs-launcher/abstract-launcher.service";
+import { parseLaunchOptions } from "main/helpers/launchOptions.helper";
 
 export class LinuxService {
     private static instance: LinuxService;
@@ -38,26 +39,11 @@ export class LinuxService {
         return path.resolve(sharedFolder, "compatdata");
     }
 
-    public async setupLaunch(
-        launchOptions: LaunchOption,
-        steamPath: string,
-        bsFolderPath: string
-    ): Promise<{
-        protonPrefix: string;
-        env: Record<string, string>;
-    }> {
-        if (launchOptions.admin) {
-            log.warn("Launching as admin is not supported on Linux! Starting the game as a normal user.");
-            launchOptions.admin = false;
-        }
-
+    public async getProtonPrefix() {
         const protonPath = await this.getProtonPath();
-        return {
-            protonPrefix: await this.isNixOS()
-                ? `steam-run "${protonPath}" run`
-                : `"${protonPath}" run`,
-            env: await this.buildEnvVariables(launchOptions, steamPath, bsFolderPath)
-        };
+        return await this.isNixOS()
+            ? `steam-run "${protonPath}" run`
+            : `"${protonPath}" run`;
     }
 
     private async getProtonPath(): Promise<string> {
@@ -81,7 +67,7 @@ export class LinuxService {
         return protonPath;
     }
 
-    private async buildEnvVariables(
+    public async buildEnvVariables(
         launchOptions: LaunchOption,
         steamPath: string,
         bsFolderPath: string
@@ -176,18 +162,42 @@ export class LinuxService {
 
     // === Shortcuts === //
 
-    private getCommand(
-        protonPrefix: string,
-        bsFolderPath: string,
-        env: Record<string, string>,
-        launchOptions: LaunchOption
-    ): string {
+    private async getCommand(
+        launchOptions: LaunchOption,
+        steamPath: string,
+        beatSaberFolderPath: string
+    ): Promise<string> {
+        const protonPrefix = await this.getProtonPrefix();
+        const launchEnv = await this.buildEnvVariables(
+            launchOptions, steamPath, beatSaberFolderPath
+        );
+
+        const beatSaberExePath = path.join(beatSaberFolderPath, BS_EXECUTABLE);
+
+        const {
+            env: parsedEnv,
+            args: parsedArgs,
+            cmdlet,
+        } = parseLaunchOptions(launchOptions.command, {
+            commandReplacement: `${protonPrefix} ${beatSaberExePath}`,
+        });
+
+        const args = buildBsLaunchArgs(launchOptions);
+        log.debug("Launch arguments:", args, "Parsed arguments:", parsedArgs);
+        if (parsedArgs) {
+            args.unshift(parsedArgs);
+        }
+
+        const env = {
+            ...launchEnv, ...parsedEnv,
+            SteamAppId: BS_APP_ID,
+            SteamOverlayGameId: BS_APP_ID,
+            SteamGameId: BS_APP_ID,
+        };
         const envString = Object.entries(env)
             .map(([ key, value ]) => `${key}="${value}"`)
             .join(" ");
-        const bsExe = path.join(bsFolderPath, BS_EXECUTABLE);
-        const args = buildBsLaunchArgs(launchOptions).join(" ");
-        return `${envString} ${protonPrefix} "${bsExe}" ${args}`;
+        return `${envString} ${cmdlet} ${args.join(" ")}`;
     }
 
     public async createDesktopShortcut(
@@ -196,22 +206,11 @@ export class LinuxService {
         icon: string,
         launchOptions: LaunchOption,
         steamPath: string,
-        bsFolderPath: string
+        beatSaberFolderPath: string
     ): Promise<boolean> {
         try {
-            const {
-                protonPrefix, env
-            } = await this.setupLaunch(launchOptions, steamPath, bsFolderPath);
-
-            Object.assign(env, {
-                "SteamAppId": BS_APP_ID,
-                "SteamOverlayGameId": BS_APP_ID,
-                "SteamGameId": BS_APP_ID,
-            });
-
-            const command = this.getCommand(
-                protonPrefix, bsFolderPath,
-                env, launchOptions
+            const command = await this.getCommand(
+                launchOptions, steamPath, beatSaberFolderPath
             );
 
             const desktopEntry = [
@@ -219,7 +218,7 @@ export class LinuxService {
                 "Type=Application",
                 `Name=${name}`,
                 `Icon=${icon}`,
-                `Path=${bsFolderPath}`,
+                `Path=${beatSaberFolderPath}`,
                 `Exec=${command}`
             ].join("\n");
 
@@ -237,31 +236,20 @@ export class LinuxService {
         icon: string,
         launchOptions: LaunchOption,
         steamPath: string,
-        bsFolderPath: string
+        beatSaberFolderPath: string
     ): Promise<SteamShortcutData> {
-        const env = await this.buildEnvVariables(
-            launchOptions, steamPath, bsFolderPath
+        const protonPath = await this.getProtonPath();
+        const command = await this.getCommand(
+            launchOptions, steamPath, beatSaberFolderPath
         );
-        Object.assign(env, {
-            "SteamAppId": BS_APP_ID,
-            "SteamOverlayGameId": BS_APP_ID,
-            "SteamGameId": BS_APP_ID,
-        });
-
-        const protonPrefix = await this.isNixOS()
-            ? "steam-run %command% run"
-            : "%command% run";
 
         return {
             AppName: shortcutName,
-            Exe: await this.getProtonPath(),
-            StartDir: bsFolderPath,
+            Exe: protonPath,
+            StartDir: beatSaberFolderPath,
             icon,
             OpenVR: "\x01",
-            LaunchOptions: this.getCommand(
-                protonPrefix, bsFolderPath,
-                env, launchOptions
-            )
+            LaunchOptions: command
         };
     }
 

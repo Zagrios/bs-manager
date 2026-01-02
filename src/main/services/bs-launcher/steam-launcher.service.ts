@@ -6,12 +6,13 @@ import { SteamService } from "../steam.service";
 import path from "path";
 import { BS_APP_ID, BS_EXECUTABLE, STEAMVR_APP_ID } from "../../constants";
 import log from "electron-log";
-import { AbstractLauncherService, buildBsLaunchArgs, SpawnBsProcessOptions } from "./abstract-launcher.service";
+import { AbstractLauncherService, buildBsLaunchArgs, LaunchBeatSaberOptions } from "./abstract-launcher.service";
 import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
 import { UtilsService } from "../utils.service";
 import { exec, ChildProcessWithoutNullStreams } from "child_process";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { app, Event } from "electron";
+import { parseLaunchOptions } from "main/helpers/launchOptions.helper";
 
 export class SteamLauncherService extends AbstractLauncherService implements StoreLauncherInterface{
 
@@ -64,8 +65,8 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         });
     }
 
-    protected launchBs(bsExePath: string, args: string[], options?: SpawnBsProcessOptions): {process: ChildProcessWithoutNullStreams, exit: Promise<number>} {
-        const process = this.launchBSProcess(bsExePath, args, options);
+    protected launchBeatSaber(options: LaunchBeatSaberOptions): {process: ChildProcessWithoutNullStreams, exit: Promise<number>} {
+        const process = this.launchBeatSaberProcess(options);
 
         const exit = new Promise<number>((resolve, reject) => {
             // Don't remove, useful for debugging!
@@ -146,24 +147,35 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
 
             const steamPath = await this.steam.getSteamPath();
 
-            const env = {
+            let env: Record<string, string> = {
                 ...process.env,
                 "SteamAppId": BS_APP_ID,
                 "SteamOverlayGameId": BS_APP_ID,
                 "SteamGameId": BS_APP_ID,
             };
 
-            let protonPrefix = "";
             // Linux setup
             if (process.platform === "linux") {
-                const linuxSetup = await this.linux.setupLaunch(
+                if (launchOptions.admin) {
+                    log.warn("Launching as admin is not supported on Linux! Starting the game as a normal user.");
+                    launchOptions.admin = false;
+                }
+
+                Object.assign(env, await this.linux.buildEnvVariables(
                     launchOptions, steamPath, bsFolderPath
-                );
-                protonPrefix = linuxSetup.protonPrefix;
-                Object.assign(env, linuxSetup.env);
+                ));
             }
 
-            this.injectAdditionalArgsEnvs(launchOptions, env);
+            const {
+                env: parsedEnv,
+                cmdlet, args
+            } = parseLaunchOptions(launchOptions.command, {
+                commandReplacement: process.platform === "win32"
+                    ? `"${bsExePath}"`
+                    : `${await this.linux.getProtonPrefix()} "${bsExePath}"`,
+            });
+            env = this.mergeEnvVariables(env, parsedEnv);
+
             const launchArgs = buildBsLaunchArgs(launchOptions);
 
             obs.next({type: BSLaunchEvent.BS_LAUNCHING});
@@ -171,9 +183,12 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
             const spawnOpts = { env, cwd: bsFolderPath };
 
             const launchPromise = !launchOptions.admin ? (
-                this.launchBs(bsExePath, launchArgs, {
-                    ...spawnOpts,
-                    protonPrefix
+                this.launchBeatSaber({
+                    env, cmdlet,
+                    args: args
+                        ? [ args, ...launchArgs ]
+                        : launchArgs,
+                    beatSaberFolderPath: bsFolderPath,
                 }).exit
             ) : (
                 new Promise<number>(resolve => {
