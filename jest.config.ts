@@ -12,8 +12,9 @@ const config: Config = {
     },
     moduleFileExtensions: ["js", "jsx", "ts", "tsx", "json"],
     moduleDirectories: ["node_modules", "src"],
-    testPathIgnorePatterns: ["release/app/dist"],
+    testPathIgnorePatterns: ["<rootDir>/release/app"],
     setupFiles: ["./.erb/scripts/check-build-exists.ts"],
+    modulePathIgnorePatterns: ["<rootDir>/release/app"]
 };
 
 export default config;

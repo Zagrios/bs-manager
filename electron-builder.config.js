@@ -15,7 +15,9 @@ const config = {
     afterSign: ".erb/scripts/notarize.js",
     afterPack: ".erb/scripts/after-pack.js",
     win: {
-        signingHashAlgorithms: ["sha256"],
+        signtoolOptions: {
+            signingHashAlgorithms: ["sha256"],
+        },
         target: [
             "nsis",
             "nsis-web"
