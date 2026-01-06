@@ -56,7 +56,7 @@ To install AUR packages, you need to install [yay](https://github.com/Jguer/yay)
 
 Refer to [bs-manager](https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/bs/bs-manager/package.nix).
 
-Available in nixpkgs on `24.11` and `unstable` branches
+Available in nixpkgs on `25.11` and `unstable` branches
 
 > [!NOTE]
 > bs-manager will not be automatically updated in the client. You must update your channel or `flake.lock` to get the latest version in nixpkgs.
@@ -69,6 +69,31 @@ BSManager can be installed via your configuration or [home-manager](https://gith
 To try out bs-manager without installing, please run:
 ```bash
 nix-shell -p bs-manager --run bs-manager
+```
+
+#### Troubleshooting
+
+(tested on 25.11)
+If you have BSManager installed and version selected, but the game starts for a brief moment and then closes, add this to your launch options:
+
+```
+STEAM_COMPAT_CLIENT_INSTALL_PATH="/home/<your_user_name>/.local/share/Steam"
+
+or
+
+STEAM_COMPAT_CLIENT_INSTALL_PATH="/home/<your_user_name>/.steam/steam"
+```
+
+Also, if you are using WiVRn, don't forget the other launch option:
+
+```
+PRESSURE_VESSEL_IMPORT_OPENXR_1_RUNTIMES=1 %command%
+```
+
+So the whole launch options could, for example, look like this:
+
+```
+STEAM_COMPAT_CLIENT_INSTALL_PATH="/home/<your_user_name>/.local/share/Steam" PRESSURE_VESSEL_IMPORT_OPENXR_1_RUNTIMES=1 %command%
 ```
 
 > [!WARNING]
