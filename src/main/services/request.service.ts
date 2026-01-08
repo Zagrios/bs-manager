@@ -10,7 +10,7 @@ import path from 'path';
 import { pipeline } from 'stream/promises';
 import sanitize from 'sanitize-filename';
 import internal from 'stream';
-import { app } from 'electron';
+import { app, net } from 'electron';
 import { CookieJar } from 'tough-cookie';
 
 export class RequestService {
@@ -31,7 +31,76 @@ export class RequestService {
 
     private constructor() {}
 
+    /**
+     * Request JSON using Electron's Chromium network stack (electron.net).
+     * This is used specifically for beatmods.com to avoid Cloudflare timeout issues
+     */
+    private async requestWithElectronNet<T = unknown>(url: string): Promise<{ data: T; headers: IncomingHttpHeaders }> {
+        return new Promise<{ data: T; headers: IncomingHttpHeaders }>((resolve, reject) => {
+            const request = net.request({
+                method: 'GET',
+                url: url,
+                headers: this.baseHeaders,
+            });
+
+            let responseBody = Buffer.alloc(0);
+            let responseHeaders: IncomingHttpHeaders = {};
+            let isResolved = false;
+
+            // Set up timeout
+            const timeoutId = setTimeout(() => {
+                if (!isResolved) {
+                    isResolved = true;
+                    request.abort();
+                    reject(new Error(`Request timeout for ${url}`));
+                }
+            }, 15000);
+
+            const cleanup = () => {
+                clearTimeout(timeoutId);
+            };
+
+            request.on('response', (response) => {
+                // Collect headers
+                responseHeaders = response.headers as IncomingHttpHeaders;
+
+                // Collect response body
+                response.on('data', (chunk: Buffer) => {
+                    responseBody = Buffer.concat([responseBody, chunk]);
+                });
+
+                response.on('end', () => {
+                    if (isResolved) return;
+                    isResolved = true;
+                    cleanup();
+                    try {
+                        const bodyText = responseBody.toString('utf-8');
+                        const data = JSON.parse(bodyText) as T;
+                        resolve({ data, headers: responseHeaders });
+                    } catch (parseError) {
+                        reject(new Error(`Failed to parse JSON response from ${url}: ${parseError}`));
+                    }
+                });
+            });
+
+            request.on('error', (error) => {
+                if (isResolved) return;
+                isResolved = true;
+                cleanup();
+                reject(new Error(`Network error requesting ${url}: ${error.message}`));
+            });
+
+            request.end();
+        });
+    }
+
     public async getJSON<T = unknown>(url: string): Promise<{ data: T; headers: IncomingHttpHeaders }> {
+        // Use Electron's Chromium network stack for beatmods.com to avoid Cloudflare timeout issues
+        const hostname = new URL(url).hostname;
+        if (hostname === 'beatmods.com' || hostname.endsWith('.beatmods.com')) {
+            return await this.requestWithElectronNet<T>(url);
+        }
+
         const domain = (new URL(url)).hostname;
         const cachedFamily = this.preferredFamilyCache[domain];
         if (cachedFamily) {
