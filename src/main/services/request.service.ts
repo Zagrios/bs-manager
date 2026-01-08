@@ -10,7 +10,7 @@ import path from 'path';
 import { pipeline } from 'stream/promises';
 import sanitize from 'sanitize-filename';
 import internal from 'stream';
-import { app } from 'electron';
+import { app, net } from 'electron';
 import { CookieJar } from 'tough-cookie';
 
 export class RequestService {
@@ -31,7 +31,77 @@ export class RequestService {
 
     private constructor() {}
 
+    private isBeatmodsUrl(url: string): boolean {
+        const hostname = new URL(url).hostname;
+        return hostname === 'beatmods.com' || hostname.endsWith('.beatmods.com');
+    }
+
+    /**
+     * Uses Electron's Chromium network stack instead of Node's HTTP stack
+     * to avoid Cloudflare timeout issues that occur with beatmods.com
+     */
+    private async requestWithElectronNet<T = unknown>(url: string): Promise<{ data: T; headers: IncomingHttpHeaders }> {
+        return new Promise<{ data: T; headers: IncomingHttpHeaders }>((resolve, reject) => {
+            const request = net.request({
+                method: 'GET',
+                url: url,
+                headers: this.baseHeaders,
+            });
+
+            let responseBody = Buffer.alloc(0);
+            let responseHeaders: IncomingHttpHeaders = {};
+            let isResolved = false;
+
+            const timeoutId = setTimeout(() => {
+                if (!isResolved) {
+                    isResolved = true;
+                    request.abort();
+                    reject(new Error(`Request timeout for ${url}`));
+                }
+            }, 15000);
+
+            const cleanup = () => {
+                clearTimeout(timeoutId);
+            };
+
+            request.on('response', (response) => {
+                responseHeaders = response.headers as IncomingHttpHeaders;
+
+                response.on('data', (chunk: Buffer) => {
+                    responseBody = Buffer.concat([responseBody, chunk]);
+                });
+
+                response.on('end', () => {
+                    if (isResolved) return;
+                    isResolved = true;
+                    cleanup();
+                    try {
+                        const bodyText = responseBody.toString('utf-8');
+                        const data = JSON.parse(bodyText) as T;
+                        resolve({ data, headers: responseHeaders });
+                    } catch (parseError) {
+                        reject(new Error(`Failed to parse JSON response from ${url}: ${parseError}`));
+                    }
+                });
+            });
+
+            request.on('error', (error) => {
+                if (isResolved) return;
+                isResolved = true;
+                cleanup();
+                reject(new Error(`Network error requesting ${url}: ${error.message}`));
+            });
+
+            request.end();
+        });
+    }
+
     public async getJSON<T = unknown>(url: string): Promise<{ data: T; headers: IncomingHttpHeaders }> {
+        // Node's HTTP stack has Cloudflare compatibility issues with beatmods.com
+        if (this.isBeatmodsUrl(url)) {
+            return await this.requestWithElectronNet<T>(url);
+        }
+
         const domain = (new URL(url)).hostname;
         const cachedFamily = this.preferredFamilyCache[domain];
         if (cachedFamily) {
@@ -106,11 +176,107 @@ export class RequestService {
         };
     }
 
+    /**
+     * Uses Electron's Chromium network stack instead of Node's HTTP stack
+     * to avoid Cloudflare timeout issues that occur with beatmods.com
+     */
+    private downloadFileWithElectronNet(
+        url: string,
+        dest: string,
+        opt?: { preferContentDisposition?: boolean }
+    ): Observable<Progression<string>> {
+        return new Observable<Progression<string>>((subscriber) => {
+            const progress: Progression<string> = { current: 0, total: 0 };
+            let file: WriteStream | undefined;
+            let isCompleted = false;
+
+            const request = net.request({
+                method: 'GET',
+                url: url,
+                headers: this.baseHeaders,
+            });
+
+            const cleanup = () => {
+                if (file) {
+                    file.destroy();
+                }
+            };
+
+            request.on('response', (response) => {
+                const contentLength = response.headers['content-length'];
+                if (contentLength) {
+                    const length = Array.isArray(contentLength) ? contentLength[0] : contentLength;
+                    progress.total = parseInt(length, 10);
+                }
+
+                const filename = opt?.preferContentDisposition 
+                    ? this.getFilenameFromContentDisposition(response.headers['content-disposition'] as string) 
+                    : null;
+
+                if (filename) {
+                    dest = path.join(path.dirname(dest), sanitize(filename));
+                }
+
+                progress.data = dest;
+                file = createWriteStream(dest);
+
+                response.on('data', (chunk: Buffer) => {
+                    if (file && !file.destroyed) {
+                        progress.current += chunk.length;
+                        subscriber.next(progress);
+                        file.write(chunk);
+                    }
+                });
+
+                response.on('end', () => {
+                    if (isCompleted) return;
+                    isCompleted = true;
+                    if (file && !file.destroyed) {
+                        file.end();
+                    }
+                    subscriber.next(progress);
+                    subscriber.complete();
+                });
+
+                response.on('error', (error) => {
+                    if (isCompleted) return;
+                    isCompleted = true;
+                    cleanup();
+                    tryit(() => deleteFileSync(dest));
+                    subscriber.error(error);
+                });
+            });
+
+            request.on('error', (error) => {
+                if (isCompleted) return;
+                isCompleted = true;
+                cleanup();
+                tryit(() => deleteFileSync(dest));
+                subscriber.error(error);
+            });
+
+            request.end();
+
+            return () => {
+                request.abort();
+                cleanup();
+            };
+        }).pipe(
+            tap({ error: (e) => log.error(e, url, dest) }),
+            shareReplay(1)
+        );
+    }
+
     public downloadFile(
         url: string,
         dest: string,
         opt?: { preferContentDisposition?: boolean }
     ): Observable<Progression<string>> {
+        // Node's HTTP stack has Cloudflare compatibility issues with beatmods.com
+        if (this.isBeatmodsUrl(url)) {
+            return this.downloadFileWithElectronNet(url, dest, opt);
+        }
+
         return new Observable<Progression<string>>((subscriber) => {
             const progress: Progression<string> = { current: 0, total: 0 };
 
@@ -187,10 +353,104 @@ export class RequestService {
         );
     }
 
+    /**
+     * Uses Electron's Chromium network stack instead of Node's HTTP stack
+     * to avoid Cloudflare timeout issues that occur with beatmods.com
+     */
+    private downloadBufferWithElectronNet(
+        url: string,
+        options?: got.GotOptions<null>
+    ): Observable<Progression<Buffer, IncomingMessage>> {
+        return new Observable<Progression<Buffer, IncomingMessage>>((subscriber) => {
+            const progress: Progression<Buffer, IncomingMessage> = {
+                current: 0,
+                total: 0,
+                data: null,
+            };
+
+            // Convert headers to the format expected by electron.net (string | string[])
+            const electronHeaders: Record<string, string | string[]> = { ...this.baseHeaders };
+            if (options?.headers) {
+                for (const [key, value] of Object.entries(options.headers)) {
+                    if (typeof value === 'string' || Array.isArray(value)) {
+                        electronHeaders[key] = value;
+                    } else if (value != null) {
+                        electronHeaders[key] = String(value);
+                    }
+                }
+            }
+            
+            let data = Buffer.alloc(0);
+            let responseHeaders: IncomingHttpHeaders = {};
+            let isCompleted = false;
+
+            const request = net.request({
+                method: 'GET',
+                url: url,
+                headers: electronHeaders,
+            });
+
+            request.on('response', (response) => {
+                const contentLength = response.headers['content-length'];
+                if (contentLength) {
+                    const length = Array.isArray(contentLength) ? contentLength[0] : contentLength;
+                    progress.total = parseInt(length, 10);
+                }
+
+                responseHeaders = response.headers as IncomingHttpHeaders;
+
+                response.on('data', (chunk: Buffer) => {
+                    data = Buffer.concat([data, chunk]);
+                    progress.current = data.length;
+                    subscriber.next(progress);
+                });
+
+                response.on('end', () => {
+                    if (isCompleted) return;
+                    isCompleted = true;
+                    progress.data = data;
+                    // Required to maintain API compatibility with got-based implementation
+                    const mockResponse = {
+                        headers: responseHeaders,
+                    } as IncomingMessage;
+                    progress.extra = mockResponse;
+                    subscriber.next(progress);
+                    subscriber.complete();
+                });
+
+                response.on('error', (error) => {
+                    if (isCompleted) return;
+                    isCompleted = true;
+                    subscriber.error(error);
+                });
+            });
+
+            request.on('error', (error) => {
+                if (isCompleted) return;
+                isCompleted = true;
+                subscriber.error(error);
+            });
+
+            request.end();
+
+            return () => {
+                request.abort();
+            };
+        }).pipe(
+            tap({ error: (e) => log.error(e, url) }),
+            shareReplay(1)
+        );
+    }
+
     public downloadBuffer(
         url: string,
         options?: got.GotOptions<null>
     ): Observable<Progression<Buffer, IncomingMessage>> {
+        // Node's HTTP stack has Cloudflare compatibility issues with beatmods.com
+        if (this.isBeatmodsUrl(url)) {
+            return this.downloadBufferWithElectronNet(url, options);
+        }
+
         return new Observable<Progression<Buffer, IncomingMessage>>((subscriber) => {
             const progress: Progression<Buffer, IncomingMessage> = {
                 current: 0,
