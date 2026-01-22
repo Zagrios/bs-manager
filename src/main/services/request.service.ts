@@ -67,6 +67,15 @@ export class RequestService {
             request.on('response', (response) => {
                 responseHeaders = response.headers as IncomingHttpHeaders;
 
+                // Validate HTTP status code (got throws on non-2xx by default)
+                const statusCode = response.statusCode;
+                if (statusCode < 200 || statusCode >= 300) {
+                    isResolved = true;
+                    cleanup();
+                    reject(new Error(`Request failed with status ${statusCode} for ${url}`));
+                    return;
+                }
+
                 response.on('data', (chunk: Buffer) => {
                     responseBody = Buffer.concat([responseBody, chunk]);
                 });
@@ -82,6 +91,13 @@ export class RequestService {
                     } catch (parseError) {
                         reject(new Error(`Failed to parse JSON response from ${url}: ${parseError}`));
                     }
+                });
+
+                response.on('error', (error) => {
+                    if (isResolved) return;
+                    isResolved = true;
+                    cleanup();
+                    reject(new Error(`Response stream error for ${url}: ${error.message}`));
                 });
             });
 
@@ -203,14 +219,23 @@ export class RequestService {
             };
 
             request.on('response', (response) => {
+                // Validate HTTP status code (got throws on non-2xx by default)
+                const statusCode = response.statusCode;
+                if (statusCode < 200 || statusCode >= 300) {
+                    isCompleted = true;
+                    cleanup();
+                    subscriber.error(new Error(`Download failed with status ${statusCode} for ${url}`));
+                    return;
+                }
+
                 const contentLength = response.headers['content-length'];
                 if (contentLength) {
                     const length = Array.isArray(contentLength) ? contentLength[0] : contentLength;
                     progress.total = parseInt(length, 10);
                 }
 
-                const filename = opt?.preferContentDisposition 
-                    ? this.getFilenameFromContentDisposition(response.headers['content-disposition'] as string) 
+                const filename = opt?.preferContentDisposition
+                    ? this.getFilenameFromContentDisposition(response.headers['content-disposition'] as string)
                     : null;
 
                 if (filename) {
@@ -219,6 +244,15 @@ export class RequestService {
 
                 progress.data = dest;
                 file = createWriteStream(dest);
+
+                // Handle WriteStream errors (e.g., disk full, permission denied)
+                file.on('error', (error) => {
+                    if (isCompleted) return;
+                    isCompleted = true;
+                    cleanup();
+                    tryit(() => deleteFileSync(dest));
+                    subscriber.error(new Error(`File write error for ${dest}: ${error.message}`));
+                });
 
                 response.on('data', (chunk: Buffer) => {
                     if (file && !file.destroyed) {
@@ -379,7 +413,7 @@ export class RequestService {
                     }
                 }
             }
-            
+
             let data = Buffer.alloc(0);
             let responseHeaders: IncomingHttpHeaders = {};
             let isCompleted = false;
@@ -391,6 +425,14 @@ export class RequestService {
             });
 
             request.on('response', (response) => {
+                // Validate HTTP status code (got throws on non-2xx by default)
+                const statusCode = response.statusCode;
+                if (statusCode < 200 || statusCode >= 300) {
+                    isCompleted = true;
+                    subscriber.error(new Error(`Download failed with status ${statusCode} for ${url}`));
+                    return;
+                }
+
                 const contentLength = response.headers['content-length'];
                 if (contentLength) {
                     const length = Array.isArray(contentLength) ? contentLength[0] : contentLength;
