@@ -245,13 +245,13 @@ export class RequestService {
                 progress.data = dest;
                 file = createWriteStream(dest);
 
-                // Handle WriteStream errors (e.g., disk full, permission denied)
                 file.on('error', (error) => {
-                    if (isCompleted) return;
-                    isCompleted = true;
                     cleanup();
                     tryit(() => deleteFileSync(dest));
-                    subscriber.error(new Error(`File write error for ${dest}: ${error.message}`));
+                    if (!isCompleted) {
+                        isCompleted = true;
+                        subscriber.error(new Error(`File write error for ${dest}: ${error.message}`));
+                    }
                 });
 
                 response.on('data', (chunk: Buffer) => {
@@ -264,12 +264,19 @@ export class RequestService {
 
                 response.on('end', () => {
                     if (isCompleted) return;
-                    isCompleted = true;
                     if (file && !file.destroyed) {
+                        file.once('finish', () => {
+                            if (isCompleted) return;
+                            isCompleted = true;
+                            subscriber.next(progress);
+                            subscriber.complete();
+                        });
                         file.end();
+                    } else {
+                        isCompleted = true;
+                        subscriber.next(progress);
+                        subscriber.complete();
                     }
-                    subscriber.next(progress);
-                    subscriber.complete();
                 });
 
                 response.on('error', (error) => {
