@@ -32,7 +32,7 @@ export class RequestService {
     private constructor() {}
 
     private isBeatmodsUrl(url: string): boolean {
-        const hostname = new URL(url).hostname;
+        const { hostname } = new URL(url);
         return hostname === 'beatmods.com' || hostname.endsWith('.beatmods.com');
     }
 
@@ -44,7 +44,7 @@ export class RequestService {
         return new Promise<{ data: T; headers: IncomingHttpHeaders }>((resolve, reject) => {
             const request = net.request({
                 method: 'GET',
-                url: url,
+                url,
                 headers: this.baseHeaders,
             });
 
@@ -68,7 +68,7 @@ export class RequestService {
                 responseHeaders = response.headers as IncomingHttpHeaders;
 
                 // Validate HTTP status code (got throws on non-2xx by default)
-                const statusCode = response.statusCode;
+                const { statusCode } = response;
                 if (statusCode < 200 || statusCode >= 300) {
                     isResolved = true;
                     cleanup();
@@ -115,7 +115,7 @@ export class RequestService {
     public async getJSON<T = unknown>(url: string): Promise<{ data: T; headers: IncomingHttpHeaders }> {
         // Node's HTTP stack has Cloudflare compatibility issues with beatmods.com
         if (this.isBeatmodsUrl(url)) {
-            return await this.requestWithElectronNet<T>(url);
+            return this.requestWithElectronNet<T>(url);
         }
 
         const domain = (new URL(url)).hostname;
@@ -208,7 +208,7 @@ export class RequestService {
 
             const request = net.request({
                 method: 'GET',
-                url: url,
+                url,
                 headers: this.baseHeaders,
             });
 
@@ -220,7 +220,7 @@ export class RequestService {
 
             request.on('response', (response) => {
                 // Validate HTTP status code (got throws on non-2xx by default)
-                const statusCode = response.statusCode;
+                const { statusCode } = response;
                 if (statusCode < 200 || statusCode >= 300) {
                     isCompleted = true;
                     cleanup();
@@ -427,13 +427,13 @@ export class RequestService {
 
             const request = net.request({
                 method: 'GET',
-                url: url,
+                url,
                 headers: electronHeaders,
             });
 
             request.on('response', (response) => {
                 // Validate HTTP status code (got throws on non-2xx by default)
-                const statusCode = response.statusCode;
+                const { statusCode } = response;
                 if (statusCode < 200 || statusCode >= 300) {
                     isCompleted = true;
                     subscriber.error(new Error(`Download failed with status ${statusCode} for ${url}`));
