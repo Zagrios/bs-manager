@@ -179,6 +179,9 @@
                         "description-plural": "Ang bersyon na ito ay may {nb} lipas na mga mod. Gusto mo bang i-update ang mga ito?",
                         "dont-remind-me": "Huwag akong paalalahanan",
                         "update": "I-update"
+                    },
+                    "third-party-mod-source-not-avaliable": {
+                        "description": "Hindi magagamit ang third-party data source na \"{name}\". Bumalik sa BeatMods sa mga setting at subukang muli."
                     }
                 },
                 "drop-zone": {
@@ -283,6 +286,11 @@
                         "tl-PH": "Filipino"
                     }
                 }
+            },
+            "mod-repos": {
+                "title": "Pinagmulan ng modyul",
+                "description": "Pumili ng ibang mapagkukunan maliban sa BeatMods.",
+                "website": "website"
             },
             "patreon": {
                 "title": "Supportahan ang BSManager 💖",
