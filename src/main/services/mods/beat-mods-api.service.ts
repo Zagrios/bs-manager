@@ -73,6 +73,7 @@ export class BeatModsApiService {
     }
 
     private getVersionModsUrl(version: BSVersion): string {
+        // TODO: This endpoint is now deprecated
         const platform: BbmPlatform = version.oculus || version.metadata?.store === BsStore.OCULUS ? BbmPlatform.OculusPC : BbmPlatform.SteamPC;
         return `${this.getSelectedModRepo().mods_repo_api_url}/mods?status=verified&gameVersion=${version.BSVersion}&gameName=BeatSaber&platform=${platform}`;
     }
