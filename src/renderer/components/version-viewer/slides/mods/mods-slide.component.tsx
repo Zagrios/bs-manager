@@ -291,11 +291,11 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
 
     const renderStatus = () => {
         if (gridStatus === ModsGridStatus.BEATMODS_DOWN) {
-            if(selectedModRepo && selectedModRepo.id != "beatmods"){
+            if(selectedModRepo && selectedModRepo.id !== "beatmods"){
                 return <ModStatus image={BeatConflictImg}>
                     <span className="text-xl text-center px-2 mt-3 italic">
                     {
-                        t("pages.version-viewer.mods.notifications.third-party-mod-source-not-avaliable.description", 
+                        t("pages.version-viewer.mods.notifications.third-party-mod-source-not-avaliable.description",
                             {name:selectedModRepo ? selectedModRepo.display_name : "null"}
                         )
                     }

@@ -54,7 +54,7 @@ export class BeatModsApiService {
 
     private constructor() {
         this.staticConfig = StaticConfigurationService.getInstance();
-        
+
         this.requestService = RequestService.getInstance();
         for(const repo of BeatModsApiService.MOD_REPO_LIST){
             this.mod_repos[repo.id] = repo;
@@ -71,7 +71,7 @@ export class BeatModsApiService {
             await this.requestService.getJSON<{}>(`${this.getSelectedModRepo().mods_repo_api_url}/status`);
             return true;
         } catch (error) {
-            log.error("Could not connect to " + this.selectedModRepo, error);
+            log.error(`Could not connect to ${this.selectedModRepo}`, error);
             return false;
         }
     }
@@ -89,7 +89,7 @@ export class BeatModsApiService {
         return this.getSelectedModRepo();
     }
     public async selectModRepo(repo:string): Promise<boolean>{
-        if(repo != "__proto__" && this.mod_repos[repo]){
+        if(repo !== "__proto__" && this.mod_repos[repo]){
             this.selectedModRepo = repo;
             this.staticConfig.set("selected-mod-repo", repo);
             this.resetCache()

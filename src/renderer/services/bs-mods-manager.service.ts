@@ -228,15 +228,15 @@ export class BsModsManagerService {
     }
 
     public async getModRepoList(): Promise<ModRepo[]> {
-        return await lastValueFrom(this.ipcService.sendV2("bs-mods.mod-repo.get-repo-list")).catch(() => [] as ModRepo[]);
+        return lastValueFrom(this.ipcService.sendV2("bs-mods.mod-repo.get-repo-list")).catch(() => [] as ModRepo[]);
     }
 
     public async getSelectedModRepo(): Promise<ModRepo|null> {
-        return await lastValueFrom(this.ipcService.sendV2("bs-mods.mod-repo.get-name")).catch(() => null as (ModRepo|null));
+        return lastValueFrom(this.ipcService.sendV2("bs-mods.mod-repo.get-name")).catch(() => null as (ModRepo|null));
     }
 
     public async selectModRepo(name:string): Promise<boolean> {
-        return await lastValueFrom(this.ipcService.sendV2("bs-mods.mod-repo.select-name", name)).catch(() => false);
+        return lastValueFrom(this.ipcService.sendV2("bs-mods.mod-repo.select-name", name)).catch(() => false);
     }
 
 }
