@@ -113,9 +113,9 @@ export function SettingsPage() {
         mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
-        
-        
-        bsModManagerService.getModRepoList().then( list =>{
+
+
+        bsModManagerService.getModRepoList().then(list =>{
             setModRepoList(list);
             bsModManagerService.getSelectedModRepo().then(repo => {
                 setModRepo(repo.id);
@@ -534,7 +534,7 @@ export function SettingsPage() {
                         id:index,
                         value: repo.id,
                         text: repo.display_name,
-                        icon: repo.website ? 
+                        icon: repo.website ?
                                     <BsmButton onClick={()=>linkOpener.open(repo.website, false)} className="px-2 font-bold italic text-sm rounded-md" text="pages.settings.mod-repos.website" withBar={false} />
                                 : null
                     }))} selectedItemValue={modRepo} onItemSelected={handleChangeModRepo} />

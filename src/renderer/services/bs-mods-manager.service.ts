@@ -1,4 +1,4 @@
-import { Observable, BehaviorSubject, throwError, of, lastValueFrom } from "rxjs";
+import { Observable, BehaviorSubject, throwError, of, lastValueFrom, from } from "rxjs";
 import { catchError, map, tap } from "rxjs/operators";
 import { BSVersion } from "shared/bs-version.interface";
 import { IpcService } from "./ipc.service";
@@ -231,8 +231,10 @@ export class BsModsManagerService {
         return lastValueFrom(this.ipcService.sendV2("bs-mods.mod-repo.get-repo-list")).catch(() => [] as ModRepo[]);
     }
 
-    public async getSelectedModRepo(): Promise<ModRepo|null> {
-        return lastValueFrom(this.ipcService.sendV2("bs-mods.mod-repo.get-name")).catch(() => null as (ModRepo|null));
+    public async getSelectedModRepo(): Promise<ModRepo> {
+        return lastValueFrom(this.ipcService.sendV2("bs-mods.mod-repo.get-name").pipe(
+            catchError(() => from(this.getModRepoList()).pipe(map(list => list.find(repo => repo.default) || list[0])))
+        ));
     }
 
     public async selectModRepo(name:string): Promise<boolean> {

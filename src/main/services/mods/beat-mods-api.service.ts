@@ -30,11 +30,10 @@ export class BeatModsApiService {
         }
     ];
 
-    private selectedModRepo:string = "beatmods";
-    private readonly mod_repos:Record<string /* repo id */, ModRepo> = { __proto__: null };
+    private selectedModRepo: ModRepo = BeatModsApiService.MOD_REPO_LIST.find(repo => repo.default) || BeatModsApiService.MOD_REPO_LIST[0];
 
-    public getSelectedModRepo(){
-        return (this.mod_repos[this.selectedModRepo] || this.mod_repos.beatmods);
+    public getSelectedModRepo(): ModRepo {
+        return this.selectedModRepo;
     }
 
     private readonly versionModsCache = new Map<string, BbmFullMod[]>();
@@ -54,15 +53,12 @@ export class BeatModsApiService {
 
     private constructor() {
         this.staticConfig = StaticConfigurationService.getInstance();
-
         this.requestService = RequestService.getInstance();
-        for(const repo of BeatModsApiService.MOD_REPO_LIST){
-            this.mod_repos[repo.id] = repo;
-        }
 
-        const repoConfig = this.staticConfig.get("selected-mod-repo") || "beatmods";
-        if(this.mod_repos[repoConfig])
-            this.selectedModRepo = repoConfig;
+        const repoId = this.staticConfig.get("selected-mod-repo");
+        if(repoId){
+            this.selectedModRepo = BeatModsApiService.MOD_REPO_LIST.find(repo => repo.id === repoId) || BeatModsApiService.MOD_REPO_LIST[0];
+        }
     }
 
     public async isUp(): Promise<boolean> {
@@ -71,7 +67,7 @@ export class BeatModsApiService {
             await this.requestService.getJSON<{}>(`${this.getSelectedModRepo().mods_repo_api_url}/status`);
             return true;
         } catch (error) {
-            log.error(`Could not connect to ${this.selectedModRepo}`, error);
+            log.error(`Could not connect to ${this.selectedModRepo.mods_repo_api_url}`, error);
             return false;
         }
     }
@@ -88,14 +84,17 @@ export class BeatModsApiService {
     public async getSelectedModRepoAsync():Promise<ModRepo>{
         return this.getSelectedModRepo();
     }
-    public async selectModRepo(repo:string): Promise<boolean>{
-        if(repo !== "__proto__" && this.mod_repos[repo]){
-            this.selectedModRepo = repo;
-            this.staticConfig.set("selected-mod-repo", repo);
-            this.resetCache()
-            return true;
+    public async selectModRepo(repoId:string): Promise<boolean>{
+        const selectedRepo = BeatModsApiService.MOD_REPO_LIST.find(repo => repo.id === repoId);
+
+        if(!selectedRepo){
+            return false;
         }
-        return false;
+
+        this.selectedModRepo = selectedRepo;
+        this.staticConfig.set("selected-mod-repo", repoId);
+        this.resetCache()
+        return true;
     }
 
     private updateModsHashCache(mods: BbmModVersion[]): void {

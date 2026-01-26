@@ -4,4 +4,5 @@ export interface ModRepo {
     mods_repo_api_url: string
     display_name: string
     website?: string
+    default?: boolean
 }

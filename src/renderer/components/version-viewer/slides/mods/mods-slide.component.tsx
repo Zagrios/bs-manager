@@ -223,7 +223,7 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
 
     useEffect(()=>{
         modsManager.getSelectedModRepo().then(repo=>setSelectedModRepo(repo));
-    });
+    }, []);
 
     useEffect(() => {
         let isCancelled = false;
