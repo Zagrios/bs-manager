@@ -39,3 +39,17 @@ ipc.on("bs-mods.beatmods-up", (_, reply) => {
     const beatMods = BeatModsApiService.getInstance();
     reply(from(beatMods.isUp()));
 })
+
+ipc.on("bs-mods.mod-repo.get-repo-list", (_, reply) => {
+    const beatMods = BeatModsApiService.getInstance();
+    reply(from(beatMods.getModRepoList()));
+})
+ipc.on("bs-mods.mod-repo.get-name", (_, reply) => {
+    const beatMods = BeatModsApiService.getInstance();
+    reply(from(beatMods.getSelectedModRepoAsync()));
+})
+
+ipc.on("bs-mods.mod-repo.select-name", (args, reply) => {
+    const beatMods = BeatModsApiService.getInstance();
+    reply(from(beatMods.selectModRepo(args)));
+})

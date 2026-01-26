@@ -1,4 +1,4 @@
-import { Observable, BehaviorSubject, throwError, of, lastValueFrom } from "rxjs";
+import { Observable, BehaviorSubject, throwError, of, lastValueFrom, from } from "rxjs";
 import { catchError, map, tap } from "rxjs/operators";
 import { BSVersion } from "shared/bs-version.interface";
 import { IpcService } from "./ipc.service";
@@ -10,6 +10,7 @@ import { BbmFullMod, BbmModVersion } from "shared/models/mods/mod.interface";
 import { logRenderError } from "renderer";
 import { ModsGridStatus } from "shared/models/mods/mod-ipc.model";
 import { LinuxService } from "./linux.service";
+import { ModRepo } from "shared/models/mods/repo.model";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -224,6 +225,20 @@ export class BsModsManagerService {
         }
 
         return ModsGridStatus.OK;
+    }
+
+    public async getModRepoList(): Promise<ModRepo[]> {
+        return lastValueFrom(this.ipcService.sendV2("bs-mods.mod-repo.get-repo-list")).catch(() => [] as ModRepo[]);
+    }
+
+    public async getSelectedModRepo(): Promise<ModRepo> {
+        return lastValueFrom(this.ipcService.sendV2("bs-mods.mod-repo.get-name").pipe(
+            catchError(() => from(this.getModRepoList()).pipe(map(list => list.find(repo => repo.default) || list[0])))
+        ));
+    }
+
+    public async selectModRepo(name:string): Promise<boolean> {
+        return lastValueFrom(this.ipcService.sendV2("bs-mods.mod-repo.select-name", name)).catch(() => false);
     }
 
 }
