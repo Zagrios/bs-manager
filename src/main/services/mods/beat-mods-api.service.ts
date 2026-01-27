@@ -19,14 +19,14 @@ export class BeatModsApiService {
             mods_repo_url: "https://beatmods.com",
             mods_repo_api_url: "https://beatmods.com/api",
             display_name: "BeatMods",
-            website: "https://beatmods.com"
+            website: "https://beatmods.com/?utm_source=bsmanager&utm_medium=app&utm_campaign=website_button"
         },
         {
             id: "beatsabercn",
             mods_repo_url: "https://beatmods.bsaber.cn",
             mods_repo_api_url: "https://beatmods.bsaber.cn/api",
             display_name: "CN中文镜像源",
-            website: "https://beatmods.bsaber.cn/front/mods"
+            website: "https://beatmods.bsaber.cn/front/mods?utm_source=bsmanager&utm_medium=app&utm_campaign=website_button"
         }
     ];
 
