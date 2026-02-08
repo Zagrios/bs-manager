@@ -48,7 +48,9 @@ export class OculusLauncherService extends AbstractLauncherService implements St
                 }
 
                 // Make sure Oculus is running
-                await this.oculus.startOculus().catch(err => log.error("Error while starting Oculus", err));
+                await this.oculus.startOculus().catch(err => log.error("Error while starting Oculus", err)).catch(err => {
+                    log.warn("Unable to start Oculus client. Force launch.", err);
+                });
 
                 let env: Record<string, string> = {
                     ...process.env,
@@ -57,7 +59,7 @@ export class OculusLauncherService extends AbstractLauncherService implements St
                     env: parsedEnv,
                     cmdlet, args,
                 } = parseLaunchOptions(launchOptions.command, {
-                    commandReplacement: exePath,
+                    commandReplacement: `"${exePath}"`,
                 });
                 env = this.mergeEnvVariables(env, parsedEnv);
 

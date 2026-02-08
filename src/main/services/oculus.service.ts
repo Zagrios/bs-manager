@@ -105,8 +105,12 @@ export class OculusService {
         return null;
     }
 
-    public oculusRunning(): Promise<boolean> {
-        return isProcessRunning("OculusClient");
+    public async oculusRunning(): Promise<boolean> {
+        if (await isProcessRunning("OculusClient")) {
+            return true;
+        }
+
+        return isProcessRunning("Client"); // new name of oculus client
     }
 
     public async startOculus(): Promise<void>{
