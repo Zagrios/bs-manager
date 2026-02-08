@@ -22,7 +22,6 @@ import { StaticConfigGetIpcRequestResponse, StaticConfigKeys, StaticConfigSetIpc
 import { BbmFullMod, BbmModVersion, ExternalMod } from "../mods/mod.interface";
 import { OculusDownloadInfo } from "main/services/bs-version-download/bs-oculus-downloader.service";
 import { UpdateInfo } from "electron-updater";
-import { ModRepo } from "../mods/repo.model";
 
 export type IpcReplier<T> = (data: Observable<T>) => void;
 
@@ -91,9 +90,6 @@ export interface IpcChannelMapping {
     "bs-mods.uninstall-mods": { request: { mods: BbmFullMod[]; version: BSVersion }, response: Progression };
     "bs-mods.uninstall-all-mods": { request: BSVersion, response: Progression };
     "bs-mods.beatmods-up": { request: void, response: boolean };
-    "bs-mods.mod-repo.get-repo-list": { request: void, response: ModRepo[]};
-    "bs-mods.mod-repo.get-name": { request: void, response: ModRepo};
-    "bs-mods.mod-repo.select-name": { request: string, response: boolean};
 
     /* ** bs-playlist-ipcs ** */
     "one-click-install-playlist": { request: string, response: Progression<DownloadPlaylistProgressionData> };

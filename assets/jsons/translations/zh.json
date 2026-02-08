@@ -179,9 +179,6 @@
                         "description-plural": "此版本有 {nb} 个过时的模组。您想更新它们吗？",
                         "dont-remind-me": "不要提醒我",
                         "update": "更新"
-                    },
-                    "third-party-mod-source-not-avaliable": {
-                        "description": "第三方数据源“{name}”不可用，请在设置中切换回BeatMods再试。"
                     }
                 },
                 "drop-zone": {
@@ -286,11 +283,6 @@
                         "tl-PH": "菲律宾人"
                     }
                 }
-            },
-            "mod-repos": {
-                "title": "模组源",
-                "description": "选择一个除BeatMods之外的源",
-                "website": "网站"
             },
             "patreon": {
                 "title": "支持 BSManager 💖",

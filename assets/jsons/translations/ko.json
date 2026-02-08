@@ -179,9 +179,6 @@
                         "description-plural": "이 버전에는 {nb}개의 구식 모드가 있습니다. 업데이트하시겠습니까?",
                         "dont-remind-me": "다시는 알리지 않기",
                         "update": "업데이트"
-                    },
-                    "third-party-mod-source-not-avaliable": {
-                        "description": "타사 데이터 소스 \"{name}\"을 사용할 수 없습니다. 설정에서 BeatMods로 다시 전환한 후 다시 시도해 주세요."
                     }
                 },
                 "drop-zone": {
@@ -286,11 +283,6 @@
                         "tl-PH": "필리핀인"
                     }
                 }
-            },
-            "mod-repos": {
-                "title": "모듈 소스",
-                "description": "BeatMods 이외의 소스를 선택하세요.",
-                "website": "웹사이트"
             },
             "patreon": {
                 "title": "BSManager를 지원하기 💖",

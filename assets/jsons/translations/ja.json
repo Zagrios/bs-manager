@@ -179,9 +179,6 @@
                         "description-plural": "このバージョンには古いModが{nb}個あります。更新しますか？",
                         "dont-remind-me": "もう知らせない",
                         "update": "更新する"
-                    },
-                    "third-party-mod-source-not-avaliable": {
-                        "description": "サードパーティのデータソース「{name}」は利用できません。設定でBeatModsに切り替えて、もう一度お試しください。"
                     }
                 },
                 "drop-zone": {
@@ -286,11 +283,6 @@
                         "tl-PH": "フィリピン人"
                     }
                 }
-            },
-            "mod-repos": {
-                "title": "モジュールソース",
-                "description": "BeatMods以外のソースを選択してください。",
-                "website": "Webサイト"
             },
             "patreon": {
                 "title": "BSManagerをサポートする 💖",

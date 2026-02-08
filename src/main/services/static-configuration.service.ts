@@ -92,7 +92,6 @@ export interface StaticConfigKeyValues {
     "use-system-proxy": boolean;
     "last-version-launched": BSVersion;
     "auto-update": AutoUpdate;
-    "selected-mod-repo": string;
 
     // Linux Specific static configs
     "proton-folder": string;
