@@ -7,6 +7,7 @@ export const LaunchMods = {
     SKIP_STEAM: "skip_steam",
     EDITOR: "editor",
     PROTON_LOGS: "proton_logs",
+    PARALLEL_VIEW_POSES: "parallel_view_poses",
 } as const;
 
 export type LaunchMod = typeof LaunchMods[keyof typeof LaunchMods];

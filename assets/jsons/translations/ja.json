@@ -70,7 +70,9 @@
                 "map-editor": "マップエディタ",
                 "map-editor-description": "ゲームの代わりに公式のBeat Saberマップエディタを起動する。",
                 "proton-logs": "プロトンログ",
-                "proton-logs-description": "このBeat Saberインストールのプロトンログの記録を「{versionPath}」に有効にします。"
+                "proton-logs-description": "このBeat Saberインストールのプロトンログの記録を「{versionPath}」に有効にします。",
+                "parallel-view-poses": "Parallel View Poses",
+                "parallel-view-poses-description": "For Monado, sets OXR_PARALLEL_VIEWS to 1"
             },
             "maps": {
                 "search-bar": {

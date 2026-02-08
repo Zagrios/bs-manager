@@ -70,7 +70,9 @@
                 "map-editor": "Éditeur de map",
                 "map-editor-description": "Lance l'éditeur officiel de map de Beat Saber au lieu du jeu.",
                 "proton-logs": "Logs de Proton",
-                "proton-logs-description": "Active l'enregistrement des logs Proton pour cette installation de Beat Saber sur \"{versionPath}\"."
+                "proton-logs-description": "Active l'enregistrement des logs Proton pour cette installation de Beat Saber sur \"{versionPath}\".",
+                "parallel-view-poses": "Parallel View Poses",
+                "parallel-view-poses-description": "For Monado, sets OXR_PARALLEL_VIEWS to 1"
             },
             "maps": {
                 "search-bar": {

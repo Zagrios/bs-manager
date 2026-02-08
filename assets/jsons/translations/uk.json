@@ -70,7 +70,9 @@
                 "map-editor": "Редактор карт",
                 "map-editor-description": "Запускає офіційний редактор карт Beat Saber замість гри.",
                 "proton-logs": "Протонний журнал",
-                "proton-logs-description": "Увімкнути запис журналів протонів для цієї установки Beat Saber до \"{versionPath}\"."
+                "proton-logs-description": "Увімкнути запис журналів протонів для цієї установки Beat Saber до \"{versionPath}\".",
+                "parallel-view-poses": "Parallel View Poses",
+                "parallel-view-poses-description": "For Monado, sets OXR_PARALLEL_VIEWS to 1"
             },
             "maps": {
                 "search-bar": {

@@ -70,7 +70,9 @@
                 "map-editor": "맵 편집기",
                 "map-editor-description": "게임 대신 공식 Beat Saber 맵 편집기를 실행해.",
                 "proton-logs": "프로톤 로그",
-                "proton-logs-description": "이 Beat Saber 설치에 대한 프로톤 로그 기록을 「{versionPath}」로 활성화합니다."
+                "proton-logs-description": "이 Beat Saber 설치에 대한 프로톤 로그 기록을 「{versionPath}」로 활성화합니다.",
+                "parallel-view-poses": "Parallel View Poses",
+                "parallel-view-poses-description": "For Monado, sets OXR_PARALLEL_VIEWS to 1"
             },
             "maps": {
                 "search-bar": {

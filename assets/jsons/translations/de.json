@@ -70,7 +70,9 @@
                 "map-editor": "Karteneditor",
                 "map-editor-description": "Starte den offiziellen Beat Saber-Karteneditor anstelle des Spiels.",
                 "proton-logs": "Proton-Logs",
-                "proton-logs-description": "Aktiviert die Aufzeichnung von Proton-Logs für diese Beat Saber-Installation auf \"{versionPath}\"."
+                "proton-logs-description": "Aktiviert die Aufzeichnung von Proton-Logs für diese Beat Saber-Installation auf \"{versionPath}\".",
+                "parallel-view-poses": "Parallel View Poses",
+                "parallel-view-poses-description": "For Monado, sets OXR_PARALLEL_VIEWS to 1"
             },
             "maps": {
                 "search-bar": {

@@ -70,7 +70,9 @@
                 "map-editor": "Map Editor",
                 "map-editor-description": "Simulan ang opisyal na Beat Saber map editor imbis na ang laro.",
                 "proton-logs": "Proton Logs",
-                "proton-logs-description": "I-enable ang pag-record ng proton logs para sa Beat Saber install na ito sa \"{versionPath}\"."
+                "proton-logs-description": "I-enable ang pag-record ng proton logs para sa Beat Saber install na ito sa \"{versionPath}\".",
+                "parallel-view-poses": "Parallel View Poses",
+                "parallel-view-poses-description": "For Monado, sets OXR_PARALLEL_VIEWS to 1"
             },
             "maps": {
                 "search-bar": {
