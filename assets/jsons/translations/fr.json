@@ -179,9 +179,6 @@
                         "description-plural": "Cette version contient {nb} mods obsolètes. Voulez-vous les mettre à jour ?",
                         "dont-remind-me": "Ne plus me rappeler",
                         "update": "Mettre à jour"
-                    },
-                    "third-party-mod-source-not-avaliable": {
-                        "description": "La source de données tierce « {name} » est indisponible. Veuillez revenir à Beatmods dans les paramètres et réessayer."
                     }
                 },
                 "drop-zone": {
@@ -286,11 +283,6 @@
                         "tl-PH": "Philippin"
                     }
                 }
-            },
-            "mod-repos": {
-                "title": "Source du module",
-                "description": "Choisissez une autre source que BeatMods.",
-                "website": "site web"
             },
             "patreon": {
                 "title": "Soutenir BSManager 💖",

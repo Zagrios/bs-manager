@@ -179,9 +179,6 @@
                         "description-plural": "Esta versión tiene {nb} mods desactualizados. ¿Quieres actualizarlos?",
                         "dont-remind-me": "No me lo recuerdes",
                         "update": "Actualizar"
-                    },
-                    "third-party-mod-source-not-avaliable": {
-                        "description": "La fuente de datos de terceros \"{name}\" no está disponible. Vuelve a BeatMods en la configuración e inténtalo de nuevo."
                     }
                 },
                 "drop-zone": {
@@ -286,11 +283,6 @@
                         "tl-PH": "Filipino"
                     }
                 }
-            },
-            "mod-repos": {
-                "title": "Fuente del módulo",
-                "description": "Elija una fuente distinta a BeatMods.",
-                "website": "sitio web"
             },
             "patreon": {
                 "title": "Apoya BSManager 💖",

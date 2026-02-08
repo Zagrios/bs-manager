@@ -49,8 +49,6 @@ import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 import { OculusDownloaderService } from "renderer/services/bs-version-download/oculus-downloader.service";
 import { DISCORD_URL } from "shared/constants";
 import { AutoUpdate } from "shared/models/config";
-import { BsModsManagerService } from "renderer/services/bs-mods-manager.service";
-import { ModRepo } from "shared/models/mods/repo.model";
 
 export function SettingsPage() {
 
@@ -71,7 +69,6 @@ export function SettingsPage() {
     const versionLinker = useService(VersionFolderLinkerService);
     const staticConfig = useService(StaticConfigurationService);
     const installationLocationService = useService(InstallationLocationService);
-    const bsModManagerService = useService(BsModsManagerService);
     const autoUpdater = useService(AutoUpdaterService);
 
     const { firstColor, secondColor } = useThemeColor();
@@ -103,8 +100,6 @@ export function SettingsPage() {
     const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
     const [modelsDeepLinkEnabled, setModelsDeepLinkEnabled] = useState(false);
     const [hasDownloaderSession, setHasDownloaderSession] = useState(false);
-    const [modRepoList, setModRepoList] = useState([] as ModRepo[]);
-    const [modRepo, setModRepo] = useState("");
     const appVersion = useObservable(() => autoUpdater.getAppVersion());
 
     useEffect(() => {
@@ -113,15 +108,6 @@ export function SettingsPage() {
         mapsManager.isDeepLinksEnabled().then(enabled => setMapDeepLinksEnabled(() => enabled));
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
-
-
-        bsModManagerService.getModRepoList().then(list =>{
-            setModRepoList(list);
-            bsModManagerService.getSelectedModRepo().then(repo => {
-                setModRepo(repo.id);
-            })
-        });
-
 
         staticConfig.get("proton-folder").then(setProtonFolder);
     }, []);
@@ -171,13 +157,6 @@ export function SettingsPage() {
         i18nService.setLanguage(item.value);
     };
 
-    const handleChangeModRepo = (repo: RadioItem<string>) => {
-        bsModManagerService.selectModRepo(repo.value).then(result=>{
-            if(result){
-                setModRepo(repo.value)
-            }
-        })
-    }
     const setDefaultProtonFolder = async () => {
         if (!progressBarService.require()) {
             return;
@@ -527,17 +506,6 @@ export function SettingsPage() {
 
                 <SettingContainer title="pages.settings.language.title" description="pages.settings.language.description">
                     <SettingRadioArray items={languagesItems} selectedItemValue={languageSelected} onItemSelected={handleChangeLanguage} columnCount={2} />
-                </SettingContainer>
-
-                <SettingContainer title="pages.settings.mod-repos.title" description="pages.settings.mod-repos.description">
-                    <SettingRadioArray items={modRepoList.map((repo,index)=>({
-                        id:index,
-                        value: repo.id,
-                        text: repo.display_name,
-                        icon: repo.website ?
-                                    <BsmButton onClick={()=>linkOpener.open(repo.website, false)} className="px-2 font-bold italic text-sm rounded-md" text="pages.settings.mod-repos.website" withBar={false} />
-                                : null
-                    }))} selectedItemValue={modRepo} onItemSelected={handleChangeModRepo} />
                 </SettingContainer>
 
                 <SettingContainer title="pages.settings.patreon.title" description="pages.settings.patreon.description">
