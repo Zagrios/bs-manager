@@ -98,7 +98,7 @@ export class LinuxService {
             envVars.PROTON_LOG_DIR = path.join(bsFolderPath, "Logs");
         }
 
-        if (launchOptions.launchMods?.includes(LaunchMods.PARALLEL_VIEW_POSES)) {
+        if (launchOptions.launchMods?.includes(LaunchMods.PARALLEL_VIEWS)) {
             envVars.OXR_PARALLEL_VIEWS = "1";
         }
 
@@ -107,7 +107,7 @@ export class LinuxService {
 
     public verifyProtonPath(protonFolder: string = ""): boolean {
         if (protonFolder === "") {
-            if (!this.staticConfig.has("proton-folder")) {
+            if (!this.staticConfig.has("proton-folder")){
                 return false;
             }
 

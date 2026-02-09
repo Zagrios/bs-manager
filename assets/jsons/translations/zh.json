@@ -71,8 +71,8 @@
                 "map-editor-description": "启动官方的 Beat Saber 地图编辑器，而不是游戏。",
                 "proton-logs": "Proton日志",
                 "proton-logs-description": "启用此 Beat Saber 安装的质子日志，路径为\"{versionPath}\"。",
-                "parallel-view-poses": "Parallel View Poses",
-                "parallel-view-poses-description": "For Monado, sets OXR_PARALLEL_VIEWS to 1"
+                "parallel-views": "平行视角",
+                "parallel-views-description": "对于 Monado，将 OXR_PARALLEL_VIEWS 设置为 1。它可以修复渲染问题，但可能会裁剪部分视野（FOV）。"
             },
             "maps": {
                 "search-bar": {

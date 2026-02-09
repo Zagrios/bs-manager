@@ -71,8 +71,8 @@
                 "map-editor-description": "Запускає офіційний редактор карт Beat Saber замість гри.",
                 "proton-logs": "Протонний журнал",
                 "proton-logs-description": "Увімкнути запис журналів протонів для цієї установки Beat Saber до \"{versionPath}\".",
-                "parallel-view-poses": "Parallel View Poses",
-                "parallel-view-poses-description": "For Monado, sets OXR_PARALLEL_VIEWS to 1"
+                "parallel-views": "Паралельні погляди",
+                "parallel-views-description": "Для Monado встановлює значення OXR_PARALLEL_VIEWS на 1. Це може виправити проблеми рендерингу, але може обрізати частини поля зору (FOV)."
             },
             "maps": {
                 "search-bar": {
