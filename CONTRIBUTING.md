@@ -29,7 +29,10 @@ Hello! We’re delighted that you’re interested in contributing to **BSManager
 ### Before You Begin
 
 1. **[Fork the repository][fork]** and **clone** your fork locally.  
-2. **Install the required Node.js version** (we recommend using [Volta](https://volta.sh/) to manage Node versions).  
+2. **Install the required tools (Node, etc)** (we recommend using [mise](https://mise.jdx.dev/) to manage tool versions).
+   ```bash
+   mise install
+   ```
 3. **Install project dependencies**:
    ```bash
    npm install

@@ -248,8 +248,5 @@
             ".erb/dll/**"
         ],
         "logLevel": "quiet"
-    },
-    "volta": {
-        "node": "24.11.1"
     }
 }
