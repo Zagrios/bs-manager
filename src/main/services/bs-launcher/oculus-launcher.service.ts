@@ -52,22 +52,22 @@ export class OculusLauncherService extends AbstractLauncherService implements St
                     log.warn("Unable to start Oculus client. Force launch.", err);
                 });
 
-                let env: Record<string, string> = {
+                const env: Record<string, string> = {
                     ...process.env,
                 };
                 const {
-                    env: parsedEnv,
+                    env: customEnv,
                     cmdlet, args,
                 } = parseLaunchOptions(launchOptions.command, {
                     commandReplacement: `"${exePath}"`,
                 });
-                env = this.mergeEnvVariables(env, parsedEnv);
+                this.updateEnvVariables(env, customEnv);
 
                 obs.next({type: BSLaunchEvent.BS_LAUNCHING});
 
                 // Launch Beat Saber
                 const bsProcess = this.launchBeatSaber({
-                    env, cmdlet,
+                    env, customEnv, cmdlet,
                     beatSaberFolderPath: bsPath,
                     args: [ args, ...buildBsLaunchArgs(launchOptions) ]
                 });
