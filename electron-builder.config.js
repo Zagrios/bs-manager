@@ -59,6 +59,10 @@ const config = {
         baseVersion: "24.08",
         // Version of org.freedesktop.Platform
         runtimeVersion: "24.08",
+        icon: "./build/icons/png",
+        extraResources: [
+            "./build/icons/png"
+        ],
         finishArgs: [
             // Wayland/X11 Rendering
             "--socket=wayland",
