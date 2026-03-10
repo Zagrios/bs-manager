@@ -147,7 +147,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
 
             const steamPath = await this.steam.getSteamPath();
 
-            let env: Record<string, string> = {
+            const env: Record<string, string> = {
                 ...process.env,
                 "SteamAppId": BS_APP_ID,
                 "SteamOverlayGameId": BS_APP_ID,
@@ -167,14 +167,14 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
             }
 
             const {
-                env: parsedEnv,
+                env: customEnv,
                 cmdlet, args
             } = parseLaunchOptions(launchOptions.command, {
                 commandReplacement: process.platform === "win32"
                     ? `"${bsExePath}"`
                     : `${await this.linux.getProtonPrefix()} "${bsExePath}"`,
             });
-            env = this.mergeEnvVariables(env, parsedEnv);
+            this.updateEnvVariables(env, customEnv);
 
             const launchArgs = buildBsLaunchArgs(launchOptions);
 
@@ -184,7 +184,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
 
             const launchPromise = !launchOptions.admin ? (
                 this.launchBeatSaber({
-                    env, cmdlet,
+                    env, customEnv, cmdlet,
                     args: args
                         ? [ args, ...launchArgs ]
                         : launchArgs,
