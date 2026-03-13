@@ -12,9 +12,9 @@ export function useClickOutside(ref: MutableRefObject<any>, handler: ComponentPr
             }
         };
 
-        document.addEventListener("click", handleClickOutside);
+        document.addEventListener("mousedown", handleClickOutside);
         return () => {
-            document.removeEventListener("click", handleClickOutside);
+            document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [ref]);
 }
