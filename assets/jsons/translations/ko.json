@@ -70,7 +70,9 @@
                 "map-editor": "맵 편집기",
                 "map-editor-description": "게임 대신 공식 Beat Saber 맵 편집기를 실행해.",
                 "proton-logs": "프로톤 로그",
-                "proton-logs-description": "이 Beat Saber 설치에 대한 프로톤 로그 기록을 「{versionPath}」로 활성화합니다."
+                "proton-logs-description": "이 Beat Saber 설치에 대한 프로톤 로그 기록을 「{versionPath}」로 활성화합니다.",
+                "parallel-views": "평행한 시점",
+                "parallel-views-description": "Monado의 경우 OXR_PARALLEL_VIEWS를 1로 설정합니다. 렌더링 문제를 해결할 수 있지만, 시야각(FOV)의 일부가 잘릴 수 있습니다."
             },
             "maps": {
                 "search-bar": {

@@ -91,8 +91,6 @@ export class LinuxService {
             "STEAM_COMPAT_APP_ID": BS_APP_ID,
             // Run game in steam environment; fixes #585 for unicode song titles
             "SteamEnv": "1",
-            // Fix reflections in Monado
-            "OXR_PARALLEL_VIEWS": "1",
         };
 
         if (launchOptions.launchMods?.includes(LaunchMods.PROTON_LOGS)) {
@@ -100,12 +98,16 @@ export class LinuxService {
             envVars.PROTON_LOG_DIR = path.join(bsFolderPath, "Logs");
         }
 
+        if (launchOptions.launchMods?.includes(LaunchMods.PARALLEL_VIEWS)) {
+            envVars.OXR_PARALLEL_VIEWS = "1";
+        }
+
         return envVars;
     }
 
     public verifyProtonPath(protonFolder: string = ""): boolean {
         if (protonFolder === "") {
-            if (!this.staticConfig.has("proton-folder")) {
+            if (!this.staticConfig.has("proton-folder")){
                 return false;
             }
 

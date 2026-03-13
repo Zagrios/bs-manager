@@ -70,7 +70,9 @@
                 "map-editor": "地圖編輯器",
                 "map-editor-description": "啟動官方的 Beat Saber 地圖編輯器，而不是遊戲。",
                 "proton-logs": "Proton紀錄",
-                "proton-logs-description": "啟用此 Beat Saber 安裝的質子紀錄，路徑為\"{versionPath}\"。"
+                "proton-logs-description": "啟用此 Beat Saber 安裝的質子紀錄，路徑為\"{versionPath}\"。",
+                "parallel-views": "平行視角",
+                "parallel-views-description": "對於 Monado，將 OXR_PARALLEL_VIEWS 設為 1。這可以修復渲染問題，但可能會裁切部分視野（FOV）。"
             },
             "maps": {
                 "search-bar": {
