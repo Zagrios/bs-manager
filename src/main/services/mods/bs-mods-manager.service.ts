@@ -460,7 +460,19 @@ export class BsModsManagerService {
                 return [];
             }
 
-            return await zip.extract(destination);
+            const hasStructuredLayout = await zip.findEntry(entry => {
+                const normalized = entry.fileName.replace(/\\/g, "/");
+                return normalized.startsWith("Plugins/") || normalized.startsWith("Libs/");
+            });
+
+            if (hasStructuredLayout) {
+                log.info("ZIP has structured layout, extracting directly to", `"${destination}"`);
+                return await zip.extract(destination);
+            }
+
+            const pluginsDestination = path.join(destination, ModsInstallFolder.PLUGINS);
+            log.info("ZIP has flat layout, extracting to", `"${pluginsDestination}"`);
+            return await zip.extract(pluginsDestination);
         } catch (error) {
             log.warn("Could not extract", `"${modPath}"`, error);
             return [];
