@@ -461,7 +461,7 @@ export class BsModsManagerService {
             }
 
             const hasStructuredLayout = await zip.findEntry(entry => {
-                const normalized = entry.fileName.replace(/\\/g, "/");
+                const normalized = entry.fileName.replaceAll("\\", "/");
                 return normalized.startsWith("Plugins/") || normalized.startsWith("Libs/");
             });
 

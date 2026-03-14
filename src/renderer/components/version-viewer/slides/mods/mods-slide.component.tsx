@@ -200,23 +200,24 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
         return haveAccepted;
     }
 
+    const applyModsState = ({ available, installed }: { available: BbmFullMod[]; installed: BbmFullMod[] }) => {
+        // Merge installed mods not in the available (verified) list so they appear in the grid
+        const availableIds = new Set(available.map(m => m.mod.id));
+        const installedOnly = installed.filter(m => !availableIds.has(m.mod.id));
+        const allMods = [...available, ...installedOnly];
+
+        const defaultMods = installed?.length ? [] : allMods.filter(m => m.mod.category === BbmCategories.Core || m.mod.category === BbmCategories.Essential);
+        setModsAvailable(() => modsToCategoryMap(allMods));
+        setModsSelected(allMods.filter(m => m.mod.category === BbmCategories.Core || defaultMods.some(d => m.mod.name.toLowerCase() === d.mod.name.toLowerCase()) || installed.some(i => m.mod.id === i.mod.id)));
+        setModsInstalled(modsToCategoryMap(installed));
+    };
+
     const loadMods = async (): Promise<void> => {
         if (gridStatus !== ModsGridStatus.OK) {
             return Promise.resolve();
         }
 
-        return modsManager.getVersionModsState(version).then(({ available, installed }) => {
-            // Merge installed mods that aren't in the available list so they appear in the grid
-            const availableIds = new Set(available.map(m => m.mod.id));
-            const installedOnly = installed.filter(m => !availableIds.has(m.mod.id));
-            const allMods = [...available, ...installedOnly];
-
-            const defaultMods = installed?.length ? [] : allMods.filter(m => m.mod.category === BbmCategories.Core || m.mod.category === BbmCategories.Essential);
-            setModsAvailable(() => modsToCategoryMap(allMods));
-
-            setModsSelected(allMods.filter(m => m.mod.category === BbmCategories.Core || defaultMods.some(d => m.mod.name.toLowerCase() === d.mod.name.toLowerCase()) || installed.some(i => m.mod.id === i.mod.id)));
-            setModsInstalled(modsToCategoryMap(installed));
-        });
+        return modsManager.getVersionModsState(version).then(applyModsState);
     };
 
     useImperativeHandle(forwaredRef, () => ({
@@ -247,18 +248,9 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
                 return;
             }
 
-            modsManager.getVersionModsState(version).then(({ available, installed }) => {
+            modsManager.getVersionModsState(version).then(state => {
                 if (isCancelled) return;
-
-                // Merge installed mods that aren't in the available list so they appear in the grid
-                const availableIds = new Set(available.map(m => m.mod.id));
-                const installedOnly = installed.filter(m => !availableIds.has(m.mod.id));
-                const allMods = [...available, ...installedOnly];
-
-                const defaultMods = installed?.length ? [] : allMods.filter(m => m.mod.category === BbmCategories.Core || m.mod.category === BbmCategories.Essential);
-                setModsAvailable(() => modsToCategoryMap(allMods));
-                setModsSelected(allMods.filter(m => m.mod.category === BbmCategories.Core || defaultMods.some(d => m.mod.name.toLowerCase() === d.mod.name.toLowerCase()) || installed.some(i => m.mod.id === i.mod.id)));
-                setModsInstalled(modsToCategoryMap(installed));
+                applyModsState(state);
             });
         });
 
