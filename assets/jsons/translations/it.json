@@ -21,7 +21,7 @@
         "copied": "Copiato!",
         "confirm": "Conferma",
         "choose-folder": "Scegli cartella",
-        "unknown": "È accaduto un errore sconosciuto ¯\\_(ツ)_/¯",
+        "unknown": "Si è verificato un errore sconosciuto ¯\\_(ツ)_/¯",
         "warning": "Attenzione",
         "continue": "Continua",
         "shared": "Condivisi",
@@ -55,9 +55,9 @@
             "launch-mods": {
                 "oculus": "Modalita Oculus",
                 "oculus-description": "Se stai usando Beat Saber via Steam, questa opzione ti consente di usare il composer VR di Oculus mentre bypassi SteamVR, per un potenziale aumento di performance. Questo non è richiesto per usare i visori Oculus.",
-                "desktop": "Modalita FPFC",
+                "desktop": "Modalità FPFC",
                 "desktop-description": "La modalità FPFC (First Person Flying Controller) consente di usare i pulsanti WASD e il mouse per navigare nel menu del gioco. Questo rende i test molto più facili, perchè non devi indossare il tuo visore!",
-                "debug": "Modalita Debug",
+                "debug": "Modalità Debug",
                 "debug-description": "Abilita la finestra di uscita del log per IPA. Questo mostrerà la console di debug che lo mod usano.",
                 "outdated-tippy": "Questa versione è obsoleta, e alcune mod o funzioni non potrebbero più funzionare correttamente. Consigliamo di usare la versione raccomandata ({recommendedVersion}) di Beat Saber per godere delle ultime funzioni e bugfix.",
                 "advanced-launch": {
@@ -66,7 +66,7 @@
                     "create-launch-option": "Crea un'opzione di lancio"
                 },
                 "skipsteam": "Salta Steam",
-                "skipsteam-description": "Ferma Steam da aprirsi automaticamente con Beat Saber, abilitalo se stai usando un VR runtime differente come WiVRn o Monado con cui SteamVR potrebbe interferire.",
+                "skipsteam-description": "Impedisce a Steam di aprirsi automaticamente con Beat Saber, abilitalo se stai usando un VR runtime differente come WiVRn o Monado con cui SteamVR potrebbe interferire.",
                 "map-editor": "Map Editor",
                 "map-editor-description": "Avvia il map editor di Beat Saber ufficiale invece del gioco.",
                 "proton-logs": "Log di Proton",
@@ -142,7 +142,7 @@
                 "status": {
                     "no-wineprefix": "Impossibile trovare il percorso del WINEPREFIX di BSManager. Per favore avvia prima Beat Saber in BSManager.",
                     "beatmods-down": "Beatmods non è attualmente raggiungibile. Riprova più tardi. Se il problema persiste, informaci su {links}.",
-                    "unknown": "È accaduto un errore sconosciuto ¯\\_(ツ)_/¯"
+                    "unknown": "Si è verificato un errore sconosciuto ¯\\_(ツ)_/¯"
                 },
                 "buttons": {
                     "more-infos": "Più info",
@@ -163,8 +163,8 @@
                         }
                     },
                     "mod-item": {
-                        "this-is-a-large-mod": "Questo è un mod grande!",
-                        "this-is-a-very-large-mod": "Questo è un mod molto grande!"
+                        "this-is-a-large-mod": "Questo è una mod grande!",
+                        "this-is-a-very-large-mod": "Questo è una mod molto grande!"
                     }
                 },
                 "notifications": {
@@ -174,9 +174,9 @@
                     },
                     "outdated-mods": {
                         "title": "Mod obsoleto",
-                        "title-plural": "Mod obsoleti",
-                        "description": "Il mod {name} è obsoleto. Vuoi aggiornarlo?",
-                        "description-plural": "Questa versione ha {nb} mod obsoleti. Vuoi aggiornarli?",
+                        "title-plural": "Mod obsolete",
+                        "description": "La mod {name} è obsoleta. Vuoi aggiornarla?",
+                        "description-plural": "Questa versione ha {nb} mod obsolete. Vuoi aggiornarle?",
                         "dont-remind-me": "Non ricordarmelo",
                         "update": "Aggiorna"
                     }
@@ -317,7 +317,7 @@
                     "modal": {
                         "title": "Riavvio Necessario",
                         "body": "Cambiare l'impostazione dell'accelerazione hardware causerà un riavvio di BSManager. Sei sicuro di voler procedere?",
-                        "confirm-btn": "Si, sono sicuro"
+                        "confirm-btn": "Sì, sono sicuro"
                     },
                     "error-notification": {
                         "message": "C'è stato un errore, impossibile disattivare l'accelerazione hardware."
@@ -329,7 +329,7 @@
                     "modal": {
                         "title": "Permesso Symlink",
                         "body": "Quando crei dei Symlink, BSManager richiederà accesso amministrativo o la modalità sviluppatore sul tuo sistema. Sei sicuro di voler continuare?",
-                        "confirm-btn": "Si, sono sicuro"
+                        "confirm-btn": "Sì, sono sicuro"
                     },
                     "error-notification": {
                         "message": "C'è stato un errore, impossibile cambiare le impostazioni di Symlinks."
@@ -371,7 +371,7 @@
                     "file-not-supported": "File non supportato"
                 },
                 "msg": {
-                    "operation-running": "Attendi che l'operazione corrente finisca, poi, prova di nuovo.",
+                    "operation-running": "Attendi che l'operazione corrente finisca, poi riprova.",
                     "no-internet": "Controlla la tua connessione e riprova.",
                     "file-not-supported": "Solo i file {types} sono supportati."
                 }
@@ -476,7 +476,7 @@
                         "transfer-failed": "Trasferimento fallito 😕"
                     },
                     "descs": {
-                        "COPY_TO_SUBPATH": "La cartella di destinazione non puo essere una sotto cartella della cartella di origine.",
+                        "COPY_TO_SUBPATH": "La cartella di destinazione non puo essere una sottocartella della cartella di origine.",
                         "restore-linked-folders": "C'è stato un errore durante il ripristino delle cartelle condivise. Puoi sempre ripristinarle manualmente via il menu 'Cartelle Condivise' nella pagina delle versioni."
                     }
                 }
@@ -528,7 +528,7 @@
                     "SKIPPING_STEAM_LAUNCH": "Saltando l'avvio di Steam..."
                 },
                 "msg": {
-                    "BS_LAUNCHING": "Non scordardi ti riscaldarti 😉",
+                    "BS_LAUNCHING": "Non scordarti di riscaldarti 😉",
                     "STEAM_LAUNCHING": "Beat Saber si avvierà automaticamente dopo Steam.",
                     "SKIPPING_STEAM_LAUNCH": "Spero che sai cosa stai facendo :)"
                 }
@@ -758,7 +758,7 @@
                 "password": {
                     "label": "Password",
                     "placeholder": "Inserisci la password",
-                    "max-length-warning": "La password eccede i 64 caratteri! Se la password è invalida, prova ad entrare con solo i primi 64 caretteri."
+                    "max-length-warning": "La password eccede i 64 caratteri! Se la password è invalida, prova ad entrare con solo i primi 64 caratteri."
                 },
                 "qr": {
                     "label": "O con un codice QR",
@@ -1324,7 +1324,7 @@
     },
     "dateformat": {
         "dayNames": ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"],
-        "monthNames": ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic", "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Augosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
+        "monthNames": ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic", "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
         "timeNames": ["a", "p", "am", "pm", "A", "P", "AM", "PM"]
     }
 }
