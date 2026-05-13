@@ -93,6 +93,7 @@ export class LinuxService {
             "SteamEnv": "1",
             // Fix reflections in Monado
             "OXR_PARALLEL_VIEWS": "1",
+            "OXR_NO_TEXTURE_SOURCE_ALPHA": "1",
         };
 
         if (launchOptions.launchMods?.includes(LaunchMods.PROTON_LOGS)) {
