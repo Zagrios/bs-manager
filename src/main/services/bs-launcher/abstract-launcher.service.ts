@@ -1,56 +1,84 @@
 import { LaunchOption } from "shared/models/bs-launch";
 import { BSLocalVersionService } from "../bs-local-version.service";
-import { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio, spawn } from "child_process";
-import path from "path";
+import { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio } from "child_process";
 import log from "electron-log";
 import { sToMs } from "../../../shared/helpers/time.helpers";
+import { LinuxService } from "../linux.service";
+import { BsmShellLog, bsmSpawn } from "main/helpers/os.helpers";
+import { IS_FLATPAK } from "main/constants";
+import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
+
+export function buildBsLaunchArgs(launchOptions: LaunchOption): string[] {
+    const launchArgs = [];
+
+    if(!launchOptions.version.steam && !launchOptions.version.oculus){
+        launchArgs.push("--no-yeet")
+    }
+    if(launchOptions.launchMods?.includes(LaunchMods.OCULUS)) {
+        launchArgs.push("-vrmode");
+        launchArgs.push("oculus");
+    }
+    if(launchOptions.launchMods?.includes(LaunchMods.FPFC)) {
+        launchArgs.push("fpfc");
+    }
+    if(launchOptions.launchMods?.includes(LaunchMods.DEBUG)) {
+        launchArgs.push("--verbose");
+    }
+    if(launchOptions.launchMods?.includes(LaunchMods.EDITOR)) {
+        launchArgs.push("editor");
+    }
+
+    return Array.from(new Set(launchArgs).values());
+}
 
 export abstract class AbstractLauncherService {
 
+    protected readonly linux = LinuxService.getInstance();
     protected readonly localVersions = BSLocalVersionService.getInstance();
 
     constructor(){
+        this.linux = LinuxService.getInstance();
         this.localVersions = BSLocalVersionService.getInstance();
     }
 
-    protected buildBsLaunchArgs(launchOptions: LaunchOption): string[]{
-        const launchArgs = ["--no-yeet"];
+    protected launchBeatSaberProcess(options: LaunchBeatSaberOptions): ChildProcessWithoutNullStreams {
+        const spawnOptions: SpawnOptionsWithoutStdio = {
+            detached: true,
+            cwd: options.beatSaberFolderPath,
+            env: options.env,
+        };
 
-        if (launchOptions.oculus) {
-            launchArgs.push("-vrmode");
-            launchArgs.push("oculus");
-        }
-        if (launchOptions.desktop) {
-            launchArgs.push("fpfc");
-        }
-        if (launchOptions.debug) {
-            launchArgs.push("--verbose");
-        }
-        if (launchOptions.additionalArgs) {
-            launchArgs.push(...launchOptions.additionalArgs);
-        }
-
-        return Array.from(new Set(launchArgs).values());
-    }
-
-    protected launchBSProcess(bsExePath: string, args: string[], options?: SpawnOptionsWithoutStdio): ChildProcessWithoutNullStreams {
-
-        const spawnOptions: SpawnOptionsWithoutStdio = { detached: true, cwd: path.dirname(bsExePath), ...(options || {}) };
-
-        if(args.includes("--verbose")){
+        if (options.args?.includes("--verbose")){
             spawnOptions.windowsVerbatimArguments = true;
         }
 
-        log.info(`Launch BS exe at ${bsExePath} with args ${args?.join(" ")}`);
-
-        return spawn(bsExePath, args, spawnOptions);
-
+        spawnOptions.shell = true; // For windows to spawn properly
+        return bsmSpawn(options.cmdlet, {
+            args: options.args, options: spawnOptions, log: BsmShellLog.Command,
+            flatpak: {
+                host: IS_FLATPAK,
+                env: [
+                    "SteamAppId",
+                    "SteamOverlayGameId",
+                    "SteamGameId",
+                    "WINEDLLOVERRIDES",
+                    "STEAM_COMPAT_DATA_PATH",
+                    "STEAM_COMPAT_INSTALL_PATH",
+                    "STEAM_COMPAT_CLIENT_INSTALL_PATH",
+                    "STEAM_COMPAT_APP_ID",
+                    "SteamEnv",
+                    "OXR_PARALLEL_VIEWS",
+                    "PROTON_LOG",
+                    "PROTON_LOG_DIR",
+                ],
+            },
+        });
     }
 
-    protected launchBs(bsExePath: string, args: string[], options?: SpawnBsProcessOptions): {process: ChildProcessWithoutNullStreams, exit: Promise<number>} {
-        const process = this.launchBSProcess(bsExePath, args, options);
+    protected launchBeatSaber(options: LaunchBeatSaberOptions): {process: ChildProcessWithoutNullStreams, exit: Promise<number>} {
+        const process = this.launchBeatSaberProcess(options);
 
-        let timoutId: NodeJS.Timeout;
+        let timeoutId: NodeJS.Timeout;
 
         const exit = new Promise<number>((resolve, reject) => {
             // Don't remove, useful for debugging!
@@ -73,7 +101,7 @@ export abstract class AbstractLauncherService {
 
             const unrefAfter = options?.unrefAfter ?? sToMs(10);
 
-            timoutId = setTimeout(() => {
+            timeoutId = setTimeout(() => {
                 log.error("BS process unref after timeout", unrefAfter);
                 process.unref();
                 process.removeAllListeners();
@@ -81,13 +109,41 @@ export abstract class AbstractLauncherService {
             }, unrefAfter);
 
         }).finally(() => {
-            clearTimeout(timoutId);
+            clearTimeout(timeoutId);
         });
 
         return { process, exit };
     }
+
+    // Launch option helper function
+    protected mergeEnvVariables(
+        originalEnv: Record<string, string>,
+        newEnv: Record<string, string>
+    ): Record<string, string> {
+        const env = { ...originalEnv };
+        for (const [ key, value ] of Object.entries(newEnv)) {
+            log.info(
+                key in env ? "Overriding" : "Injecting",
+                `${key}="${value}"`,
+                "to the env launch command"
+            );
+            env[key] = value;
+        }
+        return env;
+    }
+
 }
 
-export type SpawnBsProcessOptions = {
+export type LaunchBeatSaberOptions = {
+    // To be passed to the bsmSpawn helper function
+    // Can be the Beat Saber exe or wrapper exe (for linux)
+    cmdlet: string;
+    env: Record<string, string>;
+    beatSaberFolderPath: string;
+
+    args?: string[]; // Appended to the cmdlet string
+
+    // Timeout value (in ms) to unref the Beat Saber process to BSM
     unrefAfter?: number;
-} & SpawnOptionsWithoutStdio;
+}
+

@@ -11,7 +11,7 @@ import { BPList, DownloadPlaylistProgressionData, PlaylistSong } from "shared/mo
 import { readFileSync, Stats } from "fs";
 import { BeatSaverService } from "../thrid-party/beat-saver/beat-saver.service";
 import { copy, ensureDir, pathExists, pathExistsSync, realpath, writeFileSync } from "fs-extra";
-import { Progression, getUniqueFileNamePath, unlinkPath } from "../../helpers/fs.helpers";
+import { Progression, deleteFile, getUniqueFileNamePath } from "../../helpers/fs.helpers";
 import { FileAssociationService } from "../file-association.service";
 import { SongDetailsCacheService } from "./maps/song-details-cache.service";
 import { sToMs } from "shared/helpers/time.helpers";
@@ -69,8 +69,8 @@ export class LocalPlaylistsManagerService {
         this.deepLink.addLinkOpenedListener(this.DEEP_LINKS.BeatSaver, link => {
             log.info("DEEP-LINK RECEIVED FROM", this.DEEP_LINKS.BeatSaver, link);
             const url = new URL(link);
-            const bplistUrl = url.host === "playlist" ? url.pathname.replace("/", "") : "";
-            this.windows.openWindow(`oneclick-download-playlist.html?playlistUrl=${bplistUrl}`);
+            const bplistUrl = url.host === "playlist" ? url.pathname.replace("/", "") + url.search : "";
+            this.windows.openWindow(`oneclick-download-playlist.html?playlistUrl=${encodeURIComponent(bplistUrl)}`);
         });
 
         this.fileAssociation.registerFileAssociation(".bplist", filePath => {
@@ -242,7 +242,9 @@ export class LocalPlaylistsManagerService {
             ...localBPList,
             duration: 0,
             nbMaps: localBPList.songs?.length ?? 0,
-            id: localBPList.customData?.syncURL ? tryExtractPlaylistId(localBPList.customData.syncURL) : undefined
+            id: localBPList.customData?.syncURL ? tryExtractPlaylistId(localBPList.customData.syncURL) : undefined,
+            minNps: Infinity,
+            maxNps: -Infinity,
         }
 
         const mappers = new Set<number>();
@@ -254,10 +256,23 @@ export class LocalPlaylistsManagerService {
 
             bpListDetails.duration += songDetails?.duration ? +songDetails.duration : 0;
             mappers.add(songDetails.uploader?.id);
-            bpListDetails.minNps = Math.min(bpListDetails?.minNps ?? 0, Math.min(...songDetails.difficulties?.map(d => d?.nps || 0) ?? [0]));
-            bpListDetails.maxNps = Math.max(bpListDetails?.maxNps ?? 0, Math.max(...songDetails.difficulties?.map(d => d?.nps || 0) ?? [0]));
+
+            const mapNps = songDetails.difficulties?.map(d => d?.nps).filter(nps => typeof nps === "number" && !Number.isNaN(nps));
+
+            if(mapNps?.length){
+                bpListDetails.minNps = Math.min(bpListDetails.minNps, ...mapNps);
+                bpListDetails.maxNps = Math.max(bpListDetails.maxNps, ...mapNps);
+            }
 
             song.songDetails = songDetails;
+        }
+
+        if(!Number.isFinite(bpListDetails.minNps)){
+            bpListDetails.minNps = 0;
+        }
+
+        if(!Number.isFinite(bpListDetails.maxNps)){
+            bpListDetails.maxNps = 0;
         }
 
         bpListDetails.nbMappers = mappers.size;
@@ -344,7 +359,18 @@ export class LocalPlaylistsManagerService {
                         continue;
                     }
 
-                    const downloadedMap = await this.maps.downloadMap(mapDetail, version);
+                    const downloadedMap = await this.maps.downloadMap(mapDetail, version)
+                        .catch(error => {
+                            log.error(
+                                "Could not download map for playlist",
+                                `[${mapDetail.id}] "${mapDetail.name}"`,
+                                error
+                            );
+                            return null;
+                        });
+                    if (!downloadedMap) {
+                        continue;
+                    }
 
                     progress.data.downloadedMaps.push(downloadedMap);
                     progress.data.currentDownload = mapDetail;
@@ -394,7 +420,7 @@ export class LocalPlaylistsManagerService {
     }
 
     public deletePlaylistFile(bpList: LocalBPList): Observable<void>{
-        return from(unlinkPath(bpList.path));
+        return from(deleteFile(bpList.path));
     }
 
     public exportPlaylists(opt: {version?: BSVersion, bpLists: LocalBPList[], dest: string, playlistsMaps?: BsmLocalMap[]}): Observable<Progression<string>> {

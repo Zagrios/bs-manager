@@ -8,7 +8,6 @@ import { ConfigurationService } from "./configuration.service";
 import { lstat, rename } from "fs/promises";
 import log from "electron-log";
 import { OculusService } from "./oculus.service";
-import { DownloadLinkType } from "shared/models/mods";
 import sanitize from "sanitize-filename";
 import { Progression, copyDirectoryWithJunctions, deleteFolder, ensurePathNotAlreadyExist, getFoldersInFolder, rxCopy } from "../helpers/fs.helpers";
 import { FolderLinkerService } from "./folder-linker.service";
@@ -18,6 +17,7 @@ import { Observable, Subject, catchError, finalize, from, map, switchMap, throwE
 import { BsStore } from "../../shared/models/bs-store.enum";
 import { CustomError } from "../../shared/models/exceptions/custom-error.class";
 import crypto from "crypto";
+import { StaticConfigurationService } from "./static-configuration.service";
 
 
 export class BSLocalVersionService {
@@ -32,6 +32,7 @@ export class BSLocalVersionService {
     private readonly remoteVersionService: BSVersionLibService;
     private readonly configService: ConfigurationService;
     private readonly linker: FolderLinkerService;
+    private readonly staticConfig: StaticConfigurationService;
     private readonly _loadedVersions$: Subject<BSVersion[]>;
 
     public static getInstance(): BSLocalVersionService {
@@ -48,6 +49,7 @@ export class BSLocalVersionService {
         this.remoteVersionService = BSVersionLibService.getInstance();
         this.configService = ConfigurationService.getInstance();
         this.linker = FolderLinkerService.getInstance();
+        this.staticConfig = StaticConfigurationService.getInstance();
 
         this._loadedVersions$ = new Subject<BSVersion[]>();
     }
@@ -59,7 +61,7 @@ export class BSLocalVersionService {
             return null;
         }
 
-        const versionsDict = await this.remoteVersionService.getAvailableVersions();
+        const versionsDict = (await this.remoteVersionService.getAvailableVersions()).reverse();
 
         let stream: ReadStream;
 
@@ -104,8 +106,9 @@ export class BSLocalVersionService {
 
         const versionFilePath = path.join(bsPath, 'Beat Saber_Data', 'globalgamemanagers');
         const folderVersion = await this.getVersionFromGlobalGameManagerFile(versionFilePath);
-
         if(!folderVersion){ return null; }
+
+        folderVersion.path = bsPath;
 
         if(options?.steam || options?.oculus){
             return {...folderVersion, ...options};
@@ -170,6 +173,24 @@ export class BSLocalVersionService {
         this.setCustomVersions([...this.getCustomVersions() ?? [], version]);
     }
 
+    private updateLastVersionLaunched(version: BSVersion, editedVersion: BSVersion): void {
+        const lastVersion = this.staticConfig.get("last-version-launched");
+        if (!lastVersion) {
+            return;
+        }
+
+        if (
+            version.BSVersion !== lastVersion.BSVersion
+            || version.name !== lastVersion.name
+            || version.steam !== lastVersion.steam
+            || version.oculus !== lastVersion.oculus
+        ) {
+            return;
+        }
+
+        this.staticConfig.set("last-version-launched", editedVersion);
+    }
+
     private getCustomVersions(): BSVersion[]{
         return this.configService.get<BSVersion[]>(this.CUSTOM_VERSIONS_KEY) || [];
     }
@@ -220,21 +241,15 @@ export class BSLocalVersionService {
         return version.name ?? version.BSVersion;
     }
 
-    public getVersionType(version: BSVersion): DownloadLinkType {
-        if (version.steam) {
-            return "steam";
-        }
-        if (version.oculus) {
-            return "oculus";
-        }
-        return "universal";
-    }
-
     private async getSteamVersion(): Promise<BSVersion> {
         const steamBsFolder = await this.steamService.getGameFolder(BS_APP_ID, "Beat Saber");
 
-        if (!steamBsFolder || !(await pathExists(steamBsFolder))) {
-            return null;
+        if (!steamBsFolder) {
+            throw new Error("No Beat Saber Steam version found");
+        }
+
+        if (!(await pathExists(steamBsFolder))) {
+            throw new Error(`Beat Saber Steam version not found in "${steamBsFolder}"`);
         }
 
         return this.getVersionOfBSFolder(steamBsFolder, { steam: true });
@@ -254,7 +269,8 @@ export class BSLocalVersionService {
         const versions: BSVersion[] = [];
 
         const steamVersion = await this.getSteamVersion().catch(e => {
-            log.error("unable to get original Steam version", e);
+            log.error("Unable to get original Steam version", e);
+            return null;
         });
 
         if (steamVersion) {
@@ -295,14 +311,12 @@ export class BSLocalVersionService {
         return versions;
     }
 
-    public async deleteVersion(version: BSVersion): Promise<boolean>{
-        if(version.steam || version.oculus){ return false; }
+    public async deleteVersion(version: BSVersion): Promise<void>{
+        if(version.steam || version.oculus){ throw new CustomError("BSManager is not able to delete official Beat Saber versions", "CantDeleteOfficialVersion"); }
         const versionFolder = await this.getVersionPath(version);
-        if(!(await pathExists(versionFolder))){ return true; }
+        if(!(await pathExists(versionFolder))){ throw new CustomError("Version not found", "VersionNotFound"); }
 
-        return deleteFolder(versionFolder)
-            .then(() => { return true; })
-            .catch(() => { return false; })
+        return deleteFolder(versionFolder);
     }
 
     public async editVersion(version: BSVersion, name: string, color: string): Promise<BSVersion>{
@@ -316,6 +330,7 @@ export class BSLocalVersionService {
         if(oldPath === newPath){
             this.deleteCustomVersion(version);
             this.addCustomVersion(editedVersion);
+            this.updateLastVersionLaunched(version, editedVersion);
             return editedVersion;
         }
 
@@ -326,6 +341,7 @@ export class BSLocalVersionService {
         return rename(oldPath, newPath).then(() => {
             this.deleteCustomVersion(version);
             this.addCustomVersion(editedVersion);
+            this.updateLastVersionLaunched(version, editedVersion);
             return editedVersion;
         }).catch((err: Error) => {
             log.error("edit version error", err, version, name, color);

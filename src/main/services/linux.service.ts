@@ -1,7 +1,16 @@
+import fs from "fs-extra";
+import log from "electron-log";
 import path from "path";
-import { pathExistsSync } from "fs-extra";
-import { PROTON_BINARY_PREFIX, WINE_BINARY_PREFIX } from "main/constants";
+import { BS_APP_ID, BS_EXECUTABLE, IS_FLATPAK } from "main/constants";
+import { InstallationLocationService } from "./installation-location.service";
 import { StaticConfigurationService } from "./static-configuration.service";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
+import { BSLaunchError, LaunchOption } from "shared/models/bs-launch";
+import { BsmShellLog, bsmExec } from "main/helpers/os.helpers";
+import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
+import { SteamShortcutData } from "shared/models/steam/shortcut.model";
+import { buildBsLaunchArgs } from "./bs-launcher/abstract-launcher.service";
+import { parseLaunchOptions } from "main/helpers/launchOptions.helper";
 
 export class LinuxService {
     private static instance: LinuxService;
@@ -13,10 +22,95 @@ export class LinuxService {
         return LinuxService.instance;
     }
 
+    private readonly PROTON_BINARY_PREFIX = "proton";
+    // Use "wine64" instead of "wine"
+    // https://github.com/Zagrios/bs-manager/pull/586#issuecomment-2449228826
+    private readonly WINE_BINARY_PREFIXES = [
+        path.join("files", "bin", "wine64"),
+        path.join("files", "lib", "wine", "x86_64-unix", "wine64"),
+    ];
+
+    private readonly installLocationService: InstallationLocationService;
     private readonly staticConfig: StaticConfigurationService;
 
+    private nixOS: boolean | undefined;
+    private winePath = "";
+
     private constructor() {
+        this.installLocationService = InstallationLocationService.getInstance();
         this.staticConfig = StaticConfigurationService.getInstance();
+    }
+
+    // === Launching === //
+
+    private getCompatDataPath() {
+        const sharedFolder = this.installLocationService.sharedContentPath();
+        return path.resolve(sharedFolder, "compatdata");
+    }
+
+    public async getProtonPrefix() {
+        const protonPath = await this.getProtonPath();
+        return await this.isNixOS()
+            ? `steam-run "${protonPath}" run`
+            : `"${protonPath}" run`;
+    }
+
+    private async getProtonPath(): Promise<string> {
+        if (!this.staticConfig.has("proton-folder")) {
+            throw CustomError.fromError(
+                new Error("Proton folder not set"),
+                BSLaunchError.PROTON_NOT_SET
+            );
+        }
+        const protonPath = path.join(
+            this.staticConfig.get("proton-folder"),
+            this.PROTON_BINARY_PREFIX
+        );
+        if (!fs.pathExistsSync(protonPath)) {
+            throw CustomError.fromError(
+                new Error("Could not locate proton binary"),
+                BSLaunchError.PROTON_NOT_FOUND
+            );
+        }
+
+        return protonPath;
+    }
+
+    public async buildEnvVariables(
+        launchOptions: LaunchOption,
+        steamPath: string,
+        bsFolderPath: string
+    ): Promise<Record<string, string>> {
+        // Create the compat data path if it doesn't exist.
+        // If the user never ran Beat Saber through steam before
+        // using bsmanager, it won't exist, and proton will fail
+        // to launch the game.
+        const compatDataPath = this.getCompatDataPath();
+        if (!fs.existsSync(compatDataPath)) {
+            log.info(`Proton compat data path not found at '${compatDataPath}', creating directory`);
+            await fs.ensureDir(compatDataPath);
+        }
+
+        // Setup Proton environment variables
+        const envVars: Record<string, string> = {
+            "WINEDLLOVERRIDES": "winhttp=n,b", // Required for mods to work
+            "STEAM_COMPAT_DATA_PATH": compatDataPath,
+            "STEAM_COMPAT_INSTALL_PATH": bsFolderPath,
+            "STEAM_COMPAT_CLIENT_INSTALL_PATH": steamPath,
+            "STEAM_COMPAT_APP_ID": BS_APP_ID,
+            // Run game in steam environment; fixes #585 for unicode song titles
+            "SteamEnv": "1",
+            // Fix reflections in Monado
+            "OXR_PARALLEL_VIEWS": "1",
+            "OXR_NO_TEXTURE_SOURCE_ALPHA": "1",
+        };
+
+        if (launchOptions.launchMods?.includes(LaunchMods.PROTON_LOGS)) {
+            envVars.PROTON_LOG = "1";
+            envVars.PROTON_LOG_DIR = path.join(bsFolderPath, "Logs");
+        }
+
+        return envVars;
     }
 
     public verifyProtonPath(protonFolder: string = ""): boolean {
@@ -28,24 +122,171 @@ export class LinuxService {
             protonFolder = this.staticConfig.get("proton-folder");
         }
 
-        const protonPath = path.join(protonFolder, PROTON_BINARY_PREFIX);
-        const winePath = path.join(protonFolder, WINE_BINARY_PREFIX);
-        return pathExistsSync(protonPath) && pathExistsSync(winePath);
+        // Check if the proton binary exists
+        const protonPath = path.join(protonFolder, this.PROTON_BINARY_PREFIX);
+        if (!fs.pathExistsSync(protonPath)) {
+            return false;
+        }
+
+        // Check if any wine64 here exists
+        for (const winePath of this.WINE_BINARY_PREFIXES) {
+            if (fs.pathExistsSync(path.join(protonFolder, winePath))) {
+                // Reset this, in the case where the user reselects a new proton folder
+                this.winePath = "";
+                return true;
+            }
+        }
+        return false;
     }
 
     public getWinePath(): string {
+        if (this.winePath) {
+            return this.winePath;
+        }
+
         if (!this.staticConfig.has("proton-folder")) {
             throw new Error("proton-folder variable not set");
         }
 
-        const winePath = path.join(
-            this.staticConfig.get("proton-folder"),
-            WINE_BINARY_PREFIX
-        );
-        if (!pathExistsSync(winePath)) {
+        const protonFolder = this.staticConfig.get("proton-folder");
+        let winePath = "";
+        for (const prefixes of this.WINE_BINARY_PREFIXES) {
+            winePath = path.join(protonFolder, prefixes);
+            if (!fs.pathExistsSync(winePath)) {
+                winePath = "";
+                continue;
+            }
+            break;
+        }
+
+        if (winePath === "") {
             throw new Error(`"${winePath}" binary file not found`);
         }
 
+        this.winePath = winePath;
         return winePath;
     }
+
+    // Should be different from winePath, this is the "WINEPREFIX" env var
+    //   that points to the wine windows files directory
+    public getWinePrefixPath(): string {
+        const compatDataPath = this.getCompatDataPath();
+        return fs.existsSync(compatDataPath)
+            ? path.join(compatDataPath, "pfx") : "";
+    }
+
+    // === NixOS Specific === //
+
+    public async isNixOS(): Promise<boolean> {
+        if (this.nixOS !== undefined) {
+            return this.nixOS;
+        }
+
+        try {
+            await bsmExec("nixos-version", {
+                log: BsmShellLog.Command,
+                flatpak: { host: IS_FLATPAK },
+            });
+            this.nixOS = true;
+        } catch (error) {
+            log.info("Not NixOS", error);
+            this.nixOS = false;
+        }
+
+        return this.nixOS;
+    }
+
+    // === Shortcuts === //
+
+    private async getCommand(
+        launchOptions: LaunchOption,
+        steamPath: string,
+        beatSaberFolderPath: string
+    ): Promise<string> {
+        const protonPrefix = await this.getProtonPrefix();
+        const launchEnv = await this.buildEnvVariables(
+            launchOptions, steamPath, beatSaberFolderPath
+        );
+
+        const beatSaberExePath = path.join(beatSaberFolderPath, BS_EXECUTABLE);
+
+        const {
+            env: parsedEnv,
+            args: parsedArgs,
+            cmdlet,
+        } = parseLaunchOptions(launchOptions.command, {
+            commandReplacement: `${protonPrefix} ${beatSaberExePath}`,
+        });
+
+        const args = buildBsLaunchArgs(launchOptions);
+        log.debug("Launch arguments:", args, "Parsed arguments:", parsedArgs);
+        if (parsedArgs) {
+            args.unshift(parsedArgs);
+        }
+
+        const env = {
+            ...launchEnv, ...parsedEnv,
+            SteamAppId: BS_APP_ID,
+            SteamOverlayGameId: BS_APP_ID,
+            SteamGameId: BS_APP_ID,
+        };
+        const envString = Object.entries(env)
+            .map(([ key, value ]) => `${key}="${value}"`)
+            .join(" ");
+        return `${envString} ${cmdlet} ${args.join(" ")}`;
+    }
+
+    public async createDesktopShortcut(
+        shortcutPath: string,
+        name: string,
+        icon: string,
+        launchOptions: LaunchOption,
+        steamPath: string,
+        beatSaberFolderPath: string
+    ): Promise<boolean> {
+        try {
+            const command = await this.getCommand(
+                launchOptions, steamPath, beatSaberFolderPath
+            );
+
+            const desktopEntry = [
+                "[Desktop Entry]",
+                "Type=Application",
+                `Name=${name}`,
+                `Icon=${icon}`,
+                `Path=${beatSaberFolderPath}`,
+                `Exec=${command}`
+            ].join("\n");
+
+            await fs.writeFile(shortcutPath, desktopEntry);
+            log.info("Created shorcut at ", `"${shortcutPath}/${name}"`);
+            return true;
+        } catch (error) {
+            log.error("Could not create shortcut", error);
+            return false;
+        }
+    }
+
+    public async getSteamShortcutData(
+        shortcutName: string,
+        icon: string,
+        launchOptions: LaunchOption,
+        steamPath: string,
+        beatSaberFolderPath: string
+    ): Promise<SteamShortcutData> {
+        const protonPath = await this.getProtonPath();
+        const command = await this.getCommand(
+            launchOptions, steamPath, beatSaberFolderPath
+        );
+
+        return {
+            AppName: shortcutName,
+            Exe: protonPath,
+            StartDir: beatSaberFolderPath,
+            icon,
+            OpenVR: "\x01",
+            LaunchOptions: command
+        };
+    }
+
 }

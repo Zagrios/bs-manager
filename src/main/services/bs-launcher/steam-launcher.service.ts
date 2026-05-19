@@ -1,17 +1,18 @@
 import { Observable } from "rxjs";
 import { BSLaunchError, BSLaunchEvent, BSLaunchEventData, BSLaunchWarning, LaunchOption } from "../../../shared/models/bs-launch";
 import { StoreLauncherInterface } from "./store-launcher.interface";
-import { pathExists, pathExistsSync, rename } from "fs-extra";
+import { pathExists, rename } from "fs-extra";
 import { SteamService } from "../steam.service";
 import path from "path";
-import { BS_APP_ID, BS_EXECUTABLE, PROTON_BINARY_PREFIX, STEAMVR_APP_ID } from "../../constants";
+import { BS_APP_ID, BS_EXECUTABLE, STEAMVR_APP_ID } from "../../constants";
 import log from "electron-log";
-import { AbstractLauncherService } from "./abstract-launcher.service";
+import { AbstractLauncherService, buildBsLaunchArgs, LaunchBeatSaberOptions } from "./abstract-launcher.service";
 import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
 import { UtilsService } from "../utils.service";
-import { exec } from "child_process";
-import fs from 'fs';
-import { StaticConfigurationService } from "../static-configuration.service";
+import { exec, ChildProcessWithoutNullStreams } from "child_process";
+import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
+import { app, Event } from "electron";
+import { parseLaunchOptions } from "main/helpers/launchOptions.helper";
 
 export class SteamLauncherService extends AbstractLauncherService implements StoreLauncherInterface{
 
@@ -24,13 +25,11 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         return SteamLauncherService.instance;
     }
 
-    private readonly staticConfig: StaticConfigurationService;
     private readonly steam: SteamService;
     private readonly util: UtilsService;
 
     private constructor(){
         super();
-        this.staticConfig = StaticConfigurationService.getInstance();
         this.steam = SteamService.getInstance();
         this.util = UtilsService.getInstance();
     }
@@ -66,19 +65,64 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         });
     }
 
+    protected launchBeatSaber(options: LaunchBeatSaberOptions): {process: ChildProcessWithoutNullStreams, exit: Promise<number>} {
+        const process = this.launchBeatSaberProcess(options);
+
+        const exit = new Promise<number>((resolve, reject) => {
+            // Don't remove, useful for debugging!
+            // process.stdout.on("data", (data) => {
+            //    log.info(`BS stdout: ${data}`);
+            // });
+            // process.stderr.on("data", (data) => {
+            //    log.error(`BS stderr: ${data}`);
+            // });
+
+            const onWillQuitHandler = async (event: Event) => {
+                app.removeListener('will-quit', onWillQuitHandler);
+                if (!process.killed) {
+                    event.preventDefault();
+                    log.info(`Unref'ing BS process ${process.pid} on app will-quit`);
+                    process.unref();
+                    await this.restoreSteamVR().catch(log.error);
+                    resolve(-1);
+                    app.quit();
+                }
+            };
+
+            process.on("error", (err) => {
+                log.error(`Error while launching BS`, err);
+                reject(err);
+                app.removeListener('will-quit', onWillQuitHandler);
+            });
+
+            process.on("exit", (code) => {
+                log.info(`BS process exit with code ${code}`);
+                resolve(code);
+                app.removeListener('will-quit', onWillQuitHandler);
+            });
+
+            app.on('will-quit', onWillQuitHandler);
+        });
+
+        return { process, exit };
+    }
+
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
 
         return new Observable<BSLaunchEventData>(obs => {(async () => {
 
             const bsFolderPath = await this.localVersions.getInstalledVersionPath(launchOptions.version);
-            let exePath = path.join(bsFolderPath, BS_EXECUTABLE);
+            const bsExePath = path.join(bsFolderPath, BS_EXECUTABLE);
 
-            if(!(await pathExists(exePath))){
-                throw CustomError.fromError(new Error(`Path not exist : ${exePath}`), BSLaunchError.BS_NOT_FOUND);
+            if(!(await pathExists(bsExePath))){
+                throw CustomError.fromError(new Error(`Path not exist : ${bsExePath}`), BSLaunchError.BS_NOT_FOUND);
             }
 
+            const skipSteam: boolean = launchOptions.launchMods?.includes(LaunchMods.SKIP_STEAM) ?? false;
+
             // Open Steam if not running
-            if(!(await this.steam.steamRunning())){
+            if(!skipSteam && !(await this.steam.isSteamRunning())){
+
                 obs.next({type: BSLaunchEvent.STEAM_LAUNCHING});
 
                 await this.steam.openSteam().then(() => {
@@ -88,9 +132,12 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                     obs.next({type: BSLaunchWarning.UNABLE_TO_LAUNCH_STEAM});
                 });
             }
+            else if(skipSteam) {
+                obs.next({ type: BSLaunchEvent.SKIPPING_STEAM_LAUNCH});
+            }
 
             // Backup SteamVR when desktop mode is enabled
-            if(launchOptions.desktop){
+            if(launchOptions.launchMods?.includes(LaunchMods.FPFC)){
                 await this.backupSteamVR().catch(() => {
                     return this.restoreSteamVR();
                 });
@@ -98,10 +145,9 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 await this.restoreSteamVR().catch(log.error);
             }
 
-            let launchArgs = this.buildBsLaunchArgs(launchOptions);
             const steamPath = await this.steam.getSteamPath();
 
-            const env = {
+            let env: Record<string, string> = {
                 ...process.env,
                 "SteamAppId": BS_APP_ID,
                 "SteamOverlayGameId": BS_APP_ID,
@@ -115,58 +161,38 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                     launchOptions.admin = false;
                 }
 
-                // Create the compat data path if it doesn't exist.
-                // If the user never ran Beat Saber through steam before
-                // using bsmanager, it won't exist, and proton will fail
-                // to launch the game.
-                const compatDataPath = `${steamPath}/steamapps/compatdata/${BS_APP_ID}`;
-                if (!fs.existsSync(compatDataPath)) {
-                    log.info(`Proton compat data path not found at '${compatDataPath}', creating directory`);
-                    fs.mkdirSync(compatDataPath);
-                }
-
-                // proton run BeatSaber.exe
-                launchArgs = [
-                    "run",
-                    `${exePath}`,
-                    ...launchArgs,
-                ];
-
-                if (!this.staticConfig.has("proton-folder")) {
-                    throw CustomError.fromError(new Error("Proton folder not set"), BSLaunchError.PROTON_NOT_SET);
-                }
-                exePath = path.join(this.staticConfig.get("proton-folder"), PROTON_BINARY_PREFIX);
-                if (!pathExistsSync(exePath)) {
-                    throw CustomError.fromError(
-                        new Error("Could not locate proton binary"),
-                        BSLaunchError.PROTON_NOT_FOUND
-                    );
-                }
-
-                // Setup Proton environment variables
-                Object.assign(env, {
-                    "WINEDLLOVERRIDES": "winhttp=n,b", // Required for mods to work
-                    "STEAM_COMPAT_DATA_PATH": compatDataPath,
-                    "STEAM_COMPAT_INSTALL_PATH": bsFolderPath,
-                    "STEAM_COMPAT_CLIENT_INSTALL_PATH": steamPath,
-                    "STEAM_COMPAT_APP_ID": BS_APP_ID,
-                    // Run game in steam environment; fixes #585 for unicode song titles
-                    "SteamEnv": "1",
-                    // Uncomment these to create a proton log file in the Beat Saber install directory.
-                    // "PROTON_LOG": 1,
-                    // "PROTON_LOG_DIR": bsFolderPath,
-                });
+                Object.assign(env, await this.linux.buildEnvVariables(
+                    launchOptions, steamPath, bsFolderPath
+                ));
             }
+
+            const {
+                env: parsedEnv,
+                cmdlet, args
+            } = parseLaunchOptions(launchOptions.command, {
+                commandReplacement: process.platform === "win32"
+                    ? `"${bsExePath}"`
+                    : `${await this.linux.getProtonPrefix()} "${bsExePath}"`,
+            });
+            env = this.mergeEnvVariables(env, parsedEnv);
+
+            const launchArgs = buildBsLaunchArgs(launchOptions);
 
             obs.next({type: BSLaunchEvent.BS_LAUNCHING});
 
             const spawnOpts = { env, cwd: bsFolderPath };
 
             const launchPromise = !launchOptions.admin ? (
-                this.launchBs(exePath, launchArgs, spawnOpts).exit
+                this.launchBeatSaber({
+                    env, cmdlet,
+                    args: args
+                        ? [ args, ...launchArgs ]
+                        : launchArgs,
+                    beatSaberFolderPath: bsFolderPath,
+                }).exit
             ) : (
                 new Promise<number>(resolve => {
-                    const adminProcess = exec(`"${this.getStartBsAsAdminExePath()}" "${exePath}" ${launchArgs.join(" ")}`, spawnOpts);
+                    const adminProcess = exec(`"${this.getStartBsAsAdminExePath()}" "${bsExePath}" ${launchArgs.join(" ")} --log-path "${path.join(app.getPath("logs"), "bs-admin-start.log")}"`, spawnOpts);
                     adminProcess.on("error", err => {
                         log.error("Error while starting BS as Admin", err);
                         resolve(-1)

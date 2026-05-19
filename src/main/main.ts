@@ -23,8 +23,12 @@ import { LivShortcut } from "./services/liv/liv-shortcut.service";
 import { SteamLauncherService } from "./services/bs-launcher/steam-launcher.service";
 import { FileAssociationService } from "./services/file-association.service";
 import { SongDetailsCacheService } from "./services/additional-content/maps/song-details-cache.service";
-import { readdirSync, statSync, unlinkSync } from "fs-extra";
+import { Dirent, readdirSync } from "fs-extra";
 import { StaticConfigurationService } from "./services/static-configuration.service";
+import { configureProxy } from './helpers/proxy.helpers';
+import { deleteFileSync, deleteFolderSync } from "./helpers/fs.helpers";
+import { tryit } from "shared/helpers/error.helpers";
+import { AutoUpdate } from "shared/models/config";
 
 const isDebug = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true";
 const staticConfig = StaticConfigurationService.getInstance();
@@ -33,10 +37,10 @@ export const filterStrings = new Set<string>();
 export const filterPatterns = new Set<RegExp>();
 
 // Filter all occulus tokens
-filterPatterns.add(/FRL\S{10,}/g);
+filterPatterns.add(/(FRL|OC)\S{10,}/g);
 
 initLogger();
-deleteOlestLogs();
+deleteOldestLogs();
 deleteOldLogs();
 
 staticConfig.take("disable-hadware-acceleration", disabled => {
@@ -46,6 +50,7 @@ staticConfig.take("disable-hadware-acceleration", disabled => {
     }
 });
 
+configureProxy();
 
 if (process.env.NODE_ENV === "production") {
     const sourceMapSupport = require("source-map-support");
@@ -69,7 +74,7 @@ const installExtensions = async () => {
         .catch(log.error);
 };
 
-const createWindow = async (window: AppWindow = "launcher.html") => {
+const createWindow = async (window: AppWindow) => {
     if (isDebug) {
         await installExtensions();
     }
@@ -95,6 +100,10 @@ const findAssociatedFileInArgs = (args: string[]): string => {
 
 const gotTheLock = app.requestSingleInstanceLock();
 
+const init = () => {
+    initServicesMustBeInitialized();
+}
+
 if (!gotTheLock) {
     app.quit();
 } else {
@@ -117,11 +126,8 @@ if (!gotTheLock) {
 
     app.whenReady().then(() => {
 
-
-
         app.setAppUserModelId(APP_NAME);
-
-        initServicesMustBeInitialized();
+        init();
 
         const deepLink = findDeepLinkInArgs(process.argv);
         const associatedFile = findAssociatedFileInArgs(process.argv);
@@ -130,8 +136,18 @@ if (!gotTheLock) {
             DeepLinkService.getInstance().dispatchLinkOpened(deepLink);
         } else if (associatedFile) {
             FileAssociationService.getInstance().handleFileAssociation(associatedFile);
+        } else if (process.platform === "linux") {
+            createWindow("index.html");
         } else {
-            createWindow();
+            const configService =  StaticConfigurationService.getInstance();
+            const autoUpdate = configService.get("auto-update", AutoUpdate.ALWAYS);
+            const update = autoUpdate !== AutoUpdate.NEVER;
+            if (autoUpdate === AutoUpdate.ONCE) {
+                configService.set("auto-update", AutoUpdate.NEVER);
+            }
+
+            // Skip launcher only if autoUpdate is strictly false
+            createWindow(update ? "launcher.html" : "index.html");
         }
 
         SteamLauncherService.getInstance().restoreSteamVR();
@@ -152,11 +168,40 @@ if (!gotTheLock) {
     }).catch(log.error);
 }
 
+function convertDateToDateString(date: Date): string {
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    return `${date.getFullYear()}-${month}-${day}`;
+}
+
+function getReadableTime(date: Date): string {
+    return `${
+        date.getHours().toString().padStart(2, "0")
+    }-${
+        date.getMinutes().toString().padStart(2, "0")
+    }-${
+        date.getSeconds().toString().padStart(2, "0")
+    }`;
+}
+
 function initLogger(){
     log.transports.file.level = "info";
+
+    let filepath = "";
+    let currentDateString = convertDateToDateString(new Date());
     log.transports.file.resolvePath = () => {
         const now = new Date();
-        return path.join(app.getPath("logs"), `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}-v${app.getVersion()}.log`);
+        const nowString = convertDateToDateString(now);
+        if (filepath && nowString === currentDateString) {
+            return filepath;
+        }
+
+        filepath = path.join(
+            app.getPath("logs"), nowString,
+            `${nowString}_${getReadableTime(now)}_v${app.getVersion()}.log`
+        );
+        currentDateString = nowString;
+        return filepath;
     };
 
     log.hooks.push((message) => {
@@ -199,66 +244,42 @@ function initLogger(){
     log.catchErrors();
 }
 
-function getLogFilesEntries() {
+// Keep only the past week (7 days) of logs
+function deleteOldLogs(): void {
+    let deleteLogFolders: Dirent[] = [];
     try {
-        const logsFolder = app.getPath("logs");
-        let logs = readdirSync(logsFolder, { withFileTypes: true });
+        const filterDate = convertDateToDateString(
+            new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // 7 days
+        );
+        deleteLogFolders = readdirSync(app.getPath("logs"), { withFileTypes: true })
+            .filter(folder => folder.isDirectory() && folder.name <= filterDate);
+    } catch (error) {
+        log.error("Error while deleting old logs:", error);
+        return;
+    }
 
-        logs = logs.filter(file => file.isFile() && path.extname(file.name) === ".log");
-
-        logs.sort((a, b) => {
-            const aStat = statSync(path.join(logsFolder, a.name));
-            const bStat = statSync(path.join(logsFolder, b.name));
-            return bStat.mtime.getTime() - aStat.mtime.getTime();
-        });
-
-        return logs.map(file => {
-            const filePath = path.join(logsFolder, file.name);
-            const stat = statSync(filePath);
-            return {
-                path: filePath,
-                name: file.name,
-                stats: stat
-            };
-        });
-    } catch (err) {
-        log.error('Error while retrieving log files entries:', err);
-        return [];
+    for (const folder of deleteLogFolders) {
+        const folderPath = path.join(folder.parentPath, folder.name);
+        tryit(() => deleteFolderSync(folderPath));
     }
 }
 
-// keep only the last 5 logs
-function deleteOldLogs(): void{
-    try {
-        let logs = getLogFilesEntries();
+// Obsolete behavior, delete log files that are on the parent log folder
+function deleteOldestLogs(): void {
+    const logsFolder = app.getPath("logs");
+    const logs = readdirSync(logsFolder, { withFileTypes: true })
+        .filter(file => file.isFile() && path.extname(file.name) === ".log");
 
-        logs = logs.slice(5);
-
-        logs.forEach(file => {
-            try {
-                unlinkSync(file.path);
-                log.info(`Deleted log file: ${file.path}`);
-            } catch (err) {
-                log.error(`Error deleting file ${file.path}:`, err);
-            }
-        });
-    } catch (err) {
-        log.error("Error while deleting old logs:", err);
+    for (const file of logs) {
+        const filepath = path.join(file.parentPath, file.name);
+        tryit(() => deleteFileSync(filepath));
     }
 }
 
-// Temporary function to delete logs before 2024-07-31
-function deleteOlestLogs(): void{
-    // delete all logs before 2024-07-31
-    const date = new Date(2024, 6, 31); // month is 0-based
-    const logs = getLogFilesEntries().filter(file => file.stats.mtime.getTime() < date.getTime());
+export function addFilterStringLog(filter: string): void {
+    filterStrings.add(filter);
+}
 
-    logs.forEach(file => {
-        try {
-            unlinkSync(file.path);
-            log.info(`Deleted log file: ${file.path}`);
-        } catch (err) {
-            log.error(`Error deleting file ${file.path}:`, err);
-        }
-    });
+export function addFilterPatternLog(filter: RegExp): void {
+    filterPatterns.add(filter);
 }

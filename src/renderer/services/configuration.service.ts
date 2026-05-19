@@ -29,7 +29,7 @@ export class ConfigurationService {
 
     public get<Type>(key: string | DefaultConfigKey): Type {
         const rawValue = (window.sessionStorage.getItem(key) ?? window.localStorage.getItem(key));
-        const tryParse = tryit<Type>(() => JSON.parse(rawValue));
+        const tryParse = tryit(() => JSON.parse(rawValue));
 
         const res = (tryParse.error ? rawValue : tryParse.result) as Type;
 
@@ -64,4 +64,6 @@ export class ConfigurationService {
         this.observers.set(key, new BehaviorSubject(this.get(key)));
         return this.observers.get(key).asObservable() as Observable<T>;
     }
+
+
 }

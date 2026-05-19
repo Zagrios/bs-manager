@@ -6,12 +6,11 @@ import { BsvMapDetail, SongDetails } from "shared/models/maps";
 import { BsmLocalMap, BsmLocalMapsProgress, DeleteMapsProgress } from "shared/models/maps/bsm-local-map.interface";
 import { BsvPlaylist, BsvPlaylistPage, PlaylistSearchParams, SearchParams } from "../maps/beat-saver.model";
 import { ImportVersionOptions } from "main/services/bs-local-version.service";
-import { DownloadInfo, DownloadSteamInfo } from "main/services/bs-version-download/bs-steam-downloader.service";
+import { DownloadSteamInfo } from "main/services/bs-version-download/bs-steam-downloader.service";
 import { DepotDownloaderEvent } from "../bs-version-download/depot-downloader.model";
 import { MSGetQuery, MSModel, MSModelType } from "../models/model-saber.model";
 import { ModelDownload } from "renderer/services/models-management/models-downloader.service";
 import { BsmLocalModel } from "../models/bsm-local-model.interface";
-import { Mod } from "../mods";
 import { BPList, DownloadPlaylistProgressionData } from "../playlists/playlist.interface";
 import { VersionLinkerAction } from "renderer/services/version-folder-linker.service";
 import { FileFilter, OpenDialogOptions, OpenDialogReturnValue } from "electron";
@@ -20,6 +19,9 @@ import { Supporter } from "../supporters";
 import { AppWindow } from "../window-manager/app-window.model";
 import { LocalBPList, LocalBPListsDetails } from "../playlists/local-playlist.models";
 import { StaticConfigGetIpcRequestResponse, StaticConfigKeys, StaticConfigSetIpcRequest } from "main/services/static-configuration.service";
+import { BbmFullMod, BbmModVersion, ExternalMod } from "../mods/mod.interface";
+import { OculusDownloadInfo } from "main/services/bs-version-download/bs-oculus-downloader.service";
+import { UpdateInfo } from "electron-updater";
 
 export type IpcReplier<T> = (data: Observable<T>) => void;
 
@@ -32,8 +34,11 @@ export interface IpcChannelMapping {
     "download-bs-version-qr": { request: DownloadSteamInfo, response: DepotDownloaderEvent};
     "stop-download-bs-version": { request: void, response: void};
     "send-input-bs-download": { request: string, response: boolean};
-    "bs-oculus-download": { request: DownloadInfo, response: Progression<BSVersion>};
+    "bs-oculus-download": { request: OculusDownloadInfo, response: Progression<BSVersion>};
     "bs-oculus-stop-download": { request: void, response: void};
+    "login-with-meta": { request: boolean, response: string };
+    "delete-meta-session": { request: void, response: void };
+    "meta-session-exists": { request: void, response: boolean };
 
     /* ** beat-saver-ipcs ** */
     "bsv-search-map": {request: SearchParams, response: BsvMapDetail[]};
@@ -49,7 +54,7 @@ export interface IpcChannelMapping {
     "bs-installer.set-install-path": { request: { path: string, move: boolean }, response: string};
 
     /* ** bs-launcher-ipcs ** */
-    "create-launch-shortcut": { request: LaunchOption, response: boolean };
+    "create-launch-shortcut": { request: { options: LaunchOption, steamShortcut?: boolean }, response: boolean };
     "bs-launch.need-start-as-admin": { request: void, response: boolean };
     "bs-launch.launch": { request: LaunchOption, response: BSLaunchEventData };
     "bs-launch.restore-steamvr": { request: void, response: void };
@@ -78,11 +83,13 @@ export interface IpcChannelMapping {
     "delete-models": { request: BsmLocalModel[], response: Progression<BsmLocalModel[]> };
 
     /* ** bs-mods-ipcs ** */
-    "get-available-mods": { request: BSVersion, response: Mod[] };
-    "get-installed-mods": { request: BSVersion, response: Mod[] };
-    "install-mods": { request: { mods: Mod[]; version: BSVersion }, response: Progression };
-    "uninstall-mods": { request: { mods: Mod[]; version: BSVersion }, response: Progression };
-    "uninstall-all-mods": { request: BSVersion, response: Progression };
+    "bs-mods.get-available-mods": { request: BSVersion, response: BbmFullMod[] };
+    "bs-mods.get-installed-mods": { request: BSVersion, response: BbmModVersion[] };
+    "bs-mods.import-mods": { request: { paths: string[]; version: BSVersion; }, response: Progression<ExternalMod> };
+    "bs-mods.install-mods": { request: { mods: BbmFullMod[]; version: BSVersion }, response: Progression };
+    "bs-mods.uninstall-mods": { request: { mods: BbmFullMod[]; version: BSVersion }, response: Progression };
+    "bs-mods.uninstall-all-mods": { request: BSVersion, response: Progression };
+    "bs-mods.beatmods-up": { request: void, response: boolean };
 
     /* ** bs-playlist-ipcs ** */
     "one-click-install-playlist": { request: string, response: Progression<DownloadPlaylistProgressionData> };
@@ -97,7 +104,7 @@ export interface IpcChannelMapping {
     "install-playlist-file": {request: {bplist: BPList, version?: BSVersion, dest?: string}, response: LocalBPListsDetails};
 
     /* ** bs-uninstall-ipcs ** */
-    "bs.uninstall": { request: BSVersion, response: boolean };
+    "bs.uninstall": { request: BSVersion, response: void };
 
     /* ** bs-version-ipcs ** */
     "bs-version.get-version-dict": { request: void, response: BSVersion[] };
@@ -111,10 +118,12 @@ export interface IpcChannelMapping {
     "link-version-folder-action": { request: VersionLinkerAction, response: void };
     "is-version-folder-linked": { request: { version: BSVersion; relativeFolder: string }, response: boolean };
     "relink-all-versions-folders": { request: void, response: void };
+    "get-shared-folder": { request: void, response: string };
 
     /* ** launcher-ipcs ** */
     "download-update": { request: void, response: Progression };
     "check-update": { request: void, response: boolean };
+    "get-available-update": { request: void, response: UpdateInfo | null };
     "install-update": { request: void, response: void };
 
     /* ** model-saber.ipcs ** */
@@ -149,9 +158,15 @@ export interface IpcChannelMapping {
     /* ** static-configuration.ipcs ** */
     "static-configuration.get": StaticConfigGetIpcRequestResponse<StaticConfigKeys>;
     "static-configuration.set": StaticConfigSetIpcRequest<StaticConfigKeys>;
+    "static-configuration.delete": { request: StaticConfigKeys; response: void };
 
     /* ** linux.ipcs ** */
     "linux.verify-proton-folder": { request: void, response: boolean };
+    "linux.get-wine-prefix-path": { request: void, response: string };
+
+    /* ** oculus.ipcs ** */
+    "is-oculus-sideloaded-apps-enabled": { request: void, response: boolean };
+    "enable-oculus-sideloaded-apps": { request: void, response: void };
 
     /* ** OTHERS (if your IPC channel is not in a "-ipcs" file, put it here) ** */
     "shortcut-launch-options": { request: void, response: LaunchOption };

@@ -8,7 +8,7 @@ import path from "path";
 import { RequestService } from "../request.service";
 import { copyFileSync } from "fs-extra";
 import sanitize from "sanitize-filename";
-import { Progression, ensureFolderExist, unlinkPath } from "../../helpers/fs.helpers";
+import { Progression, deleteFile, ensureFolderExist } from "../../helpers/fs.helpers";
 import { MODEL_FILE_EXTENSIONS, MODEL_TYPES, MODEL_TYPE_FOLDERS } from "../../../shared/models/models/constants";
 import { InstallationLocationService } from "../installation-location.service";
 import { Observable, Subscription, lastValueFrom } from "rxjs";
@@ -105,7 +105,9 @@ export class LocalModelsManagerService {
     }
 
     public async oneClickDownloadModel(model: MSModel): Promise<void> {
-        if (!model) { return; }
+        if (!model) {
+            return;
+        }
 
         const versions = await this.localVersion.getInstalledVersions();
         const downloaded = await lastValueFrom(this.downloadModel(model, versions.pop()));
@@ -198,7 +200,7 @@ export class LocalModelsManagerService {
                 };
 
                 for (const model of models) {
-                    await unlinkPath(model.path);
+                    await deleteFile(model.path);
                     progression.data.push(model);
                     progression.current = progression.data.length;
                     subscriber.next(progression);

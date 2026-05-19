@@ -21,7 +21,7 @@ export class VersionFolderLinkerService {
         return VersionFolderLinkerService.instance;
     }
 
-    private readonly KNOWN_ERROR_CODES = ["EPERM", "EACCES", "ENOSPC"];
+    private readonly KNOWN_ERROR_CODES = ["EPERM", "EACCES", "ENOSPC", "LinkingNotSupported"];
 
     private readonly ipcService: IpcService;
     private readonly progress: ProgressBarService;
@@ -181,6 +181,10 @@ export class VersionFolderLinkerService {
 
     public relinkAllVersionsFolders(): Observable<void> {
         return this.ipcService.sendV2("relink-all-versions-folders");
+    }
+
+    public getSharedFolder(): Observable<string> {
+        return this.ipcService.sendV2("get-shared-folder");
     }
 }
 

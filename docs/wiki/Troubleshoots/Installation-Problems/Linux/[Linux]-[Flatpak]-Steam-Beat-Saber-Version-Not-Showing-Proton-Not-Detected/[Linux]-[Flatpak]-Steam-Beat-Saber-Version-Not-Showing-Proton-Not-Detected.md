@@ -1,0 +1,1 @@
+Flatpak should have permissions with the steam games folder. By default, the minimum permissions are `~/.steam/steam/steamapps/common:ro` and `~/.steam/steam/steamapps/common:ro`. If you changed the steam installation path, add that path instead into the permissions.

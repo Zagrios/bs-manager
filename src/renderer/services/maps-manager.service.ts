@@ -1,5 +1,5 @@
-import { LinkMapsModal } from "renderer/components/modal/modal-types/link-maps-modal.component";
-import { UnlinkMapsModal } from "renderer/components/modal/modal-types/unlink-maps-modal.component";
+import { LinkContentModal } from "renderer/components/modal/modal-types/link-contents-modal.component";
+import { UnlinkContentsModal } from "renderer/components/modal/modal-types/unlink-contents-modal.component";
 import { Subject, Observable, of, lastValueFrom, Subscription, throwError } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { BsmLocalMapsProgress, BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
@@ -60,7 +60,7 @@ export class MapsManagerService {
     }
 
     public async linkVersion(version: BSVersion): Promise<boolean> {
-        const modalRes = await this.modal.openModal(LinkMapsModal);
+        const modalRes = await this.modal.openModal(LinkContentModal, { data: { version, contentType: "maps" } });
 
         if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
             return Promise.resolve(false);
@@ -69,12 +69,12 @@ export class MapsManagerService {
         return this.linker.linkVersionFolder({
             version,
             relativeFolder: MapsManagerService.RELATIVE_MAPS_FOLDER,
-            options: { keepContents: !!modalRes.data },
+            options: { keepContents: true },
         });
     }
 
     public async unlinkVersion(version: BSVersion): Promise<boolean> {
-        const modalRes = await this.modal.openModal(UnlinkMapsModal);
+        const modalRes = await this.modal.openModal(UnlinkContentsModal, { data: { version, contentType: "maps" } });
 
         if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
             return Promise.resolve(false);

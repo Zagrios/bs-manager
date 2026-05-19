@@ -27,4 +27,8 @@ export class StaticConfigurationService {
         return lastValueFrom(this.ipc.sendV2("static-configuration.set", { key, value }));
     }
 
+    public delete<K extends StaticConfigKeys>(key: K): Promise<void> {
+        return lastValueFrom(this.ipc.sendV2("static-configuration.delete", key));
+    }
+
 }

@@ -20,13 +20,33 @@ jobs:
             - name: Check out Git repository
               uses: actions/checkout@v4
 
+            - name: update apt-get
+              run: sudo apt-get update
+
+            - name: Install rpm/flatpak packages
+              run: sudo apt-get install -y flatpak flatpak-builder rpm libarchive-tools
+
+            - name: Setup flatpak repo
+              run: |
+                flatpak remote-add --if-not-exists --user \
+                  flathub https://flathub.org/repo/flathub.flatpakrepo
+
             - name: Use Node.js
               uses: actions/setup-node@v4
               with:
-                  node-version: 18.x
+                  node-version: 24.11.1
                   cache: "npm"
             - run: npm ci
-            - run: npm run publish:linux
+            - run: npm run build
+
+            - name: Build deb
+              run: npx electron-builder --config electron-builder.config.js --publish always --linux deb --x64
+
+            - name: Build rpm
+              run: npx electron-builder --config electron-builder.config.js --publish always --linux rpm --x64
+
+            - name: Build flatpak
+              run: env DEBUG="@malept/flatpak-bundler" npx electron-builder --config electron-builder.config.js --publish always --linux flatpak
 
             - name: Upload artifact
               uses: actions/upload-artifact@v4

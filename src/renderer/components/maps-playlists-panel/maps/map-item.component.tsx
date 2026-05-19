@@ -324,12 +324,12 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
                         <motion.div className="w-full h-5 pb-1 pr-7 flex items-center gap-1" onHoverStart={bottomBarHoverStart} onHoverEnd={bottomBarHoverEnd}>
                             {ranked && (
                                 <div className="text-yellow-300 bg-current rounded-full px-1 h-full flex items-center justify-center">
-                                    <span className="uppercase text-xs font-bold tracking-wide brightness-[.25]">{t("maps.map-specificities.ranked")}</span>
+                                    <span className="uppercase text-xs font-bold tracking-wide brightness-[.25]">{t("maps.map-leaderboard.Ranked")}</span>
                                 </div>
                             )}
                             {blRanked && (
                                 <div className="bg-pink-400 bg-current rounded-full px-1 h-full flex items-center justify-center">
-                                    <span className="uppercase text-xs font-bold tracking-wide brightness-[.25]">{t("maps.map-specificities.ranked")}</span>
+                                    <span className="uppercase text-xs font-bold tracking-wide brightness-[.25]">{t("maps.map-leaderboard.Ranked")}</span>
                                 </div>
                             )}
                             <div className="h-full grow flex items-start content-start">{renderDiffPreview()}</div>

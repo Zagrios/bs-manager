@@ -8,6 +8,7 @@ import { IpcService } from "renderer/services/ipc.service";
 import { lastValueFrom } from "rxjs";
 import { logRenderError } from "renderer";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { DEFAULT_PLAYLIST_COVER } from "shared/models/playlists/local-playlist.models";
 
 type OutProps = {
     playlistTitle: string;
@@ -34,7 +35,9 @@ export const EditPlaylistInfosModal: ModalComponent<OutProps, Props> = ({ resolv
     const [title, setTitle] = useState(playlistTitle);
     const [description, setDescription] = useState(playlistDescription);
     const [author, setAuthor] = useState(playlistAuthor ?? steamDownloader.getSteamUsername());
-    const [base64, setBase64] = useState(base64Image);
+
+    // Playlist cover or Default playlist cover
+    const [base64, setBase64] = useState(base64Image || DEFAULT_PLAYLIST_COVER);
 
     const handleClickImage = async () => {
         const res = await lastValueFrom(ipc.sendV2("choose-image", { base64: true })).catch(logRenderError) as string[];
@@ -60,12 +63,11 @@ export const EditPlaylistInfosModal: ModalComponent<OutProps, Props> = ({ resolv
             </h1>
             <div className="w-full flex flex-col justify-center items-center">
                 <button className="flex justify-center items-center relative size-36 border-2 border-gray-400 bg-theme-1 rounded-md overflow-hidden" onClick={handleClickImage}>
-                    {base64 ? (
+                    {base64 && (
                         <BsmImage className="absolute size-full cursor-pointer" base64={base64} />
-                    ) : (
-                        <span className="absolute size-full flex justify-center items-center p-2">{t("playlist.choose-image")}</span>
                     )}
                 </button>
+                <span className="size-full flex justify-center items-center mb-1">{t("playlist.choose-image")}</span>
                 <div className="w-full">
                     <label className="font-bold cursor-pointer tracking-wide" htmlFor="playlist-title">{t("playlist.title")}</label>
                     <input id="playlist-title" type="text" className="w-full bg-theme-1 px-1 py-0.5 rounded-md outline-none h-9" value={title} placeholder={t("playlist.playlist-title")} onChange={e => setTitle(e.target.value)}/>

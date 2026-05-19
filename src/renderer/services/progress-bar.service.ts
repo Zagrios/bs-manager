@@ -76,7 +76,10 @@ export class ProgressBarService {
             this.subscribreTo(obs);
         }
         this._visible$.next(true);
-        this._style$.next(style);
+
+        if(style) {
+            this._style$.next(style);
+        }
     }
 
     public showFake(speed: number, style?: CSSProperties, label?: string): void {

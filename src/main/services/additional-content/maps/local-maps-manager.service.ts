@@ -1,13 +1,13 @@
 import path from "path";
 import { BSVersion } from "shared/bs-version.interface";
 import { BsvMapDetail } from "shared/models/maps";
-import { BsmLocalMap, BsmLocalMapsProgress, DeleteMapsProgress } from "shared/models/maps/bsm-local-map.interface";
+import { BsmLocalMap, BsmLocalMapMetadata, BsmLocalMapsProgress, DeleteMapsProgress } from "shared/models/maps/bsm-local-map.interface";
 import { BSLocalVersionService } from "../../bs-local-version.service";
 import { InstallationLocationService } from "../../installation-location.service";
 import { UtilsService } from "../../utils.service";
 import crypto, { BinaryLike } from "crypto";
 import { lstatSync } from "fs";
-import { copy, createReadStream, ensureDir, pathExists, pathExistsSync, realpath, unlink } from "fs-extra";
+import { copy, createReadStream, ensureDir, existsSync, pathExists, pathExistsSync, readJson, realpath, writeJson } from "fs-extra";
 import { RequestService } from "../../request.service";
 import sanitize from "sanitize-filename";
 import { DeepLinkService } from "../../deep-link.service";
@@ -15,7 +15,7 @@ import log from "electron-log";
 import { WindowManagerService } from "../../window-manager.service";
 import { Observable, Subject, lastValueFrom } from "rxjs";
 import { Archive } from "../../../models/archive.class";
-import { Progression, deleteFolder, ensureFolderExist, getFilesInFolder, getFoldersInFolder, pathExist } from "../../../helpers/fs.helpers";
+import { Progression, deleteFile, deleteFolder, ensureFolderExist, getFilesInFolder, getFoldersInFolder, pathExist } from "../../../helpers/fs.helpers";
 import { readFile } from "fs/promises";
 import { FolderLinkerService } from "../../folder-linker.service";
 import { allSettled } from "../../../../shared/helpers/promise.helpers";
@@ -31,6 +31,7 @@ import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { tryit } from "shared/helpers/error.helpers";
 import { BsmZipExtractor } from "main/models/bsm-zip-extractor.class";
 import { escapeRegExp } from "../../../../shared/helpers/string.helpers";
+import dateFormat from "dateformat";
 
 export class LocalMapsManagerService {
     private static instance: LocalMapsManagerService;
@@ -46,6 +47,7 @@ export class LocalMapsManagerService {
     public static readonly CUSTOM_LEVELS_FOLDER = "CustomLevels";
     public static readonly RELATIVE_MAPS_FOLDER = path.join(LocalMapsManagerService.LEVELS_ROOT_FOLDER, LocalMapsManagerService.CUSTOM_LEVELS_FOLDER);
     public static readonly SHARED_MAPS_FOLDER = "SharedMaps";
+    public static readonly METADATA_FILE = "metadata.json";
 
     private readonly DEEP_LINKS = {
         BeatSaver: "beatsaver",
@@ -138,16 +140,21 @@ export class LocalMapsManagerService {
 
     public async loadMapInfoFromPath(mapPath: string): Promise<BsmLocalMap> {
 
-        const getUrlsAndReturn = (mapInfo: MapInfo, hash: string, mapPath: string): BsmLocalMap => {
+        const getUrlsAndReturn = (mapInfo: MapInfo, hash: string, mapPath: string, metadata: BsmLocalMapMetadata): BsmLocalMap => {
             const coverUrl = pathToFileURL(path.join(mapPath, mapInfo.coverImageFilename)).href;
             const songUrl = pathToFileURL(path.join(mapPath, mapInfo.songFilename)).href;
-            return { mapInfo, coverUrl, songUrl, hash, path: mapPath, songDetails: this.songDetailsCache.getSongDetails(hash) };
+            return {
+                mapInfo, coverUrl, songUrl, hash, path: mapPath,
+                songDetails: this.songDetailsCache.getSongDetails(hash),
+                metadata,
+            };
         };
 
         const cachedMapInfos = this.songCache.getMapInfoFromDirname(path.basename(mapPath));
 
         if (cachedMapInfos) {
-            return getUrlsAndReturn(cachedMapInfos.mapInfo, cachedMapInfos.hash, mapPath);
+            const metadata = await this.getMetadata(mapPath);
+            return getUrlsAndReturn(cachedMapInfos.mapInfo, cachedMapInfos.hash, mapPath, metadata);
         }
 
         const files = await getFilesInFolder(mapPath);
@@ -166,8 +173,9 @@ export class LocalMapsManagerService {
         }
 
         const hash = await this.computeMapHash(mapPath, rawInfoString);
+        const metadata = await this.getMetadata(mapPath);
 
-        return getUrlsAndReturn(mapInfo, hash, mapPath);
+        return getUrlsAndReturn(mapInfo, hash, mapPath, metadata);
     }
 
     private async downloadMapZip(zipUrl: string): Promise<string> {
@@ -280,6 +288,8 @@ export class LocalMapsManagerService {
         return new Observable<Progression>(observer => {
             const progress: Progression = { total: hashs.length, current: 0 };
 
+            observer.next(progress);
+
             (async () => {
                 const versionMapsPath = await this.getMapsFolderPath(version);
                 const mapsPaths = await getFoldersInFolder(versionMapsPath);
@@ -367,10 +377,12 @@ export class LocalMapsManagerService {
                     for (const folder of mapsFolders) {
                         log.info(">", folder);
 
-                        const regex = new RegExp(`^${escapeRegExp(folder)}\\/`);
+                        const entriesNames = isRoot
+                            ? null
+                            : [ new RegExp(`^${escapeRegExp(folder)}\\/`) ];
 
                         const exported = await zip.extract(destination, {
-                            entriesNames: [regex],
+                            entriesNames,
                             abortToken: abortController
                         });
 
@@ -426,9 +438,10 @@ export class LocalMapsManagerService {
             throw new Error("Cannot download map, no hash found");
         }
 
-        log.info("Downloading map", map.name, map.id);
-
         const zipUrl = map.versions.at(0).downloadURL;
+
+        log.info("Downloading map", map.name, map.id, zipUrl);
+
         const mapFolderName = sanitize(`${map.id} (${map.metadata.songName} - ${map.metadata.levelAuthorName})`);
         const mapsFolder = await this.getMapsFolderPath(version);
 
@@ -447,7 +460,7 @@ export class LocalMapsManagerService {
         const zip = await BsmZipExtractor.fromPath(zipPath);
         await zip.extract(mapPath);
         zip.close();
-        await unlink(zipPath);
+        await deleteFile(zipPath);
 
         const localMap = await this.loadMapInfoFromPath(mapPath);
         localMap.songDetails = this.songDetailsCache.getSongDetails(localMap.hash);
@@ -455,6 +468,21 @@ export class LocalMapsManagerService {
         this._lastDownloadedMap.next({ map: localMap, version });
 
         return localMap;
+    }
+
+    private async getMetadata(mapPath: string): Promise<BsmLocalMapMetadata> {
+        const metadataPath = path.join(mapPath, LocalMapsManagerService.METADATA_FILE);
+        if (existsSync(metadataPath)) {
+            return await readJson(metadataPath) as BsmLocalMapMetadata;
+        }
+
+        // Create the metadata then return it to the user
+        const metadata: BsmLocalMapMetadata = {
+            addedDate: dateFormat(new Date(), "yyyy-mm-dd'T'HH:MM:ss.l"),
+        };
+
+        await writeJson(metadataPath, metadata);
+        return metadata;
     }
 
     public async exportMaps(version: BSVersion, maps: BsmLocalMap[], outPath: string): Promise<Observable<Progression>> {

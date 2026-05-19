@@ -27,7 +27,7 @@ ipc.on("bs-launch.need-start-as-admin", (_, reply) => {
 
 ipc.on("create-launch-shortcut", (args, reply) => {
     const bsLauncher = BSLauncherService.getInstance();
-    reply(from(bsLauncher.createLaunchShortcut(args)));
+    reply(from(bsLauncher.createLaunchShortcut(args.options, args.steamShortcut)));
 });
 
 ipc.on("bs-launch.restore-steamvr", (_, reply) => {

@@ -22,7 +22,7 @@ export const ChooseProtonFolderModal: ModalComponent<{}, {}> = ({ resolver }) =>
     const selectProtonPath = async () => {
         const response = await lastValueFrom(ipcService.sendV2("choose-folder", {
             parent: "home",
-            defaultPath: ".local/share/Steam/steamapps/common",
+            defaultPath: ".steam/steam/steamapps/common",
             showHidden: true,
         }));
 

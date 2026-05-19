@@ -11,27 +11,122 @@ import "./title-bar.component.css";
 import { useService } from "renderer/hooks/use-service.hook";
 import { lastValueFrom } from "rxjs";
 import { useWindowControls } from "renderer/hooks/use-window-controls.hook";
+import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
+import Tippy from "@tippyjs/react";
+import { StaticConfigurationService } from "renderer/services/static-configuration.service";
+import { AutoUpdate } from "shared/models/config";
+import { UpdateInfo } from "electron-updater";
+
+function useVersion() {
+    const ipcService = useService(IpcService);
+
+    const [currentVersion, setCurrentVersion] = useState("");
+    const [latestVersion, setLatestVersion] = useState<UpdateInfo | null>(null);
+
+    useEffect(() => {
+        Promise.all([
+            lastValueFrom(ipcService.sendV2("current-version")),
+            lastValueFrom(ipcService.sendV2("get-available-update"))
+        ]).then(([ currentVersion, latestVersion ]) => {
+            setCurrentVersion(currentVersion);
+            setLatestVersion(latestVersion);
+        });
+    }, []);
+
+    return { currentVersion, latestVersion };
+}
+
+function TitleBarTags({ version, latestVersion }: Readonly<{
+    version: string;
+    latestVersion: UpdateInfo | null;
+}>) {
+    const t = useTranslationV2();
+
+    const previewVersion = (() => {
+        if (version.toLowerCase().includes("alpha")) {
+            return "ALPHA";
+        }
+
+        if (version.toLowerCase().includes("beta")) {
+            return "BETA";
+        }
+
+        return "";
+    })();
+
+    return <>
+        {previewVersion &&
+            <span className="bg-main-color-1 text-white dark:text-black dark:bg-white rounded-full ml-1 text-[10px] italic px-1 uppercase h-3.5 font-bold">
+                {previewVersion}
+            </span>
+        }
+        {latestVersion &&
+            <span className="bg-warning-500 text-black rounded-full ml-1 text-[10px] italic px-1 uppercase h-3.5 font-bold">
+                {t.text("title-bar.outdated")}
+            </span>
+        }
+    </>;
+}
+
+function AutoUpdateButton({ latestVersion }: Readonly<{
+    latestVersion: UpdateInfo | null;
+}>) {
+    const configService = useService(StaticConfigurationService);
+    const ipcService = useService(IpcService);
+    const { text: t } = useTranslationV2();
+
+    const isLinux = window.electron.platform === "linux";
+
+    const updateAndRestart = async () => {
+        await configService.set("auto-update", AutoUpdate.ONCE);
+        await lastValueFrom(ipcService.sendV2("restart-app"));
+    };
+
+
+    const renderTippyContent = () => {
+        return (
+            <div className="p-2">
+                <div>{t("title-bar.update-text", { version: latestVersion.version })}</div>
+                {latestVersion?.version ? (
+                    <a href={`https://github.com/Zagrios/bs-manager/releases/tag/v${latestVersion.version}`} target="_blank" className="cursor-pointer underline text-sm hover:text-gray-300">{t("title-bar.see-changelog")}</a>
+                ) : null}
+                {!isLinux &&
+                    <BsmButton typeColor="primary"
+                        className="text-center rounded-md px-2 py-1 mt-2"
+                        text={t("title-bar.update-button")}
+                        withBar={false}
+                        onClick={() => updateAndRestart()}
+                    />
+                }
+            </div>
+        )
+    }
+
+    return latestVersion && (
+        <Tippy
+            zIndex={1000}
+            placement="bottom"
+            content={renderTippyContent()}
+            theme="default"
+            hideOnClick
+            interactive
+        >
+            <BsmButton
+                className="shrink-0 w-11 h-full aspect-square !bg-transparent flex items-start p-0.5"
+                icon="download"
+                withBar={false}
+            />
+        </Tippy>
+    );
+}
 
 export default function TitleBar({ template = "index.html" }: { template: AppWindow }) {
-    const ipcService = useService(IpcService);
     const audio = useService(AudioPlayerService);
     const windowControls = useWindowControls();
 
     const volume = useObservable(() => audio.volume$, audio.volume);
     const color = useThemeColor("first-color");
-
-    const [previewVersion, setPreviewVersion] = useState(null);
-
-    useEffect(() => {
-        lastValueFrom(ipcService.sendV2("current-version")).then(version => {
-            if (version.toLowerCase().includes("alpha")) {
-                return setPreviewVersion("ALPHA");
-            }
-            if (version.toLowerCase().includes("beta")) {
-                return setPreviewVersion("BETA");
-            }
-        });
-    }, []);
+    const { currentVersion, latestVersion } = useVersion();
 
     const [maximized, setMaximized] = useState(false);
 
@@ -76,7 +171,7 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
                 <div id="drag-region" className="grow basis-0 h-full">
                     <div id="window-title" className="pl-1">
                         <span className="text-gray-800 dark:text-gray-100 font-bold text-xs italic">BSManager</span>
-                        {previewVersion && <span className="bg-main-color-1 text-white dark:text-black dark:bg-white rounded-full ml-1 text-[10px] italic px-1 uppercase h-3.5 font-bold">{previewVersion}</span>}
+                        <TitleBarTags version={currentVersion} latestVersion={latestVersion} />
                     </div>
                 </div>
                 <div id="window-controls" className="h-full flex shrink-0 items-center">
@@ -86,6 +181,7 @@ export default function TitleBar({ template = "index.html" }: { template: AppWin
                         </div>
                         <BsmButton className="shrink-0 h-[23px] w-[23px] aspect-square !bg-transparent flex items-start" iconClassName={volumeIcon === "volume-down" ? "-translate-x-[1.8px]" : null} icon={volumeIcon} withBar={false} onClick={() => audio.toggleMute()} />
                     </div>
+                    <AutoUpdateButton latestVersion={latestVersion} />
                     <button onClick={minimizeWindow} className="text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-[#4F545C] cursor-pointer w-11 h-full shrink-0 flex justify-center items-center" id="min-button">
                         <svg aria-hidden="false" width="12" height="12" viewBox="0 0 12 12">
                             <rect fill="currentColor" width="10" height="1" x="1" y="6" />

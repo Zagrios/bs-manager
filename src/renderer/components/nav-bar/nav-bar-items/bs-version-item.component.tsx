@@ -2,7 +2,7 @@ import { BSVersion } from "shared/bs-version.interface";
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { distinctUntilChanged, lastValueFrom, map, of, Subscription, switchMap, take } from "rxjs";
-import { BSLauncherService, LaunchMods } from "renderer/services/bs-launcher.service";
+import { BSLauncherService } from "renderer/services/bs-launcher.service";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { BSUninstallerService } from "renderer/services/bs-uninstaller.service";
 import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
@@ -16,6 +16,7 @@ import equal from "fast-deep-equal";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
+import { noop } from "shared/helpers/function.helpers";
 
 export function BsVersionItem(props: { version: BSVersion }) {
 
@@ -35,7 +36,7 @@ export function BsVersionItem(props: { version: BSVersion }) {
 
     useOnUpdate(() => {
         const subs: Subscription[] = []
-        
+
         subs.push(bsDownloader.downloadingVersion$.pipe(map(download => equal(download, props.version)), distinctUntilChanged()).subscribe(isDownloading => {
             setIsDownloading(() => isDownloading);
         }));
@@ -60,9 +61,7 @@ export function BsVersionItem(props: { version: BSVersion }) {
         if(equal(downloadingVersion, props.version)){ return; }
         const launch$ = launcherService.launch({
             version: state,
-            oculus: !!configService.get<boolean>(LaunchMods.OCULUS_MOD),
-            desktop: !!configService.get<boolean>(LaunchMods.DESKTOP_MOD),
-            debug: !!configService.get<boolean>(LaunchMods.DEBUG_MOD),
+            launchMods: configService.get("launch-mods") ?? [],
         });
         return lastValueFrom(launch$).catch(() => {});
     };
@@ -72,7 +71,7 @@ export function BsVersionItem(props: { version: BSVersion }) {
         const wasVerification = bsDownloader.isVerifying;
         bsDownloader.stopDownload().then(() => {
             if(wasVerification){ return; }
-            bsUninstallerService.uninstall(versionDownload).then(res => res && verionManagerService.askInstalledVersions());
+            bsUninstallerService.uninstall(versionDownload).then(() => verionManagerService.askInstalledVersions()).catch(noop);
         });
     };
 

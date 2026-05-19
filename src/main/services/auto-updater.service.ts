@@ -1,8 +1,9 @@
-import { autoUpdater, CancellationToken, ProgressInfo } from "electron-updater";
+import { autoUpdater, CancellationToken, ProgressInfo, UpdateInfo } from "electron-updater";
 import log from "electron-log";
 import { gt } from "semver";
 import { Progression } from "main/helpers/fs.helpers";
 import { Observable } from "rxjs";
+import { safeGt } from "shared/helpers/semver.helpers";
 
 export class AutoUpdaterService {
     private static instance: AutoUpdaterService;
@@ -19,10 +20,28 @@ export class AutoUpdaterService {
         autoUpdater.autoDownload = false;
     }
 
-    public isUpdateAvailable(): Promise<boolean> {
+    public async isUpdateAvailable(): Promise<boolean> {
+        return autoUpdater.checkForUpdates()
+            .then(info => {
+                return !!info?.updateInfo && gt(
+                info.updateInfo.version, autoUpdater.currentVersion.version
+            )})
+            .catch(error => {
+                log.error("Could not get update", error);
+                return false;
+            });
+    }
+
+    public async getAvailableUpdate(): Promise<UpdateInfo | null> {
         return autoUpdater.checkForUpdates().then(info => {
-            return !!info?.updateInfo && gt(info.updateInfo.version, autoUpdater.currentVersion.version);
-        }).catch(() => false);
+                if (info?.updateInfo && safeGt(info.updateInfo.version, autoUpdater.currentVersion.version)) {
+                    return info.updateInfo;
+                }
+                return null;
+            }).catch((error: Error): UpdateInfo | null => {
+                log.error("Could not get update", error);
+                return null;
+            });
     }
 
     public downloadUpdate(): Observable<Progression> {

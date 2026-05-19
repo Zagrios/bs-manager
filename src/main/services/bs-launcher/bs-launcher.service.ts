@@ -20,6 +20,11 @@ import { SteamLauncherService } from "./steam-launcher.service";
 import { OculusLauncherService } from "./oculus-launcher.service";
 import { BSVersion } from "shared/bs-version.interface";
 import { BsStore } from "../../../shared/models/bs-store.enum";
+import { LaunchMod, LaunchMods } from "shared/models/bs-launch/launch-option.interface";
+import { StaticConfigurationService } from "../static-configuration.service";
+import { SteamService } from "../steam.service";
+import { tryit } from "shared/helpers/error.helpers";
+import { LinuxService } from "../linux.service";
 
 export class BSLauncherService {
     private static instance: BSLauncherService;
@@ -30,7 +35,10 @@ export class BSLauncherService {
     private readonly ipc: IpcService;
     private readonly remoteVersion: BSVersionLibService;
     private readonly steamLauncher: SteamLauncherService;
+    private readonly steam: SteamService;
     private readonly oculusLauncher: OculusLauncherService;
+    private readonly staticConfig: StaticConfigurationService;
+    private readonly linux: LinuxService;
 
     public static getInstance(): BSLauncherService {
         if (!BSLauncherService.instance) {
@@ -47,6 +55,9 @@ export class BSLauncherService {
         this.remoteVersion = BSVersionLibService.getInstance();
         this.steamLauncher = SteamLauncherService.getInstance();
         this.oculusLauncher = OculusLauncherService.getInstance();
+        this.staticConfig = StaticConfigurationService.getInstance();
+        this.steam = SteamService.getInstance();
+        this.linux = LinuxService.getInstance();
 
         this.bsmProtocolService.on("launch", link => {
             log.info("Launch from bsm protocol", link.toString());
@@ -72,6 +83,8 @@ export class BSLauncherService {
             return throwError(() => new Error("Unable to get launcher for the provided version"));
         }
 
+        this.staticConfig.set("last-version-launched", launchOptions.version);
+
         return launcher.launch(launchOptions);
     }
 
@@ -82,10 +95,6 @@ export class BSLauncherService {
 
         const params = objectFromEntries(shortcutLink.searchParams.entries()) as ShortcutParams;
 
-        if(typeof params.additionalArgs === "string"){
-            params.additionalArgs = [params.additionalArgs];
-        }
-
         return params;
     }
 
@@ -94,6 +103,14 @@ export class BSLauncherService {
     }
 
     private shortcutParamsToLaunchOption(params: ShortcutParams): LaunchOption{
+
+        const launchMods: LaunchMod[] = [];
+
+        if(params.oculusMode === "true"){ launchMods.push(LaunchMods.OCULUS); }
+        if(params.desktopMode === "true"){ launchMods.push(LaunchMods.FPFC); }
+        if(params.debug === "true"){ launchMods.push(LaunchMods.DEBUG); }
+        if(params.skipSteam === "true"){ launchMods.push(LaunchMods.SKIP_STEAM); }
+
         const res: LaunchOption = {
             version: {
                 BSVersion: params.version,
@@ -102,10 +119,8 @@ export class BSLauncherService {
                 oculus: params.versionOculus === "true",
                 ino: +params.versionIno
             },
-            oculus: params.oculusMode === "true",
-            desktop: params.desktopMode === "true",
-            debug: params.debug === "true",
-            additionalArgs: params.additionalArgs
+            command: params.command,
+            launchMods,
         };
 
         return res;
@@ -119,10 +134,12 @@ export class BSLauncherService {
         if(launchOptions.version.oculus){ res.versionOculus = `${launchOptions.version.oculus}`; }
         if(launchOptions.version.ino){ res.versionIno = `${launchOptions.version.ino}`; }
 
-        if(launchOptions.oculus){ res.oculusMode = "true"; }
-        if(launchOptions.desktop){ res.desktopMode = "true"; }
-        if(launchOptions.debug){ res.debug = "true"; }
-        if(launchOptions.additionalArgs){ res.additionalArgs = launchOptions.additionalArgs; }
+        if(launchOptions.launchMods?.includes(LaunchMods.OCULUS)){ res.oculusMode = "true"; }
+        if(launchOptions.launchMods?.includes(LaunchMods.FPFC)){ res.desktopMode = "true"; }
+        if(launchOptions.launchMods?.includes(LaunchMods.DEBUG)){ res.debug = "true"; }
+        if(launchOptions.command){ res.command = launchOptions.command; }
+        if(launchOptions.launchMods?.includes(LaunchMods.SKIP_STEAM)){ res.skipSteam = "true"; }
+        if(launchOptions.launchMods?.includes(LaunchMods.PROTON_LOGS)){ res.protonLogs = "true"; }
 
         return res;
     }
@@ -164,7 +181,7 @@ export class BSLauncherService {
      * @returns {Promise<string>} Path of the icon
      */
     private async createShortcutIco(color: Color): Promise<string>{
-        const pngBuffer = await this.createShortcutPngBuffer(color);
+        const pngBuffer = this.createShortcutPngBuffer(color);
         const icoBuffer = await toIco([pngBuffer]);
 
         await ensureDir(IMAGE_CACHE_PATH);
@@ -181,11 +198,38 @@ export class BSLauncherService {
         return this.bsmProtocolService.buildLink("launch", shortcutParams).toString();
     }
 
-    public async createLaunchShortcut(launchOptions: LaunchOption): Promise<boolean>{
+    public async createLaunchShortcut(launchOptions: LaunchOption, steamShortcut?: boolean): Promise<boolean>{
         const shortcutUrl =  this.createLaunchLink(launchOptions);
 
         const shortcutName = ["Beat Saber", launchOptions.version.BSVersion, launchOptions.version.name].join(" ");
         const shortcutIconColor = new Color(launchOptions.version.color, "hex");
+
+        if(steamShortcut){
+            const userId = await tryit(() => this.steam.getActiveUser());
+            const exePath = app.getPath("exe");
+            const icon = await this.createShortcutPng(shortcutIconColor)
+            return this.steam.createShortcut(
+                process.platform === "win32"
+                    ? {
+                        AppName: shortcutName,
+                        Exe: exePath,
+                        StartDir: path.dirname(exePath),
+                        LaunchOptions: this.createLaunchLink(launchOptions),
+                        OpenVR: "\u0001", icon,
+                    }
+                    : await this.linux.getSteamShortcutData(
+                        shortcutName, icon, launchOptions,
+                        await this.steam.getSteamPath(),
+                        await this.localVersionService.getVersionPath(launchOptions.version)
+                    ),
+                userId.result
+            )
+                .then(() => true)
+                .catch(e => {
+                    log.error(e);
+                    return false;
+                });
+        }
 
         return execOnOs({
             win32: async () => (
@@ -196,12 +240,13 @@ export class BSLauncherService {
                     description: [shortcutName, launchOptions.version.color].join(" "), // <= Need color in description to help windows know that the shortcut is different
                 })
             ),
-            linux: async () => (
-                createDesktopUrlShortcut(path.join(app.getPath("desktop"), `${shortcutName}.desktop`), {
-                    name: shortcutName,
-                    url: shortcutUrl,
-                    icon: await this.createShortcutPng(shortcutIconColor),
-                })
+            linux: async () => this.linux.createDesktopShortcut(
+                path.join(app.getPath("desktop"), `${shortcutName}.desktop`),
+                shortcutName,
+                await this.createShortcutPng(shortcutIconColor),
+                launchOptions,
+                await this.steam.getSteamPath(),
+                await this.localVersionService.getVersionPath(launchOptions.version)
             )
         })
 
@@ -213,7 +258,7 @@ export class BSLauncherService {
         const bsPath: string = await (async () => {
             const bsPath = await this.localVersionService.getInstalledVersionPath(launchOption.version);
             return bsPath ?? this.localVersionService.getVersionPath(launchOption.version);
-        })().catch(e => {
+        })().catch((e): null => {
             log.error(e);
             return null;
         });
@@ -238,7 +283,9 @@ type ShortcutParams = {
     oculusMode?: string;
     desktopMode?: string;
     debug?: string;
-    additionalArgs?: string[];
+    command?: string;
+    skipSteam?: string;
+    protonLogs?: string;
     version: string;
     versionName?: string;
     versionIno?: string;
@@ -246,26 +293,3 @@ type ShortcutParams = {
     versionOculus?: string;
 }
 
-/**
- * Create .desktop file for url shortcut (only for linux)
- * @param {string} shortcutPath
- * @param options
- * @returns
- */
-function createDesktopUrlShortcut(shortcutPath: string, options?: {
-    url: string
-    name: string,
-    icon: string
-}): Promise<boolean> {
-    const { url, name, icon } = options || {};
-
-    const data = [
-        "[Desktop Entry]",
-        "Type=Link",
-        `Name=${name}`,
-        `Icon=${icon}`,
-        `URL=${url}`
-    ].join("\n");
-
-    return writeFile(shortcutPath, data).then(() => true);
-}

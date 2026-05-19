@@ -17,6 +17,7 @@ export interface BSVersion extends PartialBSVersion {
     color?: string; // TODO : Should be in metadata
     OculusBinaryId?: string;
     metadata?: BSVersionMetadata;
+    path?: string;
     recommended?: boolean;
 }
 

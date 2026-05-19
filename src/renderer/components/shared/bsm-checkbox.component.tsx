@@ -24,7 +24,7 @@ export function BsmCheckbox({ className, checked, onChange, disabled }: Props) {
             <GlowEffect visible={!disabled && hovered} className="!w-[calc(100%+6px)] !h-[calc(100%+6px)] !-top-[3px] !-left-[3px]" />
 
             <span
-                className={`w-full h-full flex items-center justify-center rounded-md border-2 border-current overflow-hidden bg-light-main-color-3 dark:bg-main-color-1 ${disabled ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}`}
+                className={`w-full h-full flex items-center justify-center rounded-md border-2 border-main-color-1 dark:border-light-main-color-1 overflow-hidden bg-light-main-color-3 dark:bg-main-color-1 ${disabled ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}`}
                 onClickCapture={e => {
                     e.stopPropagation();
                     handleClick();

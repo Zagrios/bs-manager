@@ -15,8 +15,7 @@ import { logRenderError } from "renderer";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { BSVersionOutdatedModal } from "renderer/components/modal/modal-types/bs-version-outdated-modal.component";
 import { ConfigurationService } from "renderer/services/configuration.service";
-import { coerce, lt, valid } from "semver";
-import { tryit } from "shared/helpers/error.helpers";
+import { safeLt } from "shared/helpers/semver.helpers";
 
 export const AvailableVersionsContext = createContext<{ selectedVersion: BSVersion; setSelectedVersion: (version: BSVersion) => void }>(null);
 
@@ -34,12 +33,10 @@ export function AvailableVersionsList() {
     const t = useTranslation();
 
     const startDownload = async (version: BSVersion) => {
-        const showOutdated = !config.get("not-show-bs-version-outdated");
-        const recommendedVersion = showOutdated ? versionManager.availableVersions$.value.find(v => v.recommended) : undefined;
+        const showOutdated = !config.get("not-show-bs-version-outdated-modal");
+        const recommendedVersion = versionManager.getRecommendedVersion();
 
-        const isVersionOutdated = recommendedVersion?.BSVersion ? (
-            tryit(() => lt(valid(coerce(version.BSVersion)), valid(coerce(recommendedVersion.BSVersion)))).result ?? false
-        ) : false;
+        const isVersionOutdated = safeLt(version.BSVersion, recommendedVersion?.BSVersion);
 
         if (showOutdated && isVersionOutdated) {
 

@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { BsmIcon } from "../svgs/bsm-icon.component";
-import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { FolderLinkState } from "renderer/services/version-folder-linker.service";
-import React from "react";
+import React, { forwardRef } from "react";
 
 export type LinkBtnProps = {
     className?: string;
@@ -12,8 +12,8 @@ export type LinkBtnProps = {
     onClick?: () => unknown;
 };
 
-export function LinkButton({className, title, state, onClick}: LinkBtnProps) {
-    const t = useTranslation();
+export const LinkButton = forwardRef<HTMLDivElement, LinkBtnProps>(({className, title, state, onClick}, forwardedRef) => {
+    const { text: t } = useTranslationV2();
 
     const color = useThemeColor("first-color");
     const disabled = state === FolderLinkState.Processing || state === FolderLinkState.Pending;
@@ -41,6 +41,7 @@ export function LinkButton({className, title, state, onClick}: LinkBtnProps) {
 
     return (
         <motion.div
+            ref={forwardedRef}
             variants={{ hover: { rotate: 22.5 }, tap: { rotate: 45 } }}
             whileHover="hover"
             whileTap="tap"
@@ -55,4 +56,4 @@ export function LinkButton({className, title, state, onClick}: LinkBtnProps) {
             <BsmIcon className="p-1 absolute top-0 left-0 h-full w-full !bg-transparent -rotate-45 brightness-150" icon={state === FolderLinkState.Linked ? "link" : "unlink"} style={{ color: btnColor() }} />
         </motion.div>
     );
-}
+});

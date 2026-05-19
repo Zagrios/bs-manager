@@ -24,7 +24,7 @@ export class ModalService {
         const promise = new Promise<ModalResponse<T>>(resolve => {
             resolver = resolve as (value: ModalResponse | PromiseLike<ModalResponse>) => void;
         });
-        const modalObj = {modal: modal as ModalComponent, resolver, options};
+        const modalObj = {id: crypto.randomUUID(), modal: modal as ModalComponent, resolver, options};
         this._modalToShow$.next([...this._modalToShow$.getValue(), modalObj]);
 
         promise.then(() => {
@@ -41,7 +41,7 @@ export class ModalService {
 
 export type ModalOptions<T = unknown> = { readonly data?: T, readonly noStyle?: boolean, readonly closable?: boolean }
 export type ModalComponent<Return = unknown, Receive = unknown> = ({ resolver, options }: { readonly resolver: (x: ModalResponse<Return>) => void; readonly options?: ModalOptions<Receive> }) => JSX.Element;
-export type ModalObject = {modal: ModalComponent, resolver: (value: ModalResponse | PromiseLike<ModalResponse>) => void, options: ModalOptions};
+export type ModalObject = {id: string, modal: ModalComponent, resolver: (value: ModalResponse | PromiseLike<ModalResponse>) => void, options: ModalOptions};
 
 export const enum ModalExitCode {
     NO_CHOICE = -1,

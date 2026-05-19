@@ -26,7 +26,8 @@ body:
       id: replication
       attributes:
         label: Steps to Reproduce
-        description: Provide a link to a live example, or an unambiguous set of steps to reproduce this bug. Include code to reproduce, if relevant.
+        description: Provide a link to a live example, or an unambiguous set of steps to reproduce this bug.
+            Include code to reproduce, if relevant.
         placeholder: |
             1. Go to '...'
             2. Click on '....'
@@ -50,5 +51,6 @@ body:
       id: additional-context
       attributes:
         label: Additional Context
-        description: Any other context that you may share about the issue. You may add your log files here.
+        description: Any other context that you may share about the issue such as logs.
+            To get the logs, follow these steps `Open BSManager -> Go to settings -> Scroll down -> Open Logs`.
 

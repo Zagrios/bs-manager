@@ -1,3 +1,4 @@
+import log from "electron-log";
 import fetch from "node-fetch";
 import { CustomError } from "../../shared/models/exceptions/custom-error.class";
 import { mkdirs, createWriteStream, pathExists, WriteStream } from "fs-extra";
@@ -87,7 +88,10 @@ export class OculusDownloader {
                         sub.next(progress);
                     }
 
-                })().catch(err => sub.error(err)).finally(() => {
+                })()
+                .then(() => {
+                    log.info("Downloaded file to", `"${destination}"`);
+                }).catch(err => sub.error(err)).finally(() => {
                     sub.complete();
                     writeStream?.end();
                 });
@@ -100,12 +104,25 @@ export class OculusDownloader {
     }
 
     private async isFileIntegrityValid(file: OculusFileWithName, folder: string): Promise<boolean> {
-        const [fileName, fileData] = file;
-        const destination = path.join(folder, fileName);
+
+        const [filename, fileData] = file;
+        const destination = path.join(
+            folder,
+            process.platform === "win32"
+                ? filename
+                : filename.replaceAll("\\", "/")
+        );
 
         return pathExists(destination).then(exists => {
-            if(!exists){ return false; }
-            return hashFile(destination, "sha256").then(hash => hash === fileData.sha256);
+            if(!exists){
+                log.info("File not found", `"${destination}"`);
+                return false;
+            }
+            return hashFile(destination, "sha256").then(hash => {
+                const isValid = hash === fileData.sha256;
+                log.info("File integrity", isValid ? "VALID" : "INVALID", `"${destination}"`);
+                return isValid;
+            });
         });
     }
 
@@ -124,6 +141,7 @@ export class OculusDownloader {
                     if(canceled){ return; }
 
                     if(!(await this.isFileIntegrityValid(oculusFile, folder))){
+                        log.info("File integrity invalid", `"${oculusFile[0]}"`);
                         wrongFiles.push(oculusFile);
                     }
 
@@ -176,7 +194,13 @@ export class OculusDownloader {
                             return from([res])
                         }
 
-                        const target = path.join(options.destination, filename);
+                        const target = path.join(
+                            options.destination,
+                            process.platform === "win32"
+                                ? filename
+                                : filename.replaceAll("\\", "/")
+                        );
+
                         return this.downloadManifestFile(file, target).pipe(
                             catchError(err => {
                                 this.options.logger?.error(err);

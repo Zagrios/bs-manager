@@ -29,7 +29,7 @@ import Tippy from "@tippyjs/react";
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { PlaylistsManagerService } from "renderer/services/playlists-manager.service";
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
-import { useTranslation } from "renderer/hooks/use-translation.hook";
+import { useTranslation, useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { VersionFolderLinkerService } from "renderer/services/version-folder-linker.service";
 import { useService } from "renderer/hooks/use-service.hook";
 import { lastValueFrom } from "rxjs";
@@ -40,12 +40,15 @@ import { SteamIcon } from "renderer/components/svgs/icons/steam-icon.component";
 import { OculusIcon } from "renderer/components/svgs/icons/oculus-icon.component";
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
 import BeatConflict from "../../../assets/images/apngs/beat-conflict.png";
-import { SettingToogleSwitchGrid } from "renderer/components/settings/setting-toogle-switch-grid.component";
+import { Item, SettingToogleSwitchGrid } from "renderer/components/settings/setting-toogle-switch-grid.component";
 import { BasicModal } from "renderer/components/modal/basic-modal.component";
 import { StaticConfigurationService } from "renderer/services/static-configuration.service";
 import { tryit } from "shared/helpers/error.helpers";
 import { InstallationLocationService } from "renderer/services/installation-location.service";
 import { AutoUpdaterService } from "renderer/services/auto-updater.service";
+import { OculusDownloaderService } from "renderer/services/bs-version-download/oculus-downloader.service";
+import { DISCORD_URL } from "shared/constants";
+import { AutoUpdate } from "shared/models/config";
 
 export function SettingsPage() {
 
@@ -55,6 +58,7 @@ export function SettingsPage() {
     const modalService = useService(ModalService);
     const bsDownloader = useService(BsDownloaderService);
     const steamDownloader = useService(SteamDownloaderService);
+    const oculusDownloader = useService(OculusDownloaderService);
     const progressBarService = useService(ProgressBarService);
     const notificationService = useService(NotificationService);
     const i18nService = useService(I18nService);
@@ -96,8 +100,6 @@ export function SettingsPage() {
     const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
     const [modelsDeepLinkEnabled, setModelsDeepLinkEnabled] = useState(false);
     const [hasDownloaderSession, setHasDownloaderSession] = useState(false);
-    const [hardwareAccelerationEnabled, setHardwareAccelerationEnabled] = useState(true);
-    const [useSymlink, setUseSymlink] = useState(false);
     const appVersion = useObservable(() => autoUpdater.getAppVersion());
 
     useEffect(() => {
@@ -107,8 +109,6 @@ export function SettingsPage() {
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
 
-        staticConfig.get("disable-hadware-acceleration").then(disabled =>setHardwareAccelerationEnabled(() => disabled !== true));
-        staticConfig.get("use-symlinks").then(useSymlinks => setUseSymlink(() => useSymlinks));
         staticConfig.get("proton-folder").then(setProtonFolder);
     }, []);
 
@@ -125,16 +125,17 @@ export function SettingsPage() {
         });
     };
 
-    const loadDownloadersSession = () => {
-        setHasDownloaderSession(steamDownloader.sessionExist());
+    const loadDownloadersSession = async () => {
+        setHasDownloaderSession(steamDownloader.sessionExist() || await oculusDownloader.metaSessionExists());
     }
 
-    const clearDownloadersSession = () => {
+    const clearDownloadersSession = async () => {
         if (!hasDownloaderSession) {
             return;
         }
 
         steamDownloader.deleteSteamSession();
+        await oculusDownloader.deleteMetaSession()
         notificationService.notifyInfo({
             title: "pages.settings.steam-and-oculus.logout-success",
         });
@@ -164,7 +165,7 @@ export function SettingsPage() {
         try {
             const pathResponse = await lastValueFrom(ipcService.sendV2("choose-folder", {
                 parent: "home",
-                defaultPath: ".local/share/Steam/steamapps/common",
+                defaultPath: ".steam/steam/steamapps/common",
                 showHidden: true,
         }));
             if (
@@ -201,11 +202,18 @@ export function SettingsPage() {
             const fileChooserRes = await lastValueFrom(ipcService.sendV2("choose-folder"));
 
             if (!fileChooserRes.canceled && fileChooserRes.filePaths?.length) {
+
+                const newInstallationPath = fileChooserRes.filePaths[0];
+
+                if(newInstallationPath === installationFolder){
+                    return;
+                }
+
                 progressBarService.showFake(0.008);
 
                 notificationService.notifySuccess({ title: "notifications.settings.move-folder.success.titles.transfer-started", desc: "notifications.settings.move-folder.success.descs.transfer-started" });
 
-                lastValueFrom(installationLocationService.setInstallationFolder(fileChooserRes.filePaths[0], true)).then(res => {
+                lastValueFrom(installationLocationService.setInstallationFolder(newInstallationPath, true)).then(res => {
 
                     progressBarService.complete();
                     progressBarService.hide();
@@ -233,75 +241,15 @@ export function SettingsPage() {
         });
     };
 
-    const onChangeHardwareAcceleration = async (newHardwareAccelerationEnabled: boolean) => {
-        if(newHardwareAccelerationEnabled === hardwareAccelerationEnabled){ return; }
-
-        const res = await modalService.openModal(BasicModal, { data: {
-            title: "pages.settings.advanced.hardware-acceleration.modal.title",
-            body: "pages.settings.advanced.hardware-acceleration.modal.body",
-            image: BeatConflict,
-            buttons: [
-                { id: "cancel", text: "misc.cancel", type: "cancel", isCancel: true },
-                { id: "confirm", text: "pages.settings.advanced.hardware-acceleration.modal.confirm-btn", type: "error" }
-            ]
-        }});
-
-        if(res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm"){ return; }
-
-        const { error } = await tryit(() => staticConfig.set("disable-hadware-acceleration", !newHardwareAccelerationEnabled));
-
-        if(error){
-            notificationService.notifyError({ title: "notifications.types.error", desc: "pages.settings.advanced.hardware-acceleration.error-notification.message" });
-            setHardwareAccelerationEnabled(() => !newHardwareAccelerationEnabled);
-                return;
-        }
-
-        setHardwareAccelerationEnabled(() => newHardwareAccelerationEnabled);
-
-        if(!progressBarService.require()){
-            return;
-        }
-
-        await lastValueFrom(ipcService.sendV2("restart-app"));
-    };
-
-    const onChangeUseSymlinks = async (newUseSymlink: boolean) => {
-
-        if(newUseSymlink === useSymlink){ return; }
-
-        if(newUseSymlink){
-            const res = await modalService.openModal(BasicModal, { data: {
-                title: "pages.settings.advanced.use-symlinks.modal.title",
-                body: "pages.settings.advanced.use-symlinks.modal.body",
-                image: BeatConflict,
-                buttons: [
-                    { id: "cancel", text: "misc.cancel", type: "cancel", isCancel: true },
-                    { id: "confirm", text: "pages.settings.advanced.use-symlinks.modal.confirm-btn", type: "error" }
-                ]
-            }});
-
-            if(res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm"){ return; }
-        }
-
-        const { error } = await tryit(() => staticConfig.set("use-symlinks", newUseSymlink));
-
-        if(error){
-            notificationService.notifyError({ title: "notifications.types.error", desc: "pages.settings.advanced.use-symlinks.error-notification.message" });
-            return;
-        }
-
-        setUseSymlink(() => newUseSymlink);
-    }
-
     const toogleShowSupporters = () => {
         setShowSupporters(show => !show);
     };
 
     const openSupportPage = () => linkOpener.open("https://www.patreon.com/bsmanager");
     const openGithub = () => linkOpener.open("https://github.com/Zagrios/bs-manager");
-    const openReportBug = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&template=-bug--bug-report.md&title=%5BBUG%5D+%3A+");
-    const openRequestFeatures = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=enhancement&template=-feat---feature-request.md&title=%5BFEAT.%5D+%3A+");
-    const openDiscord = () => linkOpener.open("https://discord.gg/uSqbHVpKdV");
+    const openReportBug = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?template=1-bug-report.yaml");
+    const openRequestFeatures = () => linkOpener.open("https://github.com/Zagrios/bs-manager/issues/new?template=2-feature-request.yaml");
+    const openDiscord = () => linkOpener.open(DISCORD_URL);
     const openTwitter = () => linkOpener.open("https://twitter.com/BSManager_");
 
     const openLogs = () => lastValueFrom(ipcService.sendV2("open-logs"));
@@ -557,7 +505,7 @@ export function SettingsPage() {
                 </SettingContainer>
 
                 <SettingContainer title="pages.settings.language.title" description="pages.settings.language.description">
-                    <SettingRadioArray items={languagesItems} selectedItemValue={languageSelected} onItemSelected={handleChangeLanguage} />
+                    <SettingRadioArray items={languagesItems} selectedItemValue={languageSelected} onItemSelected={handleChangeLanguage} columnCount={2} />
                 </SettingContainer>
 
                 <SettingContainer title="pages.settings.patreon.title" description="pages.settings.patreon.description">
@@ -568,7 +516,8 @@ export function SettingsPage() {
                     <SettingContainer className="mt-3" description="pages.settings.discord.description">
                         <div className="flex gap-2">
                             <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="Discord" icon="discord" iconClassName="p-0.5 mr-1" color="#5865f2" onClick={openDiscord} />
-                            <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="Twitter" icon="twitter" iconClassName="p-0.5 mr-1" color="#000" onClick={openTwitter} />
+                            <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="Twitter" icon="twitter" iconClassName="p-0.5 mr-1" color="#171717" onClick={openTwitter} />
+                            <BsmButton className="flex w-fit rounded-md h-8 px-2 font-bold py-1 !text-white" withBar={false} text="GitHub" icon="github" iconClassName="p-0.5 mr-1 h-full w-full" color="#171717" onClick={openGithub} />
                         </div>
                     </SettingContainer>
                     <SettingContainer className="pt-3" description="pages.settings.contribution.description">
@@ -579,18 +528,12 @@ export function SettingsPage() {
                             </div>
                             <div className="flex px-2 gap-2">
                                 <BsmButton onClick={openLogs} className="shrink-0 whitespace-nowrap px-2 font-bold italic text-sm rounded-md" text="pages.settings.contribution.buttons.open-logs" withBar={false} />
-                                <BsmButton onClick={openGithub} className="shrink-0 px-2 rounded-md" icon="github" title="GitHub" withBar={false} />
                             </div>
                         </div>
                     </SettingContainer>
                 </SettingContainer>
 
-                <SettingContainer title="pages.settings.advanced.title" description="pages.settings.advanced.description">
-                    <SettingToogleSwitchGrid items={[
-                        { checked: hardwareAccelerationEnabled, text: t("pages.settings.advanced.hardware-acceleration.title"), desc: t("pages.settings.advanced.hardware-acceleration.description"), onChange: onChangeHardwareAcceleration },
-                        { checked: useSymlink, text: t("pages.settings.advanced.use-symlinks.title"), desc: t("pages.settings.advanced.use-symlinks.description"), onChange: onChangeUseSymlinks },
-                    ]}/>
-                </SettingContainer>
+                <AdvancedSettings />
 
                 <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5">v{appVersion}</span>
             </div>
@@ -598,3 +541,165 @@ export function SettingsPage() {
         </div>
     );
 }
+
+function AdvancedSettings() {
+    const ipc = useService(IpcService);
+    const modal = useService(ModalService);
+    const notification = useService(NotificationService);
+    const progressBar = useService(ProgressBarService);
+    const staticConfig = useService(StaticConfigurationService);
+
+    const t = useTranslationV2();
+
+    const [hardwareAccelerationEnabled, setHardwareAccelerationEnabled] = useState(true);
+    const [useSymlink, setUseSymlink] = useState(false);
+    const [useSystemProxy, setUseSystemProxy] = useState(false);
+    const [autoUpdate, setAutoUpdate] = useState<AutoUpdate>(AutoUpdate.NEVER);
+
+
+    useEffect(() => {
+        staticConfig.get("disable-hadware-acceleration").then(disabled =>setHardwareAccelerationEnabled(() => disabled !== true));
+
+        if (window.electron.platform === "win32") {
+            staticConfig.get("use-symlinks").then(useSymlinks => setUseSymlink(() => useSymlinks));
+            staticConfig.get("use-system-proxy").then(useSystemProxy => setUseSystemProxy(() => useSystemProxy));
+            staticConfig.get("auto-update").then(res => setAutoUpdate(() => res ?? AutoUpdate.ALWAYS));
+        }
+    }, []);
+
+    const onChangeHardwareAcceleration = async (newHardwareAccelerationEnabled: boolean) => {
+        if(newHardwareAccelerationEnabled === hardwareAccelerationEnabled){ return; }
+
+        const res = await modal.openModal(BasicModal, { data: {
+            title: "pages.settings.advanced.hardware-acceleration.modal.title",
+            body: "pages.settings.advanced.hardware-acceleration.modal.body",
+            image: BeatConflict,
+            buttons: [
+                { id: "cancel", text: "misc.cancel", type: "cancel" },
+                { id: "confirm", text: "pages.settings.advanced.hardware-acceleration.modal.confirm-btn", type: "error", onClick: () => true },
+            ]
+        }});
+
+        if(res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm"){ return; }
+
+        const { error } = await tryit(() => staticConfig.set("disable-hadware-acceleration", !newHardwareAccelerationEnabled));
+
+        if(error){
+            notification.notifyError({ title: "notifications.types.error", desc: "pages.settings.advanced.hardware-acceleration.error-notification.message" });
+            setHardwareAccelerationEnabled(() => !newHardwareAccelerationEnabled);
+                return;
+        }
+
+        setHardwareAccelerationEnabled(() => newHardwareAccelerationEnabled);
+
+        if(!progressBar.require()){
+            return;
+        }
+
+        await lastValueFrom(ipc.sendV2("restart-app"));
+    };
+
+    const onChangeUseSymlinks = async (newUseSymlink: boolean) => {
+
+        if (window.electron.platform !== "win32" || newUseSymlink === useSymlink) {
+            return;
+        }
+
+        if(newUseSymlink){
+            const res = await modal.openModal(BasicModal, { data: {
+                title: "pages.settings.advanced.use-symlinks.modal.title",
+                body: "pages.settings.advanced.use-symlinks.modal.body",
+                image: BeatConflict,
+                buttons: [
+                    { id: "cancel", text: "misc.cancel", type: "cancel" },
+                    { id: "confirm", text: "pages.settings.advanced.use-symlinks.modal.confirm-btn", type: "error", onClick: () => true }
+                ]
+            }});
+
+            if(res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm"){ return; }
+        }
+
+        const { error } = await tryit(() => staticConfig.set("use-symlinks", newUseSymlink));
+
+        if(error){
+            notification.notifyError({ title: "notifications.types.error", desc: "pages.settings.advanced.use-symlinks.error-notification.message" });
+            return;
+        }
+
+        setUseSymlink(() => newUseSymlink);
+    }
+
+    const onChangeUseSystemProxy = async (newUseSystemProxy: boolean) => {
+
+        if (window.electron.platform !== "win32" || newUseSystemProxy === useSystemProxy) {
+            return;
+        }
+
+        const { error } = await tryit(() => staticConfig.set("use-system-proxy", newUseSystemProxy));
+
+        if(error){
+            notification.notifyError({ title: "notifications.types.error", desc: "pages.settings.advanced.use-system-proxy.error-notification.message" });
+            return;
+        }
+
+        setUseSystemProxy(() => newUseSystemProxy);
+    }
+
+    const onChangeAutoUpdate = async (value: boolean) => {
+        if (window.electron.platform !== "win32") {
+            return;
+        }
+
+        const newAutoUpdate = value ? AutoUpdate.ALWAYS : AutoUpdate.NEVER;
+        const { error } = await tryit(() => staticConfig.set("auto-update", newAutoUpdate));
+
+        if (error) {
+            notification.notifyError({
+                title: "notifications.types.error",
+                desc: "pages.settings.advanced.auto-update.error-notification.message",
+            });
+            return;
+        }
+
+        setAutoUpdate(() => newAutoUpdate);
+    }
+
+    const advancedItems: Item[] = [];
+
+    if (window.electron.platform === "win32") {
+        advancedItems.push({
+            checked: autoUpdate === AutoUpdate.ALWAYS,
+            text: t.text("pages.settings.advanced.auto-update.title"),
+            desc: t.text("pages.settings.advanced.auto-update.description"),
+            onChange: onChangeAutoUpdate
+        });
+    }
+
+    advancedItems.push({
+        checked: hardwareAccelerationEnabled,
+        text: t.text("pages.settings.advanced.hardware-acceleration.title"),
+        desc: t.text("pages.settings.advanced.hardware-acceleration.description"),
+        onChange: onChangeHardwareAcceleration
+    });
+
+    if (window.electron.platform === "win32") {
+        advancedItems.push({
+            checked: useSymlink,
+            text: t.text("pages.settings.advanced.use-symlinks.title"),
+            desc: t.text("pages.settings.advanced.use-symlinks.description"),
+            onChange: onChangeUseSymlinks
+        });
+        advancedItems.push({
+            checked: useSystemProxy,
+            text: t.text("pages.settings.advanced.use-system-proxy.title"),
+            desc: t.text("pages.settings.advanced.use-system-proxy.description"),
+            onChange: onChangeUseSystemProxy
+        });
+    }
+
+    return <SettingContainer title="pages.settings.advanced.title" description="pages.settings.advanced.description">
+        <SettingToogleSwitchGrid items={advancedItems}/>
+    </SettingContainer>
+
+}
+
