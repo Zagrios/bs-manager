@@ -41,13 +41,27 @@ export class SteamService {
         return registryValue.value;
     }
 
+    public async isSteamProcessRunning(): Promise<boolean> {
+        return isProcessRunning(SteamService.PROCESS_NAME);
+    }
+
     public async isSteamRunning(): Promise<boolean> {
-        const steamProcessRunning = await isProcessRunning(SteamService.PROCESS_NAME);
+        const steamProcessRunning = await this.isSteamProcessRunning();
+        if (!steamProcessRunning) {
+            return false;
+        }
+
         if (process.platform === "linux") {
             return steamProcessRunning;
         }
-        const activeUser = await this.getActiveUser().catch(err => log.error(err));
-        return steamProcessRunning && !!activeUser;
+
+        try {
+            const activeUser = await this.getActiveUser();
+            return !!activeUser;
+        } catch (err) {
+            log.warn("Unable to read Steam active user; falling back to process detection", err);
+            return true;
+        }
     }
 
     public async getSteamPid(): Promise<number> {
@@ -96,6 +110,66 @@ export class SteamService {
         }
     }
 
+    private async getSteamRootCandidates(): Promise<string[]> {
+        const candidates = new Set<string>();
+        const steamPath = await this.getSteamPath().catch(() => null);
+
+        if (steamPath) {
+            candidates.add(steamPath);
+        }
+
+        if (process.platform === "win32") {
+            const programFiles = process.env["ProgramFiles"];
+            const programFilesX86 = process.env["ProgramFiles(x86)"];
+            if (programFiles) {
+                candidates.add(path.join(programFiles, "Steam"));
+            }
+            if (programFilesX86) {
+                candidates.add(path.join(programFilesX86, "Steam"));
+            }
+
+            for (let code = "A".charCodeAt(0); code <= "Z".charCodeAt(0); code += 1) {
+                const drive = `${String.fromCharCode(code)}:\\`;
+                candidates.add(path.join(drive, "Steam"));
+                candidates.add(path.join(drive, "SteamLibrary"));
+            }
+        } else if (process.platform === "linux") {
+            candidates.add(path.join(app.getPath("home"), ".local", "share", "Steam"));
+            candidates.add(path.join(app.getPath("home"), ".steam", "steam"));
+        }
+
+        const existing = await Promise.all(Array.from(candidates).map(async candidate => {
+            return (await pathExists(path.join(candidate, "steamapps")).catch(() => false)) ? candidate : null;
+        }));
+
+        return existing.filter(Boolean);
+    }
+
+    private async getGameFolderFallback(gameId: string, gameFolder?: string): Promise<string> {
+        if (!gameFolder) {
+            return null;
+        }
+
+        const roots = await this.getSteamRootCandidates();
+
+        for (const root of roots) {
+            const appManifest = path.join(root, "steamapps", `appmanifest_${gameId}.acf`);
+            const appFolder = path.join(root, "steamapps", "common", gameFolder);
+
+            if (
+                await pathExists(appFolder).catch(() => false)
+                || await pathExists(`${appFolder}.bak`).catch(() => false)
+                || await pathExists(appManifest).catch(() => false)
+            ) {
+                log.info("Resolved Steam game folder from fallback", { gameId, gameFolder, appFolder });
+                return appFolder;
+            }
+        }
+
+        log.warn("Unable to resolve Steam game folder", { gameId, gameFolder, roots });
+        return null;
+    }
+
     public async getGameFolder(gameId: string, gameFolder?: string): Promise<string> {
         try {
             const steamPath = await this.getSteamPath();
@@ -103,17 +177,17 @@ export class SteamService {
             let libraryFolders: any = path.join(steamPath, "steamapps", "libraryfolders.vdf");
 
             if (!(await pathExists(libraryFolders))) {
-                return null;
+                return this.getGameFolderFallback(gameId, gameFolder);
             }
 
             libraryFolders = parse(await readFile(libraryFolders, { encoding: "utf-8" }));
 
             if (!libraryFolders.libraryfolders) {
-                return null;
+                return this.getGameFolderFallback(gameId, gameFolder);
             }
             libraryFolders = libraryFolders.libraryfolders;
 
-            for (const libKey in Object.keys(libraryFolders)) {
+            for (const libKey of Object.keys(libraryFolders)) {
                 if (!libraryFolders?.[libKey]?.apps) {
                     continue;
                 }
@@ -124,10 +198,23 @@ export class SteamService {
                 }
             }
 
-            return null;
+            if (gameFolder) {
+                for (const libKey of Object.keys(libraryFolders)) {
+                    if (!libraryFolders?.[libKey]?.path) {
+                        continue;
+                    }
+
+                    const appFolder = path.join(libraryFolders[libKey].path, "steamapps", "common", gameFolder);
+                    if (await pathExists(appFolder) || await pathExists(`${appFolder}.bak`)) {
+                        return appFolder;
+                    }
+                }
+            }
+
+            return this.getGameFolderFallback(gameId, gameFolder);
         } catch (e) {
             log.error(e);
-            return null;
+            return this.getGameFolderFallback(gameId, gameFolder);
         }
     }
 
