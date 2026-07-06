@@ -13,7 +13,7 @@ jobs:
 
         strategy:
             matrix:
-                os: [windows-latest, ubuntu-latest]
+                os: [windows-latest, ubuntu-latest, ubuntu-24.04-arm]
 
         steps:
             - name: Check out Git repository
@@ -27,26 +27,26 @@ jobs:
 
             # Update package lists
             - name: update apt-get
-              if: matrix.os == 'ubuntu-latest'
+              if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04-arm'
               run: sudo apt-get update
 
             # Install and setup rpm/Flatpak for Ubuntu
             - name: Install rpm/flatpak packages (Ubuntu only)
-              if: matrix.os == 'ubuntu-latest'
+              if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04-arm'
               run: sudo apt-get install -y flatpak flatpak-builder rpm libarchive-tools
 
             - run: npm ci
             - run: npm run package
 
             - name: Setup flatpak repo (Ubuntu only)
-              if: matrix.os == 'ubuntu-latest'
+              if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04-arm'
               run: |
                 flatpak remote-add --if-not-exists --user \
                   flathub https://flathub.org/repo/flathub.flatpakrepo
 
             # Build Flatpak package
             - name: Build Flatpak (Ubuntu only)
-              if: matrix.os == 'ubuntu-latest'
+              if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04-arm'
               run: |
                   env DEBUG="@malept/flatpak-bundler" \
                   npx electron-builder --config electron-builder.config.js --publish never --linux flatpak
