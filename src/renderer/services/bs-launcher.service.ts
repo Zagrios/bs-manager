@@ -46,7 +46,7 @@ export class BSLauncherService {
 
     private handleLaunchEvents(events$: Observable<BSLaunchEventData>): Observable<BSLaunchEventData>{
         const warningTypes: string[] = Object.values(BSLaunchWarning);
-        const eventToFilter = [...warningTypes, BSLaunchEvent.STEAM_LAUNCHED]
+        const eventToFilter = [BSLaunchEvent.STEAM_LAUNCHED]
 
         return events$.pipe(tap({
             next: event => {

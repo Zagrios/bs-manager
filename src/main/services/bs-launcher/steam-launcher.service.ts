@@ -39,10 +39,10 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
     }
 
     private timedRename(src: string, dest: string): Promise<void> {
-        return Promise.race([
-            rename(src, dest),
-            new Promise<never>((_, reject) => setTimeout(() => reject(new Error("Rename timed out")), 5000)),
-        ]);
+        return new Promise<void>((resolve, reject) => {
+            const timeout = setTimeout(() => reject(new Error("Rename timed out")), 5000);
+            rename(src, dest).then(resolve, reject).finally(() => clearTimeout(timeout));
+        });
     }
 
     private async backupSteamVR(): Promise<boolean> {
