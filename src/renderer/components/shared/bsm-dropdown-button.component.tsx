@@ -41,7 +41,7 @@ export const BsmDropdownButton = forwardRef(({ className, classNames, buttonColo
     const ref = useRef(fowardRed);
     useClickOutside(ref, () => setExpanded(false));
 
-    const itemRef = useRef<HTMLDivElement>(null);
+    const itemRef = useRef<HTMLButtonElement>(null);
     const renderedItems = items?.filter((item): item is DropDownItem => !!item);
 
     const [itemHeight, setItemHeight] = useState<number>();
@@ -89,10 +89,10 @@ export const BsmDropdownButton = forwardRef(({ className, classNames, buttonColo
             <BsmButton onClick={() => setExpanded(!expanded)} className={cn(buttonClassName ?? defaultButtonClassName, classNames?.button)} icon={icon} active={expanded} textClassName={textClassName} onClickOutside={handleClickOutside} withBar={withBar} text={text} typeColor={buttonColor} iconClassName={classNames?.iconClassName}/>
             <div className={cn(`py-1 w-fit absolute cursor-pointer top-[calc(100%-4px)] rounded-md bg-inherit text-sm text-gray-800 dark:text-gray-200 shadow-md shadow-black transition-[scale] duration-150 ease-in-out ${alignClass} overflow-y-auto scrollbar-thin`, classNames?.itemsContainer)} style={{ scale: expanded ? "1" : "0", translate: `0 ${menuTranslationY}`, maxHeight}}>
                 {renderedItems?.map((i, index) => (
-                    <div ref={index === 0 ? itemRef : undefined} key={i.text} onClick={() => { setExpanded(() => false); i.onClick?.()}} className="flex w-full px-3 py-2 hover:backdrop-brightness-150">
+                    <button ref={index === 0 ? itemRef : undefined} key={i.text} type="button" onClick={() => { setExpanded(() => false); i.onClick?.()}} className="flex w-full px-3 py-2 hover:backdrop-brightness-150">
                         {i.icon && <BsmIcon icon={i.icon} className="h-5 w-5 mr-1 text-inherit" />}
                         <span className="w-max">{t(i.text)}</span>
-                    </div>
+                    </button>
                 ))}
             </div>
             {!!children && <AnimatePresence>{expanded && children}</AnimatePresence>}
