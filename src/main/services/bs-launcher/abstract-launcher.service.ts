@@ -127,22 +127,18 @@ export abstract class AbstractLauncherService {
         customEnv: Record<string, string>
     ): void {
         for (const [ key, value ] of Object.entries(customEnv)) {
-            if (!(key in originalEnv)) {
-                log.info(
-                    "Injecting",
-                    `${key}="${value}"`,
-                    "to the env launch command"
-                );
-                continue;
-            }
+            const isOverride = key in originalEnv;
 
             log.info(
-                "Overriding",
+                isOverride ? "Overriding" : "Injecting",
                 `${key}="${value}"`,
                 "to the env launch command"
             );
-            originalEnv[key] = value;
-            delete customEnv[key];
+
+            if (isOverride) {
+                originalEnv[key] = value;
+                delete customEnv[key];
+            }
         }
     }
 
