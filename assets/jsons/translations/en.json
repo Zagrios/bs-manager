@@ -561,6 +561,16 @@
                 "actions": {
                     "STEAM_NOT_RUNNING": "Launch Steam"
                 }
+            },
+            "warnings": {
+                "titles": {
+                    "FPFC_NEED_ADMIN": "FPFC mode setup incomplete",
+                    "UNABLE_TO_LAUNCH_STEAM": "Could not launch Steam"
+                },
+                "msg": {
+                    "FPFC_NEED_ADMIN": "BSManager needs administrator privileges to properly set up FPFC mode. Run BSManager as administrator for the best experience.",
+                    "UNABLE_TO_LAUNCH_STEAM": "Steam could not be started automatically."
+                }
             }
         },
         "steam": {

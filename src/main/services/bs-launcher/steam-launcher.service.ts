@@ -38,14 +38,25 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         return this.steam.getGameFolder(STEAMVR_APP_ID, "SteamVR");
     }
 
-    private async backupSteamVR(): Promise<void> {
-        const steamVrFolder = await this.getSteamVRPath();
-        if (!(await pathExists(steamVrFolder))) {
-            return;
-        }
-        return rename(steamVrFolder, `${steamVrFolder}.bak`).catch(err => {
-            log.error("Error while create backup of SteamVR", err);
+    private timedRename(src: string, dest: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const timeout = setTimeout(() => reject(new Error("Rename timed out")), 5000);
+            rename(src, dest).then(resolve, reject).finally(() => clearTimeout(timeout));
         });
+    }
+
+    private async backupSteamVR(): Promise<boolean> {
+        const steamVrFolder = await this.getSteamVRPath();
+        if (!steamVrFolder || !(await pathExists(steamVrFolder))) {
+            return false;
+        }
+        try {
+            await this.timedRename(steamVrFolder, `${steamVrFolder}.bak`);
+            return false;
+        } catch (err) {
+            log.warn("Could not backup SteamVR folder, skipping", err);
+            return err?.code === "EPERM" || err?.message?.includes("timed out");
+        }
     }
 
     private getStartBsAsAdminExePath(): string {
@@ -54,14 +65,11 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
 
     public async restoreSteamVR(): Promise<void> {
         const steamVrFolder = await this.getSteamVRPath();
+        if (!steamVrFolder) { return; }
         const steamVrBackup = `${steamVrFolder}.bak`;
-
-        if (!(await pathExists(steamVrBackup))) {
-            return;
-        }
-
-        return rename(steamVrBackup, steamVrFolder).catch(err => {
-            log.error("Error while restoring SteamVR", err);
+        if (!(await pathExists(steamVrBackup))) { return; }
+        return this.timedRename(steamVrBackup, steamVrFolder).catch(err => {
+            log.warn("Could not restore SteamVR folder", err);
         });
     }
 
@@ -136,12 +144,16 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 obs.next({ type: BSLaunchEvent.SKIPPING_STEAM_LAUNCH});
             }
 
-            // Backup SteamVR when desktop mode is enabled
-            if(launchOptions.launchMods?.includes(LaunchMods.FPFC)){
-                await this.backupSteamVR().catch(() => {
-                    return this.restoreSteamVR();
+            const isFpfc = launchOptions.launchMods?.includes(LaunchMods.FPFC);
+            const isOculus = launchOptions.launchMods?.includes(LaunchMods.OCULUS);
+            if(isFpfc && !isOculus){
+                const backupPermError = await this.backupSteamVR().catch(() => {
+                    return this.restoreSteamVR().then(() => false);
                 });
-            } else {
+                if(backupPermError){
+                    obs.next({type: BSLaunchWarning.FPFC_NEED_ADMIN});
+                }
+            } else if(!isFpfc) {
                 await this.restoreSteamVR().catch(log.error);
             }
 
