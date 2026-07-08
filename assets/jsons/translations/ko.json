@@ -59,6 +59,7 @@
                 "desktop-description": "FPFC 모드에서는 WASD와 마우스로 게임 내 메뉴를 조작할 수 있어 테스트가 더 쉬워집니다. 헤드셋을 착용할 필요가 없습니다!",
                 "debug": "디버그 모드",
                 "debug-description": "IPA 출력 로그 창을 활성화하여 모드의 디버그 콘솔을 표시합니다.",
+                "outdated-tippy": "이 버전은 오래되어 일부 모드나 기능이 예상대로 작동하지 않을 수 있습니다. 최신 기능과 버그 수정을 사용하려면 권장 버전({recommendedVersion})의 Beat Saber를 사용하는 것이 좋습니다.",
                 "advanced-launch": {
                     "button": "실행 옵션",
                     "placeholder": "실행 옵션 예: KEY=VALUE %command% fpfc",
@@ -523,7 +524,8 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "실행 중...🚀",
-                    "STEAM_LAUNCHING": "Steam 실행 중..."
+                    "STEAM_LAUNCHING": "Steam 실행 중...",
+                    "SKIPPING_STEAM_LAUNCH": "Steam 실행 건너뛰기"
                 },
                 "msg": {
                     "BS_LAUNCHING": "워밍업을 잊지 마세요 😉",
@@ -618,7 +620,8 @@
                 "msg": {
                     "success": "모든 모드가 제거되었습니다.",
                     "errors": {
-                        "no-mods": "이 버전에 설치된 모드가 없습니다 😑"
+                        "no-mods": "이 버전에 설치된 모드가 없습니다 😑",
+                        "no-wineprefix": "BSManager WINEPREFIX 경로를 찾을 수 없습니다. 먼저 BSManager에서 Beat Saber를 실행하세요."
                     }
                 }
             },
@@ -907,12 +910,18 @@
                 "remove-from-the-list": "목록에서 제거"
             }
         },
+        "adding-shared-folder": {
+            "title": "공유 폴더 추가",
+            "description": "「{folder}」폴더를 연결할 때 문제가 발생할 수 있습니다. 정말 추가하시겠습니까?"
+        },
         "create-launch-shortcut": {
             "title": "바로 가기 만들기",
             "desc": "바로 가기를 만들면 BSManager를 거치지 않고 선택한 옵션으로 Beat Saber를 바로 실행할 수 있습니다.",
             "launch-options": "실행 옵션",
             "advanced-launch": "고급 실행",
-            "valid-btn": "바로 가기 만들기"
+            "valid-btn": "바로 가기 만들기",
+            "create-steam-shortcut": "Steam 바로가기를 생성",
+            "steam-shortcut-tippy": "활성화하면 바탕 화면에 바로가기를 생성하는 대신 Steam에 생성됩니다."
         },
         "connect-to-meta": {
             "title": "Meta에 연결하기",
@@ -926,13 +935,12 @@
             "stay": "기억하기",
             "connect-to-meta": "Meta에 연결하기"
         },
-        "original-version-backup-oculus": {
-            "title": "주의",
-            "body": {
-                "must-be-installed-once": "이 장치에 Oculus 스토어에서 Beat Saber를 설치해야 합니다. 그렇지 않으면 Beat Saber가 실행 후 자동으로 종료됩니다.",
-                "will-backup": "이 버전을 실행하기 위해 Oculus 라이브러리에 있는 Beat Saber의 원래 설치 폴더의 이름이 변경되며, Beat Saber가 종료되면 자동으로 복원됩니다."
-            },
-            "not-remind-me": "다시 표시하지 않기",
+        "enable-oculus-sideloaded-apps": {
+            "title": "사이드로딩 활성화",
+            "info-1": "Beat Saber를 실행하려면 사이드로딩 앱을 실행할 수 있는 기능을 활성화해야 합니다. BSManager는 이 기능을 자동으로 활성화하기 위해 관리자 권한을 요청할 것입니다.",
+            "info-2": "사이드로딩 기능을 사용하면 Oculus 라이브러리 폴더 외부에 있는 게임을 실행할 수 있습니다.",
+            "info-3": "사이드로딩(sideloading)이 활성화되면 이 기능은 계속 활성 상태를 유지하며, 더 이상 활성화를 요청받지 않습니다.",
+            "i-want-to-do-it-myself": "스스로 하고 싶습니다",
             "understood": "알겠습니다"
         },
         "enter-meta-token": {
