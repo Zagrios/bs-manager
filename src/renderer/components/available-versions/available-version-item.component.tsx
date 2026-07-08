@@ -1,5 +1,5 @@
 import { BSVersion } from "shared/bs-version.interface";
-import { useState, memo, ComponentProps, useContext } from "react";
+import { useState, memo, useContext } from "react";
 import defaultImage from "../../../../assets/images/default-version-img.jpg";
 import dateFormat from "dateformat";
 import { BsmImage } from "../shared/bsm-image.component";
@@ -14,11 +14,9 @@ import { AvailableVersionsContext } from "renderer/pages/available-versions-list
 
 type Props = {
     version: BSVersion;
-    selected: boolean;
-    onClick: ComponentProps<"li">["onClick"];
 }
 
-export const AvailableVersionItem = memo(function AvailableVersionItem({version, selected, onClick}: Props) {
+export const AvailableVersionItem = memo(function AvailableVersionItem({version}: Props) {
 
     const t = useTranslation();
     const context = useContext(AvailableVersionsContext);
@@ -26,9 +24,9 @@ export const AvailableVersionItem = memo(function AvailableVersionItem({version,
     const formatedDate = useConstant(() => dateFormat(+version.ReleaseDate * 1000, "ddd. d mmm yyyy"));
 
     return (
-        <motion.li className="group/card relative w-72 h-60 active:scale-[.98]" onClick={onClick} onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)}>
-            <GlowEffect visible={hovered || selected} className="absolute" />
-            <div className={`relative flex flex-col overflow-hidden rounded-md w-72 h-60 cursor-pointer group-hover/card:shadow-none duration-300 bg-light-main-color-2 dark:bg-main-color-2 ${!selected && "shadow-lg shadow-gray-900"}`}>
+        <motion.li className="group/card relative w-72 h-60" onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)}>
+            <GlowEffect visible={hovered} className="absolute" />
+            <div className="relative flex flex-col overflow-hidden rounded-md w-72 h-60 shadow-lg shadow-gray-900 group-hover/card:shadow-none duration-300 bg-light-main-color-2 dark:bg-main-color-2">
                 {version.recommended && (
                     <span className="uppercase absolute -rotate-45 top-9 -left-[6.2rem] font-bold text-white bg-red-600 w-full text-center text-xs z-[1] shadow-sm shadow-black py-0.5" title={t("pages.available-versions.recommended-tooltip")}>{t("pages.available-versions.recommended")}</span>
                 )}
