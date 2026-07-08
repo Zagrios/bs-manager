@@ -1,8 +1,6 @@
 import { AvailableVersionsSlider } from "../components/available-versions/available-versions-slider.component";
 import { Slideshow } from "renderer/components/slideshow/slideshow.component";
-import { createContext, useMemo, useState } from "react";
-import { BsmButton } from "renderer/components/shared/bsm-button.component";
-import { AnimatePresence, motion } from "framer-motion";
+import { createContext, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
 import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-button.component";
@@ -17,7 +15,7 @@ import { BSVersionOutdatedModal } from "renderer/components/modal/modal-types/bs
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { safeLt } from "shared/helpers/semver.helpers";
 
-export const AvailableVersionsContext = createContext<{ selectedVersion: BSVersion; setSelectedVersion: (version: BSVersion) => void }>(null);
+export const AvailableVersionsContext = createContext<{ selectedVersion: BSVersion; setSelectedVersion: (version: BSVersion) => void; startDownload: (version: BSVersion) => void; downloading: boolean }>(null);
 
 export function AvailableVersionsList() {
 
@@ -27,12 +25,11 @@ export function AvailableVersionsList() {
     const config = useService(ConfigurationService);
 
     const [selectedVersion, setSelectedVersion] = useState<BSVersion>(null);
-    const contextValue = useMemo(() => ({ selectedVersion, setSelectedVersion }), [selectedVersion]);
 
     const downloading = useObservable(() => bsDownloader.downloadingVersion$.pipe(map(v => !!v)));
     const t = useTranslation();
 
-    const startDownload = async (version: BSVersion) => {
+    const startDownload = useCallback(async (version: BSVersion) => {
         const showOutdated = !config.get("not-show-bs-version-outdated-modal");
         const recommendedVersion = versionManager.getRecommendedVersion();
 
@@ -50,7 +47,9 @@ export function AvailableVersionsList() {
         return bsDownloader.downloadVersion(version)
             .catch(logRenderError)
             .finally(() => setSelectedVersion(null));
-    };
+    }, [config, versionManager, modals, bsDownloader]);
+
+    const contextValue = useMemo(() => ({ selectedVersion, setSelectedVersion, startDownload, downloading }), [selectedVersion, downloading, startDownload]);
 
     const importVersion = () => {
         return lastValueFrom(versionManager.importVersion()).catch(() => {});
@@ -72,14 +71,6 @@ export function AvailableVersionsList() {
             <AvailableVersionsContext.Provider value={contextValue}>
                 <AvailableVersionsSlider />
             </AvailableVersionsContext.Provider>
-
-            <AnimatePresence>
-                {selectedVersion && !downloading && (
-                    <motion.div initial={{ y: "150%" }} animate={{ y: "0%" }} exit={{ y: "150%" }} className="absolute bottom-5" onClick={() => startDownload(selectedVersion)}>
-                        <BsmButton text="misc.download" className="relative text-gray-800 dark:text-gray-100 rounded-md text-3xl font-bold italic tracking-wide px-3 pb-2 pt-1 shadow-md shadow-black" />
-                    </motion.div>
-                )}
-            </AnimatePresence>
 
             <BsmDropdownButton
                 className="absolute top-5 right-5 h-9 w-9 bg-light-main-color-2 dark:bg-main-color-2 rounded-md"
