@@ -917,6 +917,7 @@
                 "link-folder": "關聯文件夾",
                 "unlink-folder": "取消關聯文件夾",
                 "link-all": "關聯所有",
+                "unlink-all": "取消關聯所有",
                 "remove-from-the-list": "從列表中移除"
             }
         },

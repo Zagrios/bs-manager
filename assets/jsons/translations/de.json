@@ -917,6 +917,7 @@
                 "link-folder": "Ordner verknüpfen",
                 "unlink-folder": "Ordner-Verknüpfung aufheben",
                 "link-all": "Alle verlinken",
+                "unlink-all": "Alle Verknüpfungen aufheben",
                 "remove-from-the-list": "Aus der Liste entfernen"
             }
         },

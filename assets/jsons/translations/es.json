@@ -917,6 +917,7 @@
                 "link-folder": "Enlazar Carpeta",
                 "unlink-folder": "Desenlazar Carpeta",
                 "link-all": "Enlazar todo",
+                "unlink-all": "Desenlazar todo",
                 "remove-from-the-list": "Eliminar de la lista"
             }
         },
