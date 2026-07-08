@@ -78,6 +78,7 @@ describe("BSLauncherService shortcut links", () => {
             LaunchMods.FPFC,
             LaunchMods.DEBUG,
             LaunchMods.SKIP_STEAM,
+            LaunchMods.EDITOR,
             LaunchMods.PROTON_LOGS,
             LaunchMods.PARALLEL_VIEWS,
         ];
@@ -94,6 +95,9 @@ describe("BSLauncherService shortcut links", () => {
         };
 
         const shortcutLink = service.createLaunchLink(launchOptions);
+        expect(shortcutLink).toContain("mapEditor=true");
+        expect(shortcutLink).toContain("parallelViews=true");
+
         const roundTrippedOptions = service.shortcutLinkToLaunchOptions(shortcutLink);
 
         expect(roundTrippedOptions.launchMods).toEqual(launchMods);

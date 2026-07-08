@@ -50,7 +50,6 @@ describe("Test os.helpers bsmSpawn", () => {
                 STEAM_COMPAT_CLIENT_INSTALL_PATH: "/steam",
                 STEAM_COMPAT_APP_ID: BS_APP_ID,
                 SteamEnv: "1",
-                OXR_PARALLEL_VIEWS: "1",
             });
         }
     });
@@ -157,8 +156,55 @@ describe("Test os.helpers bsmSpawn", () => {
         });
 
         expect(spawnSpy).toHaveBeenCalledTimes(1);
-        const envArgs = flatpakEnv.map(argName =>
-                `--env=${argName}="${(BS_ENV as any)[argName]}"`
+        const envArgs = flatpakEnv.filter(argName => (newEnv as any)[argName]).map(argName =>
+                `--env=${argName}="${(newEnv as any)[argName]}"`
+            ).join(" ");
+        expect(spawnSpy).toHaveBeenCalledWith(
+            `flatpak-spawn --host ${envArgs} "./proton" run "./Beat Saber.exe" --no-yeet fpfc`,
+            expect.objectContaining({
+                cwd: "/",
+                detached: true,
+                env: newEnv,
+            })
+        );
+
+        expect(logSpy).toHaveBeenCalledTimes(1);
+    });
+
+    ifIt(IS_LINUX)("Complex spawn command call (BS launch flatpak with parallel views)", () => {
+        const flatpakEnv = [
+            "SteamAppId",
+            "SteamOverlayGameId",
+            "SteamGameId",
+            "WINEDLLOVERRIDES",
+            "STEAM_COMPAT_DATA_PATH",
+            "STEAM_COMPAT_INSTALL_PATH",
+            "STEAM_COMPAT_CLIENT_INSTALL_PATH",
+            "STEAM_COMPAT_APP_ID",
+            "SteamEnv",
+            "OXR_PARALLEL_VIEWS"
+        ];
+        const newEnv = {
+            ...BS_ENV,
+            OXR_PARALLEL_VIEWS: "1",
+        };
+        bsmSpawn(`"./proton" run "./Beat Saber.exe"`, {
+            args: ["--no-yeet", "fpfc"],
+            options: {
+                cwd: "/",
+                detached: true,
+                env: newEnv,
+            },
+            log: BsmShellLog.Command,
+            flatpak: {
+                host: true,
+                env: flatpakEnv,
+            },
+        });
+
+        expect(spawnSpy).toHaveBeenCalledTimes(1);
+        const envArgs = flatpakEnv.filter(argName => (newEnv as any)[argName]).map(argName =>
+                `--env=${argName}="${(newEnv as any)[argName]}"`
             ).join(" ");
         expect(spawnSpy).toHaveBeenCalledWith(
             `flatpak-spawn --host ${envArgs} "./proton" run "./Beat Saber.exe" --no-yeet fpfc`,
