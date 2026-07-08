@@ -917,6 +917,7 @@
                 "link-folder": "Link Folder",
                 "unlink-folder": "Unlink Folder",
                 "link-all": "Link all",
+                "unlink-all": "Unlink all",
                 "remove-from-the-list": "Remove from the list"
             }
         },

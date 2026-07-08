@@ -917,6 +917,7 @@
                 "link-folder": "フォルダーをリンク",
                 "unlink-folder": "フォルダーのリンクを解除",
                 "link-all": "すべてリンク",
+                "unlink-all": "すべてのリンクを解除",
                 "remove-from-the-list": "リストから削除"
             }
         },

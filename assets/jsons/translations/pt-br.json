@@ -917,6 +917,7 @@
                 "link-folder": "Vincular Pasta",
                 "unlink-folder": "Desvincular Pasta",
                 "link-all": "Vincular todas",
+                "unlink-all": "Desvincular todas",
                 "remove-from-the-list": "Remover da lista"
             }
         },

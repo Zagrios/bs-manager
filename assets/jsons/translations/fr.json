@@ -917,6 +917,7 @@
                 "link-folder": "Lier le dossier",
                 "unlink-folder": "Délier le dossier",
                 "link-all": "Tout lier",
+                "unlink-all": "Tout délier",
                 "remove-from-the-list": "Retirer de la liste"
             }
         },

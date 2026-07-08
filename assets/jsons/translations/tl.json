@@ -917,6 +917,7 @@
                 "link-folder": "I-link ang Folder",
                 "unlink-folder": "I-unlink ang Folder",
                 "link-all": "I-link lahat",
+                "unlink-all": "I-unlink lahat",
                 "remove-from-the-list": "Alisin mula sa listahan"
             }
         },

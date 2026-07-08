@@ -917,6 +917,7 @@
                 "link-folder": "Collega Cartella",
                 "unlink-folder": "Scollega Cartella",
                 "link-all": "Collega Tutto",
+                "unlink-all": "Scollega Tutto",
                 "remove-from-the-list": "Rimuovi dalla lista"
             }
         },

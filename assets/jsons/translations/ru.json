@@ -917,6 +917,7 @@
                 "link-folder": "Связать папку",
                 "unlink-folder": "Отвязать папку",
                 "link-all": "Связать всё",
+                "unlink-all": "Отвязать всё",
                 "remove-from-the-list": "Удалить из списка"
             }
         },
