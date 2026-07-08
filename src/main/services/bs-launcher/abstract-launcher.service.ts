@@ -19,6 +19,10 @@ export function buildBsLaunchArgs(launchOptions: LaunchOption): string[] {
         launchArgs.push("oculus");
     }
     if(launchOptions.launchMods?.includes(LaunchMods.FPFC)) {
+        if (!launchOptions.launchMods?.includes(LaunchMods.OCULUS)) {
+            launchArgs.push("-vrmode");
+            launchArgs.push("None");
+        }
         launchArgs.push("fpfc");
     }
     if(launchOptions.launchMods?.includes(LaunchMods.DEBUG)) {
@@ -146,4 +150,3 @@ export type LaunchBeatSaberOptions = {
     // Timeout value (in ms) to unref the Beat Saber process to BSM
     unrefAfter?: number;
 }
-
