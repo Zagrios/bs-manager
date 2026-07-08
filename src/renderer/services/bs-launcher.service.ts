@@ -46,7 +46,6 @@ export class BSLauncherService {
 
     private handleLaunchEvents(events$: Observable<BSLaunchEventData>): Observable<BSLaunchEventData>{
         const warningTypes: string[] = Object.values(BSLaunchWarning);
-        const eventToFilter = [BSLaunchEvent.STEAM_LAUNCHED]
 
         return events$.pipe(tap({
             next: event => {
@@ -54,7 +53,7 @@ export class BSLauncherService {
                     this.notificationService.notifyWarning({title: `notifications.bs-launch.warnings.titles.${event.type}`, desc: `notifications.bs-launch.warnings.msg.${event.type}`, duration: sToMs(9)});
                     return;
                 }
-                if(eventToFilter.includes(event.type)){ return; }
+                if(event.type === BSLaunchEvent.STEAM_LAUNCHED){ return; }
                 this.notificationService.notifySuccess({title: `notifications.bs-launch.success.titles.${event.type}`, desc: `notifications.bs-launch.success.msg.${event.type}`});
             },
             error: (err: CustomError) => {
