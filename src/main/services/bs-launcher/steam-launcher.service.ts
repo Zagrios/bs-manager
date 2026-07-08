@@ -180,7 +180,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
 
             obs.next({type: BSLaunchEvent.BS_LAUNCHING});
 
-            const spawnOpts = { env, cwd: bsFolderPath };
+            const spawnOpts = { env: { ...customEnv, ...env }, cwd: bsFolderPath };
 
             const launchPromise = !launchOptions.admin ? (
                 this.launchBeatSaber({
