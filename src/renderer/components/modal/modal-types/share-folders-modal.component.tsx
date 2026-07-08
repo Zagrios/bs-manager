@@ -65,14 +65,17 @@ export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ options: { 
         setFolders(prev => prev.filter((_, i) => i !== index));
     };
 
-    const allLinked = useObservable(() => {
+    const bulkLinkState = useObservable(() => {
         if (!folders?.length) {
-            return of(false);
+            return of({ allLinked: false, actionInProgress: false });
         }
         return combineLatest(folders.map(folder => linker.$folderLinkedState(version, folder))).pipe(
-            map(states => states.every(state => state === FolderLinkState.Linked))
+            map(states => ({
+                allLinked: states.every(state => state === FolderLinkState.Linked),
+                actionInProgress: states.some(state => state === FolderLinkState.Pending || state === FolderLinkState.Processing),
+            }))
         );
-    }, false, [folders]);
+    }, { allLinked: false, actionInProgress: false }, [folders]);
 
     const linkAll = () => {
         folders.forEach(relativeFolder => linker.linkVersionFolder({ version, relativeFolder, type: VersionLinkerActionType.Link }));
@@ -104,7 +107,7 @@ export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ options: { 
                     folders={folders}
                     setFolders={setFolders}
                 />
-                <BsmButton icon={allLinked ? "unlink" : "link"} className="h-8 rounded-md flex justify-center items-center font-bold" typeColor="primary" iconClassName="h-6 aspect-square text-current -rotate-45" onClick={allLinked ? unlinkAll : linkAll} withBar={false} text={allLinked ? "modals.shared-folders.buttons.unlink-all" : "modals.shared-folders.buttons.link-all"} />
+                <BsmButton icon={bulkLinkState.allLinked ? "unlink" : "link"} className="h-8 rounded-md flex justify-center items-center font-bold" typeColor="primary" iconClassName="h-6 aspect-square text-current -rotate-45" onClick={bulkLinkState.allLinked ? unlinkAll : linkAll} withBar={false} disabled={bulkLinkState.actionInProgress} text={bulkLinkState.allLinked ? "modals.shared-folders.buttons.unlink-all" : "modals.shared-folders.buttons.link-all"} />
             </div>
         </form>
     );
