@@ -1,5 +1,5 @@
 import { BSVersion } from "shared/bs-version.interface";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { MouseEventHandler, useEffect, useMemo, useState } from "react";
 import { distinctUntilChanged, lastValueFrom, map, of, Subject, Subscription, switchMap, take } from "rxjs";
 import { BSLauncherService } from "renderer/services/bs-launcher.service";
@@ -48,6 +48,7 @@ export function BsVersionItem(props: { version: BSVersion }) {
     const modalService = useService(ModalService);
     const notification = useService(NotificationService);
     const t = useTranslation();
+    const navigate = useNavigate();
 
     const { state } = useLocation() as { state: BSVersion };
     const { fontSize, ref } = useFitText();
@@ -88,6 +89,14 @@ export function BsVersionItem(props: { version: BSVersion }) {
 
     const isActive = (): boolean => {
         return props.version?.BSVersion === state?.BSVersion && props?.version.steam === state?.steam && props?.version.oculus === state?.oculus && props?.version.name === state?.name;
+    };
+
+    const navigateToVersion = (version?: BSVersion) => {
+        if (!version) {
+            return navigate("/available-versions");
+        }
+
+        navigate(`/bs-version/${version.BSVersion}`, { state: version });
     };
 
     const handleDoubleClick = async () => {
@@ -141,11 +150,13 @@ export function BsVersionItem(props: { version: BSVersion }) {
     const verifyFiles = () => bsDownloader.verifyBsVersion(props.version).then(() => {}).catch(noop);
 
     const openContextMenu: MouseEventHandler<HTMLElement> = e => {
-        if (isDownloading) {
-            return;
-        }
         e.preventDefault();
         e.stopPropagation();
+
+        if (isDownloading || bsDownloader.downloadingVersion || bsDownloader.isVerifying || !progressBar.require()) {
+            return;
+        }
+
         contextMenuOpened$.next(itemId);
         setMenuVisible(true);
     };
@@ -156,12 +167,20 @@ export function BsVersionItem(props: { version: BSVersion }) {
         ...(!props.version.steam && !props.version.oculus ? [{
             text: "pages.version-viewer.dropdown.edit",
             icon: "edit" as const,
-            onClick: () => verionManagerService.editVersion(props.version).then(() => {}),
+            onClick: () => verionManagerService.editVersion(props.version).then(newVersion => {
+                if (newVersion) {
+                    navigateToVersion(newVersion);
+                }
+            }),
         }] : []),
         ...(!props.version.oculus ? [{
             text: "pages.version-viewer.dropdown.clone",
             icon: "copy" as const,
-            onClick: () => verionManagerService.cloneVersion(props.version).then(() => {}),
+            onClick: () => verionManagerService.cloneVersion(props.version).then(newVersion => {
+                if (newVersion) {
+                    navigateToVersion(newVersion);
+                }
+            }),
         }] : []),
         {
             text: "pages.version-viewer.dropdown.shared-folders",
@@ -199,8 +218,14 @@ export function BsVersionItem(props: { version: BSVersion }) {
                     return;
                 }
 
+                const wasActive = isActive();
+
                 return bsUninstallerService.uninstall(props.version).then(() => {
-                    return verionManagerService.askInstalledVersions().then(() => {});
+                    return verionManagerService.askInstalledVersions().then(versions => {
+                        if (wasActive) {
+                            navigateToVersion(versions?.at(0));
+                        }
+                    });
                 }).catch((err: CustomError) => {
                     let desc = err?.message;
 
