@@ -12,7 +12,7 @@ import { ConfigurationService } from "renderer/services/configuration.service";
 import { IpcService } from "renderer/services/ipc.service";
 import { ModalComponent, ModalService } from "renderer/services/modale.service";
 import { FolderLinkState, VersionFolderLinkerService, VersionLinkerActionType } from "renderer/services/version-folder-linker.service";
-import { lastValueFrom } from "rxjs";
+import { combineLatest, lastValueFrom, map, of } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { NotificationService } from "renderer/services/notification.service";
 import { BasicModal } from "../basic-modal.component";
@@ -65,8 +65,24 @@ export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ options: { 
         setFolders(prev => prev.filter((_, i) => i !== index));
     };
 
+    const bulkLinkState = useObservable(() => {
+        if (!folders?.length) {
+            return of({ allLinked: false, actionInProgress: false });
+        }
+        return combineLatest(folders.map(folder => linker.$folderLinkedState(version, folder))).pipe(
+            map(states => ({
+                allLinked: states.every(state => state === FolderLinkState.Linked),
+                actionInProgress: states.some(state => state === FolderLinkState.Pending || state === FolderLinkState.Processing),
+            }))
+        );
+    }, { allLinked: false, actionInProgress: false }, [folders]);
+
     const linkAll = () => {
         folders.forEach(relativeFolder => linker.linkVersionFolder({ version, relativeFolder, type: VersionLinkerActionType.Link }));
+    };
+
+    const unlinkAll = () => {
+        folders.forEach(relativeFolder => linker.unlinkVersionFolder({ version, relativeFolder, type: VersionLinkerActionType.Unlink }));
     };
 
     return (
@@ -91,7 +107,7 @@ export const ShareFoldersModal: ModalComponent<void, BSVersion> = ({ options: { 
                     folders={folders}
                     setFolders={setFolders}
                 />
-                <BsmButton icon="link" className="h-8 rounded-md flex justify-center items-center font-bold" typeColor="primary" iconClassName="h-6 aspect-square text-current -rotate-45" onClick={linkAll} withBar={false} text="modals.shared-folders.buttons.link-all" />
+                <BsmButton icon={bulkLinkState.allLinked ? "unlink" : "link"} className="h-8 rounded-md flex justify-center items-center font-bold" typeColor="primary" iconClassName="h-6 aspect-square text-current -rotate-45" onClick={bulkLinkState.allLinked ? unlinkAll : linkAll} withBar={false} disabled={bulkLinkState.actionInProgress} text={bulkLinkState.allLinked ? "modals.shared-folders.buttons.unlink-all" : "modals.shared-folders.buttons.link-all"} />
             </div>
         </form>
     );

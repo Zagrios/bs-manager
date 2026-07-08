@@ -964,5 +964,41 @@
 		"ReleaseImg": "https://clan.fastly.steamstatic.com/images/32055887/1161f8316767615d2fbe863673cace231c6d2b6f.png",
 		"ReleaseDate": "1770303705",
 		"year": "2026"
+	},
+	{
+		"BSVersion": "1.42.3",
+		"BSManifest": "5798847223913166210",
+		"OculusBinaryId": "25563181170021654",
+		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/511860284166506401",
+		"ReleaseImg": "https://clan.fastly.steamstatic.com/images/32055887/c48686febbf5a5c753dc232c4cde48652231b667.png",
+		"ReleaseDate": "1774534379",
+		"year": "2026"
+	},
+	{
+		"BSVersion": "1.43.0",
+		"BSManifest": "6499880290663953435",
+		"OculusBinaryId": "25964224259917341",
+		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/692008075043799325",
+		"ReleaseImg": "https://clan.fastly.steamstatic.com/images/32055887/79767d59028f454d63c4425a7bfd90913b59b546.png",
+		"ReleaseDate": "1777467723",
+		"year": "2026"
+	},
+	{
+		"BSVersion": "1.44.0",
+		"BSManifest": "4180431244915746363",
+		"OculusBinaryId": "26135279289478503",
+		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/690884711519617603",
+		"ReleaseImg": "https://clan.fastly.steamstatic.com/images/32055887/335654acc1a5066bb634486a4834368097c84983.png",
+		"ReleaseDate": "1779973295",
+		"year": "2026"
+	},
+	{
+		"BSVersion": "1.44.1",
+		"BSManifest": "7621452421350879947",
+		"OculusBinaryId": "26497783233228105",
+		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/703272148131643814",
+		"ReleaseImg": "https://clan.fastly.steamstatic.com/images/32055887/30fd358099eb07fe22e429cdf64380d7c2ae28dc.png",
+		"ReleaseDate": "1782392653",
+		"year": "2026"
 	}
 ]

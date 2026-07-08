@@ -7,6 +7,7 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 
 export const UninstallModal: ModalComponent<void, BSVersion> = ({ resolver, options: {data} }) => {
     const version = data;
+    const versionLabel = version.name ? `${version.name} (${version.BSVersion})` : version.BSVersion;
     const t = useTranslation();
 
     return (
@@ -18,7 +19,7 @@ export const UninstallModal: ModalComponent<void, BSVersion> = ({ resolver, opti
         >
             <h1 className="text-3xl uppercase tracking-wide w-full text-center text-gray-800 dark:text-gray-200">{t("modals.bs-uninstall.title")}</h1>
             <BsmImage className="mx-auto h-24" image={BeatConflict} />
-            <p className="max-w-sm text-gray-800 dark:text-gray-200">{t("modals.bs-uninstall.description", { version: version.BSVersion })}</p>
+            <p className="max-w-sm text-gray-800 dark:text-gray-200">{t("modals.bs-uninstall.description", { version: versionLabel })}</p>
             <div className="grid grid-flow-col grid-cols-2 gap-4 mt-4">
                 <BsmButton
                     typeColor="cancel"
