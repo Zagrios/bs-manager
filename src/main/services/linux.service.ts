@@ -118,7 +118,7 @@ export class LinuxService {
 
     public verifyProtonPath(protonFolder: string = ""): boolean {
         if (protonFolder === "") {
-            if (!this.staticConfig.has("proton-folder")){
+            if (!this.staticConfig.has("proton-folder")) {
                 return false;
             }
 
