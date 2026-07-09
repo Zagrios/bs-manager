@@ -192,7 +192,7 @@ export class BsModsManagerService {
             return [available ?? [], installed ?? []] as [BbmFullMod[], BbmModVersion[]]; // Make TS happy
         })().catch(e => {
             logRenderError(e);
-            return [[], []] as [BbmFullMod[], BbmModVersion[]]; // Make TS happy
+            throw e;
         })
 
         const installedMods: BbmFullMod[] = installed.reduce((acc, installedMod) => {

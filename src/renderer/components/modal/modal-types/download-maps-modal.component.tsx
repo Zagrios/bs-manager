@@ -39,6 +39,7 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
     const [downloadbleMaps, setDownloadbleMaps] = useState<DownloadableMap[]>([]);
     const [ownedMapHashs, setOwnedMapHashs] = useState<string[]>(ownedMaps?.map(map => map.hash) ?? []);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
     const [searchParams, setSearchParams] = useState<SearchParams>({
         sortOrder: config.get("map-sort-order"),
         filter,
@@ -96,12 +97,14 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
 
     const loadMaps = (params: SearchParams, tryToLoad = 5) => {
         setLoading(() => true);
+        setError(() => false);
 
         const searchResult = beatSaver.searchMaps(params);
 
         if (!filter.installed) {
             searchResult
                 .then(maps => setMaps(prev => [...prev, ...maps]))
+                .catch(() => setError(() => true))
                 .finally(() => setLoading(() => false));
 
             return;
@@ -124,6 +127,10 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
                     return;
                 }
 
+                setLoading(() => false);
+            })
+            .catch(() => {
+                setError(() => true);
                 setLoading(() => false);
             })
     };
@@ -252,6 +259,9 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
                             {(() => {
                                 if (loading) {
                                     return t("modals.download-maps.loading-maps");
+                                }
+                                if (error) {
+                                    return t("modals.download-maps.no-internet");
                                 }
                                 return t("modals.download-maps.no-maps-found");
                             })()}

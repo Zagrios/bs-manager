@@ -165,9 +165,9 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
         (async () => {
             const maps = await beatSaver.searchMaps(bsvSearchParams);
             bsvMaps$.next([...(bsvMaps ?? []), ...maps]);
-            setBsvLoading(false);
         })()
         .catch(logRenderError)
+        .finally(() => setBsvLoading(false))
     }, [bsvSearchParams])
 
     const getHashOfMap = useCallback((map: (BsmLocalMap|BsvMapDetail|SongDetails)) => {

@@ -389,8 +389,9 @@ export class BsModsManagerService {
     }
 
     public async getAvailableMods(version: BSVersion): Promise<BbmFullMod[]> {
-        return this.beatModsApi.getVersionMods(version).catch(() => {
-            return [] as BbmFullMod[];
+        return this.beatModsApi.getVersionMods(version).catch(err => {
+            log.error("Unable to load available mods from BeatMods", err);
+            throw err;
         });
     }
 

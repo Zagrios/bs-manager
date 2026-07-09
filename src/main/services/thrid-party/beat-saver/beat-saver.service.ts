@@ -60,7 +60,7 @@ export class BeatSaverService {
             })
             .catch(e => {
                 log.error(e);
-                return e;
+                throw e;
             });
     }
 

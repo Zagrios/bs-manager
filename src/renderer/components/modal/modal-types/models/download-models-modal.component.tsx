@@ -194,6 +194,9 @@ export const DownloadModelsModal: ModalComponent<void, { version: BSVersion; typ
         if (isLoading) {
             return <span className="text-lg">{t("models.panel.grid.loading")}</span>;
         }
+        if (error) {
+            return <span className="text-lg">{t("models.modals.download-models.error-occurred")}</span>;
+        }
         return <span className="text-lg">{t("models.modals.download-models.no-models")}</span>;
     };
 

@@ -217,7 +217,9 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
             return Promise.resolve();
         }
 
-        return modsManager.getVersionModsState(version).then(applyModsState);
+        return modsManager.getVersionModsState(version).then(applyModsState).catch(() => {
+            setGridStatus(() => ModsGridStatus.BEATMODS_DOWN);
+        });
     };
 
     useImperativeHandle(forwaredRef, () => ({
@@ -251,6 +253,9 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
             modsManager.getVersionModsState(version).then(state => {
                 if (isCancelled) return;
                 applyModsState(state);
+            }).catch(() => {
+                if (isCancelled) return;
+                setGridStatus(() => ModsGridStatus.BEATMODS_DOWN);
             });
         });
 

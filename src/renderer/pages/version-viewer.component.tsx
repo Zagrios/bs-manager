@@ -52,7 +52,7 @@ export function VersionViewer() {
     useOnUpdate(() => {
 
         checkIsVersionOutaded();
-        checkOutdatedMods();
+        checkOutdatedMods().catch(noop);
 
     }, [state]);
 
