@@ -142,24 +142,36 @@ function useHeader({
         mode,
         otherVersion, otherAvailableModsMap, otherInstalledModsMap,
 
-        renderHeader: () => <div className="grid grid-cols-2 text-large mb-2">
-            <div className="flex justify-center gap-x-2">
-                <div>{getVersionName(version)}</div>
+        renderHeader: () => <div className="mb-4 overflow-hidden rounded-xl border border-black/10 bg-light-main-color-2 shadow-md shadow-black/20 dark:border-white/10 dark:bg-main-color-2">
+            <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-stretch gap-3 p-3">
+                <div className="min-w-0 rounded-lg border border-black/10 bg-light-main-color-3 p-3 dark:border-white/10 dark:bg-main-color-1">
+                    <div className="text-xs font-bold uppercase tracking-[0.2em] opacity-60">Beat Saber</div>
+                    <div className="truncate text-2xl font-bold tracking-wide">{getVersionName(version)}</div>
+                    <BsmSelect
+                        className="mt-3 h-9 w-full rounded-md border border-black/10 bg-light-main-color-1 px-2 text-sm dark:border-white/10 dark:bg-main-color-2"
+                        options={modeOptions}
+                        selected={mode}
+                        onChange={setMode}
+                    />
+                </div>
 
-                <BsmSelect
-                    options={modeOptions}
-                    defaultValue={Mode.All}
-                    onChange={setMode}
-                />
+                <div className="flex items-center justify-center">
+                    <div className="rounded-full border border-black/10 bg-light-main-color-3 px-3 py-1 text-sm font-black tracking-widest shadow-sm dark:border-white/10 dark:bg-main-color-1">
+                        VS
+                    </div>
+                </div>
+
+                <div className="min-w-0 rounded-lg border border-black/10 bg-light-main-color-3 p-3 dark:border-white/10 dark:bg-main-color-1">
+                    <div className="text-xs font-bold uppercase tracking-[0.2em] opacity-60">Beat Saber</div>
+                    <BsmSelect
+                        className="mt-3 h-9 w-full rounded-md border border-black/10 bg-light-main-color-1 px-2 text-sm dark:border-white/10 dark:bg-main-color-2"
+                        disabled={loading}
+                        options={versionOptions}
+                        selected={otherVersion}
+                        onChange={setOtherVersion}
+                    />
+                </div>
             </div>
-
-            <BsmSelect
-                className="mx-2"
-                disabled={loading}
-                options={versionOptions}
-                defaultValue={null}
-                onChange={setOtherVersion}
-            />
         </div>
     };
 }
@@ -181,51 +193,57 @@ function ModCompare({
     loading: boolean;
 }>) {
     const name = mod?.name || otherMod?.name;
+    const cardClass = "flex min-w-0 items-center justify-between gap-3 rounded-lg border px-3 py-2 shadow-sm";
+    const missingClass = `${cardClass} border-dashed border-black/10 bg-light-main-color-1 text-gray-500 dark:border-white/10 dark:bg-main-color-3 dark:text-gray-400`;
+
+    const renderModContent = (modToRender: ModCompareType | null) => (
+        <>
+            <div className="min-w-0 truncate font-semibold">{name}</div>
+            {modToRender ? (
+                <div className="shrink-0 rounded-full bg-black/10 px-2 py-0.5 text-xs font-bold tracking-wide dark:bg-white/10">
+                    {modToRender.version}
+                </div>
+            ) : (
+                <div className="shrink-0 text-xs italic opacity-60">—</div>
+            )}
+        </>
+    );
 
     const renderMod = () => {
         if (!mod) {
-            return <div className="bg-black py-1 px-2">{name}</div>
+            return <div className={missingClass}>{renderModContent(null)}</div>;
         }
 
-        let modClass = "flex justify-between py-1 px-2 gap-x-2";
-        if (installed) {
-            modClass += " bg-green-700";
-        } else {
-            modClass += " bg-red-700";
-        }
+        const modClass = installed ? (
+            `${cardClass} border-green-500/40 bg-green-500/15 text-green-950 dark:bg-green-700/30 dark:text-green-100`
+        ) : (
+            `${cardClass} border-red-500/30 bg-red-500/15 text-red-950 dark:bg-red-700/25 dark:text-red-100`
+        );
 
-        return <div className={modClass}>
-            <div className="text-ellipsis overflow-hidden">{name}</div>
-            <div>{mod.version}</div>
-        </div>
+        return <div className={modClass}>{renderModContent(mod)}</div>;
     }
 
     const renderOtherMod = () => {
         if (loading) {
             return (
-                <div className="bg-black py-1 px-2 flex justify-center">
-                    <BsmBasicSpinner className="w-4 h-4" thikness="2px" />
+                <div className={`${missingClass} justify-center`}>
+                    <BsmBasicSpinner className="h-4 w-4" thikness="2px" />
                 </div>
             );
         }
 
         if (!otherMod) {
-            return <div className="bg-black py-1 px-2">{name}</div>
+            return <div className={missingClass}>{renderModContent(null)}</div>;
         }
 
-        let modClass = "flex justify-between py-1 px-2 gap-x-2";
-        if (!otherInstalledLocal) {
-            modClass += " bg-blue-700"; // Change, just for visual prototyping
-        } else if (otherInstalled) {
-            modClass += " bg-green-700";
-        } else {
-            modClass += " bg-red-700";
+        let modClass = `${cardClass} border-blue-500/35 bg-blue-500/15 text-blue-950 dark:bg-blue-700/25 dark:text-blue-100`;
+        if (otherInstalledLocal && otherInstalled) {
+            modClass = `${cardClass} border-green-500/40 bg-green-500/15 text-green-950 dark:bg-green-700/30 dark:text-green-100`;
+        } else if (otherInstalledLocal) {
+            modClass = `${cardClass} border-red-500/30 bg-red-500/15 text-red-950 dark:bg-red-700/25 dark:text-red-100`;
         }
 
-        return <div className={modClass}>
-            <div className="text-ellipsis overflow-hidden">{name}</div>
-            <div>{otherMod.version}</div>
-        </div>
+        return <div className={modClass}>{renderModContent(otherMod)}</div>;
     }
 
     const renderIcon = () => {
@@ -235,37 +253,42 @@ function ModCompare({
 
         if (mod && !otherMod) {
             // Removed / Not Submitted Yet
-            return <RemoveIcon className="text-center w-6 h-6" />
+            return <RemoveIcon className="h-5 w-5 text-red-500" />
         }
 
         if (!mod && otherMod) {
             // Added
-            return <AddIcon className="text-center w-6 h-6" />
+            return <AddIcon className="h-5 w-5 text-blue-500" />
         }
 
         if (mod.version === otherMod.version) {
             // Equals
-            return <EqualIcon className="text-center w-6 h-6" />
+            return <EqualIcon className="h-5 w-5 text-gray-500 dark:text-gray-300" />
         }
 
         if (safeLt(mod.version, otherMod.version)) {
             // Upgraded
-            return <UpIcon className="text-center w-6 h-6" />
+            return <UpIcon className="h-5 w-5 text-green-500" />
         }
 
         // Downgraded
-        return <DownIcon className="text-center w-6 h-6" />
+        return <DownIcon className="h-5 w-5 text-orange-400" />
     }
 
     return <>
         {renderMod()}
-        {renderIcon()}
+        <div className="flex items-center justify-center">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-light-main-color-3 shadow-sm dark:border-white/10 dark:bg-main-color-1">
+                {renderIcon()}
+            </div>
+        </div>
         {renderOtherMod()}
     </>
 }
 
 function ModCategory({
     mode,
+    version,
     category,
     otherVersion,
     availableMods,
@@ -275,8 +298,9 @@ function ModCategory({
     loading,
 }: Readonly<{
     mode: Mode;
+    version: BSVersion;
     category: string;
-    otherVersion: BSVersion;
+    otherVersion: BSVersion | null;
     availableMods: ModCompareType[];
     installedMods: ModCompareType[];
     otherAvailableMods: ModCompareType[];
@@ -327,14 +351,24 @@ function ModCategory({
         return <div />
     }
 
-    return <div className="bg-gray-500 py-2 px-4 rounded-md mb-4">
-        <h2 className="text-xl font-bold capitalize text-center mb-2">
-            {category}
-        </h2>
+    return <div className="mb-4 overflow-hidden rounded-xl border border-black/10 bg-light-main-color-2 shadow-md shadow-black/20 dark:border-white/10 dark:bg-main-color-2">
+        <div className="flex items-center justify-between bg-light-main-color-3 px-4 py-3 dark:bg-main-color-3">
+            <h2 className="text-xl font-bold capitalize tracking-wide">
+                {category}
+            </h2>
+            <span className="rounded-full bg-black/10 px-2 py-0.5 text-xs font-bold dark:bg-white/10">
+                {combinedMods.length}
+            </span>
+        </div>
 
-        <div className="grid" style={{
-            gridTemplateColumns: "350px 24px 350px"
-        }}>
+        <div className="grid grid-cols-[minmax(290px,1fr)_40px_minmax(290px,1fr)] gap-x-2 gap-y-1 p-3">
+            <div className="truncate px-3 pb-1 text-xs font-bold uppercase tracking-[0.18em] opacity-60">
+                {getVersionName(version)}
+            </div>
+            <div />
+            <div className="truncate px-3 pb-1 text-xs font-bold uppercase tracking-[0.18em] opacity-60">
+                {otherVersion ? getVersionName(otherVersion) : ""}
+            </div>
             {combinedMods.map(mod =>
                 <ModCompare
                     key={mod.id}
@@ -384,18 +418,19 @@ export const ModsVersionCompareModal: ModalComponent<void, Readonly<{
         } = useHeader({ version, loading, setLoading });
 
         return (
-            <div>
-                <h1 className="tracking-wide w-full uppercase text-3xl text-center mb-4">
+            <div className="w-[860px] max-w-[calc(100vw-3rem)]">
+                <h1 className="mb-3 w-full text-center text-3xl uppercase tracking-wide">
                     {t("modals.mods-version-compare.title")}
                 </h1>
 
                 {renderHeader()}
 
-                <div className="h-[500px] overflow-y-auto">
+                <div className="h-[500px] overflow-y-auto pr-1 scrollbar-default">
                     {Object.values(BbmCategories).map(category =>
                         <ModCategory
                             key={category}
                             mode={mode}
+                            version={version}
                             category={category}
                             otherVersion={otherVersion}
                             availableMods={simpleAvailableModsMap.get(category) || []}
