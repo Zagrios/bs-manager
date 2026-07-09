@@ -540,7 +540,7 @@
                     "OCULUS_NOT_RUNNING": "Oculus не запущен",
                     "OCULUS_NOT_INSTALLED": "Oculus не установлен",
                     "BS_ALREADY_RUNNING": "Beat Saber уде запущен",
-                    "EXE_NOT_FINDED": "Отсутствуют файлы",
+                    "EXE_NOT_FOUND": "Отсутствуют файлы",
                     "PROTON_NOT_SET": "Папка Proton не установлена",
                     "PROTON_NOT_FOUND": "Бинарный файл Proton не найде",
                     "EXIT": "Вылет",
@@ -553,7 +553,7 @@
                     "OCULUS_NOT_RUNNING": "Oculus должен быть запущен, чтобы запустить Beat Saber.",
                     "OCULUS_NOT_INSTALLED": "Проверьте, правильно ли установлено приложение Oculus.",
                     "BS_ALREADY_RUNNING": "Закройте Beat Saber, чтобы запустить его.",
-                    "EXE_NOT_FINDED": "Некоторые файлы отсутствуют, пробуем их проверить.",
+                    "EXE_NOT_FOUND": "Некоторые файлы отсутствуют, пробуем их проверить.",
                     "EXIT": "Beat Saber вылетел, пытаемся проверить файлы.",
                     "OCULUS_LIB_NOT_FOUND": "Проверьте, правильно ли установлено приложение Oculus, и правильно ли определены библиотеки в Oculus.",
                     "PROTON_NOT_SET": "Установите путь к Proton в настройках.",
@@ -562,6 +562,16 @@
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Запустить Steam"
+                }
+            },
+            "warnings": {
+                "titles": {
+                    "FPFC_NEED_ADMIN": "FPFC mode setup incomplete",
+                    "UNABLE_TO_LAUNCH_STEAM": "Could not launch Steam"
+                },
+                "msg": {
+                    "FPFC_NEED_ADMIN": "BSManager needs administrator privileges to properly set up FPFC mode. Run BSManager as administrator for the best experience.",
+                    "UNABLE_TO_LAUNCH_STEAM": "Steam could not be started automatically."
                 }
             }
         },
@@ -909,6 +919,7 @@
                 "link-folder": "Связать папку",
                 "unlink-folder": "Отвязать папку",
                 "link-all": "Связать всё",
+                "unlink-all": "Отвязать всё",
                 "remove-from-the-list": "Удалить из списка"
             }
         },

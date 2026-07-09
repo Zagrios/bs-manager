@@ -45,7 +45,7 @@ export abstract class AbstractLauncherService {
         const spawnOptions: SpawnOptionsWithoutStdio = {
             detached: true,
             cwd: options.beatSaberFolderPath,
-            env: options.env,
+            env: { ...options.customEnv, ...options.env },
         };
 
         if (options.args?.includes("--verbose")){
@@ -70,6 +70,7 @@ export abstract class AbstractLauncherService {
                     "OXR_PARALLEL_VIEWS",
                     "PROTON_LOG",
                     "PROTON_LOG_DIR",
+                    ...Object.keys(options.customEnv || {})
                 ],
             },
         });
@@ -115,21 +116,30 @@ export abstract class AbstractLauncherService {
         return { process, exit };
     }
 
-    // Launch option helper function
-    protected mergeEnvVariables(
+    /**
+     * Updates the env variables between the originalEnv (comming from the BSM)
+     *   and customEnv (coming from the user).
+     * - originalEnv keys will be overwritten with customEnv values
+     * - customEnv keys will be removed if they exist in originalEnv
+     */
+    protected updateEnvVariables(
         originalEnv: Record<string, string>,
-        newEnv: Record<string, string>
-    ): Record<string, string> {
-        const env = { ...originalEnv };
-        for (const [ key, value ] of Object.entries(newEnv)) {
+        customEnv: Record<string, string>
+    ): void {
+        for (const [ key, value ] of Object.entries(customEnv)) {
+            const isOverride = key in originalEnv;
+
             log.info(
-                key in env ? "Overriding" : "Injecting",
+                isOverride ? "Overriding" : "Injecting",
                 `${key}="${value}"`,
                 "to the env launch command"
             );
-            env[key] = value;
+
+            if (isOverride) {
+                originalEnv[key] = value;
+                delete customEnv[key];
+            }
         }
-        return env;
     }
 
 }
@@ -139,6 +149,8 @@ export type LaunchBeatSaberOptions = {
     // Can be the Beat Saber exe or wrapper exe (for linux)
     cmdlet: string;
     env: Record<string, string>;
+    // Should come from either launch options or custom launch mod.
+    customEnv: Record<string, string>;
     beatSaberFolderPath: string;
 
     args?: string[]; // Appended to the cmdlet string

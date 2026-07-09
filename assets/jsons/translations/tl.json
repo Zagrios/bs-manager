@@ -540,7 +540,7 @@
                     "OCULUS_NOT_RUNNING": "Hindi tumatakbo ang Oculus",
                     "OCULUS_NOT_INSTALLED": "Hindi naka-install ang Oculus",
                     "BS_ALREADY_RUNNING": "Ang Beat Saber ay tumatakbo na",
-                    "EXE_NOT_FINDED": "Nawawalang mga file",
+                    "EXE_NOT_FOUND": "Nawawalang mga file",
                     "PROTON_NOT_SET": "Walang naka-set na Proton folder",
                     "PROTON_NOT_FOUND": "Hindi nahanap ang Proton binary",
                     "EXIT": "Biglaang paghinto",
@@ -553,7 +553,7 @@
                     "OCULUS_NOT_RUNNING": "Dapat tumakbo ang Oculus upang i-launch ng BeatSaber.",
                     "OCULUS_NOT_INSTALLED": "Suriin kung maayos na naka-install ang Oculus application.",
                     "BS_ALREADY_RUNNING": "Isara ang BeatSaber bago ito muling i-launch.",
-                    "EXE_NOT_FINDED": "Mukhang nawawala ang ilang mga file, subukang i-verify ang mga file.",
+                    "EXE_NOT_FOUND": "Mukhang nawawala ang ilang mga file, subukang i-verify ang mga file.",
                     "EXIT": "Biglaang huminto ang BeatSaber, subukang i-check ang mga file.",
                     "OCULUS_LIB_NOT_FOUND": "Suriin kung ang Oculus application ay tamang naka-install, at na ang mga libraries ay tamang naka-define sa Oculus.",
                     "PROTON_NOT_SET": "I-set ang Proton path sa settings.",
@@ -562,6 +562,16 @@
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "I-launch ang Steam"
+                }
+            },
+            "warnings": {
+                "titles": {
+                    "FPFC_NEED_ADMIN": "FPFC mode setup incomplete",
+                    "UNABLE_TO_LAUNCH_STEAM": "Could not launch Steam"
+                },
+                "msg": {
+                    "FPFC_NEED_ADMIN": "BSManager needs administrator privileges to properly set up FPFC mode. Run BSManager as administrator for the best experience.",
+                    "UNABLE_TO_LAUNCH_STEAM": "Steam could not be started automatically."
                 }
             }
         },
@@ -909,6 +919,7 @@
                 "link-folder": "I-link ang Folder",
                 "unlink-folder": "I-unlink ang Folder",
                 "link-all": "I-link lahat",
+                "unlink-all": "I-unlink lahat",
                 "remove-from-the-list": "Alisin mula sa listahan"
             }
         },

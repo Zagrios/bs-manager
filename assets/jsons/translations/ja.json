@@ -540,7 +540,7 @@
                     "OCULUS_NOT_RUNNING": "Oculusが起動していません",
                     "OCULUS_NOT_INSTALLED": "Oculus がインストールされていません",
                     "BS_ALREADY_RUNNING": "Beat Saberはすでに起動しています",
-                    "EXE_NOT_FINDED": "ファイルが見つかりません",
+                    "EXE_NOT_FOUND": "ファイルが見つかりません",
                     "PROTON_NOT_SET": "Protonフォルダーが設定されていません",
                     "PROTON_NOT_FOUND": "Protonのバイナリが見つかりません",
                     "EXIT": "緊急停止",
@@ -553,7 +553,7 @@
                     "OCULUS_NOT_RUNNING": "BeatSaberを起動するには、Oculusが起動している必要があります。",
                     "OCULUS_NOT_INSTALLED": "Oculus アプリが正しくインストールされているか確認する。",
                     "BS_ALREADY_RUNNING": "再度起動する前にBeatSaberを閉じてください。",
-                    "EXE_NOT_FINDED": "いくつかのファイルが見つからないようです。",
+                    "EXE_NOT_FOUND": "いくつかのファイルが見つからないようです。",
                     "EXIT": "BeatSaberが緊急停止したため、ファイルをチェックします。",
                     "OCULUS_LIB_NOT_FOUND": "Oculusアプリケーションが正しくインストールしていることと、Oculusライブラリが正しく定義されていることを確認してください。",
                     "PROTON_NOT_SET": "設定でProtonのパスを設定してください。",
@@ -562,6 +562,16 @@
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Steamを起動"
+                }
+            },
+            "warnings": {
+                "titles": {
+                    "FPFC_NEED_ADMIN": "FPFC mode setup incomplete",
+                    "UNABLE_TO_LAUNCH_STEAM": "Could not launch Steam"
+                },
+                "msg": {
+                    "FPFC_NEED_ADMIN": "BSManager needs administrator privileges to properly set up FPFC mode. Run BSManager as administrator for the best experience.",
+                    "UNABLE_TO_LAUNCH_STEAM": "Steam could not be started automatically."
                 }
             }
         },
@@ -909,6 +919,7 @@
                 "link-folder": "フォルダーをリンク",
                 "unlink-folder": "フォルダーのリンクを解除",
                 "link-all": "すべてリンク",
+                "unlink-all": "すべてのリンクを解除",
                 "remove-from-the-list": "リストから削除"
             }
         },

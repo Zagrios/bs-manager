@@ -540,7 +540,7 @@
                     "OCULUS_NOT_RUNNING": "Oculus 未运行",
                     "OCULUS_NOT_INSTALLED": "Oculus 未安装",
                     "BS_ALREADY_RUNNING": "Beat Saber 已在运行",
-                    "EXE_NOT_FINDED": "缺少文件",
+                    "EXE_NOT_FOUND": "缺少文件",
                     "PROTON_NOT_SET": "Proton文件夹未设置",
                     "PROTON_NOT_FOUND": "未找到Proton二进制文件",
                     "EXIT": "突然停止",
@@ -553,7 +553,7 @@
                     "OCULUS_NOT_RUNNING": "启动 BeatSaber 前必须运行 Oculus。",
                     "OCULUS_NOT_INSTALLED": "请检查 Oculus 应用是否正确安装。",
                     "BS_ALREADY_RUNNING": "再次启动前请关闭 BeatSaber。",
-                    "EXE_NOT_FINDED": "某些文件似乎丢失了，尝试验证文件。",
+                    "EXE_NOT_FOUND": "某些文件似乎丢失了，尝试验证文件。",
                     "EXIT": "BeatSaber 突然停止，请检查文件。",
                     "OCULUS_LIB_NOT_FOUND": "检查 Oculus 应用是否正确安装，以及库是否在 Oculus 中正确定义。",
                     "PROTON_NOT_SET": "在设置中设置Proton路径。",
@@ -562,6 +562,16 @@
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "启动 Steam"
+                }
+            },
+            "warnings": {
+                "titles": {
+                    "FPFC_NEED_ADMIN": "FPFC mode setup incomplete",
+                    "UNABLE_TO_LAUNCH_STEAM": "Could not launch Steam"
+                },
+                "msg": {
+                    "FPFC_NEED_ADMIN": "BSManager needs administrator privileges to properly set up FPFC mode. Run BSManager as administrator for the best experience.",
+                    "UNABLE_TO_LAUNCH_STEAM": "Steam could not be started automatically."
                 }
             }
         },
@@ -909,6 +919,7 @@
                 "link-folder": "关联文件夹",
                 "unlink-folder": "取消关联文件夹",
                 "link-all": "关联所有",
+                "unlink-all": "取消关联所有",
                 "remove-from-the-list": "从列表中移除"
             }
         },

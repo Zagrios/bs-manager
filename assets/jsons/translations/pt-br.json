@@ -540,7 +540,7 @@
                     "OCULUS_NOT_RUNNING": "Oculus não está iniciando",
                     "OCULUS_NOT_INSTALLED": "Oculus não está instalado",
                     "BS_ALREADY_RUNNING": "Beat Saber já está rodando",
-                    "EXE_NOT_FINDED": "Arquivos faltando",
+                    "EXE_NOT_FOUND": "Arquivos faltando",
                     "PROTON_NOT_SET": "Pasta do Proton não está configurada",
                     "PROTON_NOT_FOUND": "Binário do Proton não encontrado",
                     "EXIT": "Interrupção Abrupta",
@@ -553,7 +553,7 @@
                     "OCULUS_NOT_RUNNING": "Oculus precisa estar rodando para iniciar.",
                     "OCULUS_NOT_INSTALLED": "Verifique se o aplicativo Oculus está instalado corretamente.",
                     "BS_ALREADY_RUNNING": "Feche BeatSaber antes de iniciar novamente.",
-                    "EXE_NOT_FINDED": "Alguns arquivos parecem estar faltando, tente verificar os arquivos.",
+                    "EXE_NOT_FOUND": "Alguns arquivos parecem estar faltando, tente verificar os arquivos.",
                     "EXIT": "BeatSaber parou abruptamente, tente verificar os arquivos.",
                     "OCULUS_LIB_NOT_FOUND": "Verifique que o aplicativo Oculus está instalado corretamente, e que as bibliotecas estão definidas no Oculus.",
                     "PROTON_NOT_SET": "Defina o Proton nas configurações.",
@@ -562,6 +562,16 @@
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Iniciar Steam"
+                }
+            },
+            "warnings": {
+                "titles": {
+                    "FPFC_NEED_ADMIN": "FPFC mode setup incomplete",
+                    "UNABLE_TO_LAUNCH_STEAM": "Could not launch Steam"
+                },
+                "msg": {
+                    "FPFC_NEED_ADMIN": "BSManager needs administrator privileges to properly set up FPFC mode. Run BSManager as administrator for the best experience.",
+                    "UNABLE_TO_LAUNCH_STEAM": "Steam could not be started automatically."
                 }
             }
         },
@@ -909,6 +919,7 @@
                 "link-folder": "Vincular Pasta",
                 "unlink-folder": "Desvincular Pasta",
                 "link-all": "Vincular todas",
+                "unlink-all": "Desvincular todas",
                 "remove-from-the-list": "Remover da lista"
             }
         },

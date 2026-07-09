@@ -540,7 +540,7 @@
                     "OCULUS_NOT_RUNNING": "Oculus is not running",
                     "OCULUS_NOT_INSTALLED": "Oculus is not installed",
                     "BS_ALREADY_RUNNING": "Beat Saber already running",
-                    "EXE_NOT_FINDED": "Missing files",
+                    "EXE_NOT_FOUND": "Missing files",
                     "PROTON_NOT_SET": "Proton folder not set",
                     "PROTON_NOT_FOUND": "Proton binary not found",
                     "EXIT": "Abrupt stop",
@@ -553,7 +553,7 @@
                     "OCULUS_NOT_RUNNING": "Oculus must be running to launch BeatSaber.",
                     "OCULUS_NOT_INSTALLED": "Check that the Oculus application is properly installed.",
                     "BS_ALREADY_RUNNING": "Close BeatSaber before launching it again.",
-                    "EXE_NOT_FINDED": "Some files seem to be missing, try to verify the files.",
+                    "EXE_NOT_FOUND": "Some files seem to be missing, try to verify the files.",
                     "EXIT": "BeatSaber stopped abruptly, tries to check the files.",
                     "OCULUS_LIB_NOT_FOUND": "Check that the Oculus application is properly installed, and that the libraries are correctly defined in Oculus.",
                     "PROTON_NOT_SET": "Set the Proton path in settings.",
@@ -562,6 +562,16 @@
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Launch Steam"
+                }
+            },
+            "warnings": {
+                "titles": {
+                    "FPFC_NEED_ADMIN": "FPFC mode setup incomplete",
+                    "UNABLE_TO_LAUNCH_STEAM": "Could not launch Steam"
+                },
+                "msg": {
+                    "FPFC_NEED_ADMIN": "BSManager needs administrator privileges to properly set up FPFC mode. Run BSManager as administrator for the best experience.",
+                    "UNABLE_TO_LAUNCH_STEAM": "Steam could not be started automatically."
                 }
             }
         },
@@ -909,6 +919,7 @@
                 "link-folder": "Link Folder",
                 "unlink-folder": "Unlink Folder",
                 "link-all": "Link all",
+                "unlink-all": "Unlink all",
                 "remove-from-the-list": "Remove from the list"
             }
         },
