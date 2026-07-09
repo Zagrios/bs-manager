@@ -418,14 +418,16 @@ export const ModsVersionCompareModal: ModalComponent<void, Readonly<{
         } = useHeader({ version, loading, setLoading });
 
         return (
-            <div className="w-[860px] max-w-[calc(100vw-3rem)]">
+            <div className="flex max-h-[calc(100vh-5rem)] w-[860px] max-w-[calc(100vw-3rem)] flex-col">
                 <h1 className="mb-3 w-full text-center text-3xl uppercase tracking-wide">
                     {t("modals.mods-version-compare.title")}
                 </h1>
 
-                {renderHeader()}
+                <div className="shrink-0">
+                    {renderHeader()}
+                </div>
 
-                <div className="h-[500px] overflow-y-auto pr-1 scrollbar-default">
+                <div className="min-h-0 max-h-[500px] flex-1 overflow-y-auto pr-1 scrollbar-default">
                     {Object.values(BbmCategories).map(category =>
                         <ModCategory
                             key={category}
