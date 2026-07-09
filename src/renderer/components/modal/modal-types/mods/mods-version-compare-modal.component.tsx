@@ -425,7 +425,7 @@ function ModCategory({
         return <div />
     }
 
-    const modColumnMinWidth = comparedVersions.length >= 5 ? 180 : 240;
+    const modColumnMinWidth = comparedVersions.length >= 5 ? 160 : 240;
     const comparisonIconColumnWidth = comparedVersions.length >= 5 ? 32 : 40;
     const gridTemplateColumns = comparedVersions
         .map((_, index) => `${index > 0 ? `${comparisonIconColumnWidth}px ` : ""}minmax(${modColumnMinWidth}px, 1fr)`)
