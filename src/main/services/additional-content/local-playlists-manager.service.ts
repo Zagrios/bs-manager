@@ -359,7 +359,18 @@ export class LocalPlaylistsManagerService {
                         continue;
                     }
 
-                    const downloadedMap = await this.maps.downloadMap(mapDetail, version);
+                    const downloadedMap = await this.maps.downloadMap(mapDetail, version)
+                        .catch(error => {
+                            log.error(
+                                "Could not download map for playlist",
+                                `[${mapDetail.id}] "${mapDetail.name}"`,
+                                error
+                            );
+                            return null;
+                        });
+                    if (!downloadedMap) {
+                        continue;
+                    }
 
                     progress.data.downloadedMaps.push(downloadedMap);
                     progress.data.currentDownload = mapDetail;

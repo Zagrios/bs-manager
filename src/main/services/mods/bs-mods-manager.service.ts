@@ -28,8 +28,6 @@ export class BsModsManagerService {
     private readonly linuxService: LinuxService;
     private readonly requestService: RequestService;
 
-    private manifestMatches: BbmModVersion[];
-
     public static getInstance(): BsModsManagerService {
         if (!BsModsManagerService.instance) {
             BsModsManagerService.instance = new BsModsManagerService();
@@ -45,17 +43,24 @@ export class BsModsManagerService {
     }
 
     private async getModFromHash(hash: string): Promise<BbmModVersion | undefined> {
-        const mod = await this.beatModsApi.getModByHash(hash);
+        const mod: BbmModVersion | undefined = await this.beatModsApi.getModByHash(hash)
+            .catch((error): undefined => {
+                log.warn("Could not get mod with hash", hash, "cause", error?.message);
+                return undefined;
+            });
 
-        if(mod?.contentHashes?.some(content => content.path.includes("IPA.exe"))){
+        if (mod?.contentHashes?.some(content => content.path.includes("IPA.exe"))) {
             return undefined;
         }
 
         return mod;
-
     }
 
-    private async getModsInDir(version: BSVersion, modsDir: ModsInstallFolder): Promise<BbmModVersion[]> {
+    private async getModsInDir(
+        version: BSVersion,
+        modsDir: ModsInstallFolder,
+        manifestMatches: BbmModVersion[]
+    ): Promise<BbmModVersion[]> {
         const bsPath = await this.bsLocalService.getVersionPath(version);
         const modsPath = path.join(bsPath, modsDir);
 
@@ -66,34 +71,35 @@ export class BsModsManagerService {
         const files = await recursiveReadDir(modsPath);
 
         const promises = files.map(async filePath => {
-                const ext = path.extname(filePath);
+            const ext = path.extname(filePath);
+            if (ext !== ".dll" && ext !== ".exe" && ext !== ".manifest") {
+                return undefined;
+            }
 
-                if (ext !== ".dll" && ext !== ".exe" && ext !== ".manifest") {
+            log.info("Getting mod manifest", filePath);
+            const hash = await md5File(filePath);
+            const mod = await this.getModFromHash(hash);
+
+            if (!mod) {
+                return undefined;
+            }
+
+            if (ext === ".manifest") {
+                manifestMatches.push(mod);
+                return undefined;
+            }
+
+            if (modsDir === ModsInstallFolder.LIBS || modsDir === ModsInstallFolder.LIBS_PENDING) {
+                const manifestIndex = manifestMatches.findIndex(m => m.id === mod.id);
+                if (manifestIndex < 0) {
+                    log.warn("No matching manifest for", `"${filePath}"`, "with hash:", hash);
                     return undefined;
                 }
-                const hash = await md5File(filePath);
-                const mod = await this.getModFromHash(hash);
 
-                if (!mod) {
-                    return undefined;
-                }
+                manifestMatches.splice(manifestIndex, 1);
+            }
 
-                if (ext === ".manifest") {
-                    this.manifestMatches.push(mod);
-                    return undefined;
-                }
-
-                if (filePath.toLowerCase().includes("libs")) {
-                    const manifestIndex = this.manifestMatches.findIndex(m => m.id === mod.id);
-
-                    if (manifestIndex < 0) {
-                        return undefined;
-                    }
-
-                    this.manifestMatches.splice(manifestIndex, 1);
-                }
-
-                return mod;
+            return mod;
         });
 
         const results = await Promise.allSettled(promises);
@@ -101,6 +107,8 @@ export class BsModsManagerService {
         return results.reduce((mods, mod) => {
             if (mod?.status === "fulfilled" && mod?.value) {
                 mods.push(mod.value);
+            } else if (mod?.status === "rejected") {
+                log.error("MOD FAILED", mod);
             }
             return mods;
         }, [] as BbmModVersion[]);
@@ -113,11 +121,14 @@ export class BsModsManagerService {
             return undefined;
         }
         const injectorMd5 = await md5File(injectorPath);
-        return this.beatModsApi.getModByHash(injectorMd5);
+        return this.beatModsApi.getModByHash(injectorMd5).catch((error): undefined => {
+            log.error("Could not get bsipa mod", error?.message);
+            return undefined;
+        });
     }
 
     private async downloadZip(zipUrl: string): Promise<BsmZipExtractor> {
-        zipUrl = path.join(this.beatModsApi.MODS_REPO_URL, zipUrl);
+        zipUrl = new URL(zipUrl, this.beatModsApi.MODS_REPO_URL).href;
 
         log.info("Download mod zip", zipUrl);
 
@@ -133,9 +144,9 @@ export class BsModsManagerService {
 
         return BsmZipExtractor.fromBuffer(buffer);
     }
-    private async executeBSIPA(version: BSVersion, args: string[]): Promise<boolean> {
 
-        log.info("executeBSIPA", version?.BSVersion, args);
+    private async executeIPA(version: BSVersion, args: string[]): Promise<boolean> {
+        log.info("executeIPA", version?.BSVersion, args);
 
         const versionPath = await this.bsLocalService.getVersionPath(version);
         const ipaPath = path.join(versionPath, "IPA.exe");
@@ -145,39 +156,24 @@ export class BsModsManagerService {
             return false;
         }
 
-        const env: Record<string, string> = {};
-        const cmd = `"${ipaPath}" "${bsExePath}" ${args.join(" ")}`;
-        let winePath: string = "";
-        if (process.platform === "linux") {
-            const { error: winePathError, result: winePathResult } =
-                tryit(() => this.linuxService.getWinePath());
-            if (winePathError) {
-                log.error(winePathError);
-                return false;
-            }
-            winePath = `"${winePathResult}"`;
-
-            const winePrefix = this.linuxService.getWinePrefixPath();
-            if (!winePrefix) {
-                throw new CustomError("Could not find BSManager WINEPREFIX path", "no-wineprefix");
-            }
-            env.WINEPREFIX = winePrefix;
+        const command = await this.getCommand(ipaPath, bsExePath, args);
+        if (!command) {
+            return false;
         }
 
         return new Promise<boolean>(resolve => {
-            const processIPA = bsmSpawn(cmd, {
+            const processIPA = bsmSpawn(command.command, {
                 log: BsmShellLog.Command | BsmShellLog.EnvVariables,
                 options: {
                     cwd: versionPath,
                     detached: true,
                     shell: true,
-                    env
+                    env: command.env
                 },
-                linux: { prefix: winePath },
             });
 
             const timeout = setTimeout(() => {
-                log.info("Ipa process timeout");
+                log.info("IPA process timed out");
                 resolve(false)
             }, sToMs(30));
 
@@ -191,14 +187,53 @@ export class BsModsManagerService {
             processIPA.once("exit", code => {
                 clearTimeout(timeout);
                 if (code === 0) {
-                    log.info("Ipa process exist with code 0");
                     return resolve(true);
                 }
-                log.error("Ipa process exist with non 0 code", code);
+                log.error("IPA process exited with non-zero code", code);
                 resolve(false);
             });
-
         });
+    }
+
+    private async getCommand(
+        ipaPath: string,
+        beatSaberExePath: string,
+        args: string[]
+    ): Promise<{
+        env: Record<string, string>;
+        command: string;
+    } | null> {
+        const command = `"${ipaPath}" "${beatSaberExePath}" ${args.join(" ")}`;
+        if (process.platform === "win32") {
+            return {
+                env: { ...process.env },
+                command,
+            };
+        }
+
+        const { error: winePathError, result: winePathResult } =
+            tryit(() => this.linuxService.getWinePath());
+        if (winePathError) {
+            log.error(winePathError);
+            return null;
+        }
+
+        const winePath = await this.linuxService.isNixOS()
+            ? `steam-run "${winePathResult}"`
+            : `"${winePathResult}"`;
+
+        const winePrefix = this.linuxService.getWinePrefixPath();
+        if (!winePrefix) {
+            throw new CustomError("Could not find BSManager WINEPREFIX path", "no-wineprefix");
+        }
+
+        return {
+            env: {
+                ...process.env,
+                WINEPREFIX: winePrefix
+            },
+            command: `${winePath} ${command}`,
+        };
     }
 
     private getModDownload(modVersion: BbmModVersion): string {
@@ -210,7 +245,7 @@ export class BsModsManagerService {
 
         const isBSIPA = mod.mod.name.toLowerCase() === "bsipa";
 
-        if(isBSIPA){
+        if (isBSIPA) {
             await this.clearIpaFolder(version).catch(e => log.error("Error while clearing IPA folder", e));
         }
 
@@ -257,9 +292,11 @@ export class BsModsManagerService {
 
         log.info("Mod zip extraction end", mod.mod.name, "to", destDir, "success:", extracted);
 
-        const res = isBSIPA
+        // Executing IPA.exe when BSIPA is already installed could potentially corrupt the game.
+        const shouldRunIPA = isBSIPA && !pathExistsSync(path.join(versionPath, "winhttp.dll"));
+        const res = shouldRunIPA
             ? extracted &&
-              (await this.executeBSIPA(version, ["-n"]).catch(e => {
+              (await this.executeIPA(version, ["-n"]).catch(e => {
                   log.error(e);
                   return false;
               }))
@@ -274,14 +311,14 @@ export class BsModsManagerService {
         const versionPath = await this.bsLocalService.getVersionPath(version);
         const ipaPath = path.join(versionPath, ModsInstallFolder.IPA);
 
-        if(!pathExistsSync(ipaPath)){
+        if (!pathExistsSync(ipaPath)) {
             log.info("IPA folder does not exist, skipping");
             return;
         }
 
         const contents = readdirSync(ipaPath, { withFileTypes: true });
 
-        for(const content of contents){
+        for (const content of contents) {
 
             if (content.name === 'Backups' || content.name === 'Pending') {
                 continue;
@@ -294,13 +331,12 @@ export class BsModsManagerService {
                 : deleteFile(contentPath)
             );
 
-            if(res.error){
+            if (res.error) {
                 log.error("Error while clearing IPA folder content", content.name, res.error);
             }
         }
 
         log.info("IPA folder cleared successfully");
-
     }
 
     private async uninstallBSIPA(mod: BbmFullMod, version: BSVersion): Promise<void> {
@@ -312,15 +348,18 @@ export class BsModsManagerService {
             return;
         }
 
-        await this.executeBSIPA(version, ["--revert", "-n"]);
+        await this.executeIPA(version, ["--revert", "-n"]);
 
         const promises = mod.version.contentHashes.map(content => {
             const file = content.path.replaceAll("IPA/", "").replaceAll("Data", "Beat Saber_Data");
-            return deleteFile(path.join(verionPath, file));
+            return deleteFile(path.join(verionPath, file)).catch(err => {
+                log.info("Unable to delete IPA file, likely because it has been removed by the --revert command. Here is the error:", err);
+            });
         });
 
         await Promise.all(promises);
     }
+
     private async uninstallMod(mod: BbmFullMod, version: BSVersion): Promise<void> {
         if (mod.mod.name.toLowerCase() === "bsipa") {
             return this.uninstallBSIPA(mod, version);
@@ -328,11 +367,22 @@ export class BsModsManagerService {
 
         const versionPath = await this.bsLocalService.getVersionPath(version);
 
-        const promises = mod.version.contentHashes.map(async content => {
-            return Promise.all([
-                deleteFile(path.join(versionPath, content.path)),
-                deleteFile(path.join(versionPath, "IPA", "Pending", content.path))
-            ]);
+        const promises: Promise<void>[] = mod.version.contentHashes.map(async content => {
+            return (async () => {
+                const modPath = path.join(versionPath, content.path);
+                if (pathExistsSync(modPath)) {
+                    log.info("Deleting mod", modPath);
+                    await deleteFile(modPath);
+                }
+
+                const pendingPath = path.join(versionPath, "IPA", "Pending", content.path);
+                if (pathExistsSync(pendingPath)) {
+                    log.info("Deleting pending mod", pendingPath);
+                    return deleteFile(pendingPath);
+                }
+
+                log.warn("Mod file not found in", versionPath, "or pending folder", pendingPath);
+            })() ;
         });
 
         await Promise.all(promises);
@@ -345,12 +395,17 @@ export class BsModsManagerService {
     }
 
     public async getInstalledMods(version: BSVersion): Promise<BbmModVersion[]> {
-        this.manifestMatches = [];
-
         const bsipa = await this.getBsipaInstalled(version);
 
-        const pluginsMods = await Promise.all([this.getModsInDir(version, ModsInstallFolder.PLUGINS_PENDING), this.getModsInDir(version, ModsInstallFolder.PLUGINS)]);
-        const libsMods = await Promise.all([this.getModsInDir(version, ModsInstallFolder.LIBS_PENDING), this.getModsInDir(version, ModsInstallFolder.LIBS)]);
+        const manifestMatches: BbmModVersion[] = [];
+        const pluginsMods = await Promise.all([
+            this.getModsInDir(version, ModsInstallFolder.PLUGINS_PENDING, manifestMatches),
+            this.getModsInDir(version, ModsInstallFolder.PLUGINS, manifestMatches)
+        ]);
+        const libsMods = await Promise.all([
+            this.getModsInDir(version, ModsInstallFolder.LIBS_PENDING, manifestMatches),
+            this.getModsInDir(version, ModsInstallFolder.LIBS, manifestMatches)
+        ]);
 
         const dirMods = pluginsMods.flat().concat(libsMods.flat());
 
@@ -405,7 +460,19 @@ export class BsModsManagerService {
                 return [];
             }
 
-            return await zip.extract(destination);
+            const hasStructuredLayout = await zip.findEntry(entry => {
+                const normalized = entry.fileName.replaceAll("\\", "/");
+                return normalized.startsWith("Plugins/") || normalized.startsWith("Libs/");
+            });
+
+            if (hasStructuredLayout) {
+                log.info("ZIP has structured layout, extracting directly to", `"${destination}"`);
+                return await zip.extract(destination);
+            }
+
+            const pluginsDestination = path.join(destination, ModsInstallFolder.PLUGINS);
+            log.info("ZIP has flat layout, extracting to", `"${pluginsDestination}"`);
+            return await zip.extract(pluginsDestination);
         } catch (error) {
             log.warn("Could not extract", `"${modPath}"`, error);
             return [];
@@ -485,12 +552,12 @@ export class BsModsManagerService {
 
                 const bsipa = popElement(mod => mod.mod.name.toLowerCase() === "bsipa", mods);
 
-                if(bsipa){
+                if (bsipa) {
                     const bsipaInstalled = await this.installMod(bsipa, version).catch(err => {
                         log.error("Error while installing BSIPA", err);
                     });
 
-                    if(!bsipaInstalled){
+                    if (!bsipaInstalled) {
                         throw CustomError.throw(new Error("BSIPA failed to install"), "cannot-install-bsipa");
                     }
 

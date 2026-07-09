@@ -8,6 +8,12 @@ export interface BsmLocalMap {
     mapInfo: MapInfo;
     songDetails?: SongDetails;
     path: string;
+    metadata?: BsmLocalMapMetadata;
+}
+
+export interface BsmLocalMapMetadata {
+    // Date of download or import
+    addedDate: string;
 }
 
 export interface BsmLocalMapsProgress {

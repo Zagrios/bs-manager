@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import log from "electron-log";
 import path from "path";
-import { BS_APP_ID, BS_EXECUTABLE, IS_FLATPAK, PROTON_BINARY_PREFIX, WINE_BINARY_PREFIX } from "main/constants";
+import { BS_APP_ID, BS_EXECUTABLE, IS_FLATPAK } from "main/constants";
 import { InstallationLocationService } from "./installation-location.service";
 import { StaticConfigurationService } from "./static-configuration.service";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
@@ -10,6 +10,7 @@ import { BsmShellLog, bsmExec } from "main/helpers/os.helpers";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { SteamShortcutData } from "shared/models/steam/shortcut.model";
 import { buildBsLaunchArgs } from "./bs-launcher/abstract-launcher.service";
+import { parseLaunchOptions } from "main/helpers/launchOptions.helper";
 
 export class LinuxService {
     private static instance: LinuxService;
@@ -21,10 +22,19 @@ export class LinuxService {
         return LinuxService.instance;
     }
 
+    private readonly PROTON_BINARY_PREFIX = "proton";
+    // Use "wine64" instead of "wine"
+    // https://github.com/Zagrios/bs-manager/pull/586#issuecomment-2449228826
+    private readonly WINE_BINARY_PREFIXES = [
+        path.join("files", "bin", "wine64"),
+        path.join("files", "lib", "wine", "x86_64-unix", "wine64"),
+    ];
+
     private readonly installLocationService: InstallationLocationService;
     private readonly staticConfig: StaticConfigurationService;
 
     private nixOS: boolean | undefined;
+    private winePath = "";
 
     private constructor() {
         this.installLocationService = InstallationLocationService.getInstance();
@@ -38,26 +48,11 @@ export class LinuxService {
         return path.resolve(sharedFolder, "compatdata");
     }
 
-    public async setupLaunch(
-        launchOptions: LaunchOption,
-        steamPath: string,
-        bsFolderPath: string
-    ): Promise<{
-        protonPrefix: string;
-        env: Record<string, string>;
-    }> {
-        if (launchOptions.admin) {
-            log.warn("Launching as admin is not supported on Linux! Starting the game as a normal user.");
-            launchOptions.admin = false;
-        }
-
+    public async getProtonPrefix() {
         const protonPath = await this.getProtonPath();
-        return {
-            protonPrefix: await this.isNixOS()
-                ? `steam-run "${protonPath}" run`
-                : `"${protonPath}" run`,
-            env: await this.buildEnvVariables(launchOptions, steamPath, bsFolderPath)
-        };
+        return await this.isNixOS()
+            ? `steam-run "${protonPath}" run`
+            : `"${protonPath}" run`;
     }
 
     private async getProtonPath(): Promise<string> {
@@ -69,7 +64,7 @@ export class LinuxService {
         }
         const protonPath = path.join(
             this.staticConfig.get("proton-folder"),
-            PROTON_BINARY_PREFIX
+            this.PROTON_BINARY_PREFIX
         );
         if (!fs.pathExistsSync(protonPath)) {
             throw CustomError.fromError(
@@ -81,7 +76,7 @@ export class LinuxService {
         return protonPath;
     }
 
-    private async buildEnvVariables(
+    public async buildEnvVariables(
         launchOptions: LaunchOption,
         steamPath: string,
         bsFolderPath: string
@@ -105,6 +100,9 @@ export class LinuxService {
             "STEAM_COMPAT_APP_ID": BS_APP_ID,
             // Run game in steam environment; fixes #585 for unicode song titles
             "SteamEnv": "1",
+            // Fix reflections in Monado
+            "OXR_PARALLEL_VIEWS": "1",
+            "OXR_NO_TEXTURE_SOURCE_ALPHA": "1",
         };
 
         if (launchOptions.launchMods?.includes(LaunchMods.PROTON_LOGS)) {
@@ -124,27 +122,53 @@ export class LinuxService {
             protonFolder = this.staticConfig.get("proton-folder");
         }
 
-        const protonPath = path.join(protonFolder, PROTON_BINARY_PREFIX);
-        const winePath = path.join(protonFolder, WINE_BINARY_PREFIX);
-        return fs.pathExistsSync(protonPath) && fs.pathExistsSync(winePath);
+        // Check if the proton binary exists
+        const protonPath = path.join(protonFolder, this.PROTON_BINARY_PREFIX);
+        if (!fs.pathExistsSync(protonPath)) {
+            return false;
+        }
+
+        // Check if any wine64 here exists
+        for (const winePath of this.WINE_BINARY_PREFIXES) {
+            if (fs.pathExistsSync(path.join(protonFolder, winePath))) {
+                // Reset this, in the case where the user reselects a new proton folder
+                this.winePath = "";
+                return true;
+            }
+        }
+        return false;
     }
 
     public getWinePath(): string {
+        if (this.winePath) {
+            return this.winePath;
+        }
+
         if (!this.staticConfig.has("proton-folder")) {
             throw new Error("proton-folder variable not set");
         }
 
-        const winePath = path.join(
-            this.staticConfig.get("proton-folder"),
-            WINE_BINARY_PREFIX
-        );
-        if (!fs.pathExistsSync(winePath)) {
+        const protonFolder = this.staticConfig.get("proton-folder");
+        let winePath = "";
+        for (const prefixes of this.WINE_BINARY_PREFIXES) {
+            winePath = path.join(protonFolder, prefixes);
+            if (!fs.pathExistsSync(winePath)) {
+                winePath = "";
+                continue;
+            }
+            break;
+        }
+
+        if (winePath === "") {
             throw new Error(`"${winePath}" binary file not found`);
         }
 
+        this.winePath = winePath;
         return winePath;
     }
 
+    // Should be different from winePath, this is the "WINEPREFIX" env var
+    //   that points to the wine windows files directory
     public getWinePrefixPath(): string {
         const compatDataPath = this.getCompatDataPath();
         return fs.existsSync(compatDataPath)
@@ -174,18 +198,42 @@ export class LinuxService {
 
     // === Shortcuts === //
 
-    private getCommand(
-        protonPrefix: string,
-        bsFolderPath: string,
-        env: Record<string, string>,
-        launchOptions: LaunchOption
-    ): string {
+    private async getCommand(
+        launchOptions: LaunchOption,
+        steamPath: string,
+        beatSaberFolderPath: string
+    ): Promise<string> {
+        const protonPrefix = await this.getProtonPrefix();
+        const launchEnv = await this.buildEnvVariables(
+            launchOptions, steamPath, beatSaberFolderPath
+        );
+
+        const beatSaberExePath = path.join(beatSaberFolderPath, BS_EXECUTABLE);
+
+        const {
+            env: parsedEnv,
+            args: parsedArgs,
+            cmdlet,
+        } = parseLaunchOptions(launchOptions.command, {
+            commandReplacement: `${protonPrefix} ${beatSaberExePath}`,
+        });
+
+        const args = buildBsLaunchArgs(launchOptions);
+        log.debug("Launch arguments:", args, "Parsed arguments:", parsedArgs);
+        if (parsedArgs) {
+            args.unshift(parsedArgs);
+        }
+
+        const env = {
+            ...launchEnv, ...parsedEnv,
+            SteamAppId: BS_APP_ID,
+            SteamOverlayGameId: BS_APP_ID,
+            SteamGameId: BS_APP_ID,
+        };
         const envString = Object.entries(env)
             .map(([ key, value ]) => `${key}="${value}"`)
             .join(" ");
-        const bsExe = path.join(bsFolderPath, BS_EXECUTABLE);
-        const args = buildBsLaunchArgs(launchOptions).join(" ");
-        return `${envString} ${protonPrefix} "${bsExe}" ${args}`;
+        return `${envString} ${cmdlet} ${args.join(" ")}`;
     }
 
     public async createDesktopShortcut(
@@ -194,22 +242,11 @@ export class LinuxService {
         icon: string,
         launchOptions: LaunchOption,
         steamPath: string,
-        bsFolderPath: string
+        beatSaberFolderPath: string
     ): Promise<boolean> {
         try {
-            const {
-                protonPrefix, env
-            } = await this.setupLaunch(launchOptions, steamPath, bsFolderPath);
-
-            Object.assign(env, {
-                "SteamAppId": BS_APP_ID,
-                "SteamOverlayGameId": BS_APP_ID,
-                "SteamGameId": BS_APP_ID,
-            });
-
-            const command = this.getCommand(
-                protonPrefix, bsFolderPath,
-                env, launchOptions
+            const command = await this.getCommand(
+                launchOptions, steamPath, beatSaberFolderPath
             );
 
             const desktopEntry = [
@@ -217,7 +254,7 @@ export class LinuxService {
                 "Type=Application",
                 `Name=${name}`,
                 `Icon=${icon}`,
-                `Path=${bsFolderPath}`,
+                `Path=${beatSaberFolderPath}`,
                 `Exec=${command}`
             ].join("\n");
 
@@ -235,31 +272,20 @@ export class LinuxService {
         icon: string,
         launchOptions: LaunchOption,
         steamPath: string,
-        bsFolderPath: string
+        beatSaberFolderPath: string
     ): Promise<SteamShortcutData> {
-        const env = await this.buildEnvVariables(
-            launchOptions, steamPath, bsFolderPath
+        const protonPath = await this.getProtonPath();
+        const command = await this.getCommand(
+            launchOptions, steamPath, beatSaberFolderPath
         );
-        Object.assign(env, {
-            "SteamAppId": BS_APP_ID,
-            "SteamOverlayGameId": BS_APP_ID,
-            "SteamGameId": BS_APP_ID,
-        });
-
-        const protonPrefix = await this.isNixOS()
-            ? "steam-run %command% run"
-            : "%command% run";
 
         return {
             AppName: shortcutName,
-            Exe: await this.getProtonPath(),
-            StartDir: bsFolderPath,
+            Exe: protonPath,
+            StartDir: beatSaberFolderPath,
             icon,
             OpenVR: "\x01",
-            LaunchOptions: this.getCommand(
-                protonPrefix, bsFolderPath,
-                env, launchOptions
-            )
+            LaunchOptions: command
         };
     }
 

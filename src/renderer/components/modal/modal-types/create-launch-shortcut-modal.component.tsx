@@ -6,13 +6,12 @@ import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { LaunchOption } from "shared/models/bs-launch";
 import { useService } from "renderer/hooks/use-service.hook";
 import { BSLauncherService } from "renderer/services/bs-launcher.service";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { BsNoteFill } from "renderer/components/svgs/icons/bs-note-fill.component";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { ChevronTopIcon } from "renderer/components/svgs/icons/chevron-top-icon.component";
 import Tippy from "@tippyjs/react";
 import { LaunchMod } from "shared/models/bs-launch/launch-option.interface";
-import { BsStore } from "shared/models/bs-store.enum";
 
 export const CreateLaunchShortcutModal: ModalComponent<{ steamShortcut: boolean, launchOption: LaunchOption }, BSVersion> = ({resolver, options: {data}}) => {
 
@@ -25,10 +24,6 @@ export const CreateLaunchShortcutModal: ModalComponent<{ steamShortcut: boolean,
     const [advanced, setAdvanced] = useState(!!launchOption.command?.length);
     const [command, setCommand] = useState(launchOption.command || "");
     const [steamShortcut, setSteamShortcut] = useState(false);
-
-    const isSteamVersion = useMemo(() => {
-        return data.steam || data.metadata?.store === BsStore.STEAM;
-    }, [data]);
 
     const completeModal = () => {
         launchOption.command = command.trim();
@@ -96,17 +91,15 @@ export const CreateLaunchShortcutModal: ModalComponent<{ steamShortcut: boolean,
                     </div>
                 </div>
             </div>
-            {isSteamVersion && (
-                <Tippy placement="right" theme="default" content={t("modals.create-launch-shortcut.steam-shortcut-tippy")}>
-                    <div className="h-full flex items-center gap-1.5 mt-3 mb-4 w-fit pr-1">
-                        <BsmCheckbox className="h-5 aspect-square relative z-[1]" checked={steamShortcut} onChange={e => setSteamShortcut(() => e)} />
-                        <span>{t("modals.create-launch-shortcut.create-steam-shortcut")}</span>
-                    </div>
-                </Tippy>
-            )}
-            <div className="grid grid-flow-col grid-cols-2 gap-4 mt-2">
-                <BsmButton typeColor="cancel" className="rounded-md text-center transition-all" onClick={() => resolver({ exitCode: ModalExitCode.CANCELED })} withBar={false} text="misc.cancel" />
-                <BsmButton typeColor="primary" className="rounded-md text-center transition-all" onClick={completeModal} withBar={false} text="modals.create-launch-shortcut.valid-btn" />
+            <Tippy placement="right" theme="default" content={t("modals.create-launch-shortcut.steam-shortcut-tippy")}>
+                <div className="h-full flex items-center gap-1.5 mt-3 mb-4 w-fit pr-1">
+                    <BsmCheckbox className="h-5 aspect-square relative z-[1]" checked={steamShortcut} onChange={e => setSteamShortcut(() => e)} />
+                    <span>{t("modals.create-launch-shortcut.create-steam-shortcut")}</span>
+                </div>
+            </Tippy>
+            <div className="grid grid-flow-col grid-cols-2 gap-4 h-8">
+                <BsmButton typeColor="cancel" className="h-full flex items-center justify-center rounded-md text-center transition-all" onClick={() => resolver({ exitCode: ModalExitCode.CANCELED })} withBar={false} text="misc.cancel" />
+                <BsmButton typeColor="primary" className="h-full flex items-center justify-center rounded-md text-center transition-all" onClick={completeModal} withBar={false} text="modals.create-launch-shortcut.valid-btn" />
             </div>
         </form>
     )

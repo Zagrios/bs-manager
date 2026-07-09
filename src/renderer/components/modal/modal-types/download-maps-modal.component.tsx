@@ -15,7 +15,6 @@ import BeatConflictImg from "../../../../../assets/images/apngs/beat-conflict.pn
 import equal from "fast-deep-equal/es6";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { useService } from "renderer/hooks/use-service.hook";
 import { useConstant } from "renderer/hooks/use-constant.hook";
@@ -29,7 +28,6 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
     const config = useService(ConfigurationService);
     const mapsDownloader = useService(MapsDownloaderService);
     const progressBar = useService(ProgressBarService);
-    const os = useService(OsDiagnosticService);
 
     const currentDownload = useObservable(() => mapsDownloader.currentMapDownload$);
     const mapsInQueue = useObservable(() => mapsDownloader.mapsInQueue$);
@@ -41,7 +39,6 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
     const [downloadbleMaps, setDownloadbleMaps] = useState<DownloadableMap[]>([]);
     const [ownedMapHashs, setOwnedMapHashs] = useState<string[]>(ownedMaps?.map(map => map.hash) ?? []);
     const [loading, setLoading] = useState(false);
-    const isOnline = useObservable(() => os.isOnline$);
     const [searchParams, setSearchParams] = useState<SearchParams>({
         sortOrder: config.get("map-sort-order"),
         filter,
@@ -122,7 +119,7 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
                 setMaps(prev => [...prev, ...maps])
 
                 if (maps.length < tryToLoad) {
-                    handleLoadMore();
+                    handleLoadMore(false);
 
                     return;
                 }
@@ -188,9 +185,9 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
         setSearchParams(() => searchParamsLocal);
     };
 
-    const handleLoadMore = () => {
+    const handleLoadMore = (skipLoading: boolean = true) => {
 
-        if(loading){ return; }
+        if(skipLoading && loading){ return; }
 
         setSearchParams(prev => {
             return { ...prev, page: prev.page + 1 };
@@ -256,10 +253,7 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
                                 if (loading) {
                                     return t("modals.download-maps.loading-maps");
                                 }
-                                if (isOnline) {
-                                    return t("modals.download-maps.no-maps-found");
-                                }
-                                return t("modals.download-maps.no-internet");
+                                return t("modals.download-maps.no-maps-found");
                             })()}
                         </span>
                     </div>

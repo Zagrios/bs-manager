@@ -12,7 +12,6 @@ import { ModelDownload, ModelsDownloaderService } from "renderer/services/models
 import { ModelSaberService } from "renderer/services/thrird-partys/model-saber.service";
 import { useBehaviorSubject } from "renderer/hooks/use-behavior-subject.hook";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
-import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import { MODEL_TYPES, MS_GET_QUERY_SORTS } from "shared/models/models/constants";
@@ -26,7 +25,6 @@ import { VirtualScroll } from "renderer/components/shared/virtual-scroll/virtual
 export const DownloadModelsModal: ModalComponent<void, { version: BSVersion; type: MSModelType; owned: BsmLocalModel[] }> = ({ options: {data: { version, type, owned }} }) => {
     const modelsDownloader = useService(ModelsDownloaderService);
     const modelSaber = useService(ModelSaberService);
-    const os = useService(OsDiagnosticService);
 
     const t = useTranslation();
 
@@ -48,7 +46,6 @@ export const DownloadModelsModal: ModalComponent<void, { version: BSVersion; typ
     const downloadQueue = useObservable(() => modelsDownloader.getQueue$(), []);
     const [msModels, msModels$] = useBehaviorSubject<MSModel[]>([]);
     const [renderableModels, setRenderableModels] = useState<RenderableModel[]>([]);
-    const isOnline = useObservable(() => os.isOnline$, true);
     const [error, error$] = useBehaviorSubject(false);
     const [isLoading, isLoading$] = useBehaviorSubject(false);
     const [ownedModels, setOwnedModels] = useState<BsmLocalModel[]>(owned ?? []);
@@ -197,13 +194,7 @@ export const DownloadModelsModal: ModalComponent<void, { version: BSVersion; typ
         if (isLoading) {
             return <span className="text-lg">{t("models.panel.grid.loading")}</span>;
         }
-        if (isOnline) {
-            return <span className="text-lg">{t("models.modals.download-models.no-models")}</span>;
-        }
-        if (!isOnline) {
-            return <span className="text-lg">{t("models.modals.download-models.no-internet")}</span>;
-        }
-        return <span className="text-lg">{t("models.modals.download-models.error-occured")}</span>;
+        return <span className="text-lg">{t("models.modals.download-models.no-models")}</span>;
     };
 
     return (

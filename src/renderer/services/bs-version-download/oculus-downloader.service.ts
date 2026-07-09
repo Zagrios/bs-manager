@@ -11,6 +11,8 @@ import { AbstractBsDownloaderService } from "./abstract-bs-downloader.service";
 import { MetaAuthErrorCodes, OculusDownloaderErrorCodes } from "shared/models/bs-version-download/oculus-download.model";
 import { LoginToMetaModal } from "renderer/components/modal/modal-types/bs-downgrade/login-to-meta-modal.component";
 import { OculusDownloadInfo } from "main/services/bs-version-download/bs-oculus-downloader.service";
+import { Notification } from "shared/models/notification/notification.model";
+import { LinkOpenerService } from "../link-opener.service";
 
 export class OculusDownloaderService extends AbstractBsDownloaderService implements DownloaderServiceInterface{
 
@@ -28,6 +30,7 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
     private readonly progressBar: ProgressBarService;
     private readonly notifications: NotificationService;
     private readonly modals: ModalService;
+    private readonly linkOpener: LinkOpenerService;
 
     private readonly DISPLAYABLE_ERROR_CODES: string[] = [...Object.values(MetaAuthErrorCodes), ...Object.values(OculusDownloaderErrorCodes)];
 
@@ -37,11 +40,20 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
         this.progressBar = ProgressBarService.getInstance();
         this.notifications = NotificationService.getInstance();
         this.modals = ModalService.getInstance();
+        this.linkOpener = LinkOpenerService.getInstance();
     }
 
     private handleDownloadErrors(err: CustomError): Promise<void>{
         if(!err?.code || !this.DISPLAYABLE_ERROR_CODES.includes(err.code)){
-            return this.notifications.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.oculus-download.errors.msg.UNKNOWN_ERROR`}).then(noop);
+            return this.notifications.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.oculus-download.errors.msg.UNKNOWN_ERROR`, duration: 9000}).then(noop);
+        }
+
+        const notificationData: Notification = {title: "notifications.types.error", desc: `notifications.bs-download.oculus-download.errors.msg.${err.code}`, duration: 9000};
+        if(err.code === OculusDownloaderErrorCodes.DOWNLOAD_MANIFEST_FAILED || err.code === OculusDownloaderErrorCodes.UNABLE_TO_GET_MANIFEST){
+            notificationData.actions = [{ id: "0", title: "notifications.bs-download.oculus-download.errors.actions.claim-your-desktop-version" }]
+            return this.notifications.notifyError(notificationData).then(action => (
+                action === "0" && this.linkOpener.open("https://github.com/Zagrios/bs-manager/wiki/how-to-claim-oculus-desktop-version")
+            ));
         }
 
         return this.notifications.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.oculus-download.errors.msg.${err.code}`}).then(noop);

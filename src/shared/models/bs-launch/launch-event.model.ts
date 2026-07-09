@@ -9,7 +9,7 @@ export interface BSLaunchErrorData{
 }
 
 export enum BSLaunchError{
-    BS_NOT_FOUND = "EXE_NOT_FINDED",
+    BS_NOT_FOUND = "EXE_NOT_FOUND",
     BS_ALREADY_RUNNING = "BS_ALREADY_RUNNING",
     OCULUS_NOT_RUNNING = "OCULUS_NOT_RUNNING",
     BS_EXIT_ERROR = "EXIT",
@@ -29,6 +29,7 @@ export enum BSLaunchEvent{
 
 export enum BSLaunchWarning{
     UNABLE_TO_LAUNCH_STEAM = "UNABLE_TO_LAUNCH_STEAM",
+    FPFC_NEED_ADMIN = "FPFC_NEED_ADMIN",
 }
 
 export type BSLaunchEventType = BSLaunchEvent | BSLaunchWarning;

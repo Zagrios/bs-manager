@@ -51,7 +51,15 @@ async function enableWindowsProxy(enable: boolean): Promise<void> {
     }
 
     if (enable) {
-        const httpProxyUrl = `http://${await getProxyServer().catch(err => log.error(err))}`
+        const httpProxyServer = await getProxyServer().catch(err => log.error(err));
+        let httpProxyUrl: string | null = null;
+        if (httpProxyServer) {
+            // Prepend the http protocol
+            httpProxyUrl = httpProxyServer.startsWith("http://")
+                ? httpProxyServer
+                : `http://${httpProxyServer}`;
+        }
+
         globalProxyAgent.HTTP_PROXY = httpProxyUrl;
         globalProxyAgent.HTTPS_PROXY = httpProxyUrl;
         globalProxyAgent.NO_PROXY = `${await getProxyOverride().catch(err => log.error(err))}`;

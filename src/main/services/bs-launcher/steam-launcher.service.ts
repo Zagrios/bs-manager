@@ -6,12 +6,13 @@ import { SteamService } from "../steam.service";
 import path from "path";
 import { BS_APP_ID, BS_EXECUTABLE, STEAMVR_APP_ID } from "../../constants";
 import log from "electron-log";
-import { AbstractLauncherService, buildBsLaunchArgs } from "./abstract-launcher.service";
+import { AbstractLauncherService, buildBsLaunchArgs, LaunchBeatSaberOptions } from "./abstract-launcher.service";
 import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
 import { UtilsService } from "../utils.service";
-import { exec } from "child_process";
+import { exec, ChildProcessWithoutNullStreams } from "child_process";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
-import { app } from "electron";
+import { app, Event } from "electron";
+import { parseLaunchOptions } from "main/helpers/launchOptions.helper";
 
 export class SteamLauncherService extends AbstractLauncherService implements StoreLauncherInterface{
 
@@ -37,14 +38,25 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         return this.steam.getGameFolder(STEAMVR_APP_ID, "SteamVR");
     }
 
-    private async backupSteamVR(): Promise<void> {
-        const steamVrFolder = await this.getSteamVRPath();
-        if (!(await pathExists(steamVrFolder))) {
-            return;
-        }
-        return rename(steamVrFolder, `${steamVrFolder}.bak`).catch(err => {
-            log.error("Error while create backup of SteamVR", err);
+    private timedRename(src: string, dest: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const timeout = setTimeout(() => reject(new Error("Rename timed out")), 5000);
+            rename(src, dest).then(resolve, reject).finally(() => clearTimeout(timeout));
         });
+    }
+
+    private async backupSteamVR(): Promise<boolean> {
+        const steamVrFolder = await this.getSteamVRPath();
+        if (!steamVrFolder || !(await pathExists(steamVrFolder))) {
+            return false;
+        }
+        try {
+            await this.timedRename(steamVrFolder, `${steamVrFolder}.bak`);
+            return false;
+        } catch (err) {
+            log.warn("Could not backup SteamVR folder, skipping", err);
+            return err?.code === "EPERM" || err?.message?.includes("timed out");
+        }
     }
 
     private getStartBsAsAdminExePath(): string {
@@ -53,15 +65,54 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
 
     public async restoreSteamVR(): Promise<void> {
         const steamVrFolder = await this.getSteamVRPath();
+        if (!steamVrFolder) { return; }
         const steamVrBackup = `${steamVrFolder}.bak`;
-
-        if (!(await pathExists(steamVrBackup))) {
-            return;
-        }
-
-        return rename(steamVrBackup, steamVrFolder).catch(err => {
-            log.error("Error while restoring SteamVR", err);
+        if (!(await pathExists(steamVrBackup))) { return; }
+        return this.timedRename(steamVrBackup, steamVrFolder).catch(err => {
+            log.warn("Could not restore SteamVR folder", err);
         });
+    }
+
+    protected launchBeatSaber(options: LaunchBeatSaberOptions): {process: ChildProcessWithoutNullStreams, exit: Promise<number>} {
+        const process = this.launchBeatSaberProcess(options);
+
+        const exit = new Promise<number>((resolve, reject) => {
+            // Don't remove, useful for debugging!
+            // process.stdout.on("data", (data) => {
+            //    log.info(`BS stdout: ${data}`);
+            // });
+            // process.stderr.on("data", (data) => {
+            //    log.error(`BS stderr: ${data}`);
+            // });
+
+            const onWillQuitHandler = async (event: Event) => {
+                app.removeListener('will-quit', onWillQuitHandler);
+                if (!process.killed) {
+                    event.preventDefault();
+                    log.info(`Unref'ing BS process ${process.pid} on app will-quit`);
+                    process.unref();
+                    await this.restoreSteamVR().catch(log.error);
+                    resolve(-1);
+                    app.quit();
+                }
+            };
+
+            process.on("error", (err) => {
+                log.error(`Error while launching BS`, err);
+                reject(err);
+                app.removeListener('will-quit', onWillQuitHandler);
+            });
+
+            process.on("exit", (code) => {
+                log.info(`BS process exit with code ${code}`);
+                resolve(code);
+                app.removeListener('will-quit', onWillQuitHandler);
+            });
+
+            app.on('will-quit', onWillQuitHandler);
+        });
+
+        return { process, exit };
     }
 
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
@@ -93,45 +144,63 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 obs.next({ type: BSLaunchEvent.SKIPPING_STEAM_LAUNCH});
             }
 
-            // Backup SteamVR when desktop mode is enabled
-            if(launchOptions.launchMods?.includes(LaunchMods.FPFC)){
-                await this.backupSteamVR().catch(() => {
-                    return this.restoreSteamVR();
+            const isFpfc = launchOptions.launchMods?.includes(LaunchMods.FPFC);
+            const isOculus = launchOptions.launchMods?.includes(LaunchMods.OCULUS);
+            if(isFpfc && !isOculus){
+                const backupPermError = await this.backupSteamVR().catch(() => {
+                    return this.restoreSteamVR().then(() => false);
                 });
-            } else {
+                if(backupPermError){
+                    obs.next({type: BSLaunchWarning.FPFC_NEED_ADMIN});
+                }
+            } else if(!isFpfc) {
                 await this.restoreSteamVR().catch(log.error);
             }
 
             const steamPath = await this.steam.getSteamPath();
 
-            const env = {
+            const env: Record<string, string> = {
                 ...process.env,
                 "SteamAppId": BS_APP_ID,
                 "SteamOverlayGameId": BS_APP_ID,
                 "SteamGameId": BS_APP_ID,
             };
 
-            let protonPrefix = "";
             // Linux setup
             if (process.platform === "linux") {
-                const linuxSetup = await this.linux.setupLaunch(
+                if (launchOptions.admin) {
+                    log.warn("Launching as admin is not supported on Linux! Starting the game as a normal user.");
+                    launchOptions.admin = false;
+                }
+
+                Object.assign(env, await this.linux.buildEnvVariables(
                     launchOptions, steamPath, bsFolderPath
-                );
-                protonPrefix = linuxSetup.protonPrefix;
-                Object.assign(env, linuxSetup.env);
+                ));
             }
 
-            this.injectAdditionalArgsEnvs(launchOptions, env);
+            const {
+                env: customEnv,
+                cmdlet, args
+            } = parseLaunchOptions(launchOptions.command, {
+                commandReplacement: process.platform === "win32"
+                    ? `"${bsExePath}"`
+                    : `${await this.linux.getProtonPrefix()} "${bsExePath}"`,
+            });
+            this.updateEnvVariables(env, customEnv);
+
             const launchArgs = buildBsLaunchArgs(launchOptions);
 
             obs.next({type: BSLaunchEvent.BS_LAUNCHING});
 
-            const spawnOpts = { env, cwd: bsFolderPath };
+            const spawnOpts = { env: { ...customEnv, ...env }, cwd: bsFolderPath };
 
             const launchPromise = !launchOptions.admin ? (
-                this.launchBs(bsExePath, launchArgs, {
-                    ...spawnOpts,
-                    protonPrefix
+                this.launchBeatSaber({
+                    env, customEnv, cmdlet,
+                    args: args
+                        ? [ args, ...launchArgs ]
+                        : launchArgs,
+                    beatSaberFolderPath: bsFolderPath,
                 }).exit
             ) : (
                 new Promise<number>(resolve => {

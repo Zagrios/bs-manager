@@ -11,7 +11,7 @@
         "avatars": "アバター",
         "sabers": "セイバー",
         "platforms": "プラットフォーム",
-        "blocks": "ブロック",
+        "bloqs": "ブロック",
         "cancel": "キャンセル",
         "delete": "削除",
         "accept": "同意する",
@@ -26,7 +26,10 @@
         "continue": "続ける",
         "shared": "共有",
         "pin": "固定",
-        "unpin": "固定解除"
+        "unpin": "固定解除",
+        "this-guide": "このガイド",
+        "create": "作成",
+        "edit": "編集"
     },
     "generic": {
         "env": {
@@ -34,7 +37,10 @@
         }
     },
     "title-bar": {
-        "outdated": "時代遅れ"
+        "outdated": "時代遅れ",
+        "update-text": "BSManager {version} が利用可能です！",
+        "update-button": "更新して再起動",
+        "see-changelog": "変更点を確認"
     },
     "nav-bar": {
         "add-version": "バージョンを追加",
@@ -56,7 +62,8 @@
                 "outdated-tippy": "このバージョンは古いため、一部のMODや機能が期待通りに動作しない可能性があります。最新の機能やバグ修正を楽しむには、推奨バージョン ({recommendedVersion}) のBeat Saberを使用することをお勧めします。",
                 "advanced-launch": {
                     "button": "起動オプション",
-                    "placeholder": "起動オプション 例：KEY=VALUE %command% fpfc"
+                    "placeholder": "起動オプション 例：KEY=VALUE %command% fpfc",
+                    "create-launch-option": "起動オプションを作成"
                 },
                 "skipsteam": "Steamをスキップ",
                 "skipsteam-description": "Beat Saberと一緒にSteamが自動的に開くのを防ぎます。SteamVRが干渉する可能性のあるWiVRnやMonadoなど、別のVRランタイムを使用している場合は有効にしてください。",
@@ -104,7 +111,8 @@
                             "bpm": "BPM",
                             "duration": "持続時間",
                             "likes": "いいね",
-                            "date-uploaded": "アップロード日"
+                            "date-uploaded": "アップロード日",
+                            "added-date": "追加日"
                         }
                     },
                     "playlists": {
@@ -144,6 +152,7 @@
                 "mods-grid": {
                     "header-bar": {
                         "name": "名前",
+                        "size": "サイズ",
                         "installed": "インストール済み",
                         "latest": "最新",
                         "description": "說明",
@@ -153,6 +162,10 @@
                             "uninstall-all": "全てアンインストールする",
                             "unselect-all": "すべて選択解除"
                         }
+                    },
+                    "mod-item": {
+                        "this-is-a-large-mod": "これは大きなModです！",
+                        "this-is-a-very-large-mod": "これは非常に大きなModです！"
                     }
                 },
                 "notifications": {
@@ -329,6 +342,13 @@
                     "error-notification": {
                         "message": "エラーが発生しました。システムプロキシ設定を変更できません。"
                     }
+                },
+                "auto-update": {
+                    "title": "自動更新",
+                    "description": "アプリケーション起動時にBSManagerが自動的に更新されます。",
+                    "error-notification": {
+                        "message": "エラーが発生し、自動更新の設定を変更できませんでした。"
+                    }
                 }
             }
         }
@@ -407,17 +427,20 @@
             "oculus-download": {
                 "errors": {
                     "msg": {
-                        "DOWNLOAD_MANIFEST_FAILED": "このバージョンのマニフェストをダウンロードできません。ログイントークンが無効な可能性があります。",
+                        "DOWNLOAD_MANIFEST_FAILED": "このバージョンのマニフェストをダウンロードできません。ログイントークンが無効であるか、Beat Saberのデスクトップ版を所有していない可能性があります。",
                         "MANIFEST_FILE_NOT_FOUND": "このバージョンのマニフェストが見つかりません。",
                         "PARSE_MANIFEST_FILE_FAILED": "マニフェストの読み取り中にエラーが発生しました。",
                         "ALREADY_DOWNLOADING": "バージョンはすでにダウンロードされています。",
-                        "UNABLE_TO_GET_MANIFEST": "ダウンロードに必要なマニフェストを取得できません。",
+                        "UNABLE_TO_GET_MANIFEST": "ダウンロードに必要なマニフェストを取得できません。ログイントークンが無効であるか、Beat Saberのデスクトップ版を所有していない可能性があります。",
                         "VERIFY_INTEGRITY_FAILED": "ファイルの検証中にエラーが発生しました。",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "一部のファイルのダウンロードに失敗しました。",
                         "META_LOGIN_TIMED_OUT": "ログイントークンの取得に時間がかかりすぎました。",
                         "META_LOGIN_WINDOW_CLOSED_BY_USER": "メタ・ログイン・ウィンドウが閉じられた。",
                         "NO_META_AUTH_TOKEN": "ダウンロードに必要な Meta ログイン トークンを取得できません。",
                         "UNKNOWN_ERROR": "不明なエラーが発生しました。"
+                    },
+                    "actions": {
+                        "claim-your-desktop-version": "デスクトップ版を取得"
                     }
                 }
             }
@@ -517,7 +540,7 @@
                     "STEAM_NOT_RUNNING": "Steamが起動していません",
                     "OCULUS_NOT_RUNNING": "Oculusが起動していません",
                     "BS_ALREADY_RUNNING": "Beat Saberはすでに起動しています",
-                    "EXE_NOT_FINDED": "ファイルが見つかりません",
+                    "EXE_NOT_FOUND": "ファイルが見つかりません",
                     "PROTON_NOT_SET": "Protonフォルダーが設定されていません",
                     "PROTON_NOT_FOUND": "Protonのバイナリが見つかりません",
                     "EXIT": "緊急停止",
@@ -529,7 +552,7 @@
                     "STEAM_NOT_RUNNING": "BeatSaberを起動するには、Steamが起動している必要があります。",
                     "OCULUS_NOT_RUNNING": "BeatSaberを起動するには、Oculusが起動している必要があります。",
                     "BS_ALREADY_RUNNING": "再度起動する前にBeatSaberを閉じてください。",
-                    "EXE_NOT_FINDED": "いくつかのファイルが見つからないようです。",
+                    "EXE_NOT_FOUND": "いくつかのファイルが見つからないようです。",
                     "EXIT": "BeatSaberが緊急停止したため、ファイルをチェックします。",
                     "OCULUS_LIB_NOT_FOUND": "Oculusアプリケーションが正しくインストールしていることと、Oculusライブラリが正しく定義されていることを確認してください。",
                     "PROTON_NOT_SET": "設定でProtonのパスを設定してください。",
@@ -538,6 +561,16 @@
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Steamを起動"
+                }
+            },
+            "warnings": {
+                "titles": {
+                    "FPFC_NEED_ADMIN": "FPFC mode setup incomplete",
+                    "UNABLE_TO_LAUNCH_STEAM": "Could not launch Steam"
+                },
+                "msg": {
+                    "FPFC_NEED_ADMIN": "BSManager needs administrator privileges to properly set up FPFC mode. Run BSManager as administrator for the best experience.",
+                    "UNABLE_TO_LAUNCH_STEAM": "Steam could not be started automatically."
                 }
             }
         },
@@ -692,6 +725,16 @@
             "actions": {
                 "do-not-remind": "再度通知しない",
                 "ok": "OK"
+            }
+        },
+        "bs-uninstall": {
+            "errors": {
+                "title": "バージョンをアンインストールできません",
+                "desc": {
+                    "CantDeleteOfficialVersion": "BSManagerはBeat Saberのオリジナルバージョンをアンインストールできません",
+                    "VersionNotFound": "バージョンが見つかりません。",
+                    "delete-folder": "バージョンを削除できません。Beat Saberが実行中でないことを確認してください。"
+                }
             }
         }
     },
@@ -875,6 +918,7 @@
                 "link-folder": "フォルダーをリンク",
                 "unlink-folder": "フォルダーのリンクを解除",
                 "link-all": "すべてリンク",
+                "unlink-all": "すべてのリンクを解除",
                 "remove-from-the-list": "リストから削除"
             }
         },
@@ -897,7 +941,8 @@
                 "token-needed": "Beat SaberのダウンロードにはMetaのログイントークンが必要です。",
                 "need-cookie-enabled": "Metaにログインするとログインウィンドウが開き、ログインプロセスを開始することができます。Cookieを受け入れるようにしてください。そうしないとダウンロードを開始するためのトークンを取得できない場合があります。",
                 "enter-token-manually": "ログイントークンを手動で入力する",
-                "enter-token-manually-tooltip": "これにより、Metaログインを経由せずにログイントークンを入力できるようになります。"
+                "enter-token-manually-tooltip": "これにより、Metaログインを経由せずにログイントークンを入力できるようになります。",
+                "must-own-desktop-version": "Beat Saberのデスクトップ版を所有している必要があります。スタンドアロン版を購入した場合は、{link} を確認して取得してください。"
             },
             "stay": "記憶する",
             "connect-to-meta": "Metaに接続する"
@@ -962,6 +1007,14 @@
                 "not-installed": "未インストール",
                 "missing": "欠落している"
             }
+        },
+        "custom-launch-option": {
+            "title": "カスタム起動オプション",
+            "title-placeholder": "私のオプション",
+            "desc": "特定のコマンドでBeat Saberを起動するための再利用可能な起動オプションを作成します。",
+            "name": "名前",
+            "launch-option": "起動オプション",
+            "create": "作成"
         }
     },
     "maps": {

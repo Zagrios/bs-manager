@@ -28,6 +28,7 @@ import { StaticConfigurationService } from "./services/static-configuration.serv
 import { configureProxy } from './helpers/proxy.helpers';
 import { deleteFileSync, deleteFolderSync } from "./helpers/fs.helpers";
 import { tryit } from "shared/helpers/error.helpers";
+import { AutoUpdate } from "shared/models/config";
 
 const isDebug = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true";
 const staticConfig = StaticConfigurationService.getInstance();
@@ -99,6 +100,10 @@ const findAssociatedFileInArgs = (args: string[]): string => {
 
 const gotTheLock = app.requestSingleInstanceLock();
 
+const init = () => {
+    initServicesMustBeInitialized();
+}
+
 if (!gotTheLock) {
     app.quit();
 } else {
@@ -121,11 +126,8 @@ if (!gotTheLock) {
 
     app.whenReady().then(() => {
 
-
-
         app.setAppUserModelId(APP_NAME);
-
-        initServicesMustBeInitialized();
+        init();
 
         const deepLink = findDeepLinkInArgs(process.argv);
         const associatedFile = findAssociatedFileInArgs(process.argv);
@@ -134,10 +136,18 @@ if (!gotTheLock) {
             DeepLinkService.getInstance().dispatchLinkOpened(deepLink);
         } else if (associatedFile) {
             FileAssociationService.getInstance().handleFileAssociation(associatedFile);
+        } else if (process.platform === "linux") {
+            createWindow("index.html");
         } else {
-            createWindow(process.platform === "linux"
-                ? "index.html" : "launcher.html"
-            );
+            const configService =  StaticConfigurationService.getInstance();
+            const autoUpdate = configService.get("auto-update", AutoUpdate.ALWAYS);
+            const update = autoUpdate !== AutoUpdate.NEVER;
+            if (autoUpdate === AutoUpdate.ONCE) {
+                configService.set("auto-update", AutoUpdate.NEVER);
+            }
+
+            // Skip launcher only if autoUpdate is strictly false
+            createWindow(update ? "launcher.html" : "index.html");
         }
 
         SteamLauncherService.getInstance().restoreSteamVR();
@@ -164,6 +174,16 @@ function convertDateToDateString(date: Date): string {
     return `${date.getFullYear()}-${month}-${day}`;
 }
 
+function getReadableTime(date: Date): string {
+    return `${
+        date.getHours().toString().padStart(2, "0")
+    }-${
+        date.getMinutes().toString().padStart(2, "0")
+    }-${
+        date.getSeconds().toString().padStart(2, "0")
+    }`;
+}
+
 function initLogger(){
     log.transports.file.level = "info";
 
@@ -178,7 +198,7 @@ function initLogger(){
 
         filepath = path.join(
             app.getPath("logs"), nowString,
-            `${now.getTime()}-v${app.getVersion()}.log`
+            `${nowString}_${getReadableTime(now)}_v${app.getVersion()}.log`
         );
         currentDateString = nowString;
         return filepath;

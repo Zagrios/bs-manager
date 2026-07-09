@@ -11,7 +11,7 @@
         "avatars": "Avatars",
         "sabers": "Sabers",
         "platforms": "Platforms",
-        "blocks": "Blocks",
+        "bloqs": "Blocks",
         "cancel": "Kanselahin",
         "delete": "Tanggalin",
         "accept": "Tanggapin",
@@ -26,7 +26,10 @@
         "continue": "Magpatuloy",
         "shared": "Ibinahagi",
         "pin": "I-pin",
-        "unpin": "I-unpin"
+        "unpin": "I-unpin",
+        "this-guide": "ang gabay na ito",
+        "create": "Lumikha",
+        "edit": "I-edit"
     },
     "generic": {
         "env": {
@@ -34,7 +37,10 @@
         }
     },
     "title-bar": {
-        "outdated": "lipas na"
+        "outdated": "lipas na",
+        "update-text": "Ang BSManager {version} ay available!",
+        "update-button": "I-update at i-restart",
+        "see-changelog": "Tingnan ang mga pagbabago"
     },
     "nav-bar": {
         "add-version": "Magdagdag ng bersyon",
@@ -56,7 +62,8 @@
                 "outdated-tippy": "Ang bersyon na ito ay lipas na, at maaaring hindi na gumana ang ilang mods o features tulad ng inaasahan. Mas mainam na gumamit ng inirerekomendang bersyon ({recommendedVersion}) ng Beat Saber upang magamit ang mga pinakabagong features at pag-aayos ng bug.",
                 "advanced-launch": {
                     "button": "Launch options",
-                    "placeholder": "Launch options hal: KEY=VALUE %command% fpfc"
+                    "placeholder": "Launch options hal: KEY=VALUE %command% fpfc",
+                    "create-launch-option": "Lumikha ng launch option"
                 },
                 "skipsteam": "I-skip ang Steam",
                 "skipsteam-description": "Pinipigilan mo ang Steam na awtomatikong magbukas kasama ng Beat Saber, i-enable ito kung gumagamit ka ng ibang VR runtime tulad ng WiVRn o Monado na maaaring magdulot ng problema sa SteamVR.",
@@ -104,7 +111,8 @@
                             "bpm": "BPM",
                             "duration": "Haba",
                             "likes": "Likes",
-                            "date-uploaded": "Petsa ng Pagka-upload"
+                            "date-uploaded": "Petsa ng Pagka-upload",
+                            "added-date": "Petsa ng Pagdaragdag"
                         }
                     },
                     "playlists": {
@@ -144,6 +152,7 @@
                 "mods-grid": {
                     "header-bar": {
                         "name": "Pangalan",
+                        "size": "laki",
                         "installed": "Naka-install",
                         "latest": "Pinakabago",
                         "description": "Deskripsyon",
@@ -152,6 +161,10 @@
                             "uninstall-all": "I-uninstall ang lahat",
                             "unselect-all": "I-unselect and lahat"
                         }
+                    },
+                    "mod-item": {
+                        "this-is-a-large-mod": "Ito ay isang malaking mod!",
+                        "this-is-a-very-large-mod": "Ito ay isang napakalaking mod!"
                     }
                 },
                 "notifications": {
@@ -328,6 +341,13 @@
                     "error-notification": {
                         "message": "Nagkaroon ng error, hindi ma-bago ang setting ng system proxy."
                     }
+                },
+                "auto-update": {
+                    "title": "Awtomatikong Pag-update",
+                    "description": "Ang BSManager ay awtomatikong mag-uupdate kapag binuksan mo ang aplikasyon.",
+                    "error-notification": {
+                        "message": "Nagkaroon ng error, hindi mababago ang mga setting ng awtomatikong pag-update."
+                    }
                 }
             }
         }
@@ -406,17 +426,20 @@
             "oculus-download": {
                 "errors": {
                     "msg": {
-                        "DOWNLOAD_MANIFEST_FAILED": "Hindi magawang i-download ang manifest para sa bersyong ito; maaaring hindi wasto ang iyong login token.",
+                        "DOWNLOAD_MANIFEST_FAILED": "Hindi ma-download ang manifesto. Maaaring hindi wasto ang iyong login token, o maaaring wala kang desktop na bersyon ng Beat Saber.",
                         "MANIFEST_FILE_NOT_FOUND": "Hindi mahanap ang manifest para sa bersyong ito.",
                         "PARSE_MANIFEST_FILE_FAILED": "Nagkaroon ng error habang binabasa ang manifest.",
                         "ALREADY_DOWNLOADING": "May kasalukuyang dina-download na bersyon.",
-                        "UNABLE_TO_GET_MANIFEST": "Hindi magawang makuha ang manifest na kailangan para sa pag-download.",
+                        "UNABLE_TO_GET_MANIFEST": "Hindi makuha ang manifesto na kinakailangan para sa pag-download. Maaaring hindi wasto ang iyong login token, o maaaring wala kang desktop na bersyon ng Beat Saber.",
                         "VERIFY_INTEGRITY_FAILED": "Nagkaroon ng error habang nirere-verify ang file.",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "May mga file na hindi nagawang i-download.",
                         "META_LOGIN_TIMED_OUT": "Matagal ang pagkuha ng login token.",
                         "META_LOGIN_WINDOW_CLOSED_BY_USER": "Isinara ng user ang Meta login window.",
                         "NO_META_AUTH_TOKEN": "Hindi magawang kunin ang Meta login token na kailangan para sa pag-download.",
                         "UNKNOWN_ERROR": "May error na nangyari."
+                    },
+                    "actions": {
+                        "claim-your-desktop-version": "Kunin ang iyong desktop na bersyon"
                     }
                 }
             }
@@ -516,7 +539,7 @@
                     "STEAM_NOT_RUNNING": "Hindi tumatakbo ang Steam",
                     "OCULUS_NOT_RUNNING": "Hindi tumatakbo ang Oculus",
                     "BS_ALREADY_RUNNING": "Ang Beat Saber ay tumatakbo na",
-                    "EXE_NOT_FINDED": "Nawawalang mga file",
+                    "EXE_NOT_FOUND": "Nawawalang mga file",
                     "PROTON_NOT_SET": "Walang naka-set na Proton folder",
                     "PROTON_NOT_FOUND": "Hindi nahanap ang Proton binary",
                     "EXIT": "Biglaang paghinto",
@@ -528,7 +551,7 @@
                     "STEAM_NOT_RUNNING": "Dapat tumakbo ang Steam upang i-launch ng BeatSaber.",
                     "OCULUS_NOT_RUNNING": "Dapat tumakbo ang Oculus upang i-launch ng BeatSaber.",
                     "BS_ALREADY_RUNNING": "Isara ang BeatSaber bago ito muling i-launch.",
-                    "EXE_NOT_FINDED": "Mukhang nawawala ang ilang mga file, subukang i-verify ang mga file.",
+                    "EXE_NOT_FOUND": "Mukhang nawawala ang ilang mga file, subukang i-verify ang mga file.",
                     "EXIT": "Biglaang huminto ang BeatSaber, subukang i-check ang mga file.",
                     "OCULUS_LIB_NOT_FOUND": "Suriin kung ang Oculus application ay tamang naka-install, at na ang mga libraries ay tamang naka-define sa Oculus.",
                     "PROTON_NOT_SET": "I-set ang Proton path sa settings.",
@@ -537,6 +560,16 @@
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "I-launch ang Steam"
+                }
+            },
+            "warnings": {
+                "titles": {
+                    "FPFC_NEED_ADMIN": "FPFC mode setup incomplete",
+                    "UNABLE_TO_LAUNCH_STEAM": "Could not launch Steam"
+                },
+                "msg": {
+                    "FPFC_NEED_ADMIN": "BSManager needs administrator privileges to properly set up FPFC mode. Run BSManager as administrator for the best experience.",
+                    "UNABLE_TO_LAUNCH_STEAM": "Steam could not be started automatically."
                 }
             }
         },
@@ -691,6 +724,16 @@
             "actions": {
                 "do-not-remind": "Huwag akong paalalahanan",
                 "ok": "Ok"
+            }
+        },
+        "bs-uninstall": {
+            "errors": {
+                "title": "Hindi maalis ang bersyon",
+                "desc": {
+                    "CantDeleteOfficialVersion": "Hindi maalis ng BSManager ang orihinal na bersyon ng Beat Saber",
+                    "VersionNotFound": "Hindi nahanap ang bersyon.",
+                    "delete-folder": "Hindi maalis ang bersyon. Tiyakin na ang Beat Saber ay hindi naka-run."
+                }
             }
         }
     },
@@ -874,6 +917,7 @@
                 "link-folder": "I-link ang Folder",
                 "unlink-folder": "I-unlink ang Folder",
                 "link-all": "I-link lahat",
+                "unlink-all": "I-unlink lahat",
                 "remove-from-the-list": "Alisin mula sa listahan"
             }
         },
@@ -896,7 +940,8 @@
                 "token-needed": "Kinakailangan ang iyong Meta connection token upang ma-download ang Beat Saber.",
                 "need-cookie-enabled": "Sa pag-login sa Meta, isang login window ang magbubukas at maaari mong simulan ang proseso ng pag-login. Siguraduhin na tanggapin ang cookies, kung hindi, maaaring hindi namin makuha ang iyong token upang simulan ang pag-download.",
                 "enter-token-manually": "I-enter ang aking login token manu-mano",
-                "enter-token-manually-tooltip": "Papayagan ka nitong i-enter ang iyong login token nang hindi dumadaan sa Meta login."
+                "enter-token-manually-tooltip": "Papayagan ka nitong i-enter ang iyong login token nang hindi dumadaan sa Meta login.",
+                "must-own-desktop-version": "Dapat ay mayroon kang desktop na bersyon ng Beat Saber. Kung binili mo ang standalone na bersyon, sundan ang {link} upang makuha ito."
             },
             "stay": "Tandaan ako",
             "connect-to-meta": "Mag-connect sa Meta"
@@ -951,6 +996,14 @@
         },
         "bs-version-outdated": {
             "body": "Ang bersyon na {outdatedVersion} ay lipas na, at ang ilang mods o features ay maaaring hindi na gumana ng tama. Mangyaring i-download ang pinakabagong inirerekomendang bersyon ({recommendedVersion}) ng Beat Saber upang tamasahin ang mga pinakabagong tampok at mga pag-aayos ng bug."
+        },
+        "custom-launch-option": {
+            "title": "Custom na opsyon sa paglulunsad",
+            "title-placeholder": "Aking opsyon",
+            "desc": "Gumawa ng muling magagamit na opsyon sa paglulunsad upang ilunsad ang Beat Saber gamit ang isang partikular na command.",
+            "name": "Pangalan",
+            "launch-option": "Opsyon sa paglulunsad",
+            "create": "Lumikha"
         }
     },
     "maps": {

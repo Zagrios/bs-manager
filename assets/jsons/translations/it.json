@@ -11,7 +11,7 @@
         "avatars": "Avatar",
         "sabers": "Spade",
         "platforms": "Piattaforme",
-        "blocks": "Blocchi",
+        "bloqs": "Blocchi",
         "cancel": "Cancella",
         "delete": "Elimina",
         "accept": "Accetta",
@@ -21,12 +21,15 @@
         "copied": "Copiato!",
         "confirm": "Conferma",
         "choose-folder": "Scegli cartella",
-        "unknown": "È accaduto un errore sconosciuto ¯\\_(ツ)_/¯",
+        "unknown": "Si è verificato un errore sconosciuto ¯\\_(ツ)_/¯",
         "warning": "Attenzione",
         "continue": "Continua",
         "shared": "Condivisi",
         "pin": "Fissa",
-        "unpin": "Rimuovi Fissaggio"
+        "unpin": "Rimuovi Fissaggio",
+        "this-guide": "questa guida",
+        "create": "Crea",
+        "edit": "Modifica"
     },
     "generic": {
         "env": {
@@ -34,7 +37,10 @@
         }
     },
     "title-bar": {
-        "outdated": "obsoleta"
+        "outdated": "obsoleta",
+        "update-text": "BSManager {version} è disponibile!",
+        "update-button": "Aggiorna e riavvia",
+        "see-changelog": "Vedi i cambiamenti"
     },
     "nav-bar": {
         "add-version": "Aggiungi una versione",
@@ -49,17 +55,18 @@
             "launch-mods": {
                 "oculus": "Modalita Oculus",
                 "oculus-description": "Se stai usando Beat Saber via Steam, questa opzione ti consente di usare il composer VR di Oculus mentre bypassi SteamVR, per un potenziale aumento di performance. Questo non è richiesto per usare i visori Oculus.",
-                "desktop": "Modalita FPFC",
+                "desktop": "Modalità FPFC",
                 "desktop-description": "La modalità FPFC (First Person Flying Controller) consente di usare i pulsanti WASD e il mouse per navigare nel menu del gioco. Questo rende i test molto più facili, perchè non devi indossare il tuo visore!",
-                "debug": "Modalita Debug",
+                "debug": "Modalità Debug",
                 "debug-description": "Abilita la finestra di uscita del log per IPA. Questo mostrerà la console di debug che lo mod usano.",
                 "outdated-tippy": "Questa versione è obsoleta, e alcune mod o funzioni non potrebbero più funzionare correttamente. Consigliamo di usare la versione raccomandata ({recommendedVersion}) di Beat Saber per godere delle ultime funzioni e bugfix.",
                 "advanced-launch": {
                     "button": "Opzioni di Lancio",
-                    "placeholder": "Opzioni di Lancio es: KEY=VALUE %command% fpfc"
+                    "placeholder": "Opzioni di Lancio es: KEY=VALUE %command% fpfc",
+                    "create-launch-option": "Crea un'opzione di lancio"
                 },
                 "skipsteam": "Salta Steam",
-                "skipsteam-description": "Ferma Steam da aprirsi automaticamente con Beat Saber, abilitalo se stai usando un VR runtime differente come WiVRn o Monado con cui SteamVR potrebbe interferire.",
+                "skipsteam-description": "Impedisce a Steam di aprirsi automaticamente con Beat Saber, abilitalo se stai usando un VR runtime differente come WiVRn o Monado con cui SteamVR potrebbe interferire.",
                 "map-editor": "Map Editor",
                 "map-editor-description": "Avvia il map editor di Beat Saber ufficiale invece del gioco.",
                 "proton-logs": "Log di Proton",
@@ -104,7 +111,8 @@
                             "bpm": "BPM",
                             "duration": "Durata",
                             "likes": "Mi piace",
-                            "date-uploaded": "Data di caricamento"
+                            "date-uploaded": "Data di caricamento",
+                            "added-date": "Data di aggiunta"
                         }
                     },
                     "playlists": {
@@ -134,7 +142,7 @@
                 "status": {
                     "no-wineprefix": "Impossibile trovare il percorso del WINEPREFIX di BSManager. Per favore avvia prima Beat Saber in BSManager.",
                     "beatmods-down": "Beatmods non è attualmente raggiungibile. Riprova più tardi. Se il problema persiste, informaci su {links}.",
-                    "unknown": "È accaduto un errore sconosciuto ¯\\_(ツ)_/¯"
+                    "unknown": "Si è verificato un errore sconosciuto ¯\\_(ツ)_/¯"
                 },
                 "buttons": {
                     "more-infos": "Più info",
@@ -144,6 +152,7 @@
                 "mods-grid": {
                     "header-bar": {
                         "name": "Nome",
+                        "size": "Dimensione",
                         "installed": "Installata",
                         "latest": "Ultima Versione",
                         "description": "Descrizione",
@@ -153,6 +162,10 @@
                             "uninstall-all": "Disinstalla tutto",
                             "unselect-all": "Deseleziona tutto"
                         }
+                    },
+                    "mod-item": {
+                        "this-is-a-large-mod": "Questa è una mod grande!",
+                        "this-is-a-very-large-mod": "Questa è una mod molto grande!"
                     }
                 },
                 "notifications": {
@@ -162,9 +175,9 @@
                     },
                     "outdated-mods": {
                         "title": "Mod obsoleto",
-                        "title-plural": "Mod obsoleti",
-                        "description": "Il mod {name} è obsoleto. Vuoi aggiornarlo?",
-                        "description-plural": "Questa versione ha {nb} mod obsoleti. Vuoi aggiornarli?",
+                        "title-plural": "Mod obsolete",
+                        "description": "La mod {name} è obsoleta. Vuoi aggiornarla?",
+                        "description-plural": "Questa versione ha {nb} mod obsolete. Vuoi aggiornarle?",
                         "dont-remind-me": "Non ricordarmelo",
                         "update": "Aggiorna"
                     }
@@ -305,7 +318,7 @@
                     "modal": {
                         "title": "Riavvio Necessario",
                         "body": "Cambiare l'impostazione dell'accelerazione hardware causerà un riavvio di BSManager. Sei sicuro di voler procedere?",
-                        "confirm-btn": "Si, sono sicuro"
+                        "confirm-btn": "Sì, sono sicuro"
                     },
                     "error-notification": {
                         "message": "C'è stato un errore, impossibile disattivare l'accelerazione hardware."
@@ -317,7 +330,7 @@
                     "modal": {
                         "title": "Permesso Symlink",
                         "body": "Quando crei dei Symlink, BSManager richiederà accesso amministrativo o la modalità sviluppatore sul tuo sistema. Sei sicuro di voler continuare?",
-                        "confirm-btn": "Si, sono sicuro"
+                        "confirm-btn": "Sì, sono sicuro"
                     },
                     "error-notification": {
                         "message": "C'è stato un errore, impossibile cambiare le impostazioni di Symlinks."
@@ -328,6 +341,13 @@
                     "description": "BSManager fara richieste di rete tramite il tuo sistema proxy.",
                     "error-notification": {
                         "message": "C'è stato un errore, impossibile cambiare le impostazioni del proxy di sistema."
+                    }
+                },
+                "auto-update": {
+                    "title": "Aggiornamento automatico",
+                    "description": "BSManager si aggiornerà automaticamente all'avvio dell'applicazione.",
+                    "error-notification": {
+                        "message": "Si è verificato un errore, impossibile modificare le impostazioni di aggiornamento automatico."
                     }
                 }
             }
@@ -352,7 +372,7 @@
                     "file-not-supported": "File non supportato"
                 },
                 "msg": {
-                    "operation-running": "Attendi che l'operazione corrente finisca, poi, prova di nuovo.",
+                    "operation-running": "Attendi che l'operazione corrente finisca, poi riprova.",
                     "no-internet": "Controlla la tua connessione e riprova.",
                     "file-not-supported": "Solo i file {types} sono supportati."
                 }
@@ -407,17 +427,20 @@
             "oculus-download": {
                 "errors": {
                     "msg": {
-                        "DOWNLOAD_MANIFEST_FAILED": "Impossibile scaricare il manifest per questa versione; il tuo token di accesso potrebbe essere invalido.",
+                        "DOWNLOAD_MANIFEST_FAILED": "Impossibile scaricare il manifesto. Il tuo token di accesso potrebbe non essere valido o potresti non possedere la versione desktop di Beat Saber.",
                         "MANIFEST_FILE_NOT_FOUND": "Impossibile trovare il manifest per questa versione.",
                         "PARSE_MANIFEST_FILE_FAILED": "C'è stato un errore durante la lettura del manifest.",
                         "ALREADY_DOWNLOADING": "Una versione sta già venendo scaricata.",
-                        "UNABLE_TO_GET_MANIFEST": "Impossibile ottenere il manifest richiesto per il download.",
+                        "UNABLE_TO_GET_MANIFEST": "Impossibile ottenere il manifesto necessario per il download. Il tuo token di accesso potrebbe non essere valido o potresti non possedere la versione desktop di Beat Saber.",
                         "VERIFY_INTEGRITY_FAILED": "C'è stato un errore durante la verifica dei file.",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "Alcuni file non sono stati scaricati con successo.",
                         "META_LOGIN_TIMED_OUT": "Il token di accesso ha impiegato troppo tempo per essere recuperato.",
                         "META_LOGIN_WINDOW_CLOSED_BY_USER": "La finestra di login di Meta è stata chiusa.",
                         "NO_META_AUTH_TOKEN": "Impossibile recuperare il token di accesso Meta necessario per il download.",
                         "UNKNOWN_ERROR": "C'è stato un errore sconosciuto."
+                    },
+                    "actions": {
+                        "claim-your-desktop-version": "Richiedi la tua versione desktop"
                     }
                 }
             }
@@ -454,7 +477,7 @@
                         "transfer-failed": "Trasferimento fallito 😕"
                     },
                     "descs": {
-                        "COPY_TO_SUBPATH": "La cartella di destinazione non puo essere una sotto cartella della cartella di origine.",
+                        "COPY_TO_SUBPATH": "La cartella di destinazione non puo essere una sottocartella della cartella di origine.",
                         "restore-linked-folders": "C'è stato un errore durante il ripristino delle cartelle condivise. Puoi sempre ripristinarle manualmente via il menu 'Cartelle Condivise' nella pagina delle versioni."
                     }
                 }
@@ -506,7 +529,7 @@
                     "SKIPPING_STEAM_LAUNCH": "Saltando l'avvio di Steam..."
                 },
                 "msg": {
-                    "BS_LAUNCHING": "Non scordardi ti riscaldarti 😉",
+                    "BS_LAUNCHING": "Non scordarti di riscaldarti 😉",
                     "STEAM_LAUNCHING": "Beat Saber si avvierà automaticamente dopo Steam.",
                     "SKIPPING_STEAM_LAUNCH": "Spero che sai cosa stai facendo :)"
                 }
@@ -517,7 +540,7 @@
                     "STEAM_NOT_RUNNING": "Steam non è in esecuzione",
                     "OCULUS_NOT_RUNNING": "Oculus non è in esecuzione",
                     "BS_ALREADY_RUNNING": "Beat Saber già in esecuzione",
-                    "EXE_NOT_FINDED": "File mancanti",
+                    "EXE_NOT_FOUND": "File mancanti",
                     "PROTON_NOT_SET": "Cartella di Proton non impostata",
                     "PROTON_NOT_FOUND": "Esegiubile di Proton non trovato",
                     "EXIT": "Arresto improvviso",
@@ -529,7 +552,7 @@
                     "STEAM_NOT_RUNNING": "Steam deve essere in esecuzione per avviare BeatSaber.",
                     "OCULUS_NOT_RUNNING": "L'app Oculus deve essere in esecuzione per avviare BeatSaber.",
                     "BS_ALREADY_RUNNING": "Chiudi Beat Saber prima di riavviarlo.",
-                    "EXE_NOT_FINDED": "Alcuni file sembrano essere mancanti, prova a verificare i file.",
+                    "EXE_NOT_FOUND": "Alcuni file sembrano essere mancanti, prova a verificare i file.",
                     "EXIT": "BeatSaber si è arrestato improvvisamente, prova a verificare i file.",
                     "OCULUS_LIB_NOT_FOUND": "Controlla che l'applicazione Oculus sia correttamente installata e che le librerie siano correttamente definite dall'app Oculus.",
                     "PROTON_NOT_SET": "Imposta il percorso di Proton nelle impostazioni.",
@@ -538,6 +561,16 @@
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Avvia Steam"
+                }
+            },
+            "warnings": {
+                "titles": {
+                    "FPFC_NEED_ADMIN": "FPFC mode setup incomplete",
+                    "UNABLE_TO_LAUNCH_STEAM": "Could not launch Steam"
+                },
+                "msg": {
+                    "FPFC_NEED_ADMIN": "BSManager needs administrator privileges to properly set up FPFC mode. Run BSManager as administrator for the best experience.",
+                    "UNABLE_TO_LAUNCH_STEAM": "Steam could not be started automatically."
                 }
             }
         },
@@ -693,6 +726,16 @@
                 "do-not-remind": "Non ricordarmelo più",
                 "ok": "Ok"
             }
+        },
+        "bs-uninstall": {
+            "errors": {
+                "title": "Impossibile disinstallare la versione",
+                "desc": {
+                    "CantDeleteOfficialVersion": "BSManager non può disinstallare la versione originale di Beat Saber",
+                    "VersionNotFound": "Versione non trovata.",
+                    "delete-folder": "Impossibile eliminare la versione. Assicurati che Beat Saber non sia in esecuzione."
+                }
+            }
         }
     },
     "modals": {
@@ -726,7 +769,7 @@
                 "password": {
                     "label": "Password",
                     "placeholder": "Inserisci la password",
-                    "max-length-warning": "La password eccede i 64 caratteri! Se la password è invalida, prova ad entrare con solo i primi 64 caretteri."
+                    "max-length-warning": "La password eccede i 64 caratteri! Se la password è invalida, prova ad entrare con solo i primi 64 caratteri."
                 },
                 "qr": {
                     "label": "O con un codice QR",
@@ -875,6 +918,7 @@
                 "link-folder": "Collega Cartella",
                 "unlink-folder": "Scollega Cartella",
                 "link-all": "Collega Tutto",
+                "unlink-all": "Scollega Tutto",
                 "remove-from-the-list": "Rimuovi dalla lista"
             }
         },
@@ -897,7 +941,8 @@
                 "token-needed": "Il tuo token di connessione Meta è necessario per scaricare Beat Saber.",
                 "need-cookie-enabled": "Accedendo a Meta, si aprirà una finestra di login e potrai quindi avviare il processo di login. Assicurati di accettare i cookie, altrimenti potremmo non essere in grado di recuperare il tuo token per avviare il download.",
                 "enter-token-manually": "Inserisci manualmente il mio token di login",
-                "enter-token-manually-tooltip": "Questo ti permetterà di inserire il tuo token di accesso senza passare per il login di Meta."
+                "enter-token-manually-tooltip": "Questo ti permetterà di inserire il tuo token di accesso senza passare per il login di Meta.",
+                "must-own-desktop-version": "Devi possedere la versione desktop di Beat Saber. Se hai acquistato la versione autonoma, segui {link} per richiederla."
             },
             "stay": "Ricordami",
             "connect-to-meta": "Connettiti a Meta"
@@ -962,6 +1007,14 @@
                 "not-installed": "Non installato",
                 "missing": "Mancante"
             }
+        },
+        "custom-launch-option": {
+            "title": "Opzione di lancio personalizzata",
+            "title-placeholder": "La mia opzione",
+            "desc": "Crea un'opzione di lancio rilocabile per lanciare Beat Saber con un comando specifico.",
+            "name": "Nome",
+            "launch-option": "Opzione di lancio",
+            "create": "Crea"
         }
     },
     "maps": {
@@ -1293,7 +1346,7 @@
     },
     "dateformat": {
         "dayNames": ["Dom", "Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"],
-        "monthNames": ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic", "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Augosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
+        "monthNames": ["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic", "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"],
         "timeNames": ["a", "p", "am", "pm", "A", "P", "AM", "PM"]
     }
 }

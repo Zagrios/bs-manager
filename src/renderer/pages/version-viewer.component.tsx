@@ -28,6 +28,7 @@ import { logRenderError } from "renderer";
 import { BsModsManagerService } from "renderer/services/bs-mods-manager.service";
 import { noop } from "shared/helpers/function.helpers";
 import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
 
 export function VersionViewer() {
 
@@ -125,13 +126,25 @@ export function VersionViewer() {
 
     const uninstall = async () => {
         const modalCompleted = await modalService.openModal(UninstallModal, { data: state });
-        if (modalCompleted.exitCode === ModalExitCode.COMPLETED) {
-            bsUninstallerService.uninstall(state).then(() => {
-                bsVersionManagerService.askInstalledVersions().then(versions => {
-                    navigateToVersion(versions?.at(0));
-                });
-            });
+        if (modalCompleted.exitCode !== ModalExitCode.COMPLETED) {
+            return;
         }
+
+        bsUninstallerService.uninstall(state).then(() => {
+            bsVersionManagerService.askInstalledVersions().then(versions => {
+                navigateToVersion(versions?.at(0));
+            });
+        }).catch((err: CustomError) => {
+            let desc = err?.message;
+
+            if (["CantDeleteOfficialVersion", "VersionNotFound"].includes(err?.code)) {
+                desc = `notifications.bs-uninstall.errors.desc.${err.code}`;
+            } else if (err?.code?.startsWith("generic.fs.delete-folder")) {
+                desc = "notifications.bs-uninstall.errors.desc.delete-folder";
+            }
+
+            notification.notifyError({ title: "notifications.bs-uninstall.errors.title", desc });
+        });
     };
 
     const edit = () => {

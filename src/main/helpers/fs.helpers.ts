@@ -1,9 +1,8 @@
-import { CopyOptions, MoveOptions, RmOptions, copy, createReadStream, ensureDir, move, pathExists, pathExistsSync, realpath, rm, stat, symlink, unlink, unlinkSync } from "fs-extra";
+import { CopyOptions, MoveOptions, RmOptions, copy, createReadStream, ensureDir, move, pathExists, pathExistsSync, realpath, rm, stat, symlink, unlink, unlinkSync, rmSync } from "fs-extra";
 import { access, mkdir, readdir, lstat, readlink } from "fs/promises";
 import path from "path";
 import { Observable, concatMap, from } from "rxjs";
 import log from "electron-log";
-import { BsmException } from "shared/models/bsm-exception.model";
 import crypto from "crypto";
 import { execSync } from "child_process";
 import { tryit } from "../../shared/helpers/error.helpers";
@@ -33,7 +32,7 @@ export async function deleteFile(filepath: string) {
         log.info("Deleting file", `"${filepath}"`);
         await unlink(filepath);
     } catch (error: any) {
-        log.error("Could not delete file", `"${filepath}"`);
+        log.error("Could not delete file", `"${filepath}"`, error);
         throw CustomError.fromError(error, "generic.fs.delete-file");
     }
 }
@@ -43,7 +42,7 @@ export function deleteFileSync(filepath: string) {
         log.info("Deleting file", `"${filepath}"`);
         unlinkSync(filepath);
     } catch (error: any) {
-        log.error("Could not delete file", `"${filepath}"`);
+        log.error("Could not delete file", `"${filepath}"`, error);
         throw CustomError.fromError(error, "generic.fs.delete-file");
     }
 }
@@ -71,6 +70,7 @@ export function deleteFolderSync(folderPath: string, options?: RmOptions) {
     try {
         options = options || { recursive: true, force: true };
         log.info("Deleting folder", `"${folderPath}"`, options);
+        rmSync(folderPath, options);
     } catch (error: any) {
         log.error("Could not delete folder", `"${folderPath}"`);
         throw CustomError.fromError(error, "generic.fs.delete-folder");
@@ -180,7 +180,7 @@ export function isSubdirectory(parent: string, child: string): boolean {
 
 export async function copyDirectoryWithJunctions(src: string, dest: string, options?: CopyOptions): Promise<void> {
     if (isSubdirectory(src, dest)) {
-        throw { message: `Cannot copy directory '${src}' into itself '${dest}'.`, code: "COPY_TO_SUBPATH" } as BsmException;
+        throw new CustomError(`Cannot copy directory '${src}' into itself '${dest}'.`, "COPY_TO_SUBPATH");
     }
 
     await ensureDir(dest);

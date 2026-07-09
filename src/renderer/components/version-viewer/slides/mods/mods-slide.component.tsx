@@ -7,13 +7,11 @@ import { ConfigurationService } from "renderer/services/configuration.service";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import BeatWaitingImg from "../../../../../../assets/images/apngs/beat-waiting.png";
 import BeatConflictImg from "../../../../../../assets/images/apngs/beat-conflict.png";
-import { useObservable } from "renderer/hooks/use-observable.hook";
 import { lastValueFrom } from "rxjs";
 import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods/mods-disclaimer-modal.component";
-import { OsDiagnosticService } from "renderer/services/os-diagnostic.service";
 import { lt } from "semver";
 import { useService } from "renderer/hooks/use-service.hook";
 import { NotificationService } from "renderer/services/notification.service";
@@ -43,7 +41,6 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
     const notification = useService(NotificationService);
     const linkOpener = useService(LinkOpenerService);
     const modals = useService(ModalService);
-    const os = useService(OsDiagnosticService);
     const progress = useService(ProgressBarService);
 
     const [gridStatus, setGridStatus] = useState(ModsGridStatus.OK);
@@ -52,7 +49,6 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
     const [modsSelected, setModsSelected] = useState([] as BbmFullMod[]);
     const [moreInfoMod, setMoreInfoMod] = useState(null as BbmFullMod);
     const [reinstallAllMods, setReinstallAllMods] = useState(false);
-    const isOnline = useObservable(() => os.isOnline$);
     const [installing, setInstalling] = useState(false);
     const [uninstalling, setUninstalling] = useState(false);
     const [modsDropZoneOpen, setModsDropZoneOpen] = useState(false);
@@ -205,18 +201,24 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
         return haveAccepted;
     }
 
+    const applyModsState = ({ available, installed }: { available: BbmFullMod[]; installed: BbmFullMod[] }) => {
+        // Merge installed mods not in the available (verified) list so they appear in the grid
+        const availableIds = new Set(available.map(m => m.mod.id));
+        const installedOnly = installed.filter(m => !availableIds.has(m.mod.id));
+        const allMods = [...available, ...installedOnly];
+
+        const defaultMods = installed?.length ? [] : allMods.filter(m => m.mod.category === BbmCategories.Core || m.mod.category === BbmCategories.Essential);
+        setModsAvailable(() => modsToCategoryMap(allMods));
+        setModsSelected(allMods.filter(m => m.mod.category === BbmCategories.Core || defaultMods.some(d => m.mod.name.toLowerCase() === d.mod.name.toLowerCase()) || installed.some(i => m.mod.id === i.mod.id)));
+        setModsInstalled(modsToCategoryMap(installed));
+    };
+
     const loadMods = async (): Promise<void> => {
-        if (os.isOffline || gridStatus !== ModsGridStatus.OK) {
+        if (gridStatus !== ModsGridStatus.OK) {
             return Promise.resolve();
         }
 
-        return modsManager.getVersionModsState(version).then(({ available, installed }) => {
-            const defaultMods = installed?.length ? [] : available.filter(m => m.mod.category === BbmCategories.Core || m.mod.category === BbmCategories.Essential);
-            setModsAvailable(() => modsToCategoryMap(available));
-
-            setModsSelected(available.filter(m => m.mod.category === BbmCategories.Core || defaultMods.some(d => m.mod.name.toLowerCase() === d.mod.name.toLowerCase()) || installed.some(i => m.mod.id === i.mod.id)));
-            setModsInstalled(modsToCategoryMap(installed));
-        });
+        return modsManager.getVersionModsState(version).then(applyModsState);
     };
 
     useImperativeHandle(forwaredRef, () => ({
@@ -224,9 +226,10 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
     }), [version]);
 
     useEffect(() => {
+        let isCancelled = false;
 
-        if(!isActive || !isOnline){
-            return noop();
+        if(!isActive){
+            return noop;
         }
 
         ensureDisclaimerAccepted().then(async canLoad => {
@@ -234,19 +237,32 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
                 return onDisclamerDecline?.();
             }
 
+            if (isCancelled) return;
+
             const status = await modsManager.getModsGridStatus();
+
+            if (isCancelled) return;
+
             setGridStatus(() => status);
 
-            loadMods();
+            if (status !== ModsGridStatus.OK) {
+                return;
+            }
+
+            modsManager.getVersionModsState(version).then(state => {
+                if (isCancelled) return;
+                applyModsState(state);
+            });
         });
 
         return () => {
+            isCancelled = true;
             setMoreInfoMod(null);
             setModsAvailable(null);
             setModsInstalled(null);
             setGridStatus(ModsGridStatus.OK);
         };
-    }, [isActive, isOnline, version]);
+    }, [isActive, version]);
 
     useEffect(() => {
         // Center the progress bar between buttons
@@ -298,9 +314,6 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
     }
 
     const renderContent = () => {
-        if (!isOnline) {
-            return <ModStatus text="pages.version-viewer.mods.no-internet" image={BeatConflictImg} />;
-        }
         if (gridStatus !== ModsGridStatus.OK) {
             return renderStatus();
         }

@@ -11,7 +11,7 @@
         "avatars": "Avatars",
         "sabers": "Sabers",
         "platforms": "Platforms",
-        "blocks": "Blocks",
+        "bloqs": "Blocks",
         "cancel": "Cancel",
         "delete": "Delete",
         "accept": "Accept",
@@ -26,7 +26,10 @@
         "continue": "Continue",
         "shared": "Shared",
         "pin": "Pin",
-        "unpin": "Unpin"
+        "unpin": "Unpin",
+        "this-guide": "this guide",
+        "create": "Create",
+        "edit": "Edit"
     },
     "generic": {
         "env": {
@@ -34,7 +37,10 @@
         }
     },
     "title-bar": {
-        "outdated": "outdated"
+        "outdated": "outdated",
+        "update-text": "BSManager {version} is available!",
+        "update-button": "Update and Restart",
+        "see-changelog": "See changelog"
     },
     "nav-bar": {
         "add-version": "Add a version",
@@ -56,7 +62,8 @@
                 "outdated-tippy": "This version is outdated, and some mods or features may no longer work as expected. Prefer using the recommended version ({recommendedVersion}) of Beat Saber to enjoy the latest features and bugfixes.",
                 "advanced-launch": {
                     "button": "Launch options",
-                    "placeholder": "Launch options ex: KEY=VALUE %command% fpfc"
+                    "placeholder": "Launch options ex: KEY=VALUE %command% fpfc",
+                    "create-launch-option": "Create a launch option"
                 },
                 "skipsteam": "Skip Steam",
                 "skipsteam-description": "Stops Steam from opening automatically with Beat Saber, enable if you are using a different VR runtime like WiVRn or Monado that SteamVR may interfere with.",
@@ -104,7 +111,8 @@
                             "bpm": "BPM",
                             "duration": "Duration",
                             "likes": "Likes",
-                            "date-uploaded": "Date Uploaded"
+                            "date-uploaded": "Date Uploaded",
+                            "added-date": "Added Date"
                         }
                     },
                     "playlists": {
@@ -144,6 +152,7 @@
                 "mods-grid": {
                     "header-bar": {
                         "name": "Name",
+                        "size": "Size",
                         "installed": "Installed",
                         "latest": "Latest",
                         "description": "Description",
@@ -153,6 +162,10 @@
                             "uninstall-all": "Uninstall all",
                             "unselect-all": "Unselect all"
                         }
+                    },
+                    "mod-item":{
+                        "this-is-a-large-mod": "This is a large mod!",
+                        "this-is-a-very-large-mod": "This is a very large mod!"
                     }
                 },
                 "notifications": {
@@ -329,6 +342,13 @@
                     "error-notification": {
                         "message": "An error occurred, unable to change system proxy settings."
                     }
+                },
+                "auto-update": {
+                    "title": "Auto Update",
+                    "description": "BSManager will automatically update when you launch the application.",
+                    "error-notification": {
+                        "message": "An error occurred, unable to change auto update settings."
+                    }
                 }
             }
         }
@@ -407,17 +427,20 @@
             "oculus-download": {
                 "errors": {
                     "msg": {
-                        "DOWNLOAD_MANIFEST_FAILED": "Unable to download the manifest for this version; your login token may be invalid.",
+                        "DOWNLOAD_MANIFEST_FAILED": "Unable to download the manifest. Your login token may be invalid, or you don't own the desktop version of Beat Saber.",
                         "MANIFEST_FILE_NOT_FOUND": "Unable to find the manifest for this version.",
                         "PARSE_MANIFEST_FILE_FAILED": "An error occurred while reading the manifest.",
                         "ALREADY_DOWNLOADING": "A version is already being downloaded.",
-                        "UNABLE_TO_GET_MANIFEST": "Unable to obtain the manifest required for download.",
+                        "UNABLE_TO_GET_MANIFEST": "Unable to obtain the manifest required for download. Your login token may be invalid, or you don't own the desktop version of Beat Saber.",
                         "VERIFY_INTEGRITY_FAILED": "An error occurred during file verification.",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "Some files failed to download.",
                         "META_LOGIN_TIMED_OUT": "The login token took too long to retrieve.",
                         "META_LOGIN_WINDOW_CLOSED_BY_USER": "The Meta login window was closed.",
                         "NO_META_AUTH_TOKEN": "Unable to retrieve the Meta login token required for download.",
                         "UNKNOWN_ERROR": "An unknown error occurred."
+                    },
+                    "actions":{
+                        "claim-your-desktop-version": "Claim your desktop version"
                     }
                 }
             }
@@ -517,7 +540,7 @@
                     "STEAM_NOT_RUNNING": "Steam is not running",
                     "OCULUS_NOT_RUNNING": "Oculus is not running",
                     "BS_ALREADY_RUNNING": "Beat Saber already running",
-                    "EXE_NOT_FINDED": "Missing files",
+                    "EXE_NOT_FOUND": "Missing files",
                     "PROTON_NOT_SET": "Proton folder not set",
                     "PROTON_NOT_FOUND": "Proton binary not found",
                     "EXIT": "Abrupt stop",
@@ -529,7 +552,7 @@
                     "STEAM_NOT_RUNNING": "Steam must be running to launch BeatSaber.",
                     "OCULUS_NOT_RUNNING": "Oculus must be running to launch BeatSaber.",
                     "BS_ALREADY_RUNNING": "Close BeatSaber before launching it again.",
-                    "EXE_NOT_FINDED": "Some files seem to be missing, try to verify the files.",
+                    "EXE_NOT_FOUND": "Some files seem to be missing, try to verify the files.",
                     "EXIT": "BeatSaber stopped abruptly, tries to check the files.",
                     "OCULUS_LIB_NOT_FOUND": "Check that the Oculus application is properly installed, and that the libraries are correctly defined in Oculus.",
                     "PROTON_NOT_SET": "Set the Proton path in settings.",
@@ -538,6 +561,16 @@
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Launch Steam"
+                }
+            },
+            "warnings": {
+                "titles": {
+                    "FPFC_NEED_ADMIN": "FPFC mode setup incomplete",
+                    "UNABLE_TO_LAUNCH_STEAM": "Could not launch Steam"
+                },
+                "msg": {
+                    "FPFC_NEED_ADMIN": "BSManager needs administrator privileges to properly set up FPFC mode. Run BSManager as administrator for the best experience.",
+                    "UNABLE_TO_LAUNCH_STEAM": "Steam could not be started automatically."
                 }
             }
         },
@@ -692,6 +725,16 @@
             "actions": {
                 "do-not-remind": "Do not remind me",
                 "ok": "Ok"
+            }
+        },
+        "bs-uninstall": {
+            "errors": {
+                "title": "Unable to uninstall version",
+                "desc": {
+                    "CantDeleteOfficialVersion": "BSManager cannot uninstall the original Beat Saber version",
+                    "VersionNotFound": "Version not found.",
+                    "delete-folder": "Unable to delete the version. Ensure Beat Saber is not running."
+                }
             }
         }
     },
@@ -875,6 +918,7 @@
                 "link-folder": "Link Folder",
                 "unlink-folder": "Unlink Folder",
                 "link-all": "Link all",
+                "unlink-all": "Unlink all",
                 "remove-from-the-list": "Remove from the list"
             }
         },
@@ -897,7 +941,8 @@
                 "token-needed": "Your Meta connection token is required to download Beat Saber.",
                 "need-cookie-enabled": "By logging into Meta, a login window will open and you can then start the login process. Please ensure to accept cookies, otherwise, we might not be able to retrieve your token to start the download.",
                 "enter-token-manually": "Enter my login token manually",
-                "enter-token-manually-tooltip": "This will allow you to enter your login token without going through Meta login."
+                "enter-token-manually-tooltip": "This will allow you to enter your login token without going through Meta login.",
+                "must-own-desktop-version": "You must own the desktop version of Beat Saber. If you bought the standalone version, follow {link} to claim it."
             },
             "stay": "Remember me",
             "connect-to-meta": "Connect to Meta"
@@ -962,6 +1007,14 @@
                 "not-installed": "Not Installed",
                 "missing": "Missing"
             }
+        },
+        "custom-launch-option": {
+            "title": "Custom launch option",
+            "title-placeholder": "My option",
+            "desc": "Create a re-usable launch option to launch Beat Saber with a specific command.",
+            "name": "Name",
+            "launch-option": "Launch option",
+            "create": "Create"
         }
     },
     "maps": {

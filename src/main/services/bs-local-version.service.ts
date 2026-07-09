@@ -61,7 +61,7 @@ export class BSLocalVersionService {
             return null;
         }
 
-        const versionsDict = await this.remoteVersionService.getAvailableVersions();
+        const versionsDict = (await this.remoteVersionService.getAvailableVersions()).reverse();
 
         let stream: ReadStream;
 
@@ -244,8 +244,12 @@ export class BSLocalVersionService {
     private async getSteamVersion(): Promise<BSVersion> {
         const steamBsFolder = await this.steamService.getGameFolder(BS_APP_ID, "Beat Saber");
 
-        if (!steamBsFolder || !(await pathExists(steamBsFolder))) {
-            return null;
+        if (!steamBsFolder) {
+            throw new Error("No Beat Saber Steam version found");
+        }
+
+        if (!(await pathExists(steamBsFolder))) {
+            throw new Error(`Beat Saber Steam version not found in "${steamBsFolder}"`);
         }
 
         return this.getVersionOfBSFolder(steamBsFolder, { steam: true });
@@ -265,7 +269,8 @@ export class BSLocalVersionService {
         const versions: BSVersion[] = [];
 
         const steamVersion = await this.getSteamVersion().catch(e => {
-            log.error("unable to get original Steam version", e);
+            log.error("Unable to get original Steam version", e);
+            return null;
         });
 
         if (steamVersion) {
@@ -306,14 +311,12 @@ export class BSLocalVersionService {
         return versions;
     }
 
-    public async deleteVersion(version: BSVersion): Promise<boolean>{
-        if(version.steam || version.oculus){ return false; }
+    public async deleteVersion(version: BSVersion): Promise<void>{
+        if(version.steam || version.oculus){ throw new CustomError("BSManager is not able to delete official Beat Saber versions", "CantDeleteOfficialVersion"); }
         const versionFolder = await this.getVersionPath(version);
-        if(!(await pathExists(versionFolder))){ return true; }
+        if(!(await pathExists(versionFolder))){ throw new CustomError("Version not found", "VersionNotFound"); }
 
-        return deleteFolder(versionFolder)
-            .then(() => { return true; })
-            .catch(() => { return false; })
+        return deleteFolder(versionFolder);
     }
 
     public async editVersion(version: BSVersion, name: string, color: string): Promise<BSVersion>{

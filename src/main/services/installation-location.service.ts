@@ -26,6 +26,7 @@ export class InstallationLocationService {
     private readonly staticConfig: StaticConfigurationService;
     private readonly updateListeners: Set<Listener> = new Set();
 
+    private readonly installPath: string;
     private _installationDirectory: string;
 
     private constructor() {
@@ -34,6 +35,13 @@ export class InstallationLocationService {
         this.staticConfig.$watch(this.STORE_INSTALLATION_PATH_KEY).subscribe(() => {
             this.triggerListeners();
         });
+
+        if (process.platform === "linux") {
+            this.installPath = process.env.XDG_DATA_HOME
+                || path.join(process.env.HOME, ".local", "share");
+        } else {
+            this.installPath = app.getPath("home");
+        }
     }
 
     private triggerListeners(): void {
@@ -65,7 +73,7 @@ export class InstallationLocationService {
 
     public defaultInstallationDirectory(): string {
         const { result: oldPath } = tryit(() => path.join(app.getPath("documents"), this.INSTALLATION_FOLDER));
-        const installationDirectory = (oldPath && pathExistsSync(oldPath)) ? app.getPath("documents") : app.getPath("home");
+        const installationDirectory = (oldPath && pathExistsSync(oldPath)) ? app.getPath("documents") : this.installPath;
         return path.join(installationDirectory, this.INSTALLATION_FOLDER);
     }
 
@@ -85,7 +93,7 @@ export class InstallationLocationService {
                 return app.getPath("documents");
             }
 
-            return app.getPath("home");
+            return this.installPath;
         };
 
         this._installationDirectory = installParentPath();

@@ -11,7 +11,7 @@
         "avatars": "头像",
         "sabers": "光剑",
         "platforms": "平台",
-        "blocks": "方块",
+        "bloqs": "方块",
         "cancel": "取消",
         "delete": "删除",
         "accept": "接受",
@@ -26,7 +26,10 @@
         "continue": "继续",
         "shared": "共享",
         "pin": "固定",
-        "unpin": "取消固定"
+        "unpin": "取消固定",
+        "this-guide": "本指南",
+        "create": "创建",
+        "edit": "编辑"
     },
     "generic": {
         "env": {
@@ -34,7 +37,10 @@
         }
     },
     "title-bar": {
-        "outdated": "过时"
+        "outdated": "过时",
+        "update-text": "BSManager {version} 可用！",
+        "update-button": "更新并重新启动",
+        "see-changelog": "查看变更"
     },
     "nav-bar": {
         "add-version": "添加版本",
@@ -56,7 +62,8 @@
                 "outdated-tippy": "此版本已过时，某些模组或功能可能无法按预期运行。建议使用推荐版本的 Beat Saber ({recommendedVersion})，以享受最新功能和修复。",
                 "advanced-launch": {
                     "button": "启动选项",
-                    "placeholder": "启动选项，例如: KEY=VALUE %command% fpfc"
+                    "placeholder": "启动选项，例如: KEY=VALUE %command% fpfc",
+                    "create-launch-option": "创建启动选项"
                 },
                 "skipsteam": "跳过 Steam",
                 "skipsteam-description": "防止 Steam 与 Beat Saber 自动打开，如果您使用的是其他 VR 运行时，如 WiVRn 或 Monado，SteamVR 可能会干扰，请启用此选项。",
@@ -104,7 +111,8 @@
                             "bpm": "BPM",
                             "duration": "持续时间",
                             "likes": "喜欢",
-                            "date-uploaded": "上传日期"
+                            "date-uploaded": "上传日期",
+                            "added-date": "添加日期"
                         }
                     },
                     "playlists": {
@@ -144,6 +152,7 @@
                 "mods-grid": {
                     "header-bar": {
                         "name": "名称",
+                        "size": "大小",
                         "installed": "已安装",
                         "latest": "最新",
                         "description": "描述",
@@ -153,6 +162,10 @@
                             "uninstall-all": "全部卸载",
                             "unselect-all": "取消全选"
                         }
+                    },
+                    "mod-item": {
+                        "this-is-a-large-mod": "这是一个大型Mod！",
+                        "this-is-a-very-large-mod": "这是一个非常大型的Mod！"
                     }
                 },
                 "notifications": {
@@ -329,6 +342,13 @@
                     "error-notification": {
                         "message": "发生错误，无法启用系统代理。"
                     }
+                },
+                "auto-update": {
+                    "title": "自动更新",
+                    "description": "启动应用程序时，BSManager 将自动更新。",
+                    "error-notification": {
+                        "message": "发生错误，无法更改自动更新设置。"
+                    }
                 }
             }
         }
@@ -407,17 +427,20 @@
             "oculus-download": {
                 "errors": {
                     "msg": {
-                        "DOWNLOAD_MANIFEST_FAILED": "无法下载此版本的清单；你的登录令牌可能无效。",
+                        "DOWNLOAD_MANIFEST_FAILED": "无法下载清单。您的登录令牌可能无效，或者您未拥有 Beat Saber 的桌面版本。",
                         "MANIFEST_FILE_NOT_FOUND": "找不到此版本的清单。",
                         "PARSE_MANIFEST_FILE_FAILED": "读取清单时发生错误。",
                         "ALREADY_DOWNLOADING": "已经有一个版本在下载中。",
-                        "UNABLE_TO_GET_MANIFEST": "无法获取下载所需的清单。",
+                        "UNABLE_TO_GET_MANIFEST": "无法获取下载所需的清单。您的登录令牌可能无效，或者您未拥有 Beat Saber 的桌面版本。",
                         "VERIFY_INTEGRITY_FAILED": "文件验证过程中发生错误。",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "一些文件下载失败。",
                         "META_LOGIN_TIMED_OUT": "获取登录令牌用时过长。",
                         "META_LOGIN_WINDOW_CLOSED_BY_USER": "Meta 登录窗口被关闭。",
                         "NO_META_AUTH_TOKEN": "无法获取下载所需的 Meta 登录令牌。",
                         "UNKNOWN_ERROR": "发生未知错误。"
+                    },
+                    "actions": {
+                        "claim-your-desktop-version": "领取您的桌面版本"
                     }
                 }
             }
@@ -517,7 +540,7 @@
                     "STEAM_NOT_RUNNING": "Steam 未运行",
                     "OCULUS_NOT_RUNNING": "Oculus 未运行",
                     "BS_ALREADY_RUNNING": "Beat Saber 已在运行",
-                    "EXE_NOT_FINDED": "缺少文件",
+                    "EXE_NOT_FOUND": "缺少文件",
                     "PROTON_NOT_SET": "Proton文件夹未设置",
                     "PROTON_NOT_FOUND": "未找到Proton二进制文件",
                     "EXIT": "突然停止",
@@ -529,7 +552,7 @@
                     "STEAM_NOT_RUNNING": "启动 BeatSaber 前必须运行 Steam。",
                     "OCULUS_NOT_RUNNING": "启动 BeatSaber 前必须运行 Oculus。",
                     "BS_ALREADY_RUNNING": "再次启动前请关闭 BeatSaber。",
-                    "EXE_NOT_FINDED": "某些文件似乎丢失了，尝试验证文件。",
+                    "EXE_NOT_FOUND": "某些文件似乎丢失了，尝试验证文件。",
                     "EXIT": "BeatSaber 突然停止，请检查文件。",
                     "OCULUS_LIB_NOT_FOUND": "检查 Oculus 应用是否正确安装，以及库是否在 Oculus 中正确定义。",
                     "PROTON_NOT_SET": "在设置中设置Proton路径。",
@@ -538,6 +561,16 @@
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "启动 Steam"
+                }
+            },
+            "warnings": {
+                "titles": {
+                    "FPFC_NEED_ADMIN": "FPFC mode setup incomplete",
+                    "UNABLE_TO_LAUNCH_STEAM": "Could not launch Steam"
+                },
+                "msg": {
+                    "FPFC_NEED_ADMIN": "BSManager needs administrator privileges to properly set up FPFC mode. Run BSManager as administrator for the best experience.",
+                    "UNABLE_TO_LAUNCH_STEAM": "Steam could not be started automatically."
                 }
             }
         },
@@ -692,6 +725,16 @@
             "actions": {
                 "do-not-remind": "不再提醒",
                 "ok": "确定"
+            }
+        },
+        "bs-uninstall": {
+            "errors": {
+                "title": "无法卸载版本",
+                "desc": {
+                    "CantDeleteOfficialVersion": "BSManager无法卸载Beat Saber的原始版本",
+                    "VersionNotFound": "未找到版本。",
+                    "delete-folder": "无法删除版本。确保Beat Saber未运行。"
+                }
             }
         }
     },
@@ -875,6 +918,7 @@
                 "link-folder": "关联文件夹",
                 "unlink-folder": "取消关联文件夹",
                 "link-all": "关联所有",
+                "unlink-all": "取消关联所有",
                 "remove-from-the-list": "从列表中移除"
             }
         },
@@ -897,7 +941,8 @@
                 "token-needed": "需要 Meta 登录令牌用于下载 Beat Saber。",
                 "need-cookie-enabled": "通过登录 Meta，将打开一个登录窗口，然后你可以开始登录过程。请确保接受 cookie，否则我们可能无法检索你的令牌以开始下载。",
                 "enter-token-manually": "手动输入我的登录令牌",
-                "enter-token-manually-tooltip": "这将允许你在不通过 Meta 登录的情况下输入你的登录令牌。"
+                "enter-token-manually-tooltip": "这将允许你在不通过 Meta 登录的情况下输入你的登录令牌。",
+                "must-own-desktop-version": "您必须拥有 Beat Saber 的桌面版本。如果您购买了独立版本，请按照 {link} 领取。"
             },
             "stay": "记住我",
             "connect-to-meta": "连接到 Meta"
@@ -962,6 +1007,14 @@
                 "not-installed": "未安装",
                 "missing": "缺少"
             }
+        },
+        "custom-launch-option": {
+            "title": "自定义启动选项",
+            "title-placeholder": "我的选项",
+            "desc": "创建一个可重用的启动选项，以特定命令启动 Beat Saber。",
+            "name": "名称",
+            "launch-option": "启动选项",
+            "create": "创建"
         }
     },
     "maps": {

@@ -1,6 +1,6 @@
 import { InstallationLocationService } from "./installation-location.service";
 import log from "electron-log";
-import { deleteFile, deleteFileSync, deleteFolder, deleteFolderSync, ensureFolderExist, moveFolderContent, pathExist } from "../helpers/fs.helpers";
+import { deleteFileSync, deleteFolder, deleteFolderSync, ensureFolderExist, moveFolderContent, pathExist } from "../helpers/fs.helpers";
 import { lstat, symlink } from "fs/promises";
 import path from "path";
 import { copy, mkdirSync, readlink, symlinkSync } from "fs-extra";
@@ -113,7 +113,7 @@ export class FolderLinkerService {
             if (isTargetedToSharedPath) {
                 return;
             }
-            await deleteFile(folderPath);
+            await deleteFolder(folderPath);
 
             log.info(`Linking ${folderPath} to ${sharedPath}; type: ${this.linkingType}`);
             return symlink(sharedPath, folderPath, this.getLinkingType());
@@ -141,7 +141,7 @@ export class FolderLinkerService {
         if (!(await this.isFolderSymlink(folderPath))) {
             return;
         }
-        await deleteFile(folderPath);
+        await deleteFolder(folderPath);
 
         const sharedPath = await this.getSharedFolder(folderPath, options?.intermediateFolder);
 

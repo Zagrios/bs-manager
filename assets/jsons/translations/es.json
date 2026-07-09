@@ -11,7 +11,7 @@
         "avatars": "Avatares",
         "sabers": "Sables",
         "platforms": "Plataformas",
-        "blocks": "Bloques",
+        "bloqs": "Bloques",
         "cancel": "Cancelar",
         "delete": "Borrar",
         "accept": "Aceptar",
@@ -26,7 +26,10 @@
         "continue": "Continuar",
         "shared": "Compartido",
         "pin": "Fijar",
-        "unpin": "Desfijar"
+        "unpin": "Desfijar",
+        "this-guide": "esta guía",
+        "create": "Crear",
+        "edit": "Editar"
     },
     "generic": {
         "env": {
@@ -34,7 +37,10 @@
         }
     },
     "title-bar": {
-        "outdated": "obsoleto"
+        "outdated": "obsoleto",
+        "update-text": "¡BSManager {version} está disponible!",
+        "update-button": "Actualizar y reiniciar",
+        "see-changelog": "Ver los cambios"
     },
     "nav-bar": {
         "add-version": "Agregar una versión",
@@ -56,7 +62,8 @@
                 "outdated-tippy": "Esta versión está desactualizada, y algunos mods o funciones pueden no funcionar como se espera. Es mejor usar la versión recomendada ({recommendedVersion}) de Beat Saber para disfrutar de las últimas características y correcciones.",
                 "advanced-launch": {
                     "button": "Opciones de lanzamiento",
-                    "placeholder": "Opciones de lanzamiento ej: KEY=VALUE %command% fpfc"
+                    "placeholder": "Opciones de lanzamiento ej: KEY=VALUE %command% fpfc",
+                    "create-launch-option": "Crear una opción de lanzamiento"
                 },
                 "skipsteam": "Saltar Steam",
                 "skipsteam-description": "Evita que Steam se abra automáticamente con Beat Saber, habilita esto si estás usando un runtime de VR diferente como WiVRn o Monado que SteamVR podría interferir.",
@@ -104,7 +111,8 @@
                             "bpm": "BPM",
                             "duration": "Duración",
                             "likes": "Me gusta",
-                            "date-uploaded": "Fecha de subida"
+                            "date-uploaded": "Fecha de subida",
+                            "added-date": "Fecha de adición"
                         }
                     },
                     "playlists": {
@@ -144,6 +152,7 @@
                 "mods-grid": {
                     "header-bar": {
                         "name": "Nombre",
+                        "size": "Tamaño",
                         "installed": "Instalado",
                         "latest": "Último",
                         "description": "Descripción",
@@ -153,6 +162,10 @@
                             "uninstall-all": "Desinstalar todos",
                             "unselect-all": "Deseleccionar todo"
                         }
+                    },
+                    "mod-item": {
+                        "this-is-a-large-mod": "¡Este es un mod grande!",
+                        "this-is-a-very-large-mod": "¡Este es un mod muy grande!"
                     }
                 },
                 "notifications": {
@@ -329,6 +342,13 @@
                     "error-notification": {
                         "message": "Ocurrió un error, no se pueden cambiar los ajustes del proxy del sistema."
                     }
+                },
+                "auto-update": {
+                    "title": "Actualización automática",
+                    "description": "BSManager se actualizará automáticamente al iniciar la aplicación.",
+                    "error-notification": {
+                        "message": "Ocurrió un error, no se pudo cambiar la configuración de actualización automática."
+                    }
                 }
             }
         }
@@ -407,17 +427,20 @@
             "oculus-download": {
                 "errors": {
                     "msg": {
-                        "DOWNLOAD_MANIFEST_FAILED": "No se puede descargar el manifiesto de esta versión; su token de inicio de sesión podría ser inválido.",
+                        "DOWNLOAD_MANIFEST_FAILED": "No se puede descargar el manifiesto de esta versión. Su token de inicio de sesión podría ser inválido o que no poseas la versión de escritorio de Beat Saber.",
                         "MANIFEST_FILE_NOT_FOUND": "Imposible encontrar el manifiesto de esta versión.",
                         "PARSE_MANIFEST_FILE_FAILED": "Se produjo un error al leer el manifiesto.",
                         "ALREADY_DOWNLOADING": "Ya se está descargando una versión.",
-                        "UNABLE_TO_GET_MANIFEST": "Imposible obtener el manifiesto necesario para la descarga.",
+                        "UNABLE_TO_GET_MANIFEST": "Imposible obtener el manifiesto necesario para la descarga. Su token de inicio de sesión podría ser inválido o que no poseas la versión de escritorio de Beat Saber.",
                         "VERIFY_INTEGRITY_FAILED": "Se produjo un error durante la verificación de archivos.",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "Algunos archivos no pudieron ser descargados.",
                         "META_LOGIN_TIMED_OUT": "El token de inicio de sesión tardó demasiado en recuperarse.",
                         "META_LOGIN_WINDOW_CLOSED_BY_USER": "La ventana de inicio de sesión de Meta fue cerrada.",
                         "NO_META_AUTH_TOKEN": "Imposible recuperar el token de inicio de sesión de Meta necesario para la descarga.",
                         "UNKNOWN_ERROR": "Se produjo un error desconocido."
+                    },
+                    "actions": {
+                        "claim-your-desktop-version": "Reclama tu versión de escritorio"
                     }
                 }
             }
@@ -517,7 +540,7 @@
                     "STEAM_NOT_RUNNING": "Steam no funciona",
                     "OCULUS_NOT_RUNNING": "Oculus no funciona",
                     "BS_ALREADY_RUNNING": "Beat Saber ya está en marcha",
-                    "EXE_NOT_FINDED": "Archivos no encontrados",
+                    "EXE_NOT_FOUND": "Archivos no encontrados",
                     "PROTON_NOT_SET": "Carpeta de Proton no establecida",
                     "PROTON_NOT_FOUND": "Binario de Proton no encontrado",
                     "EXIT": "Parada abrupta",
@@ -529,7 +552,7 @@
                     "STEAM_NOT_RUNNING": "Para iniciar Beat Saber es necesario que Steam esté en funcionamiento.",
                     "OCULUS_NOT_RUNNING": "Oculus debe estar funcionando para iniciar Beat Saber.",
                     "BS_ALREADY_RUNNING": "Cierra Beat Saber antes de volver a iniciarlo.",
-                    "EXE_NOT_FINDED": "Parece que faltan algunos archivos, intenta verificar los archivos.",
+                    "EXE_NOT_FOUND": "Parece que faltan algunos archivos, intenta verificar los archivos.",
                     "EXIT": "Beat Saber se detuvo abruptamente, trata de verificar los archivos.",
                     "OCULUS_LIB_NOT_FOUND": "Verifica que la aplicación Oculus esté correctamente instalada y que las librerías estén bien definidas en Oculus.",
                     "PROTON_NOT_SET": "Establece la ruta de Proton en la configuración.",
@@ -538,6 +561,16 @@
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Iniciar Steam"
+                }
+            },
+            "warnings": {
+                "titles": {
+                    "FPFC_NEED_ADMIN": "FPFC mode setup incomplete",
+                    "UNABLE_TO_LAUNCH_STEAM": "Could not launch Steam"
+                },
+                "msg": {
+                    "FPFC_NEED_ADMIN": "BSManager needs administrator privileges to properly set up FPFC mode. Run BSManager as administrator for the best experience.",
+                    "UNABLE_TO_LAUNCH_STEAM": "Steam could not be started automatically."
                 }
             }
         },
@@ -692,6 +725,16 @@
             "actions": {
                 "do-not-remind": "No volver a recordármelo",
                 "ok": "Ok"
+            }
+        },
+        "bs-uninstall": {
+            "errors": {
+                "title": "No se puede desinstalar la versión",
+                "desc": {
+                    "CantDeleteOfficialVersion": "BSManager no puede desinstalar la versión original de Beat Saber",
+                    "VersionNotFound": "Versión no encontrada.",
+                    "delete-folder": "No se puede eliminar la versión. Asegúrate de que Beat Saber no esté en marcha."
+                }
             }
         }
     },
@@ -875,6 +918,7 @@
                 "link-folder": "Enlazar Carpeta",
                 "unlink-folder": "Desenlazar Carpeta",
                 "link-all": "Enlazar todo",
+                "unlink-all": "Desenlazar todo",
                 "remove-from-the-list": "Eliminar de la lista"
             }
         },
@@ -897,7 +941,8 @@
                 "token-needed": "Tu token de conexión a Meta es necesario para descargar Beat Saber.",
                 "need-cookie-enabled": "Al conectarte a Meta, se abrirá una ventana de inicio de sesión y entonces podrás empezar el proceso de conexión. Asegúrate de aceptar las cookies, de lo contrario, podríamos no poder recuperar tu token para iniciar la descarga.",
                 "enter-token-manually": "Ingresar mi token de inicio de sesión manualmente",
-                "enter-token-manually-tooltip": "Esto te permitirá ingresar tu token de inicio de sesión sin pasar por el inicio de sesión de Meta."
+                "enter-token-manually-tooltip": "Esto te permitirá ingresar tu token de inicio de sesión sin pasar por el inicio de sesión de Meta.",
+                "must-own-desktop-version": "Debes poseer la versión de escritorio de Beat Saber. Si compraste la versión autónoma, sigue {link} para reclamarla."
             },
             "stay": "Recuérdame",
             "connect-to-meta": "Conectarse a Meta"
@@ -962,6 +1007,14 @@
                 "not-installed": "No instalado",
                 "missing": "Faltante"
             }
+        },
+        "custom-launch-option": {
+            "title": "Opción de lanzamiento personalizada",
+            "title-placeholder": "Mi opción",
+            "desc": "Crea una opción de lanzamiento reutilizable para lanzar Beat Saber con un comando específico.",
+            "name": "Nombre",
+            "launch-option": "Opción de lanzamiento",
+            "create": "Crear"
         }
     },
     "maps": {

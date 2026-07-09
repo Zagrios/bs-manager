@@ -5,6 +5,7 @@
         - [PPA Repository](#ppa-repository)
         - [dpkg Install](#dpkg-install)
     - [Arch (AUR)](#arch-aur)
+    - [NixOS/Nix](#nixosnix)
     - [Universal (flatpak)](#universal-flatpak)
 - [Proton Setup](#proton-setup)
 
@@ -40,16 +41,38 @@ Download the `.deb` file in the releases and run the following command:
 dpkg -i ./bsmanager.deb
 ```
 
-**NOTE:** When installed using dpkg, BSManager will not automatically update to the latest version. You have to either:
-
-- Download the latest `.deb` file on the Releases page; or
-- Install thru PPA repository to automatically update with `sudo apt update & sudo apt upgrade`.
+> [!NOTE]
+> When installed using dpkg, BSManager will not automatically update to the latest version. You have to either:
+> - Download the latest `.deb` file on the Releases page; or
+> - Install thru PPA repository to automatically update with `sudo apt update & sudo apt upgrade`.
 
 ### Arch (AUR)
 
 Refer to [bs-manager-git](https://aur.archlinux.org/packages/bs-manager-git).
 
 To install AUR packages, you need to install [yay](https://github.com/Jguer/yay).
+
+### NixOS/Nix
+
+Refer to [bs-manager](https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/bs/bs-manager/package.nix).
+
+Available in nixpkgs on `24.11` and `unstable` branches
+
+> [!NOTE]
+> bs-manager will not be automatically updated in the client. You must update your channel or `flake.lock` to get the latest version in nixpkgs.
+> Additionally updates to the nix package will lag behind main due to nixpkgs being run by volunteers
+
+#### Installation
+
+BSManager can be installed via your configuration or [home-manager](https://github.com/nix-community/home-manager).
+
+To try out bs-manager without installing, please run:
+```bash
+nix-shell -p bs-manager --run bs-manager
+```
+
+> [!WARNING]
+> bs-manager has been untested on non-nixos systems running the nix package manager; if you encounter issues, please contact the nix package maintainer
 
 ### Universal (flatpak)
 

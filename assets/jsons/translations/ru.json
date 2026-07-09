@@ -11,7 +11,7 @@
         "avatars": "Аватары",
         "sabers": "Сабли",
         "platforms": "Платформы",
-        "blocks": "Блоки",
+        "bloqs": "Блоки",
         "cancel": "Отмена",
         "delete": "Удалить",
         "accept": "Принять",
@@ -26,7 +26,10 @@
         "continue": "Продолжить",
         "shared": "Общий",
         "pin": "Закрепить",
-        "unpin": "Открепить"
+        "unpin": "Открепить",
+        "this-guide": "это руководство",
+        "create": "Создать",
+        "edit": "Редактировать"
     },
     "generic": {
         "env": {
@@ -34,7 +37,10 @@
         }
     },
     "title-bar": {
-        "outdated": "устаревший"
+        "outdated": "устаревший",
+        "update-text": "BSManager {version} доступен!",
+        "update-button": "Обновить и перезапустить",
+        "see-changelog": "Смотреть изменения"
     },
     "nav-bar": {
         "add-version": "Добавить версию игры",
@@ -56,7 +62,8 @@
                 "outdated-tippy": "Эта версия устарела, и некоторые моды или функции могут работать не так, как ожидалось. Рекомендуется использовать рекомендуемую версию ({recommendedVersion}) Beat Saber, чтобы воспользоваться последними функциями и исправлениями ошибок.",
                 "advanced-launch": {
                     "button": "Параметры запуска",
-                    "placeholder": "Параметры запуска, например: KEY=VALUE %command% fpfc"
+                    "placeholder": "Параметры запуска, например: KEY=VALUE %command% fpfc",
+                    "create-launch-option": "Создать параметр запуска"
                 },
                 "skipsteam": "Пропустить Steam",
                 "skipsteam-description": "Предотвращает автоматическое открытие Steam с Beat Saber, включите, если вы используете другую VR-среду, такую как WiVRn или Monado, с которой SteamVR может мешать.",
@@ -104,7 +111,8 @@
                             "bpm": "BPM",
                             "duration": "Длительность",
                             "likes": "Лайки",
-                            "date-uploaded": "Дата загрузки"
+                            "date-uploaded": "Дата загрузки",
+                            "added-date": "Дата добавления"
                         }
                     },
                     "playlists": {
@@ -144,6 +152,7 @@
                 "mods-grid": {
                     "header-bar": {
                         "name": "Имя",
+                        "size": "Размер",
                         "installed": "Установлено",
                         "latest": "Latest",
                         "description": "Описание",
@@ -153,6 +162,10 @@
                             "uninstall-all": "Удалить всё",
                             "unselect-all": "Снять все выделения"
                         }
+                    },
+                    "mod-item": {
+                        "this-is-a-large-mod": "Это большой мод!",
+                        "this-is-a-very-large-mod": "Это очень большой мод!"
                     }
                 },
                 "notifications": {
@@ -329,6 +342,13 @@
                     "error-notification": {
                         "message": "Произошла ошибка, не удалось изменить настройки системного прокси."
                     }
+                },
+                "auto-update": {
+                    "title": "Автообновление",
+                    "description": "BSManager будет автоматически обновляться при запуске приложения.",
+                    "error-notification": {
+                        "message": "Произошла ошибка, не удалось изменить настройки автообновления."
+                    }
                 }
             }
         }
@@ -407,17 +427,20 @@
             "oculus-download": {
                 "errors": {
                     "msg": {
-                        "DOWNLOAD_MANIFEST_FAILED": "Невозможно загрузить манифест этой версии; ваш токен входа, возможно, недействителен.",
+                        "DOWNLOAD_MANIFEST_FAILED": "Невозможно загрузить манифест этой версии. Ваш токен входа, возможно, недействителен, или у вас нет настольной версии Beat Saber.",
                         "MANIFEST_FILE_NOT_FOUND": "Невозможно найти манифест этой версии.",
                         "PARSE_MANIFEST_FILE_FAILED": "При чтении манифеста произошла ошибка.",
                         "ALREADY_DOWNLOADING": "Версия уже загружается.",
-                        "UNABLE_TO_GET_MANIFEST": "Невозможно получить манифест, необходимый для загрузки.",
+                        "UNABLE_TO_GET_MANIFEST": "Невозможно получить манифест, необходимый для загрузки. Ваш токен входа, возможно, недействителен, или у вас нет настольной версии Beat Saber.",
                         "VERIFY_INTEGRITY_FAILED": "При проверке файлов произошла ошибка.",
                         "SOME_FILES_FAILED_TO_DOWNLOAD": "Некоторые файлы не удалось загрузить.",
                         "META_LOGIN_TIMED_OUT": "Получение токена входа заняло слишком много времени.",
                         "META_LOGIN_WINDOW_CLOSED_BY_USER": "Окно входа в Meta было закрыто.",
                         "NO_META_AUTH_TOKEN": "Невозможно получить токен входа в Meta, необходимый для загрузки.",
                         "UNKNOWN_ERROR": "Произошла неизвестная ошибка."
+                    },
+                    "actions": {
+                        "claim-your-desktop-version": "Получить настольную версию"
                     }
                 }
             }
@@ -517,7 +540,7 @@
                     "STEAM_NOT_RUNNING": "Steam не запущен",
                     "OCULUS_NOT_RUNNING": "Oculus не запущен",
                     "BS_ALREADY_RUNNING": "Beat Saber уде запущен",
-                    "EXE_NOT_FINDED": "Отсутствуют файлы",
+                    "EXE_NOT_FOUND": "Отсутствуют файлы",
                     "PROTON_NOT_SET": "Папка Proton не установлена",
                     "PROTON_NOT_FOUND": "Бинарный файл Proton не найде",
                     "EXIT": "Вылет",
@@ -529,7 +552,7 @@
                     "STEAM_NOT_RUNNING": "Steam должен быть запущен, чтобы запустить Beat Saber.",
                     "OCULUS_NOT_RUNNING": "Oculus должен быть запущен, чтобы запустить Beat Saber.",
                     "BS_ALREADY_RUNNING": "Закройте Beat Saber, чтобы запустить его.",
-                    "EXE_NOT_FINDED": "Некоторые файлы отсутствуют, пробуем их проверить.",
+                    "EXE_NOT_FOUND": "Некоторые файлы отсутствуют, пробуем их проверить.",
                     "EXIT": "Beat Saber вылетел, пытаемся проверить файлы.",
                     "OCULUS_LIB_NOT_FOUND": "Проверьте, правильно ли установлено приложение Oculus, и правильно ли определены библиотеки в Oculus.",
                     "PROTON_NOT_SET": "Установите путь к Proton в настройках.",
@@ -538,6 +561,16 @@
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Запустить Steam"
+                }
+            },
+            "warnings": {
+                "titles": {
+                    "FPFC_NEED_ADMIN": "FPFC mode setup incomplete",
+                    "UNABLE_TO_LAUNCH_STEAM": "Could not launch Steam"
+                },
+                "msg": {
+                    "FPFC_NEED_ADMIN": "BSManager needs administrator privileges to properly set up FPFC mode. Run BSManager as administrator for the best experience.",
+                    "UNABLE_TO_LAUNCH_STEAM": "Steam could not be started automatically."
                 }
             }
         },
@@ -692,6 +725,16 @@
             "actions": {
                 "do-not-remind": "Больше не напоминать",
                 "ok": "Ок"
+            }
+        },
+        "bs-uninstall": {
+            "errors": {
+                "title": "Невозможно удалить версию",
+                "desc": {
+                    "CantDeleteOfficialVersion": "BSManager не может удалить оригинальную версию Beat Saber",
+                    "VersionNotFound": "Версия не найдена.",
+                    "delete-folder": "Не удалось удалить версию. Убедитесь, что Beat Saber не запущен."
+                }
             }
         }
     },
@@ -875,6 +918,7 @@
                 "link-folder": "Связать папку",
                 "unlink-folder": "Отвязать папку",
                 "link-all": "Связать всё",
+                "unlink-all": "Отвязать всё",
                 "remove-from-the-list": "Удалить из списка"
             }
         },
@@ -897,7 +941,8 @@
                 "token-needed": "Для скачивания Beat Saber необходим ваш токен подключения к Meta.",
                 "need-cookie-enabled": "При входе в Meta откроется окно входа, и вы сможете начать процесс входа. Пожалуйста, убедитесь, что вы приняли cookies, иначе мы можем не суметь получить ваш токен для начала загрузки.",
                 "enter-token-manually": "Ввести мой токен входа вручную",
-                "enter-token-manually-tooltip": "Это позволит вам ввести ваш токен входа без прохождения через вход в Meta."
+                "enter-token-manually-tooltip": "Это позволит вам ввести ваш токен входа без прохождения через вход в Meta.",
+                "must-own-desktop-version": "Вы должны владеть настольной версией Beat Saber. Если вы купили автономную версию, следуйте {link}, чтобы получить её."
             },
             "stay": "Запомнить меня",
             "connect-to-meta": "Подключиться к Meta"
@@ -961,6 +1006,14 @@
                 "not-installed": "Не установлено",
                 "missing": "Отсутствует"
             }
+        },
+        "custom-launch-option": {
+            "title": "Опция запуска",
+            "title-placeholder": "Моя опция",
+            "desc": "Создайте повторно используемую опцию запуска для запуска Beat Saber с конкретной командой.",
+            "name": "Имя",
+            "launch-option": "Опция запуска",
+            "create": "Создать"
         }
     },
     "maps": {
