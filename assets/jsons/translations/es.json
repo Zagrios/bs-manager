@@ -70,7 +70,9 @@
                 "map-editor": "Editor de mapas",
                 "map-editor-description": "Inicia el editor oficial de mapas de Beat Saber en lugar del juego.",
                 "proton-logs": "Registros de Proton",
-                "proton-logs-description": "Habilita el registro de los logs de Proton para esta instalación de Beat Saber en \"{versionPath}\"."
+                "proton-logs-description": "Habilita el registro de los logs de Proton para esta instalación de Beat Saber en \"{versionPath}\".",
+                "parallel-views": "Vistas paralelas",
+                "parallel-views-description": "Para Monado, establece OXR_PARALLEL_VIEWS en 1. Puede corregir problemas de renderizado, pero podría recortar partes de tu campo de visión (FOV)."
             },
             "maps": {
                 "search-bar": {

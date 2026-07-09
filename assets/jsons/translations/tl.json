@@ -70,7 +70,9 @@
                 "map-editor": "Map Editor",
                 "map-editor-description": "Simulan ang opisyal na Beat Saber map editor imbis na ang laro.",
                 "proton-logs": "Proton Logs",
-                "proton-logs-description": "I-enable ang pag-record ng proton logs para sa Beat Saber install na ito sa \"{versionPath}\"."
+                "proton-logs-description": "I-enable ang pag-record ng proton logs para sa Beat Saber install na ito sa \"{versionPath}\".",
+                "parallel-views": "Parallel Views",
+                "parallel-views-description": "Para sa Monado, itinatakda ang OXR_PARALLEL_VIEWS sa 1. Maaari nitong ayusin ang mga isyu sa rendering, ngunit posibleng maputol ang ilang bahagi ng iyong field of view (FOV)."
             },
             "maps": {
                 "search-bar": {

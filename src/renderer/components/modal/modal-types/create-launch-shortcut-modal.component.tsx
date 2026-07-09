@@ -11,7 +11,7 @@ import { BsNoteFill } from "renderer/components/svgs/icons/bs-note-fill.componen
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { ChevronTopIcon } from "renderer/components/svgs/icons/chevron-top-icon.component";
 import Tippy from "@tippyjs/react";
-import { LaunchMod } from "shared/models/bs-launch/launch-option.interface";
+import { LaunchMod, LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 
 export const CreateLaunchShortcutModal: ModalComponent<{ steamShortcut: boolean, launchOption: LaunchOption }, BSVersion> = ({resolver, options: {data}}) => {
 
@@ -39,7 +39,7 @@ export const CreateLaunchShortcutModal: ModalComponent<{ steamShortcut: boolean,
     }
 
     return (
-        <form className="text-gray-800 dark:text-gray-200 max-w-lg" onSubmit={e => e.preventDefault()}>
+        <form className="text-gray-800 dark:text-gray-200 w-[38rem] max-w-[calc(100vw-2rem)]" onSubmit={e => e.preventDefault()}>
             <h1 className="text-3xl uppercase tracking-wide w-full text-center">{t("modals.create-launch-shortcut.title")}</h1>
             <p className="my-5">{t("modals.create-launch-shortcut.desc")}</p>
             <div className="flex justify-center my-5 gap-3 items-center">
@@ -71,6 +71,14 @@ export const CreateLaunchShortcutModal: ModalComponent<{ steamShortcut: boolean,
                         <span className="font-bold cursor-help">{t("pages.version-viewer.launch-mods.debug")}</span>
                     </Tippy>
                 </div>
+                {window.electron.platform === "linux" && (
+                    <div className="h-full flex justify-center items-center gap-2">
+                        <BsmCheckbox className="h-5 aspect-square relative z-[1]" checked={launchOption.launchMods.includes(LaunchMods.PARALLEL_VIEWS)} onChange={e => toogleLaunchMod(LaunchMods.PARALLEL_VIEWS, e)} />
+                        <Tippy className="!bg-main-color-1" content={t("pages.version-viewer.launch-mods.parallel-views-description")} delay={[300, 0]} arrow={false}>
+                            <span className="font-bold cursor-help">{t("pages.version-viewer.launch-mods.parallel-views")}</span>
+                        </Tippy>
+                    </div>
+                )}
             </div>
             <div className="w-full rounded-md bg-light-main-color-1 dark:bg-main-color-1">
                 <div className="flex items-center justify-between cursor-pointer pl-3 pr-1 py-1" onClick={() => setAdvanced(prev => !prev)}>

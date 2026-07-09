@@ -70,7 +70,9 @@
                 "map-editor": "Редактор карт",
                 "map-editor-description": "Запусти официальный редактор карт Beat Saber вместо игры.",
                 "proton-logs": "Протонные логи",
-                "proton-logs-description": "Включает запись протонных логов для этой установки Beat Saber в \"{versionPath}\"."
+                "proton-logs-description": "Включает запись протонных логов для этой установки Beat Saber в \"{versionPath}\".",
+                "parallel-views": "Параллельные взгляды",
+                "parallel-views-description": "Для Monado устанавливает OXR_PARALLEL_VIEWS в значение 1. Это может исправить проблемы рендеринга, но может обрезать части поля зрения (FOV)."
             },
             "maps": {
                 "search-bar": {

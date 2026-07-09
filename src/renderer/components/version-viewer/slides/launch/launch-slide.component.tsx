@@ -246,6 +246,16 @@ export function LaunchSlide({ version }: Props) {
                 onChange: (checked) => toggleActiveLaunchMod(checked, LaunchMods.PROTON_LOGS),
                 onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.PROTON_LOGS),
             },
+            {
+                id: LaunchMods.PARALLEL_VIEWS,
+                label: t("pages.version-viewer.launch-mods.parallel-views"),
+                description: t("pages.version-viewer.launch-mods.parallel-views-description"),
+                active: activeLaunchMods.includes(LaunchMods.PARALLEL_VIEWS),
+                pinned: pinnedLaunchMods.includes(LaunchMods.PARALLEL_VIEWS),
+                visible: window.electron.platform === "linux",
+                onChange: (checked) => toggleActiveLaunchMod(checked, LaunchMods.PARALLEL_VIEWS),
+                onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.PARALLEL_VIEWS),
+            },
             ...customOptions,
         ]
     }, [activeLaunchMods, pinnedLaunchMods, customLaunchOptions, version]);
