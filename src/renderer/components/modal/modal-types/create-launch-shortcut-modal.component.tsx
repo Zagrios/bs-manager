@@ -39,7 +39,7 @@ export const CreateLaunchShortcutModal: ModalComponent<{ steamShortcut: boolean,
     }
 
     return (
-        <form className="text-gray-800 dark:text-gray-200 max-w-xl" onSubmit={e => e.preventDefault()}>
+        <form className="text-gray-800 dark:text-gray-200 w-[38rem] max-w-[calc(100vw-2rem)]" onSubmit={e => e.preventDefault()}>
             <h1 className="text-3xl uppercase tracking-wide w-full text-center">{t("modals.create-launch-shortcut.title")}</h1>
             <p className="my-5">{t("modals.create-launch-shortcut.desc")}</p>
             <div className="flex justify-center my-5 gap-3 items-center">
