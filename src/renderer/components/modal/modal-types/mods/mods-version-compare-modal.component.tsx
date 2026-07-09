@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { logRenderError } from "renderer";
 import { BsmBasicSpinner } from "renderer/components/shared/bsm-basic-spinner/bsm-basic-spinner.component";
 import { BsmSelect, BsmSelectOption } from "renderer/components/shared/bsm-select.component";
@@ -34,6 +34,12 @@ type ComparedVersion = Readonly<{
 }>;
 
 const EMPTY_MODS_MAP = new Map<BbmCategories, ModCompareType[]>();
+
+type HorizontalScrollSync = Readonly<{
+    register: (scroller: HTMLDivElement) => void;
+    unregister: (scroller: HTMLDivElement) => void;
+    sync: (source: HTMLDivElement) => void;
+}>;
 
 function getVersionKey(version: BSVersion): string {
     return [
@@ -377,11 +383,25 @@ function ModCategory({
     mode,
     category,
     comparedVersions,
+    horizontalScrollSync,
 }: Readonly<{
     mode: Mode;
     category: BbmCategories;
     comparedVersions: ComparedVersion[];
+    horizontalScrollSync: HorizontalScrollSync;
 }>) {
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const scrollContainer = scrollContainerRef.current;
+        if (!scrollContainer) {
+            return undefined;
+        }
+
+        horizontalScrollSync.register(scrollContainer);
+        return () => horizontalScrollSync.unregister(scrollContainer);
+    }, [horizontalScrollSync]);
+
     const availableModsByVersion = comparedVersions.map(comparedVersion => comparedVersion.availableModsMap.get(category) || []);
     const installedModsByVersion = comparedVersions.map(comparedVersion => comparedVersion.installedModsMap.get(category) || []);
 
@@ -425,7 +445,7 @@ function ModCategory({
         return <div />
     }
 
-    const modColumnMinWidth = comparedVersions.length >= 5 ? 160 : 240;
+    const modColumnMinWidth = comparedVersions.length >= 5 ? 180 : 240;
     const comparisonIconColumnWidth = comparedVersions.length >= 5 ? 32 : 40;
     const gridTemplateColumns = comparedVersions
         .map((_, index) => `${index > 0 ? `${comparisonIconColumnWidth}px ` : ""}minmax(${modColumnMinWidth}px, 1fr)`)
@@ -444,7 +464,11 @@ function ModCategory({
             </span>
         </div>
 
-        <div className="overflow-x-auto scrollbar-default">
+        <div
+            ref={scrollContainerRef}
+            className="overflow-x-auto scrollbar-default"
+            onScroll={event => horizontalScrollSync.sync(event.currentTarget)}
+        >
             <div className="grid gap-x-2 gap-y-1 p-3" style={{ gridTemplateColumns, minWidth: minGridWidth }}>
                 {comparedVersions.map((comparedVersion, index) =>
                     <Fragment key={getVersionKey(comparedVersion.version)}>
@@ -511,6 +535,28 @@ export const ModsVersionCompareModal: ModalComponent<void, Readonly<{
         });
 
         const [loading, setLoading] = useState(false);
+        const horizontalScrollSync = useConstant<HorizontalScrollSync>(() => {
+            const scrollers = new Set<HTMLDivElement>();
+            let syncing = false;
+
+            return {
+                register: scroller => scrollers.add(scroller),
+                unregister: scroller => scrollers.delete(scroller),
+                sync: source => {
+                    if (syncing) {
+                        return;
+                    }
+
+                    syncing = true;
+                    scrollers.forEach(scroller => {
+                        if (scroller !== source && scroller.scrollLeft !== source.scrollLeft) {
+                            scroller.scrollLeft = source.scrollLeft;
+                        }
+                    });
+                    syncing = false;
+                },
+            };
+        });
         const {
             mode,
             selectedVersions,
@@ -538,7 +584,7 @@ export const ModsVersionCompareModal: ModalComponent<void, Readonly<{
         ];
 
         return (
-            <div className="flex max-h-[calc(100vh-5rem)] w-[1180px] max-w-[calc(100vw-3rem)] flex-col">
+            <div className="flex max-h-[calc(100vh-5rem)] w-[860px] max-w-[calc(100vw-3rem)] flex-col">
                 <h1 className="mb-3 w-full text-center text-3xl uppercase tracking-wide">
                     {t("modals.mods-version-compare.title")}
                 </h1>
@@ -554,6 +600,7 @@ export const ModsVersionCompareModal: ModalComponent<void, Readonly<{
                             mode={mode}
                             category={category}
                             comparedVersions={comparedVersions}
+                            horizontalScrollSync={horizontalScrollSync}
                         />
                     )}
                 </div>
