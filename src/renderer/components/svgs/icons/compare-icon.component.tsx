@@ -13,4 +13,3 @@ export const CompareIcon = createSvgIcon((props, ref) => {
         </svg>
     );
 });
-

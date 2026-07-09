@@ -14,6 +14,7 @@ import { ModalComponent } from "renderer/services/modale.service";
 import { lastValueFrom } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { getVersionName } from "shared/helpers/bs-version.helpers";
+import { getCompareModsMaps, ModCompareType, simplifyFullMod } from "shared/helpers/mods-version-compare.helpers";
 import { safeLt } from "shared/helpers/semver.helpers";
 import { BbmCategories, BbmFullMod, BbmModVersion } from "shared/models/mods/mod.interface";
 
@@ -23,19 +24,6 @@ enum Mode {
     NotInstalled = "not-installed",
     Missing = "missing", // If mod is not found from the other version
 }
-
-// To save memory when caching
-export interface ModCompareType {
-    id: number;
-    name: string;
-    version: string;
-}
-
-const simplifyFullMod = (mod: BbmFullMod) => ({
-    id: mod.mod.id,
-    name: mod.mod.name,
-    version: mod.version.modVersion
-});
 
 function useHeader({
     version,
@@ -128,32 +116,10 @@ function useHeader({
         }
 
         Promise.all(promises).then(([availableMods, installedMods]) => {
-            const availableModsMap = new Map<BbmCategories, ModCompareType[]>();
-            const installedModsMap = new Map<BbmCategories, ModCompareType[]>();
-
-            (availableMods as BbmFullMod[]).forEach(fullMod => availableModsMap.set(
-                fullMod.mod.category,
-                [
-                    ...(availableModsMap.get(fullMod.mod.category) ?? []),
-                    simplifyFullMod(fullMod)
-                ]
-            ));
-            if (installedMods) {
-                (installedMods as BbmModVersion[])
-                    .map(mod => (availableMods as BbmFullMod[])
-                        .find(availMod => availMod.mod.id === mod.id)
-                    )
-                    .forEach(fullMod => {
-                        if (!fullMod) { return; }
-                        installedModsMap.set(
-                            fullMod.mod.category,
-                            [
-                                ...(availableModsMap.get(fullMod.mod.category) ?? []),
-                                simplifyFullMod(fullMod)
-                            ]
-                        );
-                    });
-            }
+            const { availableModsMap, installedModsMap } = getCompareModsMaps(
+                availableMods as BbmFullMod[],
+                installedMods as BbmModVersion[] | undefined
+            );
 
             // Manual in-memory caching
             const newCache = new Map(modsMapCache);
@@ -164,8 +130,11 @@ function useHeader({
 
             setOtherAvailableModsMap(availableModsMap);
             setOtherInstalledModsMap(installedModsMap);
-            setLoading(false);
-        });
+        }).catch(error => {
+            logRenderError("Could not load mods for version comparison", error);
+            setOtherAvailableModsMap(new Map());
+            setOtherInstalledModsMap(new Map());
+        }).finally(() => setLoading(false));
     }, [otherVersion]);
 
     return {
@@ -327,13 +296,13 @@ function ModCategory({
 
         case Mode.Installed:
             combinedMods = availableMods.filter(
-                mod => installedMods.findIndex(im => im.name === mod.name) > -1
+                mod => installedMods.findIndex(im => im.id === mod.id) > -1
             );
             break;
 
         case Mode.NotInstalled:
             combinedMods = availableMods.filter(
-                mod => installedMods.findIndex(im => im.name === mod.name) === -1
+                mod => installedMods.findIndex(im => im.id === mod.id) === -1
             );
             break;
 
@@ -342,7 +311,7 @@ function ModCategory({
                 break;
             }
             combinedMods = otherAvailableMods.filter(
-                mod => availableMods.findIndex(am => am.name === mod.name) === -1
+                mod => availableMods.findIndex(am => am.id === mod.id) === -1
             );
             break;
 
@@ -363,11 +332,11 @@ function ModCategory({
         }}>
             {combinedMods.map(mod =>
                 <ModCompare
-                    key={mod.name}
-                    mod={availableMods.find(am => am.name === mod.name)}
-                    installed={installedMods.findIndex(im => im.name === mod.name) > -1}
-                    otherMod={otherAvailableMods.find(oam => oam.name === mod.name)}
-                    otherInstalled={otherInstalledMods.findIndex(oim => oim.name === mod.name) > -1}
+                    key={mod.id}
+                    mod={availableMods.find(am => am.id === mod.id)}
+                    installed={installedMods.findIndex(im => im.id === mod.id) > -1}
+                    otherMod={otherAvailableMods.find(oam => oam.id === mod.id)}
+                    otherInstalled={otherInstalledMods.findIndex(oim => oim.id === mod.id) > -1}
                     otherInstalledLocal={otherInstalledLocal}
                     loading={loading}
                 />

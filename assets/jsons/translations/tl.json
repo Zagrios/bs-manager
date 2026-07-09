@@ -158,6 +158,7 @@
                         "description": "Deskripsyon",
                         "dropdown": {
                             "import-mods": "I-import ang mga mod",
+                            "compare-mods": "Ihambing ang mga mod",
                             "uninstall-all": "I-uninstall ang lahat",
                             "unselect-all": "I-unselect and lahat"
                         }
@@ -996,6 +997,16 @@
         },
         "bs-version-outdated": {
             "body": "Ang bersyon na {outdatedVersion} ay lipas na, at ang ilang mods o features ay maaaring hindi na gumana ng tama. Mangyaring i-download ang pinakabagong inirerekomendang bersyon ({recommendedVersion}) ng Beat Saber upang tamasahin ang mga pinakabagong tampok at mga pag-aayos ng bug."
+        },
+        "mods-version-compare": {
+            "title": "Paghahambing ng bersyon ng mga mod",
+            "select-version": "Pumili ng bersyon",
+            "mod-types": {
+                "all": "Lahat",
+                "installed": "Naka-install",
+                "not-installed": "Hindi naka-install",
+                "missing": "Nawawala"
+            }
         },
         "custom-launch-option": {
             "title": "Custom na opsyon sa paglulunsad",

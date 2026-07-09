@@ -158,6 +158,7 @@
                         "description": "Descrição",
                         "dropdown": {
                             "import-mods": "Importar mods",
+                            "compare-mods": "Comparar mods",
                             "uninstall-all": "Desinstalar todos",
                             "unselect-all": "Desmarcar todos"
                         }
@@ -996,6 +997,16 @@
         },
         "bs-version-outdated": {
             "body": "Essa versão {outdatedVersion} está desatualizada, e alguns mods ou funções podem não funcionar como esperado. Por favor baixe a versão mais recente ({recommendedVersion}) de Beat Saber para aproveitar as últimas novidades e correções."
+        },
+        "mods-version-compare": {
+            "title": "Comparação de versões dos mods",
+            "select-version": "Selecione uma versão",
+            "mod-types": {
+                "all": "Todos",
+                "installed": "Instalado",
+                "not-installed": "Não instalado",
+                "missing": "Ausente"
+            }
         },
         "custom-launch-option": {
             "title": "Opção de lançamento personalizada",
