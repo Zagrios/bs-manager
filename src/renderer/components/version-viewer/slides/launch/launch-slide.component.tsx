@@ -302,9 +302,9 @@ export function LaunchSlide({ version }: Props) {
                         !!command ||
                         activeLaunchMods?.some(
                             mod =>
-                                !(version.metadata?.store === BsStore.OCULUS && mod === "oculus") &&
-                                !(safeLt(version.BSVersion, "1.23.0") && mod === "editor") &&
-                                !(window.electron.platform !== "linux" && mod === "proton_logs") &&
+                                !(version.metadata?.store === BsStore.OCULUS && mod === LaunchMods.OCULUS) &&
+                                !(safeLt(version.BSVersion, "1.23.0") && mod === LaunchMods.EDITOR) &&
+                                !(window.electron.platform !== "linux" && mod === LaunchMods.PROTON_LOGS) &&
                                 !pinnedLaunchMods.includes(mod))
                         }/>
                     <BsmButton
