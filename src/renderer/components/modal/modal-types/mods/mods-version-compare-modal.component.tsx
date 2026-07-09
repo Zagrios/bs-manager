@@ -142,13 +142,15 @@ function useHeader({
         mode,
         otherVersion, otherAvailableModsMap, otherInstalledModsMap,
 
-        renderHeader: () => <div className="mb-4 overflow-hidden rounded-xl border border-black/10 bg-light-main-color-2 shadow-md shadow-black/20 dark:border-white/10 dark:bg-main-color-2">
-            <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-stretch gap-3 p-3">
-                <div className="min-w-0 rounded-lg border border-black/10 bg-light-main-color-3 p-3 dark:border-white/10 dark:bg-main-color-1">
-                    <div className="text-xs font-bold uppercase tracking-[0.2em] opacity-60">Beat Saber</div>
-                    <div className="truncate text-2xl font-bold tracking-wide">{getVersionName(version)}</div>
+        renderHeader: () => <div className="mb-3 overflow-hidden rounded-xl border border-black/10 bg-light-main-color-2 shadow-md shadow-black/20 dark:border-white/10 dark:bg-main-color-2">
+            <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 p-2">
+                <div className="flex min-w-0 items-center gap-3 rounded-lg border border-black/10 bg-light-main-color-3 px-3 py-2 dark:border-white/10 dark:bg-main-color-1">
+                    <div className="min-w-0 flex-1">
+                        <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">Beat Saber</div>
+                        <div className="truncate text-xl font-bold tracking-wide">{getVersionName(version)}</div>
+                    </div>
                     <BsmSelect
-                        className="mt-3 h-9 w-full rounded-md border border-black/10 bg-light-main-color-1 px-2 text-sm dark:border-white/10 dark:bg-main-color-2"
+                        className="h-8 w-36 shrink-0 rounded-md border border-black/10 bg-light-main-color-1 px-2 text-sm dark:border-white/10 dark:bg-main-color-2"
                         options={modeOptions}
                         selected={mode}
                         onChange={setMode}
@@ -161,10 +163,10 @@ function useHeader({
                     </div>
                 </div>
 
-                <div className="min-w-0 rounded-lg border border-black/10 bg-light-main-color-3 p-3 dark:border-white/10 dark:bg-main-color-1">
-                    <div className="text-xs font-bold uppercase tracking-[0.2em] opacity-60">Beat Saber</div>
+                <div className="flex min-w-0 items-center gap-3 rounded-lg border border-black/10 bg-light-main-color-3 px-3 py-2 dark:border-white/10 dark:bg-main-color-1">
+                    <div className="shrink-0 text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">Beat Saber</div>
                     <BsmSelect
-                        className="mt-3 h-9 w-full rounded-md border border-black/10 bg-light-main-color-1 px-2 text-sm dark:border-white/10 dark:bg-main-color-2"
+                        className="h-8 min-w-0 flex-1 rounded-md border border-black/10 bg-light-main-color-1 px-2 text-sm dark:border-white/10 dark:bg-main-color-2"
                         disabled={loading}
                         options={versionOptions}
                         selected={otherVersion}
