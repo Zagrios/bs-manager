@@ -101,13 +101,16 @@ export class LinuxService {
             // Run game in steam environment; fixes #585 for unicode song titles
             "SteamEnv": "1",
             // Fix reflections in Monado
-            "OXR_PARALLEL_VIEWS": "1",
             "OXR_NO_TEXTURE_SOURCE_ALPHA": "1",
         };
 
         if (launchOptions.launchMods?.includes(LaunchMods.PROTON_LOGS)) {
             envVars.PROTON_LOG = "1";
             envVars.PROTON_LOG_DIR = path.join(bsFolderPath, "Logs");
+        }
+
+        if (launchOptions.launchMods?.includes(LaunchMods.PARALLEL_VIEWS)) {
+            envVars.OXR_PARALLEL_VIEWS = "1";
         }
 
         return envVars;

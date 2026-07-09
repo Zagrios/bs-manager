@@ -70,7 +70,9 @@
                 "map-editor": "Éditeur de map",
                 "map-editor-description": "Lance l'éditeur officiel de map de Beat Saber au lieu du jeu.",
                 "proton-logs": "Logs de Proton",
-                "proton-logs-description": "Active l'enregistrement des logs Proton pour cette installation de Beat Saber sur \"{versionPath}\"."
+                "proton-logs-description": "Active l'enregistrement des logs Proton pour cette installation de Beat Saber sur \"{versionPath}\".",
+                "parallel-views": "Vues parallèles",
+                "parallel-views-description": "Pour Monado, définit OXR_PARALLEL_VIEWS sur 1. Cela peut corriger des problèmes de rendu, mais peut réduire certaines parties de votre champ de vision (FOV)."
             },
             "maps": {
                 "search-bar": {
@@ -158,6 +160,7 @@
                         "description": "Description",
                         "dropdown": {
                             "import-mods": "Importer des mods",
+                            "compare-mods": "Comparer les mods",
                             "uninstall-all": "Tout désinstaller",
                             "unselect-all": "Tout désélectionner"
                         }
@@ -998,6 +1001,16 @@
         },
         "bs-version-outdated": {
             "body": "La version {outdatedVersion} est obsolète, et certains mods ou fonctionnalités peuvent ne plus fonctionner comme prévu. Veuillez télécharger la dernière version recommandée ({recommendedVersion}) de Beat Saber pour profiter des dernières fonctionnalités et corrections de bugs."
+        },
+        "mods-version-compare": {
+            "title": "Comparaison des versions des mods",
+            "select-version": "Sélectionner une version",
+            "mod-types": {
+                "all": "Tout",
+                "installed": "Installé",
+                "not-installed": "Non installé",
+                "missing": "Manquant"
+            }
         },
         "custom-launch-option": {
             "title": "Option de lancement personnalisée",

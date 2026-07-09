@@ -70,7 +70,9 @@
                 "map-editor": "Editor de mapas",
                 "map-editor-description": "Inicia el editor oficial de mapas de Beat Saber en lugar del juego.",
                 "proton-logs": "Registros de Proton",
-                "proton-logs-description": "Habilita el registro de los logs de Proton para esta instalación de Beat Saber en \"{versionPath}\"."
+                "proton-logs-description": "Habilita el registro de los logs de Proton para esta instalación de Beat Saber en \"{versionPath}\".",
+                "parallel-views": "Vistas paralelas",
+                "parallel-views-description": "Para Monado, establece OXR_PARALLEL_VIEWS en 1. Puede corregir problemas de renderizado, pero podría recortar partes de tu campo de visión (FOV)."
             },
             "maps": {
                 "search-bar": {
@@ -158,6 +160,7 @@
                         "description": "Descripción",
                         "dropdown": {
                             "import-mods": "Importar mods",
+                            "compare-mods": "Comparar mods",
                             "uninstall-all": "Desinstalar todos",
                             "unselect-all": "Deseleccionar todo"
                         }
@@ -998,6 +1001,16 @@
         },
         "bs-version-outdated": {
             "body": "La versión {outdatedVersion} está obsoleta, y algunos mods o funciones pueden no funcionar como se espera. Por favor, descarga la última versión recomendada ({recommendedVersion}) de Beat Saber para disfrutar de las últimas funciones y correcciones de errores."
+        },
+        "mods-version-compare": {
+            "title": "Comparación de versiones de mods",
+            "select-version": "Seleccionar una versión",
+            "mod-types": {
+                "all": "Todos",
+                "installed": "Instalado",
+                "not-installed": "No instalado",
+                "missing": "Faltante"
+            }
         },
         "custom-launch-option": {
             "title": "Opción de lanzamiento personalizada",

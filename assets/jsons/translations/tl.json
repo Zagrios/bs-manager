@@ -70,7 +70,9 @@
                 "map-editor": "Map Editor",
                 "map-editor-description": "Simulan ang opisyal na Beat Saber map editor imbis na ang laro.",
                 "proton-logs": "Proton Logs",
-                "proton-logs-description": "I-enable ang pag-record ng proton logs para sa Beat Saber install na ito sa \"{versionPath}\"."
+                "proton-logs-description": "I-enable ang pag-record ng proton logs para sa Beat Saber install na ito sa \"{versionPath}\".",
+                "parallel-views": "Parallel Views",
+                "parallel-views-description": "Para sa Monado, itinatakda ang OXR_PARALLEL_VIEWS sa 1. Maaari nitong ayusin ang mga isyu sa rendering, ngunit posibleng maputol ang ilang bahagi ng iyong field of view (FOV)."
             },
             "maps": {
                 "search-bar": {
@@ -158,6 +160,7 @@
                         "description": "Deskripsyon",
                         "dropdown": {
                             "import-mods": "I-import ang mga mod",
+                            "compare-mods": "Ihambing ang mga mod",
                             "uninstall-all": "I-uninstall ang lahat",
                             "unselect-all": "I-unselect and lahat"
                         }
@@ -998,6 +1001,16 @@
         },
         "bs-version-outdated": {
             "body": "Ang bersyon na {outdatedVersion} ay lipas na, at ang ilang mods o features ay maaaring hindi na gumana ng tama. Mangyaring i-download ang pinakabagong inirerekomendang bersyon ({recommendedVersion}) ng Beat Saber upang tamasahin ang mga pinakabagong tampok at mga pag-aayos ng bug."
+        },
+        "mods-version-compare": {
+            "title": "Paghahambing ng bersyon ng mga mod",
+            "select-version": "Pumili ng bersyon",
+            "mod-types": {
+                "all": "Lahat",
+                "installed": "Naka-install",
+                "not-installed": "Hindi naka-install",
+                "missing": "Nawawala"
+            }
         },
         "custom-launch-option": {
             "title": "Custom na opsyon sa paglulunsad",

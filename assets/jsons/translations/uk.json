@@ -70,7 +70,9 @@
                 "map-editor": "Редактор карт",
                 "map-editor-description": "Запускає офіційний редактор карт Beat Saber замість гри.",
                 "proton-logs": "Протонний журнал",
-                "proton-logs-description": "Увімкнути запис журналів протонів для цієї установки Beat Saber до \"{versionPath}\"."
+                "proton-logs-description": "Увімкнути запис журналів протонів для цієї установки Beat Saber до \"{versionPath}\".",
+                "parallel-views": "Паралельні погляди",
+                "parallel-views-description": "Для Monado встановлює значення OXR_PARALLEL_VIEWS на 1. Це може виправити проблеми рендерингу, але може обрізати частини поля зору (FOV)."
             },
             "maps": {
                 "search-bar": {
@@ -158,6 +160,7 @@
                         "description": "Опис",
                         "dropdown": {
                             "import-mods": "Імпортувати моди",
+                            "compare-mods": "Порівняти моди",
                             "uninstall-all": "Видалити всі",
                             "unselect-all": "Зняти виділення з всіх"
                         }
@@ -993,6 +996,16 @@
         },
         "bs-version-outdated": {
             "body": "Версія {outdatedVersion} застаріла, і деякі моди чи функції можуть більше не працювати належним чином. Будь ласка, завантажте останню рекомендовану версію ({recommendedVersion}) Beat Saber, щоб насолоджуватися останніми функціями та виправленнями помилок."
+        },
+        "mods-version-compare": {
+            "title": "Порівняння версій модів",
+            "select-version": "Виберіть версію",
+            "mod-types": {
+                "all": "Усі",
+                "installed": "Встановлено",
+                "not-installed": "Не встановлено",
+                "missing": "Відсутні"
+            }
         },
         "custom-launch-option": {
             "title": "Опція запуску",

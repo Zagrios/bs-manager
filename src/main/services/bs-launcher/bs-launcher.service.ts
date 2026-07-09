@@ -110,6 +110,9 @@ export class BSLauncherService {
         if(params.desktopMode === "true"){ launchMods.push(LaunchMods.FPFC); }
         if(params.debug === "true"){ launchMods.push(LaunchMods.DEBUG); }
         if(params.skipSteam === "true"){ launchMods.push(LaunchMods.SKIP_STEAM); }
+        if(params.mapEditor === "true"){ launchMods.push(LaunchMods.EDITOR); }
+        if(params.protonLogs === "true"){ launchMods.push(LaunchMods.PROTON_LOGS); }
+        if(params.parallelViews === "true"){ launchMods.push(LaunchMods.PARALLEL_VIEWS); }
 
         const res: LaunchOption = {
             version: {
@@ -139,12 +142,14 @@ export class BSLauncherService {
         if(launchOptions.launchMods?.includes(LaunchMods.DEBUG)){ res.debug = "true"; }
         if(launchOptions.command){ res.command = launchOptions.command; }
         if(launchOptions.launchMods?.includes(LaunchMods.SKIP_STEAM)){ res.skipSteam = "true"; }
+        if(launchOptions.launchMods?.includes(LaunchMods.EDITOR)){ res.mapEditor = "true"; }
         if(launchOptions.launchMods?.includes(LaunchMods.PROTON_LOGS)){ res.protonLogs = "true"; }
+        if(launchOptions.launchMods?.includes(LaunchMods.PARALLEL_VIEWS)){ res.parallelViews = "true"; }
 
         return res;
     }
 
-    private createShortcutPngBuffer(color: Color): Buffer{
+    private createShortcutPngBuffer(color: ReturnType<typeof Color>): Buffer{
 
         const svg = `
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 406.4 406.4" height="406.4" width="406.4">
@@ -163,7 +168,7 @@ export class BSLauncherService {
      * @param {Color} color
      * @returns {Promise<string>} Path of the icon
      */
-    private async createShortcutPng(color: Color): Promise<string>{
+    private async createShortcutPng(color: ReturnType<typeof Color>): Promise<string>{
         const pngBuffer = this.createShortcutPngBuffer(color);
 
         await ensureDir(IMAGE_CACHE_PATH);
@@ -180,7 +185,7 @@ export class BSLauncherService {
      * @param {Color} color
      * @returns {Promise<string>} Path of the icon
      */
-    private async createShortcutIco(color: Color): Promise<string>{
+    private async createShortcutIco(color: ReturnType<typeof Color>): Promise<string>{
         const pngBuffer = this.createShortcutPngBuffer(color);
         const icoBuffer = await toIco([pngBuffer]);
 
@@ -285,7 +290,9 @@ type ShortcutParams = {
     debug?: string;
     command?: string;
     skipSteam?: string;
+    mapEditor?: string;
     protonLogs?: string;
+    parallelViews?: string;
     version: string;
     versionName?: string;
     versionIno?: string;

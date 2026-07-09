@@ -70,7 +70,9 @@
                 "map-editor": "Map Editor",
                 "map-editor-description": "Avvia il map editor di Beat Saber ufficiale invece del gioco.",
                 "proton-logs": "Log di Proton",
-                "proton-logs-description": "Abilita la registrazione dei log di proton per questa installazione di Beat Saber su \"{versionPath}\"."
+                "proton-logs-description": "Abilita la registrazione dei log di proton per questa installazione di Beat Saber su \"{versionPath}\".",
+                "parallel-views": "Visioni parallele",
+                "parallel-views-description": "Per Monado, imposta OXR_PARALLEL_VIEWS su 1. Può risolvere problemi di rendering, ma potrebbe tagliare parti del campo visivo (FOV)."
             },
             "maps": {
                 "search-bar": {
@@ -158,6 +160,7 @@
                         "description": "Descrizione",
                         "dropdown": {
                             "import-mods": "Importa mod",
+                            "compare-mods": "Confronta i mod",
                             "uninstall-all": "Disinstalla tutto",
                             "unselect-all": "Deseleziona tutto"
                         }
@@ -998,6 +1001,16 @@
         },
         "bs-version-outdated": {
             "body": "La versione {outdatedVersion} è obsoleta, e alcune mod o funzioni potrebbero non funzionare più come previsto. Per favore scarica l'ultima versione raccomandata ({recommendedVersion}) di Beat Saber per godere delle ultime funzioni e bugfix."
+        },
+        "mods-version-compare": {
+            "title": "Confronto delle versioni dei mod",
+            "select-version": "Seleziona una versione",
+            "mod-types": {
+                "all": "Tutti",
+                "installed": "Installato",
+                "not-installed": "Non installato",
+                "missing": "Mancante"
+            }
         },
         "custom-launch-option": {
             "title": "Opzione di lancio personalizzata",
