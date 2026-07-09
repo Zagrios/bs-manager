@@ -1,4 +1,5 @@
 module.exports = {
+    root: true,
     extends: "erb",
     rules: {
         // A temporary hack related to IDE not resolving correct package.json
