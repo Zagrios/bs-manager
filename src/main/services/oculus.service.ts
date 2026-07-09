@@ -9,6 +9,8 @@ import { sToMs } from "../../shared/helpers/time.helpers";
 import { execOnOs } from "../helpers/env.helpers";
 import { UtilsService } from "./utils.service";
 import { exec } from "child_process";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
+import { BSLaunchError } from "shared/models/bs-launch";
 
 const { list } = (execOnOs({ win32: () => require("regedit-rs") }, true) ?? {}) as typeof import("regedit-rs");
 
@@ -113,8 +115,53 @@ export class OculusService {
         return isProcessRunning("Client"); // new name of oculus client
     }
 
+    public async isOculusInstalled(): Promise<boolean> {
+        if (process.platform !== "win32") {
+            log.info("Oculus installation check is not supported on non-windows platforms");
+            return true;
+        }
+
+        const oculusSchemeRegKeys = [
+            "HKCR\\oculus",
+            "HKCU\\SOFTWARE\\Classes\\oculus",
+            "HKLM\\SOFTWARE\\Classes\\oculus",
+        ];
+
+        for (const oculusSchemeRegKey of oculusSchemeRegKeys) {
+            const schemeRegData = await list(oculusSchemeRegKey)
+                .then(data => data[oculusSchemeRegKey])
+                .catch(err => {
+                    log.info("Unable to read Oculus URL protocol registry key", oculusSchemeRegKey, err);
+                    return null;
+                });
+
+            if (!schemeRegData?.exists || !Object.prototype.hasOwnProperty.call(schemeRegData.values ?? {}, "URL Protocol")) {
+                continue;
+            }
+
+            const commandRegKey = `${oculusSchemeRegKey}\\shell\\open\\command`;
+            const commandRegData = await list(commandRegKey)
+                .then(data => data[commandRegKey])
+                .catch(err => {
+                    log.info("Unable to read Oculus URL protocol command registry key", commandRegKey, err);
+                    return null;
+                });
+
+            if (commandRegData?.exists && Object.values(commandRegData.values ?? {}).some(value => Boolean((value as { value?: unknown })?.value))) {
+                return true;
+            }
+        }
+
+        log.error("Oculus URL protocol registry key not found", oculusSchemeRegKeys);
+        return false;
+    }
+
     public async startOculus(): Promise<void>{
         if(await this.oculusRunning()){ return; }
+
+        if (!await this.isOculusInstalled()){
+            throw new CustomError("No scheme found. Check if Oculus is installed.", BSLaunchError.OCULUS_NOT_INSTALLED);
+        }
 
         await shell.openPath("oculus://view/homepage");
 

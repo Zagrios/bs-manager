@@ -308,7 +308,15 @@ export function LaunchSlide({ version }: Props) {
             </div>
             <div className="mt-4 flex flex-col items-center justify-center gap-3">
                 <div className="relative">
-                    <GlowEffect className="!rounded-full" visible={!!((activeLaunchMods?.filter(mod => !pinnedLaunchMods.includes(mod)))?.length || command)}/>
+                    <GlowEffect className="!rounded-full" visible={
+                        !!command ||
+                        activeLaunchMods?.some(
+                            mod =>
+                                !(version.metadata?.store === BsStore.OCULUS && mod === LaunchMods.OCULUS) &&
+                                !(safeLt(version.BSVersion, "1.23.0") && mod === LaunchMods.EDITOR) &&
+                                !(window.electron.platform !== "linux" && mod === LaunchMods.PROTON_LOGS) &&
+                                !pinnedLaunchMods.includes(mod))
+                        }/>
                     <BsmButton
                         className="rounded-full w-fit text-lg py-1 px-7 bg-theme-2 text-gray-800 dark:text-white shadow-md shadow-black"
                         text="pages.version-viewer.launch-mods.advanced-launch.button"
