@@ -986,6 +986,26 @@
             },
             "launch-as-admin": "Запустить от имени администратора"
         },
+        "vr-runtime-mismatch": {
+            "title": "Среда выполнения OpenXR не настроена",
+            "tutorial": "Нажмите здесь, чтобы посмотреть руководство по настройке среды выполнения.",
+            "body": {
+                "active-runtime": "Активная среда выполнения OpenXR: {activeRuntime}.",
+                "expected-runtime": "Для этой установки Beat Saber ожидается {expectedRuntime}.",
+                "info": "Если это сделано намеренно, выберите Запустить всё равно. Иначе выберите подходящую среду выполнения OpenXR в программе VR.",
+                "info-2": "SteamVR и Meta Horizon Link — два популярных приложения, предоставляющих среду выполнения OpenXR."
+            },
+            "runtimes": {
+                    "steam": "SteamVR",
+                    "oculus": "Meta Quest Link",
+                    "vdxr": "Virtual Desktop (VDXR)",
+                    "not-set": "Не настроено",
+                    "other": "другая среда выполнения",
+                    "unknown": "не настроена или неизвестна"
+            },
+            "dont-remind-me": "Больше не напоминать",
+            "launch-anyway": "Запустить всё равно"
+        },
         "ask-install-path": {
             "title": "Папка установок",
             "choose-folder-description": "Выберите папку, которая будет содержать весь контент, загруженный BSManager. (версии, моды, карты, плейлисты и т.д.)",

@@ -987,6 +987,26 @@
             "launch-as-admin": "Iniciar como Administrador",
             "not-remind-me": "Não me perguntar novamente"
         },
+        "vr-runtime-mismatch": {
+            "title": "Runtime OpenXR não configurado",
+            "tutorial": "Clique aqui para ver um tutorial sobre como configurar o runtime.",
+            "body": {
+                "active-runtime": "O runtime OpenXR ativo é {activeRuntime}.",
+                "expected-runtime": "Esta instância do Beat Saber espera {expectedRuntime}.",
+                "info": "Se essa configuração for intencional, escolha Iniciar mesmo assim. Caso contrário, selecione o runtime OpenXR apropriado no seu software de VR.",
+                "info-2": "SteamVR e Meta Horizon Link são dois aplicativos populares que fornecem um runtime OpenXR que você pode usar."
+            },
+            "runtimes": {
+                    "steam": "SteamVR",
+                    "oculus": "Meta Quest Link",
+                    "vdxr": "Virtual Desktop (VDXR)",
+                    "not-set": "Não configurado",
+                    "other": "outro runtime",
+                    "unknown": "não configurado ou desconhecido"
+            },
+            "dont-remind-me": "Não avisar novamente",
+            "launch-anyway": "Iniciar mesmo assim"
+        },
         "ask-install-path": {
             "title": "Pasta de instalação",
             "choose-folder-description": "Escolha a pasta que irá conter todos os conteúdos baixados pelo BSManager. (versões, mods, mapas, playlists, etc.)",

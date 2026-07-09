@@ -987,6 +987,26 @@
             "launch-as-admin": "관리자로 실행",
             "not-remind-me": "다시 알림 받지 않기"
         },
+        "vr-runtime-mismatch": {
+            "title": "OpenXR 런타임이 설정되지 않음",
+            "tutorial": "런타임 설정 방법은 여기를 클릭해 튜토리얼을 확인하세요.",
+            "body": {
+                "active-runtime": "현재 활성 OpenXR 런타임은 {activeRuntime}입니다.",
+                "expected-runtime": "이 Beat Saber 인스턴스에는 {expectedRuntime}이(가) 필요합니다.",
+                "info": "의도한 구성이라면 계속 실행을 선택하세요. 그렇지 않다면 VR 소프트웨어에서 적절한 OpenXR 런타임을 선택하세요.",
+                "info-2": "SteamVR과 Meta Horizon Link는 사용할 수 있는 OpenXR 런타임을 제공하는 대표적인 앱입니다."
+            },
+            "runtimes": {
+                    "steam": "SteamVR",
+                    "oculus": "Meta Quest Link",
+                    "vdxr": "Virtual Desktop (VDXR)",
+                    "not-set": "설정되지 않음",
+                    "other": "다른 런타임",
+                    "unknown": "설정되지 않았거나 알 수 없음"
+            },
+            "dont-remind-me": "다시 알리지 않기",
+            "launch-anyway": "계속 실행"
+        },
         "ask-install-path": {
             "title": "설치 폴더",
             "choose-folder-description": "BSManager에 의해 다운로드된 모든 콘텐츠 (버전, 모드, 맵, 재생 목록 등)를 포함하는 폴더를 선택하세요.",

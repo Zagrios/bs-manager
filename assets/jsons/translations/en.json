@@ -987,6 +987,26 @@
             "launch-as-admin": "Launch as Administrator",
             "not-remind-me": "Do not remind me"
         },
+        "vr-runtime-mismatch": {
+            "title": "OpenXR Runtime Not Set",
+            "tutorial": "Click here for a tutorial on how to configure the runtime.",
+            "body": {
+                "active-runtime": "The active OpenXR runtime is {activeRuntime}.",
+                "expected-runtime": "This Beat Saber instance expects {expectedRuntime}.",
+                "info": "If this is intentional, choose Launch anyway. Otherwise, select the appropriate OpenXR runtime in your VR software.",
+                "info-2": "SteamVR and Meta Horizon Link are two popular apps that provide an OpenXR runtime you can use."
+            },
+            "runtimes": {
+                    "steam": "SteamVR",
+                    "oculus": "Meta Quest Link",
+                    "vdxr": "Virtual Desktop (VDXR)",
+                    "not-set": "Not set",
+                    "other": "another runtime",
+                    "unknown": "not set or unknown"
+            },
+            "dont-remind-me": "Don't remind me again",
+            "launch-anyway": "Launch anyway"
+        },
         "ask-install-path": {
             "title": "Installation folder",
             "choose-folder-description": "Choose the folder that will contain all the content downloaded by BSManager. (versions, mods, maps, playlists, etc.)",

@@ -25,6 +25,7 @@ import { StaticConfigurationService } from "../static-configuration.service";
 import { SteamService } from "../steam.service";
 import { tryit } from "shared/helpers/error.helpers";
 import { LinuxService } from "../linux.service";
+import { VrRuntimeService } from "../vr-runtime.service";
 
 export class BSLauncherService {
     private static instance: BSLauncherService;
@@ -76,6 +77,11 @@ export class BSLauncherService {
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
 
         log.info("Launch version", launchOptions);
+
+        VrRuntimeService.getInstance()
+            .getActiveRuntime()
+            .then(runtime => log.info("Active OpenXR runtime", runtime))
+            .catch(error => log.warn("Unable to log the active OpenXR runtime", error));
 
         const launcher = this.getStoreLauncherFromVersion(launchOptions.version);
 
@@ -299,4 +305,3 @@ type ShortcutParams = {
     versionSteam?: string;
     versionOculus?: string;
 }
-

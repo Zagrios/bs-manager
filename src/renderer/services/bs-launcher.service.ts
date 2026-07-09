@@ -11,6 +11,9 @@ import { EnableOculusSideloadedApps } from "renderer/components/modal/modal-type
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { sToMs } from "shared/helpers/time.helpers";
 import { NeedLaunchAdminModal } from "renderer/components/modal/modal-types/need-launch-admin-modal.component";
+import { VrRuntimeMismatchModal } from "renderer/components/modal/modal-types/vr-runtime-mismatch-modal.component";
+import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
+import { VrRuntime } from "shared/models/vr-runtime.model";
 
 export class BSLauncherService {
     private static instance: BSLauncherService;
@@ -95,6 +98,30 @@ export class BSLauncherService {
         await lastValueFrom(this.ipcService.sendV2("enable-oculus-sideloaded-apps"));
     }
 
+    private async confirmVrRuntime(launchOptions: LaunchOption): Promise<void> {
+        const isOculusModeEnabled = launchOptions.launchMods?.includes(LaunchMods.OCULUS);
+        const dismissKey = "dont-remind-vr-runtime";
+
+        if (window.electron.platform !== "win32" || isOculusModeEnabled || this.config.get(dismissKey)) {
+            return;
+        }
+
+        const activeRuntime = await lastValueFrom(this.ipcService.sendV2("vr-runtime.get-active"))
+            .catch(() => VrRuntime.UNKNOWN);
+        if (activeRuntime !== VrRuntime.NOT_SET) {
+            return;
+        }
+
+        const modalRes = await this.modals.openModal(VrRuntimeMismatchModal);
+        if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
+            throw new Error("VR runtime launch canceled");
+        }
+
+        if (modalRes.data) {
+            this.config.set(dismissKey, true);
+        }
+    }
+
     public doLaunch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
         return this.ipcService.sendV2("bs-launch.launch", launchOptions);
     }
@@ -103,7 +130,6 @@ export class BSLauncherService {
 
         return new Observable<BSLaunchEventData>(obs => {
             (async () => {
-
                 // If downgraded from oculus and its not the official version
                 if(launchOptions.version.metadata?.store === BsStore.OCULUS && !launchOptions.version.oculus){
                     await this.enableSideloadedAppsIfNeeded();
@@ -112,6 +138,8 @@ export class BSLauncherService {
                 if(launchOptions.version.metadata?.store !== BsStore.OCULUS){
                     launchOptions.admin = await this.doMustStartAsAdmin();
                 }
+
+                await this.confirmVrRuntime(launchOptions);
 
                 const launch$ = this.handleLaunchEvents(this.doLaunch(launchOptions));
 
