@@ -301,9 +301,9 @@ export function LaunchSlide({ version }: Props) {
                     <GlowEffect className="!rounded-full" visible={
                         !!command ||
                         activeLaunchMods?.some(
-                            mod => 
-                                !(version.metadata?.store === BsStore.OCULUS && mod === "oculus") && 
-                                !(safeLt(version.BSVersion, "1.23.0") && mod === "editor") && 
+                            mod =>
+                                !(version.metadata?.store === BsStore.OCULUS && mod === "oculus") &&
+                                !(safeLt(version.BSVersion, "1.23.0") && mod === "editor") &&
                                 !(window.electron.platform !== "linux" && mod === "proton_logs") &&
                                 !pinnedLaunchMods.includes(mod))
                         }/>

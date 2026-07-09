@@ -121,14 +121,39 @@ export class OculusService {
             return true;
         }
 
-        const oculusSchemeRegKey = "HKCU\\SOFTWARE\\Classes\\oculus";
-        const schemeRegData = await list(oculusSchemeRegKey).then(data => data[oculusSchemeRegKey]);
+        const oculusSchemeRegKeys = [
+            "HKCR\\oculus",
+            "HKCU\\SOFTWARE\\Classes\\oculus",
+            "HKLM\\SOFTWARE\\Classes\\oculus",
+        ];
 
-        if (!Object.keys(schemeRegData.values).length) {
-            log.error("Registry key \"HKCU\\SOFTWARE\\Classes\\oculus\" not found");
-            return false;
+        for (const oculusSchemeRegKey of oculusSchemeRegKeys) {
+            const schemeRegData = await list(oculusSchemeRegKey)
+                .then(data => data[oculusSchemeRegKey])
+                .catch(err => {
+                    log.info("Unable to read Oculus URL protocol registry key", oculusSchemeRegKey, err);
+                    return null;
+                });
+
+            if (!schemeRegData?.exists || !Object.prototype.hasOwnProperty.call(schemeRegData.values ?? {}, "URL Protocol")) {
+                continue;
+            }
+
+            const commandRegKey = `${oculusSchemeRegKey}\\shell\\open\\command`;
+            const commandRegData = await list(commandRegKey)
+                .then(data => data[commandRegKey])
+                .catch(err => {
+                    log.info("Unable to read Oculus URL protocol command registry key", commandRegKey, err);
+                    return null;
+                });
+
+            if (commandRegData?.exists && Object.values(commandRegData.values ?? {}).some(value => Boolean((value as { value?: unknown })?.value))) {
+                return true;
+            }
         }
-        return true
+
+        log.error("Oculus URL protocol registry key not found", oculusSchemeRegKeys);
+        return false;
     }
 
     public async startOculus(): Promise<void>{

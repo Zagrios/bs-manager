@@ -50,7 +50,7 @@ export class OculusLauncherService extends AbstractLauncherService implements St
                 // Make sure Oculus is running
                 await this.oculus.startOculus().catch(err => {
                     if (err instanceof CustomError) throw err;
-                    
+
                     log.error("Error while starting Oculus", err);
                     log.warn("Unable to start Oculus client. Force launch.");
                 });

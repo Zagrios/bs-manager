@@ -11,7 +11,7 @@ import { BsNoteFill } from "renderer/components/svgs/icons/bs-note-fill.componen
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { ChevronTopIcon } from "renderer/components/svgs/icons/chevron-top-icon.component";
 import Tippy from "@tippyjs/react";
-import { LaunchMod } from "shared/models/bs-launch/launch-option.interface";
+import { LaunchMod, LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { BsStore } from "shared/models/bs-store.enum";
 
 export const CreateLaunchShortcutModal: ModalComponent<{ steamShortcut: boolean, launchOption: LaunchOption }, BSVersion> = ({resolver, options: {data}}) => {
@@ -20,15 +20,24 @@ export const CreateLaunchShortcutModal: ModalComponent<{ steamShortcut: boolean,
 
     const { text: t } = useTranslationV2();
     const color = useThemeColor("second-color");
+    const isOculusVersion = data.oculus === true || data.metadata?.store === BsStore.OCULUS;
 
-    const [launchOption, setLaunchOptions] = useState(bsLauncher.getLaunchOptions(data));
+    const [launchOption, setLaunchOptions] = useState(() => {
+        const launchOption = bsLauncher.getLaunchOptions(data);
+        if (!isOculusVersion) { return launchOption; }
+        return {...launchOption, launchMods: (launchOption.launchMods ?? []).filter(mod => mod !== LaunchMods.OCULUS)};
+    });
     const [advanced, setAdvanced] = useState(!!launchOption.command?.length);
     const [command, setCommand] = useState(launchOption.command || "");
     const [steamShortcut, setSteamShortcut] = useState(false);
 
     const completeModal = () => {
-        launchOption.command = command.trim();
-        resolver({exitCode: ModalExitCode.COMPLETED, data: { launchOption, steamShortcut }});
+        const shortcutLaunchOption = {
+            ...launchOption,
+            command: command.trim(),
+            launchMods: isOculusVersion ? (launchOption.launchMods ?? []).filter(mod => mod !== LaunchMods.OCULUS) : launchOption.launchMods,
+        };
+        resolver({exitCode: ModalExitCode.COMPLETED, data: { launchOption: shortcutLaunchOption, steamShortcut }});
     }
 
     const toogleLaunchMod = (mod: LaunchMod, enabled: boolean) => {
@@ -52,9 +61,9 @@ export const CreateLaunchShortcutModal: ModalComponent<{ steamShortcut: boolean,
             </div>
             <h2 className="font-bold">{t("modals.create-launch-shortcut.launch-options")}</h2>
             <div className="mb-1 grid grid-flow-col gap-3 w-full rounded-md py-2 bg-light-main-color-1 dark:bg-main-color-1">
-                {data.oculus !== true && data.metadata?.store !== BsStore.OCULUS && (
+                {!isOculusVersion && (
                     <div className="h-full flex justify-center items-center gap-2">
-                        <BsmCheckbox className="h-5 aspect-square relative z-[1]" checked={launchOption.launchMods.includes("oculus")} onChange={e => toogleLaunchMod("oculus", e)} />
+                        <BsmCheckbox className="h-5 aspect-square relative z-[1]" checked={launchOption.launchMods.includes(LaunchMods.OCULUS)} onChange={e => toogleLaunchMod(LaunchMods.OCULUS, e)} />
                         <Tippy className="!bg-main-color-1" content={t("pages.version-viewer.launch-mods.oculus-description")} delay={[300, 0]} arrow={false}>
                             <span className="font-bold cursor-help">{t("pages.version-viewer.launch-mods.oculus")}</span>
                         </Tippy>

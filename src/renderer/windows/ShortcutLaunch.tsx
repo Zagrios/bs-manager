@@ -50,10 +50,11 @@ export default function ShortcutLaunch() {
                 setStatus(event.type);
             },
             error: err => {
-                if(!Object.values(BSLaunchError).includes(err.type)){
+                const errorCode = err?.code as BSLaunchError;
+                if(!errorCode || !Object.values(BSLaunchError).includes(errorCode)){
                     notification.notifySystem({title: t("notifications.bs-launch.errors.titles.UNKNOWN_ERROR"), body: t("notifications.bs-launch.errors.msg.UNKNOWN_ERROR")});
                 } else {
-                    notification.notifySystem({title: t(`notifications.bs-launch.errors.titles.${err.type}`), body: t(`notifications.bs-launch.errors.msg.${err.type}`)})
+                    notification.notifySystem({title: t(`notifications.bs-launch.errors.titles.${errorCode}`), body: t(`notifications.bs-launch.errors.msg.${errorCode}`)})
                 }
             }
         });
