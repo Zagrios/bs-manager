@@ -19,6 +19,7 @@ node_modules
 .DS_Store
 
 release/app/dist
+release/app/.erb
 release/build
 .erb/dll
 
@@ -31,3 +32,5 @@ npm-debug.log.*
 # eslint ignores hidden directories by default:
 # https://github.com/eslint/eslint/issues/8429
 !.erb
+release/app/.erb
+release/app/.erb/**
