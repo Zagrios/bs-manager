@@ -10,7 +10,7 @@ const author: BbmUserAPIResponse = {
     bio: "",
 };
 
-function createInstalledVersion(id: number, modId: number, modVersion = "1.0.0", dllPath?: string): BbmModVersion {
+function createInstalledVersion(id: number, modId: number, dllPath?: string, modVersion = "1.0.0"): BbmModVersion {
     return {
         id,
         modId,
@@ -54,7 +54,7 @@ describe("mods version compare helpers", () => {
             createFullMod(1, "Installed mod"),
             createFullMod(2, "Available only"),
         ];
-        const installedMods = [createInstalledVersion(101, 1, "1.2.3")];
+        const installedMods = [createInstalledVersion(101, 1, undefined, "1.2.3")];
 
         const { availableModsMap, installedModsMap } = getCompareModsMaps(availableMods, installedMods);
 
@@ -66,7 +66,7 @@ describe("mods version compare helpers", () => {
 
     test("preserves installed-only mods missing from the available list", () => {
         const { availableModsMap, installedModsMap } = getCompareModsMaps([], [
-            createInstalledVersion(201, 999, "2.0.0", "Plugins/LocalOnly.dll"),
+            createInstalledVersion(201, 999, "Plugins/LocalOnly.dll", "2.0.0"),
         ]);
 
         const expectedInstalledOnlyMod = { id: 999, name: "LocalOnly", version: "2.0.0" };
