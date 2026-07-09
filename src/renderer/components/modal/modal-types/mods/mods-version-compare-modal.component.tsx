@@ -367,7 +367,7 @@ function ComparisonIcon({
     }
 
     return <div className="flex items-center justify-center">
-        <div className="flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-light-main-color-3 shadow-sm dark:border-white/10 dark:bg-main-color-1">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full border border-black/10 bg-light-main-color-3 shadow-sm dark:border-white/10 dark:bg-main-color-1">
             {renderIcon()}
         </div>
     </div>
@@ -425,11 +425,13 @@ function ModCategory({
         return <div />
     }
 
+    const modColumnMinWidth = comparedVersions.length >= 5 ? 180 : 240;
+    const comparisonIconColumnWidth = comparedVersions.length >= 5 ? 32 : 40;
     const gridTemplateColumns = comparedVersions
-        .map((_, index) => `${index > 0 ? "40px " : ""}minmax(240px, 1fr)`)
+        .map((_, index) => `${index > 0 ? `${comparisonIconColumnWidth}px ` : ""}minmax(${modColumnMinWidth}px, 1fr)`)
         .join(" ");
     const minGridWidth = comparedVersions.length > 2
-        ? `${comparedVersions.length * 260 + (comparedVersions.length - 1) * 40}px`
+        ? `${comparedVersions.length * modColumnMinWidth + (comparedVersions.length - 1) * comparisonIconColumnWidth}px`
         : "100%";
 
     return <div className="mb-4 overflow-hidden rounded-xl border border-black/10 bg-light-main-color-2 shadow-md shadow-black/20 dark:border-white/10 dark:bg-main-color-2">
@@ -536,7 +538,7 @@ export const ModsVersionCompareModal: ModalComponent<void, Readonly<{
         ];
 
         return (
-            <div className="flex max-h-[calc(100vh-5rem)] w-[960px] max-w-[calc(100vw-3rem)] flex-col">
+            <div className="flex max-h-[calc(100vh-5rem)] w-[1180px] max-w-[calc(100vw-3rem)] flex-col">
                 <h1 className="mb-3 w-full text-center text-3xl uppercase tracking-wide">
                     {t("modals.mods-version-compare.title")}
                 </h1>
