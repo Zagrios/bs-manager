@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { logRenderError } from "renderer";
+import { BsmBasicSpinner } from "renderer/components/shared/bsm-basic-spinner/bsm-basic-spinner.component";
 import { BsmSelect, BsmSelectOption } from "renderer/components/shared/bsm-select.component";
 import { AddIcon } from "renderer/components/svgs/icons/add-icon.component";
 import { DownIcon } from "renderer/components/svgs/icons/down-icon.component";
@@ -201,7 +202,11 @@ function ModCompare({
 
     const renderOtherMod = () => {
         if (loading) {
-            return <div className="bg-black">TODO: Rainbow Lazy Loading</div>
+            return (
+                <div className="bg-black py-1 px-2 flex justify-center">
+                    <BsmBasicSpinner className="w-4 h-4" thikness="2px" />
+                </div>
+            );
         }
 
         if (!otherMod) {
