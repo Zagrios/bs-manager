@@ -345,6 +345,13 @@
                         "message": "发生错误，无法启用系统代理。"
                     }
                 },
+                "close-bs-manager-on-launch": {
+                    "title": "启动 Beat Saber 时关闭 BSManager",
+                    "description": "Beat Saber 窗口准备就绪后关闭 BSManager。",
+                    "error-notification": {
+                        "message": "无法更改启动时关闭的设置。"
+                    }
+                },
                 "auto-update": {
                     "title": "自动更新",
                     "description": "启动应用程序时，BSManager 将自动更新。",

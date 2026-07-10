@@ -165,7 +165,7 @@
                             "unselect-all": "Unselect all"
                         }
                     },
-                    "mod-item":{
+                    "mod-item": {
                         "this-is-a-large-mod": "This is a large mod!",
                         "this-is-a-very-large-mod": "This is a very large mod!"
                     }
@@ -351,6 +351,13 @@
                     "error-notification": {
                         "message": "An error occurred, unable to change auto update settings."
                     }
+                },
+                "close-bs-manager-on-launch": {
+                    "title": "Close BSManager when Beat Saber launches",
+                    "description": "Closes BSManager once the Beat Saber window is ready.",
+                    "error-notification": {
+                        "message": "An error occurred, unable to change the close-on-launch setting."
+                    }
                 }
             }
         }
@@ -441,7 +448,7 @@
                         "NO_META_AUTH_TOKEN": "Unable to retrieve the Meta login token required for download.",
                         "UNKNOWN_ERROR": "An unknown error occurred."
                     },
-                    "actions":{
+                    "actions": {
                         "claim-your-desktop-version": "Claim your desktop version"
                     }
                 }

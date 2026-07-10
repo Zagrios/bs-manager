@@ -345,6 +345,13 @@
                         "message": "Nagkaroon ng error, hindi ma-bago ang setting ng system proxy."
                     }
                 },
+                "close-bs-manager-on-launch": {
+                    "title": "Isara ang BSManager kapag inilunsad ang Beat Saber",
+                    "description": "Isinasara ang BSManager kapag handa na ang window ng Beat Saber.",
+                    "error-notification": {
+                        "message": "Hindi mabago ang setting para isara sa paglunsad."
+                    }
+                },
                 "auto-update": {
                     "title": "Awtomatikong Pag-update",
                     "description": "Ang BSManager ay awtomatikong mag-uupdate kapag binuksan mo ang aplikasyon.",
@@ -1348,57 +1355,8 @@
         }
     },
     "dateformat": {
-        "dayNames": [
-            "Lin",
-            "Lun",
-            "Mar",
-            "Miy",
-            "Huw",
-            "Biy",
-            "Sab",
-            "Linggo",
-            "Lunes",
-            "Martes",
-            "Miyerkules",
-            "Huwebes",
-            "Biyernes",
-            "Sabado"
-        ],
-        "monthNames": [
-            "Ene",
-            "Peb",
-            "Mar",
-            "Abr",
-            "May",
-            "Hun",
-            "Hul",
-            "Ago",
-            "Set",
-            "Okt",
-            "Nob",
-            "Dis",
-            "Enero",
-            "Pebrero",
-            "Marso",
-            "Abril",
-            "Mayo",
-            "Hunyo",
-            "Hulyo",
-            "Agosto",
-            "Setyembre",
-            "Oktubre",
-            "Nobyembre",
-            "Disyembre"
-        ],
-        "timeNames": [
-            "a",
-            "p",
-            "am",
-            "pm",
-            "A",
-            "P",
-            "AM",
-            "PM"
-        ]
+        "dayNames": ["Lin", "Lun", "Mar", "Miy", "Huw", "Biy", "Sab", "Linggo", "Lunes", "Martes", "Miyerkules", "Huwebes", "Biyernes", "Sabado"],
+        "monthNames": ["Ene", "Peb", "Mar", "Abr", "May", "Hun", "Hul", "Ago", "Set", "Okt", "Nob", "Dis", "Enero", "Pebrero", "Marso", "Abril", "Mayo", "Hunyo", "Hulyo", "Agosto", "Setyembre", "Oktubre", "Nobyembre", "Disyembre"],
+        "timeNames": ["a", "p", "am", "pm", "A", "P", "AM", "PM"]
     }
 }

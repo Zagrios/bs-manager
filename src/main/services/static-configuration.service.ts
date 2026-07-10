@@ -66,13 +66,14 @@ export interface StaticConfigKeyValues {
     "disable-hadware-acceleration": boolean;
     "use-symlinks": boolean;
     "use-system-proxy": boolean;
+    "close-bs-manager-on-launch": boolean;
     "last-version-launched": BSVersion;
     "auto-update": AutoUpdate;
 
     // Linux Specific static configs
     "proton-folder": string;
-    "versions": BSVersion[];
-};
+    versions: BSVersion[];
+}
 
 export type StaticConfigKeys = keyof StaticConfigKeyValues;
 
@@ -82,7 +83,6 @@ export type StaticConfigGetIpcRequestResponse<K extends StaticConfigKeys> = {
 };
 
 export type StaticConfigSetIpcRequest<K extends StaticConfigKeys> = {
-    request: { key: K, value: StaticConfigKeyValues[K] };
+    request: { key: K; value: StaticConfigKeyValues[K] };
     response: void;
 };
-

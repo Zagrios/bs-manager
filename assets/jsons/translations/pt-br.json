@@ -345,6 +345,13 @@
                         "message": "Um erro aconteceu, não foi possível alterar a configuração de proxy de sistema."
                     }
                 },
+                "close-bs-manager-on-launch": {
+                    "title": "Fechar o BSManager ao iniciar o Beat Saber",
+                    "description": "Fecha o BSManager quando a janela do Beat Saber estiver pronta.",
+                    "error-notification": {
+                        "message": "Não foi possível alterar a opção de fechar ao iniciar."
+                    }
+                },
                 "auto-update": {
                     "title": "Atualização automática",
                     "description": "O BSManager será atualizado automaticamente ao iniciar o aplicativo.",

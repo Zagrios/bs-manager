@@ -345,6 +345,13 @@
                         "message": "Произошла ошибка, не удалось изменить настройки системного прокси."
                     }
                 },
+                "close-bs-manager-on-launch": {
+                    "title": "Закрывать BSManager при запуске Beat Saber",
+                    "description": "Закрывает BSManager, когда окно Beat Saber готово.",
+                    "error-notification": {
+                        "message": "Не удалось изменить настройку закрытия при запуске."
+                    }
+                },
                 "auto-update": {
                     "title": "Автообновление",
                     "description": "BSManager будет автоматически обновляться при запуске приложения.",

@@ -14,12 +14,11 @@ import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { app, Event } from "electron";
 import { parseLaunchOptions } from "main/helpers/launchOptions.helper";
 
-export class SteamLauncherService extends AbstractLauncherService implements StoreLauncherInterface{
-
+export class SteamLauncherService extends AbstractLauncherService implements StoreLauncherInterface {
     private static instance: SteamLauncherService;
 
-    public static getInstance(): SteamLauncherService{
-        if(!SteamLauncherService.instance){
+    public static getInstance(): SteamLauncherService {
+        if (!SteamLauncherService.instance) {
             SteamLauncherService.instance = new SteamLauncherService();
         }
         return SteamLauncherService.instance;
@@ -28,7 +27,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
     private readonly steam: SteamService;
     private readonly util: UtilsService;
 
-    private constructor(){
+    private constructor() {
         super();
         this.steam = SteamService.getInstance();
         this.util = UtilsService.getInstance();
@@ -41,7 +40,9 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
     private timedRename(src: string, dest: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             const timeout = setTimeout(() => reject(new Error("Rename timed out")), 5000);
-            rename(src, dest).then(resolve, reject).finally(() => clearTimeout(timeout));
+            rename(src, dest)
+                .then(resolve, reject)
+                .finally(() => clearTimeout(timeout));
         });
     }
 
@@ -65,16 +66,21 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
 
     public async restoreSteamVR(): Promise<void> {
         const steamVrFolder = await this.getSteamVRPath();
-        if (!steamVrFolder) { return; }
+        if (!steamVrFolder) {
+            return;
+        }
         const steamVrBackup = `${steamVrFolder}.bak`;
-        if (!(await pathExists(steamVrBackup))) { return; }
+        if (!(await pathExists(steamVrBackup))) {
+            return;
+        }
         return this.timedRename(steamVrBackup, steamVrFolder).catch(err => {
             log.warn("Could not restore SteamVR folder", err);
         });
     }
 
-    protected launchBeatSaber(options: LaunchBeatSaberOptions): {process: ChildProcessWithoutNullStreams, exit: Promise<number>} {
+    protected launchBeatSaber(options: LaunchBeatSaberOptions): { process: ChildProcessWithoutNullStreams; exit: Promise<number> } {
         const process = this.launchBeatSaberProcess(options);
+        this.handleGameWindowReady(process, options.beatSaberFolderPath);
 
         const exit = new Promise<number>((resolve, reject) => {
             // Don't remove, useful for debugging!
@@ -86,7 +92,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
             // });
 
             const onWillQuitHandler = async (event: Event) => {
-                app.removeListener('will-quit', onWillQuitHandler);
+                app.removeListener("will-quit", onWillQuitHandler);
                 if (!process.killed) {
                     event.preventDefault();
                     log.info(`Unref'ing BS process ${process.pid} on app will-quit`);
@@ -97,146 +103,140 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 }
             };
 
-            process.on("error", (err) => {
+            process.on("error", err => {
                 log.error(`Error while launching BS`, err);
                 reject(err);
-                app.removeListener('will-quit', onWillQuitHandler);
+                app.removeListener("will-quit", onWillQuitHandler);
             });
 
-            process.on("exit", (code) => {
+            process.on("exit", code => {
                 log.info(`BS process exit with code ${code}`);
                 resolve(code);
-                app.removeListener('will-quit', onWillQuitHandler);
+                app.removeListener("will-quit", onWillQuitHandler);
             });
 
-            app.on('will-quit', onWillQuitHandler);
+            app.on("will-quit", onWillQuitHandler);
         });
 
         return { process, exit };
     }
 
-    public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
+    public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData> {
+        return new Observable<BSLaunchEventData>(obs => {
+            (async () => {
+                const bsFolderPath = await this.localVersions.getInstalledVersionPath(launchOptions.version);
+                const bsExePath = path.join(bsFolderPath, BS_EXECUTABLE);
 
-        return new Observable<BSLaunchEventData>(obs => {(async () => {
-
-            const bsFolderPath = await this.localVersions.getInstalledVersionPath(launchOptions.version);
-            const bsExePath = path.join(bsFolderPath, BS_EXECUTABLE);
-
-            if(!(await pathExists(bsExePath))){
-                throw CustomError.fromError(new Error(`Path not exist : ${bsExePath}`), BSLaunchError.BS_NOT_FOUND);
-            }
-
-            const skipSteam: boolean = launchOptions.launchMods?.includes(LaunchMods.SKIP_STEAM) ?? false;
-
-            // Open Steam if not running
-            if(!skipSteam && !(await this.steam.isSteamRunning())){
-
-                obs.next({type: BSLaunchEvent.STEAM_LAUNCHING});
-
-                await this.steam.openSteam().then(() => {
-                    obs.next({type: BSLaunchEvent.STEAM_LAUNCHED});
-                }).catch(e => {
-                    log.error(e);
-                    obs.next({type: BSLaunchWarning.UNABLE_TO_LAUNCH_STEAM});
-                });
-            }
-            else if(skipSteam) {
-                obs.next({ type: BSLaunchEvent.SKIPPING_STEAM_LAUNCH});
-            }
-
-            const isFpfc = launchOptions.launchMods?.includes(LaunchMods.FPFC);
-            const isOculus = launchOptions.launchMods?.includes(LaunchMods.OCULUS);
-            if(isFpfc && !isOculus){
-                const backupPermError = await this.backupSteamVR().catch(() => {
-                    return this.restoreSteamVR().then(() => false);
-                });
-                if(backupPermError){
-                    obs.next({type: BSLaunchWarning.FPFC_NEED_ADMIN});
-                }
-            } else if(!isFpfc) {
-                await this.restoreSteamVR().catch(log.error);
-            }
-
-            const steamPath = await this.steam.getSteamPath();
-
-            const env: Record<string, string> = {
-                ...process.env,
-                "SteamAppId": BS_APP_ID,
-                "SteamOverlayGameId": BS_APP_ID,
-                "SteamGameId": BS_APP_ID,
-            };
-
-            // Linux setup
-            if (process.platform === "linux") {
-                if (launchOptions.admin) {
-                    log.warn("Launching as admin is not supported on Linux! Starting the game as a normal user.");
-                    launchOptions.admin = false;
+                if (!(await pathExists(bsExePath))) {
+                    throw CustomError.fromError(new Error(`Path not exist : ${bsExePath}`), BSLaunchError.BS_NOT_FOUND);
                 }
 
-                Object.assign(env, await this.linux.buildEnvVariables(
-                    launchOptions, steamPath, bsFolderPath
-                ));
-            }
+                const skipSteam: boolean = launchOptions.launchMods?.includes(LaunchMods.SKIP_STEAM) ?? false;
 
-            const {
-                env: customEnv,
-                cmdlet, args
-            } = parseLaunchOptions(launchOptions.command, {
-                commandReplacement: process.platform === "win32"
-                    ? `"${bsExePath}"`
-                    : `${await this.linux.getProtonPrefix()} "${bsExePath}"`,
-            });
-            this.updateEnvVariables(env, customEnv);
+                // Open Steam if not running
+                if (!skipSteam && !(await this.steam.isSteamRunning())) {
+                    obs.next({ type: BSLaunchEvent.STEAM_LAUNCHING });
 
-            const launchArgs = buildBsLaunchArgs(launchOptions);
+                    await this.steam
+                        .openSteam()
+                        .then(() => {
+                            obs.next({ type: BSLaunchEvent.STEAM_LAUNCHED });
+                        })
+                        .catch(e => {
+                            log.error(e);
+                            obs.next({ type: BSLaunchWarning.UNABLE_TO_LAUNCH_STEAM });
+                        });
+                } else if (skipSteam) {
+                    obs.next({ type: BSLaunchEvent.SKIPPING_STEAM_LAUNCH });
+                }
 
-            obs.next({type: BSLaunchEvent.BS_LAUNCHING});
-
-            const spawnOpts = { env: { ...customEnv, ...env }, cwd: bsFolderPath };
-
-            const launchPromise = !launchOptions.admin ? (
-                this.launchBeatSaber({
-                    env, customEnv, cmdlet,
-                    args: args
-                        ? [ args, ...launchArgs ]
-                        : launchArgs,
-                    beatSaberFolderPath: bsFolderPath,
-                }).exit
-            ) : (
-                new Promise<number>(resolve => {
-                    const adminProcess = exec(`"${this.getStartBsAsAdminExePath()}" "${bsExePath}" ${launchArgs.join(" ")} --log-path "${path.join(app.getPath("logs"), "bs-admin-start.log")}"`, spawnOpts);
-                    adminProcess.on("error", err => {
-                        log.error("Error while starting BS as Admin", err);
-                        resolve(-1)
+                const isFpfc = launchOptions.launchMods?.includes(LaunchMods.FPFC);
+                const isOculus = launchOptions.launchMods?.includes(LaunchMods.OCULUS);
+                if (isFpfc && !isOculus) {
+                    const backupPermError = await this.backupSteamVR().catch(() => {
+                        return this.restoreSteamVR().then(() => false);
                     });
+                    if (backupPermError) {
+                        obs.next({ type: BSLaunchWarning.FPFC_NEED_ADMIN });
+                    }
+                } else if (!isFpfc) {
+                    await this.restoreSteamVR().catch(log.error);
+                }
 
-                    setTimeout(() => {
-                        adminProcess.removeAllListeners("error");
-                        resolve(-1);
-                    }, 35_000);
+                const steamPath = await this.steam.getSteamPath();
+
+                const env: Record<string, string> = {
+                    ...process.env,
+                    SteamAppId: BS_APP_ID,
+                    SteamOverlayGameId: BS_APP_ID,
+                    SteamGameId: BS_APP_ID,
+                };
+
+                // Linux setup
+                if (process.platform === "linux") {
+                    if (launchOptions.admin) {
+                        log.warn("Launching as admin is not supported on Linux! Starting the game as a normal user.");
+                        launchOptions.admin = false;
+                    }
+
+                    Object.assign(env, await this.linux.buildEnvVariables(launchOptions, steamPath, bsFolderPath));
+                }
+
+                const {
+                    env: customEnv,
+                    cmdlet,
+                    args,
+                } = parseLaunchOptions(launchOptions.command, {
+                    commandReplacement: process.platform === "win32" ? `"${bsExePath}"` : `${await this.linux.getProtonPrefix()} "${bsExePath}"`,
+                });
+                this.updateEnvVariables(env, customEnv);
+
+                const launchArgs = buildBsLaunchArgs(launchOptions);
+
+                obs.next({ type: BSLaunchEvent.BS_LAUNCHING });
+
+                const spawnOpts = { env: { ...customEnv, ...env }, cwd: bsFolderPath };
+
+                const launchPromise = !launchOptions.admin
+                    ? this.launchBeatSaber({
+                          env,
+                          customEnv,
+                          cmdlet,
+                          args: args ? [args, ...launchArgs] : launchArgs,
+                          beatSaberFolderPath: bsFolderPath,
+                      }).exit
+                    : new Promise<number>(resolve => {
+                          const adminProcess = exec(`"${this.getStartBsAsAdminExePath()}" "${bsExePath}" ${launchArgs.join(" ")} --log-path "${path.join(app.getPath("logs"), "bs-admin-start.log")}"`, spawnOpts);
+                          adminProcess.on("error", err => {
+                              log.error("Error while starting BS as Admin", err);
+                              resolve(-1);
+                          });
+
+                          setTimeout(() => {
+                              adminProcess.removeAllListeners("error");
+                              resolve(-1);
+                          }, 35_000);
+                      });
+
+                try {
+                    const exitCode = await launchPromise;
+                    log.info("BS process exit code", exitCode);
+                } catch (err: any) {
+                    throw CustomError.fromError(err, BSLaunchError.BS_EXIT_ERROR);
+                } finally {
+                    await this.restoreSteamVR().catch(log.error);
+                }
+            })()
+                .then(() => {
+                    obs.complete();
                 })
-            );
-
-            try {
-                const exitCode = await launchPromise;
-                log.info("BS process exit code", exitCode);
-            }
-            catch(err: any) {
-                throw CustomError.fromError(err, BSLaunchError.BS_EXIT_ERROR);
-            }
-            finally {
-                await this.restoreSteamVR().catch(log.error);
-            }
-
-        })().then(() => {
-            obs.complete();
-        }).catch(err => {
-            if(err instanceof CustomError){
-                obs.error(err);
-            } else {
-                obs.error(CustomError.fromError(err, BSLaunchError.UNKNOWN_ERROR));
-            }
-        })});
+                .catch(err => {
+                    if (err instanceof CustomError) {
+                        obs.error(err);
+                    } else {
+                        obs.error(CustomError.fromError(err, BSLaunchError.UNKNOWN_ERROR));
+                    }
+                });
+        });
     }
-
 }
