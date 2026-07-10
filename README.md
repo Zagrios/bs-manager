@@ -318,7 +318,6 @@
     <li><strong>Oculus Mode</strong>: Allows you to use Oculus's VR composer while bypassing SteamVR, which may improve performance. (Only useful if you launch the game via Steam).</li>
     <li><strong>FPFC Mode</strong>: Enables "First Person Flying Controller" mode, allowing you to navigate menus using the keyboard (WASD) and mouse without a VR headset.</li>
     <li><strong>Debug Mode</strong>: Activates the IPA debug console, displaying logs used by mods.</li>
-    <li><strong>Skip Steam</strong>: Prevents Steam from opening automatically with Beat Saber, useful if you use an alternative VR runtime like WIVRn or Monado.</li>
     <li><strong>Map Editor</strong>: Launches the official Beat Saber map editor instead of the game.</li>
   </ul>
 

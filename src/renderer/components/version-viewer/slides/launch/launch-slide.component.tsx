@@ -215,15 +215,6 @@ export function LaunchSlide({ version }: Props) {
                 onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.DEBUG),
             },
             {
-                id: LaunchMods.SKIP_STEAM,
-                label: t("pages.version-viewer.launch-mods.skipsteam"),
-                description: t("pages.version-viewer.launch-mods.skipsteam-description"),
-                active: activeLaunchMods.includes(LaunchMods.SKIP_STEAM),
-                pinned: pinnedLaunchMods.includes(LaunchMods.SKIP_STEAM),
-                onChange: (checked) => toggleActiveLaunchMod(checked, LaunchMods.SKIP_STEAM),
-                onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.SKIP_STEAM),
-            },
-            {
                 id: LaunchMods.EDITOR,
                 icon: EditIcon,
                 label: t("pages.version-viewer.launch-mods.map-editor"),

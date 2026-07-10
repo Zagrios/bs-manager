@@ -4,7 +4,6 @@ export const LaunchMods = {
     OCULUS: "oculus",
     FPFC: "fpfc",
     DEBUG: "debug",
-    SKIP_STEAM: "skip_steam",
     EDITOR: "editor",
     PROTON_LOGS: "proton_logs",
     PARALLEL_VIEWS: "parallel_views",

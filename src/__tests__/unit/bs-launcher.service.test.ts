@@ -77,7 +77,6 @@ describe("BSLauncherService shortcut links", () => {
             LaunchMods.OCULUS,
             LaunchMods.FPFC,
             LaunchMods.DEBUG,
-            LaunchMods.SKIP_STEAM,
             LaunchMods.EDITOR,
             LaunchMods.PROTON_LOGS,
             LaunchMods.PARALLEL_VIEWS,

@@ -65,8 +65,6 @@
                     "placeholder": "Startoptionen, bspw: KEY=VALUE %command% fpfc",
                     "create-launch-option": "Eine Startoption erstellen"
                 },
-                "skipsteam": "Steam überspringen",
-                "skipsteam-description": "Verhindert, dass Steam automatisch mit Beat Saber geöffnet wird. Aktivieren Sie dies, wenn Sie eine andere VR-Laufzeit wie WiVRn oder Monado verwenden, mit der SteamVR interferieren könnte.",
                 "map-editor": "Karteneditor",
                 "map-editor-description": "Starte den offiziellen Beat Saber-Karteneditor anstelle des Spiels.",
                 "proton-logs": "Proton-Logs",
@@ -527,13 +525,11 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "Starte... 🚀",
-                    "STEAM_LAUNCHING": "Steam startet!",
-                    "SKIPPING_STEAM_LAUNCH": "Steam-Start überspringen"
+                    "STEAM_LAUNCHING": "Steam startet!"
                 },
                 "msg": {
                     "BS_LAUNCHING": "Vergiss nicht, dich aufzuwärmen 😉",
-                    "STEAM_LAUNCHING": "Beat Saber wird automatisch nach Steam gestartet.",
-                    "SKIPPING_STEAM_LAUNCH": "Ich hoffe, du weißt, was du tust :)"
+                    "STEAM_LAUNCHING": "Beat Saber wird automatisch nach Steam gestartet."
                 }
             },
             "errors": {

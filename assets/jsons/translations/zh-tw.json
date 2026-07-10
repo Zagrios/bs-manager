@@ -65,8 +65,6 @@
                     "placeholder": "啟動選項，例如: KEY=VALUE %command% fpfc",
                     "create-launch-option": "新增啟動選項"
                 },
-                "skipsteam": "跳過 Steam",
-                "skipsteam-description": "防止 Steam 與 Beat Saber 自動打開，如果您使用的是其他 VR 執行時，如 WiVRn 或 Monado，SteamVR 可能會干擾，請啟用此選項。",
                 "map-editor": "地圖編輯器",
                 "map-editor-description": "啟動官方的 Beat Saber 地圖編輯器，而不是遊戲。",
                 "proton-logs": "Proton紀錄",
@@ -527,13 +525,11 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "啟動中...🚀",
-                    "STEAM_LAUNCHING": "Steam 正在啟動！",
-                    "SKIPPING_STEAM_LAUNCH": "跳過 Steam 啟動"
+                    "STEAM_LAUNCHING": "Steam 正在啟動！"
                 },
                 "msg": {
                     "BS_LAUNCHING": "別忘了熱身哦 😉",
-                    "STEAM_LAUNCHING": "Beat Saber 會在 Steam 啟動後自動啟動。",
-                    "SKIPPING_STEAM_LAUNCH": "希望你知道自己在做什麼 :)"
+                    "STEAM_LAUNCHING": "Beat Saber 會在 Steam 啟動後自動啟動。"
                 }
             },
             "errors": {
