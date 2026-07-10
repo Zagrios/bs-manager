@@ -1,5 +1,4 @@
 import log from "electron-log";
-import fetch from "node-fetch";
 import { CustomError } from "../../shared/models/exceptions/custom-error.class";
 import { mkdirs, createWriteStream, pathExists, WriteStream } from "fs-extra";
 import path from "path";

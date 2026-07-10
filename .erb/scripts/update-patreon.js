@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import fs from "fs";
 import path from "path";
 
@@ -166,5 +165,4 @@ main().catch((err) => {
   console.error(err);
   process.exitCode = 1;
 });
-
 

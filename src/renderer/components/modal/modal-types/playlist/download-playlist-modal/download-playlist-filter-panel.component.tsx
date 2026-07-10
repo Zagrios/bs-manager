@@ -4,8 +4,8 @@ import { BsmRange } from "renderer/components/shared/bsm-range.component";
 import { cn } from "renderer/helpers/css-class.helpers";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { PlaylistSearchParams } from "shared/models/maps/beat-saver.model"
-import {DateRangePicker} from "@nextui-org/date-picker";
-import { Radio, RadioGroup, RadioProps, RangeValue } from "@nextui-org/react";
+import {DateRangePicker} from "@heroui/date-picker";
+import { Radio, RadioGroup, RadioProps, RangeValue } from "@heroui/react";
 import { today, getLocalTimeZone, parseAbsoluteToLocal, toCalendarDate, toZoned, CalendarDate } from "@internationalized/date";
 import { motion } from "framer-motion";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";

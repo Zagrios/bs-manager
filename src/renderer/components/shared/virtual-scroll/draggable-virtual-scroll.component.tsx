@@ -1,5 +1,5 @@
 import { CSSProperties, useCallback, useRef } from "react";
-import { DragDropContext, Draggable, DraggableProvided, DropResult, Droppable } from "react-beautiful-dnd";
+import { DragDropContext, Draggable, DraggableProvided, DropResult, Droppable } from "@hello-pangea/dnd";
 import { ListChildComponentProps, VariableSizeList } from "react-window";
 import { cn } from "renderer/helpers/css-class.helpers";
 import { useObserveSize } from "renderer/hooks/use-observe-size.hook";
