@@ -30,6 +30,7 @@ const config = {
         ],
     },
     linux: {
+        syncDesktopName: true,
         target: [
             "deb",
             "rpm",
