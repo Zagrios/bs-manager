@@ -10,7 +10,7 @@ jest.mock("renderer/services/notification.service", () => ({ NotificationService
 jest.mock("renderer/services/configuration.service", () => ({ ConfigurationService: { getInstance: jest.fn() } }));
 jest.mock("renderer/services/theme.service", () => ({ ThemeService: { getInstance: jest.fn() } }));
 jest.mock("renderer/services/modale.service", () => ({
-    ModalExitCode: { COMPLETED: 0 },
+    ModalExitCode: { COMPLETED: 0, CANCELED: 2 },
     ModalService: { getInstance: jest.fn() },
 }));
 jest.mock("renderer/components/modal/modal-types/enable-oculus-sideloaded-apps", () => ({ EnableOculusSideloadedApps: jest.fn() }));
@@ -46,11 +46,12 @@ function buildService(activeRuntime: VrRuntime = VrRuntime.NOT_SET) {
         throw new Error(`Unexpected IPC channel: ${channel}`);
     });
     const openModal = jest.fn().mockResolvedValue({ exitCode: 0, data: false });
+    const config = { get: jest.fn<boolean, [string?]>().mockReturnValue(false), set: jest.fn() };
     const service = Object.create(BSLauncherService.prototype) as BSLauncherService;
 
     Object.assign(service as any, {
         ipcService: { sendV2 },
-        config: { get: jest.fn(() => false), set: jest.fn() },
+        config,
         modals: { openModal },
         notificationService: {
             notifyWarning: jest.fn(),
@@ -60,7 +61,7 @@ function buildService(activeRuntime: VrRuntime = VrRuntime.NOT_SET) {
         versionRunning$: new BehaviorSubject(null),
     });
 
-    return { service, sendV2, openModal };
+    return { service, sendV2, openModal, config };
 }
 
 describe("renderer BSLauncherService OpenXR checks", () => {
@@ -92,6 +93,15 @@ describe("renderer BSLauncherService OpenXR checks", () => {
         expect(openModal).not.toHaveBeenCalled();
     });
 
+    it.each([LaunchMods.OCULUS, LaunchMods.EDITOR])("skips the runtime check for %s launches", async launchMod => {
+        const { service, sendV2, openModal } = buildService();
+
+        await lastValueFrom(service.doLaunch(buildLaunchOptions([launchMod])));
+
+        expect(sendV2.mock.calls.map(([channel]) => channel)).toEqual(["bs-launch.launch"]);
+        expect(openModal).not.toHaveBeenCalled();
+    });
+
     it("skips the runtime check for Beat Saber versions before OpenXR", async () => {
         const { service, sendV2, openModal } = buildService();
         const launchOptions = buildLaunchOptions();
@@ -109,6 +119,37 @@ describe("renderer BSLauncherService OpenXR checks", () => {
         await lastValueFrom(service.doLaunch(buildLaunchOptions()));
 
         expect(openModal).toHaveBeenCalledWith(expect.anything(), { data: VrRuntime.UNKNOWN });
+    });
+
+    it.each([VrRuntime.STEAM, VrRuntime.OCULUS, VrRuntime.VDXR, VrRuntime.OTHER])("launches without prompting when %s is active", async activeRuntime => {
+        const { service, sendV2, openModal } = buildService(activeRuntime);
+
+        await lastValueFrom(service.doLaunch(buildLaunchOptions()));
+
+        expect(sendV2.mock.calls.map(([channel]) => channel)).toEqual([
+            "vr-runtime.get-active",
+            "bs-launch.launch",
+        ]);
+        expect(openModal).not.toHaveBeenCalled();
+    });
+
+    it("launches without checking the runtime when the reminder is disabled", async () => {
+        const { service, sendV2, openModal, config } = buildService();
+        config.get.mockImplementation(key => key === "dont-remind-vr-runtime");
+
+        await lastValueFrom(service.doLaunch(buildLaunchOptions()));
+
+        expect(sendV2.mock.calls.map(([channel]) => channel)).toEqual(["bs-launch.launch"]);
+        expect(openModal).not.toHaveBeenCalled();
+    });
+
+    it("persists the reminder preference when the runtime confirmation is accepted", async () => {
+        const { service, openModal, config } = buildService();
+        openModal.mockResolvedValueOnce({ exitCode: 0, data: true });
+
+        await lastValueFrom(service.doLaunch(buildLaunchOptions()));
+
+        expect(config.set).toHaveBeenCalledWith("dont-remind-vr-runtime", true);
     });
 
     it("confirms the runtime before enabling Oculus sideloading", async () => {
@@ -149,5 +190,41 @@ describe("renderer BSLauncherService OpenXR checks", () => {
 
         expect(openModal).toHaveBeenCalledTimes(1);
         expect(sendV2.mock.calls.filter(([channel]) => channel === "bs-launch.launch")).toHaveLength(1);
+    });
+
+    it("treats canceling the runtime confirmation as a cleanly completed launch attempt", async () => {
+        const { service, sendV2, openModal } = buildService();
+        openModal.mockResolvedValueOnce({ exitCode: 2 });
+        const launchOptions = buildLaunchOptions();
+
+        await new Promise<void>((resolve, reject) => {
+            service.doLaunch(launchOptions).subscribe({ complete: resolve, error: reject });
+        });
+
+        expect(sendV2.mock.calls.filter(([channel]) => channel === "bs-launch.launch")).toHaveLength(0);
+        expect(service.versionRunning$.getValue()).toBeNull();
+
+        await lastValueFrom(service.doLaunch(launchOptions));
+        expect(sendV2.mock.calls.filter(([channel]) => channel === "bs-launch.launch")).toHaveLength(1);
+    });
+
+    it("does not continue launching after the launch subscription is canceled", async () => {
+        const { service, sendV2, openModal } = buildService();
+        let resolveModal: (value: { exitCode: number; data: boolean }) => void;
+        openModal.mockImplementationOnce(() => new Promise(resolve => {
+            resolveModal = resolve;
+        }));
+        const launchOptions = buildLaunchOptions();
+
+        const subscription = service.launch(launchOptions).subscribe();
+        await new Promise(resolve => { setTimeout(resolve, 0); });
+        expect(service.versionRunning$.getValue()).toBe(launchOptions.version);
+
+        subscription.unsubscribe();
+        expect(service.versionRunning$.getValue()).toBeNull();
+        resolveModal({ exitCode: 0, data: false });
+        await new Promise(resolve => { setTimeout(resolve, 0); });
+
+        expect(sendV2.mock.calls.filter(([channel]) => channel === "bs-launch.launch")).toHaveLength(0);
     });
 });

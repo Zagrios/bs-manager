@@ -1,6 +1,7 @@
 import { BSLauncherService } from "main/services/bs-launcher/bs-launcher.service";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { LaunchOption } from "shared/models/bs-launch";
+import { Subject, of } from "rxjs";
 
 jest.mock("electron", () => ({
     app: { getPath: () => "" },
@@ -52,6 +53,9 @@ jest.mock("main/services/steam.service", () => ({
 }));
 jest.mock("main/services/linux.service", () => ({
     LinuxService: { getInstance: jest.fn(() => ({})) },
+}));
+jest.mock("main/services/vr-runtime.service", () => ({
+    VrRuntimeService: { getInstance: jest.fn(() => ({ getActiveRuntime: jest.fn().mockResolvedValue("UNKNOWN") })) },
 }));
 
 describe("BSLauncherService shortcut links", () => {
@@ -109,5 +113,89 @@ describe("BSLauncherService shortcut links", () => {
             oculus: false,
             ino: launchOptions.version.ino,
         }));
+    });
+});
+
+describe("BSLauncherService launch coordination", () => {
+    function buildLaunchOptions(): LaunchOption {
+        return {
+            version: {
+                BSVersion: "1.40.0",
+                name: "launch-test",
+                steam: true,
+                oculus: false,
+            },
+            launchMods: [],
+        };
+    }
+
+    it("allows only one main-process launch at a time and releases the guard on completion", () => {
+        const firstLaunch = new Subject<any>();
+        const launcher = { launch: jest.fn().mockReturnValueOnce(firstLaunch).mockReturnValueOnce(of({ type: "BS_LAUNCHED" })) };
+        const service = Object.create(BSLauncherService.prototype) as BSLauncherService;
+        Object.assign(service as any, {
+            steamLauncher: launcher,
+            oculusLauncher: launcher,
+            staticConfig: { set: jest.fn() },
+        });
+        const launchOptions = buildLaunchOptions();
+
+        const firstSubscription = service.launch(launchOptions).subscribe();
+        const secondError = jest.fn();
+        service.launch(launchOptions).subscribe({ error: secondError });
+
+        expect(launcher.launch).toHaveBeenCalledTimes(1);
+        expect(secondError).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("already in progress") }));
+
+        firstLaunch.complete();
+        firstSubscription.unsubscribe();
+        service.launch(launchOptions).subscribe();
+        expect(launcher.launch).toHaveBeenCalledTimes(2);
+    });
+
+    it("releases the main-process guard when a launcher throws before returning an observable", () => {
+        const launcher = {
+            launch: jest.fn()
+                .mockImplementationOnce(() => { throw new Error("launcher setup failed"); })
+                .mockReturnValueOnce(of({ type: "BS_LAUNCHED" })),
+        };
+        const service = Object.create(BSLauncherService.prototype) as BSLauncherService;
+        Object.assign(service as any, {
+            steamLauncher: launcher,
+            oculusLauncher: launcher,
+            staticConfig: { set: jest.fn() },
+        });
+        const launchOptions = buildLaunchOptions();
+
+        service.launch(launchOptions).subscribe({ error: jest.fn() });
+        const retryError = jest.fn();
+        service.launch(launchOptions).subscribe({ error: retryError });
+
+        expect(launcher.launch).toHaveBeenCalledTimes(2);
+        expect(retryError).not.toHaveBeenCalled();
+    });
+
+    it("releases the main-process guard when saving the last launched version fails", () => {
+        const launcher = { launch: jest.fn(() => of({ type: "BS_LAUNCHED" })) };
+        const staticConfig = {
+            set: jest.fn()
+                .mockImplementationOnce(() => { throw new Error("configuration write failed"); })
+                .mockReturnValueOnce(undefined),
+        };
+        const service = Object.create(BSLauncherService.prototype) as BSLauncherService;
+        Object.assign(service as any, {
+            steamLauncher: launcher,
+            oculusLauncher: launcher,
+            staticConfig,
+        });
+        const launchOptions = buildLaunchOptions();
+
+        service.launch(launchOptions).subscribe({ error: jest.fn() });
+        const retryError = jest.fn();
+        service.launch(launchOptions).subscribe({ error: retryError });
+
+        expect(staticConfig.set).toHaveBeenCalledTimes(2);
+        expect(launcher.launch).toHaveBeenCalledTimes(1);
+        expect(retryError).not.toHaveBeenCalled();
     });
 });

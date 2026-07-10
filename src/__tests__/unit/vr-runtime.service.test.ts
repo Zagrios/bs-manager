@@ -1,4 +1,4 @@
-import { VrRuntimeService } from "main/services/vr-runtime.service";
+import { loadRegistryList, VrRuntimeService } from "main/services/vr-runtime.service";
 import { VrRuntime } from "shared/models/vr-runtime.model";
 
 jest.mock("electron-log", () => ({
@@ -18,6 +18,14 @@ function registryValue(value?: unknown) {
 }
 
 describe("VrRuntimeService.getActiveRuntime", () => {
+    it("degrades to an unavailable registry when the native binding cannot load", () => {
+        const loadRegistryModule = jest.fn(() => {
+            throw new Error("native binding unavailable");
+        });
+
+        expect(loadRegistryList("win32", loadRegistryModule)).toBeUndefined();
+    });
+
     it("returns UNKNOWN without querying the registry on non-Windows platforms", async () => {
         const registryList = jest.fn();
         const service = new VrRuntimeService({ platform: "linux", registryList });

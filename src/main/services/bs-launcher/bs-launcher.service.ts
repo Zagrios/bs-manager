@@ -3,7 +3,7 @@ import { LaunchOption, BSLaunchEventData } from "../../../shared/models/bs-launc
 import { IMAGE_CACHE_PATH } from "../../constants";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import log from "electron-log";
-import { Observable, of, throwError } from "rxjs";
+import { Observable, defer, finalize, of, throwError } from "rxjs";
 import { BsmProtocolService } from "../bsm-protocol.service";
 import { app, shell} from "electron";
 import Color from "color";
@@ -40,6 +40,7 @@ export class BSLauncherService {
     private readonly oculusLauncher: OculusLauncherService;
     private readonly staticConfig: StaticConfigurationService;
     private readonly linux: LinuxService;
+    private launchInProgress = false;
 
     public static getInstance(): BSLauncherService {
         if (!BSLauncherService.instance) {
@@ -75,23 +76,32 @@ export class BSLauncherService {
     }
 
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
+        return defer(() => {
+            if (this.launchInProgress) {
+                return throwError(() => new Error("Beat Saber launch already in progress"));
+            }
 
-        log.info("Launch version", launchOptions);
+            log.info("Launch version", launchOptions);
 
-        VrRuntimeService.getInstance()
-            .getActiveRuntime()
-            .then(runtime => log.info("Active OpenXR runtime", runtime))
-            .catch(error => log.warn("Unable to log the active OpenXR runtime", error));
+            VrRuntimeService.getInstance()
+                .getActiveRuntime()
+                .then(runtime => log.info("Active OpenXR runtime", runtime))
+                .catch(error => log.warn("Unable to log the active OpenXR runtime", error));
 
-        const launcher = this.getStoreLauncherFromVersion(launchOptions.version);
+            const launcher = this.getStoreLauncherFromVersion(launchOptions.version);
 
-        if(!launcher){
-            return throwError(() => new Error("Unable to get launcher for the provided version"));
-        }
+            if(!launcher){
+                return throwError(() => new Error("Unable to get launcher for the provided version"));
+            }
 
-        this.staticConfig.set("last-version-launched", launchOptions.version);
-
-        return launcher.launch(launchOptions);
+            this.launchInProgress = true;
+            return defer(() => {
+                this.staticConfig.set("last-version-launched", launchOptions.version);
+                return launcher.launch(launchOptions);
+            }).pipe(finalize(() => {
+                this.launchInProgress = false;
+            }));
+        });
     }
 
     public shortcutLinkToShortcutParams(shortcutLink: string|URL): ShortcutParams{

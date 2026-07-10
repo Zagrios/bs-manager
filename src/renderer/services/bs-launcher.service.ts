@@ -2,7 +2,7 @@ import { LaunchOption, BSLaunchEvent, BSLaunchWarning, BSLaunchEventData, BSLaun
 import { BSVersion } from 'shared/bs-version.interface';
 import { IpcService } from "./ipc.service";
 import { NotificationService } from "./notification.service";
-import { BehaviorSubject, Observable, defer, finalize, from, lastValueFrom, switchMap, tap, throwError } from "rxjs";
+import { BehaviorSubject, EMPTY, Observable, defer, finalize, from, lastValueFrom, of, switchMap, tap, throwError } from "rxjs";
 import { ConfigurationService } from "./configuration.service";
 import { ThemeService } from "./theme.service";
 import { BsStore } from "shared/models/bs-store.enum";
@@ -100,30 +100,32 @@ export class BSLauncherService {
         await lastValueFrom(this.ipcService.sendV2("enable-oculus-sideloaded-apps"));
     }
 
-    private async confirmVrRuntime(launchOptions: LaunchOption): Promise<void> {
+    private async confirmVrRuntime(launchOptions: LaunchOption): Promise<boolean> {
         const bypassesOpenXr = [LaunchMods.OCULUS, LaunchMods.FPFC, LaunchMods.EDITOR]
             .some(launchMod => launchOptions.launchMods?.includes(launchMod));
         const predatesOpenXr = safeLt(launchOptions.version.BSVersion, "1.29.4");
         const dismissKey = "dont-remind-vr-runtime";
 
         if (window.electron.platform !== "win32" || bypassesOpenXr || predatesOpenXr || this.config.get(dismissKey)) {
-            return;
+            return true;
         }
 
         const activeRuntime = await lastValueFrom(this.ipcService.sendV2("vr-runtime.get-active"))
             .catch(() => VrRuntime.UNKNOWN);
         if (![VrRuntime.NOT_SET, VrRuntime.UNKNOWN].includes(activeRuntime)) {
-            return;
+            return true;
         }
 
         const modalRes = await this.modals.openModal(VrRuntimeMismatchModal, { data: activeRuntime });
         if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
-            throw new Error("VR runtime launch canceled");
+            return false;
         }
 
         if (modalRes.data) {
             this.config.set(dismissKey, true);
         }
+
+        return true;
     }
 
     private sendLaunch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
@@ -148,35 +150,34 @@ export class BSLauncherService {
 
     public doLaunch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
         return this.withLaunchState(launchOptions, () => from(this.confirmVrRuntime(launchOptions))
-            .pipe(switchMap(() => this.sendLaunch(launchOptions))));
+            .pipe(switchMap(shouldLaunch => shouldLaunch ? this.sendLaunch(launchOptions) : EMPTY)));
     }
 
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData> {
-
-        return this.withLaunchState(launchOptions, () => new Observable<BSLaunchEventData>(obs => {
-            (async () => {
-                await this.confirmVrRuntime(launchOptions);
+        return this.withLaunchState(launchOptions, () => from(this.confirmVrRuntime(launchOptions)).pipe(
+            switchMap(shouldLaunch => {
+                if (!shouldLaunch) {
+                    return EMPTY;
+                }
 
                 // If downgraded from oculus and its not the official version
                 if(launchOptions.version.metadata?.store === BsStore.OCULUS && !launchOptions.version.oculus){
-                    await this.enableSideloadedAppsIfNeeded();
+                    return from(this.enableSideloadedAppsIfNeeded());
                 }
 
-                if(launchOptions.version.metadata?.store !== BsStore.OCULUS){
-                    launchOptions.admin = await this.doMustStartAsAdmin();
+                return of(undefined);
+            }),
+            switchMap(() => {
+                if(launchOptions.version.metadata?.store === BsStore.OCULUS){
+                    return of(undefined);
                 }
 
-                const launch$ = this.handleLaunchEvents(this.sendLaunch(launchOptions));
-
-                await lastValueFrom(launch$);
-
-            })().then(() => {
-                obs.complete();
-            }).catch(err => {
-                obs.error(err);
-            })
-        }));
-
+                return from(this.doMustStartAsAdmin()).pipe(tap(admin => {
+                    launchOptions.admin = admin;
+                }));
+            }),
+            switchMap(() => this.handleLaunchEvents(this.sendLaunch(launchOptions))),
+        ));
     }
 
     public createLaunchShortcut(launchOptions: LaunchOption, steamShortcut: boolean): Observable<boolean>{

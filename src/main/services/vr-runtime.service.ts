@@ -1,6 +1,5 @@
 import log from "electron-log";
 import { pathExistsSync } from "fs-extra";
-import { execOnOs } from "main/helpers/env.helpers";
 import { parseOpenXrRuntimePath } from "shared/helpers/vr-runtime.helpers";
 import { VrRuntime } from "shared/models/vr-runtime.model";
 
@@ -11,6 +10,7 @@ type RegistryKeyData = {
 };
 
 type RegistryList = (key: string) => Promise<Record<string, RegistryKeyData>>;
+type RegistryModuleLoader = () => { list?: RegistryList };
 
 type VrRuntimeServiceOptions = {
     platform?: NodeJS.Platform;
@@ -19,7 +19,21 @@ type VrRuntimeServiceOptions = {
     environment?: NodeJS.ProcessEnv;
 };
 
-const { list } = (execOnOs({ win32: () => require("regedit-rs") }, true) ?? {}) as { list?: RegistryList };
+export function loadRegistryList(
+    platform: NodeJS.Platform = process.platform,
+    loadRegistryModule: RegistryModuleLoader = () => require("regedit-rs") as { list?: RegistryList },
+): RegistryList | undefined {
+    if (platform !== "win32") {
+        return undefined;
+    }
+
+    try {
+        return loadRegistryModule()?.list;
+    } catch (error) {
+        log.warn("Unable to load the Windows registry binding", error);
+        return undefined;
+    }
+}
 
 export class VrRuntimeService {
     private static instance: VrRuntimeService;
@@ -31,7 +45,7 @@ export class VrRuntimeService {
 
     public constructor(options: VrRuntimeServiceOptions = {}) {
         this.platform = options.platform ?? process.platform;
-        this.registryList = options.registryList ?? list;
+        this.registryList = options.registryList ?? loadRegistryList(this.platform);
         this.pathExists = options.pathExists ?? pathExistsSync;
         this.environment = options.environment ?? process.env;
     }
