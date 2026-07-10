@@ -8,6 +8,9 @@ describe("parseOpenXrRuntimePath", () => {
         ["C:\\Program Files\\Meta\\Quest Link\\meta_openxr_64.json", VrRuntime.OCULUS],
         ["C:\\Program Files\\Virtual Desktop\\openxr.json", VrRuntime.VDXR],
         ["C:\\Program Files\\VirtualDesktop\\vdxr.json", VrRuntime.VDXR],
+        ["C:\\Program Files\\Virtual Desktop Streamer\\OpenXR\\virtualdesktop-openxr.json", VrRuntime.VDXR],
+        ["C:\\Users\\meta\\AppData\\Local\\Virtual Desktop\\openxr.json", VrRuntime.VDXR],
+        ["C:\\Users\\meta\\AppData\\Local\\Another Runtime\\openxr.json", VrRuntime.OTHER],
         ["C:\\Program Files\\Another Runtime\\openxr.json", VrRuntime.OTHER],
         [undefined, VrRuntime.NOT_SET],
     ];

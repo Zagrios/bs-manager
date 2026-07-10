@@ -17,6 +17,7 @@ import { BSLaunchError, BSLaunchEventType } from "shared/models/bs-launch";
 import { NotificationService } from "renderer/services/notification.service";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { useWindowControls } from "renderer/hooks/use-window-controls.hook";
+import { Modal } from "renderer/components/modal/modal.component";
 
 export default function ShortcutLaunch() {
 
@@ -68,6 +69,7 @@ export default function ShortcutLaunch() {
 
     return (
         <div className="relative w-screen h-screen overflow-hidden ">
+            <Modal />
             <BsmImage className="absolute top-0 left-0 w-full h-full object-cover" placeholder={defaultImage} image={launchOptions?.version?.ReleaseImg ?? defaultImage}/>
             <div className="w-full h-full backdrop-blur-lg flex flex-col">
                 <TitleBar template="shortcut-launch.html"/>

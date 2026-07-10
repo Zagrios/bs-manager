@@ -2,7 +2,7 @@ import { LaunchOption, BSLaunchEvent, BSLaunchWarning, BSLaunchEventData, BSLaun
 import { BSVersion } from 'shared/bs-version.interface';
 import { IpcService } from "./ipc.service";
 import { NotificationService } from "./notification.service";
-import { BehaviorSubject, Observable, lastValueFrom, tap } from "rxjs";
+import { BehaviorSubject, Observable, defer, finalize, from, lastValueFrom, switchMap, tap, throwError } from "rxjs";
 import { ConfigurationService } from "./configuration.service";
 import { ThemeService } from "./theme.service";
 import { BsStore } from "shared/models/bs-store.enum";
@@ -14,6 +14,7 @@ import { NeedLaunchAdminModal } from "renderer/components/modal/modal-types/need
 import { VrRuntimeMismatchModal } from "renderer/components/modal/modal-types/vr-runtime-mismatch-modal.component";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { VrRuntime } from "shared/models/vr-runtime.model";
+import { safeLt } from "shared/helpers/semver.helpers";
 
 export class BSLauncherService {
     private static instance: BSLauncherService;
@@ -23,6 +24,7 @@ export class BSLauncherService {
     private readonly config: ConfigurationService;
     private readonly theme: ThemeService;
     private readonly modals: ModalService;
+    private launchInProgress = false;
 
     public readonly versionRunning$: BehaviorSubject<BSVersion> = new BehaviorSubject(null);
 
@@ -99,20 +101,22 @@ export class BSLauncherService {
     }
 
     private async confirmVrRuntime(launchOptions: LaunchOption): Promise<void> {
-        const isOculusModeEnabled = launchOptions.launchMods?.includes(LaunchMods.OCULUS);
+        const bypassesOpenXr = [LaunchMods.OCULUS, LaunchMods.FPFC, LaunchMods.EDITOR]
+            .some(launchMod => launchOptions.launchMods?.includes(launchMod));
+        const predatesOpenXr = safeLt(launchOptions.version.BSVersion, "1.29.4");
         const dismissKey = "dont-remind-vr-runtime";
 
-        if (window.electron.platform !== "win32" || isOculusModeEnabled || this.config.get(dismissKey)) {
+        if (window.electron.platform !== "win32" || bypassesOpenXr || predatesOpenXr || this.config.get(dismissKey)) {
             return;
         }
 
         const activeRuntime = await lastValueFrom(this.ipcService.sendV2("vr-runtime.get-active"))
             .catch(() => VrRuntime.UNKNOWN);
-        if (activeRuntime !== VrRuntime.NOT_SET) {
+        if (![VrRuntime.NOT_SET, VrRuntime.UNKNOWN].includes(activeRuntime)) {
             return;
         }
 
-        const modalRes = await this.modals.openModal(VrRuntimeMismatchModal);
+        const modalRes = await this.modals.openModal(VrRuntimeMismatchModal, { data: activeRuntime });
         if (modalRes.exitCode !== ModalExitCode.COMPLETED) {
             throw new Error("VR runtime launch canceled");
         }
@@ -122,14 +126,37 @@ export class BSLauncherService {
         }
     }
 
-    public doLaunch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
+    private sendLaunch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
         return this.ipcService.sendV2("bs-launch.launch", launchOptions);
+    }
+
+    private withLaunchState(launchOptions: LaunchOption, launchFactory: () => Observable<BSLaunchEventData>): Observable<BSLaunchEventData> {
+        return defer(() => {
+            if (this.launchInProgress) {
+                return throwError(() => new Error("Beat Saber launch already in progress"));
+            }
+
+            this.launchInProgress = true;
+            this.versionRunning$.next(launchOptions.version);
+
+            return launchFactory().pipe(finalize(() => {
+                this.launchInProgress = false;
+                this.versionRunning$.next(null);
+            }));
+        });
+    }
+
+    public doLaunch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
+        return this.withLaunchState(launchOptions, () => from(this.confirmVrRuntime(launchOptions))
+            .pipe(switchMap(() => this.sendLaunch(launchOptions))));
     }
 
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData> {
 
-        return new Observable<BSLaunchEventData>(obs => {
+        return this.withLaunchState(launchOptions, () => new Observable<BSLaunchEventData>(obs => {
             (async () => {
+                await this.confirmVrRuntime(launchOptions);
+
                 // If downgraded from oculus and its not the official version
                 if(launchOptions.version.metadata?.store === BsStore.OCULUS && !launchOptions.version.oculus){
                     await this.enableSideloadedAppsIfNeeded();
@@ -139,9 +166,7 @@ export class BSLauncherService {
                     launchOptions.admin = await this.doMustStartAsAdmin();
                 }
 
-                await this.confirmVrRuntime(launchOptions);
-
-                const launch$ = this.handleLaunchEvents(this.doLaunch(launchOptions));
+                const launch$ = this.handleLaunchEvents(this.sendLaunch(launchOptions));
 
                 await lastValueFrom(launch$);
 
@@ -150,7 +175,7 @@ export class BSLauncherService {
             }).catch(err => {
                 obs.error(err);
             })
-        });
+        }));
 
     }
 

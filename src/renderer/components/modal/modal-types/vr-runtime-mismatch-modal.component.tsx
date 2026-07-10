@@ -6,11 +6,12 @@ import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { BsmLink } from "renderer/components/shared/bsm-link.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { ModalComponent, ModalExitCode } from "renderer/services/modale.service";
+import { VrRuntime } from "shared/models/vr-runtime.model";
 
-export const VrRuntimeMismatchModal: ModalComponent<boolean> = ({ resolver }) => {
+export const VrRuntimeMismatchModal: ModalComponent<boolean, VrRuntime> = ({ resolver, options }) => {
     const t = useTranslation();
     const [dontRemindAgain, setDontRemindAgain] = useState(false);
-    const activeRuntime = t("modals.vr-runtime-mismatch.runtimes.unknown");
+    const activeRuntime = t(`modals.vr-runtime-mismatch.runtimes.${options?.data ?? VrRuntime.UNKNOWN}`);
 
     return (
         <form className="text-gray-800 dark:text-gray-200 flex flex-col min-w-[350px]">
@@ -21,7 +22,7 @@ export const VrRuntimeMismatchModal: ModalComponent<boolean> = ({ resolver }) =>
                 <p className="text-sm italic">{t("modals.vr-runtime-mismatch.body.info")}</p>
                 <p className="text-sm">{t("modals.vr-runtime-mismatch.body.info-2")}</p>
             </div>
-            <div className="flex justify-start items-center *:underline *:text-sm *:text-neutral-200">
+            <div className="flex justify-start items-center *:underline *:text-sm *:text-gray-700 dark:*:text-neutral-200">
                 <BsmLink href="https://github.com/Zagrios/bs-manager/wiki/Configure-OpenXR-Runtime">
                     {t("modals.vr-runtime-mismatch.tutorial")}
                 </BsmLink>
