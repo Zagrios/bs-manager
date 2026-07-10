@@ -351,6 +351,23 @@
                     "error-notification": {
                         "message": "Ocorreu um erro, não foi possível alterar as configurações de atualização automática."
                     }
+                },
+                "pre-release-updates": {
+                    "title": "Receber versões de pré-lançamento",
+                    "description": "Receba versões beta e alfa do BSManager quando as atualizações automáticas estiverem ativadas.",
+                    "enable-modal": {
+                        "title": "Aviso sobre versões de pré-lançamento",
+                        "body": "Versões de pré-lançamento podem ser instáveis e conter alterações incompatíveis. Antes de continuar, faça backup manual das suas instâncias do Beat Saber e dos dados do BSManager. Continue apenas se entender e aceitar esses riscos.",
+                        "confirm-btn": "Entendo os riscos"
+                    },
+                    "disable-modal": {
+                        "title": "Voltar para versões estáveis?",
+                        "body": "O BSManager voltará para a versão estável mais recente disponível. Este downgrade pode remover recursos exclusivos da beta e tornar incompatíveis os dados criados com a versão de pré-lançamento. Faça backup manual das suas instâncias do Beat Saber e dos dados do BSManager antes de continuar.",
+                        "confirm-btn": "Voltar para versões estáveis"
+                    },
+                    "error-notification": {
+                        "message": "Ocorreu um erro ao alterar as configurações de pré-lançamento ou ao voltar para a versão estável."
+                    }
                 }
             }
         }

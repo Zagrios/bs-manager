@@ -351,6 +351,23 @@
                     "error-notification": {
                         "message": "發生錯誤，無法更改自動更新設定。"
                     }
+                },
+                "pre-release-updates": {
+                    "title": "接收預發布更新",
+                    "description": "啟用自動更新後，接收 BSManager 的 Beta 與 Alpha 版本。",
+                    "enable-modal": {
+                        "title": "預發布版本警告",
+                        "body": "預發布版本可能不穩定，且可能包含不相容的變更。繼續前，請手動備份您的 Beat Saber 實例與 BSManager 資料。僅在您了解並接受這些風險時才繼續。",
+                        "confirm-btn": "我了解這些風險"
+                    },
+                    "disable-modal": {
+                        "title": "返回穩定版本？",
+                        "body": "BSManager 將返回最新可用的穩定版本。此次降級可能會移除 Beta 專屬功能，並使使用預發布版本建立的資料不相容。繼續前，請手動備份您的 Beat Saber 實例與 BSManager 資料。",
+                        "confirm-btn": "返回穩定版本"
+                    },
+                    "error-notification": {
+                        "message": "變更預發布版本設定或返回穩定版本時發生錯誤。"
+                    }
                 }
             }
         }

@@ -351,6 +351,23 @@
                     "error-notification": {
                         "message": "Ocurrió un error, no se pudo cambiar la configuración de actualización automática."
                     }
+                },
+                "pre-release-updates": {
+                    "title": "Recibir versiones preliminares",
+                    "description": "Recibe versiones beta y alfa de BSManager cuando las actualizaciones automáticas están activadas.",
+                    "enable-modal": {
+                        "title": "Advertencia sobre versiones preliminares",
+                        "body": "Las versiones preliminares pueden ser inestables e incluir cambios incompatibles. Antes de continuar, haz una copia de seguridad manual de tus instancias de Beat Saber y de los datos de BSManager. Continúa solo si comprendes y aceptas estos riesgos.",
+                        "confirm-btn": "Entiendo los riesgos"
+                    },
+                    "disable-modal": {
+                        "title": "¿Volver a versiones estables?",
+                        "body": "BSManager volverá a la última versión estable disponible. Esta degradación puede eliminar funciones exclusivas de la beta y hacer incompatibles los datos creados con la versión preliminar. Haz una copia de seguridad manual de tus instancias de Beat Saber y de los datos de BSManager antes de continuar.",
+                        "confirm-btn": "Volver a versiones estables"
+                    },
+                    "error-notification": {
+                        "message": "Ocurrió un error al cambiar la configuración de versiones preliminares o al volver a la versión estable."
+                    }
                 }
             }
         }

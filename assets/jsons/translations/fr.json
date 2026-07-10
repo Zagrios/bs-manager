@@ -351,6 +351,23 @@
                     "error-notification": {
                         "message": "Une erreur est survenue, impossible de modifier les paramètres de mise à jour automatique."
                     }
+                },
+                "pre-release-updates": {
+                    "title": "Recevoir les pré-versions",
+                    "description": "Recevez les versions bêta et alpha de BSManager lorsque les mises à jour automatiques sont activées.",
+                    "enable-modal": {
+                        "title": "Avertissement pré-version",
+                        "body": "Les pré-versions peuvent être instables et contenir des changements incompatibles. Avant de continuer, sauvegardez manuellement vos instances Beat Saber et vos données BSManager. Continuez uniquement si vous comprenez et acceptez ces risques.",
+                        "confirm-btn": "Je comprends les risques"
+                    },
+                    "disable-modal": {
+                        "title": "Revenir aux versions stables ?",
+                        "body": "BSManager reviendra vers la dernière version stable disponible. Ce retour peut retirer des fonctionnalités propres à la bêta et rendre incompatibles des données créées avec la pré-version. Sauvegardez manuellement vos instances Beat Saber et vos données BSManager avant de continuer.",
+                        "confirm-btn": "Revenir aux versions stables"
+                    },
+                    "error-notification": {
+                        "message": "Une erreur est survenue lors de la modification des pré-versions ou du retour vers la version stable."
+                    }
                 }
             }
         }

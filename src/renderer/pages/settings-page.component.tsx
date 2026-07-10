@@ -548,6 +548,7 @@ function AdvancedSettings() {
     const notification = useService(NotificationService);
     const progressBar = useService(ProgressBarService);
     const staticConfig = useService(StaticConfigurationService);
+    const autoUpdater = useService(AutoUpdaterService);
 
     const t = useTranslationV2();
 
@@ -555,6 +556,7 @@ function AdvancedSettings() {
     const [useSymlink, setUseSymlink] = useState(false);
     const [useSystemProxy, setUseSystemProxy] = useState(false);
     const [autoUpdate, setAutoUpdate] = useState<AutoUpdate>(AutoUpdate.NEVER);
+    const [preReleaseUpdates, setPreReleaseUpdates] = useState(false);
 
 
     useEffect(() => {
@@ -564,6 +566,7 @@ function AdvancedSettings() {
             staticConfig.get("use-symlinks").then(useSymlinks => setUseSymlink(() => useSymlinks));
             staticConfig.get("use-system-proxy").then(useSystemProxy => setUseSystemProxy(() => useSystemProxy));
             staticConfig.get("auto-update").then(res => setAutoUpdate(() => res ?? AutoUpdate.ALWAYS));
+            staticConfig.get("pre-release-updates").then(enabled => setPreReleaseUpdates(() => enabled === true));
         }
     }, []);
 
@@ -664,6 +667,65 @@ function AdvancedSettings() {
         setAutoUpdate(() => newAutoUpdate);
     }
 
+    const onChangePreReleaseUpdates = async (enabled: boolean) => {
+        if (window.electron.platform !== "win32" || enabled === preReleaseUpdates) {
+            return;
+        }
+
+        const res = await modal.openModal(BasicModal, { data: {
+            title: enabled
+                ? "pages.settings.advanced.pre-release-updates.enable-modal.title"
+                : "pages.settings.advanced.pre-release-updates.disable-modal.title",
+            body: enabled
+                ? "pages.settings.advanced.pre-release-updates.enable-modal.body"
+                : "pages.settings.advanced.pre-release-updates.disable-modal.body",
+            image: BeatConflict,
+            buttons: [
+                { id: "cancel", text: "misc.cancel", type: "cancel" },
+                {
+                    id: "confirm",
+                    text: enabled
+                        ? "pages.settings.advanced.pre-release-updates.enable-modal.confirm-btn"
+                        : "pages.settings.advanced.pre-release-updates.disable-modal.confirm-btn",
+                    type: "error",
+                    onClick: () => true
+                }
+            ]
+        }});
+
+        if (res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm") {
+            return;
+        }
+
+        const { error } = await tryit(() => staticConfig.set("pre-release-updates", enabled));
+
+        if (error) {
+            notification.notifyError({
+                title: "notifications.types.error",
+                desc: "pages.settings.advanced.pre-release-updates.error-notification.message",
+            });
+            return;
+        }
+
+        setPreReleaseUpdates(() => enabled);
+
+        if (enabled) {
+            return;
+        }
+
+        const updateAvailable = await autoUpdater.isUpdateAvailable();
+        if (!updateAvailable || !progressBar.require()) {
+            return;
+        }
+
+        lastValueFrom(autoUpdater.downloadUpdate())
+            .then(() => autoUpdater.quitAndInstall())
+            .catch(() => notification.notifyError({
+                title: "notifications.types.error",
+                desc: "pages.settings.advanced.pre-release-updates.error-notification.message",
+            }));
+    }
+
     const advancedItems: Item[] = [];
 
     if (window.electron.platform === "win32") {
@@ -672,6 +734,12 @@ function AdvancedSettings() {
             text: t.text("pages.settings.advanced.auto-update.title"),
             desc: t.text("pages.settings.advanced.auto-update.description"),
             onChange: onChangeAutoUpdate
+        });
+        advancedItems.push({
+            checked: preReleaseUpdates,
+            text: t.text("pages.settings.advanced.pre-release-updates.title"),
+            desc: t.text("pages.settings.advanced.pre-release-updates.description"),
+            onChange: onChangePreReleaseUpdates
         });
     }
 
@@ -702,4 +770,3 @@ function AdvancedSettings() {
     </SettingContainer>
 
 }
-

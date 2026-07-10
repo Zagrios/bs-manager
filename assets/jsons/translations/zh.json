@@ -351,6 +351,23 @@
                     "error-notification": {
                         "message": "发生错误，无法更改自动更新设置。"
                     }
+                },
+                "pre-release-updates": {
+                    "title": "接收预发布更新",
+                    "description": "启用自动更新后，接收 BSManager 的 Beta 和 Alpha 版本。",
+                    "enable-modal": {
+                        "title": "预发布版本警告",
+                        "body": "预发布版本可能不稳定，并且可能包含不兼容的更改。继续前，请手动备份您的 Beat Saber 实例和 BSManager 数据。仅当您理解并接受这些风险时才继续。",
+                        "confirm-btn": "我了解这些风险"
+                    },
+                    "disable-modal": {
+                        "title": "返回稳定版本？",
+                        "body": "BSManager 将返回最新可用的稳定版本。此次降级可能会移除 Beta 专属功能，并使使用预发布版本创建的数据不兼容。继续前，请手动备份您的 Beat Saber 实例和 BSManager 数据。",
+                        "confirm-btn": "返回稳定版本"
+                    },
+                    "error-notification": {
+                        "message": "更改预发布版本设置或返回稳定版本时发生错误。"
+                    }
                 }
             }
         }

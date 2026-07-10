@@ -351,6 +351,23 @@
                     "error-notification": {
                         "message": "An error occurred, unable to change auto update settings."
                     }
+                },
+                "pre-release-updates": {
+                    "title": "Receive pre-release updates",
+                    "description": "Receive beta and alpha versions of BSManager when automatic updates are enabled.",
+                    "enable-modal": {
+                        "title": "Pre-release warning",
+                        "body": "Pre-release versions can be unstable and may contain incompatible changes. Before continuing, manually back up your Beat Saber instances and BSManager data. Continue only if you understand and accept these risks.",
+                        "confirm-btn": "I understand the risks"
+                    },
+                    "disable-modal": {
+                        "title": "Return to stable releases?",
+                        "body": "BSManager will return to the latest stable release if one is available. This downgrade can remove beta-only features and may make data created with the pre-release incompatible. Manually back up your Beat Saber instances and BSManager data before continuing.",
+                        "confirm-btn": "Return to stable releases"
+                    },
+                    "error-notification": {
+                        "message": "An error occurred while changing pre-release update settings or returning to the stable release."
+                    }
                 }
             }
         }

@@ -1,12 +1,14 @@
 import { autoUpdater, CancellationToken, ProgressInfo, UpdateInfo } from "electron-updater";
 import log from "electron-log";
-import { gt } from "semver";
+import { prerelease } from "semver";
 import { Progression } from "main/helpers/fs.helpers";
 import { Observable } from "rxjs";
 import { safeGt } from "shared/helpers/semver.helpers";
+import { StaticConfigurationService } from "./static-configuration.service";
 
 export class AutoUpdaterService {
     private static instance: AutoUpdaterService;
+    private readonly staticConfig = StaticConfigurationService.getInstance();
 
     public static getInstance(): AutoUpdaterService {
         if (!AutoUpdaterService.instance) {
@@ -18,14 +20,41 @@ export class AutoUpdaterService {
     constructor() {
         autoUpdater.logger = log;
         autoUpdater.autoDownload = false;
+        this.configureUpdateChannel();
+        this.staticConfig.$watch("pre-release-updates").subscribe(() => this.configureUpdateChannel());
+    }
+
+    private configureUpdateChannel(): void {
+        const allowPrerelease = this.staticConfig.get("pre-release-updates", false);
+
+        autoUpdater.allowPrerelease = allowPrerelease;
+        // A stable release can be numerically older than the beta currently installed.
+        // Keeping this enabled lets users explicitly return to the latest stable release.
+        autoUpdater.allowDowngrade = true;
+    }
+
+    private isStableDowngradeAvailable(version: string): boolean {
+        const prereleaseUpdatesEnabled = this.staticConfig.get("pre-release-updates", false);
+        const currentVersionIsPrerelease = !!prerelease(autoUpdater.currentVersion.version);
+        const updateVersionIsPrerelease = !!prerelease(version);
+
+        return !prereleaseUpdatesEnabled && currentVersionIsPrerelease && !updateVersionIsPrerelease;
+    }
+
+    private isUpdateAvailableForCurrentChannel(updateInfo: UpdateInfo | null | undefined): boolean {
+        if (!updateInfo) {
+            return false;
+        }
+
+        return safeGt(updateInfo.version, autoUpdater.currentVersion.version)
+            || this.isStableDowngradeAvailable(updateInfo.version);
     }
 
     public async isUpdateAvailable(): Promise<boolean> {
         return autoUpdater.checkForUpdates()
             .then(info => {
-                return !!info?.updateInfo && gt(
-                info.updateInfo.version, autoUpdater.currentVersion.version
-            )})
+                return this.isUpdateAvailableForCurrentChannel(info?.updateInfo)
+            })
             .catch(error => {
                 log.error("Could not get update", error);
                 return false;
@@ -34,7 +63,7 @@ export class AutoUpdaterService {
 
     public async getAvailableUpdate(): Promise<UpdateInfo | null> {
         return autoUpdater.checkForUpdates().then(info => {
-                if (info?.updateInfo && safeGt(info.updateInfo.version, autoUpdater.currentVersion.version)) {
+                if (this.isUpdateAvailableForCurrentChannel(info?.updateInfo)) {
                     return info.updateInfo;
                 }
                 return null;

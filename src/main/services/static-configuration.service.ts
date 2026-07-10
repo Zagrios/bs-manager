@@ -68,6 +68,7 @@ export interface StaticConfigKeyValues {
     "use-system-proxy": boolean;
     "last-version-launched": BSVersion;
     "auto-update": AutoUpdate;
+    "pre-release-updates": boolean;
 
     // Linux Specific static configs
     "proton-folder": string;
@@ -85,4 +86,3 @@ export type StaticConfigSetIpcRequest<K extends StaticConfigKeys> = {
     request: { key: K, value: StaticConfigKeyValues[K] };
     response: void;
 };
-

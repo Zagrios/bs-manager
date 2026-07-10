@@ -351,6 +351,23 @@
                     "error-notification": {
                         "message": "Nagkaroon ng error, hindi mababago ang mga setting ng awtomatikong pag-update."
                     }
+                },
+                "pre-release-updates": {
+                    "title": "Tumanggap ng mga pre-release update",
+                    "description": "Tumanggap ng beta at alpha na bersyon ng BSManager kapag naka-enable ang awtomatikong pag-update.",
+                    "enable-modal": {
+                        "title": "Babala sa pre-release",
+                        "body": "Maaaring hindi matatag ang mga pre-release na bersyon at magkaroon ng hindi tugmang pagbabago. Bago magpatuloy, manu-manong i-backup ang iyong mga instance ng Beat Saber at data ng BSManager. Magpatuloy lamang kung nauunawaan at tinatanggap mo ang mga panganib na ito.",
+                        "confirm-btn": "Nauunawaan ko ang mga panganib"
+                    },
+                    "disable-modal": {
+                        "title": "Bumalik sa mga stable na bersyon?",
+                        "body": "Babalik ang BSManager sa pinakabagong available na stable na bersyon. Maaaring alisin ng downgrade na ito ang mga feature na para lang sa beta at gawing hindi tugma ang data na ginawa sa pre-release. Manu-manong i-backup ang iyong mga instance ng Beat Saber at data ng BSManager bago magpatuloy.",
+                        "confirm-btn": "Bumalik sa mga stable na bersyon"
+                    },
+                    "error-notification": {
+                        "message": "Nagkaroon ng error habang binabago ang mga setting ng pre-release o bumabalik sa stable na bersyon."
+                    }
                 }
             }
         }

@@ -45,18 +45,37 @@ export class I18nService {
             });
     }
 
+    private mergeDictionary(fallback: Record<string, unknown>, dictionary: Record<string, unknown>): Record<string, unknown> {
+        const merged: Record<string, unknown> = { ...fallback };
+
+        Object.entries(dictionary).forEach(([key, value]) => {
+            const fallbackValue = fallback[key];
+            if (value && fallbackValue && typeof value === "object" && typeof fallbackValue === "object" && !Array.isArray(value) && !Array.isArray(fallbackValue)) {
+                merged[key] = this.mergeDictionary(fallbackValue as Record<string, unknown>, value as Record<string, unknown>);
+                return;
+            }
+
+            merged[key] = value;
+        });
+
+        return merged;
+    }
+
     private importLang(lang: string[], fallback: string): Record<string, string> {
+
+        const fallbackDictionary = require(`../../../assets/jsons/translations/${fallback.toLowerCase()}.json`);
 
         for (const l of lang) {
             try {
-                return require(`../../../assets/jsons/translations/${l.toLowerCase()}.json`);
+                const dictionary = require(`../../../assets/jsons/translations/${l.toLowerCase()}.json`);
+                return this.mergeDictionary(fallbackDictionary, dictionary) as Record<string, string>;
             }
             catch (e) {
                 continue;
             }
         }
 
-        return require(`../../../assets/jsons/translations/${fallback.toLowerCase()}.json`);
+        return fallbackDictionary;
     }
 
     public getSupportedLanguages(): string[] {

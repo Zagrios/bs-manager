@@ -351,6 +351,23 @@
                     "error-notification": {
                         "message": "Ein Fehler ist aufgetreten, die Einstellungen für die automatische Aktualisierung können nicht geändert werden."
                     }
+                },
+                "pre-release-updates": {
+                    "title": "Vorabversionen erhalten",
+                    "description": "Beta- und Alpha-Versionen von BSManager erhalten, wenn automatische Aktualisierungen aktiviert sind.",
+                    "enable-modal": {
+                        "title": "Warnung zu Vorabversionen",
+                        "body": "Vorabversionen können instabil sein und inkompatible Änderungen enthalten. Sichere vor dem Fortfahren deine Beat-Saber-Instanzen und BSManager-Daten manuell. Fahre nur fort, wenn du diese Risiken verstehst und akzeptierst.",
+                        "confirm-btn": "Ich verstehe die Risiken"
+                    },
+                    "disable-modal": {
+                        "title": "Zu stabilen Versionen zurückkehren?",
+                        "body": "BSManager kehrt zur neuesten verfügbaren stabilen Version zurück. Dieses Downgrade kann Beta-Funktionen entfernen und Daten aus der Vorabversion inkompatibel machen. Sichere vor dem Fortfahren deine Beat-Saber-Instanzen und BSManager-Daten manuell.",
+                        "confirm-btn": "Zu stabilen Versionen zurückkehren"
+                    },
+                    "error-notification": {
+                        "message": "Beim Ändern der Einstellungen für Vorabversionen oder beim Zurückkehren zur stabilen Version ist ein Fehler aufgetreten."
+                    }
                 }
             }
         }

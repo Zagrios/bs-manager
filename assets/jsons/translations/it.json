@@ -351,6 +351,23 @@
                     "error-notification": {
                         "message": "Si è verificato un errore, impossibile modificare le impostazioni di aggiornamento automatico."
                     }
+                },
+                "pre-release-updates": {
+                    "title": "Ricevi versioni preliminari",
+                    "description": "Ricevi versioni beta e alpha di BSManager quando gli aggiornamenti automatici sono attivati.",
+                    "enable-modal": {
+                        "title": "Avviso sulle versioni preliminari",
+                        "body": "Le versioni preliminari possono essere instabili e contenere modifiche incompatibili. Prima di continuare, esegui manualmente il backup delle istanze di Beat Saber e dei dati di BSManager. Continua solo se comprendi e accetti questi rischi.",
+                        "confirm-btn": "Comprendo i rischi"
+                    },
+                    "disable-modal": {
+                        "title": "Tornare alle versioni stabili?",
+                        "body": "BSManager tornerà all'ultima versione stabile disponibile. Questo downgrade può rimuovere funzionalità esclusive della beta e rendere incompatibili i dati creati con la versione preliminare. Esegui manualmente il backup delle istanze di Beat Saber e dei dati di BSManager prima di continuare.",
+                        "confirm-btn": "Torna alle versioni stabili"
+                    },
+                    "error-notification": {
+                        "message": "Si è verificato un errore durante la modifica delle impostazioni delle versioni preliminari o il ritorno alla versione stabile."
+                    }
                 }
             }
         }
