@@ -74,7 +74,7 @@ export class LivShortcut {
             name: this.buildShortcutName(launchOptions.version),
             installPath: await this.versionManager.getInstalledVersionPath(launchOptions.version),
             executable: app.getPath("exe"),
-            arguments: this.launcher.createLaunchLink(launchOptions)
+            arguments: this.launcher.createLaunchLink(launchOptions, { preserveLegacyOptions: true })
         };
     }
 

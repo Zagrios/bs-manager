@@ -109,6 +109,7 @@ export class BSLauncherService {
         if(params.oculusMode === "true"){ launchMods.push(LaunchMods.OCULUS); }
         if(params.desktopMode === "true"){ launchMods.push(LaunchMods.FPFC); }
         if(params.debug === "true"){ launchMods.push(LaunchMods.DEBUG); }
+        if(params.skipSteam === "true"){ launchMods.push(LaunchMods.SKIP_STEAM); }
         if(params.mapEditor === "true"){ launchMods.push(LaunchMods.EDITOR); }
         if(params.protonLogs === "true"){ launchMods.push(LaunchMods.PROTON_LOGS); }
         if(params.parallelViews === "true"){ launchMods.push(LaunchMods.PARALLEL_VIEWS); }
@@ -128,7 +129,7 @@ export class BSLauncherService {
         return res;
     }
 
-    private launchOptionToShortcutParams(launchOptions: LaunchOption): ShortcutParams{
+    private launchOptionToShortcutParams(launchOptions: LaunchOption, preserveLegacyOptions: boolean): ShortcutParams{
         const res: ShortcutParams = { version: launchOptions.version.BSVersion };
 
         if(launchOptions.version.name){ res.versionName = launchOptions.version.name; }
@@ -140,6 +141,7 @@ export class BSLauncherService {
         if(launchOptions.launchMods?.includes(LaunchMods.FPFC)){ res.desktopMode = "true"; }
         if(launchOptions.launchMods?.includes(LaunchMods.DEBUG)){ res.debug = "true"; }
         if(launchOptions.command){ res.command = launchOptions.command; }
+        if(preserveLegacyOptions && launchOptions.launchMods?.includes(LaunchMods.SKIP_STEAM)){ res.skipSteam = "true"; }
         if(launchOptions.launchMods?.includes(LaunchMods.EDITOR)){ res.mapEditor = "true"; }
         if(launchOptions.launchMods?.includes(LaunchMods.PROTON_LOGS)){ res.protonLogs = "true"; }
         if(launchOptions.launchMods?.includes(LaunchMods.PARALLEL_VIEWS)){ res.parallelViews = "true"; }
@@ -196,8 +198,8 @@ export class BSLauncherService {
         return iconPath;
     }
 
-    public createLaunchLink(launchOptions: LaunchOption): string{
-        const shortcutParams = this.launchOptionToShortcutParams(launchOptions);
+    public createLaunchLink(launchOptions: LaunchOption, options: CreateLaunchLinkOptions = {}): string{
+        const shortcutParams = this.launchOptionToShortcutParams(launchOptions, options.preserveLegacyOptions ?? false);
         return this.bsmProtocolService.buildLink("launch", shortcutParams).toString();
     }
 
@@ -287,6 +289,7 @@ type ShortcutParams = {
     desktopMode?: string;
     debug?: string;
     command?: string;
+    skipSteam?: string;
     mapEditor?: string;
     protonLogs?: string;
     parallelViews?: string;
@@ -295,5 +298,9 @@ type ShortcutParams = {
     versionIno?: string;
     versionSteam?: string;
     versionOculus?: string;
+}
+
+type CreateLaunchLinkOptions = {
+    preserveLegacyOptions?: boolean;
 }
 

@@ -126,8 +126,10 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 throw CustomError.fromError(new Error(`Path not exist : ${bsExePath}`), BSLaunchError.BS_NOT_FOUND);
             }
 
+            const skipSteam = launchOptions.launchMods?.includes(LaunchMods.SKIP_STEAM) ?? false;
+
             // Open Steam if not running
-            if(!(await this.steam.isSteamRunning())){
+            if(!skipSteam && !(await this.steam.isSteamRunning())){
 
                 obs.next({type: BSLaunchEvent.STEAM_LAUNCHING});
 
