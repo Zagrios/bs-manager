@@ -12,7 +12,7 @@ export function OpenXrRuntimeStatus() {
     const ipc = useService(IpcService);
     const t = useTranslation();
     const [activeRuntime, setActiveRuntime] = useState<VrRuntime>(null);
-    const warningDisabled = useObservable(
+    const warningDismissed = useObservable(
         () => config.watch<boolean>(VR_RUNTIME_WARNING_DISMISS_KEY),
         false,
         [config]
@@ -66,7 +66,7 @@ export function OpenXrRuntimeStatus() {
             <button type="button" className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold hover:brightness-110" onClick={refreshRuntime}>
                 {t("pages.settings.openxr.refresh")}
             </button>
-            {warningDisabled && (
+            {warningDismissed && (
                 <button type="button" className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold hover:brightness-110" onClick={restoreWarning}>
                     {t("pages.settings.openxr.restore-warning")}
                 </button>

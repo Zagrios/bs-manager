@@ -7,23 +7,37 @@ import { ThemeColorGradientSpliter } from "../shared/theme-color-gradient-splite
 import { map } from "rxjs";
 import { useConstant } from "renderer/hooks/use-constant.hook";
 
+const FOCUSABLE_SELECTOR = [
+    "a[href]",
+    "area[href]",
+    "button:not([disabled])",
+    "input:not([disabled]):not([type='hidden'])",
+    "select:not([disabled])",
+    "textarea:not([disabled])",
+    "iframe",
+    "object",
+    "embed",
+    "[contenteditable='true']",
+    "[tabindex]:not([tabindex='-1'])",
+].join(",");
+
 export function Modal() {
     const modalSevice = ModalService.getInstance();
-    const currentModalContainer = useRef<HTMLDivElement>(null);
-    const latestModals = useRef<ModalObject[]>();
+    const activeModalRef = useRef<HTMLDivElement>(null);
+    const modalsRef = useRef<ModalObject[]>();
 
     const modals$ = useConstant(() => modalSevice.getModalToShow());
 
     const modals = useObservable(() => modals$);
     const currentModal = useObservable<ModalObject>(() =>modals$.pipe(map(modals => modals?.at(-1))));
-    latestModals.current = modals;
+    modalsRef.current = modals;
 
     useEffect(() => {
-        if (!currentModal || !currentModalContainer.current) {
+        if (!currentModal || !activeModalRef.current) {
             return undefined;
         }
 
-        const modalContainer = currentModalContainer.current;
+        const modalContainer = activeModalRef.current;
         const previouslyFocused = document.activeElement instanceof HTMLElement
             ? document.activeElement
             : undefined;
@@ -44,27 +58,14 @@ export function Modal() {
             element.setAttribute("inert", "");
         });
 
-        const focusableElements = () => Array.from(modalContainer.querySelectorAll<HTMLElement>([
-            "a[href]",
-            "area[href]",
-            "button:not([disabled])",
-            "input:not([disabled]):not([type='hidden'])",
-            "select:not([disabled])",
-            "textarea:not([disabled])",
-            "iframe",
-            "object",
-            "embed",
-            "[contenteditable='true']",
-            "[tabindex]:not([tabindex='-1'])",
-        ].join(","))).filter(element => (
+        const getFocusableElements = () => Array.from(modalContainer.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(element => (
             element.getClientRects().length > 0 &&
             !element.matches(":disabled") &&
             !element.closest("[aria-hidden='true'], [hidden], [inert]")
         ));
 
-        const focusInsideModal = (last = false) => {
-            const focusable = focusableElements();
-            (focusable[last ? focusable.length - 1 : 0] ?? modalContainer).focus();
+        const focusModalEdge = (edge: "first" | "last", focusable = getFocusableElements()) => {
+            (focusable.at(edge === "first" ? 0 : -1) ?? modalContainer).focus();
         };
 
         const onKeyDown = (event: KeyboardEvent) => {
@@ -82,14 +83,14 @@ export function Modal() {
                 return;
             }
 
-            const focusable = focusableElements();
+            const focusable = getFocusableElements();
             const first = focusable.at(0);
             const last = focusable.at(-1);
             const { activeElement } = document;
 
             if (!first || !last || !modalContainer.contains(activeElement)) {
                 event.preventDefault();
-                focusInsideModal(event.shiftKey);
+                focusModalEdge(event.shiftKey ? "last" : "first", focusable);
             } else if (event.shiftKey && activeElement === first) {
                 event.preventDefault();
                 last.focus();
@@ -101,7 +102,7 @@ export function Modal() {
 
         const onFocusIn = (event: FocusEvent) => {
             if (!modalContainer.contains(event.target as Node)) {
-                focusInsideModal();
+                focusModalEdge("first");
             }
         };
 
@@ -109,7 +110,7 @@ export function Modal() {
         document.addEventListener("focusin", onFocusIn);
 
         if (!modalContainer.contains(document.activeElement)) {
-            focusInsideModal();
+            focusModalEdge("first");
         }
 
         return () => {
@@ -126,7 +127,7 @@ export function Modal() {
                 }
             });
 
-            const modalIsStillOpen = latestModals.current?.some(modal => modal.id === currentModal.id);
+            const modalIsStillOpen = modalsRef.current?.some(modal => modal.id === currentModal.id);
             if (!modalIsStillOpen && previouslyFocused?.isConnected) {
                 previouslyFocused.focus();
             }
@@ -177,7 +178,7 @@ export function Modal() {
             <AnimatePresence>
                 {currentModal ? <motion.span aria-hidden="true" data-modal-overlay="true" key="modal-overlay" onClick={onOverlayClicked} className="fixed size-full bg-black z-[90]" initial={{ opacity: 0 }} animate={{ opacity: currentModal && 0.6 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} /> : undefined}
                 {modals?.map(modal => (
-                    <motion.div aria-hidden={modal === currentModal ? undefined : "true"} ref={modal === currentModal ? currentModalContainer : undefined} tabIndex={-1} key={modal.id} className="fixed z-[90] top-1/2 left-1/2" initial={{ y: "100vh", x: "-50%" }} animate={{y: "-50%", scale: modal === currentModal ? 1 : 0, opacity: modal === currentModal ? 1 : 0, display: modal === currentModal ? "block" : ["block", "none"]}} exit={{ y: "100vh" }}>
+                    <motion.div aria-hidden={modal === currentModal ? undefined : "true"} ref={modal === currentModal ? activeModalRef : undefined} tabIndex={-1} key={modal.id} className="fixed z-[90] top-1/2 left-1/2" initial={{ y: "100vh", x: "-50%" }} animate={{y: "-50%", scale: modal === currentModal ? 1 : 0, opacity: modal === currentModal ? 1 : 0, display: modal === currentModal ? "block" : ["block", "none"]}} exit={{ y: "100vh" }}>
                         {renderModal(modal)}
                     </motion.div>
                 ))}
