@@ -309,6 +309,11 @@
                     "open-logs": "Открыть логи"
                 }
             },
+            "openxr": {
+                "status": "OpenXR: {runtime}",
+                "refresh": "Обновить статус OpenXR",
+                "restore-warning": "Восстановить предупреждение OpenXR"
+            },
             "advanced": {
                 "title": "Дополнительные",
                 "description": "Дополнительные настройки для BSManager.",
@@ -983,7 +988,7 @@
             "launch-as-admin": "Запустить от имени администратора"
         },
         "vr-runtime-mismatch": {
-            "title": "Среда выполнения OpenXR не настроена",
+            "title": "Предупреждение среды выполнения OpenXR",
             "tutorial": "Нажмите здесь, чтобы посмотреть руководство по настройке среды выполнения.",
             "body": {
                 "active-runtime": "Активная среда выполнения OpenXR: {activeRuntime}.",
@@ -997,7 +1002,7 @@
                     "vdxr": "Virtual Desktop (VDXR)",
                     "not-set": "Не настроено",
                     "other": "другая среда выполнения",
-                    "unknown": "не настроена или неизвестна"
+                    "unknown": "неизвестна (ошибка обнаружения)"
             },
             "dont-remind-me": "Больше не напоминать",
             "launch-anyway": "Запустить всё равно"

@@ -57,7 +57,41 @@ export class VrRuntimeService {
         return VrRuntimeService.instance;
     }
 
-    public async getActiveRuntime(): Promise<VrRuntime> {
+    private getEnvironmentValue(name: string, environment: NodeJS.ProcessEnv = this.environment): string | undefined {
+        const environmentKey = Object.keys(environment)
+            .find(key => key.toLowerCase() === name.toLowerCase());
+        return environmentKey ? environment[environmentKey] : undefined;
+    }
+
+    private getEffectiveEnvironmentValue(name: string, overrides: NodeJS.ProcessEnv): string | undefined {
+        return this.getEnvironmentValue(name, overrides) ?? this.getEnvironmentValue(name);
+    }
+
+    private expandEnvironmentVariables(runtimePath: string, environmentOverrides: NodeJS.ProcessEnv): string {
+        return runtimePath.replace(/%([^%]+)%/g, (match, variableName: string) => (
+            this.getEffectiveEnvironmentValue(variableName, environmentOverrides) ?? match
+        ));
+    }
+
+    private detectRuntime(runtimePath: string, environmentOverrides: NodeJS.ProcessEnv): VrRuntime {
+        const expandedRuntimePath = this.expandEnvironmentVariables(runtimePath, environmentOverrides);
+        try {
+            if (!this.pathExists(expandedRuntimePath)) {
+                return VrRuntime.NOT_SET;
+            }
+            return parseOpenXrRuntimePath(expandedRuntimePath);
+        } catch (error) {
+            log.warn("Unable to validate the active OpenXR runtime", error);
+            return VrRuntime.UNKNOWN;
+        }
+    }
+
+    public async getActiveRuntime(environmentOverrides: NodeJS.ProcessEnv = {}): Promise<VrRuntime> {
+        const runtimeOverride = this.getEffectiveEnvironmentValue("XR_RUNTIME_JSON", environmentOverrides);
+        if (runtimeOverride) {
+            return this.detectRuntime(runtimeOverride, environmentOverrides);
+        }
+
         if (this.platform !== "win32") {
             return VrRuntime.UNKNOWN;
         }
@@ -82,16 +116,6 @@ export class VrRuntimeService {
             return VrRuntime.NOT_SET;
         }
 
-        const expandedRuntimePath = activeRuntimePath.replace(/%([^%]+)%/g, (match, variableName: string) => {
-            const environmentKey = Object.keys(this.environment)
-                .find(key => key.toLowerCase() === variableName.toLowerCase());
-            return environmentKey ? this.environment[environmentKey] : match;
-        });
-
-        if (!this.pathExists(expandedRuntimePath)) {
-            return VrRuntime.NOT_SET;
-        }
-
-        return parseOpenXrRuntimePath(expandedRuntimePath);
+        return this.detectRuntime(activeRuntimePath, environmentOverrides);
     }
 }

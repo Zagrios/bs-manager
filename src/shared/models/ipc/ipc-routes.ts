@@ -170,7 +170,7 @@ export interface IpcChannelMapping {
     "enable-oculus-sideloaded-apps": { request: void, response: void };
 
     /* ** vr-runtime.ipcs ** */
-    "vr-runtime.get-active": { request: void, response: VrRuntime };
+    "vr-runtime.get-active": { request: string | void, response: VrRuntime };
 
     /* ** OTHERS (if your IPC channel is not in a "-ipcs" file, put it here) ** */
     "shortcut-launch-options": { request: void, response: LaunchOption };

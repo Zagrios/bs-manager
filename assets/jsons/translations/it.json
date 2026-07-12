@@ -309,6 +309,11 @@
                     "open-logs": "Apri Log"
                 }
             },
+            "openxr": {
+                "status": "OpenXR: {runtime}",
+                "refresh": "Aggiorna stato OpenXR",
+                "restore-warning": "Ripristina avviso OpenXR"
+            },
             "advanced": {
                 "title": "Avanzate",
                 "description": "Impostazioni avanzate per BSManager.",
@@ -984,7 +989,7 @@
             "not-remind-me": "Non ricordarmelo"
         },
         "vr-runtime-mismatch": {
-            "title": "Runtime OpenXR non impostato",
+            "title": "Avviso runtime OpenXR",
             "tutorial": "Clicca qui per un tutorial su come configurare il runtime.",
             "body": {
                 "active-runtime": "Il runtime OpenXR attivo è {activeRuntime}.",
@@ -998,7 +1003,7 @@
                     "vdxr": "Virtual Desktop (VDXR)",
                     "not-set": "Non impostato",
                     "other": "un altro runtime",
-                    "unknown": "non impostato o sconosciuto"
+                    "unknown": "sconosciuto (rilevamento non riuscito)"
             },
             "dont-remind-me": "Non ricordarmelo più",
             "launch-anyway": "Avvia comunque"

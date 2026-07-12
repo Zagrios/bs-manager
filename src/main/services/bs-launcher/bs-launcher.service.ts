@@ -3,7 +3,7 @@ import { LaunchOption, BSLaunchEventData } from "../../../shared/models/bs-launc
 import { IMAGE_CACHE_PATH } from "../../constants";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import log from "electron-log";
-import { Observable, defer, finalize, of, throwError } from "rxjs";
+import { Observable, Subject, defer, finalize, of } from "rxjs";
 import { BsmProtocolService } from "../bsm-protocol.service";
 import { app, shell} from "electron";
 import Color from "color";
@@ -13,7 +13,7 @@ import { objectFromEntries } from "../../../shared/helpers/object.helpers";
 import { WindowManagerService } from "../window-manager.service";
 import { IpcService } from "../ipc.service";
 import { BSVersionLibService } from "../bs-version-lib.service";
-import { execOnOs } from "../../helpers/env.helpers";
+import { execOnOs, parseEnvString } from "../../helpers/env.helpers";
 import { Resvg } from "@resvg/resvg-js";
 import { StoreLauncherInterface } from "./store-launcher.interface";
 import { SteamLauncherService } from "./steam-launcher.service";
@@ -76,31 +76,42 @@ export class BSLauncherService {
     }
 
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
-        return defer(() => {
+        return new Observable(observer => {
             if (this.launchInProgress) {
-                return throwError(() => new Error("Beat Saber launch already in progress"));
+                observer.error(new Error("Beat Saber launch already in progress"));
+                return undefined;
             }
 
+            this.launchInProgress = true;
             log.info("Launch version", launchOptions);
 
+            const launchEnvironment = tryit(() => parseEnvString(launchOptions.command ?? "").env).result;
             VrRuntimeService.getInstance()
-                .getActiveRuntime()
+                .getActiveRuntime(launchEnvironment)
                 .then(runtime => log.info("Active OpenXR runtime", runtime))
                 .catch(error => log.warn("Unable to log the active OpenXR runtime", error));
 
             const launcher = this.getStoreLauncherFromVersion(launchOptions.version);
 
             if(!launcher){
-                return throwError(() => new Error("Unable to get launcher for the provided version"));
+                this.launchInProgress = false;
+                observer.error(new Error("Unable to get launcher for the provided version"));
+                return undefined;
             }
 
-            this.launchInProgress = true;
-            return defer(() => {
+            const launchEvents = new Subject<BSLaunchEventData>();
+            const rendererSubscription = launchEvents.subscribe(observer);
+
+            defer(() => {
                 this.staticConfig.set("last-version-launched", launchOptions.version);
                 return launcher.launch(launchOptions);
             }).pipe(finalize(() => {
                 this.launchInProgress = false;
-            }));
+            })).subscribe(launchEvents);
+
+            // IPC/renderer teardown only stops delivery. The main process keeps the
+            // source subscription alive until the real launch lifecycle settles.
+            return () => rendererSubscription.unsubscribe();
         });
     }
 
@@ -315,6 +326,7 @@ type ShortcutParams = {
     versionSteam?: string;
     versionOculus?: string;
 }
+
 type CreateLaunchLinkOptions = {
     preserveLegacyOptions?: boolean;
 }

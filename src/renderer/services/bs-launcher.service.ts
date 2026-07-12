@@ -110,7 +110,7 @@ export class BSLauncherService {
             return true;
         }
 
-        const activeRuntime = await lastValueFrom(this.ipcService.sendV2("vr-runtime.get-active"))
+        const activeRuntime = await lastValueFrom(this.ipcService.sendV2("vr-runtime.get-active", launchOptions.command))
             .catch(() => VrRuntime.UNKNOWN);
         if (![VrRuntime.NOT_SET, VrRuntime.UNKNOWN].includes(activeRuntime)) {
             return true;

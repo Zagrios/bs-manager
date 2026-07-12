@@ -171,6 +171,33 @@ describe("BSLauncherService launch coordination", () => {
         expect(launcher.launch).toHaveBeenCalledTimes(2);
     });
 
+    it("keeps the main-process guard until the source completes after renderer teardown", () => {
+        const firstLaunch = new Subject<any>();
+        const launcher = { launch: jest.fn().mockReturnValue(firstLaunch) };
+        const service = Object.create(BSLauncherService.prototype) as BSLauncherService;
+        Object.assign(service as any, {
+            steamLauncher: launcher,
+            oculusLauncher: launcher,
+            staticConfig: { set: jest.fn() },
+        });
+        const launchOptions = buildLaunchOptions();
+
+        const rendererSubscription = service.launch(launchOptions).subscribe();
+        rendererSubscription.unsubscribe();
+
+        const overlappingError = jest.fn();
+        service.launch(launchOptions).subscribe({ error: overlappingError });
+        expect(overlappingError).toHaveBeenCalledWith(expect.objectContaining({ message: expect.stringContaining("already in progress") }));
+        expect(launcher.launch).toHaveBeenCalledTimes(1);
+
+        firstLaunch.complete();
+
+        const retryError = jest.fn();
+        service.launch(launchOptions).subscribe({ error: retryError });
+        expect(retryError).not.toHaveBeenCalled();
+        expect(launcher.launch).toHaveBeenCalledTimes(2);
+    });
+
     it("releases the main-process guard when a launcher throws before returning an observable", () => {
         const launcher = {
             launch: jest.fn()

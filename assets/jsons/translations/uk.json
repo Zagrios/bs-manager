@@ -309,6 +309,11 @@
                     "open-logs": "Відкрити логи"
                 }
             },
+            "openxr": {
+                "status": "OpenXR: {runtime}",
+                "refresh": "Оновити стан OpenXR",
+                "restore-warning": "Відновити попередження OpenXR"
+            },
             "advanced": {
                 "title": "Додатково",
                 "description": "Додаткові налаштування для BSManager.",
@@ -979,7 +984,7 @@
             "not-remind-me": "Не нагадувати мені"
         },
         "vr-runtime-mismatch": {
-            "title": "Середовище виконання OpenXR не налаштовано",
+            "title": "Попередження середовища виконання OpenXR",
             "tutorial": "Натисніть тут, щоб переглянути посібник із налаштування середовища виконання.",
             "body": {
                 "active-runtime": "Активний OpenXR-рушій: {activeRuntime}.",
@@ -993,7 +998,7 @@
                     "vdxr": "Virtual Desktop (VDXR)",
                     "not-set": "Не налаштовано",
                     "other": "інший рушій",
-                    "unknown": "не налаштовано або невідомо"
+                    "unknown": "невідомо (помилка виявлення)"
             },
             "dont-remind-me": "Більше не нагадувати",
             "launch-anyway": "Запустити все одно"

@@ -2,6 +2,14 @@ import { pathExists } from "fs-extra";
 import { lastValueFrom } from "rxjs";
 import { SteamLauncherService } from "main/services/bs-launcher/steam-launcher.service";
 import { LaunchOption } from "shared/models/bs-launch";
+import { exec } from "child_process";
+import { EventEmitter } from "events";
+import { isProcessRunning } from "main/helpers/os.helpers";
+
+jest.mock("child_process", () => ({
+    ...jest.requireActual("child_process"),
+    exec: jest.fn(),
+}));
 
 jest.mock("electron", () => ({
     app: {
@@ -49,6 +57,7 @@ jest.mock("main/services/bs-local-version.service", () => ({
 jest.mock("main/helpers/os.helpers", () => ({
     BsmShellLog: { Command: 1 },
     bsmSpawn: jest.fn(),
+    isProcessRunning: jest.fn(),
 }));
 
 jest.mock("main/helpers/launchOptions.helper", () => ({
@@ -104,5 +113,44 @@ describe("SteamLauncherService legacy launch options", () => {
 
         expect(steam.isSteamRunning).not.toHaveBeenCalled();
         expect(steam.openSteam).not.toHaveBeenCalled();
+    });
+});
+
+describe("SteamLauncherService administrator lifecycle", () => {
+    it("waits for the elevated helper to report Beat Saber exit", async () => {
+        jest.useFakeTimers();
+        const adminProcess = Object.assign(new EventEmitter(), {
+            killed: false,
+            pid: 84,
+            unref: jest.fn(),
+        });
+        (exec as unknown as jest.Mock).mockReturnValue(adminProcess);
+        (isProcessRunning as jest.Mock).mockResolvedValue(true);
+        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
+        Object.assign(service as any, {
+            util: { getAssetsScriptsPath: jest.fn(() => "C:/assets/scripts") },
+            restoreSteamVR: jest.fn().mockResolvedValue(undefined),
+        });
+
+        let settled = false;
+        const exit = (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", [], {})
+            .then((code: number) => {
+                settled = true;
+                return code;
+            });
+
+        jest.advanceTimersByTime(35_000);
+        await Promise.resolve();
+        expect(settled).toBe(false);
+
+        adminProcess.emit("exit", 0);
+        await Promise.resolve();
+        await Promise.resolve();
+        expect(settled).toBe(false);
+
+        (isProcessRunning as jest.Mock).mockResolvedValue(false);
+        await jest.advanceTimersByTimeAsync(1_000);
+        await expect(exit).resolves.toBe(0);
+        jest.useRealTimers();
     });
 });

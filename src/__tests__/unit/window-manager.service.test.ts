@@ -30,8 +30,8 @@ describe("WindowManagerService shortcut launch window", () => {
             width: 600,
             height: 500,
             minWidth: 600,
-            minHeight: 500,
-            resizable: false,
+            minHeight: 300,
+            resizable: true,
         }));
     });
 });

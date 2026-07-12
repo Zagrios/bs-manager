@@ -49,7 +49,7 @@ import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 import { OculusDownloaderService } from "renderer/services/bs-version-download/oculus-downloader.service";
 import { DISCORD_URL } from "shared/constants";
 import { AutoUpdate } from "shared/models/config";
-import { VrRuntime } from "shared/models/vr-runtime.model";
+import { OpenXrRuntimeStatus } from "renderer/components/settings/openxr-runtime-status.component";
 
 export function SettingsPage() {
 
@@ -101,7 +101,6 @@ export function SettingsPage() {
     const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
     const [modelsDeepLinkEnabled, setModelsDeepLinkEnabled] = useState(false);
     const [hasDownloaderSession, setHasDownloaderSession] = useState(false);
-    const [activeVrRuntime, setActiveVrRuntime] = useState<VrRuntime>(null);
     const appVersion = useObservable(() => autoUpdater.getAppVersion());
 
     useEffect(() => {
@@ -113,11 +112,6 @@ export function SettingsPage() {
 
         staticConfig.get("proton-folder").then(setProtonFolder);
 
-        if (window.electron.platform === "win32") {
-            lastValueFrom(ipcService.sendV2("vr-runtime.get-active"))
-                .then(setActiveVrRuntime)
-                .catch(() => setActiveVrRuntime(VrRuntime.UNKNOWN));
-        }
     }, []);
 
     const allDeepLinkEnabled = mapDeepLinksEnabled && playlistsDeepLinkEnabled && modelsDeepLinkEnabled;
@@ -543,12 +537,8 @@ export function SettingsPage() {
 
                 <AdvancedSettings />
 
-                <div className="flex justify-end gap-2 mb-5">
-                    {window.electron.platform === "win32" && (
-                        <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold">
-                            OpenXR: {activeVrRuntime ? t(`modals.vr-runtime-mismatch.runtimes.${activeVrRuntime}`) : "..."}
-                        </span>
-                    )}
+                <div className="flex flex-wrap justify-end gap-2 mb-5">
+                    <OpenXrRuntimeStatus />
                     <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold">v{appVersion}</span>
                 </div>
             </div>

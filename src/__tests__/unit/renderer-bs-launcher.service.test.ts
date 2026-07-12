@@ -84,6 +84,16 @@ describe("renderer BSLauncherService OpenXR checks", () => {
         expect(openModal).toHaveBeenCalledTimes(1);
     });
 
+    it("checks the runtime with launch-specific environment overrides", async () => {
+        const { service, sendV2 } = buildService();
+        const launchOptions = buildLaunchOptions();
+        launchOptions.command = "XR_RUNTIME_JSON=C:\\VirtualDesktop\\vdxr.json %command%";
+
+        await lastValueFrom(service.doLaunch(launchOptions));
+
+        expect(sendV2).toHaveBeenCalledWith("vr-runtime.get-active", launchOptions.command);
+    });
+
     it("skips the runtime check for headset-free FPFC launches", async () => {
         const { service, sendV2, openModal } = buildService();
 

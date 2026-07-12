@@ -309,6 +309,11 @@
                     "open-logs": "打开日志"
                 }
             },
+            "openxr": {
+                "status": "OpenXR：{runtime}",
+                "refresh": "刷新 OpenXR 状态",
+                "restore-warning": "恢复 OpenXR 警告"
+            },
             "advanced": {
                 "title": "高级设置",
                 "description": "BSManager的高级设置。",
@@ -984,7 +989,7 @@
             "not-remind-me": "不再提醒我"
         },
         "vr-runtime-mismatch": {
-            "title": "未设置 OpenXR 运行时",
+            "title": "OpenXR 运行时警告",
             "tutorial": "点击此处查看如何配置运行时的教程。",
             "body": {
                 "active-runtime": "当前活动的 OpenXR 运行时是 {activeRuntime}。",
@@ -998,7 +1003,7 @@
                     "vdxr": "Virtual Desktop (VDXR)",
                     "not-set": "未设置",
                     "other": "其他运行时",
-                    "unknown": "未设置或未知"
+                    "unknown": "未知（检测失败）"
             },
             "dont-remind-me": "不再提醒",
             "launch-anyway": "仍要启动"

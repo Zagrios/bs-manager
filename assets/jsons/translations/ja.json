@@ -309,6 +309,11 @@
                     "open-logs": "ログを表示"
                 }
             },
+            "openxr": {
+                "status": "OpenXR: {runtime}",
+                "refresh": "OpenXR の状態を更新",
+                "restore-warning": "OpenXR の警告を再び有効にする"
+            },
             "advanced": {
                 "title": "高度な設定",
                 "description": "BSManagerの高度な設定。",
@@ -984,7 +989,7 @@
             "not-remind-me": "Больше не напоминать"
         },
         "vr-runtime-mismatch": {
-            "title": "OpenXR ランタイムが未設定",
+            "title": "OpenXR ランタイムの警告",
             "tutorial": "ランタイムの設定方法については、こちらのチュートリアルをクリックしてください。",
             "body": {
                 "active-runtime": "現在有効な OpenXR ランタイムは {activeRuntime} です。",
@@ -998,7 +1003,7 @@
                     "vdxr": "Virtual Desktop (VDXR)",
                     "not-set": "未設定",
                     "other": "別のランタイム",
-                    "unknown": "未設定または不明"
+                    "unknown": "不明（検出に失敗）"
             },
             "dont-remind-me": "今後は表示しない",
             "launch-anyway": "このまま起動"
