@@ -18,7 +18,7 @@ import { BSVersionManagerService } from "renderer/services/bs-version-manager.se
 import { safeLt } from "shared/helpers/semver.helpers";
 import { WarningIcon } from "renderer/components/svgs/icons/warning-icon.component";
 import Tippy from "@tippyjs/react";
-import { CustomLaunchOption, LaunchModItemProps, LaunchOptionsPanel } from "./launch-options-panel.component";
+import { CustomLaunchOption, hasActiveVisibleUnpinnedLaunchMod, LaunchModItemProps, LaunchOptionsPanel } from "./launch-options-panel.component";
 import { LaunchMod, LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { OculusIcon } from "renderer/components/svgs/icons/oculus-icon.component";
 import { DesktopIcon } from "renderer/components/svgs/icons/desktop-icon.component";
@@ -215,15 +215,6 @@ export function LaunchSlide({ version }: Props) {
                 onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.DEBUG),
             },
             {
-                id: LaunchMods.SKIP_STEAM,
-                label: t("pages.version-viewer.launch-mods.skipsteam"),
-                description: t("pages.version-viewer.launch-mods.skipsteam-description"),
-                active: activeLaunchMods.includes(LaunchMods.SKIP_STEAM),
-                pinned: pinnedLaunchMods.includes(LaunchMods.SKIP_STEAM),
-                onChange: (checked) => toggleActiveLaunchMod(checked, LaunchMods.SKIP_STEAM),
-                onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.SKIP_STEAM),
-            },
-            {
                 id: LaunchMods.EDITOR,
                 icon: EditIcon,
                 label: t("pages.version-viewer.launch-mods.map-editor"),
@@ -310,12 +301,7 @@ export function LaunchSlide({ version }: Props) {
                 <div className="relative">
                     <GlowEffect className="!rounded-full" visible={
                         !!command ||
-                        activeLaunchMods?.some(
-                            mod =>
-                                !(version.metadata?.store === BsStore.OCULUS && mod === LaunchMods.OCULUS) &&
-                                !(safeLt(version.BSVersion, "1.23.0") && mod === LaunchMods.EDITOR) &&
-                                !(window.electron.platform !== "linux" && mod === LaunchMods.PROTON_LOGS) &&
-                                !pinnedLaunchMods.includes(mod))
+                        hasActiveVisibleUnpinnedLaunchMod(launchModItems)
                         }/>
                     <BsmButton
                         className="rounded-full w-fit text-lg py-1 px-7 bg-theme-2 text-gray-800 dark:text-white shadow-md shadow-black"

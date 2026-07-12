@@ -53,7 +53,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         try {
             await this.timedRename(steamVrFolder, `${steamVrFolder}.bak`);
             return false;
-        } catch (err) {
+        } catch (err: any) {
             log.warn("Could not backup SteamVR folder, skipping", err);
             return err?.code === "EPERM" || err?.message?.includes("timed out");
         }
@@ -126,7 +126,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 throw CustomError.fromError(new Error(`Path not exist : ${bsExePath}`), BSLaunchError.BS_NOT_FOUND);
             }
 
-            const skipSteam: boolean = launchOptions.launchMods?.includes(LaunchMods.SKIP_STEAM) ?? false;
+            const skipSteam = launchOptions.launchMods?.includes(LaunchMods.SKIP_STEAM) ?? false;
 
             // Open Steam if not running
             if(!skipSteam && !(await this.steam.isSteamRunning())){
@@ -140,16 +140,12 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                     obs.next({type: BSLaunchWarning.UNABLE_TO_LAUNCH_STEAM});
                 });
             }
-            else if(skipSteam) {
-                obs.next({ type: BSLaunchEvent.SKIPPING_STEAM_LAUNCH});
-            }
 
             const isFpfc = launchOptions.launchMods?.includes(LaunchMods.FPFC);
             const isOculus = launchOptions.launchMods?.includes(LaunchMods.OCULUS);
             if(isFpfc && !isOculus){
-                const backupPermError = await this.backupSteamVR().catch(() => {
-                    return this.restoreSteamVR().then(() => false);
-                });
+                const backupPermError = await this.backupSteamVR()
+                    .catch(async () => this.restoreSteamVR().then(() => false));
                 if(backupPermError){
                     obs.next({type: BSLaunchWarning.FPFC_NEED_ADMIN});
                 }

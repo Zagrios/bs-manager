@@ -77,7 +77,6 @@ describe("BSLauncherService shortcut links", () => {
             LaunchMods.OCULUS,
             LaunchMods.FPFC,
             LaunchMods.DEBUG,
-            LaunchMods.SKIP_STEAM,
             LaunchMods.EDITOR,
             LaunchMods.PROTON_LOGS,
             LaunchMods.PARALLEL_VIEWS,
@@ -109,5 +108,24 @@ describe("BSLauncherService shortcut links", () => {
             oculus: false,
             ino: launchOptions.version.ino,
         }));
+    });
+
+    it("parses legacy skipSteam shortcut links", () => {
+        const launchOptions = buildService().shortcutLinkToLaunchOptions(
+            "bsm://launch?version=1.29.1&versionSteam=true&skipSteam=true"
+        );
+
+        expect(launchOptions.launchMods).toContain("skip_steam");
+    });
+
+    it("only emits skipSteam when preserving an existing shortcut", () => {
+        const service = buildService();
+        const launchOptions: LaunchOption = {
+            version: { BSVersion: "1.29.1", steam: true },
+            launchMods: [LaunchMods.SKIP_STEAM],
+        };
+
+        expect(service.createLaunchLink(launchOptions)).not.toContain("skipSteam");
+        expect(service.createLaunchLink(launchOptions, { preserveLegacyOptions: true })).toContain("skipSteam=true");
     });
 });
