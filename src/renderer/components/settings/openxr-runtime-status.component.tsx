@@ -4,16 +4,14 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { IpcService } from "renderer/services/ipc.service";
 import { lastValueFrom } from "rxjs";
-import { VrRuntime } from "shared/models/vr-runtime.model";
-
-const DISMISS_KEY = "dont-remind-vr-runtime";
+import { VrRuntime, VR_RUNTIME_WARNING_DISMISS_KEY } from "shared/models/vr-runtime.model";
 
 export function OpenXrRuntimeStatus() {
     const config = useService(ConfigurationService);
     const ipc = useService(IpcService);
     const t = useTranslation();
     const [activeRuntime, setActiveRuntime] = useState<VrRuntime>(null);
-    const [warningDisabled, setWarningDisabled] = useState(() => config.get<boolean>(DISMISS_KEY) ?? false);
+    const [warningDisabled, setWarningDisabled] = useState(() => config.get<boolean>(VR_RUNTIME_WARNING_DISMISS_KEY) ?? false);
 
     const refreshRuntime = useCallback(() => {
         if (window.electron.platform !== "win32") {
@@ -52,7 +50,7 @@ export function OpenXrRuntimeStatus() {
         : "...";
 
     const restoreWarning = () => {
-        config.delete(DISMISS_KEY);
+        config.delete(VR_RUNTIME_WARNING_DISMISS_KEY);
         setWarningDisabled(false);
     };
 

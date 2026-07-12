@@ -993,7 +993,6 @@
             "tutorial": "런타임 설정 방법은 여기를 클릭해 튜토리얼을 확인하세요.",
             "body": {
                 "active-runtime": "현재 활성 OpenXR 런타임은 {activeRuntime}입니다.",
-                "expected-runtime": "이 Beat Saber 인스턴스에는 {expectedRuntime}이(가) 필요합니다.",
                 "info": "의도한 구성이라면 계속 실행을 선택하세요. 그렇지 않다면 VR 소프트웨어에서 적절한 OpenXR 런타임을 선택하세요.",
                 "info-2": "SteamVR과 Meta Horizon Link는 사용할 수 있는 OpenXR 런타임을 제공하는 대표적인 앱입니다."
             },

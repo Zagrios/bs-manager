@@ -100,14 +100,11 @@ export class VrRuntimeService {
         if (!this.registryList) {
             return VrRuntime.UNKNOWN;
         }
-        const registryData = await this.registryList(registryKey)
-            .then(data => data[registryKey])
-            .catch((error: unknown): null => {
-                log.warn("Unable to read the active OpenXR runtime", error);
-                return null;
-            });
-
-        if (registryData === null) {
+        let registryData: RegistryKeyData | undefined;
+        try {
+            registryData = (await this.registryList(registryKey))[registryKey];
+        } catch (error) {
+            log.warn("Unable to read the active OpenXR runtime", error);
             return VrRuntime.UNKNOWN;
         }
 

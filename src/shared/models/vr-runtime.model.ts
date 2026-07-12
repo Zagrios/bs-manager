@@ -6,3 +6,5 @@ export enum VrRuntime {
     OTHER = "other",
     UNKNOWN = "unknown",
 }
+
+export const VR_RUNTIME_WARNING_DISMISS_KEY = "dont-remind-vr-runtime";

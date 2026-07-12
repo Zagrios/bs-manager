@@ -993,7 +993,6 @@
             "tutorial": "Clicca qui per un tutorial su come configurare il runtime.",
             "body": {
                 "active-runtime": "Il runtime OpenXR attivo è {activeRuntime}.",
-                "expected-runtime": "Questa istanza di Beat Saber richiede {expectedRuntime}.",
                 "info": "Se questa configurazione è intenzionale, scegli Avvia comunque. Altrimenti seleziona il runtime OpenXR appropriato nel software VR.",
                 "info-2": "SteamVR e Meta Horizon Link sono due app popolari che forniscono un runtime OpenXR che puoi usare."
             },

@@ -13,7 +13,7 @@ import { sToMs } from "shared/helpers/time.helpers";
 import { NeedLaunchAdminModal } from "renderer/components/modal/modal-types/need-launch-admin-modal.component";
 import { VrRuntimeMismatchModal } from "renderer/components/modal/modal-types/vr-runtime-mismatch-modal.component";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
-import { VrRuntime } from "shared/models/vr-runtime.model";
+import { VrRuntime, VR_RUNTIME_WARNING_DISMISS_KEY } from "shared/models/vr-runtime.model";
 import { safeLt } from "shared/helpers/semver.helpers";
 
 export class BSLauncherService {
@@ -104,9 +104,8 @@ export class BSLauncherService {
         const bypassesOpenXr = [LaunchMods.OCULUS, LaunchMods.FPFC, LaunchMods.EDITOR]
             .some(launchMod => launchOptions.launchMods?.includes(launchMod));
         const predatesOpenXr = safeLt(launchOptions.version.BSVersion, "1.29.4");
-        const dismissKey = "dont-remind-vr-runtime";
 
-        if (window.electron.platform !== "win32" || bypassesOpenXr || predatesOpenXr || this.config.get(dismissKey)) {
+        if (window.electron.platform !== "win32" || bypassesOpenXr || predatesOpenXr || this.config.get(VR_RUNTIME_WARNING_DISMISS_KEY)) {
             return true;
         }
 
@@ -122,7 +121,7 @@ export class BSLauncherService {
         }
 
         if (modalRes.data) {
-            this.config.set(dismissKey, true);
+            this.config.set(VR_RUNTIME_WARNING_DISMISS_KEY, true);
         }
 
         return true;

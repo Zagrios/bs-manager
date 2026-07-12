@@ -23,7 +23,6 @@ export function BsmLink({ className, href, children, style, internal }: Props) {
     };
 
     return (
-        // eslint-disable-next-line jsx-a11y/anchor-is-valid -- Will be reworked later
         <a
             className={`${className} ${href && "cursor-pointer"}`}
             href={href}

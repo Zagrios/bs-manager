@@ -993,7 +993,6 @@
             "tutorial": "點擊此處查看如何設定執行階段的教學。",
             "body": {
                 "active-runtime": "目前作用中的 OpenXR 執行階段是 {activeRuntime}。",
-                "expected-runtime": "此 Beat Saber 執行個體需要 {expectedRuntime}。",
                 "info": "若這是預期的設定，請選擇仍要啟動。否則，請在 VR 軟體中選擇合適的 OpenXR 執行階段。",
                 "info-2": "SteamVR 和 Meta Horizon Link 是兩個可提供 OpenXR 執行階段的常用應用程式。"
             },

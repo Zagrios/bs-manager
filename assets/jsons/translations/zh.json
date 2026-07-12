@@ -993,7 +993,6 @@
             "tutorial": "点击此处查看如何配置运行时的教程。",
             "body": {
                 "active-runtime": "当前活动的 OpenXR 运行时是 {activeRuntime}。",
-                "expected-runtime": "此 Beat Saber 实例需要 {expectedRuntime}。",
                 "info": "如果这是预期配置，请选择仍要启动。否则，请在 VR 软件中选择合适的 OpenXR 运行时。",
                 "info-2": "SteamVR 和 Meta Horizon Link 是两个可提供 OpenXR 运行时的常用应用。"
             },

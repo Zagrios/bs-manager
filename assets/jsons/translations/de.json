@@ -993,7 +993,6 @@
             "tutorial": "Klicke hier für eine Anleitung zum Einrichten der Laufzeit.",
             "body": {
                 "active-runtime": "Die aktive OpenXR-Laufzeit ist {activeRuntime}.",
-                "expected-runtime": "Diese Beat-Saber-Instanz erwartet {expectedRuntime}.",
                 "info": "Wenn dies beabsichtigt ist, wähle Trotzdem starten. Andernfalls wähle die passende OpenXR-Laufzeit in deiner VR-Software.",
                 "info-2": "SteamVR und Meta Horizon Link sind zwei beliebte Anwendungen, die eine OpenXR-Laufzeit bereitstellen."
             },
