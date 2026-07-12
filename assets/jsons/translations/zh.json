@@ -309,11 +309,6 @@
                     "open-logs": "打开日志"
                 }
             },
-            "openxr": {
-                "status": "OpenXR：{runtime}",
-                "refresh": "刷新 OpenXR 状态",
-                "restore-warning": "恢复 OpenXR 警告"
-            },
             "advanced": {
                 "title": "高级设置",
                 "description": "BSManager的高级设置。",

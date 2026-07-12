@@ -309,11 +309,6 @@
                     "open-logs": "ログを表示"
                 }
             },
-            "openxr": {
-                "status": "OpenXR: {runtime}",
-                "refresh": "OpenXR の状態を更新",
-                "restore-warning": "OpenXR の警告を再び有効にする"
-            },
             "advanced": {
                 "title": "高度な設定",
                 "description": "BSManagerの高度な設定。",

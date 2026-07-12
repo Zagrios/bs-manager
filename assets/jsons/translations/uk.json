@@ -309,11 +309,6 @@
                     "open-logs": "Відкрити логи"
                 }
             },
-            "openxr": {
-                "status": "OpenXR: {runtime}",
-                "refresh": "Оновити стан OpenXR",
-                "restore-warning": "Відновити попередження OpenXR"
-            },
             "advanced": {
                 "title": "Додатково",
                 "description": "Додаткові налаштування для BSManager.",

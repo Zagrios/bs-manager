@@ -309,11 +309,6 @@
                     "open-logs": "Protokolle öffnen"
                 }
             },
-            "openxr": {
-                "status": "OpenXR: {runtime}",
-                "refresh": "OpenXR-Status aktualisieren",
-                "restore-warning": "OpenXR-Warnung wiederherstellen"
-            },
             "advanced": {
                 "title": "Erweiterte",
                 "description": "Erweiterte Einstellungen für BSManager.",

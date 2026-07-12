@@ -49,7 +49,6 @@ import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 import { OculusDownloaderService } from "renderer/services/bs-version-download/oculus-downloader.service";
 import { DISCORD_URL } from "shared/constants";
 import { AutoUpdate } from "shared/models/config";
-import { OpenXrRuntimeStatus } from "renderer/components/settings/openxr-runtime-status.component";
 
 export function SettingsPage() {
 
@@ -537,10 +536,7 @@ export function SettingsPage() {
 
                 <AdvancedSettings />
 
-                <div className="flex flex-wrap justify-end gap-2 mb-5">
-                    <OpenXrRuntimeStatus />
-                    <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold">v{appVersion}</span>
-                </div>
+                <span className="bg-light-main-color-1 dark:bg-main-color-1 rounded-md py-1 px-2 font-bold float-right mb-5">v{appVersion}</span>
             </div>
             <SupportersView isVisible={showSupporters} setVisible={setShowSupporters} />
         </div>

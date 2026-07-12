@@ -309,11 +309,6 @@
                     "open-logs": "로그 보기"
                 }
             },
-            "openxr": {
-                "status": "OpenXR: {runtime}",
-                "refresh": "OpenXR 상태 새로 고침",
-                "restore-warning": "OpenXR 경고 복원"
-            },
             "advanced": {
                 "title": "고급 설정",
                 "description": "BSManager의 고급 설정입니다.",

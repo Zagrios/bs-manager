@@ -309,11 +309,6 @@
                     "open-logs": "Buksan ang mga logs"
                 }
             },
-            "openxr": {
-                "status": "OpenXR: {runtime}",
-                "refresh": "I-refresh ang status ng OpenXR",
-                "restore-warning": "Ibalik ang babala ng OpenXR"
-            },
             "advanced": {
                 "title": "Advanced",
                 "description": "Mga advanced na setting para sa BSManager.",
