@@ -65,8 +65,6 @@
                     "placeholder": "실행 옵션 예: KEY=VALUE %command% fpfc",
                     "create-launch-option": "실행 옵션 만들기"
                 },
-                "skipsteam": "Steam 실행 건너뛰기",
-                "skipsteam-description": "Beat Saber와 함께 Steam이 자동으로 열리는 것을 방지합니다. SteamVR이 간섭할 수 있는 WiVRn 또는 Monado와 같은 다른 VR 런타임을 사용하는 경우 활성화하세요.",
                 "map-editor": "맵 편집기",
                 "map-editor-description": "게임 대신 공식 Beat Saber 맵 편집기를 실행해.",
                 "proton-logs": "프로톤 로그",
@@ -527,13 +525,11 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "실행 중...🚀",
-                    "STEAM_LAUNCHING": "Steam 실행 중...",
-                    "SKIPPING_STEAM_LAUNCH": "Steam 실행 건너뛰기"
+                    "STEAM_LAUNCHING": "Steam 실행 중..."
                 },
                 "msg": {
                     "BS_LAUNCHING": "워밍업을 잊지 마세요 😉",
-                    "STEAM_LAUNCHING": "Beat Saber는 Steam 실행 후 자동으로 시작됩니다.",
-                    "SKIPPING_STEAM_LAUNCH": "신이 무엇을 하고 있는지 알고 있기를 바랍니다 :)"
+                    "STEAM_LAUNCHING": "Beat Saber는 Steam 실행 후 자동으로 시작됩니다."
                 }
             },
             "errors": {

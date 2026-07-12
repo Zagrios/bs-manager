@@ -65,8 +65,6 @@
                     "placeholder": "Параметры запуска, например: KEY=VALUE %command% fpfc",
                     "create-launch-option": "Создать параметр запуска"
                 },
-                "skipsteam": "Пропустить Steam",
-                "skipsteam-description": "Предотвращает автоматическое открытие Steam с Beat Saber, включите, если вы используете другую VR-среду, такую как WiVRn или Monado, с которой SteamVR может мешать.",
                 "map-editor": "Редактор карт",
                 "map-editor-description": "Запусти официальный редактор карт Beat Saber вместо игры.",
                 "proton-logs": "Протонные логи",
@@ -527,13 +525,11 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "Запуск...🚀",
-                    "STEAM_LAUNCHING": "Steam запускается!",
-                    "SKIPPING_STEAM_LAUNCH": "Пропуск запуска Steam"
+                    "STEAM_LAUNCHING": "Steam запускается!"
                 },
                 "msg": {
                     "BS_LAUNCHING": "Не забудьте разогреться 😉",
-                    "STEAM_LAUNCHING": "Beat Saber запустится сам после Steam.",
-                    "SKIPPING_STEAM_LAUNCH": "Надеюсь, вы знаете, что делаете :)"
+                    "STEAM_LAUNCHING": "Beat Saber запустится сам после Steam."
                 }
             },
             "errors": {

@@ -69,6 +69,10 @@ export type LaunchModItemProps = {
     readonly onDelete?: () => void;
 }
 
+export function hasActiveVisibleUnpinnedLaunchMod(launchMods: LaunchModItemProps[]): boolean {
+    return launchMods.some(mod => mod.active && mod.visible !== false && !mod.pinned);
+}
+
 export function LaunchModItem({ id, icon: Icon, label, description, active, visible, pinned, onChange, onPinChange, onEdit, onDelete }: LaunchModItemProps) {
 
     const { text: t } = useTranslationV2();

@@ -65,8 +65,6 @@
                     "placeholder": "Launch options ex: KEY=VALUE %command% fpfc",
                     "create-launch-option": "Create a launch option"
                 },
-                "skipsteam": "Skip Steam",
-                "skipsteam-description": "Stops Steam from opening automatically with Beat Saber, enable if you are using a different VR runtime like WiVRn or Monado that SteamVR may interfere with.",
                 "map-editor": "Map Editor",
                 "map-editor-description": "Start the official Beat Saber map editor instead of the game.",
                 "proton-logs": "Proton Logs",
@@ -527,13 +525,11 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "Launching...🚀",
-                    "STEAM_LAUNCHING": "Steam is launching!",
-                    "SKIPPING_STEAM_LAUNCH": "Skipping Steam launch"
+                    "STEAM_LAUNCHING": "Steam is launching!"
                 },
                 "msg": {
                     "BS_LAUNCHING": "Don't forget to warm up 😉",
-                    "STEAM_LAUNCHING": "Beat Saber will automatically launch after Steam.",
-                    "SKIPPING_STEAM_LAUNCH": "I hope you know what you're doing :)"
+                    "STEAM_LAUNCHING": "Beat Saber will automatically launch after Steam."
                 }
             },
             "errors": {

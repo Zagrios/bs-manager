@@ -145,7 +145,7 @@ export class BSLauncherService {
         return res;
     }
 
-    private launchOptionToShortcutParams(launchOptions: LaunchOption): ShortcutParams{
+    private launchOptionToShortcutParams(launchOptions: LaunchOption, preserveLegacyOptions: boolean): ShortcutParams{
         const res: ShortcutParams = { version: launchOptions.version.BSVersion };
 
         if(launchOptions.version.name){ res.versionName = launchOptions.version.name; }
@@ -157,7 +157,7 @@ export class BSLauncherService {
         if(launchOptions.launchMods?.includes(LaunchMods.FPFC)){ res.desktopMode = "true"; }
         if(launchOptions.launchMods?.includes(LaunchMods.DEBUG)){ res.debug = "true"; }
         if(launchOptions.command){ res.command = launchOptions.command; }
-        if(launchOptions.launchMods?.includes(LaunchMods.SKIP_STEAM)){ res.skipSteam = "true"; }
+        if(preserveLegacyOptions && launchOptions.launchMods?.includes(LaunchMods.SKIP_STEAM)){ res.skipSteam = "true"; }
         if(launchOptions.launchMods?.includes(LaunchMods.EDITOR)){ res.mapEditor = "true"; }
         if(launchOptions.launchMods?.includes(LaunchMods.PROTON_LOGS)){ res.protonLogs = "true"; }
         if(launchOptions.launchMods?.includes(LaunchMods.PARALLEL_VIEWS)){ res.parallelViews = "true"; }
@@ -214,8 +214,8 @@ export class BSLauncherService {
         return iconPath;
     }
 
-    public createLaunchLink(launchOptions: LaunchOption): string{
-        const shortcutParams = this.launchOptionToShortcutParams(launchOptions);
+    public createLaunchLink(launchOptions: LaunchOption, options: CreateLaunchLinkOptions = {}): string{
+        const shortcutParams = this.launchOptionToShortcutParams(launchOptions, options.preserveLegacyOptions ?? false);
         return this.bsmProtocolService.buildLink("launch", shortcutParams).toString();
     }
 
@@ -314,4 +314,7 @@ type ShortcutParams = {
     versionIno?: string;
     versionSteam?: string;
     versionOculus?: string;
+}
+type CreateLaunchLinkOptions = {
+    preserveLegacyOptions?: boolean;
 }
