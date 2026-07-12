@@ -24,12 +24,13 @@ describe("OpenXrRuntimeStatus", () => {
         Object.defineProperty(global, "document", { configurable: true, value: documentEvents });
     });
 
-    it("refreshes after focus changes and can restore a disabled warning", async () => {
+    it("refreshes after focus changes and tracks warning dismissal while mounted", async () => {
         const runtimes = [VrRuntime.STEAM, VrRuntime.OCULUS];
         const sendV2 = jest.fn(() => of(runtimes.shift() ?? VrRuntime.OCULUS));
         const warningDisabled$ = new BehaviorSubject(true);
         const config = {
-            get: jest.fn(() => warningDisabled$.getValue()),
+            watch: jest.fn(() => warningDisabled$.asObservable()),
+            set: jest.fn((_key: string, value: boolean) => warningDisabled$.next(value)),
             delete: jest.fn(() => warningDisabled$.next(false)),
         };
         const ipc = { sendV2 };
@@ -58,6 +59,9 @@ describe("OpenXrRuntimeStatus", () => {
         act(() => restoreButton?.props.onClick());
         expect(config.delete).toHaveBeenCalledWith("dont-remind-vr-runtime");
         expect(renderer.root.findAllByType("button").some(button => button.children.includes("pages.settings.openxr.restore-warning"))).toBe(false);
+
+        act(() => config.set("dont-remind-vr-runtime", true));
+        expect(renderer.root.findAllByType("button").some(button => button.children.includes("pages.settings.openxr.restore-warning"))).toBe(true);
 
         act(() => renderer.unmount());
     });

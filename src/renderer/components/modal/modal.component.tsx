@@ -1,7 +1,7 @@
 import { ModalExitCode, ModalObject, ModalService } from "renderer/services/modale.service";
 import { AnimatePresence, motion } from "framer-motion";
 import { useObservable } from "renderer/hooks/use-observable.hook";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { BsmIcon } from "../svgs/bsm-icon.component";
 import { ThemeColorGradientSpliter } from "../shared/theme-color-gradient-spliter.component";
 import { map } from "rxjs";
@@ -9,28 +9,127 @@ import { useConstant } from "renderer/hooks/use-constant.hook";
 
 export function Modal() {
     const modalSevice = ModalService.getInstance();
+    const currentModalContainer = useRef<HTMLDivElement>(null);
+    const latestModals = useRef<ModalObject[]>();
 
     const modals$ = useConstant(() => modalSevice.getModalToShow());
 
     const modals = useObservable(() => modals$);
     const currentModal = useObservable<ModalObject>(() =>modals$.pipe(map(modals => modals?.at(-1))));
+    latestModals.current = modals;
 
     useEffect(() => {
-        const onEscape = (e: KeyboardEvent) => {
-            if (currentModal.options?.closable === false || e.key !== "Escape") {
-                return;
-            }
-            currentModal.resolver({ exitCode: ModalExitCode.CLOSED });
+        if (!currentModal || !currentModalContainer.current) {
+            return undefined;
+        }
+
+        const modalContainer = currentModalContainer.current;
+        const previouslyFocused = document.activeElement instanceof HTMLElement
+            ? document.activeElement
+            : undefined;
+        const backgroundElements = Array.from(modalContainer.parentElement?.children ?? [])
+            .filter((element): element is HTMLElement => (
+                element instanceof HTMLElement &&
+                element !== modalContainer &&
+                !element.hasAttribute("data-modal-overlay")
+            ))
+            .map(element => ({
+                element,
+                ariaHidden: element.getAttribute("aria-hidden"),
+                inert: element.hasAttribute("inert"),
+            }));
+
+        backgroundElements.forEach(({ element }) => {
+            element.setAttribute("aria-hidden", "true");
+            element.setAttribute("inert", "");
+        });
+
+        const focusableElements = () => Array.from(modalContainer.querySelectorAll<HTMLElement>([
+            "a[href]",
+            "area[href]",
+            "button:not([disabled])",
+            "input:not([disabled]):not([type='hidden'])",
+            "select:not([disabled])",
+            "textarea:not([disabled])",
+            "iframe",
+            "object",
+            "embed",
+            "[contenteditable='true']",
+            "[tabindex]:not([tabindex='-1'])",
+        ].join(","))).filter(element => (
+            element.getClientRects().length > 0 &&
+            !element.matches(":disabled") &&
+            !element.closest("[aria-hidden='true'], [hidden], [inert]")
+        ));
+
+        const focusInsideModal = (last = false) => {
+            const focusable = focusableElements();
+            (focusable[last ? focusable.length - 1 : 0] ?? modalContainer).focus();
         };
 
-        if (currentModal) {
-            window.addEventListener("keyup", onEscape);
-        } else {
-            window.removeEventListener("keyup", onEscape);
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                if (currentModal.options?.closable === false) {
+                    return;
+                }
+                event.preventDefault();
+                event.stopPropagation();
+                currentModal.resolver({ exitCode: ModalExitCode.CLOSED });
+                return;
+            }
+
+            if (event.key !== "Tab") {
+                return;
+            }
+
+            const focusable = focusableElements();
+            const first = focusable.at(0);
+            const last = focusable.at(-1);
+            const { activeElement } = document;
+
+            if (!first || !last || !modalContainer.contains(activeElement)) {
+                event.preventDefault();
+                focusInsideModal(event.shiftKey);
+            } else if (event.shiftKey && activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        };
+
+        const onFocusIn = (event: FocusEvent) => {
+            if (!modalContainer.contains(event.target as Node)) {
+                focusInsideModal();
+            }
+        };
+
+        window.addEventListener("keydown", onKeyDown);
+        document.addEventListener("focusin", onFocusIn);
+
+        if (!modalContainer.contains(document.activeElement)) {
+            focusInsideModal();
         }
 
         return () => {
-            window.removeEventListener("keyup", onEscape);
+            window.removeEventListener("keydown", onKeyDown);
+            document.removeEventListener("focusin", onFocusIn);
+            backgroundElements.forEach(({ element, ariaHidden, inert }) => {
+                if (ariaHidden === null) {
+                    element.removeAttribute("aria-hidden");
+                } else {
+                    element.setAttribute("aria-hidden", ariaHidden);
+                }
+                if (!inert) {
+                    element.removeAttribute("inert");
+                }
+            });
+
+            const modalIsStillOpen = latestModals.current?.some(modal => modal.id === currentModal.id);
+            if (!modalIsStillOpen && previouslyFocused?.isConnected) {
+                previouslyFocused.focus();
+            }
         };
     }, [currentModal]);
 
@@ -76,9 +175,9 @@ export function Modal() {
 
     return (
             <AnimatePresence>
-                {currentModal ? <motion.span aria-hidden="true" key="modal-overlay" onClick={onOverlayClicked} className="fixed size-full bg-black z-[90]" initial={{ opacity: 0 }} animate={{ opacity: currentModal && 0.6 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} /> : undefined}
+                {currentModal ? <motion.span aria-hidden="true" data-modal-overlay="true" key="modal-overlay" onClick={onOverlayClicked} className="fixed size-full bg-black z-[90]" initial={{ opacity: 0 }} animate={{ opacity: currentModal && 0.6 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} /> : undefined}
                 {modals?.map(modal => (
-                    <motion.div key={modal.id} className="fixed z-[90] top-1/2 left-1/2" initial={{ y: "100vh", x: "-50%" }} animate={{y: "-50%", scale: modal === currentModal ? 1 : 0, opacity: modal === currentModal ? 1 : 0, display: modal === currentModal ? "block" : ["block", "none"]}} exit={{ y: "100vh" }}>
+                    <motion.div aria-hidden={modal === currentModal ? undefined : "true"} ref={modal === currentModal ? currentModalContainer : undefined} tabIndex={-1} key={modal.id} className="fixed z-[90] top-1/2 left-1/2" initial={{ y: "100vh", x: "-50%" }} animate={{y: "-50%", scale: modal === currentModal ? 1 : 0, opacity: modal === currentModal ? 1 : 0, display: modal === currentModal ? "block" : ["block", "none"]}} exit={{ y: "100vh" }}>
                         {renderModal(modal)}
                     </motion.div>
                 ))}

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useService } from "renderer/hooks/use-service.hook";
+import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { IpcService } from "renderer/services/ipc.service";
@@ -11,7 +12,11 @@ export function OpenXrRuntimeStatus() {
     const ipc = useService(IpcService);
     const t = useTranslation();
     const [activeRuntime, setActiveRuntime] = useState<VrRuntime>(null);
-    const [warningDisabled, setWarningDisabled] = useState(() => config.get<boolean>(VR_RUNTIME_WARNING_DISMISS_KEY) ?? false);
+    const warningDisabled = useObservable(
+        () => config.watch<boolean>(VR_RUNTIME_WARNING_DISMISS_KEY),
+        false,
+        [config]
+    );
 
     const refreshRuntime = useCallback(() => {
         if (window.electron.platform !== "win32") {
@@ -51,7 +56,6 @@ export function OpenXrRuntimeStatus() {
 
     const restoreWarning = () => {
         config.delete(VR_RUNTIME_WARNING_DISMISS_KEY);
-        setWarningDisabled(false);
     };
 
     return (
