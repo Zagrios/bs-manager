@@ -983,6 +983,25 @@
             "launch-as-admin": "管理者として起動",
             "not-remind-me": "Больше не напоминать"
         },
+        "vr-runtime-mismatch": {
+            "title": "OpenXR ランタイムの警告",
+            "tutorial": "ランタイムの設定方法については、こちらのチュートリアルをクリックしてください。",
+            "body": {
+                "active-runtime": "現在有効な OpenXR ランタイムは {activeRuntime} です。",
+                "info": "意図した設定であれば、このまま起動を選択してください。そうでない場合は、VR ソフトウェアで適切な OpenXR ランタイムを選択してください。",
+                "info-2": "SteamVR と Meta Horizon Link は、使用できる OpenXR ランタイムを提供する代表的なアプリです。"
+            },
+            "runtimes": {
+                    "steam": "SteamVR",
+                    "oculus": "Meta Quest Link",
+                    "vdxr": "Virtual Desktop (VDXR)",
+                    "not-set": "未設定",
+                    "other": "別のランタイム",
+                    "unknown": "不明（検出に失敗）"
+            },
+            "dont-remind-me": "今後は表示しない",
+            "launch-anyway": "このまま起動"
+        },
         "ask-install-path": {
             "title": "インストールフォルダー",
             "choose-folder-description": "BSManager によってダウンロードされたすべてのコンテンツ (バージョン、MOD、マップ、プレイリストなど) を含むフォルダを選択してください。",

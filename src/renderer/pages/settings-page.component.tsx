@@ -110,6 +110,7 @@ export function SettingsPage() {
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
 
         staticConfig.get("proton-folder").then(setProtonFolder);
+
     }, []);
 
     const allDeepLinkEnabled = mapDeepLinksEnabled && playlistsDeepLinkEnabled && modelsDeepLinkEnabled;
@@ -702,4 +703,3 @@ function AdvancedSettings() {
     </SettingContainer>
 
 }
-

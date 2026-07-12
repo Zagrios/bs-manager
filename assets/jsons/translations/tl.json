@@ -983,6 +983,25 @@
             "launch-as-admin": "I-launch bilang Administrator",
             "not-remind-me": "Huwag na akong paalalahanan"
         },
+        "vr-runtime-mismatch": {
+            "title": "Babala sa OpenXR runtime",
+            "tutorial": "I-click dito para sa tutorial kung paano i-configure ang runtime.",
+            "body": {
+                "active-runtime": "Ang aktibong OpenXR runtime ay {activeRuntime}.",
+                "info": "Kung sinadya ang setup na ito, piliin ang Ilunsad pa rin. Kung hindi, piliin ang angkop na OpenXR runtime sa iyong VR software.",
+                "info-2": "Ang SteamVR at Meta Horizon Link ay dalawang sikat na app na nagbibigay ng OpenXR runtime na maaari mong gamitin."
+            },
+            "runtimes": {
+                    "steam": "SteamVR",
+                    "oculus": "Meta Quest Link",
+                    "vdxr": "Virtual Desktop (VDXR)",
+                    "not-set": "Hindi naka-set",
+                    "other": "ibang runtime",
+                    "unknown": "hindi kilala (nabigo ang pagtukoy)"
+            },
+            "dont-remind-me": "Huwag nang ipaalala muli",
+            "launch-anyway": "Ilunsad pa rin"
+        },
         "ask-install-path": {
             "title": "Installation Folder",
             "choose-folder-description": "Piliin ang folder na maglalaman ng lahat ng content na ida-download ng BSManager. (mga bersyon, mods, maps, playlists, atbp.)",

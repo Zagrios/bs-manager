@@ -2,11 +2,11 @@ import { LaunchOption } from "shared/models/bs-launch";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio } from "child_process";
 import log from "electron-log";
-import { sToMs } from "../../../shared/helpers/time.helpers";
 import { LinuxService } from "../linux.service";
 import { BsmShellLog, bsmSpawn } from "main/helpers/os.helpers";
 import { IS_FLATPAK } from "main/constants";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
+import { app, Event } from "electron";
 
 export function buildBsLaunchArgs(launchOptions: LaunchOption): string[] {
     const launchArgs = [];
@@ -79,8 +79,6 @@ export abstract class AbstractLauncherService {
     protected launchBeatSaber(options: LaunchBeatSaberOptions): {process: ChildProcessWithoutNullStreams, exit: Promise<number>} {
         const process = this.launchBeatSaberProcess(options);
 
-        let timeoutId: NodeJS.Timeout;
-
         const exit = new Promise<number>((resolve, reject) => {
             // Don't remove, useful for debugging!
             // process.stdout.on("data", (data) => {
@@ -90,27 +88,31 @@ export abstract class AbstractLauncherService {
             //     log.error(`BS stderr: ${data}`);
             // });
 
-            process.on("error", (err) => {
+            const cleanup = () => app.removeListener("will-quit", onWillQuitHandler);
+            const onWillQuitHandler = (event: Event) => {
+                cleanup();
+                if (!process.killed) {
+                    event.preventDefault();
+                    log.info(`Unref'ing BS process ${process.pid} on app will-quit`);
+                    process.unref();
+                    resolve(-1);
+                    app.quit();
+                }
+            };
+
+            process.once("error", (err) => {
                 log.error(`Error while launching BS`, err);
+                cleanup();
                 reject(err);
             });
 
-            process.on("exit", (code) => {
+            process.once("exit", (code) => {
                 log.info(`BS process exit with code ${code}`);
+                cleanup();
                 resolve(code);
             });
 
-            const unrefAfter = options?.unrefAfter ?? sToMs(10);
-
-            timeoutId = setTimeout(() => {
-                log.error("BS process unref after timeout", unrefAfter);
-                process.unref();
-                process.removeAllListeners();
-                resolve(-1);
-            }, unrefAfter);
-
-        }).finally(() => {
-            clearTimeout(timeoutId);
+            app.on("will-quit", onWillQuitHandler);
         });
 
         return { process, exit };
@@ -154,8 +156,4 @@ export type LaunchBeatSaberOptions = {
     beatSaberFolderPath: string;
 
     args?: string[]; // Appended to the cmdlet string
-
-    // Timeout value (in ms) to unref the Beat Saber process to BSM
-    unrefAfter?: number;
 }
-

@@ -29,6 +29,14 @@ export class OculusLauncherService extends AbstractLauncherService implements St
         this.oculus = OculusService.getInstance();
     }
 
+    private async waitForBeatSaberExit(): Promise<void> {
+        while (await isProcessRunning(BS_EXECUTABLE)) {
+            await new Promise(resolve => {
+                setTimeout(resolve, 1_000);
+            });
+        }
+    }
+
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData> {
 
         return new Observable<BSLaunchEventData>(obs => {
@@ -75,9 +83,11 @@ export class OculusLauncherService extends AbstractLauncherService implements St
                     args: [ args, ...buildBsLaunchArgs(launchOptions) ]
                 });
 
-                return bsProcess.exit.catch(err => {
+                const exitCode = await bsProcess.exit.catch(err => {
                     throw CustomError.fromError(err, BSLaunchError.BS_EXIT_ERROR);
                 });
+                await this.waitForBeatSaberExit();
+                return exitCode;
 
             })().then(exitCode => {
                 log.info("BS process exit code", exitCode);

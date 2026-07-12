@@ -983,6 +983,25 @@
             "launch-as-admin": "以管理员身份启动",
             "not-remind-me": "不再提醒我"
         },
+        "vr-runtime-mismatch": {
+            "title": "OpenXR 运行时警告",
+            "tutorial": "点击此处查看如何配置运行时的教程。",
+            "body": {
+                "active-runtime": "当前活动的 OpenXR 运行时是 {activeRuntime}。",
+                "info": "如果这是预期配置，请选择仍要启动。否则，请在 VR 软件中选择合适的 OpenXR 运行时。",
+                "info-2": "SteamVR 和 Meta Horizon Link 是两个可提供 OpenXR 运行时的常用应用。"
+            },
+            "runtimes": {
+                    "steam": "SteamVR",
+                    "oculus": "Meta Quest Link",
+                    "vdxr": "Virtual Desktop (VDXR)",
+                    "not-set": "未设置",
+                    "other": "其他运行时",
+                    "unknown": "未知（检测失败）"
+            },
+            "dont-remind-me": "不再提醒",
+            "launch-anyway": "仍要启动"
+        },
         "ask-install-path": {
             "title": "安装文件夹",
             "choose-folder-description": "选择将包含 BSManager 下载的所有内容的文件夹。(版本、mod、地图、播放列表等)",

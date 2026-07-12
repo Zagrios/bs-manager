@@ -978,6 +978,25 @@
             "launch-as-admin": "Запустити як адміністратор",
             "not-remind-me": "Не нагадувати мені"
         },
+        "vr-runtime-mismatch": {
+            "title": "Попередження середовища виконання OpenXR",
+            "tutorial": "Натисніть тут, щоб переглянути посібник із налаштування середовища виконання.",
+            "body": {
+                "active-runtime": "Активний OpenXR-рушій: {activeRuntime}.",
+                "info": "Якщо це навмисна конфігурація, виберіть Запустити все одно. Інакше виберіть відповідний OpenXR-рушій у програмі VR.",
+                "info-2": "SteamVR і Meta Horizon Link — це дві популярні програми, які надають середовище виконання OpenXR."
+            },
+            "runtimes": {
+                    "steam": "SteamVR",
+                    "oculus": "Meta Quest Link",
+                    "vdxr": "Virtual Desktop (VDXR)",
+                    "not-set": "Не налаштовано",
+                    "other": "інший рушій",
+                    "unknown": "невідомо (помилка виявлення)"
+            },
+            "dont-remind-me": "Більше не нагадувати",
+            "launch-anyway": "Запустити все одно"
+        },
         "ask-install-path": {
             "title": "Папка встановлення",
             "choose-folder-description": "Виберіть папку, яка міститиме весь вміст, завантажений BSManager. (версії, моди, карти, плейлисти тощо)",

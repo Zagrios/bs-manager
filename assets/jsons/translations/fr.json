@@ -983,6 +983,25 @@
             "launch-as-admin": "Lancer en administateur",
             "not-remind-me": "Ne plus me rappeler"
         },
+        "vr-runtime-mismatch": {
+            "title": "Avertissement du runtime OpenXR",
+            "tutorial": "Clique ici pour voir un tutoriel afin de configurer le runtime.",
+            "body": {
+                "active-runtime": "Le runtime OpenXR actif est {activeRuntime}.",
+                "info": "Si cette configuration est intentionnelle, choisis Lancer quand même. Sinon, sélectionne le runtime OpenXR approprié dans ton logiciel VR.",
+                "info-2": "SteamVR et Meta Horizon Link sont deux applications populaires qui fournissent un runtime OpenXR que tu peux utiliser."
+            },
+            "runtimes": {
+                    "steam": "SteamVR",
+                    "oculus": "Meta Quest Link",
+                    "vdxr": "Virtual Desktop (VDXR)",
+                    "not-set": "Non configuré",
+                    "other": "un autre runtime",
+                    "unknown": "inconnu (échec de la détection)"
+            },
+            "dont-remind-me": "Ne plus me le rappeler",
+            "launch-anyway": "Lancer quand même"
+        },
         "ask-install-path": {
             "title": "Dossier d'installation",
             "choose-folder-description": "Choisissez le dossier qui contiendra tout le contenu téléchargé par BSManager. (versions, mods, maps, playlists, etc.)",
