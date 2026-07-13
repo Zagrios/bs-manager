@@ -119,10 +119,13 @@ async function isProcessRunningLinux(name: string): Promise<boolean> {
     };
 }
 
+const processMatchesName = (process: Awaited<ReturnType<typeof psList>>[number], name: string) =>
+    process.name?.includes(name) || process.cmd?.includes(name);
+
 async function getProcessIdWindows(name: string): Promise<number | null> {
     try {
         const processes = await psList();
-        const process = processes.find(process => process.name?.includes(name) || process.cmd?.includes(name));
+        const process = processes.find(process => processMatchesName(process, name));
         return process?.pid;
     } catch (error) {
         log.error(error);
@@ -137,9 +140,7 @@ export const isProcessRunning = process.platform === "win32"
 async function isProcessRunningWindows(name: string): Promise<boolean> {
     try {
         const processes = await psList();
-        return processes.some(process =>
-            process.name?.includes(name) || process.cmd?.includes(name)
-        );
+        return processes.some(process => processMatchesName(process, name));
     } catch (error) {
         log.error(error);
         return false;
@@ -184,7 +185,7 @@ export async function getProcessIds(name: string): Promise<number[]> {
     try {
         const processes = await psList();
         return processes
-            .filter(process => process.name?.includes(name) || process.cmd?.includes(name))
+            .filter(process => processMatchesName(process, name))
             .map(process => process.pid);
     } catch (error) {
         log.error(error);
