@@ -45,6 +45,10 @@ class TestLauncher extends AbstractLauncherService {
     public spawn(options: LaunchBeatSaberOptions) {
         return this.launchBeatSaberProcess(options);
     }
+
+    public enumerateProcesses(deadline: number) {
+        return this.getProcessesWithRetry("Beat Saber.exe", undefined, deadline);
+    }
 }
 
 const launchOptions: LaunchBeatSaberOptions = {
@@ -195,6 +199,25 @@ describe("AbstractLauncherService process lifecycle", () => {
 
         expect(execFile).not.toHaveBeenCalled();
         expect(app.quit).not.toHaveBeenCalled();
+    });
+
+    it("does not start another process enumeration after the deadline expires", async () => {
+        jest.useFakeTimers({ now: 1_000 });
+        try {
+            (getProcessesByName as jest.Mock).mockReturnValue(new Promise(() => {
+                // Remains pending until the enumeration deadline.
+            }));
+            const launcher = new TestLauncher();
+            const enumeration = launcher.enumerateProcesses(Date.now() + 50);
+            const enumerationError = enumeration.catch(error => error);
+
+            await jest.advanceTimersByTimeAsync(50);
+
+            expect(await enumerationError).toMatchObject({ message: "Process enumeration timed out" });
+            expect(getProcessesByName).toHaveBeenCalledTimes(1);
+        } finally {
+            jest.useRealTimers();
+        }
     });
 
     it("does not prevent or restart quit when Linux has no ownership identity", async () => {

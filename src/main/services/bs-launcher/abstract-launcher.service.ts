@@ -163,6 +163,9 @@ export abstract class AbstractLauncherService {
             if (signal?.aborted) {
                 throw new Error("Process ownership acquisition was cancelled");
             }
+            if (Date.now() >= enumerationDeadline) {
+                throw lastError ?? new Error("Process enumeration timed out");
+            }
             try {
                 return await this.waitForProcessList(getProcessesByName(name, launchToken), enumerationDeadline, signal);
             } catch (error) {

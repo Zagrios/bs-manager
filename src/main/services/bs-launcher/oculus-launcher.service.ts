@@ -75,17 +75,27 @@ export class OculusLauncherService extends AbstractLauncherService implements St
                     beatSaberFolderPath: bsPath,
                     args: [ args, ...buildBsLaunchArgs(launchOptions) ]
                 }, ownershipSnapshot);
-                const wrapperExit = bsProcess.exit.catch(err => {
-                    throw CustomError.fromError(err, BSLaunchError.BS_EXIT_ERROR);
-                });
+                const wrapperOutcome = bsProcess.exit.then(
+                    exitCode => ({ exitCode }),
+                    error => ({ error })
+                );
 
                 const ownedProcess = await bsProcess.ownership;
                 if (ownedProcess) {
+                    wrapperOutcome.then(wrapperResult => {
+                        if ("error" in wrapperResult) {
+                            log.error("BS wrapper process failed after Oculus process ownership was acquired", wrapperResult.error);
+                        }
+                    }).catch(error => log.error("Could not handle the BS wrapper process outcome", error));
                     await this.waitForOwnedProcessExit(exePath, ownedProcess, bsProcess.signal);
                     return 0;
                 }
 
-                return wrapperExit;
+                const wrapperResult = await wrapperOutcome;
+                if ("error" in wrapperResult) {
+                    throw CustomError.fromError(wrapperResult.error, BSLaunchError.BS_EXIT_ERROR);
+                }
+                return wrapperResult.exitCode;
 
             })().then(exitCode => {
                 log.info("BS process exit code", exitCode);
