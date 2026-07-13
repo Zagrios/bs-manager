@@ -1,34 +1,33 @@
 import { LaunchOption } from "shared/models/bs-launch";
 import { BSLocalVersionService } from "../bs-local-version.service";
-import { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio } from "child_process";
-import { app } from "electron";
+import { ChildProcess, SpawnOptions } from "child_process";
 import path from "path";
 import log from "electron-log";
-import { sToMs } from "../../../shared/helpers/time.helpers";
 import { LinuxService } from "../linux.service";
 import { BsmShellLog, bsmSpawn } from "main/helpers/os.helpers";
 import { BS_EXECUTABLE, IS_FLATPAK } from "main/constants";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
+import { app, Event } from "electron";
 import { StaticConfigurationService } from "main/services/static-configuration.service";
 import { focusProcessWindow } from "main/helpers/focus-process-window.helper";
 
 export function buildBsLaunchArgs(launchOptions: LaunchOption): string[] {
     const launchArgs = [];
 
-    if (!launchOptions.version.steam && !launchOptions.version.oculus) {
-        launchArgs.push("--no-yeet");
+    if(!launchOptions.version.steam && !launchOptions.version.oculus){
+        launchArgs.push("--no-yeet")
     }
-    if (launchOptions.launchMods?.includes(LaunchMods.OCULUS)) {
+    if(launchOptions.launchMods?.includes(LaunchMods.OCULUS)) {
         launchArgs.push("-vrmode");
         launchArgs.push("oculus");
     }
-    if (launchOptions.launchMods?.includes(LaunchMods.FPFC)) {
+    if(launchOptions.launchMods?.includes(LaunchMods.FPFC)) {
         launchArgs.push("fpfc");
     }
-    if (launchOptions.launchMods?.includes(LaunchMods.DEBUG)) {
+    if(launchOptions.launchMods?.includes(LaunchMods.DEBUG)) {
         launchArgs.push("--verbose");
     }
-    if (launchOptions.launchMods?.includes(LaunchMods.EDITOR)) {
+    if(launchOptions.launchMods?.includes(LaunchMods.EDITOR)) {
         launchArgs.push("editor");
     }
 
@@ -36,44 +35,56 @@ export function buildBsLaunchArgs(launchOptions: LaunchOption): string[] {
 }
 
 export abstract class AbstractLauncherService {
+
     protected readonly linux = LinuxService.getInstance();
     protected readonly localVersions = BSLocalVersionService.getInstance();
     protected readonly staticConfig = StaticConfigurationService.getInstance();
 
-    constructor() {
+    constructor(){
         this.linux = LinuxService.getInstance();
         this.localVersions = BSLocalVersionService.getInstance();
     }
 
-    protected launchBeatSaberProcess(options: LaunchBeatSaberOptions): ChildProcessWithoutNullStreams {
-        const spawnOptions: SpawnOptionsWithoutStdio = {
+    protected launchBeatSaberProcess(options: LaunchBeatSaberOptions): ChildProcess {
+        const spawnOptions: SpawnOptions = {
             detached: true,
             cwd: options.beatSaberFolderPath,
             env: { ...options.customEnv, ...options.env },
+            stdio: "ignore",
         };
 
-        if (options.args?.includes("--verbose")) {
+        if (options.args?.includes("--verbose")){
             spawnOptions.windowsVerbatimArguments = true;
         }
 
         spawnOptions.shell = true; // For windows to spawn properly
         return bsmSpawn(options.cmdlet, {
-            args: options.args,
-            options: spawnOptions,
-            log: BsmShellLog.Command,
+            args: options.args, options: spawnOptions, log: BsmShellLog.Command,
             flatpak: {
                 host: IS_FLATPAK,
-                env: ["SteamAppId", "SteamOverlayGameId", "SteamGameId", "WINEDLLOVERRIDES", "STEAM_COMPAT_DATA_PATH", "STEAM_COMPAT_INSTALL_PATH", "STEAM_COMPAT_CLIENT_INSTALL_PATH", "STEAM_COMPAT_APP_ID", "SteamEnv", "OXR_PARALLEL_VIEWS", "PROTON_LOG", "PROTON_LOG_DIR", ...Object.keys(options.customEnv || {})],
+                env: [
+                    "SteamAppId",
+                    "SteamOverlayGameId",
+                    "SteamGameId",
+                    "WINEDLLOVERRIDES",
+                    "STEAM_COMPAT_DATA_PATH",
+                    "STEAM_COMPAT_INSTALL_PATH",
+                    "STEAM_COMPAT_CLIENT_INSTALL_PATH",
+                    "STEAM_COMPAT_APP_ID",
+                    "SteamEnv",
+                    "OXR_PARALLEL_VIEWS",
+                    "PROTON_LOG",
+                    "PROTON_LOG_DIR",
+                    ...Object.keys(options.customEnv || {})
+                ],
             },
         });
     }
 
-    protected launchBeatSaber(options: LaunchBeatSaberOptions): { process: ChildProcessWithoutNullStreams; exit: Promise<number> } {
+    protected launchBeatSaber(options: LaunchBeatSaberOptions): {process: ChildProcess, exit: Promise<number>} {
+        const launchedAfter = new Date();
         const process = this.launchBeatSaberProcess(options);
-
-        this.handleGameWindowReady(process, options.beatSaberFolderPath);
-
-        let timeoutId: NodeJS.Timeout;
+        this.handleGameWindowReady(process, options.beatSaberFolderPath, launchedAfter);
 
         const exit = new Promise<number>((resolve, reject) => {
             // Don't remove, useful for debugging!
@@ -84,33 +95,38 @@ export abstract class AbstractLauncherService {
             //     log.error(`BS stderr: ${data}`);
             // });
 
-            process.on("error", err => {
+            const cleanup = () => app.removeListener("will-quit", onWillQuitHandler);
+            const onWillQuitHandler = (event: Event) => {
+                cleanup();
+                if (!process.killed) {
+                    event.preventDefault();
+                    log.info(`Unref'ing BS process ${process.pid} on app will-quit`);
+                    process.unref();
+                    resolve(-1);
+                    app.quit();
+                }
+            };
+
+            process.once("error", (err) => {
                 log.error(`Error while launching BS`, err);
+                cleanup();
                 reject(err);
             });
 
-            process.on("exit", code => {
+            process.once("exit", (code) => {
                 log.info(`BS process exit with code ${code}`);
+                cleanup();
                 resolve(code);
             });
 
-            const unrefAfter = options?.unrefAfter ?? sToMs(10);
-
-            timeoutId = setTimeout(() => {
-                log.error("BS process unref after timeout", unrefAfter);
-                process.unref();
-                process.removeAllListeners();
-                resolve(-1);
-            }, unrefAfter);
-        }).finally(() => {
-            clearTimeout(timeoutId);
+            app.on("will-quit", onWillQuitHandler);
         });
 
         return { process, exit };
     }
 
-    protected handleGameWindowReady(process: ChildProcessWithoutNullStreams, beatSaberFolderPath: string): void {
-        focusProcessWindow(path.join(beatSaberFolderPath, BS_EXECUTABLE)).then(result => {
+    protected handleGameWindowReady(process: ChildProcess, beatSaberFolderPath: string, launchedAfter: Date): void {
+        focusProcessWindow(path.join(beatSaberFolderPath, BS_EXECUTABLE), { launchedAfter }).then(result => {
             if (result === "not-found") {
                 return;
             }
@@ -128,11 +144,18 @@ export abstract class AbstractLauncherService {
      * - originalEnv keys will be overwritten with customEnv values
      * - customEnv keys will be removed if they exist in originalEnv
      */
-    protected updateEnvVariables(originalEnv: Record<string, string>, customEnv: Record<string, string>): void {
-        for (const [key, value] of Object.entries(customEnv)) {
+    protected updateEnvVariables(
+        originalEnv: Record<string, string>,
+        customEnv: Record<string, string>
+    ): void {
+        for (const [ key, value ] of Object.entries(customEnv)) {
             const isOverride = key in originalEnv;
 
-            log.info(isOverride ? "Overriding" : "Injecting", `${key}="${value}"`, "to the env launch command");
+            log.info(
+                isOverride ? "Overriding" : "Injecting",
+                `${key}="${value}"`,
+                "to the env launch command"
+            );
 
             if (isOverride) {
                 originalEnv[key] = value;
@@ -140,6 +163,7 @@ export abstract class AbstractLauncherService {
             }
         }
     }
+
 }
 
 export type LaunchBeatSaberOptions = {
@@ -152,7 +176,4 @@ export type LaunchBeatSaberOptions = {
     beatSaberFolderPath: string;
 
     args?: string[]; // Appended to the cmdlet string
-
-    // Timeout value (in ms) to unref the Beat Saber process to BSM
-    unrefAfter?: number;
-};
+}

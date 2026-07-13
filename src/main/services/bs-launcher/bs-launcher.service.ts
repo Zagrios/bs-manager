@@ -3,7 +3,7 @@ import { LaunchOption, BSLaunchEventData } from "../../../shared/models/bs-launc
 import { IMAGE_CACHE_PATH } from "../../constants";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import log from "electron-log";
-import { Observable, of, throwError } from "rxjs";
+import { Observable, Subject, defer, finalize, of } from "rxjs";
 import { BsmProtocolService } from "../bsm-protocol.service";
 import { app, shell} from "electron";
 import Color from "color";
@@ -13,7 +13,7 @@ import { objectFromEntries } from "../../../shared/helpers/object.helpers";
 import { WindowManagerService } from "../window-manager.service";
 import { IpcService } from "../ipc.service";
 import { BSVersionLibService } from "../bs-version-lib.service";
-import { execOnOs } from "../../helpers/env.helpers";
+import { execOnOs, parseEnvString } from "../../helpers/env.helpers";
 import { Resvg } from "@resvg/resvg-js";
 import { StoreLauncherInterface } from "./store-launcher.interface";
 import { SteamLauncherService } from "./steam-launcher.service";
@@ -25,6 +25,7 @@ import { StaticConfigurationService } from "../static-configuration.service";
 import { SteamService } from "../steam.service";
 import { tryit } from "shared/helpers/error.helpers";
 import { LinuxService } from "../linux.service";
+import { VrRuntimeService } from "../vr-runtime.service";
 
 export class BSLauncherService {
     private static instance: BSLauncherService;
@@ -39,6 +40,7 @@ export class BSLauncherService {
     private readonly oculusLauncher: OculusLauncherService;
     private readonly staticConfig: StaticConfigurationService;
     private readonly linux: LinuxService;
+    private launchInProgress = false;
 
     public static getInstance(): BSLauncherService {
         if (!BSLauncherService.instance) {
@@ -74,18 +76,43 @@ export class BSLauncherService {
     }
 
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
+        return new Observable(observer => {
+            if (this.launchInProgress) {
+                observer.error(new Error("Beat Saber launch already in progress"));
+                return undefined;
+            }
 
-        log.info("Launch version", launchOptions);
+            this.launchInProgress = true;
+            log.info("Launch version", launchOptions);
 
-        const launcher = this.getStoreLauncherFromVersion(launchOptions.version);
+            const launchEnvironment = tryit(() => parseEnvString(launchOptions.command ?? "").env).result;
+            VrRuntimeService.getInstance()
+                .getActiveRuntime(launchEnvironment)
+                .then(runtime => log.info("Active OpenXR runtime", runtime))
+                .catch(error => log.warn("Unable to log the active OpenXR runtime", error));
 
-        if(!launcher){
-            return throwError(() => new Error("Unable to get launcher for the provided version"));
-        }
+            const launcher = this.getStoreLauncherFromVersion(launchOptions.version);
 
-        this.staticConfig.set("last-version-launched", launchOptions.version);
+            if(!launcher){
+                this.launchInProgress = false;
+                observer.error(new Error("Unable to get launcher for the provided version"));
+                return undefined;
+            }
 
-        return launcher.launch(launchOptions);
+            const launchEvents = new Subject<BSLaunchEventData>();
+            const rendererSubscription = launchEvents.subscribe(observer);
+
+            defer(() => {
+                this.staticConfig.set("last-version-launched", launchOptions.version);
+                return launcher.launch(launchOptions);
+            }).pipe(finalize(() => {
+                this.launchInProgress = false;
+            })).subscribe(launchEvents);
+
+            // IPC/renderer teardown only stops delivery. The main process keeps the
+            // source subscription alive until the real launch lifecycle settles.
+            return () => rendererSubscription.unsubscribe();
+        });
     }
 
     public shortcutLinkToShortcutParams(shortcutLink: string|URL): ShortcutParams{
@@ -129,7 +156,7 @@ export class BSLauncherService {
         return res;
     }
 
-    private launchOptionToShortcutParams(launchOptions: LaunchOption): ShortcutParams{
+    private launchOptionToShortcutParams(launchOptions: LaunchOption, preserveLegacyOptions: boolean): ShortcutParams{
         const res: ShortcutParams = { version: launchOptions.version.BSVersion };
 
         if(launchOptions.version.name){ res.versionName = launchOptions.version.name; }
@@ -141,7 +168,7 @@ export class BSLauncherService {
         if(launchOptions.launchMods?.includes(LaunchMods.FPFC)){ res.desktopMode = "true"; }
         if(launchOptions.launchMods?.includes(LaunchMods.DEBUG)){ res.debug = "true"; }
         if(launchOptions.command){ res.command = launchOptions.command; }
-        if(launchOptions.launchMods?.includes(LaunchMods.SKIP_STEAM)){ res.skipSteam = "true"; }
+        if(preserveLegacyOptions && launchOptions.launchMods?.includes(LaunchMods.SKIP_STEAM)){ res.skipSteam = "true"; }
         if(launchOptions.launchMods?.includes(LaunchMods.EDITOR)){ res.mapEditor = "true"; }
         if(launchOptions.launchMods?.includes(LaunchMods.PROTON_LOGS)){ res.protonLogs = "true"; }
         if(launchOptions.launchMods?.includes(LaunchMods.PARALLEL_VIEWS)){ res.parallelViews = "true"; }
@@ -198,8 +225,8 @@ export class BSLauncherService {
         return iconPath;
     }
 
-    public createLaunchLink(launchOptions: LaunchOption): string{
-        const shortcutParams = this.launchOptionToShortcutParams(launchOptions);
+    public createLaunchLink(launchOptions: LaunchOption, options: CreateLaunchLinkOptions = {}): string{
+        const shortcutParams = this.launchOptionToShortcutParams(launchOptions, options.preserveLegacyOptions ?? false);
         return this.bsmProtocolService.buildLink("launch", shortcutParams).toString();
     }
 
@@ -300,3 +327,6 @@ type ShortcutParams = {
     versionOculus?: string;
 }
 
+type CreateLaunchLinkOptions = {
+    preserveLegacyOptions?: boolean;
+}

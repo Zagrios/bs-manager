@@ -51,6 +51,7 @@ import { DISCORD_URL } from "shared/constants";
 import { AutoUpdate } from "shared/models/config";
 
 export function SettingsPage() {
+
     const configService = useService(ConfigurationService);
     const themeService = useService(ThemeService);
     const ipcService = useService(IpcService);
@@ -81,7 +82,7 @@ export function SettingsPage() {
     const languagesItems: RadioItem<string>[] = i18nService
         .getSupportedLanguages()
         .map((l, index) => {
-            return { id: index, text: `pages.settings.language.languages.${l}`, value: l, textIcon: `pages.settings.language.languages.translated.${l}`, icon: <BsmIcon icon={`${l}-flag` as BsmIconType} className="max-h-5 w-fit ml-2" /> };
+            return { id: index, text: `pages.settings.language.languages.${l}`, value: l, textIcon: `pages.settings.language.languages.translated.${l}`, icon: <BsmIcon icon={`${l}-flag` as BsmIconType} className="max-h-5 w-fit ml-2"/> };
         })
         .sort((a, b) => a.text.localeCompare(b.text));
 
@@ -109,6 +110,7 @@ export function SettingsPage() {
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
 
         staticConfig.get("proton-folder").then(setProtonFolder);
+
     }, []);
 
     const allDeepLinkEnabled = mapDeepLinksEnabled && playlistsDeepLinkEnabled && modelsDeepLinkEnabled;
@@ -125,8 +127,8 @@ export function SettingsPage() {
     };
 
     const loadDownloadersSession = async () => {
-        setHasDownloaderSession(steamDownloader.sessionExist() || (await oculusDownloader.metaSessionExists()));
-    };
+        setHasDownloaderSession(steamDownloader.sessionExist() || await oculusDownloader.metaSessionExists());
+    }
 
     const clearDownloadersSession = async () => {
         if (!hasDownloaderSession) {
@@ -134,19 +136,19 @@ export function SettingsPage() {
         }
 
         steamDownloader.deleteSteamSession();
-        await oculusDownloader.deleteMetaSession();
+        await oculusDownloader.deleteMetaSession()
         notificationService.notifyInfo({
             title: "pages.settings.steam-and-oculus.logout-success",
         });
         loadDownloadersSession();
-    };
+    }
 
     const setFirstColorSetting = (hex: string) => configService.set("first-color", hex);
     const setSecondColorSetting = (hex: string) => configService.set("second-color", hex);
 
-    const handleChangeBsStore = (item: RadioItem<BsStore | undefined>) => {
+    const handleChangeBsStore = (item: RadioItem<BsStore|undefined>) => {
         bsDownloader.setDefaultStore(item.value);
-    };
+    }
 
     const handleChangeTheme = (item: RadioItem<ThemeConfig>) => {
         themeService.setTheme(item.value);
@@ -162,14 +164,16 @@ export function SettingsPage() {
         }
 
         try {
-            const pathResponse = await lastValueFrom(
-                ipcService.sendV2("choose-folder", {
-                    parent: "home",
-                    defaultPath: ".steam/steam/steamapps/common",
-                    showHidden: true,
-                })
-            );
-            if (pathResponse.canceled || !pathResponse.filePaths || pathResponse.filePaths.length === 0) {
+            const pathResponse = await lastValueFrom(ipcService.sendV2("choose-folder", {
+                parent: "home",
+                defaultPath: ".steam/steam/steamapps/common",
+                showHidden: true,
+        }));
+            if (
+                pathResponse.canceled
+                || !pathResponse.filePaths
+                || pathResponse.filePaths.length === 0
+            ) {
                 return;
             }
 
@@ -179,7 +183,9 @@ export function SettingsPage() {
         } catch (error: any) {
             notificationService.notifyError({
                 title: "pages.settings.proton-folder.errors.title",
-                desc: ["invalid-folder"].includes(error?.code) ? `pages.settings.proton-folder.errors.${error.code}` : "misc.unknown",
+                desc: ["invalid-folder"].includes(error?.code)
+                    ? `pages.settings.proton-folder.errors.${error.code}`
+                    : "misc.unknown",
             });
         }
     };
@@ -197,9 +203,10 @@ export function SettingsPage() {
             const fileChooserRes = await lastValueFrom(ipcService.sendV2("choose-folder"));
 
             if (!fileChooserRes.canceled && fileChooserRes.filePaths?.length) {
+
                 const newInstallationPath = fileChooserRes.filePaths[0];
 
-                if (newInstallationPath === installationFolder) {
+                if(newInstallationPath === installationFolder){
                     return;
                 }
 
@@ -207,30 +214,30 @@ export function SettingsPage() {
 
                 notificationService.notifySuccess({ title: "notifications.settings.move-folder.success.titles.transfer-started", desc: "notifications.settings.move-folder.success.descs.transfer-started" });
 
-                lastValueFrom(installationLocationService.setInstallationFolder(newInstallationPath, true))
-                    .then(res => {
-                        progressBarService.complete();
-                        progressBarService.hide();
+                lastValueFrom(installationLocationService.setInstallationFolder(newInstallationPath, true)).then(res => {
 
-                        setInstallationFolder(res);
+                    progressBarService.complete();
+                    progressBarService.hide();
 
-                        notificationService.notifySuccess({ title: "notifications.settings.move-folder.success.titles.transfer-finished", duration: 3000 });
+                    setInstallationFolder(res);
 
-                        // Restore links of external BS versions (steam, oculus, etc.)
-                        lastValueFrom(versionLinker.relinkAllVersionsFolders()).catch(() => {
-                            notificationService.notifyError({ title: "notifications.types.error", desc: "notifications.settings.move-folder.errors.descs.restore-linked-folders", duration: 15_000 });
-                        });
-                    })
-                    .catch((err: BsmException) => {
-                        progressBarService.hide();
+                    notificationService.notifySuccess({ title: "notifications.settings.move-folder.success.titles.transfer-finished", duration: 3000 });
 
-                        if (err?.code === "COPY_TO_SUBPATH") {
-                            notificationService.notifyError({ title: "notifications.settings.move-folder.errors.titles.transfer-failed", desc: "notifications.settings.move-folder.errors.descs.COPY_TO_SUBPATH", duration: 10_000 });
-                            return;
-                        }
-
-                        notificationService.notifyError({ title: "notifications.settings.move-folder.errors.titles.transfer-failed" });
+                    // Restore links of external BS versions (steam, oculus, etc.)
+                    lastValueFrom(versionLinker.relinkAllVersionsFolders()).catch(() => {
+                        notificationService.notifyError({ title: "notifications.types.error", desc: "notifications.settings.move-folder.errors.descs.restore-linked-folders", duration: 15_000 });
                     });
+
+                }).catch((err: BsmException) => {
+                    progressBarService.hide();
+
+                    if (err?.code === "COPY_TO_SUBPATH") {
+                        notificationService.notifyError({ title: "notifications.settings.move-folder.errors.titles.transfer-failed", desc: "notifications.settings.move-folder.errors.descs.COPY_TO_SUBPATH", duration: 10_000 });
+                        return;
+                    }
+
+                    notificationService.notifyError({ title: "notifications.settings.move-folder.errors.titles.transfer-failed" });
+                });
             }
         });
     };
@@ -262,9 +269,10 @@ export function SettingsPage() {
     const switchDeepLink = async (manager: MapsManagerService | PlaylistsManagerService | ModelsManagerService, enable: boolean, showNotification: boolean, setter: Dispatch<SetStateAction<boolean>>) => {
         const res = await (enable ? manager.enableDeepLink() : manager.disableDeepLink()).then(() => true).catch(() => false);
 
-        if (showNotification && res) {
-            showDeepLinkSuccess(enable);
-        } else if (showNotification && !res) {
+        if(showNotification && res){
+            showDeepLinkSuccess(enable)
+        }
+        else if(showNotification && !res){
             showDeepLinkError(enable);
         }
 
@@ -279,9 +287,10 @@ export function SettingsPage() {
     const toogleAllDeepLinks = async () => {
         const res = (await Promise.all([switchDeepLink(mapsManager, !allDeepLinkEnabled, false, setMapDeepLinksEnabled), switchDeepLink(playlistsManager, !allDeepLinkEnabled, false, setPlaylistsDeepLinkEnabled), switchDeepLink(modelsManager, !allDeepLinkEnabled, false, setModelsDeepLinkEnabled)])).every(activation => activation === true);
 
-        if (res) {
+        if(res){
             showDeepLinkSuccess(allDeepLinkEnabled);
-        } else {
+        }
+        else{
             showDeepLinkError(allDeepLinkEnabled);
         }
     };
@@ -294,19 +303,16 @@ export function SettingsPage() {
                 </div>
 
                 <SettingContainer title="pages.settings.steam-and-oculus.title" description="pages.settings.steam-and-oculus.description">
-                    <BsmButton onClick={clearDownloadersSession} className="w-fit px-3 py-[2px] text-white rounded-md" withBar={false} text="pages.settings.steam-and-oculus.logout" typeColor="error" disabled={!hasDownloaderSession} />
+                    <BsmButton onClick={clearDownloadersSession} className="w-fit px-3 py-[2px] text-white rounded-md" withBar={false} text="pages.settings.steam-and-oculus.logout" typeColor="error" disabled={!hasDownloaderSession}/>
 
                     <SettingContainer id="choose-default-store" minorTitle="pages.settings.steam-and-oculus.download-platform.title" description="pages.settings.steam-and-oculus.download-platform.desc" className="mt-3">
-                        <SettingRadioArray
-                            items={[
-                                { id: 1, text: "Steam", value: BsStore.STEAM, icon: <SteamIcon className="h-6 w-6 float-left" /> },
-                                { id: 2, text: "Oculus Store (PC)", value: BsStore.OCULUS, icon: <OculusIcon className="h-6 w-6 float-left bg-white text-black rounded-full p-0.5" /> },
-                                { id: 0, text: t("pages.settings.steam-and-oculus.download-platform.always-ask"), value: null },
-                            ]}
-                            selectedItemValue={downloadStore}
-                            onItemSelected={handleChangeBsStore}
-                        />
+                        <SettingRadioArray items={[
+                            { id: 1, text: "Steam", value: BsStore.STEAM, icon: <SteamIcon className="h-6 w-6 float-left"/> },
+                            { id: 2, text: "Oculus Store (PC)", value: BsStore.OCULUS, icon: <OculusIcon className="h-6 w-6 float-left bg-white text-black rounded-full p-0.5"/>},
+                            { id: 0, text: t("pages.settings.steam-and-oculus.download-platform.always-ask"), value: null, },
+                        ]} selectedItemValue={downloadStore} onItemSelected={handleChangeBsStore}/>
                     </SettingContainer>
+
                 </SettingContainer>
 
                 <SettingContainer title="pages.settings.appearance.title" description="pages.settings.appearance.description">
@@ -552,8 +558,9 @@ function AdvancedSettings() {
     const [autoUpdate, setAutoUpdate] = useState<AutoUpdate>(AutoUpdate.NEVER);
     const [closeBsManagerOnLaunch, setCloseBsManagerOnLaunch] = useState(false);
 
+
     useEffect(() => {
-        staticConfig.get("disable-hadware-acceleration").then(disabled => setHardwareAccelerationEnabled(() => disabled !== true));
+        staticConfig.get("disable-hadware-acceleration").then(disabled =>setHardwareAccelerationEnabled(() => disabled !== true));
 
         if (window.electron.platform === "win32") {
             staticConfig.get("use-symlinks").then(useSymlinks => setUseSymlink(() => useSymlinks));
@@ -564,37 +571,31 @@ function AdvancedSettings() {
     }, []);
 
     const onChangeHardwareAcceleration = async (newHardwareAccelerationEnabled: boolean) => {
-        if (newHardwareAccelerationEnabled === hardwareAccelerationEnabled) {
-            return;
-        }
+        if(newHardwareAccelerationEnabled === hardwareAccelerationEnabled){ return; }
 
-        const res = await modal.openModal(BasicModal, {
-            data: {
-                title: "pages.settings.advanced.hardware-acceleration.modal.title",
-                body: "pages.settings.advanced.hardware-acceleration.modal.body",
-                image: BeatConflict,
-                buttons: [
-                    { id: "cancel", text: "misc.cancel", type: "cancel" },
-                    { id: "confirm", text: "pages.settings.advanced.hardware-acceleration.modal.confirm-btn", type: "error", onClick: () => true },
-                ],
-            },
-        });
+        const res = await modal.openModal(BasicModal, { data: {
+            title: "pages.settings.advanced.hardware-acceleration.modal.title",
+            body: "pages.settings.advanced.hardware-acceleration.modal.body",
+            image: BeatConflict,
+            buttons: [
+                { id: "cancel", text: "misc.cancel", type: "cancel" },
+                { id: "confirm", text: "pages.settings.advanced.hardware-acceleration.modal.confirm-btn", type: "error", onClick: () => true },
+            ]
+        }});
 
-        if (res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm") {
-            return;
-        }
+        if(res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm"){ return; }
 
         const { error } = await tryit(() => staticConfig.set("disable-hadware-acceleration", !newHardwareAccelerationEnabled));
 
-        if (error) {
+        if(error){
             notification.notifyError({ title: "notifications.types.error", desc: "pages.settings.advanced.hardware-acceleration.error-notification.message" });
             setHardwareAccelerationEnabled(() => !newHardwareAccelerationEnabled);
-            return;
+                return;
         }
 
         setHardwareAccelerationEnabled(() => newHardwareAccelerationEnabled);
 
-        if (!progressBar.require()) {
+        if(!progressBar.require()){
             return;
         }
 
@@ -602,52 +603,50 @@ function AdvancedSettings() {
     };
 
     const onChangeUseSymlinks = async (newUseSymlink: boolean) => {
+
         if (window.electron.platform !== "win32" || newUseSymlink === useSymlink) {
             return;
         }
 
-        if (newUseSymlink) {
-            const res = await modal.openModal(BasicModal, {
-                data: {
-                    title: "pages.settings.advanced.use-symlinks.modal.title",
-                    body: "pages.settings.advanced.use-symlinks.modal.body",
-                    image: BeatConflict,
-                    buttons: [
-                        { id: "cancel", text: "misc.cancel", type: "cancel" },
-                        { id: "confirm", text: "pages.settings.advanced.use-symlinks.modal.confirm-btn", type: "error", onClick: () => true },
-                    ],
-                },
-            });
+        if(newUseSymlink){
+            const res = await modal.openModal(BasicModal, { data: {
+                title: "pages.settings.advanced.use-symlinks.modal.title",
+                body: "pages.settings.advanced.use-symlinks.modal.body",
+                image: BeatConflict,
+                buttons: [
+                    { id: "cancel", text: "misc.cancel", type: "cancel" },
+                    { id: "confirm", text: "pages.settings.advanced.use-symlinks.modal.confirm-btn", type: "error", onClick: () => true }
+                ]
+            }});
 
-            if (res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm") {
-                return;
-            }
+            if(res.exitCode !== ModalExitCode.COMPLETED || res.data !== "confirm"){ return; }
         }
 
         const { error } = await tryit(() => staticConfig.set("use-symlinks", newUseSymlink));
 
-        if (error) {
+        if(error){
             notification.notifyError({ title: "notifications.types.error", desc: "pages.settings.advanced.use-symlinks.error-notification.message" });
             return;
         }
 
         setUseSymlink(() => newUseSymlink);
-    };
+    }
 
     const onChangeUseSystemProxy = async (newUseSystemProxy: boolean) => {
+
         if (window.electron.platform !== "win32" || newUseSystemProxy === useSystemProxy) {
             return;
         }
 
         const { error } = await tryit(() => staticConfig.set("use-system-proxy", newUseSystemProxy));
 
-        if (error) {
+        if(error){
             notification.notifyError({ title: "notifications.types.error", desc: "pages.settings.advanced.use-system-proxy.error-notification.message" });
             return;
         }
 
         setUseSystemProxy(() => newUseSystemProxy);
-    };
+    }
 
     const onChangeAutoUpdate = async (value: boolean) => {
         if (window.electron.platform !== "win32") {
@@ -666,7 +665,7 @@ function AdvancedSettings() {
         }
 
         setAutoUpdate(() => newAutoUpdate);
-    };
+    }
 
     const onChangeCloseBsManagerOnLaunch = async (value: boolean) => {
         if (window.electron.platform !== "win32" || value === closeBsManagerOnLaunch) {
@@ -684,7 +683,7 @@ function AdvancedSettings() {
         }
 
         setCloseBsManagerOnLaunch(() => value);
-    };
+    }
 
     const advancedItems: Item[] = [];
 
@@ -693,13 +692,13 @@ function AdvancedSettings() {
             checked: autoUpdate === AutoUpdate.ALWAYS,
             text: t.text("pages.settings.advanced.auto-update.title"),
             desc: t.text("pages.settings.advanced.auto-update.description"),
-            onChange: onChangeAutoUpdate,
+            onChange: onChangeAutoUpdate
         });
         advancedItems.push({
             checked: closeBsManagerOnLaunch,
             text: t.text("pages.settings.advanced.close-bs-manager-on-launch.title"),
             desc: t.text("pages.settings.advanced.close-bs-manager-on-launch.description"),
-            onChange: onChangeCloseBsManagerOnLaunch,
+            onChange: onChangeCloseBsManagerOnLaunch
         });
     }
 
@@ -707,7 +706,7 @@ function AdvancedSettings() {
         checked: hardwareAccelerationEnabled,
         text: t.text("pages.settings.advanced.hardware-acceleration.title"),
         desc: t.text("pages.settings.advanced.hardware-acceleration.description"),
-        onChange: onChangeHardwareAcceleration,
+        onChange: onChangeHardwareAcceleration
     });
 
     if (window.electron.platform === "win32") {
@@ -715,19 +714,18 @@ function AdvancedSettings() {
             checked: useSymlink,
             text: t.text("pages.settings.advanced.use-symlinks.title"),
             desc: t.text("pages.settings.advanced.use-symlinks.description"),
-            onChange: onChangeUseSymlinks,
+            onChange: onChangeUseSymlinks
         });
         advancedItems.push({
             checked: useSystemProxy,
             text: t.text("pages.settings.advanced.use-system-proxy.title"),
             desc: t.text("pages.settings.advanced.use-system-proxy.description"),
-            onChange: onChangeUseSystemProxy,
+            onChange: onChangeUseSystemProxy
         });
     }
 
-    return (
-        <SettingContainer title="pages.settings.advanced.title" description="pages.settings.advanced.description">
-            <SettingToogleSwitchGrid items={advancedItems} />
-        </SettingContainer>
-    );
+    return <SettingContainer title="pages.settings.advanced.title" description="pages.settings.advanced.description">
+        <SettingToogleSwitchGrid items={advancedItems}/>
+    </SettingContainer>
+
 }

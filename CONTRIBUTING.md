@@ -35,7 +35,7 @@ Hello! We’re delighted that you’re interested in contributing to **BSManager
    ```
 3. **Install project dependencies**:
    ```bash
-   npm install
+   npm ci
    ```
 
 ### Create a Dedicated Branch

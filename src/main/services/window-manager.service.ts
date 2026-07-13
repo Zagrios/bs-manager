@@ -20,7 +20,7 @@ export class WindowManagerService {
         "oneclick-download-map.html": { width: 350, height: 400, minWidth: 350, minHeight: 400, resizable: false },
         "oneclick-download-playlist.html": { width: 350, height: 400, minWidth: 350, minHeight: 400, resizable: false },
         "oneclick-download-model.html": { width: 350, height: 400, minWidth: 350, minHeight: 400, resizable: false },
-        "shortcut-launch.html": { width: 600, height: 300, minWidth: 600, minHeight: 300, resizable: false },
+        "shortcut-launch.html": { width: 600, height: 500, minWidth: 600, minHeight: 300, resizable: true },
     };
 
     private readonly baseWindowOption: BrowserWindowConstructorOptions = {

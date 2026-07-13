@@ -72,8 +72,8 @@ export interface StaticConfigKeyValues {
 
     // Linux Specific static configs
     "proton-folder": string;
-    versions: BSVersion[];
-}
+    "versions": BSVersion[];
+};
 
 export type StaticConfigKeys = keyof StaticConfigKeyValues;
 
@@ -83,6 +83,6 @@ export type StaticConfigGetIpcRequestResponse<K extends StaticConfigKeys> = {
 };
 
 export type StaticConfigSetIpcRequest<K extends StaticConfigKeys> = {
-    request: { key: K; value: StaticConfigKeyValues[K] };
+    request: { key: K, value: StaticConfigKeyValues[K] };
     response: void;
 };

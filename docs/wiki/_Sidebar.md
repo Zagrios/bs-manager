@@ -85,6 +85,7 @@
     <summary>🔍 Debugging Tips</summary>
     <ul>
         <li><a href="Activate-Oculus-sideloading">Activate Oculus Sideloading</a></li>
+        <li><a href="Configure-OpenXR-Runtime">Configure the OpenXR Runtime</a></li>
         <li><a href="how-to-find-your-logs">How to Find Your Logs</a></li>
         <li><a href="https://github.com/Zagrios/bs-manager/issues/new?assignees=Zagrios&labels=bug&projects=&template=1-bug-report.yaml&title=%5BBUG%5D+%3A+">Submitting a Bug Report</a></li>
     </ul>

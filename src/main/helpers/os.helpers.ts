@@ -176,3 +176,18 @@ export const getProcessId = process.platform === "win32"
     ? getProcessIdWindows
     : getProcessIdLinux;
 
+export async function getProcessIds(name: string): Promise<number[]> {
+    if (!name) {
+        return [];
+    }
+
+    try {
+        const processes = await psList();
+        return processes
+            .filter(process => process.name?.includes(name) || process.cmd?.includes(name))
+            .map(process => process.pid);
+    } catch (error) {
+        log.error(error);
+        return [];
+    }
+}

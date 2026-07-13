@@ -65,8 +65,6 @@
                     "placeholder": "실행 옵션 예: KEY=VALUE %command% fpfc",
                     "create-launch-option": "실행 옵션 만들기"
                 },
-                "skipsteam": "Steam 실행 건너뛰기",
-                "skipsteam-description": "Beat Saber와 함께 Steam이 자동으로 열리는 것을 방지합니다. SteamVR이 간섭할 수 있는 WiVRn 또는 Monado와 같은 다른 VR 런타임을 사용하는 경우 활성화하세요.",
                 "map-editor": "맵 편집기",
                 "map-editor-description": "게임 대신 공식 Beat Saber 맵 편집기를 실행해.",
                 "proton-logs": "프로톤 로그",
@@ -534,13 +532,11 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "실행 중...🚀",
-                    "STEAM_LAUNCHING": "Steam 실행 중...",
-                    "SKIPPING_STEAM_LAUNCH": "Steam 실행 건너뛰기"
+                    "STEAM_LAUNCHING": "Steam 실행 중..."
                 },
                 "msg": {
                     "BS_LAUNCHING": "워밍업을 잊지 마세요 😉",
-                    "STEAM_LAUNCHING": "Beat Saber는 Steam 실행 후 자동으로 시작됩니다.",
-                    "SKIPPING_STEAM_LAUNCH": "신이 무엇을 하고 있는지 알고 있기를 바랍니다 :)"
+                    "STEAM_LAUNCHING": "Beat Saber는 Steam 실행 후 자동으로 시작됩니다."
                 }
             },
             "errors": {
@@ -993,6 +989,25 @@
             },
             "launch-as-admin": "관리자로 실행",
             "not-remind-me": "다시 알림 받지 않기"
+        },
+        "vr-runtime-mismatch": {
+            "title": "OpenXR 런타임 경고",
+            "tutorial": "런타임 설정 방법은 여기를 클릭해 튜토리얼을 확인하세요.",
+            "body": {
+                "active-runtime": "현재 활성 OpenXR 런타임은 {activeRuntime}입니다.",
+                "info": "의도한 구성이라면 계속 실행을 선택하세요. 그렇지 않다면 VR 소프트웨어에서 적절한 OpenXR 런타임을 선택하세요.",
+                "info-2": "SteamVR과 Meta Horizon Link는 사용할 수 있는 OpenXR 런타임을 제공하는 대표적인 앱입니다."
+            },
+            "runtimes": {
+                    "steam": "SteamVR",
+                    "oculus": "Meta Quest Link",
+                    "vdxr": "Virtual Desktop (VDXR)",
+                    "not-set": "설정되지 않음",
+                    "other": "다른 런타임",
+                    "unknown": "알 수 없음(감지 실패)"
+            },
+            "dont-remind-me": "다시 알리지 않기",
+            "launch-anyway": "계속 실행"
         },
         "ask-install-path": {
             "title": "설치 폴더",
