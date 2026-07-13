@@ -4,12 +4,13 @@ import { ChildProcess, SpawnOptions } from "child_process";
 import path from "path";
 import log from "electron-log";
 import { LinuxService } from "../linux.service";
-import { BsmShellLog, bsmSpawn, getProcessesByName, ProcessDetails } from "main/helpers/os.helpers";
+import { BsmShellLog, bsmSpawn, BSM_LAUNCH_TOKEN_ENV, getProcessesByName, ProcessDetails } from "main/helpers/os.helpers";
 import { BS_EXECUTABLE, IS_FLATPAK } from "main/constants";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { app } from "electron";
 import { StaticConfigurationService } from "main/services/static-configuration.service";
 import { abortableDelay } from "main/helpers/abortable-delay.helper";
+import { randomUUID } from "crypto";
 
 const PROCESS_LIST_RETRY_ATTEMPTS = 3;
 const PROCESS_LIST_RETRY_INTERVAL_MS = 100;
@@ -20,6 +21,7 @@ const OWNED_PROCESS_EXIT_POLL_INTERVAL_MS = 1_000;
 export type ProcessOwnershipSnapshot = {
     existingProcessIds: Set<number>;
     launchedAfter: Date;
+    launchToken?: string;
 };
 
 export type OwnedProcessIdentity = {
@@ -70,10 +72,15 @@ export abstract class AbstractLauncherService {
     }
 
     protected launchBeatSaberProcess(options: LaunchBeatSaberOptions): ChildProcess {
+        const launchEnvironment = {
+            ...options.customEnv,
+            ...options.env,
+            ...(options.ownershipToken ? { [BSM_LAUNCH_TOKEN_ENV]: options.ownershipToken } : {}),
+        };
         const spawnOptions: SpawnOptions = {
             detached: true,
             cwd: options.beatSaberFolderPath,
-            env: { ...options.customEnv, ...options.env },
+            env: launchEnvironment,
             stdio: "ignore",
         };
 
@@ -99,6 +106,7 @@ export abstract class AbstractLauncherService {
                     "OXR_PARALLEL_VIEWS",
                     "PROTON_LOG",
                     "PROTON_LOG_DIR",
+                    BSM_LAUNCH_TOKEN_ENV,
                     ...Object.keys(options.customEnv || {})
                 ],
             },
@@ -146,21 +154,23 @@ export abstract class AbstractLauncherService {
     protected async getProcessesWithRetry(
         name: string,
         signal?: AbortSignal,
-        deadline = Date.now() + OWNED_PROCESS_FIND_TIMEOUT_MS
+        deadline?: number,
+        launchToken?: string
     ): Promise<ProcessDetails[]> {
+        const enumerationDeadline = deadline ?? Date.now() + OWNED_PROCESS_FIND_TIMEOUT_MS;
         let lastError: unknown;
         for (let attempt = 0; attempt < PROCESS_LIST_RETRY_ATTEMPTS; attempt++) {
             if (signal?.aborted) {
                 throw new Error("Process ownership acquisition was cancelled");
             }
             try {
-                return await this.waitForProcessList(getProcessesByName(name), deadline, signal);
+                return await this.waitForProcessList(getProcessesByName(name, launchToken), enumerationDeadline, signal);
             } catch (error) {
                 lastError = error;
                 if (signal?.aborted) {
                     throw error;
                 }
-                const remainingMs = deadline - Date.now();
+                const remainingMs = enumerationDeadline - Date.now();
                 if (attempt + 1 < PROCESS_LIST_RETRY_ATTEMPTS && remainingMs > 0) {
                     const retryDelayCompleted = await abortableDelay(
                         Math.min(PROCESS_LIST_RETRY_INTERVAL_MS, remainingMs),
@@ -245,17 +255,20 @@ export abstract class AbstractLauncherService {
         existingProcessIds: Set<number>,
         executablePath: string,
         launchedAfter: Date,
-        launcherProcessId?: number
+        launcherProcessId?: number,
+        launchToken?: string
     ): ProcessDetails | undefined {
-        if (!Number.isSafeInteger(launcherProcessId) || (launcherProcessId ?? 0) <= 0) {
+        if (!launchToken && (!Number.isSafeInteger(launcherProcessId) || (launcherProcessId ?? 0) <= 0)) {
             return undefined;
         }
 
         const candidates = processes.filter(processDetails => !existingProcessIds.has(processDetails.pid)
-            && (processDetails.ppid === launcherProcessId
-                || (process.platform === "linux"
-                    && (processDetails.processGroupId === launcherProcessId
-                        || processDetails.ancestorPids?.includes(launcherProcessId))))
+            && (launchToken
+                ? processDetails.launchToken === launchToken
+                : (processDetails.ppid === launcherProcessId
+                    || (process.platform === "linux"
+                        && (processDetails.processGroupId === launcherProcessId
+                            || processDetails.ancestorPids?.includes(launcherProcessId)))))
             && this.processTargetsExecutable(processDetails, executablePath, launchedAfter, true));
         return candidates.length === 1 ? candidates[0] : undefined;
     }
@@ -265,9 +278,10 @@ export abstract class AbstractLauncherService {
         executablePath: string,
         launchedAfter: Date,
         launcherProcessId?: number,
-        signal?: AbortSignal
+        signal?: AbortSignal,
+        launchToken?: string
     ): Promise<OwnedProcessIdentity | undefined> {
-        if (!Number.isSafeInteger(launcherProcessId) || (launcherProcessId ?? 0) <= 0) {
+        if (!launchToken && (!Number.isSafeInteger(launcherProcessId) || (launcherProcessId ?? 0) <= 0)) {
             return undefined;
         }
 
@@ -275,7 +289,7 @@ export abstract class AbstractLauncherService {
         do {
             let processes: ProcessDetails[];
             try {
-                processes = await this.getProcessesWithRetry(BS_EXECUTABLE, signal, deadline);
+                processes = await this.getProcessesWithRetry(BS_EXECUTABLE, signal, deadline, launchToken);
             } catch (error) {
                 if (signal?.aborted) {
                     return undefined;
@@ -287,7 +301,8 @@ export abstract class AbstractLauncherService {
                 existingProcessIds,
                 executablePath,
                 launchedAfter,
-                launcherProcessId
+                launcherProcessId,
+                launchToken
             );
             const startedAt = ownedProcess && this.getProcessStartedAt(ownedProcess);
             if (ownedProcess && startedAt) {
@@ -352,6 +367,7 @@ export abstract class AbstractLauncherService {
                 launchedAfter: process.platform === "linux"
                     ? new Date(Math.floor(Date.now() / 1_000) * 1_000)
                     : new Date(),
+                ...(IS_FLATPAK ? { launchToken: randomUUID() } : {}),
             };
         } catch (error) {
             log.warn("Could not snapshot existing Beat Saber processes; continuing without launch ownership", error);
@@ -370,7 +386,10 @@ export abstract class AbstractLauncherService {
         options: LaunchBeatSaberOptions,
         ownershipSnapshot?: ProcessOwnershipSnapshot
     ): LaunchedBeatSaber {
-        const process = this.launchBeatSaberProcess(options);
+        const process = this.launchBeatSaberProcess({
+            ...options,
+            ownershipToken: ownershipSnapshot?.launchToken,
+        });
         const ownershipLifecycle = new AbortController();
         const executablePath = path.join(options.beatSaberFolderPath, BS_EXECUTABLE);
         const ownership = ownershipSnapshot
@@ -379,7 +398,8 @@ export abstract class AbstractLauncherService {
                 executablePath,
                 ownershipSnapshot.launchedAfter,
                 process.pid,
-                ownershipLifecycle.signal
+                ownershipLifecycle.signal,
+                ownershipSnapshot.launchToken
             ).catch((error): undefined => {
                 if (!ownershipLifecycle.signal.aborted) {
                     log.error("Could not acquire the launched Beat Saber process", error);
@@ -462,4 +482,5 @@ export type LaunchBeatSaberOptions = {
     beatSaberFolderPath: string;
 
     args?: string[]; // Appended to the cmdlet string
+    ownershipToken?: string;
 }

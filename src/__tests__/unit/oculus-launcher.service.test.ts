@@ -3,6 +3,7 @@ import { pathExists } from "fs-extra";
 import { isProcessRunning } from "main/helpers/os.helpers";
 import { OculusLauncherService } from "main/services/bs-launcher/oculus-launcher.service";
 import { LaunchOption } from "shared/models/bs-launch";
+import path from "path";
 
 jest.mock("electron-log", () => ({ info: jest.fn(), warn: jest.fn(), error: jest.fn() }));
 jest.mock("fs-extra", () => ({ pathExists: jest.fn() }));
@@ -71,7 +72,7 @@ describe("OculusLauncherService owned process lifecycle", () => {
         expect(createProcessOwnershipSnapshot).toHaveBeenCalledTimes(1);
         expect(launchBeatSaber).toHaveBeenCalledWith(expect.any(Object), snapshot);
         expect(waitForOwnedProcessExit).toHaveBeenCalledWith(
-            "C:\\Beat Saber\\Beat Saber.exe",
+            path.join("C:/Beat Saber", "Beat Saber.exe"),
             identity,
             expect.any(AbortSignal)
         );

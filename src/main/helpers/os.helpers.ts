@@ -1,9 +1,11 @@
 import cp from "child_process";
+import { readFile } from "fs/promises";
 import log from "electron-log";
 import psList from "ps-list";
 import { IS_FLATPAK } from "main/constants";
 import { getWindowsProcessesByName } from "./windows-powershell.helper";
-import { readFile } from "fs/promises";
+
+export const BSM_LAUNCH_TOKEN_ENV = "BSMANAGER_LAUNCH_TOKEN";
 
 // Only applied if package as flatpak
 type FlatpakOptions = {
@@ -131,6 +133,7 @@ export type ProcessDetails = {
     pid: number;
     ppid?: number;
     processGroupId?: number;
+    launchToken?: string;
     startMarker?: string;
     startTime?: Date | number | string;
 };
@@ -139,6 +142,45 @@ type LinuxProcessMetadata = {
     processGroupId: number;
     startTime: Date;
 };
+
+async function getFlatpakHostProcessesByName(name: string): Promise<ProcessDetails[]> {
+    const quoteShellArgument = (value: string) => `'${value.replace(/'/g, `'"'"'`)}'`;
+    const hostScript = `env LC_ALL=C TZ=UTC ps eww -eo pid=,ppid=,pgid=,lstart=,comm=,args= | grep -F -- ${quoteShellArgument(` ${name} `)} || true`;
+    const { stdout } = await bsmExec(`sh -c ${quoteShellArgument(hostScript)}`, {
+        log: BsmShellLog.Command,
+        flatpak: { host: true },
+        options: { maxBuffer: 4 * 1_024 * 1_024 },
+    });
+    const launchTokenPattern = new RegExp(`(?:^|\\s)${BSM_LAUNCH_TOKEN_ENV}=([^\\s]+)(?:\\s|$)`);
+
+    return stdout.split("\n").flatMap(line => {
+        const match = line.match(/^\s*(\d+)\s+(\d+)\s+(\d+)\s+(.{24})\s+(.+)$/);
+        if (!match) { return []; }
+        const pid = Number(match[1]);
+        const ppid = Number(match[2]);
+        const processGroupId = Number(match[3]);
+        const startedAt = new Date(`${match[4]} UTC`);
+        const processAndCommand = match[5].trim();
+        if (!Number.isSafeInteger(pid) || pid <= 0
+            || !Number.isSafeInteger(ppid)
+            || !Number.isSafeInteger(processGroupId)
+            || !Number.isFinite(startedAt.getTime())
+            || (processAndCommand !== name && !processAndCommand.startsWith(`${name} `))) {
+            return [];
+        }
+        const command = processAndCommand.slice(name.length).trim();
+        const launchToken = command.match(launchTokenPattern)?.[1];
+        return [{
+            pid,
+            ppid,
+            processGroupId,
+            name,
+            cmd: command || undefined,
+            startTime: startedAt,
+            ...(launchToken ? { launchToken } : {}),
+        }];
+    });
+}
 
 async function getLinuxProcessMetadata(processIds: number[]): Promise<Map<number, LinuxProcessMetadata>> {
     if (processIds.length === 0) {
@@ -193,12 +235,18 @@ function getAncestorPids(
     return ancestorPids;
 }
 
-export async function getProcessesByName(name: string): Promise<ProcessDetails[]> {
+export async function getProcessesByName(name: string, launchToken?: string): Promise<ProcessDetails[]> {
     if (!name) {
         return [];
     }
     if (process.platform === "win32") {
         return getWindowsProcessesByName(name);
+    }
+    if (IS_FLATPAK) {
+        const processes = await getFlatpakHostProcessesByName(name);
+        return launchToken
+            ? processes.filter(processDetails => processDetails.launchToken === launchToken)
+            : processes;
     }
     const processes = await psList();
     const matchingProcesses = processes.filter(process => processMatchesName(process, name));
