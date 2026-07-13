@@ -1213,9 +1213,32 @@ describe("SteamLauncherService elevated lifecycle", () => {
 });
 
 describe("SteamVR restore watcher", () => {
+    it("reuses one target-process identity function for readiness and polling", async () => {
+        const watcher = Object.assign(new EventEmitter(), { unref: jest.fn() });
+        (spawn as jest.Mock).mockReturnValue(watcher);
+        (pathExists as jest.Mock).mockImplementation(async filePath => (
+            String(filePath).endsWith(".bak") || String(filePath).endsWith(".ready")
+        ));
+        const service = serviceWithConfig();
+        (service as any).steam = { getGameFolder: jest.fn().mockResolvedValue("C:/SteamVR") };
+
+        await (service as any).handoffSteamVRRestore(
+            "C:/Beat Saber/Beat Saber.exe",
+            { pid: 85, startedAt: processStartedAt }
+        );
+
+        const encodedScript = (spawn as jest.Mock).mock.calls[0][1][3];
+        const script = Buffer.from(encodedScript, "base64").toString("utf16le");
+        expect(script).toContain("function Get-TargetProcessState");
+        expect(script.match(/Get-Process -Id \$TargetProcessId/g)).toHaveLength(1);
+        expect(script).toContain("$targetState = Get-TargetProcessState");
+        expect(script).toContain("while ((Get-TargetProcessState) -eq 'Owned')");
+        expect(script.match(/Get-TargetProcessState/g)).toHaveLength(3);
+    });
+
     it.each([
-        ["absent", "if ($null -eq $processCandidate) {\n    $targetState = 'Exited'\n}"],
-        ["reused", "if (!$pathMatches -or !$startTimeMatches) {\n            $targetState = 'Exited'\n        }"],
+        ["absent", "if ($null -eq $processCandidate) {\n        return 'Exited'\n    }"],
+        ["reused", "if (!$pathMatches -or !$startTimeMatches) {\n            return 'Exited'\n        }"],
     ])("treats an %s exact PID as an exited original without attaching to it", async (_state, expectedBranch) => {
         const watcher = Object.assign(new EventEmitter(), { unref: jest.fn() });
         (spawn as jest.Mock).mockReturnValue(watcher);

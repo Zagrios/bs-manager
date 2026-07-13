@@ -114,14 +114,14 @@ exit [int]$HelperProcess.ExitCode
 }
 
 const STEAM_VR_RESTORE_WATCHER_SCRIPT = `
-$targetState = 'Uncertain'
-$processCandidate = Get-Process -Id $TargetProcessId -ErrorAction SilentlyContinue |
-    Select-Object -First 1
+function Get-TargetProcessState {
+    $processCandidate = Get-Process -Id $TargetProcessId -ErrorAction SilentlyContinue |
+        Select-Object -First 1
 
-if ($null -eq $processCandidate) {
-    $targetState = 'Exited'
-}
-else {
+    if ($null -eq $processCandidate) {
+        return 'Exited'
+    }
+
     try {
         $processStartedAtUtc = $processCandidate.StartTime.ToUniversalTime()
         $startTimeMatches = $processStartedAtUtc.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") -eq
@@ -137,17 +137,17 @@ else {
         }
 
         if (!$pathMatches -or !$startTimeMatches) {
-            $targetState = 'Exited'
+            return 'Exited'
         }
-        else {
-            $targetState = 'Owned'
-        }
+
+        return 'Owned'
     }
     catch {
-        $targetState = 'Uncertain'
+        return 'Uncertain'
     }
 }
 
+$targetState = Get-TargetProcessState
 if ($targetState -eq 'Uncertain') {
     exit 2
 }
@@ -160,30 +160,7 @@ catch {
 }
 
 if ($targetState -eq 'Owned') {
-    while ($true) {
-        $currentProcess = Get-Process -Id $TargetProcessId -ErrorAction SilentlyContinue
-        if ($null -eq $currentProcess) {
-            break
-        }
-        try {
-            $startTimeMatches = $currentProcess.StartTime.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ") -eq
-                $TargetProcessStartedAtUtc.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
-            $pathMatches = $true
-            try {
-                $processPath = $currentProcess.Path
-                if ($null -ne $processPath) {
-                    $pathMatches = $processPath -ieq $TargetExecutablePath
-                }
-            }
-            catch {
-            }
-            if (!$pathMatches -or !$startTimeMatches) {
-                break
-            }
-        }
-        catch {
-            break
-        }
+    while ((Get-TargetProcessState) -eq 'Owned') {
         Start-Sleep -Seconds 1
     }
 }
