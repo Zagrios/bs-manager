@@ -61,13 +61,20 @@ function updateCommand(command: string, options: BsmSpawnOptions) {
 function logValues(shell: "spawn" | "exec", command: string, options?: BsmShellOptions<cp.SpawnOptions | cp.ExecOptions>) {
     const platform = process.platform === "win32" ? "Windows" : "Linux";
     const optionsLog = options?.log || 0;
+    const launchToken = options?.options?.env?.[BSM_LAUNCH_TOKEN_ENV];
+    const loggedCommand = typeof launchToken === "string" && launchToken.length > 0
+        ? command.replaceAll(launchToken, "[REDACTED]")
+        : command;
 
     if ((optionsLog & BsmShellLog.EnvVariables) > 0) {
-        log.info(platform, shell, "env", options?.options?.env);
+        const loggedEnvironment = launchToken
+            ? { ...options?.options?.env, [BSM_LAUNCH_TOKEN_ENV]: "[REDACTED]" }
+            : options?.options?.env;
+        log.info(platform, shell, "env", loggedEnvironment);
     }
 
     if ((optionsLog & BsmShellLog.Command) > 0) {
-        log.info(platform, shell, "command\n>", command);
+        log.info(platform, shell, "command\n>", loggedCommand);
     }
 }
 
@@ -145,31 +152,41 @@ type LinuxProcessMetadata = {
 
 async function getFlatpakHostProcessesByName(name: string): Promise<ProcessDetails[]> {
     const quoteShellArgument = (value: string) => `'${value.replace(/'/g, `'"'"'`)}'`;
-    const hostScript = `env LC_ALL=C TZ=UTC ps eww -eo pid=,ppid=,pgid=,lstart=,comm=,args= | grep -F -- ${quoteShellArgument(` ${name} `)} || true`;
+    const quotedName = quoteShellArgument(name);
+    const hostScript = [
+        "current_uid=$(id -u)",
+        "for process_dir in /proc/[0-9]*; do",
+        "[ \"$(stat -c %u \"$process_dir\" 2>/dev/null)\" = \"$current_uid\" ] || continue",
+        `process_name=$(cat \"$process_dir/comm\" 2>/dev/null) || continue; [ \"$process_name\" = ${quotedName} ] || continue`,
+        "pid=$(basename \"$process_dir\")",
+        "metadata=$(env LC_ALL=C TZ=UTC /bin/ps -p \"$pid\" -o ppid=,pgid=,lstart= 2>/dev/null) || continue",
+        "set -- $metadata; [ \"$#\" -eq 7 ] || continue",
+        "command_base64=$(base64 < \"$process_dir/cmdline\" 2>/dev/null | tr -d '\\n') || continue",
+        `token_base64=$(tr '\\0' '\\n' < \"$process_dir/environ\" 2>/dev/null | sed -n ${quoteShellArgument(`s/^${BSM_LAUNCH_TOKEN_ENV}=//p`)} | head -n 1 | tr -d '\\n' | base64 | tr -d '\\n')`,
+        "printf '%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\n' \"$pid\" \"$1\" \"$2\" \"$3\" \"$4\" \"$5\" \"$6\" \"$7\" \"$command_base64\" \"$token_base64\"",
+        "done",
+    ].join("\n");
     const { stdout } = await bsmExec(`sh -c ${quoteShellArgument(hostScript)}`, {
         log: BsmShellLog.Command,
         flatpak: { host: true },
         options: { maxBuffer: 4 * 1_024 * 1_024 },
     });
-    const launchTokenPattern = new RegExp(`(?:^|\\s)${BSM_LAUNCH_TOKEN_ENV}=([^\\s]+)(?:\\s|$)`);
 
     return stdout.split("\n").flatMap(line => {
-        const match = line.match(/^\s*(\d+)\s+(\d+)\s+(\d+)\s+(.{24})\s+(.+)$/);
-        if (!match) { return []; }
-        const pid = Number(match[1]);
-        const ppid = Number(match[2]);
-        const processGroupId = Number(match[3]);
-        const startedAt = new Date(`${match[4]} UTC`);
-        const processAndCommand = match[5].trim();
+        const fields = line.split("\t");
+        if (fields.length !== 10) { return []; }
+        const pid = Number(fields[0]);
+        const ppid = Number(fields[1]);
+        const processGroupId = Number(fields[2]);
+        const startedAt = new Date(`${fields.slice(3, 8).join(" ")} UTC`);
+        const command = Buffer.from(fields[8], "base64").toString("utf8").replaceAll("\0", " ").trim();
+        const launchToken = Buffer.from(fields[9], "base64").toString("utf8");
         if (!Number.isSafeInteger(pid) || pid <= 0
             || !Number.isSafeInteger(ppid)
             || !Number.isSafeInteger(processGroupId)
-            || !Number.isFinite(startedAt.getTime())
-            || (processAndCommand !== name && !processAndCommand.startsWith(`${name} `))) {
+            || !Number.isFinite(startedAt.getTime())) {
             return [];
         }
-        const command = processAndCommand.slice(name.length).trim();
-        const launchToken = command.match(launchTokenPattern)?.[1];
         return [{
             pid,
             ppid,
@@ -177,7 +194,7 @@ async function getFlatpakHostProcessesByName(name: string): Promise<ProcessDetai
             name,
             cmd: command || undefined,
             startTime: startedAt,
-            ...(launchToken ? { launchToken } : {}),
+            ...(launchToken.length > 0 ? { launchToken } : {}),
         }];
     });
 }
@@ -189,7 +206,7 @@ async function getLinuxProcessMetadata(processIds: number[]): Promise<Map<number
 
     const stdout = await new Promise<string>((resolve, reject) => {
         cp.execFile(
-            "ps",
+            "/bin/ps",
             ["-o", "pid=,pgid=,lstart=", "-p", processIds.join(",")],
             { env: { ...process.env, LC_ALL: "C" } },
             (error, output) => error ? reject(error) : resolve(output)
