@@ -24,12 +24,14 @@ jest.mock("main/services/utils.service", () => ({
 }));
 
 describe("WindowManagerService", () => {
+    const windowManager = WindowManagerService.getInstance();
+
     beforeEach(() => {
         jest.clearAllMocks();
     });
 
     it("provides enough vertical space for launch confirmation modals", async () => {
-        await WindowManagerService.getInstance().openWindow("shortcut-launch.html");
+        await windowManager.openWindow("shortcut-launch.html");
 
         expect(BrowserWindow).toHaveBeenCalledWith(expect.objectContaining({
             width: 600,
@@ -41,7 +43,7 @@ describe("WindowManagerService", () => {
     });
 
     it("keeps the privileged preload for internal application windows", async () => {
-        await WindowManagerService.getInstance().openWindow("index.html");
+        await windowManager.openWindow("index.html");
 
         expect(BrowserWindow).toHaveBeenCalledWith(expect.objectContaining({
             webPreferences: expect.objectContaining({
@@ -51,7 +53,7 @@ describe("WindowManagerService", () => {
     });
 
     it("opens remote windows without a preload and with hardened preferences", async () => {
-        await WindowManagerService.getInstance().openRemoteWindow("https://secure.oculus.com", {
+        await windowManager.openRemoteWindow("https://secure.oculus.com", {
             webPreferences: {
                 preload: "untrusted-preload.js",
                 nodeIntegration: true,
@@ -62,9 +64,9 @@ describe("WindowManagerService", () => {
             },
         });
 
-        const options = (BrowserWindow as unknown as jest.Mock).mock.calls[0][0];
-        expect(options.webPreferences).not.toHaveProperty("preload");
-        expect(options.webPreferences).toEqual(expect.objectContaining({
+        const { webPreferences } = (BrowserWindow as unknown as jest.Mock).mock.calls[0][0];
+        expect(webPreferences).not.toHaveProperty("preload");
+        expect(webPreferences).toEqual(expect.objectContaining({
             nodeIntegration: false,
             nodeIntegrationInWorker: false,
             nodeIntegrationInSubFrames: false,
@@ -77,14 +79,14 @@ describe("WindowManagerService", () => {
     });
 
     it("rejects remote URLs passed to the privileged internal-window API", async () => {
-        await expect(WindowManagerService.getInstance().openWindow("https://example.com"))
+        await expect(windowManager.openWindow("https://example.com"))
             .rejects.toThrow("Remote URLs must be opened with openRemoteWindow");
 
         expect(BrowserWindow).not.toHaveBeenCalled();
     });
 
     it("blocks an internal window from navigating to a remote page", async () => {
-        await WindowManagerService.getInstance().openWindow("index.html");
+        await windowManager.openWindow("index.html");
 
         const navigationHandler = mockWindow.webContents.on.mock.calls
             .find(([event]) => event === "will-navigate")?.[1];

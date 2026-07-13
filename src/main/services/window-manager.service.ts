@@ -4,6 +4,7 @@ import { UtilsService } from "./utils.service";
 import { AppWindow } from "shared/models/window-manager/app-window.model";
 import path from "path";
 import { APP_NAME } from "../constants";
+import { isValidUrl } from "../../shared/helpers/url.helpers";
 
 export class WindowManagerService {
     private static instance: WindowManagerService;
@@ -51,36 +52,28 @@ export class WindowManagerService {
         }
     }
 
-    private isAbsoluteUrl(url: string): boolean {
-        try {
-            new URL(url);
-            return true;
-        } catch {
-            return false;
+    private openExternalHttpUrl(url: string): void {
+        if(this.isHttpUrl(url)){
+            shell.openExternal(url);
         }
     }
 
-    private handleNewWindow(url: string, window: BrowserWindow, isInternal: boolean){
+    private handleNewWindow(
+        initialUrl: string,
+        window: BrowserWindow,
+        isNavigationAllowed: (url: string) => boolean
+    ){
 
-        window.webContents.setWindowOpenHandler(({ url }) => {
-            if(this.isHttpUrl(url)){
-                shell.openExternal(url);
-            }
-
+        window.webContents.setWindowOpenHandler(({ url: targetUrl }) => {
+            this.openExternalHttpUrl(targetUrl);
             return { action: "deny"}
         });
 
         const handleNavigation = (event: { preventDefault: () => void }, navigationUrl: string) => {
-            const isAllowed = isInternal
-                ? navigationUrl.startsWith(resolveHtmlPath(""))
-                : this.isHttpUrl(navigationUrl, true);
-
-            if(isAllowed){ return; }
+            if(isNavigationAllowed(navigationUrl)){ return; }
 
             event.preventDefault();
-            if(this.isHttpUrl(navigationUrl)){
-                shell.openExternal(navigationUrl);
-            }
+            this.openExternalHttpUrl(navigationUrl);
         };
 
         window.webContents.on("will-navigate", handleNavigation);
@@ -89,7 +82,7 @@ export class WindowManagerService {
         window.removeMenu();
         window.setMenu(null);
 
-        const promise = window.loadURL(url);
+        const promise = window.loadURL(initialUrl);
 
         window.once("ready-to-show", () => {
             if (!window) {
@@ -102,7 +95,7 @@ export class WindowManagerService {
     }
 
     public openWindow(url: AppWindow, options?: BrowserWindowConstructorOptions): Promise<BrowserWindow> {
-        if(this.isAbsoluteUrl(url)){
+        if(isValidUrl(url)){
             return Promise.reject(new Error("Remote URLs must be opened with openRemoteWindow"));
         }
 
@@ -117,7 +110,7 @@ export class WindowManagerService {
                 preload: this.PRELOAD_PATH,
             },
         });
-        return this.handleNewWindow(resolveHtmlPath(url), window, true);
+        return this.handleNewWindow(resolveHtmlPath(url), window, navigationUrl => navigationUrl.startsWith(resolveHtmlPath("")));
     }
 
     public openRemoteWindow(url: string, options?: BrowserWindowConstructorOptions): Promise<BrowserWindow> {
@@ -144,7 +137,7 @@ export class WindowManagerService {
             },
         });
 
-        return this.handleNewWindow(url, window, false);
+        return this.handleNewWindow(url, window, navigationUrl => this.isHttpUrl(navigationUrl, true));
     }
 
     public closeAllWindows(except?: AppWindow) {
