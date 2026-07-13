@@ -125,17 +125,45 @@ export abstract class AbstractLauncherService {
         return { process, exit };
     }
 
-    protected handleGameWindowReady(process: ChildProcess, beatSaberFolderPath: string, launchedAfter: Date): void {
-        focusProcessWindow(path.join(beatSaberFolderPath, BS_EXECUTABLE), { launchedAfter }).then(result => {
-            if (result === "not-found") {
-                return;
-            }
+    protected handleGameWindowReady(
+        process: ChildProcess,
+        beatSaberFolderPath: string,
+        launchedAfter: Date,
+        ownedProcessId = process.pid,
+        ownedProcessSignal: AbortSignal | undefined = undefined,
+        ownedProcessStartedAt: Date | undefined = undefined
+    ): void {
+        const ownership = new AbortController();
+        const abort = () => ownership.abort();
+        const cleanup = () => {
+            process.removeListener("error", abort);
+            process.removeListener("exit", abort);
+            ownedProcessSignal?.removeEventListener("abort", abort);
+        };
+        process.once("error", abort);
+        process.once("exit", abort);
+        ownedProcessSignal?.addEventListener("abort", abort, { once: true });
+        if (ownedProcessSignal?.aborted) {
+            abort();
+        }
 
-            if (this.staticConfig.get("close-bs-manager-on-launch")) {
-                process.unref();
-                app.quit();
+        focusProcessWindow(path.join(beatSaberFolderPath, BS_EXECUTABLE), {
+            launchedAfter,
+            processId: ownedProcessId,
+            processStartedAt: ownedProcessStartedAt,
+            signal: ownership.signal,
+            onWindowReady: () => {
+                if (!ownership.signal.aborted && this.staticConfig.get("close-bs-manager-on-launch")) {
+                    process.unref();
+                    ownership.abort();
+                    app.quit();
+                }
+            },
+        }).catch(error => {
+            if (!ownership.signal.aborted) {
+                log.error("Could not focus Beat Saber window", error);
             }
-        });
+        }).finally(cleanup);
     }
 
     /**

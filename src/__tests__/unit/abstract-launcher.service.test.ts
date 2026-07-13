@@ -40,7 +40,10 @@ class TestLauncher extends AbstractLauncherService {
 describe("AbstractLauncherService process lifecycle", () => {
     beforeEach(() => {
         jest.clearAllMocks();
-        (focusProcessWindow as jest.Mock).mockResolvedValue("window-found");
+        (focusProcessWindow as jest.Mock).mockImplementation((_path, options) => {
+            options.onWindowReady?.();
+            return Promise.resolve("window-found");
+        });
     });
 
     it("keeps Oculus-style launches pending until Beat Saber exits", async () => {
@@ -113,8 +116,46 @@ describe("AbstractLauncherService process lifecycle", () => {
 
         expect(process.unref).toHaveBeenCalledTimes(enabled ? 1 : 0);
         expect(app.quit).toHaveBeenCalledTimes(enabled ? 1 : 0);
+        expect((focusProcessWindow as jest.Mock).mock.calls[0][1].signal.aborted).toBe(enabled);
 
         process.emit("exit", 0);
         await expect(exit).resolves.toBe(0);
+    });
+
+    it("does not auto-close from a window result delivered after the owned process exits", async () => {
+        const process = Object.assign(new EventEmitter(), {
+            killed: false,
+            pid: 42,
+            unref: jest.fn(),
+        }) as unknown as ChildProcessWithoutNullStreams;
+        (bsmSpawn as jest.Mock).mockReturnValue(process);
+        (StaticConfigurationService.getInstance as jest.Mock).mockReturnValue({
+            get: jest.fn(() => true),
+        });
+        let reportWindowReady: () => void;
+        (focusProcessWindow as jest.Mock).mockImplementation((_path, options) => new Promise(resolve => {
+            reportWindowReady = () => {
+                options.onWindowReady?.();
+                resolve("window-found");
+            };
+        }));
+        const launcher = new TestLauncher();
+
+        const { exit } = launcher.start({
+            cmdlet: "Beat Saber.exe",
+            env: {},
+            customEnv: {},
+            beatSaberFolderPath: "C:\\Beat Saber",
+        });
+        process.emit("exit", 0);
+        await expect(exit).resolves.toBe(0);
+        reportWindowReady!();
+        await Promise.resolve();
+
+        const focusOptions = (focusProcessWindow as jest.Mock).mock.calls[0][1];
+        expect(focusOptions.processId).toBe(42);
+        expect(focusOptions.signal.aborted).toBe(true);
+        expect(process.unref).not.toHaveBeenCalled();
+        expect(app.quit).not.toHaveBeenCalled();
     });
 });

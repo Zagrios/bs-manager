@@ -2,6 +2,7 @@ import cp from "child_process";
 import log from "electron-log";
 import psList from "ps-list";
 import { IS_FLATPAK } from "main/constants";
+import { getWindowsProcessesByName } from "./windows-powershell.helper";
 
 // Only applied if package as flatpak
 type FlatpakOptions = {
@@ -121,6 +122,25 @@ async function isProcessRunningLinux(name: string): Promise<boolean> {
 
 const processMatchesName = (process: Awaited<ReturnType<typeof psList>>[number], name: string) =>
     process.name?.includes(name) || process.cmd?.includes(name);
+
+export type ProcessDetails = {
+    cmd?: string;
+    name?: string;
+    pid: number;
+    ppid?: number;
+    startTime?: Date | number | string;
+};
+
+export async function getProcessesByName(name: string): Promise<ProcessDetails[]> {
+    if (!name) {
+        return [];
+    }
+    if (process.platform === "win32") {
+        return getWindowsProcessesByName(name);
+    }
+    const processes = await psList();
+    return processes.filter(process => processMatchesName(process, name));
+}
 
 async function getProcessIdWindows(name: string): Promise<number | null> {
     try {

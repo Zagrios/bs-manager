@@ -1,7 +1,7 @@
 import { Observable } from "rxjs";
 import { BSLaunchError, BSLaunchEvent, BSLaunchEventData, BSLaunchWarning, LaunchOption } from "../../../shared/models/bs-launch";
 import { StoreLauncherInterface } from "./store-launcher.interface";
-import { pathExists, rename } from "fs-extra";
+import { pathExists, remove, rename } from "fs-extra";
 import { SteamService } from "../steam.service";
 import path from "path";
 import { BS_APP_ID, BS_EXECUTABLE, STEAMVR_APP_ID } from "../../constants";
@@ -13,24 +13,59 @@ import { exec, spawn, ChildProcess, ExecOptions } from "child_process";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { app, Event } from "electron";
 import { parseLaunchOptions } from "main/helpers/launchOptions.helper";
-import { getProcessIds } from "main/helpers/os.helpers";
+import { getProcessesByName, ProcessDetails } from "main/helpers/os.helpers";
+import { randomUUID } from "crypto";
+import { getWindowsPowerShellPath } from "main/helpers/windows-powershell.helper";
+
+const STEAM_VR_WATCHER_READY_TIMEOUT_MS = 65_000;
+const STEAM_VR_WATCHER_READY_POLL_INTERVAL_MS = 50;
+const PROCESS_LIST_RETRY_ATTEMPTS = 3;
+const PROCESS_LIST_RETRY_INTERVAL_MS = 100;
+const OWNED_PROCESS_FIND_TIMEOUT_MS = 5_000;
+const OWNED_PROCESS_FIND_INTERVAL_MS = 250;
+
+type ProcessOwnershipSnapshot = {
+    existingProcessIds: Set<number>;
+    launchedAfter: Date;
+};
+
+type OwnedProcessIdentity = {
+    pid: number;
+    startedAt: Date;
+};
 
 const STEAM_VR_RESTORE_WATCHER_SCRIPT = `
 $ownedProcess = $null
 $findDeadline = [DateTime]::UtcNow.AddSeconds(60)
 
 do {
-    $ownedProcess = Get-Process -Name "Beat Saber" -ErrorAction SilentlyContinue |
+    if ($TargetProcessId -gt 0) {
+        $processCandidates = @(Get-Process -Id $TargetProcessId -ErrorAction SilentlyContinue)
+    }
+    else {
+        $processCandidates = @(Get-Process -Name "Beat Saber" -ErrorAction SilentlyContinue)
+    }
+
+    $ownedProcess = $processCandidates |
         Where-Object {
             try {
+                $processStartedAtUtc = $_.StartTime.ToUniversalTime()
+                $startTimeMatches = if ($null -ne $TargetProcessStartedAtUtc) {
+                    $processStartedAtUtc.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") -eq
+                        $TargetProcessStartedAtUtc.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
+                }
+                else {
+                    $processStartedAtUtc -ge $LaunchStartedAfterUtc
+                }
+
                 $_.Path -ieq $TargetExecutablePath -and
-                    $_.StartTime.ToUniversalTime() -ge $LaunchStartedAfterUtc
+                    $startTimeMatches
             }
             catch {
                 $false
             }
         } |
-        Sort-Object StartTime -Descending |
+        Sort-Object StartTime |
         Select-Object -First 1
 
     if ($null -eq $ownedProcess) {
@@ -38,11 +73,35 @@ do {
     }
 } while ($null -eq $ownedProcess -and [DateTime]::UtcNow -lt $findDeadline)
 
-if ($null -ne $ownedProcess) {
-    $ownedProcessId = $ownedProcess.Id
-    while ($null -ne (Get-Process -Id $ownedProcessId -ErrorAction SilentlyContinue)) {
-        Start-Sleep -Seconds 1
+if ($null -eq $ownedProcess) {
+    exit 2
+}
+
+$ownedProcessId = $ownedProcess.Id
+$ownedProcessStartedAtUtc = $ownedProcess.StartTime.ToUniversalTime()
+try {
+    [System.IO.File]::WriteAllText($HandoffReadyPath, "$ownedProcessId")
+}
+catch {
+    exit 4
+}
+
+while ($true) {
+    $currentProcess = Get-Process -Id $ownedProcessId -ErrorAction SilentlyContinue
+    if ($null -eq $currentProcess) {
+        break
     }
+    try {
+        if ($currentProcess.Path -ine $TargetExecutablePath -or
+            $currentProcess.StartTime.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ") -ne
+                $ownedProcessStartedAtUtc.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")) {
+            break
+        }
+    }
+    catch {
+        break
+    }
+    Start-Sleep -Seconds 1
 }
 
 for ($attempt = 0; $attempt -lt 60; $attempt++) {
@@ -124,48 +183,329 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         });
     }
 
-    private async handoffSteamVRRestore(bsExePath: string, launchedAfter: Date): Promise<void> {
+    private async waitForSteamVRWatcherReady(watcher: ChildProcess, readyPath: string): Promise<void> {
+        const deadline = Date.now() + STEAM_VR_WATCHER_READY_TIMEOUT_MS;
+
+        try {
+            await new Promise<void>((resolve, reject) => {
+                let pollTimer: NodeJS.Timeout | undefined;
+                let checking = false;
+                let settled = false;
+                let terminalError: Error | undefined;
+
+                const cleanup = () => {
+                    if (pollTimer) {
+                        clearTimeout(pollTimer);
+                    }
+                    watcher.removeListener("error", onError);
+                    watcher.removeListener("exit", onExit);
+                };
+                const settle = (error?: Error) => {
+                    if (settled) { return; }
+                    settled = true;
+                    cleanup();
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve();
+                    }
+                };
+                const pollReady = async () => {
+                    if (checking || settled) { return; }
+                    checking = true;
+                    try {
+                        if (await pathExists(readyPath)) {
+                            settle();
+                            return;
+                        }
+                        if (terminalError) {
+                            settle(terminalError);
+                            return;
+                        }
+                        const remainingMs = deadline - Date.now();
+                        if (remainingMs <= 0) {
+                            settle(new Error("SteamVR restore watcher readiness timed out"));
+                            return;
+                        }
+                        pollTimer = setTimeout(pollReady, Math.min(STEAM_VR_WATCHER_READY_POLL_INTERVAL_MS, remainingMs));
+                    } catch (error) {
+                        settle(error instanceof Error ? error : new Error(String(error)));
+                    } finally {
+                        checking = false;
+                    }
+                };
+                const failBeforeReady = (error: Error) => {
+                    terminalError ??= error;
+                    if (pollTimer) {
+                        clearTimeout(pollTimer);
+                        pollTimer = undefined;
+                    }
+                    pollReady();
+                };
+                const onError = (error: Error) => failBeforeReady(error);
+                const onExit = (code: number | null, signal: NodeJS.Signals | null) => {
+                    failBeforeReady(new Error(`SteamVR restore watcher exited before readiness (code ${code ?? "null"}, signal ${signal ?? "none"})`));
+                };
+
+                watcher.once("error", onError);
+                watcher.once("exit", onExit);
+                pollReady();
+            });
+        } finally {
+            await remove(readyPath).catch(error => log.warn("Could not remove SteamVR watcher readiness file", error));
+        }
+    }
+
+    private waitForOwnershipDelay(timeoutMs: number, signal?: AbortSignal): Promise<boolean> {
+        return new Promise(resolve => {
+            if (signal?.aborted) {
+                resolve(false);
+                return;
+            }
+
+            let settled = false;
+            let timer: NodeJS.Timeout;
+            const finish = (completed: boolean) => {
+                if (settled) { return; }
+                settled = true;
+                clearTimeout(timer);
+                signal?.removeEventListener("abort", onAbort);
+                resolve(completed);
+            };
+            const onAbort = () => finish(false);
+            timer = setTimeout(() => finish(true), timeoutMs);
+            signal?.addEventListener("abort", onAbort, { once: true });
+        });
+    }
+
+    private waitForProcessList(
+        processes: Promise<ProcessDetails[]>,
+        deadline: number,
+        signal?: AbortSignal
+    ): Promise<ProcessDetails[]> {
+        return new Promise((resolve, reject) => {
+            const remainingMs = deadline - Date.now();
+            if (remainingMs <= 0) {
+                reject(new Error("Process enumeration timed out"));
+                return;
+            }
+            if (signal?.aborted) {
+                reject(new Error("Process ownership acquisition was cancelled"));
+                return;
+            }
+
+            let settled = false;
+            const cleanup = () => {
+                clearTimeout(timer);
+                signal?.removeEventListener("abort", onAbort);
+            };
+            const settle = (error?: unknown, processDetails?: ProcessDetails[]) => {
+                if (settled) { return; }
+                settled = true;
+                cleanup();
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(processDetails ?? []);
+                }
+            };
+            const onAbort = () => settle(new Error("Process ownership acquisition was cancelled"));
+            const timer = setTimeout(() => settle(new Error("Process enumeration timed out")), remainingMs);
+            signal?.addEventListener("abort", onAbort, { once: true });
+            processes.then(processDetails => settle(undefined, processDetails), settle);
+        });
+    }
+
+    private async getProcessesWithRetry(
+        name: string,
+        signal?: AbortSignal,
+        deadline = Date.now() + OWNED_PROCESS_FIND_TIMEOUT_MS
+    ): Promise<ProcessDetails[]> {
+        let lastError: unknown;
+        for (let attempt = 0; attempt < PROCESS_LIST_RETRY_ATTEMPTS; attempt++) {
+            if (signal?.aborted) {
+                throw new Error("Process ownership acquisition was cancelled");
+            }
+            try {
+                return await this.waitForProcessList(getProcessesByName(name), deadline, signal);
+            } catch (error) {
+                lastError = error;
+                if (signal?.aborted) {
+                    throw error;
+                }
+                const remainingMs = deadline - Date.now();
+                if (attempt + 1 < PROCESS_LIST_RETRY_ATTEMPTS && remainingMs > 0) {
+                    const retryDelayCompleted = await this.waitForOwnershipDelay(
+                        Math.min(PROCESS_LIST_RETRY_INTERVAL_MS, remainingMs),
+                        signal
+                    );
+                    if (!retryDelayCompleted) {
+                        throw error;
+                    }
+                }
+            }
+        }
+        throw lastError ?? new Error("Could not enumerate processes");
+    }
+
+    private getProcessStartedAt(processDetails: ProcessDetails): Date | undefined {
+        if (processDetails.startTime === undefined) {
+            return undefined;
+        }
+        const startedAt = processDetails.startTime instanceof Date
+            ? processDetails.startTime
+            : new Date(processDetails.startTime);
+        return Number.isFinite(startedAt.getTime()) ? startedAt : undefined;
+    }
+
+    private processTargetsExecutable(processDetails: ProcessDetails, executablePath: string, launchedAfter: Date): boolean {
+        if (!Number.isSafeInteger(processDetails.pid) || processDetails.pid <= 0
+            || path.win32.basename(processDetails.name ?? "").toLowerCase() !== BS_EXECUTABLE.toLowerCase()
+            || !processDetails.cmd) {
+            return false;
+        }
+
+        const normalizedExecutablePath = path.win32.normalize(executablePath).toLowerCase();
+        const normalizedCommand = processDetails.cmd.replaceAll("/", "\\").trim().toLowerCase();
+        const quotedExecutablePath = `"${normalizedExecutablePath}"`;
+        const exactCommandPath = normalizedCommand === normalizedExecutablePath
+            || normalizedCommand.startsWith(`${normalizedExecutablePath} `)
+            || normalizedCommand === quotedExecutablePath
+            || normalizedCommand.startsWith(`${quotedExecutablePath} `);
+        if (!exactCommandPath) {
+            return false;
+        }
+
+        const processStartedAt = this.getProcessStartedAt(processDetails);
+        return processStartedAt !== undefined && processStartedAt.getTime() >= launchedAfter.getTime();
+    }
+
+    private selectOwnedProcess(
+        processes: ProcessDetails[],
+        existingProcessIds: Set<number>,
+        executablePath: string,
+        launchedAfter: Date,
+        launcherProcessId?: number
+    ): ProcessDetails | undefined {
+        const candidates = processes.filter(processDetails => !existingProcessIds.has(processDetails.pid)
+            && this.processTargetsExecutable(processDetails, executablePath, launchedAfter));
+        if (candidates.length <= 1) {
+            return candidates[0];
+        }
+
+        const launcherChildren = candidates.filter(processDetails => processDetails.ppid === launcherProcessId);
+        return Number.isSafeInteger(launcherProcessId) && launcherProcessId > 0 && launcherChildren.length === 1
+            ? launcherChildren[0]
+            : undefined;
+    }
+
+    private async findOwnedProcess(
+        existingProcessIds: Set<number>,
+        executablePath: string,
+        launchedAfter: Date,
+        launcherProcessId?: number,
+        signal?: AbortSignal
+    ): Promise<OwnedProcessIdentity | undefined> {
+        const deadline = Date.now() + OWNED_PROCESS_FIND_TIMEOUT_MS;
+        do {
+            let processes: ProcessDetails[];
+            try {
+                processes = await this.getProcessesWithRetry(BS_EXECUTABLE, signal, deadline);
+            } catch (error) {
+                if (signal?.aborted) {
+                    return undefined;
+                }
+                throw error;
+            }
+            const ownedProcess = this.selectOwnedProcess(
+                processes,
+                existingProcessIds,
+                executablePath,
+                launchedAfter,
+                launcherProcessId
+            );
+            const startedAt = ownedProcess && this.getProcessStartedAt(ownedProcess);
+            if (ownedProcess && startedAt) {
+                return { pid: ownedProcess.pid, startedAt };
+            }
+
+            const remainingMs = deadline - Date.now();
+            if (remainingMs <= 0 || signal?.aborted) {
+                return undefined;
+            }
+            if (!(await this.waitForOwnershipDelay(Math.min(OWNED_PROCESS_FIND_INTERVAL_MS, remainingMs), signal))) {
+                return undefined;
+            }
+        } while (Date.now() < deadline);
+
+        return undefined;
+    }
+
+    private processMatchesOwnedIdentity(
+        processDetails: ProcessDetails,
+        executablePath: string,
+        ownedProcess: OwnedProcessIdentity
+    ): boolean {
+        return processDetails.pid === ownedProcess.pid
+            && this.processTargetsExecutable(processDetails, executablePath, ownedProcess.startedAt)
+            && this.getProcessStartedAt(processDetails)?.getTime() === ownedProcess.startedAt.getTime();
+    }
+
+    private async createProcessOwnershipSnapshot(): Promise<ProcessOwnershipSnapshot> {
+        const deadline = Date.now() + OWNED_PROCESS_FIND_TIMEOUT_MS;
+        const existingProcesses = await this.getProcessesWithRetry(BS_EXECUTABLE, undefined, deadline);
+        return {
+            existingProcessIds: new Set(existingProcesses.map(processDetails => processDetails.pid)),
+            launchedAfter: new Date(),
+        };
+    }
+
+    private async handoffSteamVRRestore(
+        bsExePath: string,
+        launchedAfter: Date,
+        ownedProcessId?: number,
+        ownedProcessStartedAt?: Date
+    ): Promise<void> {
         const steamVrFolder = await this.getSteamVRPath();
         if (!steamVrFolder) { return; }
         const steamVrBackup = `${steamVrFolder}.bak`;
         if (!(await pathExists(steamVrBackup))) { return; }
+        const readyPath = path.join(app.getPath("temp"), `bsmanager-steamvr-restore-${randomUUID()}.ready`);
 
         const encode = (value: string) => Buffer.from(value, "utf8").toString("base64");
         const script = `$TargetExecutablePath = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${encode(bsExePath)}'))
 $SteamVrFolderPath = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${encode(steamVrFolder)}'))
 $SteamVrBackupPath = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${encode(steamVrBackup)}'))
+$HandoffReadyPath = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${encode(readyPath)}'))
+$TargetProcessId = ${ownedProcessId ?? 0}
+$TargetProcessStartedAtUtc = ${ownedProcessStartedAt ? `[DateTime]::Parse('${ownedProcessStartedAt.toISOString()}').ToUniversalTime()` : "$null"}
 $LaunchStartedAfterUtc = [DateTime]::Parse('${launchedAfter.toISOString()}').ToUniversalTime()
 ${STEAM_VR_RESTORE_WATCHER_SCRIPT}`;
         const encodedScript = Buffer.from(script, "utf16le").toString("base64");
-        const watcher = spawn("powershell.exe", ["-NoProfile", "-NonInteractive", "-EncodedCommand", encodedScript], {
+        const watcher = spawn(getWindowsPowerShellPath(), ["-NoProfile", "-NonInteractive", "-EncodedCommand", encodedScript], {
             detached: true,
+            shell: false,
             stdio: "ignore",
             windowsHide: true,
         });
-        await new Promise<void>((resolve, reject) => {
-            const onError = (error: Error) => {
-                watcher.removeListener("spawn", onSpawn);
-                reject(error);
-            };
-            const onSpawn = () => {
-                watcher.removeListener("error", onError);
-                watcher.once("error", error => log.error("SteamVR restore watcher error", error));
-                watcher.unref();
-                resolve();
-            };
-
-            watcher.once("error", onError);
-            watcher.once("spawn", onSpawn);
+        await this.waitForSteamVRWatcherReady(watcher, readyPath);
+        watcher.once("error", error => log.error("SteamVR restore watcher error", error));
+        watcher.once("exit", code => {
+            if (code !== 0) {
+                log.error(`SteamVR restore watcher exited with code ${code}`);
+            }
         });
+        watcher.unref();
     }
 
     private async launchBeatSaberAsAdmin(bsExePath: string, launchArgs: string[], options: ExecOptions): Promise<number> {
-        const existingProcessIds = new Set(await getProcessIds(BS_EXECUTABLE));
-        const launchedAfter = new Date();
+        const { existingProcessIds, launchedAfter } = await this.createProcessOwnershipSnapshot();
         let restoreHandedOff = false;
+        let helperProcessId: number | undefined;
+        let adminProcess: ChildProcess;
         const helperExitCode = await new Promise<number>((resolve, reject) => {
-            const adminProcess = exec(`"${this.getStartBsAsAdminExePath()}" "${bsExePath}" ${launchArgs.join(" ")} --log-path "${path.join(app.getPath("logs"), "bs-admin-start.log")}"`, options);
-            this.handleGameWindowReady(adminProcess, path.dirname(bsExePath), launchedAfter);
+            adminProcess = exec(`"${this.getStartBsAsAdminExePath()}" "${bsExePath}" ${launchArgs.join(" ")} --log-path "${path.join(app.getPath("logs"), "bs-admin-start.log")}"`, options);
+            helperProcessId = adminProcess.pid;
 
             let handoffPending = false;
             let settleHelperAfterHandoff: (() => void) | undefined;
@@ -224,10 +564,24 @@ ${STEAM_VR_RESTORE_WATCHER_SCRIPT}`;
         if (helperExitCode !== 0) {
             return helperExitCode;
         }
-        const ownedProcessId = (await getProcessIds(BS_EXECUTABLE)).find(processId => !existingProcessIds.has(processId));
-        if (ownedProcessId === undefined) {
+        const ownedProcess = await this.findOwnedProcess(
+            existingProcessIds,
+            bsExePath,
+            launchedAfter,
+            helperProcessId
+        );
+        if (!ownedProcess) {
             return helperExitCode;
         }
+        const ownedProcessLifecycle = new AbortController();
+        this.handleGameWindowReady(
+            adminProcess,
+            path.dirname(bsExePath),
+            launchedAfter,
+            ownedProcess.pid,
+            ownedProcessLifecycle.signal,
+            ownedProcess.startedAt
+        );
 
         return new Promise<number>((resolve, reject) => {
             let pollTimer: NodeJS.Timeout;
@@ -235,13 +589,19 @@ ${STEAM_VR_RESTORE_WATCHER_SCRIPT}`;
             const cleanup = () => {
                 clearTimeout(pollTimer);
                 app.removeListener("will-quit", onWillQuitHandler);
+                ownedProcessLifecycle.abort();
             };
             const onWillQuitHandler = async (event: Event) => {
                 event.preventDefault();
                 if (handoffPending) { return; }
                 handoffPending = true;
                 try {
-                    await this.handoffSteamVRRestore(bsExePath, launchedAfter);
+                    await this.handoffSteamVRRestore(
+                        bsExePath,
+                        launchedAfter,
+                        ownedProcess.pid,
+                        ownedProcess.startedAt
+                    );
                 } catch (error) {
                     handoffPending = false;
                     log.error("Could not hand off SteamVR restoration", error);
@@ -251,8 +611,13 @@ ${STEAM_VR_RESTORE_WATCHER_SCRIPT}`;
                 app.quit();
             };
             const pollBeatSaber = () => {
-                getProcessIds(BS_EXECUTABLE).then(processIds => {
-                    if (processIds.includes(ownedProcessId)) {
+                this.getProcessesWithRetry(BS_EXECUTABLE).then(processes => {
+                    const ownedProcessIsRunning = processes.some(processDetails => this.processMatchesOwnedIdentity(
+                        processDetails,
+                        bsExePath,
+                        ownedProcess
+                    ));
+                    if (ownedProcessIsRunning) {
                         pollTimer = setTimeout(pollBeatSaber, 1_000);
                     } else {
                         cleanup();
@@ -269,10 +634,40 @@ ${STEAM_VR_RESTORE_WATCHER_SCRIPT}`;
         });
     }
 
-    protected launchBeatSaber(options: LaunchBeatSaberOptions): {process: ChildProcess, exit: Promise<number>} {
-        const launchedAfter = new Date();
+    protected launchBeatSaber(
+        options: LaunchBeatSaberOptions,
+        ownershipSnapshot?: ProcessOwnershipSnapshot
+    ): {process: ChildProcess, exit: Promise<number>} {
+        const launchedAfter = ownershipSnapshot?.launchedAfter ?? new Date();
         const process = this.launchBeatSaberProcess(options);
-        this.handleGameWindowReady(process, options.beatSaberFolderPath, launchedAfter);
+        const ownershipLifecycle = new AbortController();
+        const executablePath = path.join(options.beatSaberFolderPath, BS_EXECUTABLE);
+        const ownedProcess: Promise<OwnedProcessIdentity | undefined> = ownershipSnapshot
+            ? this.findOwnedProcess(
+                ownershipSnapshot.existingProcessIds,
+                executablePath,
+                launchedAfter,
+                process.pid,
+                ownershipLifecycle.signal
+            ).catch((error): undefined => {
+                if (!ownershipLifecycle.signal.aborted) {
+                    log.error("Could not acquire the launched Beat Saber process", error);
+                }
+                return undefined;
+            })
+            : Promise.resolve(undefined);
+        ownedProcess.then(processIdentity => {
+            if (processIdentity && !ownershipLifecycle.signal.aborted) {
+                this.handleGameWindowReady(
+                    process,
+                    options.beatSaberFolderPath,
+                    launchedAfter,
+                    processIdentity.pid,
+                    ownershipLifecycle.signal,
+                    processIdentity.startedAt
+                );
+            }
+        }).catch(error => log.error("Could not start Beat Saber window handling", error));
 
         const exit = new Promise<number>((resolve, reject) => {
             // Don't remove, useful for debugging!
@@ -284,43 +679,65 @@ ${STEAM_VR_RESTORE_WATCHER_SCRIPT}`;
             // });
 
             let handoffPending = false;
+            const cleanup = () => {
+                ownershipLifecycle.abort();
+                app.removeListener('will-quit', onWillQuitHandler);
+            };
             const onWillQuitHandler = async (event: Event) => {
                 if (!process.killed) {
                     event.preventDefault();
                     if (handoffPending) { return; }
                     handoffPending = true;
-                    log.info(`Unref'ing BS process ${process.pid} on app will-quit`);
+                    const processIdentity = await ownedProcess;
+                    if (!processIdentity || ownershipLifecycle.signal.aborted) {
+                        handoffPending = false;
+                        return;
+                    }
+                    log.info(`Unref'ing BS process ${processIdentity.pid} on app will-quit`);
                     try {
-                        await this.handoffSteamVRRestore(path.join(options.beatSaberFolderPath, BS_EXECUTABLE), launchedAfter);
+                        await this.handoffSteamVRRestore(
+                            executablePath,
+                            launchedAfter,
+                            processIdentity.pid,
+                            processIdentity.startedAt
+                        );
                     } catch (error) {
                         handoffPending = false;
                         log.error("Could not hand off SteamVR restoration", error);
                         return;
                     }
-                    app.removeListener('will-quit', onWillQuitHandler);
+                    cleanup();
                     process.unref();
                     app.quit();
                 } else {
-                    app.removeListener('will-quit', onWillQuitHandler);
+                    cleanup();
                 }
             };
 
-            process.on("error", (err) => {
+            process.once("error", (err) => {
                 log.error(`Error while launching BS`, err);
+                cleanup();
                 reject(err);
-                app.removeListener('will-quit', onWillQuitHandler);
             });
 
-            process.on("exit", (code) => {
+            process.once("exit", (code) => {
                 log.info(`BS process exit with code ${code}`);
+                cleanup();
                 resolve(code);
-                app.removeListener('will-quit', onWillQuitHandler);
             });
 
             app.on('will-quit', onWillQuitHandler);
         });
 
         return { process, exit };
+    }
+
+    private async launchBeatSaberNormally(options: LaunchBeatSaberOptions): Promise<number> {
+        if (process.platform !== "win32") {
+            return this.launchBeatSaber(options).exit;
+        }
+        const ownershipSnapshot = await this.createProcessOwnershipSnapshot();
+        return this.launchBeatSaber(options, ownershipSnapshot).exit;
     }
 
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData>{
@@ -399,13 +816,13 @@ ${STEAM_VR_RESTORE_WATCHER_SCRIPT}`;
             const spawnOpts = { env: { ...customEnv, ...env }, cwd: bsFolderPath };
 
             const launchPromise = !launchOptions.admin ? (
-                this.launchBeatSaber({
+                this.launchBeatSaberNormally({
                     env, customEnv, cmdlet,
                     args: args
                         ? [ args, ...launchArgs ]
                         : launchArgs,
                     beatSaberFolderPath: bsFolderPath,
-                }).exit
+                })
             ) : this.launchBeatSaberAsAdmin(bsExePath, launchArgs, spawnOpts);
 
             try {
