@@ -9,10 +9,11 @@ import log from "electron-log";
 import { AbstractLauncherService, buildBsLaunchArgs, LaunchBeatSaberOptions } from "./abstract-launcher.service";
 import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
 import { UtilsService } from "../utils.service";
-import { exec, ChildProcessWithoutNullStreams } from "child_process";
+import { exec, ChildProcessWithoutNullStreams, ExecOptions } from "child_process";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { app, Event } from "electron";
 import { parseLaunchOptions } from "main/helpers/launchOptions.helper";
+import { isProcessRunning } from "main/helpers/os.helpers";
 
 export class SteamLauncherService extends AbstractLauncherService implements StoreLauncherInterface{
 
@@ -53,7 +54,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         try {
             await this.timedRename(steamVrFolder, `${steamVrFolder}.bak`);
             return false;
-        } catch (err) {
+        } catch (err: any) {
             log.warn("Could not backup SteamVR folder, skipping", err);
             return err?.code === "EPERM" || err?.message?.includes("timed out");
         }
@@ -70,6 +71,71 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         if (!(await pathExists(steamVrBackup))) { return; }
         return this.timedRename(steamVrBackup, steamVrFolder).catch(err => {
             log.warn("Could not restore SteamVR folder", err);
+        });
+    }
+
+    private async launchBeatSaberAsAdmin(bsExePath: string, launchArgs: string[], options: ExecOptions): Promise<number> {
+        const helperExitCode = await new Promise<number>((resolve, reject) => {
+            const adminProcess = exec(`"${this.getStartBsAsAdminExePath()}" "${bsExePath}" ${launchArgs.join(" ")} --log-path "${path.join(app.getPath("logs"), "bs-admin-start.log")}"`, options);
+
+            const cleanup = () => app.removeListener("will-quit", onWillQuitHandler);
+            const onWillQuitHandler = async (event: Event) => {
+                cleanup();
+                if (!adminProcess.killed) {
+                    event.preventDefault();
+                    log.info(`Unref'ing admin launcher process ${adminProcess.pid} on app will-quit`);
+                    adminProcess.unref();
+                    await this.restoreSteamVR().catch(log.error);
+                    resolve(-1);
+                    app.quit();
+                }
+            };
+
+            adminProcess.once("error", err => {
+                cleanup();
+                log.error("Error while starting BS as Admin", err);
+                reject(err);
+            });
+            adminProcess.once("exit", code => {
+                cleanup();
+                resolve(code ?? -1);
+            });
+            app.on("will-quit", onWillQuitHandler);
+        });
+
+        if (helperExitCode !== 0 || !(await isProcessRunning(BS_EXECUTABLE))) {
+            return helperExitCode;
+        }
+
+        return new Promise<number>((resolve, reject) => {
+            let pollTimer: NodeJS.Timeout;
+            const cleanup = () => {
+                clearTimeout(pollTimer);
+                app.removeListener("will-quit", onWillQuitHandler);
+            };
+            const onWillQuitHandler = async (event: Event) => {
+                cleanup();
+                event.preventDefault();
+                await this.restoreSteamVR().catch(log.error);
+                resolve(-1);
+                app.quit();
+            };
+            const pollBeatSaber = () => {
+                isProcessRunning(BS_EXECUTABLE).then(running => {
+                    if (running) {
+                        pollTimer = setTimeout(pollBeatSaber, 1_000);
+                    } else {
+                        cleanup();
+                        resolve(0);
+                    }
+                }).catch(error => {
+                    cleanup();
+                    reject(error);
+                });
+            };
+
+            app.on("will-quit", onWillQuitHandler);
+            pollBeatSaber();
         });
     }
 
@@ -126,7 +192,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 throw CustomError.fromError(new Error(`Path not exist : ${bsExePath}`), BSLaunchError.BS_NOT_FOUND);
             }
 
-            const skipSteam: boolean = launchOptions.launchMods?.includes(LaunchMods.SKIP_STEAM) ?? false;
+            const skipSteam = launchOptions.launchMods?.includes(LaunchMods.SKIP_STEAM) ?? false;
 
             // Open Steam if not running
             if(!skipSteam && !(await this.steam.isSteamRunning())){
@@ -140,16 +206,12 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                     obs.next({type: BSLaunchWarning.UNABLE_TO_LAUNCH_STEAM});
                 });
             }
-            else if(skipSteam) {
-                obs.next({ type: BSLaunchEvent.SKIPPING_STEAM_LAUNCH});
-            }
 
             const isFpfc = launchOptions.launchMods?.includes(LaunchMods.FPFC);
             const isOculus = launchOptions.launchMods?.includes(LaunchMods.OCULUS);
             if(isFpfc && !isOculus){
-                const backupPermError = await this.backupSteamVR().catch(() => {
-                    return this.restoreSteamVR().then(() => false);
-                });
+                const backupPermError = await this.backupSteamVR()
+                    .catch(async () => this.restoreSteamVR().then(() => false));
                 if(backupPermError){
                     obs.next({type: BSLaunchWarning.FPFC_NEED_ADMIN});
                 }
@@ -202,20 +264,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                         : launchArgs,
                     beatSaberFolderPath: bsFolderPath,
                 }).exit
-            ) : (
-                new Promise<number>(resolve => {
-                    const adminProcess = exec(`"${this.getStartBsAsAdminExePath()}" "${bsExePath}" ${launchArgs.join(" ")} --log-path "${path.join(app.getPath("logs"), "bs-admin-start.log")}"`, spawnOpts);
-                    adminProcess.on("error", err => {
-                        log.error("Error while starting BS as Admin", err);
-                        resolve(-1)
-                    });
-
-                    setTimeout(() => {
-                        adminProcess.removeAllListeners("error");
-                        resolve(-1);
-                    }, 35_000);
-                })
-            );
+            ) : this.launchBeatSaberAsAdmin(bsExePath, launchArgs, spawnOpts);
 
             try {
                 const exitCode = await launchPromise;

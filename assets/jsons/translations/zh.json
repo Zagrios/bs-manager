@@ -65,8 +65,6 @@
                     "placeholder": "启动选项，例如: KEY=VALUE %command% fpfc",
                     "create-launch-option": "创建启动选项"
                 },
-                "skipsteam": "跳过 Steam",
-                "skipsteam-description": "防止 Steam 与 Beat Saber 自动打开，如果您使用的是其他 VR 运行时，如 WiVRn 或 Monado，SteamVR 可能会干扰，请启用此选项。",
                 "map-editor": "地图编辑器",
                 "map-editor-description": "启动官方的 Beat Saber 地图编辑器，而不是游戏。",
                 "proton-logs": "Proton日志",
@@ -527,13 +525,11 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "启动中...🚀",
-                    "STEAM_LAUNCHING": "Steam 正在启动！",
-                    "SKIPPING_STEAM_LAUNCH": "跳过 Steam 启动"
+                    "STEAM_LAUNCHING": "Steam 正在启动！"
                 },
                 "msg": {
                     "BS_LAUNCHING": "别忘了热身哦 😉",
-                    "STEAM_LAUNCHING": "Beat Saber 会在 Steam 启动后自动启动。",
-                    "SKIPPING_STEAM_LAUNCH": "希望你知道自己在做什么 :)"
+                    "STEAM_LAUNCHING": "Beat Saber 会在 Steam 启动后自动启动。"
                 }
             },
             "errors": {
@@ -986,6 +982,25 @@
             },
             "launch-as-admin": "以管理员身份启动",
             "not-remind-me": "不再提醒我"
+        },
+        "vr-runtime-mismatch": {
+            "title": "OpenXR 运行时警告",
+            "tutorial": "点击此处查看如何配置运行时的教程。",
+            "body": {
+                "active-runtime": "当前活动的 OpenXR 运行时是 {activeRuntime}。",
+                "info": "如果这是预期配置，请选择仍要启动。否则，请在 VR 软件中选择合适的 OpenXR 运行时。",
+                "info-2": "SteamVR 和 Meta Horizon Link 是两个可提供 OpenXR 运行时的常用应用。"
+            },
+            "runtimes": {
+                    "steam": "SteamVR",
+                    "oculus": "Meta Quest Link",
+                    "vdxr": "Virtual Desktop (VDXR)",
+                    "not-set": "未设置",
+                    "other": "其他运行时",
+                    "unknown": "未知（检测失败）"
+            },
+            "dont-remind-me": "不再提醒",
+            "launch-anyway": "仍要启动"
         },
         "ask-install-path": {
             "title": "安装文件夹",

@@ -16,3 +16,4 @@ import "./bs-version-download/bs-download-ipcs";
 import "./static-configuration.ipcs";
 import "./linux.ipcs.ts";
 import "./oculus.ipcs";
+import "./vr-runtime.ipcs";

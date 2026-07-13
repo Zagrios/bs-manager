@@ -65,8 +65,6 @@
                     "placeholder": "Startoptionen, bspw: KEY=VALUE %command% fpfc",
                     "create-launch-option": "Eine Startoption erstellen"
                 },
-                "skipsteam": "Steam überspringen",
-                "skipsteam-description": "Verhindert, dass Steam automatisch mit Beat Saber geöffnet wird. Aktivieren Sie dies, wenn Sie eine andere VR-Laufzeit wie WiVRn oder Monado verwenden, mit der SteamVR interferieren könnte.",
                 "map-editor": "Karteneditor",
                 "map-editor-description": "Starte den offiziellen Beat Saber-Karteneditor anstelle des Spiels.",
                 "proton-logs": "Proton-Logs",
@@ -527,13 +525,11 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "Starte... 🚀",
-                    "STEAM_LAUNCHING": "Steam startet!",
-                    "SKIPPING_STEAM_LAUNCH": "Steam-Start überspringen"
+                    "STEAM_LAUNCHING": "Steam startet!"
                 },
                 "msg": {
                     "BS_LAUNCHING": "Vergiss nicht, dich aufzuwärmen 😉",
-                    "STEAM_LAUNCHING": "Beat Saber wird automatisch nach Steam gestartet.",
-                    "SKIPPING_STEAM_LAUNCH": "Ich hoffe, du weißt, was du tust :)"
+                    "STEAM_LAUNCHING": "Beat Saber wird automatisch nach Steam gestartet."
                 }
             },
             "errors": {
@@ -986,6 +982,25 @@
             },
             "launch-as-admin": "Als Administrator starten",
             "not-remind-me": "Nicht mehr erinnern"
+        },
+        "vr-runtime-mismatch": {
+            "title": "OpenXR-Laufzeitwarnung",
+            "tutorial": "Klicke hier für eine Anleitung zum Einrichten der Laufzeit.",
+            "body": {
+                "active-runtime": "Die aktive OpenXR-Laufzeit ist {activeRuntime}.",
+                "info": "Wenn dies beabsichtigt ist, wähle Trotzdem starten. Andernfalls wähle die passende OpenXR-Laufzeit in deiner VR-Software.",
+                "info-2": "SteamVR und Meta Horizon Link sind zwei beliebte Anwendungen, die eine OpenXR-Laufzeit bereitstellen."
+            },
+            "runtimes": {
+                    "steam": "SteamVR",
+                    "oculus": "Meta Quest Link",
+                    "vdxr": "Virtual Desktop (VDXR)",
+                    "not-set": "Nicht konfiguriert",
+                    "other": "eine andere Laufzeit",
+                    "unknown": "unbekannt (Erkennung fehlgeschlagen)"
+            },
+            "dont-remind-me": "Nicht mehr erinnern",
+            "launch-anyway": "Trotzdem starten"
         },
         "ask-install-path": {
             "title": "Installations Ordner",

@@ -65,8 +65,6 @@
                     "placeholder": "起動オプション 例：KEY=VALUE %command% fpfc",
                     "create-launch-option": "起動オプションを作成"
                 },
-                "skipsteam": "Steamをスキップ",
-                "skipsteam-description": "Beat Saberと一緒にSteamが自動的に開くのを防ぎます。SteamVRが干渉する可能性のあるWiVRnやMonadoなど、別のVRランタイムを使用している場合は有効にしてください。",
                 "map-editor": "マップエディタ",
                 "map-editor-description": "ゲームの代わりに公式のBeat Saberマップエディタを起動する。",
                 "proton-logs": "プロトンログ",
@@ -527,13 +525,11 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "起動中...🚀",
-                    "STEAM_LAUNCHING": "Steamの起動を確認しました!",
-                    "SKIPPING_STEAM_LAUNCH": "Steamの起動をスキップ"
+                    "STEAM_LAUNCHING": "Steamの起動を確認しました!"
                 },
                 "msg": {
                     "BS_LAUNCHING": "ウォームアップを忘れずに 😉",
-                    "STEAM_LAUNCHING": "Beat SaberはSteamの起動後に自動的に起動します。",
-                    "SKIPPING_STEAM_LAUNCH": "あなたが何をしているのか分かっていることを願っています :)"
+                    "STEAM_LAUNCHING": "Beat SaberはSteamの起動後に自動的に起動します。"
                 }
             },
             "errors": {
@@ -986,6 +982,25 @@
             },
             "launch-as-admin": "管理者として起動",
             "not-remind-me": "Больше не напоминать"
+        },
+        "vr-runtime-mismatch": {
+            "title": "OpenXR ランタイムの警告",
+            "tutorial": "ランタイムの設定方法については、こちらのチュートリアルをクリックしてください。",
+            "body": {
+                "active-runtime": "現在有効な OpenXR ランタイムは {activeRuntime} です。",
+                "info": "意図した設定であれば、このまま起動を選択してください。そうでない場合は、VR ソフトウェアで適切な OpenXR ランタイムを選択してください。",
+                "info-2": "SteamVR と Meta Horizon Link は、使用できる OpenXR ランタイムを提供する代表的なアプリです。"
+            },
+            "runtimes": {
+                    "steam": "SteamVR",
+                    "oculus": "Meta Quest Link",
+                    "vdxr": "Virtual Desktop (VDXR)",
+                    "not-set": "未設定",
+                    "other": "別のランタイム",
+                    "unknown": "不明（検出に失敗）"
+            },
+            "dont-remind-me": "今後は表示しない",
+            "launch-anyway": "このまま起動"
         },
         "ask-install-path": {
             "title": "インストールフォルダー",

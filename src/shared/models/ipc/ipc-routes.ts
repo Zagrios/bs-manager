@@ -22,6 +22,7 @@ import { StaticConfigGetIpcRequestResponse, StaticConfigKeys, StaticConfigSetIpc
 import { BbmFullMod, BbmModVersion, ExternalMod } from "../mods/mod.interface";
 import { OculusDownloadInfo } from "main/services/bs-version-download/bs-oculus-downloader.service";
 import { UpdateInfo } from "electron-updater";
+import { VrRuntime } from "shared/models/vr-runtime.model";
 
 export type IpcReplier<T> = (data: Observable<T>) => void;
 
@@ -167,6 +168,9 @@ export interface IpcChannelMapping {
     /* ** oculus.ipcs ** */
     "is-oculus-sideloaded-apps-enabled": { request: void, response: boolean };
     "enable-oculus-sideloaded-apps": { request: void, response: void };
+
+    /* ** vr-runtime.ipcs ** */
+    "vr-runtime.get-active": { request: string | void, response: VrRuntime };
 
     /* ** OTHERS (if your IPC channel is not in a "-ipcs" file, put it here) ** */
     "shortcut-launch-options": { request: void, response: LaunchOption };

@@ -65,8 +65,6 @@
                     "placeholder": "Параметры запуска, например: KEY=VALUE %command% fpfc",
                     "create-launch-option": "Создать параметр запуска"
                 },
-                "skipsteam": "Пропустить Steam",
-                "skipsteam-description": "Предотвращает автоматическое открытие Steam с Beat Saber, включите, если вы используете другую VR-среду, такую как WiVRn или Monado, с которой SteamVR может мешать.",
                 "map-editor": "Редактор карт",
                 "map-editor-description": "Запусти официальный редактор карт Beat Saber вместо игры.",
                 "proton-logs": "Протонные логи",
@@ -527,13 +525,11 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "Запуск...🚀",
-                    "STEAM_LAUNCHING": "Steam запускается!",
-                    "SKIPPING_STEAM_LAUNCH": "Пропуск запуска Steam"
+                    "STEAM_LAUNCHING": "Steam запускается!"
                 },
                 "msg": {
                     "BS_LAUNCHING": "Не забудьте разогреться 😉",
-                    "STEAM_LAUNCHING": "Beat Saber запустится сам после Steam.",
-                    "SKIPPING_STEAM_LAUNCH": "Надеюсь, вы знаете, что делаете :)"
+                    "STEAM_LAUNCHING": "Beat Saber запустится сам после Steam."
                 }
             },
             "errors": {
@@ -985,6 +981,25 @@
                 "info-3": "Обратите внимание, что не рекомендуется предоставлять права администратора Steam, так как это также влияет на установленные игры и моды, представляя угрозу безопасности."
             },
             "launch-as-admin": "Запустить от имени администратора"
+        },
+        "vr-runtime-mismatch": {
+            "title": "Предупреждение среды выполнения OpenXR",
+            "tutorial": "Нажмите здесь, чтобы посмотреть руководство по настройке среды выполнения.",
+            "body": {
+                "active-runtime": "Активная среда выполнения OpenXR: {activeRuntime}.",
+                "info": "Если это сделано намеренно, выберите Запустить всё равно. Иначе выберите подходящую среду выполнения OpenXR в программе VR.",
+                "info-2": "SteamVR и Meta Horizon Link — два популярных приложения, предоставляющих среду выполнения OpenXR."
+            },
+            "runtimes": {
+                    "steam": "SteamVR",
+                    "oculus": "Meta Quest Link",
+                    "vdxr": "Virtual Desktop (VDXR)",
+                    "not-set": "Не настроено",
+                    "other": "другая среда выполнения",
+                    "unknown": "неизвестна (ошибка обнаружения)"
+            },
+            "dont-remind-me": "Больше не напоминать",
+            "launch-anyway": "Запустить всё равно"
         },
         "ask-install-path": {
             "title": "Папка установок",
