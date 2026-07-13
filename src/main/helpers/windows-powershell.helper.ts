@@ -56,6 +56,11 @@ export function getWindowsPowerShellPath(): string {
     return powershellPath;
 }
 
+export function buildWindowsPowerShellArgs(script: string): string[] {
+    const encodedScript = Buffer.from(script, "utf16le").toString("base64");
+    return ["-NoProfile", "-NonInteractive", "-EncodedCommand", encodedScript];
+}
+
 export function getWindowsProcessesByName(name: string): Promise<WindowsProcessDetails[]> {
     if (!name) {
         return Promise.resolve([]);
@@ -63,10 +68,9 @@ export function getWindowsProcessesByName(name: string): Promise<WindowsProcessD
 
     const encodedProcessName = Buffer.from(name, "utf8").toString("base64");
     const script = `$TargetProcessName = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${encodedProcessName}'))\n${WINDOWS_PROCESS_LIST_SCRIPT}`;
-    const encodedScript = Buffer.from(script, "utf16le").toString("base64");
 
     return new Promise((resolve, reject) => {
-        execFile(getWindowsPowerShellPath(), ["-NoProfile", "-NonInteractive", "-EncodedCommand", encodedScript], {
+        execFile(getWindowsPowerShellPath(), buildWindowsPowerShellArgs(script), {
             encoding: "utf8",
             maxBuffer: 1_000_000,
             shell: false,

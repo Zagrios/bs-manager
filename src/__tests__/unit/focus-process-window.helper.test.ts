@@ -32,7 +32,7 @@ describe("focusProcessWindow", () => {
     });
 
     beforeEach(() => {
-        jest.clearAllMocks();
+        execFileMock.mockReset();
     });
 
     afterEach(() => {
@@ -61,9 +61,10 @@ describe("focusProcessWindow", () => {
         const launchedAfter = new Date("2026-07-13T08:00:00.000Z");
         execFileMock.mockImplementationOnce((_file, args, _options, callback) => {
             const script = Buffer.from(args[3], "base64").toString("utf16le");
-            const selectsNewProcess = script.includes(launchedAfter.toISOString())
-                && script.includes("$_.StartTime.ToUniversalTime() -ge $LaunchStartedAfterUtc");
-            callback(null, selectsNewProcess ? "focused\n" : "window-found\n", "");
+            expect(script).toContain("$TargetProcessStartedAtUtc = $null");
+            expect(script).toContain(`$LaunchStartedAfterUtc = [DateTime]::Parse('${launchedAfter.toISOString()}').ToUniversalTime()`);
+            expect(script).toContain("$processStartedAtUtc -lt $LaunchStartedAfterUtc");
+            callback(null, "focused\n", "");
         });
 
         await expect(focusProcessWindow("C:\\Beat Saber\\Beat Saber.exe", {

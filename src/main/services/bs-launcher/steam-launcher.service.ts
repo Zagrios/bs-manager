@@ -15,7 +15,8 @@ import { app, Event } from "electron";
 import { parseLaunchOptions } from "main/helpers/launchOptions.helper";
 import { getProcessesByName, ProcessDetails } from "main/helpers/os.helpers";
 import { randomUUID } from "crypto";
-import { getWindowsPowerShellPath } from "main/helpers/windows-powershell.helper";
+import { abortableDelay } from "main/helpers/abortable-delay.helper";
+import { buildWindowsPowerShellArgs, getWindowsPowerShellPath } from "main/helpers/windows-powershell.helper";
 
 const STEAM_VR_WATCHER_READY_TIMEOUT_MS = 65_000;
 const STEAM_VR_WATCHER_READY_POLL_INTERVAL_MS = 50;
@@ -256,28 +257,6 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         }
     }
 
-    private waitForOwnershipDelay(timeoutMs: number, signal?: AbortSignal): Promise<boolean> {
-        return new Promise(resolve => {
-            if (signal?.aborted) {
-                resolve(false);
-                return;
-            }
-
-            let settled = false;
-            let timer: NodeJS.Timeout;
-            const finish = (completed: boolean) => {
-                if (settled) { return; }
-                settled = true;
-                clearTimeout(timer);
-                signal?.removeEventListener("abort", onAbort);
-                resolve(completed);
-            };
-            const onAbort = () => finish(false);
-            timer = setTimeout(() => finish(true), timeoutMs);
-            signal?.addEventListener("abort", onAbort, { once: true });
-        });
-    }
-
     private waitForProcessList(
         processes: Promise<ProcessDetails[]>,
         deadline: number,
@@ -335,7 +314,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 }
                 const remainingMs = deadline - Date.now();
                 if (attempt + 1 < PROCESS_LIST_RETRY_ATTEMPTS && remainingMs > 0) {
-                    const retryDelayCompleted = await this.waitForOwnershipDelay(
+                    const retryDelayCompleted = await abortableDelay(
                         Math.min(PROCESS_LIST_RETRY_INTERVAL_MS, remainingMs),
                         signal
                     );
@@ -433,7 +412,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
             if (remainingMs <= 0 || signal?.aborted) {
                 return undefined;
             }
-            if (!(await this.waitForOwnershipDelay(Math.min(OWNED_PROCESS_FIND_INTERVAL_MS, remainingMs), signal))) {
+            if (!(await abortableDelay(Math.min(OWNED_PROCESS_FIND_INTERVAL_MS, remainingMs), signal))) {
                 return undefined;
             }
         } while (Date.now() < deadline);
@@ -481,8 +460,7 @@ $TargetProcessId = ${ownedProcessId ?? 0}
 $TargetProcessStartedAtUtc = ${ownedProcessStartedAt ? `[DateTime]::Parse('${ownedProcessStartedAt.toISOString()}').ToUniversalTime()` : "$null"}
 $LaunchStartedAfterUtc = [DateTime]::Parse('${launchedAfter.toISOString()}').ToUniversalTime()
 ${STEAM_VR_RESTORE_WATCHER_SCRIPT}`;
-        const encodedScript = Buffer.from(script, "utf16le").toString("base64");
-        const watcher = spawn(getWindowsPowerShellPath(), ["-NoProfile", "-NonInteractive", "-EncodedCommand", encodedScript], {
+        const watcher = spawn(getWindowsPowerShellPath(), buildWindowsPowerShellArgs(script), {
             detached: true,
             shell: false,
             stdio: "ignore",

@@ -1,5 +1,6 @@
 import { execFile } from "child_process";
-import { getWindowsPowerShellPath } from "./windows-powershell.helper";
+import { abortableDelay } from "./abortable-delay.helper";
+import { buildWindowsPowerShellArgs, getWindowsPowerShellPath } from "./windows-powershell.helper";
 
 export type FocusProcessWindowResult = "focused" | "window-found" | "not-found";
 
@@ -79,9 +80,9 @@ if ($null -ne $process -and $process.MainWindowHandle -ne 0) {
 Write-Output "not-found"
 `;
 
-function runFocusAttempt(encodedScript: string, timeoutMs: number, signal?: AbortSignal): Promise<FocusProcessWindowResult> {
+function runFocusAttempt(powershellArgs: string[], timeoutMs: number, signal?: AbortSignal): Promise<FocusProcessWindowResult> {
     return new Promise(resolve => {
-        execFile(getWindowsPowerShellPath(), ["-NoProfile", "-NonInteractive", "-EncodedCommand", encodedScript], {
+        execFile(getWindowsPowerShellPath(), powershellArgs, {
             encoding: "utf8",
             shell: false,
             signal,
@@ -96,27 +97,6 @@ function runFocusAttempt(encodedScript: string, timeoutMs: number, signal?: Abor
             const result = stdout.trim();
             resolve(result === "focused" || result === "window-found" ? result : "not-found");
         });
-    });
-}
-
-function delay(timeoutMs: number, signal?: AbortSignal): Promise<boolean> {
-    return new Promise(resolve => {
-        if (signal?.aborted) {
-            resolve(false);
-            return;
-        }
-
-        let settled = false;
-        const finish = (completed: boolean) => {
-            if (settled) { return; }
-            settled = true;
-            clearTimeout(timer);
-            signal?.removeEventListener("abort", onAbort);
-            resolve(completed);
-        };
-        const onAbort = () => finish(false);
-        const timer = setTimeout(() => finish(true), timeoutMs);
-        signal?.addEventListener("abort", onAbort, { once: true });
     });
 }
 
@@ -137,7 +117,7 @@ export async function focusProcessWindow(executablePath?: string, options: Focus
         ? `[DateTime]::Parse('${processStartedAt.toISOString()}').ToUniversalTime()`
         : "$null";
     const script = `$TargetExecutablePath = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${encodedExecutablePath}'))\n$TargetProcessId = ${options.processId}\n$TargetProcessStartedAtUtc = ${processStartedAtAssignment}\n$LaunchStartedAfterUtc = [DateTime]::Parse('${launchedAfterUtc}').ToUniversalTime()\n${FOCUS_PROCESS_WINDOW_SCRIPT}`;
-    const encodedScript = Buffer.from(script, "utf16le").toString("base64");
+    const powershellArgs = buildWindowsPowerShellArgs(script);
     const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
     const pollIntervalMs = options.pollIntervalMs ?? DEFAULT_POLL_INTERVAL_MS;
     const deadline = Date.now() + timeoutMs;
@@ -152,7 +132,7 @@ export async function focusProcessWindow(executablePath?: string, options: Focus
         if (options.signal?.aborted) {
             break;
         }
-        const result = await runFocusAttempt(encodedScript, attemptBudgetMs, options.signal);
+        const result = await runFocusAttempt(powershellArgs, attemptBudgetMs, options.signal);
         if (!windowReadyReported && result !== "not-found") {
             windowReadyReported = true;
             options.onWindowReady?.();
@@ -166,7 +146,7 @@ export async function focusProcessWindow(executablePath?: string, options: Focus
         if (remainingMs <= 0) {
             break;
         }
-        if (!(await delay(Math.min(pollIntervalMs, remainingMs), options.signal))) {
+        if (!(await abortableDelay(Math.min(pollIntervalMs, remainingMs), options.signal))) {
             break;
         }
     }
