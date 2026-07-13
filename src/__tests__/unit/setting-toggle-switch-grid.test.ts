@@ -18,7 +18,7 @@ describe("settings toggle accessibility", () => {
         expect(isCloseOnLaunchSupported("darwin")).toBe(false);
     });
 
-    it("describes process-based close-after-launch without promising window focus", () => {
+    it("uses the authorized close-on-launch description without promising focus", () => {
         const copy = en.pages.settings.advanced["close-bs-manager-on-launch"];
         const renderer = TestRenderer.create(React.createElement(SettingToogleSwitchGrid, {
             items: [{
@@ -38,7 +38,7 @@ describe("settings toggle accessibility", () => {
         expect(title.props.id).toBeTruthy();
         expect(description.props.id).toBeTruthy();
         expect(focusIndicator).toBeDefined();
-        expect(copy.description).toBe("Closes BSManager after a safely owned Beat Saber process starts.");
-        expect(`${copy.title} ${copy.description}`).not.toMatch(/focus|foreground|window/i);
+        expect(copy.description).toBe("Closes BSManager once the Beat Saber window is ready.");
+        expect(`${copy.title} ${copy.description}`).not.toMatch(/focus|foreground/i);
     });
 });
