@@ -460,7 +460,7 @@ describe("SteamLauncherService normal lifecycle", () => {
             expect(settled).toBe(false);
 
             resolveOwnership!(undefined);
-            await expect(launch).resolves.toEqual({ exitCode: 7, steamVrRestoreSafe: true });
+            await expect(launch).resolves.toEqual({ exitCode: 7, steamVrRestoreSafe: false });
         } finally {
             Object.defineProperty(process, "platform", { configurable: true, value: "win32" });
         }
@@ -596,6 +596,62 @@ describe("SteamLauncherService normal lifecycle", () => {
         await jest.advanceTimersByTimeAsync(1_000);
         await launch;
         expect((service as any).restoreSteamVR).toHaveBeenCalledTimes(1);
+    });
+
+    it("waits for delayed ownership after a successful wrapper exit before restoring SteamVR", async () => {
+        jest.useFakeTimers({ now: launchedAfter });
+        (pathExists as jest.Mock).mockResolvedValue(true);
+        const wrapper = processHandle(42);
+        (bsmSpawn as jest.Mock).mockReturnValue(wrapper);
+        const owned = {
+            pid: 85,
+            ppid: 42,
+            name: "Beat Saber.exe",
+            cmd: "C:/Beat Saber/Beat Saber.exe",
+            startTime: processStartedAt,
+        };
+        (getProcessesByName as jest.Mock).mockImplementation(() => Promise.resolve(
+            Date.now() >= launchedAfter.getTime() + 6_000 ? [owned] : []
+        ));
+        const service = serviceWithConfig(true);
+        Object.assign(service as any, {
+            restoreSteamVR: jest.fn(async (): Promise<void> => undefined),
+        });
+
+        const launch = (service as any).launchTrackedBeatSaber(launchOptions, {
+            existingProcessIds: new Set(),
+            launchedAfter,
+        });
+        wrapper.emit("exit", 0);
+        await jest.advanceTimersByTimeAsync(5_000);
+
+        expect((service as any).restoreSteamVR).not.toHaveBeenCalled();
+        expect(app.quit).not.toHaveBeenCalled();
+
+        await jest.advanceTimersByTimeAsync(1_000);
+        expect(app.quit).toHaveBeenCalledTimes(1);
+        expect((service as any).restoreSteamVR).not.toHaveBeenCalled();
+
+        (getProcessesByName as jest.Mock).mockResolvedValue([]);
+        await jest.advanceTimersByTimeAsync(1_000);
+        await expect(launch).resolves.toEqual({ exitCode: 0, steamVrRestoreSafe: true });
+    });
+
+    it("does not claim SteamVR restoration safety from an early wrapper success plus acquisition timeout", async () => {
+        jest.useFakeTimers({ now: launchedAfter });
+        const wrapper = processHandle(42);
+        (bsmSpawn as jest.Mock).mockReturnValue(wrapper);
+        (getProcessesByName as jest.Mock).mockResolvedValue([]);
+        const service = serviceWithConfig();
+
+        const launch = (service as any).launchTrackedBeatSaber(launchOptions, {
+            existingProcessIds: new Set(),
+            launchedAfter,
+        });
+        wrapper.emit("exit", 0);
+        await jest.advanceTimersByTimeAsync(60_000);
+
+        await expect(launch).resolves.toEqual({ exitCode: 0, steamVrRestoreSafe: false });
     });
 
     it("launches normally when the optional ownership snapshot fails", async () => {
@@ -914,7 +970,7 @@ describe("SteamLauncherService elevated lifecycle", () => {
         resolveOwnership!(undefined);
         await expect(launch).resolves.toEqual({
             exitCode: 7,
-            steamVrRestoreSafe: true,
+            steamVrRestoreSafe: false,
         });
     });
 
@@ -943,8 +999,8 @@ describe("SteamLauncherService elevated lifecycle", () => {
         expect(app.removeListener).not.toHaveBeenCalledWith("will-quit", handler);
 
         resolveOwnership!([]);
-        await jest.advanceTimersByTimeAsync(5_500);
-        await expect(launch).resolves.toEqual({ exitCode: 0, steamVrRestoreSafe: true });
+        await jest.advanceTimersByTimeAsync(60_000);
+        await expect(launch).resolves.toEqual({ exitCode: 0, steamVrRestoreSafe: false });
     });
 
     it("does not intercept quit or hand off when elevated ownership is not established", async () => {

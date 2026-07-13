@@ -713,12 +713,10 @@ ${STEAM_VR_RESTORE_WATCHER_SCRIPT}`;
             throw new SteamLaunchFailure(error, false);
         }
         if (!processIdentity) {
-            const noOwnedProcessProven = ownershipSnapshot !== undefined
-                && !ownershipLifecycle.signal.aborted;
             cleanup();
             return {
                 exitCode: helperResult.exitCode,
-                steamVrRestoreSafe: noOwnedProcessProven,
+                steamVrRestoreSafe: false,
             };
         }
 
@@ -854,15 +852,13 @@ ${STEAM_VR_RESTORE_WATCHER_SCRIPT}`;
         }
         if (!processIdentity) {
             const wrapperResult = await wrapperOutcome;
-            const noOwnedProcessProven = ownershipSnapshot !== undefined
-                && !ownershipLifecycle.signal.aborted;
             cleanup();
             if ("error" in wrapperResult) {
                 throw new SteamLaunchFailure(wrapperResult.error, true);
             }
             return {
                 exitCode: wrapperResult.exitCode,
-                steamVrRestoreSafe: noOwnedProcessProven,
+                steamVrRestoreSafe: false,
             };
         }
 

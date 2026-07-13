@@ -30,6 +30,7 @@ describe("getWindowsPowerShellPath", () => {
             expect(script).toContain("Get-CimInstance Win32_Process");
             expect(script).toContain("$_.ExecutablePath");
             expect(script).toContain("$_.CreationDate.ToUniversalTime()");
+            expect(script).toContain("[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)");
             callback(null, JSON.stringify([{
                 pid: 85,
                 ppid: 42,
@@ -49,8 +50,36 @@ describe("getWindowsPowerShellPath", () => {
         expect(execFile).toHaveBeenCalledWith(
             "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
             expect.any(Array),
-            expect.objectContaining({ shell: false, timeout: expect.any(Number) }),
+            expect.objectContaining({ encoding: "utf8", shell: false, timeout: expect.any(Number) }),
             expect.any(Function)
         );
+    });
+
+    it("preserves a non-ASCII executable path from UTF-8 JSON", async () => {
+        process.env.SystemRoot = "C:\\Windows";
+        (execFile as unknown as jest.Mock).mockImplementationOnce((_file, _args, _options, callback) => {
+            callback(null, JSON.stringify({
+                pid: 85,
+                ppid: 42,
+                name: "Beat Saber.exe",
+                cmd: "C:\\Jeux\\Béat Sàber\\Beat Saber.exe",
+                startTime: "2026-07-13T08:00:00.123Z",
+            }), "");
+        });
+
+        await expect(getWindowsProcessesByName("Beat Saber.exe")).resolves.toEqual([expect.objectContaining({
+            cmd: "C:\\Jeux\\Béat Sàber\\Beat Saber.exe",
+        })]);
+    });
+
+    it("rejects process enumeration and malformed JSON errors", async () => {
+        process.env.SystemRoot = "C:\\Windows";
+        const enumerationError = new Error("PowerShell failed");
+        (execFile as unknown as jest.Mock)
+            .mockImplementationOnce((_file, _args, _options, callback) => callback(enumerationError, "", ""))
+            .mockImplementationOnce((_file, _args, _options, callback) => callback(null, "not json", ""));
+
+        await expect(getWindowsProcessesByName("Beat Saber.exe")).rejects.toBe(enumerationError);
+        await expect(getWindowsProcessesByName("Beat Saber.exe")).rejects.toBeInstanceOf(SyntaxError);
     });
 });

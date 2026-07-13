@@ -55,7 +55,7 @@ describe("Flatpak host process discovery", () => {
 
         expect(cp.exec).toHaveBeenCalledWith(
             expect.stringContaining("flatpak-spawn --host"),
-            expect.any(Object),
+            expect.objectContaining({ timeout: 5_000 }),
             expect.any(Function)
         );
         const command = (cp.exec as unknown as jest.Mock).mock.calls[0][0];

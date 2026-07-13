@@ -6,6 +6,7 @@ import { IS_FLATPAK } from "main/constants";
 import { getWindowsProcessesByName } from "./windows-powershell.helper";
 
 export const BSM_LAUNCH_TOKEN_ENV = "BSMANAGER_LAUNCH_TOKEN";
+const FLATPAK_HOST_PROCESS_LIST_TIMEOUT_MS = 5_000;
 
 // Only applied if package as flatpak
 type FlatpakOptions = {
@@ -169,7 +170,10 @@ async function getFlatpakHostProcessesByName(name: string): Promise<ProcessDetai
     const { stdout } = await bsmExec(`sh -c ${quoteShellArgument(hostScript)}`, {
         log: BsmShellLog.Command,
         flatpak: { host: true },
-        options: { maxBuffer: 4 * 1_024 * 1_024 },
+        options: {
+            maxBuffer: 4 * 1_024 * 1_024,
+            timeout: FLATPAK_HOST_PROCESS_LIST_TIMEOUT_MS,
+        },
     });
 
     return stdout.split("\n").flatMap(line => {

@@ -49,6 +49,16 @@ class TestLauncher extends AbstractLauncherService {
     public enumerateProcesses(deadline: number) {
         return this.getProcessesWithRetry("Beat Saber.exe", undefined, deadline);
     }
+
+    public findProcess(signal?: AbortSignal) {
+        return this.findOwnedProcess(
+            new Set(),
+            "C:/Beat Saber/Beat Saber.exe",
+            new Date("2026-07-13T08:00:00.000Z"),
+            42,
+            signal
+        );
+    }
 }
 
 const launchOptions: LaunchBeatSaberOptions = {
@@ -215,6 +225,134 @@ describe("AbstractLauncherService process lifecycle", () => {
 
             expect(await enumerationError).toMatchObject({ message: "Process enumeration timed out" });
             expect(getProcessesByName).toHaveBeenCalledTimes(1);
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    it("rejects a process list that resolves at the enumeration deadline", async () => {
+        jest.useFakeTimers({ now: 1_000 });
+        try {
+            (getProcessesByName as jest.Mock).mockReturnValue(new Promise(resolve => {
+                setTimeout(() => resolve([{
+                    pid: 85,
+                    ppid: 42,
+                    name: "Beat Saber.exe",
+                }]), 50);
+            }));
+            const launcher = new TestLauncher();
+            const enumeration = launcher.enumerateProcesses(Date.now() + 50);
+            const enumerationError = enumeration.catch(error => error);
+
+            await jest.advanceTimersByTimeAsync(50);
+
+            expect(await enumerationError).toMatchObject({ message: "Process enumeration timed out" });
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    it("keeps acquiring ownership when Beat Saber appears after the short enumeration timeout", async () => {
+        jest.useFakeTimers({ now: new Date("2026-07-13T08:00:00.000Z") });
+        try {
+            const owned = {
+                pid: 85,
+                ppid: 42,
+                name: "Beat Saber.exe",
+                cmd: "C:/Beat Saber/Beat Saber.exe",
+                startTime: new Date("2026-07-13T08:00:00.001Z"),
+            };
+            (getProcessesByName as jest.Mock).mockImplementation(() => Promise.resolve(
+                Date.now() >= new Date("2026-07-13T08:00:06.000Z").getTime() ? [owned] : []
+            ));
+            const launcher = new TestLauncher();
+            const ownership = launcher.findProcess();
+
+            await jest.advanceTimersByTimeAsync(6_000);
+
+            await expect(ownership).resolves.toMatchObject({ pid: 85 });
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    it("rejects ownership cancelled while selecting an enumerated process", async () => {
+        const controller = new AbortController();
+        const owned = {
+            pid: 85,
+            ppid: 42,
+            name: "Beat Saber.exe",
+            cmd: "C:/Beat Saber/Beat Saber.exe",
+            startTime: new Date("2026-07-13T08:00:00.001Z"),
+        };
+        (getProcessesByName as jest.Mock).mockResolvedValue([owned]);
+        const launcher = new TestLauncher();
+        jest.spyOn(launcher as any, "selectOwnedProcess").mockImplementation(() => {
+            controller.abort();
+            return owned;
+        });
+
+        await expect(launcher.findProcess(controller.signal)).resolves.toBeUndefined();
+    });
+
+    it("continues bounded acquisition after repeated short enumeration timeouts", async () => {
+        jest.useFakeTimers({ now: new Date("2026-07-13T08:00:00.000Z") });
+        try {
+            const pendingEnumeration = () => new Promise(() => {
+                // Times out independently while the acquisition deadline remains active.
+            });
+            (getProcessesByName as jest.Mock)
+                .mockImplementationOnce(pendingEnumeration)
+                .mockImplementationOnce(pendingEnumeration)
+                .mockImplementationOnce(pendingEnumeration)
+                .mockResolvedValueOnce([{
+                    pid: 85,
+                    ppid: 42,
+                    name: "Beat Saber.exe",
+                    cmd: "C:/Beat Saber/Beat Saber.exe",
+                    startTime: new Date("2026-07-13T08:00:00.001Z"),
+                }]);
+            const launcher = new TestLauncher();
+            const ownership = launcher.findProcess();
+            const outcome = ownership.catch(error => error);
+
+            await jest.advanceTimersByTimeAsync(16_000);
+
+            await expect(outcome).resolves.toMatchObject({ pid: 85 });
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    it("stops ownership acquisition at its bounded deadline without later enumeration", async () => {
+        jest.useFakeTimers({ now: 1_000 });
+        try {
+            const launcher = new TestLauncher();
+            const ownership = launcher.findProcess();
+
+            await jest.advanceTimersByTimeAsync(60_000);
+            await expect(ownership).resolves.toBeUndefined();
+            const callsAtDeadline = (getProcessesByName as jest.Mock).mock.calls.length;
+            await jest.advanceTimersByTimeAsync(10_000);
+
+            expect(getProcessesByName).toHaveBeenCalledTimes(callsAtDeadline);
+        } finally {
+            jest.useRealTimers();
+        }
+    });
+
+    it("preserves persistent process-enumeration failure at the acquisition deadline", async () => {
+        jest.useFakeTimers({ now: 1_000 });
+        try {
+            const enumerationError = new Error("process list unavailable");
+            (getProcessesByName as jest.Mock).mockRejectedValue(enumerationError);
+            const launcher = new TestLauncher();
+            const ownership = launcher.findProcess();
+            const outcome = ownership.catch(error => error);
+
+            await jest.advanceTimersByTimeAsync(60_000);
+
+            await expect(outcome).resolves.toBe(enumerationError);
         } finally {
             jest.useRealTimers();
         }

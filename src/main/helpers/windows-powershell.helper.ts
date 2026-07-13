@@ -11,6 +11,7 @@ const WINDOWS_POWERSHELL_RELATIVE_PATH = [
 const WINDOWS_PROCESS_LIST_TIMEOUT_MS = 2_000;
 
 const WINDOWS_PROCESS_LIST_SCRIPT = `
+[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
 $escapedProcessName = $TargetProcessName.Replace("'", "''")
 $processes = @(Get-CimInstance Win32_Process -Filter "Name = '$escapedProcessName'" -ErrorAction Stop |
     ForEach-Object {

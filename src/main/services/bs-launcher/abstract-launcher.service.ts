@@ -14,7 +14,8 @@ import { randomUUID } from "crypto";
 
 const PROCESS_LIST_RETRY_ATTEMPTS = 3;
 const PROCESS_LIST_RETRY_INTERVAL_MS = 100;
-const OWNED_PROCESS_FIND_TIMEOUT_MS = 5_000;
+const PROCESS_ENUMERATION_TIMEOUT_MS = 5_000;
+const OWNED_PROCESS_ACQUISITION_TIMEOUT_MS = 60_000;
 const OWNED_PROCESS_FIND_INTERVAL_MS = 250;
 const OWNED_PROCESS_EXIT_POLL_INTERVAL_MS = 1_000;
 
@@ -147,7 +148,15 @@ export abstract class AbstractLauncherService {
             const onAbort = () => settle(new Error("Process ownership acquisition was cancelled"));
             const timer = setTimeout(() => settle(new Error("Process enumeration timed out")), remainingMs);
             signal?.addEventListener("abort", onAbort, { once: true });
-            processes.then(processDetails => settle(undefined, processDetails), settle);
+            processes.then(processDetails => {
+                if (signal?.aborted) {
+                    settle(new Error("Process ownership acquisition was cancelled"));
+                } else if (Date.now() >= deadline) {
+                    settle(new Error("Process enumeration timed out"));
+                } else {
+                    settle(undefined, processDetails);
+                }
+            }, settle);
         });
     }
 
@@ -157,23 +166,28 @@ export abstract class AbstractLauncherService {
         deadline?: number,
         launchToken?: string
     ): Promise<ProcessDetails[]> {
-        const enumerationDeadline = deadline ?? Date.now() + OWNED_PROCESS_FIND_TIMEOUT_MS;
+        const retryDeadline = deadline ?? Date.now() + PROCESS_ENUMERATION_TIMEOUT_MS;
         let lastError: unknown;
         for (let attempt = 0; attempt < PROCESS_LIST_RETRY_ATTEMPTS; attempt++) {
             if (signal?.aborted) {
                 throw new Error("Process ownership acquisition was cancelled");
             }
-            if (Date.now() >= enumerationDeadline) {
+            const enumerationStartedAt = Date.now();
+            if (enumerationStartedAt >= retryDeadline) {
                 throw lastError ?? new Error("Process enumeration timed out");
             }
             try {
+                const enumerationDeadline = Math.min(
+                    retryDeadline,
+                    enumerationStartedAt + PROCESS_ENUMERATION_TIMEOUT_MS
+                );
                 return await this.waitForProcessList(getProcessesByName(name, launchToken), enumerationDeadline, signal);
             } catch (error) {
                 lastError = error;
                 if (signal?.aborted) {
                     throw error;
                 }
-                const remainingMs = enumerationDeadline - Date.now();
+                const remainingMs = retryDeadline - Date.now();
                 if (attempt + 1 < PROCESS_LIST_RETRY_ATTEMPTS && remainingMs > 0) {
                     const retryDelayCompleted = await abortableDelay(
                         Math.min(PROCESS_LIST_RETRY_INTERVAL_MS, remainingMs),
@@ -288,7 +302,7 @@ export abstract class AbstractLauncherService {
             return undefined;
         }
 
-        const deadline = Date.now() + OWNED_PROCESS_FIND_TIMEOUT_MS;
+        const deadline = Date.now() + OWNED_PROCESS_ACQUISITION_TIMEOUT_MS;
         do {
             let processes: ProcessDetails[];
             try {
@@ -297,7 +311,14 @@ export abstract class AbstractLauncherService {
                 if (signal?.aborted) {
                     return undefined;
                 }
-                throw error;
+                const remainingMs = deadline - Date.now();
+                if (remainingMs <= 0) {
+                    throw error;
+                }
+                if (!(await abortableDelay(Math.min(OWNED_PROCESS_FIND_INTERVAL_MS, remainingMs), signal))) {
+                    return undefined;
+                }
+                continue;
             }
             const ownedProcess = this.selectOwnedProcess(
                 processes,
@@ -308,7 +329,7 @@ export abstract class AbstractLauncherService {
                 launchToken
             );
             const startedAt = ownedProcess && this.getProcessStartedAt(ownedProcess);
-            if (ownedProcess && startedAt) {
+            if (ownedProcess && startedAt && !signal?.aborted && Date.now() < deadline) {
                 return {
                     pid: ownedProcess.pid,
                     startedAt,
@@ -362,7 +383,7 @@ export abstract class AbstractLauncherService {
     }
 
     protected async createProcessOwnershipSnapshot(): Promise<ProcessOwnershipSnapshot | undefined> {
-        const deadline = Date.now() + OWNED_PROCESS_FIND_TIMEOUT_MS;
+        const deadline = Date.now() + PROCESS_ENUMERATION_TIMEOUT_MS;
         try {
             const existingProcesses = await this.getProcessesWithRetry(BS_EXECUTABLE, undefined, deadline);
             return {

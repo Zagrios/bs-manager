@@ -183,7 +183,7 @@ describe("Flatpak launch ownership", () => {
             customEnv: {},
             beatSaberFolderPath: "/games/Beat Saber",
         }, snapshot);
-        await jest.advanceTimersByTimeAsync(5_000);
+        await jest.advanceTimersByTimeAsync(60_000);
 
         await expect(launch.ownership).resolves.toBeUndefined();
         expect(app.quit).not.toHaveBeenCalled();
