@@ -2,14 +2,14 @@ import { pathExists, remove } from "fs-extra";
 import { lastValueFrom } from "rxjs";
 import { SteamLauncherService } from "main/services/bs-launcher/steam-launcher.service";
 import { LaunchOption } from "shared/models/bs-launch";
-import { exec, spawn } from "child_process";
+import { execFile, spawn } from "child_process";
 import { EventEmitter } from "events";
-import { bsmSpawn, getProcessIds, getProcessesByName } from "main/helpers/os.helpers";
+import { bsmSpawn, getProcessesByName } from "main/helpers/os.helpers";
 import { app } from "electron";
 
 jest.mock("child_process", () => ({
     ...jest.requireActual("child_process"),
-    exec: jest.fn(),
+    execFile: jest.fn(),
     spawn: jest.fn(),
 }));
 
@@ -57,10 +57,13 @@ jest.mock("main/services/bs-local-version.service", () => ({
     BSLocalVersionService: { getInstance: jest.fn(() => ({})) },
 }));
 
+jest.mock("main/services/static-configuration.service", () => ({
+    StaticConfigurationService: { getInstance: jest.fn(() => ({ get: jest.fn(() => false) })) },
+}));
+
 jest.mock("main/helpers/os.helpers", () => ({
     BsmShellLog: { Command: 1 },
     bsmSpawn: jest.fn(),
-    getProcessIds: jest.fn(),
     getProcessesByName: jest.fn(),
 }));
 
@@ -73,56 +76,115 @@ jest.mock("main/helpers/launchOptions.helper", () => ({
 }));
 
 const originalPlatform = process.platform;
+const originalSystemRoot = process.env.SystemRoot;
+const launchedAfter = new Date("2026-07-13T08:00:00.000Z");
+const processStartedAt = new Date("2026-07-13T08:00:00.001Z");
+const launchOptions = {
+    cmdlet: "Beat Saber.exe",
+    env: {},
+    customEnv: {},
+    beatSaberFolderPath: "C:/Beat Saber",
+};
 
 beforeAll(() => {
     Object.defineProperty(process, "platform", { configurable: true, value: "win32" });
+    process.env.SystemRoot = "C:\\Windows";
 });
 
 afterAll(() => {
     Object.defineProperty(process, "platform", { configurable: true, value: originalPlatform });
+    if (originalSystemRoot === undefined) {
+        delete process.env.SystemRoot;
+    } else {
+        process.env.SystemRoot = originalSystemRoot;
+    }
+});
+
+function processHandle(pid: number) {
+    return Object.assign(new EventEmitter(), {
+        exitCode: null,
+        killed: false,
+        pid,
+        stdout: Object.assign(new EventEmitter(), { destroy: jest.fn() }),
+        unref: jest.fn(),
+    });
+}
+
+function reportElevatedHelperPid(process: ReturnType<typeof processHandle>, pid = 42): void {
+    process.stdout.emit("data", Buffer.from(`BSM_ADMIN_HELPER_PID:${pid}\n`, "utf8"));
+}
+
+function serviceWithConfig(closeOnLaunch = false): SteamLauncherService {
+    const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
+    Object.assign(service as any, {
+        staticConfig: { get: jest.fn(() => closeOnLaunch) },
+        steam: { getGameFolder: jest.fn().mockResolvedValue(undefined) },
+        util: { getAssetsScriptsPath: jest.fn(() => "C:/assets/scripts") },
+    });
+    return service;
+}
+
+async function flushPromises(): Promise<void> {
+    for (let attempt = 0; attempt < 12; attempt++) {
+        await Promise.resolve();
+    }
+}
+
+async function currentWillQuitHandler(): Promise<(event: { preventDefault: jest.Mock }) => Promise<void>> {
+    for (let attempt = 0; attempt < 20; attempt++) {
+        const handler = (app.on as jest.Mock).mock.calls.find(([event]) => event === "will-quit")?.[1];
+        if (handler) {
+            return handler;
+        }
+        await Promise.resolve();
+    }
+    throw new Error("will-quit handler was not registered");
+}
+
+beforeEach(() => {
+    jest.clearAllMocks();
+    (pathExists as jest.Mock).mockResolvedValue(false);
+    (remove as jest.Mock).mockResolvedValue(undefined);
+    (getProcessesByName as jest.Mock).mockResolvedValue([]);
+});
+
+afterEach(() => {
+    jest.useRealTimers();
 });
 
 describe("SteamLauncherService legacy launch options", () => {
-    function buildService() {
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
+    function buildService(completion = { exitCode: 0, steamVrRestoreSafe: true }) {
+        const service = serviceWithConfig();
         const steam = {
             isSteamRunning: jest.fn(async () => false),
             openSteam: jest.fn(async (): Promise<void> => undefined),
             getSteamPath: jest.fn(async () => "C:/Steam"),
         };
 
-        (service as any).steam = steam;
-        (service as any).localVersions = {
-            getInstalledVersionPath: jest.fn(async () => "C:/Beat Saber"),
-        };
-        (service as any).linux = {
-            buildEnvVariables: jest.fn(async () => ({})),
-            getProtonPrefix: jest.fn(async () => "proton"),
-        };
-        (service as any).restoreSteamVR = jest.fn(async (): Promise<void> => undefined);
-        (service as any).launchBeatSaberNormally = jest.fn().mockResolvedValue(0);
+        Object.assign(service as any, {
+            steam,
+            localVersions: { getInstalledVersionPath: jest.fn(async () => "C:/Beat Saber") },
+            linux: {
+                buildEnvVariables: jest.fn(async () => ({})),
+                getProtonPrefix: jest.fn(async () => "proton"),
+            },
+            backupSteamVR: jest.fn().mockResolvedValue(false),
+            restoreSteamVR: jest.fn(async (): Promise<void> => undefined),
+            launchBeatSaberNormally: jest.fn().mockResolvedValue(completion),
+        });
 
         return { service, steam };
     }
 
-    beforeEach(() => {
-        jest.clearAllMocks();
-        (getProcessIds as jest.Mock).mockReset().mockResolvedValue([]);
-        (getProcessesByName as jest.Mock).mockReset();
-        (pathExists as jest.Mock).mockResolvedValue(true);
-    });
-
     it("does not open Steam for a legacy skip_steam launch option", async () => {
+        (pathExists as jest.Mock).mockResolvedValue(true);
         const { service, steam } = buildService();
-        const launchOptions: LaunchOption = {
-            version: {
-                BSVersion: "1.29.1",
-                steam: true,
-            },
+        const options: LaunchOption = {
+            version: { BSVersion: "1.29.1", steam: true },
             launchMods: ["skip_steam"] as LaunchOption["launchMods"],
         };
 
-        await lastValueFrom(service.launch(launchOptions));
+        await lastValueFrom(service.launch(options));
 
         expect(steam.isSteamRunning).not.toHaveBeenCalled();
         expect(steam.openSteam).not.toHaveBeenCalled();
@@ -131,19 +193,17 @@ describe("SteamLauncherService legacy launch options", () => {
     it("uses an explicit Linux environment builder when Linux is simulated", async () => {
         Object.defineProperty(process, "platform", { configurable: true, value: "linux" });
         try {
+            (pathExists as jest.Mock).mockResolvedValue(true);
             const { service } = buildService();
-            const launchOptions: LaunchOption = {
-                version: {
-                    BSVersion: "1.29.1",
-                    steam: true,
-                },
+            const options: LaunchOption = {
+                version: { BSVersion: "1.29.1", steam: true },
                 launchMods: ["skip_steam"] as LaunchOption["launchMods"],
             };
 
-            await lastValueFrom(service.launch(launchOptions));
+            await lastValueFrom(service.launch(options));
 
             expect((service as any).linux.buildEnvVariables).toHaveBeenCalledWith(
-                launchOptions,
+                options,
                 "C:/Steam",
                 "C:/Beat Saber"
             );
@@ -151,911 +211,844 @@ describe("SteamLauncherService legacy launch options", () => {
             Object.defineProperty(process, "platform", { configurable: true, value: "win32" });
         }
     });
+
+    it.each([
+        [{ exitCode: 0, steamVrRestoreSafe: true }, 1],
+        [{ exitCode: 0, steamVrRestoreSafe: false }, 0],
+    ])("restores SteamVR only after safely completed ownership", async (completion, restoreCalls) => {
+        (pathExists as jest.Mock).mockResolvedValue(true);
+        const { service } = buildService(completion);
+        const options: LaunchOption = {
+            version: { BSVersion: "1.29.1", steam: true },
+            launchMods: ["skip_steam", "fpfc"] as LaunchOption["launchMods"],
+        };
+
+        await lastValueFrom(service.launch(options));
+
+        expect((service as any).restoreSteamVR).toHaveBeenCalledTimes(restoreCalls);
+    });
+
+    it("restores the FPFC backup when normal spawn fails before a process starts", async () => {
+        (pathExists as jest.Mock).mockResolvedValue(true);
+        const wrapper = processHandle(42);
+        (bsmSpawn as jest.Mock).mockReturnValue(wrapper);
+        const { service } = buildService();
+        delete (service as any).launchBeatSaberNormally;
+        const options: LaunchOption = {
+            version: { BSVersion: "1.29.1", steam: true },
+            launchMods: ["skip_steam", "fpfc"] as LaunchOption["launchMods"],
+        };
+
+        const launch = lastValueFrom(service.launch(options));
+        await flushPromises();
+        wrapper.emit("error", new Error("spawn failed"));
+
+        await expect(launch).rejects.toThrow("spawn failed");
+        expect((service as any).restoreSteamVR).toHaveBeenCalledTimes(1);
+    });
+
+    it("restores the FPFC backup when UAC rejects before the elevated helper starts", async () => {
+        (pathExists as jest.Mock).mockResolvedValue(true);
+        const elevationProcess = processHandle(42);
+        (spawn as jest.Mock).mockReturnValue(elevationProcess);
+        const { service } = buildService();
+        const options: LaunchOption = {
+            version: { BSVersion: "1.29.1", steam: true },
+            launchMods: ["skip_steam", "fpfc"] as LaunchOption["launchMods"],
+            admin: true,
+        };
+
+        const launch = lastValueFrom(service.launch(options));
+        await flushPromises();
+        elevationProcess.emit("exit", 1223);
+        elevationProcess.emit("close", 1223);
+
+        await expect(launch).rejects.toThrow("exited before reporting the helper PID");
+        expect((service as any).restoreSteamVR).toHaveBeenCalledTimes(1);
+    });
+
+    it("restores the FPFC backup when elevation stdout ends before UAC rejection exits", async () => {
+        (pathExists as jest.Mock).mockResolvedValue(true);
+        const elevationProcess = processHandle(42);
+        (spawn as jest.Mock).mockReturnValue(elevationProcess);
+        const { service } = buildService();
+        const options: LaunchOption = {
+            version: { BSVersion: "1.29.1", steam: true },
+            launchMods: ["skip_steam", "fpfc"] as LaunchOption["launchMods"],
+            admin: true,
+        };
+
+        const launch = lastValueFrom(service.launch(options));
+        await flushPromises();
+        elevationProcess.stdout.emit("end");
+        elevationProcess.emit("exit", 1223);
+        elevationProcess.emit("close", 1223);
+
+        await expect(launch).rejects.toThrow("exited before reporting the helper PID");
+        expect((service as any).restoreSteamVR).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not restore after an elevation error once the helper may have started Beat Saber", async () => {
+        (pathExists as jest.Mock).mockResolvedValue(true);
+        const elevationProcess = processHandle(42);
+        (spawn as jest.Mock).mockReturnValue(elevationProcess);
+        const { service } = buildService();
+        const options: LaunchOption = {
+            version: { BSVersion: "1.29.1", steam: true },
+            launchMods: ["skip_steam", "fpfc"] as LaunchOption["launchMods"],
+            admin: true,
+        };
+
+        const launch = lastValueFrom(service.launch(options));
+        await flushPromises();
+        reportElevatedHelperPid(elevationProcess, 84);
+        await flushPromises();
+        elevationProcess.emit("error", new Error("elevation channel failed"));
+
+        await expect(launch).rejects.toThrow("elevation channel failed");
+        expect((service as any).restoreSteamVR).not.toHaveBeenCalled();
+    });
+
+    it("hands normal ownership to the watcher before propagating an exit enumeration failure", async () => {
+        (pathExists as jest.Mock).mockResolvedValue(true);
+        const wrapper = processHandle(42);
+        (bsmSpawn as jest.Mock).mockReturnValue(wrapper);
+        const { service } = buildService();
+        delete (service as any).launchBeatSaberNormally;
+        jest.spyOn(service as any, "findOwnedProcess").mockResolvedValue({
+            pid: 85,
+            startedAt: processStartedAt,
+        });
+        let lifecycleSignal: AbortSignal | undefined;
+        jest.spyOn(service as any, "waitForOwnedProcessExit").mockImplementation(
+            (...args: unknown[]) => {
+                lifecycleSignal = args[2] as AbortSignal;
+                return Promise.reject(new Error("monitor failed"));
+            }
+        );
+        const handoffSteamVRRestore = jest.fn().mockResolvedValue(undefined);
+        (service as any).handoffSteamVRRestore = handoffSteamVRRestore;
+        const options: LaunchOption = {
+            version: { BSVersion: "1.29.1", steam: true },
+            launchMods: ["skip_steam", "fpfc"] as LaunchOption["launchMods"],
+        };
+
+        const launch = lastValueFrom(service.launch(options));
+        const rejection = launch.catch(error => error);
+        const handler = await currentWillQuitHandler();
+
+        await expect(rejection).resolves.toThrow("monitor failed");
+        expect(handoffSteamVRRestore).toHaveBeenCalledWith(
+            "C:\\Beat Saber\\Beat Saber.exe",
+            { pid: 85, startedAt: processStartedAt }
+        );
+        expect((service as any).restoreSteamVR).not.toHaveBeenCalled();
+        expect(app.removeListener).toHaveBeenCalledWith("will-quit", handler);
+        expect(lifecycleSignal?.aborted).toBe(true);
+    });
 });
 
-describe("SteamLauncherService administrator lifecycle", () => {
-    const originalSystemRoot = process.env.SystemRoot;
-    const processStartedAt = new Date("2099-01-01T00:00:00.000Z");
+describe("SteamLauncherService ownership evidence", () => {
+    it("does not claim one concurrent manual process without wrapper provenance", () => {
+        const service = serviceWithConfig();
 
-    function launchNormal(
-        service: SteamLauncherService,
-        options: { cmdlet: string; env: {}; customEnv: {}; beatSaberFolderPath: string },
-        existingProcessIds: number[] = []
-    ) {
-        return (service as any).launchBeatSaber(options, {
-            existingProcessIds: new Set(existingProcessIds),
-            launchedAfter: new Date("2026-07-13T08:00:00.000Z"),
-        });
-    }
-
-    async function waitForAdminHelperStart(): Promise<void> {
-        for (let attempt = 0; attempt < 20 && !(exec as unknown as jest.Mock).mock.calls.length; attempt++) {
-            await Promise.resolve();
-        }
-        expect(exec).toHaveBeenCalledTimes(1);
-    }
-
-    async function waitForWillQuitHandler(): Promise<(event: { preventDefault: jest.Mock }) => Promise<void>> {
-        for (let attempt = 0; attempt < 20; attempt++) {
-            const handler = (app.on as jest.Mock).mock.calls.find(([event]) => event === "will-quit")?.[1];
-            if (handler) {
-                return handler;
-            }
-            await Promise.resolve();
-        }
-        throw new Error("will-quit handler was not registered");
-    }
-
-    beforeEach(() => {
-        jest.clearAllMocks();
-        (getProcessIds as jest.Mock).mockReset().mockResolvedValue([]);
-        (getProcessesByName as jest.Mock).mockReset().mockImplementation(async (name: string) => (
-            await (getProcessIds as jest.Mock)(name)
-        ).map((pid: number) => ({
-            pid,
-            ppid: 0,
+        const selected = (service as any).selectOwnedProcess([{
+            pid: 85,
+            ppid: 77,
             name: "Beat Saber.exe",
             cmd: "C:/Beat Saber/Beat Saber.exe",
             startTime: processStartedAt,
-        })));
-        (remove as jest.Mock).mockResolvedValue(undefined);
+        }], new Set(), "C:/Beat Saber/Beat Saber.exe", launchedAfter, 42);
+
+        expect(selected).toBeUndefined();
     });
 
-    beforeAll(() => {
-        process.env.SystemRoot = "C:\\Windows";
-    });
-
-    afterAll(() => {
-        if (originalSystemRoot === undefined) {
-            delete process.env.SystemRoot;
-        } else {
-            process.env.SystemRoot = originalSystemRoot;
-        }
-    });
-
-    afterEach(() => {
-        jest.useRealTimers();
-    });
-
-    it("hands off SteamVR restoration on quit until the owned Beat Saber process exits", async () => {
-        const gameProcess = Object.assign(new EventEmitter(), {
-            killed: false,
-            pid: 42,
-            unref: jest.fn(),
-        });
-        const restoreWatcher = Object.assign(new EventEmitter(), {
-            unref: jest.fn(),
-        });
-        (bsmSpawn as jest.Mock).mockReturnValue(gameProcess);
-        (getProcessIds as jest.Mock).mockResolvedValue([85]);
-        (spawn as jest.Mock).mockReturnValue(restoreWatcher);
-        (pathExists as jest.Mock).mockResolvedValue(true);
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
-        const restoreSteamVR = jest.fn().mockResolvedValue(undefined);
-        Object.assign(service as any, {
-            steam: { getGameFolder: jest.fn().mockResolvedValue("C:/SteamVR") },
-            restoreSteamVR,
-            handleGameWindowReady: jest.fn(),
-        });
-
-        launchNormal(service, {
-            cmdlet: "Beat Saber.exe",
-            env: {},
-            customEnv: {},
-            beatSaberFolderPath: "C:/Beat Saber",
-        });
-        const willQuitHandler = (app.on as jest.Mock).mock.calls.find(([event]) => event === "will-quit")[1];
-        const quitEvent = { preventDefault: jest.fn() };
-
-        const handlingQuit = willQuitHandler(quitEvent);
-        await Promise.resolve();
-        await Promise.resolve();
-        restoreWatcher.emit("spawn");
-        await handlingQuit;
-
-        const encodedScript = (spawn as jest.Mock).mock.calls[0]?.[1]?.[3];
-        const script = encodedScript ? Buffer.from(encodedScript, "base64").toString("utf16le") : "";
-        expect(script).toContain("$TargetProcessId = 85");
-        expect(script).toContain(`$TargetProcessStartedAtUtc = [DateTime]::Parse('${processStartedAt.toISOString()}').ToUniversalTime()`);
-        expect(script).toContain("Get-Process -Id $TargetProcessId");
-        expect(script).toContain("$processStartedAtUtc.ToString(\"yyyy-MM-ddTHH:mm:ss.fffZ\") -eq");
-        expect(script).toContain("$ownedProcessId");
-        expect(script).toContain("if ($null -eq $ownedProcess) {\n    exit 2");
-        expect(script).toContain("[System.IO.File]::WriteAllText($HandoffReadyPath, \"$ownedProcessId\")");
-        expect(spawn).toHaveBeenCalledWith("C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", expect.any(Array), expect.objectContaining({
-            detached: true,
-            shell: false,
-            stdio: "ignore",
-        }));
-        expect(restoreSteamVR).not.toHaveBeenCalled();
-        expect(gameProcess.unref).toHaveBeenCalled();
-        expect(restoreWatcher.unref).toHaveBeenCalled();
-        expect(app.quit).toHaveBeenCalled();
-    });
-
-    it("keeps launch ownership when the detached SteamVR restore watcher cannot start", async () => {
-        const gameProcess = Object.assign(new EventEmitter(), {
-            killed: false,
-            pid: 42,
-            unref: jest.fn(),
-        });
-        const restoreWatcher = Object.assign(new EventEmitter(), {
-            unref: jest.fn(),
-        });
-        (bsmSpawn as jest.Mock).mockReturnValue(gameProcess);
-        (getProcessIds as jest.Mock).mockResolvedValue([85]);
-        (spawn as jest.Mock).mockReturnValue(restoreWatcher);
-        (pathExists as jest.Mock).mockImplementation(async filePath => !String(filePath).endsWith(".ready"));
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
-        const restoreSteamVR = jest.fn().mockResolvedValue(undefined);
-        Object.assign(service as any, {
-            steam: { getGameFolder: jest.fn().mockResolvedValue("C:/SteamVR") },
-            restoreSteamVR,
-            handleGameWindowReady: jest.fn(),
-        });
-
-        const { exit } = launchNormal(service, {
-            cmdlet: "Beat Saber.exe",
-            env: {},
-            customEnv: {},
-            beatSaberFolderPath: "C:/Beat Saber",
-        });
-        const willQuitHandler = (app.on as jest.Mock).mock.calls.find(([event]) => event === "will-quit")[1];
-        const quitEvent = { preventDefault: jest.fn() };
-
-        const handlingQuit = willQuitHandler(quitEvent);
-        for (let attempt = 0; attempt < 20 && !(spawn as jest.Mock).mock.calls.length; attempt++) {
-            await Promise.resolve();
-        }
-        restoreWatcher.emit("error", new Error("spawn failed"));
-        await handlingQuit;
-
-        expect(quitEvent.preventDefault).toHaveBeenCalled();
-        expect(gameProcess.unref).not.toHaveBeenCalled();
-        expect(app.quit).not.toHaveBeenCalled();
-        expect(restoreSteamVR).not.toHaveBeenCalled();
-
-        gameProcess.emit("exit", 0);
-        await expect(exit).resolves.toBe(0);
-    });
-
-    it("keeps launch ownership when the SteamVR watcher exits before claiming Beat Saber", async () => {
-        const gameProcess = Object.assign(new EventEmitter(), {
-            killed: false,
-            pid: 42,
-            unref: jest.fn(),
-        });
-        const restoreWatcher = Object.assign(new EventEmitter(), {
-            unref: jest.fn(),
-        });
-        (bsmSpawn as jest.Mock).mockReturnValue(gameProcess);
-        (getProcessIds as jest.Mock).mockResolvedValue([85]);
-        (spawn as jest.Mock).mockReturnValue(restoreWatcher);
-        (pathExists as jest.Mock).mockImplementation(async filePath => !String(filePath).endsWith(".ready"));
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
-        Object.assign(service as any, {
-            steam: { getGameFolder: jest.fn().mockResolvedValue("C:/SteamVR") },
-            restoreSteamVR: jest.fn().mockResolvedValue(undefined),
-            handleGameWindowReady: jest.fn(),
-        });
-
-        const { exit } = launchNormal(service, {
-            cmdlet: "Beat Saber.exe",
-            env: {},
-            customEnv: {},
-            beatSaberFolderPath: "C:/Beat Saber",
-        });
-        const willQuitHandler = (app.on as jest.Mock).mock.calls.find(([event]) => event === "will-quit")[1];
-        const quitEvent = { preventDefault: jest.fn() };
-
-        const handlingQuit = willQuitHandler(quitEvent);
-        for (let attempt = 0; attempt < 20 && !(spawn as jest.Mock).mock.calls.length; attempt++) {
-            await Promise.resolve();
-        }
-        restoreWatcher.emit("spawn");
-        restoreWatcher.emit("exit", 2);
-        await handlingQuit;
-
-        expect(quitEvent.preventDefault).toHaveBeenCalled();
-        expect(gameProcess.unref).not.toHaveBeenCalled();
-        expect(restoreWatcher.unref).not.toHaveBeenCalled();
-        expect(app.quit).not.toHaveBeenCalled();
-
-        gameProcess.emit("exit", 0);
-        await expect(exit).resolves.toBe(0);
-    });
-
-    it("binds a normal launch to the newly observed Beat Saber process instead of its shell wrapper", async () => {
-        const wrapperProcess = Object.assign(new EventEmitter(), {
-            killed: false,
-            pid: 42,
-            unref: jest.fn(),
-        });
-        const observedAt = Date.now();
-        let resolveSnapshot: (processes: unknown[]) => void;
-        const snapshot = new Promise<unknown[]>(resolve => {
-            resolveSnapshot = resolve;
-        });
-        (bsmSpawn as jest.Mock).mockReturnValue(wrapperProcess);
-        (pathExists as jest.Mock).mockResolvedValue(true);
-        (getProcessesByName as jest.Mock)
-            .mockReturnValueOnce(snapshot)
-            .mockResolvedValueOnce([
-                { pid: 11, name: "Beat Saber.exe", cmd: "C:/Beat Saber/Beat Saber.exe", startTime: new Date(observedAt - 60_000) },
-                { pid: 84, name: "Beat Saber.exe", cmd: "C:/Other Copy/Beat Saber.exe", startTime: new Date(observedAt + 1_000) },
-                { pid: 85, name: "Beat Saber.exe", cmd: "C:/Beat Saber/Beat Saber.exe", startTime: new Date(observedAt + 2_000) },
-            ]);
-        const handleGameWindowReady = jest.fn();
-        const handoffSteamVRRestore = jest.fn().mockResolvedValue(undefined);
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
-        Object.assign(service as any, {
-            steam: {
-                getSteamPath: jest.fn().mockResolvedValue("C:/Steam"),
-                isSteamRunning: jest.fn().mockResolvedValue(true),
-            },
-            localVersions: { getInstalledVersionPath: jest.fn().mockResolvedValue("C:/Beat Saber") },
-            linux: {
-                buildEnvVariables: jest.fn().mockResolvedValue({}),
-                getProtonPrefix: jest.fn().mockResolvedValue("proton"),
-            },
-            restoreSteamVR: jest.fn().mockResolvedValue(undefined),
-            handleGameWindowReady,
-            handoffSteamVRRestore,
-        });
-
-        const completion = lastValueFrom(service.launch({
-            version: { BSVersion: "1.29.1", steam: true },
-            launchMods: ["skip_steam"] as LaunchOption["launchMods"],
-        }));
-        for (let attempt = 0; attempt < 20 && !(getProcessesByName as jest.Mock).mock.calls.length; attempt++) {
-            await Promise.resolve();
-        }
-        expect(bsmSpawn).not.toHaveBeenCalled();
-        resolveSnapshot!([
-            { pid: 11, name: "Beat Saber.exe", cmd: "C:/Beat Saber/Beat Saber.exe", startTime: new Date(observedAt - 60_000) },
-        ]);
-        for (let attempt = 0; attempt < 50 && !handleGameWindowReady.mock.calls.length; attempt++) {
-            await Promise.resolve();
-        }
-        const willQuitHandler = await waitForWillQuitHandler();
-        await willQuitHandler({ preventDefault: jest.fn() });
-        wrapperProcess.emit("exit", 0);
-        await completion;
-
-        expect(wrapperProcess.pid).not.toBe(85);
-        expect(getProcessesByName).toHaveBeenCalledTimes(2);
-        expect(handleGameWindowReady).toHaveBeenCalledWith(
-            wrapperProcess,
-            "C:/Beat Saber",
-            expect.any(Date),
-            85,
-            expect.any(AbortSignal),
-            new Date(observedAt + 2_000)
-        );
-        expect(handoffSteamVRRestore).toHaveBeenCalledWith(
-            expect.stringMatching(/Beat Saber[\\/]Beat Saber\.exe$/),
-            expect.any(Date),
-            85,
-            new Date(observedAt + 2_000)
-        );
-    });
-
-    it.each(["error", "exit"] as const)("cancels normal target acquisition when the shell wrapper emits %s", async eventName => {
-        const wrapperProcess = Object.assign(new EventEmitter(), {
-            killed: false,
-            pid: 42,
-            unref: jest.fn(),
-        });
-        (bsmSpawn as jest.Mock).mockReturnValue(wrapperProcess);
-        (getProcessesByName as jest.Mock).mockReturnValue(new Promise(() => {
-            // Intentionally pending so the wrapper event must cancel acquisition.
-        }));
-        const handleGameWindowReady = jest.fn();
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
-        Object.assign(service as any, { handleGameWindowReady });
-
-        const { exit } = launchNormal(service, {
-            cmdlet: "Beat Saber.exe",
-            env: {},
-            customEnv: {},
-            beatSaberFolderPath: "C:/Beat Saber",
-        });
-        const wrapperError = new Error("wrapper failed");
-        const exitResult = exit.catch((error: Error) => error);
-
-        if (eventName === "error") {
-            wrapperProcess.emit("error", wrapperError);
-        } else {
-            wrapperProcess.emit("exit", 0);
-        }
-        expect(await exitResult).toEqual(eventName === "error" ? wrapperError : 0);
-        await Promise.resolve();
-
-        expect(handleGameWindowReady).not.toHaveBeenCalled();
-    });
-
-    it("uses the same window-ready lifecycle for normal and elevated launches", async () => {
-        const normalProcess = Object.assign(new EventEmitter(), {
-            killed: false,
-            pid: 42,
-            unref: jest.fn(),
-        });
-        const adminProcess = Object.assign(new EventEmitter(), {
-            killed: false,
-            pid: 84,
-            unref: jest.fn(),
-        });
-        (bsmSpawn as jest.Mock).mockReturnValue(normalProcess);
-        (getProcessIds as jest.Mock).mockResolvedValue([85]);
-        (exec as unknown as jest.Mock).mockReturnValue(adminProcess);
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
-        const handleGameWindowReady = jest.fn();
-        Object.assign(service as any, {
-            util: { getAssetsScriptsPath: jest.fn(() => "C:/assets/scripts") },
-            restoreSteamVR: jest.fn().mockResolvedValue(undefined),
-            handleGameWindowReady,
-        });
-
-        const normalExit = launchNormal(service, {
-            cmdlet: "Beat Saber.exe",
-            env: {},
-            customEnv: {},
-            beatSaberFolderPath: "C:/Beat Saber",
-        }).exit;
-        for (let attempt = 0; attempt < 20 && !handleGameWindowReady.mock.calls.length; attempt++) {
-            await Promise.resolve();
-        }
-        normalProcess.emit("exit", 0);
-        await normalExit;
-
-        (getProcessIds as jest.Mock)
-            .mockResolvedValueOnce([])
-            .mockResolvedValueOnce([85])
-            .mockResolvedValueOnce([]);
-        const adminExit = (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", [], {});
-        await waitForAdminHelperStart();
-        adminProcess.emit("exit", 0);
-        await adminExit;
-
-        expect(handleGameWindowReady).toHaveBeenNthCalledWith(
-            1,
-            normalProcess,
-            "C:/Beat Saber",
-            expect.any(Date),
-            85,
-            expect.any(AbortSignal),
-            processStartedAt
-        );
-        expect(handleGameWindowReady).toHaveBeenNthCalledWith(
-            2,
-            adminProcess,
-            "C:/Beat Saber",
-            expect.any(Date),
-            85,
-            expect.any(AbortSignal),
-            processStartedAt
-        );
-    });
-
-    it("binds elevated window polling to the selected Beat Saber PID until it exits", async () => {
-        jest.useFakeTimers();
-        const adminProcess = Object.assign(new EventEmitter(), {
-            killed: false,
-            pid: 70,
-            unref: jest.fn(),
-        });
-        (exec as unknown as jest.Mock).mockReturnValue(adminProcess);
-        (getProcessIds as jest.Mock)
-            .mockResolvedValueOnce([])
-            .mockResolvedValueOnce([85])
-            .mockResolvedValueOnce([85])
-            .mockResolvedValueOnce([]);
-        const handleGameWindowReady = jest.fn();
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
-        Object.assign(service as any, {
-            util: { getAssetsScriptsPath: jest.fn(() => "C:/assets/scripts") },
-            restoreSteamVR: jest.fn().mockResolvedValue(undefined),
-            handleGameWindowReady,
-        });
-
-        const exit = (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", [], {});
-        await waitForAdminHelperStart();
-        const pollingStartedBeforeOwnership = handleGameWindowReady.mock.calls.length > 0;
-        adminProcess.emit("exit", 0);
-        await Promise.resolve();
-        await Promise.resolve();
-        await Promise.resolve();
-        await jest.advanceTimersByTimeAsync(1_000);
-        await expect(exit).resolves.toBe(0);
-        const focusSignal = handleGameWindowReady.mock.calls.at(-1)?.[4] as AbortSignal | undefined;
-
-        expect(pollingStartedBeforeOwnership).toBe(false);
-        expect(handleGameWindowReady).toHaveBeenCalledWith(
-            adminProcess,
-            "C:/Beat Saber",
-            expect.any(Date),
-            85,
-            expect.any(AbortSignal),
-            processStartedAt
-        );
-        expect(focusSignal?.aborted).toBe(true);
-    });
-
-    it("hands off SteamVR restoration when quit starts before the elevated helper exits", async () => {
-        const adminProcess = Object.assign(new EventEmitter(), {
-            killed: false,
-            pid: 84,
-            unref: jest.fn(),
-        });
-        (exec as unknown as jest.Mock).mockReturnValue(adminProcess);
-        (pathExists as jest.Mock).mockResolvedValue(true);
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
-        const restoreSteamVR = jest.fn().mockResolvedValue(undefined);
-        const handoffSteamVRRestore = jest.fn().mockResolvedValue(undefined);
-        Object.assign(service as any, {
-            util: { getAssetsScriptsPath: jest.fn(() => "C:/assets/scripts") },
-            restoreSteamVR,
-            handoffSteamVRRestore,
-            handleGameWindowReady: jest.fn(),
-        });
-
-        let settled = false;
-        (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", [], {}).finally(() => {
-            settled = true;
-        });
-        const willQuitHandler = await waitForWillQuitHandler();
-        const quitEvent = { preventDefault: jest.fn() };
-
-        await willQuitHandler(quitEvent);
-
-        await Promise.resolve();
-        expect(settled).toBe(false);
-        expect(handoffSteamVRRestore).toHaveBeenCalledWith(expect.stringMatching(/Beat Saber[\\/]Beat Saber\.exe$/), expect.any(Date));
-        expect(restoreSteamVR).not.toHaveBeenCalled();
-        expect(quitEvent.preventDefault).toHaveBeenCalled();
-        expect(adminProcess.unref).toHaveBeenCalled();
-        expect(app.quit).toHaveBeenCalled();
-    });
-
-    it("does not resume the in-process restore finalizer after an early elevated handoff", async () => {
-        const adminProcess = Object.assign(new EventEmitter(), {
-            killed: false,
-            pid: 84,
-            unref: jest.fn(),
-        });
-        (exec as unknown as jest.Mock).mockReturnValue(adminProcess);
-        (pathExists as jest.Mock).mockResolvedValue(true);
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
-        const restoreSteamVR = jest.fn().mockResolvedValue(undefined);
-        const handoffSteamVRRestore = jest.fn().mockResolvedValue(undefined);
-        Object.assign(service as any, {
-            util: { getAssetsScriptsPath: jest.fn(() => "C:/assets/scripts") },
-            steam: { getSteamPath: jest.fn().mockResolvedValue("C:/Steam") },
-            localVersions: { getInstalledVersionPath: jest.fn().mockResolvedValue("C:/Beat Saber") },
-            linux: {
-                buildEnvVariables: jest.fn().mockResolvedValue({}),
-                getProtonPrefix: jest.fn().mockResolvedValue("proton"),
-            },
-            backupSteamVR: jest.fn().mockResolvedValue(false),
-            restoreSteamVR,
-            handoffSteamVRRestore,
-            handleGameWindowReady: jest.fn(),
-        });
-        const launchOptions: LaunchOption = {
-            version: { BSVersion: "1.40.0", steam: true },
-            admin: true,
-            launchMods: ["fpfc", "skip_steam"] as LaunchOption["launchMods"],
+    it("accepts an elevated child with unavailable path only with exact parent provenance", () => {
+        const service = serviceWithConfig();
+        const child = {
+            pid: 85,
+            ppid: 42,
+            name: "Beat Saber.exe",
+            startTime: processStartedAt,
         };
 
-        const subscription = service.launch(launchOptions).subscribe();
-        let willQuitHandler: ((event: { preventDefault: jest.Mock }) => Promise<void>) | undefined;
-        for (let attempt = 0; attempt < 20 && !willQuitHandler; attempt++) {
-            await Promise.resolve();
-            willQuitHandler = (app.on as jest.Mock).mock.calls.find(([event]) => event === "will-quit")?.[1];
-        }
-        expect(willQuitHandler).toBeDefined();
-
-        await willQuitHandler!({ preventDefault: jest.fn() });
-        await Promise.resolve();
-        await Promise.resolve();
-        await Promise.resolve();
-
-        expect(handoffSteamVRRestore).toHaveBeenCalledWith(expect.stringMatching(/Beat Saber[\\/]Beat Saber\.exe$/), expect.any(Date));
-        expect(restoreSteamVR).not.toHaveBeenCalled();
-        subscription.unsubscribe();
+        expect((service as any).selectOwnedProcess(
+            [child], new Set(), "C:/Beat Saber/Beat Saber.exe", launchedAfter, 42
+        )?.pid).toBe(85);
+        expect((service as any).selectOwnedProcess(
+            [child], new Set(), "C:/Beat Saber/Beat Saber.exe", launchedAfter, 77
+        )).toBeUndefined();
     });
 
-    it("keeps the watcher handoff terminal when the elevated helper exits during startup", async () => {
-        const adminProcess = Object.assign(new EventEmitter(), {
-            killed: false,
-            pid: 84,
-            unref: jest.fn(),
-        });
-        let completeHandoff: () => void;
-        const handoffSteamVRRestore = jest.fn(() => new Promise<void>(resolve => {
-            completeHandoff = resolve;
-        }));
-        (exec as unknown as jest.Mock).mockReturnValue(adminProcess);
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
-        Object.assign(service as any, {
-            util: { getAssetsScriptsPath: jest.fn(() => "C:/assets/scripts") },
-            restoreSteamVR: jest.fn().mockResolvedValue(undefined),
-            handoffSteamVRRestore,
-            handleGameWindowReady: jest.fn(),
-        });
-        let settled = false;
-        (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", [], {}).finally(() => {
-            settled = true;
-        });
-        const willQuitHandler = await waitForWillQuitHandler();
-
-        const handlingQuit = willQuitHandler({ preventDefault: jest.fn() });
-        adminProcess.emit("exit", 0);
-        completeHandoff!();
-        await handlingQuit;
-        await Promise.resolve();
-        await Promise.resolve();
-
-        expect(settled).toBe(false);
-        expect(adminProcess.unref).toHaveBeenCalled();
-        expect(app.quit).toHaveBeenCalled();
-    });
-
-    it("hands off elevated SteamVR restoration instead of restoring during quit", async () => {
-        jest.useFakeTimers();
-        const adminProcess = Object.assign(new EventEmitter(), {
-            killed: false,
-            pid: 84,
-            unref: jest.fn(),
-        });
-        (exec as unknown as jest.Mock).mockReturnValue(adminProcess);
-        (getProcessIds as jest.Mock)
-            .mockResolvedValueOnce([])
-            .mockResolvedValueOnce([84])
-            .mockResolvedValue([84]);
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
-        const restoreSteamVR = jest.fn().mockResolvedValue(undefined);
-        const handoffSteamVRRestore = jest.fn().mockResolvedValue(undefined);
-        Object.assign(service as any, {
-            util: { getAssetsScriptsPath: jest.fn(() => "C:/assets/scripts") },
-            restoreSteamVR,
-            handoffSteamVRRestore,
-            handleGameWindowReady: jest.fn(),
-        });
-
-        (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", [], {});
-        await waitForAdminHelperStart();
-        adminProcess.emit("exit", 0);
-        for (let attempt = 0; attempt < 20 && (app.on as jest.Mock).mock.calls.filter(([event]) => event === "will-quit").length < 2; attempt++) {
-            await Promise.resolve();
-        }
-        const willQuitHandlers = (app.on as jest.Mock).mock.calls
-            .filter(([event]) => event === "will-quit")
-            .map(([, handler]) => handler);
-        expect(willQuitHandlers).toHaveLength(2);
-        const quitEvent = { preventDefault: jest.fn() };
-
-        await willQuitHandlers.at(-1)(quitEvent);
-
-        expect(handoffSteamVRRestore).toHaveBeenCalledWith(
-            "C:/Beat Saber/Beat Saber.exe",
-            expect.any(Date),
-            84,
-            processStartedAt
-        );
-        expect(restoreSteamVR).not.toHaveBeenCalled();
-        expect(quitEvent.preventDefault).toHaveBeenCalled();
-        expect(app.quit).toHaveBeenCalled();
-    });
-
-    it("waits for the elevated helper to report Beat Saber exit", async () => {
-        jest.useFakeTimers();
-        const adminProcess = Object.assign(new EventEmitter(), {
-            killed: false,
-            pid: 84,
-            unref: jest.fn(),
-        });
-        (exec as unknown as jest.Mock).mockReturnValue(adminProcess);
-        (getProcessIds as jest.Mock)
-            .mockResolvedValueOnce([])
-            .mockResolvedValueOnce([84])
-            .mockResolvedValue([84]);
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
-        Object.assign(service as any, {
-            util: { getAssetsScriptsPath: jest.fn(() => "C:/assets/scripts") },
-            restoreSteamVR: jest.fn().mockResolvedValue(undefined),
-            handleGameWindowReady: jest.fn(),
-        });
-
-        let settled = false;
-        const exit = (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", [], {})
-            .then((code: number) => {
-                settled = true;
-                return code;
-            });
-
-        await waitForAdminHelperStart();
-        jest.advanceTimersByTime(35_000);
-        await Promise.resolve();
-        expect(settled).toBe(false);
-
-        adminProcess.emit("exit", 0);
-        await Promise.resolve();
-        await Promise.resolve();
-        expect(settled).toBe(false);
-
-        (getProcessIds as jest.Mock).mockResolvedValue([]);
-        await jest.advanceTimersByTimeAsync(1_000);
-        await expect(exit).resolves.toBe(0);
-        jest.useRealTimers();
-    });
-
-    it("tracks the newly launched elevated PID instead of an existing Beat Saber", async () => {
-        jest.useFakeTimers();
-        const adminProcess = Object.assign(new EventEmitter(), {
-            killed: false,
-            pid: 84,
-            unref: jest.fn(),
-        });
-        (exec as unknown as jest.Mock).mockReturnValue(adminProcess);
-        (getProcessIds as jest.Mock)
-            .mockResolvedValueOnce([11])
-            .mockResolvedValueOnce([11, 84])
-            .mockResolvedValueOnce([11, 84])
-            .mockResolvedValue([11]);
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
-        Object.assign(service as any, {
-            util: { getAssetsScriptsPath: jest.fn(() => "C:/assets/scripts") },
-            restoreSteamVR: jest.fn().mockResolvedValue(undefined),
-            handleGameWindowReady: jest.fn(),
-        });
-
-        const exit = (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", [], {});
-        await waitForAdminHelperStart();
-        adminProcess.emit("exit", 0);
-        await Promise.resolve();
-        await Promise.resolve();
-        await jest.advanceTimersByTimeAsync(1_000);
-
-        await expect(exit).resolves.toBe(0);
-        expect(getProcessIds).toHaveBeenCalled();
-    });
-
-    it("retries a transient process-list failure while acquiring the elevated PID", async () => {
-        jest.useFakeTimers();
-        const adminProcess = Object.assign(new EventEmitter(), {
-            killed: false,
-            pid: 84,
-            unref: jest.fn(),
-        });
-        (exec as unknown as jest.Mock).mockReturnValue(adminProcess);
-        (getProcessIds as jest.Mock)
-            .mockResolvedValueOnce([])
-            .mockRejectedValueOnce(new Error("ps-list unavailable"))
-            .mockResolvedValueOnce([84])
-            .mockResolvedValueOnce([84])
-            .mockResolvedValueOnce([]);
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
-        Object.assign(service as any, {
-            util: { getAssetsScriptsPath: jest.fn(() => "C:/assets/scripts") },
-            restoreSteamVR: jest.fn().mockResolvedValue(undefined),
-            handleGameWindowReady: jest.fn(),
-        });
-
-        const exit = (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", [], {});
-        const exitExpectation = (async () => {
-            await expect(exit).resolves.toBe(0);
-        })();
-        for (let attempt = 0; attempt < 5 && !(exec as unknown as jest.Mock).mock.calls.length; attempt++) {
-            await Promise.resolve();
-        }
-        expect(exec).toHaveBeenCalledTimes(1);
-        adminProcess.emit("exit", 0);
-        await jest.advanceTimersByTimeAsync(1_100);
-
-        await exitExpectation;
-        expect(getProcessIds).toHaveBeenCalledTimes(5);
-    });
-
-    it("tracks only the new elevated process at the requested executable path", async () => {
-        jest.useFakeTimers({ now: new Date("2026-07-13T08:00:00.000Z") });
-        const adminProcess = Object.assign(new EventEmitter(), {
-            killed: false,
-            pid: 70,
-            unref: jest.fn(),
-        });
-        (exec as unknown as jest.Mock).mockReturnValue(adminProcess);
-        (getProcessIds as jest.Mock)
-            .mockResolvedValueOnce([])
-            .mockResolvedValueOnce([84, 85])
-            .mockResolvedValueOnce([84, 85])
-            .mockResolvedValueOnce([84])
-            .mockResolvedValueOnce([]);
-        (getProcessesByName as jest.Mock)
-            .mockResolvedValueOnce([])
-            .mockResolvedValueOnce([
-                { pid: 84, name: "Beat Saber.exe", cmd: "C:/Other Copy/Beat Saber.exe", startTime: new Date("2026-07-13T08:00:00.001Z") },
-                { pid: 85, name: "Beat Saber.exe", cmd: "C:/Beat Saber/Beat Saber.exe", startTime: new Date("2026-07-13T08:00:00.002Z") },
-            ])
-            .mockResolvedValueOnce([
-                { pid: 84, name: "Beat Saber.exe", cmd: "C:/Other Copy/Beat Saber.exe", startTime: new Date("2026-07-13T08:00:00.001Z") },
-                { pid: 85, name: "Beat Saber.exe", cmd: "C:/Beat Saber/Beat Saber.exe", startTime: new Date("2026-07-13T08:00:00.002Z") },
-            ])
-            .mockResolvedValueOnce([
-                { pid: 84, name: "Beat Saber.exe", cmd: "C:/Other Copy/Beat Saber.exe", startTime: new Date("2026-07-13T08:00:00.001Z") },
-            ])
-            .mockResolvedValueOnce([]);
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
-        Object.assign(service as any, {
-            util: { getAssetsScriptsPath: jest.fn(() => "C:/assets/scripts") },
-            restoreSteamVR: jest.fn().mockResolvedValue(undefined),
-            handleGameWindowReady: jest.fn(),
-        });
-
-        let settled = false;
-        const exit = (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", [], {})
-            .then((code: number) => {
-                settled = true;
-                return code;
-            });
-        for (let attempt = 0; attempt < 5 && !(exec as unknown as jest.Mock).mock.calls.length; attempt++) {
-            await Promise.resolve();
-        }
-        adminProcess.emit("exit", 0);
-        await jest.advanceTimersByTimeAsync(1_000);
-        const settledWhenRequestedProcessExited = settled;
-
-        if (!settled) {
-            await jest.advanceTimersByTimeAsync(1_000);
-        }
-        await expect(exit).resolves.toBe(0);
-        expect(settledWhenRequestedProcessExited).toBe(true);
-    });
-
-    it("accepts a quoted command line only when it starts with the exact executable path", () => {
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
-        const launchedAfter = new Date("2026-07-13T08:00:00.000Z");
-
-        expect((service as any).processTargetsExecutable({
+    it("requires exact executable path, process name, PID, and start-time evidence", () => {
+        const service = serviceWithConfig();
+        const valid = {
             pid: 85,
+            ppid: 42,
             name: "Beat Saber.exe",
             cmd: "\"C:/Beat Saber/Beat Saber.exe\" fpfc",
-            startTime: new Date("2026-07-13T08:00:00.001Z"),
-        }, "C:/Beat Saber/Beat Saber.exe", launchedAfter)).toBe(true);
-        expect((service as any).processTargetsExecutable({
-            pid: 86,
-            name: "Beat Saber.exe",
-            cmd: "\"C:/Other Copy/Beat Saber.exe\" fpfc",
-            startTime: new Date("2026-07-13T08:00:00.001Z"),
-        }, "C:/Beat Saber/Beat Saber.exe", launchedAfter)).toBe(false);
+            startTime: processStartedAt,
+        };
+
+        expect((service as any).processTargetsExecutable(
+            valid, "C:/Beat Saber/Beat Saber.exe", launchedAfter
+        )).toBe(true);
+        expect((service as any).processTargetsExecutable(
+            { ...valid, pid: 0 }, "C:/Beat Saber/Beat Saber.exe", launchedAfter
+        )).toBe(false);
+        expect((service as any).processTargetsExecutable(
+            { ...valid, name: "Other.exe" }, "C:/Beat Saber/Beat Saber.exe", launchedAfter
+        )).toBe(false);
+        expect((service as any).processTargetsExecutable(
+            { ...valid, cmd: "C:/Other Copy/Beat Saber.exe" }, "C:/Beat Saber/Beat Saber.exe", launchedAfter
+        )).toBe(false);
+        expect((service as any).processTargetsExecutable(
+            { ...valid, startTime: new Date(launchedAfter.getTime() - 1) }, "C:/Beat Saber/Beat Saber.exe", launchedAfter
+        )).toBe(false);
     });
 
-    it("does not claim a process without both exact command-path and start-time evidence", () => {
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
-        const launchedAfter = new Date("2026-07-13T08:00:00.000Z");
+    it("cancels a pending bounded process enumeration without stale acquisition", async () => {
+        const service = serviceWithConfig();
+        const controller = new AbortController();
+        (getProcessesByName as jest.Mock).mockReturnValue(new Promise(() => {
+            // Remains pending until ownership cancellation.
+        }));
 
-        expect((service as any).processTargetsExecutable({
-            pid: 85,
-            name: "Beat Saber.exe",
-            startTime: new Date("2026-07-13T08:00:00.001Z"),
-        }, "C:/Beat Saber/Beat Saber.exe", launchedAfter)).toBe(false);
-        expect((service as any).processTargetsExecutable({
-            pid: 85,
-            name: "Beat Saber.exe",
-            cmd: "C:/Beat Saber/Beat Saber.exe",
-        }, "C:/Beat Saber/Beat Saber.exe", launchedAfter)).toBe(false);
-        expect((service as any).processTargetsExecutable({
-            pid: 85,
-            name: "Beat Saber.exe",
-            cmd: "C:/Beat Saber/Beat Saber.exe",
-            startTime: new Date("2026-07-13T08:00:00.001Z"),
-        }, "C:/Beat Saber/Beat Saber.exe", launchedAfter)).toBe(true);
-    });
-
-    it("does not guess between exact new candidates without unique wrapper-parent evidence", () => {
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
-        const launchedAfter = new Date("2026-07-13T08:00:00.000Z");
-        const candidates = [
-            {
-                pid: 85,
-                ppid: 42,
-                name: "Beat Saber.exe",
-                cmd: "C:/Beat Saber/Beat Saber.exe",
-                startTime: new Date("2026-07-13T08:00:00.001Z"),
-            },
-            {
-                pid: 86,
-                ppid: 77,
-                name: "Beat Saber.exe",
-                cmd: "C:/Beat Saber/Beat Saber.exe",
-                startTime: new Date("2026-07-13T08:00:00.002Z"),
-            },
-        ];
-
-        expect((service as any).selectOwnedProcess(
-            candidates,
-            new Set(),
-            "C:/Beat Saber/Beat Saber.exe",
-            launchedAfter
-        )).toBeUndefined();
-        expect((service as any).selectOwnedProcess(
-            candidates,
+        const ownership = (service as any).findOwnedProcess(
             new Set(),
             "C:/Beat Saber/Beat Saber.exe",
             launchedAfter,
-            42
-        )?.pid).toBe(85);
+            42,
+            controller.signal
+        );
+        controller.abort();
+
+        await expect(ownership).resolves.toBeUndefined();
+    });
+});
+
+describe("SteamLauncherService normal lifecycle", () => {
+    it("does not claim Linux SteamVR restoration safety from wrapper exit alone", async () => {
+        Object.defineProperty(process, "platform", { configurable: true, value: "linux" });
+        try {
+            const wrapper = processHandle(42);
+            (bsmSpawn as jest.Mock).mockReturnValue(wrapper);
+            const service = serviceWithConfig();
+            jest.spyOn(service as any, "createProcessOwnershipSnapshot").mockResolvedValue({
+                existingProcessIds: new Set([70]),
+                launchedAfter,
+            });
+            let resolveOwnership: (ownedProcess: undefined) => void;
+            jest.spyOn(service as any, "findOwnedProcess").mockReturnValue(new Promise(resolve => {
+                resolveOwnership = resolve;
+            }));
+
+            let settled = false;
+            const launch = (service as any).launchBeatSaberNormally({
+                ...launchOptions,
+                beatSaberFolderPath: "/games/Beat Saber",
+            }).then((completion: unknown) => {
+                settled = true;
+                return completion;
+            });
+            await flushPromises();
+            wrapper.emit("exit", 7);
+            await flushPromises();
+
+            expect(settled).toBe(false);
+
+            resolveOwnership!(undefined);
+            await expect(launch).resolves.toEqual({ exitCode: 7, steamVrRestoreSafe: true });
+        } finally {
+            Object.defineProperty(process, "platform", { configurable: true, value: "win32" });
+        }
     });
 
-    it("polls for a bounded time when the elevated process is initially absent", async () => {
+    it("restores SteamVR before completing an exactly owned Linux auto-close quit", async () => {
+        Object.defineProperty(process, "platform", { configurable: true, value: "linux" });
+        try {
+            const wrapper = processHandle(42);
+            (bsmSpawn as jest.Mock).mockReturnValue(wrapper);
+            const owned = {
+                pid: 85,
+                ppid: 42,
+                name: "Beat Saber.exe",
+                cmd: '"Z:C:/Beat Saber/Beat Saber.exe"',
+                startTime: processStartedAt,
+            };
+            (getProcessesByName as jest.Mock).mockResolvedValue([owned]);
+            const service = serviceWithConfig(true);
+            let finishRestore!: () => void;
+            let restoreFinished = false;
+            const restoreSteamVR = jest.fn(() => new Promise<void>(resolve => {
+                finishRestore = () => {
+                    restoreFinished = true;
+                    resolve();
+                };
+            }));
+            (service as any).restoreSteamVR = restoreSteamVR;
+            let launchCompleted = false;
+
+            const launch = (service as any).launchTrackedBeatSaber({
+                ...launchOptions,
+                beatSaberFolderPath: "C:/Beat Saber",
+            }, {
+                existingProcessIds: new Set(),
+                launchedAfter,
+            }).then((completion: unknown) => {
+                launchCompleted = true;
+                return completion;
+            });
+            await flushPromises();
+
+            expect(app.quit).toHaveBeenCalledTimes(1);
+            const handler = await currentWillQuitHandler();
+            (app.quit as jest.Mock).mockClear();
+            const event = { preventDefault: jest.fn() };
+            let quitCompleted = false;
+            const handlingQuit = handler(event).then(() => {
+                quitCompleted = true;
+            });
+            await flushPromises();
+
+            expect(event.preventDefault).toHaveBeenCalledTimes(1);
+            expect(restoreSteamVR).toHaveBeenCalledTimes(1);
+            expect(quitCompleted).toBe(false);
+            expect(launchCompleted).toBe(false);
+            expect(app.removeListener).not.toHaveBeenCalledWith("will-quit", handler);
+            expect(wrapper.unref).not.toHaveBeenCalled();
+            expect(app.quit).not.toHaveBeenCalled();
+
+            finishRestore();
+            await handlingQuit;
+
+            expect(restoreFinished).toBe(true);
+            expect(app.removeListener).toHaveBeenCalledWith("will-quit", handler);
+            expect(wrapper.unref).toHaveBeenCalledTimes(1);
+            expect(app.quit).toHaveBeenCalledTimes(1);
+            await expect(launch).resolves.toEqual({ exitCode: 0, steamVrRestoreSafe: false });
+        } finally {
+            Object.defineProperty(process, "platform", { configurable: true, value: "win32" });
+        }
+    });
+
+    it("continues bounded ownership after a nonzero wrapper exit without premature restore or close", async () => {
+        jest.useFakeTimers({ now: launchedAfter });
+        (pathExists as jest.Mock).mockResolvedValue(true);
+        const wrapper = processHandle(42);
+        (bsmSpawn as jest.Mock).mockReturnValue(wrapper);
+        let resolveOwnership: (processes: unknown[]) => void;
+        const ownership = new Promise<unknown[]>(resolve => {
+            resolveOwnership = resolve;
+        });
+        const owned = {
+            pid: 85,
+            ppid: 42,
+            name: "Beat Saber.exe",
+            cmd: "C:/Beat Saber/Beat Saber.exe",
+            startTime: processStartedAt,
+        };
+        const concurrent = {
+            ...owned,
+            pid: 86,
+            ppid: 77,
+        };
+        (getProcessesByName as jest.Mock)
+            .mockResolvedValueOnce([])
+            .mockReturnValueOnce(ownership)
+            .mockResolvedValueOnce([owned, concurrent])
+            .mockResolvedValueOnce([concurrent]);
+        const { service } = (() => {
+            const built = serviceWithConfig(true);
+            Object.assign(built as any, {
+                steam: {
+                    isSteamRunning: jest.fn(async () => true),
+                    getSteamPath: jest.fn(async () => "C:/Steam"),
+                    getGameFolder: jest.fn().mockResolvedValue(undefined),
+                },
+                localVersions: { getInstalledVersionPath: jest.fn(async () => "C:/Beat Saber") },
+                backupSteamVR: jest.fn().mockResolvedValue(false),
+                restoreSteamVR: jest.fn(async (): Promise<void> => undefined),
+            });
+            return { service: built };
+        })();
+        const options: LaunchOption = {
+            version: { BSVersion: "1.29.1", steam: true },
+            launchMods: ["skip_steam", "fpfc"] as LaunchOption["launchMods"],
+        };
+
+        const launch = lastValueFrom(service.launch(options));
+        await flushPromises();
+        wrapper.emit("exit", 7);
+        await flushPromises();
+
+        expect((service as any).restoreSteamVR).not.toHaveBeenCalled();
+        expect(app.quit).not.toHaveBeenCalled();
+
+        resolveOwnership!([owned, concurrent]);
+        await flushPromises();
+
+        expect(app.quit).toHaveBeenCalledTimes(1);
+        expect((service as any).restoreSteamVR).not.toHaveBeenCalled();
+
+        await jest.advanceTimersByTimeAsync(1_000);
+        await launch;
+        expect((service as any).restoreSteamVR).toHaveBeenCalledTimes(1);
+    });
+
+    it("launches normally when the optional ownership snapshot fails", async () => {
         jest.useFakeTimers();
-        const adminProcess = Object.assign(new EventEmitter(), {
-            killed: false,
-            pid: 70,
-            unref: jest.fn(),
+        const wrapper = processHandle(42);
+        (bsmSpawn as jest.Mock).mockReturnValue(wrapper);
+        (getProcessesByName as jest.Mock).mockRejectedValue(new Error("process list unavailable"));
+        const service = serviceWithConfig();
+
+        const launch = (service as any).launchBeatSaberNormally(launchOptions);
+        await jest.advanceTimersByTimeAsync(500);
+
+        expect(bsmSpawn).toHaveBeenCalledTimes(1);
+        wrapper.emit("exit", 0);
+        await expect(launch).resolves.toEqual({ exitCode: 0, steamVrRestoreSafe: false });
+    });
+
+    it("does not prevent quit while normal-launch ownership is missing", async () => {
+        const wrapper = processHandle(42);
+        (bsmSpawn as jest.Mock).mockReturnValue(wrapper);
+        (getProcessesByName as jest.Mock).mockReturnValue(new Promise(() => {
+            // Remains pending until ownership cancellation.
+        }));
+        const service = serviceWithConfig();
+        const launch = (service as any).launchTrackedBeatSaber(launchOptions, {
+            existingProcessIds: new Set(),
+            launchedAfter,
         });
-        (exec as unknown as jest.Mock).mockReturnValue(adminProcess);
-        (getProcessIds as jest.Mock)
+        const handler = await currentWillQuitHandler();
+        const event = { preventDefault: jest.fn() };
+
+        await handler(event);
+
+        expect(event.preventDefault).not.toHaveBeenCalled();
+        expect(wrapper.unref).toHaveBeenCalledTimes(1);
+        expect(app.quit).not.toHaveBeenCalled();
+        expect(app.removeListener).toHaveBeenCalledWith("will-quit", handler);
+
+        wrapper.emit("exit", 0);
+        await expect(launch).resolves.toEqual({ exitCode: 0, steamVrRestoreSafe: false });
+    });
+
+    it("auto-closes a safely owned normal launch without any focus action", async () => {
+        jest.useFakeTimers({ now: launchedAfter });
+        const wrapper = processHandle(42);
+        (bsmSpawn as jest.Mock).mockReturnValue(wrapper);
+        const owned = {
+            pid: 85,
+            ppid: 42,
+            name: "Beat Saber.exe",
+            cmd: "C:/Beat Saber/Beat Saber.exe",
+            startTime: processStartedAt,
+        };
+        (getProcessesByName as jest.Mock)
+            .mockResolvedValueOnce([owned])
+            .mockResolvedValueOnce([owned])
+            .mockResolvedValue([]);
+        const service = serviceWithConfig(true);
+
+        const launch = (service as any).launchTrackedBeatSaber(launchOptions, {
+            existingProcessIds: new Set(),
+            launchedAfter,
+        });
+        await flushPromises();
+
+        expect(execFile).not.toHaveBeenCalled();
+        expect(app.quit).toHaveBeenCalledTimes(1);
+
+        await jest.advanceTimersByTimeAsync(1_000);
+        await expect(launch).resolves.toEqual({ exitCode: 0, steamVrRestoreSafe: true });
+    });
+
+    it("performs no focus or close action when wrapper failure cancels ownership", async () => {
+        const wrapper = processHandle(42);
+        (bsmSpawn as jest.Mock).mockReturnValue(wrapper);
+        (getProcessesByName as jest.Mock).mockReturnValue(new Promise(() => {
+            // Remains pending until ownership cancellation.
+        }));
+        const service = serviceWithConfig(true);
+
+        const launch = (service as any).launchTrackedBeatSaber(launchOptions, {
+            existingProcessIds: new Set(),
+            launchedAfter,
+        });
+        wrapper.emit("error", new Error("spawn failed"));
+
+        await expect(launch).rejects.toThrow("spawn failed");
+        expect(execFile).not.toHaveBeenCalled();
+        expect(app.quit).not.toHaveBeenCalled();
+    });
+});
+
+describe("SteamLauncherService elevated lifecycle", () => {
+    it("accepts a helper PID delivered by stdout after the elevation process exit event", async () => {
+        const elevationProcess = processHandle(42);
+        const service = serviceWithConfig();
+
+        const helperPid = (service as any).waitForElevatedHelperPid(elevationProcess);
+        const outcome = helperPid.then(
+            (pid: number) => ({ pid }),
+            (error: Error) => ({ error })
+        );
+        elevationProcess.emit("exit", 0);
+        elevationProcess.stdout.emit("data", Buffer.from("BSM_ADMIN_HELPER_PID:84\n", "utf8"));
+        elevationProcess.stdout.emit("end");
+
+        await expect(outcome).resolves.toEqual({ pid: 84 });
+    });
+
+    it("elevates with shell-free PowerShell and owns only the reported helper's child", async () => {
+        jest.useFakeTimers({ now: launchedAfter });
+        const elevationProcess = processHandle(42);
+        (spawn as jest.Mock).mockReturnValue(elevationProcess);
+        (getProcessesByName as jest.Mock)
             .mockResolvedValueOnce([])
-            .mockResolvedValueOnce([])
-            .mockResolvedValueOnce([84])
-            .mockResolvedValueOnce([84])
+            .mockResolvedValueOnce([{
+                pid: 85,
+                ppid: 42,
+                name: "Beat Saber.exe",
+                startTime: processStartedAt,
+            }, {
+                pid: 86,
+                ppid: 84,
+                name: "Beat Saber.exe",
+                startTime: processStartedAt,
+            }])
             .mockResolvedValueOnce([]);
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
-        Object.assign(service as any, {
-            util: { getAssetsScriptsPath: jest.fn(() => "C:/assets/scripts") },
-            restoreSteamVR: jest.fn().mockResolvedValue(undefined),
-            handleGameWindowReady: jest.fn(),
+        const service = serviceWithConfig();
+        const waitForOwnedProcessExit = jest.spyOn(service as any, "waitForOwnedProcessExit")
+            .mockResolvedValue(true);
+
+        const launch = (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", ["fpfc"], {});
+        await flushPromises();
+        reportElevatedHelperPid(elevationProcess, 84);
+        await flushPromises();
+        elevationProcess.emit("exit", 0);
+
+        await expect(launch).resolves.toEqual({ exitCode: 0, steamVrRestoreSafe: true });
+        expect(spawn).toHaveBeenCalledWith(
+            "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+            expect.any(Array),
+            expect.objectContaining({ detached: true, shell: false })
+        );
+        const encodedScript = (spawn as jest.Mock).mock.calls[0][1][3];
+        const script = Buffer.from(encodedScript, "base64").toString("utf16le");
+        expect(script).toContain("Start-Process");
+        expect(script).toContain("-Verb RunAs");
+        expect(script).toContain("FromBase64String");
+        expect(script).not.toContain("C:/Beat Saber/Beat Saber.exe");
+        expect(script).not.toContain("C:\\assets\\scripts\\start_beat_saber_admin.exe");
+        expect(waitForOwnedProcessExit).toHaveBeenCalledWith(
+            "C:/Beat Saber/Beat Saber.exe",
+            { pid: 86, startedAt: processStartedAt },
+            expect.any(AbortSignal)
+        );
+    });
+
+    it("bounds helper PID acquisition and detaches unresolved PowerShell safely", async () => {
+        jest.useFakeTimers({ now: launchedAfter });
+        const elevationProcess = processHandle(42);
+        (spawn as jest.Mock).mockReturnValue(elevationProcess);
+        const service = serviceWithConfig();
+
+        const launch = (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", [], {});
+        const failure = launch.catch((error: Error & { steamVrRestoreSafe?: boolean }) => error);
+        await flushPromises();
+        const handler = await currentWillQuitHandler();
+        await jest.advanceTimersByTimeAsync(60_000);
+
+        await expect(failure).resolves.toMatchObject({
+            message: "Elevated helper PID acquisition timed out",
+            steamVrRestoreSafe: false,
         });
+        expect(elevationProcess.unref).toHaveBeenCalledTimes(1);
+        expect(app.removeListener).toHaveBeenCalledWith("will-quit", handler);
+    });
+
+    it("continues elevated ownership proof after a nonzero helper result", async () => {
+        const elevationProcess = processHandle(42);
+        (spawn as jest.Mock).mockReturnValue(elevationProcess);
+        const service = serviceWithConfig();
+        let resolveOwnership: (ownedProcess: undefined) => void;
+        jest.spyOn(service as any, "findOwnedProcess").mockReturnValue(new Promise(resolve => {
+            resolveOwnership = resolve;
+        }));
 
         let settled = false;
-        const exit = (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", [], {})
-            .then((code: number) => {
+        const launch = (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", [], {})
+            .then((completion: unknown) => {
                 settled = true;
-                return code;
+                return completion;
             });
-        for (let attempt = 0; attempt < 5 && !(exec as unknown as jest.Mock).mock.calls.length; attempt++) {
-            await Promise.resolve();
-        }
-        adminProcess.emit("exit", 0);
-        await Promise.resolve();
-        await Promise.resolve();
-        const settledAfterFirstAbsence = settled;
-        await jest.advanceTimersByTimeAsync(1_250);
+        await flushPromises();
+        reportElevatedHelperPid(elevationProcess, 84);
+        await flushPromises();
+        elevationProcess.emit("exit", 7);
+        await flushPromises();
 
-        await expect(exit).resolves.toBe(0);
-        expect(settledAfterFirstAbsence).toBe(false);
-        expect(getProcessIds).toHaveBeenCalledTimes(5);
+        expect(settled).toBe(false);
+
+        resolveOwnership!(undefined);
+        await expect(launch).resolves.toEqual({
+            exitCode: 7,
+            steamVrRestoreSafe: true,
+        });
     });
 
-    it("finishes the existing-PID snapshot before starting the elevated helper", async () => {
-        let resolveExistingProcessIds: (processIds: number[]) => void;
-        const existingProcessIds = new Promise<number[]>(resolve => {
-            resolveExistingProcessIds = resolve;
+    it("keeps one will-quit listener continuously across helper exit and ownership acquisition", async () => {
+        jest.useFakeTimers({ now: launchedAfter });
+        const helper = processHandle(42);
+        (spawn as jest.Mock).mockReturnValue(helper);
+        let resolveOwnership: (value: unknown[]) => void;
+        const ownership = new Promise<unknown[]>(resolve => {
+            resolveOwnership = resolve;
         });
-        const adminProcess = Object.assign(new EventEmitter(), {
-            killed: false,
-            pid: 84,
-            unref: jest.fn(),
-        });
-        (exec as unknown as jest.Mock).mockReturnValue(adminProcess);
-        (getProcessIds as jest.Mock)
-            .mockReturnValueOnce(existingProcessIds)
+        (getProcessesByName as jest.Mock)
+            .mockResolvedValueOnce([])
+            .mockReturnValueOnce(ownership)
             .mockResolvedValue([]);
-        const service = Object.create(SteamLauncherService.prototype) as SteamLauncherService;
-        Object.assign(service as any, {
-            util: { getAssetsScriptsPath: jest.fn(() => "C:/assets/scripts") },
-            restoreSteamVR: jest.fn().mockResolvedValue(undefined),
-            handleGameWindowReady: jest.fn(),
+        const service = serviceWithConfig();
+
+        const launch = (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", [], {});
+        await flushPromises();
+        reportElevatedHelperPid(helper);
+        await flushPromises();
+        const handler = await currentWillQuitHandler();
+        helper.emit("exit", 0);
+        await flushPromises();
+
+        expect(app.removeListener).not.toHaveBeenCalledWith("will-quit", handler);
+
+        resolveOwnership!([]);
+        await jest.advanceTimersByTimeAsync(5_500);
+        await expect(launch).resolves.toEqual({ exitCode: 0, steamVrRestoreSafe: true });
+    });
+
+    it("does not intercept quit or hand off when elevated ownership is not established", async () => {
+        const helper = processHandle(42);
+        (spawn as jest.Mock).mockReturnValue(helper);
+        (getProcessesByName as jest.Mock)
+            .mockResolvedValueOnce([])
+            .mockReturnValue(new Promise(() => {
+                // Remains pending until ownership cancellation.
+            }));
+        const service = serviceWithConfig();
+        const handoffSteamVRRestore = jest.fn();
+        (service as any).handoffSteamVRRestore = handoffSteamVRRestore;
+
+        const launch = (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", [], {});
+        await flushPromises();
+        reportElevatedHelperPid(helper);
+        await flushPromises();
+        const handler = await currentWillQuitHandler();
+        const event = { preventDefault: jest.fn() };
+
+        await handler(event);
+
+        expect(event.preventDefault).not.toHaveBeenCalled();
+        expect(handoffSteamVRRestore).not.toHaveBeenCalled();
+        expect(helper.unref).toHaveBeenCalledTimes(1);
+        expect(app.quit).not.toHaveBeenCalled();
+
+        helper.emit("exit", 0);
+        await expect(launch).resolves.toEqual({ exitCode: 0, steamVrRestoreSafe: false });
+    });
+
+    it("auto-closes a safely owned elevated process with unavailable path and no focus action", async () => {
+        jest.useFakeTimers({ now: launchedAfter });
+        const helper = processHandle(42);
+        (spawn as jest.Mock).mockReturnValue(helper);
+        const owned = {
+            pid: 85,
+            ppid: 42,
+            name: "Beat Saber.exe",
+            startTime: processStartedAt,
+        };
+        (getProcessesByName as jest.Mock)
+            .mockResolvedValueOnce([])
+            .mockResolvedValueOnce([owned])
+            .mockResolvedValueOnce([owned])
+            .mockResolvedValue([]);
+        const service = serviceWithConfig(true);
+
+        const launch = (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", [], {});
+        await flushPromises();
+        reportElevatedHelperPid(helper);
+        await flushPromises();
+        helper.emit("exit", 0);
+        await flushPromises();
+
+        expect(execFile).not.toHaveBeenCalled();
+        expect(app.quit).toHaveBeenCalledTimes(1);
+
+        await jest.advanceTimersByTimeAsync(1_000);
+        await expect(launch).resolves.toEqual({ exitCode: 0, steamVrRestoreSafe: true });
+    });
+
+    it("reports an elevated watcher handoff failure and still cleans the lifecycle", async () => {
+        const helper = processHandle(42);
+        (spawn as jest.Mock).mockReturnValue(helper);
+        const service = serviceWithConfig();
+        jest.spyOn(service as any, "findOwnedProcess").mockResolvedValue({
+            pid: 85,
+            startedAt: processStartedAt,
         });
+        let lifecycleSignal: AbortSignal | undefined;
+        jest.spyOn(service as any, "waitForOwnedProcessExit").mockImplementation(
+            (...args: unknown[]) => {
+                lifecycleSignal = args[2] as AbortSignal;
+                return Promise.reject(new Error("monitor failed"));
+            }
+        );
+        const handoffSteamVRRestore = jest.fn().mockRejectedValue(new Error("watcher unavailable"));
+        (service as any).handoffSteamVRRestore = handoffSteamVRRestore;
 
-        const exit = (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", [], {});
-        expect(exec).not.toHaveBeenCalled();
+        const launch = (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", [], {});
+        const rejection = launch.catch((error: Error) => error);
+        await flushPromises();
+        reportElevatedHelperPid(helper, 84);
+        await flushPromises();
+        const handler = await currentWillQuitHandler();
+        helper.emit("exit", 0);
 
-        resolveExistingProcessIds!([11]);
-        await waitForAdminHelperStart();
+        await expect(rejection).resolves.toMatchObject({
+            message: "Owned Beat Saber exit monitoring failed and SteamVR restore watcher handoff failed",
+            steamVrRestoreSafe: false,
+        });
+        expect(handoffSteamVRRestore).toHaveBeenCalledWith(
+            "C:/Beat Saber/Beat Saber.exe",
+            { pid: 85, startedAt: processStartedAt }
+        );
+        expect(app.removeListener).toHaveBeenCalledWith("will-quit", handler);
+        expect(lifecycleSignal?.aborted).toBe(true);
+    });
 
-        adminProcess.emit("exit", 1);
-        await expect(exit).resolves.toBe(1);
+    it.each([false, true])("always completes quit after owned SteamVR handoff (failure=%s)", async handoffFails => {
+        jest.useFakeTimers({ now: launchedAfter });
+        const helper = processHandle(42);
+        (spawn as jest.Mock).mockReturnValue(helper);
+        const owned = {
+            pid: 85,
+            ppid: 42,
+            name: "Beat Saber.exe",
+            cmd: "C:/Beat Saber/Beat Saber.exe",
+            startTime: processStartedAt,
+        };
+        (getProcessesByName as jest.Mock)
+            .mockResolvedValueOnce([])
+            .mockResolvedValue([owned]);
+        const service = serviceWithConfig();
+        const handoffSteamVRRestore = handoffFails
+            ? jest.fn().mockRejectedValue(new Error("watcher unavailable"))
+            : jest.fn().mockResolvedValue(undefined);
+        (service as any).handoffSteamVRRestore = handoffSteamVRRestore;
+
+        const launch = (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", [], {});
+        await flushPromises();
+        reportElevatedHelperPid(helper);
+        await flushPromises();
+        const handler = await currentWillQuitHandler();
+        helper.emit("exit", 0);
+        await flushPromises();
+        const event = { preventDefault: jest.fn() };
+
+        await handler(event);
+
+        expect(event.preventDefault).toHaveBeenCalledTimes(1);
+        expect(handoffSteamVRRestore).toHaveBeenCalledWith(
+            "C:/Beat Saber/Beat Saber.exe",
+            { pid: 85, startedAt: processStartedAt }
+        );
+        expect(helper.unref).toHaveBeenCalledTimes(1);
+        expect(app.quit).toHaveBeenCalledTimes(1);
+
+        await expect(launch).resolves.toEqual({ exitCode: 0, steamVrRestoreSafe: false });
+    });
+});
+
+describe("SteamVR restore watcher", () => {
+    it.each([
+        ["absent", "if ($null -eq $processCandidate) {\n    $targetState = 'Exited'\n}"],
+        ["reused", "if (!$pathMatches -or !$startTimeMatches) {\n            $targetState = 'Exited'\n        }"],
+    ])("treats an %s exact PID as an exited original without attaching to it", async (_state, expectedBranch) => {
+        const watcher = Object.assign(new EventEmitter(), { unref: jest.fn() });
+        (spawn as jest.Mock).mockReturnValue(watcher);
+        (pathExists as jest.Mock).mockImplementation(async filePath => (
+            String(filePath).endsWith(".bak") || String(filePath).endsWith(".ready")
+        ));
+        const service = serviceWithConfig();
+        (service as any).steam = { getGameFolder: jest.fn().mockResolvedValue("C:/SteamVR") };
+
+        await (service as any).handoffSteamVRRestore(
+            "C:/Beat Saber/Beat Saber.exe",
+            { pid: 85, startedAt: processStartedAt }
+        );
+
+        const encodedScript = (spawn as jest.Mock).mock.calls[0][1][3];
+        const script = Buffer.from(encodedScript, "base64").toString("utf16le");
+        expect(script).toContain(expectedBranch);
+        expect(script).toContain("if ($targetState -eq 'Uncertain')");
+        expect(script).toContain("if ($targetState -eq 'Owned')");
+        expect(script.indexOf("WriteAllText($HandoffReadyPath")).toBeLessThan(
+            script.indexOf("if ($targetState -eq 'Owned')")
+        );
+    });
+
+    it("uses an absolute shell-free PowerShell process bound to exact owned identity", async () => {
+        const watcher = Object.assign(new EventEmitter(), { unref: jest.fn() });
+        (spawn as jest.Mock).mockReturnValue(watcher);
+        (pathExists as jest.Mock).mockImplementation(async filePath => (
+            String(filePath).endsWith(".bak") || String(filePath).endsWith(".ready")
+        ));
+        const service = serviceWithConfig();
+        (service as any).steam = { getGameFolder: jest.fn().mockResolvedValue("C:/SteamVR") };
+
+        await (service as any).handoffSteamVRRestore(
+            "C:/Beat Saber/Beat Saber.exe",
+            { pid: 85, startedAt: processStartedAt }
+        );
+
+        expect(spawn).toHaveBeenCalledWith(
+            "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+            expect.any(Array),
+            expect.objectContaining({ detached: true, shell: false, stdio: "ignore" })
+        );
+        const encodedScript = (spawn as jest.Mock).mock.calls[0][1][3];
+        const script = Buffer.from(encodedScript, "base64").toString("utf16le");
+        expect(script).toContain("$TargetProcessId = 85");
+        expect(script).toContain(`$TargetProcessStartedAtUtc = [DateTime]::Parse('${processStartedAt.toISOString()}').ToUniversalTime()`);
+        expect(script).toContain("Get-Process -Id $TargetProcessId");
+        expect(script).not.toContain("Get-Process -Name");
+        expect(script).toContain("$pathMatches = $true");
+        expect(script).toContain("if ($null -ne $processPath)");
+        expect(watcher.unref).toHaveBeenCalledTimes(1);
+        expect(remove).toHaveBeenCalledWith(expect.stringMatching(/\.ready$/));
+    });
+
+    it("rejects watcher failure without leaving readiness listeners or files stale", async () => {
+        const watcher = Object.assign(new EventEmitter(), { unref: jest.fn() });
+        (spawn as jest.Mock).mockReturnValue(watcher);
+        (pathExists as jest.Mock).mockImplementation(async filePath => String(filePath).endsWith(".bak"));
+        const service = serviceWithConfig();
+        (service as any).steam = { getGameFolder: jest.fn().mockResolvedValue("C:/SteamVR") };
+
+        const handoff = (service as any).handoffSteamVRRestore(
+            "C:/Beat Saber/Beat Saber.exe",
+            { pid: 85, startedAt: processStartedAt }
+        );
+        await flushPromises();
+        watcher.emit("error", new Error("spawn failed"));
+
+        await expect(handoff).rejects.toThrow("spawn failed");
+        expect(watcher.listenerCount("error")).toBe(0);
+        expect(watcher.listenerCount("exit")).toBe(1);
+        expect(remove).toHaveBeenCalledWith(expect.stringMatching(/\.ready$/));
+        expect(watcher.unref).not.toHaveBeenCalled();
     });
 });

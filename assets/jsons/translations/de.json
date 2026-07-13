@@ -345,7 +345,7 @@
                 },
                 "close-bs-manager-on-launch": {
                     "title": "BSManager beim Start von Beat Saber schließen",
-                    "description": "Schließt BSManager, sobald das Beat-Saber-Fenster bereit ist.",
+                    "description": "Schließt BSManager, nachdem ein sicher zugeordneter Beat-Saber-Prozess gestartet wurde.",
                     "error-notification": {
                         "message": "Die Einstellung zum Schließen beim Start konnte nicht geändert werden."
                     }

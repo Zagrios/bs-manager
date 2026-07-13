@@ -345,7 +345,7 @@
                 },
                 "close-bs-manager-on-launch": {
                     "title": "啟動 Beat Saber 時關閉 BSManager",
-                    "description": "Beat Saber 視窗準備就緒後關閉 BSManager。",
+                    "description": "安全識別的 Beat Saber 程序啟動後關閉 BSManager。",
                     "error-notification": {
                         "message": "無法變更啟動時關閉的設定。"
                     }

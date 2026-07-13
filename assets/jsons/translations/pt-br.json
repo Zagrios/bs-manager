@@ -345,7 +345,7 @@
                 },
                 "close-bs-manager-on-launch": {
                     "title": "Fechar o BSManager ao iniciar o Beat Saber",
-                    "description": "Fecha o BSManager quando a janela do Beat Saber estiver pronta.",
+                    "description": "Fecha o BSManager após o início de um processo do Beat Saber identificado com segurança.",
                     "error-notification": {
                         "message": "Não foi possível alterar a opção de fechar ao iniciar."
                     }

@@ -345,7 +345,7 @@
                 },
                 "close-bs-manager-on-launch": {
                     "title": "Закривати BSManager під час запуску Beat Saber",
-                    "description": "Закриває BSManager, коли вікно Beat Saber готове.",
+                    "description": "Закриває BSManager після запуску безпечно ідентифікованого процесу Beat Saber.",
                     "error-notification": {
                         "message": "Не вдалося змінити налаштування закриття під час запуску."
                     }

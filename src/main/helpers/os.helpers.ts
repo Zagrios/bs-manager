@@ -3,6 +3,7 @@ import log from "electron-log";
 import psList from "ps-list";
 import { IS_FLATPAK } from "main/constants";
 import { getWindowsProcessesByName } from "./windows-powershell.helper";
+import { readFile } from "fs/promises";
 
 // Only applied if package as flatpak
 type FlatpakOptions = {
@@ -124,12 +125,73 @@ const processMatchesName = (process: Awaited<ReturnType<typeof psList>>[number],
     process.name?.includes(name) || process.cmd?.includes(name);
 
 export type ProcessDetails = {
+    ancestorPids?: number[];
     cmd?: string;
     name?: string;
     pid: number;
     ppid?: number;
+    processGroupId?: number;
+    startMarker?: string;
     startTime?: Date | number | string;
 };
+
+type LinuxProcessMetadata = {
+    processGroupId: number;
+    startTime: Date;
+};
+
+async function getLinuxProcessMetadata(processIds: number[]): Promise<Map<number, LinuxProcessMetadata>> {
+    if (processIds.length === 0) {
+        return new Map();
+    }
+
+    const stdout = await new Promise<string>((resolve, reject) => {
+        cp.execFile(
+            "ps",
+            ["-o", "pid=,pgid=,lstart=", "-p", processIds.join(",")],
+            { env: { ...process.env, LC_ALL: "C" } },
+            (error, output) => error ? reject(error) : resolve(output)
+        );
+    });
+    const metadata = new Map<number, LinuxProcessMetadata>();
+    for (const line of stdout.split("\n")) {
+        const match = line.match(/^\s*(\d+)\s+(\d+)\s+(.+?)\s*$/);
+        if (!match) { continue; }
+        const processId = Number(match[1]);
+        const processGroupId = Number(match[2]);
+        const startTime = new Date(match[3]);
+        if (Number.isSafeInteger(processId) && Number.isSafeInteger(processGroupId)
+            && Number.isFinite(startTime.getTime())) {
+            metadata.set(processId, { processGroupId, startTime });
+        }
+    }
+    return metadata;
+}
+
+async function getLinuxProcessStartMarker(processId: number): Promise<string | undefined> {
+    try {
+        const stat = await readFile(`/proc/${processId}/stat`, "utf8");
+        const fieldsAfterName = stat.slice(stat.lastIndexOf(")") + 2).trim().split(/\s+/);
+        return fieldsAfterName[19];
+    } catch {
+        return undefined;
+    }
+}
+
+function getAncestorPids(
+    processId: number,
+    processesById: Map<number, Awaited<ReturnType<typeof psList>>[number]>
+): number[] {
+    const ancestorPids: number[] = [];
+    const visited = new Set<number>([processId]);
+    let parentId = processesById.get(processId)?.ppid;
+    while (Number.isSafeInteger(parentId) && (parentId ?? 0) > 0 && !visited.has(parentId!)) {
+        ancestorPids.push(parentId!);
+        visited.add(parentId!);
+        parentId = processesById.get(parentId!)?.ppid;
+    }
+    return ancestorPids;
+}
 
 export async function getProcessesByName(name: string): Promise<ProcessDetails[]> {
     if (!name) {
@@ -139,7 +201,15 @@ export async function getProcessesByName(name: string): Promise<ProcessDetails[]
         return getWindowsProcessesByName(name);
     }
     const processes = await psList();
-    return processes.filter(process => processMatchesName(process, name));
+    const matchingProcesses = processes.filter(process => processMatchesName(process, name));
+    const metadata = await getLinuxProcessMetadata(matchingProcesses.map(process => process.pid));
+    const processesById = new Map(processes.map(process => [process.pid, process]));
+    return Promise.all(matchingProcesses.map(async processDetails => ({
+        ...processDetails,
+        ...metadata.get(processDetails.pid),
+        ancestorPids: getAncestorPids(processDetails.pid, processesById),
+        startMarker: await getLinuxProcessStartMarker(processDetails.pid),
+    })));
 }
 
 async function getProcessIdWindows(name: string): Promise<number | null> {
@@ -196,19 +266,3 @@ async function getProcessIdLinux(name: string): Promise<number | null> {
 export const getProcessId = process.platform === "win32"
     ? getProcessIdWindows
     : getProcessIdLinux;
-
-export async function getProcessIds(name: string): Promise<number[]> {
-    if (!name) {
-        return [];
-    }
-
-    try {
-        const processes = await psList();
-        return processes
-            .filter(process => processMatchesName(process, name))
-            .map(process => process.pid);
-    } catch (error) {
-        log.error(error);
-        return [];
-    }
-}

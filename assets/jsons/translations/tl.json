@@ -345,7 +345,7 @@
                 },
                 "close-bs-manager-on-launch": {
                     "title": "Isara ang BSManager kapag inilunsad ang Beat Saber",
-                    "description": "Isinasara ang BSManager kapag handa na ang window ng Beat Saber.",
+                    "description": "Isinasara ang BSManager matapos magsimula ang ligtas na natukoy na proseso ng Beat Saber.",
                     "error-notification": {
                         "message": "Hindi mabago ang setting para isara sa paglunsad."
                     }

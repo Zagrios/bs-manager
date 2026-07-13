@@ -1,6 +1,8 @@
 import React from "react";
 import TestRenderer from "react-test-renderer";
 import { SettingToogleSwitchGrid } from "renderer/components/settings/setting-toogle-switch-grid.component";
+import { isCloseOnLaunchSupported } from "renderer/helpers/close-on-launch-setting.helper";
+import en from "../../../assets/jsons/translations/en.json";
 
 jest.mock("renderer/hooks/use-theme-color.hook", () => ({
     useThemeColor: jest.fn(() => ({ firstColor: "#336699" })),
@@ -10,12 +12,19 @@ jest.mock("renderer/helpers/correct-text-color", () => ({
 }));
 
 describe("settings toggle accessibility", () => {
-    it("names and describes the close-after-launch switch and exposes keyboard focus", () => {
+    it("keeps the Linux close-on-launch setting visible and configurable", () => {
+        expect(isCloseOnLaunchSupported("linux")).toBe(true);
+        expect(isCloseOnLaunchSupported("win32")).toBe(true);
+        expect(isCloseOnLaunchSupported("darwin")).toBe(false);
+    });
+
+    it("describes process-based close-after-launch without promising window focus", () => {
+        const copy = en.pages.settings.advanced["close-bs-manager-on-launch"];
         const renderer = TestRenderer.create(React.createElement(SettingToogleSwitchGrid, {
             items: [{
                 checked: false,
-                text: "Close BSManager when Beat Saber launches",
-                desc: "Closes BSManager once the Beat Saber window is ready.",
+                text: copy.title,
+                desc: copy.description,
             }],
         }));
         const title = renderer.root.findByType("h2");
@@ -29,5 +38,7 @@ describe("settings toggle accessibility", () => {
         expect(title.props.id).toBeTruthy();
         expect(description.props.id).toBeTruthy();
         expect(focusIndicator).toBeDefined();
+        expect(copy.description).toBe("Closes BSManager after a safely owned Beat Saber process starts.");
+        expect(`${copy.title} ${copy.description}`).not.toMatch(/focus|foreground|window/i);
     });
 });

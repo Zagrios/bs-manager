@@ -345,7 +345,7 @@
                 },
                 "close-bs-manager-on-launch": {
                     "title": "Beat Saberの起動時にBSManagerを閉じる",
-                    "description": "Beat Saberのウィンドウが準備できたらBSManagerを閉じます。",
+                    "description": "安全に識別されたBeat Saberプロセスが起動した後にBSManagerを閉じます。",
                     "error-notification": {
                         "message": "起動時に閉じる設定を変更できませんでした。"
                     }

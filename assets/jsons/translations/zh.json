@@ -345,7 +345,7 @@
                 },
                 "close-bs-manager-on-launch": {
                     "title": "启动 Beat Saber 时关闭 BSManager",
-                    "description": "Beat Saber 窗口准备就绪后关闭 BSManager。",
+                    "description": "安全识别的 Beat Saber 进程启动后关闭 BSManager。",
                     "error-notification": {
                         "message": "无法更改启动时关闭的设置。"
                     }
