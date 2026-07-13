@@ -4,7 +4,6 @@ import { UtilsService } from "./utils.service";
 import { AppWindow } from "shared/models/window-manager/app-window.model";
 import path from "path";
 import { APP_NAME } from "../constants";
-import { isValidUrl } from "../../shared/helpers/url.helpers";
 
 export class WindowManagerService {
     private static instance: WindowManagerService;
@@ -43,20 +42,54 @@ export class WindowManagerService {
 
     private constructor() {}
 
-    private handleNewWindow(url: AppWindow, window: BrowserWindow){
+    private isHttpUrl(url: string, httpsOnly = false): boolean {
+        try {
+            const { protocol } = new URL(url);
+            return protocol === "https:" || (!httpsOnly && protocol === "http:");
+        } catch {
+            return false;
+        }
+    }
+
+    private isAbsoluteUrl(url: string): boolean {
+        try {
+            new URL(url);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    private handleNewWindow(url: string, window: BrowserWindow, isInternal: boolean){
 
         window.webContents.setWindowOpenHandler(({ url }) => {
-            if(isValidUrl(url)){
+            if(this.isHttpUrl(url)){
                 shell.openExternal(url);
             }
 
             return { action: "deny"}
         });
 
+        const handleNavigation = (event: { preventDefault: () => void }, navigationUrl: string) => {
+            const isAllowed = isInternal
+                ? navigationUrl.startsWith(resolveHtmlPath(""))
+                : this.isHttpUrl(navigationUrl, true);
+
+            if(isAllowed){ return; }
+
+            event.preventDefault();
+            if(this.isHttpUrl(navigationUrl)){
+                shell.openExternal(navigationUrl);
+            }
+        };
+
+        window.webContents.on("will-navigate", handleNavigation);
+        window.webContents.on("will-redirect", handleNavigation);
+
         window.removeMenu();
         window.setMenu(null);
 
-        const promise = window.loadURL(isValidUrl(url) ? url : resolveHtmlPath(url));
+        const promise = window.loadURL(url);
 
         window.once("ready-to-show", () => {
             if (!window) {
@@ -69,9 +102,49 @@ export class WindowManagerService {
     }
 
     public openWindow(url: AppWindow, options?: BrowserWindowConstructorOptions): Promise<BrowserWindow> {
+        if(this.isAbsoluteUrl(url)){
+            return Promise.reject(new Error("Remote URLs must be opened with openRemoteWindow"));
+        }
+
         const windowType = url.split("?")[0];
-        const window = new BrowserWindow({ ...(this.appWindowsOptions[windowType] ?? {}), ...this.baseWindowOption, ...options });
-        return this.handleNewWindow(url, window);
+        const window = new BrowserWindow({
+            ...(this.appWindowsOptions[windowType] ?? {}),
+            ...this.baseWindowOption,
+            ...options,
+            webPreferences: {
+                ...this.baseWindowOption.webPreferences,
+                ...options?.webPreferences,
+                preload: this.PRELOAD_PATH,
+            },
+        });
+        return this.handleNewWindow(resolveHtmlPath(url), window, true);
+    }
+
+    public openRemoteWindow(url: string, options?: BrowserWindowConstructorOptions): Promise<BrowserWindow> {
+        if(!this.isHttpUrl(url, true)){
+            return Promise.reject(new Error("Remote windows only support HTTPS URLs"));
+        }
+
+        const webPreferences = { ...options?.webPreferences };
+        delete webPreferences.preload;
+
+        const window = new BrowserWindow({
+            ...this.baseWindowOption,
+            ...options,
+            webPreferences: {
+                ...webPreferences,
+                nodeIntegration: false,
+                nodeIntegrationInWorker: false,
+                nodeIntegrationInSubFrames: false,
+                contextIsolation: true,
+                sandbox: true,
+                webSecurity: true,
+                allowRunningInsecureContent: false,
+                webviewTag: false,
+            },
+        });
+
+        return this.handleNewWindow(url, window, false);
     }
 
     public closeAllWindows(except?: AppWindow) {
