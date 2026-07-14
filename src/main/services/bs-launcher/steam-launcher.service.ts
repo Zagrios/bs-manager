@@ -160,9 +160,18 @@ catch {
 }
 
 if ($targetState -eq 'Owned') {
-    while ((Get-TargetProcessState) -eq 'Owned') {
+    while ($targetState -eq 'Owned') {
         Start-Sleep -Seconds 1
+        $targetState = Get-TargetProcessState
     }
+}
+
+if ($targetState -eq 'Uncertain') {
+    exit 2
+}
+
+if ($targetState -ne 'Exited') {
+    exit 2
 }
 
 for ($attempt = 0; $attempt -lt 60; $attempt++) {

@@ -1231,9 +1231,40 @@ describe("SteamVR restore watcher", () => {
         const script = Buffer.from(encodedScript, "base64").toString("utf16le");
         expect(script).toContain("function Get-TargetProcessState");
         expect(script.match(/Get-Process -Id \$TargetProcessId/g)).toHaveLength(1);
-        expect(script).toContain("$targetState = Get-TargetProcessState");
-        expect(script).toContain("while ((Get-TargetProcessState) -eq 'Owned')");
+        expect(script.match(/\$targetState = Get-TargetProcessState/g)).toHaveLength(2);
+        expect(script).toContain("while ($targetState -eq 'Owned')");
         expect(script.match(/Get-TargetProcessState/g)).toHaveLength(3);
+    });
+
+    it("exits fail-closed without restoring when polling changes from Owned to Uncertain", async () => {
+        const watcher = Object.assign(new EventEmitter(), { unref: jest.fn() });
+        (spawn as jest.Mock).mockReturnValue(watcher);
+        (pathExists as jest.Mock).mockImplementation(async filePath => (
+            String(filePath).endsWith(".bak") || String(filePath).endsWith(".ready")
+        ));
+        const service = serviceWithConfig();
+        (service as any).steam = { getGameFolder: jest.fn().mockResolvedValue("C:/SteamVR") };
+
+        await (service as any).handoffSteamVRRestore(
+            "C:/Beat Saber/Beat Saber.exe",
+            { pid: 85, startedAt: processStartedAt }
+        );
+
+        const encodedScript = (spawn as jest.Mock).mock.calls[0][1][3];
+        const script = Buffer.from(encodedScript, "base64").toString("utf16le");
+        const polling = script.indexOf("while ($targetState -eq 'Owned')");
+        const refresh = script.indexOf("$targetState = Get-TargetProcessState", polling + 1);
+        const uncertainExit = script.indexOf("if ($targetState -eq 'Uncertain')", refresh + 1);
+        const confirmedExit = script.indexOf("if ($targetState -ne 'Exited')", uncertainExit + 1);
+        const restoreAttempt = script.indexOf("for ($attempt = 0; $attempt -lt 60; $attempt++)");
+
+        expect(polling).toBeGreaterThan(-1);
+        expect(refresh).toBeGreaterThan(polling);
+        expect(uncertainExit).toBeGreaterThan(refresh);
+        expect(script.slice(uncertainExit, confirmedExit)).toContain("exit 2");
+        expect(confirmedExit).toBeGreaterThan(uncertainExit);
+        expect(script.slice(confirmedExit, restoreAttempt)).toContain("exit 2");
+        expect(restoreAttempt).toBeGreaterThan(confirmedExit);
     });
 
     it.each([
