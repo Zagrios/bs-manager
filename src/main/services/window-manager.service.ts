@@ -101,7 +101,7 @@ export class WindowManagerService {
 
         const windowType = url.split("?")[0];
         const window = new BrowserWindow({
-            ...(this.appWindowsOptions[windowType] ?? {}),
+            ...this.appWindowsOptions[windowType],
             ...this.baseWindowOption,
             ...options,
             webPreferences: {
