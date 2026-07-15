@@ -43,20 +43,46 @@ export class WindowManagerService {
 
     private constructor() {}
 
-    private handleNewWindow(url: AppWindow, window: BrowserWindow){
+    private isHttpUrl(url: string, httpsOnly = false): boolean {
+        try {
+            const { protocol } = new URL(url);
+            return protocol === "https:" || (!httpsOnly && protocol === "http:");
+        } catch {
+            return false;
+        }
+    }
 
-        window.webContents.setWindowOpenHandler(({ url }) => {
-            if(isValidUrl(url)){
-                shell.openExternal(url);
-            }
+    private openExternalHttpUrl(url: string): void {
+        if(this.isHttpUrl(url)){
+            shell.openExternal(url);
+        }
+    }
 
+    private handleNewWindow(
+        initialUrl: string,
+        window: BrowserWindow,
+        isNavigationAllowed: (url: string) => boolean
+    ){
+
+        window.webContents.setWindowOpenHandler(({ url: targetUrl }) => {
+            this.openExternalHttpUrl(targetUrl);
             return { action: "deny"}
         });
+
+        const handleNavigation = (event: { preventDefault: () => void }, navigationUrl: string) => {
+            if(isNavigationAllowed(navigationUrl)){ return; }
+
+            event.preventDefault();
+            this.openExternalHttpUrl(navigationUrl);
+        };
+
+        window.webContents.on("will-navigate", handleNavigation);
+        window.webContents.on("will-redirect", handleNavigation);
 
         window.removeMenu();
         window.setMenu(null);
 
-        const promise = window.loadURL(isValidUrl(url) ? url : resolveHtmlPath(url));
+        const promise = window.loadURL(initialUrl);
 
         window.once("ready-to-show", () => {
             if (!window) {
@@ -69,9 +95,49 @@ export class WindowManagerService {
     }
 
     public openWindow(url: AppWindow, options?: BrowserWindowConstructorOptions): Promise<BrowserWindow> {
+        if(isValidUrl(url)){
+            return Promise.reject(new Error("Remote URLs must be opened with openRemoteWindow"));
+        }
+
         const windowType = url.split("?")[0];
-        const window = new BrowserWindow({ ...(this.appWindowsOptions[windowType] ?? {}), ...this.baseWindowOption, ...options });
-        return this.handleNewWindow(url, window);
+        const window = new BrowserWindow({
+            ...this.appWindowsOptions[windowType],
+            ...this.baseWindowOption,
+            ...options,
+            webPreferences: {
+                ...this.baseWindowOption.webPreferences,
+                ...options?.webPreferences,
+                preload: this.PRELOAD_PATH,
+            },
+        });
+        return this.handleNewWindow(resolveHtmlPath(url), window, navigationUrl => navigationUrl.startsWith(resolveHtmlPath("")));
+    }
+
+    public openRemoteWindow(url: string, options?: BrowserWindowConstructorOptions): Promise<BrowserWindow> {
+        if(!this.isHttpUrl(url, true)){
+            return Promise.reject(new Error("Remote windows only support HTTPS URLs"));
+        }
+
+        const webPreferences = { ...options?.webPreferences };
+        delete webPreferences.preload;
+
+        const window = new BrowserWindow({
+            ...this.baseWindowOption,
+            ...options,
+            webPreferences: {
+                ...webPreferences,
+                nodeIntegration: false,
+                nodeIntegrationInWorker: false,
+                nodeIntegrationInSubFrames: false,
+                contextIsolation: true,
+                sandbox: true,
+                webSecurity: true,
+                allowRunningInsecureContent: false,
+                webviewTag: false,
+            },
+        });
+
+        return this.handleNewWindow(url, window, navigationUrl => this.isHttpUrl(navigationUrl, true));
     }
 
     public closeAllWindows(except?: AppWindow) {
