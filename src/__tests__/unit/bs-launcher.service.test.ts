@@ -13,7 +13,7 @@ jest.mock("electron-log", () => ({
     error: jest.fn(),
 }));
 jest.mock("color", () => jest.fn(() => ({ hex: jest.fn(() => "#000000") })));
-jest.mock("to-ico", () => jest.fn());
+jest.mock("png-to-ico", () => jest.fn());
 jest.mock("@resvg/resvg-js", () => ({
     Resvg: jest.fn(() => ({
         render: jest.fn(() => ({ asPng: jest.fn(() => Buffer.from("")) })),

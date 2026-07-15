@@ -1,5 +1,5 @@
 import log from "electron-log";
-import fetch from "node-fetch";
+import got from "got";
 import { CustomError } from "../../shared/models/exceptions/custom-error.class";
 import { mkdirs, createWriteStream, pathExists, WriteStream } from "fs-extra";
 import path from "path";
@@ -26,9 +26,7 @@ export class OculusDownloader {
     }
 
     private async downloadManifestZip(manifestUrl: string): Promise<Buffer> {
-        const response = await fetch(manifestUrl);
-        const arrBuffer = await response.arrayBuffer();
-        return Buffer.from(arrBuffer);
+        return got(manifestUrl).buffer();
     }
 
     private async getManifest(): Promise<OculusManifest> {
@@ -57,10 +55,9 @@ export class OculusDownloader {
 
     private downloadManifestFile(file: OculusManifestFile, destination: string): Observable<Progression<OculusManifestFile>> {
 
-            const downloadSegment = async (segment: OculusManifestFileSegment): Promise<ArrayBuffer> => {
+            const downloadSegment = async (segment: OculusManifestFileSegment): Promise<Buffer> => {
                 const segmentUrl = this.getDownloadSegmentUrl(this.options.accessToken, this.options.binaryId, segment[1]);
-                const response = await fetch(segmentUrl);
-                return response.arrayBuffer();
+                return got(segmentUrl).buffer();
             }
 
             const totalSegmentSize = file.segments.reduce((acc, segment) => acc + segment[2], 0);

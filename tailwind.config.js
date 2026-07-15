@@ -1,4 +1,4 @@
-const {nextui} = require("@nextui-org/react");
+const {heroui} = require("@heroui/theme");
 const colors = require("tailwindcss/colors");
 
 // Suppress deprecation warnings during build
@@ -10,9 +10,9 @@ delete colors.blueGray;
 
 module.exports = {
     darkMode: "class",
-    content: ["./src/renderer/**/*.{js,jsx,ts,tsx,ejs}", "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"],
+    content: ["./src/renderer/**/*.{js,jsx,ts,tsx,ejs}", "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}"],
     mode: "jit",
-    plugins: [require("tailwindcss-scoped-groups")({ groups: ["one"] }), nextui()],
+    plugins: [require("tailwindcss-scoped-groups")({ groups: ["one"] }), heroui()],
     theme: {
         colors: {
             ...colors,

@@ -8,7 +8,7 @@ import { BsmProtocolService } from "../bsm-protocol.service";
 import { app, shell} from "electron";
 import Color from "color";
 import { ensureDir, writeFile } from "fs-extra";
-import toIco from "to-ico";
+import toIco from "png-to-ico";
 import { objectFromEntries } from "../../../shared/helpers/object.helpers";
 import { WindowManagerService } from "../window-manager.service";
 import { IpcService } from "../ipc.service";

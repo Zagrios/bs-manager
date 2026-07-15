@@ -1,5 +1,6 @@
 {
   "name": "bs-manager",
+  "desktopName": "bs-manager",
   "version": "1.5.6",
   "description": "BSManager",
   "main": "./dist/main/main.js",

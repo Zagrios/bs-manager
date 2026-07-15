@@ -29,14 +29,17 @@ Hello! We’re delighted that you’re interested in contributing to **BSManager
 ### Before You Begin
 
 1. **[Fork the repository][fork]** and **clone** your fork locally.  
-2. **Install the required tools (Node, etc)** (we recommend using [mise](https://mise.jdx.dev/) to manage tool versions).
+2. **Install the required tools**. The Node version is defined by both
+   [mise](https://mise.jdx.dev/) and `.nvmrc`; using mise is recommended.
    ```bash
    mise install
    ```
-3. **Install project dependencies**:
+3. **Install project dependencies** from the lockfile:
    ```bash
    npm ci
    ```
+
+See [Building on Linux](#building-on-linux) for the required system packages.
 
 ### Create a Dedicated Branch
 
@@ -68,6 +71,68 @@ git checkout -b (feature|bugfix|hotfix|chore)/(short-description)(/issue-id)
 
 ---
 
+## Building on Linux
+
+The install, build, test, and lint commands are the same on every distribution;
+only system prerequisites and the native package target differ. Node 24 is
+selected from `mise.toml`/`.nvmrc`.
+
+### Distribution prerequisites
+
+Install the packages for your distribution, then run `mise install` and
+`npm ci` from the repository root.
+
+Fedora 44:
+
+```bash
+sudo dnf install -y binutils gcc-c++ libxcrypt-compat make python3 rpm-build
+```
+
+Build the native RPM package with:
+
+```bash
+npm run build
+npx electron-builder --config electron-builder.config.js --publish never --linux rpm --x64
+```
+
+Ubuntu 24.04 / Debian-based distributions:
+
+```bash
+sudo apt update
+sudo apt install -y build-essential libarchive-tools python3
+```
+
+Build the native DEB package with:
+
+```bash
+npm run build
+npx electron-builder --config electron-builder.config.js --publish never --linux deb --x64
+```
+
+Arch Linux:
+
+```bash
+sudo pacman -Syu --needed base-devel libarchive libxcrypt-compat python
+```
+
+Build the native pacman package with:
+
+```bash
+npm run build
+npx electron-builder --config electron-builder.config.js --publish never --linux pacman --x64
+```
+
+### Verify a change
+
+Before submitting a pull request, run:
+
+```bash
+npm run build
+npm test -- --runInBand
+npm run lint
+npm audit --omit=dev
+```
+
 ## Useful Commands
 
 ### Development
@@ -81,16 +146,19 @@ npm start
 ### Packaging
 
 ```bash
-npm run package  
+npm run package
 ```
 
-> Packages the application using Electron Builder.
+> Packages the application for the current platform using Electron Builder.
+> Use the target-specific commands under [Building on Linux](#building-on-linux)
+> for a native Linux distribution package.
+
+For one Linux package format, replace `<deb|rpm|pacman>` below:
 
 ```bash
-npm run build && electron-builder --config electron-builder.config.js --publish never --x64 --linux <deb/rpm/pacman>
+npm run build
+npx electron-builder --config electron-builder.config.js --publish never --linux <deb|rpm|pacman> --x64
 ```
-
-> Package for Linux distros (deb, rpm, pacman)
 
 ```bash
 npm run publish
