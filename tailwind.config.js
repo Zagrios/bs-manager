@@ -1,4 +1,4 @@
-const {heroui} = require("@heroui/react");
+const {heroui} = require("@heroui/theme");
 const colors = require("tailwindcss/colors");
 
 // Suppress deprecation warnings during build

@@ -5,7 +5,8 @@ import { cn } from "renderer/helpers/css-class.helpers";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { PlaylistSearchParams } from "shared/models/maps/beat-saver.model"
 import {DateRangePicker} from "@heroui/date-picker";
-import { Radio, RadioGroup, RadioProps, RangeValue } from "@heroui/react";
+import { Radio, RadioGroup, RadioProps } from "@heroui/radio";
+import type { RangeValue } from "@react-types/shared";
 import { today, getLocalTimeZone, parseAbsoluteToLocal, toCalendarDate, toZoned, CalendarDate } from "@internationalized/date";
 import { motion } from "framer-motion";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
@@ -29,6 +30,7 @@ const MIN_NPS = 0;
 export function DownloadPlaylistFilterPanel({ className, params, onChange, onSubmit }: Props) {
 
     const t = useTranslation();
+    const [portalContainer, setPortalContainer] = useState<HTMLDivElement | null>(null);
 
     const timeZone = useConstant(() => getLocalTimeZone());
     const [curated, setCurated] = useState<boolean>(params?.curated);
@@ -110,7 +112,7 @@ export function DownloadPlaylistFilterPanel({ className, params, onChange, onSub
     };
 
     return (
-        <motion.div className={cn("bg-theme-3 flex flex-row gap-3 p-2 absolute origin-top shadow-md shadow-black rounded-md", className)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{duration: .1}}>
+        <motion.div ref={setPortalContainer} className={cn("bg-theme-3 flex flex-row gap-3 p-2 absolute origin-top shadow-md shadow-black rounded-md", className)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{duration: .1}}>
             <div className="flex flex-col gap-1 shrink-0">
                 <h2 className="mb-0.5 uppercase text-sm">{t("maps.map-filter-panel.specificities")}</h2>
                 <div className="flex flex-row h-6 gap-1">
@@ -132,7 +134,7 @@ export function DownloadPlaylistFilterPanel({ className, params, onChange, onSub
                     <span className=" text-sm font-bold text-center mt-2.5">{t("maps.map-filter-panel.nps")}</span>
                 </div>
                 <div className="w-full">
-                    <DateRangePicker label={t("playlist.date-picker.start-date-end-date")} value={dateRange} onChange={setDateRange} classNames={{
+                    <DateRangePicker disableAnimation label={t("playlist.date-picker.start-date-end-date")} value={dateRange} onChange={setDateRange} popoverProps={{ portalContainer: portalContainer ?? undefined }} classNames={{
                         inputWrapper: "pointer-events-none bg-light-main-color-1 hover:bg-light-main-color-1 dark:bg-main-color-1 dark:hover:bg-main-color-1 hover:brightness-75",
                         input: "pointer-events-auto",
                         selectorButton: "pointer-events-auto",

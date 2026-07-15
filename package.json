@@ -74,6 +74,7 @@
         "@electron/notarize": "^2.3.0",
         "@electron/rebuild": "^4.2.0",
         "@pmmmwh/react-refresh-webpack-plugin": "^0.5.17",
+        "@react-types/shared": "3.30.0",
         "@teamsupercell/typings-for-css-modules-loader": "^2.5.2",
         "@testing-library/jest-dom": "^6.4.1",
         "@testing-library/react": "^14.2.0",
@@ -151,14 +152,16 @@
         "webpack": "^5.108.4",
         "webpack-bundle-analyzer": "^4.10.1",
         "webpack-cli": "^5.1.4",
-        "webpack-dev-server": "^6.0.0",
+        "webpack-dev-server": "^5.2.6",
         "webpack-merge": "^5.10.0"
     },
     "dependencies": {
         "@emotion/is-prop-valid": "1.4.0",
         "@hello-pangea/dnd": "^18.0.1",
-        "@heroui/date-picker": "2.3.23",
-        "@heroui/react": "2.7.11",
+        "@heroui/date-picker": "2.3.22",
+        "@heroui/radio": "2.3.21",
+        "@heroui/system": "2.4.18",
+        "@heroui/theme": "2.4.17",
         "@internationalized/date": "^3.5.4",
         "@node-steam/vdf": "^2.2.0",
         "@tippyjs/react": "^4.2.6",
@@ -213,7 +216,6 @@
         "node": ">=24 <25"
     },
     "overrides": {
-        "@heroui/theme": "2.4.17",
         "@typescript-eslint/typescript-estree": {
             "minimatch": "^9.0.9"
         }

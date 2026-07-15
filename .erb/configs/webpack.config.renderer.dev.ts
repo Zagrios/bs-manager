@@ -55,7 +55,7 @@ const configuration: webpack.Configuration = {
 
     target: ["web", "electron-renderer"],
 
-    entry: [`webpack-dev-server/client?http://localhost:${port}/dist`, "webpack/hot/only-dev-server", path.join(webpackPaths.srcRendererPath, "index.tsx")],
+    entry: path.join(webpackPaths.srcRendererPath, "index.tsx"),
 
     output: {
         path: webpackPaths.distRendererPath,
@@ -80,7 +80,10 @@ const configuration: webpack.Configuration = {
                             importLoaders: 1,
                         },
                     },
-                    "sass-loader",
+                    {
+                        loader: "sass-loader",
+                        options: { api: "modern" },
+                    },
                 ],
                 include: /\.module\.s?(c|a)ss$/,
             },
@@ -89,7 +92,10 @@ const configuration: webpack.Configuration = {
                 use: [
                     "style-loader",
                     "css-loader",
-                    "sass-loader",
+                    {
+                        loader: "sass-loader",
+                        options: { api: "modern" },
+                    },
                     {
                         loader: "postcss-loader",
                         options: {
@@ -163,6 +169,12 @@ const configuration: webpack.Configuration = {
 
     devServer: {
         port,
+        client: {
+            overlay: {
+                errors: true,
+                warnings: false,
+            },
+        },
         compress: true,
         hot: true,
         headers: { "Access-Control-Allow-Origin": "*" },

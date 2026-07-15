@@ -149,9 +149,9 @@ npm start
 npm run package
 ```
 
-> Builds the configured Debian and RPM packages using Electron Builder. Use the
-> target-specific commands under [Building on Linux](#building-on-linux) for a
-> native distribution package.
+> Packages the application for the current platform using Electron Builder.
+> Use the target-specific commands under [Building on Linux](#building-on-linux)
+> for a native Linux distribution package.
 
 For one Linux package format, replace `<deb|rpm|pacman>` below:
 
