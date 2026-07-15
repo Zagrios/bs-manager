@@ -37,8 +37,21 @@ function toLaunchError(error: unknown): Error {
     if (error instanceof Error) {
         return error;
     }
-    if (typeof error !== "object" || error === null) {
-        return new Error(String(error));
+    if (typeof error === "string") {
+        return new Error(error);
+    }
+    if (error === undefined) {
+        return new Error("undefined");
+    }
+    if (error === null) {
+        return new Error("null");
+    }
+    if (typeof error === "number" || typeof error === "boolean"
+        || typeof error === "bigint" || typeof error === "symbol") {
+        return new Error(error.toString());
+    }
+    if (typeof error === "function") {
+        return new Error(Function.prototype.toString.call(error));
     }
     try {
         return new Error(JSON.stringify(error) ?? Object.prototype.toString.call(error));

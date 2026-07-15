@@ -7,7 +7,7 @@ import { getWindowsProcessesByName } from "./windows-powershell.helper";
 
 export const BSM_LAUNCH_TOKEN_ENV = "BSMANAGER_LAUNCH_TOKEN";
 const FLATPAK_HOST_PROCESS_LIST_TIMEOUT_MS = 5_000;
-const SHELL_SINGLE_QUOTE_ESCAPE = String.raw`'"'"'`;
+const SHELL_SINGLE_QUOTE_ESCAPE = `'"'"'`;
 
 // Only applied if package as flatpak
 type FlatpakOptions = {
@@ -159,11 +159,11 @@ async function getFlatpakHostProcessesByName(name: string): Promise<ProcessDetai
     const hostScript = [
         "current_uid=$(id -u)",
         "for process_dir in /proc/[0-9]*; do",
-        String.raw`[ "$(stat -c %u "$process_dir" 2>/dev/null)" = "$current_uid" ] || continue`,
-        String.raw`process_name=$(cat "$process_dir/comm" 2>/dev/null) || continue; [ "$process_name" = ${quotedName} ] || continue`,
-        String.raw`pid=$(basename "$process_dir")`,
-        String.raw`metadata=$(env LC_ALL=C TZ=UTC /bin/ps -p "$pid" -o ppid=,pgid=,lstart= 2>/dev/null) || continue`,
-        String.raw`set -- $metadata; [ "$#" -eq 7 ] || continue`,
+        `[ "$(stat -c %u "$process_dir" 2>/dev/null)" = "$current_uid" ] || continue`,
+        `process_name=$(cat "$process_dir/comm" 2>/dev/null) || continue; [ "$process_name" = ${quotedName} ] || continue`,
+        `pid=$(basename "$process_dir")`,
+        `metadata=$(env LC_ALL=C TZ=UTC /bin/ps -p "$pid" -o ppid=,pgid=,lstart= 2>/dev/null) || continue`,
+        `set -- $metadata; [ "$#" -eq 7 ] || continue`,
         String.raw`command_base64=$(base64 < "$process_dir/cmdline" 2>/dev/null | tr -d '\n') || continue`,
         String.raw`token_base64=$(tr '\0' '\n' < "$process_dir/environ" 2>/dev/null | sed -n ${launchTokenExpression} | head -n 1 | tr -d '\n' | base64 | tr -d '\n')`,
         String.raw`printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$pid" "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$command_base64" "$token_base64"`,
