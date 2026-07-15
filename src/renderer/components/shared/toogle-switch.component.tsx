@@ -5,6 +5,8 @@ import { useConstant } from "renderer/hooks/use-constant.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 
 type Props = {
+    ariaDescribedBy?: string;
+    ariaLabelledBy?: string;
     checked?: boolean;
     className?: string;
     classNames?: {
@@ -17,7 +19,7 @@ type Props = {
     onChange?: (isChecked: boolean) => void;
 }
 
-export function ToogleSwitch({ checked, className, classNames, bgColor, onChange }: Readonly<Props>) {
+export function ToogleSwitch({ ariaDescribedBy, ariaLabelledBy, checked, className, classNames, bgColor, onChange }: Readonly<Props>) {
 
     const uuid = useConstant(() => crypto.randomUUID());
     const { firstColor } = useThemeColor();
@@ -37,6 +39,8 @@ export function ToogleSwitch({ checked, className, classNames, bgColor, onChange
         <label className={cn("flex cursor-pointer select-none items-center h-8 w-14", className, classNames?.container)} htmlFor={uuid}>
             <div className='relative size-full rounded-full p-1 bg-neutral-500 transition-colors duration-200' style={{ backgroundColor: checked && backgroundColor }}>
                 <input
+                    aria-describedby={ariaDescribedBy}
+                    aria-labelledby={ariaLabelledBy}
                     id={uuid}
                     type='checkbox'
                     checked={checked}
@@ -44,7 +48,7 @@ export function ToogleSwitch({ checked, className, classNames, bgColor, onChange
                     className='sr-only peer'
                 />
                 <div
-                    className={cn("dot top-0 left-0 flex h-full aspect-square items-center justify-center rounded-full transition duration-200 peer-checked:translate-x-full", classNames?.dot)}
+                    className={cn("dot top-0 left-0 flex h-full aspect-square items-center justify-center rounded-full transition duration-200 peer-checked:translate-x-full peer-focus-visible:ring-2 peer-focus-visible:ring-blue-500 peer-focus-visible:ring-offset-2", classNames?.dot)}
                     style={{ backgroundColor:  dotColor }}
                 >
                     {checked && <span className="text-current" style={{ color: textColor }}>

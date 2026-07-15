@@ -6,7 +6,7 @@ import {
     // getProcessId,
 } from "main/helpers/os.helpers";
 
-import cp from "child_process";
+import cp from "node:child_process";
 import crypto from "crypto";
 import log from "electron-log";
 import { ifDescribe, ifIt } from "__tests__/utils";
@@ -248,4 +248,3 @@ ifDescribe(IS_LINUX)("Test os.helpers isProcessRunning", () => {
         expect(logSpy).toHaveBeenCalledTimes(0);
     })
 });
-

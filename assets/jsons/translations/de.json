@@ -343,6 +343,13 @@
                         "message": "Es ist ein Fehler aufgetreten, die Systemproxyeinstellungen können nicht geändert werden."
                     }
                 },
+                "close-bs-manager-on-launch": {
+                    "title": "BSManager beim Start von Beat Saber schließen",
+                    "description": "Schließt BSManager, nachdem ein sicher zugeordneter Beat-Saber-Prozess gestartet wurde.",
+                    "error-notification": {
+                        "message": "Die Einstellung zum Schließen beim Start konnte nicht geändert werden."
+                    }
+                },
                 "auto-update": {
                     "title": "Automatische Aktualisierung",
                     "description": "BSManager wird beim Start der Anwendung automatisch aktualisiert.",

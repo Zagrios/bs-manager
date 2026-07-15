@@ -343,6 +343,13 @@
                         "message": "Une erreur est survenue, impossible de modifier les paramètres du proxy système."
                     }
                 },
+                "close-bs-manager-on-launch": {
+                    "title": "Fermer BSManager au lancement de Beat Saber",
+                    "description": "Ferme BSManager après le démarrage d’un processus Beat Saber identifié de manière sûre.",
+                    "error-notification": {
+                        "message": "Impossible de modifier l'option de fermeture au lancement."
+                    }
+                },
                 "auto-update": {
                     "title": "Mise à jour automatique",
                     "description": "BSManager se mettra automatiquement à jour au lancement de l'application.",

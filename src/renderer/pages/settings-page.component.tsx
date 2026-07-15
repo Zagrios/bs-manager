@@ -49,6 +49,7 @@ import { AutoUpdaterService } from "renderer/services/auto-updater.service";
 import { OculusDownloaderService } from "renderer/services/bs-version-download/oculus-downloader.service";
 import { DISCORD_URL } from "shared/constants";
 import { AutoUpdate } from "shared/models/config";
+import { isCloseOnLaunchSupported } from "renderer/helpers/close-on-launch-setting.helper";
 
 export function SettingsPage() {
 
@@ -556,6 +557,7 @@ function AdvancedSettings() {
     const [useSymlink, setUseSymlink] = useState(false);
     const [useSystemProxy, setUseSystemProxy] = useState(false);
     const [autoUpdate, setAutoUpdate] = useState<AutoUpdate>(AutoUpdate.NEVER);
+    const [closeBsManagerOnLaunch, setCloseBsManagerOnLaunch] = useState(false);
 
 
     useEffect(() => {
@@ -565,6 +567,9 @@ function AdvancedSettings() {
             staticConfig.get("use-symlinks").then(useSymlinks => setUseSymlink(() => useSymlinks));
             staticConfig.get("use-system-proxy").then(useSystemProxy => setUseSystemProxy(() => useSystemProxy));
             staticConfig.get("auto-update").then(res => setAutoUpdate(() => res ?? AutoUpdate.ALWAYS));
+        }
+        if (isCloseOnLaunchSupported(window.electron.platform)) {
+            staticConfig.get("close-bs-manager-on-launch").then(closeOnLaunch => setCloseBsManagerOnLaunch(closeOnLaunch ?? false));
         }
     }, []);
 
@@ -665,6 +670,24 @@ function AdvancedSettings() {
         setAutoUpdate(() => newAutoUpdate);
     }
 
+    const onChangeCloseBsManagerOnLaunch = async (value: boolean) => {
+        if (!isCloseOnLaunchSupported(window.electron.platform) || value === closeBsManagerOnLaunch) {
+            return;
+        }
+
+        const { error } = await tryit(() => staticConfig.set("close-bs-manager-on-launch", value));
+
+        if (error) {
+            notification.notifyError({
+                title: "notifications.types.error",
+                desc: "pages.settings.advanced.close-bs-manager-on-launch.error-notification.message",
+            });
+            return;
+        }
+
+        setCloseBsManagerOnLaunch(value);
+    }
+
     const advancedItems: Item[] = [];
 
     if (window.electron.platform === "win32") {
@@ -673,6 +696,14 @@ function AdvancedSettings() {
             text: t.text("pages.settings.advanced.auto-update.title"),
             desc: t.text("pages.settings.advanced.auto-update.description"),
             onChange: onChangeAutoUpdate
+        });
+    }
+    if (isCloseOnLaunchSupported(window.electron.platform)) {
+        advancedItems.push({
+            checked: closeBsManagerOnLaunch,
+            text: t.text("pages.settings.advanced.close-bs-manager-on-launch.title"),
+            desc: t.text("pages.settings.advanced.close-bs-manager-on-launch.description"),
+            onChange: onChangeCloseBsManagerOnLaunch
         });
     }
 

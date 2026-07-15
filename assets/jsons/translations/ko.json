@@ -343,6 +343,13 @@
                         "message": "오류가 발생했습니다. 시스템 프록시 설정을 변경할 수 없습니다."
                     }
                 },
+                "close-bs-manager-on-launch": {
+                    "title": "Beat Saber 실행 시 BSManager 닫기",
+                    "description": "안전하게 식별된 Beat Saber 프로세스가 시작된 후 BSManager를 닫습니다.",
+                    "error-notification": {
+                        "message": "실행 시 닫기 설정을 변경할 수 없습니다."
+                    }
+                },
                 "auto-update": {
                     "title": "자동 업데이트",
                     "description": "애플리케이션을 실행할 때 BSManager가 자동으로 업데이트됩니다.",

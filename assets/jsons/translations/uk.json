@@ -343,6 +343,13 @@
                         "message": "Сталася помилка, неможливо змінити налаштування системного проксі."
                     }
                 },
+                "close-bs-manager-on-launch": {
+                    "title": "Закривати BSManager під час запуску Beat Saber",
+                    "description": "Закриває BSManager після запуску безпечно ідентифікованого процесу Beat Saber.",
+                    "error-notification": {
+                        "message": "Не вдалося змінити налаштування закриття під час запуску."
+                    }
+                },
                 "auto-update": {
                     "title": "Автоматичне оновлення (Avtomatychne onovlennya)",
                     "description": "BSManager автоматично оновлюватиметься, коли ви запустите програму.",

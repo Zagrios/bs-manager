@@ -343,6 +343,13 @@
                         "message": "An error occurred, unable to change system proxy settings."
                     }
                 },
+                "close-bs-manager-on-launch": {
+                    "title": "Close BSManager when Beat Saber launches",
+                    "description": "Closes BSManager once the Beat Saber window is ready.",
+                    "error-notification": {
+                        "message": "An error occurred, unable to change the close-on-launch setting."
+                    }
+                },
                 "auto-update": {
                     "title": "Auto Update",
                     "description": "BSManager will automatically update when you launch the application.",
