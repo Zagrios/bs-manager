@@ -1,5 +1,5 @@
-import cp from "child_process";
-import { readFile } from "fs/promises";
+import cp from "node:child_process";
+import { readFile } from "node:fs/promises";
 import log from "electron-log";
 import psList from "ps-list";
 import { IS_FLATPAK } from "main/constants";
@@ -7,6 +7,7 @@ import { getWindowsProcessesByName } from "./windows-powershell.helper";
 
 export const BSM_LAUNCH_TOKEN_ENV = "BSMANAGER_LAUNCH_TOKEN";
 const FLATPAK_HOST_PROCESS_LIST_TIMEOUT_MS = 5_000;
+const SHELL_SINGLE_QUOTE_ESCAPE = String.raw`'"'"'`;
 
 // Only applied if package as flatpak
 type FlatpakOptions = {
@@ -152,19 +153,20 @@ type LinuxProcessMetadata = {
 };
 
 async function getFlatpakHostProcessesByName(name: string): Promise<ProcessDetails[]> {
-    const quoteShellArgument = (value: string) => `'${value.replace(/'/g, `'"'"'`)}'`;
+    const quoteShellArgument = (value: string) => `'${value.replaceAll("'", SHELL_SINGLE_QUOTE_ESCAPE)}'`;
     const quotedName = quoteShellArgument(name);
+    const launchTokenExpression = quoteShellArgument(`s/^${BSM_LAUNCH_TOKEN_ENV}=//p`);
     const hostScript = [
         "current_uid=$(id -u)",
         "for process_dir in /proc/[0-9]*; do",
-        "[ \"$(stat -c %u \"$process_dir\" 2>/dev/null)\" = \"$current_uid\" ] || continue",
-        `process_name=$(cat \"$process_dir/comm\" 2>/dev/null) || continue; [ \"$process_name\" = ${quotedName} ] || continue`,
-        "pid=$(basename \"$process_dir\")",
-        "metadata=$(env LC_ALL=C TZ=UTC /bin/ps -p \"$pid\" -o ppid=,pgid=,lstart= 2>/dev/null) || continue",
-        "set -- $metadata; [ \"$#\" -eq 7 ] || continue",
-        "command_base64=$(base64 < \"$process_dir/cmdline\" 2>/dev/null | tr -d '\\n') || continue",
-        `token_base64=$(tr '\\0' '\\n' < \"$process_dir/environ\" 2>/dev/null | sed -n ${quoteShellArgument(`s/^${BSM_LAUNCH_TOKEN_ENV}=//p`)} | head -n 1 | tr -d '\\n' | base64 | tr -d '\\n')`,
-        "printf '%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\n' \"$pid\" \"$1\" \"$2\" \"$3\" \"$4\" \"$5\" \"$6\" \"$7\" \"$command_base64\" \"$token_base64\"",
+        String.raw`[ "$(stat -c %u "$process_dir" 2>/dev/null)" = "$current_uid" ] || continue`,
+        String.raw`process_name=$(cat "$process_dir/comm" 2>/dev/null) || continue; [ "$process_name" = ${quotedName} ] || continue`,
+        String.raw`pid=$(basename "$process_dir")`,
+        String.raw`metadata=$(env LC_ALL=C TZ=UTC /bin/ps -p "$pid" -o ppid=,pgid=,lstart= 2>/dev/null) || continue`,
+        String.raw`set -- $metadata; [ "$#" -eq 7 ] || continue`,
+        String.raw`command_base64=$(base64 < "$process_dir/cmdline" 2>/dev/null | tr -d '\n') || continue`,
+        String.raw`token_base64=$(tr '\0' '\n' < "$process_dir/environ" 2>/dev/null | sed -n ${launchTokenExpression} | head -n 1 | tr -d '\n' | base64 | tr -d '\n')`,
+        String.raw`printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$pid" "$1" "$2" "$3" "$4" "$5" "$6" "$7" "$command_base64" "$token_base64"`,
         "done",
     ].join("\n");
     const { stdout } = await bsmExec(`sh -c ${quoteShellArgument(hostScript)}`, {
@@ -217,12 +219,16 @@ async function getLinuxProcessMetadata(processIds: number[]): Promise<Map<number
         );
     });
     const metadata = new Map<number, LinuxProcessMetadata>();
+    const isUnsignedInteger = (value: string) => value.length > 0
+        && Array.from(value).every(character => character >= "0" && character <= "9");
     for (const line of stdout.split("\n")) {
-        const match = line.match(/^\s*(\d+)\s+(\d+)\s+(.+?)\s*$/);
-        if (!match) { continue; }
-        const processId = Number(match[1]);
-        const processGroupId = Number(match[2]);
-        const startTime = new Date(match[3]);
+        const fields = line.trim().split(/\s+/);
+        if (fields.length < 3) { continue; }
+        const [processIdField, processGroupIdField, ...startTimeFields] = fields;
+        if (!isUnsignedInteger(processIdField) || !isUnsignedInteger(processGroupIdField)) { continue; }
+        const processId = Number(processIdField);
+        const processGroupId = Number(processGroupIdField);
+        const startTime = new Date(startTimeFields.join(" "));
         if (Number.isSafeInteger(processId) && Number.isSafeInteger(processGroupId)
             && Number.isFinite(startTime.getTime())) {
             metadata.set(processId, { processGroupId, startTime });

@@ -1,7 +1,7 @@
 import { LaunchOption } from "shared/models/bs-launch";
 import { BSLocalVersionService } from "../bs-local-version.service";
-import { ChildProcess, SpawnOptions } from "child_process";
-import path from "path";
+import { ChildProcess, SpawnOptions } from "node:child_process";
+import path from "node:path";
 import log from "electron-log";
 import { LinuxService } from "../linux.service";
 import { BsmShellLog, bsmSpawn, BSM_LAUNCH_TOKEN_ENV, getProcessesByName, ProcessDetails } from "main/helpers/os.helpers";
@@ -10,7 +10,7 @@ import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { app } from "electron";
 import { StaticConfigurationService } from "main/services/static-configuration.service";
 import { abortableDelay } from "main/helpers/abortable-delay.helper";
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 
 const PROCESS_LIST_RETRY_ATTEMPTS = 3;
 const PROCESS_LIST_RETRY_INTERVAL_MS = 100;
@@ -160,6 +160,46 @@ export abstract class AbstractLauncherService {
         });
     }
 
+    private assertProcessOwnershipAcquisitionIsActive(signal?: AbortSignal): void {
+        if (signal?.aborted) {
+            throw new Error("Process ownership acquisition was cancelled");
+        }
+    }
+
+    private assertProcessEnumerationIsWithinDeadline(
+        enumerationStartedAt: number,
+        retryDeadline: number,
+        lastError?: unknown
+    ): void {
+        if (enumerationStartedAt >= retryDeadline) {
+            throw lastError ?? new Error("Process enumeration timed out");
+        }
+    }
+
+    private async waitBeforeProcessListRetry(
+        error: unknown,
+        attempt: number,
+        retryDeadline: number,
+        signal?: AbortSignal
+    ): Promise<void> {
+        if (signal?.aborted) {
+            throw error;
+        }
+
+        const remainingMs = retryDeadline - Date.now();
+        if (attempt + 1 >= PROCESS_LIST_RETRY_ATTEMPTS || remainingMs <= 0) {
+            return;
+        }
+
+        const retryDelayCompleted = await abortableDelay(
+            Math.min(PROCESS_LIST_RETRY_INTERVAL_MS, remainingMs),
+            signal
+        );
+        if (!retryDelayCompleted) {
+            throw error;
+        }
+    }
+
     protected async getProcessesWithRetry(
         name: string,
         signal?: AbortSignal,
@@ -169,13 +209,9 @@ export abstract class AbstractLauncherService {
         const retryDeadline = deadline ?? Date.now() + PROCESS_ENUMERATION_TIMEOUT_MS;
         let lastError: unknown;
         for (let attempt = 0; attempt < PROCESS_LIST_RETRY_ATTEMPTS; attempt++) {
-            if (signal?.aborted) {
-                throw new Error("Process ownership acquisition was cancelled");
-            }
+            this.assertProcessOwnershipAcquisitionIsActive(signal);
             const enumerationStartedAt = Date.now();
-            if (enumerationStartedAt >= retryDeadline) {
-                throw lastError ?? new Error("Process enumeration timed out");
-            }
+            this.assertProcessEnumerationIsWithinDeadline(enumerationStartedAt, retryDeadline, lastError);
             try {
                 const enumerationDeadline = Math.min(
                     retryDeadline,
@@ -184,19 +220,7 @@ export abstract class AbstractLauncherService {
                 return await this.waitForProcessList(getProcessesByName(name, launchToken), enumerationDeadline, signal);
             } catch (error) {
                 lastError = error;
-                if (signal?.aborted) {
-                    throw error;
-                }
-                const remainingMs = retryDeadline - Date.now();
-                if (attempt + 1 < PROCESS_LIST_RETRY_ATTEMPTS && remainingMs > 0) {
-                    const retryDelayCompleted = await abortableDelay(
-                        Math.min(PROCESS_LIST_RETRY_INTERVAL_MS, remainingMs),
-                        signal
-                    );
-                    if (!retryDelayCompleted) {
-                        throw error;
-                    }
-                }
+                await this.waitBeforeProcessListRetry(error, attempt, retryDeadline, signal);
             }
         }
         throw lastError ?? new Error("Could not enumerate processes");
@@ -290,6 +314,45 @@ export abstract class AbstractLauncherService {
         return candidates.length === 1 ? candidates[0] : undefined;
     }
 
+    private async waitForNextOwnedProcessAttempt(deadline: number, signal?: AbortSignal): Promise<boolean> {
+        const remainingMs = deadline - Date.now();
+        if (remainingMs <= 0 || signal?.aborted) {
+            return false;
+        }
+        return abortableDelay(Math.min(OWNED_PROCESS_FIND_INTERVAL_MS, remainingMs), signal);
+    }
+
+    private async waitAfterOwnedProcessEnumerationError(
+        error: unknown,
+        deadline: number,
+        signal?: AbortSignal
+    ): Promise<boolean> {
+        if (signal?.aborted) {
+            return false;
+        }
+        const remainingMs = deadline - Date.now();
+        if (remainingMs <= 0) {
+            throw error;
+        }
+        return abortableDelay(Math.min(OWNED_PROCESS_FIND_INTERVAL_MS, remainingMs), signal);
+    }
+
+    private toOwnedProcessIdentity(
+        ownedProcess: ProcessDetails | undefined,
+        deadline: number,
+        signal?: AbortSignal
+    ): OwnedProcessIdentity | undefined {
+        const startedAt = ownedProcess && this.getProcessStartedAt(ownedProcess);
+        if (!ownedProcess || !startedAt || signal?.aborted || Date.now() >= deadline) {
+            return undefined;
+        }
+        return {
+            pid: ownedProcess.pid,
+            startedAt,
+            ...(ownedProcess.startMarker ? { startMarker: ownedProcess.startMarker } : {}),
+        };
+    }
+
     protected async findOwnedProcess(
         existingProcessIds: Set<number>,
         executablePath: string,
@@ -308,14 +371,7 @@ export abstract class AbstractLauncherService {
             try {
                 processes = await this.getProcessesWithRetry(BS_EXECUTABLE, signal, deadline, launchToken);
             } catch (error) {
-                if (signal?.aborted) {
-                    return undefined;
-                }
-                const remainingMs = deadline - Date.now();
-                if (remainingMs <= 0) {
-                    throw error;
-                }
-                if (!(await abortableDelay(Math.min(OWNED_PROCESS_FIND_INTERVAL_MS, remainingMs), signal))) {
+                if (!(await this.waitAfterOwnedProcessEnumerationError(error, deadline, signal))) {
                     return undefined;
                 }
                 continue;
@@ -328,20 +384,12 @@ export abstract class AbstractLauncherService {
                 launcherProcessId,
                 launchToken
             );
-            const startedAt = ownedProcess && this.getProcessStartedAt(ownedProcess);
-            if (ownedProcess && startedAt && !signal?.aborted && Date.now() < deadline) {
-                return {
-                    pid: ownedProcess.pid,
-                    startedAt,
-                    ...(ownedProcess.startMarker ? { startMarker: ownedProcess.startMarker } : {}),
-                };
+            const ownedProcessIdentity = this.toOwnedProcessIdentity(ownedProcess, deadline, signal);
+            if (ownedProcessIdentity) {
+                return ownedProcessIdentity;
             }
 
-            const remainingMs = deadline - Date.now();
-            if (remainingMs <= 0 || signal?.aborted) {
-                return undefined;
-            }
-            if (!(await abortableDelay(Math.min(OWNED_PROCESS_FIND_INTERVAL_MS, remainingMs), signal))) {
+            if (!(await this.waitForNextOwnedProcessAttempt(deadline, signal))) {
                 return undefined;
             }
         } while (Date.now() < deadline);

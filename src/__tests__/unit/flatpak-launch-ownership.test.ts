@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { ChildProcess } from "child_process";
+import { ChildProcess } from "node:child_process";
 import { app } from "electron";
 import { bsmSpawn, getProcessesByName } from "main/helpers/os.helpers";
 import { AbstractLauncherService, LaunchBeatSaberOptions, ProcessOwnershipSnapshot } from "main/services/bs-launcher/abstract-launcher.service";

@@ -569,7 +569,7 @@ function AdvancedSettings() {
             staticConfig.get("auto-update").then(res => setAutoUpdate(() => res ?? AutoUpdate.ALWAYS));
         }
         if (isCloseOnLaunchSupported(window.electron.platform)) {
-            staticConfig.get("close-bs-manager-on-launch").then(closeOnLaunch => setCloseBsManagerOnLaunch(() => closeOnLaunch ?? false));
+            staticConfig.get("close-bs-manager-on-launch").then(closeOnLaunch => setCloseBsManagerOnLaunch(closeOnLaunch ?? false));
         }
     }, []);
 
@@ -685,7 +685,7 @@ function AdvancedSettings() {
             return;
         }
 
-        setCloseBsManagerOnLaunch(() => value);
+        setCloseBsManagerOnLaunch(value);
     }
 
     const advancedItems: Item[] = [];

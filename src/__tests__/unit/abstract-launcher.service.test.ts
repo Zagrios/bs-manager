@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
 import { AbstractLauncherService, LaunchBeatSaberOptions } from "main/services/bs-launcher/abstract-launcher.service";
 import { bsmSpawn, getProcessesByName } from "main/helpers/os.helpers";
-import { ChildProcess, execFile } from "child_process";
+import { ChildProcess, execFile } from "node:child_process";
 import { app } from "electron";
 import { StaticConfigurationService } from "main/services/static-configuration.service";
 
@@ -18,8 +18,8 @@ jest.mock("electron", () => {
     };
 });
 jest.mock("electron-log", () => ({ info: jest.fn(), error: jest.fn(), warn: jest.fn() }));
-jest.mock("child_process", () => ({
-    ...jest.requireActual("child_process"),
+jest.mock("node:child_process", () => ({
+    ...jest.requireActual("node:child_process"),
     execFile: jest.fn(),
 }));
 jest.mock("main/helpers/os.helpers", () => ({

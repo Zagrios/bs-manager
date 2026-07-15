@@ -1,5 +1,5 @@
-import path from "path";
-import { execFile } from "child_process";
+import path from "node:path";
+import { execFile } from "node:child_process";
 
 const WINDOWS_POWERSHELL_RELATIVE_PATH = [
     "System32",
@@ -45,7 +45,7 @@ export type WindowsProcessDetails = {
 export function getWindowsPowerShellPath(): string {
     const systemRoot = process.env.SystemRoot;
     const invalidRootCharacters = systemRoot && (/[<>:"|?*]/.test(systemRoot.slice(2))
-        || Array.from(systemRoot.slice(2)).some(character => character.charCodeAt(0) <= 0x1f));
+        || Array.from(systemRoot.slice(2)).some(character => character.codePointAt(0) <= 0x1f));
     if (!systemRoot || invalidRootCharacters || !/^[a-z]:[\\/]/i.test(systemRoot)) {
         throw new Error("SystemRoot must be a drive-qualified absolute Windows path");
     }

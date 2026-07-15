@@ -1,12 +1,12 @@
-import cp from "child_process";
+import cp from "node:child_process";
 import log from "electron-log";
 import psList from "ps-list";
 import { BsmShellLog, bsmSpawn, getProcessesByName } from "main/helpers/os.helpers";
 
 jest.mock("electron-log", () => ({ info: jest.fn(), error: jest.fn(), warn: jest.fn() }));
 jest.mock("main/constants", () => ({ IS_FLATPAK: true }));
-jest.mock("child_process", () => ({
-    ...jest.requireActual("child_process"),
+jest.mock("node:child_process", () => ({
+    ...jest.requireActual("node:child_process"),
     exec: jest.fn(),
     execFile: jest.fn(),
     spawn: jest.fn(),

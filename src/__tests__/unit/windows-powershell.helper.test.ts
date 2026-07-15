@@ -1,7 +1,7 @@
-import { execFile } from "child_process";
+import { execFile } from "node:child_process";
 import { getWindowsPowerShellPath, getWindowsProcessesByName } from "main/helpers/windows-powershell.helper";
 
-jest.mock("child_process", () => ({
+jest.mock("node:child_process", () => ({
     execFile: jest.fn(),
 }));
 

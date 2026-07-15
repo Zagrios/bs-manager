@@ -13,21 +13,16 @@ type Props = {
 };
 
 export function SettingToogleSwitchGrid({ items }: Readonly<Props>) {
-
-    const handleItemChange = (item: Item, state: boolean) => {
-        item.onChange?.(state);
-    };
-
     return (
         <div className="flex flex-col gap-1.5">
             {items.map((item) => (
-                <SettingToggleSwitchItem key={item.text} item={item} onChange={checked => handleItemChange(item, checked)}/>
+                <SettingToggleSwitchItem key={item.text} item={item}/>
             ))}
         </div>
     )
 }
 
-function SettingToggleSwitchItem({ item, onChange }: Readonly<{ item: Item; onChange: (checked: boolean) => void }>) {
+function SettingToggleSwitchItem({ item }: Readonly<{ item: Item }>) {
     const id = useId();
     const titleId = `${id}-title`;
     const descriptionId = `${id}-description`;
@@ -38,7 +33,7 @@ function SettingToggleSwitchItem({ item, onChange }: Readonly<{ item: Item; onCh
                 <h2 id={titleId} className="font-bold">{item.text}</h2>
                 <p id={descriptionId} className="text-sm text-gray-600 dark:text-gray-400">{item.desc}</p>
             </div>
-            <ToogleSwitch ariaLabelledBy={titleId} ariaDescribedBy={descriptionId} checked={item.checked} className="shrink-0 h-7 w-12" onChange={onChange}/>
+            <ToogleSwitch ariaLabelledBy={titleId} ariaDescribedBy={descriptionId} checked={item.checked} className="shrink-0 h-7 w-12" onChange={checked => item.onChange?.(checked)}/>
         </div>
     );
 }

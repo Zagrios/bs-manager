@@ -3,7 +3,7 @@ import { BSLaunchError, BSLaunchEvent, BSLaunchEventData, BSLaunchWarning, Launc
 import { StoreLauncherInterface } from "./store-launcher.interface";
 import { pathExists, removeSync, rename } from "fs-extra";
 import { SteamService } from "../steam.service";
-import path from "path";
+import path from "node:path";
 import { BS_APP_ID, BS_EXECUTABLE, STEAMVR_APP_ID } from "../../constants";
 import log from "electron-log";
 import {
@@ -15,11 +15,11 @@ import {
 } from "./abstract-launcher.service";
 import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
 import { UtilsService } from "../utils.service";
-import { spawn, ChildProcess, SpawnOptions } from "child_process";
+import { spawn, ChildProcess, SpawnOptions } from "node:child_process";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { app, Event } from "electron";
 import { parseLaunchOptions } from "main/helpers/launchOptions.helper";
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 import { buildWindowsPowerShellArgs, getWindowsPowerShellPath } from "main/helpers/windows-powershell.helper";
 
 const STEAM_VR_WATCHER_READY_TIMEOUT_MS = 5_000;
@@ -33,11 +33,25 @@ type SteamLaunchCompletion = {
     steamVrRestoreSafe: boolean;
 };
 
+function toLaunchError(error: unknown): Error {
+    if (error instanceof Error) {
+        return error;
+    }
+    if (typeof error !== "object" || error === null) {
+        return new Error(String(error));
+    }
+    try {
+        return new Error(JSON.stringify(error) ?? Object.prototype.toString.call(error));
+    } catch {
+        return new Error(Object.prototype.toString.call(error));
+    }
+}
+
 class SteamLaunchFailure extends Error {
     public readonly launchError: Error;
 
     constructor(error: unknown, public readonly steamVrRestoreSafe: boolean) {
-        const launchError = error instanceof Error ? error : new Error(String(error));
+        const launchError = toLaunchError(error);
         super(launchError.message);
         this.name = "SteamLaunchFailure";
         this.stack = launchError.stack;
@@ -56,12 +70,12 @@ function buildAdminElevationScript(helperExecutablePath: string, helperArguments
     const encode = (value: string) => Buffer.from(value, "utf8").toString("base64");
     const encodedArguments = encode(JSON.stringify(helperArguments));
 
-    return `$HelperExecutablePath = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${encode(helperExecutablePath)}'))
+    return String.raw`$HelperExecutablePath = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${encode(helperExecutablePath)}'))
 $HelperArgumentsJson = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${encodedArguments}'))
 $HelperArguments = @((ConvertFrom-Json -InputObject $HelperArgumentsJson))
 
 function ConvertTo-NativeArgument([AllowEmptyString()][string]$Value) {
-    if ($Value.Length -gt 0 -and $Value -notmatch '[\\s"]') {
+    if ($Value.Length -gt 0 -and $Value -notmatch '[\s"]') {
         return $Value
     }
 
@@ -74,19 +88,19 @@ function ConvertTo-NativeArgument([AllowEmptyString()][string]$Value) {
             continue
         }
         if ($character -eq [char]34) {
-            [void]$result.Append(('\\' * (($backslashCount * 2) + 1)))
+            [void]$result.Append(('\' * (($backslashCount * 2) + 1)))
             [void]$result.Append('"')
             $backslashCount = 0
             continue
         }
         if ($backslashCount -gt 0) {
-            [void]$result.Append(('\\' * $backslashCount))
+            [void]$result.Append(('\' * $backslashCount))
             $backslashCount = 0
         }
         [void]$result.Append($character)
     }
     if ($backslashCount -gt 0) {
-        [void]$result.Append(('\\' * ($backslashCount * 2)))
+        [void]$result.Append(('\' * ($backslashCount * 2)))
     }
     [void]$result.Append('"')
     return $result.ToString()
@@ -214,6 +228,19 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         this.util = UtilsService.getInstance();
     }
 
+    private createOwnershipCleanup(
+        ownershipLifecycle: AbortController,
+        getWillQuitHandler: () => (event: Event) => void
+    ): () => void {
+        let cleanedUp = false;
+        return () => {
+            if (cleanedUp) { return; }
+            cleanedUp = true;
+            ownershipLifecycle.abort();
+            app.removeListener("will-quit", getWillQuitHandler());
+        };
+    }
+
     private getSteamVRPath(): Promise<string> {
         return this.steam.getGameFolder(STEAMVR_APP_ID, "SteamVR");
     }
@@ -276,7 +303,8 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 }
             };
             const readHelperPid = (): number | undefined => {
-                const match = output.replaceAll("\0", "").match(new RegExp(`${ELEVATED_HELPER_PID_PREFIX}(\\d+)`));
+                const helperPidPattern = new RegExp(String.raw`${ELEVATED_HELPER_PID_PREFIX}(\d+)`);
+                const match = helperPidPattern.exec(output.replaceAll("\0", ""));
                 const helperPid = match && Number(match[1]);
                 return Number.isSafeInteger(helperPid) && (helperPid ?? 0) > 0
                     ? helperPid!
@@ -447,7 +475,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                         }
                         pollTimer = setTimeout(pollReady, Math.min(STEAM_VR_WATCHER_READY_POLL_INTERVAL_MS, remainingMs));
                     } catch (error) {
-                        settle(error instanceof Error ? error : new Error(String(error)));
+                        settle(toLaunchError(error));
                     } finally {
                         checking = false;
                     }
@@ -589,14 +617,8 @@ ${STEAM_VR_RESTORE_WATCHER_SCRIPT}`;
         let handoffPromise: Promise<void> | undefined;
         let quitCompletion: Promise<void> | undefined;
         let quitStarted = false;
-        let cleanedUp = false;
 
-        const cleanup = () => {
-            if (cleanedUp) { return; }
-            cleanedUp = true;
-            ownershipLifecycle.abort();
-            app.removeListener("will-quit", onWillQuitHandler);
-        };
+        const cleanup = this.createOwnershipCleanup(ownershipLifecycle, () => onWillQuitHandler);
         const unrefAdminProcess = () => {
             adminProcess.stdout?.destroy();
             if (!adminProcess.killed) {
@@ -746,14 +768,8 @@ ${STEAM_VR_RESTORE_WATCHER_SCRIPT}`;
         let handoffPromise: Promise<void> | undefined;
         let quitCompletion: Promise<void> | undefined;
         let quitStarted = false;
-        let cleanedUp = false;
 
-        const cleanup = () => {
-            if (cleanedUp) { return; }
-            cleanedUp = true;
-            ownershipLifecycle.abort();
-            app.removeListener("will-quit", onWillQuitHandler);
-        };
+        const cleanup = this.createOwnershipCleanup(ownershipLifecycle, () => onWillQuitHandler);
         const unrefWrapper = () => {
             if (!wrapperProcess.killed) {
                 wrapperProcess.unref();

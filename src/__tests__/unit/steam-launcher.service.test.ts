@@ -2,14 +2,14 @@ import { pathExists, removeSync } from "fs-extra";
 import { lastValueFrom } from "rxjs";
 import { SteamLauncherService } from "main/services/bs-launcher/steam-launcher.service";
 import { LaunchOption } from "shared/models/bs-launch";
-import { execFile, spawn } from "child_process";
+import { execFile, spawn } from "node:child_process";
 import { EventEmitter } from "events";
 import { bsmSpawn, getProcessesByName } from "main/helpers/os.helpers";
 import { app } from "electron";
 import path from "path";
 
-jest.mock("child_process", () => ({
-    ...jest.requireActual("child_process"),
+jest.mock("node:child_process", () => ({
+    ...jest.requireActual("node:child_process"),
     execFile: jest.fn(),
     spawn: jest.fn(),
 }));
