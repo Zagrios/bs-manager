@@ -66,6 +66,7 @@ export interface StaticConfigKeyValues {
     "disable-hadware-acceleration": boolean;
     "use-symlinks": boolean;
     "use-system-proxy": boolean;
+    "close-bs-manager-on-launch": boolean;
     "last-version-launched": BSVersion;
     "auto-update": AutoUpdate;
 
@@ -85,4 +86,3 @@ export type StaticConfigSetIpcRequest<K extends StaticConfigKeys> = {
     request: { key: K, value: StaticConfigKeyValues[K] };
     response: void;
 };
-

@@ -343,6 +343,13 @@
                         "message": "Nagkaroon ng error, hindi ma-bago ang setting ng system proxy."
                     }
                 },
+                "close-bs-manager-on-launch": {
+                    "title": "Isara ang BSManager kapag inilunsad ang Beat Saber",
+                    "description": "Isinasara ang BSManager matapos magsimula ang ligtas na natukoy na proseso ng Beat Saber.",
+                    "error-notification": {
+                        "message": "Hindi mabago ang setting para isara sa paglunsad."
+                    }
+                },
                 "auto-update": {
                     "title": "Awtomatikong Pag-update",
                     "description": "Ang BSManager ay awtomatikong mag-uupdate kapag binuksan mo ang aplikasyon.",
