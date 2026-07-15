@@ -41,7 +41,7 @@ export class BsOculusDownloaderService {
 
         const loginUrl = "https://secure.oculus.com";
         const redirectUrl = `${loginUrl}/my/profile`;
-        const window = await this.windows.openWindow(loginUrl, { frame: true, width: 650, height: 800 });
+        const window = await this.windows.openRemoteWindow(loginUrl, { frame: true, width: 650, height: 800 });
 
         let timout: NodeJS.Timeout;
 
