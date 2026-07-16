@@ -7,7 +7,7 @@ import { PersonIcon } from 'renderer/components/svgs/icons/person-icon.component
 import { useThemeColor } from 'renderer/hooks/use-theme-color.hook';
 import { NpsIcon } from 'renderer/components/svgs/icons/nps-icon.component';
 import { GlowEffect } from 'renderer/components/shared/glow-effect.component';
-import { memo, useState } from 'react';
+import { memo, MouseEvent, useEffect, useRef, useState } from 'react';
 import { SearchIcon } from 'renderer/components/svgs/icons/search-icon.component';
 import { BsmButton } from 'renderer/components/shared/bsm-button.component';
 import Tippy from '@tippyjs/react';
@@ -69,6 +69,7 @@ export const PlaylistItem = memo(({ title,
     const color = useThemeColor("first-color");
 
     const [hovered, setHovered] = useState(false);
+    const singleClickTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
     const selected = useObservable(() => selected$ ?? of(false), false, [selected$]);
     const isDownloading = useObservable(() => isDownloading$ ?? of(), false, [isDownloading$]);
     const isInQueue = useObservable(() => isInQueue$ ?? of(), false, [isInQueue$]);
@@ -78,6 +79,37 @@ export const PlaylistItem = memo(({ title,
     const minNpsText = minNps ? Math.round(minNps * 10) / 10 : 0;
     const maxNpsText = maxNps ? Math.round(maxNps * 10) / 10 : 0;
     const showNps = minNps !== undefined && maxNps !== undefined;
+
+    useEffect(() => () => {
+        if (singleClickTimeout.current) {
+            clearTimeout(singleClickTimeout.current);
+        }
+    }, []);
+
+    const handleContentClick = (event: MouseEvent<HTMLDivElement>) => {
+        event.stopPropagation();
+
+        if (!onClickOpen) {
+            onClick?.();
+            return;
+        }
+
+        if (event.detail === 1) {
+            singleClickTimeout.current = setTimeout(() => {
+                onClick?.();
+                singleClickTimeout.current = null;
+            }, 200);
+            return;
+        }
+
+        if (event.detail === 2) {
+            if (singleClickTimeout.current) {
+                clearTimeout(singleClickTimeout.current);
+                singleClickTimeout.current = null;
+            }
+            onClickOpen();
+        }
+    };
 
     const durationText = (() => {
         if (!duration) {
@@ -90,7 +122,7 @@ export const PlaylistItem = memo(({ title,
     return (
         <motion.li className='relative flex-grow basis-0 min-w-80 h-28 cursor-pointer group' onHoverStart={() => setHovered(() => true)} onHoverEnd={() => setHovered(() => false)}>
             <GlowEffect visible={selected || hovered}/>
-            <div className="size-full relative flex flex-row justify-start items-center overflow-hidden bg-black rounded-md *:z-[1]" onClick={e => {e.stopPropagation(); onClick?.()}}>
+            <div className="size-full relative flex flex-row justify-start items-center overflow-hidden bg-black rounded-md *:z-[1]" onClick={handleContentClick}>
                 <div className="absolute inset-0 flex justify-center items-center z-0">
                     <BsmImage className="size-full object-cover saturate-150 blur-lg" image={coverUrl} base64={coverBase64} />
                     <div className="absolute inset-0 bg-black opacity-20"/>

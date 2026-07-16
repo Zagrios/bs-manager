@@ -48,6 +48,7 @@ type Props = {
     linkedState?: FolderLinkState;
     isActive?: boolean;
     sort: LocalPlaylistSort;
+    onSelectionChange?: (count: number) => void;
 };
 
 export type LocalPlaylistsListRef = {
@@ -55,6 +56,7 @@ export type LocalPlaylistsListRef = {
     syncPlaylists: (playlists?: LocalBPList[]) => Promise<void>;
     deletePlaylists: () => Promise<void>;
     exportPlaylists: () => Promise<void>;
+    reloadPlaylists: () => Promise<void>;
 }
 
 export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(({
@@ -65,6 +67,7 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
     isActive,
     linkedState,
     sort: playlistSort,
+    onSelectionChange,
 }, forwardedRef) => {
 
     const t = useTranslation();
@@ -86,6 +89,11 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
     const [playlistsLoading, setPlaylistsLoading] = useState(false);
     const loadPercent$ = useConstant(() => new BehaviorSubject<number>(0));
     const linked = useStateMap(linkedState, (newState, precMapped) => (newState === FolderLinkState.Pending || newState === FolderLinkState.Processing) ? precMapped : newState === FolderLinkState.Linked, false);
+
+    const updateSelection = (selectedPlaylists: LocalBPList[]) => {
+        selectedPlaylists$.next(selectedPlaylists);
+        onSelectionChange?.(selectedPlaylists.length);
+    };
 
     const installPlaylist = (playlist: LocalBPList) => {
         const ignoreSongsHashs = (maps$.value || []).map(m => m.hash.toLowerCase());
@@ -174,6 +182,11 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
             const toDelete = selectedPlaylists$.value?.length ? selectedPlaylists$.value : playlists$.value;
             if(!toDelete.length){ return Promise.resolve(); }
             return deletePlaylists(toDelete);
+        },
+        reloadPlaylists: async () => {
+            updateSelection([]);
+            const loadedPlaylists = await loadLocalPlaylistsDetails();
+            setPlaylists(loadedPlaylists);
         }
     }))
 
@@ -188,7 +201,9 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
         return lastValueFrom(obs);
     }
 
-    useOnUpdate(() => selectedPlaylists$.next([]), [version]);
+    useOnUpdate(() => {
+        updateSelection([]);
+    }, [version]);
 
     useOnUpdate(() => {
 
@@ -379,11 +394,13 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
                 selected$={selectedPlaylists$.pipe(map(selected => selected.some(s => s.path === playlist.path)), distinctUntilChanged(equal))}
                 onClick={() => {
                     if(selectedPlaylists$.value.some(s => s.path === playlist.path)){
-                        selectedPlaylists$.next(selectedPlaylists$.value.filter(s => s.path !== playlist.path));
+                        const selectedPlaylists = selectedPlaylists$.value.filter(s => s.path !== playlist.path);
+                        updateSelection(selectedPlaylists);
                         return;
                     }
 
-                    selectedPlaylists$.next([...selectedPlaylists$.value, playlist]);
+                    const selectedPlaylists = [...selectedPlaylists$.value, playlist];
+                    updateSelection(selectedPlaylists);
                 }}
                 onClickOpen={() => openPlaylistDetails(playlist.path)}
                 onClickDelete={() => deletePlaylists([playlist])}

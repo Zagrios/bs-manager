@@ -28,9 +28,17 @@ type Props = {
     search?: string;
     active: boolean;
     downloadModels?: () => void;
+    onSelectionChange?: (count: number) => void;
 };
 
-export const ModelsGrid = forwardRef<unknown, Props>(({ className, version, type, search, active, downloadModels }, forwardRef) => {
+export type ModelsGridRef = {
+    getModels: () => BsmLocalModel[];
+    getSelectedModels: () => BsmLocalModel[];
+    reloadModels: () => void;
+    deleteSelectedModels: () => void;
+};
+
+export const ModelsGrid = forwardRef<ModelsGridRef, Props>(({ className, version, type, search, active, downloadModels, onSelectionChange }, forwardRef) => {
     const modelsManager = useService(ModelsManagerService);
     const modelsDownloader = useService(ModelsDownloaderService);
 
@@ -57,12 +65,15 @@ export const ModelsGrid = forwardRef<unknown, Props>(({ className, version, type
                 loadModels();
             },
             deleteSelectedModels: () => {
-                modelsManager.deleteModels(!modelsSelected?.length ? models : modelsSelected, version).then(deletedModels => {
+                const modelsToDelete = modelsSelected.length ? modelsSelected : (models ?? []);
+                if (!modelsToDelete.length) {
+                    return;
+                }
+                modelsManager.deleteModels(modelsToDelete, version).then(deletedModels => {
                     if (!deletedModels?.length) {
                         return;
                     }
-                    const newModels = models.filter(m => !deletedModels.some(d => d.hash === m.hash));
-                    setModels(() => newModels);
+                    setModels(currentModels => currentModels?.filter(m => !deletedModels.some(d => d.hash === m.hash)) ?? []);
                     setModelsSelected(() => []);
                 });
             },
@@ -71,6 +82,8 @@ export const ModelsGrid = forwardRef<unknown, Props>(({ className, version, type
     );
 
     useOnUpdate(() => setModelsSelected([]), [version]);
+
+    useOnUpdate(() => onSelectionChange?.(modelsSelected.length), [modelsSelected]);
 
     useOnUpdate(() => setRenderableModels(() => (
         models?.map(model => ({
@@ -128,6 +141,7 @@ export const ModelsGrid = forwardRef<unknown, Props>(({ className, version, type
 
     const loadModels = () => {
         const modelsObs$ = modelsManager.$getModels(type, version);
+        setModelsSelected(() => []);
         setModels(() => null);
         setModelsLoadObservable(() =>
             modelsObs$.pipe(

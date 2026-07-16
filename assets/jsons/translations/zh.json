@@ -1,5 +1,9 @@
 {
     "misc": {
+        "refresh": "\u5237\u65b0",
+        "refresh-maps": "\u5237\u65b0\u8c31\u9762",
+        "refresh-playlists": "\u5237\u65b0\u64ad\u653e\u5217\u8868",
+        "refresh-models": "\u5237\u65b0\u6a21\u578b",
         "download": "下载",
         "add": "添加",
         "verify": "验证",
@@ -212,6 +216,8 @@
                 "title": "Steam & Oculus",
                 "description": "登出后，您可以在下一次下载 Beat Saber 时切换帐户。",
                 "logout": "登出",
+                "session-active": "会话有效",
+                "session-inactive": "无有效会话",
                 "logout-success": "注销成功",
                 "download-platform": {
                     "title": "，默认平台",

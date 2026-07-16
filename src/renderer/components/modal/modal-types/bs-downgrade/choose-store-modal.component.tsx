@@ -7,12 +7,17 @@ import { useState } from "react";
 import tailwindConfig from "../../../../../../tailwind.config";
 import Color from "color";
 import { useNavigate } from "react-router-dom";
+import { BsmButton } from "renderer/components/shared/bsm-button.component";
+import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
+import { useService } from "renderer/hooks/use-service.hook";
+import { lastValueFrom } from "rxjs";
 
 export const ChooseStore: ModalComponent<BsStore> = ({ resolver }) => {
 
     const t = useTranslation();
 
     const navigate = useNavigate();
+    const versionManager = useService(BSVersionManagerService);
 
     const [oculusHover, setOculusHover] = useState(false);
     const [steamHover, setSteamHover] = useState(false);
@@ -24,6 +29,11 @@ export const ChooseStore: ModalComponent<BsStore> = ({ resolver }) => {
     const goToSettings = () => {
         resolver({ exitCode: ModalExitCode.CANCELED });
         navigate("/settings#choose-default-store");
+    }
+
+    const importVersion = () => {
+        resolver({ exitCode: ModalExitCode.CANCELED });
+        lastValueFrom(versionManager.importVersion()).catch(() => {});
     }
 
     const isDarkMode = document.documentElement.classList.contains("dark");
@@ -56,6 +66,16 @@ export const ChooseStore: ModalComponent<BsStore> = ({ resolver }) => {
                     <h2 className="font-bold">Steam</h2>
                 </div>
             </div>
+            <BsmButton
+                className="flex h-10 w-full items-center justify-center rounded-md border-2 border-main-color-3 text-center text-gray-800 transition-all dark:text-gray-200"
+                icon="download"
+                iconClassName="size-5 text-gray-800 dark:text-gray-200"
+                text="pages.available-versions.dropdown.import-version"
+                textClassName="ml-2"
+                color={bg.bright}
+                withBar={false}
+                onClick={importVersion}
+            />
             <p onClick={goToSettings} className="text-sm italic underline cursor-pointer text-center leading-3">{t("modals.choose-store.set-in-settings")}</p>
         </form>
     );

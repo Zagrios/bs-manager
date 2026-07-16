@@ -1,5 +1,9 @@
 {
     "misc": {
+        "refresh": "I-refresh",
+        "refresh-maps": "I-refresh ang mga mapa",
+        "refresh-playlists": "I-refresh ang mga playlist",
+        "refresh-models": "I-refresh ang mga modelo",
         "download": "I-download",
         "add": "Magdagdag",
         "verify": "I-verify",
@@ -212,6 +216,8 @@
                 "title": "Steam & Oculus",
                 "description": "Ang pag-log out ay magpapahintulot sa iyong magpalit ng account sa susunod na pag-download ng Beat Saber.",
                 "logout": "Mag-log out",
+                "session-active": "Aktibong session",
+                "session-inactive": "Walang aktibong session",
                 "logout-success": "Nakapag-logout na sa app",
                 "download-platform": {
                     "title": "Default na Platform",

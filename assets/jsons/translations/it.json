@@ -1,5 +1,9 @@
 {
     "misc": {
+        "refresh": "Aggiorna",
+        "refresh-maps": "Aggiorna mappe",
+        "refresh-playlists": "Aggiorna playlist",
+        "refresh-models": "Aggiorna modelli",
         "download": "Scarica",
         "add": "Aggiungi",
         "verify": "Verifica",
@@ -212,6 +216,8 @@
                 "title": "Steam e Oculus",
                 "description": "La disconnessione ti consentirà di cambiare account nel prossimo download di Beat Saber.",
                 "logout": "Disconnettiti",
+                "session-active": "Sessione attiva",
+                "session-inactive": "Nessuna sessione attiva",
                 "logout-success": "Disconnesso con successo",
                 "download-platform": {
                     "title": "Piattaforma di default",

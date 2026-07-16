@@ -81,6 +81,8 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
         ascending: true,
     });
     const [selectedSort, setSelectedSort] = useState<string>("name");
+    const [mapsSelectedCount, setMapsSelectedCount] = useState(0);
+    const [playlistsSelectedCount, setPlaylistsSelectedCount] = useState(0);
 
     const [sortOptions, setSortOptions] = useState<BsmSelectOption<string>[]>(
         () => mapSorter.getComparatorKeys().map(key => ({
@@ -239,16 +241,18 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
     const dropDownItems = ((): DropDownItem[] => {
         if (tabIndex === MAP_TAB) {
             return [
-                { icon: "export", text: "pages.version-viewer.maps.search-bar.dropdown.export-maps", onClick: () => mapsRef.current.exportMaps?.() },
-                { icon: "trash", text: "pages.version-viewer.maps.search-bar.dropdown.delete-maps", onClick: () => mapsRef.current.deleteMaps?.() },
+                { icon: "sync", text: t("misc.refresh-maps"), onClick: () => mapsRef.current.reloadMaps?.() },
+                { icon: "export", text: mapsSelectedCount ? `${t("playlist.export")} (${mapsSelectedCount})` : "pages.version-viewer.maps.search-bar.dropdown.export-maps", onClick: () => mapsRef.current.exportMaps?.() },
+                { icon: "trash", text: mapsSelectedCount ? `${t("misc.delete")} (${mapsSelectedCount})` : "pages.version-viewer.maps.search-bar.dropdown.delete-maps", onClick: () => mapsRef.current.deleteMaps?.() },
                 { icon: "clean", text: "pages.version-viewer.maps.search-bar.dropdown.delete-duplicate-maps", onClick: () => mapsRef.current.removeDuplicates?.() },
             ];
         }
 
         return [
-            { icon: "sync", text: t("playlist.synchronize-playlists"), onClick: () => playlistsRef?.current?.syncPlaylists?.() },
-            { icon: "export", text: t("playlist.export-playlists"), onClick: () => playlistsRef?.current?.exportPlaylists?.() },
-            { icon: "trash", text: t("playlist.delete-playlists"), onClick: () => playlistsRef?.current?.deletePlaylists?.() },
+            { icon: "sync", text: t("misc.refresh-playlists"), onClick: () => playlistsRef?.current?.reloadPlaylists?.() },
+            { icon: "sync", text: playlistsSelectedCount ? `${t("playlist.synchronize")} (${playlistsSelectedCount})` : t("playlist.synchronize-playlists"), onClick: () => playlistsRef?.current?.syncPlaylists?.() },
+            { icon: "export", text: playlistsSelectedCount ? `${t("playlist.export")} (${playlistsSelectedCount})` : t("playlist.export-playlists"), onClick: () => playlistsRef?.current?.exportPlaylists?.() },
+            { icon: "trash", text: playlistsSelectedCount ? `${t("misc.delete")} (${playlistsSelectedCount})` : t("playlist.delete-playlists"), onClick: () => playlistsRef?.current?.deletePlaylists?.() },
         ];
     })();
 
@@ -359,6 +363,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                             search={search}
                             linkedState={mapsLinkedState}
                             sort={mapSort}
+                            onSelectionChange={setMapsSelectedCount}
                         />
                     </Dropzone>
 
@@ -383,6 +388,7 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
                             filter={playlistFilter}
                             search={search}
                             sort={playlistSort}
+                            onSelectionChange={setPlaylistsSelectedCount}
                         />
                     </Dropzone>
 

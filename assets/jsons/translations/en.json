@@ -1,5 +1,9 @@
 {
     "misc": {
+        "refresh": "Refresh",
+        "refresh-maps": "Refresh maps",
+        "refresh-playlists": "Refresh playlists",
+        "refresh-models": "Refresh models",
         "download": "Download",
         "add": "Add",
         "verify": "Verify",
@@ -212,6 +216,8 @@
                 "title": "Steam & Oculus",
                 "description": "Logging out will allow you to switch accounts on the next Beat Saber download.",
                 "logout": "Log out",
+                "session-active": "Active session",
+                "session-inactive": "No active session",
                 "logout-success": "Logout Successful",
                 "download-platform": {
                     "title": "Default Platform",

@@ -33,15 +33,17 @@ type Props = {
     linkedState?: FolderLinkState;
     isActive?: boolean;
     sort: MapSort;
+    onSelectionChange?: (count: number) => void;
 };
 
 export type LocalMapsListPanelRef = {
     deleteMaps: () => void;
     exportMaps: () => void;
     removeDuplicates: () => void;
+    reloadMaps: () => void;
 }
 
-export const LocalMapsListPanel = forwardRef<unknown, Props>(({
+export const LocalMapsListPanel = forwardRef<LocalMapsListPanelRef, Props>(({
     version,
     className,
     filter,
@@ -49,6 +51,7 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({
     linkedState,
     isActive,
     sort,
+    onSelectionChange,
 }, forwardRef) => {
     const mapsManager = useService(MapsManagerService);
     const mapsDownloader = useService(MapsDownloaderService);
@@ -84,8 +87,13 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({
                 if(!res?.current){ return; }
                 loadMaps();
             }).catch(noop);
+        },
+        reloadMaps() {
+            loadMaps();
         }
     }),[selectedMaps, maps, version]);
+
+    useOnUpdate(() => onSelectionChange?.(selectedMaps.length), [selectedMaps]);
 
     useOnUpdate(() => {
         setRenderableMaps(() => maps?.map(map => ({ map, selected: selectedMaps.some(selectedMap => selectedMap.hash === map.hash) }) ));
@@ -136,6 +144,7 @@ export const LocalMapsListPanel = forwardRef<unknown, Props>(({
     }, [isActiveOnce, version])
 
     const loadMaps = () => {
+        setSelectedMaps([]);
         setMaps(null);
         loadPercent$.next(0);
 
