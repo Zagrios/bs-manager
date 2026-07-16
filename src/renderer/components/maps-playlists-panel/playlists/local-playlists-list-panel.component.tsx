@@ -48,6 +48,7 @@ type Props = {
     linkedState?: FolderLinkState;
     isActive?: boolean;
     sort: LocalPlaylistSort;
+    onSelectionChange?: (count: number) => void;
 };
 
 export type LocalPlaylistsListRef = {
@@ -55,6 +56,7 @@ export type LocalPlaylistsListRef = {
     syncPlaylists: (playlists?: LocalBPList[]) => Promise<void>;
     deletePlaylists: () => Promise<void>;
     exportPlaylists: () => Promise<void>;
+    reloadPlaylists: () => Promise<void>;
 }
 
 export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(({
@@ -65,6 +67,7 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
     isActive,
     linkedState,
     sort: playlistSort,
+    onSelectionChange,
 }, forwardedRef) => {
 
     const t = useTranslation();
@@ -174,6 +177,10 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
             const toDelete = selectedPlaylists$.value?.length ? selectedPlaylists$.value : playlists$.value;
             if(!toDelete.length){ return Promise.resolve(); }
             return deletePlaylists(toDelete);
+        },
+        reloadPlaylists: async () => {
+            const loadedPlaylists = await loadLocalPlaylistsDetails();
+            setPlaylists(loadedPlaylists);
         }
     }))
 
@@ -188,7 +195,10 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
         return lastValueFrom(obs);
     }
 
-    useOnUpdate(() => selectedPlaylists$.next([]), [version]);
+    useOnUpdate(() => {
+        selectedPlaylists$.next([]);
+        onSelectionChange?.(0);
+    }, [version]);
 
     useOnUpdate(() => {
 
@@ -379,11 +389,15 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
                 selected$={selectedPlaylists$.pipe(map(selected => selected.some(s => s.path === playlist.path)), distinctUntilChanged(equal))}
                 onClick={() => {
                     if(selectedPlaylists$.value.some(s => s.path === playlist.path)){
-                        selectedPlaylists$.next(selectedPlaylists$.value.filter(s => s.path !== playlist.path));
+                        const selectedPlaylists = selectedPlaylists$.value.filter(s => s.path !== playlist.path);
+                        selectedPlaylists$.next(selectedPlaylists);
+                        onSelectionChange?.(selectedPlaylists.length);
                         return;
                     }
 
-                    selectedPlaylists$.next([...selectedPlaylists$.value, playlist]);
+                    const selectedPlaylists = [...selectedPlaylists$.value, playlist];
+                    selectedPlaylists$.next(selectedPlaylists);
+                    onSelectionChange?.(selectedPlaylists.length);
                 }}
                 onClickOpen={() => openPlaylistDetails(playlist.path)}
                 onClickDelete={() => deletePlaylists([playlist])}

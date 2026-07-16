@@ -1,6 +1,6 @@
 import { BSVersion } from "shared/bs-version.interface";
 import { useRef, useState } from "react";
-import { ModelsGrid } from "./models-grid.component";
+import { ModelsGrid, ModelsGridRef } from "./models-grid.component";
 import { MSModelType } from "shared/models/models/model-saber.model";
 import { BsmDropdownButton, DropDownItem } from "../shared/bsm-dropdown-button.component";
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
@@ -33,11 +33,12 @@ export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersi
 
     const ref = useRef();
 
-    const modelsGridRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
+    const modelsGridRefs = [useRef<ModelsGridRef>(null), useRef<ModelsGridRef>(null), useRef<ModelsGridRef>(null), useRef<ModelsGridRef>(null)];
 
     const [modelTypeTab, setModelTypeTab] = useState<MSModelType>(MSModelType.Avatar);
     const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
     const [search, setSearch] = useState<string>("");
+    const [selectedModelsCount, setSelectedModelsCount] = useState(0);
 
     const modelsLinkStats = {
         [MSModelType.Avatar]: useObservable(() => version ? modelsManager.$modelsLinkingState(version, MSModelType.Avatar) : of(null), FolderLinkState.Unlinked, [version]),
@@ -83,14 +84,19 @@ export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersi
         activeTab.current?.deleteSelectedModels();
     };
 
+    const reloadModels = () => {
+        modelsGridRefs[currentTabIndex].current?.reloadModels();
+    };
+
     const openDownloadModal = () => {
         const allLoadedModels = modelsGridRefs.map(ref => ref.current?.getModels() as BsmLocalModel[]).flat();
         modelDownloader.openDownloadModelsModal(version, modelTypeTab, allLoadedModels);
     };
 
     const threeDotsItems: DropDownItem[] = [
-        { text: "models.panel.actions.drop-down.export", onClick: exportModels, icon: "export" },
-        { text: "models.panel.actions.drop-down.delete", onClick: deleteModels, icon: "trash" },
+        { text: t("misc.refresh-models"), onClick: reloadModels, icon: "sync" },
+        { text: selectedModelsCount ? `${t("models.panel.actions.drop-down.export")} (${selectedModelsCount})` : "models.panel.actions.drop-down.export", onClick: exportModels, icon: "export" },
+        { text: selectedModelsCount ? `${t("models.panel.actions.drop-down.delete")} (${selectedModelsCount})` : "models.panel.actions.drop-down.delete", onClick: deleteModels, icon: "trash" },
     ];
 
     const getModelTabProps = (model: MSModelType): BsContentTabItemProps => {
@@ -153,7 +159,10 @@ export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersi
             </div>
             <BsContentTabPanel
                 tabIndex={currentTabIndex}
-                onTabChange={(index) => setCurrentTabIndex(index)}
+                onTabChange={(index) => {
+                    setCurrentTabIndex(index);
+                    setSelectedModelsCount(0);
+                }}
                 tabs={[
                     getModelTabProps(MSModelType.Avatar),
                     getModelTabProps(MSModelType.Saber),
@@ -162,10 +171,10 @@ export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersi
                 ]}
             >
                 <>
-                    <ModelsGrid ref={modelsGridRefs[0]} version={version} type={MSModelType.Avatar} active={isActive && modelTypeTab === MSModelType.Avatar} search={search} downloadModels={openDownloadModal} />
-                    <ModelsGrid ref={modelsGridRefs[1]} version={version} type={MSModelType.Saber} active={isActive && modelTypeTab === MSModelType.Saber} search={search} downloadModels={openDownloadModal} />
-                    <ModelsGrid ref={modelsGridRefs[2]} version={version} type={MSModelType.Platfrom} active={isActive && modelTypeTab === MSModelType.Platfrom} search={search} downloadModels={openDownloadModal} />
-                    <ModelsGrid ref={modelsGridRefs[3]} version={version} type={MSModelType.Bloq} active={isActive && modelTypeTab === MSModelType.Bloq} search={search} downloadModels={openDownloadModal} />
+                    <ModelsGrid ref={modelsGridRefs[0]} version={version} type={MSModelType.Avatar} active={isActive && modelTypeTab === MSModelType.Avatar} search={search} downloadModels={openDownloadModal} onSelectionChange={setSelectedModelsCount} />
+                    <ModelsGrid ref={modelsGridRefs[1]} version={version} type={MSModelType.Saber} active={isActive && modelTypeTab === MSModelType.Saber} search={search} downloadModels={openDownloadModal} onSelectionChange={setSelectedModelsCount} />
+                    <ModelsGrid ref={modelsGridRefs[2]} version={version} type={MSModelType.Platfrom} active={isActive && modelTypeTab === MSModelType.Platfrom} search={search} downloadModels={openDownloadModal} onSelectionChange={setSelectedModelsCount} />
+                    <ModelsGrid ref={modelsGridRefs[3]} version={version} type={MSModelType.Bloq} active={isActive && modelTypeTab === MSModelType.Bloq} search={search} downloadModels={openDownloadModal} onSelectionChange={setSelectedModelsCount} />
                 </>
             </BsContentTabPanel>
         </div>

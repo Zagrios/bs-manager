@@ -1,5 +1,9 @@
 {
     "misc": {
+        "refresh": "I-refresh",
+        "refresh-maps": "I-refresh ang mga mapa",
+        "refresh-playlists": "I-refresh ang mga playlist",
+        "refresh-models": "I-refresh ang mga modelo",
         "download": "I-download",
         "add": "Magdagdag",
         "verify": "I-verify",

@@ -28,9 +28,17 @@ type Props = {
     search?: string;
     active: boolean;
     downloadModels?: () => void;
+    onSelectionChange?: (count: number) => void;
 };
 
-export const ModelsGrid = forwardRef<unknown, Props>(({ className, version, type, search, active, downloadModels }, forwardRef) => {
+export type ModelsGridRef = {
+    getModels: () => BsmLocalModel[];
+    getSelectedModels: () => BsmLocalModel[];
+    reloadModels: () => void;
+    deleteSelectedModels: () => void;
+};
+
+export const ModelsGrid = forwardRef<ModelsGridRef, Props>(({ className, version, type, search, active, downloadModels, onSelectionChange }, forwardRef) => {
     const modelsManager = useService(ModelsManagerService);
     const modelsDownloader = useService(ModelsDownloaderService);
 
@@ -71,6 +79,8 @@ export const ModelsGrid = forwardRef<unknown, Props>(({ className, version, type
     );
 
     useOnUpdate(() => setModelsSelected([]), [version]);
+
+    useOnUpdate(() => onSelectionChange?.(modelsSelected.length), [modelsSelected]);
 
     useOnUpdate(() => setRenderableModels(() => (
         models?.map(model => ({

@@ -62,11 +62,11 @@ export function AvailableVersionsList() {
         }
     }, [config, versionManager, modals, bsDownloader]);
 
-    const contextValue = useMemo(() => ({ startDownload, downloading: downloadUnavailable }), [downloadUnavailable, startDownload]);
-
     const importVersion = () => {
         return lastValueFrom(versionManager.importVersion()).catch(() => {});
     };
+
+    const contextValue = useMemo(() => ({ startDownload, downloading: downloadUnavailable }), [downloadUnavailable, startDownload]);
 
     const refreshVersions = () => {
         return Promise.all([

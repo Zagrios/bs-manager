@@ -1,5 +1,9 @@
 {
     "misc": {
+        "refresh": "Actualizar",
+        "refresh-maps": "Actualizar los mapas",
+        "refresh-playlists": "Actualizar las listas de reproducción",
+        "refresh-models": "Actualizar los modelos",
         "download": "Descargar",
         "add": "Añadir",
         "verify": "Verificar",

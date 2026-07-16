@@ -1,5 +1,9 @@
 {
     "misc": {
+        "refresh": "\\u91cd\\u65b0\\u6574\\u7406",
+        "refresh-maps": "\\u91cd\\u65b0\\u6574\\u7406\\u8b5c\\u9762",
+        "refresh-playlists": "\\u91cd\\u65b0\\u6574\\u7406\\u64ad\\u653e\\u6e05\\u55ae",
+        "refresh-models": "\\u91cd\\u65b0\\u6574\\u7406\\u6a21\\u578b",
         "download": "下載",
         "add": "新增",
         "verify": "驗證",

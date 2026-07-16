@@ -1,5 +1,9 @@
 {
     "misc": {
+        "refresh": "\\uc0c8\\ub85c\\uace0\\uce68",
+        "refresh-maps": "\\ub9f5 \\uc0c8\\ub85c\\uace0\\uce68",
+        "refresh-playlists": "\\ud50c\\ub808\\uc774\\ub9ac\\uc2a4\\ud2b8 \\uc0c8\\ub85c\\uace0\\uce68",
+        "refresh-models": "\\ubaa8\\ub378 \\uc0c8\\ub85c\\uace0\\uce68",
         "download": "다운로드",
         "add": "추가",
         "verify": "인증",

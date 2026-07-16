@@ -1,5 +1,9 @@
 {
     "misc": {
+        "refresh": "Refresh",
+        "refresh-maps": "Refresh maps",
+        "refresh-playlists": "Refresh playlists",
+        "refresh-models": "Refresh models",
         "download": "Download",
         "add": "Add",
         "verify": "Verify",
