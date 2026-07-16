@@ -123,4 +123,3 @@ export interface ModMetadata {
     };
     misc?: Record<string, string>;
 }
-

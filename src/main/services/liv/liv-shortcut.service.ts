@@ -40,8 +40,8 @@ export class LivShortcut {
                     const clearedLaunchOptions = (await this.clearLivShortcuts().catch(() => [] as LivEntry[]))?.map(entry => {
                         return tryit(() => this.launcher.shortcutLinkToLaunchOptions(entry.arguments)).result;
                     });
-                    
-                    versions.forEach(version => this.createLivShortcut({ 
+
+                    versions.forEach(version => this.createLivShortcut({
                         ...(clearedLaunchOptions?.find(launchOpt => launchOpt.version.ino === version.ino) ?? {}),
                         version
                     }));
@@ -79,7 +79,7 @@ export class LivShortcut {
     }
 
     private createLivShortcut(launchOptions: LaunchOption): Promise<void>{
-        return this.buildLivEntry(launchOptions).then(entry => this.liv.createLivShortcut(entry)); 
+        return this.buildLivEntry(launchOptions).then(entry => this.liv.createLivShortcut(entry));
     }
 
     private async clearLivShortcuts(): Promise<LivEntry[]>{

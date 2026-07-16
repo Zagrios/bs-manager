@@ -22,7 +22,7 @@ export function buildUrl({
   }): URL {
     const url = new URL(`${protocol}://${host}${path}`);
     url.hash = hash;
-  
+
     for (const [key, value] of Object.entries(search)) {
       if (Array.isArray(value)) {
         value.forEach(v => url.searchParams.append(key, v));
@@ -30,6 +30,6 @@ export function buildUrl({
         url.searchParams.append(key, value);
       }
     }
-  
+
     return url;
   }

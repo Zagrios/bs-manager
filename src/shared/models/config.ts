@@ -5,4 +5,3 @@ export enum AutoUpdate {
     ONCE = "once",
     NEVER = "never",
 }
-

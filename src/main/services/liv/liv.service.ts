@@ -97,4 +97,3 @@ export interface LivEntry {
     executable: string,
     arguments: string
 }
-

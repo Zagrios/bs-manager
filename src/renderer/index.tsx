@@ -69,5 +69,3 @@ export function addFilterStringLog(str: string){
 export function addFilterPatternLog(pattern: string){
     ipc.sendLazy("add-filter-pattern", { args: pattern });
 }
-
-

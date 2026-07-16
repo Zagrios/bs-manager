@@ -59,4 +59,3 @@ describe("Test mods.helpers.test", () => {
     });
 
 });
-

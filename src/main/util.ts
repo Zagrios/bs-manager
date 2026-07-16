@@ -12,5 +12,3 @@ export function resolveHtmlPath (htmlFileName: string) {
     const filePath = path.resolve(__dirname, "..", "renderer");
     return pathToFileURL(filePath).toString().concat("/", htmlFileName);
 };
-
-

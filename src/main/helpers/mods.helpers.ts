@@ -54,4 +54,3 @@ export async function parseMetadata(filepath: string): Promise<ModMetadata | nul
 
     return JSON.parse(data.toString(undefined, start, end)) as ModMetadata;
 }
-

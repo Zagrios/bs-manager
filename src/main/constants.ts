@@ -20,4 +20,3 @@ export const HTTP_STATUS_CODES = constants;
 // Linux related stuff
 
 export const IS_FLATPAK = process.env.container === "flatpak";
-

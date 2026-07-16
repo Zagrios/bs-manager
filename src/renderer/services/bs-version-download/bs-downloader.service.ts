@@ -21,7 +21,7 @@ export class BsDownloaderService extends AbstractBsDownloaderService {
 
         return BsDownloaderService.instance;
     }
-    
+
     private readonly config: ConfigurationService;
     private readonly modals: ModalService;
     private readonly steamDownloader: SteamDownloaderService;
@@ -56,7 +56,7 @@ export class BsDownloaderService extends AbstractBsDownloaderService {
     }
 
     public get defaultStore(): BsStore | undefined { return this.config.get<BsStore>(this.SELECTED_STORE_TO_DOWNLOAD_KEY); }
-    public get defaultStore$(): Observable<BsStore | undefined> { return this.config.watch(this.SELECTED_STORE_TO_DOWNLOAD_KEY); } 
+    public get defaultStore$(): Observable<BsStore | undefined> { return this.config.watch(this.SELECTED_STORE_TO_DOWNLOAD_KEY); }
 
     public setDefaultStore(store: BsStore|undefined): void {
         this.config.set(this.SELECTED_STORE_TO_DOWNLOAD_KEY, store);
