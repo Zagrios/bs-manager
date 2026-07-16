@@ -325,10 +325,10 @@ export function SettingsPage() {
                                         <h3 className="font-bold">Steam</h3>
                                         <span className={`size-2 rounded-full ${hasSteamSession ? "bg-green-500 shadow-[0_0_8px_rgb(34_197_94)]" : "bg-gray-400"}`} />
                                     </div>
-                                    <p className="text-xs text-gray-600 dark:text-gray-300">{hasSteamSession ? "Session active" : "Aucune session active"}</p>
+                                    <p className="text-xs text-gray-600 dark:text-gray-300">{t(hasSteamSession ? "pages.settings.steam-and-oculus.session-active" : "pages.settings.steam-and-oculus.session-inactive")}</p>
                                 </div>
                             </div>
-                            <BsmButton onClick={clearSteamSession} className="relative mt-3 flex h-8 w-full items-center justify-center rounded-md px-3 text-sm font-semibold text-white" withBar={false} text="Déconnexion" typeColor="error" disabled={!hasSteamSession}/>
+                            <BsmButton onClick={clearSteamSession} className="relative mt-3 flex h-8 w-full items-center justify-center rounded-md px-3 text-sm font-semibold text-white" withBar={false} text="pages.settings.steam-and-oculus.logout" typeColor="error" disabled={!hasSteamSession}/>
                         </div>
                         <div className={`relative overflow-hidden rounded-lg border p-3 transition-all ${hasOculusSession ? "border-main-color-1/50 bg-light-main-color-1/80 shadow-sm dark:bg-main-color-1/80" : "border-gray-300/70 bg-gray-100/70 opacity-70 dark:border-gray-600/70 dark:bg-main-color-2/50"}`}>
                             <div className="absolute -right-5 -top-5 size-20 rounded-full bg-main-color-1/10" />
@@ -339,10 +339,10 @@ export function SettingsPage() {
                                         <h3 className="font-bold">Oculus</h3>
                                         <span className={`size-2 rounded-full ${hasOculusSession ? "bg-green-500 shadow-[0_0_8px_rgb(34_197_94)]" : "bg-gray-400"}`} />
                                     </div>
-                                    <p className="text-xs text-gray-600 dark:text-gray-300">{hasOculusSession ? "Session active" : "Aucune session active"}</p>
+                                    <p className="text-xs text-gray-600 dark:text-gray-300">{t(hasOculusSession ? "pages.settings.steam-and-oculus.session-active" : "pages.settings.steam-and-oculus.session-inactive")}</p>
                                 </div>
                             </div>
-                            <BsmButton onClick={clearOculusSession} className="relative mt-3 flex h-8 w-full items-center justify-center rounded-md px-3 text-sm font-semibold text-white" withBar={false} text="Déconnexion" typeColor="error" disabled={!hasOculusSession}/>
+                            <BsmButton onClick={clearOculusSession} className="relative mt-3 flex h-8 w-full items-center justify-center rounded-md px-3 text-sm font-semibold text-white" withBar={false} text="pages.settings.steam-and-oculus.logout" typeColor="error" disabled={!hasOculusSession}/>
                         </div>
                     </div>
 

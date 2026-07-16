@@ -72,13 +72,14 @@ export class BsDownloaderService extends AbstractBsDownloaderService {
         return res.data;
     }
 
-    public async downloadVersion(version: BSVersion, from?: BsStore): Promise<BSVersion> {
+    public async downloadVersion(version: BSVersion, from?: BsStore): Promise<BSVersion | undefined> {
+        const store = from ?? this.defaultStore ?? await this.chooseStoreToDownloadFrom();
 
-        if(!from){
-            from = this.defaultStore ?? await this.chooseStoreToDownloadFrom();
+        if(!store){
+            return undefined;
         }
 
-        return this.getStoreDownloader(from).downloadBsVersion(version).then(() => {
+        return this.getStoreDownloader(store).downloadBsVersion(version).then(() => {
             return this.downloadingVersion;
         }).finally(() => {
             this.resetDownloadState();

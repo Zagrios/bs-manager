@@ -1,9 +1,9 @@
 {
     "misc": {
-        "refresh": "\\u66f4\\u65b0",
-        "refresh-maps": "\\u30de\\u30c3\\u30d7\\u3092\\u66f4\\u65b0",
-        "refresh-playlists": "\\u30d7\\u30ec\\u30a4\\u30ea\\u30b9\\u30c8\\u3092\\u66f4\\u65b0",
-        "refresh-models": "\\u30e2\\u30c7\\u30eb\\u3092\\u66f4\\u65b0",
+        "refresh": "\u66f4\u65b0",
+        "refresh-maps": "\u30de\u30c3\u30d7\u3092\u66f4\u65b0",
+        "refresh-playlists": "\u30d7\u30ec\u30a4\u30ea\u30b9\u30c8\u3092\u66f4\u65b0",
+        "refresh-models": "\u30e2\u30c7\u30eb\u3092\u66f4\u65b0",
         "download": "ダウンロード",
         "add": "追加　",
         "verify": "認証済み",
@@ -218,6 +218,8 @@
                 "title": "Steam & Oculus",
                 "description": "ログアウトすると、次のBeat Saberダウンロード時にアカウントを切り替えることができます。",
                 "logout": "ログアウト",
+                "session-active": "アクティブなセッション",
+                "session-inactive": "アクティブなセッションはありません",
                 "logout-success": "ログアウト成功",
                 "download-platform": {
                     "title": "デフォルトプラットフォーム",

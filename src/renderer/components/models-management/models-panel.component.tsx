@@ -4,7 +4,6 @@ import { ModelsGrid, ModelsGridRef } from "./models-grid.component";
 import { MSModelType } from "shared/models/models/model-saber.model";
 import { BsmDropdownButton, DropDownItem } from "../shared/bsm-dropdown-button.component";
 import { ModelsManagerService } from "renderer/services/models-management/models-manager.service";
-import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
 import { BsmButton } from "../shared/bsm-button.component";
 import { useService } from "renderer/hooks/use-service.hook";
 import { ModelsDownloaderService } from "renderer/services/models-management/models-downloader.service";
@@ -38,7 +37,10 @@ export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersi
     const [modelTypeTab, setModelTypeTab] = useState<MSModelType>(MSModelType.Avatar);
     const [currentTabIndex, setCurrentTabIndex] = useState<number>(0);
     const [search, setSearch] = useState<string>("");
-    const [selectedModelsCount, setSelectedModelsCount] = useState(0);
+    const [selectedModelsCounts, setSelectedModelsCounts] = useState([0, 0, 0, 0]);
+
+    const selectedModelsCount = selectedModelsCounts.reduce((total, count) => total + count, 0);
+    const activeSelectedModelsCount = selectedModelsCounts[currentTabIndex];
 
     const modelsLinkStats = {
         [MSModelType.Avatar]: useObservable(() => version ? modelsManager.$modelsLinkingState(version, MSModelType.Avatar) : of(null), FolderLinkState.Unlinked, [version]),
@@ -75,7 +77,7 @@ export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersi
     }, [isActive]);
 
     const exportModels = () => {
-        const selectedModels = modelsGridRefs.map(ref => ref.current?.getSelectedModels() as BsmLocalModel[]).flat();
+        const selectedModels = modelsGridRefs.flatMap(ref => ref.current?.getSelectedModels() ?? []);
         modelsManager.exportModels(selectedModels, version);
     };
 
@@ -88,15 +90,19 @@ export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersi
         modelsGridRefs[currentTabIndex].current?.reloadModels();
     };
 
+    const updateSelectedModelsCount = (index: number, count: number) => {
+        setSelectedModelsCounts(currentCounts => currentCounts.map((currentCount, currentIndex) => currentIndex === index ? count : currentCount));
+    };
+
     const openDownloadModal = () => {
-        const allLoadedModels = modelsGridRefs.map(ref => ref.current?.getModels() as BsmLocalModel[]).flat();
+        const allLoadedModels = modelsGridRefs.flatMap(ref => ref.current?.getModels() ?? []);
         modelDownloader.openDownloadModelsModal(version, modelTypeTab, allLoadedModels);
     };
 
     const threeDotsItems: DropDownItem[] = [
         { text: t("misc.refresh-models"), onClick: reloadModels, icon: "sync" },
         { text: selectedModelsCount ? `${t("models.panel.actions.drop-down.export")} (${selectedModelsCount})` : "models.panel.actions.drop-down.export", onClick: exportModels, icon: "export" },
-        { text: selectedModelsCount ? `${t("models.panel.actions.drop-down.delete")} (${selectedModelsCount})` : "models.panel.actions.drop-down.delete", onClick: deleteModels, icon: "trash" },
+        { text: activeSelectedModelsCount ? `${t("models.panel.actions.drop-down.delete")} (${activeSelectedModelsCount})` : "models.panel.actions.drop-down.delete", onClick: deleteModels, icon: "trash" },
     ];
 
     const getModelTabProps = (model: MSModelType): BsContentTabItemProps => {
@@ -159,10 +165,7 @@ export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersi
             </div>
             <BsContentTabPanel
                 tabIndex={currentTabIndex}
-                onTabChange={(index) => {
-                    setCurrentTabIndex(index);
-                    setSelectedModelsCount(0);
-                }}
+                onTabChange={setCurrentTabIndex}
                 tabs={[
                     getModelTabProps(MSModelType.Avatar),
                     getModelTabProps(MSModelType.Saber),
@@ -171,10 +174,10 @@ export function ModelsPanel({ version, isActive, goToMods }: { version?: BSVersi
                 ]}
             >
                 <>
-                    <ModelsGrid ref={modelsGridRefs[0]} version={version} type={MSModelType.Avatar} active={isActive && modelTypeTab === MSModelType.Avatar} search={search} downloadModels={openDownloadModal} onSelectionChange={setSelectedModelsCount} />
-                    <ModelsGrid ref={modelsGridRefs[1]} version={version} type={MSModelType.Saber} active={isActive && modelTypeTab === MSModelType.Saber} search={search} downloadModels={openDownloadModal} onSelectionChange={setSelectedModelsCount} />
-                    <ModelsGrid ref={modelsGridRefs[2]} version={version} type={MSModelType.Platfrom} active={isActive && modelTypeTab === MSModelType.Platfrom} search={search} downloadModels={openDownloadModal} onSelectionChange={setSelectedModelsCount} />
-                    <ModelsGrid ref={modelsGridRefs[3]} version={version} type={MSModelType.Bloq} active={isActive && modelTypeTab === MSModelType.Bloq} search={search} downloadModels={openDownloadModal} onSelectionChange={setSelectedModelsCount} />
+                    <ModelsGrid ref={modelsGridRefs[0]} version={version} type={MSModelType.Avatar} active={isActive && modelTypeTab === MSModelType.Avatar} search={search} downloadModels={openDownloadModal} onSelectionChange={count => updateSelectedModelsCount(0, count)} />
+                    <ModelsGrid ref={modelsGridRefs[1]} version={version} type={MSModelType.Saber} active={isActive && modelTypeTab === MSModelType.Saber} search={search} downloadModels={openDownloadModal} onSelectionChange={count => updateSelectedModelsCount(1, count)} />
+                    <ModelsGrid ref={modelsGridRefs[2]} version={version} type={MSModelType.Platfrom} active={isActive && modelTypeTab === MSModelType.Platfrom} search={search} downloadModels={openDownloadModal} onSelectionChange={count => updateSelectedModelsCount(2, count)} />
+                    <ModelsGrid ref={modelsGridRefs[3]} version={version} type={MSModelType.Bloq} active={isActive && modelTypeTab === MSModelType.Bloq} search={search} downloadModels={openDownloadModal} onSelectionChange={count => updateSelectedModelsCount(3, count)} />
                 </>
             </BsContentTabPanel>
         </div>

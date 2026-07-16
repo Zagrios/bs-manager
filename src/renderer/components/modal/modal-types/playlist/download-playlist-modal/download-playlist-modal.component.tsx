@@ -1,5 +1,5 @@
 import { useObservable } from "renderer/hooks/use-observable.hook"
-import { ModalComponent } from "renderer/services/modale.service"
+import { ModalComponent, ModalService } from "renderer/services/modale.service"
 import { Observable, lastValueFrom } from "rxjs"
 import { BSVersion } from "shared/bs-version.interface"
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface"
@@ -13,6 +13,7 @@ import { BeatSaverService } from "renderer/services/thrird-partys/beat-saver.ser
 import { PlaylistItem } from "renderer/components/maps-playlists-panel/playlists/playlist-item.component"
 import { PlaylistItemComponentPropsMapper } from "shared/mappers/playlist/playlist-item-component-props.mapper"
 import { PlaylistDownloaderService } from "renderer/services/playlist-downloader.service"
+import { BsvPlaylistDetailsModal } from "../playlist-details-modal/bsv-playlist-details-modal.component"
 import { BsmImage } from "renderer/components/shared/bsm-image.component"
 import BeatWaiting from "../../../../../../../assets/images/apngs/beat-waiting.png"
 import BeatConflict from "../../../../../../../assets/images/apngs/beat-conflict.png"
@@ -29,6 +30,7 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
 
     const beatSaver = useService(BeatSaverService);
     const config = useService(ConfigurationService);
+    const modal = useService(ModalService);
     const playlistDownloader = useService(PlaylistDownloaderService);
 
     const [playlists, setPlaylists] = useState<BsvPlaylist[]>(null);
@@ -67,6 +69,10 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
         setSearchParams(() => ({ ...value, page: 0}));
     };
 
+    const openPlaylist = (playlist: BsvPlaylist) => {
+        modal.openModal(BsvPlaylistDetailsModal, { data: { playlist, version, installedMaps$: ownedMaps$ }, noStyle: true })
+    };
+
     const loadMorePlaylists = () => {
         if(loading){ return; }
         setSearchParams(prev => ({ ...prev, page: prev.page + 1 }));
@@ -90,7 +96,7 @@ export const DownloadPlaylistModal: ModalComponent<void, {version: BSVersion, ow
                 {...PlaylistItemComponentPropsMapper.fromBsvPlaylist(playlist)}
                 isDownloading$={playlistDownloader.$isPlaylistDownloading(playlist.downloadURL, version)}
                 isInQueue$={playlistDownloader.$isPlaylistInQueue(playlist.downloadURL, version)}
-                onClickOpen={downloadablePlaylists.isOwned ? undefined : onClickDownload}
+                onClickOpen={() => openPlaylist(playlist)}
                 onClickDownload={downloadablePlaylists.isOwned ? null : onClickDownload}
                 onClickSync={downloadablePlaylists.isOwned ? onClickDownload : null}
                 onClickCancelDownload={() => playlistDownloader.cancelDownload(playlist.downloadURL, version)}

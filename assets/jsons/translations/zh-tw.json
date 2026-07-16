@@ -1,9 +1,9 @@
 {
     "misc": {
-        "refresh": "\\u91cd\\u65b0\\u6574\\u7406",
-        "refresh-maps": "\\u91cd\\u65b0\\u6574\\u7406\\u8b5c\\u9762",
-        "refresh-playlists": "\\u91cd\\u65b0\\u6574\\u7406\\u64ad\\u653e\\u6e05\\u55ae",
-        "refresh-models": "\\u91cd\\u65b0\\u6574\\u7406\\u6a21\\u578b",
+        "refresh": "\u91cd\u65b0\u6574\u7406",
+        "refresh-maps": "\u91cd\u65b0\u6574\u7406\u8b5c\u9762",
+        "refresh-playlists": "\u91cd\u65b0\u6574\u7406\u64ad\u653e\u6e05\u55ae",
+        "refresh-models": "\u91cd\u65b0\u6574\u7406\u6a21\u578b",
         "download": "下載",
         "add": "新增",
         "verify": "驗證",
@@ -218,6 +218,8 @@
                 "title": "Steam & Oculus",
                 "description": "登出後，您可以在下一次下載 Beat Saber 時切換帳戶。",
                 "logout": "登出",
+                "session-active": "工作階段有效",
+                "session-inactive": "沒有有效的工作階段",
                 "logout-success": "登出成功",
                 "download-platform": {
                     "title": "，預設平台",

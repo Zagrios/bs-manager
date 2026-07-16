@@ -90,6 +90,11 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
     const loadPercent$ = useConstant(() => new BehaviorSubject<number>(0));
     const linked = useStateMap(linkedState, (newState, precMapped) => (newState === FolderLinkState.Pending || newState === FolderLinkState.Processing) ? precMapped : newState === FolderLinkState.Linked, false);
 
+    const updateSelection = (selectedPlaylists: LocalBPList[]) => {
+        selectedPlaylists$.next(selectedPlaylists);
+        onSelectionChange?.(selectedPlaylists.length);
+    };
+
     const installPlaylist = (playlist: LocalBPList) => {
         const ignoreSongsHashs = (maps$.value || []).map(m => m.hash.toLowerCase());
         return playlistDownloader.downloadPlaylist({ downloadSource: playlist.customData?.syncURL ?? playlist.path, version, ignoreSongsHashs, dest: playlist.path });
@@ -179,6 +184,7 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
             return deletePlaylists(toDelete);
         },
         reloadPlaylists: async () => {
+            updateSelection([]);
             const loadedPlaylists = await loadLocalPlaylistsDetails();
             setPlaylists(loadedPlaylists);
         }
@@ -196,8 +202,7 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
     }
 
     useOnUpdate(() => {
-        selectedPlaylists$.next([]);
-        onSelectionChange?.(0);
+        updateSelection([]);
     }, [version]);
 
     useOnUpdate(() => {
@@ -390,14 +395,12 @@ export const LocalPlaylistsListPanel = forwardRef<LocalPlaylistsListRef, Props>(
                 onClick={() => {
                     if(selectedPlaylists$.value.some(s => s.path === playlist.path)){
                         const selectedPlaylists = selectedPlaylists$.value.filter(s => s.path !== playlist.path);
-                        selectedPlaylists$.next(selectedPlaylists);
-                        onSelectionChange?.(selectedPlaylists.length);
+                        updateSelection(selectedPlaylists);
                         return;
                     }
 
                     const selectedPlaylists = [...selectedPlaylists$.value, playlist];
-                    selectedPlaylists$.next(selectedPlaylists);
-                    onSelectionChange?.(selectedPlaylists.length);
+                    updateSelection(selectedPlaylists);
                 }}
                 onClickOpen={() => openPlaylistDetails(playlist.path)}
                 onClickDelete={() => deletePlaylists([playlist])}

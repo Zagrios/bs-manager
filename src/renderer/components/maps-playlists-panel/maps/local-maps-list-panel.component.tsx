@@ -144,6 +144,7 @@ export const LocalMapsListPanel = forwardRef<LocalMapsListPanelRef, Props>(({
     }, [isActiveOnce, version])
 
     const loadMaps = () => {
+        setSelectedMaps([]);
         setMaps(null);
         loadPercent$.next(0);
 

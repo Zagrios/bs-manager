@@ -218,6 +218,8 @@
                 "title": "Steam & Oculus",
                 "description": "Das Abmelden ermöglicht es dir, beim nächsten Download von Beat Saber den Account zu wechseln.",
                 "logout": "Abmelden",
+                "session-active": "Aktive Sitzung",
+                "session-inactive": "Keine aktive Sitzung",
                 "logout-success": "Abmeldung erfolgreich",
                 "download-platform": {
                     "title": "Standardplattform",

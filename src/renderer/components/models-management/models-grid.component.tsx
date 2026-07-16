@@ -65,12 +65,15 @@ export const ModelsGrid = forwardRef<ModelsGridRef, Props>(({ className, version
                 loadModels();
             },
             deleteSelectedModels: () => {
-                modelsManager.deleteModels(!modelsSelected?.length ? models : modelsSelected, version).then(deletedModels => {
+                const modelsToDelete = modelsSelected.length ? modelsSelected : (models ?? []);
+                if (!modelsToDelete.length) {
+                    return;
+                }
+                modelsManager.deleteModels(modelsToDelete, version).then(deletedModels => {
                     if (!deletedModels?.length) {
                         return;
                     }
-                    const newModels = models.filter(m => !deletedModels.some(d => d.hash === m.hash));
-                    setModels(() => newModels);
+                    setModels(currentModels => currentModels?.filter(m => !deletedModels.some(d => d.hash === m.hash)) ?? []);
                     setModelsSelected(() => []);
                 });
             },
@@ -138,6 +141,7 @@ export const ModelsGrid = forwardRef<ModelsGridRef, Props>(({ className, version
 
     const loadModels = () => {
         const modelsObs$ = modelsManager.$getModels(type, version);
+        setModelsSelected(() => []);
         setModels(() => null);
         setModelsLoadObservable(() =>
             modelsObs$.pipe(
