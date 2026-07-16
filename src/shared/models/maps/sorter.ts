@@ -46,4 +46,3 @@ export const mapSorter = new Sorter<BsmLocalMap>({
     tiebreak: sortName,
     defaultKey: "name"
 });
-

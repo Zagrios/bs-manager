@@ -56,4 +56,3 @@ export function parseLaunchOptions(launchOption: string, options: {
         args: command.substring(index + 1).trim(),
     }
 }
-

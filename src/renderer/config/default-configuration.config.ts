@@ -37,4 +37,3 @@ export const defaultConfiguration: {
 };
 
 export type ThemeConfig = "dark" | "light" | "os";
-

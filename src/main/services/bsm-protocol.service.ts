@@ -10,7 +10,7 @@ export class BsmProtocolService {
         if(!BsmProtocolService.instance){ BsmProtocolService.instance = new BsmProtocolService(); }
         return BsmProtocolService.instance;
     }
-    
+
     private readonly BSM_PROTOCOL = "bsmanager";
 
     private readonly deepLink: DeepLinkService;

@@ -13,4 +13,3 @@ ipc.on("linux.get-wine-prefix-path", (_, reply) => {
     const linuxService = LinuxService.getInstance();
     reply(of(linuxService.getWinePrefixPath()));
 });
-

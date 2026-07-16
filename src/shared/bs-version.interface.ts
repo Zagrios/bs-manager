@@ -25,5 +25,3 @@ export interface BSVersionMetadata {
     id: string;
     store: BsStore;
 }
-
-

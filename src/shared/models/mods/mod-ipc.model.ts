@@ -19,4 +19,3 @@ export enum ModsGridStatus {
     BEATMODS_DOWN = "beatmods-down",
     UNKNOWN = "unknown"
 }
-

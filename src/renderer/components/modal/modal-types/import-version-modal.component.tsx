@@ -9,7 +9,7 @@ import { useState } from "react";
 import { BsStore } from "shared/models/bs-store.enum";
 
 export const ImportVersionModal: ModalComponent<BsStore> = ({ resolver }) => {
-    
+
     const t = useTranslation();
     const [isOculus, setIsOculus] = useState(false);
 
