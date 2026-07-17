@@ -24,7 +24,7 @@ export const AvailableVersionItem = memo(function AvailableVersionItem({version}
     const formatedDate = useConstant(() => dateFormat(+version.ReleaseDate * 1000, "ddd. d mmm yyyy"));
 
     return (
-        <motion.li className="group/card relative w-72 h-60" onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)}>
+        <motion.li className="group/card relative w-72 h-60 cursor-pointer" onDoubleClick={() => context?.startDownload(version)} onHoverStart={() => setHovered(true)} onHoverEnd={() => setHovered(false)}>
             <GlowEffect visible={hovered} className="absolute" />
             <div className="relative flex flex-col overflow-hidden rounded-md w-72 h-60 shadow-lg shadow-gray-900 group-hover/card:shadow-none duration-300 bg-light-main-color-2 dark:bg-main-color-2">
                 {version.recommended && (
@@ -39,7 +39,7 @@ export const AvailableVersionItem = memo(function AvailableVersionItem({version}
                     </div>
                     <div className="flex flex-row items-center gap-1.5">
                         {version.ReleaseURL && (
-                            <a href={version.ReleaseURL} target="_blank" onClick={e => e.stopPropagation()} className="flex flex-row justify-between items-center rounded-full bg-black bg-opacity-30 text-white pb-px overflow-hidden hover:bg-opacity-50" tabIndex={-1}>
+                            <a href={version.ReleaseURL} target="_blank" onClick={e => e.stopPropagation()} onDoubleClick={e => e.stopPropagation()} className="flex flex-row justify-between items-center rounded-full bg-black bg-opacity-30 text-white pb-px overflow-hidden hover:bg-opacity-50" tabIndex={-1}>
                                 <SteamIcon className="w-[25px] h-[25px] transition-transform group-hover/card:rotate-[-360deg] duration-300" />
                                 <span className="relative -left-px text-sm w-fit max-w-0 text-center overflow-hidden h-full whitespace-nowrap pb-[3px] transition-all group-hover/card:max-w-[200px] group-hover/card:px-1 duration-300">{t("pages.available-versions.steam-release")}</span>
                             </a>
