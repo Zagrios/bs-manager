@@ -37,9 +37,9 @@ export const AvailableVersionItem = memo(function AvailableVersionItem({version}
                         <h2 className="block text-xl font-bold text-white tracking-wider">{version.BSVersion}</h2>
                         <span className="text-sm text-gray-700 dark:text-gray-400">{formatedDate}</span>
                     </div>
-                    <div className="flex flex-row items-center gap-1.5">
+                    <div className="flex flex-row items-center gap-1.5" onDoubleClick={e => e.stopPropagation()}>
                         {version.ReleaseURL && (
-                            <a href={version.ReleaseURL} target="_blank" onClick={e => e.stopPropagation()} onDoubleClick={e => e.stopPropagation()} className="flex flex-row justify-between items-center rounded-full bg-black bg-opacity-30 text-white pb-px overflow-hidden hover:bg-opacity-50" tabIndex={-1}>
+                            <a href={version.ReleaseURL} target="_blank" onClick={e => e.stopPropagation()} className="flex flex-row justify-between items-center rounded-full bg-black bg-opacity-30 text-white pb-px overflow-hidden hover:bg-opacity-50" tabIndex={-1}>
                                 <SteamIcon className="w-[25px] h-[25px] transition-transform group-hover/card:rotate-[-360deg] duration-300" />
                                 <span className="relative -left-px text-sm w-fit max-w-0 text-center overflow-hidden h-full whitespace-nowrap pb-[3px] transition-all group-hover/card:max-w-[200px] group-hover/card:px-1 duration-300">{t("pages.available-versions.steam-release")}</span>
                             </a>
