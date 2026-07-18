@@ -187,3 +187,48 @@
         background-position: 0 0%;
     }
 }
+
+.available-version-hover-glow {
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 100ms linear;
+}
+
+.available-version-download-slice {
+    opacity: 0;
+    transition:
+        transform 220ms ease-in,
+        opacity 220ms ease-in;
+}
+
+.available-version-download-slice--left {
+    transform: translate(-18px, 112px) rotate(-1.5deg);
+}
+
+.available-version-download-slice--right {
+    transform: translate(18px, -112px) rotate(1.5deg);
+}
+
+.available-version-card:hover > .available-version-hover-glow {
+    opacity: 1;
+}
+
+.available-version-card:hover .available-version-download-slice {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0);
+    transition-duration: 320ms;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (any-hover: none) and (any-pointer: coarse) {
+    .available-version-download-slice {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .glow-on-hover {
+        animation: none;
+    }
+}
