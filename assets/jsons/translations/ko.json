@@ -204,6 +204,7 @@
         "available-versions": {
             "title": "버전 선택",
             "steam-release": "릴리스 페이지",
+            "view-mods": "모드 보기",
             "dropdown": {
                 "refresh": "버전 새로고침",
                 "import-version": "버전 가져오기"
@@ -1032,7 +1033,7 @@
         },
         "mods-version-compare": {
             "title": "모드 버전 비교",
-            "select-version": "버전 선택하기",
+            "select-version": "비교할 버전 추가",
             "mod-types": {
                 "all": "모두",
                 "installed": "설치됨",

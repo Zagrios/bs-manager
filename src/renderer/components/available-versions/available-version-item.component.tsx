@@ -10,6 +10,8 @@ import { SteamIcon } from "../svgs/icons/steam-icon.component";
 import { useConstant } from "renderer/hooks/use-constant.hook";
 import { AvailableVersionsContext } from "renderer/pages/available-versions-list.components";
 import { DownloadIcon } from "../svgs/icons/download-icon.component";
+import { MemoryIcon } from "../svgs/icons/memory-icon.component";
+import Tippy from "@tippyjs/react";
 
 type Props = {
     version: BSVersion;
@@ -69,12 +71,27 @@ export const AvailableVersionItem = memo(function AvailableVersionItem({version}
                         <h2 className="block text-xl font-bold text-white tracking-wider">{version.BSVersion}</h2>
                         <span className="text-sm text-gray-700 dark:text-gray-400">{formatedDate}</span>
                     </div>
-                    {version.ReleaseURL && (
-                        <a href={version.ReleaseURL} target="_blank" onClick={e => e.stopPropagation()} className="flex flex-row justify-between items-center rounded-full bg-black bg-opacity-30 text-white pb-px overflow-hidden hover:bg-opacity-50" tabIndex={-1}>
-                            <SteamIcon className="w-[25px] h-[25px] transition-transform group-hover/card:rotate-[-360deg] duration-300 motion-reduce:transition-none" />
-                            <span className="relative -left-px text-sm w-fit max-w-0 text-center overflow-hidden h-full whitespace-nowrap pb-[3px] transition-all group-hover/card:max-w-[200px] group-hover/card:px-1 duration-300 motion-reduce:transition-none">{t("pages.available-versions.steam-release")}</span>
-                        </a>
-                    )}
+                    <div className="flex items-center gap-1.5">
+                        {version.ReleaseURL && (
+                            <a href={version.ReleaseURL} target="_blank" onClick={e => e.stopPropagation()} className="flex flex-row justify-between items-center rounded-full bg-black bg-opacity-30 text-white pb-px overflow-hidden hover:bg-opacity-50" tabIndex={-1}>
+                                <SteamIcon className="w-[25px] h-[25px] transition-transform group-hover/card:rotate-[-360deg] duration-300 motion-reduce:transition-none" />
+                                <span className="relative -left-px text-sm w-fit max-w-0 text-center overflow-hidden h-full whitespace-nowrap pb-[3px] transition-all group-hover/card:max-w-[200px] group-hover/card:px-1 duration-300 motion-reduce:transition-none">{t("pages.available-versions.steam-release")}</span>
+                            </a>
+                        )}
+                        <Tippy content={t("pages.available-versions.view-mods")} placement="top" theme="default" animation={false}>
+                            <button
+                                type="button"
+                                aria-label={`${t("misc.mods")} ${version.BSVersion}`}
+                                className="flex size-[25px] shrink-0 items-center justify-center rounded-full bg-black/30 text-white transition-colors hover:bg-black/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+                                onClick={event => {
+                                    event.stopPropagation();
+                                    context?.showAvailableMods(version);
+                                }}
+                            >
+                                <MemoryIcon className="size-[18px]" />
+                            </button>
+                        </Tippy>
+                    </div>
                 </div>
             </div>
         </motion.li>

@@ -6,6 +6,14 @@ jest.mock("dateformat", () => jest.fn(() => "formatted date"));
 jest.mock("framer-motion", () => ({
     motion: { li: "li", div: "div", span: "span", button: "button" },
 }));
+jest.mock("@tippyjs/react", () => {
+    const ReactModule = jest.requireActual("react") as typeof import("react");
+
+    return {
+        __esModule: true,
+        default: ({ children, ...props }: { children: React.ReactNode; content?: React.ReactNode }) => ReactModule.createElement("tippy", props, children),
+    };
+});
 jest.mock("renderer/components/shared/bsm-image.component", () => {
     const ReactModule = jest.requireActual("react") as typeof import("react");
 
@@ -21,6 +29,9 @@ jest.mock("renderer/components/svgs/icons/steam-icon.component", () => ({
 }));
 jest.mock("renderer/components/svgs/icons/download-icon.component", () => ({
     DownloadIcon: () => null,
+}));
+jest.mock("renderer/components/svgs/icons/memory-icon.component", () => ({
+    MemoryIcon: () => null,
 }));
 jest.mock("renderer/hooks/use-translation.hook", () => ({
     useTranslation: () => (key: string) => key,
@@ -52,19 +63,20 @@ const version: BSVersion = {
 
 function renderItem(downloading = false) {
     const startDownload = jest.fn();
+    const showAvailableMods = jest.fn();
     let renderer!: TestRenderer.ReactTestRenderer;
 
     act(() => {
         renderer = TestRenderer.create(
             React.createElement(
                 AvailableVersionsContext.Provider,
-                { value: { startDownload, downloading } },
+                { value: { startDownload, showAvailableMods, downloading } },
                 React.createElement(AvailableVersionItem, { version })
             )
         );
     });
 
-    return { renderer, startDownload };
+    return { renderer, showAvailableMods, startDownload };
 }
 
 describe("AvailableVersionItem download interactions", () => {
@@ -105,7 +117,7 @@ describe("AvailableVersionItem download interactions", () => {
         const { renderer } = renderItem();
         const releaseImage = renderer.root.findAllByType("img").find(node => node.props.className.includes("h-3/4"));
         const footer = renderer.root.findAllByType("div").find(node => node.props.className?.includes("h-1/4"));
-        const downloadSurface = renderer.root.findByType("button");
+        const downloadSurface = renderer.root.findByProps({ "aria-label": "misc.download 1.44.2" });
 
         expect(releaseImage!.props.className).toContain("shrink-0");
         expect(releaseImage!.props.className).not.toContain("scale-");
@@ -130,7 +142,7 @@ describe("AvailableVersionItem download interactions", () => {
 
     it("downloads from the large button with a single click and exposes its disabled state", () => {
         const { renderer, startDownload } = renderItem();
-        const button = renderer.root.findByType("button");
+        const button = renderer.root.findByProps({ "aria-label": "misc.download 1.44.2" });
         const stopPropagation = jest.fn();
 
         act(() => button.props.onClick({ stopPropagation }));
@@ -144,7 +156,25 @@ describe("AvailableVersionItem download interactions", () => {
         act(() => renderer.unmount());
 
         const disabledItem = renderItem(true);
-        expect(disabledItem.renderer.root.findByType("button").props.disabled).toBe(true);
+        expect(disabledItem.renderer.root.findByProps({ "aria-label": "misc.download 1.44.2" }).props.disabled).toBe(true);
         act(() => disabledItem.renderer.unmount());
+    });
+
+    it("opens the available mods modal from its dedicated footer button", () => {
+        const { renderer, showAvailableMods, startDownload } = renderItem();
+        const button = renderer.root.findByProps({ "aria-label": "misc.mods 1.44.2" });
+        const tooltip = renderer.root.findByProps({ content: "pages.available-versions.view-mods", placement: "top", theme: "default", animation: false });
+        const stopPropagation = jest.fn();
+
+        act(() => button.props.onClick({ stopPropagation }));
+
+        expect(stopPropagation).toHaveBeenCalledTimes(1);
+        expect(showAvailableMods).toHaveBeenCalledTimes(1);
+        expect(showAvailableMods).toHaveBeenCalledWith(version);
+        expect(startDownload).not.toHaveBeenCalled();
+        expect(tooltip.props.content).toBe("pages.available-versions.view-mods");
+        expect(tooltip.props.theme).toBe("default");
+        expect(tooltip.props.animation).toBe(false);
+        act(() => renderer.unmount());
     });
 });

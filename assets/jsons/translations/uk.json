@@ -204,6 +204,7 @@
         "available-versions": {
             "title": "Завантажити версію",
             "steam-release": "Сторінка релізу",
+            "view-mods": "Переглянути моди",
             "dropdown": {
                 "refresh": "Оновити версії",
                 "import-version": "Імпортувати версію"
@@ -1027,7 +1028,7 @@
         },
         "mods-version-compare": {
             "title": "Порівняння версій модів",
-            "select-version": "Виберіть версію",
+            "select-version": "Додати версію для порівняння",
             "mod-types": {
                 "all": "Усі",
                 "installed": "Встановлено",

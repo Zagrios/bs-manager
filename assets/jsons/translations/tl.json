@@ -204,6 +204,7 @@
         "available-versions": {
             "title": "Mag-download ng bersyon",
             "steam-release": "Release page",
+            "view-mods": "Tingnan ang mga mod",
             "dropdown": {
                 "refresh": "I-refresh ang mga bersyon",
                 "import-version": "Mag-import ng bersyon"
@@ -1032,7 +1033,7 @@
         },
         "mods-version-compare": {
             "title": "Paghahambing ng bersyon ng mga mod",
-            "select-version": "Pumili ng bersyon",
+            "select-version": "Magdagdag ng bersyon na ihahambing",
             "mod-types": {
                 "all": "Lahat",
                 "installed": "Naka-install",

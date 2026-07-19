@@ -204,6 +204,7 @@
         "available-versions": {
             "title": "下載一個版本",
             "steam-release": "發布頁面",
+            "view-mods": "查看模組",
             "dropdown": {
                 "refresh": "刷新版本",
                 "import-version": "導入版本"
@@ -1032,7 +1033,7 @@
         },
         "mods-version-compare": {
             "title": "模組版本比較",
-            "select-version": "選擇版本",
+            "select-version": "新增要比較的版本",
             "mod-types": {
                 "all": "全部",
                 "installed": "已安裝",

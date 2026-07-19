@@ -1,4 +1,4 @@
-import { getCompareModsMaps } from "shared/helpers/mods-version-compare.helpers";
+import { getCompareModsMaps, getModComparisonState, ModCompareType, ModComparisonState } from "shared/helpers/mods-version-compare.helpers";
 import { BbmCategories, BbmFullMod, BbmModVersion, BbmPlatform, BbmStatus, BbmUserAPIResponse } from "shared/models/mods/mod.interface";
 
 const author: BbmUserAPIResponse = {
@@ -48,6 +48,10 @@ function createFullMod(id: number, name: string, category = BbmCategories.Core, 
     };
 }
 
+function createComparableMod(version: string): ModCompareType {
+    return { id: 1, name: "Test mod", version };
+}
+
 describe("mods version compare helpers", () => {
     test("builds installed mods map from installed modId only", () => {
         const availableMods = [
@@ -72,5 +76,19 @@ describe("mods version compare helpers", () => {
         const expectedInstalledOnlyMod = { id: 999, name: "LocalOnly", version: "2.0.0" };
         expect(availableModsMap.get(BbmCategories.Other)).toEqual([expectedInstalledOnlyMod]);
         expect(installedModsMap.get(BbmCategories.Other)).toEqual([expectedInstalledOnlyMod]);
+    });
+
+    test.each([
+        [createComparableMod("1.0.0"), true, ModComparisonState.Reference],
+        [createComparableMod("1.0.0"), false, ModComparisonState.Equal],
+        [createComparableMod("2.0.0"), false, ModComparisonState.Higher],
+        [createComparableMod("0.9.0"), false, ModComparisonState.Lower],
+        [null, false, ModComparisonState.Missing],
+    ])("classifies a compared mod against the primary version", (comparedMod, isReference, expectedState) => {
+        expect(getModComparisonState(createComparableMod("1.0.0"), comparedMod, isReference)).toBe(expectedState);
+    });
+
+    test("classifies a mod missing from the primary version as newly added", () => {
+        expect(getModComparisonState(null, createComparableMod("1.0.0"))).toBe(ModComparisonState.Added);
     });
 });

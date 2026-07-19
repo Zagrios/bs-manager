@@ -204,6 +204,7 @@
         "available-versions": {
             "title": "バージョンをダウンロード",
             "steam-release": "リリースページ",
+            "view-mods": "Modを見る",
             "dropdown": {
                 "refresh": "バージョンの更新",
                 "import-version": "バージョンをインポート"
@@ -1032,7 +1033,7 @@
         },
         "mods-version-compare": {
             "title": "MODのバージョン比較",
-            "select-version": "バージョンを選択する",
+            "select-version": "比較するバージョンを追加",
             "mod-types": {
                 "all": "すべて",
                 "installed": "インストール済み",

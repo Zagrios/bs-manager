@@ -1,10 +1,20 @@
 import { BbmCategories, BbmFullMod, BbmModVersion, BbmStatus } from "shared/models/mods/mod.interface";
+import { safeLt } from "./semver.helpers";
 
 // To save memory when caching
 export interface ModCompareType {
     id: number;
     name: string;
     version: string;
+}
+
+export enum ModComparisonState {
+    Reference = "reference",
+    Added = "added",
+    Equal = "equal",
+    Higher = "higher",
+    Lower = "lower",
+    Missing = "missing",
 }
 
 export type ModCompareMaps = Readonly<{
@@ -17,6 +27,29 @@ export const simplifyFullMod = (mod: BbmFullMod): ModCompareType => ({
     name: mod.mod.name,
     version: mod.version.modVersion,
 });
+
+export function getModComparisonState(
+    referenceMod: ModCompareType | null,
+    comparedMod: ModCompareType | null,
+    isReference = false
+): ModComparisonState {
+    if (!comparedMod) {
+        return ModComparisonState.Missing;
+    }
+    if (isReference) {
+        return ModComparisonState.Reference;
+    }
+    if (!referenceMod) {
+        return ModComparisonState.Added;
+    }
+    if (referenceMod.version === comparedMod.version) {
+        return ModComparisonState.Equal;
+    }
+
+    return safeLt(referenceMod.version, comparedMod.version)
+        ? ModComparisonState.Higher
+        : ModComparisonState.Lower;
+}
 
 function addModToMap(map: Map<BbmCategories, ModCompareType[]>, fullMod: BbmFullMod): void {
     map.set(fullMod.mod.category, [

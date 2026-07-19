@@ -14,8 +14,13 @@ import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { BSVersionOutdatedModal } from "renderer/components/modal/modal-types/bs-version-outdated-modal.component";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { safeLt } from "shared/helpers/semver.helpers";
+import { ModsVersionCompareModal } from "renderer/components/modal/modal-types/mods/mods-version-compare-modal.component";
 
-export const AvailableVersionsContext = createContext<{ startDownload: (version: BSVersion) => void; downloading: boolean }>(null);
+export const AvailableVersionsContext = createContext<{
+    startDownload: (version: BSVersion) => void;
+    showAvailableMods: (version: BSVersion) => void;
+    downloading: boolean;
+}>(null);
 
 export function AvailableVersionsList() {
 
@@ -66,7 +71,15 @@ export function AvailableVersionsList() {
         return lastValueFrom(versionManager.importVersion()).catch(() => {});
     };
 
-    const contextValue = useMemo(() => ({ startDownload, downloading: downloadUnavailable }), [downloadUnavailable, startDownload]);
+    const showAvailableMods = useCallback((version: BSVersion) => {
+        modals.openModal(ModsVersionCompareModal, { data: { version } });
+    }, [modals]);
+
+    const contextValue = useMemo(() => ({
+        startDownload,
+        showAvailableMods,
+        downloading: downloadUnavailable,
+    }), [downloadUnavailable, showAvailableMods, startDownload]);
 
     const refreshVersions = () => {
         return Promise.all([

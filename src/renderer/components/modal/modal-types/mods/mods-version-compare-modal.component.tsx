@@ -15,7 +15,7 @@ import { ModalComponent } from "renderer/services/modale.service";
 import { lastValueFrom } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { getVersionName } from "shared/helpers/bs-version.helpers";
-import { getCompareModsMaps, ModCompareMaps, ModCompareType, simplifyFullMod } from "shared/helpers/mods-version-compare.helpers";
+import { getCompareModsMaps, getModComparisonState, ModCompareMaps, ModCompareType, ModComparisonState, simplifyFullMod } from "shared/helpers/mods-version-compare.helpers";
 import { safeLt } from "shared/helpers/semver.helpers";
 import { BbmCategories, BbmFullMod, BbmModVersion } from "shared/models/mods/mod.interface";
 
@@ -35,6 +35,11 @@ type ComparedVersion = Readonly<{
 
 const EMPTY_MODS_MAP = new Map<BbmCategories, ModCompareType[]>();
 
+const EMPTY_MOD_COMPARE_MAPS: ModCompareMaps = {
+    availableModsMap: EMPTY_MODS_MAP,
+    installedModsMap: EMPTY_MODS_MAP,
+};
+
 type HorizontalScrollSync = Readonly<{
     register: (scroller: HTMLDivElement) => void;
     unregister: (scroller: HTMLDivElement) => void;
@@ -52,17 +57,33 @@ function getVersionKey(version: BSVersion): string {
     ].join("|");
 }
 
+function simplifyModsMap(modsMap?: Map<BbmCategories, BbmFullMod[]>): Map<BbmCategories, ModCompareType[]> {
+    const simplifiedMap = new Map<BbmCategories, ModCompareType[]>();
+    modsMap?.forEach((mods, category) =>
+        simplifiedMap.set(category, mods.map(simplifyFullMod))
+    );
+    return simplifiedMap;
+}
+
+async function getVersionModsMaps(ipc: IpcService, version: BSVersion): Promise<ModCompareMaps> {
+    const [availableMods, installedMods] = await Promise.all([
+        lastValueFrom(ipc.sendV2("bs-mods.get-available-mods", version)),
+        version.path
+            ? lastValueFrom(ipc.sendV2("bs-mods.get-installed-mods", version))
+            : Promise.resolve([] as BbmModVersion[]),
+    ]);
+
+    return getCompareModsMaps(availableMods, installedMods);
+}
+
 function useHeader({
     version,
-    loading,
-    setLoading,
+    primaryLoading,
 }: Readonly<{
     version: BSVersion;
-    loading: boolean;
-    setLoading: (loading: boolean) => void;
+    primaryLoading: boolean;
 }>) {
     const ipc = useService(IpcService);
-    const { text: t } = useTranslationV2();
 
     const [mode, setMode] = useState(Mode.All);
     const [selectedVersions, setSelectedVersions] = useState([] as BSVersion[]);
@@ -77,10 +98,6 @@ function useHeader({
         }))
     );
     const [versionOptions, setVersionOptions] = useState([] as BsmSelectOption<BSVersion>[]);
-
-    useEffect(() => {
-        setLoading(loadingVersionKeys.size > 0);
-    }, [loadingVersionKeys, setLoading]);
 
     useEffect(() => {
         Promise.all([
@@ -135,19 +152,7 @@ function useHeader({
             return newLoadingVersionKeys;
         });
 
-        const promises: Promise<BbmFullMod[] | BbmModVersion[]>[] = [
-            lastValueFrom(ipc.sendV2("bs-mods.get-available-mods", selectedVersion))
-        ];
-        if (selectedVersion.path) {
-            promises.push(lastValueFrom(ipc.sendV2("bs-mods.get-installed-mods", selectedVersion)))
-        }
-
-        Promise.all(promises).then(([availableMods, installedMods]) => {
-            const maps = getCompareModsMaps(
-                availableMods as BbmFullMod[],
-                installedMods as BbmModVersion[] | undefined
-            );
-
+        getVersionModsMaps(ipc, selectedVersion).then(maps => {
             setModsMapCache(current => {
                 const newCache = new Map(current);
                 newCache.set(versionKey, maps);
@@ -201,6 +206,17 @@ function useHeader({
         });
     };
 
+    useEffect(() => {
+        const installedFilterWithoutLocalVersion = !version.path && (
+            mode === Mode.Installed || mode === Mode.NotInstalled
+        );
+        const missingFilterWithoutComparison = mode === Mode.Missing && selectedVersions.length === 0;
+
+        if (installedFilterWithoutLocalVersion || missingFilterWithoutComparison) {
+            setMode(Mode.All);
+        }
+    }, [mode, selectedVersions.length, version.path]);
+
     return {
         mode,
         selectedVersions,
@@ -208,7 +224,17 @@ function useHeader({
         loadingVersionKeys,
 
         renderHeader: () => {
+            const loading = primaryLoading || loadingVersionKeys.size > 0;
             const selectedVersionKeys = new Set(selectedVersions.map(getVersionKey));
+            const visibleModeOptions = modeOptions.filter(option => {
+                if (option.value === Mode.Missing) {
+                    return selectedVersions.length > 0;
+                }
+                if (option.value === Mode.Installed || option.value === Mode.NotInstalled) {
+                    return !!version.path;
+                }
+                return true;
+            });
             const selectableVersionOptions: BsmSelectOption<BSVersion | null>[] = [
                 {
                     text: "modals.mods-version-compare.select-version",
@@ -224,19 +250,18 @@ function useHeader({
                             <div className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">Beat Saber</div>
                             <div className="truncate text-xl font-bold tracking-wide">{getVersionName(version)}</div>
                         </div>
-                        <BsmSelect
-                            className="h-8 w-36 shrink-0 rounded-md border border-black/10 bg-light-main-color-1 px-2 text-sm dark:border-white/10 dark:bg-main-color-2"
-                            options={modeOptions}
-                            selected={mode}
-                            onChange={setMode}
-                        />
+                        {visibleModeOptions.length > 1 && (
+                            <BsmSelect
+                                className="h-8 w-36 shrink-0 rounded-md border border-black/10 bg-light-main-color-1 px-2 text-sm dark:border-white/10 dark:bg-main-color-2"
+                                options={visibleModeOptions}
+                                selected={mode}
+                                onChange={setMode}
+                            />
+                        )}
                     </div>
 
                     <div className="min-w-0 rounded-lg border border-black/10 bg-light-main-color-3 px-3 py-2 dark:border-white/10 dark:bg-main-color-1">
                         <div className="flex min-w-0 flex-wrap items-center gap-2">
-                            <div className="shrink-0 rounded-full border border-black/10 bg-light-main-color-2 px-3 py-1 text-xs font-black tracking-widest shadow-sm dark:border-white/10 dark:bg-main-color-2">
-                                VS
-                            </div>
                             <BsmSelect
                                 key={selectedVersions.map(getVersionKey).join("|")}
                                 className="h-8 min-w-[180px] flex-1 rounded-md border border-black/10 bg-light-main-color-1 px-2 text-sm dark:border-white/10 dark:bg-main-color-2"
@@ -270,11 +295,7 @@ function useHeader({
                                     </div>
                                 })}
                             </div>
-                        ) : (
-                            <div className="mt-2 rounded-md border border-dashed border-black/10 px-3 py-2 text-xs font-semibold opacity-60 dark:border-white/10">
-                                {t("modals.mods-version-compare.select-version")}
-                            </div>
-                        )}
+                        ) : undefined}
                     </div>
                 </div>
             </div>
@@ -285,14 +306,12 @@ function useHeader({
 function ModCompareCell({
     mod,
     fallbackName,
-    installed,
-    installedLocal,
+    comparisonState,
     loading,
 }: Readonly<{
     mod: ModCompareType | null;
     fallbackName: string;
-    installed: boolean;
-    installedLocal: boolean;
+    comparisonState: ModComparisonState;
     loading: boolean;
 }>) {
     const name = mod?.name || fallbackName;
@@ -325,9 +344,9 @@ function ModCompareCell({
     }
 
     let modClass = `${cardClass} border-blue-500/35 bg-blue-500/15 text-blue-950 dark:bg-blue-700/25 dark:text-blue-100`;
-    if (installedLocal && installed) {
+    if (comparisonState === ModComparisonState.Higher) {
         modClass = `${cardClass} border-green-500/40 bg-green-500/15 text-green-950 dark:bg-green-700/30 dark:text-green-100`;
-    } else if (installedLocal) {
+    } else if (comparisonState === ModComparisonState.Lower) {
         modClass = `${cardClass} border-red-500/30 bg-red-500/15 text-red-950 dark:bg-red-700/25 dark:text-red-100`;
     }
 
@@ -483,20 +502,16 @@ function ModCategory({
                     <Fragment key={mod.id}>
                         {comparedVersions.map((comparedVersion, index) => {
                             const currentMod = availableModsByVersion[index].find(am => am.id === mod.id) || null;
-                            const previousMod = index > 0
-                                ? availableModsByVersion[index - 1].find(am => am.id === mod.id) || null
-                                : null;
-                            const installed = installedModsByVersion[index].findIndex(im => im.id === mod.id) > -1;
-                            const installedLocal = index === 0 || !!comparedVersion.version.path;
-                            const comparisonLoading = index > 0 && (comparedVersions[index - 1].loading || comparedVersion.loading);
+                            const referenceMod = availableModsByVersion[0].find(am => am.id === mod.id) || null;
+                            const comparisonState = getModComparisonState(referenceMod, currentMod, index === 0);
+                            const comparisonLoading = index > 0 && (comparedVersions[0].loading || comparedVersion.loading);
 
                             return <Fragment key={getVersionKey(comparedVersion.version)}>
-                                {index > 0 && <ComparisonIcon leftMod={previousMod} rightMod={currentMod} loading={comparisonLoading} />}
+                                {index > 0 && <ComparisonIcon leftMod={referenceMod} rightMod={currentMod} loading={comparisonLoading} />}
                                 <ModCompareCell
                                     mod={currentMod}
                                     fallbackName={mod.name}
-                                    installed={installed}
-                                    installedLocal={installedLocal}
+                                    comparisonState={comparisonState}
                                     loading={comparedVersion.loading}
                                 />
                             </Fragment>
@@ -510,31 +525,55 @@ function ModCategory({
 
 export const ModsVersionCompareModal: ModalComponent<void, Readonly<{
     version: BSVersion;
-    availableModsMap: Map<BbmCategories, BbmFullMod[]>;
-    installedModsMap: Map<BbmCategories, BbmFullMod[]>;
+    availableModsMap?: Map<BbmCategories, BbmFullMod[]>;
+    installedModsMap?: Map<BbmCategories, BbmFullMod[]>;
 }>> = ({ options: { data: {
     version,
     availableModsMap,
     installedModsMap
 } } }) => {
         const { text: t } = useTranslationV2();
+        const ipc = useService(IpcService);
 
-        const simpleAvailableModsMap = useConstant(() => {
-            const map = new Map<BbmCategories, ModCompareType[]>();
-            availableModsMap.forEach((mods, category) =>
-                map.set(category, mods.map(simplifyFullMod))
-            );
-            return map;
-        });
-        const simpleInstalledModsMap = useConstant(() => {
-            const map = new Map<BbmCategories, ModCompareType[]>();
-            installedModsMap.forEach((mods, category) =>
-                map.set(category, mods.map(simplifyFullMod))
-            );
-            return map;
-        });
+        const providedModsMaps = useConstant<ModCompareMaps | null>(() => {
+            if (!availableModsMap) {
+                return null;
+            }
 
-        const [loading, setLoading] = useState(false);
+            return {
+                availableModsMap: simplifyModsMap(availableModsMap),
+                installedModsMap: simplifyModsMap(installedModsMap),
+            };
+        });
+        const [primaryModsMaps, setPrimaryModsMaps] = useState(providedModsMaps ?? EMPTY_MOD_COMPARE_MAPS);
+        const [primaryLoading, setPrimaryLoading] = useState(!providedModsMaps);
+
+        useEffect(() => {
+            if (providedModsMaps) {
+                return undefined;
+            }
+
+            let active = true;
+            getVersionModsMaps(ipc, version)
+                .then(modsMaps => {
+                    if (active) {
+                        setPrimaryModsMaps(modsMaps);
+                    }
+                })
+                .catch(error => {
+                    logRenderError("Could not load mods for version", error);
+                })
+                .finally(() => {
+                    if (active) {
+                        setPrimaryLoading(false);
+                    }
+                });
+
+            return () => {
+                active = false;
+            };
+        }, [ipc, providedModsMaps, version]);
+
         const horizontalScrollSync = useConstant<HorizontalScrollSync>(() => {
             const scrollers = new Set<HTMLDivElement>();
             let syncing = false;
@@ -563,13 +602,13 @@ export const ModsVersionCompareModal: ModalComponent<void, Readonly<{
             selectedVersionMods,
             loadingVersionKeys,
             renderHeader,
-        } = useHeader({ version, loading, setLoading });
+        } = useHeader({ version, primaryLoading });
         const comparedVersions: ComparedVersion[] = [
             {
                 version,
-                availableModsMap: simpleAvailableModsMap,
-                installedModsMap: simpleInstalledModsMap,
-                loading: false,
+                availableModsMap: primaryModsMaps.availableModsMap,
+                installedModsMap: primaryModsMaps.installedModsMap,
+                loading: primaryLoading,
             },
             ...selectedVersions.map(selectedVersion => {
                 const versionKey = getVersionKey(selectedVersion);
@@ -582,11 +621,17 @@ export const ModsVersionCompareModal: ModalComponent<void, Readonly<{
                 };
             }),
         ];
+        const hasAvailableMods = comparedVersions.some(comparedVersion =>
+            Array.from(comparedVersion.availableModsMap.values()).some(mods => mods.length > 0)
+        );
+        const waitingForFirstMods = primaryLoading || (!hasAvailableMods && loadingVersionKeys.size > 0);
 
         return (
             <div className="flex max-h-[calc(100vh-5rem)] w-[860px] max-w-[calc(100vw-3rem)] flex-col">
                 <h1 className="mb-3 w-full text-center text-3xl uppercase tracking-wide">
-                    {t("modals.mods-version-compare.title")}
+                    {selectedVersions.length > 0
+                        ? t("modals.mods-version-compare.title")
+                        : `${t("misc.mods")} • ${getVersionName(version)}`}
                 </h1>
 
                 <div className="shrink-0">
@@ -594,7 +639,18 @@ export const ModsVersionCompareModal: ModalComponent<void, Readonly<{
                 </div>
 
                 <div className="min-h-0 max-h-[500px] flex-1 overflow-y-auto pr-1 scrollbar-default">
-                    {Object.values(BbmCategories).map(category =>
+                    {waitingForFirstMods && (
+                        <div className="flex min-h-36 items-center justify-center gap-3 text-lg font-semibold">
+                            <BsmBasicSpinner className="h-8 w-8" thikness="3px" />
+                            <span>{t("pages.version-viewer.mods.loading-mods")}</span>
+                        </div>
+                    )}
+                    {!waitingForFirstMods && !hasAvailableMods && (
+                        <div className="flex min-h-36 items-center justify-center px-8 text-center text-lg font-semibold opacity-70">
+                            {t("pages.version-viewer.mods.mods-not-available")}
+                        </div>
+                    )}
+                    {!waitingForFirstMods && hasAvailableMods && Object.values(BbmCategories).map(category =>
                         <ModCategory
                             key={category}
                             mode={mode}

@@ -204,6 +204,7 @@
         "available-versions": {
             "title": "Скачать версию",
             "steam-release": "Список изменений",
+            "view-mods": "Посмотреть моды",
             "dropdown": {
                 "refresh": "Обновить версии",
                 "import-version": "Импорт версии"
@@ -1031,7 +1032,7 @@
         },
         "mods-version-compare": {
             "title": "Сравнение версий модов",
-            "select-version": "Выберите версию",
+            "select-version": "Добавить версию для сравнения",
             "mod-types": {
                 "all": "Все",
                 "installed": "Установлено",
