@@ -154,6 +154,10 @@
                     "reinstall-all": "Reinstalar todo"
                 },
                 "mods-grid": {
+                    "no-results": {
+                        "title": "No se encontraron mods",
+                        "description": "Puede que el mod que buscas no esté disponible para esta versión."
+                    },
                     "header-bar": {
                         "name": "Nombre",
                         "size": "Tamaño",

@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-button.component";
 import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { BbmCategories, BbmFullMod } from "shared/models/mods/mod.interface";
+import BeatConflictImg from "../../../../../../assets/images/apngs/beat-conflict.png";
 import { ModItem } from "./mod-item.component";
 
 type Props = {
@@ -27,6 +28,29 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
     const [filterEnabled, setFilterEnabled] = useState(false);
     const { text: t } = useTranslationV2();
 
+    const availableMods = useMemo(() => Array.from(modsMap.values()).flat(), [modsMap]);
+
+    const filteredModsMap = useMemo(() => {
+        const filtered = new Map<BbmCategories, BbmFullMod[]>();
+
+        modsMap.forEach((mods, category) => {
+            const matchingMods = mods.filter(mod => mod.mod.name.toLowerCase().includes(filter));
+
+            if (matchingMods.length) {
+                filtered.set(category, matchingMods);
+            }
+        });
+
+        return filtered;
+    }, [filter, modsMap]);
+
+    const dependencyIds = useMemo(() => {
+        const selectedDependencies = modsSelected.flatMap(mod => mod.version.dependencies);
+        const dependencyDependencies = availableMods.filter(mod => selectedDependencies.includes(mod.version.id)).flatMap(mod => mod.version.dependencies);
+
+        return new Set([...selectedDependencies, ...dependencyDependencies]);
+    }, [availableMods, modsSelected]);
+
     const installedModVersion = (key: BbmCategories, mod: BbmFullMod): string => {
         if (!installed?.get(key)) {
             return undefined;
@@ -38,16 +62,7 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
         return installedMod.version.modVersion;
     };
 
-    const getAvailableMods = (): BbmFullMod[] => {
-        return Array.from(modsMap.values()).flat();
-    }
-
-    const isDependency = (mod: BbmFullMod): boolean => {
-        const selectedModsDepsIds = modsSelected.flatMap(m => m.version.dependencies);
-        const modsDeps = getAvailableMods().filter(m => selectedModsDepsIds.includes(m.version.id));
-        const modsDepsDepsIds = modsDeps.flatMap(m => m.version.dependencies);
-        return selectedModsDepsIds.includes(mod.version.id) || modsDepsDepsIds.includes(mod.version.id);
-    };
+    const isDependency = (mod: BbmFullMod): boolean => dependencyIds.has(mod.version.id);
 
     const isSelected = (mod: BbmFullMod): boolean => modsSelected.some(m => m.mod.id === mod.mod.id);
 
@@ -58,9 +73,11 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
         setFilterEnabled(b => !b);
     };
 
+    const hasFilteredMods = filteredModsMap.size > 0;
+
     return (
         modsMap && (
-            <div className="grid gap-y-1 grid-cols-[40px_min-content_min-content_min-content_min-content_1fr_min-content] bg-light-main-color-2 dark:bg-main-color-2 text-main-color-1 dark:text-light-main-color-1">
+            <div className={`grid gap-y-1 grid-cols-[40px_min-content_min-content_min-content_min-content_1fr_min-content] bg-light-main-color-2 dark:bg-main-color-2 text-main-color-1 dark:text-light-main-color-1 ${hasFilteredMods ? "" : "min-h-full grid-rows-[32px_1fr]"}`}>
                 <span className="absolute z-10 top-0 w-full h-8 bg-inherit rounded-tl-md" />
                 <span className="z-10 sticky flex items-center justify-end top-0 bg-inherit border-b-2 border-main-color-1 rounded-tl-md">
                     <BsmButton className="rounded-full h-6 w-6 p-[2px]" withBar={false} icon="search" onClick={handleToogleFilter} />
@@ -79,26 +96,34 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
                     ]} />
                 </span>
 
-                {Array.from(modsMap.keys()).map(key => modsMap.get(key).some(mod => mod.mod.name.toLowerCase().includes(filter)) && (
-                            <ul key={key} className="contents">
-                                <h2 className="col-span-full py-1 font-bold pl-3 capitalize">{key}</h2>
-                                {modsMap.get(key).map(mod => mod.mod.name.toLowerCase().includes(filter) && (
-                                    <ModItem
-                                        key={mod.mod.id}
-                                        className="contents bg-light-main-color-3 dark:bg-main-color-1 text-main-color-1 dark:text-light-main-color-1 hover:cursor-pointer"
-                                        mod={mod}
-                                        installedVersion={installedModVersion(key, mod)}
-                                        isDependency={isDependency(mod)}
-                                        isSelected={isSelected(mod)}
-                                        onChange={val => onModChange(val, mod)}
-                                        onWantInfo={onWantInfos}
-                                        wantInfo={mod.mod.id === moreInfoMod?.mod.id}
-                                        disabled={disabled}
-                                        onUninstall={() => uninstallMod?.(mod)} />
-                                ))}
-                            </ul>
-                        )
+                {!hasFilteredMods && (
+                    <div className="col-span-full flex flex-col items-center justify-center gap-1 px-4 text-center text-gray-800 dark:text-gray-200">
+                        <img className="size-24" src={BeatConflictImg} alt="" />
+                        <span className="font-bold">{t("pages.version-viewer.mods.mods-grid.no-results.title")}</span>
+                        <span className="max-w-xl text-sm italic">{t("pages.version-viewer.mods.mods-grid.no-results.description")}</span>
+                        <BsmButton className="mt-2 flex items-center justify-center gap-1 rounded-md px-3 py-1" text="pages.version-viewer.mods.mods-grid.header-bar.dropdown.compare-mods" textClassName="whitespace-nowrap" icon="compare" iconClassName="size-5 shrink-0" typeColor="primary" withBar={false} onClick={() => openModsVersionCompare?.()} />
+                    </div>
                 )}
+
+                {Array.from(filteredModsMap.entries()).map(([category, mods]) => (
+                    <ul key={category} className="contents">
+                        <h2 className="col-span-full py-1 font-bold pl-3 capitalize">{category}</h2>
+                        {mods.map(mod => (
+                            <ModItem
+                                key={mod.mod.id}
+                                className="contents bg-light-main-color-3 dark:bg-main-color-1 text-main-color-1 dark:text-light-main-color-1 hover:cursor-pointer"
+                                mod={mod}
+                                installedVersion={installedModVersion(category, mod)}
+                                isDependency={isDependency(mod)}
+                                isSelected={isSelected(mod)}
+                                onChange={val => onModChange(val, mod)}
+                                onWantInfo={onWantInfos}
+                                wantInfo={mod.mod.id === moreInfoMod?.mod.id}
+                                disabled={disabled}
+                                onUninstall={() => uninstallMod?.(mod)} />
+                        ))}
+                    </ul>
+                ))}
             </div>
         )
     );
