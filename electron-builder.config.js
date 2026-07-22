@@ -39,8 +39,7 @@ const config = {
         category: "Utility;Game;",
         extraResources: [
             "./build/icons/png",
-            "./assets/scripts/DepotDownloader",
-            "./assets/DepotDownloader.LICENSE"
+            "./assets/scripts/DepotDownloader"
         ],
         protocols: {
             name: "BSManager",
