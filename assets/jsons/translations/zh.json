@@ -154,6 +154,10 @@
                     "reinstall-all": "重新安装全部"
                 },
                 "mods-grid": {
+                    "no-results": {
+                        "title": "未找到模组",
+                        "description": "你要找的模组可能不适用于此版本。"
+                    },
                     "header-bar": {
                         "name": "名称",
                         "size": "大小",

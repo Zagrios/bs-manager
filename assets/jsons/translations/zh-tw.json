@@ -154,6 +154,10 @@
                     "reinstall-all": "重新安裝全部"
                 },
                 "mods-grid": {
+                    "no-results": {
+                        "title": "找不到 Mod",
+                        "description": "你要找的 Mod 可能不適用於此版本。"
+                    },
                     "header-bar": {
                         "name": "名稱",
                         "size": "大小",

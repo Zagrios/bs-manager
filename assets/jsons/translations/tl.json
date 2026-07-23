@@ -154,6 +154,10 @@
                     "reinstall-all": "I-reinstall ang lahat"
                 },
                 "mods-grid": {
+                    "no-results": {
+                        "title": "Walang nahanap na mod",
+                        "description": "Maaaring hindi available sa bersyong ito ang mod na hinahanap mo."
+                    },
                     "header-bar": {
                         "name": "Pangalan",
                         "size": "laki",

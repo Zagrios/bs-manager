@@ -154,6 +154,10 @@
                     "reinstall-all": "すべて再インストール"
                 },
                 "mods-grid": {
+                    "no-results": {
+                        "title": "MODが見つかりません",
+                        "description": "お探しのMODはこのバージョンでは利用できない可能性があります。"
+                    },
                     "header-bar": {
                         "name": "名前",
                         "size": "サイズ",
