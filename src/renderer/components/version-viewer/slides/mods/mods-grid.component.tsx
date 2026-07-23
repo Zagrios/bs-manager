@@ -2,6 +2,9 @@ import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-button.component";
+import { BsmIcon } from "renderer/components/svgs/bsm-icon.component";
+import { getCorrectTextColor } from "renderer/helpers/correct-text-color";
+import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { BbmCategories, BbmFullMod } from "shared/models/mods/mod.interface";
 import BeatConflictImg from "../../../../../../assets/images/apngs/beat-conflict.png";
@@ -27,6 +30,7 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
     const [filter, setFilter] = useState("");
     const [filterEnabled, setFilterEnabled] = useState(false);
     const { text: t } = useTranslationV2();
+    const { firstColor } = useThemeColor();
 
     const availableMods = useMemo(() => Array.from(modsMap.values()).flat(), [modsMap]);
 
@@ -45,11 +49,13 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
     }, [filter, modsMap]);
 
     const dependencyIds = useMemo(() => {
-        const selectedDependencies = modsSelected.flatMap(mod => mod.version.dependencies);
-        const dependencyDependencies = availableMods.filter(mod => selectedDependencies.includes(mod.version.id)).flatMap(mod => mod.version.dependencies);
+        const selectedDependencies = new Set(modsSelected.flatMap(mod => mod.version.dependencies));
+        const dependencyDependencies = availableMods.filter(mod => selectedDependencies.has(mod.version.id)).flatMap(mod => mod.version.dependencies);
 
         return new Set([...selectedDependencies, ...dependencyDependencies]);
     }, [availableMods, modsSelected]);
+
+    const selectedModIds = useMemo(() => new Set(modsSelected.map(mod => mod.mod.id)), [modsSelected]);
 
     const installedModVersion = (key: BbmCategories, mod: BbmFullMod): string => {
         if (!installed?.get(key)) {
@@ -64,7 +70,7 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
 
     const isDependency = (mod: BbmFullMod): boolean => dependencyIds.has(mod.version.id);
 
-    const isSelected = (mod: BbmFullMod): boolean => modsSelected.some(m => m.mod.id === mod.mod.id);
+    const isSelected = (mod: BbmFullMod): boolean => selectedModIds.has(mod.mod.id);
 
     const handleInput = (val: string) => setFilter(val.toLowerCase());
 
@@ -99,9 +105,14 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
                 {!hasFilteredMods && (
                     <div className="col-span-full flex flex-col items-center justify-center gap-1 px-4 text-center text-gray-800 dark:text-gray-200">
                         <img className="size-24" src={BeatConflictImg} alt="" />
-                        <span className="font-bold">{t("pages.version-viewer.mods.mods-grid.no-results.title")}</span>
-                        <span className="max-w-xl text-sm italic">{t("pages.version-viewer.mods.mods-grid.no-results.description")}</span>
-                        <BsmButton className="mt-2 flex items-center justify-center gap-1 rounded-md px-3 py-1" text="pages.version-viewer.mods.mods-grid.header-bar.dropdown.compare-mods" textClassName="whitespace-nowrap" icon="compare" iconClassName="size-5 shrink-0" typeColor="primary" withBar={false} onClick={() => openModsVersionCompare?.()} />
+                        <div className="flex flex-col items-center gap-1" role="status" aria-live="polite">
+                            <span className="font-bold">{t("pages.version-viewer.mods.mods-grid.no-results.title")}</span>
+                            <span className="max-w-xl text-sm italic">{t("pages.version-viewer.mods.mods-grid.no-results.description")}</span>
+                        </div>
+                        <button type="button" className="mt-2 flex items-center justify-center gap-1 rounded-md px-3 py-1 hover:brightness-[1.15] disabled:cursor-not-allowed disabled:brightness-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-main-color-1 dark:focus-visible:outline-light-main-color-1" style={{ backgroundColor: firstColor, color: getCorrectTextColor(firstColor) }} onClick={openModsVersionCompare} disabled={!openModsVersionCompare}>
+                            <BsmIcon className="size-5 shrink-0" icon="compare" />
+                            <span className="whitespace-nowrap">{t("pages.version-viewer.mods.mods-grid.header-bar.dropdown.compare-mods")}</span>
+                        </button>
                     </div>
                 )}
 
