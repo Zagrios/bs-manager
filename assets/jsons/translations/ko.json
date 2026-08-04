@@ -1062,7 +1062,8 @@
             "tags": "태그",
             "specificities": "특성",
             "requirements": "모드 필요",
-            "exclude": "제외하기"
+            "exclude": "제외하기",
+            "leaderboard": "리더보드"
         },
         "map-types": {
             "accuracy": "정확도",
@@ -1113,10 +1114,15 @@
         },
         "map-specificities": {
             "automapper": "오토매핑",
-            "ranked": "랭크",
             "curated": "선별됨",
             "verified": "인증됨",
             "fullSpread": "풀 스프레드"
+        },
+        "map-leaderboard": {
+            "All": "전체",
+            "Ranked": "랭크",
+            "BeatLeader": "BeatLeader",
+            "ScoreSaber": "ScoreSaber"
         },
         "map-excludes": {
             "installed": "설치됨"
@@ -1204,7 +1210,7 @@
                 },
                 "no-models": "모델을 찾을 수 없습니다.",
                 "no-internet": "인터넷에 연결할 수 없습니다.",
-                "error-occured": "오류가 발생했습니다. 다시 시도해 주세요."
+                "error-occurred": "오류가 발생했습니다. 다시 시도해 주세요."
             }
         },
         "notifications": {
