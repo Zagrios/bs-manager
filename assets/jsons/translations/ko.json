@@ -583,12 +583,12 @@
             },
             "warnings": {
                 "titles": {
-                    "FPFC_NEED_ADMIN": "FPFC mode setup incomplete",
-                    "UNABLE_TO_LAUNCH_STEAM": "Could not launch Steam"
+                    "FPFC_NEED_ADMIN": "FPFC 모드 설정 미완료",
+                    "UNABLE_TO_LAUNCH_STEAM": "Steam을 실행할 수 없음"
                 },
                 "msg": {
-                    "FPFC_NEED_ADMIN": "BSManager needs administrator privileges to properly set up FPFC mode. Run BSManager as administrator for the best experience.",
-                    "UNABLE_TO_LAUNCH_STEAM": "Steam could not be started automatically."
+                    "FPFC_NEED_ADMIN": "FPFC 모드를 올바르게 설정하려면 BSManager에 관리자 권한이 필요합니다. 최상의 환경을 위해 BSManager를 관리자 권한으로 실행하세요.",
+                    "UNABLE_TO_LAUNCH_STEAM": "Steam을 자동으로 실행할 수 없었습니다."
                 }
             }
         },
@@ -1062,7 +1062,8 @@
             "tags": "태그",
             "specificities": "특성",
             "requirements": "모드 필요",
-            "exclude": "제외하기"
+            "exclude": "제외하기",
+            "leaderboard": "리더보드"
         },
         "map-types": {
             "accuracy": "정확도",
@@ -1113,10 +1114,15 @@
         },
         "map-specificities": {
             "automapper": "오토매핑",
-            "ranked": "랭크",
             "curated": "선별됨",
             "verified": "인증됨",
             "fullSpread": "풀 스프레드"
+        },
+        "map-leaderboard": {
+            "All": "전체",
+            "Ranked": "랭크",
+            "BeatLeader": "BeatLeader",
+            "ScoreSaber": "ScoreSaber"
         },
         "map-excludes": {
             "installed": "설치됨"
@@ -1204,7 +1210,7 @@
                 },
                 "no-models": "모델을 찾을 수 없습니다.",
                 "no-internet": "인터넷에 연결할 수 없습니다.",
-                "error-occured": "오류가 발생했습니다. 다시 시도해 주세요."
+                "error-occurred": "오류가 발생했습니다. 다시 시도해 주세요."
             }
         },
         "notifications": {
