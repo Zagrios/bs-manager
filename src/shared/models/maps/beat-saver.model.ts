@@ -257,10 +257,9 @@ export interface MapSort {
     ascending: boolean;
 }
 
-export interface SearchResponse {
-    docs: BsvMapDetail[];
-    redirect: string;
-}
+export type SearchResponse =
+    | { docs: BsvMapDetail[] }
+    | { redirect: string };
 
 export interface PlaylistSearchResponse {
     docs: BsvPlaylist[];
