@@ -25,7 +25,7 @@ ipc.on("choose-folder", (args, reply) => {
         defaultPath: args?.defaultPath ?? ""
     };
 
-    if (args?.showHidden) {
+    if (args?.showHidden && process.platform !== "linux") {
         options.properties.push("showHiddenFiles");
     }
 

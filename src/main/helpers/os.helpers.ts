@@ -101,7 +101,12 @@ export function bsmExec(command: string, options?: BsmExecOptions): Promise<{
     logValues("exec", command, options);
 
     return new Promise((resolve, reject) => {
-        cp.exec(command, options?.options || {}, (error: Error, stdout: string, stderr: string) => {
+        const execOptions: cp.ExecOptionsWithStringEncoding = {
+            ...options.options,
+            encoding: "utf8",
+        };
+
+        cp.exec(command, execOptions, (error, stdout, stderr) => {
             if (error) { return reject(error); }
             resolve({ stdout, stderr });
         });
