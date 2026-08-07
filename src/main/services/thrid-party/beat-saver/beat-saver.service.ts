@@ -1,6 +1,7 @@
 import { splitIntoChunk } from "../../../../shared/helpers/array.helpers";
+import { parseBsrCode } from "shared/helpers/beat-saver.helpers";
 import { BsvMapDetail } from "shared/models/maps";
-import { BsvPlaylist, BsvPlaylistPage, PlaylistSearchParams, SearchParams } from "shared/models/maps/beat-saver.model";
+import { BsvPlaylist, BsvPlaylistPage, PlaylistSearchParams, SearchParams, SearchResponse } from "shared/models/maps/beat-saver.model";
 import { BeatSaverApiService } from "./beat-saver-api.service";
 import log from "electron-log";
 
@@ -52,16 +53,26 @@ export class BeatSaverService {
         return this.bsaverApi.getMapDetailsById(id);
     }
 
-    public searchMaps(search: SearchParams): Promise<BsvMapDetail[]> {
-        return this.bsaverApi
-            .searchMaps(search)
-            .then(res => {
-                return res.docs;
-            })
-            .catch(e => {
-                log.error(e);
-                return e;
-            });
+    public async searchMaps(search: SearchParams): Promise<BsvMapDetail[]> {
+        try {
+            const bsrMapId = parseBsrCode(search.q);
+            const response: SearchResponse = bsrMapId
+                ? { redirect: bsrMapId }
+                : await this.bsaverApi.searchMaps(search);
+
+            if ("redirect" in response) {
+                if ((search.page ?? 0) > 0) {
+                    return [];
+                }
+
+                return [await this.getMapDetailsById(response.redirect)];
+            }
+
+            return response.docs;
+        } catch (error) {
+            log.error(error);
+            return [];
+        }
     }
 
     public searchPlaylists(search: PlaylistSearchParams): Promise<BsvPlaylist[]> {

@@ -34,6 +34,7 @@ import { sToMs } from "shared/helpers/time.helpers";
 import formatDuration from "format-duration";
 import { NpsIcon } from "renderer/components/svgs/icons/nps-icon.component";
 import { SpeedIcon } from "renderer/components/svgs/icons/speed-icon.component";
+import { formatBsrCode } from "shared/helpers/beat-saver.helpers";
 
 export type MapItemComponentProps<T = unknown> = {
     hash: string;
@@ -131,7 +132,7 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
         }
         linkOpener.open(previewUrl, true);
     };
-    const copyBsr = () => navigator.clipboard.writeText(`!bsr ${mapId}`);
+    const copyBsr = () => navigator.clipboard.writeText(formatBsrCode(mapId));
     const toogleMusic = () => {
         if (songPlaying) {
             return audioPlayer.pause();
