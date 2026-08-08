@@ -13,14 +13,45 @@ import internal from 'stream';
 import { app, net } from 'electron';
 import { CookieJar } from 'tough-cookie';
 
+type IpFamily = 4 | 6;
+
+type NetworkFamilySelection = {
+    domain: string;
+    cachedFamily?: IpFamily;
+    familiesToTry: readonly IpFamily[];
+};
+
+type PausableElectronResponse = {
+    pause(): void;
+    resume(): void;
+};
+
+class BufferAccumulator {
+    private readonly chunks: Buffer[] = [];
+    private byteLength = 0;
+
+    public get length(): number {
+        return this.byteLength;
+    }
+
+    public append(chunk: Buffer): void {
+        this.chunks.push(chunk);
+        this.byteLength += chunk.length;
+    }
+
+    public toBuffer(): Buffer {
+        return Buffer.concat(this.chunks, this.byteLength);
+    }
+}
+
 export class RequestService {
     private static instance: RequestService;
     private readonly baseHeaders = {
         'User-Agent': `BSManager/${app.getVersion()} (Electron/${process.versions.electron} Chrome/${process.versions.chrome} Node/${process.versions.node})`,
     }
 
-    private readonly PREFERRED_FAMILY_TESTS = [4, 6];
-    private preferredFamilyCache: Record<string, number> = {};
+    private readonly PREFERRED_FAMILY_TESTS: readonly IpFamily[] = [4, 6];
+    private preferredFamilyCache: Record<string, IpFamily> = {};
 
     public static getInstance(): RequestService {
         if (!RequestService.instance) {
@@ -36,6 +67,24 @@ export class RequestService {
         return hostname === 'beatmods.com' || hostname.endsWith('.beatmods.com');
     }
 
+    private getNetworkFamilySelection(url: string): NetworkFamilySelection {
+        const domain = new URL(url).hostname;
+        const cachedFamily = this.preferredFamilyCache[domain];
+
+        return {
+            domain,
+            cachedFamily,
+            familiesToTry: cachedFamily ? [cachedFamily] : this.PREFERRED_FAMILY_TESTS,
+        };
+    }
+
+    private rememberSuccessfulFamily(selection: NetworkFamilySelection, family: IpFamily): void {
+        if (selection.cachedFamily) return;
+
+        log.info(`Caching "${selection.domain}" with IPv${family}`);
+        this.preferredFamilyCache[selection.domain] = family;
+    }
+
     /**
      * Uses Electron's Chromium network stack instead of Node's HTTP stack
      * to avoid Cloudflare timeout issues that occur with beatmods.com
@@ -48,7 +97,7 @@ export class RequestService {
                 headers: this.baseHeaders,
             });
 
-            let responseBody = Buffer.alloc(0);
+            const responseBody = new BufferAccumulator();
             let responseHeaders: IncomingHttpHeaders = {};
             let isResolved = false;
 
@@ -77,7 +126,7 @@ export class RequestService {
                 }
 
                 response.on('data', (chunk: Buffer) => {
-                    responseBody = Buffer.concat([responseBody, chunk]);
+                    responseBody.append(chunk);
                 });
 
                 response.on('end', () => {
@@ -85,7 +134,7 @@ export class RequestService {
                     isResolved = true;
                     cleanup();
                     try {
-                        const bodyText = responseBody.toString('utf-8');
+                        const bodyText = responseBody.toBuffer().toString('utf-8');
                         const data = JSON.parse(bodyText) as T;
                         resolve({ data, headers: responseHeaders });
                     } catch (parseError) {
@@ -118,8 +167,8 @@ export class RequestService {
             return this.requestWithElectronNet<T>(url);
         }
 
-        const domain = (new URL(url)).hostname;
-        const cachedFamily = this.preferredFamilyCache[domain];
+        const familySelection = this.getNetworkFamilySelection(url);
+        const { cachedFamily } = familySelection;
         if (cachedFamily) {
             try {
                 return await this.requestData<T>(url, cachedFamily);
@@ -129,11 +178,10 @@ export class RequestService {
         }
 
         // Try on each IPv4/6 families on first request to a domain/website
-        for (const family of this.PREFERRED_FAMILY_TESTS) {
+        for (const family of familySelection.familiesToTry) {
             try {
                 const response = await this.requestData<T>(url, family);
-                log.info(`Caching "${domain}" with IPv${family}`);
-                this.preferredFamilyCache[domain] = family;
+                this.rememberSuccessfulFamily(familySelection, family);
                 return response;
             } catch (err) {
                 log.warn(`IPv${family} request failed, trying next one... URL: ${url}`, err);
@@ -143,7 +191,7 @@ export class RequestService {
         throw new Error(`IPv4 and IPv6 requests failed for URL: ${url}`);
     }
 
-    private async requestData<T>(url: string, family: number): Promise<{ data: T; headers: IncomingHttpHeaders }> {
+    private async requestData<T>(url: string, family: IpFamily): Promise<{ data: T; headers: IncomingHttpHeaders }> {
 
         const cookieJar = new CookieJar();
 
@@ -254,11 +302,20 @@ export class RequestService {
                     }
                 });
 
+                // Electron documents IncomingMessage as a Readable stream, but its generated types omit these methods.
+                const pausableResponse = response as typeof response & PausableElectronResponse;
                 response.on('data', (chunk: Buffer) => {
                     if (file && !file.destroyed) {
                         progress.current += chunk.length;
                         subscriber.next(progress);
-                        file.write(chunk);
+                        if (!file.write(chunk)) {
+                            pausableResponse.pause();
+                            file.once('drain', () => {
+                                if (!isCompleted && file && !file.destroyed) {
+                                    pausableResponse.resume();
+                                }
+                            });
+                        }
                     }
                 });
 
@@ -324,10 +381,8 @@ export class RequestService {
             let attempt = 0;
             let stream: got.GotEmitter & internal.Duplex;
 
-            const domain = (new URL(url)).hostname;
-            const cachedFamily = this.preferredFamilyCache[domain];
-            const familiesToTry = cachedFamily
-                ? [ cachedFamily ] : this.PREFERRED_FAMILY_TESTS;
+            const familySelection = this.getNetworkFamilySelection(url);
+            const { familiesToTry } = familySelection;
 
             const tryNextFamily = () => {
                 if (attempt >= familiesToTry.length) {
@@ -342,10 +397,7 @@ export class RequestService {
                 stream = got.stream(url, { dnsLookupIpVersion: family, headers: this.baseHeaders });
 
                 stream.on('response', (response) => {
-                    if (!cachedFamily) {
-                        log.info(`Caching "${domain}" with IPv${family}`);
-                        this.preferredFamilyCache[domain] = family;
-                    }
+                    this.rememberSuccessfulFamily(familySelection, family);
 
                     const filename = opt?.preferContentDisposition ? this.getFilenameFromContentDisposition(response.headers['content-disposition']) : null;
 
@@ -421,7 +473,7 @@ export class RequestService {
                 }
             }
 
-            let data = Buffer.alloc(0);
+            const data = new BufferAccumulator();
             let responseHeaders: IncomingHttpHeaders = {};
             let isCompleted = false;
 
@@ -449,7 +501,7 @@ export class RequestService {
                 responseHeaders = response.headers as IncomingHttpHeaders;
 
                 response.on('data', (chunk: Buffer) => {
-                    data = Buffer.concat([data, chunk]);
+                    data.append(chunk);
                     progress.current = data.length;
                     subscriber.next(progress);
                 });
@@ -457,7 +509,7 @@ export class RequestService {
                 response.on('end', () => {
                     if (isCompleted) return;
                     isCompleted = true;
-                    progress.data = data;
+                    progress.data = data.toBuffer();
                     // Required to maintain API compatibility with got-based implementation
                     const mockResponse = {
                         headers: responseHeaders,
@@ -512,10 +564,8 @@ export class RequestService {
             let attempt = 0;
             let stream: got.GotEmitter & internal.Duplex;
 
-            const domain = (new URL(url)).hostname;
-            const cachedFamily = this.preferredFamilyCache[domain];
-            const familiesToTry = cachedFamily
-                ? [ cachedFamily ] : this.PREFERRED_FAMILY_TESTS;
+            const familySelection = this.getNetworkFamilySelection(url);
+            const { familiesToTry } = familySelection;
 
             const tryNextFamily = () => {
                 if (attempt >= familiesToTry.length) {
@@ -527,19 +577,16 @@ export class RequestService {
                 // @ts-ignore (ESM is not well supported in this project, We need to move out electron-react-boilerplate, and use Vite)
                 stream = got.stream(url, { dnsLookupIpVersion: family, ...(options ?? {}), headers });
 
-                let data = Buffer.alloc(0);
+                const data = new BufferAccumulator();
                 let response: IncomingMessage;
 
                 stream.once('response', (res) => {
-                    if (!cachedFamily) {
-                        log.info(`Caching "${domain}" with IPv${family}`);
-                        this.preferredFamilyCache[domain] = family;
-                    }
+                    this.rememberSuccessfulFamily(familySelection, family);
                     response = res;
                 });
 
                 stream.on('data', (chunk: Buffer) => {
-                    data = Buffer.concat([data, chunk]);
+                    data.append(chunk);
                 });
 
                 stream.on('downloadProgress', ({ transferred, total }) => {
@@ -555,7 +602,7 @@ export class RequestService {
                 });
 
                 stream.on('end', () => {
-                    progress.data = data;
+                    progress.data = data.toBuffer();
                     progress.extra = response;
                     subscriber.next(progress);
                     subscriber.complete();
