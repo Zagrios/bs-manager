@@ -74,8 +74,8 @@ export const AvailableVersionItem = memo(function AvailableVersionItem({version}
                     <div className="flex items-center gap-1.5">
                         {version.ReleaseURL && (
                             <a href={version.ReleaseURL} target="_blank" onClick={e => e.stopPropagation()} className="flex flex-row justify-between items-center rounded-full bg-black bg-opacity-30 text-white pb-px overflow-hidden hover:bg-opacity-50" tabIndex={-1}>
-                                <SteamIcon className="w-[25px] h-[25px] transition-transform group-hover/card:rotate-[-360deg] duration-300 motion-reduce:transition-none" />
-                                <span className="relative -left-px text-sm w-fit max-w-0 text-center overflow-hidden h-full whitespace-nowrap pb-[3px] transition-all group-hover/card:max-w-[200px] group-hover/card:px-1 duration-300 motion-reduce:transition-none">{t("pages.available-versions.steam-release")}</span>
+                                <SteamIcon className="w-[25px] h-[25px] transition-transform group-hover/card:rotate-[-360deg] duration-300" />
+                                <span className="relative -left-px text-sm w-fit max-w-0 text-center overflow-hidden h-full whitespace-nowrap pb-[3px] transition-all group-hover/card:max-w-[200px] group-hover/card:px-1 duration-300">{t("pages.available-versions.steam-release")}</span>
                             </a>
                         )}
                         <Tippy content={t("pages.available-versions.view-mods")} placement="top" theme="default" animation={false}>

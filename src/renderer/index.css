@@ -226,9 +226,3 @@
         transform: none;
     }
 }
-
-@media (prefers-reduced-motion: reduce) {
-    .glow-on-hover {
-        animation: none;
-    }
-}

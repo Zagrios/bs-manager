@@ -24,9 +24,13 @@ jest.mock("renderer/components/shared/bsm-image.component", () => {
 jest.mock("renderer/components/shared/glow-effect.component", () => ({
     GlowEffect: () => null,
 }));
-jest.mock("renderer/components/svgs/icons/steam-icon.component", () => ({
-    SteamIcon: () => null,
-}));
+jest.mock("renderer/components/svgs/icons/steam-icon.component", () => {
+    const ReactModule = jest.requireActual("react") as typeof import("react");
+
+    return {
+        SteamIcon: ({ className }: { className?: string }) => ReactModule.createElement("svg", { className, "data-steam-icon": true }),
+    };
+});
 jest.mock("renderer/components/svgs/icons/download-icon.component", () => ({
     DownloadIcon: () => null,
 }));
@@ -137,6 +141,18 @@ describe("AvailableVersionItem download interactions", () => {
 
         expect(clickStop).toHaveBeenCalledTimes(1);
         expect(startDownload).not.toHaveBeenCalled();
+        act(() => renderer.unmount());
+    });
+
+    it("keeps the Steam button animated when the system reduces motion", () => {
+        const { renderer } = renderItem();
+        const steamIcon = renderer.root.findByProps({ "data-steam-icon": true });
+        const releaseLabel = renderer.root.findAllByType("span").find(node => node.children.includes("pages.available-versions.steam-release"));
+
+        expect(steamIcon.props.className).toContain("transition-transform");
+        expect(steamIcon.props.className).not.toContain("motion-reduce:");
+        expect(releaseLabel!.props.className).toContain("transition-all");
+        expect(releaseLabel!.props.className).not.toContain("motion-reduce:");
         act(() => renderer.unmount());
     });
 
