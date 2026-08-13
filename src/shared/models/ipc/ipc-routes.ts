@@ -108,7 +108,7 @@ export interface IpcChannelMapping {
     "bs.uninstall": { request: BSVersion, response: void };
 
     /* ** bs-version-ipcs ** */
-    "bs-version.get-version-dict": { request: void, response: BSVersion[] };
+    "bs-version.get-version-dict": { request: { refresh?: boolean }, response: BSVersion[] };
     "bs-version.installed-versions": { request: void, response: BSVersion[] };
     "bs-version.open-folder": { request: BSVersion, response: void };
     "bs-version.edit": { request: { version: BSVersion; name: string; color: string }, response: BSVersion };

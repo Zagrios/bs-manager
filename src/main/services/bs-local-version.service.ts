@@ -29,7 +29,7 @@ export class BSLocalVersionService {
     private readonly installLocationService: InstallationLocationService;
     private readonly steamService: SteamService;
     private readonly oculusService: OculusService;
-    private readonly remoteVersionService: BSVersionLibService;
+    private readonly versionLibService: BSVersionLibService;
     private readonly configService: ConfigurationService;
     private readonly linker: FolderLinkerService;
     private readonly staticConfig: StaticConfigurationService;
@@ -46,7 +46,7 @@ export class BSLocalVersionService {
         this.installLocationService = InstallationLocationService.getInstance();
         this.steamService = SteamService.getInstance();
         this.oculusService = OculusService.getInstance();
-        this.remoteVersionService = BSVersionLibService.getInstance();
+        this.versionLibService = BSVersionLibService.getInstance();
         this.configService = ConfigurationService.getInstance();
         this.linker = FolderLinkerService.getInstance();
         this.staticConfig = StaticConfigurationService.getInstance();
@@ -61,7 +61,7 @@ export class BSLocalVersionService {
             return null;
         }
 
-        const versionsDict = (await this.remoteVersionService.getAvailableVersions()).reverse();
+        const versionsDict = [...(await this.versionLibService.getCachedVersions())].reverse();
 
         let stream: ReadStream;
 
