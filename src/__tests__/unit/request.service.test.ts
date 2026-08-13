@@ -42,11 +42,11 @@ type MockWriteStream = EventEmitter & {
 
 type RequestServiceInternals = {
     preferredFamilyCache: Record<string, number>;
-    requestData: (url: string, family: number) => Promise<{ data: unknown; headers: Record<string, string> }>;
 };
 
 const netRequestMock = net.request as unknown as jest.Mock;
 const createWriteStreamMock = createWriteStream as unknown as jest.Mock;
+const gotMock = got as unknown as jest.Mock;
 const gotStreamMock = got.stream as unknown as jest.Mock;
 
 function createElectronRequest(): MockElectronRequest {
@@ -93,6 +93,7 @@ describe("RequestService network and memory behavior", () => {
         jest.clearAllMocks();
         netRequestMock.mockReset();
         createWriteStreamMock.mockReset();
+        gotMock.mockReset();
         gotStreamMock.mockReset();
         internals.preferredFamilyCache = {};
     });
@@ -216,30 +217,163 @@ describe("RequestService network and memory behavior", () => {
     });
 
     it("tries IPv4 then IPv6 and caches the first successful family", async () => {
-        const requestData = jest.spyOn(internals, "requestData");
-        requestData
+        gotMock
             .mockRejectedValueOnce(new Error("IPv4 unavailable"))
-            .mockResolvedValueOnce({ data: { ok: true }, headers: {} });
+            .mockResolvedValueOnce({
+                body: '{"ok":true}',
+                headers: { "content-type": "application/json" },
+            });
 
         await expect(service.getJSON("https://example.com/data")).resolves.toEqual({
             data: { ok: true },
-            headers: {},
+            headers: { "content-type": "application/json" },
         });
-        expect(requestData.mock.calls).toEqual([
-            ["https://example.com/data", 4],
-            ["https://example.com/data", 6],
-        ]);
-        expect(internals.preferredFamilyCache["example.com"]).toBe(6);
+
+        expect(gotMock).toHaveBeenCalledTimes(2);
+        expect(gotMock).toHaveBeenNthCalledWith(
+            1,
+            "https://example.com/data",
+            expect.objectContaining({ dnsLookupIpVersion: 4 })
+        );
+        expect(gotMock).toHaveBeenNthCalledWith(
+            2,
+            "https://example.com/data",
+            expect.objectContaining({ dnsLookupIpVersion: 6 })
+        );
+
+        gotMock.mockClear();
+        gotMock.mockResolvedValueOnce({
+            body: '{"cached":true}',
+            headers: { "content-type": "application/json" },
+        });
+
+        await expect(service.getJSON("https://example.com/data")).resolves.toEqual({
+            data: { cached: true },
+            headers: { "content-type": "application/json" },
+        });
+        expect(gotMock).toHaveBeenCalledTimes(1);
+        expect(gotMock).toHaveBeenCalledWith(
+            "https://example.com/data",
+            expect.objectContaining({ dnsLookupIpVersion: 6 })
+        );
+    });
+
+    it("forwards cancellation and retry options to every attempted network family", async () => {
+        const controller = new AbortController();
+        gotMock
+            .mockRejectedValueOnce(new Error("IPv4 unavailable"))
+            .mockResolvedValueOnce({
+                body: '{"ok":true}',
+                headers: { "content-type": "application/json" },
+            });
+
+        await expect(service.getJSON("https://example.com/data", {
+            signal: controller.signal,
+            retryLimit: 0,
+        })).resolves.toEqual({
+            data: { ok: true },
+            headers: { "content-type": "application/json" },
+        });
+
+        expect(gotMock).toHaveBeenCalledTimes(2);
+        expect(gotMock).toHaveBeenNthCalledWith(
+            1,
+            "https://example.com/data",
+            expect.objectContaining({
+                dnsLookupIpVersion: 4,
+                signal: controller.signal,
+                retry: { limit: 0 },
+            })
+        );
+        expect(gotMock).toHaveBeenNthCalledWith(
+            2,
+            "https://example.com/data",
+            expect.objectContaining({
+                dnsLookupIpVersion: 6,
+                signal: controller.signal,
+                retry: { limit: 0 },
+            })
+        );
+    });
+
+    it("keeps cancellation and retry options across a scripted JSON redirect", async () => {
+        const controller = new AbortController();
+        const redirectUrl = "https://example.com/redirected.json";
+        gotMock
+            .mockResolvedValueOnce({
+                body: `document.cookie="session=test";location.href="${redirectUrl}"`,
+                headers: { "content-type": "text/html" },
+            })
+            .mockResolvedValueOnce({
+                body: { ok: true },
+                headers: { "content-type": "application/json" },
+            });
+
+        await expect(service.getJSON("https://example.com/data", {
+            signal: controller.signal,
+            retryLimit: 0,
+        })).resolves.toEqual({
+            data: { ok: true },
+            headers: { "content-type": "application/json" },
+        });
+
+        expect(gotMock).toHaveBeenCalledTimes(2);
+        const firstOptions = gotMock.mock.calls[0][1];
+        const secondOptions = gotMock.mock.calls[1][1];
+        expect(firstOptions).toEqual(expect.objectContaining({
+            signal: controller.signal,
+            retry: { limit: 0 },
+        }));
+        expect(secondOptions).toEqual(expect.objectContaining({
+            signal: controller.signal,
+            retry: { limit: 0 },
+            responseType: "json",
+        }));
+        expect(secondOptions.cookieJar).toBe(firstOptions.cookieJar);
+    });
+
+    it("stops before the next family when the request is aborted", async () => {
+        const controller = new AbortController();
+        const abortError = new Error("catalog request aborted");
+        gotMock.mockImplementationOnce(() => {
+            controller.abort();
+            return Promise.reject(abortError);
+        });
+
+        await expect(service.getJSON("https://example.com/data", {
+            signal: controller.signal,
+            retryLimit: 0,
+        })).rejects.toBe(abortError);
+
+        expect(gotMock).toHaveBeenCalledTimes(1);
+        expect(gotMock).toHaveBeenCalledWith(
+            "https://example.com/data",
+            expect.objectContaining({
+                dnsLookupIpVersion: 4,
+                signal: controller.signal,
+                retry: { limit: 0 },
+            })
+        );
     });
 
     it("does not fall back when a cached family fails", async () => {
-        internals.preferredFamilyCache["example.com"] = 6;
-        const requestData = jest.spyOn(internals, "requestData").mockRejectedValue(new Error("offline"));
+        gotMock
+            .mockRejectedValueOnce(new Error("IPv4 unavailable"))
+            .mockResolvedValueOnce({ body: '{"ok":true}', headers: {} });
+        await service.getJSON("https://example.com/data");
+
+        gotMock.mockClear();
+        const cachedFamilyError = new Error("offline");
+        gotMock.mockRejectedValueOnce(cachedFamilyError);
 
         await expect(service.getJSON("https://example.com/data")).rejects.toThrow(
             "Request failed: https://example.com/data"
         );
-        expect(requestData.mock.calls).toEqual([["https://example.com/data", 6]]);
+        expect(gotMock).toHaveBeenCalledTimes(1);
+        expect(gotMock).toHaveBeenCalledWith(
+            "https://example.com/data",
+            expect.objectContaining({ dnsLookupIpVersion: 6 })
+        );
     });
 
     it("reads the cached family when a download Observable is subscribed", async () => {

@@ -21,6 +21,11 @@ type NetworkFamilySelection = {
     familiesToTry: readonly IpFamily[];
 };
 
+type GetJSONOptions = {
+    signal?: AbortSignal;
+    retryLimit?: number;
+};
+
 type PausableElectronResponse = {
     pause(): void;
     resume(): void;
@@ -161,7 +166,7 @@ export class RequestService {
         });
     }
 
-    public async getJSON<T = unknown>(url: string): Promise<{ data: T; headers: IncomingHttpHeaders }> {
+    public async getJSON<T = unknown>(url: string, options?: GetJSONOptions): Promise<{ data: T; headers: IncomingHttpHeaders }> {
         // Node's HTTP stack has Cloudflare compatibility issues with beatmods.com
         if (this.isBeatmodsUrl(url)) {
             return this.requestWithElectronNet<T>(url);
@@ -171,36 +176,46 @@ export class RequestService {
         const { cachedFamily } = familySelection;
         if (cachedFamily) {
             try {
-                return await this.requestData<T>(url, cachedFamily);
-            } catch (error: any) {
-                throw new Error(`Request failed: ${url}`, error);
+                return await this.requestData<T>(url, cachedFamily, options);
+            } catch (error) {
+                if (options?.signal?.aborted) {
+                    throw error;
+                }
+                throw new Error(`Request failed: ${url}`, { cause: error });
             }
         }
 
         // Try on each IPv4/6 families on first request to a domain/website
         for (const family of familySelection.familiesToTry) {
             try {
-                const response = await this.requestData<T>(url, family);
+                const response = await this.requestData<T>(url, family, options);
                 this.rememberSuccessfulFamily(familySelection, family);
                 return response;
-            } catch (err) {
-                log.warn(`IPv${family} request failed, trying next one... URL: ${url}`, err);
+            } catch (error) {
+                if (options?.signal?.aborted) {
+                    throw error;
+                }
+                log.warn(`IPv${family} request failed, trying next one... URL: ${url}`, error);
             }
         }
 
         throw new Error(`IPv4 and IPv6 requests failed for URL: ${url}`);
     }
 
-    private async requestData<T>(url: string, family: IpFamily): Promise<{ data: T; headers: IncomingHttpHeaders }> {
+    private async requestData<T>(url: string, family: IpFamily, options?: GetJSONOptions): Promise<{ data: T; headers: IncomingHttpHeaders }> {
 
         const cookieJar = new CookieJar();
 
-        const first = await got(url, {
-            // @ts-ignore (ESM is not well supported in this project, We need to move out electron-react-boilerplate, and use Vite)
+        const requestOptions = {
             dnsLookupIpVersion: family,
             cookieJar,
-            headers: this.baseHeaders
-        });
+            headers: this.baseHeaders,
+            ...(options?.signal ? { signal: options.signal } : {}),
+            ...(options?.retryLimit !== undefined ? { retry: { limit: options.retryLimit } } : {}),
+        };
+
+        // @ts-ignore (ESM is not well supported in this project, We need to move out electron-react-boilerplate, and use Vite)
+        const first = await got(url, requestOptions);
 
         // Follow script redirect to get the JSON
         if (first.headers['content-type']?.includes('text/html')) {
@@ -220,12 +235,11 @@ export class RequestService {
             const jsonUrl = redirectMatch[1];
             await cookieJar.setCookie(cookieString, jsonUrl);
 
+            // @ts-ignore (ESM is not well supported in this project, We need to move out electron-react-boilerplate, and use Vite)
             const second = await got(jsonUrl, {
+                ...requestOptions,
                 // @ts-ignore (ESM is not well supported in this project, We need to move out electron-react-boilerplate, and use Vite)
-                dnsLookupIpVersion: family,
                 responseType: "json",
-                cookieJar,
-                headers: this.baseHeaders
             });
 
             return {

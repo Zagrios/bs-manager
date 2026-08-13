@@ -10,9 +10,9 @@ import { FolderLinkerService } from "main/services/folder-linker.service";
 
 const ipc = IpcService.getInstance();
 
-ipc.on("bs-version.get-version-dict", (_, reply) => {
+ipc.on("bs-version.get-version-dict", (args, reply) => {
     const versionsLib = BSVersionLibService.getInstance();
-    reply(from(versionsLib.getAvailableVersions()));
+    reply(versionsLib.getAvailableVersions$(args?.refresh));
 });
 
 ipc.on("bs-version.installed-versions", (_, reply) => {

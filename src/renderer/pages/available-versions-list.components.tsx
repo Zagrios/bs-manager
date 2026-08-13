@@ -83,7 +83,7 @@ export function AvailableVersionsList() {
 
     const refreshVersions = () => {
         return Promise.all([
-            versionManager.askAvailableVersions(),
+            versionManager.refreshAvailableVersions(),
             versionManager.askInstalledVersions()
         ]).catch(logRenderError);
     }

@@ -1,5 +1,5 @@
 import { BSVersion } from "shared/bs-version.interface";
-import { BehaviorSubject, Observable, Subscription, lastValueFrom, map, share, shareReplay, throwError } from "rxjs";
+import { BehaviorSubject, Observable, Subscription, lastValueFrom, shareReplay, tap, throwError } from "rxjs";
 import { IpcService } from "./ipc.service";
 import { ModalExitCode, ModalService } from "./modale.service";
 import { NotificationService } from "./notification.service";
@@ -9,6 +9,7 @@ import { popElement } from "shared/helpers/array.helpers";
 import { ImportVersionModal } from "renderer/components/modal/modal-types/import-version-modal.component";
 import { Progression } from "main/helpers/fs.helpers";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
+import { logRenderError } from "renderer";
 
 export class BSVersionManagerService {
     private static instance: BSVersionManagerService;
@@ -17,9 +18,10 @@ export class BSVersionManagerService {
     private readonly modalService: ModalService;
     private readonly notification: NotificationService;
     private readonly progressBar: ProgressBarService;
-    private readonly modals: ModalService;
 
-    private askInstalledVersionsObserver$: Observable<BSVersion[]> | null = null;
+    private availableVersionsRefreshPromise: Promise<BSVersion[]> | null = null;
+    private installedVersionsRequestPromise: Promise<BSVersion[]> | null = null;
+    private installedVersionsRescanQueued = false;
     public readonly installedVersions$: BehaviorSubject<BSVersion[]> = new BehaviorSubject([]);
     public readonly availableVersions$: BehaviorSubject<BSVersion[]> = new BehaviorSubject([]);
 
@@ -28,10 +30,9 @@ export class BSVersionManagerService {
         this.modalService = ModalService.getInstance();
         this.notification = NotificationService.getInstance();
         this.progressBar = ProgressBarService.getInstance();
-        this.modals = ModalService.getInstance();
 
-        this.askAvailableVersions();
-        this.askInstalledVersions();
+        this.refreshAvailableVersions().catch(logRenderError);
+        this.askInstalledVersions().catch(logRenderError);
     }
 
     public static getInstance() {
@@ -41,52 +42,87 @@ export class BSVersionManagerService {
         return BSVersionManagerService.instance;
     }
 
-    public setInstalledVersions(versions: BSVersion[]) {
-        const sorted = BSVersionManagerService.sortVersions(versions);
-        this.installedVersions$.next(BSVersionManagerService.removeDuplicateVersions(sorted));
+    public setInstalledVersions(versions: BSVersion[]): void {
+        this.installedVersions$.next(BSVersionManagerService.normalizeInstalledVersions(versions));
     }
 
     public getInstalledVersions(): BSVersion[] {
         return this.installedVersions$.value;
     }
 
-    public askAvailableVersions(): Promise<BSVersion[]> {
-        return lastValueFrom(this.ipcService.sendV2("bs-version.get-version-dict")).then(res => {
-            this.availableVersions$.next(res);
-            return res;
-        });
-    }
-
-    public async askInstalledVersions(): Promise<BSVersion[]> {
-        if (this.askInstalledVersionsObserver$) {
-            return lastValueFrom(this.askInstalledVersionsObserver$);
+    public refreshAvailableVersions(): Promise<BSVersion[]> {
+        if (this.availableVersionsRefreshPromise) {
+            return this.availableVersionsRefreshPromise;
         }
 
-        this.askInstalledVersionsObserver$ = this.ipcService
-            .sendV2("bs-version.installed-versions")
-            .pipe(
-                map(versions => {
-                    let processed = BSVersionManagerService.sortVersions(versions);
-                    processed = BSVersionManagerService.removeDuplicateVersions(processed);
-                    return processed;
-                }),
-                share(),
-            );
+        let previousVersions: BSVersion[] | null = null;
 
-        return lastValueFrom(this.askInstalledVersionsObserver$)
+        const refreshPromise = lastValueFrom(
+            this.ipcService.sendV2("bs-version.get-version-dict", { refresh: true }).pipe(
+                tap(versions => {
+                    this.availableVersions$.next(versions);
+
+                    if (
+                        previousVersions
+                        && !BSVersionManagerService.haveSameVersionSequence(previousVersions, versions)
+                    ) {
+                        this.queueInstalledVersionsRescan();
+                    }
+
+                    previousVersions = versions;
+                }),
+            )
+        ).finally(() => {
+            if (this.availableVersionsRefreshPromise === refreshPromise) {
+                this.availableVersionsRefreshPromise = null;
+            }
+        });
+
+        this.availableVersionsRefreshPromise = refreshPromise;
+        return refreshPromise;
+    }
+
+    private queueInstalledVersionsRescan(): void {
+        if (this.installedVersionsRequestPromise) {
+            this.installedVersionsRescanQueued = true;
+            return;
+        }
+
+        this.askInstalledVersions().catch(logRenderError);
+    }
+
+    public askInstalledVersions(): Promise<BSVersion[]> {
+        if (this.installedVersionsRequestPromise) {
+            return this.installedVersionsRequestPromise;
+        }
+
+        const requestPromise = lastValueFrom(this.ipcService.sendV2("bs-version.installed-versions"))
             .then(versions => {
-                this.setInstalledVersions(versions);
-                return versions;
+                const normalizedVersions = BSVersionManagerService.normalizeInstalledVersions(versions);
+                this.installedVersions$.next(normalizedVersions);
+                return normalizedVersions;
             })
             .finally(() => {
-                this.askInstalledVersionsObserver$ = null;
+                if (this.installedVersionsRequestPromise !== requestPromise) {
+                    return;
+                }
+
+                this.installedVersionsRequestPromise = null;
+
+                if (this.installedVersionsRescanQueued) {
+                    this.installedVersionsRescanQueued = false;
+                    this.askInstalledVersions().catch(logRenderError);
+                }
             });
+
+        this.installedVersionsRequestPromise = requestPromise;
+        return requestPromise;
     }
 
     public async isVersionInstalled(version: BSVersion): Promise<boolean> {
         try {
-            const versions: BSVersion[] = this.askInstalledVersionsObserver$
-                ? await lastValueFrom(this.askInstalledVersionsObserver$)
+            const versions: BSVersion[] = this.installedVersionsRequestPromise
+                ? await this.installedVersionsRequestPromise
                 : this.getInstalledVersions();
 
             return !!versions.find(v =>
@@ -110,7 +146,7 @@ export class BSVersionManagerService {
         }
 
         return lastValueFrom(this.ipcService.sendV2("bs-version.edit", { version, name: modalRes.data.name, color: modalRes.data.color })).then(res => {
-            this.askInstalledVersions();
+            this.askInstalledVersions().catch(logRenderError);
             return res;
         }).catch(e => {
 
@@ -146,7 +182,7 @@ export class BSVersionManagerService {
 
         return lastValueFrom(this.ipcService.sendV2("bs-version.clone", { version, name: modalRes.data.name, color: modalRes.data.color })).then(res => {
             this.notification.notifySuccess({ title: "notifications.custom-version.success.titles.CloningFinished" });
-            this.askInstalledVersions();
+            this.askInstalledVersions().catch(logRenderError);
             return res;
         }).catch((e: CustomError) => {
 
@@ -175,7 +211,7 @@ export class BSVersionManagerService {
 
             (async () => {
 
-                const resModal = await this.modals.openModal(ImportVersionModal);
+                const resModal = await this.modalService.openModal(ImportVersionModal);
                 if(resModal.exitCode !== ModalExitCode.COMPLETED){
                     return;
                 }
@@ -201,7 +237,7 @@ export class BSVersionManagerService {
                 this.notification.notifyError({ title: "notifications.types.error", desc: "notifications.bs-import-version.errors.import-error.desc" });
                 obs.error(err)
             }).finally(() => {
-                this.askInstalledVersions();
+                this.askInstalledVersions().catch(logRenderError);
                 this.progressBar.hide();
             });
 
@@ -222,16 +258,28 @@ export class BSVersionManagerService {
     }
 
     public static sortVersions(versions: BSVersion[]): BSVersion[] {
-        const steamVersion = popElement(v => v.steam, versions);
-        const oculusVersion = popElement(v => v.oculus, versions);
+        const sorted = [...versions];
+        const steamVersion = popElement(v => v.steam, sorted);
+        const oculusVersion = popElement(v => v.oculus, sorted);
 
-        const compare = (a: BSVersion, b: BSVersion) => ( +b.ReleaseDate - +a.ReleaseDate )
+        const compare = (a: BSVersion, b: BSVersion) => ( +b.ReleaseDate - +a.ReleaseDate );
 
-        const sorted: BSVersion[] = versions.sort(compare);
+        sorted.sort(compare);
 
         sorted.unshift(...[steamVersion, oculusVersion].filter(Boolean).sort(compare));
 
         return sorted;
+    }
+
+    public static normalizeInstalledVersions(versions: BSVersion[]): BSVersion[] {
+        return BSVersionManagerService.removeDuplicateVersions(
+            BSVersionManagerService.sortVersions(versions)
+        );
+    }
+
+    private static haveSameVersionSequence(first: BSVersion[], second: BSVersion[]): boolean {
+        return first.length === second.length
+            && first.every((version, index) => version.BSVersion === second[index].BSVersion);
     }
 
     public static removeDuplicateVersions(versions: BSVersion[]): BSVersion[] {
