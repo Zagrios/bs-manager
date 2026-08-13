@@ -51,7 +51,7 @@ export class BSVersionManagerService {
     }
 
     public refreshAvailableVersions(): Promise<BSVersion[]> {
-        if (this.availableVersionsRefreshPromise) {
+        if (this.availableVersionsRefreshPromise !== null) {
             return this.availableVersionsRefreshPromise;
         }
 
@@ -83,7 +83,7 @@ export class BSVersionManagerService {
     }
 
     private queueInstalledVersionsRescan(): void {
-        if (this.installedVersionsRequestPromise) {
+        if (this.installedVersionsRequestPromise !== null) {
             this.installedVersionsRescanQueued = true;
             return;
         }
@@ -92,7 +92,7 @@ export class BSVersionManagerService {
     }
 
     public askInstalledVersions(): Promise<BSVersion[]> {
-        if (this.installedVersionsRequestPromise) {
+        if (this.installedVersionsRequestPromise !== null) {
             return this.installedVersionsRequestPromise;
         }
 
@@ -121,7 +121,7 @@ export class BSVersionManagerService {
 
     public async isVersionInstalled(version: BSVersion): Promise<boolean> {
         try {
-            const versions: BSVersion[] = this.installedVersionsRequestPromise
+            const versions: BSVersion[] = this.installedVersionsRequestPromise !== null
                 ? await this.installedVersionsRequestPromise
                 : this.getInstalledVersions();
 
