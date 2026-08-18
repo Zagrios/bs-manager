@@ -166,31 +166,48 @@ export class BsModsManagerService {
                 log: BsmShellLog.Command | BsmShellLog.EnvVariables,
                 options: {
                     cwd: versionPath,
-                    detached: true,
                     shell: true,
-                    env: command.env
+                    env: command.env,
+                    stdio: ["ignore", "pipe", "pipe"],
                 },
             });
 
+            let settled = false;
+            const finish = (success: boolean) => {
+                if (settled) {
+                    return;
+                }
+
+                settled = true;
+                clearTimeout(timeout);
+                resolve(success);
+            };
+
             const timeout = setTimeout(() => {
                 log.info("IPA process timed out");
-                resolve(false)
+                finish(false);
             }, sToMs(30));
 
-            processIPA.stdout.on("data", data => {
+            processIPA.stdout?.on("data", data => {
                 log.info("IPA process stdout", data.toString());
             });
-            processIPA.stderr.on("data", data => {
+            processIPA.stderr?.on("data", data => {
                 log.error("IPA process stderr", data.toString());
-            })
+            });
 
-            processIPA.once("exit", code => {
-                clearTimeout(timeout);
+            processIPA.once("error", error => {
+                log.error("IPA process failed to start", error);
+                finish(false);
+            });
+
+            // Unlike "exit", "close" is emitted after stdout and stderr have
+            // been closed, ensuring all IPA output is forwarded before resolving.
+            processIPA.once("close", code => {
                 if (code === 0) {
-                    return resolve(true);
+                    return finish(true);
                 }
                 log.error("IPA process exited with non-zero code", code);
-                resolve(false);
+                finish(false);
             });
         });
     }
