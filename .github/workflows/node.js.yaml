@@ -19,13 +19,20 @@ jobs:
 
         steps:
             - uses: actions/checkout@v4
+            - name: Install pnpm
+              uses: pnpm/action-setup@v6
+              with:
+                  version: 10.34.4
             - name: Use Node.js
               uses: actions/setup-node@v4
               with:
                   node-version-file: .nvmrc
-                  cache: "npm"
-            - run: npm ci
-            - run: npm run build
+                  cache: "pnpm"
+                  cache-dependency-path: |
+                      pnpm-lock.yaml
+                      release/app/pnpm-lock.yaml
+            - run: pnpm install --frozen-lockfile
+            - run: pnpm run build
 
             - name: Unit tests
-              run: npm run test:unit
+              run: pnpm run test:unit

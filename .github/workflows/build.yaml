@@ -19,11 +19,19 @@ jobs:
             - name: Check out Git repository
               uses: actions/checkout@v4
 
+            - name: Install pnpm
+              uses: pnpm/action-setup@v6
+              with:
+                  version: 10.34.4
+
             - name: Use Node.js
               uses: actions/setup-node@v4
               with:
                   node-version-file: .nvmrc
-                  cache: "npm"
+                  cache: "pnpm"
+                  cache-dependency-path: |
+                      pnpm-lock.yaml
+                      release/app/pnpm-lock.yaml
 
             # Update package lists
             - name: update apt-get
@@ -35,8 +43,8 @@ jobs:
               if: runner.os == 'Linux'
               run: sudo apt-get install -y flatpak flatpak-builder rpm libarchive-tools
 
-            - run: npm ci
-            - run: npm run package
+            - run: pnpm install --frozen-lockfile
+            - run: pnpm run package
 
             - name: Setup flatpak repo (Ubuntu only)
               if: runner.os == 'Linux'
@@ -49,7 +57,7 @@ jobs:
               if: runner.os == 'Linux'
               run: |
                   env DEBUG="@malept/flatpak-bundler" \
-                  npx electron-builder --config electron-builder.config.js --publish never --linux flatpak
+                  pnpm exec electron-builder --config electron-builder.config.js --publish never --linux flatpak
 
             - name: Upload artifact
               uses: actions/upload-artifact@v4
