@@ -1,1 +1,1 @@
-export { ProgressionInterface } from "./progress-bar.model";
+export type { ProgressionInterface } from "./progress-bar.model";

@@ -1,1 +1,1 @@
-export { ModInstallProgression, InstallModsResult, UninstallModsResult } from "./mod-ipc.model";
+export type { ModInstallProgression, InstallModsResult, UninstallModsResult } from "./mod-ipc.model";

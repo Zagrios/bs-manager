@@ -1,2 +1,2 @@
-export { SupporterType } from "./supporter.type";
-export { Supporter } from "./supporter.interface";
+export type { SupporterType } from "./supporter.type";
+export type { Supporter } from "./supporter.interface";

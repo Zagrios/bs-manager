@@ -6,6 +6,37 @@ import { getProperty } from "dot-prop";
 import { i18n } from "dateformat";
 import { createElement, Fragment } from "react";
 import { logRenderError } from "renderer";
+import de from "../../../assets/jsons/translations/de.json";
+import en from "../../../assets/jsons/translations/en.json";
+import es from "../../../assets/jsons/translations/es.json";
+import fr from "../../../assets/jsons/translations/fr.json";
+import it from "../../../assets/jsons/translations/it.json";
+import ja from "../../../assets/jsons/translations/ja.json";
+import ko from "../../../assets/jsons/translations/ko.json";
+import ptBr from "../../../assets/jsons/translations/pt-br.json";
+import ru from "../../../assets/jsons/translations/ru.json";
+import tl from "../../../assets/jsons/translations/tl.json";
+import uk from "../../../assets/jsons/translations/uk.json";
+import zh from "../../../assets/jsons/translations/zh.json";
+import zhTw from "../../../assets/jsons/translations/zh-tw.json";
+
+type TranslationDictionary = Record<string, unknown>;
+
+const translations: Record<string, TranslationDictionary> = {
+    de,
+    en,
+    es,
+    fr,
+    it,
+    ja,
+    ko,
+    "pt-br": ptBr,
+    ru,
+    tl,
+    uk,
+    zh,
+    "zh-tw": zhTw,
+};
 
 export class I18nService {
     private static instance: I18nService;
@@ -17,7 +48,7 @@ export class I18nService {
 
     private readonly configService: ConfigurationService;
 
-    private dictionary = {};
+    private dictionary: TranslationDictionary = {};
 
     public static getInstance(): I18nService {
         if (!I18nService.instance) {
@@ -45,18 +76,16 @@ export class I18nService {
             });
     }
 
-    private importLang(lang: string[], fallback: string): Record<string, string> {
+    private importLang(lang: string[], fallback: string): TranslationDictionary {
 
         for (const l of lang) {
-            try {
-                return require(`../../../assets/jsons/translations/${l.toLowerCase()}.json`);
-            }
-            catch (e) {
-                continue;
+            const dictionary = translations[l.toLowerCase()];
+            if (dictionary) {
+                return dictionary;
             }
         }
 
-        return require(`../../../assets/jsons/translations/${fallback.toLowerCase()}.json`);
+        return translations[fallback.toLowerCase()];
     }
 
     public getSupportedLanguages(): string[] {

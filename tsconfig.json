@@ -22,5 +22,5 @@
         "outDir": "release/app/dist",
         "strictNullChecks": false
     },
-    "exclude": ["test", "release/build", "release/app/dist", ".erb/dll"]
+    "exclude": ["test", "release/build", "release/app/dist", "electron.vite.config.mts"]
 }

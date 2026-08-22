@@ -1,4 +1,4 @@
-import { app, BrowserWindow, BrowserWindowConstructorOptions, shell } from "electron";
+import { BrowserWindow, BrowserWindowConstructorOptions, shell } from "electron";
 import { resolveHtmlPath } from "../util";
 import { UtilsService } from "./utils.service";
 import { AppWindow } from "shared/models/window-manager/app-window.model";
@@ -9,7 +9,7 @@ import { isValidUrl } from "../../shared/helpers/url.helpers";
 export class WindowManagerService {
     private static instance: WindowManagerService;
 
-    private readonly PRELOAD_PATH = app.isPackaged ? path.join(__dirname, "preload.js") : path.join(__dirname, "../../.erb/dll/preload.js");
+    private readonly PRELOAD_PATH = path.join(__dirname, "preload.js");
     private readonly IS_DEBUG = process.env.NODE_ENV === "development" || process.env.DEBUG_PROD === "true"
 
     private readonly utilsService: UtilsService = UtilsService.getInstance();
