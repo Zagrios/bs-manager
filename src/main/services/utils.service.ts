@@ -8,10 +8,10 @@ export class UtilsService {
 
     private assetsPath: string = app.isPackaged
         ? path.join(process.resourcesPath, "assets")
-        : path.join(path.dirname(path.dirname(__dirname)), "assets");
+        : path.join(app.getAppPath(), "assets");
     private readonly buildPath: string = app.isPackaged
         ? path.join(process.resourcesPath, "build")
-        : path.join(path.dirname(path.dirname(__dirname)), "build");
+        : path.join(app.getAppPath(), "build");
 
     private constructor() {}
 

@@ -4,13 +4,15 @@ import { SteamIcon } from "renderer/components/svgs/icons/steam-icon.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { BsStore } from "shared/models/bs-store.enum";
 import { useState } from "react";
-import tailwindConfig from "../../../../../../tailwind.config";
 import Color from "color";
 import { useNavigate } from "react-router-dom";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
 import { useService } from "renderer/hooks/use-service.hook";
 import { lastValueFrom } from "rxjs";
+
+const DARK_BACKGROUND = "#202225";
+const LIGHT_BACKGROUND = "#E3E5E8";
 
 export const ChooseStore: ModalComponent<BsStore> = ({ resolver }) => {
 
@@ -41,14 +43,14 @@ export const ChooseStore: ModalComponent<BsStore> = ({ resolver }) => {
     const bg = (() => {
         if(isDarkMode){
             return {
-                bright: new Color(tailwindConfig.theme.colors["main-color"][1], "hex").hex(),
-                dim: new Color(tailwindConfig.theme.colors["main-color"][1], "hex").darken(.2).hex()
+                bright: new Color(DARK_BACKGROUND, "hex").hex(),
+                dim: new Color(DARK_BACKGROUND, "hex").darken(.2).hex()
             }
         }
 
         return {
-            bright: new Color(tailwindConfig.theme.colors["light-main-color"][1], "hex").hex(),
-            dim: new Color(tailwindConfig.theme.colors["light-main-color"][1], "hex").darken(.2).hex()
+            bright: new Color(LIGHT_BACKGROUND, "hex").hex(),
+            dim: new Color(LIGHT_BACKGROUND, "hex").darken(.2).hex()
         }
     })();
 

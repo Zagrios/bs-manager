@@ -1,3 +1,5 @@
+const skipSigning = process.env.SKIP_SIGNING === "true";
+
 const config = {
     extraResources: [
         "./assets/jsons/bs-versions.json",
@@ -15,10 +17,13 @@ const config = {
     afterSign: ".erb/scripts/notarize.js",
     afterPack: ".erb/scripts/after-pack.js",
     win: {
-        signtoolOptions: {
-            signingHashAlgorithms: ["sha256"],
-            certificateSha1: "d55f8cda15bd9cba76ea796b9504860b16c7f46e",
-        },
+        signExecutable: !skipSigning,
+        signtoolOptions: skipSigning
+            ? null
+            : {
+                  signingHashAlgorithms: ["sha256"],
+                  certificateSha1: "d55f8cda15bd9cba76ea796b9504860b16c7f46e",
+              },
         target: [
             "nsis",
             "nsis-web"
