@@ -20,7 +20,7 @@ jobs:
               uses: actions/checkout@v4
 
             - name: Install pnpm
-              uses: pnpm/action-setup@v6
+              uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
               with:
                   version: 10.34.4
 
@@ -43,7 +43,8 @@ jobs:
               if: runner.os == 'Linux'
               run: sudo apt-get install -y flatpak flatpak-builder rpm libarchive-tools
 
-            - run: pnpm install --frozen-lockfile
+            # Native modules need lifecycle scripts, restricted by allowBuilds.
+            - run: pnpm install --frozen-lockfile # NOSONAR
             - run: pnpm run package
 
             - name: Setup flatpak repo (Ubuntu only)

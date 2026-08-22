@@ -16,7 +16,7 @@ jobs:
         steps:
             - uses: actions/checkout@v4
             - name: Install pnpm
-              uses: pnpm/action-setup@v6
+              uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
               with:
                   version: 10.34.4
             - name: Use Node.js
@@ -27,5 +27,6 @@ jobs:
                   cache-dependency-path: |
                       pnpm-lock.yaml
                       release/app/pnpm-lock.yaml
-            - run: pnpm install --frozen-lockfile
+            # Native modules need lifecycle scripts, restricted by allowBuilds.
+            - run: pnpm install --frozen-lockfile # NOSONAR
             - run: pnpm run lint
