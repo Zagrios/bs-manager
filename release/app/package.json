@@ -4,21 +4,39 @@
   "version": "1.6.0",
   "description": "BSManager",
   "main": "./dist/main/main.js",
+  "packageManager": "pnpm@10.34.4",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "10.34.4",
+      "onFail": "error"
+    }
+  },
   "author": {
     "name": "Zagrios",
     "email": "admin@bsmanager.io",
     "url": "https://github.com/Zagrios/bs-manager"
   },
   "scripts": {
-    "rebuild": "tsx ../../.erb/scripts/electron-rebuild.js",
-    "link-modules": "tsx ../../.erb/scripts/link-modules.ts",
-    "postinstall": "npm run rebuild && npm run link-modules"
+    "preinstall": "node ../../.erb/scripts/require-pnpm.cjs",
+    "rebuild": "pnpm --dir ../.. exec tsx .erb/scripts/electron-rebuild.js",
+    "link-modules": "pnpm --dir ../.. exec tsx .erb/scripts/link-modules.ts",
+    "postinstall": "pnpm run rebuild && pnpm run link-modules"
   },
   "dependencies": {
     "@resvg/resvg-js": "2.6.2",
     "ps-list": "^7.2.0",
     "query-process": "^0.0.3",
     "regedit-rs": "1.0.4"
+  },
+  "optionalDependencies": {
+    "@resvg/resvg-js-linux-arm64-gnu": "2.6.2",
+    "@resvg/resvg-js-linux-x64-gnu": "2.6.2",
+    "@resvg/resvg-js-win32-x64-msvc": "2.6.2",
+    "query-process-linux-arm64-gnu": "0.0.3",
+    "query-process-linux-x64-gnu": "0.0.3",
+    "query-process-win32-x64-msvc": "0.0.3",
+    "regedit-rs-win32-x64-msvc": "1.0.4"
   },
   "license": "MIT",
   "volta": {

@@ -30,14 +30,32 @@ Hello! We’re delighted that you’re interested in contributing to **BSManager
 
 1. **[Fork the repository][fork]** and **clone** your fork locally.  
 2. **Install the required tools**. The Node version is defined by both
-   [mise](https://mise.jdx.dev/) and `.nvmrc`; using mise is recommended.
+   [mise](https://mise.jdx.dev/) and `.nvmrc`; mise also installs the pinned pnpm version and is recommended.
    ```bash
    mise install
    ```
-3. **Install project dependencies** from the lockfile:
+3. **Install project dependencies**:
    ```bash
-   npm ci
+   pnpm install
    ```
+
+The project manifests reject `npm install`, `npm ci`, and `npm run` commands.
+Use the pinned pnpm version for both the root project and `release/app`.
+
+The repository keeps two independent pnpm projects on purpose. Development
+dependencies and JavaScript dependencies bundled by Vite live at the root.
+Dependencies that must remain external and ship with the packaged application,
+mainly native Electron modules, live in `release/app`. Each directory has its
+own `pnpm-lock.yaml`. Installing from the root also installs and rebuilds
+`release/app` through the root `postinstall` script.
+
+Add dependencies that Vite can bundle from the repository root. Add a dependency
+to the application manifest only when it must remain external at runtime,
+typically because it contains native binaries:
+
+```bash
+pnpm --dir release/app add <package>
+```
 
 See [Building on Linux](#building-on-linux) for the required system packages.
 
@@ -80,7 +98,7 @@ selected from `mise.toml`/`.nvmrc`.
 ### Distribution prerequisites
 
 Install the packages for your distribution, then run `mise install` and
-`npm ci` from the repository root.
+`pnpm install` from the repository root.
 
 Fedora 44:
 
@@ -91,8 +109,8 @@ sudo dnf install -y binutils gcc-c++ libxcrypt-compat make python3 rpm-build
 Build the native RPM package with:
 
 ```bash
-npm run build
-npx electron-builder --config electron-builder.config.js --publish never --linux rpm --x64
+pnpm run build
+pnpm exec electron-builder --config electron-builder.config.js --publish never --linux rpm --x64
 ```
 
 Ubuntu 24.04 / Debian-based distributions:
@@ -105,8 +123,8 @@ sudo apt install -y build-essential libarchive-tools python3
 Build the native DEB package with:
 
 ```bash
-npm run build
-npx electron-builder --config electron-builder.config.js --publish never --linux deb --x64
+pnpm run build
+pnpm exec electron-builder --config electron-builder.config.js --publish never --linux deb --x64
 ```
 
 Arch Linux:
@@ -118,8 +136,8 @@ sudo pacman -Syu --needed base-devel libarchive libxcrypt-compat python
 Build the native pacman package with:
 
 ```bash
-npm run build
-npx electron-builder --config electron-builder.config.js --publish never --linux pacman --x64
+pnpm run build
+pnpm exec electron-builder --config electron-builder.config.js --publish never --linux pacman --x64
 ```
 
 ### Verify a change
@@ -127,10 +145,10 @@ npx electron-builder --config electron-builder.config.js --publish never --linux
 Before submitting a pull request, run:
 
 ```bash
-npm run build
-npm test -- --runInBand
-npm run lint
-npm audit --omit=dev
+pnpm run build
+pnpm test --runInBand
+pnpm run lint
+pnpm audit --prod
 ```
 
 ## Useful Commands
@@ -138,7 +156,7 @@ npm audit --omit=dev
 ### Development
 
 ```bash
-npm start
+pnpm start
 ```
 
 > Runs the application in development mode.
@@ -146,7 +164,7 @@ npm start
 ### Packaging
 
 ```bash
-npm run package
+pnpm run package
 ```
 
 > Packages the application for the current platform using Electron Builder.
@@ -156,18 +174,18 @@ npm run package
 For one Linux package format, replace `<deb|rpm|pacman>` below:
 
 ```bash
-npm run build
-npx electron-builder --config electron-builder.config.js --publish never --linux <deb|rpm|pacman> --x64
+pnpm run build
+pnpm exec electron-builder --config electron-builder.config.js --publish never --linux <deb|rpm|pacman> --x64
 ```
 
 ```bash
-npm run publish
+pnpm run publish
 ```
 
 > Publishes the application (primarily for Windows).
 
 ```bash
-npm run publish:flatpak
+pnpm run publish:flatpak
 ```
 
 > Build a Flatpak package

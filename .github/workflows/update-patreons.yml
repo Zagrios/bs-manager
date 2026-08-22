@@ -20,21 +20,30 @@ jobs:
         with:
           persist-credentials: true
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+        with:
+          version: 10.34.4
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: "npm"
+          cache: "pnpm"
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            release/app/pnpm-lock.yaml
 
       - name: Install dependencies
-        run: npm ci
+        # Native modules need lifecycle scripts, restricted by allowBuilds.
+        run: pnpm install --frozen-lockfile # NOSONAR
 
       - name: Run Patreon update script
         env:
           PATREON_ACCESS_TOKEN: ${{ secrets.PATREON_ACCESS_TOKEN }}
           PATREON_CAMPAIGN_ID: ${{ secrets.PATREON_CAMPAIGN_ID }}
           PATREON_USER_AGENT: BSManager - Patreon Sync (GitHub Action)
-        run: npx ts-node ./.erb/scripts/update-patreon.js
+        run: pnpm exec ts-node ./.erb/scripts/update-patreon.js
 
       - name: Create Pull Request (only if changes)
         uses: peter-evans/create-pull-request@v6

@@ -2,9 +2,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "type": "npm",
+            "type": "shell",
             "label": "Start Webpack Dev",
-            "script": "start:renderer",
+            "command": "pnpm run start:renderer",
             "options": {
                 "cwd": "${workspaceFolder}"
             },

@@ -1,0 +1,10 @@
+packages:
+  - "."
+
+allowBuilds:
+  "@heroui/shared-utils": true
+  "@parcel/watcher": true
+  electron-winstaller: true
+  esbuild: true
+  fsevents: true
+  unrs-resolver: true

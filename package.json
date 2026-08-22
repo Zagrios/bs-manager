@@ -4,22 +4,31 @@
     "description": "Manage maps, mods and more for Beat Saber",
     "main": "./release/app/dist/main/main.js",
     "version": "1.6.0",
+    "packageManager": "pnpm@10.34.4",
+    "devEngines": {
+        "packageManager": {
+            "name": "pnpm",
+            "version": "10.34.4",
+            "onFail": "error"
+        }
+    },
     "scripts": {
+        "preinstall": "node .erb/scripts/require-pnpm.cjs",
         "build-rust-scripts": "tsx ./.erb/scripts/build-rust-scripts.js",
         "build": "tsx ./.erb/scripts/clean.js && cross-env NODE_ENV=production electron-vite build && tsx ./.erb/scripts/check-bundle-dependencies.ts",
         "postinstall": "tsx .erb/scripts/check-native-dep.js && electron-builder install-app-deps",
         "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
         "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx",
-        "package": "npm run build && electron-builder build --publish never --config electron-builder.config.js",
-        "package:unsigned": "npm run build && cross-env SKIP_SIGNING=true CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder build --publish never --config electron-builder.config.js",
+        "package": "pnpm run build && electron-builder build --publish never --config electron-builder.config.js",
+        "package:unsigned": "pnpm run build && cross-env SKIP_SIGNING=true CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder build --publish never --config electron-builder.config.js",
         "start": "tsx ./.erb/scripts/check-port-in-use.js && cross-env NODE_ENV=development electron-vite dev",
         "preview": "cross-env NODE_ENV=production electron-vite preview --skipBuild",
         "test": "jest --testRegex \"src[\\\\/]__tests__[\\\\/].*\\.test\\.ts$\"",
         "test:unit": "jest ./src/__tests__/unit",
-        "build:win": "npm run build && electron-builder --config electron-builder.config.js --publish never --win --x64",
-        "publish": "npm run build && electron-builder --config electron-builder.config.js --publish always --win --x64",
-        "publish:linux": "npm run build && electron-builder --config electron-builder.config.js --publish never --linux --x64",
-        "publish:flatpak": "npm run build && env DEBUG='@malept/flatpak-bundler' npx electron-builder --config electron-builder.config.js --publish never --linux flatpak",
+        "build:win": "pnpm run build && electron-builder --config electron-builder.config.js --publish never --win --x64",
+        "publish": "pnpm run build && electron-builder --config electron-builder.config.js --publish always --win --x64",
+        "publish:linux": "pnpm run build && electron-builder --config electron-builder.config.js --publish never --linux --x64",
+        "publish:flatpak": "pnpm run build && env DEBUG='@malept/flatpak-bundler' pnpm exec electron-builder --config electron-builder.config.js --publish never --linux flatpak",
         "update:patreon": "tsx ./.erb/scripts/update-patreon.js"
     },
     "lint-staged": {
@@ -75,6 +84,7 @@
         "@types/color": "^3.0.3",
         "@types/crypto-js": "^4.2.1",
         "@types/dateformat": "^5.0.0",
+        "@types/fs-extra": "^9.0.13",
         "@types/global-agent": "^2.1.3",
         "@types/got": "^9.6.12",
         "@types/jest": "^29.5.11",
@@ -87,6 +97,7 @@
         "@types/react-virtualized-auto-sizer": "^1.0.1",
         "@types/react-window": "^1.8.5",
         "@types/recursive-readdir": "^2.2.1",
+        "@types/semver": "^7.8.0",
         "@types/use-double-click": "^1.0.4",
         "@types/yauzl": "^3.4.0",
         "@typescript-eslint/eslint-plugin": "^6.20.0",
