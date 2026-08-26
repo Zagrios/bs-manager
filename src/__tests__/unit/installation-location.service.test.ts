@@ -1,6 +1,17 @@
 import { InstallationLocationService } from "main/services/installation-location.service";
 import { arePathsSameFileSystemLocation, copyDirectoryWithJunctions, deleteFolder, resolveExistingFolder } from "main/helpers/fs.helpers";
+import path from "path";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
+
+const mockRootPath = path.parse(process.cwd()).root;
+const mockDocumentsPath = path.join(mockRootPath, "Users", "Test");
+const mockCurrentInstallationPath = path.join(mockDocumentsPath, "BSManager");
+const mockSetupParentPath = path.join(mockRootPath, "New");
+const mockSetupInstallationPath = path.join(mockSetupParentPath, "BSManager");
+const mockGamesParentPath = path.join(mockRootPath, "Games");
+const mockGamesInstallationPath = path.join(mockGamesParentPath, "BSManager");
+const mockAliasParentPath = path.join(mockRootPath, "Alias");
+const mockAliasInstallationPath = path.join(mockAliasParentPath, "BSManager");
 
 const mockStaticConfig = {
     $watch: jest.fn(() => ({ subscribe: jest.fn() })),
@@ -11,7 +22,7 @@ const mockStaticConfig = {
 
 jest.mock("electron", () => ({
     app: {
-        getPath: jest.fn(() => "C:\\Users\\Test"),
+        getPath: jest.fn(() => mockDocumentsPath),
     },
 }));
 jest.mock("main/services/static-configuration.service", () => ({
@@ -48,7 +59,7 @@ describe("InstallationLocationService", () => {
         mockResolveExistingFolder.mockRejectedValue(new CustomError("Invalid folder path", "INVALID_FOLDER"));
         const service = InstallationLocationService.getInstance();
 
-        await expect(service.setInstallationDirectory("C:\\missing", true)).rejects.toMatchObject({ code: "INVALID_FOLDER" });
+        await expect(service.setInstallationDirectory(path.join(mockRootPath, "missing"), true)).rejects.toMatchObject({ code: "INVALID_FOLDER" });
 
         expect(mockStaticConfig.set).not.toHaveBeenCalled();
     });
@@ -57,51 +68,51 @@ describe("InstallationLocationService", () => {
         mockResolveExistingFolder.mockRejectedValue(new CustomError("Invalid folder path", "INVALID_FOLDER"));
         const service = InstallationLocationService.getInstance();
 
-        await expect(service.setInstallationDirectory("C:\\New\\BSManager", false)).resolves.toBe("C:\\New\\BSManager");
+        await expect(service.setInstallationDirectory(mockSetupInstallationPath, false)).resolves.toBe(mockSetupInstallationPath);
 
         expect(mockResolveExistingFolder).not.toHaveBeenCalled();
-        expect(mockStaticConfig.set).toHaveBeenCalledWith("installation-folder", "C:\\New");
+        expect(mockStaticConfig.set).toHaveBeenCalledWith("installation-folder", mockSetupParentPath);
     });
 
     it("keeps moving the existing installation when a valid path is applied", async () => {
-        mockResolveExistingFolder.mockResolvedValue("D:\\Games");
+        mockResolveExistingFolder.mockResolvedValue(mockGamesParentPath);
         const service = InstallationLocationService.getInstance();
 
-        await expect(service.setInstallationDirectory(" D:\\Games ", true)).resolves.toBe("D:\\Games\\BSManager");
+        await expect(service.setInstallationDirectory(` ${mockGamesParentPath} `, true)).resolves.toBe(mockGamesInstallationPath);
 
-        expect(mockResolveExistingFolder).toHaveBeenCalledWith(" D:\\Games ");
-        expect(mockCopyDirectoryWithJunctions).toHaveBeenCalledWith("C:\\Users\\Test\\BSManager", "D:\\Games\\BSManager", { overwrite: true });
-        expect(mockStaticConfig.set).toHaveBeenCalledWith("installation-folder", "D:\\Games");
+        expect(mockResolveExistingFolder).toHaveBeenCalledWith(` ${mockGamesParentPath} `);
+        expect(mockCopyDirectoryWithJunctions).toHaveBeenCalledWith(mockCurrentInstallationPath, mockGamesInstallationPath, { overwrite: true });
+        expect(mockStaticConfig.set).toHaveBeenCalledWith("installation-folder", mockGamesParentPath);
     });
 
     it("does not copy the installation onto itself when the current folder is submitted", async () => {
-        mockResolveExistingFolder.mockResolvedValue("D:\\Games\\BSManager");
+        mockResolveExistingFolder.mockResolvedValue(mockGamesInstallationPath);
         mockArePathsSameFileSystemLocation.mockResolvedValue(true);
         mockStaticConfig.has.mockReturnValue(true);
-        mockStaticConfig.get.mockReturnValue("D:\\Games");
+        mockStaticConfig.get.mockReturnValue(mockGamesParentPath);
         const service = InstallationLocationService.getInstance();
 
-        await expect(service.setInstallationDirectory("D:\\Games\\BSManager", true)).resolves.toBe("D:\\Games\\BSManager");
+        await expect(service.setInstallationDirectory(mockGamesInstallationPath, true)).resolves.toBe(mockGamesInstallationPath);
 
         expect(mockCopyDirectoryWithJunctions).not.toHaveBeenCalled();
-        expect(mockStaticConfig.set).toHaveBeenCalledWith("installation-folder", "D:\\Games");
+        expect(mockStaticConfig.set).toHaveBeenCalledWith("installation-folder", mockGamesParentPath);
     });
 
     it("does not copy when a filesystem alias points to the current installation", async () => {
-        mockResolveExistingFolder.mockResolvedValue("D:\\Alias");
+        mockResolveExistingFolder.mockResolvedValue(mockAliasParentPath);
         mockArePathsSameFileSystemLocation.mockResolvedValue(true);
         mockStaticConfig.has.mockReturnValue(true);
-        mockStaticConfig.get.mockReturnValue("D:\\Games");
+        mockStaticConfig.get.mockReturnValue(mockGamesParentPath);
         const service = InstallationLocationService.getInstance();
 
-        await service.setInstallationDirectory("D:\\Alias", true);
+        await service.setInstallationDirectory(mockAliasParentPath, true);
 
-        expect(mockArePathsSameFileSystemLocation).toHaveBeenCalledWith("D:\\Games\\BSManager", "D:\\Alias\\BSManager");
+        expect(mockArePathsSameFileSystemLocation).toHaveBeenCalledWith(mockGamesInstallationPath, mockAliasInstallationPath);
         expect(mockCopyDirectoryWithJunctions).not.toHaveBeenCalled();
     });
 
     it("waits for the source folder deletion before persisting the new location", async () => {
-        mockResolveExistingFolder.mockResolvedValue("D:\\Games");
+        mockResolveExistingFolder.mockResolvedValue(mockGamesParentPath);
         let finishDeletion: () => void;
         let deletionStarted: () => void;
         const deletionStartPromise = new Promise<void>(resolve => {
@@ -113,12 +124,12 @@ describe("InstallationLocationService", () => {
         }));
         const service = InstallationLocationService.getInstance();
 
-        const movePromise = service.setInstallationDirectory("D:\\Games", true);
+        const movePromise = service.setInstallationDirectory(mockGamesParentPath, true);
         await deletionStartPromise;
 
         expect(mockStaticConfig.set).not.toHaveBeenCalled();
         finishDeletion!();
         await movePromise;
-        expect(mockStaticConfig.set).toHaveBeenCalledWith("installation-folder", "D:\\Games");
+        expect(mockStaticConfig.set).toHaveBeenCalledWith("installation-folder", mockGamesParentPath);
     });
 });
