@@ -1,4 +1,6 @@
 const skipSigning = process.env.SKIP_SIGNING === "true";
+const certificateLink = process.env.WIN_CSC_LINK || process.env.CSC_LINK;
+const hasCertificateLink = Boolean(certificateLink?.trim());
 
 const config = {
     extraResources: [
@@ -22,7 +24,9 @@ const config = {
             ? null
             : {
                   signingHashAlgorithms: ["sha256"],
-                  certificateSha1: "d55f8cda15bd9cba76ea796b9504860b16c7f46e",
+                  ...(hasCertificateLink
+                      ? {}
+                      : { certificateSha1: "d55f8cda15bd9cba76ea796b9504860b16c7f46e" }),
               },
         target: [
             "nsis",

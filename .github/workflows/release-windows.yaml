@@ -1,0 +1,62 @@
+name: Release Windows
+
+on:
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+concurrency:
+    group: release-windows
+    cancel-in-progress: false
+
+jobs:
+    release:
+        if: github.ref == 'refs/heads/master'
+        runs-on: windows-latest
+        timeout-minutes: 60
+
+        steps:
+            - name: Require signing certificate
+              shell: pwsh
+              env:
+                  CSC_LINK: ${{ secrets.CSC_LINK }}
+                  CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+              run: |
+                  if ([string]::IsNullOrWhiteSpace($env:CSC_LINK)) {
+                      Write-Error "::error::Missing required secret CSC_LINK."
+                      exit 1
+                  }
+                  if ([string]::IsNullOrWhiteSpace($env:CSC_KEY_PASSWORD)) {
+                      Write-Error "::error::Missing required secret CSC_KEY_PASSWORD."
+                      exit 1
+                  }
+
+            - name: Check out Git repository
+              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+              with:
+                  persist-credentials: false
+
+            - name: Install pnpm
+              uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+              with:
+                  version: 10.34.4
+
+            - name: Use Node.js
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+              with:
+                  node-version-file: .nvmrc
+                  cache: "pnpm"
+                  cache-dependency-path: |
+                      pnpm-lock.yaml
+                      release/app/pnpm-lock.yaml
+
+            # Native modules need lifecycle scripts, restricted by allowBuilds.
+            - run: pnpm install --frozen-lockfile # NOSONAR
+
+            - name: Build, sign, and publish Windows release
+              run: pnpm run publish
+              env:
+                  CSC_LINK: ${{ secrets.CSC_LINK }}
+                  CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+                  GH_TOKEN: ${{ secrets.GH_TOKEN }}
