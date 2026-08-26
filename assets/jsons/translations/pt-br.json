@@ -243,7 +243,10 @@
             },
             "installation-folder": {
                 "title": "Pasta de instalação",
-                "description": "Alterar a pasta que contem todos os conteúdos baixados pelo BSManager."
+                "description": "Alterar a pasta que contem todos os conteúdos baixados pelo BSManager.",
+                "errors": {
+                    "invalid-folder": "Caminho de pasta inválido"
+                }
             },
             "proton-folder": {
                 "title": "Pasta do Proton ",

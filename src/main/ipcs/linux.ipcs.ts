@@ -1,12 +1,17 @@
 import { LinuxService } from "main/services/linux.service";
 import { IpcService } from "../services/ipc.service";
-import { of } from "rxjs";
+import { from, of } from "rxjs";
 
 const ipc = IpcService.getInstance();
 
-ipc.on("linux.verify-proton-folder", (_, reply) => {
+ipc.on("linux.set-proton-folder", (protonFolder, reply) => {
     const linuxService = LinuxService.getInstance();
-    reply(of(linuxService.verifyProtonPath()));
+    reply(from(linuxService.setProtonFolder(protonFolder)));
+});
+
+ipc.on("linux.verify-proton-folder", (protonFolder, reply) => {
+    const linuxService = LinuxService.getInstance();
+    reply(of(linuxService.verifyProtonPath(protonFolder || "")));
 });
 
 ipc.on("linux.get-wine-prefix-path", (_, reply) => {

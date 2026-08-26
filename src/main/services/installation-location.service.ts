@@ -1,6 +1,6 @@
 import path from "path";
 import { app } from "electron";
-import { copyDirectoryWithJunctions, deleteFolder, ensureFolderExist } from "../helpers/fs.helpers";
+import { arePathsSameFileSystemLocation, copyDirectoryWithJunctions, deleteFolder, ensureFolderExist, resolveExistingFolder } from "../helpers/fs.helpers";
 import { tryit } from "../../shared/helpers/error.helpers";
 import { pathExistsSync } from "fs-extra";
 import { StaticConfigurationService } from "./static-configuration.service";
@@ -52,13 +52,20 @@ export class InstallationLocationService {
      * @param move - if true, move the old installation path to the path param
      */
     public async setInstallationDirectory(newDir: string, move: boolean): Promise<string> {
+        if (move) {
+            newDir = await resolveExistingFolder(newDir);
+        }
         newDir = path.basename(newDir) === this.INSTALLATION_FOLDER ? path.join(newDir, "..") : newDir;
 
         if (move) {
             const oldDir = this.installationDirectory();
-            await ensureFolderExist(oldDir);
-            await copyDirectoryWithJunctions(oldDir, path.join(newDir, this.INSTALLATION_FOLDER), { overwrite: true });
-            deleteFolder(oldDir);
+            const destinationDir = path.join(newDir, this.INSTALLATION_FOLDER);
+
+            if (!await arePathsSameFileSystemLocation(oldDir, destinationDir)) {
+                await ensureFolderExist(oldDir);
+                await copyDirectoryWithJunctions(oldDir, destinationDir, { overwrite: true });
+                await deleteFolder(oldDir);
+            }
         }
 
         this._installationDirectory = newDir;

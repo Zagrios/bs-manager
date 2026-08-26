@@ -162,7 +162,8 @@ export interface IpcChannelMapping {
     "static-configuration.delete": { request: StaticConfigKeys; response: void };
 
     /* ** linux.ipcs ** */
-    "linux.verify-proton-folder": { request: void, response: boolean };
+    "linux.set-proton-folder": { request: string, response: boolean };
+    "linux.verify-proton-folder": { request: string | void, response: boolean };
     "linux.get-wine-prefix-path": { request: void, response: string };
 
     /* ** oculus.ipcs ** */

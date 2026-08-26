@@ -18,6 +18,31 @@ export async function pathExist(path: string): Promise<boolean> {
     }
 }
 
+export async function resolveExistingFolder(folderPath: string): Promise<string> {
+    const trimmedPath = folderPath?.trim();
+    const resolvedPath = trimmedPath ? path.resolve(trimmedPath) : "";
+
+    if (!resolvedPath || !(await pathExists(resolvedPath)) || !(await stat(resolvedPath)).isDirectory()) {
+        throw new CustomError("Invalid folder path", "INVALID_FOLDER");
+    }
+
+    return realpath(resolvedPath);
+}
+
+export async function arePathsSameFileSystemLocation(firstPath: string, secondPath: string): Promise<boolean> {
+    const resolveIdentity = async (targetPath: string): Promise<string> => {
+        const resolvedPath = path.resolve(targetPath);
+        const identityPath = await realpath(resolvedPath).catch(() => resolvedPath);
+        return process.platform === "win32" ? identityPath.toLowerCase() : identityPath;
+    };
+    const [firstIdentity, secondIdentity] = await Promise.all([
+        resolveIdentity(firstPath),
+        resolveIdentity(secondPath),
+    ]);
+
+    return firstIdentity === secondIdentity;
+}
+
 export async function ensureFolderExist(path: string): Promise<void> {
     if (await pathExist(path)) {
         return Promise.resolve();

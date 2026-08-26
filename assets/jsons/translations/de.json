@@ -243,7 +243,10 @@
             },
             "installation-folder": {
                 "title": "Installations-Ordner",
-                "description": "Ändern Sie den Ordner, der alle von BSManager heruntergeladenen Inhalte enthalten wird."
+                "description": "Ändern Sie den Ordner, der alle von BSManager heruntergeladenen Inhalte enthalten wird.",
+                "errors": {
+                    "invalid-folder": "Ungültiger Ordnerpfad"
+                }
             },
             "proton-folder": {
                 "title": "Proton-Ordner",
