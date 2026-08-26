@@ -116,6 +116,16 @@ export class LinuxService {
         return envVars;
     }
 
+    public async setProtonFolder(protonFolder: string): Promise<boolean> {
+        const trimmedProtonFolder = protonFolder.trim();
+        if (!trimmedProtonFolder || !this.verifyProtonPath(trimmedProtonFolder)) {
+            return false;
+        }
+
+        await this.staticConfig.set("proton-folder", trimmedProtonFolder);
+        return true;
+    }
+
     public verifyProtonPath(protonFolder: string = ""): boolean {
         if (protonFolder === "") {
             if (!this.staticConfig.has("proton-folder")) {
@@ -127,19 +137,32 @@ export class LinuxService {
 
         // Check if the proton binary exists
         const protonPath = path.join(protonFolder, this.PROTON_BINARY_PREFIX);
-        if (!fs.pathExistsSync(protonPath)) {
+        if (!this.isExecutableFile(protonPath)) {
             return false;
         }
 
         // Check if any wine64 here exists
         for (const winePath of this.WINE_BINARY_PREFIXES) {
-            if (fs.pathExistsSync(path.join(protonFolder, winePath))) {
+            if (this.isExecutableFile(path.join(protonFolder, winePath))) {
                 // Reset this, in the case where the user reselects a new proton folder
                 this.winePath = "";
                 return true;
             }
         }
         return false;
+    }
+
+    private isExecutableFile(filePath: string): boolean {
+        try {
+            if (!fs.pathExistsSync(filePath) || !fs.statSync(filePath).isFile()) {
+                return false;
+            }
+
+            fs.accessSync(filePath, fs.constants.X_OK);
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     public getWinePath(): string {

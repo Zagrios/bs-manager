@@ -243,7 +243,10 @@
             },
             "installation-folder": {
                 "title": "Cartella di installazione",
-                "description": "Cambia la cartella che contiene tutti i contenuti scaricati da BSManager."
+                "description": "Cambia la cartella che contiene tutti i contenuti scaricati da BSManager.",
+                "errors": {
+                    "invalid-folder": "Percorso della cartella non valido"
+                }
             },
             "proton-folder": {
                 "title": "Cartella di Proton",

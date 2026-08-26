@@ -243,7 +243,10 @@
             },
             "installation-folder": {
                 "title": "Installation folder",
-                "description": "Change the folder that will contain all the content downloaded by BSManager."
+                "description": "Change the folder that will contain all the content downloaded by BSManager.",
+                "errors": {
+                    "invalid-folder": "Invalid folder path"
+                }
             },
             "proton-folder": {
                 "title": "Proton folder",

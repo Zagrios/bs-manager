@@ -1,5 +1,5 @@
-import { mkdir, pathExistsSync, rm, writeFile } from "fs-extra";
-import { getSize } from "main/helpers/fs.helpers";
+import { mkdir, pathExistsSync, realpath, rm, symlink, writeFile } from "fs-extra";
+import { arePathsSameFileSystemLocation, copyDirectoryWithJunctions, getSize, isSubdirectory, resolveExistingFolder } from "main/helpers/fs.helpers";
 import path from "path";
 
 jest.mock("electron", () => ({ app: {
@@ -12,6 +12,68 @@ jest.mock("electron-log", () => ({
 }));
 
 const TEST_FOLDER = path.resolve(__dirname, "..", "assets", "fs");
+
+describe("arePathsSameFileSystemLocation", () => {
+    beforeEach(async () => {
+        await mkdir(TEST_FOLDER, { recursive: true });
+    });
+
+    afterEach(async () => {
+        await rm(TEST_FOLDER, { recursive: true, force: true });
+    });
+
+    it("recognizes an existing symlink or junction alias as the same location", async () => {
+        const targetPath = path.join(TEST_FOLDER, "target");
+        const aliasPath = path.join(TEST_FOLDER, "alias");
+        await mkdir(targetPath);
+        await symlink(targetPath, aliasPath, process.platform === "win32" ? "junction" : "dir");
+
+        await expect(arePathsSameFileSystemLocation(targetPath, aliasPath)).resolves.toBe(true);
+    });
+
+    it("falls back to case-insensitive resolved paths on Windows when paths do not exist", async () => {
+        const platformDescriptor = Object.getOwnPropertyDescriptor(process, "platform");
+        Object.defineProperty(process, "platform", { value: "win32" });
+        const missingPath = path.join(TEST_FOLDER, "Missing");
+
+        try {
+            await expect(arePathsSameFileSystemLocation(missingPath, missingPath.toUpperCase())).resolves.toBe(true);
+        } finally {
+            Object.defineProperty(process, "platform", platformDescriptor);
+        }
+    });
+});
+
+describe("isSubdirectory", () => {
+    beforeEach(async () => {
+        await mkdir(TEST_FOLDER, { recursive: true });
+    });
+
+    afterEach(async () => {
+        await rm(TEST_FOLDER, { recursive: true, force: true });
+    });
+
+    it("detects a real destination below a source reached through a junction alias", async () => {
+        const sourcePath = path.join(TEST_FOLDER, "real", "BSManager");
+        const sourceAliasPath = path.join(TEST_FOLDER, "current-installation");
+        const destinationParentPath = path.join(sourcePath, "nested");
+        const destinationPath = path.join(destinationParentPath, "BSManager");
+        await mkdir(destinationParentPath, { recursive: true });
+        await symlink(sourcePath, sourceAliasPath, process.platform === "win32" ? "junction" : "dir");
+
+        await expect(isSubdirectory(sourceAliasPath, destinationPath)).resolves.toBe(true);
+        await expect(copyDirectoryWithJunctions(sourceAliasPath, destinationPath)).rejects.toMatchObject({ code: "COPY_TO_SUBPATH" });
+        expect(pathExistsSync(destinationPath)).toBe(false);
+    });
+
+    it("detects a child whose name starts with two dots", async () => {
+        const sourcePath = path.join(TEST_FOLDER, "BSManager");
+        const destinationPath = path.join(sourcePath, "..nested", "BSManager");
+        await mkdir(sourcePath);
+
+        await expect(isSubdirectory(sourcePath, destinationPath)).resolves.toBe(true);
+    });
+});
 
 describe("Test fs.helpers getSize", () => {
 
@@ -98,4 +160,38 @@ describe("Test fs.helpers getSize", () => {
         expect(size).toBe(20);
     });
 
+});
+
+describe("resolveExistingFolder", () => {
+    beforeEach(async () => {
+        await mkdir(TEST_FOLDER, { recursive: true });
+    });
+
+    afterEach(async () => {
+        await rm(TEST_FOLDER, { recursive: true, force: true });
+    });
+
+    it("trims and resolves an existing folder path", async () => {
+        await expect(resolveExistingFolder(` ${TEST_FOLDER} `)).resolves.toBe(await realpath(TEST_FOLDER));
+    });
+
+    it("returns the canonical target of an existing folder alias", async () => {
+        const targetPath = path.join(TEST_FOLDER, "BSManager");
+        const aliasPath = path.join(TEST_FOLDER, "alias");
+        await mkdir(targetPath);
+        await symlink(targetPath, aliasPath, process.platform === "win32" ? "junction" : "dir");
+
+        await expect(resolveExistingFolder(aliasPath)).resolves.toBe(await realpath(targetPath));
+    });
+
+    it("rejects a folder path that does not exist", async () => {
+        await expect(resolveExistingFolder(`${TEST_FOLDER}-missing`)).rejects.toMatchObject({ code: "INVALID_FOLDER" });
+    });
+
+    it("rejects a path to a file", async () => {
+        const filePath = path.join(TEST_FOLDER, "file.txt");
+        await writeFile(filePath, "content");
+
+        await expect(resolveExistingFolder(filePath)).rejects.toMatchObject({ code: "INVALID_FOLDER" });
+    });
 });

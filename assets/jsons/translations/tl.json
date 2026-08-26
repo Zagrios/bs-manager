@@ -243,7 +243,10 @@
             },
             "installation-folder": {
                 "title": "Installation folder",
-                "description": "Palitan ang folder na maglalaman ng lahat ng nilalamang ida-download ng BSManager."
+                "description": "Palitan ang folder na maglalaman ng lahat ng nilalamang ida-download ng BSManager.",
+                "errors": {
+                    "invalid-folder": "Maling path ng folder"
+                }
             },
             "proton-folder": {
                 "title": "Proton folder",

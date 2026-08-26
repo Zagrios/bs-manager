@@ -243,7 +243,10 @@
             },
             "installation-folder": {
                 "title": "Тека встановлення",
-                "description": "Змініть теку, яка міститиме весь контент, завантажений BSManager."
+                "description": "Змініть теку, яка міститиме весь контент, завантажений BSManager.",
+                "errors": {
+                    "invalid-folder": "Некоректний шлях до теки"
+                }
             },
             "proton-folder": {
                 "title": "Тека Proton",

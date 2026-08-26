@@ -243,7 +243,10 @@
             },
             "installation-folder": {
                 "title": "설치 폴더",
-                "description": "BSManager가 다운로드한 모든 콘텐츠를 포함할 폴더를 변경합니다."
+                "description": "BSManager가 다운로드한 모든 콘텐츠를 포함할 폴더를 변경합니다.",
+                "errors": {
+                    "invalid-folder": "잘못된 폴더 경로입니다"
+                }
             },
             "proton-folder": {
                 "title": "Proton 폴더",

@@ -243,7 +243,10 @@
             },
             "installation-folder": {
                 "title": "Dossier d'installation",
-                "description": "Changez le dossier qui contiendra tout le contenu téléchargé par BSManager."
+                "description": "Changez le dossier qui contiendra tout le contenu téléchargé par BSManager.",
+                "errors": {
+                    "invalid-folder": "Chemin de dossier invalide"
+                }
             },
             "proton-folder": {
                 "title": "Dossier Proton",

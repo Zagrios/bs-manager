@@ -10,6 +10,7 @@ import { SteamDownloaderService } from "renderer/services/bs-version-download/st
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { I18nService } from "renderer/services/i18n.service";
 import { IpcService } from "renderer/services/ipc.service";
+import { LinuxService } from "renderer/services/linux.service";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { NotificationService } from "renderer/services/notification.service";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
@@ -50,12 +51,14 @@ import { OculusDownloaderService } from "renderer/services/bs-version-download/o
 import { DISCORD_URL } from "shared/constants";
 import { AutoUpdate } from "shared/models/config";
 import { isCloseOnLaunchSupported } from "renderer/helpers/close-on-launch-setting.helper";
+import { SettingFolderInput } from "renderer/components/settings/setting-folder-input.component";
 
 export function SettingsPage() {
 
     const configService = useService(ConfigurationService);
     const themeService = useService(ThemeService);
     const ipcService = useService(IpcService);
+    const linuxService = useService(LinuxService);
     const modalService = useService(ModalService);
     const bsDownloader = useService(BsDownloaderService);
     const steamDownloader = useService(SteamDownloaderService);
@@ -94,8 +97,10 @@ export function SettingsPage() {
     const languageSelected = useObservable(() => i18nService.currentLanguage$, i18nService.getFallbackLanguage());
     const downloadStore = useObservable(() => bsDownloader.defaultStore$);
 
-    const [installationFolder, setInstallationFolder] = useState(null);
+    const [installationFolder, setInstallationFolder] = useState("");
+    const [installationFolderInput, setInstallationFolderInput] = useState("");
     const [protonFolder, setProtonFolder] = useState("");
+    const [protonFolderInput, setProtonFolderInput] = useState("");
     const [showSupporters, setShowSupporters] = useState(false);
     const [mapDeepLinksEnabled, setMapDeepLinksEnabled] = useState(false);
     const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
@@ -111,7 +116,10 @@ export function SettingsPage() {
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
 
-        staticConfig.get("proton-folder").then(setProtonFolder);
+        staticConfig.get("proton-folder").then((folder = "") => {
+            setProtonFolder(folder);
+            setProtonFolderInput(folder);
+        });
 
     }, []);
 
@@ -125,6 +133,7 @@ export function SettingsPage() {
     const loadInstallationFolder = () => {
         installationLocationService.getInstallationFolder().then(res => {
             setInstallationFolder(res);
+            setInstallationFolderInput(res);
         });
     };
 
@@ -172,6 +181,27 @@ export function SettingsPage() {
         i18nService.setLanguage(item.value);
     };
 
+    const saveProtonFolder = async (path: string) => {
+        const protonPath = path.trim();
+        try {
+            if (!await lastValueFrom(linuxService.setProtonFolder(protonPath))) {
+                notificationService.notifyError({
+                    title: "pages.settings.proton-folder.errors.title",
+                    desc: "pages.settings.proton-folder.errors.invalid-folder",
+                });
+                return;
+            }
+
+            setProtonFolder(protonPath);
+            setProtonFolderInput(protonPath);
+        } catch {
+            notificationService.notifyError({
+                title: "pages.settings.proton-folder.errors.title",
+                desc: "misc.unknown",
+            });
+        }
+    };
+
     const setDefaultProtonFolder = async () => {
         if (!progressBarService.require()) {
             return;
@@ -182,26 +212,74 @@ export function SettingsPage() {
                 parent: "home",
                 defaultPath: ".steam/steam/steamapps/common",
                 showHidden: true,
-        }));
-            if (
-                pathResponse.canceled
-                || !pathResponse.filePaths
-                || pathResponse.filePaths.length === 0
-            ) {
+            }));
+
+            if (pathResponse.canceled || !pathResponse.filePaths?.length) {
                 return;
             }
 
-            const folder = pathResponse.filePaths[0];
-            await staticConfig.set("proton-folder", folder);
-            setProtonFolder(folder);
-        } catch (error: any) {
+            await saveProtonFolder(pathResponse.filePaths[0]);
+        } catch {
             notificationService.notifyError({
                 title: "pages.settings.proton-folder.errors.title",
-                desc: ["invalid-folder"].includes(error?.code)
-                    ? `pages.settings.proton-folder.errors.${error.code}`
-                    : "misc.unknown",
+                desc: "misc.unknown",
             });
         }
+    };
+
+    const moveInstallationFolder = (newInstallationPath: string) => {
+        if(newInstallationPath === installationFolder){
+            return;
+        }
+
+        progressBarService.showFake(0.008);
+
+        notificationService.notifySuccess({ title: "notifications.settings.move-folder.success.titles.transfer-started", desc: "notifications.settings.move-folder.success.descs.transfer-started" });
+
+        lastValueFrom(installationLocationService.setInstallationFolder(newInstallationPath, true)).then(res => {
+
+            progressBarService.complete();
+            progressBarService.hide();
+
+            setInstallationFolder(res);
+            setInstallationFolderInput(res);
+
+            notificationService.notifySuccess({ title: "notifications.settings.move-folder.success.titles.transfer-finished", duration: 3000 });
+
+            // Restore links of external BS versions (steam, oculus, etc.)
+            lastValueFrom(versionLinker.relinkAllVersionsFolders()).catch(() => {
+                notificationService.notifyError({ title: "notifications.types.error", desc: "notifications.settings.move-folder.errors.descs.restore-linked-folders", duration: 15_000 });
+            });
+
+        }).catch((err: BsmException) => {
+            progressBarService.hide();
+
+            if (err?.code === "INVALID_FOLDER") {
+                notificationService.notifyError({ title: "notifications.settings.move-folder.errors.titles.transfer-failed", desc: "pages.settings.installation-folder.errors.invalid-folder" });
+                return;
+            }
+
+            if (err?.code === "COPY_TO_SUBPATH") {
+                notificationService.notifyError({ title: "notifications.settings.move-folder.errors.titles.transfer-failed", desc: "notifications.settings.move-folder.errors.descs.COPY_TO_SUBPATH", duration: 10_000 });
+                return;
+            }
+
+            notificationService.notifyError({ title: "notifications.settings.move-folder.errors.titles.transfer-failed" });
+        });
+    };
+
+    const applyInstallationFolderInput = () => {
+        if (!progressBarService.require()) {
+            return;
+        }
+
+        modalService.openModal(InstallationFolderModal, { data: { submitText: "misc.apply" } }).then(async res => {
+            if (res.exitCode !== ModalExitCode.COMPLETED) {
+                return;
+            }
+
+            moveInstallationFolder(installationFolderInput);
+        });
     };
 
     const setDefaultInstallationFolder = () => {
@@ -217,41 +295,7 @@ export function SettingsPage() {
             const fileChooserRes = await lastValueFrom(ipcService.sendV2("choose-folder"));
 
             if (!fileChooserRes.canceled && fileChooserRes.filePaths?.length) {
-
-                const newInstallationPath = fileChooserRes.filePaths[0];
-
-                if(newInstallationPath === installationFolder){
-                    return;
-                }
-
-                progressBarService.showFake(0.008);
-
-                notificationService.notifySuccess({ title: "notifications.settings.move-folder.success.titles.transfer-started", desc: "notifications.settings.move-folder.success.descs.transfer-started" });
-
-                lastValueFrom(installationLocationService.setInstallationFolder(newInstallationPath, true)).then(res => {
-
-                    progressBarService.complete();
-                    progressBarService.hide();
-
-                    setInstallationFolder(res);
-
-                    notificationService.notifySuccess({ title: "notifications.settings.move-folder.success.titles.transfer-finished", duration: 3000 });
-
-                    // Restore links of external BS versions (steam, oculus, etc.)
-                    lastValueFrom(versionLinker.relinkAllVersionsFolders()).catch(() => {
-                        notificationService.notifyError({ title: "notifications.types.error", desc: "notifications.settings.move-folder.errors.descs.restore-linked-folders", duration: 15_000 });
-                    });
-
-                }).catch((err: BsmException) => {
-                    progressBarService.hide();
-
-                    if (err?.code === "COPY_TO_SUBPATH") {
-                        notificationService.notifyError({ title: "notifications.settings.move-folder.errors.titles.transfer-failed", desc: "notifications.settings.move-folder.errors.descs.COPY_TO_SUBPATH", duration: 10_000 });
-                        return;
-                    }
-
-                    notificationService.notifyError({ title: "notifications.settings.move-folder.errors.titles.transfer-failed" });
-                });
+                moveInstallationFolder(fileChooserRes.filePaths[0]);
             }
         });
     };
@@ -372,21 +416,11 @@ export function SettingsPage() {
                 </SettingContainer>
 
                 <SettingContainer title="pages.settings.installation-folder.title" description="pages.settings.installation-folder.description">
-                    <div className="relative flex items-center justify-between w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 rounded-md pl-2 py-1">
-                        <span className="block text-ellipsis overflow-hidden min-w-0" title={installationFolder}>
-                            {installationFolder}
-                        </span>
-                        <BsmButton onClick={setDefaultInstallationFolder} className="shrink-1 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="misc.choose-folder" withBar={false} />
-                    </div>
+                    <SettingFolderInput value={installationFolderInput} label={t("pages.settings.installation-folder.title")} canApply={!!installationFolderInput.trim() && installationFolderInput !== installationFolder} onChange={setInstallationFolderInput} onApply={applyInstallationFolderInput} onChoose={setDefaultInstallationFolder} />
                 </SettingContainer>
 
                 <SettingContainer os="linux" title="pages.settings.proton-folder.title" description="pages.settings.proton-folder.description">
-                    <div className="relative flex items-center justify-between w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 rounded-md pl-2 py-1">
-                        <span className="block text-ellipsis overflow-hidden min-w-0 whitespace-nowrap" title={protonFolder}>
-                            {protonFolder}
-                        </span>
-                        <BsmButton onClick={setDefaultProtonFolder} className="shrink-0 whitespace-nowrap mr-2 px-2 font-bold italic text-sm rounded-md" text="misc.choose-folder" withBar={false} />
-                    </div>
+                    <SettingFolderInput value={protonFolderInput} label={t("pages.settings.proton-folder.title")} canApply={!!protonFolderInput.trim() && protonFolderInput !== protonFolder} onChange={setProtonFolderInput} onApply={() => saveProtonFolder(protonFolderInput)} onChoose={setDefaultProtonFolder} />
                 </SettingContainer>
 
                 <SettingContainer title="pages.settings.additional-content.title" description="pages.settings.additional-content.description">

@@ -4,8 +4,13 @@ import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { ModalComponent, ModalExitCode } from "renderer/services/modale.service";
 import BeatConflict from "../../../../../assets/images/apngs/beat-conflict.png";
 
-export const InstallationFolderModal: ModalComponent<void> = ({ resolver }) => {
+type InstallationFolderModalOptions = {
+    submitText?: string;
+};
+
+export const InstallationFolderModal: ModalComponent<void, InstallationFolderModalOptions> = ({ resolver, options }) => {
     const t = useTranslation();
+    const submitText = options?.data?.submitText ?? "modals.install-folder.buttons.submit";
 
     return (
         <form>
@@ -14,7 +19,7 @@ export const InstallationFolderModal: ModalComponent<void> = ({ resolver }) => {
             <p className="max-w-sm text-gray-800 dark:text-gray-200">{t("modals.install-folder.description")}</p>
             <div className="grid grid-flow-col grid-cols-2 gap-4 mt-4">
                 <BsmButton typeColor="cancel" className="rounded-md text-center transition-all" onClick={() => resolver({ exitCode: ModalExitCode.CANCELED })} withBar={false} text="misc.cancel" />
-                <BsmButton typeColor="primary" className="rounded-md text-center transition-all" onClick={() => resolver({ exitCode: ModalExitCode.COMPLETED })} withBar={false} text="modals.install-folder.buttons.submit" />
+                <BsmButton typeColor="primary" className="rounded-md text-center transition-all" onClick={() => resolver({ exitCode: ModalExitCode.COMPLETED })} withBar={false} text={submitText} />
             </div>
         </form>
     );
