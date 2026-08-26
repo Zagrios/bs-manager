@@ -56,6 +56,7 @@ export class InstallationLocationService {
             newDir = await resolveExistingFolder(newDir);
         }
         newDir = path.basename(newDir) === this.INSTALLATION_FOLDER ? path.join(newDir, "..") : newDir;
+        let oldDirToDelete: string | undefined;
 
         if (move) {
             const oldDir = this.installationDirectory();
@@ -64,12 +65,22 @@ export class InstallationLocationService {
             if (!await arePathsSameFileSystemLocation(oldDir, destinationDir)) {
                 await ensureFolderExist(oldDir);
                 await copyDirectoryWithJunctions(oldDir, destinationDir, { overwrite: true });
-                await deleteFolder(oldDir);
+                oldDirToDelete = oldDir;
             }
         }
 
+        const previousInstallationDirectory = this._installationDirectory;
         this._installationDirectory = newDir;
-        this.staticConfig.set(this.STORE_INSTALLATION_PATH_KEY, newDir);
+        try {
+            await this.staticConfig.set(this.STORE_INSTALLATION_PATH_KEY, newDir);
+        } catch (error) {
+            this._installationDirectory = previousInstallationDirectory;
+            throw error;
+        }
+
+        if (oldDirToDelete) {
+            await deleteFolder(oldDirToDelete);
+        }
 
         return this.installationDirectory();
     }

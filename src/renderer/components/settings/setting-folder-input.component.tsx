@@ -10,7 +10,7 @@ type Props = {
     onChoose: () => void;
 };
 
-export function SettingFolderInput({ value, label, canApply, onChange, onApply, onChoose }: Props) {
+export function SettingFolderInput({ value, label, canApply, onChange, onApply, onChoose }: Readonly<Props>) {
     const handleChange = (event: ChangeEvent<HTMLInputElement>) => onChange(event.target.value);
 
     return (

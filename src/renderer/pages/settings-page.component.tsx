@@ -116,8 +116,7 @@ export function SettingsPage() {
         playlistsManager.isDeepLinksEnabled().then(enabled => setPlaylistsDeepLinkEnabled(() => enabled));
         modelsManager.isDeepLinksEnabled().then(enabled => setModelsDeepLinkEnabled(() => enabled));
 
-        staticConfig.get("proton-folder").then(path => {
-            const folder = path ?? "";
+        staticConfig.get("proton-folder").then((folder = "") => {
             setProtonFolder(folder);
             setProtonFolderInput(folder);
         });

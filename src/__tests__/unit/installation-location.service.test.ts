@@ -55,6 +55,9 @@ describe("InstallationLocationService", () => {
         (InstallationLocationService as unknown as { instance?: InstallationLocationService }).instance = undefined;
         mockStaticConfig.get.mockReset();
         mockStaticConfig.has.mockReset().mockReturnValue(false);
+        mockStaticConfig.set.mockReset().mockResolvedValue(undefined);
+        mockCopyDirectoryWithJunctions.mockReset().mockResolvedValue(undefined);
+        mockDeleteFolder.mockReset().mockResolvedValue(undefined);
         mockArePathsSameFileSystemLocation.mockResolvedValue(false);
     });
 
@@ -114,25 +117,39 @@ describe("InstallationLocationService", () => {
         expect(mockCopyDirectoryWithJunctions).not.toHaveBeenCalled();
     });
 
-    it("waits for the source folder deletion before persisting the new location", async () => {
+    it("waits for the destination persistence before deleting the source folder", async () => {
         mockResolveExistingFolder.mockResolvedValue(mockGamesParentPath);
-        let finishDeletion: () => void;
-        let deletionStarted: () => void;
-        const deletionStartPromise = new Promise<void>(resolve => {
-            deletionStarted = resolve;
+        let finishPersistence: () => void;
+        let persistenceStarted: () => void;
+        const persistenceStartPromise = new Promise<void>(resolve => {
+            persistenceStarted = resolve;
         });
-        mockDeleteFolder.mockImplementation(() => new Promise(resolve => {
-            deletionStarted();
-            finishDeletion = resolve;
+        mockStaticConfig.set.mockImplementation(() => new Promise<void>(resolve => {
+            persistenceStarted();
+            finishPersistence = resolve;
         }));
         const service = InstallationLocationService.getInstance();
 
         const movePromise = service.setInstallationDirectory(mockGamesParentPath, true);
-        await deletionStartPromise;
+        await persistenceStartPromise;
 
-        expect(mockStaticConfig.set).not.toHaveBeenCalled();
-        finishDeletion!();
+        expect(mockDeleteFolder).not.toHaveBeenCalled();
+        finishPersistence!();
         await movePromise;
+        expect(mockDeleteFolder).toHaveBeenCalledWith(mockCurrentInstallationPath);
         expect(mockStaticConfig.set).toHaveBeenCalledWith("installation-folder", mockGamesParentPath);
+    });
+
+    it("does not delete the source folder when persisting the destination fails", async () => {
+        mockResolveExistingFolder.mockResolvedValue(mockGamesParentPath);
+        const persistenceError = new Error("Could not persist installation folder");
+        const persistenceFailure = Promise.reject(persistenceError);
+        mockStaticConfig.set.mockReturnValue(persistenceFailure);
+        const service = InstallationLocationService.getInstance();
+
+        await expect(service.setInstallationDirectory(mockGamesParentPath, true)).rejects.toBe(persistenceError);
+
+        expect(mockDeleteFolder).not.toHaveBeenCalled();
+        expect(service.installationDirectory()).toBe(mockCurrentInstallationPath);
     });
 });

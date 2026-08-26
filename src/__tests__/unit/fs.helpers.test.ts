@@ -1,5 +1,5 @@
 import { mkdir, pathExistsSync, realpath, rm, symlink, writeFile } from "fs-extra";
-import { arePathsSameFileSystemLocation, getSize, resolveExistingFolder } from "main/helpers/fs.helpers";
+import { arePathsSameFileSystemLocation, copyDirectoryWithJunctions, getSize, isSubdirectory, resolveExistingFolder } from "main/helpers/fs.helpers";
 import path from "path";
 
 jest.mock("electron", () => ({ app: {
@@ -41,6 +41,37 @@ describe("arePathsSameFileSystemLocation", () => {
         } finally {
             Object.defineProperty(process, "platform", platformDescriptor);
         }
+    });
+});
+
+describe("isSubdirectory", () => {
+    beforeEach(async () => {
+        await mkdir(TEST_FOLDER, { recursive: true });
+    });
+
+    afterEach(async () => {
+        await rm(TEST_FOLDER, { recursive: true, force: true });
+    });
+
+    it("detects a real destination below a source reached through a junction alias", async () => {
+        const sourcePath = path.join(TEST_FOLDER, "real", "BSManager");
+        const sourceAliasPath = path.join(TEST_FOLDER, "current-installation");
+        const destinationParentPath = path.join(sourcePath, "nested");
+        const destinationPath = path.join(destinationParentPath, "BSManager");
+        await mkdir(destinationParentPath, { recursive: true });
+        await symlink(sourcePath, sourceAliasPath, process.platform === "win32" ? "junction" : "dir");
+
+        await expect(isSubdirectory(sourceAliasPath, destinationPath)).resolves.toBe(true);
+        await expect(copyDirectoryWithJunctions(sourceAliasPath, destinationPath)).rejects.toMatchObject({ code: "COPY_TO_SUBPATH" });
+        expect(pathExistsSync(destinationPath)).toBe(false);
+    });
+
+    it("detects a child whose name starts with two dots", async () => {
+        const sourcePath = path.join(TEST_FOLDER, "BSManager");
+        const destinationPath = path.join(sourcePath, "..nested", "BSManager");
+        await mkdir(sourcePath);
+
+        await expect(isSubdirectory(sourcePath, destinationPath)).resolves.toBe(true);
     });
 });
 

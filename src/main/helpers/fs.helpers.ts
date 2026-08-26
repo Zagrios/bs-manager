@@ -186,9 +186,28 @@ export function moveFolderContent(src: string, dest: string, option?: MoveOption
     });
 }
 
-export function isSubdirectory(parent: string, child: string): boolean {
-    const parentNormalized = path.resolve(parent);
-    const childNormalized = path.resolve(child);
+async function resolveCanonicalPath(targetPath: string): Promise<string> {
+    const unresolvedSegments: string[] = [];
+    let existingAncestor = path.resolve(targetPath);
+
+    while (!(await pathExists(existingAncestor))) {
+        const parentPath = path.dirname(existingAncestor);
+        if (parentPath === existingAncestor) {
+            return process.platform === "win32" ? existingAncestor.toLowerCase() : existingAncestor;
+        }
+        unresolvedSegments.unshift(path.basename(existingAncestor));
+        existingAncestor = parentPath;
+    }
+
+    const resolvedPath = path.join(await realpath(existingAncestor), ...unresolvedSegments);
+    return process.platform === "win32" ? resolvedPath.toLowerCase() : resolvedPath;
+}
+
+export async function isSubdirectory(parent: string, child: string): Promise<boolean> {
+    const [parentNormalized, childNormalized] = await Promise.all([
+        resolveCanonicalPath(parent),
+        resolveCanonicalPath(child),
+    ]);
 
     if (parentNormalized === childNormalized) {
         return false;
@@ -200,11 +219,13 @@ export function isSubdirectory(parent: string, child: string): boolean {
         return false;
     }
 
-    return relativePath && !relativePath.startsWith("..") && !path.isAbsolute(relativePath);
+    return relativePath !== ".."
+        && !relativePath.startsWith(`..${path.sep}`)
+        && !path.isAbsolute(relativePath);
 }
 
 export async function copyDirectoryWithJunctions(src: string, dest: string, options?: CopyOptions): Promise<void> {
-    if (isSubdirectory(src, dest)) {
+    if (await isSubdirectory(src, dest)) {
         throw new CustomError(`Cannot copy directory '${src}' into itself '${dest}'.`, "COPY_TO_SUBPATH");
     }
 
