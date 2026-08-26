@@ -46,8 +46,7 @@ jobs:
 
             # Native modules need lifecycle scripts, restricted by allowBuilds.
             - run: pnpm install --frozen-lockfile # NOSONAR
-            # CI artifacts are intentionally unsigned; signed publishing is isolated
-            # in the Release Windows workflow.
+            # CI artifacts are intentionally unsigned; releases are signed locally.
             - run: pnpm run package:unsigned
 
             - name: Setup flatpak repo (Ubuntu only)
