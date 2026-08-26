@@ -5,7 +5,10 @@ import { CustomError } from "shared/models/exceptions/custom-error.class";
 
 const mockRootPath = path.parse(process.cwd()).root;
 const mockDocumentsPath = path.join(mockRootPath, "Users", "Test");
-const mockCurrentInstallationPath = path.join(mockDocumentsPath, "BSManager");
+const mockDefaultInstallationParentPath = process.platform === "linux"
+    ? process.env.XDG_DATA_HOME || path.join(process.env.HOME ?? mockDocumentsPath, ".local", "share")
+    : mockDocumentsPath;
+const mockCurrentInstallationPath = path.join(mockDefaultInstallationParentPath, "BSManager");
 const mockSetupParentPath = path.join(mockRootPath, "New");
 const mockSetupInstallationPath = path.join(mockSetupParentPath, "BSManager");
 const mockGamesParentPath = path.join(mockRootPath, "Games");
