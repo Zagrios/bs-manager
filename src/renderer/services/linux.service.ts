@@ -22,5 +22,13 @@ export class LinuxService {
         return this.ipc.sendV2("linux.get-wine-prefix-path");
     }
 
+    public setProtonFolder(path: string): Observable<boolean> {
+        return this.ipc.sendV2("linux.set-proton-folder", path);
+    }
+
+    public verifyProtonFolder(path?: string): Observable<boolean> {
+        return this.ipc.sendV2("linux.verify-proton-folder", path);
+    }
+
 
 }

@@ -243,7 +243,10 @@
             },
             "installation-folder": {
                 "title": "安裝文件夾",
-                "description": "更改將包含 BSManager 下載的所有內容的文件夾。"
+                "description": "更改將包含 BSManager 下載的所有內容的文件夾。",
+                "errors": {
+                    "invalid-folder": "無效的資料夾路徑"
+                }
             },
             "proton-folder": {
                 "title": "Proton資料夾",

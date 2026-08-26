@@ -36,9 +36,12 @@ jest.mock("main/helpers/launchOptions.helper", () => ({
 jest.mock("fs-extra", () => ({
     __esModule: true,
     default: {
+        accessSync: jest.fn(),
+        constants: { X_OK: 1 },
         existsSync: jest.fn(() => true),
         ensureDir: jest.fn(),
         pathExistsSync: jest.fn(() => true),
+        statSync: jest.fn(() => ({ isFile: () => true })),
         writeFile: jest.fn(),
     },
 }));
@@ -58,8 +61,11 @@ describe("LinuxService.buildEnvVariables", () => {
         (service as any).staticConfig = {
             has: jest.fn(() => true),
             get: jest.fn(() => "/proton"),
+            set: jest.fn(async () => undefined),
         };
         (service as any).nixOS = false;
+        (service as any).PROTON_BINARY_PREFIX = "proton";
+        (service as any).WINE_BINARY_PREFIXES = ["files/bin/wine64"];
         (service as any).getProtonPath = jest.fn(async () => "/proton/proton");
         (service as any).getProtonPrefix = jest.fn(async () => '"/proton/proton" run');
 
@@ -76,7 +82,9 @@ describe("LinuxService.buildEnvVariables", () => {
     beforeEach(() => {
         jest.clearAllMocks();
         (fs.existsSync as jest.Mock).mockReturnValue(true);
+        (fs.accessSync as jest.Mock).mockImplementation(() => undefined);
         (fs.pathExistsSync as jest.Mock).mockReturnValue(true);
+        (fs.statSync as jest.Mock).mockReturnValue({ isFile: () => true });
         (fs.writeFile as jest.Mock).mockResolvedValue(undefined);
         (bsmExec as jest.Mock).mockRejectedValue(new Error("not nixos"));
     });
@@ -152,5 +160,55 @@ describe("LinuxService.buildEnvVariables", () => {
             "/shortcut.desktop",
             expect.stringContaining("OXR_PARALLEL_VIEWS=\"1\"")
         );
+    });
+
+    it("persists a trimmed Proton folder when its binaries are valid", async () => {
+        const service = buildService();
+
+        await expect(service.setProtonFolder("  /proton-candidate  ")).resolves.toBe(true);
+        expect((service as any).staticConfig.set).toHaveBeenCalledWith(
+            "proton-folder",
+            "/proton-candidate"
+        );
+    });
+
+    it("does not persist an invalid Proton folder", async () => {
+        const service = buildService();
+        const verifyProtonPath = jest.spyOn(service, "verifyProtonPath").mockReturnValue(false);
+
+        await expect(service.setProtonFolder("  /invalid-proton  ")).resolves.toBe(false);
+        expect(verifyProtonPath).toHaveBeenCalledWith("/invalid-proton");
+        expect((service as any).staticConfig.set).not.toHaveBeenCalled();
+    });
+
+    it("does not replace the stored Proton folder with an empty submitted path", async () => {
+        const service = buildService();
+
+        await expect(service.setProtonFolder("   ")).resolves.toBe(false);
+        expect((service as any).staticConfig.set).not.toHaveBeenCalled();
+    });
+
+    it("accepts a Proton folder with executable regular Proton and Wine files", () => {
+        expect(buildService().verifyProtonPath("/proton-candidate")).toBe(true);
+    });
+
+    it("rejects a Proton folder when a required binary path is a directory", () => {
+        (fs.statSync as jest.Mock).mockReturnValue({ isFile: () => false });
+
+        expect(buildService().verifyProtonPath("/proton-candidate")).toBe(false);
+    });
+
+    it("rejects a Proton folder when a required binary is not executable", () => {
+        (fs.accessSync as jest.Mock).mockImplementation(() => {
+            throw new Error("not executable");
+        });
+
+        expect(buildService().verifyProtonPath("/proton-candidate")).toBe(false);
+    });
+
+    it("rejects a Proton folder when a required binary is missing", () => {
+        (fs.pathExistsSync as jest.Mock).mockReturnValue(false);
+
+        expect(buildService().verifyProtonPath("/proton-candidate")).toBe(false);
     });
 });

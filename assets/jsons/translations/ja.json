@@ -243,7 +243,10 @@
             },
             "installation-folder": {
                 "title": "インストールフォルダー",
-                "description": "BSManager によってダウンロードされたすべてのコンテンツを含むフォルダを変更します。"
+                "description": "BSManager によってダウンロードされたすべてのコンテンツを含むフォルダを変更します。",
+                "errors": {
+                    "invalid-folder": "フォルダーのパスが無効です"
+                }
             },
             "proton-folder": {
                 "title": "Protonフォルダー",

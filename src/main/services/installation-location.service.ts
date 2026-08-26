@@ -1,6 +1,6 @@
 import path from "path";
 import { app } from "electron";
-import { copyDirectoryWithJunctions, deleteFolder, ensureFolderExist } from "../helpers/fs.helpers";
+import { arePathsSameFileSystemLocation, copyDirectoryWithJunctions, deleteFolder, ensureFolderExist, resolveExistingFolder } from "../helpers/fs.helpers";
 import { tryit } from "../../shared/helpers/error.helpers";
 import { pathExistsSync } from "fs-extra";
 import { StaticConfigurationService } from "./static-configuration.service";
@@ -52,17 +52,35 @@ export class InstallationLocationService {
      * @param move - if true, move the old installation path to the path param
      */
     public async setInstallationDirectory(newDir: string, move: boolean): Promise<string> {
+        if (move) {
+            newDir = await resolveExistingFolder(newDir);
+        }
         newDir = path.basename(newDir) === this.INSTALLATION_FOLDER ? path.join(newDir, "..") : newDir;
+        let oldDirToDelete: string | undefined;
 
         if (move) {
             const oldDir = this.installationDirectory();
-            await ensureFolderExist(oldDir);
-            await copyDirectoryWithJunctions(oldDir, path.join(newDir, this.INSTALLATION_FOLDER), { overwrite: true });
-            deleteFolder(oldDir);
+            const destinationDir = path.join(newDir, this.INSTALLATION_FOLDER);
+
+            if (!await arePathsSameFileSystemLocation(oldDir, destinationDir)) {
+                await ensureFolderExist(oldDir);
+                await copyDirectoryWithJunctions(oldDir, destinationDir, { overwrite: true });
+                oldDirToDelete = oldDir;
+            }
         }
 
+        const previousInstallationDirectory = this._installationDirectory;
         this._installationDirectory = newDir;
-        this.staticConfig.set(this.STORE_INSTALLATION_PATH_KEY, newDir);
+        try {
+            await this.staticConfig.set(this.STORE_INSTALLATION_PATH_KEY, newDir);
+        } catch (error) {
+            this._installationDirectory = previousInstallationDirectory;
+            throw error;
+        }
+
+        if (oldDirToDelete) {
+            await deleteFolder(oldDirToDelete);
+        }
 
         return this.installationDirectory();
     }

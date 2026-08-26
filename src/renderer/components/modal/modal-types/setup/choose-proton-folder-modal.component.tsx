@@ -6,7 +6,7 @@ import { useService } from "renderer/hooks/use-service.hook";
 import { IpcService } from "renderer/services/ipc.service";
 import { ModalComponent, ModalExitCode } from "renderer/services/modale.service";
 import { NotificationService } from "renderer/services/notification.service";
-import { StaticConfigurationService } from "renderer/services/static-configuration.service";
+import { LinuxService } from "renderer/services/linux.service";
 
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 
@@ -15,7 +15,7 @@ export const ChooseProtonFolderModal: ModalComponent<{}, {}> = ({ resolver }) =>
     const t = useTranslation();
     const ipcService = useService(IpcService);
     const notificationService = useService(NotificationService);
-    const staticConfigService = useService(StaticConfigurationService);
+    const linuxService = useService(LinuxService);
 
     const [protonFolder, setProtonFolder] = useState(null);
 
@@ -32,16 +32,25 @@ export const ChooseProtonFolderModal: ModalComponent<{}, {}> = ({ resolver }) =>
 
         const path = response.filePaths[0];
 
-        await staticConfigService.set("proton-folder", path).then(() => {
+        try {
+            const valid = await lastValueFrom(linuxService.setProtonFolder(path));
+            if (!valid) {
+                notificationService.notifyError({
+                    title: "pages.settings.proton-folder.errors.title",
+                    desc: "pages.settings.proton-folder.errors.invalid-folder",
+                });
+                return;
+            }
+
             setProtonFolder(path);
-        }).catch(err => {
+        } catch (err: any) {
             notificationService.notifyError({
                 title: "pages.settings.proton-folder.errors.title",
                 desc: ["invalid-folder"].includes(err?.code)
                     ? `pages.settings.proton-folder.errors.${err.code}`
                     : "misc.unknown"
             });
-        });
+        }
     }
 
     const onConfirmButtonPressed = async () => {

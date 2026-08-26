@@ -243,7 +243,10 @@
             },
             "installation-folder": {
                 "title": "Папка установок",
-                "description": "Папка, которая будет содержать весь контент, загруженный BSManager."
+                "description": "Папка, которая будет содержать весь контент, загруженный BSManager.",
+                "errors": {
+                    "invalid-folder": "Некорректный путь к папке"
+                }
             },
             "proton-folder": {
                 "title": "Папка Proton",
