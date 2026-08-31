@@ -407,6 +407,13 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         }
     }
 
+    private async displaceSteamVRFolder(steamVrFolder: string): Promise<string | undefined> {
+        if (!(await pathExists(steamVrFolder))) { return undefined; }
+        const displacedFolder = `${steamVrFolder}.bsm-conflict-${randomUUID()}`;
+        await this.timedRename(steamVrFolder, displacedFolder);
+        return displacedFolder;
+    }
+
     private getStartBsAsAdminExePath(): string {
         return path.resolve(this.util.getAssetsScriptsPath(), "start_beat_saber_admin.exe");
     }
@@ -505,10 +512,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
             if (!(await pathExists(steamVrBackup))) { return; }
             let displacedFolder: string | undefined;
             try {
-                if (await pathExists(steamVrFolder)) {
-                    displacedFolder = `${steamVrFolder}.bsm-conflict-${randomUUID()}`;
-                    await this.timedRename(steamVrFolder, displacedFolder);
-                }
+                displacedFolder = await this.displaceSteamVRFolder(steamVrFolder);
                 await this.timedRename(steamVrBackup, steamVrFolder);
                 if (displacedFolder) {
                     log.warn(`Preserved a conflicting SteamVR folder at ${displacedFolder}`);
