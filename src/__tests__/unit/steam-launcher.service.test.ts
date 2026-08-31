@@ -778,7 +778,7 @@ describe("SteamLauncherService normal lifecycle", () => {
         expect(handoffUnownedSteamVRRestore).toHaveBeenCalledWith(false, 42);
     });
 
-    it("launches normally when the optional ownership snapshot fails", async () => {
+    it("observes a possible delayed launch when the optional ownership snapshot fails", async () => {
         jest.useFakeTimers();
         const wrapper = processHandle(42);
         (bsmSpawn as jest.Mock).mockReturnValue(wrapper);
@@ -793,7 +793,7 @@ describe("SteamLauncherService normal lifecycle", () => {
         expect(bsmSpawn).toHaveBeenCalledTimes(1);
         wrapper.emit("exit", 0);
         await expect(launch).resolves.toEqual({ exitCode: 0, steamVrRestoreSafe: false });
-        expect(handoffUnownedSteamVRRestore).toHaveBeenCalledWith(false, 42);
+        expect(handoffUnownedSteamVRRestore).toHaveBeenCalledWith(true, 42);
     });
 
     it("hands restoration to a fallback watcher when quitting before ownership is known", async () => {
@@ -1208,6 +1208,24 @@ describe("SteamLauncherService elevated lifecycle", () => {
 
         helper.emit("exit", 0);
         await expect(launch).resolves.toEqual({ exitCode: 0, steamVrRestoreSafe: false });
+    });
+
+    it("observes a possible delayed elevated launch when the ownership snapshot is unavailable", async () => {
+        const helper = processHandle(42);
+        (spawn as jest.Mock).mockReturnValue(helper);
+        const service = serviceWithConfig();
+        jest.spyOn(service as any, "createProcessOwnershipSnapshot").mockResolvedValue(undefined);
+        const handoffUnownedSteamVRRestore = jest.fn().mockResolvedValue(undefined);
+        (service as any).handoffUnownedSteamVRRestore = handoffUnownedSteamVRRestore;
+
+        const launch = (service as any).launchBeatSaberAsAdmin("C:/Beat Saber/Beat Saber.exe", [], {});
+        await flushPromises();
+        reportElevatedHelperPid(helper);
+        await flushPromises();
+        helper.emit("exit", 0);
+
+        await expect(launch).resolves.toEqual({ exitCode: 0, steamVrRestoreSafe: false });
+        expect(handoffUnownedSteamVRRestore).toHaveBeenCalledWith(true, 42);
     });
 
     it("auto-closes a safely owned elevated process with unavailable path and no focus action", async () => {

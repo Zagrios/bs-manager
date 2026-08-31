@@ -385,6 +385,28 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         }
     }
 
+    private async rollbackDisplacedSteamVRFolder(
+        steamVrFolder: string,
+        displacedFolder: string | undefined,
+        restoreError: unknown
+    ): Promise<boolean> {
+        if (!displacedFolder
+            || await pathExists(steamVrFolder)
+            || !(await pathExists(displacedFolder))) {
+            return true;
+        }
+        try {
+            await this.timedRename(displacedFolder, steamVrFolder);
+            return true;
+        } catch (rollbackError) {
+            log.warn("Could not restore SteamVR or roll back its conflicting folder", new AggregateError(
+                [restoreError, rollbackError],
+                "SteamVR restoration and conflict rollback failed"
+            ));
+            return false;
+        }
+    }
+
     private getStartBsAsAdminExePath(): string {
         return path.resolve(this.util.getAssetsScriptsPath(), "start_beat_saber_admin.exe");
     }
@@ -493,19 +515,7 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
                 }
                 return;
             } catch (err: unknown) {
-                if (displacedFolder
-                    && !(await pathExists(steamVrFolder))
-                    && await pathExists(displacedFolder)) {
-                    try {
-                        await this.timedRename(displacedFolder, steamVrFolder);
-                    } catch (rollbackError) {
-                        log.warn("Could not restore SteamVR or roll back its conflicting folder", new AggregateError(
-                            [err, rollbackError],
-                            "SteamVR restoration and conflict rollback failed"
-                        ));
-                        return;
-                    }
-                }
+                if (!(await this.rollbackDisplacedSteamVRFolder(steamVrFolder, displacedFolder, err))) { return; }
                 if (!isRetryableSteamVRRestoreError(err)
                     || attempt + 1 === STEAM_VR_RESTORE_RETRY_ATTEMPTS) {
                     log.warn("Could not restore SteamVR folder", err);
@@ -778,6 +788,32 @@ ${STEAM_VR_FALLBACK_RESTORE_WATCHER_SCRIPT}`
         };
     }
 
+    private async handoffOrRestoreUnownedSteamVR(
+        startHandoff: (
+            processIdentity: OwnedProcessIdentity | undefined,
+            waitForPossibleLaunch?: boolean
+        ) => Promise<void>,
+        waitForPossibleLaunch: boolean
+    ): Promise<void> {
+        try {
+            await startHandoff(undefined, waitForPossibleLaunch);
+        } catch (error) {
+            log.error("Could not hand off fallback SteamVR restoration", error);
+            await this.restoreSteamVR().catch(restoreError => {
+                log.error("Could not perform the fallback SteamVR restoration", restoreError);
+            });
+        }
+    }
+
+    private async restoreUnownedSteamVRBeforeQuit(
+        processIdentity: OwnedProcessIdentity | undefined
+    ): Promise<void> {
+        if (processIdentity) { return; }
+        await this.restoreSteamVRBeforeQuit().catch(restoreError => {
+            log.error("Could not perform the fallback SteamVR restoration", restoreError);
+        });
+    }
+
     private async launchBeatSaberAsAdmin(
         bsExePath: string,
         launchArgs: string[],
@@ -823,11 +859,7 @@ ${STEAM_VR_FALLBACK_RESTORE_WATCHER_SCRIPT}`
                     await startHandoff(processIdentity, true);
                 } catch (error) {
                     log.error("Could not hand off SteamVR restoration", error);
-                    if (!processIdentity) {
-                        await this.restoreSteamVRBeforeQuit().catch(restoreError => {
-                            log.error("Could not perform the fallback SteamVR restoration", restoreError);
-                        });
-                    }
+                    await this.restoreUnownedSteamVRBeforeQuit(processIdentity);
                 } finally {
                     cleanup();
                     unrefAdminProcess();
@@ -906,14 +938,7 @@ ${STEAM_VR_FALLBACK_RESTORE_WATCHER_SCRIPT}`
             throw new SteamLaunchFailure(error, false);
         }
         if (!processIdentity) {
-            try {
-                await startHandoff(undefined);
-            } catch (error) {
-                log.error("Could not hand off fallback SteamVR restoration", error);
-                await this.restoreSteamVR().catch(restoreError => {
-                    log.error("Could not perform the fallback SteamVR restoration", restoreError);
-                });
-            }
+            await this.handoffOrRestoreUnownedSteamVR(startHandoff, !ownershipSnapshot);
             cleanup();
             return {
                 exitCode: helperResult.exitCode,
@@ -984,11 +1009,7 @@ ${STEAM_VR_FALLBACK_RESTORE_WATCHER_SCRIPT}`
                     }
                 } catch (error) {
                     log.error("Could not restore SteamVR while quitting", error);
-                    if (!processIdentity) {
-                        await this.restoreSteamVRBeforeQuit().catch(restoreError => {
-                            log.error("Could not perform the fallback SteamVR restoration", restoreError);
-                        });
-                    }
+                    await this.restoreUnownedSteamVRBeforeQuit(processIdentity);
                 } finally {
                     cleanup();
                     unrefWrapper();
@@ -1051,14 +1072,7 @@ ${STEAM_VR_FALLBACK_RESTORE_WATCHER_SCRIPT}`
                 throw new SteamLaunchFailure(wrapperResult.error, true);
             }
             if (process.platform === "win32") {
-                try {
-                    await startWindowsHandoff(undefined);
-                } catch (error) {
-                    log.error("Could not hand off fallback SteamVR restoration", error);
-                    await this.restoreSteamVR().catch(restoreError => {
-                        log.error("Could not perform the fallback SteamVR restoration", restoreError);
-                    });
-                }
+                await this.handoffOrRestoreUnownedSteamVR(startWindowsHandoff, !ownershipSnapshot);
             }
             cleanup();
             return {
