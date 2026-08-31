@@ -21,10 +21,14 @@ import { app, Event } from "electron";
 import { parseLaunchOptions } from "main/helpers/launchOptions.helper";
 import { randomUUID } from "node:crypto";
 import { buildWindowsPowerShellArgs, getWindowsPowerShellPath } from "main/helpers/windows-powershell.helper";
+import { abortableDelay } from "main/helpers/abortable-delay.helper";
 
 const STEAM_VR_WATCHER_READY_TIMEOUT_MS = 5_000;
 const STEAM_VR_WATCHER_READY_POLL_INTERVAL_MS = 50;
 const STEAM_VR_RESTORE_HANDOFF_TIMEOUT_MS = 7_500;
+const STEAM_VR_RESTORE_RETRY_ATTEMPTS = 5;
+const STEAM_VR_RESTORE_RETRY_INTERVAL_MS = 1_000;
+const STEAM_VR_FALLBACK_LAUNCH_OBSERVATION_SECONDS = 60;
 const ELEVATED_HELPER_PID_TIMEOUT_MS = 60_000;
 const ELEVATED_HELPER_PID_PREFIX = "BSM_ADMIN_HELPER_PID:";
 
@@ -58,6 +62,14 @@ function toLaunchError(error: unknown): Error {
     } catch {
         return new Error(Object.prototype.toString.call(error));
     }
+}
+
+function isRetryableSteamVRRestoreError(error: unknown): boolean {
+    const fsError = error as NodeJS.ErrnoException;
+    return fsError?.code === "EPERM"
+        || fsError?.code === "EACCES"
+        || fsError?.code === "EBUSY"
+        || fsError?.message?.includes("timed out");
 }
 
 class SteamLaunchFailure extends Error {
@@ -140,6 +152,47 @@ exit [int]$HelperProcess.ExitCode
 `;
 }
 
+const STEAM_VR_RESTORE_MOVE_SCRIPT = `
+for ($attempt = 0; $attempt -lt 60; $attempt++) {
+    if (!(Test-Path -LiteralPath $SteamVrBackupPath)) {
+        exit 0
+    }
+
+    $displacedFolderPath = $null
+    if (Test-Path -LiteralPath $SteamVrFolderPath) {
+        $displacedFolderPath = $SteamVrFolderPath + '.bsm-conflict-' + [Guid]::NewGuid().ToString('D')
+        try {
+            Move-Item -LiteralPath $SteamVrFolderPath -Destination $displacedFolderPath -ErrorAction Stop
+        }
+        catch {
+            Start-Sleep -Seconds 1
+            continue
+        }
+    }
+
+    try {
+        Move-Item -LiteralPath $SteamVrBackupPath -Destination $SteamVrFolderPath -ErrorAction Stop
+        exit 0
+    }
+    catch {
+        if ($null -ne $displacedFolderPath -and
+            !(Test-Path -LiteralPath $SteamVrFolderPath) -and
+            (Test-Path -LiteralPath $displacedFolderPath)) {
+            try {
+                Move-Item -LiteralPath $displacedFolderPath -Destination $SteamVrFolderPath -ErrorAction Stop
+            }
+            catch {
+                exit 5
+            }
+        }
+    }
+
+    Start-Sleep -Seconds 1
+}
+
+exit 3
+`;
+
 const STEAM_VR_RESTORE_WATCHER_SCRIPT = `
 function Get-TargetProcessState {
     $processCandidate = Get-Process -Id $TargetProcessId -ErrorAction SilentlyContinue |
@@ -201,24 +254,68 @@ if ($targetState -ne 'Exited') {
     exit 2
 }
 
-for ($attempt = 0; $attempt -lt 60; $attempt++) {
-    if (!(Test-Path -LiteralPath $SteamVrBackupPath)) {
-        exit 0
-    }
+${STEAM_VR_RESTORE_MOVE_SCRIPT}
+`;
 
-    if (!(Test-Path -LiteralPath $SteamVrFolderPath)) {
-        try {
-            Move-Item -LiteralPath $SteamVrBackupPath -Destination $SteamVrFolderPath -ErrorAction Stop
-            exit 0
-        }
-        catch {
-        }
+const STEAM_VR_FALLBACK_RESTORE_WATCHER_SCRIPT = `
+$launcherStartedAtUtc = $null
+if ($LauncherProcessId -gt 0) {
+    try {
+        $launcherStartedAtUtc = (Get-Process -Id $LauncherProcessId -ErrorAction Stop).StartTime.ToUniversalTime()
     }
-
-    Start-Sleep -Seconds 1
+    catch {
+    }
 }
 
-exit 3
+function Test-LauncherProcessRunning {
+    if ($null -eq $launcherStartedAtUtc) {
+        return $false
+    }
+
+    try {
+        $launcherCandidate = Get-Process -Id $LauncherProcessId -ErrorAction Stop
+        return $launcherCandidate.StartTime.ToUniversalTime() -eq $launcherStartedAtUtc
+    }
+    catch {
+        return $false
+    }
+}
+
+try {
+    [System.IO.File]::WriteAllText($HandoffReadyPath, "fallback")
+}
+catch {
+    exit 4
+}
+
+$launchObservationDeadline = [DateTime]::UtcNow.AddSeconds($LaunchObservationSeconds)
+$launchObserved = $false
+$quietSince = $null
+
+while ($true) {
+    $targetRunning = $null -ne (Get-Process -Name $TargetProcessName -ErrorAction SilentlyContinue |
+        Select-Object -First 1)
+
+    if ($targetRunning) {
+        $launchObserved = $true
+        $quietSince = $null
+    }
+    elseif ($launchObserved -or (
+        !(Test-LauncherProcessRunning) -and
+        [DateTime]::UtcNow -ge $launchObservationDeadline
+    )) {
+        if ($null -eq $quietSince) {
+            $quietSince = [DateTime]::UtcNow
+        }
+        elseif (([DateTime]::UtcNow - $quietSince).TotalSeconds -ge 2) {
+            break
+        }
+    }
+
+    Start-Sleep -Milliseconds 250
+}
+
+${STEAM_VR_RESTORE_MOVE_SCRIPT}
 `;
 
 export class SteamLauncherService extends AbstractLauncherService implements StoreLauncherInterface{
@@ -267,16 +364,54 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
 
     private async backupSteamVR(): Promise<boolean> {
         const steamVrFolder = await this.getSteamVRPath();
-        if (!steamVrFolder || !(await pathExists(steamVrFolder))) {
+        if (!steamVrFolder) {
             return false;
         }
+        const steamVrBackup = `${steamVrFolder}.bak`;
+        if (await pathExists(steamVrBackup)) {
+            await this.restoreSteamVR();
+            if (await pathExists(steamVrBackup)) {
+                log.warn("Could not recover the previous SteamVR backup before FPFC launch");
+                return true;
+            }
+        }
+        if (!(await pathExists(steamVrFolder))) { return false; }
         try {
-            await this.timedRename(steamVrFolder, `${steamVrFolder}.bak`);
+            await this.timedRename(steamVrFolder, steamVrBackup);
             return false;
         } catch (err: any) {
             log.warn("Could not backup SteamVR folder, skipping", err);
             return err?.code === "EPERM" || err?.message?.includes("timed out");
         }
+    }
+
+    private async rollbackDisplacedSteamVRFolder(
+        steamVrFolder: string,
+        displacedFolder: string | undefined,
+        restoreError: unknown
+    ): Promise<boolean> {
+        if (!displacedFolder
+            || await pathExists(steamVrFolder)
+            || !(await pathExists(displacedFolder))) {
+            return true;
+        }
+        try {
+            await this.timedRename(displacedFolder, steamVrFolder);
+            return true;
+        } catch (rollbackError) {
+            log.warn("Could not restore SteamVR or roll back its conflicting folder", new AggregateError(
+                [restoreError, rollbackError],
+                "SteamVR restoration and conflict rollback failed"
+            ));
+            return false;
+        }
+    }
+
+    private async displaceSteamVRFolder(steamVrFolder: string): Promise<string | undefined> {
+        if (!(await pathExists(steamVrFolder))) { return undefined; }
+        const displacedFolder = `${steamVrFolder}.bsm-conflict-${randomUUID()}`;
+        await this.timedRename(steamVrFolder, displacedFolder);
+        return displacedFolder;
     }
 
     private getStartBsAsAdminExePath(): string {
@@ -373,10 +508,26 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         const steamVrFolder = await this.getSteamVRPath();
         if (!steamVrFolder) { return; }
         const steamVrBackup = `${steamVrFolder}.bak`;
-        if (!(await pathExists(steamVrBackup))) { return; }
-        return this.timedRename(steamVrBackup, steamVrFolder).catch(err => {
-            log.warn("Could not restore SteamVR folder", err);
-        });
+        for (let attempt = 0; attempt < STEAM_VR_RESTORE_RETRY_ATTEMPTS; attempt++) {
+            if (!(await pathExists(steamVrBackup))) { return; }
+            let displacedFolder: string | undefined;
+            try {
+                displacedFolder = await this.displaceSteamVRFolder(steamVrFolder);
+                await this.timedRename(steamVrBackup, steamVrFolder);
+                if (displacedFolder) {
+                    log.warn(`Preserved a conflicting SteamVR folder at ${displacedFolder}`);
+                }
+                return;
+            } catch (err: unknown) {
+                if (!(await this.rollbackDisplacedSteamVRFolder(steamVrFolder, displacedFolder, err))) { return; }
+                if (!isRetryableSteamVRRestoreError(err)
+                    || attempt + 1 === STEAM_VR_RESTORE_RETRY_ATTEMPTS) {
+                    log.warn("Could not restore SteamVR folder", err);
+                    return;
+                }
+                await abortableDelay(STEAM_VR_RESTORE_RETRY_INTERVAL_MS);
+            }
+        }
     }
 
     private waitForRestorePreflight<T>(
@@ -521,9 +672,8 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
         }
     }
 
-    private async handoffSteamVRRestore(
-        bsExePath: string,
-        ownedProcess: OwnedProcessIdentity
+    private async startSteamVRRestoreWatcher(
+        buildWatcherScript: (encode: (value: string) => string) => string
     ): Promise<void> {
         const handoffLifecycle = new AbortController();
         const deadline = Date.now() + STEAM_VR_RESTORE_HANDOFF_TIMEOUT_MS;
@@ -549,13 +699,10 @@ export class SteamLauncherService extends AbstractLauncherService implements Sto
             const readyPath = path.join(app.getPath("temp"), `bsmanager-steamvr-restore-${randomUUID()}.ready`);
 
             const encode = (value: string) => Buffer.from(value, "utf8").toString("base64");
-            const script = `$TargetExecutablePath = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${encode(bsExePath)}'))
-$SteamVrFolderPath = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${encode(steamVrFolder)}'))
+            const script = `$SteamVrFolderPath = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${encode(steamVrFolder)}'))
 $SteamVrBackupPath = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${encode(steamVrBackup)}'))
 $HandoffReadyPath = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${encode(readyPath)}'))
-$TargetProcessId = ${ownedProcess.pid}
-$TargetProcessStartedAtUtc = [DateTime]::Parse('${ownedProcess.startedAt.toISOString()}').ToUniversalTime()
-${STEAM_VR_RESTORE_WATCHER_SCRIPT}`;
+${buildWatcherScript(encode)}`;
             watcher = spawn(getWindowsPowerShellPath(), buildWindowsPowerShellArgs(script), {
                 detached: true,
                 shell: false,
@@ -602,6 +749,75 @@ ${STEAM_VR_RESTORE_WATCHER_SCRIPT}`;
         }
     }
 
+    private handoffSteamVRRestore(
+        bsExePath: string,
+        ownedProcess: OwnedProcessIdentity
+    ): Promise<void> {
+        return this.startSteamVRRestoreWatcher(encode => (
+            `$TargetExecutablePath = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${encode(bsExePath)}'))
+$TargetProcessId = ${ownedProcess.pid}
+$TargetProcessStartedAtUtc = [DateTime]::Parse('${ownedProcess.startedAt.toISOString()}').ToUniversalTime()
+${STEAM_VR_RESTORE_WATCHER_SCRIPT}`
+        ));
+    }
+
+    private handoffUnownedSteamVRRestore(
+        waitForPossibleLaunch: boolean,
+        launcherProcessId?: number
+    ): Promise<void> {
+        const observationSeconds = waitForPossibleLaunch
+            ? STEAM_VR_FALLBACK_LAUNCH_OBSERVATION_SECONDS
+            : 0;
+        return this.startSteamVRRestoreWatcher(encode => (
+            `$TargetProcessName = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('${encode(path.parse(BS_EXECUTABLE).name)}'))
+$LaunchObservationSeconds = ${observationSeconds}
+$LauncherProcessId = ${launcherProcessId ?? 0}
+${STEAM_VR_FALLBACK_RESTORE_WATCHER_SCRIPT}`
+        ));
+    }
+
+    private createSteamVRRestoreHandoff(
+        bsExePath: string,
+        launcherProcessId?: number
+    ): (
+        processIdentity: OwnedProcessIdentity | undefined,
+        waitForPossibleLaunch?: boolean
+    ) => Promise<void> {
+        let handoffPromise: Promise<void> | undefined;
+        return (processIdentity, waitForPossibleLaunch = false) => {
+            handoffPromise ??= processIdentity
+                ? this.handoffSteamVRRestore(bsExePath, processIdentity)
+                : this.handoffUnownedSteamVRRestore(waitForPossibleLaunch, launcherProcessId);
+            return handoffPromise;
+        };
+    }
+
+    private async handoffOrRestoreUnownedSteamVR(
+        startHandoff: (
+            processIdentity: OwnedProcessIdentity | undefined,
+            waitForPossibleLaunch?: boolean
+        ) => Promise<void>,
+        waitForPossibleLaunch: boolean
+    ): Promise<void> {
+        try {
+            await startHandoff(undefined, waitForPossibleLaunch);
+        } catch (error) {
+            log.error("Could not hand off fallback SteamVR restoration", error);
+            await this.restoreSteamVR().catch(restoreError => {
+                log.error("Could not perform the fallback SteamVR restoration", restoreError);
+            });
+        }
+    }
+
+    private async restoreUnownedSteamVRBeforeQuit(
+        processIdentity: OwnedProcessIdentity | undefined
+    ): Promise<void> {
+        if (processIdentity) { return; }
+        await this.restoreSteamVRBeforeQuit().catch(restoreError => {
+            log.error("Could not perform the fallback SteamVR restoration", restoreError);
+        });
+    }
+
     private async launchBeatSaberAsAdmin(
         bsExePath: string,
         launchArgs: string[],
@@ -627,7 +843,6 @@ ${STEAM_VR_RESTORE_WATCHER_SCRIPT}`;
             windowsHide: true,
         });
         let ownedProcess: OwnedProcessIdentity | undefined;
-        let handoffPromise: Promise<void> | undefined;
         let quitCompletion: Promise<void> | undefined;
         let quitStarted = false;
 
@@ -638,24 +853,17 @@ ${STEAM_VR_RESTORE_WATCHER_SCRIPT}`;
                 adminProcess.unref();
             }
         };
-        const startHandoff = (processIdentity: OwnedProcessIdentity) => {
-            handoffPromise ??= this.handoffSteamVRRestore(bsExePath, processIdentity);
-            return handoffPromise;
-        };
+        const startHandoff = this.createSteamVRRestoreHandoff(bsExePath, adminProcess.pid);
         const onWillQuitHandler = async (event: Event) => {
             quitStarted = true;
-            if (!ownedProcess) {
-                cleanup();
-                unrefAdminProcess();
-                return;
-            }
-
             event.preventDefault();
             quitCompletion ??= (async () => {
+                const processIdentity = ownedProcess;
                 try {
-                    await startHandoff(ownedProcess!);
+                    await startHandoff(processIdentity, true);
                 } catch (error) {
                     log.error("Could not hand off SteamVR restoration", error);
+                    await this.restoreUnownedSteamVRBeforeQuit(processIdentity);
                 } finally {
                     cleanup();
                     unrefAdminProcess();
@@ -734,6 +942,7 @@ ${STEAM_VR_RESTORE_WATCHER_SCRIPT}`;
             throw new SteamLaunchFailure(error, false);
         }
         if (!processIdentity) {
+            await this.handoffOrRestoreUnownedSteamVR(startHandoff, !ownershipSnapshot);
             cleanup();
             return {
                 exitCode: helperResult.exitCode,
@@ -778,7 +987,6 @@ ${STEAM_VR_RESTORE_WATCHER_SCRIPT}`;
         const executablePath = path.join(options.beatSaberFolderPath, BS_EXECUTABLE);
         const ownershipLifecycle = new AbortController();
         let ownedProcess: OwnedProcessIdentity | undefined;
-        let handoffPromise: Promise<void> | undefined;
         let quitCompletion: Promise<void> | undefined;
         let quitStarted = false;
 
@@ -788,28 +996,24 @@ ${STEAM_VR_RESTORE_WATCHER_SCRIPT}`;
                 wrapperProcess.unref();
             }
         };
-        const startWindowsHandoff = (processIdentity: OwnedProcessIdentity) => {
-            handoffPromise ??= this.handoffSteamVRRestore(executablePath, processIdentity);
-            return handoffPromise;
-        };
+        const startWindowsHandoff = this.createSteamVRRestoreHandoff(
+            executablePath,
+            wrapperProcess.pid
+        );
         const onWillQuitHandler = async (event: Event) => {
             quitStarted = true;
-            if (!ownedProcess) {
-                cleanup();
-                unrefWrapper();
-                return;
-            }
-
             event.preventDefault();
             quitCompletion ??= (async () => {
+                const processIdentity = ownedProcess;
                 try {
                     if (process.platform === "win32") {
-                        await startWindowsHandoff(ownedProcess!);
+                        await startWindowsHandoff(processIdentity, true);
                     } else {
                         await this.restoreSteamVRBeforeQuit();
                     }
                 } catch (error) {
                     log.error("Could not restore SteamVR while quitting", error);
+                    await this.restoreUnownedSteamVRBeforeQuit(processIdentity);
                 } finally {
                     cleanup();
                     unrefWrapper();
@@ -867,10 +1071,14 @@ ${STEAM_VR_RESTORE_WATCHER_SCRIPT}`;
         }
         if (!processIdentity) {
             const wrapperResult = await wrapperOutcome;
-            cleanup();
             if ("error" in wrapperResult) {
+                cleanup();
                 throw new SteamLaunchFailure(wrapperResult.error, true);
             }
+            if (process.platform === "win32") {
+                await this.handoffOrRestoreUnownedSteamVR(startWindowsHandoff, !ownershipSnapshot);
+            }
+            cleanup();
             return {
                 exitCode: wrapperResult.exitCode,
                 steamVrRestoreSafe: false,
