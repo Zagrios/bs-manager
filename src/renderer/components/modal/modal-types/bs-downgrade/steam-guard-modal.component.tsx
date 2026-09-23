@@ -1,13 +1,27 @@
 import { ModalComponent, ModalExitCode } from "../../../../services/modale.service";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Observable, defaultIfEmpty, map, take } from "rxjs";
 import BeatConflict from "../../../../../../assets/images/apngs/beat-conflict.png";
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 
-export const SteamGuardModal: ModalComponent<string> = ({ resolver }) => {
+export const SteamGuardModal: ModalComponent<string, { logged$: Observable<unknown> }> = ({ resolver, options }) => {
     const [guardCode, setGuardCode] = useState("");
     const t = useTranslation();
+    const logged$ = options?.data?.logged$;
+
+    useEffect(() => {
+        const sub = logged$?.pipe(
+            take(1),
+            map(() => ModalExitCode.COMPLETED),
+            defaultIfEmpty(ModalExitCode.NO_CHOICE),
+        ).subscribe({
+            next: exitCode => resolver({ exitCode }),
+            error: () => resolver({ exitCode: ModalExitCode.NO_CHOICE }),
+        });
+        return () => sub?.unsubscribe();
+    }, [logged$, resolver]);
 
     const login = () => {
         if (!guardCode) {

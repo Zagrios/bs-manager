@@ -1,6 +1,6 @@
 > [!WARNING]  
 >
-> [BSManager](https://www.bsmanager.io) does not store your login information. It uses the open-source tool [`DepotDownloader`](https://github.com/SteamRE/DepotDownloader) to download versions of Beat Saber.
+> [BSManager](https://www.bsmanager.io) uses its own open-source `bs-downloader` to download versions of Beat Saber from Steam. Your password is sent to Steam for authentication and is never saved. If you choose to remember your session, BSManager stores an encrypted Steam session token using your operating system's secure storage.
 
 ## Table of Contents
 

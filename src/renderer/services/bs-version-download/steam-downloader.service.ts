@@ -87,11 +87,12 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
             take(1),
             map(event => event.subType),
         ).subscribe(async () => {
-            const res = await this.modalService.openModal(SteamGuardModal);
+            const logged$ = events$.pipe(filter(event => event.subType === DepotDownloaderInfoEvent.SteamID), take(1));
+            const res = await this.modalService.openModal(SteamGuardModal, { data: { logged$ } });
             if(res.exitCode !== ModalExitCode.COMPLETED){
                 return this.stopDownload();
             }
-            this.sendInput(res.data);
+            if (res.data) { this.sendInput(res.data); }
         }));
 
         subs.push(events$.pipe(

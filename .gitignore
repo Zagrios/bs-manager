@@ -31,3 +31,4 @@ pnpm-debug.log.*
 
 # externals
 externals/**/target/**
+assets/scripts/bs-downloader

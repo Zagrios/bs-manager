@@ -420,8 +420,8 @@
                     "msg": {
                         "401": "Steam não está nos permitindo baixar Beat Saber 😢",
                         "404": "Não foi possível conectar com os servidores da Steam.",
-                        "ExeNotFoundWindows": "\"DepotDownloader.exe\" está faltando. Por favor verifique se o executável está em quarentena pelo seu anti-virus.",
-                        "ExeNotFoundLinux": "\"DepotDownloader\" executable está faltando.",
+                        "ExeNotFoundWindows": "\"bs-downloader.exe\" está faltando. Por favor verifique se o executável está em quarentena pelo seu anti-virus.",
+                        "ExeNotFoundLinux": "\"bs-downloader\" executable está faltando.",
                         "Password": "Senha inválida.",
                         "InvalidCredentials": "Credenciais de login inválidas, conexão negada, ou muitas tentativas de login foram feitas.",
                         "NoManifest": "Nenhum manifesto foi encontrado",
@@ -816,7 +816,7 @@
         },
         "steam-credentials": {
             "title": "Credenciais Steam",
-            "p-1": "Suas credenciais da Steam são necessárias apenas para baixar as versões de Beat Saber, nós usamos DepotDownloader para fazer isso, e verificar que você possuí o jogo na sua biblioteca antes de baixar o jogo. Suas credenciais não são armazenadas ou salvas, e são passadas direto para o DepotDownloader. Entretanto, se você não quiser fazer isso, você pode seguir esse tutorial: ",
+            "p-1": "Suas credenciais da Steam são necessárias apenas para baixar as versões de Beat Saber, nós usamos bs-downloader para fazer isso, e verificar que você possuí o jogo na sua biblioteca antes de baixar o jogo. Suas credenciais não são armazenadas ou salvas, e são passadas direto para o bs-downloader. Entretanto, se você não quiser fazer isso, você pode seguir esse tutorial: ",
             "p-2": "Após isso, você pode apertar no ícone de engrenagem no topo direito da tela e selecionar \"Importar uma versãp\", e então selecionar a pasta com a instalação do Beat Saber. (Se você seguiu o tutorial, você vai ter a pasta correta)"
         },
         "bs-import-version": {

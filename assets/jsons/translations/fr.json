@@ -420,8 +420,8 @@
                     "msg": {
                         "401": "Steam ne semble pas vouloir nous laisser télécharger Beat Saber 😢",
                         "404": "Impossible de contacter les serveurs de Steam.",
-                        "ExeNotFoundWindows": "\"DepotDownloader.exe\" est manquant. Vérifiez que votre antivirus n'a pas mis le fichier en quarantaine.",
-                        "ExeNotFoundLinux": "L'exécutable \"DepotDownloader\" est manquant.",
+                        "ExeNotFoundWindows": "\"bs-downloader.exe\" est manquant. Vérifiez que votre antivirus n'a pas mis le fichier en quarantaine.",
+                        "ExeNotFoundLinux": "L'exécutable \"bs-downloader\" est manquant.",
                         "Password": "Le mot de passe est invalide.",
                         "InvalidCredentials": "Identifiants de connexion invalides, connexion non approuvée, ou trop de tentatives de connexion.",
                         "NoManifest": "Aucun manifeste n'a été trouvé.",
@@ -816,7 +816,7 @@
         },
         "steam-credentials": {
             "title": "Steam Credentials",
-            "p-1": "Les informations d'identification ne sont utilisées que pour télécharger le jeu, car Steam doit vérifier que vous avez payé le jeu afin d'être autorisé à le télécharger. Ils ne sont pas sauvegardés et transmis directement à DepotDownloader. Si vous ne voulez pas entrer vos informations d'identification, vous pouvez suivre ce tutoriel :",
+            "p-1": "Les informations d'identification ne sont utilisées que pour télécharger le jeu, car Steam doit vérifier que vous avez payé le jeu afin d'être autorisé à le télécharger. Ils ne sont pas sauvegardés et transmis directement à bs-downloader. Si vous ne voulez pas entrer vos informations d'identification, vous pouvez suivre ce tutoriel :",
             "p-2": "puis cliquez sur l'icône de l'engrenage dans le coin supérieur droit et sélectionnez \"Importer une version\", vous pouvez ensuite sélectionner le dossier où Beat Saber a été téléchargé (Si vous suivez le tutoriel ci-dessus, vous devriez avoir le bon emplacement)."
         },
         "bs-import-version": {
