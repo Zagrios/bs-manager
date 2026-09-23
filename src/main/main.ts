@@ -19,7 +19,6 @@ import { APP_NAME } from "./constants";
 import { BSLauncherService } from "./services/bs-launcher/bs-launcher.service";
 import { IpcRequest } from "shared/models/ipc";
 import { LivShortcut } from "./services/liv/liv-shortcut.service";
-import { SteamLauncherService } from "./services/bs-launcher/steam-launcher.service";
 import { FileAssociationService } from "./services/file-association.service";
 import { SongDetailsCacheService } from "./services/additional-content/maps/song-details-cache.service";
 import { Dirent, readdirSync } from "fs-extra";
@@ -143,8 +142,6 @@ if (!gotTheLock) {
             // Skip launcher only if autoUpdate is strictly false
             createWindow(update ? "launcher.html" : "index.html");
         }
-
-        SteamLauncherService.getInstance().restoreSteamVR();
 
         // Log renderer errors
         ipcMain.on("log-error", (_, args: IpcRequest<unknown>) => {

@@ -58,7 +58,6 @@ export interface IpcChannelMapping {
     "create-launch-shortcut": { request: { options: LaunchOption, steamShortcut?: boolean }, response: boolean };
     "bs-launch.need-start-as-admin": { request: void, response: boolean };
     "bs-launch.launch": { request: LaunchOption, response: BSLaunchEventData };
-    "bs-launch.restore-steamvr": { request: void, response: void };
 
     /* ** bs-maps-ipcs ** */
     "load-version-maps": { request: BSVersion, response: BsmLocalMapsProgress};

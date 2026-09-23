@@ -98,6 +98,8 @@ export abstract class AbstractLauncherService {
                     "SteamAppId",
                     "SteamOverlayGameId",
                     "SteamGameId",
+                    "VR_OVERRIDE",
+                    "XR_RUNTIME_JSON",
                     "WINEDLLOVERRIDES",
                     "STEAM_COMPAT_DATA_PATH",
                     "STEAM_COMPAT_INSTALL_PATH",

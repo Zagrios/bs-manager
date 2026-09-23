@@ -102,7 +102,7 @@ describe("Flatpak launch ownership", () => {
 
         const launch = launcher.start({
             cmdlet: "proton",
-            env: {},
+            env: { VR_OVERRIDE: "/games/Beat Saber/Beat Saber.exe", XR_RUNTIME_JSON: "/games/Beat Saber/Beat Saber.exe/disabled-openxr.json" },
             customEnv: {},
             beatSaberFolderPath: "/games/Beat Saber",
         }, snapshot!);
@@ -110,11 +110,15 @@ describe("Flatpak launch ownership", () => {
 
         expect(bsmSpawn).toHaveBeenCalledWith("proton", expect.objectContaining({
             options: expect.objectContaining({
-                env: expect.objectContaining({ BSMANAGER_LAUNCH_TOKEN: snapshot!.launchToken }),
+                env: expect.objectContaining({
+                    BSMANAGER_LAUNCH_TOKEN: snapshot!.launchToken,
+                    VR_OVERRIDE: "/games/Beat Saber/Beat Saber.exe",
+                    XR_RUNTIME_JSON: "/games/Beat Saber/Beat Saber.exe/disabled-openxr.json",
+                }),
             }),
             flatpak: expect.objectContaining({
                 host: true,
-                env: expect.arrayContaining(["BSMANAGER_LAUNCH_TOKEN"]),
+                env: expect.arrayContaining(["BSMANAGER_LAUNCH_TOKEN", "VR_OVERRIDE", "XR_RUNTIME_JSON"]),
             }),
         }));
         expect(getProcessesByName).toHaveBeenLastCalledWith("Beat Saber.exe", snapshot!.launchToken);
