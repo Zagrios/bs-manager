@@ -120,13 +120,24 @@ export class LocalPlaylistsManagerService {
     }): Promise<{path: string, localBPList: LocalBPList}> {
         const { bpList, filename } = await this.readPlaylistFromSource(opt.bplistSource);
 
-        const dest = await (async () => {
-            if(opt.dest && path.isAbsolute(opt.dest) && this.acceptPlaylistFiletype(opt.dest)) { return opt.dest; }
-            const playlistFolder = await this.getPlaylistsFolder(opt.version);
-            return path.join(playlistFolder, sanitize(filename));
-        })();
+        let { dest } = opt;
+        let overwrite = !!dest && path.isAbsolute(dest) && this.acceptPlaylistFiletype(dest);
 
-        writeFileSync(dest, JSON.stringify(bpList, null, 2));
+        if (!overwrite) {
+            const playlistFolder = await this.getPlaylistsFolder(opt.version);
+            const syncURL = bpList.customData?.syncURL;
+            let existingPlaylist: LocalBPList;
+
+            if (syncURL) {
+                const playlists = await lastValueFrom(this.getLocalBPListsOfFolder(playlistFolder));
+                existingPlaylist = playlists.data.find(playlist => playlist.customData?.syncURL === syncURL);
+            }
+
+            overwrite = !!existingPlaylist;
+            dest = existingPlaylist?.path ?? getUniqueFileNamePath(path.join(playlistFolder, sanitize(filename)));
+        }
+
+        writeFileSync(dest, JSON.stringify(bpList, null, 2), { flag: overwrite ? "w" : "wx" });
 
         const localBPList: LocalBPList = { ...bpList, path: dest };
 
