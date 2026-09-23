@@ -56,15 +56,3 @@ export enum DepotDownloaderWarningEvent {
     ConnectionTimeout = "ConnectionTimeout",
     Unknown = "Unknown",
 }
-
-export interface DepotDownloaderArgsOptions {
-    app: number|string,
-    depot: number|string,
-    manifest: number|string,
-    username?: string,
-    password?: string,
-    "remember-password"?: boolean,
-    dir: string,
-    validate?: boolean,
-    qr?: boolean,
-}

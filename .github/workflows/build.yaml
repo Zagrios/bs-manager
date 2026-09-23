@@ -25,6 +25,11 @@ jobs:
               with:
                   version: 10.34.4
 
+            - uses: ./.github/actions/setup-downloader
+
+            - name: Test downloader
+              run: cargo test --locked --manifest-path externals/bs-downloader/Cargo.toml
+
             - name: Use Node.js
               uses: actions/setup-node@v4
               with:
@@ -46,6 +51,9 @@ jobs:
 
             # Native modules need lifecycle scripts, restricted by allowBuilds.
             - run: pnpm install --frozen-lockfile # NOSONAR
+            - name: Build Linux downloader
+              if: runner.os == 'Linux'
+              run: pnpm run build-rust-scripts
             # CI artifacts are intentionally unsigned; releases are signed locally.
             - run: pnpm run package:unsigned
 

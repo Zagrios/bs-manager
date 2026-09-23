@@ -59,6 +59,17 @@ pnpm --dir release/app add <package>
 
 See [Building on Linux](#building-on-linux) for the required system packages.
 
+The Windows downloader executable is committed as a release build, like the
+other executables in `assets/scripts`. Rebuild it with `pnpm run build-rust-scripts`
+after changing its Rust sources and include the updated executable in the commit.
+Rust 1.93.1, a C toolchain and CMake are needed for that command. Windows builds
+require the MSVC build tools.
+
+On Linux, run `pnpm run build-rust-scripts` before the first start or build and after
+changing the downloader. Linux CI does this explicitly for each architecture.
+See the [downloader build instructions](externals/bs-downloader/README.md#build)
+for the musl target and compiler requirements.
+
 ### Create a Dedicated Branch
 
 Use a clear naming convention for your branch:

@@ -420,8 +420,8 @@
                     "msg": {
                         "401": "Mukhang hindi tayo pinapayagan ng Steam na mag-download ng Beat Saber 😢",
                         "404": "Hindi makakonek sa mga server ng Steam.",
-                        "ExeNotFoundWindows": "Nawawala ang \"DepotDownloader.exe\". Pakisuri kung ang executable na ito ay naka-quarantine ng iyong anti-virus.",
-                        "ExeNotFoundLinux": "\"Nawawala ang \"DepotDownloader\" na executable.",
+                        "ExeNotFoundWindows": "Nawawala ang \"bs-downloader.exe\". Pakisuri kung ang executable na ito ay naka-quarantine ng iyong anti-virus.",
+                        "ExeNotFoundLinux": "\"Nawawala ang \"bs-downloader\" na executable.",
                         "Password": "Maling password.",
                         "InvalidCredentials": "Maling login credentials, hindi aprubadong koneksyon, o sobrang daming pag-subok mag-login.",
                         "NoManifest": "Walang manifest na natagpuan",
@@ -816,7 +816,7 @@
         },
         "steam-credentials": {
             "title": "Steam Credentials",
-            "p-1": "Ang iyong Steam credentials ay kinakailangan lamang upang i-download ang mga bersyon ng Beat Saber, ginagamit namin ang DepotDownloader para gawin ito na nangangailangan ng iyong Steam credentials upang tiyakin na ikaw ay may-ari ng laro sa iyong library bago ka payagang kunin ang mga game files, ang iyong credentials ay hindi iniimbak o sine-save at ipinapasa nang direkta sa DepotDownloader. Gayunpaman, kung ayaw mong gawin ito, maaari mong sundan ang tutorial na ito: ",
+            "p-1": "Ang iyong Steam credentials ay kinakailangan lamang upang i-download ang mga bersyon ng Beat Saber, ginagamit namin ang bs-downloader para gawin ito na nangangailangan ng iyong Steam credentials upang tiyakin na ikaw ay may-ari ng laro sa iyong library bago ka payagang kunin ang mga game files, ang iyong credentials ay hindi iniimbak o sine-save at ipinapasa nang direkta sa bs-downloader. Gayunpaman, kung ayaw mong gawin ito, maaari mong sundan ang tutorial na ito: ",
             "p-2": "Pagkatapos, maaari mong i-click ang gear icon sa kanang itaas na sulok at piliin ang \"Import a version\", saka mo maaaring piliin ang folder kung saan na-download ang Beat Saber. (Kung sinundan mo ang tutorial, mayroon kang tamang lokasyon)"
         },
         "bs-import-version": {

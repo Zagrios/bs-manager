@@ -19,6 +19,9 @@ jobs:
 
         steps:
             - uses: actions/checkout@v4
+            - uses: ./.github/actions/setup-downloader
+            - name: Test Rust downloader
+              run: cargo test --locked --manifest-path externals/bs-downloader/Cargo.toml
             - name: Install pnpm
               uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
               with:
@@ -33,6 +36,9 @@ jobs:
                       release/app/pnpm-lock.yaml
             # Native modules need lifecycle scripts, restricted by allowBuilds.
             - run: pnpm install --frozen-lockfile # NOSONAR
+            - name: Build Linux downloader
+              if: runner.os == 'Linux'
+              run: pnpm run build-rust-scripts
             - run: pnpm run build
 
             - name: Unit tests

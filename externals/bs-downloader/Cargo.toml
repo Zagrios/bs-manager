@@ -1,0 +1,37 @@
+[package]
+name = "bs-downloader"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.93"
+publish = false
+license = "GPL-3.0-only"
+
+[dependencies]
+aes = "0.9"
+base64 = "0.23"
+bytes = "1"
+cbc = { version = "0.2", features = ["alloc", "block-padding"] }
+crc32fast = "1"
+flate2 = { version = "1", default-features = false, features = ["rust_backend"] }
+futures-util = { version = "0.3", features = ["sink"] }
+lzma-rs = "0.3"
+prost = "0.14"
+reqwest = { version = "0.13", default-features = false, features = ["rustls", "json", "form", "query", "stream", "socks"] }
+reqwest-websocket = "0.6"
+rsa = { version = "0.9", default-features = false, features = ["std", "u64_digit", "getrandom"] }
+ruzstd = "0.9"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha1 = "0.11"
+tempfile = "3"
+thiserror = "2"
+tokio = { version = "1", features = ["rt-multi-thread", "time", "sync", "macros", "net", "io-util"] }
+tungstenite = { version = "0.28", default-features = false }
+webpki-root-certs = "1"
+
+[profile.release]
+lto = "thin"
+strip = true
+
+[lints.rust]
+unsafe_code = "forbid"

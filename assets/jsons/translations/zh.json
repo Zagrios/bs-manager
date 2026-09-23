@@ -420,8 +420,8 @@
                     "msg": {
                         "401": "Steam 似乎不想让我们下载 Beat Saber😢",
                         "404": "无法联系 Steam 服务器。",
-                        "ExeNotFoundWindows": "\"DepotDownloader.exe\" 缺失。请检查执行文件是否被您的防病毒软件隔离。",
-                        "ExeNotFoundLinux": "\"DepotDownloader\" 的可执行文件缺失。",
+                        "ExeNotFoundWindows": "\"bs-downloader.exe\" 缺失。请检查执行文件是否被您的防病毒软件隔离。",
+                        "ExeNotFoundLinux": "\"bs-downloader\" 的可执行文件缺失。",
                         "Password": "密码无效",
                         "InvalidCredentials": "登录凭据无效、连接未经批准或登录尝试次数过多。",
                         "NoManifest": "未找到清单",
@@ -816,7 +816,7 @@
         },
         "steam-credentials": {
             "title": "Steam 凭证",
-            "p-1": "凭证仅用于下载游戏，因为 Steam 需要验证你是否已经购买了游戏，以便允许你下载它。它们不会被保存，而是直接传递给 DepotDownloader。如果你不想输入你的凭证，你可以按照此教程操作：",
+            "p-1": "凭证仅用于下载游戏，因为 Steam 需要验证你是否已经购买了游戏，以便允许你下载它。它们不会被保存，而是直接传递给 bs-downloader。如果你不想输入你的凭证，你可以按照此教程操作：",
             "p-2": "然后点击右上角的齿轮图标，选择“导入版本”，选择 Beat Saber 已下载的文件夹（如果你按照上面的教程，你应该会得到正确的位置）"
         },
         "bs-import-version": {

@@ -22,6 +22,7 @@ const SHARED_FOLDERS_KEY = "default-shared-folders";
 const SHARED_FOLDER_BLACKLIST = {
     error: [
         ".DepotDownloader",
+        ".bs-download",
         "Beat Saber_Data",
         "IPA",
         "Libs",

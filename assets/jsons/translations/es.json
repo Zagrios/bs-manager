@@ -420,8 +420,8 @@
                     "msg": {
                         "401": "Parece que Steam no quiere dejarnos descargar Beat Saber 😢",
                         "404": "No se puede contactar con los servidores de Steam",
-                        "ExeNotFoundWindows": "Falta \"DepotDownloader.exe\". Por favor, verifique si el ejecutable está en cuarentena por su antivirus.",
-                        "ExeNotFoundLinux": "Falta el ejecutable de \"DepotDownloader\".",
+                        "ExeNotFoundWindows": "Falta \"bs-downloader.exe\". Por favor, verifique si el ejecutable está en cuarentena por su antivirus.",
+                        "ExeNotFoundLinux": "Falta el ejecutable de \"bs-downloader\".",
                         "Password": "La contraseña es inválida.",
                         "InvalidCredentials": "Credenciales de inicio de sesión inválidas, conexión no aprobada o demasiados intentos de inicio de sesión.",
                         "NoManifest": "No se ha encontrado el manifiesto",
@@ -816,7 +816,7 @@
         },
         "steam-credentials": {
             "title": "Steam Credentials",
-            "p-1": "Las credenciales sólo se utilizan para descargar el juego porque steam necesita verificar que has pagado el juego para permitirte descargarlo. No se guardan y se pasan directamente a DepotDownloader. Si no quieres introducir tus credenciales puedes seguir este tutorial :",
+            "p-1": "Las credenciales sólo se utilizan para descargar el juego porque steam necesita verificar que has pagado el juego para permitirte descargarlo. No se guardan y se pasan directamente a bs-downloader. Si no quieres introducir tus credenciales puedes seguir este tutorial :",
             "p-2": "y, a continuación, haga clic en el icono de engranaje en la esquina superior derecha y seleccione \"Importar una versión\", seleccione la carpeta donde se ha descargado beat saber (Si usted sigue el tutorial anterior debe tener la ubicación correcta)"
         },
         "bs-import-version": {
