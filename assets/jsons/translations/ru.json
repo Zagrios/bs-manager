@@ -586,11 +586,9 @@
             },
             "warnings": {
                 "titles": {
-                    "FPFC_NEED_ADMIN": "Не удалось настроить режим FPFC",
                     "UNABLE_TO_LAUNCH_STEAM": "Не удалось запустить Steam"
                 },
                 "msg": {
-                    "FPFC_NEED_ADMIN": "BSManager нужны права администратора, чтобы корректно настроить режим FPFC. Запустите BSManager от имени администратора для корректной работы.",
                     "UNABLE_TO_LAUNCH_STEAM": "Не удалось запустить Steam автоматически."
                 }
             }

@@ -31,7 +31,6 @@ import { CreateCustomLaunchOptionModal } from "renderer/components/modal/modal-t
 type Props = { version: BSVersion };
 
 function useLaunchMods() {
-    const bsLauncherService = useService(BSLauncherService);
     const configService = useService(ConfigurationService);
 
     const [activeLaunchMods, setActiveLaunchMods] = useState<string[]>(configService.get("launch-mods") ?? []);
@@ -43,10 +42,6 @@ function useLaunchMods() {
 
     useEffect(() => {
         configService.set("launch-mods", activeLaunchMods);
-
-        if(!activeLaunchMods.includes("fpfc")){
-            bsLauncherService.restoreSteamVR();
-        }
     }, [activeLaunchMods]);
 
     const toggleActiveLaunchMod = useCallback((checked: boolean, launchMod: string) => checked

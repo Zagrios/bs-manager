@@ -29,7 +29,6 @@ export enum BSLaunchEvent{
 
 export enum BSLaunchWarning{
     UNABLE_TO_LAUNCH_STEAM = "UNABLE_TO_LAUNCH_STEAM",
-    FPFC_NEED_ADMIN = "FPFC_NEED_ADMIN",
 }
 
 export type BSLaunchEventType = BSLaunchEvent | BSLaunchWarning;

@@ -184,7 +184,4 @@ export class BSLauncherService {
         return this.ipcService.sendV2("create-launch-shortcut", { options, steamShortcut });
     }
 
-    public restoreSteamVR(): Promise<void>{
-        return lastValueFrom(this.ipcService.sendV2("bs-launch.restore-steamvr"));
-    }
 }

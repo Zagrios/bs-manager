@@ -586,11 +586,9 @@
             },
             "warnings": {
                 "titles": {
-                    "FPFC_NEED_ADMIN": "FPFC 모드 설정 미완료",
                     "UNABLE_TO_LAUNCH_STEAM": "Steam을 실행할 수 없음"
                 },
                 "msg": {
-                    "FPFC_NEED_ADMIN": "FPFC 모드를 올바르게 설정하려면 BSManager에 관리자 권한이 필요합니다. 최상의 환경을 위해 BSManager를 관리자 권한으로 실행하세요.",
                     "UNABLE_TO_LAUNCH_STEAM": "Steam을 자동으로 실행할 수 없었습니다."
                 }
             }

@@ -2,7 +2,6 @@
 import { BSLauncherService } from "../services/bs-launcher/bs-launcher.service"
 import { IpcService } from '../services/ipc.service';
 import { from } from "rxjs";
-import { SteamLauncherService } from "../services/bs-launcher/steam-launcher.service";
 import { SteamService } from "../services/steam.service";
 import log from "electron-log";
 import isElevated from "is-elevated";
@@ -28,9 +27,4 @@ ipc.on("bs-launch.need-start-as-admin", (_, reply) => {
 ipc.on("create-launch-shortcut", (args, reply) => {
     const bsLauncher = BSLauncherService.getInstance();
     reply(from(bsLauncher.createLaunchShortcut(args.options, args.steamShortcut)));
-});
-
-ipc.on("bs-launch.restore-steamvr", (_, reply) => {
-    const steamLauncher = SteamLauncherService.getInstance();
-    reply(from(steamLauncher.restoreSteamVR()));
 });
