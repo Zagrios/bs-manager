@@ -1,7 +1,7 @@
 import { app, safeStorage } from "electron";
-import { createHash, randomUUID } from "crypto";
-import { mkdir, readFile, rename, rm, writeFile } from "fs/promises";
-import path from "path";
+import { createHash, randomUUID } from "node:crypto";
+import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import path from "node:path";
 import { SteamDownloadSession } from "main/models/bs-downloader.class";
 
 function sessionPath(username: string): string {

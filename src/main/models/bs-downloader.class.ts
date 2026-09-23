@@ -1,7 +1,7 @@
-import path from "path";
-import fs from "fs";
-import { ChildProcessWithoutNullStreams, spawn } from "child_process";
-import { StringDecoder } from "string_decoder";
+import path from "node:path";
+import fs from "node:fs";
+import { ChildProcessWithoutNullStreams, spawn } from "node:child_process";
+import { StringDecoder } from "node:string_decoder";
 import { Observable, ReplaySubject, Subscriber, share } from "rxjs";
 import { UtilsService } from "main/services/utils.service";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
@@ -36,6 +36,24 @@ const EVENT_TYPES = {
     [DepotDownloaderEventType.Error]: new Set<string>(Object.values(DepotDownloaderErrorEvent)),
     [DepotDownloaderEventType.Warning]: new Set<string>(Object.values(DepotDownloaderWarningEvent)),
 };
+
+function logDiagnostic(subType: string, data: unknown, logger?: Logger): void {
+    if (!DIAGNOSTIC_STAGES.has(subType)) { return; }
+    logger?.info("bs-downloader stage:", subType);
+    if (subType === "ContentFailure" && typeof data === "string" && /^steam\.(content|format|cache|verification)\.[a-zA-Z]{1,64}$/.test(data)) {
+        logger?.info("bs-downloader content failure:", data);
+    }
+    if (subType === "CDNRetry" && typeof data === "string" && EVENT_TYPES.Error.has(data)) {
+        logger?.info("bs-downloader CDN failure:", data);
+    }
+    if (subType === "CDN" && data && typeof data === "object") {
+        const { host } = data as Record<string, unknown>;
+        if (typeof host === "string" && /^[a-zA-Z0-9.-]{1,253}$/.test(host)) {
+            logger?.info("bs-downloader CDN host:", host);
+        }
+    }
+}
+
 export class BsDownloader {
     private process: ChildProcessWithoutNullStreams | null = null;
     private subscriber: Subscriber<DepotDownloaderEvent> | null = null;
@@ -63,7 +81,7 @@ export class BsDownloader {
             const acceptLine = (line: string) => {
                 let event: Record<string, unknown>;
                 try { event = JSON.parse(line); } catch { fail("Invalid bs-downloader response"); return; }
-                if (!event || event.version !== PROTOCOL_VERSION || typeof event.type !== "string" || typeof event.subType !== "string") {
+                if (event?.version !== PROTOCOL_VERSION || typeof event.type !== "string" || typeof event.subType !== "string") {
                     fail("Unsupported bs-downloader protocol");
                     return;
                 }
@@ -75,25 +93,11 @@ export class BsDownloader {
                     return;
                 }
                 if (event.type === "Diagnostic") {
-                    if (DIAGNOSTIC_STAGES.has(event.subType)) {
-                        logger?.info("bs-downloader stage:", event.subType);
-                        if (event.subType === "ContentFailure" && typeof event.data === "string" && /^steam\.(content|format|cache|verification)\.[a-zA-Z]{1,64}$/.test(event.data)) {
-                            logger?.info("bs-downloader content failure:", event.data);
-                        }
-                        if (event.subType === "CDNRetry" && typeof event.data === "string" && EVENT_TYPES.Error.has(event.data)) {
-                            logger?.info("bs-downloader CDN failure:", event.data);
-                        }
-                        if (event.subType === "CDN" && event.data && typeof event.data === "object") {
-                            const data = event.data as Record<string, unknown>;
-                            if (typeof data.host === "string" && /^[a-zA-Z0-9.-]{1,253}$/.test(data.host)) {
-                                logger?.info("bs-downloader CDN host:", data.host);
-                            }
-                        }
-                    }
+                    logDiagnostic(event.subType, event.data, logger);
                     return;
                 }
                 const type = event.type as DepotDownloaderEventType;
-                if (!Object.prototype.hasOwnProperty.call(EVENT_TYPES, type) || !EVENT_TYPES[type].has(event.subType) || typeof event.data !== "string") {
+                if (!Object.hasOwn(EVENT_TYPES, type) || !EVENT_TYPES[type].has(event.subType) || typeof event.data !== "string") {
                     fail("Invalid bs-downloader event");
                     return;
                 }

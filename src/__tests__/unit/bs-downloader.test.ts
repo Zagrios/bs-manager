@@ -2,11 +2,11 @@ import { EventEmitter } from "events";
 import { PassThrough } from "stream";
 import { lastValueFrom, toArray } from "rxjs";
 import { BsDownloader, downloaderEnvironment } from "main/models/bs-downloader.class";
-import { spawn } from "child_process";
+import { spawn } from "node:child_process";
 
 jest.mock("main/services/utils.service", () => ({ UtilsService: { getInstance: () => ({ getAssetsScriptsPath: () => "/scripts" }) } }));
-jest.mock("fs", () => ({ ...jest.requireActual("fs"), existsSync: () => true }));
-jest.mock("child_process", () => ({ spawn: jest.fn() }));
+jest.mock("node:fs", () => ({ ...jest.requireActual("node:fs"), existsSync: () => true }));
+jest.mock("node:child_process", () => ({ spawn: jest.fn() }));
 
 function childProcess() {
     return Object.assign(new EventEmitter(), {
@@ -58,7 +58,7 @@ describe("bs-downloader process adapter", () => {
         expect(next.mock.calls.some(([event]) => event.subType === "Finished")).toBe(false);
     });
 
-    it.each(["not JSON\n", line("Progress", "1").replace('"version":1', '"version":2'), "x".repeat(128 * 1024 + 1)])("rejects malformed or oversized protocol responses", async response => {
+    it.each(["not JSON\n", "null\n", line("Progress", "1").replace('"version":1', '"version":2'), line("Progress", "1", "toString"), "x".repeat(128 * 1024 + 1)])("rejects malformed or oversized protocol responses", async response => {
         const result = lastValueFrom(new BsDownloader(options, {}).$events());
         child.stdout.write(response);
         await expect(result).rejects.toMatchObject({ code: "NotCompleted" });
@@ -97,6 +97,36 @@ describe("bs-downloader process adapter", () => {
         child.stdout.write(line("ContentFailure", "private-token /private/path", "Diagnostic"));
         expect(logger.info).toHaveBeenCalledWith("bs-downloader content failure:", "steam.content.assembledHashMismatch");
         expect(JSON.stringify(logger.info.mock.calls)).not.toContain("private-token");
+        expect(next).toHaveBeenCalledTimes(1);
+        subscription.unsubscribe();
+    });
+
+    it("logs only known diagnostic stages and validated CDN details", () => {
+        const logger = { info: jest.fn(), warn: jest.fn() };
+        const next = jest.fn();
+        const subscription = new BsDownloader(options, {}, logger).$events().subscribe({ next });
+        const diagnostics = [
+            { subType: "SteamConnection", data: "private-token" },
+            { subType: "CDNRetry", data: "ConnectionError" },
+            { subType: "CDNRetry", data: "private-token" },
+            { subType: "CDN", data: { host: "cdn.steamcontent.com", token: "private-token" } },
+            { subType: "CDN", data: { host: "https://cdn.steamcontent.com/?token=private-token" } },
+            { subType: "CDN", data: null },
+            { subType: "UnknownStage", data: "private-token" },
+        ];
+        for (const diagnostic of diagnostics) {
+            child.stdout.write(`${JSON.stringify({ version: 1, type: "Diagnostic", ...diagnostic })}\n`);
+        }
+        expect(logger.info.mock.calls).toEqual([
+            ["bs-downloader stage:", "SteamConnection"],
+            ["bs-downloader stage:", "CDNRetry"],
+            ["bs-downloader CDN failure:", "ConnectionError"],
+            ["bs-downloader stage:", "CDNRetry"],
+            ["bs-downloader stage:", "CDN"],
+            ["bs-downloader CDN host:", "cdn.steamcontent.com"],
+            ["bs-downloader stage:", "CDN"],
+            ["bs-downloader stage:", "CDN"],
+        ]);
         expect(next).toHaveBeenCalledTimes(1);
         subscription.unsubscribe();
     });
