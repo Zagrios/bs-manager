@@ -190,6 +190,19 @@ describe("LinuxService.buildEnvVariables", () => {
         expect(buildService().verifyProtonPath("/proton-candidate")).toBe(true);
     });
 
+    it("accepts and uses the native Wine binary from ARM64 Proton", () => {
+        const protonPath = path.join("/proton-candidate", "proton");
+        const armWinePath = path.join("/proton-candidate", "files", "bin-arm64", "wine");
+        (fs.pathExistsSync as jest.Mock).mockImplementation(filePath =>
+            [protonPath, armWinePath].includes(filePath)
+        );
+
+        const service = buildService();
+        (service as any).staticConfig.get.mockReturnValue("/proton-candidate");
+        expect(service.verifyProtonPath("/proton-candidate")).toBe(true);
+        expect(service.getWinePath()).toBe(armWinePath);
+    });
+
     it("rejects a Proton folder when a required binary path is a directory", () => {
         (fs.statSync as jest.Mock).mockReturnValue({ isFile: () => false });
 
