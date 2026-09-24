@@ -53,7 +53,7 @@ describe("LinuxService.buildEnvVariables", () => {
     const compatDataPath = path.resolve(sharedContentPath, "compatdata");
 
     function buildService(): LinuxService {
-        const service = Object.create(LinuxService.prototype) as LinuxService;
+        const service = Reflect.construct(LinuxService, []) as LinuxService;
 
         (service as any).installLocationService = {
             sharedContentPath: () => sharedContentPath,
@@ -64,8 +64,6 @@ describe("LinuxService.buildEnvVariables", () => {
             set: jest.fn(async () => undefined),
         };
         (service as any).nixOS = false;
-        (service as any).PROTON_BINARY_PREFIX = "proton";
-        (service as any).WINE_BINARY_PREFIXES = ["files/bin/wine64"];
         (service as any).getProtonPath = jest.fn(async () => "/proton/proton");
         (service as any).getProtonPrefix = jest.fn(async () => '"/proton/proton" run');
 
