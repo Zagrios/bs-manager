@@ -65,7 +65,6 @@ describe("LinuxService.buildEnvVariables", () => {
         };
         (service as any).nixOS = false;
         (service as any).getProtonPath = jest.fn(async () => "/proton/proton");
-        (service as any).getProtonPrefix = jest.fn(async () => '"/proton/proton" run');
 
         return service;
     }
@@ -85,6 +84,14 @@ describe("LinuxService.buildEnvVariables", () => {
         (fs.statSync as jest.Mock).mockReturnValue({ isFile: () => true });
         (fs.writeFile as jest.Mock).mockResolvedValue(undefined);
         (bsmExec as jest.Mock).mockRejectedValue(new Error("not nixos"));
+    });
+
+    it("uses Proton's utility mode for commands that run inside its prefix", async () => {
+        const service = buildService();
+
+        await expect(service.getProtonPrefix()).resolves.toBe('"/proton/proton" run');
+        await expect(service.getProtonPrefix("runinprefix"))
+            .resolves.toBe('"/proton/proton" runinprefix');
     });
 
     it("keeps parallel views out of the default Linux launch environment", async () => {
