@@ -23,11 +23,12 @@ export class LinuxService {
     }
 
     private readonly PROTON_BINARY_PREFIX = "proton";
-    // Use "wine64" instead of "wine"
+    // x86_64 Proton uses wine64; ARM64 Proton uses the unified Wine binary.
     // https://github.com/Zagrios/bs-manager/pull/586#issuecomment-2449228826
     private readonly WINE_BINARY_PREFIXES = [
         path.join("files", "bin", "wine64"),
         path.join("files", "lib", "wine", "x86_64-unix", "wine64"),
+        path.join("files", "bin-arm64", "wine"),
     ];
 
     private readonly installLocationService: InstallationLocationService;

@@ -53,7 +53,7 @@ describe("LinuxService.buildEnvVariables", () => {
     const compatDataPath = path.resolve(sharedContentPath, "compatdata");
 
     function buildService(): LinuxService {
-        const service = Object.create(LinuxService.prototype) as LinuxService;
+        const service = Reflect.construct(LinuxService, []) as LinuxService;
 
         (service as any).installLocationService = {
             sharedContentPath: () => sharedContentPath,
@@ -64,8 +64,6 @@ describe("LinuxService.buildEnvVariables", () => {
             set: jest.fn(async () => undefined),
         };
         (service as any).nixOS = false;
-        (service as any).PROTON_BINARY_PREFIX = "proton";
-        (service as any).WINE_BINARY_PREFIXES = ["files/bin/wine64"];
         (service as any).getProtonPath = jest.fn(async () => "/proton/proton");
         (service as any).getProtonPrefix = jest.fn(async () => '"/proton/proton" run');
 
@@ -190,6 +188,19 @@ describe("LinuxService.buildEnvVariables", () => {
 
     it("accepts a Proton folder with executable regular Proton and Wine files", () => {
         expect(buildService().verifyProtonPath("/proton-candidate")).toBe(true);
+    });
+
+    it("accepts and uses the native Wine binary from ARM64 Proton", () => {
+        const protonPath = path.join("/proton-candidate", "proton");
+        const armWinePath = path.join("/proton-candidate", "files", "bin-arm64", "wine");
+        (fs.pathExistsSync as jest.Mock).mockImplementation(filePath =>
+            [protonPath, armWinePath].includes(filePath)
+        );
+
+        const service = buildService();
+        (service as any).staticConfig.get.mockReturnValue("/proton-candidate");
+        expect(service.verifyProtonPath("/proton-candidate")).toBe(true);
+        expect(service.getWinePath()).toBe(armWinePath);
     });
 
     it("rejects a Proton folder when a required binary path is a directory", () => {
