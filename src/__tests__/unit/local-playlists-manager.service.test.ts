@@ -21,7 +21,11 @@ jest.mock("serialize-error", () => ({ serializeError: (error: Error) => error })
 describe("LocalPlaylistsManagerService playlist installation", () => {
     let tempDirectory: string;
     let service: LocalPlaylistsManagerService;
-    const getJSON = jest.fn();
+    const playlistsBySource = new Map<string, BPList>();
+    const getJSON = jest.fn(async (source: string) => ({
+        data: playlistsBySource.get(source),
+        headers: {},
+    }));
 
     const playlist = (id: number): BPList => ({
         playlistTitle: "Eurobeat",
@@ -32,9 +36,10 @@ describe("LocalPlaylistsManagerService playlist installation", () => {
     });
 
     const download = async (bpList: BPList, dest?: string) => {
-        getJSON.mockResolvedValueOnce({ data: bpList, headers: {} });
+        const bplistSource = bpList.customData?.syncURL ?? "https://example.com/playlist";
+        playlistsBySource.set(bplistSource, bpList);
         const result = await lastValueFrom(service.downloadPlaylist({
-            bplistSource: bpList.customData?.syncURL ?? "https://example.com/playlist",
+            bplistSource,
             ignoreSongsHashs: bpList.songs.map(song => song.hash),
             dest,
         }));
@@ -43,6 +48,7 @@ describe("LocalPlaylistsManagerService playlist installation", () => {
 
     beforeEach(async () => {
         jest.clearAllMocks();
+        playlistsBySource.clear();
         tempDirectory = await mkdtemp(path.join(os.tmpdir(), "bs-manager-playlists-"));
         service = Object.assign(Object.create(LocalPlaylistsManagerService.prototype), {
             PLAYLISTS_FOLDER: "Playlists",
