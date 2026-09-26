@@ -11,9 +11,16 @@ import { pathExists, pathExistsSync, readdir, writeFile } from "fs-extra";
 import { SteamShortcut, SteamShortcutData } from "../../shared/models/steam/shortcut.model";
 
 const { list } = (execOnOs({ win32: () => require("regedit-rs") }, true) ?? {}) as typeof import("regedit-rs");
+// Linux process detection searches full "ps" command lines - include a
+// trailing space to avoid matching "steamrtarm64/steamwebhelper".
+const LINUX_STEAM_PROCESS_NAME = process.arch === "arm64"
+    ? "steamrtarm64/steam\x20"
+    : "steam-runtime-launcher-service";
 
 export class SteamService {
-    private static readonly PROCESS_NAME: string = process.platform === "linux" ? "steam-runtime-launcher-service" : "steam.exe";
+    private static readonly PROCESS_NAME: string = process.platform === "linux"
+        ? LINUX_STEAM_PROCESS_NAME
+        : "steam.exe";
 
     private static instance: SteamService;
 
