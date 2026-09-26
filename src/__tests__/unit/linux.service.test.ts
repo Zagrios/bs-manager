@@ -29,9 +29,6 @@ jest.mock("main/helpers/os.helpers", () => ({
 jest.mock("main/services/bs-launcher/abstract-launcher.service", () => ({
     buildBsLaunchArgs: jest.fn((): string[] => []),
 }));
-jest.mock("main/helpers/launchOptions.helper", () => ({
-    parseLaunchOptions: jest.fn(() => ({ env: {}, cmdlet: "", args: "" })),
-}));
 
 jest.mock("fs-extra", () => ({
     __esModule: true,
@@ -130,6 +127,19 @@ describe("LinuxService.buildEnvVariables", () => {
         );
 
         expect(shortcutData.LaunchOptions).not.toContain("OXR_PARALLEL_VIEWS");
+    });
+
+    it("places the Steam command before its environment and quotes the Beat Saber executable", async () => {
+        const shortcutData = await buildService().getSteamShortcutData(
+            "Beat Saber",
+            "/icon.png",
+            buildLaunchOption(),
+            steamPath,
+            bsFolderPath
+        );
+
+        expect(shortcutData.Exe).toBe("/proton/proton");
+        expect(shortcutData.LaunchOptions).toContain(`%command% run "${path.join(bsFolderPath, "Beat Saber.exe")}"`);
     });
 
     it("adds parallel views to generated Linux shortcuts when the launch mod is active", async () => {
