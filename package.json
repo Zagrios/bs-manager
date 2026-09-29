@@ -16,7 +16,7 @@
         "preinstall": "node .erb/scripts/require-pnpm.cjs",
         "build-rust-scripts": "tsx ./.erb/scripts/build-rust-scripts.js",
         "build": "tsx ./.erb/scripts/clean.js && cross-env NODE_ENV=production electron-vite build && tsx ./.erb/scripts/check-bundle-dependencies.ts",
-        "postinstall": "tsx .erb/scripts/check-native-dep.js && electron-builder install-app-deps",
+        "postinstall": "tsx .erb/scripts/check-native-dep.js && electron-builder install-app-deps && pnpm install-electron --no",
         "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
         "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx",
         "package": "pnpm run build && electron-builder build --publish never --config electron-builder.config.js",
