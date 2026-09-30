@@ -49,11 +49,11 @@ export class LinuxService {
         return path.resolve(sharedFolder, "compatdata");
     }
 
-    public async getProtonPrefix() {
+    public async getProtonPrefix(action: "run" | "runinprefix" = "run") {
         const protonPath = await this.getProtonPath();
         return await this.isNixOS()
-            ? `steam-run "${protonPath}" run`
-            : `"${protonPath}" run`;
+            ? `steam-run "${protonPath}" ${action}`
+            : `"${protonPath}" ${action}`;
     }
 
     private async getProtonPath(): Promise<string> {

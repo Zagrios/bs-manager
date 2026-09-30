@@ -4,7 +4,7 @@ import { BSLocalVersionService } from "../bs-local-version.service";
 import path from "path";
 import md5File from "md5-file";
 import { RequestService } from "../request.service";
-import { BS_EXECUTABLE } from "../../constants";
+import { BS_EXECUTABLE, IS_FLATPAK } from "../../constants";
 import log from "electron-log";
 import { deleteFile, deleteFolder, pathExist, Progression } from "../../helpers/fs.helpers";
 import { lastValueFrom, Observable } from "rxjs";
@@ -19,6 +19,7 @@ import crypto from "crypto";
 import { BsmZipExtractor } from "main/models/bsm-zip-extractor.class";
 import { BsmShellLog, bsmSpawn } from "main/helpers/os.helpers";
 import { BbmFullMod, BbmModVersion, ExternalMod } from "../../../shared/models/mods/mod.interface";
+import { SteamService } from "../steam.service";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -170,6 +171,13 @@ export class BsModsManagerService {
                     env: command.env,
                     stdio: ["ignore", "pipe", "pipe"],
                 },
+                flatpak: {
+                    host: IS_FLATPAK,
+                    env: [
+                        "STEAM_COMPAT_DATA_PATH",
+                        "STEAM_COMPAT_CLIENT_INSTALL_PATH",
+                    ],
+                },
             });
 
             let settled = false;
@@ -228,16 +236,12 @@ export class BsModsManagerService {
             };
         }
 
-        const { error: winePathError, result: winePathResult } =
-            tryit(() => this.linuxService.getWinePath());
-        if (winePathError) {
-            log.error(winePathError);
+        const { error: protonError, result: protonPrefix } =
+            await tryit(() => this.linuxService.getProtonPrefix("runinprefix"));
+        if (protonError) {
+            log.error(protonError);
             return null;
         }
-
-        const winePath = await this.linuxService.isNixOS()
-            ? `steam-run "${winePathResult}"`
-            : `"${winePathResult}"`;
 
         const winePrefix = this.linuxService.getWinePrefixPath();
         if (!winePrefix) {
@@ -247,9 +251,10 @@ export class BsModsManagerService {
         return {
             env: {
                 ...process.env,
-                WINEPREFIX: winePrefix
+                STEAM_COMPAT_DATA_PATH: path.dirname(winePrefix),
+                STEAM_COMPAT_CLIENT_INSTALL_PATH: await SteamService.getInstance().getSteamPath(),
             },
-            command: `${winePath} ${command}`,
+            command: `${protonPrefix} ${command}`,
         };
     }
 
