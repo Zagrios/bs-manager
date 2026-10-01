@@ -77,7 +77,10 @@ export class SteamShortcut {
                 } else if (key !== "") {
                     const currentKey = shortcutKeysRegex.exec(key).pop().replaceAll("\u0001", "").replaceAll("\u0002", "") as SteamShortcutKey;
                     if (currentShortcut && currentKey && currentKey !== SteamShortcutKey.tags) {
-                        currentShortcut[currentKey] = word.replaceAll("\"", "") as string & ("\x01" | "\x00") // Make TS happy
+                        const isPath = currentKey === SteamShortcutKey.Exe || currentKey === SteamShortcutKey.StartDir;
+                        const value = isPath && word.startsWith('"') && word.endsWith('"')
+                            ? word.slice(1, -1) : word;
+                        currentShortcut[currentKey] = value as string & ("\x01" | "\x00") // Make TS happy
                     }
                     key = "";
                 } else if (readingTags) {
