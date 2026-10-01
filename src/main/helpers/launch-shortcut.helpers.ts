@@ -42,7 +42,8 @@ function escapeDesktopValue(value: string): string {
 function quoteDesktopArgument(argument: string): string {
     // Desktop entries decode string escapes before Exec quoting and field codes.
     // https://specifications.freedesktop.org/desktop-entry/latest/exec-variables.html
-    return `"${argument.replaceAll(/[\\"$`]/g, String.raw`\$&`).replaceAll("%", "%%")}"`;
+    const escaped = argument.replaceAll(/[\\"$`]/g, String.raw`\$&`).replaceAll("%", "%%");
+    return `"${escaped}"`;
 }
 
 export function buildSteamShortcutData(name: string, icon: string, launchLink: string): SteamShortcutData {
