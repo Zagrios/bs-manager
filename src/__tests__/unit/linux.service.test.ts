@@ -84,6 +84,14 @@ describe("LinuxService.buildEnvVariables", () => {
         (bsmExec as jest.Mock).mockRejectedValue(new Error("not nixos"));
     });
 
+    it("uses Proton's utility mode for commands that run inside its prefix", async () => {
+        const service = buildService();
+
+        await expect(service.getProtonPrefix()).resolves.toBe(`"${protonPath}" run`);
+        await expect(service.getProtonPrefix("runinprefix"))
+            .resolves.toBe(`"${protonPath}" runinprefix`);
+    });
+
     it("keeps parallel views out of the default Linux launch environment", async () => {
         const env = await buildService().buildEnvVariables(
             buildLaunchOption(),

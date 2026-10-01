@@ -4,13 +4,14 @@ import { parse } from "@node-steam/vdf";
 import { readFile } from "fs/promises";
 import log from "electron-log";
 import { app, shell } from "electron";
-import { getProcessId, isProcessRunning } from "main/helpers/os.helpers";
+import { getProcessId, getProcessesByName, isProcessRunning } from "main/helpers/os.helpers";
 import { isElevated } from "query-process";
 import { execOnOs } from "../helpers/env.helpers";
 import { pathExists, pathExistsSync, readdir, writeFile } from "fs-extra";
 import { SteamShortcut, SteamShortcutData } from "../../shared/models/steam/shortcut.model";
 
 const { list } = (execOnOs({ win32: () => require("regedit-rs") }, true) ?? {}) as typeof import("regedit-rs");
+const IS_ARM64_LINUX = process.platform === "linux" && process.arch === "arm64";
 
 export class SteamService {
     private static readonly PROCESS_NAME: string = process.platform === "linux" ? "steam-runtime-launcher-service" : "steam.exe";
@@ -42,6 +43,9 @@ export class SteamService {
     }
 
     public async isSteamRunning(): Promise<boolean> {
+        if (IS_ARM64_LINUX) {
+            return (await this.getSteamPid()) !== null;
+        }
         const steamProcessRunning = await isProcessRunning(SteamService.PROCESS_NAME);
         if (process.platform === "linux") {
             return steamProcessRunning;
@@ -51,6 +55,15 @@ export class SteamService {
     }
 
     public async getSteamPid(): Promise<number> {
+        if (IS_ARM64_LINUX) {
+            try {
+                const processes = await getProcessesByName("steam");
+                return processes.find(process => process.name === "steam")?.pid ?? null;
+            } catch (error) {
+                log.error(error);
+                return null;
+            }
+        }
         return getProcessId(SteamService.PROCESS_NAME);
     }
 
