@@ -80,7 +80,7 @@ export class SteamShortcut {
                         const isPath = currentKey === SteamShortcutKey.Exe || currentKey === SteamShortcutKey.StartDir;
                         const value = isPath && word.startsWith('"') && word.endsWith('"')
                             ? word.slice(1, -1) : word;
-                        currentShortcut[currentKey] = value as string & ("\x01" | "\x00") // Make TS happy
+                        currentShortcut[currentKey] = value as "\x01" | "\x00";
                     }
                     key = "";
                 } else if (readingTags) {

@@ -28,6 +28,7 @@ describe("BSManager shortcut targets", () => {
         Object.defineProperty(process, "platform", { value: "linux" });
         Object.defineProperty(process, "defaultApp", { value: false, configurable: true, writable: true });
         (app.getPath as jest.Mock).mockReturnValue("/opt/BS Manager/bsmanager");
+        (app.getAppPath as jest.Mock).mockReturnValue("/home/user/BS Manager/release/app");
     });
 
     afterEach(() => {
@@ -51,6 +52,30 @@ describe("BSManager shortcut targets", () => {
             OpenVR: "\x01",
             LaunchOptions: `"${launchLink}"`,
         });
+    });
+
+    it.each([
+        [String.raw`C:\BS Manager\release\app`, String.raw`"C:\BS Manager\release\app"`],
+        ["C:\\BS Manager\\", String.raw`"C:\BS Manager\\"`],
+        [String.raw`version "custom"`, String.raw`"version \"custom\""`],
+        [String.raw`path\\"quoted`, String.raw`"path\\\\\"quoted"`],
+    ])("preserves Windows argument characters: %s", (entryPoint, quotedEntryPoint) => {
+        Object.defineProperty(process, "platform", { value: "win32" });
+        Object.defineProperty(process, "defaultApp", { value: true });
+        (app.getAppPath as jest.Mock).mockReturnValue(entryPoint);
+
+        expect(buildSteamShortcutData("Beat Saber", "/icon.png", launchLink).LaunchOptions)
+            .toBe(`${quotedEntryPoint} "${launchLink}"`);
+    });
+
+    it("preserves long Windows arguments with backslash runs", () => {
+        Object.defineProperty(process, "platform", { value: "win32" });
+        Object.defineProperty(process, "defaultApp", { value: true });
+        const entryPoint = `C:${"\\".repeat(50_000)}app`;
+        (app.getAppPath as jest.Mock).mockReturnValue(entryPoint);
+
+        expect(buildSteamShortcutData("Beat Saber", "/icon.png", launchLink).LaunchOptions)
+            .toBe(`"${entryPoint}" "${launchLink}"`);
     });
 
     it("quotes native desktop commands and preserves percent-encoded launch options", () => {

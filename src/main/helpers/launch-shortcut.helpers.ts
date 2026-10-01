@@ -1,5 +1,5 @@
 import { app } from "electron";
-import path from "path";
+import path from "node:path";
 import { IS_FLATPAK } from "main/constants";
 import { SteamShortcutData } from "shared/models/steam/shortcut.model";
 
@@ -23,22 +23,26 @@ function getBSManagerCommand(launchLink: string) {
 
 function quoteSteamArgument(argument: string): string {
     const escaped = process.platform === "win32"
-        ? argument.replace(/(\\*)"/g, '$1$1\\"').replace(/(\\+)$/g, "$1$1")
-        : argument.replace(/[\\"$`]/g, "\\$&");
+        ? argument.replaceAll(/\\+|"/g, (match, offset: number) => {
+            if (match === '"') return String.raw`\"`;
+            const next = offset + match.length;
+            return next === argument.length || argument[next] === '"' ? match.repeat(2) : match;
+        })
+        : argument.replaceAll(/[\\"$`]/g, String.raw`\$&`);
     return `"${escaped}"`;
 }
 
 function escapeDesktopValue(value: string): string {
-    return value.replace(/\\/g, "\\\\")
-        .replace(/\n/g, "\\n")
-        .replace(/\r/g, "\\r")
-        .replace(/\t/g, "\\t");
+    return value.replaceAll("\\", String.raw`\\`)
+        .replaceAll("\n", String.raw`\n`)
+        .replaceAll("\r", String.raw`\r`)
+        .replaceAll("\t", String.raw`\t`);
 }
 
 function quoteDesktopArgument(argument: string): string {
     // Desktop entries decode string escapes before Exec quoting and field codes.
     // https://specifications.freedesktop.org/desktop-entry/latest/exec-variables.html
-    return `"${argument.replace(/[\\"$`]/g, "\\$&").replace(/%/g, "%%")}"`;
+    return `"${argument.replaceAll(/[\\"$`]/g, String.raw`\$&`).replaceAll("%", "%%")}"`;
 }
 
 export function buildSteamShortcutData(name: string, icon: string, launchLink: string): SteamShortcutData {
