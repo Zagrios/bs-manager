@@ -36,6 +36,13 @@ target override is available as `BS_DOWNLOADER_TARGET`. The build host must have
 the compiler/linker for that target. Consumer distributions such as Ubuntu,
 ChimeraOS and CachyOS do not need Rust or these development packages.
 
+The Windows executable can also be cross-compiled on Linux with MinGW-w64 and
+`rustup target add x86_64-pc-windows-gnu`. From this directory, run
+`cargo build --release --locked --target x86_64-pc-windows-gnu`, then copy
+`target/x86_64-pc-windows-gnu/release/bs-downloader.exe` to `assets/scripts` at the
+repository root. Check that it imports only Windows system DLLs and validate it
+on Windows or Wine before replacing the committed executable.
+
 The existing Electron packages include the binary. Flatpak runs it inside the
 same sandbox and uses the application's existing network and filesystem grants.
 
@@ -78,10 +85,16 @@ transport. It inherits HTTP_PROXY, HTTPS_PROXY, ALL_PROXY and NO_PROXY, includin
 their lowercase forms. The host also forwards BSManager's configured Windows
 proxy. HTTP(S) and SOCKS proxies are supported. TLS verification remains enabled.
 
-The CM login supplies the regional cell ID used for Steam's CDN list. The engine
-tries up to twelve eligible HTTPS mirrors per connection attempt, refreshes CDN
-authorization on 401/403, retries transient chunk failures three times, and can
-reconnect to Steam up to three times. Verified partial content survives retries.
+The CM login supplies the regional cell ID used for Steam's CDN list. Each depot
+spreads its requests over all eligible HTTPS mirrors, measures their response
+speed and prefers the fastest server with room. Each server takes up to eight
+requests at once. Failed or corrupt responses are retried on another server;
+repeatedly failing servers rest before being tried again. Slow requests for the
+manifest or the oldest pending chunks can also race another mirror.
+
+CDN authorization is requested and renewed separately for each server on 401/403.
+Transient requests get up to five failed attempts with exponential backoff, and
+the engine can reconnect to Steam up to three times. Verified partial content survives retries.
 This improves recovery from individual inaccessible CDNs. It does not guarantee
 connectivity where Steam authentication or the CM directory itself is blocked;
 real network tests in China are still required.
@@ -90,8 +103,10 @@ real network tests in China are still required.
 
 Chunks are decrypted, decompressed and checked with Steam's SHA-1 and Adler-32
 checksums. The engine supports ZIP/DEFLATE, VZip/LZMA and VZstd/Zstandard. It uses
-sixteen concurrent chunk requests, up to eight prepared files and four verification
-readers. Pending work and response sizes are bounded.
+up to sixty-four concurrent chunk downloads across the CDN pool, up to thirty-two
+prepared files and four verification readers. Completed chunks are written at
+their offsets as they arrive, so a slow chunk holds up only its own file. Up to
+sixteen decoded chunks wait for the writer, and response sizes are bounded.
 
 Progress tracks installed bytes across CDN retries. Existing files are inspected
 first for resumption; the final verification phase starts after all files are
@@ -133,6 +148,10 @@ were adapted from [Zagrios/forge at 692fb562](https://github.com/Zagrios/forge/t
 with a reduced CM client and BSManager-specific protocol, orchestration and build.
 There is no build or runtime dependency on Forge. Keep fixes in these shared-origin
 parts easy to compare with the original project.
+
+The parallel CDN scheduler and unordered chunk writer were adapted from
+[Zagrios/sailover at 04efbffb](https://github.com/Zagrios/sailover/commit/04efbffba47c889774f98fbd578e6223e1706ca6),
+keeping BSManager's pending-install marker, final verification and host protocol.
 
 Protocol references used by Forge include [SteamKit](https://github.com/SteamRE/SteamKit)
 and [DepotDownloader](https://github.com/SteamRE/DepotDownloader). No C# assemblies

@@ -3,6 +3,7 @@ use std::{
     net::TcpListener,
     sync::{Arc, Mutex},
     thread,
+    time::Instant,
 };
 
 use aes::cipher::{BlockCipherEncrypt, BlockModeEncrypt, KeyInit, KeyIvInit, block_padding::Pkcs7};
@@ -11,6 +12,7 @@ use prost::Message;
 use super::format::{Chunk, steam_adler};
 use super::*;
 
+mod mirrors;
 mod prefetch;
 
 const KEY: [u8; 32] = [0x42; 32];
@@ -336,6 +338,14 @@ fn decodes_upstream_reference_manifest_and_three_real_chunk_fixtures() {
     }
 }
 
+/// The host `plan` names; a fixture's `client` serves it.
+const CDN_HOST: &str = "cdn.steamcontent.com";
+
+/// How a fixture answers one request: status, body and a delay first.
+type Answer = (u16, Vec<u8>, Duration);
+
+/// A local CDN server. It answers one request at a time, so a delayed answer
+/// holds up every request queued behind it, as a busy server does.
 struct CdnFixture {
     endpoint: Url,
     requests: Arc<Mutex<Vec<String>>>,
@@ -345,6 +355,16 @@ struct CdnFixture {
 
 impl CdnFixture {
     fn new(routes: HashMap<String, Vec<u8>>) -> Self {
+        Self::answering(move |path| {
+            routes.get(path).map_or_else(
+                || (404, b"missing".to_vec(), Duration::ZERO),
+                |bytes| (200, bytes.clone(), Duration::ZERO),
+            )
+        })
+    }
+
+    /// `answer` receives each request's path and query.
+    fn answering(answer: impl Fn(&str) -> Answer + Send + 'static) -> Self {
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
         listener.set_nonblocking(true).unwrap();
         let endpoint = Url::parse(&format!("http://{}/", listener.local_addr().unwrap())).unwrap();
@@ -353,7 +373,7 @@ impl CdnFixture {
         let thread_requests = Arc::clone(&requests);
         let thread_stop = Arc::clone(&stop);
         let worker = thread::spawn(move || {
-            'connections: while !thread_stop.load(Ordering::Relaxed) {
+            while !thread_stop.load(Ordering::Relaxed) {
                 let (mut stream, _) = match listener.accept() {
                     Ok(connection) => connection,
                     Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
@@ -362,6 +382,9 @@ impl CdnFixture {
                     }
                     Err(error) => panic!("fixture accept: {error}"),
                 };
+                // Accepted sockets inherit nonblocking mode on macOS. The
+                // listener polls for shutdown, but each request must wait for
+                // its headers/body under the bounded socket timeouts below.
                 stream.set_nonblocking(false).unwrap();
                 stream
                     .set_read_timeout(Some(Duration::from_secs(3)))
@@ -372,47 +395,31 @@ impl CdnFixture {
                 let mut request = Vec::new();
                 let mut buffer = [0; 1024];
                 while !request.windows(4).any(|window| window == b"\r\n\r\n") {
-                    let count = match stream.read(&mut buffer) {
-                        Ok(count) => count,
-                        Err(error)
-                            if matches!(
-                                error.kind(),
-                                std::io::ErrorKind::ConnectionAborted
-                                    | std::io::ErrorKind::ConnectionReset
-                            ) =>
-                        {
-                            continue 'connections;
-                        }
-                        Err(error) => panic!("fixture read: {error}"),
+                    // A client that gave up on a request closes its socket.
+                    let Ok(count) = stream.read(&mut buffer) else {
+                        break;
                     };
                     if count == 0 {
-                        continue 'connections;
+                        break;
                     }
                     request.extend_from_slice(&buffer[..count]);
                 }
                 let text = String::from_utf8(request).unwrap();
-                let path = text.split_whitespace().nth(1).unwrap_or("").to_string();
-                thread_requests.lock().unwrap().push(path.clone());
-                let (code, bytes) = routes
-                    .get(&path)
-                    .map_or((404, &b"missing"[..]), |bytes| (200, bytes.as_slice()));
-                let sent = write!(
+                let target = text.split_whitespace().nth(1).unwrap_or("").to_string();
+                let path = target.split('?').next().unwrap_or("").to_string();
+                thread_requests.lock().unwrap().push(path);
+                let (code, bytes, delay) = answer(&target);
+                let until = Instant::now() + delay;
+                while Instant::now() < until && !thread_stop.load(Ordering::Relaxed) {
+                    thread::sleep(Duration::from_millis(5));
+                }
+                // The client may have abandoned the request meanwhile.
+                let _ = write!(
                     stream,
                     "HTTP/1.1 {code} OK\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
                     bytes.len()
                 )
-                .and_then(|_| stream.write_all(bytes));
-                if let Err(error) = sent {
-                    assert!(
-                        matches!(
-                            error.kind(),
-                            std::io::ErrorKind::BrokenPipe
-                                | std::io::ErrorKind::ConnectionAborted
-                                | std::io::ErrorKind::ConnectionReset
-                        ),
-                        "fixture write: {error}"
-                    );
-                }
+                .and_then(|()| stream.write_all(&bytes));
             }
         });
         Self {
@@ -424,10 +431,28 @@ impl CdnFixture {
     }
 
     fn client(&self) -> ContentClient {
-        ContentClient {
-            client: Client::new(),
-            test_endpoint: Some(self.endpoint.clone()),
-        }
+        serving(&[(CDN_HOST, self)])
+    }
+
+    fn chunk_requests(&self) -> usize {
+        self.requests
+            .lock()
+            .unwrap()
+            .iter()
+            .filter(|path| path.contains("/chunk/"))
+            .count()
+    }
+}
+
+/// A content client whose CDN hosts are the fixtures named; any other host is
+/// unreachable.
+fn serving(fixtures: &[(&str, &CdnFixture)]) -> ContentClient {
+    ContentClient {
+        client: Client::new(),
+        test_endpoints: fixtures
+            .iter()
+            .map(|(host, fixture)| ((*host).to_string(), fixture.endpoint.clone()))
+            .collect(),
     }
 }
 
@@ -467,14 +492,25 @@ fn cdn_fixture_waits_for_delayed_request_headers() {
     );
 }
 
-fn plan(destination: &Path) -> DepotDownload {
+fn plan(destination: &Path) -> DepotDownload<'static> {
+    plan_from(destination, &[CDN_HOST])
+}
+
+fn plan_from(destination: &Path, hosts: &[&str]) -> DepotDownload<'static> {
     DepotDownload {
         depot_id: 42,
         manifest_id: 99,
         request_code: 123,
         depot_key: KEY,
-        server: "cdn.steamcontent.com".into(),
-        cdn_token: None,
+        servers: hosts
+            .iter()
+            .map(|host| ContentServer {
+                host: (*host).into(),
+                vhost: (*host).into(),
+                allowed_app_ids: Vec::new(),
+            })
+            .collect(),
+        authorization: None,
         destination: destination.into(),
         cached_manifest: None,
     }

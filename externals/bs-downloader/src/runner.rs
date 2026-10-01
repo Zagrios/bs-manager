@@ -1,15 +1,16 @@
 use crate::{
     auth::{AuthClient, AuthError, AuthTokens, GuardType},
     cm::{CmError, SteamConnection},
-    content::{ContentClient, ContentError, DepotDownload},
+    content::{CdnAuthorization, ContentClient, ContentError, DepotDownload},
     protocol::{Command, Options, emit},
     transfer::{CancelToken, DownloadPhase},
 };
+use futures_util::future::BoxFuture;
 use std::{
     sync::{Arc, Mutex},
     time::{Duration, Instant},
 };
-use tokio::sync::mpsc;
+use tokio::sync::{Mutex as AsyncMutex, mpsc};
 
 type Result<T> = std::result::Result<T, &'static str>;
 
@@ -43,45 +44,37 @@ pub async fn run(
             emit("Diagnostic", "DepotAuthorization", "");
             let key: [u8; 32] = cm.depot_key(options.depot, options.app).await.map_err(cm_error)?
                 .try_into().map_err(|_| "NoValidKey")?;
-            let servers = cm.content_servers().await.map_err(cm_error)?;
-            let mut eligible = servers.into_iter().filter(|server| server.allowed_app_ids.is_empty() || server.allowed_app_ids.contains(&options.app)).peekable();
-            if eligible.peek().is_none() { return Err("NoServer"); }
-            let mut last = "NoServer";
-            for (index, server) in eligible.take(12).enumerate() {
+            let servers: Vec<_> = cm.content_servers().await.map_err(cm_error)?
+                .into_iter().filter(|server| server.allowed_app_ids.is_empty() || server.allowed_app_ids.contains(&options.app)).collect();
+            if servers.is_empty() { return Err("NoServer"); }
+            for (index, server) in servers.iter().enumerate() {
                 emit("Diagnostic", "CDN", serde_json::json!({"host": server.vhost, "attempt": index + 1, "round": round + 1}));
-                let cached = content.cached_manifest(&options.directory, options.depot, manifest, &key).await.map_err(content_error)?;
-                let code = if cached.is_some() { 0 } else {
-                    emit("Diagnostic", "ManifestAuthorization", "");
-                    cm.manifest_request_code(options.depot, options.app, manifest).await.map_err(cm_error)?
-                };
-                let mut plan = DepotDownload { depot_id: options.depot, manifest_id: manifest, request_code: code,
-                    depot_key: key, server: server.vhost, cdn_token: None, destination: options.directory.clone(), cached_manifest: cached };
-                let mut result = download(&content, &plan, cancel, &progress).await;
-                if matches!(result, Err(ContentError::Http(401 | 403))) {
-                    emit("Diagnostic", "CDNAuthorization", "");
-                    match cm.cdn_auth(options.app, options.depot, &server.host).await {
-                        Ok(token) => {
-                            plan.cdn_token = Some(token);
-                            result = download(&content, &plan, cancel, &progress).await;
-                        }
-                        Err(error) => {
-                            let code = cm_error(error);
-                            if !retryable(code) { return Err(code); }
-                            last = code;
-                            continue;
-                        }
-                    }
-                }
-                match result {
-                    Ok(()) => return Ok(()),
-                    Err(error @ (ContentError::Network | ContentError::Http(_) | ContentError::InvalidData(_))) => {
-                        last = content_error(error);
-                        emit("Diagnostic", "CDNRetry", last);
-                    }
-                    Err(error) => return Err(content_error(error)),
+            }
+            let cached = content.cached_manifest(&options.directory, options.depot, manifest, &key).await.map_err(content_error)?;
+            let code = if cached.is_some() { 0 } else {
+                emit("Diagnostic", "ManifestAuthorization", "");
+                cm.manifest_request_code(options.depot, options.app, manifest).await.map_err(cm_error)?
+            };
+            let authorization = DepotAuthorization {
+                cm: AsyncMutex::new(cm), app_id: options.app, depot_id: options.depot,
+                failure: Mutex::new(None),
+            };
+            let plan = DepotDownload { depot_id: options.depot, manifest_id: manifest, request_code: code,
+                depot_key: key, servers, authorization: Some(&authorization),
+                destination: options.directory.clone(), cached_manifest: cached };
+            match download(&content, &plan, cancel, &progress).await {
+                Ok(()) => Ok(()),
+                Err(error) => {
+                    let authorization_failure = *authorization.failure.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+                    let code = match error {
+                        // Preserve CM failures so transient authorization failures reconnect.
+                        ContentError::Http(401 | 403) => authorization_failure.unwrap_or_else(|| content_error(error)),
+                        _ => content_error(error),
+                    };
+                    if retryable(code) { emit("Diagnostic", "CDNRetry", code); }
+                    Err(code)
                 }
             }
-            Err(last)
         }.await;
         match result {
             Ok(()) => {
@@ -96,9 +89,45 @@ pub async fn run(
     Err(last_error)
 }
 
+/// Serializes token requests over the download's CM while CDN requests run concurrently.
+struct DepotAuthorization {
+    cm: AsyncMutex<SteamConnection>,
+    app_id: u32,
+    depot_id: u32,
+    failure: Mutex<Option<&'static str>>,
+}
+
+impl CdnAuthorization for DepotAuthorization {
+    fn token<'a>(&'a self, host: &'a str) -> BoxFuture<'a, Option<String>> {
+        Box::pin(async move {
+            emit(
+                "Diagnostic",
+                "CDNAuthorization",
+                serde_json::json!({"host": host}),
+            );
+            match self
+                .cm
+                .lock()
+                .await
+                .cdn_auth(self.app_id, self.depot_id, host)
+                .await
+            {
+                Ok(token) => Some(token),
+                Err(error) => {
+                    *self
+                        .failure
+                        .lock()
+                        .unwrap_or_else(std::sync::PoisonError::into_inner) = Some(cm_error(error));
+                    None
+                }
+            }
+        })
+    }
+}
+
 async fn download(
     content: &ContentClient,
-    plan: &DepotDownload,
+    plan: &DepotDownload<'_>,
     cancel: &CancelToken,
     progress: &Arc<Mutex<ProgressDisplay>>,
 ) -> std::result::Result<(), ContentError> {

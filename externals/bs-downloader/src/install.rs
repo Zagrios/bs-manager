@@ -194,6 +194,7 @@ pub fn write_cached_file(root: &Path, relative: &Path, bytes: &[u8]) -> Result<(
     let path = checked_file_path(root, relative)?;
     write_atomic_with(&path, bytes, || checked_file_path(root, relative).map(drop))
 }
+#[cfg(test)]
 pub fn verify_sha1_file(
     path: &Path,
     size: u64,

@@ -6,7 +6,7 @@ use std::{
     },
 };
 
-use futures_util::{StreamExt, stream};
+use futures_util::{Stream, StreamExt, stream};
 use tokio::sync::{Notify, mpsc};
 #[derive(Clone, Debug, Default)]
 pub struct CancelToken(Arc<CancelState>);
@@ -171,10 +171,36 @@ pub async fn pump_chunks<C, T, E, F>(
     F: Future<Output = Result<T, E>>,
     E: From<Cancelled>,
 {
-    let requests = stream::unfold(requests, |mut requests| async move {
+    let fetched = queued(requests).map(fetch).buffered(concurrency);
+    deliver(fetched, deliveries, cancel).await;
+}
+
+/// Delivers chunks as they arrive, for a writer that places them by file and offset.
+pub async fn pump_chunks_unordered<C, T, E, F>(
+    requests: mpsc::UnboundedReceiver<C>,
+    deliveries: mpsc::Sender<Result<T, E>>,
+    concurrency: usize,
+    cancel: &CancelToken,
+    fetch: impl Fn(C) -> F,
+) where
+    F: Future<Output = Result<T, E>>,
+    E: From<Cancelled>,
+{
+    let fetched = queued(requests).map(fetch).buffer_unordered(concurrency);
+    deliver(fetched, deliveries, cancel).await;
+}
+
+fn queued<C>(requests: mpsc::UnboundedReceiver<C>) -> impl Stream<Item = C> {
+    stream::unfold(requests, |mut requests| async move {
         requests.recv().await.map(|chunk| (chunk, requests))
-    });
-    let fetched = requests.map(fetch).buffered(concurrency);
+    })
+}
+
+async fn deliver<T, E: From<Cancelled>>(
+    fetched: impl Stream<Item = Result<T, E>>,
+    deliveries: mpsc::Sender<Result<T, E>>,
+    cancel: &CancelToken,
+) {
     tokio::pin!(fetched);
     loop {
         let next = tokio::select! {
