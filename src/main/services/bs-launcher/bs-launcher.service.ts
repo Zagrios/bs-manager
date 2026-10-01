@@ -26,6 +26,7 @@ import { SteamService } from "../steam.service";
 import { tryit } from "shared/helpers/error.helpers";
 import { LinuxService } from "../linux.service";
 import { VrRuntimeService } from "../vr-runtime.service";
+import { buildSteamShortcutData } from "main/helpers/launch-shortcut.helpers";
 
 export class BSLauncherService {
     private static instance: BSLauncherService;
@@ -238,22 +239,9 @@ export class BSLauncherService {
 
         if(steamShortcut){
             const userId = await tryit(() => this.steam.getActiveUser());
-            const exePath = app.getPath("exe");
             const icon = await this.createShortcutPng(shortcutIconColor)
             return this.steam.createShortcut(
-                process.platform === "win32"
-                    ? {
-                        AppName: shortcutName,
-                        Exe: exePath,
-                        StartDir: path.dirname(exePath),
-                        LaunchOptions: this.createLaunchLink(launchOptions),
-                        OpenVR: "\u0001", icon,
-                    }
-                    : await this.linux.getSteamShortcutData(
-                        shortcutName, icon, launchOptions,
-                        await this.steam.getSteamPath(),
-                        await this.localVersionService.getVersionPath(launchOptions.version)
-                    ),
+                buildSteamShortcutData(shortcutName, icon, shortcutUrl),
                 userId.result
             )
                 .then(() => true)
@@ -276,9 +264,7 @@ export class BSLauncherService {
                 path.join(app.getPath("desktop"), `${shortcutName}.desktop`),
                 shortcutName,
                 await this.createShortcutPng(shortcutIconColor),
-                launchOptions,
-                await this.steam.getSteamPath(),
-                await this.localVersionService.getVersionPath(launchOptions.version)
+                shortcutUrl
             )
         })
 

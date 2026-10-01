@@ -3,6 +3,7 @@
 - [How to create a shortcut on Windows](#how-to-create-a-shortcut-on-windows)
     - [On desktop](#on-desktop)
     - [On taskbar](#on-taskbar)
+- [How to create a shortcut on Linux](#how-to-create-a-shortcut-on-linux)
 - [How to create a shortcut on Steam](#how-to-create-a-shortcut-on-steam)
 
 ## How to create a shortcut on Windows
@@ -32,6 +33,14 @@ start <version link>
 
 4. Save the file with a `.bat` extension.
 5. Create a shortcut to this `.bat` file. Edit the shortcut path to: `cmd.exe /C <shortcut path>`.
+
+## How to create a shortcut on Linux
+
+Follow the [desktop shortcut steps above](#on-desktop). BSManager creates a `.desktop` shortcut, including when installed with Flatpak or as an AppImage.
+
+Linux desktop and Steam shortcuts open BSManager with the selected version and launch options, just like on Windows. The game uses BSManager's current Proton configuration when launched, so changing the Proton folder does not require recreating these shortcuts.
+
+Recreate older Linux shortcuts once to use this behavior. Existing shortcuts that launch Proton directly keep their original command.
 
 ## How to create a shortcut on Steam
 
