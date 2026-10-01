@@ -228,9 +228,9 @@ export class LinuxService {
     private async getCommand(
         launchOptions: LaunchOption,
         steamPath: string,
-        beatSaberFolderPath: string
+        beatSaberFolderPath: string,
+        commandPrefix: string
     ): Promise<string> {
-        const protonPrefix = await this.getProtonPrefix();
         const launchEnv = await this.buildEnvVariables(
             launchOptions, steamPath, beatSaberFolderPath
         );
@@ -242,7 +242,7 @@ export class LinuxService {
             args: parsedArgs,
             cmdlet,
         } = parseLaunchOptions(launchOptions.command, {
-            commandReplacement: `${protonPrefix} ${beatSaberExePath}`,
+            commandReplacement: `${commandPrefix} "${beatSaberExePath}"`,
         });
 
         const args = buildBsLaunchArgs(launchOptions);
@@ -273,7 +273,7 @@ export class LinuxService {
     ): Promise<boolean> {
         try {
             const command = await this.getCommand(
-                launchOptions, steamPath, beatSaberFolderPath
+                launchOptions, steamPath, beatSaberFolderPath, await this.getProtonPrefix()
             );
 
             const desktopEntry = [
@@ -303,7 +303,7 @@ export class LinuxService {
     ): Promise<SteamShortcutData> {
         const protonPath = await this.getProtonPath();
         const command = await this.getCommand(
-            launchOptions, steamPath, beatSaberFolderPath
+            launchOptions, steamPath, beatSaberFolderPath, "%command% run"
         );
 
         return {
