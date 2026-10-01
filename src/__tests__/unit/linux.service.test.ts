@@ -7,7 +7,7 @@ import { LaunchOption } from "shared/models/bs-launch";
 import { bsmExec } from "main/helpers/os.helpers";
 
 jest.mock("electron", () => ({
-    app: { getPath: () => "" },
+    app: { getPath: (name: string) => name === "exe" ? "/opt/BS Manager/bsmanager" : "" },
 }));
 
 jest.mock("electron-log", () => ({
@@ -25,9 +25,6 @@ jest.mock("main/services/static-configuration.service", () => ({
 jest.mock("main/helpers/os.helpers", () => ({
     BsmShellLog: { Command: 1 },
     bsmExec: jest.fn(),
-}));
-jest.mock("main/services/bs-launcher/abstract-launcher.service", () => ({
-    buildBsLaunchArgs: jest.fn((): string[] => []),
 }));
 
 jest.mock("fs-extra", () => ({
@@ -49,7 +46,6 @@ describe("LinuxService.buildEnvVariables", () => {
     const sharedContentPath = "/shared-content";
     const compatDataPath = path.resolve(sharedContentPath, "compatdata");
     const protonPath = path.join("/Proton Experimental", "proton");
-    const beatSaberExePath = path.join(bsFolderPath, "Beat Saber.exe");
 
     function buildService(): LinuxService {
         const service = Reflect.construct(LinuxService, []) as LinuxService;
@@ -125,99 +121,6 @@ describe("LinuxService.buildEnvVariables", () => {
         }));
     });
 
-    it("keeps parallel views out of generated Linux shortcuts by default", async () => {
-        const shortcutData = await buildService().getSteamShortcutData(
-            "Beat Saber",
-            "/icon.png",
-            buildLaunchOption(),
-            steamPath,
-            bsFolderPath
-        );
-
-        expect(shortcutData.LaunchOptions).not.toContain("OXR_PARALLEL_VIEWS");
-    });
-
-    it("places the environment before the Steam command and quotes the Beat Saber executable", async () => {
-        const shortcutData = await buildService().getSteamShortcutData(
-            "Beat Saber",
-            "/icon.png",
-            buildLaunchOption(),
-            steamPath,
-            bsFolderPath
-        );
-
-        expect(shortcutData.Exe).toBe(protonPath);
-        expect(shortcutData.LaunchOptions).toContain(`SteamGameId="620980" %command% run "${beatSaberExePath}"`);
-    });
-
-    it.each([
-        { nixOS: false, desktopPrefix: `"${protonPath}" run` },
-        { nixOS: true, desktopPrefix: `steam-run "${protonPath}" run` },
-    ])("preserves custom options in Steam and desktop shortcuts (NixOS: $nixOS)", async ({ nixOS, desktopPrefix }) => {
-        const service = buildService();
-        jest.spyOn(service, "isNixOS").mockResolvedValue(nixOS);
-        const launchOption = {
-            ...buildLaunchOption(),
-            command: 'CUSTOM_OPTION="two words" gamemoderun %command% --debug',
-        };
-        const expectedEnvironment = [
-            'WINEDLLOVERRIDES="winhttp=n,b"',
-            `STEAM_COMPAT_DATA_PATH="${compatDataPath}"`,
-            'STEAM_COMPAT_INSTALL_PATH="/Beat Saber/1.45.2"',
-            'STEAM_COMPAT_CLIENT_INSTALL_PATH="/Steam Library"',
-            'STEAM_COMPAT_APP_ID="620980"',
-            'SteamEnv="1"',
-            'OXR_NO_TEXTURE_SOURCE_ALPHA="1"',
-            'CUSTOM_OPTION="two words"',
-            'SteamAppId="620980"',
-            'SteamOverlayGameId="620980"',
-            'SteamGameId="620980"',
-        ].join(" ");
-
-        const shortcutData = await service.getSteamShortcutData(
-            "Beat Saber", "/icon.png", launchOption, steamPath, bsFolderPath
-        );
-        expect(shortcutData.LaunchOptions).toBe(
-            `${expectedEnvironment} gamemoderun %command% run "${beatSaberExePath}" --debug`
-        );
-
-        await expect(service.createDesktopShortcut(
-            "/shortcut.desktop", "Beat Saber", "/icon.png", launchOption, steamPath, bsFolderPath
-        )).resolves.toBe(true);
-        expect(fs.writeFile).toHaveBeenCalledWith(
-            "/shortcut.desktop",
-            expect.stringContaining(`\nExec=${expectedEnvironment} gamemoderun ${desktopPrefix} "${beatSaberExePath}" --debug`)
-        );
-    });
-
-    it("adds parallel views to generated Linux shortcuts when the launch mod is active", async () => {
-        const service = buildService();
-        const launchOption = buildLaunchOption([LaunchMods.PARALLEL_VIEWS]);
-
-        const shortcutData = await service.getSteamShortcutData(
-            "Beat Saber",
-            "/icon.png",
-            launchOption,
-            steamPath,
-            bsFolderPath
-        );
-        expect(shortcutData.LaunchOptions).toContain("OXR_PARALLEL_VIEWS=\"1\"");
-
-        await service.createDesktopShortcut(
-            "/shortcut.desktop",
-            "Beat Saber",
-            "/icon.png",
-            launchOption,
-            steamPath,
-            bsFolderPath
-        );
-
-        expect(fs.writeFile).toHaveBeenCalledWith(
-            "/shortcut.desktop",
-            expect.stringContaining("OXR_PARALLEL_VIEWS=\"1\"")
-        );
-    });
-
     it("persists a trimmed Proton folder when its binaries are valid", async () => {
         const service = buildService();
 
@@ -226,6 +129,28 @@ describe("LinuxService.buildEnvVariables", () => {
             "proton-folder",
             "/proton-candidate"
         );
+    });
+
+    it("creates a desktop shortcut to BSManager without requiring a configured Proton folder", async () => {
+        const service = buildService();
+        (service as any).staticConfig.has.mockReturnValue(false);
+
+        await expect(service.createDesktopShortcut(
+            "/shortcut.desktop", "Beat Saber", "/icon.png", "bsmanager://launch/?version=1.45.2&desktopMode=true"
+        )).resolves.toBe(true);
+
+        expect(fs.writeFile).toHaveBeenCalledWith(
+            "/shortcut.desktop",
+            expect.stringContaining('Exec="/opt/BS Manager/bsmanager" "bsmanager://launch/?version=1.45.2&desktopMode=true"')
+        );
+    });
+
+    it("reports desktop shortcut write failures", async () => {
+        (fs.writeFile as jest.Mock).mockRejectedValueOnce(new Error("read-only desktop"));
+
+        await expect(buildService().createDesktopShortcut(
+            "/shortcut.desktop", "Beat Saber", "/icon.png", "bsmanager://launch/?version=1.45.2"
+        )).resolves.toBe(false);
     });
 
     it("does not persist an invalid Proton folder", async () => {

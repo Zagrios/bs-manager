@@ -1,16 +1,14 @@
 import fs from "fs-extra";
 import log from "electron-log";
 import path from "path";
-import { BS_APP_ID, BS_EXECUTABLE, IS_FLATPAK } from "main/constants";
+import { BS_APP_ID, IS_FLATPAK } from "main/constants";
 import { InstallationLocationService } from "./installation-location.service";
 import { StaticConfigurationService } from "./static-configuration.service";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { BSLaunchError, LaunchOption } from "shared/models/bs-launch";
 import { BsmShellLog, bsmExec } from "main/helpers/os.helpers";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
-import { SteamShortcutData } from "shared/models/steam/shortcut.model";
-import { buildBsLaunchArgs } from "./bs-launcher/abstract-launcher.service";
-import { parseLaunchOptions } from "main/helpers/launchOptions.helper";
+import { buildLinuxDesktopEntry } from "main/helpers/launch-shortcut.helpers";
 
 export class LinuxService {
     private static instance: LinuxService;
@@ -225,65 +223,14 @@ export class LinuxService {
 
     // === Shortcuts === //
 
-    private async getCommand(
-        launchOptions: LaunchOption,
-        steamPath: string,
-        beatSaberFolderPath: string,
-        commandPrefix: string
-    ): Promise<string> {
-        const launchEnv = await this.buildEnvVariables(
-            launchOptions, steamPath, beatSaberFolderPath
-        );
-
-        const beatSaberExePath = path.join(beatSaberFolderPath, BS_EXECUTABLE);
-
-        const {
-            env: parsedEnv,
-            args: parsedArgs,
-            cmdlet,
-        } = parseLaunchOptions(launchOptions.command, {
-            commandReplacement: `${commandPrefix} "${beatSaberExePath}"`,
-        });
-
-        const args = buildBsLaunchArgs(launchOptions);
-        log.debug("Launch arguments:", args, "Parsed arguments:", parsedArgs);
-        if (parsedArgs) {
-            args.unshift(parsedArgs);
-        }
-
-        const env = {
-            ...launchEnv, ...parsedEnv,
-            SteamAppId: BS_APP_ID,
-            SteamOverlayGameId: BS_APP_ID,
-            SteamGameId: BS_APP_ID,
-        };
-        const envString = Object.entries(env)
-            .map(([ key, value ]) => `${key}="${value}"`)
-            .join(" ");
-        return `${envString} ${cmdlet} ${args.join(" ")}`;
-    }
-
     public async createDesktopShortcut(
         shortcutPath: string,
         name: string,
         icon: string,
-        launchOptions: LaunchOption,
-        steamPath: string,
-        beatSaberFolderPath: string
+        launchLink: string
     ): Promise<boolean> {
         try {
-            const command = await this.getCommand(
-                launchOptions, steamPath, beatSaberFolderPath, await this.getProtonPrefix()
-            );
-
-            const desktopEntry = [
-                "[Desktop Entry]",
-                "Type=Application",
-                `Name=${name}`,
-                `Icon=${icon}`,
-                `Path=${beatSaberFolderPath}`,
-                `Exec=${command}`
-            ].join("\n");
+            const desktopEntry = buildLinuxDesktopEntry(name, icon, launchLink);
 
             await fs.writeFile(shortcutPath, desktopEntry);
             log.info("Created shorcut at ", `"${shortcutPath}/${name}"`);
@@ -292,28 +239,6 @@ export class LinuxService {
             log.error("Could not create shortcut", error);
             return false;
         }
-    }
-
-    public async getSteamShortcutData(
-        shortcutName: string,
-        icon: string,
-        launchOptions: LaunchOption,
-        steamPath: string,
-        beatSaberFolderPath: string
-    ): Promise<SteamShortcutData> {
-        const protonPath = await this.getProtonPath();
-        const command = await this.getCommand(
-            launchOptions, steamPath, beatSaberFolderPath, "%command% run"
-        );
-
-        return {
-            AppName: shortcutName,
-            Exe: protonPath,
-            StartDir: beatSaberFolderPath,
-            icon,
-            OpenVR: "\x01",
-            LaunchOptions: command
-        };
     }
 
 }

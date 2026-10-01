@@ -2,9 +2,10 @@ import { BSLauncherService } from "main/services/bs-launcher/bs-launcher.service
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { LaunchOption } from "shared/models/bs-launch";
 import { Subject, of } from "rxjs";
+import { app, shell } from "electron";
 
 jest.mock("electron", () => ({
-    app: { getPath: () => "" },
+    app: { getPath: (name: string) => name === "exe" ? "/opt/BSManager/bsmanager" : "/Desktop" },
     shell: { writeShortcutLink: jest.fn() },
 }));
 
@@ -131,6 +132,83 @@ describe("BSLauncherService shortcut links", () => {
 
         expect(service.createLaunchLink(launchOptions)).not.toContain("skipSteam");
         expect(service.createLaunchLink(launchOptions, { preserveLegacyOptions: true })).toContain("skipSteam=true");
+    });
+
+    describe("shortcut creation", () => {
+        const originalPlatform = process.platform;
+        const launchOptions: LaunchOption = {
+            version: { BSVersion: "1.45.2", name: "My version", color: "#000000", steam: true },
+            command: 'CUSTOM="two words" gamescope %command% --debug',
+            launchMods: [LaunchMods.FPFC, LaunchMods.PROTON_LOGS, LaunchMods.PARALLEL_VIEWS],
+        };
+
+        afterEach(() => {
+            Object.defineProperty(process, "platform", { value: originalPlatform });
+        });
+
+        it.each(["linux", "win32"])("creates a Steam shortcut through BSManager on %s", async platform => {
+            Object.defineProperty(process, "platform", { value: platform });
+            const service = buildService();
+            const steam = {
+                getActiveUser: jest.fn().mockResolvedValue(42),
+                createShortcut: jest.fn().mockResolvedValue(undefined),
+            };
+            Object.assign(service, { steam });
+
+            await expect(service.createLaunchShortcut(launchOptions, true)).resolves.toBe(true);
+
+            expect(steam.createShortcut).toHaveBeenCalledWith(expect.objectContaining({
+                AppName: "Beat Saber 1.45.2 My version",
+                Exe: app.getPath("exe"),
+                LaunchOptions: `"${service.createLaunchLink(launchOptions)}"`,
+            }), 42);
+            const link = steam.createShortcut.mock.calls[0][0].LaunchOptions.slice(1, -1);
+            expect(service.shortcutLinkToLaunchOptions(link)).toEqual(expect.objectContaining({
+                command: launchOptions.command,
+                launchMods: launchOptions.launchMods,
+            }));
+        });
+
+        it("passes the same launch link to the Linux desktop shortcut", async () => {
+            Object.defineProperty(process, "platform", { value: "linux" });
+            const service = buildService();
+            const linux = { createDesktopShortcut: jest.fn().mockResolvedValue(true) };
+            Object.assign(service, { linux });
+
+            await expect(service.createLaunchShortcut(launchOptions)).resolves.toBe(true);
+
+            expect(linux.createDesktopShortcut).toHaveBeenCalledWith(
+                expect.stringContaining("Beat Saber 1.45.2 My version.desktop"),
+                "Beat Saber 1.45.2 My version",
+                expect.any(String),
+                service.createLaunchLink(launchOptions)
+            );
+        });
+
+        it("keeps the Windows desktop shortcut pointed at the launch link", async () => {
+            Object.defineProperty(process, "platform", { value: "win32" });
+            (shell.writeShortcutLink as jest.Mock).mockReturnValueOnce(true);
+            const service = buildService();
+
+            await expect(service.createLaunchShortcut(launchOptions)).resolves.toBe(true);
+
+            expect(shell.writeShortcutLink).toHaveBeenCalledWith(
+                expect.stringContaining("Beat Saber 1.45.2 My version.lnk"),
+                expect.objectContaining({ target: service.createLaunchLink(launchOptions) })
+            );
+        });
+
+        it("reports a failure to write the Steam shortcut", async () => {
+            const service = buildService();
+            Object.assign(service, {
+                steam: {
+                    getActiveUser: jest.fn().mockResolvedValue(42),
+                    createShortcut: jest.fn().mockRejectedValue(new Error("write failed")),
+                },
+            });
+
+            await expect(service.createLaunchShortcut(launchOptions, true)).resolves.toBe(false);
+        });
     });
 });
 
