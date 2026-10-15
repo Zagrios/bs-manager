@@ -1,6 +1,5 @@
-import { DownloadSteamInfo } from "main/services/bs-version-download/bs-steam-downloader.service";
-import { BehaviorSubject, Observable, ReplaySubject, Subscription, lastValueFrom, throwError } from "rxjs";
-import { filter, map, share, take, tap, throttleTime } from "rxjs/operators";
+import { BehaviorSubject, ReplaySubject, Subject, lastValueFrom, noop } from "rxjs";
+import { take, throttleTime } from "rxjs/operators";
 import { BSVersion } from "shared/bs-version.interface";
 import { IpcService } from "../ipc.service";
 import { ModalExitCode, ModalService } from "../modale.service";
@@ -8,14 +7,14 @@ import { NotificationService } from "../notification.service";
 import { ProgressBarService } from "../progress-bar.service";
 import { LoginToSteamModal } from "renderer/components/modal/modal-types/bs-downgrade/login-to-steam-modal.component";
 import { SteamGuardModal } from "renderer/components/modal/modal-types/bs-downgrade/steam-guard-modal.component";
-import { DepotDownloaderErrorEvent, DepotDownloaderEvent, DepotDownloaderEventType, DepotDownloaderInfoEvent, DepotDownloaderWarningEvent } from "../../../shared/models/bs-version-download/depot-downloader.model";
+import { DepotDownloaderErrorEvent, DepotDownloaderWarningEvent } from "../../../shared/models/bs-version-download/depot-downloader.model";
+import { SteamDownloadAnswer, SteamDownloadEvent } from "shared/models/bs-version-download/steam-download.model";
 import { SteamMobileApproveModal } from "renderer/components/modal/modal-types/bs-downgrade/steam-mobile-approve-modal.component";
-import { DownloaderServiceInterface } from "./bs-store-downloader.interface";
-import { AbstractBsDownloaderService } from "./abstract-bs-downloader.service";
-import { addFilterStringLog } from "renderer";
+import { DownloaderServiceInterface, StoreDownloadOptions } from "./bs-store-downloader.interface";
+import { addFilterStringLog, logRenderError } from "renderer";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 
-export class SteamDownloaderService extends AbstractBsDownloaderService implements DownloaderServiceInterface{
+export class SteamDownloaderService implements DownloaderServiceInterface {
 
     private static instance: SteamDownloaderService;
 
@@ -31,220 +30,175 @@ export class SteamDownloaderService extends AbstractBsDownloaderService implemen
     private readonly progressBarService: ProgressBarService;
     private readonly notificationService: NotificationService;
 
-    private readonly STEAM_SESSION_USERNAME_KEY = "STEAM-USERNAME";
-
-    public readonly downloadProgress$ = new BehaviorSubject(0);
+    private readonly LEGACY_STEAM_USERNAME_KEY = "STEAM-USERNAME";
+    private readonly legacySessionImported: Promise<void>;
 
     private constructor() {
-        super();
         this.ipcService = IpcService.getInstance();
         this.modalService = ModalService.getInstance();
         this.progressBarService = ProgressBarService.getInstance();
         this.notificationService = NotificationService.getInstance();
+        this.legacySessionImported = this.importLegacySession();
     }
 
-    private setSteamSession(username: string): void { localStorage.setItem(this.STEAM_SESSION_USERNAME_KEY, username); }
-    public getSteamUsername(): string { return localStorage.getItem(this.STEAM_SESSION_USERNAME_KEY); }
-    public deleteSteamSession(): void { localStorage.removeItem(this.STEAM_SESSION_USERNAME_KEY); }
-    public sessionExist(): boolean { return !!localStorage.getItem(this.STEAM_SESSION_USERNAME_KEY); }
+    private async importLegacySession(): Promise<void> {
+        try {
+            const username = localStorage.getItem(this.LEGACY_STEAM_USERNAME_KEY);
+            if (!username) { return; }
+            await lastValueFrom(this.ipcService.sendV2("import-legacy-steam-username", username));
+            localStorage.removeItem(this.LEGACY_STEAM_USERNAME_KEY);
+        } catch (e) {
+            logRenderError("Unable to import the legacy Steam session", e);
+        }
+    }
+
+    public async getSteamUsername(): Promise<string | undefined> {
+        await this.legacySessionImported;
+        return lastValueFrom(this.ipcService.sendV2("steam-session-username"));
+    }
+
+    public async sessionExists(): Promise<boolean> {
+        await this.legacySessionImported;
+        return lastValueFrom(this.ipcService.sendV2("steam-session-exists"));
+    }
+
+    public async deleteSteamSession(): Promise<void> {
+        await this.legacySessionImported;
+        return lastValueFrom(this.ipcService.sendV2("delete-steam-session"));
+    }
 
     // ### Downloading
 
-    private handleInfoEvents(events$: Observable<DepotDownloaderEvent>): Subscription[] {
-        const subs: Subscription[] = [];
-
-        subs.push(events$.pipe(
-            filter(event => event.subType === DepotDownloaderInfoEvent.Start),
-            take(1),
-            map(event => event.data as string),
-        ).subscribe(startData => {
-            const downloadVersion = JSON.parse(startData) as BSVersion;
-            if(typeof downloadVersion === "object" && downloadVersion?.BSVersion){
-                this._downloadingVersion$.next(downloadVersion);
-            }
-        }));
-
-        subs.push(events$.pipe(
-            filter(event => event.subType === DepotDownloaderInfoEvent.Progress || event.subType === DepotDownloaderInfoEvent.Validated),
-            map(event => event.data as string),
-        ).subscribe(progress => {
-            this.downloadProgress$.next(parseFloat(progress.replaceAll(",", ".")));
-        }));
-
-        subs.push(events$.pipe(
-            filter(event => event.subType === DepotDownloaderInfoEvent.MobileApp),
-            take(1),
-        ).subscribe(async () => {
-            const logged$ = events$.pipe(filter(event => event.subType === DepotDownloaderInfoEvent.SteamID), take(1));
-            const res = await this.modalService.openModal(SteamMobileApproveModal, {data: { logged$ }});
-            if(res.exitCode !== ModalExitCode.COMPLETED){
-                return this.stopDownload();
-            }
-        }));
-
-        subs.push(events$.pipe(
-            filter(event => event.subType === DepotDownloaderInfoEvent.TwoFA || event.subType === DepotDownloaderInfoEvent.Guard),
-            take(1),
-            map(event => event.subType),
-        ).subscribe(async () => {
-            const logged$ = events$.pipe(filter(event => event.subType === DepotDownloaderInfoEvent.SteamID), take(1));
-            const res = await this.modalService.openModal(SteamGuardModal, { data: { logged$ } });
-            if(res.exitCode !== ModalExitCode.COMPLETED){
-                return this.stopDownload();
-            }
-            if (res.data) { this.sendInput(res.data); }
-        }));
-
-        subs.push(events$.pipe(
-            filter(event => event.subType === DepotDownloaderInfoEvent.Finished),
-            take(1),
-        ).subscribe(() => {
-            if(this.isVerifying){
-                return this.notificationService.notifySuccess({title: "notifications.bs-download.success.titles.verification-finished"});
-            }
-            return this.notificationService.notifySuccess({title: "notifications.bs-download.success.titles.download-success"});
-        }));
-
-        return subs;
-    }
-
-    private handleWarningEvents(events$: Observable<DepotDownloaderEvent>): Subscription[] {
-        const subs: Subscription[] = [];
-
-        const handledWarnings = Object.values(DepotDownloaderWarningEvent);
-
-        subs.push(events$.pipe(
-            filter(event => handledWarnings.includes(event.subType as DepotDownloaderWarningEvent)),
-        ).subscribe(event => {
-            this.notificationService.notifyWarning({title: "notifications.types.warning", desc: `notifications.bs-download.steam-download.warnings.msg.${event.subType}`});
-        }));
-
-        return subs;
-    }
-
-    private hanndleErrorEvent(errorEvent: CustomError) {
+    private notifyError(error: CustomError) {
         const handledErrors = Object.values(DepotDownloaderErrorEvent);
-
-        if(handledErrors.includes(errorEvent?.code as DepotDownloaderErrorEvent)){
-            return this.notificationService.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.steam-download.errors.msg.${errorEvent.code}`, duration: 10_000});
-        }
-
-        return this.notificationService.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.steam-download.errors.msg.${DepotDownloaderErrorEvent.Unknown}`, duration: 10_000});
+        const code = handledErrors.includes(error?.code as DepotDownloaderErrorEvent) ? error.code : DepotDownloaderErrorEvent.Unknown;
+        return this.notificationService.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.steam-download.errors.msg.${code}`, duration: 10_000});
     }
 
-    private wrapDownload(download$: Observable<DepotDownloaderEvent>, silent?: boolean): Observable<DepotDownloaderEvent> {
+    private respond(downloadId: string, answer: SteamDownloadAnswer): Promise<boolean> {
+        return lastValueFrom(this.ipcService.sendV2("bs-steam-download-respond", { downloadId, answer })).catch(() => false);
+    }
 
-        return new Observable<DepotDownloaderEvent>(sub => {
+    private runDownload(bsVersion: BSVersion, { isVerification, onStart }: StoreDownloadOptions, progress$: Subject<number>): Promise<BSVersion | undefined> {
+        return new Promise<BSVersion | undefined>((resolve, reject) => {
+            const qrCode$ = new ReplaySubject<string>(1);
+            const loggedIn$ = new ReplaySubject<string>(1);
+            const warnings$ = new Subject<DepotDownloaderWarningEvent>();
+            let downloadId: string;
+            let downloaded: BSVersion;
+            let ended = false;
+            let guardPromptOpened = false;
+            let mobilePromptOpened = false;
 
-            const downloadSub = download$.subscribe({next: n => sub.next(n), error: e => sub.error(e), complete: () => sub.complete()});
+            const warningsSub = warnings$.pipe(throttleTime(10_000)).subscribe(code => {
+                this.notificationService.notifyWarning({title: "notifications.types.warning", desc: `notifications.bs-download.steam-download.warnings.msg.${code}`});
+            });
 
-            const subs = [
-                ...this.handleInfoEvents(download$.pipe(filter(event => event.type === DepotDownloaderEventType.Info))),
-                ...this.handleWarningEvents(download$.pipe(filter(event => event.type === DepotDownloaderEventType.Warning), throttleTime(10_000))),
-            ];
+            const stopIfRunning = () => !ended && this.stopDownload();
 
-            return () => {
-                downloadSub.unsubscribe();
-                subs.forEach(sub => sub.unsubscribe());
-            }
+            const askLogin = async () => {
+                const res = await this.modalService.openModal(LoginToSteamModal, { data: { qrCode$, logged$: loggedIn$.pipe(take(1)) } });
+                if (ended) { return; }
+                if (res.exitCode !== ModalExitCode.COMPLETED) { return stopIfRunning(); }
+                if (res.data.method !== "form") { return; }
 
-        }).pipe(
-            tap({
-                error: (e) => {
-                    this.deleteSteamSession();
-                    if(!silent){ this.hanndleErrorEvent(e) }
+                if (res.data.password) { addFilterStringLog(res.data.password); }
+                this.respond(downloadId, { type: "Password", username: res.data.username, password: res.data.password, stay: res.data.stay });
+            };
+
+            const askGuardCode = async () => {
+                if (guardPromptOpened) { return; }
+                guardPromptOpened = true;
+                const res = await this.modalService.openModal(SteamGuardModal, { data: { logged$: loggedIn$.pipe(take(1)) } });
+                guardPromptOpened = false;
+                if (res.exitCode !== ModalExitCode.COMPLETED) { return stopIfRunning(); }
+                if (res.data && !ended) { this.respond(downloadId, { type: "GuardCode", code: res.data }); }
+            };
+
+            const askMobileApproval = async () => {
+                if (mobilePromptOpened) { return; }
+                mobilePromptOpened = true;
+                const res = await this.modalService.openModal(SteamMobileApproveModal, { data: { logged$: loggedIn$.pipe(take(1)) } });
+                mobilePromptOpened = false;
+                if (res.exitCode !== ModalExitCode.COMPLETED) { return stopIfRunning(); }
+            };
+
+            const onEvent = (event: SteamDownloadEvent) => {
+                switch (event.type) {
+                    case "Started":
+                        downloadId = event.downloadId;
+                        onStart(event.version);
+                        break;
+                    case "NeedsLogin":
+                        askLogin();
+                        break;
+                    case "QrCode":
+                        qrCode$.next(event.url);
+                        break;
+                    case "LoggedIn":
+                        loggedIn$.next(event.steamId || "logged");
+                        break;
+                    case "NeedsGuardCode":
+                        askGuardCode();
+                        break;
+                    case "NeedsMobileApproval":
+                        askMobileApproval();
+                        break;
+                    case "Progress":
+                        progress$.next(event.progress);
+                        break;
+                    case "Warning":
+                        warnings$.next(event.code);
+                        break;
+                    case "Done":
+                        downloaded = event.version;
+                        this.notificationService.notifySuccess({ title: isVerification ? "notifications.bs-download.success.titles.verification-finished" : "notifications.bs-download.success.titles.download-success" });
+                        break;
+                    default:
+                        break;
                 }
-            }),
-            share({connector: () => new ReplaySubject(1)})
-        );
+            };
 
-    }
+            const end = () => {
+                ended = true;
+                warningsSub.unsubscribe();
+                qrCode$.complete();
+                loggedIn$.complete();
+            };
 
-    private tryAutoDownloadBsVersion(downloadInfo: DownloadSteamInfo){
-
-        if(!this.sessionExist()){
-            return throwError(() => new Error("No session"));
-        }
-
-        const infos: DownloadSteamInfo = {...downloadInfo, username: this.getSteamUsername()}
-        return this.wrapDownload(
-            this.ipcService.sendV2("auto-download-bs-version", infos),
-            true
-        );
-    }
-
-    private startDownload(downloadInfo: DownloadSteamInfo){
-        return this.wrapDownload(
-            this.ipcService.sendV2("download-bs-version", downloadInfo )
-        );
-    }
-
-    private startQrCodeDownload(downloadInfo: DownloadSteamInfo){
-        return this.wrapDownload(
-            this.ipcService.sendV2("download-bs-version-qr", downloadInfo)
-        );
-    }
-
-    private doDownloadBsVersion(bsVersion: BSVersion, isVerification?: boolean): Promise<void>{
-
-        if(!this.progressBarService.require()){
-            return Promise.resolve();
-        }
-
-        this.progressBarService.show(this.downloadProgress$);
-
-        const downloadPromise = (async () => {
-
-            const downloadInfo: DownloadSteamInfo = {bsVersion, isVerification}
-
-            const autoDownload = await lastValueFrom(this.tryAutoDownloadBsVersion(downloadInfo)).then(() => true).catch(() => false);
-
-            if(autoDownload){ return Promise.resolve(); }
-
-            const qrCodeDownload$ = this.startQrCodeDownload(downloadInfo);
-            const qrCode$ = qrCodeDownload$.pipe(filter(event => event.type === DepotDownloaderEventType.Info && event.subType === DepotDownloaderInfoEvent.QRCode), map(event => event.data as string));
-            const logged$ = qrCodeDownload$.pipe(filter(event => event.type === DepotDownloaderEventType.Info && event.subType === DepotDownloaderInfoEvent.SteamID), map(event => event.data as string), take(1));
-
-            const loginRes = await this.modalService.openModal(LoginToSteamModal, {data: { qrCode$, logged$ }});
-
-            if(loginRes.exitCode !== ModalExitCode.COMPLETED){
-                return Promise.resolve();
-            }
-
-            if(loginRes?.data?.password){
-                addFilterStringLog(loginRes.data.password);
-            }
-
-            if(loginRes.data.stay){
-                this.setSteamSession(loginRes.data.username);
-            }
-
-            const download$ = loginRes.data.method === "qr" ? qrCodeDownload$ : this.startDownload({...downloadInfo, username: loginRes.data.username, password: loginRes.data.password, stay: loginRes.data.stay});
-
-            return lastValueFrom(download$);
-
-        })();
-
-        return downloadPromise.then(() => {}).finally(() => {
-            this.downloadProgress$.next(0);
-            this.progressBarService.hide();
+            this.ipcService.sendV2("bs-steam-download", { bsVersion, isVerification }).subscribe({
+                next: onEvent,
+                error: (error: CustomError) => {
+                    end();
+                    this.notifyError(error);
+                    reject(error);
+                },
+                complete: () => {
+                    end();
+                    resolve(downloaded);
+                },
+            });
         });
-
     }
 
-    private sendInput(input: string){
-        return lastValueFrom(this.ipcService.sendV2("send-input-bs-download", input));
-    }
+    public async download(version: BSVersion, options: StoreDownloadOptions): Promise<BSVersion | undefined> {
+        if(!this.progressBarService.require()){
+            return undefined;
+        }
 
-    public downloadBsVersion(version: BSVersion): Promise<BSVersion> {
-        return this.doDownloadBsVersion(version).then(() => version);
-    }
+        const progress$ = new BehaviorSubject(0);
+        this.progressBarService.show(progress$);
 
-    public verifyBsVersion(version: BSVersion): Promise<BSVersion> {
-        return this.doDownloadBsVersion(version, true).then(() => version);
+        try {
+            await this.legacySessionImported;
+            return await this.runDownload(version, options, progress$);
+        } finally {
+            progress$.complete();
+            this.progressBarService.hide();
+        }
     }
 
     public stopDownload(): Promise<void>{
-        return lastValueFrom(this.ipcService.sendV2("stop-download-bs-version"));
+        return lastValueFrom(this.ipcService.sendV2("bs-steam-stop-download")).then(noop);
     }
 }

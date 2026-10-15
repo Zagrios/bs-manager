@@ -1,14 +1,15 @@
 import fs from "fs-extra";
 import log from "electron-log";
 import path from "path";
-import { BS_APP_ID, IS_FLATPAK } from "main/constants";
+import { IS_FLATPAK } from "main/constants";
 import { InstallationLocationService } from "./installation-location.service";
 import { StaticConfigurationService } from "./static-configuration.service";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
-import { BSLaunchError, LaunchOption } from "shared/models/bs-launch";
+import { BSLaunchError } from "shared/models/bs-launch";
 import { BsmShellLog, bsmExec } from "main/helpers/os.helpers";
-import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { buildLinuxDesktopEntry } from "main/helpers/launch-shortcut.helpers";
+import { ModsGridStatus } from "shared/models/mods/mod-ipc.model";
+import { ProtonConfig } from "./bs-launcher/game-runtime";
 
 export class LinuxService {
     private static instance: LinuxService;
@@ -47,11 +48,27 @@ export class LinuxService {
         return path.resolve(sharedFolder, "compatdata");
     }
 
-    public async getProtonPrefix(action: "run" | "runinprefix" = "run") {
+    public async getProtonConfig(
+        steamPath: string,
+        options: { createCompatData: boolean }
+    ): Promise<ProtonConfig> {
+        const compatDataPath = this.getCompatDataPath();
+        if (options.createCompatData && !fs.existsSync(compatDataPath)) {
+            // If the user never ran Beat Saber through steam before
+            // using bsmanager, it won't exist, and proton will fail
+            // to launch the game.
+            log.info(`Proton compat data path not found at '${compatDataPath}', creating directory`);
+            await fs.ensureDir(compatDataPath);
+        }
+
         const protonPath = await this.getProtonPath();
-        return await this.isNixOS()
-            ? `steam-run "${protonPath}" ${action}`
-            : `"${protonPath}" ${action}`;
+        const nixOS = await this.isNixOS();
+
+        if (!options.createCompatData && !fs.existsSync(compatDataPath)) {
+            throw new CustomError("Could not find BSManager WINEPREFIX path", ModsGridStatus.NO_WINEPREFIX);
+        }
+
+        return { protonPath, compatDataPath, steamPath, nixOS };
     }
 
     private async getProtonPath(): Promise<string> {
@@ -73,46 +90,6 @@ export class LinuxService {
         }
 
         return protonPath;
-    }
-
-    public async buildEnvVariables(
-        launchOptions: LaunchOption,
-        steamPath: string,
-        bsFolderPath: string
-    ): Promise<Record<string, string>> {
-        // Create the compat data path if it doesn't exist.
-        // If the user never ran Beat Saber through steam before
-        // using bsmanager, it won't exist, and proton will fail
-        // to launch the game.
-        const compatDataPath = this.getCompatDataPath();
-        if (!fs.existsSync(compatDataPath)) {
-            log.info(`Proton compat data path not found at '${compatDataPath}', creating directory`);
-            await fs.ensureDir(compatDataPath);
-        }
-
-        // Setup Proton environment variables
-        const envVars: Record<string, string> = {
-            "WINEDLLOVERRIDES": "winhttp=n,b", // Required for mods to work
-            "STEAM_COMPAT_DATA_PATH": compatDataPath,
-            "STEAM_COMPAT_INSTALL_PATH": bsFolderPath,
-            "STEAM_COMPAT_CLIENT_INSTALL_PATH": steamPath,
-            "STEAM_COMPAT_APP_ID": BS_APP_ID,
-            // Run game in steam environment; fixes #585 for unicode song titles
-            "SteamEnv": "1",
-            // Fix reflections in Monado
-            "OXR_NO_TEXTURE_SOURCE_ALPHA": "1",
-        };
-
-        if (launchOptions.launchMods?.includes(LaunchMods.PROTON_LOGS)) {
-            envVars.PROTON_LOG = "1";
-            envVars.PROTON_LOG_DIR = path.join(bsFolderPath, "Logs");
-        }
-
-        if (launchOptions.launchMods?.includes(LaunchMods.PARALLEL_VIEWS)) {
-            envVars.OXR_PARALLEL_VIEWS = "1";
-        }
-
-        return envVars;
     }
 
     public async setProtonFolder(protonFolder: string): Promise<boolean> {

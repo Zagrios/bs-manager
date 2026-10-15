@@ -4,7 +4,7 @@ import { parse } from "@node-steam/vdf";
 import { readFile } from "fs/promises";
 import log from "electron-log";
 import { app, shell } from "electron";
-import { getProcessId, getProcessesByName, isProcessRunning } from "main/helpers/os.helpers";
+import { defaultProcessTable, ProcessInfo, ProcessQuery, ProcessTable } from "main/helpers/process-table";
 import { isElevated } from "query-process";
 import { execOnOs } from "../helpers/env.helpers";
 import { pathExists, writeFile } from "fs-extra";
@@ -12,14 +12,42 @@ import { getFoldersInFolder } from "../helpers/fs.helpers";
 import { SteamShortcut, SteamShortcutData } from "../../shared/models/steam/shortcut.model";
 
 const { list } = (execOnOs({ win32: () => require("regedit-rs") }, true) ?? {}) as typeof import("regedit-rs");
-const IS_ARM64_LINUX = process.platform === "linux" && process.arch === "arm64";
+
+type SteamProcessRule = {
+    query: ProcessQuery;
+    pick(processes: ProcessInfo[]): ProcessInfo | undefined;
+    requiresActiveUser: boolean;
+};
+
+function steamProcessRule(platform: NodeJS.Platform, arch: string): SteamProcessRule {
+    if (platform === "linux" && arch === "arm64") {
+        return {
+            query: { name: "steam" },
+            pick: processes => processes.find(process => process.name === "steam"),
+            requiresActiveUser: false,
+        };
+    }
+    if (platform === "linux") {
+        return {
+            query: { commandLine: "steam-runtime-launcher-service" },
+            pick: processes => processes[0],
+            requiresActiveUser: false,
+        };
+    }
+    return {
+        query: { commandLine: "steam.exe" },
+        pick: processes => processes[0],
+        requiresActiveUser: true,
+    };
+}
 
 export class SteamService {
-    private static readonly PROCESS_NAME: string = process.platform === "linux" ? "steam-runtime-launcher-service" : "steam.exe";
-
     private static instance: SteamService;
 
     private steamPath: string = "";
+
+    private readonly processes: ProcessTable = defaultProcessTable();
+    private readonly steamProcessRule = steamProcessRule(process.platform, process.arch);
 
     private constructor() {}
 
@@ -43,29 +71,29 @@ export class SteamService {
         return registryValue.value;
     }
 
-    public async isSteamRunning(): Promise<boolean> {
-        if (IS_ARM64_LINUX) {
-            return (await this.getSteamPid()) !== null;
+    private async findSteamProcess(): Promise<ProcessInfo | undefined> {
+        try {
+            const { query, pick } = this.steamProcessRule;
+            return pick(await this.processes.list(query));
+        } catch (error) {
+            log.error(error);
+            return undefined;
         }
-        const steamProcessRunning = await isProcessRunning(SteamService.PROCESS_NAME);
-        if (process.platform === "linux") {
-            return steamProcessRunning;
+    }
+
+    public async isSteamRunning(): Promise<boolean> {
+        if (!(await this.findSteamProcess())) {
+            return false;
+        }
+        if (!this.steamProcessRule.requiresActiveUser) {
+            return true;
         }
         const activeUser = await this.getActiveUser().catch(err => log.error(err));
-        return steamProcessRunning && !!activeUser;
+        return !!activeUser;
     }
 
     public async getSteamPid(): Promise<number> {
-        if (IS_ARM64_LINUX) {
-            try {
-                const processes = await getProcessesByName("steam");
-                return processes.find(process => process.name === "steam")?.pid ?? null;
-            } catch (error) {
-                log.error(error);
-                return null;
-            }
-        }
-        return getProcessId(SteamService.PROCESS_NAME);
+        return (await this.findSteamProcess())?.pid ?? null;
     }
 
     /**

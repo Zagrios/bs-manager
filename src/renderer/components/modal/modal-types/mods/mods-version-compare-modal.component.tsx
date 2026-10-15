@@ -15,7 +15,7 @@ import { ModalComponent } from "renderer/services/modale.service";
 import { lastValueFrom } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { getVersionName } from "shared/helpers/bs-version.helpers";
-import { getCompareModsMaps, getModComparisonState, ModCompareMaps, ModCompareType, ModComparisonState, simplifyFullMod } from "shared/helpers/mods-version-compare.helpers";
+import { getCompareModsMaps, getModComparisonState, ModCompareMaps, ModCompareType, ModComparisonState, simplifyFullMod } from "shared/helpers/mods-plan.helpers";
 import { safeLt } from "shared/helpers/semver.helpers";
 import { BbmCategories, BbmFullMod, BbmModVersion } from "shared/models/mods/mod.interface";
 

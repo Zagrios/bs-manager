@@ -142,7 +142,7 @@ export function BsVersionItem(props: { version: BSVersion }) {
         e.preventDefault();
         e.stopPropagation();
 
-        if (isDownloading || bsDownloader.downloadingVersion || bsDownloader.isVerifying || !progressBar.require()) {
+        if (bsDownloader.busy || !progressBar.require()) {
             return;
         }
 

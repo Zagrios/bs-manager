@@ -13,29 +13,39 @@ ipc.on("import-version", (args, reply) => {
 
 // #region Steam
 
-ipc.on("auto-download-bs-version", (args, reply) => {
-    const bsInstaller = BsSteamDownloaderService.getInstance();
-    reply(bsInstaller.autoDownloadBsVersion(args));
+ipc.on("bs-steam-download", (args, reply) => {
+    const steamDownloader = BsSteamDownloaderService.getInstance();
+    reply(steamDownloader.download(args));
 });
 
-ipc.on("download-bs-version", (args, reply) => {
-    const bsInstaller = BsSteamDownloaderService.getInstance();
-    reply(bsInstaller.downloadBsVersion(args))
+ipc.on("bs-steam-download-respond", ({ downloadId, answer }, reply) => {
+    const steamDownloader = BsSteamDownloaderService.getInstance();
+    reply(of(steamDownloader.respond(downloadId, answer)));
 });
 
-ipc.on("download-bs-version-qr", (args, reply) => {
-    const bsInstaller = BsSteamDownloaderService.getInstance();
-    reply(bsInstaller.downloadBsVersionWithQRCode(args))
+ipc.on("bs-steam-stop-download", (_, reply) => {
+    const steamDownloader = BsSteamDownloaderService.getInstance();
+    reply(from(steamDownloader.stop()));
 });
 
-ipc.on("stop-download-bs-version", (_, reply) => {
-    const bsInstaller = BsSteamDownloaderService.getInstance();
-    reply(of(bsInstaller.stopDownload()));
+ipc.on("steam-session-exists", (_, reply) => {
+    const steamDownloader = BsSteamDownloaderService.getInstance();
+    reply(from(steamDownloader.session.exists()));
 });
 
-ipc.on("send-input-bs-download", (args, reply) => {
-    const bsInstaller = BsSteamDownloaderService.getInstance();
-    reply(of(bsInstaller.sendInput(args)));
+ipc.on("steam-session-username", (_, reply) => {
+    const steamDownloader = BsSteamDownloaderService.getInstance();
+    reply(from(steamDownloader.session.username()));
+});
+
+ipc.on("delete-steam-session", (_, reply) => {
+    const steamDownloader = BsSteamDownloaderService.getInstance();
+    reply(from(steamDownloader.session.clear()));
+});
+
+ipc.on("import-legacy-steam-username", (username, reply) => {
+    const steamDownloader = BsSteamDownloaderService.getInstance();
+    reply(from(steamDownloader.session.importLegacyUsername(username)));
 });
 
 // #endregion

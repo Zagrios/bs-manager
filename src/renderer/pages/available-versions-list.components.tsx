@@ -1,19 +1,16 @@
 import { AvailableVersionsSlider } from "../components/available-versions/available-versions-slider.component";
 import { Slideshow } from "renderer/components/slideshow/slideshow.component";
-import { createContext, useCallback, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useMemo } from "react";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
 import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-button.component";
-import { lastValueFrom, map } from "rxjs";
+import { lastValueFrom } from "rxjs";
 import { useService } from "renderer/hooks/use-service.hook";
 import { BSVersion } from "shared/bs-version.interface";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
 import { logRenderError } from "renderer";
-import { ModalExitCode, ModalService } from "renderer/services/modale.service";
-import { BSVersionOutdatedModal } from "renderer/components/modal/modal-types/bs-version-outdated-modal.component";
-import { ConfigurationService } from "renderer/services/configuration.service";
-import { safeLt } from "shared/helpers/semver.helpers";
+import { ModalService } from "renderer/services/modale.service";
 import { ModsVersionCompareModal } from "renderer/components/modal/modal-types/mods/mods-version-compare-modal.component";
 
 export const AvailableVersionsContext = createContext<{
@@ -27,45 +24,13 @@ export function AvailableVersionsList() {
     const bsDownloader = useService(BsDownloaderService);
     const versionManager = useService(BSVersionManagerService);
     const modals = useService(ModalService);
-    const config = useService(ConfigurationService);
 
-    const downloadPendingRef = useRef(false);
-    const [downloadPending, setDownloadPending] = useState(false);
-
-    const downloading = useObservable(() => bsDownloader.downloadingVersion$.pipe(map(v => !!v)), !!bsDownloader.downloadingVersion);
-    const downloadUnavailable = downloadPending || downloading;
+    const downloading = useObservable(() => bsDownloader.busy$, bsDownloader.busy);
     const t = useTranslation();
 
-    const startDownload = useCallback(async (version: BSVersion) => {
-        if (downloadPendingRef.current || bsDownloader.downloadingVersion) {
-            return;
-        }
-
-        downloadPendingRef.current = true;
-        setDownloadPending(true);
-
-        try {
-            const showOutdated = !config.get("not-show-bs-version-outdated-modal");
-            const recommendedVersion = versionManager.getRecommendedVersion();
-
-            const isVersionOutdated = safeLt(version.BSVersion, recommendedVersion?.BSVersion);
-
-            if (showOutdated && isVersionOutdated) {
-
-                const res = await modals.openModal(BSVersionOutdatedModal, {data: { outdated: version, recommended: recommendedVersion }});
-
-                if (res.exitCode !== ModalExitCode.COMPLETED) {
-                    return;
-                }
-            }
-
-            const downloadedVersion = await bsDownloader.downloadVersion(version).catch(logRenderError);
-            return downloadedVersion;
-        } finally {
-            downloadPendingRef.current = false;
-            setDownloadPending(false);
-        }
-    }, [config, versionManager, modals, bsDownloader]);
+    const startDownload = useCallback((version: BSVersion) => {
+        return bsDownloader.downloadVersion(version).catch(logRenderError);
+    }, [bsDownloader]);
 
     const importVersion = () => {
         return lastValueFrom(versionManager.importVersion()).catch(() => {});
@@ -78,8 +43,8 @@ export function AvailableVersionsList() {
     const contextValue = useMemo(() => ({
         startDownload,
         showAvailableMods,
-        downloading: downloadUnavailable,
-    }), [downloadUnavailable, showAvailableMods, startDownload]);
+        downloading,
+    }), [downloading, showAvailableMods, startDownload]);
 
     const refreshVersions = () => {
         return Promise.all([

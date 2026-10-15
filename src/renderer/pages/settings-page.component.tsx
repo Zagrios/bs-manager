@@ -138,16 +138,16 @@ export function SettingsPage() {
     };
 
     const loadDownloadersSession = async () => {
-        setHasSteamSession(steamDownloader.sessionExist());
+        setHasSteamSession(await steamDownloader.sessionExists());
         setHasOculusSession(await oculusDownloader.metaSessionExists());
     }
 
-    const clearSteamSession = () => {
+    const clearSteamSession = async () => {
         if (!hasSteamSession) {
             return;
         }
 
-        steamDownloader.deleteSteamSession();
+        await steamDownloader.deleteSteamSession();
         notificationService.notifyInfo({
             title: "pages.settings.steam-and-oculus.logout-success",
         });

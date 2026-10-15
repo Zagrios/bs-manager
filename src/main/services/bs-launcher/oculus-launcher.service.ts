@@ -5,13 +5,24 @@ import { OculusService } from "../oculus.service";
 import { BS_EXECUTABLE } from "../../constants";
 import path from "path";
 import log from "electron-log";
-import { pathExists } from "fs-extra";
-import { AbstractLauncherService, buildBsLaunchArgs } from "./abstract-launcher.service";
-import { isProcessRunning } from "../../helpers/os.helpers";
+import { isProcessRunning } from "../../helpers/process-table";
 import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
-import { parseLaunchOptions } from "main/helpers/launchOptions.helper";
+import { planLaunch } from "./launch-plan";
+import { defaultGameLauncherPorts, GameLauncherPorts, launchContext, launchGame } from "./launcher-ports";
+import { ProcessTrackingError } from "./owned-process-session";
 
-export class OculusLauncherService extends AbstractLauncherService implements StoreLauncherInterface {
+export type OculusLauncherPorts = GameLauncherPorts & {
+    oculus: Pick<OculusService, "startOculus">;
+};
+
+export function defaultOculusLauncherPorts(): OculusLauncherPorts {
+    return {
+        ...defaultGameLauncherPorts(),
+        oculus: OculusService.getInstance(),
+    };
+}
+
+export class OculusLauncherService implements StoreLauncherInterface {
 
     public static instance: OculusLauncherService;
 
@@ -22,12 +33,7 @@ export class OculusLauncherService extends AbstractLauncherService implements St
         return OculusLauncherService.instance;
     }
 
-    private readonly oculus: OculusService;
-
-    private constructor() {
-        super();
-        this.oculus = OculusService.getInstance();
-    }
+    public constructor(private readonly ports: OculusLauncherPorts = defaultOculusLauncherPorts()) {}
 
     public launch(launchOptions: LaunchOption): Observable<BSLaunchEventData> {
 
@@ -35,67 +41,40 @@ export class OculusLauncherService extends AbstractLauncherService implements St
             (async () => {
 
                 // Cannot start multiple instances of Beat Saber with Oculus
-                const bsRunning = await isProcessRunning(BS_EXECUTABLE).catch(() => false);
+                const bsRunning = await isProcessRunning(BS_EXECUTABLE, this.ports.session.processes);
                 if(bsRunning){
                     throw CustomError.fromError(new Error("Cannot start two instance of Beat Saber for Oculus"), BSLaunchError.BS_ALREADY_RUNNING);
                 }
 
-                const bsPath = await this.localVersions.getInstalledVersionPath(launchOptions.version);
+                const bsPath = await this.ports.localVersions.getInstalledVersionPath(launchOptions.version);
                 const exePath = path.join(bsPath, BS_EXECUTABLE);
 
-                if(!(await pathExists(exePath))){
+                if(!(await this.ports.pathExists(exePath))){
                     throw CustomError.fromError(new Error(`BS Path not exist ${bsPath}`), BSLaunchError.BS_NOT_FOUND);
                 }
 
                 // Make sure Oculus is running
-                await this.oculus.startOculus().catch(err => {
+                await this.ports.oculus.startOculus().catch(err => {
                     if (err instanceof CustomError) throw err;
 
                     log.error("Error while starting Oculus", err);
                     log.warn("Unable to start Oculus client. Force launch.");
                 });
 
-                const env: Record<string, string> = {
-                    ...process.env,
-                };
-                const {
-                    env: customEnv,
-                    cmdlet, args,
-                } = parseLaunchOptions(launchOptions.command, {
-                    commandReplacement: `"${exePath}"`,
-                });
-                this.updateEnvVariables(env, customEnv);
+                const plan = await planLaunch(
+                    { store: "oculus", launchOptions, gameFolder: bsPath },
+                    launchContext(this.ports)
+                );
 
                 obs.next({type: BSLaunchEvent.BS_LAUNCHING});
 
-                // Launch Beat Saber
-                const ownershipSnapshot = await this.createProcessOwnershipSnapshot();
-                const bsProcess = this.launchBeatSaber({
-                    env, customEnv, cmdlet,
-                    beatSaberFolderPath: bsPath,
-                    args: [ args, ...buildBsLaunchArgs(launchOptions) ]
-                }, ownershipSnapshot);
-                const wrapperOutcome = bsProcess.exit.then(
-                    exitCode => ({ exitCode }),
-                    error => ({ error })
-                );
-
-                const ownedProcess = await bsProcess.ownership;
-                if (ownedProcess) {
-                    wrapperOutcome.then(wrapperResult => {
-                        if ("error" in wrapperResult) {
-                            log.error("BS wrapper process failed after Oculus process ownership was acquired", wrapperResult.error);
-                        }
-                    }).catch(error => log.error("Could not handle the BS wrapper process outcome", error));
-                    await this.waitForOwnedProcessExit(exePath, ownedProcess, bsProcess.signal);
-                    return 0;
+                const session = await launchGame(this.ports, plan, bsPath, "untracked");
+                try {
+                    return await session.exit;
+                } catch (error) {
+                    if (error instanceof ProcessTrackingError) { throw error; }
+                    throw CustomError.fromError(error as Error, BSLaunchError.BS_EXIT_ERROR);
                 }
-
-                const wrapperResult = await wrapperOutcome;
-                if ("error" in wrapperResult) {
-                    throw CustomError.fromError(wrapperResult.error, BSLaunchError.BS_EXIT_ERROR);
-                }
-                return wrapperResult.exitCode;
 
             })().then(exitCode => {
                 log.info("BS process exit code", exitCode);

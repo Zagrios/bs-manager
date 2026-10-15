@@ -1,6 +1,11 @@
 import { BSVersion } from "shared/bs-version.interface";
 
+export interface StoreDownloadOptions {
+    isVerification: boolean;
+    onStart: (version: BSVersion) => void;
+}
+
 export interface DownloaderServiceInterface {
-    downloadBsVersion(version: BSVersion): Promise<BSVersion>;
-    verifyBsVersion(version: BSVersion): Promise<BSVersion>;
+    download(version: BSVersion, options: StoreDownloadOptions): Promise<BSVersion | undefined>;
+    stopDownload(): Promise<void>;
 }

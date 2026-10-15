@@ -4,7 +4,7 @@ import log from "electron-log";
 import { lstat } from "fs-extra";
 import { tryit } from "../../shared/helpers/error.helpers";
 import { app, shell } from "electron";
-import { isProcessRunning } from "../helpers/os.helpers";
+import { isProcessRunning } from "../helpers/process-table";
 import { sToMs } from "../../shared/helpers/time.helpers";
 import { execOnOs } from "../helpers/env.helpers";
 import { UtilsService } from "./utils.service";

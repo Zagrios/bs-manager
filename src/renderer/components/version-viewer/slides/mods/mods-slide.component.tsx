@@ -1,4 +1,4 @@
-import { forwardRef, ReactNode, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from "react";
+import { forwardRef, ReactNode, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { BsModsManagerService } from "renderer/services/bs-mods-manager.service";
 import { BSVersion } from "shared/bs-version.interface";
 import { BbmCategories, BbmFullMod } from "shared/models/mods/mod.interface";
@@ -12,7 +12,6 @@ import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods/mods-disclaimer-modal.component";
-import { safeLt } from "shared/helpers/semver.helpers";
 import { useService } from "renderer/hooks/use-service.hook";
 import { NotificationService } from "renderer/services/notification.service";
 import { noop } from "shared/helpers/function.helpers";
@@ -24,6 +23,7 @@ import { ModsGridStatus } from "shared/models/mods/mod-ipc.model";
 import { BsmLink } from "renderer/components/shared/bsm-link.component";
 import { DISCORD_URL, GITHUB_URL } from "shared/constants";
 import { ModsVersionCompareModal } from "renderer/components/modal/modal-types/mods/mods-version-compare-modal.component";
+import { getDefaultSelectedMods, getModsToInstall, ModsState } from "shared/helpers/mods-plan.helpers";
 
 export type ModsSlideRef = {
     loadMods: () => Promise<void>;
@@ -44,8 +44,7 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
     const progress = useService(ProgressBarService);
 
     const [gridStatus, setGridStatus] = useState(ModsGridStatus.OK);
-    const [modsAvailable, setModsAvailable] = useState(null as Map<BbmCategories, BbmFullMod[]>);
-    const [modsInstalled, setModsInstalled] = useState(null as Map<BbmCategories, BbmFullMod[]>);
+    const [modsState, setModsState] = useState(null as ModsState);
     const [modsSelected, setModsSelected] = useState([] as BbmFullMod[]);
     const [moreInfoMod, setMoreInfoMod] = useState(null as BbmFullMod);
     const [reinstallAllMods, setReinstallAllMods] = useState(false);
@@ -56,14 +55,8 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
     const downloadRef = useRef(null);
     const [downloadWith, setDownloadWidth] = useState(0);
 
-    const modsToCategoryMap = (mods: BbmFullMod[]): Map<BbmCategories, BbmFullMod[]> => {
-        if (!mods) {
-            return new Map<BbmCategories, BbmFullMod[]>();
-        }
-        const map = new Map<BbmCategories, BbmFullMod[]>();
-        mods.forEach(mod => map.set(mod.mod.category, [...(map.get(mod.mod.category) ?? []), mod]));
-        return map;
-    };
+    const modsAvailable = useMemo(() => modsState && modsToCategoryMap(modsState.mods), [modsState]);
+    const modsInstalled = useMemo(() => modsState && modsToCategoryMap(modsState.installed), [modsState]);
 
     const handleModChange = (selected: boolean, mod: BbmFullMod) => {
 
@@ -92,44 +85,6 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
         }
     };
 
-    const getAllDependencies = (mods: BbmFullMod[], availableMods: BbmFullMod[]): BbmFullMod[] => {
-        const collectedDependencies = new Set<BbmFullMod>();
-        const modIdsToProcess = new Set(mods.flatMap(m => m.version.dependencies));
-
-        for (const currentId of modIdsToProcess) {
-            const dependency = availableMods.find(m => m.version.id === currentId);
-            if (dependency && !collectedDependencies.has(dependency)) {
-                collectedDependencies.add(dependency);
-                dependency.version.dependencies?.forEach(depId => modIdsToProcess.add(depId));
-            }
-        }
-
-        return Array.from(collectedDependencies);
-    };
-
-    const getModsToInstall = (reinstallAll?: boolean): BbmFullMod[] => {
-        let modsToInstall = [
-            ...modsSelected,
-            ...getAllDependencies(modsSelected, Array.from(modsAvailable.values()).flat())
-        ];
-
-        modsToInstall = reinstallAll ? (
-            modsToInstall // If reinstalling all, we install all selected mods
-        ) : (
-            modsToInstall.filter(mod => { // Else we only install the mods that are not installed or have a newer version
-                const installedMod = modsInstalled.get(mod.mod.category)?.find(installedMod => installedMod.mod.id === mod.mod.id);
-                return !installedMod || safeLt(installedMod.version.modVersion, mod.version.modVersion);
-            })
-        );
-
-        // Remove duplicates, null and undefined
-        const set = new Set(modsToInstall);
-        set.delete(null);
-        set.delete(undefined);
-
-        return Array.from(set); // Remove duplicates
-    }
-
     const installMods = (reinstallAll: boolean): Promise<void> => {
 
         setReinstallAllMods(false);
@@ -138,7 +93,7 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
             return Promise.resolve();
         }
 
-        const modsToInstall = getModsToInstall(reinstallAll);
+        const modsToInstall = getModsToInstall(modsState, modsSelected, { reinstall: reinstallAll });
 
         if (!modsToInstall.length) {
             notification.notifyInfo({ title: "pages.version-viewer.mods.notifications.all-mods-already-installed.title", desc: "pages.version-viewer.mods.notifications.all-mods-already-installed.description" });
@@ -201,16 +156,9 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
         return haveAccepted;
     }
 
-    const applyModsState = ({ available, installed }: { available: BbmFullMod[]; installed: BbmFullMod[] }) => {
-        // Merge installed mods not in the available (verified) list so they appear in the grid
-        const availableIds = new Set(available.map(m => m.mod.id));
-        const installedOnly = installed.filter(m => !availableIds.has(m.mod.id));
-        const allMods = [...available, ...installedOnly];
-
-        const defaultMods = installed?.length ? [] : allMods.filter(m => m.mod.category === BbmCategories.Core || m.mod.category === BbmCategories.Essential);
-        setModsAvailable(() => modsToCategoryMap(allMods));
-        setModsSelected(allMods.filter(m => m.mod.category === BbmCategories.Core || defaultMods.some(d => m.mod.name.toLowerCase() === d.mod.name.toLowerCase()) || installed.some(i => m.mod.id === i.mod.id)));
-        setModsInstalled(modsToCategoryMap(installed));
+    const applyModsState = (state: ModsState) => {
+        setModsState(() => state);
+        setModsSelected(getDefaultSelectedMods(state));
     };
 
     const loadMods = async (): Promise<void> => {
@@ -258,8 +206,7 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
         return () => {
             isCancelled = true;
             setMoreInfoMod(null);
-            setModsAvailable(null);
-            setModsInstalled(null);
+            setModsState(null);
             setGridStatus(ModsGridStatus.OK);
         };
     }, [isActive, version]);
@@ -398,4 +345,10 @@ function ModStatus({ text, image, spin = false, children }: { text?: string; ima
             {children}
         </div>
     );
+}
+
+function modsToCategoryMap(mods: BbmFullMod[]): Map<BbmCategories, BbmFullMod[]> {
+    const map = new Map<BbmCategories, BbmFullMod[]>();
+    mods.forEach(mod => map.set(mod.mod.category, [...(map.get(mod.mod.category) ?? []), mod]));
+    return map;
 }

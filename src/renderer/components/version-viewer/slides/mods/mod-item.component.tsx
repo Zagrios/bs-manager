@@ -5,7 +5,7 @@ import { CSSProperties, MouseEvent, useMemo } from "react";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import striptags from "striptags";
-import { safeGt } from "shared/helpers/semver.helpers";
+import { isModOutdated } from "shared/helpers/mods-plan.helpers";
 import Tippy from "@tippyjs/react";
 import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 
@@ -95,7 +95,7 @@ export function ModItem({ className, mod, installedVersion, isDependency, isSele
     }, [isChecked]);
 
     const wantInfoStyle: CSSProperties = wantInfo ? { borderColor: themeColor } : { borderColor: "transparent" };
-    const isOutDated = installedVersion ? safeGt(mod.version.modVersion, installedVersion) : false;
+    const isOutDated = isModOutdated(installedVersion, mod.version.modVersion);
 
     const handleWantInfo = (e: MouseEvent) => {
         e.preventDefault();

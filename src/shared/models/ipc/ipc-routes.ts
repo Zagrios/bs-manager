@@ -6,8 +6,7 @@ import { BsvMapDetail, SongDetails } from "shared/models/maps";
 import { BsmLocalMap, BsmLocalMapsProgress, DeleteMapsProgress } from "shared/models/maps/bsm-local-map.interface";
 import { BsvPlaylist, BsvPlaylistPage, PlaylistSearchParams, SearchParams } from "../maps/beat-saver.model";
 import { ImportVersionOptions } from "main/services/bs-local-version.service";
-import { DownloadSteamInfo } from "main/services/bs-version-download/bs-steam-downloader.service";
-import { DepotDownloaderEvent } from "../bs-version-download/depot-downloader.model";
+import { SteamDownloadEvent, SteamDownloadRequest, SteamDownloadResponse } from "../bs-version-download/steam-download.model";
 import { MSGetQuery, MSModel, MSModelType } from "../models/model-saber.model";
 import { ModelDownload } from "renderer/services/models-management/models-downloader.service";
 import { BsmLocalModel } from "../models/bsm-local-model.interface";
@@ -30,11 +29,13 @@ export interface IpcChannelMapping {
 
     /* ** bs-download-ipcs ** */
     "import-version": { request: ImportVersionOptions, response: Progression<BSVersion>};
-    "auto-download-bs-version": { request: DownloadSteamInfo, response: DepotDownloaderEvent};
-    "download-bs-version": { request: DownloadSteamInfo, response: DepotDownloaderEvent};
-    "download-bs-version-qr": { request: DownloadSteamInfo, response: DepotDownloaderEvent};
-    "stop-download-bs-version": { request: void, response: void};
-    "send-input-bs-download": { request: string, response: boolean};
+    "bs-steam-download": { request: SteamDownloadRequest, response: SteamDownloadEvent };
+    "bs-steam-download-respond": { request: SteamDownloadResponse, response: boolean };
+    "bs-steam-stop-download": { request: void, response: void };
+    "steam-session-exists": { request: void, response: boolean };
+    "steam-session-username": { request: void, response: string | undefined };
+    "delete-steam-session": { request: void, response: void };
+    "import-legacy-steam-username": { request: string, response: void };
     "bs-oculus-download": { request: OculusDownloadInfo, response: Progression<BSVersion>};
     "bs-oculus-stop-download": { request: void, response: void};
     "login-with-meta": { request: boolean, response: string };

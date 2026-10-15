@@ -6,7 +6,8 @@ import { ProgressBarService } from "./progress-bar.service";
 import { NotificationService } from "./notification.service";
 import { Progression } from "main/helpers/fs.helpers";
 import { ProgressionInterface } from "shared/models/progress-bar";
-import { BbmFullMod, BbmModVersion, BbmCategories, BbmStatus } from "shared/models/mods/mod.interface";
+import { BbmFullMod, BbmModVersion } from "shared/models/mods/mod.interface";
+import { EMPTY_MODS_STATE, getModsState, ModsState } from "shared/helpers/mods-plan.helpers";
 import { logRenderError } from "renderer";
 import { ModsGridStatus } from "shared/models/mods/mod-ipc.model";
 import { LinuxService } from "./linux.service";
@@ -185,54 +186,15 @@ export class BsModsManagerService {
         });
     }
 
-    public async getVersionModsState(version: BSVersion): Promise<{available: BbmFullMod[], installed: BbmFullMod[]}> {
-        const [available, installed]: [BbmFullMod[], BbmModVersion[]] = await (async () => {
+    public async getVersionModsState(version: BSVersion): Promise<ModsState> {
+        try {
             const available = await lastValueFrom(this.getAvailableMods(version));
             const installed = await lastValueFrom(this.getInstalledMods(version));
-            return [available ?? [], installed ?? []] as [BbmFullMod[], BbmModVersion[]]; // Make TS happy
-        })().catch(e => {
+            return getModsState(available ?? [], installed ?? []);
+        } catch (e) {
             logRenderError(e);
-            return [[], []] as [BbmFullMod[], BbmModVersion[]]; // Make TS happy
-        })
-
-        const installedMods: BbmFullMod[] = installed.reduce((acc, installedMod) => {
-            const mod = available.find(m => m.mod.id === installedMod.modId);
-
-            if(mod){
-                acc.push({ ...mod, version: installedMod } as BbmFullMod);
-            } else {
-                // Mod is installed but not in the available (verified) list.
-                // Construct a minimal BbmMod so it still appears in the UI.
-                const dllHash = installedMod.contentHashes?.find(c => c.path.endsWith(".dll"));
-                const name = dllHash
-                    ? dllHash.path.replace(/^.*[\\/]/, "").replace(/\.dll$/, "")
-                    : `Unknown mod (${installedMod.modId})`;
-
-                acc.push({
-                    mod: {
-                        id: installedMod.modId,
-                        name,
-                        summary: "",
-                        description: "",
-                        gameName: "BeatSaber",
-                        category: BbmCategories.Other,
-                        authors: installedMod.author ? [installedMod.author] : [],
-                        status: installedMod.status ?? BbmStatus.Unverified,
-                        iconFileName: "",
-                        gitUrl: "",
-                        lastApprovedById: null,
-                        lastUpdatedById: null,
-                        createdAt: installedMod.createdAt ?? new Date(),
-                        updatedAt: installedMod.updatedAt ?? new Date(),
-                    },
-                    version: installedMod,
-                } as BbmFullMod);
-            }
-
-            return acc;
-        }, []);
-
-        return { available: (available ?? []), installed: (installedMods ?? []) };
+            return EMPTY_MODS_STATE;
+        }
     }
 
     public async getModsGridStatus(): Promise<ModsGridStatus> {

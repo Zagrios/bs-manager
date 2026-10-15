@@ -1,9 +1,7 @@
 import fs from "fs-extra";
 import path from "path";
 import { LinuxService } from "main/services/linux.service";
-import { BS_APP_ID } from "main/constants";
-import { LaunchMod, LaunchMods } from "shared/models/bs-launch/launch-option.interface";
-import { LaunchOption } from "shared/models/bs-launch";
+import { BSLaunchError } from "shared/models/bs-launch";
 import { bsmExec } from "main/helpers/os.helpers";
 
 jest.mock("electron", () => ({
@@ -40,9 +38,8 @@ jest.mock("fs-extra", () => ({
     },
 }));
 
-describe("LinuxService.buildEnvVariables", () => {
+describe("LinuxService", () => {
     const steamPath = "/Steam Library";
-    const bsFolderPath = "/Beat Saber/1.45.2";
     const sharedContentPath = "/shared-content";
     const compatDataPath = path.resolve(sharedContentPath, "compatdata");
     const protonPath = path.join("/Proton Experimental", "proton");
@@ -63,13 +60,6 @@ describe("LinuxService.buildEnvVariables", () => {
         return service;
     }
 
-    function buildLaunchOption(launchMods: LaunchMod[] = []): LaunchOption {
-        return {
-            version: { BSVersion: "1.29.1" },
-            launchMods,
-        };
-    }
-
     beforeEach(() => {
         jest.clearAllMocks();
         (fs.existsSync as jest.Mock).mockReturnValue(true);
@@ -80,45 +70,48 @@ describe("LinuxService.buildEnvVariables", () => {
         (bsmExec as jest.Mock).mockRejectedValue(new Error("not nixos"));
     });
 
-    it("uses Proton's utility mode for commands that run inside its prefix", async () => {
+    it("resolves the Proton facts used to launch the game", async () => {
+        await expect(buildService().getProtonConfig(steamPath, { createCompatData: true })).resolves.toEqual({
+            protonPath,
+            compatDataPath,
+            steamPath,
+            nixOS: false,
+        });
+        expect(fs.ensureDir).not.toHaveBeenCalled();
+    });
+
+    it("detects NixOS so Proton can be wrapped in steam-run", async () => {
+        (bsmExec as jest.Mock).mockResolvedValue({ stdout: "24.05", stderr: "" });
         const service = buildService();
+        (service as any).nixOS = undefined;
 
-        await expect(service.getProtonPrefix()).resolves.toBe(`"${protonPath}" run`);
-        await expect(service.getProtonPrefix("runinprefix"))
-            .resolves.toBe(`"${protonPath}" runinprefix`);
+        await expect(service.getProtonConfig(steamPath, { createCompatData: true }))
+            .resolves.toMatchObject({ nixOS: true });
     });
 
-    it("keeps parallel views out of the default Linux launch environment", async () => {
-        const env = await buildService().buildEnvVariables(
-            buildLaunchOption(),
-            steamPath,
-            bsFolderPath
-        );
+    it("creates a missing compat data folder before launching the game", async () => {
+        (fs.existsSync as jest.Mock).mockReturnValue(false);
 
-        expect(env).toEqual(expect.objectContaining({
-            WINEDLLOVERRIDES: "winhttp=n,b",
-            STEAM_COMPAT_DATA_PATH: compatDataPath,
-            STEAM_COMPAT_INSTALL_PATH: bsFolderPath,
-            STEAM_COMPAT_CLIENT_INSTALL_PATH: steamPath,
-            STEAM_COMPAT_APP_ID: BS_APP_ID,
-            SteamEnv: "1",
-            OXR_NO_TEXTURE_SOURCE_ALPHA: "1",
-        }));
-        expect(env).not.toHaveProperty("OXR_PARALLEL_VIEWS");
+        await buildService().getProtonConfig(steamPath, { createCompatData: true });
+
+        expect(fs.ensureDir).toHaveBeenCalledWith(compatDataPath);
     });
 
-    it("adds parallel views and proton logging only when their launch mods are active", async () => {
-        const env = await buildService().buildEnvVariables(
-            buildLaunchOption([LaunchMods.PARALLEL_VIEWS, LaunchMods.PROTON_LOGS]),
-            steamPath,
-            bsFolderPath
-        );
+    it("requires an existing prefix for commands run inside it", async () => {
+        (fs.existsSync as jest.Mock).mockReturnValue(false);
 
-        expect(env).toEqual(expect.objectContaining({
-            OXR_PARALLEL_VIEWS: "1",
-            PROTON_LOG: "1",
-            PROTON_LOG_DIR: path.join(bsFolderPath, "Logs"),
-        }));
+        await expect(buildService().getProtonConfig(steamPath, { createCompatData: false }))
+            .rejects.toMatchObject({ code: "no-wineprefix" });
+        expect(fs.ensureDir).not.toHaveBeenCalled();
+    });
+
+    it("reports a missing Proton folder before a missing prefix", async () => {
+        (fs.existsSync as jest.Mock).mockReturnValue(false);
+        const service = buildService();
+        (service as any).staticConfig.has.mockReturnValue(false);
+
+        await expect(service.getProtonConfig(steamPath, { createCompatData: false }))
+            .rejects.toMatchObject({ code: BSLaunchError.PROTON_NOT_SET });
     });
 
     it("persists a trimmed Proton folder when its binaries are valid", async () => {

@@ -63,8 +63,10 @@ function loadService(platform: NodeJS.Platform, arch: string, processes: Process
     let service: SteamService;
     let registryList: jest.Mock;
     let processList: jest.Mock;
+    let exec: jest.Mock;
     jest.isolateModules(() => {
         const childProcess = require("node:child_process") as typeof import("node:child_process");
+        exec = childProcess.exec as unknown as jest.Mock;
         const { default: psList } = require("ps-list") as { default: jest.Mock };
         registryList = (require("regedit-rs") as { list: jest.Mock }).list;
 
@@ -114,7 +116,7 @@ function loadService(platform: NodeJS.Platform, arch: string, processes: Process
         service = Service.getInstance();
     });
 
-    return { service: service!, registryList: registryList!, processList: processList! };
+    return { service: service!, registryList: registryList!, processList: processList!, exec: exec! };
 }
 
 afterEach(() => {
@@ -138,6 +140,19 @@ describe.each(["x64", "ia32"])("Steam process discovery on Linux %s", arch => {
 
         await expect(service.isSteamRunning()).resolves.toBe(false);
         await expect(service.getSteamPid()).resolves.toBeNull();
+    });
+
+    it("looks for the runtime launcher on the host inside Flatpak", async () => {
+        const { service, processList, exec } = loadService("linux", arch, [linuxRuntime], true);
+
+        await expect(service.isSteamRunning()).resolves.toBe(true);
+        await expect(service.getSteamPid()).resolves.toBe(linuxRuntime.pid);
+        expect(exec).toHaveBeenCalledWith(
+            expect.stringMatching(/^flatpak-spawn --host\s+ps awwxo pid,args \| grep "\[s\]team-runtime-launcher-service"$/),
+            expect.anything(),
+            expect.any(Function)
+        );
+        expect(processList).not.toHaveBeenCalled();
     });
 });
 
@@ -243,6 +258,6 @@ describe("Steam process discovery on Windows", () => {
         const { service } = loadService("win32", "x64", [armSteam, armWebHelper]);
 
         await expect(service.isSteamRunning()).resolves.toBe(false);
-        await expect(service.getSteamPid()).resolves.toBeUndefined();
+        await expect(service.getSteamPid()).resolves.toBeNull();
     });
 });

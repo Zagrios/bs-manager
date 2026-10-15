@@ -1,10 +1,8 @@
 import {
     BsmShellLog,
     bsmSpawn,
-    // bsmExec,
-    isProcessRunning,
-    // getProcessId,
 } from "main/helpers/os.helpers";
+import { isProcessRunning } from "main/helpers/process-table";
 
 import cp from "node:child_process";
 import crypto from "crypto";
@@ -171,6 +169,19 @@ describe("Test os.helpers bsmSpawn", () => {
         expect(logSpy).toHaveBeenCalledTimes(1);
     });
 
+    ifIt(IS_LINUX)("keeps the Flatpak launch token out of command logs", () => {
+        const launchToken = "private-test-launch-token";
+        bsmSpawn("proton", {
+            options: { env: { BSMANAGER_LAUNCH_TOKEN: launchToken } },
+            log: BsmShellLog.Command,
+            flatpak: { host: true, env: ["BSMANAGER_LAUNCH_TOKEN"] },
+        });
+
+        expect(spawnSpy).toHaveBeenCalledWith(expect.stringContaining(launchToken), expect.anything());
+        expect(JSON.stringify(logSpy.mock.calls)).not.toContain(launchToken);
+        expect(JSON.stringify(logSpy.mock.calls)).toContain("[REDACTED]");
+    });
+
     ifIt(IS_LINUX)("Complex spawn command call (BS launch flatpak with parallel views)", () => {
         const flatpakEnv = [
             "SteamAppId",
@@ -238,8 +249,7 @@ ifDescribe(IS_LINUX)("Test os.helpers isProcessRunning", () => {
         const running = await isProcessRunning(`bs-manager-${crypto.randomUUID()}`);
         expect(running).toBe(false);
 
-        // Throws because grep couldn't find any process with that name
-        expect(logSpy).toHaveBeenCalledTimes(1);
+        expect(logSpy).toHaveBeenCalledTimes(0);
     });
 
     it("Empty process name", async () => {

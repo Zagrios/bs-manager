@@ -7,6 +7,7 @@ import { getCorrectTextColor } from "renderer/helpers/correct-text-color";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { BbmCategories, BbmFullMod } from "shared/models/mods/mod.interface";
+import { getDependencyClosure } from "shared/helpers/mods-plan.helpers";
 import BeatConflictImg from "../../../../../../assets/images/apngs/beat-conflict.png";
 import { ModItem } from "./mod-item.component";
 
@@ -48,12 +49,9 @@ export function ModsGrid({ modsMap, installed, modsSelected, onModChange, moreIn
         return filtered;
     }, [filter, modsMap]);
 
-    const dependencyIds = useMemo(() => {
-        const selectedDependencies = new Set(modsSelected.flatMap(mod => mod.version.dependencies));
-        const dependencyDependencies = availableMods.filter(mod => selectedDependencies.has(mod.version.id)).flatMap(mod => mod.version.dependencies);
-
-        return new Set([...selectedDependencies, ...dependencyDependencies]);
-    }, [availableMods, modsSelected]);
+    const dependencyIds = useMemo(() => (
+        new Set(getDependencyClosure(modsSelected, availableMods).map(mod => mod.version.id))
+    ), [availableMods, modsSelected]);
 
     const selectedModIds = useMemo(() => new Set(modsSelected.map(mod => mod.mod.id)), [modsSelected]);
 

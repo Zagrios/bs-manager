@@ -20,6 +20,9 @@ import { BsmZipExtractor } from "main/models/bsm-zip-extractor.class";
 import { BsmShellLog, bsmSpawn } from "main/helpers/os.helpers";
 import { BbmFullMod, BbmModVersion, ExternalMod } from "../../../shared/models/mods/mod.interface";
 import { SteamService } from "../steam.service";
+import { planPrefixCommand, PrefixCommandPlan } from "../bs-launcher/launch-plan";
+import { ModsGridStatus } from "shared/models/mods/mod-ipc.model";
+import { getModsState } from "shared/helpers/mods-plan.helpers";
 
 export class BsModsManagerService {
     private static instance: BsModsManagerService;
@@ -168,13 +171,7 @@ export class BsModsManagerService {
                     env: command.env,
                     stdio: ["ignore", "pipe", "pipe"],
                 },
-                flatpak: {
-                    host: IS_FLATPAK,
-                    env: [
-                        "STEAM_COMPAT_DATA_PATH",
-                        "STEAM_COMPAT_CLIENT_INSTALL_PATH",
-                    ],
-                },
+                flatpak: { host: !!command.hostEnvKeys, env: command.hostEnvKeys },
             });
 
             let settled = false;
@@ -221,38 +218,24 @@ export class BsModsManagerService {
         ipaPath: string,
         beatSaberExePath: string,
         args: string[]
-    ): Promise<{
-        env: Record<string, string>;
-        command: string;
-    } | null> {
-        const command = `"${ipaPath}" "${beatSaberExePath}" ${args.join(" ")}`;
-        if (process.platform === "win32") {
-            return {
-                env: { ...process.env },
-                command,
-            };
-        }
+    ): Promise<PrefixCommandPlan | null> {
+        const { error, result } = await tryit(() => planPrefixCommand(ipaPath, [`"${beatSaberExePath}"`, ...args], {
+            platform: process.platform,
+            flatpak: IS_FLATPAK,
+            baseEnv: process.env,
+            getProtonConfig: async () => this.linuxService.getProtonConfig(
+                await SteamService.getInstance().getSteamPath(), { createCompatData: false }
+            ),
+        }));
 
-        const { error: protonError, result: protonPrefix } =
-            await tryit(() => this.linuxService.getProtonPrefix("runinprefix"));
-        if (protonError) {
-            log.error(protonError);
+        if (error instanceof CustomError && error.code === ModsGridStatus.NO_WINEPREFIX) {
+            throw error;
+        }
+        if (error) {
+            log.error(error);
             return null;
         }
-
-        const winePrefix = this.linuxService.getWinePrefixPath();
-        if (!winePrefix) {
-            throw new CustomError("Could not find BSManager WINEPREFIX path", "no-wineprefix");
-        }
-
-        return {
-            env: {
-                ...process.env,
-                STEAM_COMPAT_DATA_PATH: path.dirname(winePrefix),
-                STEAM_COMPAT_CLIENT_INSTALL_PATH: await SteamService.getInstance().getSteamPath(),
-            },
-            command: `${protonPrefix} ${command}`,
-        };
+        return result;
     }
 
     private getModDownload(modVersion: BbmModVersion): string {
@@ -619,11 +602,7 @@ export class BsModsManagerService {
                     this.getInstalledMods(version),
                 ]);
 
-                const fullInstalledMods = (installedMods || []).reduce((mods, version) => {
-                    const mod = versionMods.find(mod => version.modId === mod.mod.id)?.mod;
-                    if (mod) { mods.push({ version, mod }); }
-                    return mods;
-                }, [] as BbmFullMod[]);
+                const { installed: fullInstalledMods } = getModsState(versionMods, installedMods);
 
                 const progress = { current: 0, total: fullInstalledMods.length };
 

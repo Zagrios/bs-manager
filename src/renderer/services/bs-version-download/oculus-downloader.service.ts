@@ -6,15 +6,14 @@ import { ProgressBarService } from "../progress-bar.service";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { NotificationService } from "../notification.service";
 import { ModalExitCode, ModalService } from "../modale.service";
-import { DownloaderServiceInterface } from "./bs-store-downloader.interface";
-import { AbstractBsDownloaderService } from "./abstract-bs-downloader.service";
+import { DownloaderServiceInterface, StoreDownloadOptions } from "./bs-store-downloader.interface";
 import { MetaAuthErrorCodes, OculusDownloaderErrorCodes } from "shared/models/bs-version-download/oculus-download.model";
 import { LoginToMetaModal } from "renderer/components/modal/modal-types/bs-downgrade/login-to-meta-modal.component";
 import { OculusDownloadInfo } from "main/services/bs-version-download/bs-oculus-downloader.service";
 import { Notification } from "shared/models/notification/notification.model";
 import { LinkOpenerService } from "../link-opener.service";
 
-export class OculusDownloaderService extends AbstractBsDownloaderService implements DownloaderServiceInterface{
+export class OculusDownloaderService implements DownloaderServiceInterface{
 
     private static instance: OculusDownloaderService;
 
@@ -35,7 +34,6 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
     private readonly DISPLAYABLE_ERROR_CODES: string[] = [...Object.values(MetaAuthErrorCodes), ...Object.values(OculusDownloaderErrorCodes)];
 
     private constructor(){
-        super();
         this.ipc = IpcService.getInstance();
         this.progressBar = ProgressBarService.getInstance();
         this.notifications = NotificationService.getInstance();
@@ -59,14 +57,14 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
         return this.notifications.notifyError({title: "notifications.types.error", desc: `notifications.bs-download.oculus-download.errors.msg.${err.code}`}).then(noop);
     }
 
-    private handleDownload(download: Observable<Progression<BSVersion>>, ingoreErrorCodes?: string[]): Observable<Progression<BSVersion>> {
+    private handleDownload(download: Observable<Progression<BSVersion>>, onStart: (version: BSVersion) => void, ingoreErrorCodes?: string[]): Observable<Progression<BSVersion>> {
         const progress$ = download.pipe(catchError(() => of(0)));
         this.progressBar.show(progress$);
 
         const subs: Subscription[] = [];
 
         subs.push(
-            download.pipe(take(1)).subscribe({ next: data => data && this._downloadingVersion$.next(data.data), error: () => {} })
+            download.pipe(take(1)).subscribe({ next: data => data && onStart(data.data), error: () => {} })
         )
 
         return download.pipe(
@@ -80,15 +78,16 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
         );
     }
 
-    private startDownloadBsVersion(downloadInfo: OculusDownloadInfo): Observable<Progression<BSVersion>>{
+    private startDownloadBsVersion(downloadInfo: OculusDownloadInfo, onStart: (version: BSVersion) => void): Observable<Progression<BSVersion>>{
         const ignoreCode = [MetaAuthErrorCodes.META_LOGIN_WINDOW_CLOSED_BY_USER, OculusDownloaderErrorCodes.DOWNLOAD_CANCELLED];
         return this.handleDownload(
             this.ipc.sendV2("bs-oculus-download", downloadInfo ),
+            onStart,
             ignoreCode
         );
     }
 
-    private async doDownloadBsVersion(bsVersion: BSVersion, isVerification: boolean): Promise<BSVersion|undefined> {
+    public async download(bsVersion: BSVersion, { isVerification, onStart }: StoreDownloadOptions): Promise<BSVersion|undefined> {
 
         const {exitCode, data: token} = await this.modals.openModal(LoginToMetaModal)
 
@@ -96,7 +95,7 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
             return undefined
         }
 
-        return lastValueFrom(this.startDownloadBsVersion({ bsVersion, isVerification, token })).then(() => {
+        return lastValueFrom(this.startDownloadBsVersion({ bsVersion, isVerification, token }, onStart)).then(() => {
             if(isVerification){
                 this.notifications.notifySuccess({title: "notifications.bs-download.success.titles.verification-finished"});
             } else {
@@ -105,14 +104,6 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
 
             return bsVersion;
         }).finally(() => this.progressBar.hide());
-    }
-
-    public downloadBsVersion(version: BSVersion): Promise<BSVersion> {
-        return this.doDownloadBsVersion(version, false);
-    }
-
-    public async verifyBsVersion(version: BSVersion): Promise<BSVersion> {
-        return this.doDownloadBsVersion(version, true);
     }
 
     public stopDownload(): Promise<void>{

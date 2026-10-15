@@ -1,7 +1,7 @@
 import { mkdtemp, readFile, readdir, rm } from "fs/promises";
 import os from "os";
 import path from "path";
-import { loadSteamDownloadSession, saveSteamDownloadSession } from "main/services/bs-version-download/steam-download-session";
+import { clearSteamDownloadSessions, loadSteamDownloadSession, loadSteamUsername, saveSteamDownloadSession, saveSteamUsername } from "main/services/bs-version-download/steam-download-session";
 
 let mockDirectory: string;
 const mockAvailable = jest.fn(() => true);
@@ -35,5 +35,21 @@ describe("remembered Steam downloader sessions", () => {
         await expect(saveSteamDownloadSession({ username: "account", refreshToken: "secret" })).rejects.toThrow("Secure credential storage unavailable");
         expect(await loadSteamDownloadSession("account")).toBeUndefined();
         expect(await readdir(mockDirectory)).toEqual([]);
+    });
+
+    it("remembers the username and forgets it with every token on clear", async () => {
+        expect(await loadSteamUsername()).toBeUndefined();
+        await saveSteamUsername("Account");
+        await saveSteamDownloadSession({ username: "Account", refreshToken: "secret" });
+        await saveSteamDownloadSession({ username: "Other", refreshToken: "other-secret" });
+        expect(await loadSteamUsername()).toBe("Account");
+
+        await clearSteamDownloadSessions();
+
+        expect(await loadSteamUsername()).toBeUndefined();
+        expect(await loadSteamDownloadSession("Account")).toBeUndefined();
+        expect(await loadSteamDownloadSession("Other")).toBeUndefined();
+        expect(await readdir(mockDirectory)).toEqual([]);
+        await expect(clearSteamDownloadSessions()).resolves.toBeUndefined();
     });
 });

@@ -23,6 +23,7 @@ import { NotificationService } from "renderer/services/notification.service";
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { safeLt } from "shared/helpers/semver.helpers";
+import { getOutdatedMods } from "shared/helpers/mods-plan.helpers";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { logRenderError } from "renderer";
 import { BsModsManagerService } from "renderer/services/bs-mods-manager.service";
@@ -85,12 +86,7 @@ export function VersionViewer() {
             return;
         }
 
-        const { available: availableMods, installed: installedMods } = await modsService.getVersionModsState(state);
-
-        const modsToUpdate = availableMods.filter(availableMod => {
-            const installedMod = installedMods.find(installedMod => installedMod.mod.id === availableMod.mod.id);
-            return installedMod && safeLt(installedMod.version.modVersion, availableMod.version.modVersion);
-        });
+        const modsToUpdate = getOutdatedMods(await modsService.getVersionModsState(state));
 
         if(!modsToUpdate.length){
             return;

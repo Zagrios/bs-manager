@@ -1,7 +1,7 @@
 import { BsmImage } from "renderer/components/shared/bsm-image.component";
 import { ModalComponent, ModalExitCode } from "renderer/services/modale.service";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useService } from "renderer/hooks/use-service.hook";
 import { SteamDownloaderService } from "renderer/services/bs-version-download/steam-downloader.service";
 import { IpcService } from "renderer/services/ipc.service";
@@ -34,7 +34,14 @@ export const EditPlaylistInfosModal: ModalComponent<OutProps, Props> = ({ resolv
 
     const [title, setTitle] = useState(playlistTitle);
     const [description, setDescription] = useState(playlistDescription);
-    const [author, setAuthor] = useState(playlistAuthor ?? steamDownloader.getSteamUsername());
+    const [author, setAuthor] = useState<string>(playlistAuthor ?? null);
+
+    useEffect(() => {
+        if (playlistAuthor != null) { return; }
+        steamDownloader.getSteamUsername().then(username => {
+            if (username) { setAuthor(prev => prev || username); }
+        }).catch(logRenderError);
+    }, []);
 
     // Playlist cover or Default playlist cover
     const [base64, setBase64] = useState(base64Image || DEFAULT_PLAYLIST_COVER);
