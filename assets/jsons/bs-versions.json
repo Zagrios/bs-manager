@@ -25,12 +25,6 @@
 		"year": "2018"
 	},
 	{
-		"BSVersion": "0.11.0b1",
-		"BSManifest": "8892605455517437772",
-		"ReleaseDate": "1530472260",
-		"year": "2018"
-	},
-	{
 		"BSVersion": "0.11.0",
 		"BSManifest": "8700049030626148111",
 		"OculusBinaryId": "1480180522081722",
@@ -176,7 +170,7 @@
 		"OculusBinaryId": "2126093504157084",
 		"ReleaseURL": "https://steamcommunity.com/games/620980/announcements/detail/1595888090489865366",
 		"ReleaseImg": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/clans/32055887/2998e47ebbc57552718bb95e233a3a43d598630f.png",
-		"ReleaseDate": "1567105860",
+		"ReleaseDate": "1570209900",
 		"year": "2019"
 	},
 	{
