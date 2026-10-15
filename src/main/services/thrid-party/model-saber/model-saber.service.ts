@@ -63,7 +63,7 @@ export class ModelSaberService {
                 return null;
             }
 
-            const model = Array.from(Object.values(res)).at(0);
+            const model = Object.values(res).at(0);
 
             model.name = striptags(model.name ?? "");
             model.author = striptags(model.author ?? "");

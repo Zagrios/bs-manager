@@ -61,7 +61,7 @@ export interface IpcChannelMapping {
 
     /* ** bs-maps-ipcs ** */
     "load-version-maps": { request: BSVersion, response: BsmLocalMapsProgress};
-    "delete-maps": { request: BsmLocalMap[], response: DeleteMapsProgress };
+    "delete-maps": { request: Pick<BsmLocalMap, "path">[], response: DeleteMapsProgress };
     "export-maps": { request: { version: BSVersion; maps: BsmLocalMap[]; outPath: string }, response: Progression };
     "bs-maps.import-maps": { request: { paths: string[]; version: BSVersion | undefined }, response: Progression<BsmLocalMap> };
     "bs-maps.download-map": { request: { map: BsvMapDetail; version: BSVersion | undefined }, response: BsmLocalMap };

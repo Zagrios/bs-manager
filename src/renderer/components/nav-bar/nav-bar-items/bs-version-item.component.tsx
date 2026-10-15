@@ -1,7 +1,7 @@
 import { BSVersion } from "shared/bs-version.interface";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { MouseEventHandler, useEffect, useMemo, useState } from "react";
-import { distinctUntilChanged, lastValueFrom, map, of, Subject, Subscription, switchMap, take } from "rxjs";
+import { distinctUntilChanged, lastValueFrom, map, of, Subject, take } from "rxjs";
 import { BSLauncherService } from "renderer/services/bs-launcher.service";
 import { ConfigurationService } from "renderer/services/configuration.service";
 import { IpcService } from "renderer/services/ipc.service";
@@ -15,7 +15,7 @@ import useFitText from "use-fit-text";
 import Tippy from "@tippyjs/react";
 import { useService } from "renderer/hooks/use-service.hook";
 import equal from "fast-deep-equal";
-import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
+import { useObservable } from "renderer/hooks/use-observable.hook";
 import { BsDownloaderService } from "renderer/services/bs-version-download/bs-downloader.service";
 import { ProgressBarService } from "renderer/services/progress-bar.service";
 import { noop } from "shared/helpers/function.helpers";
@@ -53,30 +53,19 @@ export function BsVersionItem(props: { version: BSVersion }) {
     const { state } = useLocation() as { state: BSVersion };
     const { fontSize, ref } = useFitText();
 
-    const [isDownloading, setIsDownloading] = useState(false);
-    const [downloadProgress, setDownloadProgress] = useState(0);
+    const isDownloading = useObservable(() => bsDownloader.downloadingVersion$.pipe(
+        map(download => equal(download, props.version)),
+        distinctUntilChanged()
+    ), false, [props.version]);
+    const downloadProgress = useObservable(
+        () => (isDownloading ? progressBar.progress$ : of(0)),
+        0,
+        [isDownloading]
+    );
     const secondColor = useThemeColor("second-color");
 
     const itemId = useMemo(() => JSON.stringify(props.version), [props.version]);
     const [menuVisible, setMenuVisible] = useState(false);
-
-    useOnUpdate(() => {
-        const subs: Subscription[] = []
-
-        subs.push(bsDownloader.downloadingVersion$.pipe(map(download => equal(download, props.version)), distinctUntilChanged()).subscribe(isDownloading => {
-            setIsDownloading(() => isDownloading);
-        }));
-
-        subs.push(bsDownloader.downloadingVersion$.pipe(
-            map(download => equal(download, props.version)),
-            distinctUntilChanged(),
-            switchMap(isDownloading => isDownloading ? progressBar.progress$ : of(0)),
-        ).subscribe(progress => {
-            setDownloadProgress(() => progress);
-        }));
-
-        return () => subs.forEach(sub => sub.unsubscribe());
-    }, [props.version]);
 
     useEffect(() => {
         const sub = contextMenuOpened$.subscribe(openedId => {

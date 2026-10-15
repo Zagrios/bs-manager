@@ -1,4 +1,4 @@
-import { Observable, Subscription, catchError, finalize, lastValueFrom, map, noop, of, take, tap } from "rxjs";
+import { Observable, Subscription, catchError, finalize, lastValueFrom, noop, of, take, tap } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { IpcService } from "../ipc.service";
 import { Progression } from "main/helpers/fs.helpers";
@@ -60,7 +60,7 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
     }
 
     private handleDownload(download: Observable<Progression<BSVersion>>, ingoreErrorCodes?: string[]): Observable<Progression<BSVersion>> {
-        const progress$ = download.pipe(map(progress => (progress.current / progress.total) * 100), catchError(() => of(0)));
+        const progress$ = download.pipe(catchError(() => of(0)));
         this.progressBar.show(progress$);
 
         const subs: Subscription[] = [];
@@ -96,11 +96,7 @@ export class OculusDownloaderService extends AbstractBsDownloaderService impleme
             return undefined
         }
 
-        return lastValueFrom(this.startDownloadBsVersion({ bsVersion, isVerification, token })).then(() => true).then(res => {
-            if(!res){
-                return bsVersion;
-            }
-
+        return lastValueFrom(this.startDownloadBsVersion({ bsVersion, isVerification, token })).then(() => {
             if(isVerification){
                 this.notifications.notifySuccess({title: "notifications.bs-download.success.titles.verification-finished"});
             } else {

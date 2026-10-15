@@ -4,7 +4,8 @@ import path from "path";
 import { Observable, concatMap, from } from "rxjs";
 import log from "electron-log";
 import crypto from "crypto";
-import { execSync } from "child_process";
+import { execFileSync } from "child_process";
+import { buildWindowsPowerShellArgs, getWindowsPowerShellPath } from "./windows-powershell.helper";
 import { tryit } from "../../shared/helpers/error.helpers";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { ErrorObject } from "serialize-error";
@@ -327,29 +328,10 @@ export async function ensurePathNotAlreadyExist(path: string): Promise<string> {
     return destPath;
 }
 
-export function ensurePathNotAlreadyExistSync(path: string): string {
-    let destPath = path;
-    let folderExist = pathExistsSync(destPath);
-    let i = 0;
-
-    while (folderExist) {
-        i++;
-        destPath = `${path} (${i})`;
-        folderExist = pathExistsSync(destPath);
-    }
-
-    return destPath;
-}
-
-export async function isJunction(path: string): Promise<boolean> {
-    const [stats, lstats] = await Promise.all([stat(path), lstat(path)]);
-    return lstats.isSymbolicLink() && stats.isDirectory();
-}
-
 export function resolveGUIDPath(guidPath: string): string {
     const guidVolume = path.parse(guidPath).root;
-    const command = `powershell -command "(Get-WmiObject -Class Win32_Volume | Where-Object { $_.DeviceID -like '${guidVolume}' }).DriveLetter"`;
-    const { result: driveLetter, error } = tryit(() => execSync(command).toString().trim());
+    const script = `(Get-WmiObject -Class Win32_Volume | Where-Object { $_.DeviceID -like '${guidVolume}' }).DriveLetter`;
+    const { result: driveLetter, error } = tryit(() => execFileSync(getWindowsPowerShellPath(), buildWindowsPowerShellArgs(script)).toString().trim());
     if (!driveLetter || error) {
         throw new Error("Unable to resolve GUID path", error);
     }

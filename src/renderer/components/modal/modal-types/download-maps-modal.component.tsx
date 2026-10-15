@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FilterPanel } from "renderer/components/maps-playlists-panel/maps/filter-panel.component";
 import { MapItem } from "renderer/components/maps-playlists-panel/maps/map-item.component";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
@@ -36,7 +36,6 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
     const [filter, setFilter] = useState<MapFilter>({});
     const [query, setQuery] = useState("");
     const [maps, setMaps] = useState<BsvMapDetail[]>([]);
-    const [downloadbleMaps, setDownloadbleMaps] = useState<DownloadableMap[]>([]);
     const [ownedMapHashs, setOwnedMapHashs] = useState<string[]>(ownedMaps?.map(map => map.hash) ?? []);
     const [loading, setLoading] = useState(false);
     const [searchParams, setSearchParams] = useState<SearchParams>({
@@ -50,15 +49,15 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
         return Object.values(BsvSearchOrder).map(sort => ({ text: `beat-saver.maps-sorts.${sort}`, value: sort }));
     });
 
-    useEffect(() => {
-        setDownloadbleMaps(() => maps.map(map => {
-            const isMapOwned = map.versions.some(version => ownedMapHashs.includes(version.hash));
-            const isDownloading = map.id === currentDownload?.map?.id;
-            const inQueue = mapsInQueue.some(toDownload => equal(toDownload.version, version) && toDownload.map.id === map.id);
+    const ownedMapHashsSet = useMemo(() => new Set(ownedMapHashs), [ownedMapHashs]);
 
-            return { map, isOwned: isMapOwned, idDownloading: isDownloading, isInQueue: inQueue };
-        }));
-    }, [maps, currentDownload, mapsInQueue, ownedMapHashs])
+    const downloadbleMaps = useMemo<DownloadableMap[]>(() => maps.map(map => {
+        const isMapOwned = map.versions.some(version => ownedMapHashsSet.has(version.hash));
+        const isDownloading = map.id === currentDownload?.map?.id;
+        const inQueue = mapsInQueue.some(toDownload => equal(toDownload.version, version) && toDownload.map.id === map.id);
+
+        return { map, isOwned: isMapOwned, idDownloading: isDownloading, isInQueue: inQueue };
+    }), [maps, currentDownload, mapsInQueue, ownedMapHashsSet]);
 
     useEffect(() => {
         loadMaps(searchParams);
@@ -90,7 +89,7 @@ export const DownloadMapsModal: ModalComponent<void, { version: BSVersion; owned
                 return true;
             }
 
-            return !map.versions.some(version => ownedMapHashs.includes(version.hash));
+            return !map.versions.some(version => ownedMapHashsSet.has(version.hash));
         });
     }
 

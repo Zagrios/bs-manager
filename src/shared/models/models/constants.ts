@@ -23,7 +23,7 @@ export const MODEL_FILE_EXTENSIONS = {
     [MSModelType.Saber]: ".saber",
 };
 
-export const MODEL_TYPES = Array.from(Object.values(MSModelType));
-export const MS_GET_QUERY_SORTS = Array.from(Object.values(MSGetSort));
+export const MODEL_TYPES = Object.values(MSModelType);
+export const MS_GET_QUERY_SORTS = Object.values(MSGetSort);
 
-export const MS_QUERY_FILTER_TYPES = Array.from(Object.values(MSGetQueryFilterType));
+export const MS_QUERY_FILTER_TYPES = Object.values(MSGetQueryFilterType);

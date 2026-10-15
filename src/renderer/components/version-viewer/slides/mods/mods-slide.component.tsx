@@ -12,7 +12,7 @@ import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { LinkOpenerService } from "renderer/services/link-opener.service";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { ModsDisclaimerModal } from "renderer/components/modal/modal-types/mods/mods-disclaimer-modal.component";
-import { lt } from "semver";
+import { safeLt } from "shared/helpers/semver.helpers";
 import { useService } from "renderer/hooks/use-service.hook";
 import { NotificationService } from "renderer/services/notification.service";
 import { noop } from "shared/helpers/function.helpers";
@@ -118,7 +118,7 @@ export const ModsSlide = forwardRef<ModsSlideRef, Props>(({ version, isActive, o
         ) : (
             modsToInstall.filter(mod => { // Else we only install the mods that are not installed or have a newer version
                 const installedMod = modsInstalled.get(mod.mod.category)?.find(installedMod => installedMod.mod.id === mod.mod.id);
-                return !installedMod || lt(installedMod.version.modVersion, mod.version.modVersion);
+                return !installedMod || safeLt(installedMod.version.modVersion, mod.version.modVersion);
             })
         );
 

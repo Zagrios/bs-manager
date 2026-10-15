@@ -7,7 +7,8 @@ import { app, shell } from "electron";
 import { getProcessId, getProcessesByName, isProcessRunning } from "main/helpers/os.helpers";
 import { isElevated } from "query-process";
 import { execOnOs } from "../helpers/env.helpers";
-import { pathExists, pathExistsSync, readdir, writeFile } from "fs-extra";
+import { pathExists, writeFile } from "fs-extra";
+import { getFoldersInFolder } from "../helpers/fs.helpers";
 import { SteamShortcut, SteamShortcutData } from "../../shared/models/steam/shortcut.model";
 
 const { list } = (execOnOs({ win32: () => require("regedit-rs") }, true) ?? {}) as typeof import("regedit-rs");
@@ -177,25 +178,12 @@ export class SteamService {
 
         const configPath = path.join(steamPath, "userdata");
 
-        if (!pathExistsSync(configPath)) {
+        const folders = await getFoldersInFolder(configPath).catch((err): string[] => {
+            log.error("Error while reading steam user data folders", err);
             return [];
-        }
+        });
 
-        const folders = readdir(configPath, { withFileTypes: true })
-            .then(entries => {
-                return entries.reduce((acc, entry) => {
-                    if (entry.isDirectory() && Number.isInteger(parseInt(entry.name))) {
-                        acc.push(path.join(configPath, entry.name));
-                    }
-                    return acc;
-                }, [] as string[]);
-            })
-            .catch((err): string[] => {
-                log.error("Error while reading steam user data folders", err);
-                return [];
-            });
-
-        return folders;
+        return folders.filter(folder => Number.isInteger(parseInt(path.basename(folder))));
     }
 
     private async getShortcutsPath(userId: number): Promise<string> {

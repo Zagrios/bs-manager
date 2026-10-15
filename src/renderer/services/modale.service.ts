@@ -4,7 +4,6 @@ export class ModalService {
     private static instance: ModalService;
 
     private _modalToShow$: BehaviorSubject<ModalObject[]> = new BehaviorSubject([]);
-    private modalData: unknown = null;
 
     private constructor() {}
 
@@ -13,10 +12,6 @@ export class ModalService {
             this.instance = new ModalService();
         }
         return this.instance;
-    }
-
-    public getModalData<Type>(): Type {
-        return this.modalData as Type;
     }
 
     public async openModal<T, K>(modal: ModalComponent<T, K>, options?: ModalOptions<K>): Promise<ModalResponse<T>> {

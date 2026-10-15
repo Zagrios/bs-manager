@@ -1,11 +1,11 @@
 import { MapsManagerService } from "renderer/services/maps-manager.service";
 import { BSVersion } from "shared/bs-version.interface";
-import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useState } from "react";
+import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { BsmLocalMap } from "shared/models/maps/bsm-local-map.interface";
 import { Subscription, BehaviorSubject, lastValueFrom } from "rxjs";
 import { MapFilter, MapSort } from "shared/models/maps/beat-saver.model";
 import { MapsDownloaderService } from "renderer/services/maps-downloader.service";
-import { bufferTime, last, tap } from "rxjs/operators";
+import { bufferTime, filter as rxFilter, last, tap } from "rxjs/operators";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import BeatConflict from "../../../../../assets/images/apngs/beat-conflict.png";
 import { BsmImage } from "../../shared/bsm-image.component";
@@ -60,7 +60,6 @@ export const LocalMapsListPanel = forwardRef<LocalMapsListPanelRef, Props>(({
 
     const {maps$, setMaps} = useContext(InstalledMapsContext);
     const maps = useObservable(() => maps$);
-    const [renderableMaps, setRenderableMaps] = useState<RenderableMap[]>([]);
     const [subs] = useState<Subscription[]>([]);
     const [selectedMaps, setSelectedMaps] = useState<BsmLocalMap[]>([]);
     const isActiveOnce = useChangeUntilEqual(isActive, { untilEqual: true });
@@ -95,8 +94,9 @@ export const LocalMapsListPanel = forwardRef<LocalMapsListPanelRef, Props>(({
 
     useOnUpdate(() => onSelectionChange?.(selectedMaps.length), [selectedMaps]);
 
-    useOnUpdate(() => {
-        setRenderableMaps(() => maps?.map(map => ({ map, selected: selectedMaps.some(selectedMap => selectedMap.hash === map.hash) }) ));
+    const renderableMaps = useMemo<RenderableMap[]>(() => {
+        const selectedHashes = new Set(selectedMaps.map(selectedMap => selectedMap.hash));
+        return maps?.map(map => ({ map, selected: selectedHashes.has(map.hash) }));
     }, [maps, selectedMaps]);
 
     useOnUpdate(() => {
@@ -131,7 +131,7 @@ export const LocalMapsListPanel = forwardRef<LocalMapsListPanelRef, Props>(({
                 setMaps((maps$.value ? [map, ...maps$.value] : [map]));
             }}));
 
-            subs.push(mapsManager.$onMapImported(version).pipe(bufferTime(500)).subscribe({ next: newMaps => {
+            subs.push(mapsManager.$onMapImported(version).pipe(bufferTime(500), rxFilter(newMaps => newMaps.length > 0)).subscribe({ next: newMaps => {
                 const maps = (maps$.value ?? []).filter(map => !newMaps.some(newMap => newMap.path === map.path));
                 setMaps([...newMaps, ...maps]);
             }}));
@@ -164,10 +164,10 @@ export const LocalMapsListPanel = forwardRef<LocalMapsListPanelRef, Props>(({
     };
 
     const removeMapsFromList = (mapsToRemove: BsmLocalMap[]) => {
-        const filtredMaps = maps$.value.filter(map => !mapsToRemove.some(toDeleteMaps => map.hash === toDeleteMaps.hash));
-        setMaps(filtredMaps);
+        const hashesToRemove = new Set(mapsToRemove.map(map => map.hash));
+        setMaps(maps$.value.filter(map => !hashesToRemove.has(map.hash)));
 
-        setSelectedMaps(selectedMaps => selectedMaps.filter(map => !mapsToRemove.some(toDeleteMaps => map.hash === toDeleteMaps.hash)));
+        setSelectedMaps(selectedMaps => selectedMaps.filter(map => !hashesToRemove.has(map.hash)));
     };
 
     const handleDelete = (map: BsmLocalMap) => {
@@ -183,8 +183,8 @@ export const LocalMapsListPanel = forwardRef<LocalMapsListPanelRef, Props>(({
 
         setSelectedMaps(selectedMaps => {
             const mapsCopy = [...selectedMaps];
-            if (mapsCopy.some(selectedMap => selectedMap.hash === map.hash)) {
-                const i = mapsCopy.findIndex(selectedMap => selectedMap.hash === map.hash);
+            const i = mapsCopy.findIndex(selectedMap => selectedMap.hash === map.hash);
+            if (i !== -1) {
                 mapsCopy.splice(i, 1);
             } else {
                 mapsCopy.push(map);
@@ -221,11 +221,10 @@ export const LocalMapsListPanel = forwardRef<LocalMapsListPanelRef, Props>(({
         );
     }, [version]);
 
-    const preppedMaps: RenderableMap[] = (() => {
-        return (renderableMaps?.filter(renderableMap => isLocalMapFitMapFilter({ map: renderableMap.map, filter, search })) ?? [])
-        // NOTE: might be good to cache sorted maps, to reduce loading
-            .sort((map1, map2) => sort.compare(map1.map, map2.map) * (sort.ascending === false ? -1 : 1));
-    })();
+    const preppedMaps = useMemo<RenderableMap[]>(() => (
+        (renderableMaps?.filter(renderableMap => isLocalMapFitMapFilter({ map: renderableMap.map, filter, search })) ?? [])
+            .sort((map1, map2) => sort.compare(map1.map, map2.map) * (sort.ascending === false ? -1 : 1))
+    ), [renderableMaps, filter, search, sort]);
 
     if (!maps) {
         return (

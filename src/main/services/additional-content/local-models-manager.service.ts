@@ -8,12 +8,10 @@ import path from "path";
 import { RequestService } from "../request.service";
 import { copyFileSync } from "fs-extra";
 import sanitize from "sanitize-filename";
-import { Progression, deleteFile, ensureFolderExist } from "../../helpers/fs.helpers";
+import { Progression, deleteFile, ensureFolderExist, getFilesInFolder, hashFile } from "../../helpers/fs.helpers";
 import { MODEL_FILE_EXTENSIONS, MODEL_TYPES, MODEL_TYPE_FOLDERS } from "../../../shared/models/models/constants";
 import { InstallationLocationService } from "../installation-location.service";
-import { Observable, Subscription, lastValueFrom } from "rxjs";
-import { readdir } from "fs/promises";
-import md5File from "md5-file";
+import { Observable, Subscription, lastValueFrom, throttleTime } from "rxjs";
 import { allSettled } from "../../../shared/helpers/promise.helpers";
 import { ModelSaberService } from "../thrid-party/model-saber/model-saber.service";
 import { BsmLocalModel } from "shared/models/models/bsm-local-model.interface";
@@ -80,14 +78,16 @@ export class LocalModelsManagerService {
 
                 const download$ = this.request.downloadFile(url.join("/"), modelDest);
 
-                subs.push(download$.subscribe({ next: value => subscriber.next({ ...value, data: undefined }), error: e => subscriber.error(e) }));
+                subs.push(download$.pipe(
+                    throttleTime(100, undefined, { leading: true, trailing: true })
+                ).subscribe({ next: value => subscriber.next({ ...value, data: undefined }), error: e => subscriber.error(e) }));
 
                 const downloaded = await lastValueFrom(download$);
 
                 const res: BsmLocalModel = {
                     path: downloaded.data,
                     fileName: path.basename(downloaded.data),
-                    hash: await md5File(downloaded.data),
+                    hash: await hashFile(downloaded.data, "md5"),
                     type: model.type,
                     model,
                     version,
@@ -120,15 +120,8 @@ export class LocalModelsManagerService {
 
     private async getModelsPaths(type: MSModelType, version?: BSVersion): Promise<string[]> {
         const modelsPath = await this.getModelFolderPath(type, version);
-        const files = await readdir(modelsPath, { withFileTypes: true });
-
-        return files.reduce((acc, file) => {
-            if (!file.isFile() || path.extname(file.name) !== MODEL_FILE_EXTENSIONS[type]) {
-                return acc;
-            }
-            acc.push(path.join(modelsPath, file.name));
-            return acc;
-        }, []);
+        const files = await getFilesInFolder(modelsPath);
+        return files.filter(file => path.extname(file) === MODEL_FILE_EXTENSIONS[type]);
     }
 
     public getModels(type: MSModelType, version?: BSVersion): Observable<Progression<BsmLocalModel[]>> {
@@ -145,7 +138,7 @@ export class LocalModelsManagerService {
 
                 const models = await allSettled(
                     modelsPaths.map(async modelPath => {
-                        const hash = await md5File(modelPath);
+                        const hash = await hashFile(modelPath, "md5");
 
                         const localModel: BsmLocalModel = {
                             path: modelPath,
@@ -212,20 +205,14 @@ export class LocalModelsManagerService {
     }
 
     public enableDeepLinks(): boolean {
-        return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.registerDeepLink(link));
+        return Object.values(this.DEEP_LINKS).every(link => this.deepLink.registerDeepLink(link));
     }
 
     public disableDeepLinks(): boolean {
-        return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.unRegisterDeepLink(link));
+        return Object.values(this.DEEP_LINKS).every(link => this.deepLink.unRegisterDeepLink(link));
     }
 
     public isDeepLinksEnabled(): boolean {
-        return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.isDeepLinkRegistered(link));
+        return Object.values(this.DEEP_LINKS).every(link => this.deepLink.isDeepLinkRegistered(link));
     }
-}
-
-export interface BsmLocalModelsProgress {
-    total: number;
-    loaded: number;
-    models: MSModel[];
 }

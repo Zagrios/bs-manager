@@ -127,9 +127,6 @@ export class ProgressBarService {
     public get progress$(): Observable<number> {
         return this._progression$.pipe(map(data => data.progression));
     }
-    public get progressLabel(): Observable<string> {
-        return this._progression$.pipe(map(data => data?.label));
-    }
 
     public get visible$(): Observable<boolean> {
         return this._visible$.asObservable();

@@ -1,4 +1,4 @@
-import { createContext, useRef, useState } from "react";
+import { createContext, useMemo, useRef, useState } from "react";
 import { BSVersion } from "shared/bs-version.interface";
 import { LocalMapsListPanel, LocalMapsListPanelRef } from "./maps/local-maps-list-panel.component";
 import { BsmDropdownButton, DropDownItem } from "../shared/bsm-dropdown-button.component";
@@ -84,12 +84,13 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
     const [mapsSelectedCount, setMapsSelectedCount] = useState(0);
     const [playlistsSelectedCount, setPlaylistsSelectedCount] = useState(0);
 
-    const [sortOptions, setSortOptions] = useState<BsmSelectOption<string>[]>(
-        () => mapSorter.getComparatorKeys().map(key => ({
-            text: `pages.version-viewer.maps.tabs.maps.sort.${key}`,
+    const sortOptions = useMemo<BsmSelectOption<string>[]>(() => {
+        const [sorter, translationKey] = tabIndex === PLAYLIST_TAB ? [playlistSorter, "playlists"] : [mapSorter, "maps"];
+        return sorter.getComparatorKeys().map(key => ({
+            text: `pages.version-viewer.maps.tabs.${translationKey}.sort.${key}`,
             value: key,
-        }))
-    );
+        }));
+    }, [tabIndex]);
 
     const [search, setSearch] = useState("");
     const mapsLinkedState = useObservable(() => {
@@ -133,10 +134,6 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
 
         switch (index) {
         case MAP_TAB:
-            setSortOptions(() => mapSorter.getComparatorKeys().map(key => ({
-                text: `pages.version-viewer.maps.tabs.maps.sort.${key}`,
-                value: key,
-            })));
             setSelectedSort(mapSorter.defaultKey);
             setMapSort({
                 compare: mapSorter.getDefaultComparator(),
@@ -145,10 +142,6 @@ export function MapsPlaylistsPanel({ version, isActive }: Props) {
             break;
 
         case PLAYLIST_TAB:
-            setSortOptions(() => playlistSorter.getComparatorKeys().map(key => ({
-                text: `pages.version-viewer.maps.tabs.playlists.sort.${key}`,
-                value: key,
-            })));
             setSelectedSort(playlistSorter.defaultKey);
             setPlaylistSort({
                 compare: playlistSorter.getDefaultComparator(),

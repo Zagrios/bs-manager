@@ -174,18 +174,12 @@ export class LinuxService {
         }
 
         const protonFolder = this.staticConfig.get("proton-folder");
-        let winePath = "";
-        for (const prefixes of this.WINE_BINARY_PREFIXES) {
-            winePath = path.join(protonFolder, prefixes);
-            if (!fs.pathExistsSync(winePath)) {
-                winePath = "";
-                continue;
-            }
-            break;
-        }
+        const winePath = this.WINE_BINARY_PREFIXES
+            .map(prefix => path.join(protonFolder, prefix))
+            .find(candidate => fs.pathExistsSync(candidate));
 
-        if (winePath === "") {
-            throw new Error(`"${winePath}" binary file not found`);
+        if (!winePath) {
+            throw new Error(`Wine binary file not found in "${protonFolder}"`);
         }
 
         this.winePath = winePath;

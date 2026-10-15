@@ -1,4 +1,5 @@
 import { ModalExitCode, ModalObject, ModalService } from "renderer/services/modale.service";
+import { useService } from "renderer/hooks/use-service.hook";
 import { AnimatePresence, motion } from "framer-motion";
 import { useObservable } from "renderer/hooks/use-observable.hook";
 import { useEffect, useRef } from "react";
@@ -22,7 +23,7 @@ const FOCUSABLE_SELECTOR = [
 ].join(",");
 
 export function Modal() {
-    const modalSevice = ModalService.getInstance();
+    const modalSevice = useService(ModalService);
     const activeModalRef = useRef<HTMLDivElement>(null);
     const modalsRef = useRef<ModalObject[]>();
 

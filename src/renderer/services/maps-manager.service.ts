@@ -37,9 +37,6 @@ export class MapsManagerService {
     private readonly config: ConfigurationService;
     private readonly linker: VersionFolderLinkerService;
 
-    private readonly lastLinkedVersion$: Subject<BSVersion> = new Subject();
-    private readonly lastUnlinkedVersion$: Subject<BSVersion> = new Subject();
-
     private readonly lastImportedMap$: Subject<{ version: BSVersion, map: BsmLocalMap }> = new Subject();
 
     private constructor() {
@@ -101,7 +98,7 @@ export class MapsManagerService {
 
         const showProgressBar = this.progressBar.require();
 
-        const progress$ = this.ipcService.sendV2("delete-maps", maps ).pipe(map(progress => (progress.deleted / progress.total) * 100));
+        const progress$ = this.ipcService.sendV2("delete-maps", maps.map(({ path }) => ({ path }))).pipe(map(progress => (progress.deleted / progress.total) * 100));
 
         if (showProgressBar) {
             this.progressBar.show(progress$);
@@ -179,7 +176,7 @@ export class MapsManagerService {
                     throw new Error("Operation to delete duplicate maps as been canceled by the user");
                 }
 
-                const progress$: Observable<Progression> = this.ipcService.sendV2("delete-maps", mapsToDelete).pipe(map(p => ({ total: p.total, current: p.deleted })));
+                const progress$: Observable<Progression> = this.ipcService.sendV2("delete-maps", mapsToDelete.map(({ path }) => ({ path }))).pipe(map(p => ({ total: p.total, current: p.deleted })));
 
                 this.progressBar.show(progress$);
                 sub = progress$.subscribe(obs);
@@ -271,14 +268,6 @@ export class MapsManagerService {
 
     public async disableDeepLink(): Promise<boolean> {
         return lastValueFrom(this.ipcService.sendV2("unregister-maps-deep-link"));
-    }
-
-    public get versionLinked$(): Observable<BSVersion> {
-        return this.lastLinkedVersion$.asObservable();
-    }
-
-    public get versionUnlinked$(): Observable<BSVersion> {
-        return this.lastUnlinkedVersion$.asObservable();
     }
 
     public $onMapImported(version: BSVersion): Observable<BsmLocalMap> {

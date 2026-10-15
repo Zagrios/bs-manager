@@ -47,10 +47,6 @@ export class ModelsManagerService {
         return lastValueFrom(this.versionFolderLinked.isVersionFolderLinked(version, MODEL_TYPE_FOLDERS[type]));
     }
 
-    public $modelsLinkingPending(version: BSVersion, type: MSModelType): Observable<boolean> {
-        return this.versionFolderLinked.$isPending(version, MODEL_TYPE_FOLDERS[type]);
-    }
-
     public $modelsLinkingState(version: BSVersion, type: MSModelType): Observable<FolderLinkState> {
         return this.versionFolderLinked.$folderLinkedState(version, MODEL_TYPE_FOLDERS[type]);
     }
@@ -170,10 +166,8 @@ export class ModelsManagerService {
 
         const obs$ = this.ipc.sendV2("delete-models", models);
 
-        const progress$ = obs$.pipe(map(progress => (progress.current / progress.total) * 100));
-
         if (showProgressBar) {
-            this.progressBar.show(progress$);
+            this.progressBar.show(obs$);
         }
 
         return lastValueFrom(obs$)

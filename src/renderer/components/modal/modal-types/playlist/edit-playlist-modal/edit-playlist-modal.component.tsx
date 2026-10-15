@@ -5,7 +5,7 @@ import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-butto
 import { BsmSelect, BsmSelectOption } from "renderer/components/shared/bsm-select.component";
 import { VirtualScroll, VirtualScrollEndHandler } from "renderer/components/shared/virtual-scroll/virtual-scroll.component";
 import { ChevronTopIcon } from "renderer/components/svgs/icons/chevron-top-icon.component";
-import { useObservable } from "renderer/hooks/use-observable.hook";
+import { useBehaviorSubject } from "renderer/hooks/use-behavior-subject.hook";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useThemeColor } from "renderer/hooks/use-theme-color.hook";
 import { ModalComponent, ModalExitCode, ModalService } from "renderer/services/modale.service"
@@ -58,19 +58,16 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
     const keyPressed$ = useConstant(() => new BehaviorSubject<string|undefined>(undefined));
     const filterContainerRef = useRef(null);
 
-    const localMaps$ = useConstant(() => new BehaviorSubject<(BsmLocalMap|SongDetails)[]>(undefined));
-    const localMaps = useObservable(() => localMaps$);
+    const [localMaps, localMaps$] = useBehaviorSubject<(BsmLocalMap|SongDetails)[]>(undefined);
 
     const availabledHashsSelected$ = useConstant(() => new BehaviorSubject<string[]>([]));
     const [availableMapsSearch, setAvailableMapsSearch] = useState<string>("");
     const [availableMapsFilter, setAvailableMapsFilter] = useState<MapFilter>({});
 
     const [bsvLoading, setBsvLoading] = useState<boolean>(false);
-    const bsvMaps$ = useConstant(() => new BehaviorSubject<BsvMapDetail[]>(undefined));
-    const bsvMaps = useObservable(() => bsvMaps$);
-    const [bsvSortOrder, setBsvSortOrder] = useState<BsvSearchOrder>(BsvSearchOrder.Latest);
+    const [bsvMaps, bsvMaps$] = useBehaviorSubject<BsvMapDetail[]>(undefined);
     const [bsvSearchParams, setBsvSearchParams] = useState<SearchParams>({
-        sortOrder: bsvSortOrder,
+        sortOrder: BsvSearchOrder.Latest,
         filter: availableMapsFilter,
         page: 0,
         q: availableMapsSearch,
@@ -79,8 +76,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
         return Object.values(BsvSearchOrder).map(sort => ({ text: `beat-saver.maps-sorts.${sort}`, value: sort }));
     });
 
-    const playlistMaps$ = useConstant(() => new BehaviorSubject<Record<string, PlaylistMap>>(undefined));
-    const playlistMaps = useObservable(() => playlistMaps$);
+    const [playlistMaps, playlistMaps$] = useBehaviorSubject<Record<string, PlaylistMap>>(undefined);
 
     const playlistHashsSelected$ = useConstant(() => new BehaviorSubject<string[]>([]));
     const [playlistMapsSearch, setPlaylistMapsSearch] = useState<string>("");
@@ -91,12 +87,9 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
     const displayablePlaylistMaps = useMemo(() => {
         if(!playlistMaps || !Object.keys(playlistMaps).length){ return []; }
 
-        return Object.values(playlistMaps).reduce((acc, playlistMap) => {
-            if(!playlistMap?.map){ return acc; }
-            if(!isMapFitFilter({ map: playlistMap.map, filter: playlistMapsFilter, search: playlistMapsSearch })){ return acc; }
-            acc.push(playlistMap);
-            return acc;
-        }, []);
+        return Object.values(playlistMaps).filter(playlistMap => (
+            playlistMap?.map && isMapFitFilter({ map: playlistMap.map, filter: playlistMapsFilter, search: playlistMapsSearch })
+        ));
     }, [playlistMaps, playlistMapsFilter, playlistMapsSearch]);
 
     useOnUpdate(() => {
@@ -154,7 +147,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
         setAvailableMapsFilter({});
         setAvailableMapsSearch("");
         bsvMaps$.next(undefined);
-        setBsvSearchParams({ sortOrder: bsvSortOrder, filter: availableMapsFilter, page: 0, q: availableMapsSearch });
+        setBsvSearchParams(prev => ({ sortOrder: prev.sortOrder, filter: availableMapsFilter, page: 0, q: availableMapsSearch }));
     }, [availableMapsSource])
 
     useOnUpdate(() => {
@@ -323,7 +316,6 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
     }, []);
 
     const handleSortChange = (newSort: BsvSearchOrder) => {
-        setBsvSortOrder(() => newSort);
         bsvMaps$.next(undefined);
         setBsvSearchParams(() => ({ ...bsvSearchParams, sortOrder: newSort }));
     };
@@ -336,7 +328,7 @@ export const EditPlaylistModal: ModalComponent<BPList, Props> = ({ resolver, opt
     const handleNewSearch = () => {
         if(availableMapsSource === 0){ return; }
         bsvMaps$.next(undefined);
-        setBsvSearchParams(() => ({ page: 0, filter: availableMapsFilter, q: availableMapsSearch, sortOrder: bsvSortOrder}));
+        setBsvSearchParams(prev => ({ page: 0, filter: availableMapsFilter, q: availableMapsSearch, sortOrder: prev.sortOrder }));
     }
 
     const playlistNbMappers = useMemo(() => {

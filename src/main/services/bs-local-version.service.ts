@@ -10,7 +10,6 @@ import log from "electron-log";
 import { OculusService } from "./oculus.service";
 import sanitize from "sanitize-filename";
 import { Progression, copyDirectoryWithJunctions, deleteFolder, ensurePathNotAlreadyExist, getFoldersInFolder, rxCopy } from "../helpers/fs.helpers";
-import { FolderLinkerService } from "./folder-linker.service";
 import { ReadStream, createReadStream, pathExists, pathExistsSync, readFile, writeFile } from "fs-extra";
 import readline from "readline";
 import { Observable, Subject, catchError, finalize, from, map, switchMap, throwError } from "rxjs";
@@ -31,7 +30,6 @@ export class BSLocalVersionService {
     private readonly oculusService: OculusService;
     private readonly versionLibService: BSVersionLibService;
     private readonly configService: ConfigurationService;
-    private readonly linker: FolderLinkerService;
     private readonly staticConfig: StaticConfigurationService;
     private readonly _loadedVersions$: Subject<BSVersion[]>;
 
@@ -48,7 +46,6 @@ export class BSLocalVersionService {
         this.oculusService = OculusService.getInstance();
         this.versionLibService = BSVersionLibService.getInstance();
         this.configService = ConfigurationService.getInstance();
-        this.linker = FolderLinkerService.getInstance();
         this.staticConfig = StaticConfigurationService.getInstance();
 
         this._loadedVersions$ = new Subject<BSVersion[]>();
@@ -400,22 +397,6 @@ export class BSLocalVersionService {
                 await this.initVersionMetadata(versionDest.version, { store });
             })
         );
-    }
-
-    public async getLinkedFolders(version: BSVersion): Promise<string[]>{
-        const versionPath = await this.getVersionPath(version);
-        const [rootFolders, beatSaberDataFolders] = await Promise.all([getFoldersInFolder(versionPath), getFoldersInFolder(path.join(versionPath, "Beat Saber_Data"))]);
-
-        const linkedFolder = Promise.all(
-            [...rootFolders, ...beatSaberDataFolders].map(async folder => {
-                if (!(await this.linker.isFolderSymlink(folder))) {
-                    return null;
-                }
-                return folder;
-            })
-        );
-
-        return (await linkedFolder).filter(folder => folder);
     }
 
     public get loadedVersions$(): Observable<BSVersion[]>{

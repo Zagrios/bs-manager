@@ -1,5 +1,5 @@
 import { BSVersion } from "shared/bs-version.interface";
-import { forwardRef, useCallback, useImperativeHandle, useState } from "react";
+import { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from "react";
 import { MSModelType } from "shared/models/models/model-saber.model";
 import { useOnUpdate } from "renderer/hooks/use-on-update.hook";
 import { useConstant } from "renderer/hooks/use-constant.hook";
@@ -45,7 +45,6 @@ export const ModelsGrid = forwardRef<ModelsGridRef, Props>(({ className, version
     const t = useTranslation();
 
     const [models, setModelsLoadObservable, , setModels] = useSwitchableObservable<BsmLocalModel[]>();
-    const [renderableModels, setRenderableModels] = useState<RenderableModel[]>([]);
     const progress$ = useConstant(() => new BehaviorSubject(0));
     const [modelsSelected, setModelsSelected] = useState<BsmLocalModel[]>([]);
 
@@ -85,11 +84,11 @@ export const ModelsGrid = forwardRef<ModelsGridRef, Props>(({ className, version
 
     useOnUpdate(() => onSelectionChange?.(modelsSelected.length), [modelsSelected]);
 
-    useOnUpdate(() => setRenderableModels(() => (
+    const renderableModels = useMemo<RenderableModel[]>(() => (
         models?.map(model => ({
             model,
             selected: modelsSelected.some(m => m.hash === model.hash)
-        })) ?? [])
+        })) ?? []
     ), [modelsSelected, models]);
 
     useOnUpdate(() => {

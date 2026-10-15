@@ -167,14 +167,6 @@ export class VersionFolderLinkerService {
         );
     }
 
-    public $isPending(version: BSVersion, relativeFolder: string): Observable<boolean> {
-        return this.$folderLinkedState(version, relativeFolder).pipe(map(state => state === FolderLinkState.Pending));
-    }
-
-    public $isProcessing(version: BSVersion, relativeFolder: string): Observable<boolean> {
-        return this.$folderLinkedState(version, relativeFolder).pipe(map(state => state === FolderLinkState.Processing));
-    }
-
     public getLinkedFolders(version: BSVersion, options?: { relative?: boolean }): Observable<string[]> {
         return this.ipcService.sendV2("get-linked-folders", { version, options });
     }

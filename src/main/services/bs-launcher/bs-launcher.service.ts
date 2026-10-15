@@ -94,12 +94,6 @@ export class BSLauncherService {
 
             const launcher = this.getStoreLauncherFromVersion(launchOptions.version);
 
-            if(!launcher){
-                this.launchInProgress = false;
-                observer.error(new Error("Unable to get launcher for the provided version"));
-                return undefined;
-            }
-
             const launchEvents = new Subject<BSLaunchEventData>();
             const rendererSubscription = launchEvents.subscribe(observer);
 
@@ -132,15 +126,9 @@ export class BSLauncherService {
 
     private shortcutParamsToLaunchOption(params: ShortcutParams): LaunchOption{
 
-        const launchMods: LaunchMod[] = [];
-
-        if(params.oculusMode === "true"){ launchMods.push(LaunchMods.OCULUS); }
-        if(params.desktopMode === "true"){ launchMods.push(LaunchMods.FPFC); }
-        if(params.debug === "true"){ launchMods.push(LaunchMods.DEBUG); }
-        if(params.skipSteam === "true"){ launchMods.push(LaunchMods.SKIP_STEAM); }
-        if(params.mapEditor === "true"){ launchMods.push(LaunchMods.EDITOR); }
-        if(params.protonLogs === "true"){ launchMods.push(LaunchMods.PROTON_LOGS); }
-        if(params.parallelViews === "true"){ launchMods.push(LaunchMods.PARALLEL_VIEWS); }
+        const launchMods = SHORTCUT_LAUNCH_MOD_PARAMS
+            .filter(([param]) => params[param] === "true")
+            .map(([, launchMod]) => launchMod);
 
         const res: LaunchOption = {
             version: {
@@ -165,14 +153,12 @@ export class BSLauncherService {
         if(launchOptions.version.oculus){ res.versionOculus = `${launchOptions.version.oculus}`; }
         if(launchOptions.version.ino){ res.versionIno = `${launchOptions.version.ino}`; }
 
-        if(launchOptions.launchMods?.includes(LaunchMods.OCULUS)){ res.oculusMode = "true"; }
-        if(launchOptions.launchMods?.includes(LaunchMods.FPFC)){ res.desktopMode = "true"; }
-        if(launchOptions.launchMods?.includes(LaunchMods.DEBUG)){ res.debug = "true"; }
         if(launchOptions.command){ res.command = launchOptions.command; }
-        if(preserveLegacyOptions && launchOptions.launchMods?.includes(LaunchMods.SKIP_STEAM)){ res.skipSteam = "true"; }
-        if(launchOptions.launchMods?.includes(LaunchMods.EDITOR)){ res.mapEditor = "true"; }
-        if(launchOptions.launchMods?.includes(LaunchMods.PROTON_LOGS)){ res.protonLogs = "true"; }
-        if(launchOptions.launchMods?.includes(LaunchMods.PARALLEL_VIEWS)){ res.parallelViews = "true"; }
+
+        for(const [param, launchMod] of SHORTCUT_LAUNCH_MOD_PARAMS){
+            if(launchMod === LaunchMods.SKIP_STEAM && !preserveLegacyOptions){ continue; }
+            if(launchOptions.launchMods?.includes(launchMod)){ res[param] = "true"; }
+        }
 
         return res;
     }
@@ -192,38 +178,25 @@ export class BSLauncherService {
     }
 
     /**
-     * Create .png file for the shortcut with the given color
-     * @param {Color} color
+     * Write the shortcut icon for the given color to the image cache
      * @returns {Promise<string>} Path of the icon
      */
-    private async createShortcutPng(color: ReturnType<typeof Color>): Promise<string>{
-        const pngBuffer = this.createShortcutPngBuffer(color);
-
+    private async writeShortcutIcon(color: ReturnType<typeof Color>, ext: "png" | "ico", icon: Buffer): Promise<string>{
         await ensureDir(IMAGE_CACHE_PATH);
 
-        const iconPath = path.join(IMAGE_CACHE_PATH, `launch_shortcut_${color.hex()}.png`);
+        const iconPath = path.join(IMAGE_CACHE_PATH, `launch_shortcut_${color.hex()}.${ext}`);
 
-        await writeFile(iconPath, pngBuffer);
+        await writeFile(iconPath, icon);
 
         return iconPath;
     }
 
-    /**
-     * Create .ico file for the shortcut with the given color
-     * @param {Color} color
-     * @returns {Promise<string>} Path of the icon
-     */
+    private createShortcutPng(color: ReturnType<typeof Color>): Promise<string>{
+        return this.writeShortcutIcon(color, "png", this.createShortcutPngBuffer(color));
+    }
+
     private async createShortcutIco(color: ReturnType<typeof Color>): Promise<string>{
-        const pngBuffer = this.createShortcutPngBuffer(color);
-        const icoBuffer = await toIco([pngBuffer]);
-
-        await ensureDir(IMAGE_CACHE_PATH);
-
-        const iconPath = path.join(IMAGE_CACHE_PATH, `launch_shortcut_${color.hex()}.ico`);
-
-        await writeFile(iconPath, icoBuffer);
-
-        return iconPath;
+        return this.writeShortcutIcon(color, "ico", await toIco([this.createShortcutPngBuffer(color)]));
     }
 
     public createLaunchLink(launchOptions: LaunchOption, options: CreateLaunchLinkOptions = {}): string{
@@ -312,6 +285,18 @@ type ShortcutParams = {
     versionSteam?: string;
     versionOculus?: string;
 }
+
+type ShortcutLaunchModParam = Exclude<keyof ShortcutParams, "command" | `version${string}`>;
+
+const SHORTCUT_LAUNCH_MOD_PARAMS: [ShortcutLaunchModParam, LaunchMod][] = [
+    ["oculusMode", LaunchMods.OCULUS],
+    ["desktopMode", LaunchMods.FPFC],
+    ["debug", LaunchMods.DEBUG],
+    ["skipSteam", LaunchMods.SKIP_STEAM],
+    ["mapEditor", LaunchMods.EDITOR],
+    ["protonLogs", LaunchMods.PROTON_LOGS],
+    ["parallelViews", LaunchMods.PARALLEL_VIEWS],
+];
 
 type CreateLaunchLinkOptions = {
     preserveLegacyOptions?: boolean;

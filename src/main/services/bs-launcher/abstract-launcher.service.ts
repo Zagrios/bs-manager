@@ -58,7 +58,7 @@ export function buildBsLaunchArgs(launchOptions: LaunchOption): string[] {
         launchArgs.push("editor");
     }
 
-    return Array.from(new Set(launchArgs).values());
+    return launchArgs;
 }
 
 export abstract class AbstractLauncherService {
@@ -66,11 +66,6 @@ export abstract class AbstractLauncherService {
     protected readonly linux = LinuxService.getInstance();
     protected readonly localVersions = BSLocalVersionService.getInstance();
     protected readonly staticConfig = StaticConfigurationService.getInstance();
-
-    constructor(){
-        this.linux = LinuxService.getInstance();
-        this.localVersions = BSLocalVersionService.getInstance();
-    }
 
     protected launchBeatSaberProcess(options: LaunchBeatSaberOptions): ChildProcess {
         const launchEnvironment = {

@@ -6,7 +6,6 @@ import { BSLocalVersionService } from "../../bs-local-version.service";
 import { InstallationLocationService } from "../../installation-location.service";
 import { UtilsService } from "../../utils.service";
 import crypto, { BinaryLike } from "crypto";
-import { lstatSync } from "fs";
 import { copy, createReadStream, ensureDir, existsSync, pathExists, pathExistsSync, readJson, realpath, writeJson } from "fs-extra";
 import { RequestService } from "../../request.service";
 import sanitize from "sanitize-filename";
@@ -17,7 +16,6 @@ import { Observable, Subject, lastValueFrom } from "rxjs";
 import { Archive } from "../../../models/archive.class";
 import { Progression, deleteFile, deleteFolder, ensureFolderExist, getFilesInFolder, getFoldersInFolder, pathExist } from "../../../helpers/fs.helpers";
 import { readFile } from "fs/promises";
-import { FolderLinkerService } from "../../folder-linker.service";
 import { allSettled } from "../../../../shared/helpers/promise.helpers";
 import { splitIntoChunk } from "../../../../shared/helpers/array.helpers";
 import { SongDetailsCacheService } from "./song-details-cache.service";
@@ -60,7 +58,6 @@ export class LocalMapsManagerService {
     private readonly reqService: RequestService;
     private readonly deepLink: DeepLinkService;
     private readonly windows: WindowManagerService;
-    private readonly linker: FolderLinkerService;
     private readonly songDetailsCache: SongDetailsCacheService;
     private readonly songCache: SongCacheService;
 
@@ -73,7 +70,6 @@ export class LocalMapsManagerService {
         this.reqService = RequestService.getInstance();
         this.deepLink = DeepLinkService.getInstance();
         this.windows = WindowManagerService.getInstance();
-        this.linker = FolderLinkerService.getInstance();
         this.songDetailsCache = SongDetailsCacheService.getInstance();
         this.songCache = SongCacheService.getInstance();
 
@@ -97,9 +93,7 @@ export class LocalMapsManagerService {
             return path.join(await this.localVersion.getVersionPath(version), LocalMapsManagerService.RELATIVE_MAPS_FOLDER);
         }
         const sharedMapsPath = path.join(this.installLocation.sharedContentPath(), LocalMapsManagerService.SHARED_MAPS_FOLDER, LocalMapsManagerService.CUSTOM_LEVELS_FOLDER);
-        if (!(await pathExist(sharedMapsPath))) {
-            await ensureFolderExist(sharedMapsPath);
-        }
+        await ensureFolderExist(sharedMapsPath);
         return sharedMapsPath;
     }
 
@@ -238,28 +232,6 @@ export class LocalMapsManagerService {
                 observer.error(e);
             });
         });
-    }
-
-    public async versionIsLinked(version: BSVersion): Promise<boolean> {
-        const levelsPath = await this.getMapsFolderPath(version);
-
-        const isPathExist = await pathExist(levelsPath);
-
-        if (!isPathExist) {
-            return false;
-        }
-
-        return lstatSync(levelsPath).isSymbolicLink();
-    }
-
-    public async linkVersionMaps(version: BSVersion, keepMaps: boolean): Promise<void> {
-        const versionMapsPath = await this.getMapsFolderPath(version);
-        return this.linker.linkFolder(versionMapsPath, { keepContents: keepMaps, intermediateFolder: LocalMapsManagerService.SHARED_MAPS_FOLDER });
-    }
-
-    public async unlinkVersionMaps(version: BSVersion, keepMaps: boolean): Promise<void> {
-        const versionMapsPath = await this.getMapsFolderPath(version);
-        return this.linker.unlinkFolder(versionMapsPath, { keepContents: keepMaps, intermediateFolder: LocalMapsManagerService.SHARED_MAPS_FOLDER });
     }
 
     public deleteMaps(maps: FieldRequired<BsmLocalMap, "path">[]): Observable<DeleteMapsProgress> {
@@ -518,15 +490,15 @@ export class LocalMapsManagerService {
     }
 
     public enableDeepLinks(): boolean {
-        return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.registerDeepLink(link));
+        return Object.values(this.DEEP_LINKS).every(link => this.deepLink.registerDeepLink(link));
     }
 
     public disableDeepLinks(): boolean {
-        return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.unRegisterDeepLink(link));
+        return Object.values(this.DEEP_LINKS).every(link => this.deepLink.unRegisterDeepLink(link));
     }
 
     public isDeepLinksEnabled(): boolean {
-        return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.isDeepLinkRegistered(link));
+        return Object.values(this.DEEP_LINKS).every(link => this.deepLink.isDeepLinkRegistered(link));
     }
 
     public get lastDownloadedMap$(): Observable<{ map: BsmLocalMap, version?: BSVersion }> {

@@ -113,9 +113,7 @@ export class PlaylistDownloaderService {
     public oneClickInstallPlaylist(bpListUrl: string): Observable<Progression<DownloadPlaylistProgressionData>> {
 
         const download$ = this.ipc.sendV2("one-click-install-playlist", bpListUrl);
-        const progress$ = download$.pipe(map(data => (data.current / data.total) * 100));
-
-        this.progress.show(progress$);
+        this.progress.show(download$);
 
         return download$.pipe(tap({
             error: () => this.progress.hide(),

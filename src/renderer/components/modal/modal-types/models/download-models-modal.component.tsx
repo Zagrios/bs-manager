@@ -5,7 +5,7 @@ import { BSVersion } from "shared/bs-version.interface";
 import BeatWaitingImg from "../../../../../../assets/images/apngs/beat-waiting.png";
 import BeatConflictImg from "../../../../../../assets/images/apngs/beat-conflict.png";
 import { MSGetQuery, MSGetSort, MSGetSortDirection, MSModel, MSModelPlatform, MSModelType } from "shared/models/models/model-saber.model";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ModelItem } from "renderer/components/models-management/model-item.component";
 import { useService } from "renderer/hooks/use-service.hook";
 import { ModelDownload, ModelsDownloaderService } from "renderer/services/models-management/models-downloader.service";
@@ -45,7 +45,6 @@ export const DownloadModelsModal: ModalComponent<void, { version: BSVersion; typ
     const currentDownload = useObservable(() => modelsDownloader.currentDownload$(), null);
     const downloadQueue = useObservable(() => modelsDownloader.getQueue$(), []);
     const [msModels, msModels$] = useBehaviorSubject<MSModel[]>([]);
-    const [renderableModels, setRenderableModels] = useState<RenderableModel[]>([]);
     const [error, error$] = useBehaviorSubject(false);
     const [isLoading, isLoading$] = useBehaviorSubject(false);
     const [ownedModels, setOwnedModels] = useState<BsmLocalModel[]>(owned ?? []);
@@ -55,14 +54,12 @@ export const DownloadModelsModal: ModalComponent<void, { version: BSVersion; typ
     const [searhInput, searhInput$] = useBehaviorSubject("");
     const [getQuery, getQuery$] = useBehaviorSubject<MSGetQuery>({ type: currentType, platform: MSModelPlatform.PC, start: 0, end: 25, sort: currentSort, sortDirection: MSGetSortDirection.Descending });
 
-    useOnUpdate(() => {
-        setRenderableModels(() => msModels?.map(msModel => ({
-            model: msModel,
-            isInQueue: downloadQueue.some(download => download.model.id === msModel.id && equal(download.version, version)),
-            isDownloading: equal(currentDownload, { model: msModel, version } as ModelDownload),
-            isOwned: ownedModels.some(owned => owned.hash === msModel.hash),
-        })))
-    }, [msModels, currentDownload, downloadQueue, ownedModels]);
+    const renderableModels = useMemo<RenderableModel[]>(() => msModels?.map(msModel => ({
+        model: msModel,
+        isInQueue: downloadQueue.some(download => download.model.id === msModel.id && equal(download.version, version)),
+        isDownloading: equal(currentDownload, { model: msModel, version } as ModelDownload),
+        isOwned: ownedModels.some(owned => owned.hash === msModel.hash),
+    })), [msModels, currentDownload, downloadQueue, ownedModels]);
 
     useOnUpdate(() => {
         const sub = modelsDownloader.onModelsDownloaded(model => {

@@ -2,17 +2,17 @@ import { BSVersion } from "shared/bs-version.interface";
 import { BeatModsApiService } from "./beat-mods-api.service";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import path from "path";
-import md5File from "md5-file";
 import { RequestService } from "../request.service";
 import { BS_EXECUTABLE, IS_FLATPAK } from "../../constants";
 import log from "electron-log";
-import { deleteFile, deleteFolder, pathExist, Progression } from "../../helpers/fs.helpers";
+import { deleteFile, deleteFolder, hashFile, pathExist, Progression } from "../../helpers/fs.helpers";
 import { lastValueFrom, Observable } from "rxjs";
 import recursiveReadDir from "recursive-readdir";
 import { sToMs } from "../../../shared/helpers/time.helpers";
 import { copyFile, ensureDir, pathExistsSync, readdirSync } from "fs-extra";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { popElement } from "shared/helpers/array.helpers";
+import { getVersionName } from "shared/helpers/bs-version.helpers";
 import { LinuxService } from "../linux.service";
 import { tryit } from "shared/helpers/error.helpers";
 import crypto from "crypto";
@@ -78,7 +78,7 @@ export class BsModsManagerService {
             }
 
             log.info("Getting mod manifest", filePath);
-            const hash = await md5File(filePath);
+            const hash = await hashFile(filePath, "md5");
             const mod = await this.getModFromHash(hash);
 
             if (!mod) {
@@ -91,13 +91,10 @@ export class BsModsManagerService {
             }
 
             if (modsDir === ModsInstallFolder.LIBS || modsDir === ModsInstallFolder.LIBS_PENDING) {
-                const manifestIndex = manifestMatches.findIndex(m => m.id === mod.id);
-                if (manifestIndex < 0) {
+                if (!popElement(m => m.id === mod.id, manifestMatches)) {
                     log.warn("No matching manifest for", `"${filePath}"`, "with hash:", hash);
                     return undefined;
                 }
-
-                manifestMatches.splice(manifestIndex, 1);
             }
 
             return mod;
@@ -121,7 +118,7 @@ export class BsModsManagerService {
         if (!(await pathExist(injectorPath))) {
             return undefined;
         }
-        const injectorMd5 = await md5File(injectorPath);
+        const injectorMd5 = await hashFile(injectorPath, "md5");
         return this.beatModsApi.getModByHash(injectorMd5).catch((error): undefined => {
             log.error("Could not get bsipa mod", error?.message);
             return undefined;
@@ -263,7 +260,7 @@ export class BsModsManagerService {
     }
 
     private async installMod(mod: BbmFullMod, version: BSVersion): Promise<boolean> {
-        log.info("INSTALL MOD", mod.mod.name, "for version", `${version.BSVersion} - ${version.name}`);
+        log.info("INSTALL MOD", mod.mod.name, "for version", getVersionName(version));
 
         const isBSIPA = mod.mod.name.toLowerCase() === "bsipa";
 
@@ -272,10 +269,6 @@ export class BsModsManagerService {
         }
 
         const downloadUrl = this.getModDownload(mod.version);
-
-        if (!downloadUrl) {
-            return false;
-        }
 
         log.info("Start download mod zip", mod.mod.name, downloadUrl);
         const zip = await this.downloadZip(downloadUrl);
@@ -390,21 +383,19 @@ export class BsModsManagerService {
         const versionPath = await this.bsLocalService.getVersionPath(version);
 
         const promises: Promise<void>[] = mod.version.contentHashes.map(async content => {
-            return (async () => {
-                const modPath = path.join(versionPath, content.path);
-                if (pathExistsSync(modPath)) {
-                    log.info("Deleting mod", modPath);
-                    await deleteFile(modPath);
-                }
+            const modPath = path.join(versionPath, content.path);
+            if (pathExistsSync(modPath)) {
+                log.info("Deleting mod", modPath);
+                await deleteFile(modPath);
+            }
 
-                const pendingPath = path.join(versionPath, "IPA", "Pending", content.path);
-                if (pathExistsSync(pendingPath)) {
-                    log.info("Deleting pending mod", pendingPath);
-                    return deleteFile(pendingPath);
-                }
+            const pendingPath = path.join(versionPath, "IPA", "Pending", content.path);
+            if (pathExistsSync(pendingPath)) {
+                log.info("Deleting pending mod", pendingPath);
+                return deleteFile(pendingPath);
+            }
 
-                log.warn("Mod file not found in", versionPath, "or pending folder", pendingPath);
-            })() ;
+            log.warn("Mod file not found in", versionPath, "or pending folder", pendingPath);
         });
 
         await Promise.all(promises);
@@ -437,11 +428,10 @@ export class BsModsManagerService {
             modsDict.set(bsipa.id, bsipa);
         }
 
-        for (const mod of dirMods.flat()) {
-            if (modsDict.has(mod.id)) {
-                continue;
+        for (const mod of dirMods) {
+            if (!modsDict.has(mod.id)) {
+                modsDict.set(mod.id, mod);
             }
-            modsDict.set(mod.id, mod);
         }
 
         return Array.from(modsDict.values());
@@ -624,8 +614,10 @@ export class BsModsManagerService {
         return new Observable<Progression>(obs => {
             (async () => {
 
-                const versionMods = await this.getAvailableMods(version);
-                const installedMods = await this.getInstalledMods(version);
+                const [versionMods, installedMods] = await Promise.all([
+                    this.getAvailableMods(version),
+                    this.getInstalledMods(version),
+                ]);
 
                 const fullInstalledMods = (installedMods || []).reduce((mods, version) => {
                     const mod = versionMods.find(mod => version.modId === mod.mod.id)?.mod;

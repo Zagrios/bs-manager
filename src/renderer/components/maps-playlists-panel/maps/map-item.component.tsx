@@ -107,7 +107,7 @@ export function MapItemComponent <T = unknown>({ hash, title, autor, songAutor, 
 
     const createdDate = useConstant(() => {
         if(!createdAt){ return null; }
-        const date = typeof createdAt === "number" ? new Date(createdAt * 1000) : createdAt.toDate(getLocalTimeZone());
+        const date = typeof createdAt === "number" ? new Date(sToMs(createdAt)) : createdAt.toDate(getLocalTimeZone());
         return dateFormat(date, "d mmm yyyy");
     });
 

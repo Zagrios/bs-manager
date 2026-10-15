@@ -333,11 +333,19 @@ export class LocalPlaylistsManagerService {
 
                 obs.next(progress);
 
+                const ignoredHashs = new Set(ignoreSongsHashs);
+                const songsToDownload = localBPList.songs.filter(song => !ignoredHashs.has(song.hash));
+
+                // Fetch the details in batches up front so the per-song lookups below are cache hits
+                await (async () => this.bsaver.getMapDetailsFromHashs(
+                    songsToDownload.map(song => findHashInString(song?.hash)).filter(Boolean)
+                ))().catch(e => log.error("Could not prefetch playlist map details", e));
+
                 for (const song of localBPList.songs) {
 
                     if(destroyed) { break; }
 
-                    if(ignoreSongsHashs.includes(song.hash)) {
+                    if(ignoredHashs.has(song.hash)) {
                         progress.current += 1;
                         obs.next(progress);
                         continue;
@@ -348,7 +356,7 @@ export class LocalPlaylistsManagerService {
 
                         const mapHash = findHashInString(song?.hash);
                         if(mapHash) {
-                            mapDetail = (await this.bsaver.getMapDetailsFromHashs([findHashInString(mapHash)])).at(0);
+                            mapDetail = (await this.bsaver.getMapDetailsFromHashs([mapHash])).at(0);
                         }
 
                         if(song.key && !mapDetail) {
@@ -564,14 +572,14 @@ export class LocalPlaylistsManagerService {
     }
 
     public enableDeepLinks(): boolean {
-        return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.registerDeepLink(link));
+        return Object.values(this.DEEP_LINKS).every(link => this.deepLink.registerDeepLink(link));
     }
 
     public disableDeepLinks(): boolean {
-        return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.unRegisterDeepLink(link));
+        return Object.values(this.DEEP_LINKS).every(link => this.deepLink.unRegisterDeepLink(link));
     }
 
     public isDeepLinksEnabled(): boolean {
-        return Array.from(Object.values(this.DEEP_LINKS)).every(link => this.deepLink.isDeepLinkRegistered(link));
+        return Object.values(this.DEEP_LINKS).every(link => this.deepLink.isDeepLinkRegistered(link));
     }
 }
