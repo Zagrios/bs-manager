@@ -72,6 +72,7 @@ export interface StaticConfigKeyValues {
 
     // Linux Specific static configs
     "proton-folder": string;
+    "prefix-proton-folder": string;
     "versions": BSVersion[];
 };
 

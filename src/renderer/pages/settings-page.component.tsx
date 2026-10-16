@@ -101,6 +101,8 @@ export function SettingsPage() {
     const [installationFolderInput, setInstallationFolderInput] = useState("");
     const [protonFolder, setProtonFolder] = useState("");
     const [protonFolderInput, setProtonFolderInput] = useState("");
+    const [prefixProtonFolder, setPrefixProtonFolder] = useState("");
+    const [prefixProtonFolderInput, setPrefixProtonFolderInput] = useState("");
     const [showSupporters, setShowSupporters] = useState(false);
     const [mapDeepLinksEnabled, setMapDeepLinksEnabled] = useState(false);
     const [playlistsDeepLinkEnabled, setPlaylistsDeepLinkEnabled] = useState(false);
@@ -119,6 +121,10 @@ export function SettingsPage() {
         staticConfig.get("proton-folder").then((folder = "") => {
             setProtonFolder(folder);
             setProtonFolderInput(folder);
+        });
+        staticConfig.get("prefix-proton-folder").then((folder = "") => {
+            setPrefixProtonFolder(folder);
+            setPrefixProtonFolderInput(folder);
         });
 
     }, []);
@@ -202,26 +208,72 @@ export function SettingsPage() {
         }
     };
 
-    const setDefaultProtonFolder = async () => {
-        if (!progressBarService.require()) {
-            return;
-        }
-
+    const savePrefixProtonFolder = async (path: string) => {
+        const protonPath = path.trim();
         try {
-            const pathResponse = await lastValueFrom(ipcService.sendV2("choose-folder", {
-                parent: "home",
-                defaultPath: ".steam/steam/steamapps/common",
-                showHidden: true,
-            }));
-
-            if (pathResponse.canceled || !pathResponse.filePaths?.length) {
+            if (!await lastValueFrom(linuxService.setPrefixProtonFolder(protonPath))) {
+                notificationService.notifyError({
+                    title: "pages.settings.prefix-proton-folder.errors.title",
+                    desc: "pages.settings.prefix-proton-folder.errors.invalid-folder",
+                });
                 return;
             }
 
-            await saveProtonFolder(pathResponse.filePaths[0]);
+            setPrefixProtonFolder(protonPath);
+            setPrefixProtonFolderInput(protonPath);
+        } catch {
+            notificationService.notifyError({
+                title: "pages.settings.prefix-proton-folder.errors.title",
+                desc: "misc.unknown",
+            });
+        }
+    };
+
+    const chooseProtonInstallationFolder = async (): Promise<string | undefined> => {
+        if (!progressBarService.require()) {
+            return undefined;
+        }
+
+        const pathResponse = await lastValueFrom(ipcService.sendV2("choose-folder", {
+            parent: "home",
+            defaultPath: ".steam/steam/steamapps/common",
+            showHidden: true,
+        }));
+
+        if (pathResponse.canceled || !pathResponse.filePaths?.length) {
+            return undefined;
+        }
+
+        return pathResponse.filePaths[0];
+    };
+
+    const setDefaultProtonFolder = async () => {
+        try {
+            const folder = await chooseProtonInstallationFolder();
+            if (!folder) {
+                return;
+            }
+
+            await saveProtonFolder(folder);
         } catch {
             notificationService.notifyError({
                 title: "pages.settings.proton-folder.errors.title",
+                desc: "misc.unknown",
+            });
+        }
+    };
+
+    const setDefaultPrefixProtonFolder = async () => {
+        try {
+            const folder = await chooseProtonInstallationFolder();
+            if (!folder) {
+                return;
+            }
+
+            await savePrefixProtonFolder(folder);
+        } catch {
+            notificationService.notifyError({
+                title: "pages.settings.prefix-proton-folder.errors.title",
                 desc: "misc.unknown",
             });
         }
@@ -421,6 +473,10 @@ export function SettingsPage() {
 
                 <SettingContainer os="linux" title="pages.settings.proton-folder.title" description="pages.settings.proton-folder.description">
                     <SettingFolderInput value={protonFolderInput} label={t("pages.settings.proton-folder.title")} canApply={!!protonFolderInput.trim() && protonFolderInput !== protonFolder} onChange={setProtonFolderInput} onApply={() => saveProtonFolder(protonFolderInput)} onChoose={setDefaultProtonFolder} />
+                </SettingContainer>
+
+                <SettingContainer os="linux" title="pages.settings.prefix-proton-folder.title" description="pages.settings.prefix-proton-folder.description">
+                    <SettingFolderInput value={prefixProtonFolderInput} label={t("pages.settings.prefix-proton-folder.title")} canApply={prefixProtonFolderInput !== prefixProtonFolder} onChange={setPrefixProtonFolderInput} onApply={() => savePrefixProtonFolder(prefixProtonFolderInput)} onChoose={setDefaultPrefixProtonFolder} />
                 </SettingContainer>
 
                 <SettingContainer title="pages.settings.additional-content.title" description="pages.settings.additional-content.description">
