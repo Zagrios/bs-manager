@@ -8,3 +8,5 @@ allowBuilds:
   esbuild: true
   fsevents: true
   unrs-resolver: true
+patchedDependencies:
+  global-agent@4.1.3: patches/global-agent@4.1.3.patch
