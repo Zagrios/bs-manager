@@ -12,7 +12,9 @@ describe("Proton folder write routing", () => {
         const source = readRendererSource("pages/settings-page.component.tsx");
 
         expect(source).toContain("linuxService.setProtonFolder(protonPath)");
+        expect(source).toContain("linuxService.setPrefixProtonFolder(protonPath)");
         expect(source).not.toContain('staticConfig.set("proton-folder"');
+        expect(source).not.toContain('staticConfig.set("prefix-proton-folder"');
     });
 
     it("keeps the setup chooser free of direct static-config persistence", () => {
@@ -20,5 +22,6 @@ describe("Proton folder write routing", () => {
 
         expect(source).toContain("linuxService.setProtonFolder(path)");
         expect(source).not.toContain('set("proton-folder"');
+        expect(source).not.toContain('set("prefix-proton-folder"');
     });
 });
