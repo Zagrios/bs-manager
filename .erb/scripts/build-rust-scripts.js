@@ -5,7 +5,7 @@ import { execFileSync } from 'child_process';
 const root = path.join(__dirname, '..', '..');
 const externalsFolder = path.join(root, 'externals');
 const scriptsFolder = path.join(root, 'assets', 'scripts');
-const linuxTargets = { x64: 'x86_64-unknown-linux-musl', arm64: 'aarch64-unknown-linux-musl' };
+const linuxTargets = { x64: 'x86_64-unknown-linux-gnu', arm64: 'aarch64-unknown-linux-gnu' };
 const downloaderTarget = process.env.BS_DOWNLOADER_TARGET || (process.platform === 'linux' ? linuxTargets[process.arch] : undefined);
 
 if (!['win32', 'linux'].includes(process.platform) || (process.platform === 'linux' && !downloaderTarget)) {
@@ -26,8 +26,8 @@ rustProjects.forEach(project => {
     const env = { ...process.env };
     if (process.platform === 'linux' && target === linuxTargets[process.arch]) {
         const targetKey = target.replaceAll('-', '_');
-        env[`CC_${targetKey}`] ||= 'musl-gcc';
-        env[`CARGO_TARGET_${targetKey.toUpperCase()}_LINKER`] ||= 'musl-gcc';
+        env[`CC_${targetKey}`] ||= 'gcc';
+        env[`CARGO_TARGET_${targetKey.toUpperCase()}_LINKER`] ||= 'gcc';
     }
     console.log(`Building ${project}`);
     execFileSync('cargo', args, { cwd, stdio: 'inherit', env });
