@@ -78,7 +78,7 @@ export class LinuxService {
             await fs.ensureDir(compatDataPath);
         }
 
-        const protonPath = await this.getProtonPath(purpose);
+        const protonPath = this.getProtonPath(purpose);
         const nixOS = await this.isNixOS();
 
         if (!options.createCompatData && !fs.existsSync(compatDataPath)) {
@@ -120,7 +120,7 @@ export class LinuxService {
         return this.staticConfig.get("proton-folder");
     }
 
-    private async getProtonPath(purpose: ProtonPurpose = "game"): Promise<string> {
+    private getProtonPath(purpose: ProtonPurpose = "game"): string {
         const protonFolder = this.resolveProtonFolder(purpose);
         const protonPath = path.join(protonFolder, this.PROTON_BINARY_PREFIX);
         if (!fs.pathExistsSync(protonPath)) {

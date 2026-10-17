@@ -125,7 +125,7 @@ export function SettingsPage() {
         staticConfig.get("prefix-proton-folder").then((folder = "") => {
             setPrefixProtonFolder(folder);
             setPrefixProtonFolderInput(folder);
-        });
+        }).catch(() => undefined);
 
     }, []);
 
@@ -215,7 +215,7 @@ export function SettingsPage() {
                 notificationService.notifyError({
                     title: "pages.settings.prefix-proton-folder.errors.title",
                     desc: "pages.settings.prefix-proton-folder.errors.invalid-folder",
-                });
+                }).catch(() => undefined);
                 return;
             }
 
@@ -225,7 +225,7 @@ export function SettingsPage() {
             notificationService.notifyError({
                 title: "pages.settings.prefix-proton-folder.errors.title",
                 desc: "misc.unknown",
-            });
+            }).catch(() => undefined);
         }
     };
 
@@ -275,7 +275,7 @@ export function SettingsPage() {
             notificationService.notifyError({
                 title: "pages.settings.prefix-proton-folder.errors.title",
                 desc: "misc.unknown",
-            });
+            }).catch(() => undefined);
         }
     };
 
