@@ -9,6 +9,7 @@
         "verify": "Verificar",
         "launch": "Iniciar",
         "mods": "Mods",
+        "arm64": "ARM64",
         "maps": "Mapas",
         "playlists": "Playlists",
         "models": "Modelos",
@@ -56,6 +57,39 @@
     },
     "pages": {
         "version-viewer": {
+            "arm64": {
+                "title": "Native ARM64",
+                "description": "Runs this version as a native ARM64 program under ARM64 Proton (e.g. on the Steam Frame) instead of emulating the x64 build. The Unity player and runtimes are downloaded from their official sources; the original files are backed up and restored on uninstall.",
+                "status": "Status",
+                "not-installed": "Not installed",
+                "installed-mods": "Installed ({release}, with mod support)",
+                "installed-no-mods": "Installed ({release}, without mods)",
+                "mod-support": "Mod support (BSIPA)",
+                "install": "Install",
+                "reinstall": "Reinstall",
+                "uninstall": "Uninstall",
+                "log-placeholder": "Installer output appears here.",
+                "reinstall-needed": "Reinstall needed: Proton or the bs-arm64 release changed since the install.",
+                "unsupported": {
+                    "NOT_LINUX_ARM64": "Only available on ARM64 Linux.",
+                    "PROTON_NOT_ARM64": "Select an ARM64 Proton (e.g. \"Proton 11.0 (ARM64)\") in the settings.",
+                    "NO_RELEASE": "No native ARM64 release for this Proton build ({proton}) yet.",
+                    "VERSION_NOT_SUPPORTED": "Not available for this Beat Saber version. Supported: {versions}."
+                },
+                "mods-unavailable": {
+                    "NO_BSIPA": "Without mods only: BeatMods has no BSIPA for this version.",
+                    "BSIPA_NOT_SUPPORTED": "Without mods only: BSIPA {bsipa} isn't supported by this release yet."
+                },
+                "notifications": {
+                    "install-success": "Native ARM64 build installed",
+                    "uninstall-success": "Native ARM64 build removed"
+                },
+                "errors": {
+                    "BS_ARM64_NO_MATCHING_RELEASE": "No bs-arm64 release for this Proton version yet",
+                    "BS_ARM64_CHECKSUM_MISMATCH": "Download corrupted (checksum mismatch)",
+                    "BS_ARM64_INSTALLER_FAILED": "Native ARM64 install failed"
+                }
+            },
             "launch-mods": {
                 "oculus": "Modo Oculus",
                 "oculus-description": "Se você está utilizando Beat Saber pela Steam, isso  permite que você use o compositor do Oculus VR sem passar pelo SteamVR, para possíveis ganhos de performance. Isso não é necessário para utilizar o Oculus.",
@@ -562,6 +596,7 @@
                     "BS_ALREADY_RUNNING": "Beat Saber já está rodando",
                     "EXE_NOT_FOUND": "Arquivos faltando",
                     "PROTON_NOT_SET": "Pasta do Proton não está configurada",
+                    "BS_ARM64_PROTON_MISMATCH": "Native ARM64 files outdated",
                     "PROTON_NOT_FOUND": "Binário do Proton não encontrado",
                     "EXIT": "Interrupção Abrupta",
                     "OCULUS_LIB_NOT_FOUND": "Biblioteca Oculus não encontrada",
@@ -577,6 +612,7 @@
                     "EXIT": "BeatSaber parou abruptamente, tente verificar os arquivos.",
                     "OCULUS_LIB_NOT_FOUND": "Verifique que o aplicativo Oculus está instalado corretamente, e que as bibliotecas estão definidas no Oculus.",
                     "PROTON_NOT_SET": "Defina o Proton nas configurações.",
+                    "BS_ARM64_PROTON_MISMATCH": "Proton was updated. Reinstall the native ARM64 build in the ARM64 tab.",
                     "PROTON_NOT_FOUND": "Defina o caminho da pasta do proton nas configurações.",
                     "ORIGINAL_OCULUS_NOT_INSTALLED": "Beat Saber precisa estar instalado no aplicativo do Oculus antes de iniciar."
                 },

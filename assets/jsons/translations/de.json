@@ -9,6 +9,7 @@
         "verify": "Prüfen",
         "launch": "Starten",
         "mods": "Mods",
+        "arm64": "ARM64",
         "maps": "Maps",
         "playlists": "Playlists",
         "models": "Modelle",
@@ -56,6 +57,39 @@
     },
     "pages": {
         "version-viewer": {
+            "arm64": {
+                "title": "Natives ARM64",
+                "description": "Startet diese Version als natives ARM64-Programm unter ARM64-Proton (z. B. auf dem Steam Frame), statt den x64-Build zu emulieren. Unity-Player und Laufzeitbibliotheken werden von den offiziellen Quellen geladen; die Originaldateien werden gesichert und beim Deinstallieren wiederhergestellt.",
+                "status": "Status",
+                "not-installed": "Nicht installiert",
+                "installed-mods": "Installiert ({release}, mit Mod-Unterstützung)",
+                "installed-no-mods": "Installiert ({release}, ohne Mods)",
+                "mod-support": "Mod-Unterstützung (BSIPA)",
+                "install": "Installieren",
+                "reinstall": "Neu installieren",
+                "uninstall": "Deinstallieren",
+                "log-placeholder": "Hier erscheint die Ausgabe des Installers.",
+                "reinstall-needed": "Neuinstallation nötig: Proton oder das bs-arm64-Release hat sich seit der Installation geändert.",
+                "unsupported": {
+                    "NOT_LINUX_ARM64": "Nur unter ARM64-Linux verfügbar.",
+                    "PROTON_NOT_ARM64": "Wähle in den Einstellungen ein ARM64-Proton (z. B. \"Proton 11.0 (ARM64)\").",
+                    "NO_RELEASE": "Für diesen Proton-Build ({proton}) gibt es noch kein natives ARM64-Release.",
+                    "VERSION_NOT_SUPPORTED": "Für diese Beat-Saber-Version nicht verfügbar. Unterstützt: {versions}."
+                },
+                "mods-unavailable": {
+                    "NO_BSIPA": "Nur ohne Mods: BeatMods hat kein BSIPA für diese Version.",
+                    "BSIPA_NOT_SUPPORTED": "Nur ohne Mods: BSIPA {bsipa} wird von diesem Release noch nicht unterstützt."
+                },
+                "notifications": {
+                    "install-success": "Nativer ARM64-Build installiert",
+                    "uninstall-success": "Nativer ARM64-Build entfernt"
+                },
+                "errors": {
+                    "BS_ARM64_NO_MATCHING_RELEASE": "Noch kein bs-arm64-Release für diese Proton-Version",
+                    "BS_ARM64_CHECKSUM_MISMATCH": "Download beschädigt (Prüfsumme stimmt nicht)",
+                    "BS_ARM64_INSTALLER_FAILED": "Native ARM64-Installation fehlgeschlagen"
+                }
+            },
             "launch-mods": {
                 "oculus": "Oculus Modus",
                 "oculus-description": "Wenn du Beat Saber über Steam benutzt, ermöglicht dir diese Einstellung, Oculus's VR-Composer ohne SteamVR zu nutzen, um eine bessere Leistung zu erhalten. Dies wird nicht für Oculus Headsets benötigt.",
@@ -562,6 +596,7 @@
                     "BS_ALREADY_RUNNING": "Beat Saber läuft bereits",
                     "EXE_NOT_FOUND": "Dateien fehlen",
                     "PROTON_NOT_SET": "Proton-Ordner nicht festgelegt",
+                    "BS_ARM64_PROTON_MISMATCH": "Native ARM64-Dateien veraltet",
                     "PROTON_NOT_FOUND": "Proton-Binärdatei nicht gefunden",
                     "EXIT": "Abrupter Stop",
                     "OCULUS_LIB_NOT_FOUND": "Oculus-Bibliothek nicht gefunden",
@@ -577,6 +612,7 @@
                     "EXIT": "Beat Saber stoppte abrupt. Versuche, die Dateien zu überprüfen.",
                     "OCULUS_LIB_NOT_FOUND": "Überprüfe, ob die Oculus-Anwendung korrekt installiert ist und dass die Bibliotheken in Oculus richtig definiert sind.",
                     "PROTON_NOT_SET": "Stellen Sie den Proton-Pfad in den Einstellungen ein.",
+                    "BS_ARM64_PROTON_MISMATCH": "Proton wurde aktualisiert. Installiere den nativen ARM64-Build im ARM64-Tab neu.",
                     "PROTON_NOT_FOUND": "Stellen Sie den Proton-Pfad in den Einstellungen ein.",
                     "ORIGINAL_OCULUS_NOT_INSTALLED": "Beat Saber muss vor dem Öffnen über die Oculus-App installiert werden."
                 },

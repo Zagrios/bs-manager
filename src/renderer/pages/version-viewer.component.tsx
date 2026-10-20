@@ -30,6 +30,9 @@ import { BsModsManagerService } from "renderer/services/bs-mods-manager.service"
 import { noop } from "shared/helpers/function.helpers";
 import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
+import { Arm64Slide } from "renderer/components/version-viewer/slides/arm64/arm64-slide.component";
+import { BsArm64Service } from "renderer/services/bs-arm64.service";
+import { BsArm64Status, BsArm64Unsupported } from "shared/models/bs-arm64/bs-arm64.model";
 
 export function VersionViewer() {
 
@@ -44,16 +47,30 @@ export function VersionViewer() {
     const bsLauncher = useService(BSLauncherService);
     const notification = useService(NotificationService);
     const config = useService(ConfigurationService);
+    const arm64 = useService(BsArm64Service);
 
     const { state, pathname: url } = useLocation() as { state: BSVersion; pathname: string };
     const navigate = useNavigate();
     const [currentTabIndex, setCurrentTabIndex] = useState(0);
     const modsSlideRef = useRef<ModsSlideRef>(null);
+    const [arm64Status, setArm64Status] = useState<BsArm64Status>();
+    // The native ARM64 tab only exists on ARM64 Linux (e.g. the Steam Frame)
+    const showArm64Tab = !!arm64Status && arm64Status.unsupported !== BsArm64Unsupported.NOT_LINUX_ARM64;
+
+    const loadArm64Status = () => {
+        if (!state) {
+            return;
+        }
+        lastValueFrom(arm64.getStatus(state))
+            .then(setArm64Status)
+            .catch(e => logRenderError("Could not get native ARM64 status", e));
+    };
 
     useOnUpdate(() => {
 
         checkIsVersionOutaded();
         checkOutdatedMods();
+        loadArm64Status();
 
     }, [state]);
 
@@ -197,7 +214,7 @@ export function VersionViewer() {
         <>
             <BsmImage className="absolute w-full h-full top-0 left-0 object-cover" image={state.ReleaseImg || DefautVersionImage} errorImage={DefautVersionImage} />
             <div className="relative flex items-center flex-col w-full h-full text-gray-200 backdrop-blur-lg">
-                <TabNavBar className="my-4" tabIndex={currentTabIndex} tabsText={["misc.launch", "misc.maps", "misc.models", "misc.mods"]} onTabChange={(i: number) => setCurrentTabIndex(i)} />
+                <TabNavBar className="my-4" tabIndex={currentTabIndex} tabsText={["misc.launch", "misc.maps", "misc.models", "misc.mods", ...(showArm64Tab ? ["misc.arm64"] : [])]} onTabChange={(i: number) => setCurrentTabIndex(i)} />
                 <div className="w-full min-h-0 grow flex transition-transform duration-300" style={{ transform: `translate(${-(currentTabIndex * 100)}%, 0)` }}>
                     <LaunchSlide version={state} />
                     <div className="w-full shrink-0 px-3 pb-3 flex flex-col items-center">
@@ -207,6 +224,7 @@ export function VersionViewer() {
                         <ModelsPanel version={state} isActive={currentTabIndex === 2} goToMods={() => setCurrentTabIndex(() => 3)} />
                     </div>
                     <ModsSlide ref={modsSlideRef} version={state} isActive={currentTabIndex === 3} onDisclamerDecline={handleModsDisclaimerDecline} />
+                    {showArm64Tab && <Arm64Slide version={state} status={arm64Status} onStatusChange={loadArm64Status} />}
                 </div>
             </div>
             <BsmDropdownButton className="absolute top-3 right-4 h-9 w-9 bg-light-main-color-2 dark:bg-main-color-2 rounded-md" items={[

@@ -21,6 +21,7 @@ import { BsmShellLog, bsmSpawn } from "main/helpers/os.helpers";
 import { setDotNet32BitRequired } from "main/helpers/dotnet.helpers";
 import { BbmFullMod, BbmModVersion, ExternalMod } from "../../../shared/models/mods/mod.interface";
 import { SteamService } from "../steam.service";
+import { BsArm64Service } from "../bs-arm64.service";
 import { planPrefixCommand, PrefixCommandPlan } from "../bs-launcher/launch-plan";
 import { ModsGridStatus } from "shared/models/mods/mod-ipc.model";
 import { getModsState } from "shared/helpers/mods-plan.helpers";
@@ -328,6 +329,12 @@ export class BsModsManagerService {
               }))
             : extracted;
 
+        if (isBSIPA && res) {
+            // BSIPA's x64 Doorstop/MonoMod may be back in a native ARM64 instance
+            await BsArm64Service.getInstance().reapplyAfterBsipaChange(version)
+                .catch(e => log.error("Could not re-apply the native ARM64 mod fixes", e));
+        }
+
         return res;
     }
 
@@ -410,6 +417,16 @@ export class BsModsManagerService {
         });
 
         await Promise.all(promises);
+    }
+
+    /** Installed BSIPA version, else the one BeatMods offers for this game version. */
+    public async getBsipaVersion(version: BSVersion): Promise<string | undefined> {
+        const installed = await this.getBsipaInstalled(version);
+        if (installed) {
+            return installed.modVersion;
+        }
+        const available = await this.getAvailableMods(version);
+        return available.find(mod => mod.mod.name.toLowerCase() === "bsipa")?.version.modVersion;
     }
 
     public async getAvailableMods(version: BSVersion): Promise<BbmFullMod[]> {

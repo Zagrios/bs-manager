@@ -44,7 +44,7 @@ export class LinuxService {
 
     // === Launching === //
 
-    private getCompatDataPath() {
+    public getCompatDataPath() {
         const sharedFolder = this.installLocationService.sharedContentPath();
         return path.resolve(sharedFolder, "compatdata");
     }
@@ -70,6 +70,20 @@ export class LinuxService {
         }
 
         return { protonPath, compatDataPath, steamPath, nixOS };
+    }
+
+    public getProtonFolder(): string | undefined {
+        return this.staticConfig.has("proton-folder") ? this.staticConfig.get("proton-folder") : undefined;
+    }
+
+    // Build of the selected Proton from its "version" file ("<timestamp> proton-11.0-2c-arm64")
+    public getProtonBuild(): string | undefined {
+        const folder = this.getProtonFolder();
+        const versionFile = folder && path.join(folder, "version");
+        if (!versionFile || !fs.existsSync(versionFile)) {
+            return undefined;
+        }
+        return fs.readFileSync(versionFile, "utf8").trim().split(/\s+/)[1];
     }
 
     private async getProtonPath(): Promise<string> {

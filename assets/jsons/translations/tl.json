@@ -9,6 +9,7 @@
         "verify": "I-verify",
         "launch": "I-launch",
         "mods": "Mods",
+        "arm64": "ARM64",
         "maps": "Maps",
         "playlists": "Playlists",
         "models": "Models",
@@ -56,6 +57,39 @@
     },
     "pages": {
         "version-viewer": {
+            "arm64": {
+                "title": "Native ARM64",
+                "description": "Runs this version as a native ARM64 program under ARM64 Proton (e.g. on the Steam Frame) instead of emulating the x64 build. The Unity player and runtimes are downloaded from their official sources; the original files are backed up and restored on uninstall.",
+                "status": "Status",
+                "not-installed": "Not installed",
+                "installed-mods": "Installed ({release}, with mod support)",
+                "installed-no-mods": "Installed ({release}, without mods)",
+                "mod-support": "Mod support (BSIPA)",
+                "install": "Install",
+                "reinstall": "Reinstall",
+                "uninstall": "Uninstall",
+                "log-placeholder": "Installer output appears here.",
+                "reinstall-needed": "Reinstall needed: Proton or the bs-arm64 release changed since the install.",
+                "unsupported": {
+                    "NOT_LINUX_ARM64": "Only available on ARM64 Linux.",
+                    "PROTON_NOT_ARM64": "Select an ARM64 Proton (e.g. \"Proton 11.0 (ARM64)\") in the settings.",
+                    "NO_RELEASE": "No native ARM64 release for this Proton build ({proton}) yet.",
+                    "VERSION_NOT_SUPPORTED": "Not available for this Beat Saber version. Supported: {versions}."
+                },
+                "mods-unavailable": {
+                    "NO_BSIPA": "Without mods only: BeatMods has no BSIPA for this version.",
+                    "BSIPA_NOT_SUPPORTED": "Without mods only: BSIPA {bsipa} isn't supported by this release yet."
+                },
+                "notifications": {
+                    "install-success": "Native ARM64 build installed",
+                    "uninstall-success": "Native ARM64 build removed"
+                },
+                "errors": {
+                    "BS_ARM64_NO_MATCHING_RELEASE": "No bs-arm64 release for this Proton version yet",
+                    "BS_ARM64_CHECKSUM_MISMATCH": "Download corrupted (checksum mismatch)",
+                    "BS_ARM64_INSTALLER_FAILED": "Native ARM64 install failed"
+                }
+            },
             "launch-mods": {
                 "oculus": "Oculus Mode",
                 "oculus-description": "Kung ginagamit mo ang Beat Saber via Steam, pinapayagan mo itong gamitin ang VR composer ng Oculus upang iwasan ang pagbukas ng SteamVR, para sa posibleng pagbuti ng performance. Hindi ito kinakailangan upang gamitin ang Oculus headsets.",
@@ -562,6 +596,7 @@
                     "BS_ALREADY_RUNNING": "Ang Beat Saber ay tumatakbo na",
                     "EXE_NOT_FOUND": "Nawawalang mga file",
                     "PROTON_NOT_SET": "Walang naka-set na Proton folder",
+                    "BS_ARM64_PROTON_MISMATCH": "Native ARM64 files outdated",
                     "PROTON_NOT_FOUND": "Hindi nahanap ang Proton binary",
                     "EXIT": "Biglaang paghinto",
                     "OCULUS_LIB_NOT_FOUND": "Hindi nahanap ang Oculus library",
@@ -577,6 +612,7 @@
                     "EXIT": "Biglaang huminto ang BeatSaber, subukang i-check ang mga file.",
                     "OCULUS_LIB_NOT_FOUND": "Suriin kung ang Oculus application ay tamang naka-install, at na ang mga libraries ay tamang naka-define sa Oculus.",
                     "PROTON_NOT_SET": "I-set ang Proton path sa settings.",
+                    "BS_ARM64_PROTON_MISMATCH": "Proton was updated. Reinstall the native ARM64 build in the ARM64 tab.",
                     "PROTON_NOT_FOUND": "I-set ang Proton path sa settings.",
                     "ORIGINAL_OCULUS_NOT_INSTALLED": "Dapat naka-install ang Beat Saber mula sa Oculus app bago ito buksan."
                 },
