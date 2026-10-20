@@ -596,7 +596,7 @@
                     "BS_ALREADY_RUNNING": "Ang Beat Saber ay tumatakbo na",
                     "EXE_NOT_FOUND": "Nawawalang mga file",
                     "PROTON_NOT_SET": "Walang naka-set na Proton folder",
-                    "BS_ARM64_PROTON_MISMATCH": "Native ARM64 files outdated",
+                    "BS_ARM64_OUTDATED": "Native ARM64 files outdated",
                     "PROTON_NOT_FOUND": "Hindi nahanap ang Proton binary",
                     "EXIT": "Biglaang paghinto",
                     "OCULUS_LIB_NOT_FOUND": "Hindi nahanap ang Oculus library",
@@ -612,7 +612,7 @@
                     "EXIT": "Biglaang huminto ang BeatSaber, subukang i-check ang mga file.",
                     "OCULUS_LIB_NOT_FOUND": "Suriin kung ang Oculus application ay tamang naka-install, at na ang mga libraries ay tamang naka-define sa Oculus.",
                     "PROTON_NOT_SET": "I-set ang Proton path sa settings.",
-                    "BS_ARM64_PROTON_MISMATCH": "Proton was updated. Reinstall the native ARM64 build in the ARM64 tab.",
+                    "BS_ARM64_OUTDATED": "Proton or the bs-arm64 release changed. Reinstall the native ARM64 build in the ARM64 tab.",
                     "PROTON_NOT_FOUND": "I-set ang Proton path sa settings.",
                     "ORIGINAL_OCULUS_NOT_INSTALLED": "Dapat naka-install ang Beat Saber mula sa Oculus app bago ito buksan."
                 },

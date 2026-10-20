@@ -16,6 +16,8 @@ export type LaunchRequest = {
     store: "steam" | "oculus";
     launchOptions: LaunchOption;
     gameFolder: string;
+    // bs-arm64.sh that starts this native ARM64 instance (Linux only)
+    bsArm64LaunchScript?: string;
 };
 
 export type LaunchPlan = {
@@ -89,7 +91,7 @@ export async function planLaunch(request: LaunchRequest, context: LaunchContext)
 
     const runtime: GameRuntime = store === "oculus"
         ? windowsNativeRuntime
-        : await resolveGameRuntime(context);
+        : await resolveGameRuntime(context, request.bsArm64LaunchScript);
 
     const { env: userEnv, cmdlet, args: userArgs } = parseLaunchOptions(launchOptions.command, {
         commandReplacement: runtime.runCommand(exePath),

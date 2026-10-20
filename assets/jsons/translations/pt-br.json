@@ -596,7 +596,7 @@
                     "BS_ALREADY_RUNNING": "Beat Saber já está rodando",
                     "EXE_NOT_FOUND": "Arquivos faltando",
                     "PROTON_NOT_SET": "Pasta do Proton não está configurada",
-                    "BS_ARM64_PROTON_MISMATCH": "Native ARM64 files outdated",
+                    "BS_ARM64_OUTDATED": "Native ARM64 files outdated",
                     "PROTON_NOT_FOUND": "Binário do Proton não encontrado",
                     "EXIT": "Interrupção Abrupta",
                     "OCULUS_LIB_NOT_FOUND": "Biblioteca Oculus não encontrada",
@@ -612,7 +612,7 @@
                     "EXIT": "BeatSaber parou abruptamente, tente verificar os arquivos.",
                     "OCULUS_LIB_NOT_FOUND": "Verifique que o aplicativo Oculus está instalado corretamente, e que as bibliotecas estão definidas no Oculus.",
                     "PROTON_NOT_SET": "Defina o Proton nas configurações.",
-                    "BS_ARM64_PROTON_MISMATCH": "Proton was updated. Reinstall the native ARM64 build in the ARM64 tab.",
+                    "BS_ARM64_OUTDATED": "Proton or the bs-arm64 release changed. Reinstall the native ARM64 build in the ARM64 tab.",
                     "PROTON_NOT_FOUND": "Defina o caminho da pasta do proton nas configurações.",
                     "ORIGINAL_OCULUS_NOT_INSTALLED": "Beat Saber precisa estar instalado no aplicativo do Oculus antes de iniciar."
                 },

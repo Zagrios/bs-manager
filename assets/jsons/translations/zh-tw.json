@@ -596,7 +596,7 @@
                     "BS_ALREADY_RUNNING": "Beat Saber 已在運行",
                     "EXE_NOT_FOUND": "缺少文件",
                     "PROTON_NOT_SET": "Proton資料夾未設置",
-                    "BS_ARM64_PROTON_MISMATCH": "Native ARM64 files outdated",
+                    "BS_ARM64_OUTDATED": "Native ARM64 files outdated",
                     "PROTON_NOT_FOUND": "找不到Proton二進位檔",
                     "EXIT": "突然停止",
                     "OCULUS_LIB_NOT_FOUND": "未找到 Oculus 庫",
@@ -612,7 +612,7 @@
                     "EXIT": "BeatSaber 突然停止，請檢查文件。",
                     "OCULUS_LIB_NOT_FOUND": "檢查 Oculus 應用是否正確安裝，以及庫是否在 Oculus 中正確定義。",
                     "PROTON_NOT_SET": "在設定中設置Proton路徑。",
-                    "BS_ARM64_PROTON_MISMATCH": "Proton was updated. Reinstall the native ARM64 build in the ARM64 tab.",
+                    "BS_ARM64_OUTDATED": "Proton or the bs-arm64 release changed. Reinstall the native ARM64 build in the ARM64 tab.",
                     "PROTON_NOT_FOUND": "在設定中設置Proton路徑。",
                     "ORIGINAL_OCULUS_NOT_INSTALLED": "在打開之前，必須從Oculus應用程式安裝Beat Saber。"
                 },

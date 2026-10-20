@@ -1,4 +1,8 @@
-import { bsArm64ModsUnavailable, bsArm64Supported, findBsArm64ReleaseAsset, GithubRelease, parseBsArm64Result } from "main/services/bs-arm64.service";
+import os from "node:os";
+import path from "node:path";
+import fs from "fs-extra";
+import { BsArm64Service, bsArm64ModsUnavailable, bsArm64Supported, findBsArm64ReleaseAsset, GithubRelease, parseBsArm64Result } from "main/services/bs-arm64.service";
+import { BSLaunchError } from "shared/models/bs-launch";
 import { BsArm64Manifest, BsArm64ModsUnavailable } from "shared/models/bs-arm64/bs-arm64.model";
 
 jest.mock("electron", () => ({ app: { getPath: () => "", getVersion: () => "0.0.0" } }));
@@ -101,5 +105,46 @@ describe("parseBsArm64Result", () => {
 
     it("finds nothing without a result line", () => {
         expect(parseBsArm64Result(["==> done", '{"type": "error", "code": "NOT_AN_INSTANCE", "message": "x"}'])).toBeUndefined();
+    });
+});
+
+describe("getLaunchScript", () => {
+    let root: string;
+    let instance: string;
+    let release: string;
+    let status: object | undefined;
+
+    beforeEach(async () => {
+        root = await fs.mkdtemp(path.join(os.tmpdir(), "bsm-arm64-"));
+        instance = path.join(root, "instance");
+        release = path.join(root, "bs-arm64-v0.4.0-proton-11.0-2c");
+        await fs.outputJson(path.join(instance, ".bs-arm64", "bsm-release.json"), { tag: "v0.4.0", dir: release });
+        status = { installed: true, mods: true, ready: true };
+        jest.spyOn(BsArm64Service.prototype as any, "scriptStatus").mockImplementation(async () => status);
+        (BsArm64Service as unknown as { instance?: BsArm64Service }).instance = undefined;
+    });
+
+    afterEach(async () => {
+        jest.restoreAllMocks();
+        await fs.remove(root);
+    });
+
+    it("returns the installed release's bs-arm64.sh", async () => {
+        await expect(BsArm64Service.getInstance().getLaunchScript(instance)).resolves.toBe(path.join(release, "bs-arm64.sh"));
+    });
+
+    it("is undefined for an instance BSManager didn't install the native ARM64 build into", async () => {
+        await fs.remove(path.join(instance, ".bs-arm64"));
+        await expect(BsArm64Service.getInstance().getLaunchScript(instance)).resolves.toBeUndefined();
+    });
+
+    it("asks for a reinstall when the installer says so (e.g. Proton changed)", async () => {
+        status = { installed: true, mods: true, ready: false };
+        await expect(BsArm64Service.getInstance().getLaunchScript(instance)).rejects.toMatchObject({ code: BSLaunchError.BS_ARM64_OUTDATED });
+    });
+
+    it("asks for a reinstall for a release without status (0.3.x and older)", async () => {
+        status = undefined;
+        await expect(BsArm64Service.getInstance().getLaunchScript(instance)).rejects.toMatchObject({ code: BSLaunchError.BS_ARM64_OUTDATED });
     });
 });

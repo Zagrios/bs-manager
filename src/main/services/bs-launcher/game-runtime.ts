@@ -25,6 +25,17 @@ export const windowsNativeRuntime: GameRuntime = {
     prefixEnv: () => ({}),
 };
 
+// What the user picked in BSManager's launch mods
+function launchModsEnv(launchMods: LaunchMod[], gameFolder: string): Record<string, string> {
+    return {
+        ...(launchMods.includes(LaunchMods.PROTON_LOGS) ? {
+            PROTON_LOG: "1",
+            PROTON_LOG_DIR: path.join(gameFolder, "Logs"),
+        } : {}),
+        ...(launchMods.includes(LaunchMods.PARALLEL_VIEWS) ? { OXR_PARALLEL_VIEWS: "1" } : {}),
+    };
+}
+
 export function protonRuntime(config: ProtonConfig): GameRuntime {
     const proton = config.nixOS
         ? `steam-run "${config.protonPath}"`
@@ -48,12 +59,23 @@ export function protonRuntime(config: ProtonConfig): GameRuntime {
             "SteamEnv": "1",
             // Fix reflections in Monado
             "OXR_NO_TEXTURE_SOURCE_ALPHA": "1",
-            ...(launchMods.includes(LaunchMods.PROTON_LOGS) ? {
-                PROTON_LOG: "1",
-                PROTON_LOG_DIR: path.join(gameFolder, "Logs"),
-            } : {}),
-            ...(launchMods.includes(LaunchMods.PARALLEL_VIEWS) ? { OXR_PARALLEL_VIEWS: "1" } : {}),
+            ...launchModsEnv(launchMods, gameFolder),
         }),
+    };
+}
+
+/**
+ * A native ARM64 instance (bs-arm64): the installed release's bs-arm64.sh starts the game and sets
+ * everything it needs itself (Proton and Steam variables, foveated rendering, Steam's reaper).
+ * BSManager only passes on what the user picked. It runs in the foreground, so the game is tracked
+ * as usual.
+ */
+export function bsArm64Runtime(config: ProtonConfig, launchScript: string): GameRuntime {
+    return {
+        ...protonRuntime(config),
+        runCommand: exePath => `bash "${launchScript}" launch "${path.dirname(exePath)}"`
+            + ` --prefix "${config.compatDataPath}" --proton "${path.dirname(config.protonPath)}" --`,
+        gameEnv: launchModsEnv,
     };
 }
 
@@ -62,12 +84,16 @@ export type GameRuntimeFacts = {
     getProtonConfig?: () => Promise<ProtonConfig>;
 };
 
-export async function resolveGameRuntime({ platform, getProtonConfig }: GameRuntimeFacts): Promise<GameRuntime> {
+export async function resolveGameRuntime(
+    { platform, getProtonConfig }: GameRuntimeFacts,
+    bsArm64LaunchScript?: string
+): Promise<GameRuntime> {
     if (platform !== "linux") {
         return windowsNativeRuntime;
     }
     if (!getProtonConfig) {
         throw new Error("A Proton configuration is required to run Beat Saber on Linux");
     }
-    return protonRuntime(await getProtonConfig());
+    const config = await getProtonConfig();
+    return bsArm64LaunchScript ? bsArm64Runtime(config, bsArm64LaunchScript) : protonRuntime(config);
 }

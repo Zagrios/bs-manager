@@ -18,6 +18,7 @@ import {
     BsArm64Unsupported,
 } from "shared/models/bs-arm64/bs-arm64.model";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
+import { BSLaunchError } from "shared/models/bs-launch";
 import { tryit } from "shared/helpers/error.helpers";
 import { BsmShellLog, bsmSpawn } from "main/helpers/os.helpers";
 import { IS_FLATPAK } from "main/constants";
@@ -207,6 +208,23 @@ export class BsArm64Service {
         }
         log.info("BSIPA changed in a native ARM64 instance, re-applying the ARM64 mod loader fixes");
         await lastValueFrom(this.install(version, { mods: true }), { defaultValue: undefined });
+    }
+
+    /**
+     * bs-arm64.sh of the release that installed this native ARM64 instance, which launches it;
+     * undefined if the instance isn't one. Throws if the installer says it needs a reinstall first
+     * (Proton changed since install), or the release predates `status` (0.3.x and older).
+     */
+    public async getLaunchScript(versionPath: string): Promise<string | undefined> {
+        const release = await this.readInstalledRelease(versionPath);
+        if (!release) {
+            return undefined;
+        }
+        const script = await this.scriptStatus(versionPath, release).catch((): undefined => undefined);
+        if (!script?.ready) {
+            throw CustomError.fromError(new Error(`Native ARM64 instance (${release.tag}) needs a reinstall`), BSLaunchError.BS_ARM64_OUTDATED);
+        }
+        return path.join(release.dir, "bs-arm64.sh");
     }
 
     // === Release === //
