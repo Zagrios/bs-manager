@@ -29,6 +29,7 @@ export class LinuxService {
         path.join("files", "lib", "wine", "x86_64-unix", "wine64"),
         path.join("files", "bin-arm64", "wine"),
     ];
+    private readonly ARM64_WINE_BINARY = path.join("files", "bin-arm64", "wine");
 
     private readonly installLocationService: InstallationLocationService;
     private readonly staticConfig: StaticConfigurationService;
@@ -161,6 +162,11 @@ export class LinuxService {
 
         this.winePath = winePath;
         return winePath;
+    }
+
+    // ARM64 Proton (e.g. "Proton 11.0 (ARM64)")
+    public isArm64Wine(): boolean {
+        return this.getWinePath().endsWith(this.ARM64_WINE_BINARY);
     }
 
     // Should be different from winePath, this is the "WINEPREFIX" env var

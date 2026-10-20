@@ -9,7 +9,7 @@ import { deleteFile, deleteFolder, hashFile, pathExist, Progression } from "../.
 import { lastValueFrom, Observable } from "rxjs";
 import recursiveReadDir from "recursive-readdir";
 import { sToMs } from "../../../shared/helpers/time.helpers";
-import { copyFile, ensureDir, pathExistsSync, readdirSync } from "fs-extra";
+import { copyFile, ensureDir, pathExistsSync, readdirSync, readFile, writeFile } from "fs-extra";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { popElement } from "shared/helpers/array.helpers";
 import { getVersionName } from "shared/helpers/bs-version.helpers";
@@ -18,6 +18,7 @@ import { tryit } from "shared/helpers/error.helpers";
 import crypto from "crypto";
 import { BsmZipExtractor } from "main/models/bsm-zip-extractor.class";
 import { BsmShellLog, bsmSpawn } from "main/helpers/os.helpers";
+import { setDotNet32BitRequired } from "main/helpers/dotnet.helpers";
 import { BbmFullMod, BbmModVersion, ExternalMod } from "../../../shared/models/mods/mod.interface";
 import { SteamService } from "../steam.service";
 import { planPrefixCommand, PrefixCommandPlan } from "../bs-launcher/launch-plan";
@@ -157,8 +158,19 @@ export class BsModsManagerService {
             return false;
         }
 
-        const command = await this.getCommand(ipaPath, bsExePath, args);
+        const runnableIpaPath = await this.getRunnableIpaPath(ipaPath);
+        const removeIpaCopy = async () => {
+            if (runnableIpaPath !== ipaPath) {
+                await deleteFile(runnableIpaPath).catch(e => log.error("Could not delete x86 IPA copy", e));
+            }
+        };
+
+        const command = await this.getCommand(runnableIpaPath, bsExePath, args).catch(async e => {
+            await removeIpaCopy();
+            throw e;
+        });
         if (!command) {
+            await removeIpaCopy();
             return false;
         }
 
@@ -211,7 +223,23 @@ export class BsModsManagerService {
                 log.error("IPA process exited with non-zero code", code);
                 finish(false);
             });
-        });
+        }).finally(removeIpaCopy);
+    }
+
+    /**
+     * IPA.exe is an AnyCPU .NET assembly. ARM64 Wine runs those as native ARM64
+     * processes, but the wine-mono in Proton 11.0 (ARM64) only ships x86/x86_64 builds,
+     * so Mono fails to load. Run a copy flagged 32BITREQUIRED instead, which Wine runs
+     * as x86 through FEX. IPA.exe itself is left untouched since its hash is checked.
+     */
+    private async getRunnableIpaPath(ipaPath: string): Promise<string> {
+        if (process.platform !== "linux" || !tryit(() => this.linuxService.isArm64Wine()).result) {
+            return ipaPath;
+        }
+
+        const x86IpaPath = path.join(path.dirname(ipaPath), "IPA.x86.exe");
+        await writeFile(x86IpaPath, setDotNet32BitRequired(await readFile(ipaPath)));
+        return x86IpaPath;
     }
 
     private async getCommand(
