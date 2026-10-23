@@ -223,7 +223,7 @@ export class BsModsManagerService {
             platform: process.platform,
             flatpak: IS_FLATPAK,
             baseEnv: process.env,
-            getProtonConfig: async () => this.linuxService.getProtonConfig(
+            getProtonConfig: async () => this.linuxService.getPrefixProtonConfig(
                 await SteamService.getInstance().getSteamPath(), { createCompatData: false }
             ),
         }));
