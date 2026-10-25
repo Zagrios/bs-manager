@@ -1,0 +1,31 @@
+diff --git a/dist/classes/Agent.js b/dist/classes/Agent.js
+index 4a31fe58d6b2226252e8f130486f7a865b7c7aa8..6926b82dfb19e7557368f435dcfe21c423976bba 100644
+--- a/dist/classes/Agent.js
++++ b/dist/classes/Agent.js
+@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
+ };
+ Object.defineProperty(exports, "__esModule", { value: true });
+ const net_1 = __importDefault(require("net"));
++const tls_1 = __importDefault(require("tls"));
+ const serialize_error_1 = require("serialize-error");
+ const Logger_1 = require("../Logger");
+ const log = Logger_1.logger.child({
+@@ -153,13 +154,17 @@ class Agent {
+         // > are also accepted:
+         // >   ca, cert, ciphers, clientCertEngine, crl, dhparam, ecdhCurve, honorCipherOrder,
+         // >   key, passphrase, pfx, rejectUnauthorized, secureOptions, secureProtocol, servername, sessionIdContext.
+-        if (configuration.secureEndpoint) {
++        if (configuration.secureEndpoint || this.protocol === 'https:') {
+             // Determine servername - Node.js doesn't allow IP addresses as servername
+             const host = (_f = configuration.servername) !== null && _f !== void 0 ? _f : connectionConfiguration.host;
+             const servername = net_1.default.isIP(host) ? undefined : host;
+             connectionConfiguration.tls = {
+                 ca: (_g = configuration.ca) !== null && _g !== void 0 ? _g : this.ca,
+                 cert: configuration.cert,
++                checkServerIdentity: (hostname, certificate) => {
++                    const checkServerIdentity = configuration.checkServerIdentity ?? tls_1.default.checkServerIdentity;
++                    return checkServerIdentity(host, certificate);
++                },
+                 ciphers: configuration.ciphers,
+                 clientCertEngine: configuration.clientCertEngine,
+                 crl: configuration.crl,
