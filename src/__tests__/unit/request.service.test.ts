@@ -3,6 +3,8 @@ import { createWriteStream } from "fs";
 import { net } from "electron";
 import got from "got";
 import { lastValueFrom } from "rxjs";
+import { PassThrough, Writable } from "stream";
+import { deleteFileSync } from "main/helpers/fs.helpers";
 import { RequestService } from "main/services/request.service";
 
 jest.mock("electron", () => ({
@@ -180,6 +182,50 @@ describe("RequestService network and memory behavior", () => {
         expect(result.extra).toBe(response);
         expect(concat).toHaveBeenCalledTimes(1);
         expect(concat).toHaveBeenCalledWith(expect.any(Array), 6);
+    });
+
+    it.each([false, true])("waits for got file finalization (write failure: %s)", async (failWrite) => {
+        const stream = new PassThrough();
+        gotStreamMock.mockReturnValue(stream);
+        let finishWrite: (error?: Error) => void;
+        let finalizing: () => void;
+        const finalizingPromise = new Promise<void>(resolve => {
+            finalizing = resolve;
+        });
+        const file = new Writable({
+            write(_chunk, _encoding, callback) {
+                callback();
+            },
+            final(callback) {
+                finishWrite = callback;
+                finalizing();
+            },
+        });
+        createWriteStreamMock.mockReturnValue(file);
+
+        let settled = false;
+        const resultPromise = lastValueFrom(service.downloadFile("https://example.com/file", "/tmp/checksum.txt"));
+        void resultPromise.then(() => { settled = true; }, () => { settled = true; });
+
+        stream.emit("response", { headers: {} });
+        stream.end("checksum");
+        await finalizingPromise;
+        await Promise.resolve();
+
+        expect(stream.readableEnded).toBe(true);
+        expect(file.writableFinished).toBe(false);
+        expect(settled).toBe(false);
+
+        if (failWrite) {
+            const error = new Error("File write failed");
+            finishWrite(error);
+            await expect(resultPromise).rejects.toBe(error);
+            expect(deleteFileSync).toHaveBeenCalledWith("/tmp/checksum.txt");
+        } else {
+            finishWrite();
+            await expect(resultPromise).resolves.toEqual({ current: 0, total: 0, data: "/tmp/checksum.txt" });
+            expect(file.writableFinished).toBe(true);
+        }
     });
 
     it("pauses an Electron response on file backpressure and completes after finish", async () => {
