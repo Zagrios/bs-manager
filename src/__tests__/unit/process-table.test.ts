@@ -187,13 +187,33 @@ describe("Linux native process table", () => {
         const processes = await linuxProcessTable(io).list({ commandLine: "steam-runtime-launcher-service" });
 
         expect(io.exec).toHaveBeenCalledWith(
-            "ps awwxo pid,args | grep \"[s]team-runtime-launcher-service\"",
+            "ps awwxo pid,args | grep -E \"[s]team-runtime-launcher-service\"",
             { host: false }
         );
         expect(processes).toEqual([{
             pid: 410,
             cmd: "/home/player/.steam/steam/ubuntu12_32/steam-runtime-launcher-service --alongside-steam",
         }]);
+    });
+
+    it.each([linuxProcessTable, flatpakHostProcessTable])("matches either launcher name and excludes grep for %p", async createTable => {
+        const io = fakeIo();
+        io.exec.mockResolvedValue([
+            "  410 steam-runtime-launcher-service --alongside-steam",
+            "  411 /usr/libexec/steam-runtime-tools-0/x86_64-linux-gnu-srt-launcher-service --alongside-steam",
+            "  999 grep -E [s]team-runtime-launcher-service|[-]srt-launcher-service",
+            "  1000 grep -E steam-runtime-launcher-service|-srt-launcher-service",
+            "  1001 steamwebhelper",
+            "",
+        ].join("\n"));
+
+        const processes = await createTable(io).list({ commandLine: "steam-runtime-launcher-service|-srt-launcher-service" });
+
+        expect(io.exec).toHaveBeenCalledWith(
+            "ps awwxo pid,args | grep -E \"[s]team-runtime-launcher-service|[-]srt-launcher-service\"",
+            { host: createTable === flatpakHostProcessTable }
+        );
+        expect(processes.map(process => process.pid)).toEqual([410, 411]);
     });
 
     it("treats grep's no-match status as an empty table and rejects real failures", async () => {
@@ -266,7 +286,7 @@ describe("Flatpak host process table", () => {
         await flatpakHostProcessTable(io).list({ commandLine: "steam-runtime-launcher-service" });
 
         expect(io.exec).toHaveBeenCalledWith(
-            "ps awwxo pid,args | grep \"[s]team-runtime-launcher-service\"",
+            "ps awwxo pid,args | grep -E \"[s]team-runtime-launcher-service\"",
             { host: true }
         );
     });

@@ -92,12 +92,13 @@ const toDate = (value: unknown): Date | undefined => {
 const processMatchesName = (process: psList.ProcessDescriptor, name: string) =>
     process.name?.includes(name) || process.cmd?.includes(name);
 
-const transformProcessNameForPS = (name: string) => `[${name.at(0)}]${name.substring(1)}`;
+// Transform each alternative so grep cannot match its own command line.
+const transformProcessNameForPS = (name: string) => name.split("|").map(part => `[${part.at(0)}]${part.substring(1)}`).join("|");
 
 async function listLinuxCommandLines(io: ProcessTableIo, text: string, host: boolean): Promise<ProcessInfo[]> {
     let stdout: string;
     try {
-        stdout = await io.exec(`ps awwxo pid,args | grep "${transformProcessNameForPS(text)}"`, { host });
+        stdout = await io.exec(`ps awwxo pid,args | grep -E "${transformProcessNameForPS(text)}"`, { host });
     } catch (error) {
         if ((error as { code?: unknown })?.code === 1) {
             return [];
@@ -107,7 +108,7 @@ async function listLinuxCommandLines(io: ProcessTableIo, text: string, host: boo
 
     return stdout.split("\n")
         .map(line => line.trimStart())
-        .filter(line => line.includes(text) && !line.includes("grep"))
+        .filter(line => text.split("|").some(part => line.includes(part)) && !line.includes("grep"))
         .map(line => {
             const separator = line.indexOf(" ");
             return { pid: +line.substring(0, separator), cmd: line.substring(separator + 1) };

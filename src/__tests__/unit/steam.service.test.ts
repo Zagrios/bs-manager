@@ -35,6 +35,11 @@ const linuxRuntime: ProcessFixture = {
     name: "steam-runtime-launcher-service",
     cmd: "/home/player/.steam/steam/ubuntu12_32/steam-runtime-launcher-service --alongside-steam",
 };
+const srt3Runtime: ProcessFixture = {
+    pid: 411,
+    name: "x86_64-linux-gnu-srt-launcher-service",
+    cmd: "/usr/libexec/steam-runtime-tools-0/x86_64-linux-gnu-srt-launcher-service --alongside-steam",
+};
 const armSteam: ProcessFixture = {
     pid: 420,
     name: "steam",
@@ -85,7 +90,7 @@ function loadService(platform: NodeJS.Platform, arch: string, processes: Process
                 callback(null, hostOutput, "");
                 return {};
             }
-            const pattern = /grep(?: -c)? "([^"]+)"/.exec(command)?.[1];
+            const pattern = /grep(?: -E)?(?: -c)? "([^"]+)"/.exec(command)?.[1];
             if (!pattern) {
                 throw new Error(`Unexpected process discovery command: ${command}`);
             }
@@ -127,11 +132,11 @@ afterEach(() => {
 });
 
 describe.each(["x64", "ia32"])("Steam process discovery on Linux %s", arch => {
-    it("detects the runtime launcher and returns its PID without requiring an active-user registry", async () => {
-        const { service, registryList } = loadService("linux", arch, [armWebHelper, linuxRuntime]);
+    it.each([linuxRuntime, srt3Runtime])("detects $name and returns its PID without requiring an active-user registry", async runtime => {
+        const { service, registryList } = loadService("linux", arch, [armWebHelper, runtime]);
 
         await expect(service.isSteamRunning()).resolves.toBe(true);
-        await expect(service.getSteamPid()).resolves.toBe(linuxRuntime.pid);
+        await expect(service.getSteamPid()).resolves.toBe(runtime.pid);
         expect(registryList).not.toHaveBeenCalled();
     });
 
@@ -142,13 +147,24 @@ describe.each(["x64", "ia32"])("Steam process discovery on Linux %s", arch => {
         await expect(service.getSteamPid()).resolves.toBeNull();
     });
 
-    it("looks for the runtime launcher on the host inside Flatpak", async () => {
-        const { service, processList, exec } = loadService("linux", arch, [linuxRuntime], true);
+    it("returns unavailable and no PID when process enumeration fails", async () => {
+        const { service, exec } = loadService("linux", arch, [linuxRuntime]);
+        exec.mockImplementation((_command, _options, callback) => {
+            callback(new Error("process enumeration unavailable"), "", "");
+            return {};
+        });
+
+        await expect(service.isSteamRunning()).resolves.toBe(false);
+        await expect(service.getSteamPid()).resolves.toBeNull();
+    });
+
+    it.each([linuxRuntime, srt3Runtime])("looks for $name on the host inside Flatpak", async runtime => {
+        const { service, processList, exec } = loadService("linux", arch, [runtime], true);
 
         await expect(service.isSteamRunning()).resolves.toBe(true);
-        await expect(service.getSteamPid()).resolves.toBe(linuxRuntime.pid);
+        await expect(service.getSteamPid()).resolves.toBe(runtime.pid);
         expect(exec).toHaveBeenCalledWith(
-            expect.stringMatching(/^flatpak-spawn --host\s+ps awwxo pid,args \| grep "\[s\]team-runtime-launcher-service"$/),
+            expect.stringMatching(/^flatpak-spawn --host\s+ps awwxo pid,args \| grep -E "\[s\]team-runtime-launcher-service\|\[-\]srt-launcher-service"$/),
             expect.anything(),
             expect.any(Function)
         );
