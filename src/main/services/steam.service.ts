@@ -29,7 +29,7 @@ function steamProcessRule(platform: NodeJS.Platform, arch: string): SteamProcess
     }
     if (platform === "linux") {
         return {
-            query: { commandLine: "steam-runtime-launcher-service" },
+            query: { commandLine: "steam-runtime-launcher-service|-srt-launcher-service" },
             pick: processes => processes[0],
             requiresActiveUser: false,
         };
