@@ -256,6 +256,14 @@
                     "invalid-folder": "Chemin du dossier Proton invalide"
                 }
             },
+            "prefix-proton-folder": {
+                "title": "Proton pour les opérations de mods",
+                "description": "Installation Proton optionnelle utilisée pour BSIPA et les autres opérations de préfixe Wine. Si ce champ est vide, BSManager utilise l'installation Proton principale.",
+                "errors": {
+                    "title": "Le paramétrage du dossier Proton pour le modding a échoué",
+                    "invalid-folder": "Chemin du dossier Proton invalide"
+                }
+            },
             "additional-content": {
                 "title": "Contenus additionnels",
                 "description": "Les contenus additionnels te permettent de personaliser Beat Saber!",

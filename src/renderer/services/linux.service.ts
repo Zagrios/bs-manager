@@ -26,6 +26,10 @@ export class LinuxService {
         return this.ipc.sendV2("linux.set-proton-folder", path);
     }
 
+    public setPrefixProtonFolder(path: string): Observable<boolean> {
+        return this.ipc.sendV2("linux.set-prefix-proton-folder", path);
+    }
+
     public verifyProtonFolder(path?: string): Observable<boolean> {
         return this.ipc.sendV2("linux.verify-proton-folder", path);
     }

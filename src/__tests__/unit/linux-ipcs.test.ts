@@ -2,6 +2,7 @@ import { lastValueFrom } from "rxjs";
 
 const mockOn = jest.fn();
 const mockSetProtonFolder = jest.fn();
+const mockSetPrefixProtonFolder = jest.fn();
 const mockVerifyProtonPath = jest.fn();
 
 jest.mock("main/services/ipc.service", () => ({
@@ -14,6 +15,7 @@ jest.mock("main/services/linux.service", () => ({
     LinuxService: {
         getInstance: () => ({
             setProtonFolder: mockSetProtonFolder,
+            setPrefixProtonFolder: mockSetPrefixProtonFolder,
             verifyProtonPath: mockVerifyProtonPath,
             getWinePrefixPath: jest.fn(),
         }),
@@ -36,6 +38,18 @@ describe("linux IPCs", () => {
         handler("  /home/user/Proton  ", reply);
 
         expect(mockSetProtonFolder).toHaveBeenCalledWith("  /home/user/Proton  ");
+        await expect(lastValueFrom(reply.mock.calls[0][0])).resolves.toBe(true);
+    });
+
+    it("forwards prefix Proton folder persistence to LinuxService", async () => {
+        mockSetPrefixProtonFolder.mockResolvedValue(true);
+        const handler = mockOn.mock.calls.find(([channel]) => channel === "linux.set-prefix-proton-folder")?.[1];
+        const reply = jest.fn();
+
+        expect(handler).toBeDefined();
+        handler("  /home/user/Proton Experimental  ", reply);
+
+        expect(mockSetPrefixProtonFolder).toHaveBeenCalledWith("  /home/user/Proton Experimental  ");
         await expect(lastValueFrom(reply.mock.calls[0][0])).resolves.toBe(true);
     });
 

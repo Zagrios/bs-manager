@@ -256,6 +256,14 @@
                     "invalid-folder": "无效的Proton文件夹路径"
                 }
             },
+            "prefix-proton-folder": {
+                "title": "Proton for modding operations",
+                "description": "Optional Proton installation used for BSIPA and other Wine prefix operations. If left empty, BSManager uses the main Proton installation.",
+                "errors": {
+                    "title": "Setting the modding Proton folder failed",
+                    "invalid-folder": "Invalid Proton folder path"
+                }
+            },
             "additional-content": {
                 "title": "附加内容",
                 "description": "允许你自定义 BeatSaber 的附加内容！",

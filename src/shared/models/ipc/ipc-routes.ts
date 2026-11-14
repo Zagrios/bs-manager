@@ -163,6 +163,7 @@ export interface IpcChannelMapping {
 
     /* ** linux.ipcs ** */
     "linux.set-proton-folder": { request: string, response: boolean };
+    "linux.set-prefix-proton-folder": { request: string, response: boolean };
     "linux.verify-proton-folder": { request: string | void, response: boolean };
     "linux.get-wine-prefix-path": { request: void, response: string };
 

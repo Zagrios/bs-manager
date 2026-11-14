@@ -51,13 +51,28 @@ describe("LinuxService", () => {
             sharedContentPath: () => sharedContentPath,
         };
         (service as any).staticConfig = {
-            has: jest.fn(() => true),
-            get: jest.fn(() => "/Proton Experimental"),
+            has: jest.fn((key: string) => key === "proton-folder"),
+            get: jest.fn((key: string) => {
+                if (key === "proton-folder") {
+                    return "/Proton Experimental";
+                }
+                return undefined;
+            }),
             set: jest.fn(async () => undefined),
+            delete: jest.fn(),
         };
         (service as any).nixOS = false;
 
         return service;
+    }
+
+    function configStore(service: LinuxService) {
+        return (service as any).staticConfig as {
+            has: jest.Mock;
+            get: jest.Mock;
+            set: jest.Mock;
+            delete: jest.Mock;
+        };
     }
 
     beforeEach(() => {
@@ -197,5 +212,94 @@ describe("LinuxService", () => {
         (fs.pathExistsSync as jest.Mock).mockReturnValue(false);
 
         expect(buildService().verifyProtonPath("/proton-candidate")).toBe(false);
+    });
+
+    describe("prefix Proton folder", () => {
+        const mainProtonPath = path.join("/proton/main", "proton");
+        const prefixProtonPath = path.join("/proton/ipa", "proton");
+
+        function withFolders(service: LinuxService, folders: {
+            main?: string;
+            prefix?: string | null;
+        }) {
+            const store = configStore(service);
+            const main = folders.main ?? "/proton/main";
+            const { prefix } = folders;
+
+            store.has.mockImplementation((key: string) => {
+                if (key === "proton-folder") {
+                    return true;
+                }
+                if (key === "prefix-proton-folder") {
+                    return prefix !== undefined && prefix !== null;
+                }
+                return false;
+            });
+            store.get.mockImplementation((key: string) => {
+                if (key === "proton-folder") {
+                    return main;
+                }
+                if (key === "prefix-proton-folder") {
+                    return prefix ?? undefined;
+                }
+                return undefined;
+            });
+        }
+
+        it("falls back to the main Proton folder for prefix operations when unset", async () => {
+            const service = buildService();
+            withFolders(service, { main: "/proton/main" });
+
+            await expect(service.getProtonConfig(steamPath, { createCompatData: true }))
+                .resolves.toMatchObject({ protonPath: mainProtonPath });
+            await expect(service.getPrefixProtonConfig(steamPath, { createCompatData: false }))
+                .resolves.toMatchObject({ protonPath: mainProtonPath });
+        });
+
+        it("falls back to the main Proton folder when the prefix folder is blank", async () => {
+            const service = buildService();
+            withFolders(service, { main: "/proton/main", prefix: "   " });
+
+            await expect(service.getPrefixProtonConfig(steamPath, { createCompatData: false }))
+                .resolves.toMatchObject({ protonPath: mainProtonPath });
+        });
+
+        it("uses the configured prefix Proton folder for prefix operations only", async () => {
+            const service = buildService();
+            withFolders(service, { main: "/proton/main", prefix: "/proton/ipa" });
+
+            await expect(service.getProtonConfig(steamPath, { createCompatData: true }))
+                .resolves.toMatchObject({ protonPath: mainProtonPath });
+            await expect(service.getPrefixProtonConfig(steamPath, { createCompatData: false }))
+                .resolves.toMatchObject({ protonPath: prefixProtonPath });
+        });
+
+        it("persists a trimmed prefix Proton folder when its binaries are valid", async () => {
+            const service = buildService();
+
+            await expect(service.setPrefixProtonFolder("  /proton-candidate  ")).resolves.toBe(true);
+            expect(configStore(service).set).toHaveBeenCalledWith(
+                "prefix-proton-folder",
+                "/proton-candidate"
+            );
+        });
+
+        it("clears the prefix Proton folder when an empty path is submitted", async () => {
+            const service = buildService();
+
+            await expect(service.setPrefixProtonFolder("   ")).resolves.toBe(true);
+            expect(configStore(service).delete).toHaveBeenCalledWith("prefix-proton-folder");
+            expect(configStore(service).set).not.toHaveBeenCalled();
+        });
+
+        it("does not persist an invalid prefix Proton folder", async () => {
+            const service = buildService();
+            const verifyProtonPath = jest.spyOn(service, "verifyProtonPath").mockReturnValue(false);
+
+            await expect(service.setPrefixProtonFolder("  /invalid-proton  ")).resolves.toBe(false);
+            expect(verifyProtonPath).toHaveBeenCalledWith("/invalid-proton");
+            expect(configStore(service).set).not.toHaveBeenCalled();
+            expect(configStore(service).delete).not.toHaveBeenCalled();
+        });
     });
 });
