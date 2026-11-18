@@ -422,7 +422,10 @@ export class RequestService {
                     progress.data = dest;
                     file = createWriteStream(dest);
 
-                    pipeline(stream, file).catch(err => {
+                    pipeline(stream, file).then(() => {
+                        subscriber.next(progress);
+                        subscriber.complete();
+                    }).catch(err => {
                         file?.destroy();
                         tryit(() => deleteFileSync(dest));
                         subscriber.error(err);
@@ -442,11 +445,6 @@ export class RequestService {
                     tryNextFamily();
                 });
 
-                stream.on('end', () => {
-                    file?.end();
-                    subscriber.next(progress);
-                    subscriber.complete();
-                });
             };
 
             tryNextFamily();
