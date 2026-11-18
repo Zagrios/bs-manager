@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  global-agent@4.1.3:
+    hash: 8640967398f975d22c16950c2483a21a363b584325dc34f1752d1e6f2590dfbb
+    path: patches/global-agent@4.1.3.patch
+
 importers:
 
   .:
@@ -79,7 +84,7 @@ importers:
         version: 11.3.6
       global-agent:
         specifier: ^4.1.3
-        version: 4.1.3
+        version: 4.1.3(patch_hash=8640967398f975d22c16950c2483a21a363b584325dc34f1752d1e6f2590dfbb)
       got:
         specifier: ^14.4.7
         version: 14.6.6
@@ -9741,7 +9746,7 @@ snapshots:
       serialize-error: 7.0.1
     optional: true
 
-  global-agent@4.1.3:
+  global-agent@4.1.3(patch_hash=8640967398f975d22c16950c2483a21a363b584325dc34f1752d1e6f2590dfbb):
     dependencies:
       globalthis: 1.0.4
       matcher: 4.0.0
