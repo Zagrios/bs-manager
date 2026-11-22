@@ -14,7 +14,7 @@ import { SteamShortcut, SteamShortcutData } from "../../shared/models/steam/shor
 const { list } = (execOnOs({ win32: () => require("regedit-rs") }, true) ?? {}) as typeof import("regedit-rs");
 
 type SteamProcessRule = {
-    query: ProcessQuery;
+    query: ProcessQuery[];
     pick(processes: ProcessInfo[]): ProcessInfo | undefined;
     requiresActiveUser: boolean;
 };
@@ -22,20 +22,23 @@ type SteamProcessRule = {
 function steamProcessRule(platform: NodeJS.Platform, arch: string): SteamProcessRule {
     if (platform === "linux" && arch === "arm64") {
         return {
-            query: { name: "steam" },
+            queries: [{ name: "steam" }],
             pick: processes => processes.find(process => process.name === "steam"),
             requiresActiveUser: false,
         };
     }
     if (platform === "linux") {
         return {
-            query: { commandLine: "steam-runtime-launcher-service" },
+             queries: [
+                { commandLine: "x86_64-linux-gnu-srt-launcher-service" },
+                { commandLine: "steam-runtime-launcher-service" },
+            ],
             pick: processes => processes[0],
             requiresActiveUser: false,
         };
     }
     return {
-        query: { commandLine: "steam.exe" },
+        queries: [{ commandLine: "steam.exe" }],
         pick: processes => processes[0],
         requiresActiveUser: true,
     };
@@ -73,8 +76,11 @@ export class SteamService {
 
     private async findSteamProcess(): Promise<ProcessInfo | undefined> {
         try {
-            const { query, pick } = this.steamProcessRule;
-            return pick(await this.processes.list(query));
+            const { queries, pick } = this.steamProcessRule;
+            return pick((await Promise.all(
+                queries.map(query => this.processes.list(query))
+            )).flat());
+
         } catch (error) {
             log.error(error);
             return undefined;
