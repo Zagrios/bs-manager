@@ -9,6 +9,11 @@ ipc.on("linux.set-proton-folder", (protonFolder, reply) => {
     reply(from(linuxService.setProtonFolder(protonFolder)));
 });
 
+ipc.on("linux.set-prefix-proton-folder", (protonFolder, reply) => {
+    const linuxService = LinuxService.getInstance();
+    reply(from(linuxService.setPrefixProtonFolder(protonFolder)));
+});
+
 ipc.on("linux.verify-proton-folder", (protonFolder, reply) => {
     const linuxService = LinuxService.getInstance();
     reply(of(linuxService.verifyProtonPath(protonFolder || "")));

@@ -11,6 +11,8 @@ import { buildLinuxDesktopEntry } from "main/helpers/launch-shortcut.helpers";
 import { ModsGridStatus } from "shared/models/mods/mod-ipc.model";
 import { ProtonConfig } from "./bs-launcher/game-runtime";
 
+type ProtonPurpose = "game" | "prefix";
+
 export class LinuxService {
     private static instance: LinuxService;
 
@@ -52,6 +54,21 @@ export class LinuxService {
         steamPath: string,
         options: { createCompatData: boolean }
     ): Promise<ProtonConfig> {
+        return this.buildProtonConfig(steamPath, options, "game");
+    }
+
+    public async getPrefixProtonConfig(
+        steamPath: string,
+        options: { createCompatData: boolean }
+    ): Promise<ProtonConfig> {
+        return this.buildProtonConfig(steamPath, options, "prefix");
+    }
+
+    private async buildProtonConfig(
+        steamPath: string,
+        options: { createCompatData: boolean },
+        purpose: ProtonPurpose
+    ): Promise<ProtonConfig> {
         const compatDataPath = this.getCompatDataPath();
         if (options.createCompatData && !fs.existsSync(compatDataPath)) {
             // If the user never ran Beat Saber through steam before
@@ -61,7 +78,7 @@ export class LinuxService {
             await fs.ensureDir(compatDataPath);
         }
 
-        const protonPath = await this.getProtonPath();
+        const protonPath = this.getProtonPath(purpose);
         const nixOS = await this.isNixOS();
 
         if (!options.createCompatData && !fs.existsSync(compatDataPath)) {
@@ -71,17 +88,41 @@ export class LinuxService {
         return { protonPath, compatDataPath, steamPath, nixOS };
     }
 
-    private async getProtonPath(): Promise<string> {
+    private getOptionalPrefixProtonFolder(): string | undefined {
+        if (!this.staticConfig.has("prefix-proton-folder")) {
+            return undefined;
+        }
+
+        const configured = this.staticConfig.get("prefix-proton-folder");
+        if (typeof configured !== "string") {
+            return undefined;
+        }
+
+        const trimmed = configured.trim();
+        return trimmed || undefined;
+    }
+
+    private resolveProtonFolder(purpose: ProtonPurpose): string {
+        if (purpose === "prefix") {
+            const prefixFolder = this.getOptionalPrefixProtonFolder();
+            if (prefixFolder) {
+                return prefixFolder;
+            }
+        }
+
         if (!this.staticConfig.has("proton-folder")) {
             throw CustomError.fromError(
                 new Error("Proton folder not set"),
                 BSLaunchError.PROTON_NOT_SET
             );
         }
-        const protonPath = path.join(
-            this.staticConfig.get("proton-folder"),
-            this.PROTON_BINARY_PREFIX
-        );
+
+        return this.staticConfig.get("proton-folder");
+    }
+
+    private getProtonPath(purpose: ProtonPurpose = "game"): string {
+        const protonFolder = this.resolveProtonFolder(purpose);
+        const protonPath = path.join(protonFolder, this.PROTON_BINARY_PREFIX);
         if (!fs.pathExistsSync(protonPath)) {
             throw CustomError.fromError(
                 new Error("Could not locate proton binary"),
@@ -99,6 +140,21 @@ export class LinuxService {
         }
 
         await this.staticConfig.set("proton-folder", trimmedProtonFolder);
+        return true;
+    }
+
+    public async setPrefixProtonFolder(protonFolder: string): Promise<boolean> {
+        const trimmedProtonFolder = protonFolder.trim();
+        if (!trimmedProtonFolder) {
+            this.staticConfig.delete("prefix-proton-folder");
+            return true;
+        }
+
+        if (!this.verifyProtonPath(trimmedProtonFolder)) {
+            return false;
+        }
+
+        await this.staticConfig.set("prefix-proton-folder", trimmedProtonFolder);
         return true;
     }
 

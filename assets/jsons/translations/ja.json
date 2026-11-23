@@ -256,6 +256,14 @@
                     "invalid-folder": "無効なProtonフォルダーのパスです"
                 }
             },
+            "prefix-proton-folder": {
+                "title": "Proton for modding operations",
+                "description": "Optional Proton installation used for BSIPA and other Wine prefix operations. If left empty, BSManager uses the main Proton installation.",
+                "errors": {
+                    "title": "Setting the modding Proton folder failed",
+                    "invalid-folder": "Invalid Proton folder path"
+                }
+            },
             "additional-content": {
                 "title": "追加コンテンツ",
                 "description": "Beat Saberをカスタマイズできる追加コンテンツ!",

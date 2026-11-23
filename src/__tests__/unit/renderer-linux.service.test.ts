@@ -22,6 +22,17 @@ describe("renderer LinuxService", () => {
         expect(mockSendV2).toHaveBeenCalledWith("linux.set-proton-folder", "/home/user/Proton");
     });
 
+    it("sends the supplied prefix Proton folder for atomic validation and persistence", () => {
+        const service = LinuxService.getInstance();
+
+        service.setPrefixProtonFolder("/home/user/Proton Experimental");
+
+        expect(mockSendV2).toHaveBeenCalledWith(
+            "linux.set-prefix-proton-folder",
+            "/home/user/Proton Experimental"
+        );
+    });
+
     it("sends the supplied Proton folder for validation", () => {
         const service = LinuxService.getInstance();
 

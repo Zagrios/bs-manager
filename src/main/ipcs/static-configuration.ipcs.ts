@@ -19,6 +19,14 @@ ipc.on("static-configuration.set", (args, reply) => {
         return;
     }
 
+    if (args.key === "prefix-proton-folder") {
+        reply(throwError(() => new CustomError(
+            "Prefix Proton folder writes must use linux.set-prefix-proton-folder",
+            "PROTON_FOLDER_WRITE_FORBIDDEN"
+        )));
+        return;
+    }
+
     reply(from(staticConfig.set(args.key, args.value)));
 });
 
