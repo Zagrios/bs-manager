@@ -6,11 +6,12 @@ import log from "electron-log";
 import { Observable, lastValueFrom, tap } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import {
-    BS_ARM64_FALLBACK_MANIFEST,
-    BS_ARM64_MANIFEST_ASSET,
+    BS_ARM64_RELEASES_FILE,
+    BS_ARM64_RELEASES_URL,
     BS_ARM64_REPOSITORY,
     BsArm64Error,
-    BsArm64Manifest,
+    BsArm64Release,
+    BsArm64ReleaseAsset,
     BsArm64ModsUnavailable,
     BsArm64InstallOptions,
     BsArm64Progress,
@@ -26,6 +27,7 @@ import { BSLocalVersionService } from "./bs-local-version.service";
 import { InstallationLocationService } from "./installation-location.service";
 import { LinuxService } from "./linux.service";
 import { RequestService } from "./request.service";
+import { UtilsService } from "./utils.service";
 import { BsModsManagerService } from "./mods/bs-mods-manager.service";
 
 // Written by BSManager into the installer's state dir in the instance: which release (and where
@@ -55,55 +57,80 @@ export function parseBsArm64Result(lines: string[]): BsArm64ScriptStatus | undef
     return undefined;
 }
 
-export type GithubRelease = {
-    tag_name: string;
-    draft: boolean;
-    prerelease: boolean;
-    assets: { name: string; browser_download_url: string }[];
-};
-
 type InstalledRelease = { tag: string; dir: string };
 
-type ReleaseAsset = { release: GithubRelease; asset: GithubRelease["assets"][number] };
+/** A catalog release and its asset for the selected Proton build. */
+export type BsArm64ReleaseMatch = { release: BsArm64Release; asset: BsArm64ReleaseAsset };
 
-// The newest release's manifest and its asset for a Proton build
-type ReleaseInfo = { protonBuild: string | undefined; match?: ReleaseAsset; manifest: BsArm64Manifest };
+// The catalog changes rarely; the status is asked for on every version view
+const CATALOG_TTL_MS = 10 * 60 * 1000;
+const CATALOG_TIMEOUT_MS = 15_000;
 
-// GitHub allows 60 unauthenticated API requests an hour; the status is asked for on every version view
-const RELEASE_INFO_TTL_MS = 10 * 60 * 1000;
+// Strict, because tags and artifact names end up in download URLs and cache paths
+const RELEASE_TAG = /^v\d+(\.\d+)*(-[\w.]+)?$/;
+const ARTIFACT_NAME = /^bs-arm64-[\w.-]+\.tar\.gz$/;
+const SHA256 = /^[0-9a-f]{64}$/;
+
+function isStringArray(value: unknown): value is string[] {
+    return Array.isArray(value) && value.every(v => typeof v === "string");
+}
+
+function isReleaseAsset(value: unknown): value is BsArm64ReleaseAsset {
+    const asset = value as BsArm64ReleaseAsset;
+    return typeof asset?.artifact === "string" && ARTIFACT_NAME.test(asset.artifact) && !asset.artifact.includes("..")
+        && typeof asset.sha256 === "string" && SHA256.test(asset.sha256);
+}
+
+function isRelease(value: unknown): value is BsArm64Release {
+    const release = value as BsArm64Release;
+    return typeof release?.version === "string" && RELEASE_TAG.test(release.version)
+        && isStringArray(release.bsVersions) && isStringArray(release.bsipaVersions)
+        && !!release.protonVersions && typeof release.protonVersions === "object"
+        && Object.values(release.protonVersions).every(isReleaseAsset);
+}
+
+/** A valid bs-arm64-releases.json: releases newest first. */
+export function isBsArm64Catalog(value: unknown): value is BsArm64Release[] {
+    return Array.isArray(value) && value.every(isRelease);
+}
 
 // Proton's version file says e.g. "proton-11.0-2c-arm64" for the tag "proton-11.0-2c"
 function isBuildOfProtonTag(protonBuild: string, protonTag: string): boolean {
     return protonBuild === protonTag || protonBuild.startsWith(`${protonTag}-`);
 }
 
-/** The asset of a release to install for the given Proton build: the one its manifest names. */
-export function findBsArm64ReleaseAsset(release: GithubRelease, manifest: BsArm64Manifest, protonBuild: string | undefined): ReleaseAsset | undefined {
+/** The newest catalog release that has an asset for the given Proton build. */
+export function findBsArm64Release(catalog: BsArm64Release[], protonBuild: string | undefined): BsArm64ReleaseMatch | undefined {
     if (!protonBuild) {
         return undefined;
     }
-    const entry = Object.entries(manifest.protonVersions).find(([protonTag]) => isBuildOfProtonTag(protonBuild, protonTag))?.[1];
-    const asset = entry && release.assets.find(a => a.name === entry.artifact);
-    return asset ? { release, asset } : undefined;
+    for (const release of catalog) {
+        const asset = Object.entries(release.protonVersions).find(([protonTag]) => isBuildOfProtonTag(protonBuild, protonTag))?.[1];
+        if (asset) {
+            return { release, asset };
+        }
+    }
+    return undefined;
 }
 
-/** What a release was tested with; BS_ARM64_FALLBACK_MANIFEST when GitHub can't be reached. */
-export function bsArm64Supported(manifest: BsArm64Manifest | undefined): Pick<BsArm64Manifest, "bsVersions" | "bsipaVersions"> {
-    return manifest ?? BS_ARM64_FALLBACK_MANIFEST;
+/** Where a catalog asset is downloaded from: always a release of BS_ARM64_REPOSITORY. */
+export function bsArm64DownloadUrl({ release, asset }: BsArm64ReleaseMatch): string {
+    return `https://github.com/${BS_ARM64_REPOSITORY}/releases/download/${release.version}/${asset.artifact}`;
 }
 
 /** Why mod support can't be installed: no BSIPA, or one the release wasn't tested with. */
-export function bsArm64ModsUnavailable(manifest: BsArm64Manifest | undefined, bsipaVersion: string | undefined): BsArm64ModsUnavailable | undefined {
+export function bsArm64ModsUnavailable(release: BsArm64Release, bsipaVersion: string | undefined): BsArm64ModsUnavailable | undefined {
     if (!bsipaVersion) {
         return BsArm64ModsUnavailable.NO_BSIPA;
     }
-    return bsArm64Supported(manifest).bsipaVersions.includes(bsipaVersion) ? undefined : BsArm64ModsUnavailable.BSIPA_NOT_SUPPORTED;
+    return release.bsipaVersions.includes(bsipaVersion) ? undefined : BsArm64ModsUnavailable.BSIPA_NOT_SUPPORTED;
 }
 
 /**
  * Installs the native ARM64 runtime from https://github.com/DaVarga/bs-arm64 into a
- * Beat Saber instance. The release matching the selected Proton build is downloaded,
- * verified and unpacked into BSManager's cache, and its bs-arm64.sh does the rest.
+ * Beat Saber instance. The catalog release matching the selected Proton build is downloaded,
+ * checked against its pinned SHA-256 and unpacked into BSManager's cache, and its bs-arm64.sh
+ * does the rest.
  */
 export class BsArm64Service {
     private static instance: BsArm64Service;
@@ -119,8 +146,9 @@ export class BsArm64Service {
     private readonly localVersions = BSLocalVersionService.getInstance();
     private readonly installLocation = InstallationLocationService.getInstance();
     private readonly request = RequestService.getInstance();
+    private readonly utils = UtilsService.getInstance();
 
-    private releaseInfo?: { info: ReleaseInfo; time: number };
+    private catalog?: { releases: BsArm64Release[]; time: number };
 
     private constructor() {}
 
@@ -146,24 +174,20 @@ export class BsArm64Service {
             return status;
         }
 
-        // Offline or GitHub unreachable: fall back to what releases without a manifest support
-        const info = await this.getReleaseInfo().catch((error): undefined => {
-            log.warn("Could not get the bs-arm64 releases", error);
-            return undefined;
-        });
-        if (info && !info.match) {
+        const match = findBsArm64Release(await this.getCatalog(), status.protonVersion);
+        if (!match) {
             status.unsupported = BsArm64Unsupported.NO_RELEASE;
             return status;
         }
 
-        status.supportedVersions = bsArm64Supported(info?.manifest).bsVersions;
+        status.supportedVersions = match.release.bsVersions;
         if (!status.supportedVersions.includes(version.BSVersion)) {
             status.unsupported = BsArm64Unsupported.VERSION_NOT_SUPPORTED;
             return status;
         }
 
         status.bsipaVersion = await BsModsManagerService.getInstance().getBsipaVersion(version).catch((): undefined => undefined);
-        status.modsUnavailable = bsArm64ModsUnavailable(info?.manifest, status.bsipaVersion);
+        status.modsUnavailable = bsArm64ModsUnavailable(match.release, status.bsipaVersion);
         return status;
     }
 
@@ -233,93 +257,86 @@ export class BsArm64Service {
         return path.join(this.installLocation.cachePath(), "bs-arm64");
     }
 
-    /** The newest release, its asset for the selected Proton build, and its manifest. Cached for a while. */
-    private async getReleaseInfo(): Promise<ReleaseInfo> {
-        const protonBuild = this.linux.getProtonBuild();
-        const cached = this.releaseInfo;
-        if (cached && cached.info.protonBuild === protonBuild && Date.now() - cached.time < RELEASE_INFO_TTL_MS) {
-            return cached.info;
+    /**
+     * The release catalog: the one in this repository, else the copy bundled with BSManager
+     * (offline, or the remote one is invalid). Cached for a while.
+     */
+    private async getCatalog({ refresh = false } = {}): Promise<BsArm64Release[]> {
+        const cached = this.catalog;
+        if (!refresh && cached && Date.now() - cached.time < CATALOG_TTL_MS) {
+            return cached.releases;
         }
 
-        // Only the newest release: its manifest lists every supported Proton version
-        const { data: release } = await this.request.getJSON<GithubRelease>(
-            `https://api.github.com/repos/${BS_ARM64_REPOSITORY}/releases/latest`
-        );
-        const manifestAsset = release.assets.find(asset => asset.name === BS_ARM64_MANIFEST_ASSET);
-        if (!manifestAsset) {
-            throw new Error(`bs-arm64 ${release.tag_name} has no ${BS_ARM64_MANIFEST_ASSET}`);
-        }
-        const manifest = await this.downloadManifest(manifestAsset.browser_download_url);
-        const match = findBsArm64ReleaseAsset(release, manifest, protonBuild);
-        const info: ReleaseInfo = { protonBuild, match, manifest };
-
-        this.releaseInfo = { info, time: Date.now() };
-        return info;
+        const releases = await this.getRemoteCatalog().catch(async (error): Promise<BsArm64Release[]> => {
+            log.warn("Could not get the remote bs-arm64 release catalog, using the bundled one", error);
+            return this.getBundledCatalog();
+        });
+        this.catalog = { releases, time: Date.now() };
+        return releases;
     }
 
-    private async downloadManifest(url: string): Promise<BsArm64Manifest> {
-        await fs.ensureDir(this.releasesDir());
-        const file = path.join(this.releasesDir(), `manifest-${Date.now()}.json`);
+    private async getRemoteCatalog(): Promise<BsArm64Release[]> {
+        const abort = new AbortController();
+        const timeout = setTimeout(() => abort.abort(), CATALOG_TIMEOUT_MS);
         try {
-            await lastValueFrom(this.request.downloadFile(url, file));
-            const manifest: BsArm64Manifest = await fs.readJson(file);
-            if (!Array.isArray(manifest?.bsVersions) || !Array.isArray(manifest?.bsipaVersions) || !manifest.protonVersions || typeof manifest.protonVersions !== "object") {
-                throw new Error(`Invalid ${BS_ARM64_MANIFEST_ASSET}`);
+            const { data } = await this.request.getJSON<unknown>(BS_ARM64_RELEASES_URL, { signal: abort.signal, retryLimit: 0 });
+            if (!isBsArm64Catalog(data)) {
+                throw new Error(`Invalid ${BS_ARM64_RELEASES_FILE}`);
             }
-            return manifest;
+            return data;
         } finally {
-            await fs.remove(file);
+            clearTimeout(timeout);
         }
     }
 
-    /** Newest release built for the selected Proton build, downloaded and unpacked. */
+    private async getBundledCatalog(): Promise<BsArm64Release[]> {
+        const data: unknown = await fs.readJson(path.join(this.utils.getAssestsJsonsPath(), BS_ARM64_RELEASES_FILE)).catch((error): undefined => {
+            log.error("Could not read the bundled bs-arm64 release catalog", error);
+            return undefined;
+        });
+        if (!isBsArm64Catalog(data)) {
+            log.error(`Ignoring an invalid bundled ${BS_ARM64_RELEASES_FILE}`);
+            return [];
+        }
+        return data;
+    }
+
+    /** Newest catalog release for the selected Proton build, downloaded, verified and unpacked. */
     private async prepareRelease(progress: (p: BsArm64Progress) => void): Promise<InstalledRelease> {
-        this.releaseInfo = undefined;
-        const { protonBuild, match } = await this.getReleaseInfo();
+        const protonBuild = this.linux.getProtonBuild();
+        const match = findBsArm64Release(await this.getCatalog({ refresh: true }), protonBuild);
 
         if (!match) {
             throw new CustomError(`No bs-arm64 release for ${protonBuild}`, BsArm64Error.NO_MATCHING_RELEASE, protonBuild);
         }
 
         const { release, asset } = match;
-        const name = asset.name.slice(0, -".tar.gz".length);
+        const name = asset.artifact.slice(0, -".tar.gz".length);
         const dir = path.join(this.releasesDir(), name);
         if (await fs.pathExists(path.join(dir, "bs-arm64.sh"))) {
             progress({ log: `Using ${name}` });
-            return { tag: release.tag_name, dir };
+            return { tag: release.version, dir };
         }
 
         await fs.ensureDir(this.releasesDir());
-        const tarball = path.join(this.releasesDir(), asset.name);
-        progress({ log: `Downloading ${asset.name}` });
-        await lastValueFrom(this.request.downloadFile(asset.browser_download_url, tarball).pipe(
+        const tarball = path.join(this.releasesDir(), asset.artifact);
+        progress({ log: `Downloading ${asset.artifact}` });
+        await lastValueFrom(this.request.downloadFile(bsArm64DownloadUrl(match), tarball).pipe(
             tap(p => p.total && progress({ percent: Math.round((p.current / p.total) * 100) }))
         ));
 
-        const checksumAsset = release.assets.find(a => a.name === `${asset.name}.sha256`);
-        if (checksumAsset) {
-            const expected = await this.downloadChecksum(checksumAsset.browser_download_url);
-            const actual = await this.sha256(tarball);
-            if (expected !== actual) {
-                await fs.remove(tarball);
-                throw new CustomError(`Checksum mismatch for ${asset.name}`, BsArm64Error.CHECKSUM_MISMATCH);
-            }
-            progress({ log: "Checksum OK" });
+        // Pinned in the catalog: only the reviewed file gets unpacked and run
+        const actual = await this.sha256(tarball);
+        if (actual !== asset.sha256) {
+            await fs.remove(tarball);
+            throw new CustomError(`Checksum mismatch for ${asset.artifact}`, BsArm64Error.CHECKSUM_MISMATCH);
         }
+        progress({ log: "Checksum OK" });
 
         progress({ log: `Unpacking into ${this.releasesDir()}` });
         await this.run(`tar -xzf ${this.quote(tarball)} -C ${this.quote(this.releasesDir())}`, progress);
         await fs.remove(tarball);
-        return { tag: release.tag_name, dir };
-    }
-
-    // "<sha256>  <file name>"
-    private async downloadChecksum(url: string): Promise<string> {
-        const file = path.join(this.releasesDir(), `checksum-${Date.now()}.txt`);
-        await lastValueFrom(this.request.downloadFile(url, file));
-        const text = await fs.readFile(file, "utf8");
-        await fs.remove(file);
-        return text.trim().split(/\s+/)[0];
+        return { tag: release.version, dir };
     }
 
     private sha256(file: string): Promise<string> {

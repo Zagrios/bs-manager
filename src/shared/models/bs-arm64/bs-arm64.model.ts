@@ -1,35 +1,33 @@
 /**
  * Native ARM64 build of Beat Saber for ARM64 Proton (e.g. the Steam Frame).
- * The runtime itself lives in https://github.com/DaVarga/bs-arm64; BSManager
- * downloads its release matching the selected Proton build and runs its installer.
+ * The runtime itself lives in https://github.com/DaVarga/bs-arm64. BSManager only installs the
+ * releases listed in its own catalog, assets/jsons/bs-arm64-releases.json, and checks every
+ * download against the SHA-256 pinned there before running the release's installer.
  */
 
 export const BS_ARM64_REPOSITORY = "DaVarga/bs-arm64";
 
-// bs-arm64-manifest.json of a release (0.3.2 and later): what the release was tested with
-export const BS_ARM64_MANIFEST_ASSET = "bs-arm64-manifest.json";
+// Catalog of reviewed releases, bundled with BSManager and refreshed from this repository like
+// bs-versions.json, so a new release or Proton version needs a catalog update, not a BSManager release
+export const BS_ARM64_RELEASES_FILE = "bs-arm64-releases.json";
+export const BS_ARM64_RELEASES_URL = `https://raw.githubusercontent.com/Zagrios/bs-manager/master/assets/jsons/${BS_ARM64_RELEASES_FILE}`;
 
-export interface BsArm64ProtonVersion {
-    // Release asset to install for this Proton version, e.g. "bs-arm64-v0.3.2-proton-11.0-2c.tar.gz"
+export interface BsArm64ReleaseAsset {
+    // Release asset to install, e.g. "bs-arm64-v0.4.1-proton-11.0-2c.tar.gz"
     artifact: string;
+    // SHA-256 of the asset (hex), checked before it is unpacked
+    sha256: string;
 }
 
-export interface BsArm64Manifest {
+/** A release in the catalog: entries of its bs-arm64-manifest.json, plus the pinned checksums. */
+export interface BsArm64Release {
+    // Release tag, e.g. "v0.4.1"
     version: string;
-    // Proton version the DLLs are built against (kept for older BSManager versions)
-    proton: string;
-    // Proton versions the DLLs work with, by Proton tag ("proton-11.0-2e"), each tested on the Steam Frame
-    protonVersions: Record<string, BsArm64ProtonVersion>;
-    unityVersions: string[];
+    // Asset to install, by Proton tag ("proton-11.0-2e"), each tested on the Steam Frame
+    protonVersions: Record<string, BsArm64ReleaseAsset>;
     bsVersions: string[];
     bsipaVersions: string[];
 }
-
-// When GitHub can't be reached
-export const BS_ARM64_FALLBACK_MANIFEST: Pick<BsArm64Manifest, "bsVersions" | "bsipaVersions"> = {
-    bsVersions: ["1.44.1"],
-    bsipaVersions: ["4.3.7"],
-};
 
 export enum BsArm64Unsupported {
     NOT_LINUX_ARM64 = "NOT_LINUX_ARM64",
