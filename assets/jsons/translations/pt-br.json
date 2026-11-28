@@ -62,9 +62,6 @@
                 "description": "Runs this version as a native ARM64 program under ARM64 Proton (e.g. on the Steam Frame) instead of emulating the x64 build. The Unity player and runtimes are downloaded from their official sources; the original files are backed up and restored on uninstall.",
                 "status": "Status",
                 "not-installed": "Not installed",
-                "installed-mods": "Installed ({release}, with mod support)",
-                "installed-no-mods": "Installed ({release}, without mods)",
-                "mod-support": "Mod support (BSIPA)",
                 "install": "Install",
                 "reinstall": "Reinstall",
                 "uninstall": "Uninstall",
@@ -77,8 +74,8 @@
                     "VERSION_NOT_SUPPORTED": "Not available for this Beat Saber version. Supported: {versions}."
                 },
                 "mods-unavailable": {
-                    "NO_BSIPA": "Without mods only: BeatMods has no BSIPA for this version.",
-                    "BSIPA_NOT_SUPPORTED": "Without mods only: BSIPA {bsipa} isn't supported by this release yet."
+                    "NO_BSIPA": "BeatMods has no mods for this Beat Saber version yet.",
+                    "BSIPA_NOT_SUPPORTED": "Mods may not load: BSIPA {bsipa} hasn't been tested with the native ARM64 build yet."
                 },
                 "notifications": {
                     "install-success": "Native ARM64 build installed",
@@ -100,7 +97,8 @@
                     "PREFIX_BUSY": "Beat Saber or another Windows program is still running. Close it and try again.",
                     "PREFIX_FAILED": "Setting up BSManager's Wine prefix failed. The details below say why.",
                     "DOWNLOAD_FAILED": "A download failed. Check your internet connection and try again."
-                }
+                },
+                "installed": "Installed ({release})"
             },
             "launch-mods": {
                 "oculus": "Modo Oculus",

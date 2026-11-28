@@ -36,7 +36,7 @@ export enum BsArm64Unsupported {
     VERSION_NOT_SUPPORTED = "VERSION_NOT_SUPPORTED",
 }
 
-// Why the native ARM64 build can only be installed without mod support
+// Why mods may not work with the native ARM64 build
 export enum BsArm64ModsUnavailable {
     // BSIPA isn't installed and BeatMods has none for this version
     NO_BSIPA = "NO_BSIPA",
@@ -49,12 +49,13 @@ export interface BsArm64Status {
     unsupported?: BsArm64Unsupported;
     // Beat Saber versions the release matching the Proton build was tested with
     supportedVersions?: string[];
-    // Why mod support can't be installed; undefined when it can
+    // Why mods may not work with the native build; undefined when they should
     modsUnavailable?: BsArm64ModsUnavailable;
     // Installed BSIPA, else the one BeatMods offers for this version
     bsipaVersion?: string;
     installed: boolean;
-    // Installed with mod support (ARM64 BSIPA fixes)
+    // Installed with the ARM64 mod loader fixes (false for instances installed with --no-mods by
+    // BSManager versions that offered that)
     mods: boolean;
     // Build of the selected Proton, e.g. "proton-11.0-2c-arm64"
     protonVersion?: string;
@@ -63,10 +64,6 @@ export interface BsArm64Status {
     ready: boolean;
     // bs-arm64 release the instance was patched with, e.g. "v0.1.1"
     installedRelease?: string;
-}
-
-export interface BsArm64InstallOptions {
-    mods: boolean;
 }
 
 export interface BsArm64Progress {

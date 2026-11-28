@@ -8,8 +8,8 @@ ipc.on("bs-arm64.get-status", (version, reply) => {
     reply(from(BsArm64Service.getInstance().getStatus(version)));
 });
 
-ipc.on("bs-arm64.install", ({ version, options }, reply) => {
-    reply(BsArm64Service.getInstance().install(version, options));
+ipc.on("bs-arm64.install", (version, reply) => {
+    reply(BsArm64Service.getInstance().install(version));
 });
 
 ipc.on("bs-arm64.uninstall", (version, reply) => {

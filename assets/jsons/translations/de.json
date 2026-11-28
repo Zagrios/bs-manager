@@ -62,9 +62,6 @@
                 "description": "Startet diese Version als natives ARM64-Programm unter ARM64-Proton (z. B. auf dem Steam Frame), statt den x64-Build zu emulieren. Unity-Player und Laufzeitbibliotheken werden von den offiziellen Quellen geladen; die Originaldateien werden gesichert und beim Deinstallieren wiederhergestellt.",
                 "status": "Status",
                 "not-installed": "Nicht installiert",
-                "installed-mods": "Installiert ({release}, mit Mod-Unterstützung)",
-                "installed-no-mods": "Installiert ({release}, ohne Mods)",
-                "mod-support": "Mod-Unterstützung (BSIPA)",
                 "install": "Installieren",
                 "reinstall": "Neu installieren",
                 "uninstall": "Deinstallieren",
@@ -77,8 +74,8 @@
                     "VERSION_NOT_SUPPORTED": "Für diese Beat-Saber-Version nicht verfügbar. Unterstützt: {versions}."
                 },
                 "mods-unavailable": {
-                    "NO_BSIPA": "Nur ohne Mods: BeatMods hat kein BSIPA für diese Version.",
-                    "BSIPA_NOT_SUPPORTED": "Nur ohne Mods: BSIPA {bsipa} wird von diesem Release noch nicht unterstützt."
+                    "NO_BSIPA": "BeatMods has no mods for this Beat Saber version yet.",
+                    "BSIPA_NOT_SUPPORTED": "Mods may not load: BSIPA {bsipa} hasn't been tested with the native ARM64 build yet."
                 },
                 "notifications": {
                     "install-success": "Nativer ARM64-Build installiert",
@@ -100,7 +97,8 @@
                     "PREFIX_BUSY": "Beat Saber or another Windows program is still running. Close it and try again.",
                     "PREFIX_FAILED": "Setting up BSManager's Wine prefix failed. The details below say why.",
                     "DOWNLOAD_FAILED": "A download failed. Check your internet connection and try again."
-                }
+                },
+                "installed": "Installed ({release})"
             },
             "launch-mods": {
                 "oculus": "Oculus Modus",

@@ -3,7 +3,6 @@ import { Observable } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
 import { BS_ARM64_REPOSITORY, BsArm64Progress, BsArm64Status, isBsArm64InstallerErrorCode } from "shared/models/bs-arm64/bs-arm64.model";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
-import { BsmCheckbox } from "renderer/components/shared/bsm-checkbox.component";
 import { BsmLink } from "renderer/components/shared/bsm-link.component";
 import { useService } from "renderer/hooks/use-service.hook";
 import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
@@ -23,22 +22,10 @@ export function Arm64Slide({ version, status, onStatusChange }: Props) {
     const arm64 = useService(BsArm64Service);
     const notification = useService(NotificationService);
 
-    const [mods, setMods] = useState(true);
     const [busy, setBusy] = useState(false);
     const [percent, setPercent] = useState<number>();
     const [logLines, setLogLines] = useState<string[]>([]);
     const logRef = useRef<HTMLPreElement>(null);
-
-    // Mod support needs a BSIPA version the release was tested with
-    const modsAvailable = !status?.modsUnavailable;
-
-    useEffect(() => {
-        if (!modsAvailable) {
-            setMods(false);
-        } else if (status?.installed) {
-            setMods(status.mods);
-        }
-    }, [status?.installed, status?.mods, modsAvailable]);
 
     useEffect(() => {
         logRef.current?.scrollTo({ top: logRef.current.scrollHeight });
@@ -46,7 +33,7 @@ export function Arm64Slide({ version, status, onStatusChange }: Props) {
 
     const run = (action: "install" | "uninstall") => {
         const obs: Observable<BsArm64Progress> = action === "install"
-            ? arm64.install(version, { mods })
+            ? arm64.install(version)
             : arm64.uninstall(version);
 
         setBusy(true);
@@ -105,7 +92,7 @@ export function Arm64Slide({ version, status, onStatusChange }: Props) {
                             <span className="font-bold">{t("pages.version-viewer.arm64.status")}</span>
                             <span>
                                 {status?.installed
-                                    ? t(status.mods ? "pages.version-viewer.arm64.installed-mods" : "pages.version-viewer.arm64.installed-no-mods", { release: status.installedRelease ?? "?" })
+                                    ? t("pages.version-viewer.arm64.installed", { release: status.installedRelease ?? "?" })
                                     : t("pages.version-viewer.arm64.not-installed")}
                             </span>
                             <span className="font-bold">Proton</span>
@@ -116,11 +103,7 @@ export function Arm64Slide({ version, status, onStatusChange }: Props) {
                             <p className="text-sm font-bold text-yellow-500">{t("pages.version-viewer.arm64.reinstall-needed")}</p>
                         )}
 
-                        <div className="flex items-center gap-2 text-sm w-fit">
-                            <BsmCheckbox className="h-5 w-5 relative" checked={mods} disabled={busy || !modsAvailable} onChange={setMods} />
-                            <span>{t("pages.version-viewer.arm64.mod-support")}</span>
-                        </div>
-                        {!modsAvailable && (
+                        {status?.modsUnavailable && (
                             <p className="text-sm text-yellow-500">
                                 {t(`pages.version-viewer.arm64.mods-unavailable.${status.modsUnavailable}`, { bsipa: status.bsipaVersion ?? "?" })}
                             </p>

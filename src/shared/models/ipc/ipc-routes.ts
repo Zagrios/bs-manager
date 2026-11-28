@@ -22,7 +22,7 @@ import { BbmFullMod, BbmModVersion, ExternalMod } from "../mods/mod.interface";
 import { OculusDownloadInfo } from "main/services/bs-version-download/bs-oculus-downloader.service";
 import { UpdateInfo } from "electron-updater";
 import { VrRuntime } from "shared/models/vr-runtime.model";
-import { BsArm64InstallOptions, BsArm64Progress, BsArm64Status } from "shared/models/bs-arm64/bs-arm64.model";
+import { BsArm64Progress, BsArm64Status } from "shared/models/bs-arm64/bs-arm64.model";
 
 export type IpcReplier<T> = (data: Observable<T>) => void;
 
@@ -169,7 +169,7 @@ export interface IpcChannelMapping {
 
     /* ** bs-arm64.ipcs ** */
     "bs-arm64.get-status": { request: BSVersion, response: BsArm64Status };
-    "bs-arm64.install": { request: { version: BSVersion; options: BsArm64InstallOptions }, response: BsArm64Progress };
+    "bs-arm64.install": { request: BSVersion, response: BsArm64Progress };
     "bs-arm64.uninstall": { request: BSVersion, response: BsArm64Progress };
 
     /* ** oculus.ipcs ** */

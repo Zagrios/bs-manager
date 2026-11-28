@@ -13,7 +13,6 @@ import {
     BsArm64Release,
     BsArm64ReleaseAsset,
     BsArm64ModsUnavailable,
-    BsArm64InstallOptions,
     BsArm64Progress,
     BsArm64Status,
     BsArm64Unsupported,
@@ -232,16 +231,16 @@ export class BsArm64Service {
         return status;
     }
 
-    public install(version: BSVersion, options: BsArm64InstallOptions): Observable<BsArm64Progress> {
+    /**
+     * Installs the native ARM64 build, always with the ARM64 mod loader fixes: the installer applies
+     * them only when BSIPA is installed, and BSManager runs it again after every BSIPA install.
+     */
+    public install(version: BSVersion): Observable<BsArm64Progress> {
         return new Observable<BsArm64Progress>(obs => {
             (async () => {
                 const versionPath = await this.localVersions.getVersionPath(version);
                 const release = await this.prepareRelease(msg => obs.next(msg));
-                const args = ["install", this.quote(versionPath), ...this.prefixArgs()];
-                if (!options.mods) {
-                    args.push("--no-mods");
-                }
-                await this.runInstaller(release.dir, args, msg => obs.next(msg));
+                await this.runInstaller(release.dir, ["install", this.quote(versionPath), ...this.prefixArgs()], msg => obs.next(msg));
                 await fs.writeJson(path.join(versionPath, RELEASE_FILE), release);
             })().then(() => obs.complete(), err => obs.error(err));
         });
@@ -268,11 +267,11 @@ export class BsArm64Service {
         const versionPath = await this.localVersions.getVersionPath(version);
         const release = await this.readInstalledRelease(versionPath);
         const script = release && await this.scriptStatus(versionPath, release);
-        if (!script?.installed || !script.mods) {
+        if (!script?.installed) {
             return;
         }
         log.info("BSIPA changed in a native ARM64 instance, re-applying the ARM64 mod loader fixes");
-        await lastValueFrom(this.install(version, { mods: true }), { defaultValue: undefined });
+        await lastValueFrom(this.install(version), { defaultValue: undefined });
     }
 
     /**
