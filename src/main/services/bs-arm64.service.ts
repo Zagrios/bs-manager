@@ -33,7 +33,9 @@ import { BsModsManagerService } from "./mods/bs-mods-manager.service";
 
 // Written by BSManager into the installer's state dir in the instance: which release (and where
 // it's unpacked) patched the instance. Uninstall removes the whole dir.
-const RELEASE_FILE = path.join(".bs-arm64", "bsm-release.json");
+// The installer's state dir in the instance, there while anything of the native build is
+const STATE_DIR = ".bs-arm64";
+const RELEASE_FILE = path.join(STATE_DIR, "bsm-release.json");
 
 // The user's choice for the instance, native or x64: {"native": boolean}. Outside .bs-arm64/, so
 // uninstalling (e.g. as a fallback after a Proton update) keeps it.
@@ -353,7 +355,7 @@ export class BsArm64Service {
         const installed = await this.readInstalledRelease(versionPath);
         if (!(await this.wantsNative(versionPath))) {
             if (installed) {
-                await this.restoreX64(version);
+                await this.restoreX64(version, versionPath);
             }
             return undefined;
         }
@@ -362,7 +364,7 @@ export class BsArm64Service {
         if (unsupported) {
             log.info(`Native ARM64 build not available (${unsupported}), launching the x64 build`);
             if (installed) {
-                await this.fallBackToX64(version, unsupported, onEvent);
+                await this.fallBackToX64(version, versionPath, unsupported, onEvent);
             }
             return undefined;
         }
@@ -373,7 +375,7 @@ export class BsArm64Service {
                 await lastValueFrom(this.install(version), { defaultValue: undefined });
             } catch (error) {
                 log.error("Could not install the native ARM64 build, launching the x64 build", error);
-                await this.fallBackToX64(version, (error as CustomError)?.data ?? (error as Error)?.message, onEvent);
+                await this.fallBackToX64(version, versionPath, (error as CustomError)?.data ?? (error as Error)?.message, onEvent);
                 return undefined;
             }
         }
@@ -394,13 +396,18 @@ export class BsArm64Service {
     }
 
     /** Starts this launch as x64 while the native build can't run; the user's choice stays native. */
-    private async fallBackToX64(version: BSVersion, reason: unknown, onEvent: (event: BSLaunchEventData) => void): Promise<void> {
+    private async fallBackToX64(version: BSVersion, versionPath: string, reason: unknown, onEvent: (event: BSLaunchEventData) => void): Promise<void> {
         onEvent({ type: BSLaunchWarning.BS_ARM64_FALLBACK, data: reason });
-        await this.restoreX64(version);
+        await this.restoreX64(version, versionPath);
     }
 
     /** Uninstalls the native build, so the x64 files are back. Nothing to do if it isn't installed. */
-    private async restoreX64(version: BSVersion): Promise<void> {
+    private async restoreX64(version: BSVersion, versionPath: string): Promise<void> {
+        // The installer never touched the instance (e.g. the first install failed to download):
+        // uninstalling would only download the release again, which fails the same way offline
+        if (!(await fs.pathExists(path.join(versionPath, STATE_DIR)))) {
+            return;
+        }
         try {
             await lastValueFrom(this.uninstall(version, { keepChoice: true }), { defaultValue: undefined });
         } catch (error) {

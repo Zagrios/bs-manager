@@ -374,6 +374,14 @@ describe("prepareLaunch", () => {
         expect(uninstall).toHaveBeenCalledWith(VERSION, { keepChoice: true });
     });
 
+    it("launches x64 offline on a first launch whose install couldn't download anything", async () => {
+        installFails = true;
+        await expect(prepare()).resolves.toBeUndefined();
+        expect(events.map(e => e.type)).toEqual([BSLaunchEvent.BS_ARM64_PREPARING, BSLaunchWarning.BS_ARM64_FALLBACK]);
+        // Nothing to restore, so no uninstall that would try to download the release again
+        expect(uninstall).not.toHaveBeenCalled();
+    });
+
     it("puts the x64 files back when the user chose x64", async () => {
         await installedAs("v0.4.1");
         await fs.writeJson(path.join(instance, ".bsm-arm64.json"), { native: false });
