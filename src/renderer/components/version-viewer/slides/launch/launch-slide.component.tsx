@@ -27,6 +27,7 @@ import { DefaultConfigKey } from "renderer/config/default-configuration.config";
 import { EditIcon } from "renderer/components/svgs/icons/edit-icon.component";
 import { ModalExitCode, ModalService } from "renderer/services/modale.service";
 import { CreateCustomLaunchOptionModal } from "renderer/components/modal/modal-types/create-custom-launch-option.component";
+import { NativeArm64Panel } from "./native-arm64-panel.component";
 
 type Props = { version: BSVersion };
 
@@ -277,6 +278,7 @@ export function LaunchSlide({ version }: Props) {
                     )}
                 </h1>
             </div>
+            {window.electron.platform === "linux" && <NativeArm64Panel version={version} />}
             <div className="w-full flex justify-center items-center gap-4 flex-wrap scrollbar-default">
                 {pinnedLaunchMods.map(id => launchModItems.find(mod => mod.id === id)).map(launchMod => {
                     if(launchMod?.visible === false || !launchMod?.pinned) { return undefined; }

@@ -72,6 +72,13 @@ export const AvailableVersionItem = memo(function AvailableVersionItem({version}
                         <span className="text-sm text-gray-700 dark:text-gray-400">{formatedDate}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
+                        {context?.nativeArm64Versions?.includes(version.BSVersion) && (
+                            <Tippy content={t("pages.available-versions.native-arm64-tooltip")} placement="top" theme="default" animation={false}>
+                                <span data-native-arm64 className="rounded-full bg-black/30 px-2 h-[25px] flex items-center text-xs font-bold uppercase text-white">
+                                    {t("pages.available-versions.native-arm64")}
+                                </span>
+                            </Tippy>
+                        )}
                         {version.ReleaseURL && (
                             <a href={version.ReleaseURL} target="_blank" onClick={e => e.stopPropagation()} className="flex flex-row justify-between items-center rounded-full bg-black bg-opacity-30 text-white pb-px overflow-hidden hover:bg-opacity-50" tabIndex={-1}>
                                 <SteamIcon className="w-[25px] h-[25px] transition-transform group-hover/card:rotate-[-360deg] duration-300" />

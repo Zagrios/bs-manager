@@ -350,7 +350,7 @@ describe("prepareLaunch", () => {
         await expect(prepare()).resolves.toBeUndefined();
         expect(events).toEqual([{ type: BSLaunchWarning.BS_ARM64_FALLBACK, data: BsArm64Unsupported.NO_RELEASE }]);
         expect(await fs.pathExists(releaseFile())).toBe(false);
-        expect(await choice()).toEqual({ native: true });
+        expect(await choice()).toBeUndefined();
 
         // The catalog now has a release for Proton 11.0-3
         (service as unknown as Record<string, unknown>).catalog = {
@@ -379,10 +379,22 @@ describe("prepareLaunch", () => {
         expect(await fs.pathExists(releaseFile())).toBe(false);
     });
 
-    it("leaves a version that never ran natively alone", async () => {
-        await expect(prepare()).resolves.toBeUndefined();
+    it("installs the native build on the first launch of a supported version", async () => {
+        await expect(prepare()).resolves.toBe(path.join(releaseDir, "bs-arm64.sh"));
+        expect(events).toEqual([{ type: BSLaunchEvent.BS_ARM64_PREPARING }]);
+    });
+
+    it("launches an unsupported version as x64 without a word", async () => {
+        await expect(service.prepareLaunch({ BSVersion: "1.46.0" } as BSVersion, instance, e => events.push(e))).resolves.toBeUndefined();
         expect(install).not.toHaveBeenCalled();
         expect(uninstall).not.toHaveBeenCalled();
+        expect(events).toEqual([]);
+    });
+
+    it("leaves a version the user set to x64 alone", async () => {
+        await fs.writeJson(path.join(instance, ".bsm-arm64.json"), { native: false });
+        await expect(prepare()).resolves.toBeUndefined();
+        expect(install).not.toHaveBeenCalled();
     });
 
     it("does nothing off ARM64 Linux", async () => {

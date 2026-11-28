@@ -209,7 +209,7 @@ export class BsArm64Service {
             installed: script ? script.installed : !!release,
             mods: !!script?.mods,
             ready: !!script?.ready,
-            native: await this.wantsNative(versionPath, release),
+            native: await this.wantsNative(versionPath),
             protonVersion: this.linux.getProtonBuild(),
             installedRelease: release?.tag,
         };
@@ -240,6 +240,14 @@ export class BsArm64Service {
             return { unsupported: BsArm64Unsupported.VERSION_NOT_SUPPORTED, match };
         }
         return { match };
+    }
+
+    /** Beat Saber versions that can run natively with the selected Proton; empty off ARM64 Linux. */
+    public async getNativeVersions(): Promise<string[]> {
+        if (!this.isLinuxArm64() || !tryit(() => this.linux.isArm64Wine()).result) {
+            return [];
+        }
+        return findBsArm64Release(await this.getCatalog(), this.linux.getProtonBuild())?.release.bsVersions ?? [];
     }
 
     private isLinuxArm64(): boolean {
@@ -300,8 +308,8 @@ export class BsArm64Service {
     /**
      * Gets a version ready to launch and returns the bs-arm64.sh that starts it natively, or
      * undefined to start the x64 build. Never asks the user to do anything:
-     *  - native wanted and possible: installs, repairs (Proton updated) or updates (newer catalog
-     *    release) the native build first, reporting BS_ARM64_PREPARING
+     *  - native wanted (the default) and possible: installs (first launch), repairs (Proton updated)
+     *    or updates (newer catalog release) the native build first, reporting BS_ARM64_PREPARING
      *  - native wanted but not possible now (no release for this Proton yet, ...) or the install
      *    failed: puts the x64 files back and reports BS_ARM64_FALLBACK. The choice is kept, so the
      *    next launch after the catalog supports this Proton is native again.
@@ -312,7 +320,7 @@ export class BsArm64Service {
             return undefined;
         }
         const installed = await this.readInstalledRelease(versionPath);
-        if (!(await this.wantsNative(versionPath, installed))) {
+        if (!(await this.wantsNative(versionPath))) {
             if (installed) {
                 await this.restoreX64(version);
             }
@@ -323,7 +331,7 @@ export class BsArm64Service {
         if (unsupported) {
             log.info(`Native ARM64 build not available (${unsupported}), launching the x64 build`);
             if (installed) {
-                await this.fallBackToX64(version, versionPath, unsupported, onEvent);
+                await this.fallBackToX64(version, unsupported, onEvent);
             }
             return undefined;
         }
@@ -334,7 +342,7 @@ export class BsArm64Service {
                 await lastValueFrom(this.install(version), { defaultValue: undefined });
             } catch (error) {
                 log.error("Could not install the native ARM64 build, launching the x64 build", error);
-                await this.fallBackToX64(version, versionPath, (error as CustomError)?.data ?? (error as Error)?.message, onEvent);
+                await this.fallBackToX64(version, (error as CustomError)?.data ?? (error as Error)?.message, onEvent);
                 return undefined;
             }
         }
@@ -354,13 +362,9 @@ export class BsArm64Service {
         return script.mods || !(await fs.pathExists(path.join(versionPath, BSIPA_INJECTOR)));
     }
 
-    /**
-     * Starts this launch as x64 while the native build can't run. Saves the choice first: an instance
-     * installed before choices were saved would otherwise stop counting as native once uninstalled.
-     */
-    private async fallBackToX64(version: BSVersion, versionPath: string, reason: unknown, onEvent: (event: BSLaunchEventData) => void): Promise<void> {
+    /** Starts this launch as x64 while the native build can't run; the user's choice stays native. */
+    private async fallBackToX64(version: BSVersion, reason: unknown, onEvent: (event: BSLaunchEventData) => void): Promise<void> {
         onEvent({ type: BSLaunchWarning.BS_ARM64_FALLBACK, data: reason });
-        await this.setWantsNative(versionPath, true);
         await this.restoreX64(version);
     }
 
@@ -379,12 +383,12 @@ export class BsArm64Service {
     // === Choice === //
 
     /**
-     * Whether the user wants this version to run natively: their choice if they made one, else
-     * whether the native build is installed. Kept outside .bs-arm64/, which uninstall removes.
+     * Whether this version should run natively: the user's choice if they made one, else yes. A
+     * supported version then gets the native build on its first launch; others run as x64.
      */
-    private async wantsNative(versionPath: string, installed: InstalledRelease | undefined): Promise<boolean> {
+    private async wantsNative(versionPath: string): Promise<boolean> {
         const choice = await fs.readJson(path.join(versionPath, CHOICE_FILE)).catch((): undefined => undefined);
-        return typeof choice?.native === "boolean" ? choice.native : !!installed;
+        return typeof choice?.native === "boolean" ? choice.native : true;
     }
 
     private async setWantsNative(versionPath: string, native: boolean): Promise<void> {

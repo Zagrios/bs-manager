@@ -1,6 +1,6 @@
 import { AvailableVersionsSlider } from "../components/available-versions/available-versions-slider.component";
 import { Slideshow } from "renderer/components/slideshow/slideshow.component";
-import { createContext, useCallback, useMemo } from "react";
+import { createContext, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "renderer/hooks/use-translation.hook";
 import { BSVersionManagerService } from "renderer/services/bs-version-manager.service";
 import { BsmDropdownButton } from "renderer/components/shared/bsm-dropdown-button.component";
@@ -12,11 +12,14 @@ import { BsDownloaderService } from "renderer/services/bs-version-download/bs-do
 import { logRenderError } from "renderer";
 import { ModalService } from "renderer/services/modale.service";
 import { ModsVersionCompareModal } from "renderer/components/modal/modal-types/mods/mods-version-compare-modal.component";
+import { BsArm64Service } from "renderer/services/bs-arm64.service";
 
 export const AvailableVersionsContext = createContext<{
     startDownload: (version: BSVersion) => void;
     showAvailableMods: (version: BSVersion) => void;
     downloading: boolean;
+    // Versions that can run natively on this device (Steam Frame); empty elsewhere
+    nativeArm64Versions?: string[];
 }>(null);
 
 export function AvailableVersionsList() {
@@ -24,6 +27,13 @@ export function AvailableVersionsList() {
     const bsDownloader = useService(BsDownloaderService);
     const versionManager = useService(BSVersionManagerService);
     const modals = useService(ModalService);
+    const arm64 = useService(BsArm64Service);
+    const [nativeArm64Versions, setNativeArm64Versions] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (window.electron.platform !== "linux") { return; }
+        lastValueFrom(arm64.getNativeVersions()).then(setNativeArm64Versions).catch(logRenderError);
+    }, [arm64]);
 
     const downloading = useObservable(() => bsDownloader.busy$, bsDownloader.busy);
     const t = useTranslation();
@@ -44,7 +54,8 @@ export function AvailableVersionsList() {
         startDownload,
         showAvailableMods,
         downloading,
-    }), [downloading, showAvailableMods, startDownload]);
+        nativeArm64Versions,
+    }), [downloading, showAvailableMods, startDownload, nativeArm64Versions]);
 
     const refreshVersions = () => {
         return Promise.all([

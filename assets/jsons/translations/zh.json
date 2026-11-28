@@ -9,7 +9,6 @@
         "verify": "验证",
         "launch": "启动",
         "mods": "Mod",
-        "arm64": "ARM64",
         "maps": "谱面",
         "playlists": "歌单",
         "models": "模型",
@@ -59,19 +58,14 @@
         "version-viewer": {
             "arm64": {
                 "title": "Native ARM64",
-                "description": "Runs this version as a native ARM64 program under ARM64 Proton (e.g. on the Steam Frame) instead of emulating the x64 build. The Unity player and runtimes are downloaded from their official sources; the original files are backed up and restored on uninstall.",
-                "status": "Status",
-                "not-installed": "Not installed",
-                "install": "Install",
+                "description": "Runs this version as a native ARM64 program under ARM64 Proton instead of emulating the x64 build. On the Steam Frame it needs about half the CPU time per frame. On by default for supported versions: BSManager sets it up on the first launch and keeps it working after Proton updates. Turning it off puts the original x64 files back.",
                 "reinstall": "Reinstall",
-                "uninstall": "Uninstall",
                 "log-placeholder": "Installer output appears here.",
-                "reinstall-needed": "Proton or the native ARM64 release changed since the install. BSManager updates it when you launch the game.",
                 "unsupported": {
                     "NOT_LINUX_ARM64": "Only available on ARM64 Linux.",
-                    "PROTON_NOT_ARM64": "Select an ARM64 Proton (e.g. \"Proton 11.0 (ARM64)\") in the settings.",
-                    "NO_RELEASE": "No native ARM64 release for this Proton build ({proton}) yet.",
-                    "VERSION_NOT_SUPPORTED": "Not available for this Beat Saber version. Supported: {versions}."
+                    "PROTON_NOT_ARM64": "Not available: select \"Proton 11.0 (ARM64)\" in the settings.",
+                    "NO_RELEASE": "Not available for this Proton build ({proton}) yet. Beat Saber runs through emulation until it is.",
+                    "VERSION_NOT_SUPPORTED": "Not available for this version (supported: {versions}). Beat Saber runs through emulation."
                 },
                 "mods-unavailable": {
                     "NO_BSIPA": "BeatMods has no mods for this Beat Saber version yet.",
@@ -98,7 +92,15 @@
                     "PREFIX_FAILED": "Setting up BSManager's Wine prefix failed. The details below say why.",
                     "DOWNLOAD_FAILED": "A download failed. Check your internet connection and try again."
                 },
-                "installed": "Installed ({release})"
+                "state": {
+                    "on-ready": "On: runs natively ({release})",
+                    "on-pending": "On: BSManager sets it up when you launch the game",
+                    "off": "Off: runs through emulation (x64)",
+                    "installing": "Installing the native build…",
+                    "removing": "Restoring the x64 files…"
+                },
+                "details": "Details",
+                "hide-details": "Hide details"
             },
             "launch-mods": {
                 "oculus": "Oculus 模式",
@@ -258,7 +260,9 @@
                 "import-version": "导入版本"
             },
             "recommended": "推荐",
-            "recommended-tooltip": "多 Mod 版本"
+            "recommended-tooltip": "多 Mod 版本",
+            "native-arm64": "ARM64",
+            "native-arm64-tooltip": "Runs natively on this device, faster than the emulated x64 build"
         },
         "settings": {
             "steam-and-oculus": {

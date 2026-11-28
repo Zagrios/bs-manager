@@ -21,6 +21,11 @@ export class BsArm64Service {
         return this.ipc.sendV2("bs-arm64.get-status", version);
     }
 
+    /** Beat Saber versions that can run natively on this device; empty off ARM64 Linux. */
+    public getNativeVersions(): Observable<string[]> {
+        return this.ipc.sendV2("bs-arm64.get-native-versions");
+    }
+
     public install(version: BSVersion): Observable<BsArm64Progress> {
         return this.ipc.sendV2("bs-arm64.install", version);
     }
