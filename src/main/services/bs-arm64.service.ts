@@ -606,7 +606,7 @@ export class BsArm64Service {
 
     // === State === //
 
-    private async readInstalledRelease(versionPath: string): Promise<InstalledRelease | undefined> {
+    private readInstalledRelease(versionPath: string): Promise<InstalledRelease | undefined> {
         return fs.readJson(path.join(versionPath, RELEASE_FILE)).catch((): undefined => undefined);
     }
 
