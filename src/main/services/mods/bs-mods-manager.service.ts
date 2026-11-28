@@ -3,25 +3,19 @@ import { BeatModsApiService } from "./beat-mods-api.service";
 import { BSLocalVersionService } from "../bs-local-version.service";
 import path from "path";
 import { RequestService } from "../request.service";
-import { BS_EXECUTABLE, IS_FLATPAK } from "../../constants";
 import log from "electron-log";
 import { deleteFile, deleteFolder, hashFile, pathExist, Progression } from "../../helpers/fs.helpers";
 import { lastValueFrom, Observable } from "rxjs";
 import recursiveReadDir from "recursive-readdir";
-import { sToMs } from "../../../shared/helpers/time.helpers";
 import { copyFile, ensureDir, pathExistsSync, readdirSync } from "fs-extra";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
 import { popElement } from "shared/helpers/array.helpers";
 import { getVersionName } from "shared/helpers/bs-version.helpers";
-import { LinuxService } from "../linux.service";
 import { tryit } from "shared/helpers/error.helpers";
 import crypto from "crypto";
 import { BsmZipExtractor } from "main/models/bsm-zip-extractor.class";
-import { BsmShellLog, bsmSpawn } from "main/helpers/os.helpers";
 import { BbmFullMod, BbmModVersion, ExternalMod } from "../../../shared/models/mods/mod.interface";
-import { SteamService } from "../steam.service";
-import { planPrefixCommand, PrefixCommandPlan } from "../bs-launcher/launch-plan";
-import { ModsGridStatus } from "shared/models/mods/mod-ipc.model";
+import { installBsipa, revertBsipa } from "./bsipa-installer";
 import { getModsState } from "shared/helpers/mods-plan.helpers";
 
 export class BsModsManagerService {
@@ -29,7 +23,6 @@ export class BsModsManagerService {
 
     private readonly beatModsApi: BeatModsApiService;
     private readonly bsLocalService: BSLocalVersionService;
-    private readonly linuxService: LinuxService;
     private readonly requestService: RequestService;
 
     public static getInstance(): BsModsManagerService {
@@ -42,7 +35,6 @@ export class BsModsManagerService {
     private constructor() {
         this.beatModsApi = BeatModsApiService.getInstance();
         this.bsLocalService = BSLocalVersionService.getInstance();
-        this.linuxService = LinuxService.getInstance();
         this.requestService = RequestService.getInstance();
     }
 
@@ -146,98 +138,6 @@ export class BsModsManagerService {
         return BsmZipExtractor.fromBuffer(buffer);
     }
 
-    private async executeIPA(version: BSVersion, args: string[]): Promise<boolean> {
-        log.info("executeIPA", version?.BSVersion, args);
-
-        const versionPath = await this.bsLocalService.getVersionPath(version);
-        const ipaPath = path.join(versionPath, "IPA.exe");
-        const bsExePath = path.join(versionPath, BS_EXECUTABLE);
-        if (!(await pathExist(ipaPath)) || !(await pathExist(bsExePath))) {
-            log.error("IPA.exe or Beat Saber.exe not found");
-            return false;
-        }
-
-        const command = await this.getCommand(ipaPath, bsExePath, args);
-        if (!command) {
-            return false;
-        }
-
-        return new Promise<boolean>(resolve => {
-            const processIPA = bsmSpawn(command.command, {
-                log: BsmShellLog.Command | BsmShellLog.EnvVariables,
-                options: {
-                    cwd: versionPath,
-                    shell: true,
-                    env: command.env,
-                    stdio: ["ignore", "pipe", "pipe"],
-                },
-                flatpak: { host: !!command.hostEnvKeys, env: command.hostEnvKeys },
-            });
-
-            let settled = false;
-            const finish = (success: boolean) => {
-                if (settled) {
-                    return;
-                }
-
-                settled = true;
-                clearTimeout(timeout);
-                resolve(success);
-            };
-
-            const timeout = setTimeout(() => {
-                log.info("IPA process timed out");
-                finish(false);
-            }, sToMs(30));
-
-            processIPA.stdout?.on("data", data => {
-                log.info("IPA process stdout", data.toString());
-            });
-            processIPA.stderr?.on("data", data => {
-                log.error("IPA process stderr", data.toString());
-            });
-
-            processIPA.once("error", error => {
-                log.error("IPA process failed to start", error);
-                finish(false);
-            });
-
-            // Unlike "exit", "close" is emitted after stdout and stderr have
-            // been closed, ensuring all IPA output is forwarded before resolving.
-            processIPA.once("close", code => {
-                if (code === 0) {
-                    return finish(true);
-                }
-                log.error("IPA process exited with non-zero code", code);
-                finish(false);
-            });
-        });
-    }
-
-    private async getCommand(
-        ipaPath: string,
-        beatSaberExePath: string,
-        args: string[]
-    ): Promise<PrefixCommandPlan | null> {
-        const { error, result } = await tryit(() => planPrefixCommand(ipaPath, [`"${beatSaberExePath}"`, ...args], {
-            platform: process.platform,
-            flatpak: IS_FLATPAK,
-            baseEnv: process.env,
-            getProtonConfig: async () => this.linuxService.getProtonConfig(
-                await SteamService.getInstance().getSteamPath(), { createCompatData: false }
-            ),
-        }));
-
-        if (error instanceof CustomError && error.code === ModsGridStatus.NO_WINEPREFIX) {
-            throw error;
-        }
-        if (error) {
-            log.error(error);
-            return null;
-        }
-        return result;
-    }
-
     private getModDownload(modVersion: BbmModVersion): string {
         return `/cdn/mod/${modVersion.zipHash}.zip`
     }
@@ -290,17 +190,19 @@ export class BsModsManagerService {
 
         log.info("Mod zip extraction end", mod.mod.name, "to", destDir, "success:", extracted);
 
-        // Executing IPA.exe when BSIPA is already installed could potentially corrupt the game.
-        const shouldRunIPA = isBSIPA && !pathExistsSync(path.join(versionPath, "winhttp.dll"));
-        const res = shouldRunIPA
-            ? extracted &&
-              (await this.executeIPA(version, ["-n"]).catch(e => {
-                  log.error(e);
-                  return false;
-              }))
-            : extracted;
+        // Installing over an installed BSIPA could potentially corrupt the game (as with IPA.exe).
+        const shouldInstallBsipa = isBSIPA && !pathExistsSync(path.join(versionPath, "winhttp.dll"));
+        if (!extracted || !shouldInstallBsipa) {
+            return extracted;
+        }
 
-        return res;
+        // What IPA.exe does, without running it (no Wine prefix needed on Linux)
+        return installBsipa(versionPath)
+            .then(() => true)
+            .catch(e => {
+                log.error("Could not install BSIPA", e);
+                return false;
+            });
     }
 
     private async clearIpaFolder(version: BSVersion): Promise<void> {
@@ -339,14 +241,12 @@ export class BsModsManagerService {
 
     private async uninstallBSIPA(mod: BbmFullMod, version: BSVersion): Promise<void> {
         const verionPath = await this.bsLocalService.getVersionPath(version);
-        const hasIPAExe = await pathExist(path.join(verionPath, "IPA.exe"));
-        const hasIPADir = await pathExist(path.join(verionPath, "IPA"));
-
-        if (!hasIPADir || !hasIPAExe) {
+        // The backups to revert are in IPA/
+        if (!(await pathExist(path.join(verionPath, "IPA")))) {
             return;
         }
 
-        await this.executeIPA(version, ["--revert", "-n"]);
+        await revertBsipa(verionPath).catch(e => log.error("Could not revert BSIPA", e));
 
         const promises = mod.version.contentHashes.map(content => {
             const file = content.path.replaceAll("IPA/", "").replaceAll("Data", "Beat Saber_Data");
