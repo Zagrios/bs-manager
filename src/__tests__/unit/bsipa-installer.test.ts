@@ -86,6 +86,32 @@ describe("BSIPA installer", () => {
         expect(await fs.pathExists(file("IPA/Backups/Beat Saber/2026-11-28_1-05-09/winhttp.dll"))).toBe(false);
     });
 
+    it("backs up every overwritten file when many are copied at once", async () => {
+        await extractPackage();
+        const names = Array.from({ length: 60 }, (_, i) => `Lib${i}.dll`);
+        await Promise.all(names.map(async (name, i) => {
+            await write(`IPA/Libs/${name}`, `bsipa ${name}`);
+            if (i % 2 === 0) { await write(`Libs/${name}`, `user ${name}`); }
+        }));
+
+        await installBsipa(game, { now: T0 });
+
+        const lines = (await manifest()).split("\r\n").filter(Boolean);
+        expect(new Set(lines).size).toBe(lines.length);
+        expect(lines).toEqual(expect.arrayContaining(names.map(name => `Libs\\${name}`)));
+        const saved = (name: string) => fs.readFile(file(`IPA/Backups/Beat Saber/2026-11-28_1-05-09/Libs/${name}`), "utf8").catch((): undefined => undefined);
+        for (const [i, name] of names.entries()) {
+            expect(await read(`Libs/${name}`)).toBe(`bsipa ${name}`);
+            // Overwritten files are kept with their old content, added ones aren't
+            expect(await saved(name)).toBe(i % 2 === 0 ? `user ${name}` : undefined);
+        }
+
+        await revertBsipa(game);
+        for (const [i, name] of names.entries()) {
+            expect(await exists(`Libs/${name}`)).toBe(i % 2 === 0);
+        }
+    });
+
     it("keeps the package's timestamps, as IPA.exe's copy does", async () => {
         const old = new Date(2025, 0, 1);
         await extractPackage();

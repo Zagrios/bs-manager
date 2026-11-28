@@ -1,4 +1,4 @@
-import path from "path";
+import path from "node:path";
 import fs from "fs-extra";
 import log from "electron-log";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
@@ -112,6 +112,9 @@ function resolveInRoot(root: string, relative: string): string | undefined {
 /** One backup: the files an install changed, and their previous content (IPA.exe's BackupUnit). */
 class BackupUnit {
     private readonly files: string[] = [];
+    // Writes to the backup, one after another: files are copied in parallel, but each manifest line
+    // is appended in turn (and before its file is overwritten), as IPA.exe does
+    private writes: Promise<void> = Promise.resolve();
 
     private constructor(private readonly dir: string) {}
 
@@ -127,31 +130,39 @@ class BackupUnit {
             const lines = (await fs.readFile(manifest, "utf8")).split(/\r?\n/).filter(Boolean);
             unit.files.push(...lines);
         } else {
-            for (const file of await listFiles(dir)) {
-                unit.files.push(path.relative(dir, file).split(path.sep).join(MANIFEST_SEPARATOR));
-            }
+            const files = await listFiles(dir);
+            unit.files.push(...files.map(file => path.relative(dir, file).split(path.sep).join(MANIFEST_SEPARATOR)));
         }
         return unit;
     }
 
-    /** Records a file before it's overwritten or created, keeping its current content if it has one. */
-    public async add(root: string, file: string): Promise<void> {
+    /**
+     * Records a file before it's overwritten or created, keeping its current content if it has one.
+     * Resolves once the backup has it, so the caller may then overwrite the file.
+     */
+    public add(root: string, file: string): Promise<void> {
         const relative = path.relative(root, file);
         if (relative.startsWith("..") || path.isAbsolute(relative)) {
             log.error("Invalid file path for backup", file);
-            return;
+            return Promise.resolve();
         }
         const entry = relative.split(path.sep).join(MANIFEST_SEPARATOR);
         if (this.files.includes(entry)) {
-            return;
+            return Promise.resolve();
         }
-        if (await fs.pathExists(file)) {
-            await fs.copy(file, path.join(this.dir, relative), { preserveTimestamps: true });
-        } else {
-            await fs.ensureDir(path.dirname(path.join(this.dir, relative)));
-        }
-        await fs.appendFile(path.join(this.dir, MANIFEST_FILE), entry + MANIFEST_NEWLINE, "utf8");
         this.files.push(entry);
+
+        const write = this.writes.then(async () => {
+            if (await fs.pathExists(file)) {
+                await fs.copy(file, path.join(this.dir, relative), { preserveTimestamps: true });
+            } else {
+                await fs.ensureDir(path.dirname(path.join(this.dir, relative)));
+            }
+            await fs.appendFile(path.join(this.dir, MANIFEST_FILE), entry + MANIFEST_NEWLINE, "utf8");
+        });
+        // A failed write fails its caller's copy, not the ones after it
+        this.writes = write.catch(() => {});
+        return write;
     }
 
     /**
@@ -161,12 +172,13 @@ class BackupUnit {
      */
     public async restore(root: string): Promise<void> {
         const touched: string[] = [];
-        for (const entry of this.files) {
+        // Each entry is a different file, so they can be restored in parallel
+        await Promise.all(this.files.map(async entry => {
             const target = resolveInRoot(root, entry);
             const backup = resolveInRoot(this.dir, entry);
             if (!target || !backup) {
                 log.warn("Skipping invalid BSIPA backup entry", entry);
-                continue;
+                return;
             }
             const saved = await fs.stat(backup).catch((): undefined => undefined);
             if (saved?.isFile() && saved.size > 0) {
@@ -175,23 +187,22 @@ class BackupUnit {
                 await fs.remove(target);
             }
             touched.push(target);
-        }
+        }));
         await fs.remove(this.dir);
         await removeEmptyParents(root, touched);
     }
 }
 
 async function listFiles(dir: string): Promise<string[]> {
-    const files: string[] = [];
-    for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+    const nested = await Promise.all(entries.map(entry => {
         const full = path.join(dir, entry.name);
         if (entry.isDirectory()) {
-            files.push(...(await listFiles(full)));
-        } else if (entry.isFile() && entry.name !== MANIFEST_FILE) {
-            files.push(full);
+            return listFiles(full);
         }
-    }
-    return files;
+        return entry.isFile() && entry.name !== MANIFEST_FILE ? [full] : [];
+    }));
+    return nested.flat();
 }
 
 /**
@@ -206,13 +217,26 @@ async function removeEmptyParents(root: string, files: string[]): Promise<void> 
             dirs.add(dir);
         }
     }
-    // Deepest first, so a parent is empty once its children are gone
-    for (const dir of [...dirs].sort((a, b) => b.length - a.length)) {
+    // Deepest level first, so a parent is empty once its children are gone; folders on the same
+    // level don't depend on each other
+    const depth = (dir: string) => dir.split(path.sep).length;
+    const levels = [...new Set([...dirs].map(depth))].sort((a, b) => b - a)
+        .map(level => [...dirs].filter(dir => depth(dir) === level));
+    await removeEmptyLevels(levels);
+}
+
+async function removeEmptyLevels([deepest, ...rest]: string[][]): Promise<void> {
+    if (!deepest) {
+        return;
+    }
+    await Promise.all(deepest.map(async dir => {
+        // lstat: a symlink to a folder (e.g. shared maps) is never removed
         const stat = await fs.lstat(dir).catch((): undefined => undefined);
         if (stat?.isDirectory() && (await fs.readdir(dir)).length === 0) {
             await fs.rmdir(dir).catch(() => {});
         }
-    }
+    }));
+    await removeEmptyLevels(rest);
 }
 
 /** The newest backup (IPA.exe: the one whose name sorts last), if there is one. */
@@ -228,22 +252,26 @@ async function latestBackup(backups: string): Promise<BackupUnit | undefined> {
  * a file whose target is as new or newer is left alone (IPA.exe's CopyAll).
  */
 async function copyAll(source: string, target: string, aggressive: boolean, backup: BackupUnit, root: string, recurse = true): Promise<void> {
-    for (const entry of await fs.readdir(source, { withFileTypes: true })) {
+    const entries = await fs.readdir(source, { withFileTypes: true });
+    await Promise.all(entries.map(async entry => {
         const from = path.join(source, entry.name);
         const to = path.join(target, entry.name);
-        if (entry.isFile()) {
-            if (!aggressive) {
-                const [src, dst] = await Promise.all([fs.stat(from), fs.stat(to).catch((): undefined => undefined)]);
-                if (dst && dst.mtimeMs >= src.mtimeMs) {
-                    continue;
-                }
-            }
-            await backup.add(root, to);
-            await fs.copy(from, to, { preserveTimestamps: true, overwrite: true });
-        } else if (entry.isDirectory() && recurse) {
-            await copyAll(from, to, aggressive, backup, root);
+        if (entry.isDirectory()) {
+            return recurse ? copyAll(from, to, aggressive, backup, root) : undefined;
         }
-    }
+        if (!entry.isFile()) {
+            return undefined;
+        }
+        if (!aggressive) {
+            const [src, dst] = await Promise.all([fs.stat(from), fs.stat(to).catch((): undefined => undefined)]);
+            if (dst && dst.mtimeMs >= src.mtimeMs) {
+                return undefined;
+            }
+        }
+        // The backup has the file's current content before it's overwritten
+        await backup.add(root, to);
+        return fs.copy(from, to, { preserveTimestamps: true, overwrite: true });
+    }));
 }
 
 export type BsipaInstallOptions = {
