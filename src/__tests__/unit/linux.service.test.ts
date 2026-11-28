@@ -76,6 +76,7 @@ describe("LinuxService", () => {
             compatDataPath,
             steamPath,
             nixOS: false,
+            arm64: false,
         });
         expect(fs.ensureDir).not.toHaveBeenCalled();
     });

@@ -56,6 +56,57 @@
     },
     "pages": {
         "version-viewer": {
+            "arm64": {
+                "title": "Native ARM64",
+                "description": "Runs this version as a native ARM64 program under ARM64 Proton instead of emulating the x64 build. On the Steam Frame it needs about half the CPU time per frame. On by default for supported versions: BSManager sets it up on the first launch and keeps it working after Proton updates. Turning it off puts the original x64 files back.",
+                "reinstall": "Reinstall",
+                "log-placeholder": "Installer output appears here.",
+                "unsupported": {
+                    "NOT_LINUX_ARM64": "Only available on ARM64 Linux.",
+                    "PROTON_NOT_ARM64": "Not available: select \"Proton 11.0 (ARM64)\" in the settings.",
+                    "NO_RELEASE": "Not available for this Proton build ({proton}) yet. Beat Saber runs through emulation until it is.",
+                    "VERSION_NOT_SUPPORTED": "Not available for this version (supported: {versions}). Beat Saber runs through emulation."
+                },
+                "mods-unavailable": {
+                    "NO_BSIPA": "BeatMods has no mods for this Beat Saber version yet.",
+                    "BSIPA_NOT_SUPPORTED": "Mods may not load: BSIPA {bsipa} hasn't been tested with the native ARM64 build yet."
+                },
+                "notifications": {
+                    "install-success": "Native ARM64 build installed",
+                    "uninstall-success": "Native ARM64 build removed"
+                },
+                "errors": {
+                    "BS_ARM64_NO_MATCHING_RELEASE": "No bs-arm64 release for this Proton version yet",
+                    "BS_ARM64_CHECKSUM_MISMATCH": "Download corrupted (checksum mismatch)",
+                    "BS_ARM64_INSTALLER_FAILED": "Native ARM64 install failed"
+                },
+                "installer-errors": {
+                    "NOT_AN_INSTANCE": "This folder doesn't look like a Beat Saber install. Verify the version's files and try again.",
+                    "NOT_INSTALLED": "The native ARM64 build isn't installed in this version.",
+                    "UNSUPPORTED_ENGINE": "This Beat Saber version uses a Unity engine the native ARM64 build doesn't support.",
+                    "PROTON_NOT_ARM64": "The selected Proton isn't an ARM64 build. Select \"Proton 11.0 (ARM64)\" in the settings.",
+                    "PROTON_UNTESTED": "The native ARM64 build hasn't been tested with this Proton version yet.",
+                    "PROTON_CHANGED": "Proton was updated since the native ARM64 build was installed. Install it again.",
+                    "ARTIFACT_MISSING": "The downloaded native ARM64 release is incomplete. Try again.",
+                    "PREFIX_BUSY": "Beat Saber or another Windows program is still running. Close it and try again.",
+                    "PREFIX_FAILED": "Setting up BSManager's Wine prefix failed. The details below say why.",
+                    "DOWNLOAD_FAILED": "A download failed. Check your internet connection and try again."
+                },
+                "state": {
+                    "on-ready": "On: runs natively ({release})",
+                    "on-pending": "On: BSManager sets it up when you launch the game",
+                    "off": "Off: runs through emulation (x64)",
+                    "installing": "Installing the native build…",
+                    "removing": "Restoring the x64 files…"
+                },
+                "details": "Details",
+                "hide-details": "Hide details",
+                "tips": {
+                    "title": "Tips for the Steam Frame:",
+                    "text": "turn off Adaptive SFX (Solo → song selection → Player Settings) and Screen Distortion (graphics settings). Both cost a lot of performance on the Frame.",
+                    "dismiss": "Got it"
+                }
+            },
             "launch-mods": {
                 "oculus": "Oculus Mode",
                 "oculus-description": "Kung ginagamit mo ang Beat Saber via Steam, pinapayagan mo itong gamitin ang VR composer ng Oculus upang iwasan ang pagbukas ng SteamVR, para sa posibleng pagbuti ng performance. Hindi ito kinakailangan upang gamitin ang Oculus headsets.",
@@ -74,7 +125,9 @@
                 "proton-logs": "Proton Logs",
                 "proton-logs-description": "I-enable ang pag-record ng proton logs para sa Beat Saber install na ito sa \"{versionPath}\".",
                 "parallel-views": "Parallel Views",
-                "parallel-views-description": "Para sa Monado, itinatakda ang OXR_PARALLEL_VIEWS sa 1. Maaari nitong ayusin ang mga isyu sa rendering, ngunit posibleng maputol ang ilang bahagi ng iyong field of view (FOV)."
+                "parallel-views-description": "Para sa Monado, itinatakda ang OXR_PARALLEL_VIEWS sa 1. Maaari nitong ayusin ang mga isyu sa rendering, ngunit posibleng maputol ang ilang bahagi ng iyong field of view (FOV).",
+                "foveated-rendering": "Foveated rendering",
+                "foveated-rendering-description": "Steam Frame only. Renders the area you look at in full detail and the edges at lower resolution, which saves GPU time and battery. Native ARM64 versions also follow Steam's Foveated Rendering switch (Properties → Performance)."
             },
             "maps": {
                 "search-bar": {
@@ -214,7 +267,9 @@
                 "import-version": "Mag-import ng bersyon"
             },
             "recommended": "inirerekomenda",
-            "recommended-tooltip": "Pinakamaayos na bersyon para i-mod"
+            "recommended-tooltip": "Pinakamaayos na bersyon para i-mod",
+            "native-arm64": "ARM64",
+            "native-arm64-tooltip": "Runs natively on this device, faster than the emulated x64 build"
         },
         "settings": {
             "steam-and-oculus": {
@@ -546,11 +601,13 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "Nila-launch...🚀",
-                    "STEAM_LAUNCHING": "Nila-launch ang Steam!"
+                    "STEAM_LAUNCHING": "Nila-launch ang Steam!",
+                    "BS_ARM64_PREPARING": "Preparing the native ARM64 build"
                 },
                 "msg": {
                     "BS_LAUNCHING": "Huwag kalimutan mag-warm up 😉",
-                    "STEAM_LAUNCHING": "Awtomatikong ni-launch ang Beat Saber pagkatapos ng Steam."
+                    "STEAM_LAUNCHING": "Awtomatikong ni-launch ang Beat Saber pagkatapos ng Steam.",
+                    "BS_ARM64_PREPARING": "Setting up Beat Saber to run natively. The game starts when this is done."
                 }
             },
             "errors": {
@@ -565,7 +622,8 @@
                     "PROTON_NOT_FOUND": "Hindi nahanap ang Proton binary",
                     "EXIT": "Biglaang paghinto",
                     "OCULUS_LIB_NOT_FOUND": "Hindi nahanap ang Oculus library",
-                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Hindi nahanap ang orihinal na bersyon ng Oculus"
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Hindi nahanap ang orihinal na bersyon ng Oculus",
+                    "BS_ARM64_RESTORE_FAILED": "Couldn't restore the x64 files"
                 },
                 "msg": {
                     "UNKNOWN_ERROR": "May error na nangyari.",
@@ -578,7 +636,8 @@
                     "OCULUS_LIB_NOT_FOUND": "Suriin kung ang Oculus application ay tamang naka-install, at na ang mga libraries ay tamang naka-define sa Oculus.",
                     "PROTON_NOT_SET": "I-set ang Proton path sa settings.",
                     "PROTON_NOT_FOUND": "I-set ang Proton path sa settings.",
-                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Dapat naka-install ang Beat Saber mula sa Oculus app bago ito buksan."
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Dapat naka-install ang Beat Saber mula sa Oculus app bago ito buksan.",
+                    "BS_ARM64_RESTORE_FAILED": "The native ARM64 build couldn't be removed to start the x64 version. Use \"Verify files\" in the version menu, then try again."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "I-launch ang Steam"
@@ -586,10 +645,12 @@
             },
             "warnings": {
                 "titles": {
-                    "UNABLE_TO_LAUNCH_STEAM": "Could not launch Steam"
+                    "UNABLE_TO_LAUNCH_STEAM": "Could not launch Steam",
+                    "BS_ARM64_FALLBACK": "Starting the x64 version"
                 },
                 "msg": {
-                    "UNABLE_TO_LAUNCH_STEAM": "Steam could not be started automatically."
+                    "UNABLE_TO_LAUNCH_STEAM": "Steam could not be started automatically.",
+                    "BS_ARM64_FALLBACK": "The native ARM64 build isn't available right now (for example after a Proton update), so Beat Saber runs through emulation this time. BSManager switches back to native once it can."
                 }
             }
         },
@@ -1031,7 +1092,9 @@
             "title": "Proton Folder",
             "proton-folder-description": "Sa Linux, kailangan ng BSManager ang Proton upang gumana. Piliin ang folder ng Proton installation upang magpatuloy.",
             "proton-folder-placeholder": "Proton installation folder",
-            "where-is-proton-installed": "Saan naka-install ang Proton?"
+            "where-is-proton-installed": "Saan naka-install ang Proton?",
+            "auto-selected": "Proton selected automatically",
+            "arm64-hint": "On the Steam Frame, install \"Proton 11.0 (ARM64)\" in Steam (Library → Tools), then choose its folder here."
         },
         "bs-version-outdated": {
             "body": "Ang bersyon na {outdatedVersion} ay lipas na, at ang ilang mods o features ay maaaring hindi na gumana ng tama. Mangyaring i-download ang pinakabagong inirerekomendang bersyon ({recommendedVersion}) ng Beat Saber upang tamasahin ang mga pinakabagong tampok at mga pag-aayos ng bug."

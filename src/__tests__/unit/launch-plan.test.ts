@@ -137,6 +137,54 @@ describe("planLaunch", () => {
                 env: { ...BASE_ENV, ...STEAM_IDS, ...PROTON_ENV },
             },
         },
+        {
+            name: "Linux, a native ARM64 instance starts through its bs-arm64.sh with only the user's choices",
+            machine: { platform: "linux" },
+            request: { ...request({ launchMods: ["fpfc", "proton_logs"] }), bsArm64LaunchScript: "/cache/bs-arm64/bs-arm64.sh" },
+            plan: {
+                cmdlet: `bash "/cache/bs-arm64/bs-arm64.sh" launch "${GAME_FOLDER}" --prefix "/bsm/compatdata" --proton "/proton" --`,
+                args: ["fpfc", "-vrmode", "None"],
+                env: {
+                    ...BASE_ENV, ...STEAM_IDS, ...FPFC_ENV,
+                    PROTON_LOG: "1",
+                    PROTON_LOG_DIR: path.join(GAME_FOLDER, "Logs"),
+                },
+            },
+        },
+        {
+            name: "Linux, foveated rendering on a native ARM64 instance asks bs-arm64.sh for it",
+            machine: { platform: "linux", proton: { ...PROTON, arm64: true } },
+            request: { ...request({ launchMods: ["foveated_rendering"] }), bsArm64LaunchScript: "/cache/bs-arm64/bs-arm64.sh" },
+            plan: {
+                cmdlet: `bash "/cache/bs-arm64/bs-arm64.sh" launch "${GAME_FOLDER}" --prefix "/bsm/compatdata" --proton "/proton" --foveation --`,
+                args: [],
+                env: { ...BASE_ENV, ...STEAM_IDS },
+            },
+        },
+        {
+            name: "Linux, foveated rendering on the x64 build with ARM64 Proton enables Valve's layers",
+            machine: { platform: "linux", proton: { ...PROTON, arm64: true } },
+            request: request({ launchMods: ["foveated_rendering"] }),
+            plan: {
+                cmdlet: `"/proton/proton" run "${EXE}"`,
+                args: [],
+                env: {
+                    ...BASE_ENV, ...STEAM_IDS, ...PROTON_ENV,
+                    FDM_DEBUG: "enable",
+                    VK_INSTANCE_LAYERS: "VK_LAYER_VALVE_rpo:VK_LAYER_VALVE_fdm_injection",
+                },
+            },
+        },
+        {
+            name: "Linux, foveated rendering is ignored with x64 Proton, where the layers don't exist",
+            machine: { platform: "linux" },
+            request: request({ launchMods: ["foveated_rendering"] }),
+            plan: {
+                cmdlet: `"/proton/proton" run "${EXE}"`,
+                args: [],
+                env: { ...BASE_ENV, ...STEAM_IDS, ...PROTON_ENV },
+            },
+        },
     ])("$name", async ({ machine, request: launchRequest, plan }) => {
         await expect(planLaunch(launchRequest, context(machine))).resolves.toEqual(plan);
     });

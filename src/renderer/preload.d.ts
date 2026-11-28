@@ -4,6 +4,7 @@ declare global {
     interface Window {
         electron: {
             platform: "win32" | "linux",
+            arch: string,
             ipcRenderer: {
                 sendMessage(channel: string, args: any): void;
                 on(channel: string, func: (...args: any) => void): (() => void) | undefined;

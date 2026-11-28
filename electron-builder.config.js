@@ -4,6 +4,7 @@ const config = {
     extraResources: [
         "./assets/jsons/bs-versions.json",
         "./assets/jsons/patreons.json",
+        "./assets/jsons/bs-arm64-releases.json",
         "./assets/proto/song_details_cache_v1.proto"
     ],
     productName: "BSManager",

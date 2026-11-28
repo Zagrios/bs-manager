@@ -8,6 +8,7 @@ import log from "electron-log";
 import { CustomError } from "../../../shared/models/exceptions/custom-error.class";
 import { UtilsService } from "../utils.service";
 import { LinuxService } from "../linux.service";
+import { BsArm64Service } from "../bs-arm64.service";
 import { spawn, ChildProcess, SpawnOptions } from "node:child_process";
 import { LaunchMods } from "shared/models/bs-launch/launch-option.interface";
 import { app } from "electron";
@@ -199,6 +200,7 @@ function waitForElevatedHelperPid(
 export type SteamLauncherPorts = GameLauncherPorts & {
     steam: Pick<SteamService, "isSteamRunning" | "openSteam" | "getSteamPath">;
     linux: Pick<LinuxService, "getProtonConfig">;
+    bsArm64: Pick<BsArm64Service, "prepareLaunch">;
     adminHelperPath(): string;
     logsPath(): string;
     spawnElevation(command: string, args: string[], options: SpawnOptions): ChildProcess;
@@ -210,6 +212,7 @@ export function defaultSteamLauncherPorts(): SteamLauncherPorts {
         ...defaultGameLauncherPorts(),
         steam: SteamService.getInstance(),
         linux: LinuxService.getInstance(),
+        bsArm64: BsArm64Service.getInstance(),
         adminHelperPath: () => path.resolve(util.getAssetsScriptsPath(), "start_beat_saber_admin.exe"),
         logsPath: () => app.getPath("logs"),
         spawnElevation: (command, args, options) => spawn(command, args, options),
@@ -287,8 +290,12 @@ export class SteamLauncherService implements StoreLauncherInterface{
                 });
             }
 
+            // Native ARM64 build (Steam Frame): installed, repaired or updated now if needed
+            const bsArm64LaunchScript = this.ports.session.platform === "linux"
+                ? await this.ports.bsArm64.prepareLaunch(launchOptions.version, bsFolderPath, event => obs.next(event))
+                : undefined;
             const plan = await planLaunch(
-                { store: "steam", launchOptions, gameFolder: bsFolderPath },
+                { store: "steam", launchOptions, gameFolder: bsFolderPath, bsArm64LaunchScript },
                 launchContext(this.ports, async () => this.ports.linux.getProtonConfig(
                     await steam.getSteamPath(), { createCompatData: true }
                 ))

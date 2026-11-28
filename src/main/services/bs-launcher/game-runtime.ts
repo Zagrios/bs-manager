@@ -7,11 +7,13 @@ export type ProtonConfig = {
     compatDataPath: string;
     steamPath: string;
     nixOS: boolean;
+    // ARM64 Proton (Steam Frame)
+    arm64?: boolean;
 };
 
 export interface GameRuntime {
     readonly supportsElevation: boolean;
-    runCommand(exePath: string): string;
+    runCommand(exePath: string, launchMods?: LaunchMod[]): string;
     prefixCommand(exePath: string): string;
     gameEnv(launchMods: LaunchMod[], gameFolder: string): Record<string, string>;
     prefixEnv(): Record<string, string>;
@@ -23,6 +25,24 @@ export const windowsNativeRuntime: GameRuntime = {
     prefixCommand: exePath => `"${exePath}"`,
     gameEnv: () => ({}),
     prefixEnv: () => ({}),
+};
+
+// What the user picked in BSManager's launch mods
+function launchModsEnv(launchMods: LaunchMod[], gameFolder: string): Record<string, string> {
+    return {
+        ...(launchMods.includes(LaunchMods.PROTON_LOGS) ? {
+            PROTON_LOG: "1",
+            PROTON_LOG_DIR: path.join(gameFolder, "Logs"),
+        } : {}),
+        ...(launchMods.includes(LaunchMods.PARALLEL_VIEWS) ? { OXR_PARALLEL_VIEWS: "1" } : {}),
+    };
+}
+
+// Valve's eye-tracked foveated rendering for the x64 build on the Steam Frame, as Steam sets it up.
+// Native ARM64 instances get it from bs-arm64.sh (--foveation) instead.
+const FOVEATED_RENDERING_ENV = {
+    FDM_DEBUG: "enable",
+    VK_INSTANCE_LAYERS: "VK_LAYER_VALVE_rpo:VK_LAYER_VALVE_fdm_injection",
 };
 
 export function protonRuntime(config: ProtonConfig): GameRuntime {
@@ -48,12 +68,27 @@ export function protonRuntime(config: ProtonConfig): GameRuntime {
             "SteamEnv": "1",
             // Fix reflections in Monado
             "OXR_NO_TEXTURE_SOURCE_ALPHA": "1",
-            ...(launchMods.includes(LaunchMods.PROTON_LOGS) ? {
-                PROTON_LOG: "1",
-                PROTON_LOG_DIR: path.join(gameFolder, "Logs"),
-            } : {}),
-            ...(launchMods.includes(LaunchMods.PARALLEL_VIEWS) ? { OXR_PARALLEL_VIEWS: "1" } : {}),
+            ...launchModsEnv(launchMods, gameFolder),
+            // The layers only exist on the Frame: elsewhere they'd stop the game from starting
+            ...(config.arm64 && launchMods.includes(LaunchMods.FOVEATED_RENDERING) ? FOVEATED_RENDERING_ENV : {}),
         }),
+    };
+}
+
+/**
+ * A native ARM64 instance (bs-arm64): the installed release's bs-arm64.sh starts the game and sets
+ * everything it needs itself (Proton and Steam variables, foveated rendering, Steam's reaper).
+ * BSManager only passes on what the user picked. It runs in the foreground, so the game is tracked
+ * as usual.
+ */
+export function bsArm64Runtime(config: ProtonConfig, launchScript: string): GameRuntime {
+    return {
+        ...protonRuntime(config),
+        // Without --foveation, bs-arm64.sh follows Steam's Foveated Rendering switch for Beat Saber
+        runCommand: (exePath, launchMods = []) => `bash "${launchScript}" launch "${path.dirname(exePath)}"`
+            + ` --prefix "${config.compatDataPath}" --proton "${path.dirname(config.protonPath)}"`
+            + `${launchMods.includes(LaunchMods.FOVEATED_RENDERING) ? " --foveation" : ""} --`,
+        gameEnv: launchModsEnv,
     };
 }
 
@@ -62,12 +97,16 @@ export type GameRuntimeFacts = {
     getProtonConfig?: () => Promise<ProtonConfig>;
 };
 
-export async function resolveGameRuntime({ platform, getProtonConfig }: GameRuntimeFacts): Promise<GameRuntime> {
+export async function resolveGameRuntime(
+    { platform, getProtonConfig }: GameRuntimeFacts,
+    bsArm64LaunchScript?: string
+): Promise<GameRuntime> {
     if (platform !== "linux") {
         return windowsNativeRuntime;
     }
     if (!getProtonConfig) {
         throw new Error("A Proton configuration is required to run Beat Saber on Linux");
     }
-    return protonRuntime(await getProtonConfig());
+    const config = await getProtonConfig();
+    return bsArm64LaunchScript ? bsArm64Runtime(config, bsArm64LaunchScript) : protonRuntime(config);
 }

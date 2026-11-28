@@ -6,7 +6,7 @@ import { SteamLauncherPorts, SteamLauncherService } from "main/services/bs-launc
 import { systemTimers } from "main/services/bs-launcher/owned-process-session";
 import { LaunchPlan } from "main/services/bs-launcher/launch-plan";
 import { ProcessInfo, ProcessQuery } from "main/helpers/process-table";
-import { BSLaunchError, BSLaunchEventData, LaunchOption } from "shared/models/bs-launch";
+import { BSLaunchError, BSLaunchEvent, BSLaunchEventData, LaunchOption } from "shared/models/bs-launch";
 
 jest.mock("electron", () => ({ app: { getPath: () => "" } }));
 jest.mock("electron-log", () => ({ info: jest.fn(), warn: jest.fn(), error: jest.fn() }));
@@ -15,6 +15,7 @@ jest.mock("main/services/utils.service", () => ({ UtilsService: { getInstance: j
 jest.mock("main/services/linux.service", () => ({ LinuxService: { getInstance: jest.fn() } }));
 jest.mock("main/services/bs-local-version.service", () => ({ BSLocalVersionService: { getInstance: jest.fn() } }));
 jest.mock("main/services/static-configuration.service", () => ({ StaticConfigurationService: { getInstance: jest.fn() } }));
+jest.mock("main/services/bs-arm64.service", () => ({ BsArm64Service: { getInstance: jest.fn() } }));
 
 const originalSystemRoot = process.env.SystemRoot;
 const launchedAfter = new Date("2026-07-13T08:00:00.000Z");
@@ -67,6 +68,8 @@ function buildLauncher(options: {
     closeOnLaunch?: boolean;
     steamRunning?: boolean;
     exePresent?: boolean;
+    bsArm64LaunchScript?: string;
+    bsArm64Events?: BSLaunchEventData[];
 } = {}) {
     const processes = { list: jest.fn<Promise<ProcessInfo[]>, [ProcessQuery]>().mockResolvedValue([]) };
     const lifecycle = fakeLifecycle();
@@ -98,6 +101,12 @@ function buildLauncher(options: {
                 steamPath,
                 nixOS: false,
             })),
+        },
+        bsArm64: {
+            prepareLaunch: jest.fn(async (_version: unknown, _path: string, onEvent: (event: BSLaunchEventData) => void) => {
+                options.bsArm64Events?.forEach(onEvent);
+                return options.bsArm64LaunchScript;
+            }),
         },
         adminHelperPath: () => "C:\\assets\\scripts\\start_beat_saber_admin.exe",
         logsPath: () => "C:/logs",
@@ -276,6 +285,28 @@ describe("SteamLauncherService launch events and plan", () => {
             expect(args).not.toContain("None");
         }
     );
+
+    it("launches a native ARM64 instance through its bs-arm64.sh on Linux", async () => {
+        const { service, ports, wrapper } = buildLauncher({
+            platform: "linux",
+            bsArm64LaunchScript: "/cache/bs-arm64/bs-arm64.sh",
+            bsArm64Events: [{ type: BSLaunchEvent.BS_ARM64_PREPARING }],
+        });
+
+        const options = steamVersion({ command: "gamemoderun %command%" });
+        const { done, events } = launch(service, options);
+        await completeUntracked(wrapper, done);
+
+        expect(ports.bsArm64.prepareLaunch).toHaveBeenCalledWith(options.version, BS_FOLDER, expect.any(Function));
+        // Repairing or updating the native build is reported before the game starts
+        expect(events.map(e => e.type)).toEqual(expect.arrayContaining([BSLaunchEvent.BS_ARM64_PREPARING, BSLaunchEvent.BS_LAUNCHING]));
+        expect(events.findIndex(e => e.type === BSLaunchEvent.BS_ARM64_PREPARING))
+            .toBeLessThan(events.findIndex(e => e.type === BSLaunchEvent.BS_LAUNCHING));
+        expect(plannedLaunch(ports).plan).toMatchObject({
+            cmdlet: "gamemoderun",
+            args: [`bash "/cache/bs-arm64/bs-arm64.sh" launch "${BS_FOLDER}" --prefix "/bsm/compatdata" --proton "/proton" --`],
+        });
+    });
 
     it("launches through Proton without elevation on Linux", async () => {
         const { service, ports, wrapper } = buildLauncher({ platform: "linux" });

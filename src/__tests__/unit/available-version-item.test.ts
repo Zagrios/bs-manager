@@ -65,7 +65,7 @@ const version: BSVersion = {
     ReleaseURL: "https://steamcommunity.com/example",
 };
 
-function renderItem(downloading = false) {
+function renderItem({ downloading = false, nativeArm64Versions }: { downloading?: boolean; nativeArm64Versions?: string[] } = {}) {
     const startDownload = jest.fn();
     const showAvailableMods = jest.fn();
     let renderer!: TestRenderer.ReactTestRenderer;
@@ -74,7 +74,7 @@ function renderItem(downloading = false) {
         renderer = TestRenderer.create(
             React.createElement(
                 AvailableVersionsContext.Provider,
-                { value: { startDownload, showAvailableMods, downloading } },
+                { value: { startDownload, showAvailableMods, downloading, nativeArm64Versions } },
                 React.createElement(AvailableVersionItem, { version })
             )
         );
@@ -171,7 +171,7 @@ describe("AvailableVersionItem download interactions", () => {
         expect(button.props["aria-label"]).toBe("misc.download 1.44.2");
         act(() => renderer.unmount());
 
-        const disabledItem = renderItem(true);
+        const disabledItem = renderItem({ downloading: true });
         expect(disabledItem.renderer.root.findByProps({ "aria-label": "misc.download 1.44.2" }).props.disabled).toBe(true);
         act(() => disabledItem.renderer.unmount());
     });
@@ -192,5 +192,25 @@ describe("AvailableVersionItem download interactions", () => {
         expect(tooltip.props.theme).toBe("default");
         expect(tooltip.props.animation).toBe(false);
         act(() => renderer.unmount());
+    });
+});
+
+describe("AvailableVersionItem native ARM64 badge", () => {
+    const badges = (renderer: TestRenderer.ReactTestRenderer) => renderer.root.findAll(node => node.props["data-native-arm64"] === true);
+
+    it("marks versions that can run natively on this device", () => {
+        const { renderer } = renderItem({ nativeArm64Versions: ["1.44.1", "1.44.2"] });
+        expect(badges(renderer)).toHaveLength(1);
+        act(() => renderer.unmount());
+    });
+
+    it("shows no badge for other versions or off ARM64", () => {
+        const other = renderItem({ nativeArm64Versions: ["1.44.1"] });
+        expect(badges(other.renderer)).toHaveLength(0);
+        act(() => other.renderer.unmount());
+
+        const none = renderItem();
+        expect(badges(none.renderer)).toHaveLength(0);
+        act(() => none.renderer.unmount());
     });
 });
