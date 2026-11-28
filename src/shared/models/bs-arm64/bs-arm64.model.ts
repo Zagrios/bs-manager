@@ -59,6 +59,8 @@ export interface BsArm64Status {
     mods: boolean;
     // Build of the selected Proton, e.g. "proton-11.0-2c-arm64"
     protonVersion?: string;
+    // The user wants this version to run natively (they turned it on, or it's installed)
+    native: boolean;
     // The game can be launched without installing again (false after a Proton update, or for an
     // instance installed by a release older than BSManager supports)
     ready: boolean;

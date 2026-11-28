@@ -12,7 +12,10 @@ import {
     parseBsArm64InstallerLine,
 } from "main/services/bs-arm64.service";
 import { bsmSpawn } from "main/helpers/os.helpers";
-import { BSLaunchError } from "shared/models/bs-launch";
+import { Observable } from "rxjs";
+import { BSVersion } from "shared/bs-version.interface";
+import { BSLaunchEvent, BSLaunchEventData, BSLaunchWarning } from "shared/models/bs-launch";
+import { CustomError } from "shared/models/exceptions/custom-error.class";
 import {
     BS_ARM64_RELEASES_URL,
     BsArm64Error,
@@ -20,6 +23,7 @@ import {
     BsArm64ModsUnavailable,
     BsArm64Progress,
     BsArm64Release,
+    BsArm64Unsupported,
 } from "shared/models/bs-arm64/bs-arm64.model";
 
 jest.mock("electron", () => ({ app: { getPath: () => "", getVersion: () => "0.0.0" } }));
@@ -248,20 +252,61 @@ describe("runInstaller", () => {
     });
 });
 
-describe("getLaunchScript", () => {
+describe("prepareLaunch", () => {
+    const VERSION = { BSVersion: "1.44.1" } as BSVersion;
+    const asset = { artifact: "bs-arm64-v0.4.1-proton-11.0-2c.tar.gz", sha256: SHA_A };
+    const v041 = release("v0.4.1", { "proton-11.0-2c": asset });
+
     let root: string;
     let instance: string;
-    let release: string;
-    let status: object | undefined;
+    let releaseDir: string;
+    let script: { installed: boolean; mods: boolean; ready: boolean } | undefined;
+    let installFails: boolean;
+    let events: BSLaunchEventData[];
+    let service: BsArm64Service;
+    let install: jest.SpyInstance;
+    let uninstall: jest.SpyInstance;
+
+    const releaseFile = () => path.join(instance, ".bs-arm64", "bsm-release.json");
+    const choice = () => fs.readJson(path.join(instance, ".bsm-arm64.json")).catch((): undefined => undefined);
+    const installedAs = (tag: string) => fs.outputJson(releaseFile(), { tag, dir: releaseDir });
+    const prepare = () => service.prepareLaunch(VERSION, instance, e => events.push(e));
 
     beforeEach(async () => {
         root = await fs.mkdtemp(path.join(os.tmpdir(), "bsm-arm64-"));
         instance = path.join(root, "instance");
-        release = path.join(root, "bs-arm64-v0.4.0-proton-11.0-2c");
-        await fs.outputJson(path.join(instance, ".bs-arm64", "bsm-release.json"), { tag: "v0.4.0", dir: release });
-        status = { installed: true, mods: true, ready: true };
-        jest.spyOn(BsArm64Service.prototype as any, "scriptStatus").mockImplementation(async () => status);
+        releaseDir = path.join(root, "bs-arm64-v0.4.1-proton-11.0-2c");
+        await fs.outputFile(path.join(releaseDir, "bs-arm64.sh"), "");
+        await fs.ensureDir(instance);
+        script = { installed: true, mods: true, ready: true };
+        installFails = false;
+        events = [];
+
         (BsArm64Service as unknown as { instance?: BsArm64Service }).instance = undefined;
+        service = BsArm64Service.getInstance();
+        const internals = service as unknown as Record<string, unknown>;
+        internals.linux = { isArm64Wine: () => true, getProtonBuild: () => "proton-11.0-2c-arm64" };
+        internals.catalog = { releases: [v041], time: Date.now() };
+        jest.spyOn(service as any, "isLinuxArm64").mockReturnValue(true);
+        jest.spyOn(service as any, "scriptStatus").mockImplementation(async () => script);
+        // What install and uninstall leave behind, without running bs-arm64.sh
+        install = jest.spyOn(service, "install").mockImplementation(() => new Observable(obs => {
+            (async () => {
+                if (installFails) { throw new CustomError("download failed", BsArm64Error.INSTALLER_FAILED, BsArm64InstallerErrorCode.DOWNLOAD_FAILED); }
+                await installedAs("v0.4.1");
+                await fs.writeJson(path.join(instance, ".bsm-arm64.json"), { native: true });
+                script = { installed: true, mods: true, ready: true };
+            })().then(() => obs.complete(), e => obs.error(e));
+        }));
+        uninstall = jest.spyOn(service, "uninstall").mockImplementation((_v, { keepChoice = false } = {}) => new Observable(obs => {
+            (async () => {
+                if (!(await fs.pathExists(releaseFile()))) {
+                    throw new CustomError("not installed", BsArm64Error.INSTALLER_FAILED, BsArm64InstallerErrorCode.NOT_INSTALLED);
+                }
+                await fs.remove(path.join(instance, ".bs-arm64"));
+                if (!keepChoice) { await fs.writeJson(path.join(instance, ".bsm-arm64.json"), { native: false }); }
+            })().then(() => obs.complete(), e => obs.error(e));
+        }));
     });
 
     afterEach(async () => {
@@ -269,22 +314,81 @@ describe("getLaunchScript", () => {
         await fs.remove(root);
     });
 
-    it("returns the installed release's bs-arm64.sh", async () => {
-        await expect(BsArm64Service.getInstance().getLaunchScript(instance)).resolves.toBe(path.join(release, "bs-arm64.sh"));
+    it("launches an up-to-date native instance as it is", async () => {
+        await installedAs("v0.4.1");
+        await expect(prepare()).resolves.toBe(path.join(releaseDir, "bs-arm64.sh"));
+        expect(install).not.toHaveBeenCalled();
+        expect(events).toEqual([]);
     });
 
-    it("is undefined for an instance BSManager didn't install the native ARM64 build into", async () => {
-        await fs.remove(path.join(instance, ".bs-arm64"));
-        await expect(BsArm64Service.getInstance().getLaunchScript(instance)).resolves.toBeUndefined();
+    it("repairs the native build after a Proton update, then launches it", async () => {
+        await installedAs("v0.4.1");
+        script = { installed: true, mods: true, ready: false };
+        await expect(prepare()).resolves.toBe(path.join(releaseDir, "bs-arm64.sh"));
+        expect(install).toHaveBeenCalledTimes(1);
+        expect(events).toEqual([{ type: BSLaunchEvent.BS_ARM64_PREPARING }]);
     });
 
-    it("asks for a reinstall when the installer says so (e.g. Proton changed)", async () => {
-        status = { installed: true, mods: true, ready: false };
-        await expect(BsArm64Service.getInstance().getLaunchScript(instance)).rejects.toMatchObject({ code: BSLaunchError.BS_ARM64_OUTDATED });
+    it("updates to the catalog's newer release", async () => {
+        await installedAs("v0.4.0");
+        await expect(prepare()).resolves.toBe(path.join(releaseDir, "bs-arm64.sh"));
+        expect(install).toHaveBeenCalledTimes(1);
     });
 
-    it("asks for a reinstall for a release without status (0.3.x and older)", async () => {
-        status = undefined;
-        await expect(BsArm64Service.getInstance().getLaunchScript(instance)).rejects.toMatchObject({ code: BSLaunchError.BS_ARM64_OUTDATED });
+    it("adds the mod fixes when BSIPA is installed in an instance installed without them", async () => {
+        await installedAs("v0.4.1");
+        script = { installed: true, mods: false, ready: true };
+        await fs.outputFile(path.join(instance, "Beat Saber_Data", "Managed", "IPA.Injector.dll"), "");
+        await prepare();
+        expect(install).toHaveBeenCalledTimes(1);
+    });
+
+    it("falls back to x64 when no release supports the Proton build yet, and comes back when one does", async () => {
+        await installedAs("v0.4.1");
+        (service as unknown as Record<string, unknown>).linux = { isArm64Wine: () => true, getProtonBuild: () => "proton-11.0-3-arm64" };
+
+        await expect(prepare()).resolves.toBeUndefined();
+        expect(events).toEqual([{ type: BSLaunchWarning.BS_ARM64_FALLBACK, data: BsArm64Unsupported.NO_RELEASE }]);
+        expect(await fs.pathExists(releaseFile())).toBe(false);
+        expect(await choice()).toEqual({ native: true });
+
+        // The catalog now has a release for Proton 11.0-3
+        (service as unknown as Record<string, unknown>).catalog = {
+            releases: [release("v0.5.0", { "proton-11.0-3": asset }), v041], time: Date.now(),
+        };
+        events = [];
+        await expect(prepare()).resolves.toBe(path.join(releaseDir, "bs-arm64.sh"));
+        expect(events).toEqual([{ type: BSLaunchEvent.BS_ARM64_PREPARING }]);
+    });
+
+    it("launches x64 when the install fails", async () => {
+        await installedAs("v0.4.0");
+        installFails = true;
+        await expect(prepare()).resolves.toBeUndefined();
+        expect(events).toEqual([
+            { type: BSLaunchEvent.BS_ARM64_PREPARING },
+            { type: BSLaunchWarning.BS_ARM64_FALLBACK, data: BsArm64InstallerErrorCode.DOWNLOAD_FAILED },
+        ]);
+        expect(uninstall).toHaveBeenCalledWith(VERSION, { keepChoice: true });
+    });
+
+    it("puts the x64 files back when the user chose x64", async () => {
+        await installedAs("v0.4.1");
+        await fs.writeJson(path.join(instance, ".bsm-arm64.json"), { native: false });
+        await expect(prepare()).resolves.toBeUndefined();
+        expect(await fs.pathExists(releaseFile())).toBe(false);
+    });
+
+    it("leaves a version that never ran natively alone", async () => {
+        await expect(prepare()).resolves.toBeUndefined();
+        expect(install).not.toHaveBeenCalled();
+        expect(uninstall).not.toHaveBeenCalled();
+    });
+
+    it("does nothing off ARM64 Linux", async () => {
+        await installedAs("v0.4.1");
+        jest.spyOn(service as any, "isLinuxArm64").mockReturnValue(false);
+        await expect(prepare()).resolves.toBeUndefined();
+        expect(events).toEqual([]);
     });
 });

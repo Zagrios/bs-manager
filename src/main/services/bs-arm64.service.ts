@@ -10,6 +10,7 @@ import {
     BS_ARM64_RELEASES_URL,
     BS_ARM64_REPOSITORY,
     BsArm64Error,
+    BsArm64InstallerErrorCode,
     BsArm64Release,
     BsArm64ReleaseAsset,
     BsArm64ModsUnavailable,
@@ -18,7 +19,7 @@ import {
     BsArm64Unsupported,
 } from "shared/models/bs-arm64/bs-arm64.model";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
-import { BSLaunchError } from "shared/models/bs-launch";
+import { BSLaunchError, BSLaunchEvent, BSLaunchEventData, BSLaunchWarning } from "shared/models/bs-launch";
 import { tryit } from "shared/helpers/error.helpers";
 import { BsmShellLog, bsmSpawn } from "main/helpers/os.helpers";
 import { IS_FLATPAK } from "main/constants";
@@ -32,6 +33,13 @@ import { BsModsManagerService } from "./mods/bs-mods-manager.service";
 // Written by BSManager into the installer's state dir in the instance: which release (and where
 // it's unpacked) patched the instance. Uninstall removes the whole dir.
 const RELEASE_FILE = path.join(".bs-arm64", "bsm-release.json");
+
+// The user's choice for the instance, native or x64: {"native": boolean}. Outside .bs-arm64/, so
+// uninstalling (e.g. as a fallback after a Proton update) keeps it.
+const CHOICE_FILE = ".bsm-arm64.json";
+
+// Present when BSIPA is installed (as BsModsManagerService checks)
+const BSIPA_INJECTOR = path.join("Beat Saber_Data", "Managed", "IPA.Injector.dll");
 
 // The part of `bs-arm64.sh status --json` BSManager uses (bs-arm64 docs/INSTALL.md, "For launchers")
 export type BsArm64ScriptStatus = {
@@ -201,34 +209,41 @@ export class BsArm64Service {
             installed: script ? script.installed : !!release,
             mods: !!script?.mods,
             ready: !!script?.ready,
+            native: await this.wantsNative(versionPath, release),
             protonVersion: this.linux.getProtonBuild(),
             installedRelease: release?.tag,
         };
 
-        if (process.platform !== "linux" || process.arch !== "arm64") {
-            status.unsupported = BsArm64Unsupported.NOT_LINUX_ARM64;
-            return status;
+        const availability = await this.getAvailability(version);
+        status.unsupported = availability.unsupported;
+        status.supportedVersions = availability.match?.release.bsVersions;
+        if (!availability.unsupported) {
+            status.bsipaVersion = await BsModsManagerService.getInstance().getBsipaVersion(version).catch((): undefined => undefined);
+            status.modsUnavailable = bsArm64ModsUnavailable(availability.match.release, status.bsipaVersion);
+        }
+        return status;
+    }
+
+    /** Whether the native build can be installed into this version now, and the release to use. */
+    private async getAvailability(version: BSVersion): Promise<{ unsupported?: BsArm64Unsupported; match?: BsArm64ReleaseMatch }> {
+        if (!this.isLinuxArm64()) {
+            return { unsupported: BsArm64Unsupported.NOT_LINUX_ARM64 };
         }
         if (!tryit(() => this.linux.isArm64Wine()).result) {
-            status.unsupported = BsArm64Unsupported.PROTON_NOT_ARM64;
-            return status;
+            return { unsupported: BsArm64Unsupported.PROTON_NOT_ARM64 };
         }
-
-        const match = findBsArm64Release(await this.getCatalog(), status.protonVersion);
+        const match = findBsArm64Release(await this.getCatalog(), this.linux.getProtonBuild());
         if (!match) {
-            status.unsupported = BsArm64Unsupported.NO_RELEASE;
-            return status;
+            return { unsupported: BsArm64Unsupported.NO_RELEASE };
         }
-
-        status.supportedVersions = match.release.bsVersions;
-        if (!status.supportedVersions.includes(version.BSVersion)) {
-            status.unsupported = BsArm64Unsupported.VERSION_NOT_SUPPORTED;
-            return status;
+        if (!match.release.bsVersions.includes(version.BSVersion)) {
+            return { unsupported: BsArm64Unsupported.VERSION_NOT_SUPPORTED, match };
         }
+        return { match };
+    }
 
-        status.bsipaVersion = await BsModsManagerService.getInstance().getBsipaVersion(version).catch((): undefined => undefined);
-        status.modsUnavailable = bsArm64ModsUnavailable(match.release, status.bsipaVersion);
-        return status;
+    private isLinuxArm64(): boolean {
+        return process.platform === "linux" && process.arch === "arm64";
     }
 
     /**
@@ -242,14 +257,22 @@ export class BsArm64Service {
                 const release = await this.prepareRelease(msg => obs.next(msg));
                 await this.runInstaller(release.dir, ["install", this.quote(versionPath), ...this.prefixArgs()], msg => obs.next(msg));
                 await fs.writeJson(path.join(versionPath, RELEASE_FILE), release);
+                await this.setWantsNative(versionPath, true);
             })().then(() => obs.complete(), err => obs.error(err));
         });
     }
 
-    public uninstall(version: BSVersion): Observable<BsArm64Progress> {
+    /**
+     * Puts the x64 files back. Unless `keepChoice`, also remembers that the user wants this version
+     * to run as x64; a fallback keeps the choice, so the version goes native again when it can.
+     */
+    public uninstall(version: BSVersion, { keepChoice = false } = {}): Observable<BsArm64Progress> {
         return new Observable<BsArm64Progress>(obs => {
             (async () => {
                 const versionPath = await this.localVersions.getVersionPath(version);
+                if (!keepChoice) {
+                    await this.setWantsNative(versionPath, false);
+                }
                 const installed = await this.readInstalledRelease(versionPath);
                 const dir = installed && await fs.pathExists(path.join(installed.dir, "bs-arm64.sh"))
                     ? installed.dir
@@ -275,20 +298,97 @@ export class BsArm64Service {
     }
 
     /**
-     * bs-arm64.sh of the release that installed this native ARM64 instance, which launches it;
-     * undefined if the instance isn't one. Throws if the installer says it needs a reinstall first
-     * (Proton changed since install), or the release predates `status` (0.3.x and older).
+     * Gets a version ready to launch and returns the bs-arm64.sh that starts it natively, or
+     * undefined to start the x64 build. Never asks the user to do anything:
+     *  - native wanted and possible: installs, repairs (Proton updated) or updates (newer catalog
+     *    release) the native build first, reporting BS_ARM64_PREPARING
+     *  - native wanted but not possible now (no release for this Proton yet, ...) or the install
+     *    failed: puts the x64 files back and reports BS_ARM64_FALLBACK. The choice is kept, so the
+     *    next launch after the catalog supports this Proton is native again.
+     *  - native not wanted: makes sure the x64 files are in place
      */
-    public async getLaunchScript(versionPath: string): Promise<string | undefined> {
-        const release = await this.readInstalledRelease(versionPath);
-        if (!release) {
+    public async prepareLaunch(version: BSVersion, versionPath: string, onEvent: (event: BSLaunchEventData) => void): Promise<string | undefined> {
+        if (!this.isLinuxArm64()) {
             return undefined;
         }
-        const script = await this.scriptStatus(versionPath, release).catch((): undefined => undefined);
-        if (!script?.ready) {
-            throw CustomError.fromError(new Error(`Native ARM64 instance (${release.tag}) needs a reinstall`), BSLaunchError.BS_ARM64_OUTDATED);
+        const installed = await this.readInstalledRelease(versionPath);
+        if (!(await this.wantsNative(versionPath, installed))) {
+            if (installed) {
+                await this.restoreX64(version);
+            }
+            return undefined;
         }
-        return path.join(release.dir, "bs-arm64.sh");
+
+        const { unsupported, match } = await this.getAvailability(version);
+        if (unsupported) {
+            log.info(`Native ARM64 build not available (${unsupported}), launching the x64 build`);
+            if (installed) {
+                await this.fallBackToX64(version, versionPath, unsupported, onEvent);
+            }
+            return undefined;
+        }
+
+        if (!(await this.isUpToDate(versionPath, installed, match))) {
+            onEvent({ type: BSLaunchEvent.BS_ARM64_PREPARING });
+            try {
+                await lastValueFrom(this.install(version), { defaultValue: undefined });
+            } catch (error) {
+                log.error("Could not install the native ARM64 build, launching the x64 build", error);
+                await this.fallBackToX64(version, versionPath, (error as CustomError)?.data ?? (error as Error)?.message, onEvent);
+                return undefined;
+            }
+        }
+        return path.join((await this.readInstalledRelease(versionPath)).dir, "bs-arm64.sh");
+    }
+
+    /** Installed from the catalog's current release, set up for the selected Proton, with the mod fixes if BSIPA is there. */
+    private async isUpToDate(versionPath: string, installed: InstalledRelease | undefined, match: BsArm64ReleaseMatch): Promise<boolean> {
+        if (!installed || installed.tag !== match.release.version || !(await fs.pathExists(path.join(installed.dir, "bs-arm64.sh")))) {
+            return false;
+        }
+        const script = await this.scriptStatus(versionPath, installed).catch((): undefined => undefined);
+        if (!script?.installed || !script.ready) {
+            return false;
+        }
+        // Installed with --no-mods by an older BSManager, and BSIPA is there now
+        return script.mods || !(await fs.pathExists(path.join(versionPath, BSIPA_INJECTOR)));
+    }
+
+    /**
+     * Starts this launch as x64 while the native build can't run. Saves the choice first: an instance
+     * installed before choices were saved would otherwise stop counting as native once uninstalled.
+     */
+    private async fallBackToX64(version: BSVersion, versionPath: string, reason: unknown, onEvent: (event: BSLaunchEventData) => void): Promise<void> {
+        onEvent({ type: BSLaunchWarning.BS_ARM64_FALLBACK, data: reason });
+        await this.setWantsNative(versionPath, true);
+        await this.restoreX64(version);
+    }
+
+    /** Uninstalls the native build, so the x64 files are back. Nothing to do if it isn't installed. */
+    private async restoreX64(version: BSVersion): Promise<void> {
+        try {
+            await lastValueFrom(this.uninstall(version, { keepChoice: true }), { defaultValue: undefined });
+        } catch (error) {
+            if ((error as CustomError)?.data === BsArm64InstallerErrorCode.NOT_INSTALLED) {
+                return;
+            }
+            throw CustomError.fromError(error as Error, BSLaunchError.BS_ARM64_RESTORE_FAILED);
+        }
+    }
+
+    // === Choice === //
+
+    /**
+     * Whether the user wants this version to run natively: their choice if they made one, else
+     * whether the native build is installed. Kept outside .bs-arm64/, which uninstall removes.
+     */
+    private async wantsNative(versionPath: string, installed: InstalledRelease | undefined): Promise<boolean> {
+        const choice = await fs.readJson(path.join(versionPath, CHOICE_FILE)).catch((): undefined => undefined);
+        return typeof choice?.native === "boolean" ? choice.native : !!installed;
+    }
+
+    private async setWantsNative(versionPath: string, native: boolean): Promise<void> {
+        await fs.writeJson(path.join(versionPath, CHOICE_FILE), { native });
     }
 
     // === Release === //

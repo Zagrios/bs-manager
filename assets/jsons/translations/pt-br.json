@@ -66,7 +66,7 @@
                 "reinstall": "Reinstall",
                 "uninstall": "Uninstall",
                 "log-placeholder": "Installer output appears here.",
-                "reinstall-needed": "Reinstall needed: Proton or the bs-arm64 release changed since the install.",
+                "reinstall-needed": "Proton or the native ARM64 release changed since the install. BSManager updates it when you launch the game.",
                 "unsupported": {
                     "NOT_LINUX_ARM64": "Only available on ARM64 Linux.",
                     "PROTON_NOT_ARM64": "Select an ARM64 Proton (e.g. \"Proton 11.0 (ARM64)\") in the settings.",
@@ -590,11 +590,13 @@
             "success": {
                 "titles": {
                     "BS_LAUNCHING": "Iniciando...🚀",
-                    "STEAM_LAUNCHING": "Iniciando Steam!"
+                    "STEAM_LAUNCHING": "Iniciando Steam!",
+                    "BS_ARM64_PREPARING": "Preparing the native ARM64 build"
                 },
                 "msg": {
                     "BS_LAUNCHING": "Não se esqueça do aquecimento 😉",
-                    "STEAM_LAUNCHING": "Beat Saber irá automaticamente iniciar após a Steam."
+                    "STEAM_LAUNCHING": "Beat Saber irá automaticamente iniciar após a Steam.",
+                    "BS_ARM64_PREPARING": "Setting up Beat Saber to run natively. The game starts when this is done."
                 }
             },
             "errors": {
@@ -606,11 +608,11 @@
                     "BS_ALREADY_RUNNING": "Beat Saber já está rodando",
                     "EXE_NOT_FOUND": "Arquivos faltando",
                     "PROTON_NOT_SET": "Pasta do Proton não está configurada",
-                    "BS_ARM64_OUTDATED": "Native ARM64 files outdated",
                     "PROTON_NOT_FOUND": "Binário do Proton não encontrado",
                     "EXIT": "Interrupção Abrupta",
                     "OCULUS_LIB_NOT_FOUND": "Biblioteca Oculus não encontrada",
-                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Versão original do Oculus não encontrada"
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Versão original do Oculus não encontrada",
+                    "BS_ARM64_RESTORE_FAILED": "Couldn't restore the x64 files"
                 },
                 "msg": {
                     "UNKNOWN_ERROR": "Um erro desconhecido aconteceu.",
@@ -622,9 +624,9 @@
                     "EXIT": "BeatSaber parou abruptamente, tente verificar os arquivos.",
                     "OCULUS_LIB_NOT_FOUND": "Verifique que o aplicativo Oculus está instalado corretamente, e que as bibliotecas estão definidas no Oculus.",
                     "PROTON_NOT_SET": "Defina o Proton nas configurações.",
-                    "BS_ARM64_OUTDATED": "Proton or the bs-arm64 release changed. Reinstall the native ARM64 build in the ARM64 tab.",
                     "PROTON_NOT_FOUND": "Defina o caminho da pasta do proton nas configurações.",
-                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Beat Saber precisa estar instalado no aplicativo do Oculus antes de iniciar."
+                    "ORIGINAL_OCULUS_NOT_INSTALLED": "Beat Saber precisa estar instalado no aplicativo do Oculus antes de iniciar.",
+                    "BS_ARM64_RESTORE_FAILED": "The native ARM64 build couldn't be removed to start the x64 version. Use \"Verify files\" in the version menu, then try again."
                 },
                 "actions": {
                     "STEAM_NOT_RUNNING": "Iniciar Steam"
@@ -632,10 +634,12 @@
             },
             "warnings": {
                 "titles": {
-                    "UNABLE_TO_LAUNCH_STEAM": "Could not launch Steam"
+                    "UNABLE_TO_LAUNCH_STEAM": "Could not launch Steam",
+                    "BS_ARM64_FALLBACK": "Starting the x64 version"
                 },
                 "msg": {
-                    "UNABLE_TO_LAUNCH_STEAM": "Steam could not be started automatically."
+                    "UNABLE_TO_LAUNCH_STEAM": "Steam could not be started automatically.",
+                    "BS_ARM64_FALLBACK": "The native ARM64 build isn't available right now (for example after a Proton update), so Beat Saber runs through emulation this time. BSManager switches back to native once it can."
                 }
             }
         },

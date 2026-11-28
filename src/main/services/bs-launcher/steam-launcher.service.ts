@@ -200,7 +200,7 @@ function waitForElevatedHelperPid(
 export type SteamLauncherPorts = GameLauncherPorts & {
     steam: Pick<SteamService, "isSteamRunning" | "openSteam" | "getSteamPath">;
     linux: Pick<LinuxService, "getProtonConfig">;
-    bsArm64: Pick<BsArm64Service, "getLaunchScript">;
+    bsArm64: Pick<BsArm64Service, "prepareLaunch">;
     adminHelperPath(): string;
     logsPath(): string;
     spawnElevation(command: string, args: string[], options: SpawnOptions): ChildProcess;
@@ -290,8 +290,9 @@ export class SteamLauncherService implements StoreLauncherInterface{
                 });
             }
 
+            // Native ARM64 build (Steam Frame): installed, repaired or updated now if needed
             const bsArm64LaunchScript = this.ports.session.platform === "linux"
-                ? await this.ports.bsArm64.getLaunchScript(bsFolderPath)
+                ? await this.ports.bsArm64.prepareLaunch(launchOptions.version, bsFolderPath, event => obs.next(event))
                 : undefined;
             const plan = await planLaunch(
                 { store: "steam", launchOptions, gameFolder: bsFolderPath, bsArm64LaunchScript },
