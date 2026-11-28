@@ -43,18 +43,59 @@ export type BsArm64ScriptStatus = {
 };
 
 /** The `result` line of a `--json` run of the installer. */
-export function parseBsArm64Result(lines: string[]): BsArm64ScriptStatus | undefined {
-    for (const line of [...lines].reverse()) {
-        try {
-            const parsed = JSON.parse(line);
-            if (parsed?.type === "result") {
+export type BsArm64InstallerResult = { type: "result" } & Record<string, unknown>;
+
+/** One line of `bs-arm64.sh ... --json` output (bs-arm64 docs/INSTALL.md, "For launchers"). */
+export type BsArm64InstallerEvent =
+    | { type: "log" | "warning"; message: string }
+    | { type: "progress"; percent: number }
+    | { type: "error"; code: string; message: string }
+    | BsArm64InstallerResult;
+
+/** Parses an output line of the installer; anything that isn't one of its JSON objects is a log line. */
+export function parseBsArm64InstallerLine(line: string): BsArm64InstallerEvent {
+    try {
+        const parsed = JSON.parse(line);
+        switch (parsed?.type) {
+            case "log":
+            case "warning":
+                if (typeof parsed.message === "string") { return parsed; }
+                break;
+            case "progress":
+                if (typeof parsed.percent === "number") { return parsed; }
+                break;
+            case "error":
+                if (typeof parsed.code === "string" && typeof parsed.message === "string") { return parsed; }
+                break;
+            case "result":
                 return parsed;
-            }
-        } catch {
-            // not a JSON line
+            default:
+                break;
         }
+    } catch {
+        // not a JSON line (e.g. output of a program the installer runs)
     }
-    return undefined;
+    return { type: "log", message: line };
+}
+
+/** Splits a stream into lines, also when a line arrives in several chunks. */
+export function lineReader(onLine: (line: string) => void): { push(chunk: Buffer | string): void; flush(): void } {
+    let pending = "";
+    const emit = (line: string) => {
+        const trimmed = line.trimEnd();
+        if (trimmed) { onLine(trimmed); }
+    };
+    return {
+        push(chunk) {
+            const lines = (pending + chunk.toString()).split("\n");
+            pending = lines.pop() ?? "";
+            lines.forEach(emit);
+        },
+        flush() {
+            emit(pending);
+            pending = "";
+        },
+    };
 }
 
 type InstalledRelease = { tag: string; dir: string };
@@ -334,7 +375,7 @@ export class BsArm64Service {
         progress({ log: "Checksum OK" });
 
         progress({ log: `Unpacking into ${this.releasesDir()}` });
-        await this.run(`tar -xzf ${this.quote(tarball)} -C ${this.quote(this.releasesDir())}`, progress);
+        await this.run(`tar -xzf ${this.quote(tarball)} -C ${this.quote(this.releasesDir())}`, line => progress({ log: line }));
         await fs.remove(tarball);
         return { tag: release.version, dir };
     }
@@ -355,11 +396,28 @@ export class BsArm64Service {
         return ["--prefix", this.quote(this.linux.getCompatDataPath()), "--proton", this.quote(this.linux.getProtonFolder())];
     }
 
-    private async runInstaller(dir: string, args: string[], progress: (p: BsArm64Progress) => void): Promise<void> {
+    /**
+     * Runs bs-arm64.sh with --json: its log lines and download progress go to `progress`, and a
+     * failure carries the installer's stable error code (BsArm64InstallerErrorCode) as `data`.
+     * Returns the `result` the command printed, if any.
+     */
+    private async runInstaller(dir: string, args: string[], progress: (p: BsArm64Progress) => void): Promise<BsArm64InstallerResult | undefined> {
+        let failure: { code: string; message: string } | undefined;
+        let result: BsArm64InstallerResult | undefined;
         try {
-            await this.run(`bash ${this.quote(path.join(dir, "bs-arm64.sh"))} ${args.join(" ")}`, progress);
+            await this.run(`bash ${this.quote(path.join(dir, "bs-arm64.sh"))} ${[...args, "--json"].join(" ")}`, (line, isError) => {
+                const event = isError ? { type: "log" as const, message: line } : parseBsArm64InstallerLine(line);
+                switch (event.type) {
+                    case "progress": progress({ percent: event.percent }); break;
+                    case "error": failure = event; progress({ log: `error: ${event.message}` }); break;
+                    case "result": result = event; break;
+                    case "warning": progress({ log: `warning: ${event.message}` }); break;
+                    default: progress({ log: event.message });
+                }
+            });
+            return result;
         } catch (error) {
-            throw CustomError.fromError(error as Error, BsArm64Error.INSTALLER_FAILED, (error as Error)?.message);
+            throw new CustomError(failure?.message ?? (error as Error)?.message, BsArm64Error.INSTALLER_FAILED, failure?.code);
         }
     }
 
@@ -368,34 +426,40 @@ export class BsArm64Service {
         if (!(await fs.pathExists(path.join(release.dir, "bs_arm64")))) {
             return undefined;
         }
-        const lines: string[] = [];
-        await this.runInstaller(release.dir, ["status", this.quote(versionPath), ...this.prefixArgs(), "--json"],
-            p => p.log && lines.push(p.log));
-        return parseBsArm64Result(lines);
+        const result = await this.runInstaller(release.dir, ["status", this.quote(versionPath), ...this.prefixArgs()], () => {});
+        if (typeof result?.installed !== "boolean") {
+            return undefined;
+        }
+        return { installed: result.installed, mods: result.mods === true, ready: result.ready === true };
     }
 
-    private run(command: string, progress: (p: BsArm64Progress) => void): Promise<void> {
+    /** Runs a command, passing each complete output line to `onLine`. Rejects on a non-zero exit. */
+    private run(command: string, onLine: (line: string, isError: boolean) => void): Promise<void> {
         return new Promise((resolve, reject) => {
             const child = bsmSpawn(command, {
                 log: BsmShellLog.Command,
                 flatpak: { host: IS_FLATPAK },
             });
             let lastError = "";
-            const forward = (data: Buffer, isError: boolean) => {
-                for (const line of data.toString().split("\n").map(l => l.trimEnd()).filter(Boolean)) {
-                    if (isError) {
-                        log.warn("bs-arm64:", line);
-                        lastError = line;
-                    } else {
-                        log.info("bs-arm64:", line);
-                    }
-                    progress({ log: line });
+            const reader = (isError: boolean) => lineReader(line => {
+                if (isError) {
+                    log.warn("bs-arm64:", line);
+                    lastError = line;
+                } else {
+                    log.info("bs-arm64:", line);
                 }
-            };
-            child.stdout?.on("data", d => forward(d, false));
-            child.stderr?.on("data", d => forward(d, true));
+                onLine(line, isError);
+            });
+            const stdout = reader(false);
+            const stderr = reader(true);
+            child.stdout?.on("data", d => stdout.push(d));
+            child.stderr?.on("data", d => stderr.push(d));
             child.once("error", reject);
-            child.once("close", code => (code === 0 ? resolve() : reject(new Error(lastError || `exit code ${code}`))));
+            child.once("close", code => {
+                stdout.flush();
+                stderr.flush();
+                return code === 0 ? resolve() : reject(new Error(lastError || `exit code ${code}`));
+            });
         });
     }
 

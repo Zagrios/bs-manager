@@ -79,5 +79,24 @@ export interface BsArm64Progress {
 export enum BsArm64Error {
     NO_MATCHING_RELEASE = "BS_ARM64_NO_MATCHING_RELEASE",
     CHECKSUM_MISMATCH = "BS_ARM64_CHECKSUM_MISMATCH",
+    // `data` is the installer's error code (BsArm64InstallerErrorCode), if it reported one
     INSTALLER_FAILED = "BS_ARM64_INSTALLER_FAILED",
+}
+
+/** The installer's stable error codes (bs-arm64 install/bs_arm64/errors.py), shown as translated messages. */
+export enum BsArm64InstallerErrorCode {
+    NOT_AN_INSTANCE = "NOT_AN_INSTANCE",
+    NOT_INSTALLED = "NOT_INSTALLED",
+    UNSUPPORTED_ENGINE = "UNSUPPORTED_ENGINE",
+    PROTON_NOT_ARM64 = "PROTON_NOT_ARM64",
+    PROTON_UNTESTED = "PROTON_UNTESTED",
+    PROTON_CHANGED = "PROTON_CHANGED",
+    ARTIFACT_MISSING = "ARTIFACT_MISSING",
+    PREFIX_BUSY = "PREFIX_BUSY",
+    PREFIX_FAILED = "PREFIX_FAILED",
+    DOWNLOAD_FAILED = "DOWNLOAD_FAILED",
+}
+
+export function isBsArm64InstallerErrorCode(code: unknown): code is BsArm64InstallerErrorCode {
+    return Object.values(BsArm64InstallerErrorCode).includes(code as BsArm64InstallerErrorCode);
 }

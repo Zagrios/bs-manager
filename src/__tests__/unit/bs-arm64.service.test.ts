@@ -1,5 +1,6 @@
 import os from "node:os";
 import path from "node:path";
+import { EventEmitter } from "node:events";
 import fs from "fs-extra";
 import {
     BsArm64Service,
@@ -7,12 +8,22 @@ import {
     bsArm64ModsUnavailable,
     findBsArm64Release,
     isBsArm64Catalog,
-    parseBsArm64Result,
+    lineReader,
+    parseBsArm64InstallerLine,
 } from "main/services/bs-arm64.service";
+import { bsmSpawn } from "main/helpers/os.helpers";
 import { BSLaunchError } from "shared/models/bs-launch";
-import { BS_ARM64_RELEASES_URL, BsArm64ModsUnavailable, BsArm64Release } from "shared/models/bs-arm64/bs-arm64.model";
+import {
+    BS_ARM64_RELEASES_URL,
+    BsArm64Error,
+    BsArm64InstallerErrorCode,
+    BsArm64ModsUnavailable,
+    BsArm64Progress,
+    BsArm64Release,
+} from "shared/models/bs-arm64/bs-arm64.model";
 
 jest.mock("electron", () => ({ app: { getPath: () => "", getVersion: () => "0.0.0" } }));
+jest.mock("main/helpers/os.helpers", () => ({ ...jest.requireActual("main/helpers/os.helpers"), bsmSpawn: jest.fn() }));
 jest.mock("electron-log", () => ({ info: jest.fn(), warn: jest.fn(), error: jest.fn(), debug: jest.fn() }));
 jest.mock("main/services/bs-local-version.service", () => ({ BSLocalVersionService: { getInstance: jest.fn() } }));
 jest.mock("main/services/installation-location.service", () => ({ InstallationLocationService: { getInstance: jest.fn() } }));
@@ -163,17 +174,77 @@ describe("getCatalog", () => {
     });
 });
 
-describe("parseBsArm64Result", () => {
-    it("reads the result line of `bs-arm64.sh status --json`", () => {
-        const lines = [
-            '{"type": "log", "message": "x"}',
-            '{"type": "result", "api": 1, "installed": true, "mods": false, "ready": true, "protonBuild": "proton-11.0-2e-arm64"}',
-        ];
-        expect(parseBsArm64Result(lines)).toMatchObject({ installed: true, mods: false, ready: true });
+describe("parseBsArm64InstallerLine", () => {
+    it("reads the installer's --json lines", () => {
+        expect(parseBsArm64InstallerLine('{"type": "log", "message": "x"}')).toEqual({ type: "log", message: "x" });
+        expect(parseBsArm64InstallerLine('{"type": "warning", "message": "w"}')).toEqual({ type: "warning", message: "w" });
+        expect(parseBsArm64InstallerLine('{"type": "progress", "percent": 42}')).toEqual({ type: "progress", percent: 42 });
+        expect(parseBsArm64InstallerLine('{"type": "error", "code": "PREFIX_BUSY", "message": "busy"}'))
+            .toEqual({ type: "error", code: "PREFIX_BUSY", message: "busy" });
+        expect(parseBsArm64InstallerLine('{"type": "result", "api": 1, "installed": true, "mods": false, "ready": true}'))
+            .toMatchObject({ type: "result", installed: true, mods: false, ready: true });
     });
 
-    it("finds nothing without a result line", () => {
-        expect(parseBsArm64Result(["==> done", '{"type": "error", "code": "NOT_AN_INSTANCE", "message": "x"}'])).toBeUndefined();
+    it("treats anything else as a log line", () => {
+        expect(parseBsArm64InstallerLine("==> done")).toEqual({ type: "log", message: "==> done" });
+        expect(parseBsArm64InstallerLine('{"type": "progress"}')).toEqual({ type: "log", message: '{"type": "progress"}' });
+        expect(parseBsArm64InstallerLine("[1, 2]")).toEqual({ type: "log", message: "[1, 2]" });
+    });
+});
+
+describe("lineReader", () => {
+    it("joins lines that arrive in several chunks and drops empty ones", () => {
+        const lines: string[] = [];
+        const reader = lineReader(line => lines.push(line));
+        reader.push('{"type": "lo');
+        reader.push('g", "message": "a"}\n\nb\r\nc');
+        expect(lines).toEqual(['{"type": "log", "message": "a"}', "b"]);
+        reader.flush();
+        expect(lines).toEqual(['{"type": "log", "message": "a"}', "b", "c"]);
+    });
+});
+
+describe("runInstaller", () => {
+    // A child process that prints `stdout` and exits with `code`
+    function fakeChild(stdout: string[], code: number) {
+        const child = Object.assign(new EventEmitter(), { stdout: new EventEmitter(), stderr: new EventEmitter() });
+        setImmediate(() => {
+            stdout.forEach(chunk => child.stdout.emit("data", Buffer.from(chunk)));
+            child.emit("close", code);
+        });
+        return child;
+    }
+
+    const runInstaller = (args: string[], progress: (p: BsArm64Progress) => void) => {
+        (BsArm64Service as unknown as { instance?: BsArm64Service }).instance = undefined;
+        const s = BsArm64Service.getInstance() as unknown as {
+            runInstaller(dir: string, args: string[], progress: (p: BsArm64Progress) => void): Promise<unknown>;
+        };
+        return s.runInstaller("/r", args, progress);
+    };
+
+    afterEach(() => jest.mocked(bsmSpawn).mockReset());
+
+    it("passes --json, forwards log lines and progress, and returns the result", async () => {
+        jest.mocked(bsmSpawn).mockImplementation(() => fakeChild([
+            '{"type": "log", "message": "fetching"}\n{"type": "progress", "percent": 50}\n',
+            '{"type": "warning", "message": "w"}\n{"type": "result", "installed": true}\n',
+        ], 0) as never);
+        const progress = jest.fn();
+        await expect(runInstaller(["install", "'/i'"], progress)).resolves.toMatchObject({ type: "result", installed: true });
+        expect(jest.mocked(bsmSpawn).mock.calls[0][0]).toBe("bash '/r/bs-arm64.sh' install '/i' --json");
+        expect(progress.mock.calls.map(c => c[0])).toEqual([{ log: "fetching" }, { percent: 50 }, { log: "warning: w" }]);
+    });
+
+    it("fails with the installer's error code", async () => {
+        jest.mocked(bsmSpawn).mockImplementation(() => fakeChild([
+            '{"type": "error", "code": "PREFIX_BUSY", "message": "Windows programs are still running"}\n',
+        ], 1) as never);
+        await expect(runInstaller(["install"], () => {})).rejects.toMatchObject({
+            code: BsArm64Error.INSTALLER_FAILED,
+            data: BsArm64InstallerErrorCode.PREFIX_BUSY,
+            message: "Windows programs are still running",
+        });
     });
 });
 

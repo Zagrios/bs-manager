@@ -88,6 +88,18 @@
                     "BS_ARM64_NO_MATCHING_RELEASE": "Noch kein bs-arm64-Release für diese Proton-Version",
                     "BS_ARM64_CHECKSUM_MISMATCH": "Download beschädigt (Prüfsumme stimmt nicht)",
                     "BS_ARM64_INSTALLER_FAILED": "Native ARM64-Installation fehlgeschlagen"
+                },
+                "installer-errors": {
+                    "NOT_AN_INSTANCE": "This folder doesn't look like a Beat Saber install. Verify the version's files and try again.",
+                    "NOT_INSTALLED": "The native ARM64 build isn't installed in this version.",
+                    "UNSUPPORTED_ENGINE": "This Beat Saber version uses a Unity engine the native ARM64 build doesn't support.",
+                    "PROTON_NOT_ARM64": "The selected Proton isn't an ARM64 build. Select \"Proton 11.0 (ARM64)\" in the settings.",
+                    "PROTON_UNTESTED": "The native ARM64 build hasn't been tested with this Proton version yet.",
+                    "PROTON_CHANGED": "Proton was updated since the native ARM64 build was installed. Install it again.",
+                    "ARTIFACT_MISSING": "The downloaded native ARM64 release is incomplete. Try again.",
+                    "PREFIX_BUSY": "Beat Saber or another Windows program is still running. Close it and try again.",
+                    "PREFIX_FAILED": "Setting up BSManager's Wine prefix failed. The details below say why.",
+                    "DOWNLOAD_FAILED": "A download failed. Check your internet connection and try again."
                 }
             },
             "launch-mods": {

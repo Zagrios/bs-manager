@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Observable } from "rxjs";
 import { BSVersion } from "shared/bs-version.interface";
-import { BS_ARM64_REPOSITORY, BsArm64Progress, BsArm64Status } from "shared/models/bs-arm64/bs-arm64.model";
+import { BS_ARM64_REPOSITORY, BsArm64Progress, BsArm64Status, isBsArm64InstallerErrorCode } from "shared/models/bs-arm64/bs-arm64.model";
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 import { BsmCheckbox } from "renderer/components/shared/bsm-checkbox.component";
 import { BsmLink } from "renderer/components/shared/bsm-link.component";
@@ -62,13 +62,14 @@ export function Arm64Slide({ version, status, onStatusChange }: Props) {
                     setLogLines(lines => [...lines, p.log].slice(-MAX_LOG_LINES));
                 }
             },
-            error: (e: { code?: string; message?: string }) => {
+            error: (e: { code?: string; message?: string; data?: unknown }) => {
                 setBusy(false);
                 setLogLines(lines => [...lines, e?.message ?? String(e)]);
                 const code = e?.code?.startsWith("BS_ARM64_") ? e.code : "BS_ARM64_INSTALLER_FAILED";
                 notification.notifyError({
                     title: `pages.version-viewer.arm64.errors.${code}`,
-                    desc: e?.message,
+                    // The installer's stable error code says what to do; else its message
+                    desc: isBsArm64InstallerErrorCode(e?.data) ? `pages.version-viewer.arm64.installer-errors.${e.data}` : e?.message,
                 });
                 onStatusChange();
             },
