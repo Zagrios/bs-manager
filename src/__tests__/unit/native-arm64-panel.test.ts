@@ -3,6 +3,7 @@ import { BsArm64Status, BsArm64Unsupported } from "shared/models/bs-arm64/bs-arm
 jest.mock("renderer", () => ({ logRenderError: jest.fn() }));
 jest.mock("renderer/services/bs-arm64.service", () => ({ BsArm64Service: { getInstance: jest.fn() } }));
 jest.mock("renderer/services/notification.service", () => ({ NotificationService: { getInstance: jest.fn() } }));
+jest.mock("renderer/services/configuration.service", () => ({ ConfigurationService: { getInstance: jest.fn() } }));
 jest.mock("renderer/hooks/use-translation.hook", () => ({ useTranslationV2: () => ({ text: (key: string) => key }) }));
 jest.mock("renderer/hooks/use-service.hook", () => ({ useService: jest.fn() }));
 jest.mock("renderer/components/shared/bsm-button.component", () => ({ BsmButton: () => null }));

@@ -100,7 +100,12 @@
                     "removing": "Restoring the x64 files…"
                 },
                 "details": "Details",
-                "hide-details": "Hide details"
+                "hide-details": "Hide details",
+                "tips": {
+                    "title": "Tips for the Steam Frame:",
+                    "text": "turn off Adaptive SFX (Solo → song selection → Player Settings) and Screen Distortion (graphics settings). Both cost a lot of performance on the Frame.",
+                    "dismiss": "Got it"
+                }
             },
             "launch-mods": {
                 "oculus": "Oculus Mode",
@@ -120,7 +125,9 @@
                 "proton-logs": "Proton Logs",
                 "proton-logs-description": "Enables the recording of proton logs for this Beat Saber install to \"{versionPath}\".",
                 "parallel-views": "Parallel Views",
-                "parallel-views-description": "For Monado, sets OXR_PARALLEL_VIEWS to 1. It can fix rendering issues, but might cut off parts of your field of view (FOV)."
+                "parallel-views-description": "For Monado, sets OXR_PARALLEL_VIEWS to 1. It can fix rendering issues, but might cut off parts of your field of view (FOV).",
+                "foveated-rendering": "Foveated rendering",
+                "foveated-rendering-description": "Steam Frame only. Renders the area you look at in full detail and the edges at lower resolution, which saves GPU time and battery. Native ARM64 versions also follow Steam's Foveated Rendering switch (Properties → Performance)."
             },
             "maps": {
                 "search-bar": {

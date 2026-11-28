@@ -100,7 +100,12 @@
                     "removing": "Restoring the x64 files…"
                 },
                 "details": "Details",
-                "hide-details": "Hide details"
+                "hide-details": "Hide details",
+                "tips": {
+                    "title": "Tips for the Steam Frame:",
+                    "text": "turn off Adaptive SFX (Solo → song selection → Player Settings) and Screen Distortion (graphics settings). Both cost a lot of performance on the Frame.",
+                    "dismiss": "Got it"
+                }
             },
             "launch-mods": {
                 "oculus": "Oculus 模式",
@@ -120,7 +125,9 @@
                 "proton-logs": "Proton紀錄",
                 "proton-logs-description": "啟用此 Beat Saber 安裝的質子紀錄，路徑為\"{versionPath}\"。",
                 "parallel-views": "平行視角",
-                "parallel-views-description": "對於 Monado，將 OXR_PARALLEL_VIEWS 設為 1。這可以修復渲染問題，但可能會裁切部分視野（FOV）。"
+                "parallel-views-description": "對於 Monado，將 OXR_PARALLEL_VIEWS 設為 1。這可以修復渲染問題，但可能會裁切部分視野（FOV）。",
+                "foveated-rendering": "Foveated rendering",
+                "foveated-rendering-description": "Steam Frame only. Renders the area you look at in full detail and the edges at lower resolution, which saves GPU time and battery. Native ARM64 versions also follow Steam's Foveated Rendering switch (Properties → Performance)."
             },
             "maps": {
                 "search-bar": {

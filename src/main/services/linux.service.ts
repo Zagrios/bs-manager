@@ -5,6 +5,7 @@ import { IS_FLATPAK } from "main/constants";
 import { InstallationLocationService } from "./installation-location.service";
 import { StaticConfigurationService } from "./static-configuration.service";
 import { CustomError } from "shared/models/exceptions/custom-error.class";
+import { tryit } from "shared/helpers/error.helpers";
 import { BSLaunchError } from "shared/models/bs-launch";
 import { BsmShellLog, bsmExec } from "main/helpers/os.helpers";
 import { buildLinuxDesktopEntry } from "main/helpers/launch-shortcut.helpers";
@@ -69,7 +70,8 @@ export class LinuxService {
             throw new CustomError("Could not find BSManager WINEPREFIX path", ModsGridStatus.NO_WINEPREFIX);
         }
 
-        return { protonPath, compatDataPath, steamPath, nixOS };
+        const arm64 = tryit(() => this.isArm64Wine()).result === true;
+        return { protonPath, compatDataPath, steamPath, nixOS, arm64 };
     }
 
     public getProtonFolder(): string | undefined {

@@ -94,7 +94,7 @@ export async function planLaunch(request: LaunchRequest, context: LaunchContext)
         : await resolveGameRuntime(context, request.bsArm64LaunchScript);
 
     const { env: userEnv, cmdlet, args: userArgs } = parseLaunchOptions(launchOptions.command, {
-        commandReplacement: runtime.runCommand(exePath),
+        commandReplacement: runtime.runCommand(exePath, launchMods),
     });
 
     const planEnv: Record<string, string> = {

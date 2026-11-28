@@ -16,11 +16,15 @@ import { useService } from "renderer/hooks/use-service.hook";
 import { useTranslationV2 } from "renderer/hooks/use-translation.hook";
 import { BsArm64Service } from "renderer/services/bs-arm64.service";
 import { NotificationService } from "renderer/services/notification.service";
+import { ConfigurationService } from "renderer/services/configuration.service";
 import { logRenderError } from "renderer";
 
 type Props = { version: BSVersion };
 
 const MAX_LOG_LINES = 300;
+
+// Set once the user dismissed the Steam Frame tips (stored per device, in local storage)
+const TIPS_DISMISSED_KEY = "native-arm64-tips-dismissed";
 
 type Action = "install" | "uninstall";
 
@@ -47,7 +51,9 @@ export function NativeArm64Panel({ version }: Readonly<Props>) {
     const { text: t } = useTranslationV2();
     const arm64 = useService(BsArm64Service);
     const notification = useService(NotificationService);
+    const config = useService(ConfigurationService);
 
+    const [tipsDismissed, setTipsDismissed] = useState<boolean>(() => !!config.get(TIPS_DISMISSED_KEY));
     const [status, setStatus] = useState<BsArm64Status>();
     const [action, setAction] = useState<Action>();
     const [percent, setPercent] = useState<number>();
@@ -136,6 +142,25 @@ export function NativeArm64Panel({ version }: Readonly<Props>) {
                     <p className="text-yellow-500">
                         {t(`pages.version-viewer.arm64.mods-unavailable.${status.modsUnavailable}`, { bsipa: status.bsipaVersion ?? "?" })}
                     </p>
+                )}
+
+                {!tipsDismissed && !status.unsupported && (
+                    <div className="flex items-start gap-3 mt-1" data-native-arm64-tips>
+                        <p className="grow">
+                            <span className="font-bold">{t("pages.version-viewer.arm64.tips.title")} </span>
+                            {t("pages.version-viewer.arm64.tips.text")}
+                        </p>
+                        <button
+                            type="button"
+                            className="underline text-xs whitespace-nowrap"
+                            onClick={() => {
+                                config.set(TIPS_DISMISSED_KEY, true);
+                                setTipsDismissed(true);
+                            }}
+                        >
+                            {t("pages.version-viewer.arm64.tips.dismiss")}
+                        </button>
+                    </div>
                 )}
 
                 {showDetails && (

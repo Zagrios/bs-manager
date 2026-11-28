@@ -31,6 +31,8 @@ import { NativeArm64Panel } from "./native-arm64-panel.component";
 
 type Props = { version: BSVersion };
 
+const isLinuxArm64 = () => window.electron.platform === "linux" && window.electron.arch === "arm64";
+
 function useLaunchMods() {
     const configService = useService(ConfigurationService);
 
@@ -243,6 +245,17 @@ export function LaunchSlide({ version }: Props) {
                 onChange: (checked) => toggleActiveLaunchMod(checked, LaunchMods.PARALLEL_VIEWS),
                 onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.PARALLEL_VIEWS),
             },
+            {
+                id: LaunchMods.FOVEATED_RENDERING,
+                label: t("pages.version-viewer.launch-mods.foveated-rendering"),
+                description: t("pages.version-viewer.launch-mods.foveated-rendering-description"),
+                active: activeLaunchMods.includes(LaunchMods.FOVEATED_RENDERING),
+                pinned: pinnedLaunchMods.includes(LaunchMods.FOVEATED_RENDERING),
+                // Steam Frame only: Valve's foveation layers don't exist elsewhere
+                visible: isLinuxArm64(),
+                onChange: (checked) => toggleActiveLaunchMod(checked, LaunchMods.FOVEATED_RENDERING),
+                onPinChange: (pinned) => togglePinnedLaunchMod(pinned, LaunchMods.FOVEATED_RENDERING),
+            },
             ...customOptions,
         ]
     }, [activeLaunchMods, pinnedLaunchMods, customLaunchOptions, version]);
@@ -250,7 +263,9 @@ export function LaunchSlide({ version }: Props) {
     const launch = async () => {
         const launch$ = bsLauncherService.launch({
             version,
-            launchMods: activeLaunchMods.filter(mod => Object.values(LaunchMods).includes(mod as LaunchMod)) as LaunchMod[],
+            launchMods: activeLaunchMods
+                .filter(mod => Object.values(LaunchMods).includes(mod as LaunchMod))
+                .filter(mod => mod !== LaunchMods.FOVEATED_RENDERING || isLinuxArm64()) as LaunchMod[],
             command: [command, ...customLaunchModsArgs].filter(Boolean).join(" ").trim(),
         });
 

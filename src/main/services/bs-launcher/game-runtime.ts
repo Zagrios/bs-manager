@@ -7,11 +7,13 @@ export type ProtonConfig = {
     compatDataPath: string;
     steamPath: string;
     nixOS: boolean;
+    // ARM64 Proton (Steam Frame)
+    arm64?: boolean;
 };
 
 export interface GameRuntime {
     readonly supportsElevation: boolean;
-    runCommand(exePath: string): string;
+    runCommand(exePath: string, launchMods?: LaunchMod[]): string;
     prefixCommand(exePath: string): string;
     gameEnv(launchMods: LaunchMod[], gameFolder: string): Record<string, string>;
     prefixEnv(): Record<string, string>;
@@ -35,6 +37,13 @@ function launchModsEnv(launchMods: LaunchMod[], gameFolder: string): Record<stri
         ...(launchMods.includes(LaunchMods.PARALLEL_VIEWS) ? { OXR_PARALLEL_VIEWS: "1" } : {}),
     };
 }
+
+// Valve's eye-tracked foveated rendering for the x64 build on the Steam Frame, as Steam sets it up.
+// Native ARM64 instances get it from bs-arm64.sh (--foveation) instead.
+const FOVEATED_RENDERING_ENV = {
+    FDM_DEBUG: "enable",
+    VK_INSTANCE_LAYERS: "VK_LAYER_VALVE_rpo:VK_LAYER_VALVE_fdm_injection",
+};
 
 export function protonRuntime(config: ProtonConfig): GameRuntime {
     const proton = config.nixOS
@@ -60,6 +69,8 @@ export function protonRuntime(config: ProtonConfig): GameRuntime {
             // Fix reflections in Monado
             "OXR_NO_TEXTURE_SOURCE_ALPHA": "1",
             ...launchModsEnv(launchMods, gameFolder),
+            // The layers only exist on the Frame: elsewhere they'd stop the game from starting
+            ...(config.arm64 && launchMods.includes(LaunchMods.FOVEATED_RENDERING) ? FOVEATED_RENDERING_ENV : {}),
         }),
     };
 }
@@ -73,8 +84,10 @@ export function protonRuntime(config: ProtonConfig): GameRuntime {
 export function bsArm64Runtime(config: ProtonConfig, launchScript: string): GameRuntime {
     return {
         ...protonRuntime(config),
-        runCommand: exePath => `bash "${launchScript}" launch "${path.dirname(exePath)}"`
-            + ` --prefix "${config.compatDataPath}" --proton "${path.dirname(config.protonPath)}" --`,
+        // Without --foveation, bs-arm64.sh follows Steam's Foveated Rendering switch for Beat Saber
+        runCommand: (exePath, launchMods = []) => `bash "${launchScript}" launch "${path.dirname(exePath)}"`
+            + ` --prefix "${config.compatDataPath}" --proton "${path.dirname(config.protonPath)}"`
+            + `${launchMods.includes(LaunchMods.FOVEATED_RENDERING) ? " --foveation" : ""} --`,
         gameEnv: launchModsEnv,
     };
 }
