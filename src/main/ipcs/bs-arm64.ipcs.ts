@@ -8,6 +8,10 @@ ipc.on("bs-arm64.get-status", (version, reply) => {
     reply(from(BsArm64Service.getInstance().getStatus(version)));
 });
 
+ipc.on("bs-arm64.auto-select-proton-folder", (_, reply) => {
+    reply(from(BsArm64Service.getInstance().autoSelectProtonFolder()));
+});
+
 ipc.on("bs-arm64.get-native-versions", (_, reply) => {
     reply(from(BsArm64Service.getInstance().getNativeVersions()));
 });

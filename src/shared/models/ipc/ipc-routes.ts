@@ -169,6 +169,7 @@ export interface IpcChannelMapping {
 
     /* ** bs-arm64.ipcs ** */
     "bs-arm64.get-status": { request: BSVersion, response: BsArm64Status };
+    "bs-arm64.auto-select-proton-folder": { request: void, response: { folder?: string; arm64: boolean } };
     "bs-arm64.get-native-versions": { request: void, response: string[] };
     "bs-arm64.install": { request: BSVersion, response: BsArm64Progress };
     "bs-arm64.uninstall": { request: BSVersion, response: BsArm64Progress };

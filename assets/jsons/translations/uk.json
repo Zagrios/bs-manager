@@ -1080,7 +1080,9 @@
             "title": "Папка Proton",
             "proton-folder-description": "На Linux, BSManager потребує Proton для роботи. Виберіть папку встановлення Proton, щоб продовжити.",
             "proton-folder-placeholder": "Папка встановлення Proton",
-            "where-is-proton-installed": "Де встановлено Proton?"
+            "where-is-proton-installed": "Де встановлено Proton?",
+            "auto-selected": "Proton selected automatically",
+            "arm64-hint": "On the Steam Frame, install \"Proton 11.0 (ARM64)\" in Steam (Library → Tools), then choose its folder here."
         },
         "bs-version-outdated": {
             "body": "Версія {outdatedVersion} застаріла, і деякі моди чи функції можуть більше не працювати належним чином. Будь ласка, завантажте останню рекомендовану версію ({recommendedVersion}) Beat Saber, щоб насолоджуватися останніми функціями та виправленнями помилок."

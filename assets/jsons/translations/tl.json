@@ -1085,7 +1085,9 @@
             "title": "Proton Folder",
             "proton-folder-description": "Sa Linux, kailangan ng BSManager ang Proton upang gumana. Piliin ang folder ng Proton installation upang magpatuloy.",
             "proton-folder-placeholder": "Proton installation folder",
-            "where-is-proton-installed": "Saan naka-install ang Proton?"
+            "where-is-proton-installed": "Saan naka-install ang Proton?",
+            "auto-selected": "Proton selected automatically",
+            "arm64-hint": "On the Steam Frame, install \"Proton 11.0 (ARM64)\" in Steam (Library → Tools), then choose its folder here."
         },
         "bs-version-outdated": {
             "body": "Ang bersyon na {outdatedVersion} ay lipas na, at ang ilang mods o features ay maaaring hindi na gumana ng tama. Mangyaring i-download ang pinakabagong inirerekomendang bersyon ({recommendedVersion}) ng Beat Saber upang tamasahin ang mga pinakabagong tampok at mga pag-aayos ng bug."

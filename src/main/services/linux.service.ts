@@ -76,9 +76,8 @@ export class LinuxService {
         return this.staticConfig.has("proton-folder") ? this.staticConfig.get("proton-folder") : undefined;
     }
 
-    // Build of the selected Proton from its "version" file ("<timestamp> proton-11.0-2c-arm64")
-    public getProtonBuild(): string | undefined {
-        const folder = this.getProtonFolder();
+    // Build of a Proton (default: the selected one) from its "version" file ("<timestamp> proton-11.0-2c-arm64")
+    public getProtonBuild(folder: string | undefined = this.getProtonFolder()): string | undefined {
         const versionFile = folder && path.join(folder, "version");
         if (!versionFile || !fs.existsSync(versionFile)) {
             return undefined;
@@ -141,6 +140,22 @@ export class LinuxService {
             }
         }
         return false;
+    }
+
+    /** ARM64 Proton installs (with files/bin-arm64/wine) in the steamapps/common of the given Steam libraries. */
+    public async findArm64ProtonFolders(libraries: string[]): Promise<{ folder: string; build?: string }[]> {
+        const found: { folder: string; build?: string }[] = [];
+        for (const library of new Set(libraries)) {
+            const common = path.join(library, "steamapps", "common");
+            const names = await fs.readdir(common).catch((): string[] => []);
+            for (const name of names.sort()) {
+                const folder = path.join(common, name);
+                if (this.isExecutableFile(path.join(folder, this.PROTON_BINARY_PREFIX)) && this.isExecutableFile(path.join(folder, this.ARM64_WINE_BINARY))) {
+                    found.push({ folder, build: this.getProtonBuild(folder) });
+                }
+            }
+        }
+        return found;
     }
 
     private isExecutableFile(filePath: string): boolean {

@@ -21,6 +21,11 @@ export class BsArm64Service {
         return this.ipc.sendV2("bs-arm64.get-status", version);
     }
 
+    /** On ARM64 Linux without a valid Proton folder, selects an ARM64 Proton from the Steam libraries. */
+    public autoSelectProtonFolder(): Observable<{ folder?: string; arm64: boolean }> {
+        return this.ipc.sendV2("bs-arm64.auto-select-proton-folder");
+    }
+
     /** Beat Saber versions that can run natively on this device; empty off ARM64 Linux. */
     public getNativeVersions(): Observable<string[]> {
         return this.ipc.sendV2("bs-arm64.get-native-versions");

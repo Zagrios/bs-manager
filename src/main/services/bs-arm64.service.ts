@@ -27,6 +27,7 @@ import { BSLocalVersionService } from "./bs-local-version.service";
 import { InstallationLocationService } from "./installation-location.service";
 import { LinuxService } from "./linux.service";
 import { RequestService } from "./request.service";
+import { SteamService } from "./steam.service";
 import { UtilsService } from "./utils.service";
 import { BsModsManagerService } from "./mods/bs-mods-manager.service";
 
@@ -175,6 +176,16 @@ export function bsArm64ModsUnavailable(release: BsArm64Release, bsipaVersion: st
 }
 
 /**
+ * The Proton to select on ARM64: one a catalog release supports, else a stable one over
+ * Experimental, else the first. Undefined if there's none.
+ */
+export function pickArm64ProtonFolder(candidates: { folder: string; build?: string }[], catalog: BsArm64Release[]): string | undefined {
+    const supported = candidates.find(c => findBsArm64Release(catalog, c.build));
+    const stable = candidates.find(c => !/experimental/i.test(path.basename(c.folder)));
+    return (supported ?? stable ?? candidates[0])?.folder;
+}
+
+/**
  * Installs the native ARM64 runtime from https://github.com/DaVarga/bs-arm64 into a
  * Beat Saber instance. The catalog release matching the selected Proton build is downloaded,
  * checked against its pinned SHA-256 and unpacked into BSManager's cache, and its bs-arm64.sh
@@ -240,6 +251,26 @@ export class BsArm64Service {
             return { unsupported: BsArm64Unsupported.VERSION_NOT_SUPPORTED, match };
         }
         return { match };
+    }
+
+    /**
+     * On ARM64 Linux without a valid Proton folder: finds the ARM64 Protons in the Steam libraries
+     * and selects the best one (pickArm64ProtonFolder), so the user doesn't have to.
+     */
+    public async autoSelectProtonFolder(): Promise<{ folder?: string; arm64: boolean }> {
+        if (!this.isLinuxArm64()) {
+            return { arm64: false };
+        }
+        if (this.linux.verifyProtonPath()) {
+            return { arm64: true };
+        }
+        const libraries = await SteamService.getInstance().getLibraryFolders().catch((): string[] => []);
+        const folder = pickArm64ProtonFolder(await this.linux.findArm64ProtonFolders(libraries), await this.getCatalog());
+        if (!folder || !(await this.linux.setProtonFolder(folder))) {
+            return { arm64: true };
+        }
+        log.info("Selected the ARM64 Proton", folder);
+        return { folder, arm64: true };
     }
 
     /** Beat Saber versions that can run natively with the selected Proton; empty off ARM64 Linux. */

@@ -5,6 +5,8 @@ import { BSVersionManagerService } from "./bs-version-manager.service";
 import { InstallationLocationService } from "./installation-location.service";
 import { IpcService } from "./ipc.service";
 import { ModalService } from "./modale.service";
+import { BsArm64Service } from "./bs-arm64.service";
+import { NotificationService } from "./notification.service";
 
 import { AskInstallPathModal } from "renderer/components/modal/modal-types/setup/ask-install-path.component";
 import { ChooseProtonFolderModal } from "renderer/components/modal/modal-types/setup/choose-proton-folder-modal.component";
@@ -17,12 +19,16 @@ export class SetupService {
     private readonly ipcService: IpcService;
     private readonly modalService: ModalService;
     private readonly versionManagerService: BSVersionManagerService;
+    private readonly bsArm64Service: BsArm64Service;
+    private readonly notificationService: NotificationService;
 
     private constructor() {
         this.installationLocationService = InstallationLocationService.getInstance();
         this.ipcService = IpcService.getInstance();
         this.modalService = ModalService.getInstance();
         this.versionManagerService = BSVersionManagerService.getInstance();
+        this.bsArm64Service = BsArm64Service.getInstance();
+        this.notificationService = NotificationService.getInstance();
     }
 
     public static getInstance(): SetupService {
@@ -73,9 +79,16 @@ export class SetupService {
                 return;
             }
 
+            // On ARM64 (Steam Frame), select an ARM64 Proton from the Steam libraries if there is one
+            const auto = await lastValueFrom(this.bsArm64Service.autoSelectProtonFolder()).catch((): undefined => undefined);
+            if (auto?.folder) {
+                this.notificationService.notifySuccess({ title: "modals.choose-proton-folder.auto-selected", desc: auto.folder });
+                return;
+            }
+
             await this.modalService.openModal(
                 ChooseProtonFolderModal,
-                { closable: false }
+                { closable: false, data: { arm64: !!auto?.arm64 } }
             );
         } catch (error) {
             logRenderError(error);

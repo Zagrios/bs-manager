@@ -138,6 +138,22 @@ export class SteamService {
         }
     }
 
+    /** Steam's own folder and the other library folders in libraryfolders.vdf. */
+    public async getLibraryFolders(): Promise<string[]> {
+        const steamPath = await this.getSteamPath();
+        const vdfPath = path.join(steamPath, "steamapps", "libraryfolders.vdf");
+        const libraries = [steamPath];
+        if (await pathExists(vdfPath)) {
+            const parsed = parse(await readFile(vdfPath, { encoding: "utf-8" })) as { libraryfolders?: Record<string, { path?: string }> };
+            for (const library of Object.values(parsed?.libraryfolders ?? {})) {
+                if (typeof library?.path === "string") {
+                    libraries.push(library.path);
+                }
+            }
+        }
+        return libraries;
+    }
+
     public async getGameFolder(gameId: string, gameFolder?: string): Promise<string> {
         try {
             const steamPath = await this.getSteamPath();

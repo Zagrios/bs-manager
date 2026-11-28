@@ -1085,7 +1085,9 @@
             "title": "Protonフォルダ",
             "proton-folder-description": "Linuxでは、BSManagerを動作させるためにProtonが必要です。続行するには、Protonのインストールフォルダを選択してください。",
             "proton-folder-placeholder": "Protonのインストールフォルダ",
-            "where-is-proton-installed": "Protonはどこにインストールされていますか？"
+            "where-is-proton-installed": "Protonはどこにインストールされていますか？",
+            "auto-selected": "Proton selected automatically",
+            "arm64-hint": "On the Steam Frame, install \"Proton 11.0 (ARM64)\" in Steam (Library → Tools), then choose its folder here."
         },
         "bs-version-outdated": {
             "body": "バージョン {outdatedVersion} は古いため、一部のモッドや機能が期待通りに動作しない場合があります。最新の機能やバグ修正を楽しむために、推奨される最新バージョンの Beat Saber ({recommendedVersion}) をダウンロードしてください。"

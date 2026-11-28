@@ -10,6 +10,7 @@ import {
     isBsArm64Catalog,
     lineReader,
     parseBsArm64InstallerLine,
+    pickArm64ProtonFolder,
 } from "main/services/bs-arm64.service";
 import { bsmSpawn } from "main/helpers/os.helpers";
 import { Observable } from "rxjs";
@@ -33,6 +34,7 @@ jest.mock("main/services/bs-local-version.service", () => ({ BSLocalVersionServi
 jest.mock("main/services/installation-location.service", () => ({ InstallationLocationService: { getInstance: jest.fn() } }));
 jest.mock("main/services/linux.service", () => ({ LinuxService: { getInstance: jest.fn() } }));
 jest.mock("main/services/request.service", () => ({ RequestService: { getInstance: jest.fn() } }));
+jest.mock("main/services/steam.service", () => ({ SteamService: { getInstance: jest.fn() } }));
 jest.mock("main/services/utils.service", () => ({ UtilsService: { getInstance: jest.fn() } }));
 jest.mock("main/services/mods/bs-mods-manager.service", () => ({ BsModsManagerService: { getInstance: jest.fn() } }));
 
@@ -402,5 +404,25 @@ describe("prepareLaunch", () => {
         jest.spyOn(service as any, "isLinuxArm64").mockReturnValue(false);
         await expect(prepare()).resolves.toBeUndefined();
         expect(events).toEqual([]);
+    });
+});
+
+describe("pickArm64ProtonFolder", () => {
+    const catalog = [release("v0.4.1", { "proton-11.0-2e": { artifact: "bs-arm64-v0.4.1-proton-11.0-2c.tar.gz", sha256: SHA_A } })];
+    const experimental = { folder: "/s/common/Proton Experimental (ARM64)", build: "proton-experimental-arm64" };
+    const older = { folder: "/s/common/Proton 10.0 (ARM64)", build: "proton-10.0-3-arm64" };
+    const supported = { folder: "/s/common/Proton 11.0 (ARM64)", build: "proton-11.0-2e-arm64" };
+
+    it("prefers a Proton a release supports", () => {
+        expect(pickArm64ProtonFolder([experimental, older, supported], catalog)).toBe(supported.folder);
+    });
+
+    it("prefers a stable Proton over Experimental otherwise", () => {
+        expect(pickArm64ProtonFolder([experimental, older], catalog)).toBe(older.folder);
+        expect(pickArm64ProtonFolder([experimental], catalog)).toBe(experimental.folder);
+    });
+
+    it("finds nothing without candidates", () => {
+        expect(pickArm64ProtonFolder([], catalog)).toBeUndefined();
     });
 });

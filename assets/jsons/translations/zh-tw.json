@@ -1085,7 +1085,9 @@
             "title": "Proton資料夾",
             "proton-folder-description": "在Linux上，BSManager需要Proton才能運行。請選擇Proton的安裝資料夾以繼續。",
             "proton-folder-placeholder": "Proton安裝資料夾",
-            "where-is-proton-installed": "Proton安裝在哪裡？"
+            "where-is-proton-installed": "Proton安裝在哪裡？",
+            "auto-selected": "Proton selected automatically",
+            "arm64-hint": "On the Steam Frame, install \"Proton 11.0 (ARM64)\" in Steam (Library → Tools), then choose its folder here."
         },
         "bs-version-outdated": {
             "body": "版本 {outdatedVersion} 已過時，某些模組或功能可能無法正常運作。請下載最新推薦的 Beat Saber 版本 ({recommendedVersion})，以享受最新功能和修正。"

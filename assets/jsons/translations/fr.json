@@ -1085,7 +1085,9 @@
             "title": "Dossier Proton",
             "proton-folder-description": "Sous Linux, BSManager a besoin de Proton pour fonctionner. Choisissez le dossier d'installation de Proton pour continuer.",
             "proton-folder-placeholder": "Dossier d'installation de Proton",
-            "where-is-proton-installed": "Où est installé Proton ?"
+            "where-is-proton-installed": "Où est installé Proton ?",
+            "auto-selected": "Proton selected automatically",
+            "arm64-hint": "On the Steam Frame, install \"Proton 11.0 (ARM64)\" in Steam (Library → Tools), then choose its folder here."
         },
         "bs-version-outdated": {
             "body": "La version {outdatedVersion} est obsolète, et certains mods ou fonctionnalités peuvent ne plus fonctionner comme prévu. Veuillez télécharger la dernière version recommandée ({recommendedVersion}) de Beat Saber pour profiter des dernières fonctionnalités et corrections de bugs."

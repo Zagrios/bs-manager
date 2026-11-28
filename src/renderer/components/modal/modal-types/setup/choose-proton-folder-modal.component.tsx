@@ -10,7 +10,7 @@ import { LinuxService } from "renderer/services/linux.service";
 
 import { BsmButton } from "renderer/components/shared/bsm-button.component";
 
-export const ChooseProtonFolderModal: ModalComponent<{}, {}> = ({ resolver }) => {
+export const ChooseProtonFolderModal: ModalComponent<{}, { arm64?: boolean }> = ({ resolver, options }) => {
 
     const t = useTranslation();
     const ipcService = useService(IpcService);
@@ -70,6 +70,7 @@ export const ChooseProtonFolderModal: ModalComponent<{}, {}> = ({ resolver }) =>
             <h1 className="tracking-wide w-full uppercase text-3xl text-center mb-4">{t("modals.choose-proton-folder.title")}</h1>
 
             <p>{t("modals.choose-proton-folder.proton-folder-description")}</p>
+            {options?.data?.arm64 && <p className="font-bold">{t("modals.choose-proton-folder.arm64-hint")}</p>}
 
             <a className="underline" href="https://github.com/ValveSoftware/Proton/wiki/Proton-FAQ#where-is-proton-installed" target="_blank">{t("modals.choose-proton-folder.where-is-proton-installed")}</a>
             <div className="relative flex items-center justify-between w-full h-8 bg-light-main-color-1 dark:bg-main-color-1 rounded-md pl-2 py-1">
