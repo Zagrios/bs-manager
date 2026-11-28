@@ -82,7 +82,7 @@ export class SetupService {
             // On ARM64 (Steam Frame), select an ARM64 Proton from the Steam libraries if there is one
             const auto = await lastValueFrom(this.bsArm64Service.autoSelectProtonFolder()).catch((): undefined => undefined);
             if (auto?.folder) {
-                void this.notificationService.notifySuccess({ title: "modals.choose-proton-folder.auto-selected", desc: auto.folder });
+                this.notificationService.notifySuccess({ title: "modals.choose-proton-folder.auto-selected", desc: auto.folder }).catch(logRenderError);
                 return;
             }
 

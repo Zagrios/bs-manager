@@ -96,17 +96,17 @@ export function NativeArm64Panel({ version }: Readonly<Props>) {
                 setAction(undefined);
                 setLogLines(lines => [...lines, e?.message ?? String(e)]);
                 const code = e?.code?.startsWith("BS_ARM64_") ? e.code : "BS_ARM64_INSTALLER_FAILED";
-                void notification.notifyError({
+                notification.notifyError({
                     title: `pages.version-viewer.arm64.errors.${code}`,
                     // The installer's stable error code says what to do; else its message
                     desc: isBsArm64InstallerErrorCode(e?.data) ? `pages.version-viewer.arm64.installer-errors.${e.data}` : e?.message,
-                });
+                }).catch(logRenderError);
                 loadStatus();
             },
             complete: () => {
                 setAction(undefined);
                 setPercent(undefined);
-                void notification.notifySuccess({ title: `pages.version-viewer.arm64.notifications.${next}-success` });
+                notification.notifySuccess({ title: `pages.version-viewer.arm64.notifications.${next}-success` }).catch(logRenderError);
                 loadStatus();
             },
         });
